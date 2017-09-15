@@ -8,11 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Value.h
 /// @author Manuel Fuentes
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Jun 97
 
 #ifndef eckit_Value_h
 #define eckit_Value_h
@@ -280,6 +278,7 @@ public:
     bool     isDate()     const { return content_->isDate(); }
     bool     isTime()     const { return content_->isTime(); }
     bool     isDateTime() const { return content_->isDateTime(); }
+    bool     isOrderedMap() const { return content_->isOrderedMap(); }
 
     Value    tail() const;
     Value    head() const;

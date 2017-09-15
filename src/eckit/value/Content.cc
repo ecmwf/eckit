@@ -213,12 +213,6 @@ int Content::compareMap(const MapContent&) const
     return 0;
 }
 
-//int Content::compareOrderedMap(const OrderedMapContent&) const
-//{
-//    badComparison("Map");
-//    return 0;
-//}
-
 int Content::compareDate(const DateContent&) const
 {
     badComparison("Date");
@@ -234,6 +228,12 @@ int Content::compareTime(const TimeContent&) const
 int Content::compareDateTime(const DateTimeContent&) const
 {
     badComparison("DateTime");
+    return 0;
+}
+
+int Content::compareOrderedMap(const OrderedMapContent&) const
+{
+    badComparison("OrderedMap");
     return 0;
 }
 
@@ -308,6 +308,12 @@ Content* Content::addDateTime(const DateTimeContent&) const
     return 0;
 }
 
+Content*Content::addOrderedMap(const OrderedMapContent&) const
+{
+    badOperator("+", "OrderedMap");
+    return 0;
+}
+
 Content* Content::operator-(const Content& other) const
 {
     return sub(other);
@@ -379,6 +385,12 @@ Content* Content::subDateTime(const DateTimeContent&) const
     return 0;
 }
 
+Content*Content::subOrderedMap(const OrderedMapContent&) const
+{
+    badOperator("-", "OrderedMap");
+    return 0;
+}
+
 Content* Content::operator*(const Content& other) const
 {
     return mul(other);
@@ -447,6 +459,12 @@ Content* Content::mulTime(const TimeContent&) const
 Content* Content::mulDateTime(const DateTimeContent&) const
 {
     badOperator("*", "DateTime");
+    return 0;
+}
+
+Content*Content::mulOrderedMap(const OrderedMapContent&) const
+{
+    badOperator("-", "OrderedMap");
     return 0;
 }
 
@@ -522,6 +540,11 @@ Content* Content::divDateTime(const DateTimeContent&) const
     return 0;
 }
 
+Content*Content::divOrderedMap(const OrderedMapContent&) const
+{
+    badOperator("/", "OrderedMap");
+    return 0;
+}
 
 Content* Content::mod(const Content& other) const
 {
@@ -586,9 +609,17 @@ Content* Content::modTime(const TimeContent&) const
 
 Content* Content::modDateTime(const DateTimeContent&) const
 {
-    badOperator("/%", "DateTime");
+    badOperator("%", "DateTime");
     return 0;
 }
+
+Content*Content::modOrderedMap(const OrderedMapContent&) const
+{
+    badOperator("%", "OrderedMap");
+    return 0;
+}
+
+Content::Content() {}
 
 #ifndef IBM
 template<>

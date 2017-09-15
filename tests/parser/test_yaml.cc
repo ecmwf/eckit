@@ -51,7 +51,7 @@ CASE ( "test_eckit_yaml_2" ) {
     std::cout << "2.2.yaml " << v << std::endl;
     std::cout << toJSON(v) << std::endl;
 
-    EXPECT( v.isMap() );
+    EXPECT( v.isOrderedMap() );
     EXPECT( v.keys().size() == 3 );
 
     EXPECT( v["hr"] == Value(65) );
@@ -64,7 +64,7 @@ CASE ( "test_eckit_yaml_3" ) {
     std::cout << "2.3.yaml " << v << std::endl;
     std::cout << toJSON(v) << std::endl;
 
-    EXPECT( v.isMap() );
+    EXPECT( v.isOrderedMap() );
     EXPECT( v.keys().size() == 2 );
 
     EXPECT( v["american"].isList() );
@@ -82,10 +82,10 @@ CASE ( "test_eckit_yaml_4" ) {
     EXPECT( v.isList() );
     EXPECT( v.size() == 2 );
 
-    EXPECT( v[0].isMap() );
+    EXPECT( v[0].isOrderedMap() );
     EXPECT( v[0].keys().size() == 3 );
 
-    EXPECT( v[1].isMap() );
+    EXPECT( v[1].isOrderedMap() );
     EXPECT( v[1].keys().size() == 3 );
 
 }
@@ -115,13 +115,13 @@ CASE ( "test_eckit_yaml_6" ) {
     std::cout << "2.6.yaml " << v << std::endl;
     std::cout << toJSON(v) << std::endl;
 
-    EXPECT( v.isMap() );
+    EXPECT( v.isOrderedMap() );
     EXPECT( v.keys().size() == 2 );
 
-    EXPECT( v["Mark McGwire"].isMap() );
+    EXPECT( v["Mark McGwire"].isOrderedMap() );
     EXPECT( v["Mark McGwire"].keys().size() == 2 );
 
-    EXPECT( v["Sammy Sosa"].isMap() );
+    EXPECT( v["Sammy Sosa"].isOrderedMap() );
     EXPECT( v["Sammy Sosa"].keys().size() == 2 );
 
 

@@ -12,21 +12,21 @@
 #include "eckit/value/MapContent.h"
 #include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 ClassSpec MapContent::classSpec_ = {&Content::classSpec(), "MapContent",};
 Reanimator<MapContent>  MapContent::reanimator_;
 
 
-MapContent::MapContent()
-{
+MapContent::MapContent() {
 }
 
-MapContent::MapContent(const ValueMap& v):
+MapContent::MapContent(const ValueMap& v) :
     value_(v)
 {
 }
@@ -44,7 +44,6 @@ MapContent::MapContent(Stream& s):
         value_[k] = v;
         s >> more;
     }
-
 }
 
 void MapContent::encode(Stream& s) const
@@ -63,6 +62,21 @@ MapContent::~MapContent()
 {
 }
 
+void MapContent::value(ValueMap& v) const
+{
+    v = value_;
+}
+
+
+Value MapContent::keys() const {
+    ValueList list;
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
+        list.push_back((*j).first);
+    }
+    return Value::makeList(list);
+}
+
+
 Value& MapContent::element(const Value& key)
 {
     return value_[key];
@@ -71,11 +85,6 @@ Value& MapContent::element(const Value& key)
 bool MapContent::contains(const Value& key) const
 {
     return value_.find(key) != value_.end();
-}
-
-void MapContent::value(ValueMap& v) const
-{
-    v = value_;
 }
 
 int MapContent::compare(const Content& other)const
@@ -90,15 +99,6 @@ int MapContent::compareMap(const MapContent& other) const
     if (value_ < other.value_)
         return -1;
     return 1;
-
-}
-
-Value MapContent::keys() const {
-    ValueList list;
-    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
-        list.push_back((*j).first);
-    }
-    return Value::makeList(list);
 }
 
 void MapContent::print(std::ostream& s) const
@@ -194,7 +194,7 @@ void MapContent::dump(std::ostream& out, size_t depth, bool indent) const {
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

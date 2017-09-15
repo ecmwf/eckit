@@ -83,10 +83,10 @@ public:
     virtual int  compareNil(const NilContent&)       const;
     virtual int  compareList(const ListContent&)     const;
     virtual int  compareMap(const MapContent&)        const;
-//    virtual int  compareOrderedMap(const OrderedMapContent&)  const;
     virtual int  compareDate(const DateContent&)         const;
     virtual int  compareTime(const TimeContent&)         const;
     virtual int  compareDateTime(const DateTimeContent&) const;
+    virtual int  compareOrderedMap(const OrderedMapContent&)  const;
 
     // Double-dispatching on subclasses for addition
     // Needs an add??? for every new subclass
@@ -101,6 +101,7 @@ public:
     virtual Content* addDate(const DateContent&)         const;
     virtual Content* addTime(const TimeContent&)         const;
     virtual Content* addDateTime(const DateTimeContent&) const;
+    virtual Content* addOrderedMap(const OrderedMapContent&)      const;
 
     virtual Content* subNumber(const NumberContent&)  const;
     virtual Content* subDouble(const DoubleContent&)  const;
@@ -112,6 +113,7 @@ public:
     virtual Content* subDate(const DateContent&)         const;
     virtual Content* subTime(const TimeContent&)         const;
     virtual Content* subDateTime(const DateTimeContent&) const;
+    virtual Content* subOrderedMap(const OrderedMapContent&)      const;
 
     virtual Content* mulNumber(const NumberContent&)  const;
     virtual Content* mulDouble(const DoubleContent&)  const;
@@ -123,6 +125,7 @@ public:
     virtual Content* mulDate(const DateContent&)         const;
     virtual Content* mulTime(const TimeContent&)         const;
     virtual Content* mulDateTime(const DateTimeContent&) const;
+    virtual Content* mulOrderedMap(const OrderedMapContent&)      const;
 
     virtual Content* divNumber(const NumberContent&)  const;
     virtual Content* divDouble(const DoubleContent&)  const;
@@ -134,6 +137,7 @@ public:
     virtual Content* divDate(const DateContent&)         const;
     virtual Content* divTime(const TimeContent&)         const;
     virtual Content* divDateTime(const DateTimeContent&) const;
+    virtual Content* divOrderedMap(const OrderedMapContent&)      const;
 
     virtual Content* modNumber(const NumberContent&)  const;
     virtual Content* modDouble(const DoubleContent&)  const;
@@ -145,13 +149,14 @@ public:
     virtual Content* modDate(const DateContent&)         const;
     virtual Content* modTime(const TimeContent&)         const;
     virtual Content* modDateTime(const DateTimeContent&) const;
+    virtual Content* modOrderedMap(const OrderedMapContent&)      const;
 
 
 protected:
 
 // -- Constructor
 
-    Content()          {  }
+    Content();
     Content(Stream&);
 
 // -- Destructor
@@ -204,6 +209,7 @@ protected:
     virtual bool   isDate()     const  { return false; }
     virtual bool   isTime()     const  { return false; }
     virtual bool   isDateTime() const  { return false; }
+    virtual bool   isOrderedMap() const  { return false; }
 
 
     virtual bool contains(const Value&) const;

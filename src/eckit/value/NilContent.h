@@ -55,10 +55,10 @@ protected:
     virtual int  compareNil(const NilContent&)              const;
     virtual int  compareList(const ListContent&)            const {return 1; }
     virtual int  compareMap(const MapContent&)              const {return 1; }
-//    virtual int  compareOrderedMap(const MapContent&)              const {return 1; }
     virtual int  compareDate(const DateContent&)            const {return 1; }
     virtual int  compareTime(const TimeContent&)            const {return 1; }
     virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
+    virtual int  compareOrderedMap(const OrderedMapContent&) const { return 1; }
 
     virtual Content* add(const Content&) const;
     virtual Content* sub(const Content&) const;

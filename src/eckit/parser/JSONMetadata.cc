@@ -42,7 +42,7 @@ JSONMetadata::~JSONMetadata() {}
 std::vector<std::string> JSONMetadata::keywords() const {
 
     std::vector<std::string> params;
-    if (root_.isMap()) {
+    if (root_.isOrderedMap()) {
         ValueMap vmap(root_);
         for (ValueMap::const_iterator it = vmap.begin(); it != vmap.end(); ++it) {
             params.push_back(std::string(it->first));
@@ -52,14 +52,14 @@ std::vector<std::string> JSONMetadata::keywords() const {
 }
 
 bool JSONMetadata::has(const std::string& key) const {
-    return root_.isMap() && root_.contains(key);
+    return root_.isOrderedMap() && root_.contains(key);
 }
 
 // If Value had a templated isType<T>() method, we could make this beautifully
 // DRY and templated...
 
 void JSONMetadata::get(const std::string& key, std::string& value) const {
-    ASSERT(root_.isMap());
+    ASSERT(root_.isOrderedMap());
 
     if (!has(key))
         throw OutOfRange(std::string("Element \"") + key + "\" not present in JSON", Here());
@@ -72,7 +72,7 @@ void JSONMetadata::get(const std::string& key, std::string& value) const {
 }
 
 void JSONMetadata::get(const std::string& key, long& value) const {
-    ASSERT(root_.isMap());
+    ASSERT(root_.isOrderedMap());
 
     if (!has(key))
         throw OutOfRange(std::string("Element \"") + key + "\" not present in JSON", Here());
@@ -85,7 +85,7 @@ void JSONMetadata::get(const std::string& key, long& value) const {
 }
 
 void JSONMetadata::get(const std::string& key, double& value) const {
-    ASSERT(root_.isMap());
+    ASSERT(root_.isOrderedMap());
 
     if (!has(key))
         throw OutOfRange(std::string("Element \"") + key + "\" not present in JSON", Here());

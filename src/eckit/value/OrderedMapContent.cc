@@ -12,30 +12,41 @@
 #include "eckit/value/OrderedMapContent.h"
 #include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 ClassSpec OrderedMapContent::classSpec_ = {&Content::classSpec(), "OrderedMapContent",};
 Reanimator<OrderedMapContent>  OrderedMapContent::reanimator_;
 
-OrderedMapContent::OrderedMapContent() {
 
+OrderedMapContent::OrderedMapContent() {
 }
 
-OrderedMapContent::OrderedMapContent(const ValueMap& v, const ValueList& keys):
-    MapContent(v) {
-
-    ASSERT(keys.size() == v.size());
+OrderedMapContent::OrderedMapContent(const ValueMap& v, const ValueList& keys) :
+    value_(v)
+{
+    ASSERT(keys.size() == value_.size());
     keys_ = keys;
 }
 
 
 OrderedMapContent::OrderedMapContent(Stream& s):
-    MapContent(s)
+    Content(s)
 {
+    bool more;
+    s >> more;
+    while (more)
+    {
+        Value k(s);
+        Value v(s);
+        value_[k] = v;
+        s >> more;
+    }
+
     for (size_t i = 0; i < value_.size(); i++) {
         Value v(s);
         keys_.push_back(v);
@@ -44,7 +55,15 @@ OrderedMapContent::OrderedMapContent(Stream& s):
 
 void OrderedMapContent::encode(Stream& s) const
 {
-    MapContent::encode(s);
+    Content::encode(s);
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
+    {
+        s << true;
+        s << (*j).first;
+        s << (*j).second;
+    }
+    s << false;
+
     for (size_t i = 0; i < value_.size(); i++) {
         s << keys_[i];
     }
@@ -62,16 +81,37 @@ void OrderedMapContent::value(ValueMap& v) const
     }
 }
 
+const Value& OrderedMapContent::value(const Value& key) const {
+    ValueMap::const_iterator j = value_.find(key);
+    ASSERT(j != value_.end());
+    return (*j).second;
+}
+
 Value OrderedMapContent::keys() const {
     return keys_;
 }
 
 Value& OrderedMapContent::element(const Value& key)
 {
-    if (value_.find(key) == value_.end()) {
+    if(value_.find(key) == value_.end()) { // key is new so add too order list
         keys_.push_back(key);
     }
     return value_[key];
+}
+
+bool OrderedMapContent::contains(const Value& key) const
+{
+    return value_.find(key) != value_.end();
+}
+
+int OrderedMapContent::compare(const Content& other)const
+{
+    return -other.compareOrderedMap(*this);
+}
+
+int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
+{
+    NOTIMP; // must ensure order is also the same
 }
 
 void OrderedMapContent::print(std::ostream& s) const
@@ -100,12 +140,41 @@ void OrderedMapContent::json(JSON& s) const
 
 
 Content* OrderedMapContent::clone() const {
-    ValueMap v;
+
+    OrderedMapContent* m = new OrderedMapContent();
+
     for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
-        v[(*j).first.clone()] = (*j).second.clone();
+        m->element((*j).first.clone()) = (*j).second.clone();
     }
-    return new OrderedMapContent(v, keys_);
+
+    return m;
 }
+
+Content* OrderedMapContent::add(const Content& other) const
+{
+    return other.addOrderedMap(*this);
+}
+
+Content* OrderedMapContent::sub(const Content& other) const
+{
+    return other.subOrderedMap(*this);
+}
+
+Content* OrderedMapContent::mul(const Content& other) const
+{
+    return other.mulOrderedMap(*this);
+}
+
+Content* OrderedMapContent::div(const Content& other) const
+{
+    return other.divOrderedMap(*this);
+}
+
+Content* OrderedMapContent::mod(const Content& other) const
+{
+    return other.modOrderedMap(*this);
+}
+
 
 void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const {
 
@@ -139,14 +208,8 @@ void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const
     out << "}";
 }
 
-const Value& OrderedMapContent::value(const Value& key) const {
-    ValueMap::const_iterator j = value_.find(key);
-    ASSERT(j != value_.end());
-    return (*j).second;
-}
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

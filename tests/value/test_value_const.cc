@@ -79,11 +79,10 @@ CASE( "There is a Total Order between types" ) {
     EXPECT( Value(std::string("foo")) > Value() );
     EXPECT( Value() > Value::makeList() );
     EXPECT( Value::makeList() > Value::makeMap() );
-//    EXPECT( Value::makeMap() > Value::makeOrderedMap() );
-//    EXPECT( Value::makeOrderedMap() > Value(Date(2016,5,1)) );
-//    EXPECT( Value::makeMap() > Value(Date(2016,5,1)) );
+    EXPECT( Value::makeMap() > Value(Date(2016,5,1)) );
     EXPECT( Value(Date(2016,5,1)) > Value(Time(1000)) );
     EXPECT( Value(Time(1000)) > Value(DateTime()) );
+    EXPECT( Value(DateTime()) > Value::makeOrderedMap() );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

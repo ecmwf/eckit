@@ -24,7 +24,7 @@ Properties::Properties()
 
 Properties::Properties(const property_t& value)
 {
-  ASSERT( value.isMap() );
+  ASSERT( value.isOrderedMap() || value.isMap() );
   ValueMap value_map = value;
   for( ValueMap::const_iterator vit = value_map.begin(); vit != value_map.end(); ++vit )
   {

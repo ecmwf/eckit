@@ -38,7 +38,7 @@ CASE( "test_eckit_parser_parse_to_value" ) {
     JSON j(cout);
     j << v;
 
-    EXPECT( v.isMap() );
+    EXPECT( v.isOrderedMap() );
     EXPECT( v.as<ValueMap>().size() == 5 );
 
     EXPECT( v["a"].isList() );
@@ -102,7 +102,7 @@ CASE( "test_eckit_parser_parse_to_map" ) {
 
     Log::info() << v << std::endl;
 
-    EXPECT( v.isMap() );
+    EXPECT( v.isOrderedMap() );
     EXPECT( v.as<ValueMap>().size() == 4 );
 
     EXPECT( v["a"].isString() );

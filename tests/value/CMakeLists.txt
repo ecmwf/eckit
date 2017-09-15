@@ -11,10 +11,13 @@ ecbuild_add_test( TARGET   eckit_test_value_value_properties
                   SOURCES  test_value_properties.cc
                   LIBS     eckit )
 
-ecbuild_add_test( TARGET   eckit_test_value_value
-                  SOURCES  test_value.cc
-                  LIBS     eckit )
 
 ecbuild_add_test( TARGET   eckit_test_value_value_const
                   SOURCES  test_value_const.cc
                   LIBS     eckit )
+
+foreach( valueType boolean integer double string valuemap valuelist date )
+    ecbuild_add_test(   TARGET   eckit_test_value_value_${valueType}
+                        SOURCES  test_value_${valueType}.cc
+                        LIBS     eckit )
+endforeach(type bool)

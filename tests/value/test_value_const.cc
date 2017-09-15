@@ -87,6 +87,35 @@ CASE( "There is a Total Order between types" ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE( "Ordered Maps compare using their ordered keys" ) {
+
+    EXPECT( Value(2) > Value(1) );
+
+    Value small = Value::makeOrderedMap();
+
+    small["1"] = 2;
+    small["2"] = 3;
+    small["3"] = 4;
+
+    Value large = Value::makeOrderedMap();
+
+    large["2"] = 2;
+    large["3"] = 3;
+    large["4"] = 4;
+
+    EXPECT( large.compare(large) ==  0 );
+    EXPECT( large.compare(small) ==  1 );
+    EXPECT( small.compare(large) == -1 );
+    EXPECT( small.compare(small) ==  0 );
+
+    EXPECT( large > small );
+    EXPECT( small < large );
+    EXPECT( small != large );
+    EXPECT( large != small );
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace test
 } // namespace eckit
 

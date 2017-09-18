@@ -119,12 +119,12 @@ int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
     // we make use of the order for comparison
     ValueList::const_iterator jc = other.keys_.begin();
     for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j, ++jc) {
-        if(*j == *jc) {
+        if(*j == *jc) { // Check keys are equal
             const Value& k = *j;
             const Value& left  = value_.at(k);
             const Value& right = other.value_.at(k);
 
-            if(left == right) {
+            if(left == right) { // Check values are equal
                 continue;
             }
 

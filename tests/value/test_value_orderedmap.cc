@@ -115,69 +115,100 @@ CASE( "Types are reported correctly for OrderedMap" ) {
 
 CASE( "Test comparisons using OrderedMap" ) {
 
-    // Check comparisons with same type of data
+    SETUP("Create OrderedMaps") {
+
+        Value om1 = Value::makeOrderedMap();
+        Value om2 = Value::makeOrderedMap();
+        Value om3 = Value::makeOrderedMap();
+        Value om4 = Value::makeOrderedMap();
+
+        SECTION("Equal OrderedMaps") {
+
+            om1[123] = 1234;
+
+            om2[123] = 1234;
+
+            EXPECT(om1.compare(om1) == 0);
+            EXPECT(om1.compare(om2) == 0);
+            EXPECT(om2.compare(om1) == 0);
+        }
+        SECTION("Number of keys mismatch") {
+
+            om1[123] = 1234;
+            om1["xyz"] = "abcd";
+
+            om2[123] = 1234;
+
+            EXPECT(om1.compare(om2) ==  1); // om1 is greater than om2 (it's got more keys)
+            EXPECT(om2.compare(om1) == -1); // om3 is less than om3 (it's got fewer keys)
+        }
+        SECTION("Keys mismatch") {
+
+            om1["1"] = 2;
+            om1["2"] = 3;
+            om1["3"] = 4;
+
+            om2["2"] = 2;
+            om2["3"] = 3;
+            om2["4"] = 4;
+
+            EXPECT( om2.compare(om1) ==  1 ); // First key is larger
+            EXPECT( om1.compare(om2) == -1 ); // First key is smaller
+
+        }
+        SECTION("Values mismatch") {
+
+            om1["1"] = 1;
+            om1["2"] = 2;
+            om1["3"] = 3;
+
+            om2["1"] = 2;
+            om2["2"] = 3;
+            om2["3"] = 4;
+
+            EXPECT( om2.compare(om1) ==  1 ); // First value is larger
+            EXPECT( om1.compare(om2) == -1 ); // First value is smaller
+        }
+        SECTION("Check order of insertion is used for comparison, not key order") {
+
+            om1[2] = 100; // < should use this for value comparison, even though 2 > 1
+            om1[1] = 200;
+
+            om2[2] = 200; // < should use this for value comparison, even though 2 > 1
+            om2[1] = 100;
+
+            EXPECT( om2.compare(om1) ==  1 ); // First value is larger
+            EXPECT( om1.compare(om2) == -1 ); // First value is smaller
+        }
+        SECTION("Check keys are compared by order of insertion") {
+
+            om1[2] = 100;
+            om1[1] = 200;
+
+            om2[2] = 100;
+            om2[1] = 200;
+
+            om3[1] = 200;
+            om3[2] = 100;
+
+            om4[1] = 100;
+            om4[2] = 200;
+
+            EXPECT( om2.compare(om1) ==  0 ); // Keys are equal and inserted in same order
+            EXPECT( om1.compare(om2) ==  0 ); // Keys are equal and inserted in same order
+            EXPECT( om1.compare(om3) ==  1 ); // Keys are equal but inserted in wrong order, values also in wrong order
+            EXPECT( om1.compare(om4) ==  1 ); // Keys are equal but inserted in wrong order, values in correct order
+        }
+    }
+}
+
+CASE("Check comparisons with other types of data.") {
 
     Value om1 = Value::makeOrderedMap();
-    om1[123] = 1234;
-
-    Value om2 = Value::makeOrderedMap();
-    om2[123] = 1234;
-
-    Value om3 = Value::makeOrderedMap();
-    om3["abc"] = "abcd";
-
-    Value om4 = Value::makeOrderedMap();
-    om4["abc"] = "abcd";
-    om4["xyz"] = "wxyz";
-
-    Value om5 = Value::makeOrderedMap();
-    om5[123] = 9999;
-
-    Value om6 = Value::makeOrderedMap();
-    om6[123] = Value(true);
-
-    EXPECT(om1.compare(om1) == 0);
-    EXPECT(om1.compare(om2) == 0);
-    EXPECT(om2.compare(om1) == 0);
-
-    EXPECT(om4.compare(om3) ==  1); // om4 is greater than om3 (it's got more keys)
-    EXPECT(om4.compare(om1) ==  1); // om4 is greater than om1 (it's got more keys)
-    EXPECT(om3.compare(om4) == -1); // om3 is less than om3 (it's got fewer keys)
-
-    EXPECT(om1.compare(om3) ==  1); // keys are not equal (int key > string key)
-    EXPECT(om3.compare(om1) == -1); // keys are not equal (string key < int key)
-
-    EXPECT(om5.compare(om1) ==  1); // keys are equal, values are different (9999 > 1234)
-    EXPECT(om1.compare(om5) == -1);
-
-    EXPECT(om6.compare(om1) ==  1); // keys are equal, values are different (true > 1234)
-    EXPECT(om1.compare(om6) == -1);
-
-    // This checks that the comparison is checking values in order of insertion rather than key-order
-    Value om7 = Value::makeOrderedMap();
-    om7[2] = Value(100); // < Comparison should check this value first
-    om7[1] = Value(200); // < ... not this one, as in unordered map
-
-    Value om8 = Value::makeOrderedMap();
-    om8[2] = Value(200); // < Comparison should check this value first
-    om8[1] = Value(100); // < ... not this one, as in unordered map
-
-    EXPECT(om7.compare(om8) == -1);
-    EXPECT(om8.compare(om7) ==  1);
-
-    // .. And the opposite situation (just to be sure)
-    Value om9 = Value::makeOrderedMap();
-    om9[2] = Value(200); // < Comparison should check this value first
-    om9[1] = Value(100);
-
-    Value om10 = Value::makeOrderedMap();
-    om10[2] = Value(100); // < Comparison should check this value first
-    om10[1] = Value(200);
-
-    EXPECT(om9.compare(om10) ==  1);
-    EXPECT(om10.compare(om9) == -1);
-
-    // Check comparisons with other types of data.
+    om1[123]             = 1234;
+    om1["abc"]           = "abcd";
+    om1[Value(123.45)]   = 123.456;
+    om1[Value(true)]     = false;
 
     EXPECT(om1.compare(Value(true)) < 0);
     EXPECT(om1.compare(Value(123)) < 0);
@@ -198,7 +229,6 @@ CASE( "Test comparisons using OrderedMap" ) {
     EXPECT(Value(ValueList()).compare(om1) > 0);
     EXPECT(Value(Date(2016, 3, 30)).compare(om1) > 0);
     EXPECT(Value(vm).compare(om1) > 0);
-
 }
 
 CASE( "Test indexing for OrderedMap" ) {

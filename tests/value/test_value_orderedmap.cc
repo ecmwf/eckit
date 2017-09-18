@@ -122,6 +122,14 @@ CASE( "Test comparisons using OrderedMap" ) {
         Value om3 = Value::makeOrderedMap();
         Value om4 = Value::makeOrderedMap();
 
+        SECTION("Test empty maps") {
+            EXPECT( om1.compare(om2) == 0 );
+            EXPECT( om2.compare(om1) == 0 );
+            om2[123] = 1234;
+            EXPECT( om1.compare(om2) == -1 );
+            EXPECT( om2.compare(om1) ==  1 );
+
+        }
         SECTION("Equal OrderedMaps") {
 
             om1[123] = 1234;
@@ -179,6 +187,15 @@ CASE( "Test comparisons using OrderedMap" ) {
 
             EXPECT( om2.compare(om1) ==  1 ); // First value is larger
             EXPECT( om1.compare(om2) == -1 ); // First value is smaller
+
+            om1[3] = 300;
+            EXPECT( om1.compare(om2) ==  1 ); // More keys in om1
+            EXPECT( om2.compare(om1) == -1 );
+
+            om2[3] = 500;
+            EXPECT( om1.compare(om2) == -1 ); // 3rd value is larger in om2
+            EXPECT( om2.compare(om1) ==  1 );
+
         }
         SECTION("Check keys are compared by order of insertion") {
 

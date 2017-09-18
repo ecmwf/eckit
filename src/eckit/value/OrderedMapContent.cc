@@ -111,35 +111,39 @@ int OrderedMapContent::compare(const Content& other)const
 int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
 {
     int b = 1;
-    const ValueList * base = &keys_;
-    const ValueList * comp = &other.keys_;
+    const ValueList * shorter = &keys_; 
+    const ValueList * longer = &other.keys_;
     bool swap = keys_.size() > other.keys_.size();
-    if(swap) { // ensure base is large or equal
-        std::swap(base, comp);
+    if(swap) { 
+        std::swap(shorter, longer);
         b = -1;
     }
 
-    // we make use of the order for comparison
-    ValueList::const_iterator jc = (*comp).begin();
-    for (ValueList::const_iterator j = base->begin(); j != base->end(); ++j, ++jc) {
-        if(*j == *jc) { // Check keys are equal
-            const Value& k = *j;
-            const Value& left  = value_.at(k);
-            const Value& right = other.value_.at(k);
-
-            if(left == right) { // Check values are equal
-                continue;
-            }
-
-            return (left < right) ? -b : b;
-        }
+    // compare the keys in order
+    ValueList::const_iterator jc = (*longer).begin();
+    for (ValueList::const_iterator j = shorter->begin(); j != shorter->end(); ++j, ++jc) {
+        
+        if(*j == *jc) { continue; }
 
         return (*j < *jc) ? -b : b;
     }
 
-    if(keys_.size() == other.keys_.size()) return 0; // all keys and values are equal
+    if(keys_.size() != other.keys_.size()) { return -b; } // the map with more elements is larger 
 
-    return swap ? -b : b; // the map with more elements is larger 
+    // all keys are equal and in same order, compare now the values
+    jc = (*longer).begin();
+    for (ValueList::const_iterator j = shorter->begin(); j != shorter->end(); ++j, ++jc) {
+
+        const Value& k = *j;
+        const Value& left  = value_.at(k);
+        const Value& right = other.value_.at(k);
+
+        if(left == right) { continue; }
+
+        return (left < right) ? -b : b;
+    }
+
+    return 0; // all keys and values are the same and in same order
 }
 
 void OrderedMapContent::print(std::ostream& s) const

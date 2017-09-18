@@ -111,7 +111,16 @@ int OrderedMapContent::compare(const Content& other)const
 
 int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
 {
-    NOTIMP; // must ensure order is also the same
+    if (keys_ > other.keys_)
+        return 1;
+    else if (keys_ < other.keys_)
+        return -1;
+    else if (value_ == other.value_)
+        return 0;
+    else if (value_ < other.value_)
+        return -1;
+    else
+        return 1;
 }
 
 void OrderedMapContent::print(std::ostream& s) const

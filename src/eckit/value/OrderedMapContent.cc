@@ -111,16 +111,26 @@ int OrderedMapContent::compare(const Content& other)const
 
 int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
 {
-    if (keys_ > other.keys_)
-        return 1;
-    else if (keys_ < other.keys_)
-        return -1;
-    else if (value_ == other.value_)
-        return 0;
-    else if (value_ < other.value_)
-        return -1;
-    else
-        return 1;
+    int b = 1;
+    const ValueList * base = &keys_;
+    const ValueList * comp = &other.keys_;
+    if(keys_.size() < other.keys_.size()) { // ensure base is large or equal
+        std::swap(base, comp);
+        b = -1;
+    }
+
+    // we make use of the order for comparison
+    ValueList::const_iterator jc = (*comp).begin();
+    for (ValueList::const_iterator j = base->begin(); j != base->end(); ++j, ++jc) {
+
+        if(*j == *jc) {
+            continue;
+        }
+
+        return (*j < *jc) ? -b : b; /* take into account the swap */
+    }
+
+    return 0;
 }
 
 void OrderedMapContent::print(std::ostream& s) const

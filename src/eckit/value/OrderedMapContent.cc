@@ -13,7 +13,6 @@
 #include "eckit/parser/JSON.h"
 
 
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -111,14 +110,18 @@ int OrderedMapContent::compare(const Content& other)const
 
 int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
 {
-    if (keys_.size() > other.keys_.size())
-         return 1;
-    else if (keys_.size() < other.keys_.size())
-         return -1;
+    int b = 1;
+    const ValueList * base = &keys_;
+    const ValueList * comp = &other.keys_;
+    bool swap = keys_.size() > other.keys_.size();
+    if(swap) { // ensure base is large or equal
+        std::swap(base, comp);
+        b = -1;
+    }
 
     // we make use of the order for comparison
-    ValueList::const_iterator jc = other.keys_.begin();
-    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j, ++jc) {
+    ValueList::const_iterator jc = (*comp).begin();
+    for (ValueList::const_iterator j = base->begin(); j != base->end(); ++j, ++jc) {
         if(*j == *jc) { // Check keys are equal
             const Value& k = *j;
             const Value& left  = value_.at(k);
@@ -128,14 +131,15 @@ int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
                 continue;
             }
 
-            return (left < right) ? -1 : 1;
+            return (left < right) ? -b : b;
         }
 
-        return (*j < *jc) ? -1 : 1;
+        return (*j < *jc) ? -b : b;
     }
 
-    return 0;
+    if(keys_.size() == other.keys_.size()) return 0; // all keys and values are equal
 
+    return swap ? -b : b; // the map with more elements is larger 
 }
 
 void OrderedMapContent::print(std::ostream& s) const

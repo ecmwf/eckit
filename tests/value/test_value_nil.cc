@@ -82,15 +82,19 @@ CASE( "Nil compare with other nils, and are well ordered to other Value" ) {
     EXPECT(val_nil1.compare(val_nil1) == 0);
     EXPECT(val_nil1.compare(val_nil2) == 0);
 
-    // Check comparisons with other types of data.
-
-    EXPECT(val_nil1.compare(Value(1234)) < 0);  // Only need 1 integral test, they are all the same.
-    EXPECT(val_nil1.compare(Value(1234.5)) < 0);
-    EXPECT(val_nil1.compare(Value("test str")) < 0);
-    EXPECT(val_nil1.compare(Value(std::string("testing string"))) < 0);
-    EXPECT(val_nil1.compare(Value(ValueMap())) > 0);
-    EXPECT(val_nil1.compare(Value(Date(2016, 3, 30))) > 0);
-    EXPECT(val_nil1.compare(ValueList()) > 0);
+    // Check comparisons with other types of data (see test_value_typeordering).
+    
+    Value val;
+    EXPECT(val.compare(Value(true))                < 0);
+    EXPECT(val.compare(Value(1))                   < 0);
+    EXPECT(val.compare(Value(1234.5))              < 0);
+    EXPECT(val.compare(Value("test str"))          < 0);
+    EXPECT(val.compare(Value())                   == 0);
+    EXPECT(val.compare(Value::makeList())          > 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1)))    > 0);
+    EXPECT(val.compare(Value(Time(1000)))          > 0);
+    EXPECT(val.compare(Value(DateTime()))          > 0);
+    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
 
 }
 

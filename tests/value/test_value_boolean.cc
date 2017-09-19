@@ -119,9 +119,6 @@ CASE( "Booleans compare with other booleans, and are well ordered to other Value
     Value val_false1(false);
     Value val_false2(false);
 
-    // n.b. These comparisons are designed to define a well defined order between different data types
-    // bool [true > false] > number > string > nil > list > map > Date > Time > DateTime
-
     // Check comparisons with same type of data
 
     EXPECT(val_true1.compare(val_true1) == 0);
@@ -132,23 +129,30 @@ CASE( "Booleans compare with other booleans, and are well ordered to other Value
     EXPECT(val_true1.compare(val_false1) == 1);
     EXPECT(val_false2.compare(val_true2) == -1);
 
-    // Check comparisons with other types of data.
+    // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(val_true1.compare(Value(1234)) > 0);  // Only need 1 integral test, they are all the same.
-    EXPECT(val_true1.compare(Value(1234.5)) > 0);
-    EXPECT(val_true1.compare(Value("test str")) > 0);
-    EXPECT(val_true1.compare(Value(std::string("testing string"))) > 0);
-    EXPECT(val_true1.compare(Value(ValueMap())) > 0);
-    EXPECT(val_true1.compare(Value(Date(2016, 3, 30))) > 0);
-    EXPECT(val_true1.compare(ValueList()) > 0);
+    EXPECT(val_true1.compare(Value(true))               == 0);
+    EXPECT(val_true1.compare(Value(1))                   > 0);
+    EXPECT(val_true1.compare(Value(1234.5))              > 0);
+    EXPECT(val_true1.compare(Value("test str"))          > 0);
+    EXPECT(val_true1.compare(Value())                    > 0);
+    EXPECT(val_true1.compare(Value::makeList())          > 0);
+    EXPECT(val_true1.compare(Value(Date(2016, 5, 1)))    > 0);
+    EXPECT(val_true1.compare(Value(Time(1000)))          > 0);
+    EXPECT(val_true1.compare(Value(DateTime()))          > 0);
+    EXPECT(val_true1.compare(Value::makeOrderedMap())    > 0);
 
-    EXPECT(Value(1234).compare(val_false1) < 0);  // Only need 1 integral test, they are all the same.
-    EXPECT(Value(1234.5).compare(val_false1) < 0);
-    EXPECT(Value("test str").compare(val_false1) < 0);
-    EXPECT(Value(std::string("testing string")).compare(val_false1) < 0);
-    EXPECT(Value(ValueMap()).compare(val_false1) < 0);
-    EXPECT(Value(Date(2016, 3, 30)).compare(val_false1) < 0);
-    EXPECT(Value(ValueList()).compare(val_false1) < 0);
+    EXPECT(val_false1.compare(Value(false))              == 0);
+    EXPECT(val_false1.compare(Value(1))                   > 0);
+    EXPECT(val_false1.compare(Value(1234.5))              > 0);
+    EXPECT(val_false1.compare(Value("test str"))          > 0);
+    EXPECT(val_false1.compare(Value())                    > 0);
+    EXPECT(val_false1.compare(Value::makeList())          > 0);
+    EXPECT(val_false1.compare(Value(Date(2016, 5, 1)))    > 0);
+    EXPECT(val_false1.compare(Value(Time(1000)))          > 0);
+    EXPECT(val_false1.compare(Value(DateTime()))          > 0);
+    EXPECT(val_false1.compare(Value::makeOrderedMap())    > 0);
+
 }
 
 CASE( "Indexing is not a valid operation for booleans" ) {

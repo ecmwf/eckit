@@ -80,36 +80,29 @@ CASE( "Test that comparisons work correctly for dates" ) {
     Value val2(Date(2016, 3, 31));
     Value val3(Date(2016, 4, 30));
 
-    // n.b. These comparisons are designed to define a well defined order between different data types
-    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
-
     // Check comparisons with same type of data
-    // Comparison makes use of strcmp
 
-    /// Value(Date) compare function is rather broken...
-    /// EXPECT(val1.compare(val1) == 0);
-    /// EXPECT(val1.compare(val2) == 0);
-    /// EXPECT(val2.compare(val1) == 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(val2) == 0);
+    EXPECT(val2.compare(val1) == 0);
 
-    /// EXPECT(val1.compare(val3) == -1);
+    EXPECT(val1.compare(val3) == -1);
     EXPECT(val3.compare(val1) == 1);
 
-    // Check comparisons with other types of data.
+    // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(val1.compare(Value(true)) < 0);
-    EXPECT(val1.compare(Value(123)) < 0);
-    EXPECT(val1.compare(Value(123.45)) < 0);
-    EXPECT(val1.compare(Value("testing")) < 0);
-    /// There is a bug in the ValueMap implementation, so this would fail
-    /// EXPECT(val1.compare(Value(ValueMap())) < 0);
-    EXPECT(val1.compare(ValueList()) < 0);
+    Value val(Date(2016, 5, 1));
+    EXPECT(val.compare(Value(true))                < 0);
+    EXPECT(val.compare(Value(1))                   < 0);
+    EXPECT(val.compare(Value(1234.5))              < 0);
+    EXPECT(val.compare(Value("test str"))          < 0);
+    EXPECT(val.compare(Value())                    < 0);
+    EXPECT(val.compare(Value::makeList())          < 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1)))   == 0);
+    EXPECT(val.compare(Value(Time(1000)))          > 0);
+    EXPECT(val.compare(Value(DateTime()))          > 0);
+    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
 
-    EXPECT(Value(true).compare(val1) > 0);
-    EXPECT(Value(123).compare(val1) > 0);
-    EXPECT(Value(123.45).compare(val1) > 0);
-    EXPECT(Value("testing").compare(val1) > 0);
-    EXPECT(Value(ValueMap()).compare(val1) > 0);
-    EXPECT(Value(ValueList()).compare(val1) > 0);
 }
 
 CASE( "Test that indexing is invalid for dates" ) {

@@ -67,12 +67,9 @@ int DateTimeContent::compare(const Content& other) const
 
 int DateTimeContent::compareDateTime(const DateTimeContent& other) const
 {
-    if (value_ < other.value_)
-        return -1;
-    else if (value_ == other.value_)
-        return 0;
+    if (value_ == other.value_) { return 0; }
 
-    return 1;
+    return (value_ < other.value_) ? -1 : 1;
 }
 
 void DateTimeContent::value(DateTime& d) const

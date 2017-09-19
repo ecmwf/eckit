@@ -67,12 +67,9 @@ int TimeContent::compare(const Content& other) const
 
 int TimeContent::compareTime(const TimeContent& other) const
 {
-    if (value_ < other.value_)
-        return -1;
-    else if (value_ == other.value_)
-        return 0;
+    if (value_ == other.value_) { return 0; }
 
-    return 1;
+    return (value_ < other.value_) ? -1 : 1;
 }
 
 void TimeContent::value(Time& d) const

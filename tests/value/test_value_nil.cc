@@ -33,7 +33,7 @@ namespace test {
 
 CASE( "Nil cast correctly in/out of Value" ) {
 
-    Value val_nil("null");
+    Value val_nil;
 
     //
     // Access and conversion of nil
@@ -41,133 +41,81 @@ CASE( "Nil cast correctly in/out of Value" ) {
     EXPECT(val_nil.typeName() == "Nil");
     EXPECT(val_nil.isNil());
 
-    // For pretty printing
+    // Valid conversions
 
-    EXPECT(std::string(val_nil) == "nil");
-    EXPECT(val_nil.as<std::string>() == "nil");
 
-    // ValueList is a bit of an odd one --> it just puts the value in a list of one element...
-
-    ValueList vl(val_nil.as<ValueList>());
-    EXPECT(vl.size() == 1);
-    EXPECT(vl[0].isNil());
-
-    // And all the invalid conversions
-
-    // For some reason, Value(bool) happily converts to double...
-    // FIXME: EXPECT_THROWS_AS(val_false.as<double>(), BadConversion);
-
-    EXPECT(val_nil.as<double>() == 0.0);  // FIXME: Do we want this?
-    EXPECT(val_nil.as<long long>() == 0);  // FIXME: Do we want this?
-
-    EXPECT_THROWS_AS(Length(val_nil), BadConversion);
-    EXPECT_THROWS_AS(Offset(val_nil), BadConversion);
-
+    // Invalid conversions
+    EXPECT_THROWS_AS(val_nil.as<long long>(), BadConversion);
+    EXPECT_THROWS_AS(val_nil.as<double>(), BadConversion);
+    EXPECT_THROWS_AS(val_nil.as<std::string>(), BadConversion);
     EXPECT_THROWS_AS(val_nil.as<Time>(), BadConversion);
     EXPECT_THROWS_AS(val_nil.as<Date>(), BadConversion);
     EXPECT_THROWS_AS(val_nil.as<DateTime>(), BadConversion);
     EXPECT_THROWS_AS(val_nil.as<ValueMap>(), BadConversion);
+    // EXPECT_THROWS_AS(Length(val_nil), BadConversion); // FIXME: These are valid
+    // EXPECT_THROWS_AS(Offset(val_nil), BadConversion); // FIXME: These are valid
 }
 
-CASE( "Type knowledge is correct for booleans" ) {
-    Value val_true(true);
-    Value val_false(false);
+CASE( "Type knowledge is correct for nil" ) {
+    Value val_nil;
 
-    EXPECT(val_true.isBool());
-    EXPECT(val_false.isBool());
+    EXPECT(val_nil.isNil());
 
-    EXPECT(!val_true.isNil());
-    EXPECT(!val_true.isNumber());
-    EXPECT(!val_true.isDouble());
-    EXPECT(!val_true.isString());
-    EXPECT(!val_true.isList());
-    EXPECT(!val_true.isMap());
-    EXPECT(!val_true.isDate());
-    EXPECT(!val_true.isTime());
-    EXPECT(!val_true.isDateTime());
+    EXPECT(!val_nil.isBool());
+    EXPECT(!val_nil.isNumber());
+    EXPECT(!val_nil.isDouble());
+    EXPECT(!val_nil.isString());
+    EXPECT(!val_nil.isList());
+    EXPECT(!val_nil.isMap());
+    EXPECT(!val_nil.isDate());
+    EXPECT(!val_nil.isTime());
+    EXPECT(!val_nil.isDateTime());
 
-    EXPECT(!val_false.isNil());
-    EXPECT(!val_false.isNumber());
-    EXPECT(!val_false.isDouble());
-    EXPECT(!val_false.isString());
-    EXPECT(!val_false.isList());
-    EXPECT(!val_false.isMap());
-    EXPECT(!val_false.isDate());
-    EXPECT(!val_false.isTime());
-    EXPECT(!val_false.isDateTime());
 }
 
-CASE( "Booleans compare with other booleans, and are well ordered to other Value" ) {
-    Value val_true1(true);
-    Value val_true2(true);
-    Value val_false1(false);
-    Value val_false2(false);
-
-    // n.b. These comparisons are designed to define a well defined order between different data types
-    // bool [true > false] > number > string > nil > list > map > Date > Time > DateTime
+CASE( "Nil compare with other nils, and are well ordered to other Value" ) {
+    Value val_nil1;
+    Value val_nil2;
 
     // Check comparisons with same type of data
 
-    EXPECT(val_true1.compare(val_true1) == 0);
-    EXPECT(val_true1.compare(val_true2) == 0);
-    EXPECT(val_false1.compare(val_false1) == 0);
-    EXPECT(val_false1.compare(val_false2) == 0);
-
-    EXPECT(val_true1.compare(val_false1) == 1);
-    EXPECT(val_false2.compare(val_true2) == -1);
+    EXPECT(val_nil1.compare(val_nil1) == 0);
+    EXPECT(val_nil1.compare(val_nil2) == 0);
 
     // Check comparisons with other types of data.
 
-    EXPECT(val_true1.compare(Value(1234)) > 0);  // Only need 1 integral test, they are all the same.
-    EXPECT(val_true1.compare(Value(1234.5)) > 0);
-    EXPECT(val_true1.compare(Value("test str")) > 0);
-    EXPECT(val_true1.compare(Value(std::string("testing string"))) > 0);
-    EXPECT(val_true1.compare(Value(ValueMap())) > 0);
-    EXPECT(val_true1.compare(Value(Date(2016, 3, 30))) > 0);
-    EXPECT(val_true1.compare(ValueList()) > 0);
+    EXPECT(val_nil1.compare(Value(1234)) < 0);  // Only need 1 integral test, they are all the same.
+    EXPECT(val_nil1.compare(Value(1234.5)) < 0);
+    EXPECT(val_nil1.compare(Value("test str")) < 0);
+    EXPECT(val_nil1.compare(Value(std::string("testing string"))) < 0);
+    EXPECT(val_nil1.compare(Value(ValueMap())) > 0);
+    EXPECT(val_nil1.compare(Value(Date(2016, 3, 30))) > 0);
+    EXPECT(val_nil1.compare(ValueList()) > 0);
 
-    EXPECT(Value(1234).compare(val_false1) < 0);  // Only need 1 integral test, they are all the same.
-    EXPECT(Value(1234.5).compare(val_false1) < 0);
-    EXPECT(Value("test str").compare(val_false1) < 0);
-    EXPECT(Value(std::string("testing string")).compare(val_false1) < 0);
-    EXPECT(Value(ValueMap()).compare(val_false1) < 0);
-    EXPECT(Value(Date(2016, 3, 30)).compare(val_false1) < 0);
-    EXPECT(Value(ValueList()).compare(val_false1) < 0);
 }
 
-CASE( "Indexing is not a valid operation for booleans" ) {
-    // No indexing operations should work on a bool...
+CASE( "Indexing is not a valid operation for nil" ) {
 
-    Value val_true(true);
-    Value val_false(false);
+    Value val_nil;
 
-    EXPECT_THROWS_AS(val_true["idx"], BadOperator);
-    EXPECT_THROWS_AS(val_true[std::string("idx")], BadOperator);
-    EXPECT_THROWS_AS(val_true[123], BadOperator);
-    EXPECT_THROWS_AS(val_true[Value(123)], BadOperator);
-
-    EXPECT_THROWS_AS(val_false["idx"], BadOperator);
-    EXPECT_THROWS_AS(val_false[std::string("idx")], BadOperator);
-    EXPECT_THROWS_AS(val_false[123], BadOperator);
-    EXPECT_THROWS_AS(val_false[Value(123)], BadOperator);
+    EXPECT_THROWS_AS(val_nil["idx"], BadOperator);
+    EXPECT_THROWS_AS(val_nil[std::string("idx")], BadOperator);
+    EXPECT_THROWS_AS(val_nil[123], BadOperator);
+    EXPECT_THROWS_AS(val_nil[Value(123)], BadOperator);
 
     // Test the matching contains() function too
 
-    EXPECT_THROWS_AS(val_true.contains("idx"), BadOperator);
-    EXPECT_THROWS_AS(val_true.contains(std::string("idx")), BadOperator);
-    EXPECT_THROWS_AS(val_true.contains(123), BadOperator);
-    EXPECT_THROWS_AS(val_true.contains(Value(123)), BadOperator);
+    // These should probably throw BadOperator, instead they just return false
+    //EXPECT_THROWS_AS(val_nil.contains("idx"), BadOperator);
+    //EXPECT_THROWS_AS(val_nil.contains(std::string("idx")), BadOperator);
+    //EXPECT_THROWS_AS(val_nil.contains(123), BadOperator);
+    //EXPECT_THROWS_AS(val_nil.contains(Value(123)), BadOperator);
 
-    EXPECT_THROWS_AS(val_false.contains("idx"), BadOperator);
-    EXPECT_THROWS_AS(val_false.contains(std::string("idx")), BadOperator);
-    EXPECT_THROWS_AS(val_false.contains(123), BadOperator);
-    EXPECT_THROWS_AS(val_false.contains(Value(123)), BadOperator);
 }
 
-CASE( "Addition is not a valid operation for booleans" ) {
-    // There are no valid boolean addition operations.
+CASE( "Addition is not a valid operation for nil" ) {
 
-    Value val(true);
+    Value val;
 
     EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
     EXPECT_THROWS_AS(ValueAdd(val, 1234), BadOperator);
@@ -194,10 +142,9 @@ CASE( "Addition is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Subtraction is not a valid operation for booleans" ) {
-    // There are no valid boolean subtraction operations.
+CASE( "Subtraction is not a valid operation for nil" ) {
 
-    Value val(true);
+    Value val;
 
     EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
     EXPECT_THROWS_AS(ValueSub(val, 1234), BadOperator);
@@ -224,10 +171,9 @@ CASE( "Subtraction is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Multiplication is not a valid operation for booleans" ) {
-    // There are no valid boolean multiplication operations.
+CASE( "Multiplication is not a valid operation for nil" ) {
 
-    Value val(true);
+    Value val;
 
     EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
     EXPECT_THROWS_AS(ValueMul(val, 1234), BadOperator);
@@ -254,10 +200,9 @@ CASE( "Multiplication is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Division is not a valid operation for booleans" ) {
-    // There are no valid boolean division operations.
+CASE( "Division is not a valid operation for nil" ) {
 
-    Value val(true);
+    Value val;
 
     EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
     EXPECT_THROWS_AS(ValueDiv(val, 1234), BadOperator);
@@ -284,10 +229,9 @@ CASE( "Division is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "The modulo operator is not a valid operation for booleans" ) {
-    // There are no valid boolean modulo operations.
+CASE( "The modulo operator is not a valid operation for nil" ) {
 
-    Value val(true);
+    Value val;
 
     EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
     EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
@@ -314,8 +258,8 @@ CASE( "The modulo operator is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Head/tail tests are disabled for booleans" ) {
-    Value val(true);
+CASE( "Head/tail tests are disabled for nil" ) {
+    Value val;
 
     /// EXPECT_THROWS_AS(val.head(), AssertationError);
     /// EXPECT_THROWS_AS(val.tail(), AssertationError);

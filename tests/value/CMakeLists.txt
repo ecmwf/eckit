@@ -16,7 +16,7 @@ ecbuild_add_test( TARGET   eckit_test_value_value_const
                   SOURCES  test_value_const.cc
                   LIBS     eckit )
 
-foreach( valueType boolean integer double string valuemap valuelist date )
+foreach( valueType nil boolean integer double string valuemap valuelist date orderedmap )
     ecbuild_add_test(   TARGET   eckit_test_value_value_${valueType}
                         SOURCES  test_value_${valueType}.cc
                         LIBS     eckit )

@@ -11,7 +11,7 @@
 #include "eckit/value/Value.h"
 
 // Disable warnings for old-style casts in these tests. They are intentional
-#ifndef __INTEL_COMPILER
+#ifdef __clang__
 #pragma clang diagnostic ignored "-Wold-style-cast"
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #endif

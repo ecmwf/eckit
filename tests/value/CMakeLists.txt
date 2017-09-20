@@ -24,4 +24,4 @@ foreach( valueType nil boolean integer double string valuemap valuelist date ord
     ecbuild_add_test(   TARGET   eckit_test_value_value_${valueType}
                         SOURCES  test_value_${valueType}.cc
                         LIBS     eckit )
-endforeach(type bool)
+endforeach()

@@ -16,10 +16,11 @@
 #include "eckit/testing/Test.h"
 
 // Disable warnings for old-style casts in these tests. They are intentional
+#ifdef __clang__
 #pragma clang diagnostic ignored "-Wold-style-cast"
+#endif
 
 using namespace eckit::testing;
-
 
 namespace eckit {
 namespace test {

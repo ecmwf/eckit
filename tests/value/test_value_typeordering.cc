@@ -96,7 +96,6 @@ CASE( "Every type compares correctly against every other type" ) {
                 EXPECT(!(values[i] <  values[j]) );
                 EXPECT(  values[i].compare(values[j]) >= 0 );
 
-                sanity_check++;
 
             }
 
@@ -124,7 +123,6 @@ CASE( "Every type compares correctly against every other type" ) {
                 EXPECT(!(values[j] == values[i]) );
                 EXPECT(  values[j].compare(values[i]) != 0 );
 
-                sanity_check++;
             }
 
             // ------------------
@@ -151,14 +149,13 @@ CASE( "Every type compares correctly against every other type" ) {
                 EXPECT(!(values[j] <  values[i]) );
                 EXPECT(  values[j].compare(values[i]) >= 0 );
 
-                sanity_check++;
             }
 
             // ------------------
         }
     }
 
-    EXPECT( sanity_check == values.size() * values.size() * 3 ); // *3 because we test '<', '==' and '>' for each pair
+    EXPECT( sanity_check == values.size() * values.size() ); // Checks that one of '<', '==' or '>' was triggered for each pair
 
 }
 

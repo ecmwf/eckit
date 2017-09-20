@@ -15,10 +15,6 @@
 #include "eckit/testing/Test.h"
 #include "test_value_helper.h"
 
-// Disable warnings for old-style casts in these tests. They are intentional
-#pragma clang diagnostic ignored "-Wold-style-cast"
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;

@@ -102,7 +102,7 @@ public:
     // -- Accessors
     const T& operator[](int i) const { return data_[i]; }
     const T& at(int i) const { return data_[i]; }
-    const size_t size() const { return size_; }
+    size_t size() const { return size_; }
     const T * data() const { return data_; }
 
     // -- Comparison Operators

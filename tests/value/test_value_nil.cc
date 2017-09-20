@@ -15,10 +15,6 @@
 #include "eckit/testing/Test.h"
 #include "test_value_helper.h"
 
-// Disable warnings for old-style casts in these tests. They are intentional
-#pragma clang diagnostic ignored "-Wold-style-cast"
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
@@ -83,7 +79,7 @@ CASE( "Nil compare with other nils, and are well ordered to other Value" ) {
     EXPECT(val_nil1.compare(val_nil2) == 0);
 
     // Check comparisons with other types of data (see test_value_typeordering).
-    
+
     Value val;
     EXPECT(val.compare(Value(true))                < 0);
     EXPECT(val.compare(Value(1))                   < 0);

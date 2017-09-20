@@ -197,21 +197,19 @@ CASE( "Test comparisons with integers" ) {
     EXPECT(val_f2.compare(val1) == 1);
     EXPECT(val_f2.compare(val3) == -1);
 
-    // Check comparisons with other types of data.
+    // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(val1.compare(Value(true)) < 0);
-    EXPECT(val1.compare(Value("test str")) > 0);
-    EXPECT(val1.compare(Value(std::string("testing string"))) > 0);
-    EXPECT(val1.compare(Value(ValueMap())) > 0);
-    EXPECT(val1.compare(Value(Date(2016, 3, 30))) > 0);
-    EXPECT(val1.compare(ValueList()) > 0);
-
-    EXPECT(Value(true).compare(val1) > 0);
-    EXPECT(Value("test str").compare(val1) < 0);
-    EXPECT(Value(std::string("testing string")).compare(val1) < 0);
-    EXPECT(Value(ValueMap()).compare(val1) < 0);
-    EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
-    EXPECT(Value(ValueList()).compare(val1) < 0);
+    Value val(1);
+    EXPECT(val.compare(Value(true))                < 0);
+    EXPECT(val.compare(Value(1))                  == 0);
+    EXPECT(val.compare(Value(1234.5))              < 0); // Special case
+    EXPECT(val.compare(Value("test str"))          > 0);
+    EXPECT(val.compare(Value())                    > 0);
+    EXPECT(val.compare(Value::makeList())          > 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1)))    > 0);
+    EXPECT(val.compare(Value(Time(1000)))          > 0);
+    EXPECT(val.compare(Value(DateTime()))          > 0);
+    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
 }
 
 CASE( "Indexing is not a valid operatior for integers" ) {

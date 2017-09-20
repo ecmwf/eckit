@@ -239,13 +239,18 @@ CASE("Check comparisons with other types of data.") {
     Value val(vm);
     EXPECT(om1.compare(vm) < 0);
 
-    EXPECT(Value(true).compare(om1) > 0);
-    EXPECT(Value(123).compare(om1) > 0);
-    EXPECT(Value(123.45).compare(om1) > 0);
-    EXPECT(Value(std::string("test string")).compare(om1) > 0);
-    EXPECT(Value(ValueList()).compare(om1) > 0);
-    EXPECT(Value(Date(2016, 3, 30)).compare(om1) > 0);
-    EXPECT(Value(vm).compare(om1) > 0);
+    // Check comparisons with other types of data (see test_value_typeordering).
+
+    EXPECT(om1.compare(Value(true))                < 0);
+    EXPECT(om1.compare(Value(1))                   < 0);
+    EXPECT(om1.compare(Value(1234.5))              < 0);
+    EXPECT(om1.compare(Value("test str"))          < 0);
+    EXPECT(om1.compare(Value())                    < 0);
+    EXPECT(om1.compare(Value::makeList())          < 0);
+    EXPECT(om1.compare(Value(Date(2016, 5, 1)))    < 0);
+    EXPECT(om1.compare(Value(Time(1000)))          < 0);
+    EXPECT(om1.compare(Value(DateTime()))          < 0);
+    EXPECT(om1.compare(om1)                       == 0);
 }
 
 CASE( "Test indexing for OrderedMap" ) {

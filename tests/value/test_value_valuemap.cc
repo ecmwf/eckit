@@ -103,11 +103,7 @@ CASE( "Test comparisons using ValueMap" ) {
     Value val2(vm);
     Value val3(vm2);
 
-    // n.b. These comparisons are designed to define a well defined order between different data types
-    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
-
     // Check comparisons with same type of data
-    // Comparison makes use of strcmp
 
     EXPECT(val1.compare(val1) == 0);
     EXPECT(val1.compare(val2) == 0);
@@ -116,23 +112,18 @@ CASE( "Test comparisons using ValueMap" ) {
     EXPECT(val1.compare(val3) == 1);
     EXPECT(val3.compare(val1) == -1);
 
-    // Check comparisons with other types of data.
+    // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(val1.compare(Value(true)) < 0);
-    EXPECT(val1.compare(Value(123)) < 0);
-    EXPECT(val1.compare(Value(123.45)) < 0);
-    EXPECT(val1.compare(Value(std::string("test string"))) < 0);
-    EXPECT(val1.compare(ValueList()) < 0);
-    EXPECT(val1.compare(Value(Date(2016, 3, 30))) > 0);
-
-    EXPECT(Value(true).compare(val1) > 0);
-    EXPECT(Value(123).compare(val1) > 0);
-    EXPECT(Value(123.45).compare(val1) > 0);
-    EXPECT(Value(std::string("test string")).compare(val1) > 0);
-    EXPECT(Value(ValueList()).compare(val1) > 0);
-
-    /// This is currently correct in MapContent.h
-    /// EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
+    EXPECT(val1.compare(Value(true))                < 0);
+    EXPECT(val1.compare(Value(1))                   < 0);
+    EXPECT(val1.compare(Value(1234.5))              < 0);
+    EXPECT(val1.compare(Value("test str"))          < 0);
+    EXPECT(val1.compare(Value())                    < 0);
+    EXPECT(val1.compare(val1)                      == 0);
+    EXPECT(val1.compare(Value(Date(2016, 5, 1)))    > 0);
+    EXPECT(val1.compare(Value(Time(1000)))          > 0);
+    EXPECT(val1.compare(Value(DateTime()))          > 0);
+    EXPECT(val1.compare(Value::makeOrderedMap())    > 0);
 }
 
 CASE( "Tets indexing for ValueMap" ) {

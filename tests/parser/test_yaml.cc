@@ -368,6 +368,8 @@ CASE ( "test_eckit_yaml_cfg_1" ) {
 }
 
 
+#if __cplusplus > 199711L
+
 CASE( "test_eckit_ymal_text_1" ) {
 
     const char* text = R"YAML(
@@ -434,6 +436,7 @@ CASE( "test_eckit_yaml_text_4" ) {
      v.dump(std::cout) << std::endl;
 }
 
+#endif
 
 //-----------------------------------------------------------------------------
 

@@ -207,7 +207,7 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
 
         Entry wk = w + k;
 
-        auto j = code_table.find(wk);
+        std::set<Entry>::iterator j = code_table.find(wk);
 
         // Sequence in table
         if (j != code_table.end()) {
@@ -322,7 +322,7 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
 
         Entry e;
 
-        auto j = table.find(k);
+        std::map<size_t, Entry>::iterator j = table.find(k);
         if (j != table.end()) {
             e = (*j).second;
         }

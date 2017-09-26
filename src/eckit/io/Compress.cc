@@ -124,8 +124,8 @@ bool Entry::operator<(const Entry& other) const {
 void Entry::output(eckit::BitIO& out) const {
     // std::cout << "Output " << *this << std::endl;
 
-    for (unsigned char c : chars_) {
-        out.write(c, 8);
+    for(size_t i = 0; i < chars_.size(); ++i) {
+        out.write(chars_[i], 8);
     }
 }
 
@@ -133,8 +133,8 @@ void Entry::print(std::ostream& out) const {
     out << '[';
     print_code(out, code_);
     out << " -> ";
-    for (unsigned char c : chars_) {
-        print_code(out, c);
+    for(size_t i = 0; i < chars_.size(); ++i) {
+        print_code(out, chars_[i]);
     }
     out << ']';
 

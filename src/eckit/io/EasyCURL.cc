@@ -17,26 +17,22 @@
 #include "eckit/parser/Tokenizer.h"
 
 #include "eckit/parser/StringTools.h"
-// #include "eckit/utils/Translator.h"
 #include "eckit/parser/Tokenizer.h"
 
-// #undef ECKIT_HAVE_CURL
 
 #ifdef ECKIT_HAVE_CURL
 #include <curl/curl.h>
 #endif
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #ifdef ECKIT_HAVE_CURL
 
+
 #define _(a) call(#a, a)
-
-
 
 
 static void call(const char* what, CURLcode code)
@@ -299,9 +295,9 @@ size_t EasyCURL::activeTransfers() const { return 0; }
 void EasyCURL::print(std::ostream&s) const {}
 void EasyCURL::url(const std::string& value) {}
 
-#endif
+#endif  /* ECKIT_HAVE_CURL */
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

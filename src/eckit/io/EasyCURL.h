@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/EasyCURL.h
-// Baudouin Raoult - ECMWF Jun 17
+/// @author Baudouin Raoult
+/// @date   June 2017
 
 #ifndef eckit_io_EasyCURL_h
 #define eckit_io_EasyCURL_h
@@ -17,7 +17,6 @@
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 
-// #undef ECKIT_HAVE_CURL
 
 #ifdef ECKIT_HAVE_CURL
 #include <curl/curl.h>
@@ -26,12 +25,11 @@ typedef int CURL;
 typedef int CURLM;
 #endif
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class EasyCURL {
 public:
@@ -119,7 +117,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

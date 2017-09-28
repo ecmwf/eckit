@@ -11,16 +11,11 @@
 #include <arpa/inet.h>
 
 #include "eckit/io/URLHandle.h"
-// #include "eckit/log/Log.h"
-// #include "eckit/parser/StringTools.h"
-// #include "eckit/utils/Translator.h"
-// #include "eckit/parser/Tokenizer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec URLHandle::classSpec_ = {&DataHandle::classSpec(), "URLHandle",};
 Reanimator<URLHandle> URLHandle::reanimator_;
@@ -118,7 +113,8 @@ size_t URLHandle::writeCallback(void *ptr, size_t size)
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
 
 } // namespace eckit
 

@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/URLHandle.h
-// Baudouin Raoult - ECMWF Jun 17
+/// @author Baudouin Raoult
+/// @date   June 2017
 
 #ifndef eckit_filesystem_URLHandle_h
 #define eckit_filesystem_URLHandle_h
@@ -18,11 +18,11 @@
 #include "eckit/io/CircularBuffer.h"
 #include "eckit/io/EasyCURL.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class URLHandle : public DataHandle, private EasyCURL {
 public:
@@ -86,7 +86,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

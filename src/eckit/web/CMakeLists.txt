@@ -34,8 +34,12 @@ JavaService.cc
 JavaService.h
 JavaUser.cc
 JavaUser.h
+ProxiedTCPClient.cc
+ProxiedTCPClient.h
+ProxiedTCPServer.cc
+ProxiedTCPServer.h
 Url.cc
-Url.h )
+Url.h)
 
 
 ecbuild_add_library( TARGET eckit_web

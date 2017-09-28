@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -16,6 +16,7 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -37,7 +38,7 @@ public:
 
 // --  Methods
 
-	void advance(const Length&); 
+	void advance(const Length&);
 	const std::string& path() const { return name_; }
 
 // -- Overridden methods
@@ -55,7 +56,7 @@ public:
 	virtual void   rewind();
 	virtual void   print(std::ostream&) const;
 	virtual Length estimate();
-	virtual Length saveInto(DataHandle&,TransferWatcher& = TransferWatcher::dummy());
+	virtual Length saveInto(DataHandle&,TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true);
 	virtual Offset position();
 	virtual bool isEmpty() const;
 	virtual void restartReadFrom(const Offset& from);
@@ -87,7 +88,7 @@ private:
 	bool                overwrite_;
 	FILE*               file_;
 	bool                read_;
-    std::auto_ptr<Buffer>    buffer_;
+    eckit::ScopedPtr<Buffer>    buffer_;
 
 // -- Methods
 

@@ -14,22 +14,22 @@
 #include "eckit/value/NumberContent.h"
 #include "eckit/utils/Translator.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 class BadBoolConversion:  public Exception {
-	public:
-		BadBoolConversion(const std::string& w):
-			Exception(std::string("Bad Bool Conversion: ") + w)   {  }
+public:
+    BadBoolConversion(const std::string& w):
+        Exception(std::string("Bad Bool Conversion: ") + w)   {  }
 };
 
 //=============================================================================
 
-ClassSpec NumberContent::classSpec_ = {&Content::classSpec(),"NumberContent",};
+ClassSpec NumberContent::classSpec_ = {&Content::classSpec(), "NumberContent",};
 Reanimator<NumberContent> NumberContent::reanimator_;
 
 NumberContent::NumberContent(long long l):
@@ -38,8 +38,8 @@ NumberContent::NumberContent(long long l):
 }
 
 NumberContent::NumberContent(Stream& s):
-	Content(s),
-	value_(0)
+    Content(s),
+    value_(0)
 {
     s >> value_;
 }
@@ -50,7 +50,7 @@ Content* NumberContent::clone() const {
 
 void NumberContent::encode(Stream& s) const
 {
-	Content::encode(s);
+    Content::encode(s);
     s << value_;
 }
 
@@ -70,33 +70,33 @@ void NumberContent::json(JSON& s) const
 
 int NumberContent::compare(const Content& other) const
 {
-	return -other.compareNumber(*this);
+    return -other.compareNumber(*this);
 }
 
 int NumberContent::compareNumber(const NumberContent& other) const
 {
     long long dif = (value_ - other.value_);
-	if(dif == 0)
-		return dif;
-	if(dif<0)
-		return -1;
+    if (dif == 0)
+        return dif;
+    if (dif < 0)
+        return -1;
 
-	return 1;
+    return 1;
 }
 
 int NumberContent::compareDouble(const DoubleContent& other) const
 {
     double dif = (value_ - other.value_);
-    if(dif == 0)
+    if (dif == 0)
         return dif;
-    if(dif<0)
+    if (dif < 0)
         return -1;
     return 1;
 }
 
 void NumberContent::value(bool& b) const
 {
-    if( value_ == 0 )
+    if ( value_ == 0 )
         b = false;
     else
         b = true;
@@ -114,12 +114,12 @@ void NumberContent::value(double& l) const
 
 void NumberContent::value(std::string& s) const
 {
-    s = Translator<long long,std::string>()(value_);
+    s = Translator<long long, std::string>()(value_);
 }
 
 Content* NumberContent::add(const Content& other) const
 {
-	return other.addNumber(*this);
+    return other.addNumber(*this);
 }
 
 Content* NumberContent::addNumber(const NumberContent& other) const
@@ -129,7 +129,7 @@ Content* NumberContent::addNumber(const NumberContent& other) const
 
 Content* NumberContent::sub(const Content& other) const
 {
-	return other.subNumber(*this);
+    return other.subNumber(*this);
 }
 
 Content* NumberContent::subNumber(const NumberContent& other) const
@@ -139,7 +139,7 @@ Content* NumberContent::subNumber(const NumberContent& other) const
 
 Content* NumberContent::mul(const Content& other) const
 {
-	return other.mulNumber(*this);
+    return other.mulNumber(*this);
 }
 
 Content* NumberContent::mod(const Content& other) const
@@ -154,7 +154,7 @@ Content* NumberContent::mulNumber(const NumberContent& other) const
 
 Content* NumberContent::div(const Content& other) const
 {
-	return other.divNumber(*this);
+    return other.divNumber(*this);
 }
 
 Content* NumberContent::divNumber(const NumberContent& other) const
@@ -167,7 +167,16 @@ Value NumberContent::negate() const
     return Value(-value_);
 }
 
-//-----------------------------------------------------------------------------
+void NumberContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+    out << "number(" << value_ << ")";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

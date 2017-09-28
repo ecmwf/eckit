@@ -25,13 +25,16 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
+namespace eckit {
+namespace test {
 
-namespace eckit_test {
-
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 static StaticMutex static_mutex;
 
@@ -73,45 +76,39 @@ class TLog : public Thread
     }
 };
 
-
-class TestApp : public eckit::Tool {
-public:
-
-    TestApp(int argc,char **argv) : Tool(argc,argv) {}
-
-    virtual ~TestApp() {}
-
-    virtual void run()
-    {
-        Log::info().setCallback(&callback_logger);
-
-        Log::info() << ">>> starting ... " << std::endl;
-
-        ThreadControler t1( new TLog<1>(), false );
-        ThreadControler t2( new TLog<2>(), false );
-        ThreadControler t3( new TLog<3>(), false );
-
-        t1.start();
-        t2.start();
-        t3.start();
-
-        t1.wait();
-        t2.wait();
-        t3.wait();
-
-        Log::info() << ">>> finished!" << std::endl;
-
-    }
-};
-
-} // namespace eckit_test
-
 //----------------------------------------------------------------------------------------------------------------------
 
-using namespace eckit_test;
+CASE ("test_log_threads") {
+
+    Log::info().setCallback(&callback_logger);
+
+    Log::info() << ">>> starting ... " << std::endl;
+
+    ThreadControler t1( new TLog<1>(), false );
+    ThreadControler t2( new TLog<2>(), false );
+    ThreadControler t3( new TLog<3>(), false );
+
+    t1.start();
+    t2.start();
+    t3.start();
+
+    t1.wait();
+    t2.wait();
+    t3.wait();
+
+    Log::info() << ">>> finished!" << std::endl;
+
+}
+
+
+//-----------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckit
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestApp app(argc,argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
+
+

@@ -17,11 +17,11 @@
 #include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class BoolContent : public Content {
 
@@ -62,6 +62,7 @@ protected:
     virtual int  compareDate(const DateContent&)            const {return 1; }
     virtual int  compareTime(const TimeContent&)            const {return 1; }
     virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
+    virtual int  compareOrderedMap(const OrderedMapContent&) const { return 1; }
 
     virtual Content* add(const Content&)  const;
     virtual Content* sub(const Content&) const;
@@ -80,6 +81,8 @@ protected:
     //        virtual Content* divNumber(const NumberContent&) const;
 
     virtual void    print(std::ostream&) const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
+
     virtual void    json(JSON&)     const;
     virtual std::string  typeName()      const { return "Bool"; }
     virtual bool    isBool()      const { return true; }
@@ -115,7 +118,7 @@ private:
     friend class DateContent;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

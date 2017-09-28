@@ -8,10 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_la_streaming
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
 
@@ -20,29 +16,34 @@
 #include "eckit/linalg/Vector.h"
 #include "util.h"
 
+#include "eckit/testing/Test.h"
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
 using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 template <typename T>
 void test(const T& v, const T& r) {
-    BOOST_CHECK_EQUAL(v.rows(), r.rows());
-    BOOST_CHECK_EQUAL(v.cols(), r.cols());
-    BOOST_CHECK_EQUAL(v.size(), r.size());
-    BOOST_CHECK_EQUAL_COLLECTIONS(v.begin(), v.end(), r.begin(), r.end());
+    EXPECT ( v.rows() == r.rows() );
+    EXPECT ( v.cols() == r.cols() );
+    EXPECT ( v.size() == r.size() );
+    EXPECT ( make_view( v.begin(), v.end() ) == make_view( r.begin(), r.end() ) );
 }
 
 void test(const SparseMatrix& v, const SparseMatrix& r) {
-    BOOST_CHECK_EQUAL(v.rows(), r.rows());
-    BOOST_CHECK_EQUAL(v.cols(), r.cols());
-    BOOST_CHECK_EQUAL(v.nonZeros(), r.nonZeros());
+    EXPECT( v.rows() == r.rows() );
+    EXPECT( v.cols() == r.cols() );
+    EXPECT( v.nonZeros() == r.nonZeros() );
     const Size nnz = v.nonZeros();
-    BOOST_CHECK_EQUAL_COLLECTIONS(v.outer(), v.outer()+v.rows()+1, r.outer(), r.outer()+r.rows()+1);
-    BOOST_CHECK_EQUAL_COLLECTIONS(v.inner(), v.inner()+nnz, r.inner(), r.inner()+nnz);
-    BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data()+nnz, r.data(), r.data()+nnz);
+    EXPECT ( make_view ( v.outer(), v.outer()+v.rows()+1 ) == make_view ( r.outer(), r.outer()+r.rows()+1 ) );
+    EXPECT ( make_view ( v.inner(), v.inner()+nnz )        == make_view ( r.inner(), r.inner()+nnz ) );
+    EXPECT ( make_view ( v.data() , v.data()+nnz )         == make_view ( r.data() , r.data()+nnz ) );
 }
 
 template<typename T>
@@ -64,17 +65,15 @@ void stream_test(const T& t) {
 
 /// Test linear algebra interface
 
-BOOST_AUTO_TEST_SUITE(test_eckit_la_streaming)
-
-BOOST_AUTO_TEST_CASE(test_stream_vector) {
+CASE ( "test_stream_vector" ) {
     stream_test(V(5, 1., 2., 3., 4., 5.));
 }
 
-BOOST_AUTO_TEST_CASE(test_stream_matrix) {
+CASE ( "test_stream_matrix" ) {
     stream_test(M(3, 3, 1., 2., 3., 4., 5., 6., 7., 8., 9.));
 }
 
-BOOST_AUTO_TEST_CASE(test_stream_sparsematrix) {
+CASE ( "test_stream_sparsematrix" ) {
 
     std::vector<Triplet> triplets;
 
@@ -88,9 +87,12 @@ BOOST_AUTO_TEST_CASE(test_stream_sparsematrix) {
     stream_test(smat);
 }
 
-BOOST_AUTO_TEST_SUITE_END()
-
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

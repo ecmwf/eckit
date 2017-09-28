@@ -13,33 +13,19 @@
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/types/Types.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
-namespace eckit_test {
-
-//-----------------------------------------------------------------------------
-
-class TestTokenizer : public Tool {
-public:
-
-    TestTokenizer(int argc,char **argv): Tool(argc,argv) {}
-
-    ~TestTokenizer() {}
-
-    virtual void run();
-
-    template< class Container >  void test_single();
-    template< class Container >  void test_multi();
-
-    void test_keep_empty_list();
-    void test_keep_empty_set();
-};
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
 template< class Container >
-void TestTokenizer::test_single()
+void test_single()
 {
     std::string source (":lolo1:lolo2::lolo3");
     Container  target;
@@ -48,7 +34,7 @@ void TestTokenizer::test_single()
 
     parse(source,target);
 
-    ASSERT( target.size() == 3 );
+    EXPECT( target.size() == 3 );
 
     size_t c = 1;
     for( typename Container::const_iterator i = target.begin(); i != target.end(); ++i, ++c )
@@ -56,14 +42,14 @@ void TestTokenizer::test_single()
         ostringstream s;
         s << "lolo" << c;
 //        std::cout << *i << " ??? " << s.str() << std::endl;
-        ASSERT( *i == s.str() );
+        EXPECT( *i == s.str() );
     }
 }
 
 //-----------------------------------------------------------------------------
 
 template< class Container >
-void TestTokenizer::test_multi()
+void test_multi()
 {
     Container  target;
 
@@ -72,7 +58,7 @@ void TestTokenizer::test_multi()
     std::string source1 ("-lolo0-lolo1-lolo2;lolo3:-lolo4-");
     parse(source1,target);
 
-    ASSERT( target.size() == 5 );
+    EXPECT( target.size() == 5 );
 
     size_t c = 0;
     for( typename Container::const_iterator i = target.begin(); i != target.end(); ++i, ++c )
@@ -80,13 +66,13 @@ void TestTokenizer::test_multi()
         ostringstream s;
         s << "lolo" << c;
 //        std::cout << *i << " ??? " << s.str() << std::endl;
-        ASSERT( *i == s.str() );
+        EXPECT( *i == s.str() );
     }
 
     std::string source2 ("-lolo5-lolo6-lolo7;lolo8:lolo9-");
     parse(source2,target);
 
-    ASSERT( target.size() == 10 );
+    EXPECT( target.size() == 10 );
 
     c = 0;
     for( typename Container::const_iterator i = target.begin(); i != target.end(); ++i, ++c )
@@ -94,13 +80,13 @@ void TestTokenizer::test_multi()
         ostringstream s;
         s << "lolo" << c;
 //        std::cout << *i << " ??? " << s.str() << std::endl;
-        ASSERT( *i == s.str() );
+        EXPECT( *i == s.str() );
     }
 }
 
 //-----------------------------------------------------------------------------
 
-void TestTokenizer::test_keep_empty_list()
+void test_keep_empty_list()
 {
     StringList  target;
 
@@ -111,12 +97,12 @@ void TestTokenizer::test_keep_empty_list()
 
     Log::info() << target << std::endl;
 
-    ASSERT( target.size() == 11 );
+    EXPECT( target.size() == 11 );
 }
 
 //-----------------------------------------------------------------------------
 
-void TestTokenizer::test_keep_empty_set()
+void test_keep_empty_set()
 {
     StringSet  target;
 
@@ -127,16 +113,19 @@ void TestTokenizer::test_keep_empty_set()
 
     Log::info() << target << std::endl;
 
-    ASSERT( target.size() == 5 ); // 5 uniqe elments
+    EXPECT( target.size() == 5 ); // 5 uniqe elments
 }
 
 //-----------------------------------------------------------------------------
             
-void TestTokenizer::run()
-{
+CASE ( "Test Tokenizer StringList" ) {
+
     test_single< StringList >();
     test_multi < StringList >();
     test_keep_empty_list();
+}
+
+CASE ( "Test Tokenizer StringSet" ) {
 
     test_single< StringSet >();
     test_multi < StringSet >();
@@ -145,13 +134,13 @@ void TestTokenizer::run()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
+} // namespace test
+} // namespace eckit
 
 //-----------------------------------------------------------------------------
 
 int main(int argc,char **argv)
 {
-    eckit_test::TestTokenizer app(argc,argv);
-    return app.start();
+    return run_tests( argc, argv );
 }
 

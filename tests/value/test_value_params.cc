@@ -7,10 +7,8 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-
-#define BOOST_TEST_MODULE test_eckit_value_params
-
-#include "ecbuild/boost_test_framework.h"
+#include <limits>
+#include <sys/types.h>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
@@ -20,15 +18,13 @@
 #include "eckit/value/Properties.h"
 #include "eckit/value/ScopeParams.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
 #include "AnyKeyParams.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
-
-BOOST_GLOBAL_FIXTURE(Setup);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -172,64 +168,64 @@ struct AnyKeyParamsFixture
 
 void test_keys(const Params& p)
 {
-    BOOST_CHECK( p.has("bool") );
-    BOOST_CHECK( p.has("int") );
-    BOOST_CHECK( p.has("unsigned int") );
-    BOOST_CHECK( p.has("long long") );
-    BOOST_CHECK( p.has("unsigned long long") );
-    BOOST_CHECK( p.has("double") );
-    BOOST_CHECK( p.has("string") );
-    BOOST_CHECK( p.has("Length") );
-    BOOST_CHECK( p.has("Date") );
-    BOOST_CHECK( p.has("PathName") );
-    BOOST_CHECK( !p.has("foo") );
-    BOOST_CHECK_THROW( p["foo"], BadParameter );
+    EXPECT( p.has("bool") );
+    EXPECT( p.has("int") );
+    EXPECT( p.has("unsigned int") );
+    EXPECT( p.has("long long") );
+    EXPECT( p.has("unsigned long long") );
+    EXPECT( p.has("double") );
+    EXPECT( p.has("string") );
+    EXPECT( p.has("Length") );
+    EXPECT( p.has("Date") );
+    EXPECT( p.has("PathName") );
+    EXPECT( !p.has("foo") );
+    EXPECT_THROWS_AS( p["foo"], BadParameter );
 }
 
 void test_vals(const Params& p)
 {
-    BOOST_CHECK_EQUAL((bool)p["bool"], true);
-    BOOST_CHECK_EQUAL((int)p["int"], imax);
-    BOOST_CHECK_EQUAL((unsigned int)p["unsigned int"], uimax);
-    BOOST_CHECK_EQUAL((long long)p["long long"], llmax);
-    BOOST_CHECK_EQUAL((unsigned long long)p["unsigned long long"], ullmax);
-    BOOST_CHECK_EQUAL((double)p["double"], dmax);
-    BOOST_CHECK_EQUAL(p["string"], "foo");
-    BOOST_CHECK_EQUAL(p["Length"], Length(42));
-    BOOST_CHECK(p["Date"].compare(Date(2015, 2, 1))); // FIXME: equality check fails
-    BOOST_CHECK_EQUAL(p["PathName"], PathName("/var/tmp"));
+    EXPECT((bool)p["bool"] == true);
+    EXPECT((int)p["int"] == imax);
+    EXPECT((unsigned int)p["unsigned int"] == uimax);
+    EXPECT((long long)p["long long"] == llmax);
+    EXPECT((unsigned long long)p["unsigned long long"] == ullmax);
+    EXPECT((double)p["double"] == dmax);
+    EXPECT(p["string"] == "foo");
+    EXPECT(p["Length"] == Length(42));
+    EXPECT(p["Date"] == (Date(2015, 2, 1)));
+    EXPECT(p["PathName"] == PathName("/var/tmp"));
 }
 
 void test_scope(const Params& p)
 {
-    BOOST_CHECK( p.has("scope.foo") );
-    BOOST_CHECK( !p.has("foo") );
-    BOOST_CHECK_EQUAL( p["scope.foo"], "bar" );
-    BOOST_CHECK_THROW( p["foo"], BadParameter );
+    EXPECT( p.has("scope.foo") );
+    EXPECT( !p.has("foo") );
+    EXPECT( p["scope.foo"] == "bar" );
+    EXPECT_THROWS_AS( p["foo"], BadParameter );
 }
 
 void test_composite_scope(const Params& p)
 {
-    BOOST_CHECK( p.has("user.resol") );
-    BOOST_CHECK( p.has("default.resol") );
-    BOOST_CHECK( !p.has("resol") );
-    BOOST_CHECK_EQUAL( (uint)p["user.resol"], 100 );
-    BOOST_CHECK_EQUAL( (uint)p["default.resol"], 200 );
+    EXPECT( p.has("user.resol") );
+    EXPECT( p.has("default.resol") );
+    EXPECT( !p.has("resol") );
+    EXPECT( (uint)p["user.resol"] == 100 );
+    EXPECT( (uint)p["default.resol"] == 200 );
 }
 
 void test_dispatch(const Params& p)
 {
-    BOOST_CHECK( p.has("foo") );
-    BOOST_CHECK( !p.has("bar") );
-    BOOST_CHECK_EQUAL( p["foo"], "bar" );
+    EXPECT( p.has("foo") );
+    EXPECT( !p.has("bar") );
+    EXPECT( p["foo"] == "bar" );
 }
 
 void test_custom(const Params& p)
 {
-    BOOST_CHECK( p.has("foo") );
-    BOOST_CHECK( p.has("bar") );
-    BOOST_CHECK_EQUAL( p["foo"], "foo" );
-    BOOST_CHECK_EQUAL( p["bar"], "foo" );
+    EXPECT( p.has("foo") );
+    EXPECT( p.has("bar") );
+    EXPECT( p["foo"] == "foo" );
+    EXPECT( p["bar"] == "foo" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -250,136 +246,156 @@ Params stream_to_from_file(const Params& p)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_value_params )
+CASE( "test_properties" ) {
 
-//----------------------------------------------------------------------------------------------------------------------
+    SETUP( "PropertiesFixture" ) {
+        PropertiesFixture fix;
 
-BOOST_FIXTURE_TEST_CASE( test_properties_params, PropertiesFixture ) {
-    BOOST_TEST_MESSAGE("Initialize Properties");
-    BOOST_TEST_MESSAGE("Params: " << p);
-    test_keys(p);
-    test_vals(p);
+        SECTION( "test_properties_params_init" ) {
+            eckit::Log::info() << "Initialize Properties" << std::endl;
+            eckit::Log::info() << "Params: " << fix.p << std::endl;
+            test_keys(fix.p);
+            test_vals(fix.p);
+        }
+
+        SECTION( "test_properties_params_streaming" ) {
+            eckit::Log::info() << "Stream Properties" << std::endl;
+            eckit::Log::info() << "original: " << fix.p << std::endl;
+            Params params = stream_to_from_file(fix.p);
+            eckit::Log::info() << "streamed: " << params << std::endl;
+            test_keys(params);
+            test_vals(params);
+        }
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE( "test_composite_params" ) {
 
-BOOST_FIXTURE_TEST_CASE( test_properties_params_streaming, PropertiesFixture ) {
-    BOOST_TEST_MESSAGE("Stream Properties");
-    BOOST_TEST_MESSAGE("original: " << p);
-    Params params = stream_to_from_file(p);
-    BOOST_TEST_MESSAGE("streamed: " << params);
-    test_keys(params);
-    test_vals(params);
+    SETUP( "CompositeParamsFixture" ) {
+        CompositeParamsFixture fix;
+
+        SECTION ( "test_composite_params" ) {
+            eckit::Log::info() << "Initialize CompositeParams from Properties" << std::endl;
+            eckit::Log::info() << "Params: " << fix.p << std::endl;
+            test_keys(fix.p);
+            test_vals(fix.p);
+        }
+
+        SECTION( "test_composite_params_streaming" ) {
+            eckit::Log::info() << "Stream CompositeParams initialised from Properties" << std::endl;
+            eckit::Log::info() << "original: " << fix.p << std::endl;
+            Params params = stream_to_from_file(fix.p);
+            eckit::Log::info() << "streamed: " << params << std::endl;
+            test_keys(params);
+            test_vals(params);
+        }
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params, CompositeParamsFixture ) {
-    BOOST_TEST_MESSAGE("Initialize CompositeParams from Properties");
-    BOOST_TEST_MESSAGE("Params: " << p);
-    test_keys(p);
-    test_vals(p);
+CASE ( "test_composite_params_list" ) {
+
+    SETUP ( "ListParamsFixture" ) {
+        ListParamsFixture fix;
+
+        SECTION ( "test_composite_params_list_init" ) {
+            eckit::Log::info() << "Initialize CompositeParams from list of Properties" << std::endl;
+            eckit::Log::info() << "Params: " << fix.p << std::endl;
+            test_keys(fix.p);
+            test_vals(fix.p);
+        }
+
+        SECTION ( "test_composite_params_list_streaming" ) {
+            eckit::Log::info() << "Stream CompositeParams initialised from list of Properties" << std::endl;
+            eckit::Log::info() << "original: " << fix.p << std::endl;
+            Params params = stream_to_from_file(fix.p);
+            eckit::Log::info() << "streamed: " << params << std::endl;
+            test_keys(params);
+            test_vals(params);
+        }
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE ( "test_scoped_params" ) {
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params_streaming, CompositeParamsFixture ) {
-    BOOST_TEST_MESSAGE("Stream CompositeParams initialised from Properties");
-    BOOST_TEST_MESSAGE("original: " << p);
-    Params params = stream_to_from_file(p);
-    BOOST_TEST_MESSAGE("streamed: " << params);
-    test_keys(params);
-    test_vals(params);
+    SETUP ( "ScopedParamsFixture" ) {
+        ScopedParamsFixture fix;
+
+        SECTION( "test_scope_params_init" ) {
+            eckit::Log::info() << "Initialize ScopedParams" << std::endl;
+            eckit::Log::info() << "Params: " << fix.p << std::endl;
+            test_scope(fix.p);
+        }
+
+        SECTION( "test_scope_params_streaming" ) {
+            eckit::Log::info() << "Stream ScopedParams" << std::endl;
+            eckit::Log::info() << "original: " << fix.p << std::endl;
+            Params params = stream_to_from_file(fix.p);
+            eckit::Log::info() << "streamed: " << params << std::endl;
+            test_scope(params);
+        }
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE ( "test_composite_scope_params" ) {
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params_list, ListParamsFixture ) {
-    BOOST_TEST_MESSAGE("Initialize CompositeParams from list of Properties");
-    BOOST_TEST_MESSAGE("Params: " << p);
-    test_keys(p);
-    test_vals(p);
+    SETUP ( "CompositeScopedParamsFixture" ) {
+        CompositeScopedParamsFixture fix;
+        
+        SECTION( "test_composite_scope_params_init" ) {
+            eckit::Log::info() << "Initialize CompositeParams from ScopedParams" << std::endl;
+            eckit::Log::info() << "Params: " << fix.p << std::endl;
+            test_composite_scope(fix.p);
+        }
+
+        SECTION( "test_composite_scope_params_streaming" ) {
+            eckit::Log::info() << "Stream CompositeParams initialised from ScopedParams" << std::endl;
+            eckit::Log::info() << "original: " << fix.p << std::endl;
+            Params params = stream_to_from_file(fix.p);
+            eckit::Log::info() << "streamed: " << params << std::endl;
+            test_composite_scope(params);
+        }
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE ( "test_dispatch_params" ) {
 
-BOOST_FIXTURE_TEST_CASE( test_composite_params_list_streaming, ListParamsFixture ) {
-    BOOST_TEST_MESSAGE("Stream CompositeParams initialised from list of Properties");
-    BOOST_TEST_MESSAGE("original: " << p);
-    Params params = stream_to_from_file(p);
-    BOOST_TEST_MESSAGE("streamed: " << params);
-    test_keys(params);
-    test_vals(params);
+    SETUP ( "DispatchParamsFixture" ) {
+        DispatchParamsFixture fix;
+
+        SECTION( "test_dispatch_params_init" ) {
+            eckit::Log::info() << "Initialize DispatchParams" << std::endl;
+            test_dispatch(fix.p);
+        }
+
+        SECTION( "test_dispatch_params_streaming" ) {
+            eckit::Log::info() << "Stream DispatchParams" << std::endl;
+            Params params = stream_to_from_file(fix.p);
+            test_dispatch(params);
+        }
+    }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE ( "test_custom_params" ) {
 
-BOOST_FIXTURE_TEST_CASE( test_scope_params, ScopedParamsFixture ) {
-    BOOST_TEST_MESSAGE("Initialize ScopedParams");
-    BOOST_TEST_MESSAGE("Params: " << p);
-    test_scope(p);
+    SETUP ( "AnyKeyParamsFixture" ) {
+        AnyKeyParamsFixture fix;
+
+        SECTION( "test_custom_params_init" ) {
+            eckit::Log::info() << "Initialize custom AnyKeyParams" << std::endl;
+            test_custom(fix.p);
+        }
+
+        SECTION( "test_custom_params_streaming" ) {
+            eckit::Log::info() << "Stream custom AnyKeyParams" << std::endl;
+            Params params = stream_to_from_file(fix.p);
+            test_custom(params);
+        }
+    }
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_FIXTURE_TEST_CASE( test_scope_params_streaming, ScopedParamsFixture ) {
-    BOOST_TEST_MESSAGE("Stream ScopedParams");
-    BOOST_TEST_MESSAGE("original: " << p);
-    Params params = stream_to_from_file(p);
-    BOOST_TEST_MESSAGE("streamed: " << params);
-    test_scope(params);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_FIXTURE_TEST_CASE( test_composite_scope_params, CompositeScopedParamsFixture ) {
-    BOOST_TEST_MESSAGE("Initialize CompositeParams from ScopedParams");
-    BOOST_TEST_MESSAGE("Params: " << p);
-    test_composite_scope(p);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_FIXTURE_TEST_CASE( test_composite_scope_params_streaming, CompositeScopedParamsFixture ) {
-    BOOST_TEST_MESSAGE("Stream CompositeParams initialised from ScopedParams");
-    BOOST_TEST_MESSAGE("original: " << p);
-    Params params = stream_to_from_file(p);
-    BOOST_TEST_MESSAGE("streamed: " << params);
-    test_composite_scope(params);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_FIXTURE_TEST_CASE( test_dispatch_params, DispatchParamsFixture ) {
-    BOOST_TEST_MESSAGE("Initialize DispatchParams");
-    test_dispatch(p);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_FIXTURE_TEST_CASE( test_dispatch_params_streaming, DispatchParamsFixture ) {
-    BOOST_TEST_MESSAGE("Stream DispatchParams");
-    Params params = stream_to_from_file(p);
-    test_dispatch(params);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_FIXTURE_TEST_CASE( test_custom_params, AnyKeyParamsFixture ) {
-    BOOST_TEST_MESSAGE("Initialize custom AnyKeyParams");
-    test_custom(p);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_FIXTURE_TEST_CASE( test_custom_params_streaming, AnyKeyParamsFixture ) {
-    BOOST_TEST_MESSAGE("Stream custom AnyKeyParams");
-    Params params = stream_to_from_file(p);
-    test_custom(params);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace eckit_test
+
+int main(int argc, char* argv[]) {
+    return run_tests(argc, argv);
+}

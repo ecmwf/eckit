@@ -80,7 +80,7 @@ set_package_properties( Armadillo PROPERTIES
 
 ecbuild_add_option( FEATURE LAPACK
                     DESCRIPTION "Linear Algebra PACKage"
-                    REQUIRED_PACKAGES "LAPACK" )
+                    REQUIRED_PACKAGES "LAPACK QUIET" )
 
 ### OpenSSL (for SHA1)
 
@@ -94,10 +94,15 @@ ecbuild_info("OpenSSL ${OPENSSL_FOUND} ${OPENSSL_VERSION} : libs ${OPENSSL_LIBRA
 
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "Use xxHash for non-crypto hashing in data integrity checks"
-                    REQUIRED_PACKAGES "PROJECT xxHash" )
+                    REQUIRED_PACKAGES "xxHash QUIET" )
 
 ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_INCLUDE_DIRS}")
 
+#### Curl
+
+ecbuild_add_option( FEATURE CURL
+                    DESCRIPTION "Curl library for transfering data with URLs"
+                    REQUIRED_PACKAGES CURL )
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA

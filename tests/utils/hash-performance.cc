@@ -18,8 +18,16 @@
 #include "eckit/utils/Hash.h"
 #include "eckit/memory/ScopedPtr.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 template <int N, int M>
 void timeAdd(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
@@ -53,9 +61,10 @@ void timeCompute(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
     std::cout << " - compute() rate " << Bytes(N*buffer.size(), timer) << std::endl;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-int main(int argc, char const *argv[])
-{
+CASE( "Test hash performance" ) {
+
     eckit::Buffer buffer(4*1024*1024);
     eckit::Buffer buffer2(64*1024*1024);
     eckit::Timer timer;
@@ -83,7 +92,15 @@ int main(int argc, char const *argv[])
 
         }
     }
+}
 
-    return 0;
+//----------------------------------------------------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckit
+
+int main(int argc, char *argv[])
+{
+    return run_tests(argc, argv);
 }
 

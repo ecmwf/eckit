@@ -13,11 +13,11 @@
 #include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec DateContent::classSpec_ = {&Content::classSpec(),"DateContent",};
 Reanimator<DateContent> DateContent::reanimator_;
@@ -67,12 +67,9 @@ int DateContent::compare(const Content& other) const
 
 int DateContent::compareDate(const DateContent& other) const
 {
-    if(value_ < other.value_)
-		return -1;
-    else if(value_ == other.value_)
-		return 1;
+    if(value_ == other.value_) return 0;
 
-	return 0;
+    return (value_ < other.value_) ? -1 : 1;
 }
 
 void DateContent::value(Date& d) const
@@ -110,6 +107,17 @@ Content* DateContent::mod(const Content& other) const
     return other.modDate(*this);
 }
 
-//-----------------------------------------------------------------------------
+
+void DateContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+    out << "date(" << value_ << ")";
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

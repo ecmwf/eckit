@@ -24,7 +24,8 @@
 #include "eckit/linalg/types.h"
 #include "eckit/linalg/Triplet.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/memory/ScopedPtr.h"
+#include "eckit/memory/MemoryBuffer.h"
 #include "eckit/io/MemoryHandle.h"
 
 namespace eckit {
@@ -40,27 +41,94 @@ namespace linalg {
 ///
 class SparseMatrix {
 
+public: // types
+
+    struct Layout {
+
+        Layout() : data_(0), outer_(0), inner_(0) {}
+
+        void reset() {
+            data_   = 0;
+            outer_  = 0;
+            inner_  = 0;
+        }
+
+        Scalar*      data_;   ///< matrix entries, sized with number of non-zeros (nnz)
+        Index*       outer_;  ///< start of rows
+        Index*       inner_;  ///< column indices
+    };
+
+    struct Shape {
+
+        Shape() : size_(0), rows_(0), cols_(0) {}
+
+        void reset() {
+            size_  = 0;
+            rows_  = 0;
+            cols_  = 0;
+        }
+
+        /// @returns number of rows
+        Size rows() const { return rows_; }
+
+        /// @returns number of columns
+        Size cols() const { return cols_; }
+
+        /// @returns number of non-zeros
+        Size nonZeros() const { return size_; }
+
+        /// data size is the number of non-zeros
+        Size dataSize() const { return nonZeros(); }
+
+        /// inner size is the number of non-zeros
+        Size innerSize() const { return nonZeros(); }
+
+        /// @returns outer size is number of rows + 1
+        Size outerSize() const { return Size(rows_ + 1); }
+
+        size_t allocSize() const { return sizeofData() + sizeofOuter() + sizeofInner(); }
+
+        size_t sizeofData()  const { return dataSize()  * sizeof(Scalar); }
+        size_t sizeofOuter() const { return outerSize() * sizeof(Index);  }
+        size_t sizeofInner() const { return innerSize() * sizeof(Index);  }
+
+        Size         size_;   ///< Size of the container (AKA number of non-zeros nnz)
+        Size         rows_;   ///< Number of rows
+        Size         cols_;   ///< Number of columns
+
+    };
+
+
+    class Allocator {
+    public:
+
+        virtual ~Allocator();
+
+        /// @note that shape may be modified by the allocator, e.g. loading of pre-computed matrices
+        virtual Layout allocate(Shape&) = 0;
+
+        /// Layout and Shape parameters may be ignored
+        virtual void deallocate(Layout, Shape) = 0;
+    };
+
 public:  // methods
 
     // -- Constructors
 
     /// Default constructor, empty matrix
-    SparseMatrix();
+    SparseMatrix(Allocator* alloc = 0);
 
     /// Constructs an identity matrix with provided dimensions
-    SparseMatrix(Size rows, Size cols);
+    SparseMatrix(Size rows, Size cols, Allocator* alloc = 0);
 
     /// Constructor from triplets
     SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets);
 
-    /// Construct vector from existing data (does NOT take ownership)
-    SparseMatrix(Scalar* values, Size size, Size rows, Size cols, Index* outer, Index* inner);
-
-    /// Construct vector from existing data (does NOT take ownership)
-    SparseMatrix(const eckit::Buffer& buffer);
-
     /// Constructor from Stream
     SparseMatrix(Stream& v);
+
+    /// Constructor from MemoryBuffer
+    SparseMatrix(const MemoryBuffer&);
 
     ~SparseMatrix();
 
@@ -86,39 +154,33 @@ public:
     void save(const eckit::PathName& path) const;
     void load(const eckit::PathName& path);
 
-    void dump(eckit::Buffer& buffer) const;
+    void dump(eckit::MemoryBuffer& buffer) const;
+    void dump(void* buffer, size_t size) const;
+
+    static void load(const void* buffer, size_t bufferSize, Layout& layout, Shape& shape); ///< from dump()
 
     void swap(SparseMatrix& other);
 
     /// @returns number of rows
-    Size rows() const { return rows_; }
+    Size rows() const { return shape_.rows_; }
 
     /// @returns number of columns
-    Size cols() const { return cols_; }
+    Size cols() const { return shape_.cols_; }
 
     /// @returns number of non-zeros
-    Size nonZeros() const { return size_; }
+    Size nonZeros() const { return shape_.size_; }
 
     /// @returns true if this matrix does not contain non-zero entries
     bool empty() const { return !nonZeros(); }
 
     /// @returns read-only view of the data vector
-    const Scalar* data() const { return data_; }
+    const Scalar* data() const { return spm_.data_; }
 
     /// @returns read-only view of the outer index vector
-    const Index* outer() const { return outer_; }
+    const Index* outer() const { return spm_.outer_; }
 
     /// @returns read-only view of the inner index vector
-    const Index* inner() const { return inner_; }
-
-    /// data size is the number of non-zeros
-    Size dataSize() const { return nonZeros(); }
-
-    /// inner size is the number of non-zeros
-    Size innerSize() const { return nonZeros(); }
-
-    /// @returns outer size is number of rows + 1
-    Size outerSize() const { return Size(rows_ + 1); }
+    const Index* inner() const { return spm_.inner_; }
 
     /// Reserve memory for given number of non-zeros (invalidates all data arrays)
     /// @note variables into this method must be by value
@@ -163,7 +225,7 @@ public: // iterators
     protected:
 
         /// checks if index is last of row
-        bool lastOfRow() const { return ((index_ + 1) == Size(matrix_->outer_[row_ + 1])); }
+        bool lastOfRow() const { return ((index_ + 1) == Size(matrix_->outer()[row_ + 1])); }
 
         SparseMatrix* matrix_;
         Size index_;
@@ -183,7 +245,7 @@ public: // iterators
 
     /// const iterators to being/end of matrix
     const_iterator begin()           const { return const_iterator(*this); }
-    const_iterator end()             const { return const_iterator(*this, rows_); }
+    const_iterator end()             const { return const_iterator(*this, rows()); }
 
     /// iterators to being/end of row
     iterator       begin(Size row)   { return iterator(*this, row); }
@@ -191,13 +253,9 @@ public: // iterators
 
     /// const iterators to being/end of matrix
     iterator       begin()           { return iterator(*this); }
-    iterator       end()             { return iterator(*this, rows_); }
+    iterator       end()             { return iterator(*this, rows()); }
 
 private: // methods
-
-    size_t sizeofData() const  { return dataSize()  * sizeof(Scalar); }
-    size_t sizeofOuter() const { return outerSize() * sizeof(Index);  }
-    size_t sizeofInner() const { return innerSize() * sizeof(Index);  }
 
     /// Resets the matrix to a deallocated state
     void reset();
@@ -213,17 +271,11 @@ private: // methods
 
 private: // members
 
-    Scalar*      data_;   ///< matrix entries, sized with number of non-zeros (nnz)
+    Layout    spm_;
 
-    Size         size_;   ///< Size of the container (AKA number of non-zeros nnz)
+    Shape     shape_;
 
-    Index*       outer_;  ///< Starts of rows
-    Index*       inner_;  ///< Column indices
-
-    Size         rows_;   ///< Number of rows
-    Size         cols_;   ///< Number of columns
-
-    bool own_;   ///< do we own the memory allocated in the containers ?
+    eckit::ScopedPtr<SparseMatrix::Allocator> owner_;   ///< memory manager / allocator
 
     friend Stream& operator<<(Stream&, const SparseMatrix&);
 };

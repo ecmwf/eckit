@@ -43,6 +43,8 @@ public:
     template<typename ITER>
     static KDNode* build(Alloc& a,const ITER& begin, const ITER& end, int depth = 0);
 
+    static KDNode<Traits>* insert(Alloc& a, const Value& value, KDNode<Traits>* node, int depth = 0);
+
 
 public:
     void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);

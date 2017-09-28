@@ -37,7 +37,7 @@ public:
 
     class BadTag : public Exception {
     public:
-        BadTag(const std::string& what): Exception(what) {}
+        BadTag(const std::string& what);
     };
 
 // -- Destructor
@@ -103,6 +103,8 @@ public:
 
     // Blobs
     Stream& operator>>(Buffer&);
+
+    Stream& operator>>(std::map<std::string, std::string>&);
 
 // -- Methods
 

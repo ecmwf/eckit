@@ -30,6 +30,584 @@
 			"name": "Anaconda Python Builder",
 			"selector": "source.python",
 			"shell_cmd": "\"python\" -u \"$file\""
+		},
+		{
+			"file_regex": "(.+[^:]):(\\d+):(\\d+): (?:fatal )?((?:error|warning): .+)$",
+			"name": "eckit (OSX)",
+			"shell_cmd": "make -j4",
+			"syntax": "Packages/CMakeBuilder/Syntax/Make.sublime-syntax",
+			"variants":
+			[
+				{
+					"name": "clean",
+					"shell_cmd": "make -j4 clean"
+				},
+				{
+					"name": "install/strip",
+					"shell_cmd": "make -j4 install/strip"
+				},
+				{
+					"name": "install/local",
+					"shell_cmd": "make -j4 install/local"
+				},
+				{
+					"name": "list_install_components",
+					"shell_cmd": "make -j4 list_install_components"
+				},
+				{
+					"name": "rebuild_cache",
+					"shell_cmd": "make -j4 rebuild_cache"
+				},
+				{
+					"name": "execs",
+					"shell_cmd": "make -j4 execs"
+				},
+				{
+					"name": "eckit_top_files",
+					"shell_cmd": "make -j4 eckit_top_files"
+				},
+				{
+					"name": "package_source",
+					"shell_cmd": "make -j4 package_source"
+				},
+				{
+					"name": "ContinuousCoverage",
+					"shell_cmd": "make -j4 ContinuousCoverage"
+				},
+				{
+					"name": "ContinuousTest",
+					"shell_cmd": "make -j4 ContinuousTest"
+				},
+				{
+					"name": "ContinuousBuild",
+					"shell_cmd": "make -j4 ContinuousBuild"
+				},
+				{
+					"name": "ContinuousStart",
+					"shell_cmd": "make -j4 ContinuousStart"
+				},
+				{
+					"name": "ExperimentalBuild",
+					"shell_cmd": "make -j4 ExperimentalBuild"
+				},
+				{
+					"name": "ExperimentalCoverage",
+					"shell_cmd": "make -j4 ExperimentalCoverage"
+				},
+				{
+					"name": "ExperimentalSubmit",
+					"shell_cmd": "make -j4 ExperimentalSubmit"
+				},
+				{
+					"name": "ContinuousUpdate",
+					"shell_cmd": "make -j4 ContinuousUpdate"
+				},
+				{
+					"name": "ExperimentalUpdate",
+					"shell_cmd": "make -j4 ExperimentalUpdate"
+				},
+				{
+					"name": "install",
+					"shell_cmd": "make -j4 install"
+				},
+				{
+					"name": "ExperimentalStart",
+					"shell_cmd": "make -j4 ExperimentalStart"
+				},
+				{
+					"name": "NightlyMemCheck",
+					"shell_cmd": "make -j4 NightlyMemCheck"
+				},
+				{
+					"name": "test",
+					"shell_cmd": "make -j4 test"
+				},
+				{
+					"name": "package",
+					"shell_cmd": "make -j4 package"
+				},
+				{
+					"name": "ExperimentalConfigure",
+					"shell_cmd": "make -j4 ExperimentalConfigure"
+				},
+				{
+					"name": "NightlyCoverage",
+					"shell_cmd": "make -j4 NightlyCoverage"
+				},
+				{
+					"name": "NightlyTest",
+					"shell_cmd": "make -j4 NightlyTest"
+				},
+				{
+					"name": "ContinuousMemCheck",
+					"shell_cmd": "make -j4 ContinuousMemCheck"
+				},
+				{
+					"name": "uninstall",
+					"shell_cmd": "make -j4 uninstall"
+				},
+				{
+					"name": "NightlyBuild",
+					"shell_cmd": "make -j4 NightlyBuild"
+				},
+				{
+					"name": "NightlyConfigure",
+					"shell_cmd": "make -j4 NightlyConfigure"
+				},
+				{
+					"name": "ExperimentalMemCheck",
+					"shell_cmd": "make -j4 ExperimentalMemCheck"
+				},
+				{
+					"name": "check",
+					"shell_cmd": "make -j4 check"
+				},
+				{
+					"name": "ContinuousConfigure",
+					"shell_cmd": "make -j4 ContinuousConfigure"
+				},
+				{
+					"name": "NightlyMemoryCheck",
+					"shell_cmd": "make -j4 NightlyMemoryCheck"
+				},
+				{
+					"name": "Continuous",
+					"shell_cmd": "make -j4 Continuous"
+				},
+				{
+					"name": "Experimental",
+					"shell_cmd": "make -j4 Experimental"
+				},
+				{
+					"name": "libs",
+					"shell_cmd": "make -j4 libs"
+				},
+				{
+					"name": "NightlyStart",
+					"shell_cmd": "make -j4 NightlyStart"
+				},
+				{
+					"name": "Nightly",
+					"shell_cmd": "make -j4 Nightly"
+				},
+				{
+					"name": "NightlyUpdate",
+					"shell_cmd": "make -j4 NightlyUpdate"
+				},
+				{
+					"name": "ContinuousSubmit",
+					"shell_cmd": "make -j4 ContinuousSubmit"
+				},
+				{
+					"name": "ExperimentalTest",
+					"shell_cmd": "make -j4 ExperimentalTest"
+				},
+				{
+					"name": "NightlySubmit",
+					"shell_cmd": "make -j4 NightlySubmit"
+				},
+				{
+					"name": "eckit_bamboo",
+					"shell_cmd": "make -j4 eckit_bamboo"
+				},
+				{
+					"name": "eckit",
+					"shell_cmd": "make -j4 eckit"
+				},
+				{
+					"name": "eckit_templates",
+					"shell_cmd": "make -j4 eckit_templates"
+				},
+				{
+					"name": "eckit_cmd",
+					"shell_cmd": "make -j4 eckit_cmd"
+				},
+				{
+					"name": "eckit_geometry",
+					"shell_cmd": "make -j4 eckit_geometry"
+				},
+				{
+					"name": "eckit_linalg",
+					"shell_cmd": "make -j4 eckit_linalg"
+				},
+				{
+					"name": "eckit_maths",
+					"shell_cmd": "make -j4 eckit_maths"
+				},
+				{
+					"name": "eckit_mpi",
+					"shell_cmd": "make -j4 eckit_mpi"
+				},
+				{
+					"name": "eckit_option_templates",
+					"shell_cmd": "make -j4 eckit_option_templates"
+				},
+				{
+					"name": "eckit_option",
+					"shell_cmd": "make -j4 eckit_option"
+				},
+				{
+					"name": "eckit_web",
+					"shell_cmd": "make -j4 eckit_web"
+				},
+				{
+					"name": "eckit_testing",
+					"shell_cmd": "make -j4 eckit_testing"
+				},
+				{
+					"name": "eckit_test_factory",
+					"shell_cmd": "make -j4 eckit_test_factory"
+				},
+				{
+					"name": "eckit_test_singleton",
+					"shell_cmd": "make -j4 eckit_test_singleton"
+				},
+				{
+					"name": "eckit_test_builder2",
+					"shell_cmd": "make -j4 eckit_test_builder2"
+				},
+				{
+					"name": "eckit_test_builder1",
+					"shell_cmd": "make -j4 eckit_test_builder1"
+				},
+				{
+					"name": "eckit_version",
+					"shell_cmd": "make -j4 eckit_version"
+				},
+				{
+					"name": "eckit_test_configuration",
+					"shell_cmd": "make -j4 eckit_test_configuration"
+				},
+				{
+					"name": "eckit_test_resource",
+					"shell_cmd": "make -j4 eckit_test_resource"
+				},
+				{
+					"name": "eckit_test_benchmark_densemap",
+					"shell_cmd": "make -j4 eckit_test_benchmark_densemap"
+				},
+				{
+					"name": "eckit_test_bloomfilter",
+					"shell_cmd": "make -j4 eckit_test_bloomfilter"
+				},
+				{
+					"name": "eckit_test_cache_lru",
+					"shell_cmd": "make -j4 eckit_test_cache_lru"
+				},
+				{
+					"name": "eckit_test_trie",
+					"shell_cmd": "make -j4 eckit_test_trie"
+				},
+				{
+					"name": "eckit_test_densemap",
+					"shell_cmd": "make -j4 eckit_test_densemap"
+				},
+				{
+					"name": "eckit_test_btree",
+					"shell_cmd": "make -j4 eckit_test_btree"
+				},
+				{
+					"name": "eckit_test_sharedmemarray",
+					"shell_cmd": "make -j4 eckit_test_sharedmemarray"
+				},
+				{
+					"name": "eckit_test_pathexpander",
+					"shell_cmd": "make -j4 eckit_test_pathexpander"
+				},
+				{
+					"name": "eckit_test_multihandle",
+					"shell_cmd": "make -j4 eckit_test_multihandle"
+				},
+				{
+					"name": "eckit_test_restarthandle",
+					"shell_cmd": "make -j4 eckit_test_restarthandle"
+				},
+				{
+					"name": "eckit_test_localpathname",
+					"shell_cmd": "make -j4 eckit_test_localpathname"
+				},
+				{
+					"name": "eckit_test_aiohandle",
+					"shell_cmd": "make -j4 eckit_test_aiohandle"
+				},
+				{
+					"name": "eckit_test_kdtree",
+					"shell_cmd": "make -j4 eckit_test_kdtree"
+				},
+				{
+					"name": "eckit_test_urlhandle",
+					"shell_cmd": "make -j4 eckit_test_urlhandle"
+				},
+				{
+					"name": "eckit_test_filepool",
+					"shell_cmd": "make -j4 eckit_test_filepool"
+				},
+				{
+					"name": "eckit_test_datablob",
+					"shell_cmd": "make -j4 eckit_test_datablob"
+				},
+				{
+					"name": "eckit_test_circularbuffer",
+					"shell_cmd": "make -j4 eckit_test_circularbuffer"
+				},
+				{
+					"name": "eckit_test_large_file",
+					"shell_cmd": "make -j4 eckit_test_large_file"
+				},
+				{
+					"name": "eckit_test_la_factory",
+					"shell_cmd": "make -j4 eckit_test_la_factory"
+				},
+				{
+					"name": "eckit_test_la_streaming",
+					"shell_cmd": "make -j4 eckit_test_la_streaming"
+				},
+				{
+					"name": "eckit_test_la_sparse",
+					"shell_cmd": "make -j4 eckit_test_la_sparse"
+				},
+				{
+					"name": "eckit_test_la_linalg",
+					"shell_cmd": "make -j4 eckit_test_la_linalg"
+				},
+				{
+					"name": "eckit_test_colour",
+					"shell_cmd": "make -j4 eckit_test_colour"
+				},
+				{
+					"name": "eckit_test_log_user_channels",
+					"shell_cmd": "make -j4 eckit_test_log_user_channels"
+				},
+				{
+					"name": "eckit_test_log_channels",
+					"shell_cmd": "make -j4 eckit_test_log_channels"
+				},
+				{
+					"name": "eckit_test_log",
+					"shell_cmd": "make -j4 eckit_test_log"
+				},
+				{
+					"name": "eckit_test_log_threads",
+					"shell_cmd": "make -j4 eckit_test_log_threads"
+				},
+				{
+					"name": "eckit_test_log_callback",
+					"shell_cmd": "make -j4 eckit_test_log_callback"
+				},
+				{
+					"name": "eckit_test_eigen",
+					"shell_cmd": "make -j4 eckit_test_eigen"
+				},
+				{
+					"name": "eckit_test_matrix",
+					"shell_cmd": "make -j4 eckit_test_matrix"
+				},
+				{
+					"name": "eckit_test_memory_factory",
+					"shell_cmd": "make -j4 eckit_test_memory_factory"
+				},
+				{
+					"name": "eckit_test_memory_shared_ptr",
+					"shell_cmd": "make -j4 eckit_test_memory_shared_ptr"
+				},
+				{
+					"name": "eckit_test_memory_scoped_ptr",
+					"shell_cmd": "make -j4 eckit_test_memory_scoped_ptr"
+				},
+				{
+					"name": "eckit_test_memory_counted",
+					"shell_cmd": "make -j4 eckit_test_memory_counted"
+				},
+				{
+					"name": "eckit_test_memory_map",
+					"shell_cmd": "make -j4 eckit_test_memory_map"
+				},
+				{
+					"name": "eckit_test_mpi",
+					"shell_cmd": "make -j4 eckit_test_mpi"
+				},
+				{
+					"name": "eckit_test_mpi_addcomm",
+					"shell_cmd": "make -j4 eckit_test_mpi_addcomm"
+				},
+				{
+					"name": "eckit_test_option_factory",
+					"shell_cmd": "make -j4 eckit_test_option_factory"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_12",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_12"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_11",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_11"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_10",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_10"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_8",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_8"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_6",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_6"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_5",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_5"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_4",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_4"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_3",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_3"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_1",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_1"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_7",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_7"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_2",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_2"
+				},
+				{
+					"name": "eckit_test_option_cmdargs_9",
+					"shell_cmd": "make -j4 eckit_test_option_cmdargs_9"
+				},
+				{
+					"name": "eckit_test_stream_parser",
+					"shell_cmd": "make -j4 eckit_test_stream_parser"
+				},
+				{
+					"name": "eckit_test_json_metadata",
+					"shell_cmd": "make -j4 eckit_test_json_metadata"
+				},
+				{
+					"name": "eckit_test_yaml",
+					"shell_cmd": "make -j4 eckit_test_yaml"
+				},
+				{
+					"name": "eckit_test_json",
+					"shell_cmd": "make -j4 eckit_test_json"
+				},
+				{
+					"name": "eckit_test_producer",
+					"shell_cmd": "make -j4 eckit_test_producer"
+				},
+				{
+					"name": "eckit_test_context",
+					"shell_cmd": "make -j4 eckit_test_context"
+				},
+				{
+					"name": "eckit_test_file_stream",
+					"shell_cmd": "make -j4 eckit_test_file_stream"
+				},
+				{
+					"name": "eckit_test_streamable",
+					"shell_cmd": "make -j4 eckit_test_streamable"
+				},
+				{
+					"name": "eckit_test_mutex",
+					"shell_cmd": "make -j4 eckit_test_mutex"
+				},
+				{
+					"name": "eckit_test_cache",
+					"shell_cmd": "make -j4 eckit_test_cache"
+				},
+				{
+					"name": "eckit_test_fixedstring",
+					"shell_cmd": "make -j4 eckit_test_fixedstring"
+				},
+				{
+					"name": "eckit_test_fraction",
+					"shell_cmd": "make -j4 eckit_test_fraction"
+				},
+				{
+					"name": "eckit-test-double-compare-speed",
+					"shell_cmd": "make -j4 eckit-test-double-compare-speed"
+				},
+				{
+					"name": "eckit_test_floatcompare",
+					"shell_cmd": "make -j4 eckit_test_floatcompare"
+				},
+				{
+					"name": "eckit_test_doublecompare",
+					"shell_cmd": "make -j4 eckit_test_doublecompare"
+				},
+				{
+					"name": "eckit_test_print_vector",
+					"shell_cmd": "make -j4 eckit_test_print_vector"
+				},
+				{
+					"name": "eckit_test_uuid",
+					"shell_cmd": "make -j4 eckit_test_uuid"
+				},
+				{
+					"name": "eckit_test_rendezvoushash",
+					"shell_cmd": "make -j4 eckit_test_rendezvoushash"
+				},
+				{
+					"name": "eckit_test_tokenizer",
+					"shell_cmd": "make -j4 eckit_test_tokenizer"
+				},
+				{
+					"name": "hash-performance",
+					"shell_cmd": "make -j4 hash-performance"
+				},
+				{
+					"name": "eckit_test_md5",
+					"shell_cmd": "make -j4 eckit_test_md5"
+				},
+				{
+					"name": "eckit_test_translator",
+					"shell_cmd": "make -j4 eckit_test_translator"
+				},
+				{
+					"name": "eckit_test_string_tools",
+					"shell_cmd": "make -j4 eckit_test_string_tools"
+				},
+				{
+					"name": "eckit_test_value_params",
+					"shell_cmd": "make -j4 eckit_test_value_params"
+				},
+				{
+					"name": "eckit_test_value",
+					"shell_cmd": "make -j4 eckit_test_value"
+				},
+				{
+					"name": "eckit_test_value_properties",
+					"shell_cmd": "make -j4 eckit_test_value_properties"
+				},
+				{
+					"name": "eckit_test_custom_params",
+					"shell_cmd": "make -j4 eckit_test_custom_params"
+				},
+				{
+					"name": "eckit_test_system",
+					"shell_cmd": "make -j4 eckit_test_system"
+				},
+				{
+					"name": "ECKIT-175.x",
+					"shell_cmd": "make -j4 ECKIT-175.x"
+				},
+				{
+					"name": "ECKIT-221.x",
+					"shell_cmd": "make -j4 ECKIT-221.x"
+				},
+				{
+					"name": "ECKIT-166.x",
+					"shell_cmd": "make -j4 ECKIT-166.x"
+				}
+			],
+			"working_dir": "${project_path}/../../build/eckit"
 		}
 	],
 	"folders":

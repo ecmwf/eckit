@@ -8,11 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file Value.h
 /// @author Manuel Fuentes
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date Jun 97
 
 #ifndef eckit_Value_h
 #define eckit_Value_h
@@ -69,11 +67,7 @@ namespace eckit {
 ///
 ///    Value(true) != Value(true)
 ///
-/// 8. Value(bool)::compare() has inverted sense to the other compare methods
-///
-///    - It will return 0 if the Values are different
-///    - It will return -1 if the values are true
-///    - It will return 1 if the values are false
+/// 8. ECKIT-260 (FIXED)
 ///
 /// 9. On conversion falure Value(std::string> --> long long, zero is returned rather than an exception being thrown.
 ///
@@ -120,11 +114,7 @@ namespace eckit {
 ///
 /// 20. Subtraction operators for Value(Date) have a sign error. A later date minus a newer date should be positive.
 ///
-/// 21. compare() function for Value(Date()) is buggy. Currently:
-///
-///     date1 == date2 --> 1
-///     date1 <  date2 --> -1
-///     date1 >  date2 --> 0
+/// 21. ECKIT-265 (FIXED)
 ///
 /// 22. The Value::head() and Value::tail() members make an entire copy of the contained ValueList before selecting
 ///     and returning the head/tail element (which is copied). This will involve head allocations (and then
@@ -248,10 +238,10 @@ public:
     Value operator%(const Value&) const;
     Value& operator%=(const Value&);
 
-    const Value& operator[](const char*) const;
-    const Value& operator[](const std::string&) const;
-    const Value& operator[](const Value&) const;
-    const Value& operator[](int) const;
+    Value operator[](const char*) const;
+    Value operator[](const std::string&) const;
+    Value operator[](const Value&) const;
+    Value operator[](int) const;
 
     Value& operator[](const char*);
     Value& operator[](const std::string&);
@@ -261,13 +251,18 @@ public:
     Value keys() const;
     size_t size() const;
 
+    std::ostream& dump(std::ostream& out, size_t depth = 0, bool indent = true) const;
+
+    std::string typeName() const;
+
 public:
     bool contains(const char*) const;
     bool contains(const std::string&) const;
     bool contains(const Value&) const;
     bool contains(int) const;
 
-    Value& element(const std::string&);
+    Value& element(const Value&);
+    Value element(const Value&) const;
 
     // -- Methods
 
@@ -283,6 +278,7 @@ public:
     bool     isDate()     const { return content_->isDate(); }
     bool     isTime()     const { return content_->isTime(); }
     bool     isDateTime() const { return content_->isDateTime(); }
+    bool     isOrderedMap() const { return content_->isOrderedMap(); }
 
     Value    tail() const;
     Value    head() const;
@@ -299,6 +295,9 @@ public:
     static Value makeMap();
     static Value makeMap(const ValueMap&);
 
+    static Value makeOrderedMap();
+    static Value makeOrderedMap(const ValueMap&, const ValueList&);
+
 
 protected:
 
@@ -313,6 +312,9 @@ private: // methods
     void json(JSON& s) const        { s << *content_; }
     void print(std::ostream& s) const    { s << *content_; }
     void encode(Stream& s) const    { s << *content_; }
+
+
+    void update();
 
     friend JSON& operator<<(JSON& s, const Value& v) { v.json(s);  return s; }
     friend std::ostream& operator<<(std::ostream& s, const Value& v) { v.print(s);  return s; }

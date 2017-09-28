@@ -125,7 +125,7 @@ Timing &Timing::operator/=(size_t n) {
 }
 
 Timing Timing::operator-(const Timing & other) const {
-    return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, updates_ + other.updates_);
+    return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, 1);
 }
 
 
@@ -140,6 +140,11 @@ Stream &operator>>(Stream & s, Timing & t) {
     s >> t.elapsed_;
     s >> t.cpu_;
     s >> t.updates_;
+    return s;
+}
+
+std::ostream& operator<<(std::ostream& s, const Timing& t) {
+    s << t.elapsed_;
     return s;
 }
 

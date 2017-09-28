@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -39,9 +39,23 @@ template<>
 struct Translator<bool,std::string>
     { std::string operator()(bool);          };
 
+
 template<>
 struct Translator<std::string,bool>
     { bool   operator()(const std::string&); };
+
+
+template<>
+struct Translator<unsigned char,std::string>
+    { std::string operator()(unsigned char);          };
+
+template<>
+struct Translator<float,std::string>
+    { std::string operator()(float);          };
+
+template<>
+struct Translator<short,std::string>
+    { std::string operator()(short);          };
 
 template<>
 struct Translator<int,std::string>
@@ -80,12 +94,20 @@ struct Translator<std::string,long>
     { long   operator()(const std::string&); };
 
 template<>
+struct Translator<std::string,short>
+    { short   operator()(const std::string&); };
+
+template<>
 struct Translator<unsigned long,std::string>
     { std::string operator()(unsigned long);          };
 
 template<>
 struct Translator<std::string,unsigned long>
     { unsigned long   operator()(const std::string&); };
+
+template<>
+struct Translator<std::string,unsigned char>
+    { unsigned char   operator()(const std::string&); };
 
 template<>
 struct Translator<std::string,unsigned long long>

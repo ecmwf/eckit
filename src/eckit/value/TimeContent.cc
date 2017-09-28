@@ -13,13 +13,13 @@
 #include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec TimeContent::classSpec_ = {&Content::classSpec(),"TimeContent",};
+ClassSpec TimeContent::classSpec_ = {&Content::classSpec(), "TimeContent",};
 Reanimator<TimeContent> TimeContent::reanimator_;
 
 TimeContent::TimeContent(const Time& d):
@@ -28,18 +28,18 @@ TimeContent::TimeContent(const Time& d):
 }
 
 TimeContent::TimeContent(Stream& s):
-	Content(s)
+    Content(s)
 {
-	std::string dd;
-	s >> dd;
+    std::string dd;
+    s >> dd;
     value_ = Time(dd);
 }
 
 void TimeContent::encode(Stream& s) const
 {
-	Content::encode(s);
+    Content::encode(s);
     std::string dd = value_;
-	s << dd;
+    s << dd;
 }
 
 TimeContent::~TimeContent()
@@ -62,17 +62,14 @@ void TimeContent::json(JSON& s) const
 
 int TimeContent::compare(const Content& other) const
 {
-	return -other.compareTime(*this);
+    return -other.compareTime(*this);
 }
 
 int TimeContent::compareTime(const TimeContent& other) const
 {
-    if(value_ < other.value_)
-		return -1;
-    else if(value_ == other.value_)
-		return 1;
+    if (value_ == other.value_) { return 0; }
 
-	return 0;
+    return (value_ < other.value_) ? -1 : 1;
 }
 
 void TimeContent::value(Time& d) const
@@ -82,12 +79,12 @@ void TimeContent::value(Time& d) const
 
 Content* TimeContent::add(const Content& other) const
 {
-	return other.addTime(*this);
+    return other.addTime(*this);
 }
 
 Content* TimeContent::sub(const Content& other) const
 {
-	return other.subTime(*this);
+    return other.subTime(*this);
 }
 
 Content* TimeContent::mul(const Content& other) const
@@ -105,6 +102,15 @@ Content* TimeContent::mod(const Content& other) const
     return other.modTime(*this);
 }
 
-//-----------------------------------------------------------------------------
+void TimeContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+
+    out << "time(" << value_ << ")";
+}
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

@@ -18,40 +18,32 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-class TestMHHandle : public Tool {
+class TestMHHandle  {
 public:
-
-    TestMHHandle(int argc, char **argv): Tool(argc, argv) {}
-
-    ~TestMHHandle() {}
-
-    virtual void run();
-
     void setup();
     void teardown();
-
     void test_write();
-
     PathName path1_;
     PathName path2_;
     PathName path3_;
 
 };
 
-
 void TestMHHandle::test_write()
 {
-    const char buf1 [] = "abcdefghijklmnopqrstuvwxyz";
-    const char buf2 [] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
+    const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     char expect[26 * 2];
 
     // setformat(std::cout, Log::fullFormat);
@@ -106,12 +98,12 @@ void TestMHHandle::test_write()
 
     Buffer result(1024);
 
-    ASSERT(fh->read(result, result.size()) == 52);
+    EXPECT(fh->read(result, result.size()) == 52);
     fh->close();
 
     delete fh;
 
-    ASSERT( ::memcmp(expect, result, 52) == 0 );
+    EXPECT( ::memcmp(expect, result, 52) == 0 );
 }
 
 
@@ -137,23 +129,20 @@ void TestMHHandle::teardown()
 }
 
 
-void TestMHHandle::run()
+CASE("test_multihandle")
 {
-    setup();
-
-    test_write();
-
-    teardown();
+    TestMHHandle test;
+    test.setup();
+    test.test_write();
+    test.teardown();
 }
 
-} // namespace test
-} // namespace eckit
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace test
+}  // namespace eckit
 
 int main(int argc, char **argv)
 {
-    eckit::test::TestMHHandle app(argc, argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
-

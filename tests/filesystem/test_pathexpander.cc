@@ -8,29 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_pathexpander
 
 #include <string>
 
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathExpander.h"
-
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-BOOST_GLOBAL_FIXTURE(Setup);
+namespace eckit {
+namespace test {
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( TestPathExpander )
-
-BOOST_AUTO_TEST_CASE( test_expands )
+CASE("test_expands")
 {
     std::string s = "{CWD}/tmp/foo";
     std::string r = std::string(::getenv("CURRENT_TEST_DIR")) + std::string("/tmp/foo");
@@ -38,16 +34,24 @@ BOOST_AUTO_TEST_CASE( test_expands )
     LocalPathName ps = LocalPathName(PathExpander::expand("CWD", s)).realName();
     LocalPathName pr = LocalPathName(r).realName();
 
-    BOOST_CHECK_EQUAL(ps.c_str(), pr.c_str());
+    EXPECT( ::strcmp(ps.c_str(), pr.c_str()) == 0 );
 }
 
-BOOST_AUTO_TEST_CASE( test_missing_keys )
+CASE("test_missing_keys")
 {
     std::string s = "{FOO}/tmp/foo";
 
-    BOOST_CHECK_THROW( PathExpander::expand("FOO", s), eckit::UserError );
+    EXPECT_THROWS_AS( PathExpander::expand("FOO", s), eckit::UserError );
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
+
+

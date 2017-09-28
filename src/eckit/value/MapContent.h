@@ -8,19 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File MapContent.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @author Manuel Fuentes
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef eckit_MapContent_h
 #define eckit_MapContent_h
 
 #include "eckit/value/Value.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class MapContent : public Content {
 
@@ -30,7 +29,6 @@ protected:
 
     MapContent();
     MapContent(const ValueMap&);
-    //MapContent(const Value&);
 
     MapContent(Stream&);
 
@@ -61,9 +59,10 @@ protected:
     virtual int  compareNil(const NilContent&)              const {return -1; }
     virtual int  compareList(const ListContent&)            const {return -1; }
     virtual int  compareMap(const MapContent&)              const;
-    virtual int  compareDate(const DateContent&)            const {return -1; }
-    virtual int  compareTime(const TimeContent&)            const {return -1; }
-    virtual int  compareDateTime(const DateTimeContent&)    const {return -1; }
+    virtual int  compareDate(const DateContent&)            const {return 1; }
+    virtual int  compareTime(const TimeContent&)            const {return 1; }
+    virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
+    virtual int  compareOrderedMap(const OrderedMapContent&) const { return 1; }
 
 	virtual Content* add(const Content&)         const;
 	virtual Content* sub(const Content&) const;
@@ -72,17 +71,17 @@ protected:
     virtual Content* mod(const Content&) const;
 
     virtual Value   keys() const;
-    virtual Value&   element(const Value&);
-    virtual bool contains(const Value& key) const;
-
-//    virtual Content* addMap(const MapContent&) const;
+    virtual Value&  element(const Value&);
+    virtual bool    contains(const Value& key) const;
 
 	virtual void   print(std::ostream&) const;
     virtual void   json(JSON&)     const;
+
     virtual std::string typeName() const       { return "Map"; }
 
     virtual bool   isMap() const         { return true; }
     virtual Content* clone() const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
     // -- From Streamable
 
@@ -94,9 +93,6 @@ protected:
     static  const ClassSpec&  classSpec()         { return classSpec_;}
 
 private:
-
-    MapContent(const MapContent&);
-    MapContent& operator=(const MapContent&);
 
 // -- Members
 
@@ -115,7 +111,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

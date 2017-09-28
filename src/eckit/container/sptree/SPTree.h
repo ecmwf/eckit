@@ -75,6 +75,7 @@ public:
     {
         if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
+        ASSERT(root_);
         return alloc_.convert(root_,(Node*)0)->nearestNeighbour(alloc_, p);
     }
 
@@ -82,6 +83,7 @@ public:
     {
         if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
+        ASSERT(root_);
         return alloc_.convert(root_,(Node*)0)->findInSphere(alloc_, p, radius);
     }
 
@@ -89,6 +91,7 @@ public:
     {
         if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
+        ASSERT(root_);
         return alloc_.convert(root_,(Node*)0)->kNearestNeighbours(alloc_, p, k);
     }
 
@@ -97,6 +100,7 @@ public:
     {
         if(!root_) { root_ = alloc_.root(); }
         alloc_.statsCall();
+        ASSERT(root_);
         return alloc_.convert(root_,(Node*)0)->nearestNeighbourBruteForce(alloc_, p);
     }
 
@@ -104,12 +108,14 @@ public:
     NodeList findInSphereBruteForce(const Point& p,double radius)
     {
         if(!root_) { root_ = alloc_.root(); }
+        ASSERT(root_);
         return alloc_.convert(root_,(Node*)0)->findInSphereBruteForce(alloc_, p, radius);
     }
 
     NodeList kNearestNeighboursBruteForce(const Point& p,size_t k)
     {
         if(!root_) { root_ = alloc_.root(); }
+        ASSERT(root_);
         return alloc_.convert(root_,(Node*)0)->kNearestNeighboursBruteForce(alloc_, p, k);
     }
 
@@ -118,6 +124,7 @@ public:
     void visit(Visitor& v)
     {
         if(!root_) { root_ = alloc_.root(); }
+        ASSERT(root_);
         return alloc_.convert(root_,(Node*)0)->visit(alloc_, v);
     }
 
@@ -146,6 +153,7 @@ public:
     iterator begin()
     {
         if(!root_) { root_ = alloc_.root(); }
+        ASSERT(root_);
         return iterator(alloc_, root_);
     }
 

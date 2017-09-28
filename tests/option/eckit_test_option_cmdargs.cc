@@ -8,10 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_option
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/option/VectorOption.h"
@@ -19,11 +15,21 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
+#include "eckit/types/FloatCompare.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/testing/Test.h"
 
+using namespace std;
 using namespace eckit;
 using namespace eckit::option;
+using namespace eckit::types;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
+
+//-----------------------------------------------------------------------------
+
 
 /// Test the options parser
 /// @note The options parser normall calls ::exit(1) if an error occurs. All the constructors accept an additional
@@ -48,28 +54,26 @@ namespace {
     }
 }
 
-BOOST_AUTO_TEST_SUITE( test_eckit_option_cmdargs )
-
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE >= 1 and TESTCASE <= 3
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required ) {
+CASE( "test_eckit_option_cmdargs_numbered_args_required" ) {
     // Argument parser will succeed when passed exactly one unnamed argument.
     // Note that argument 0 is always the executable name.
 
 #if TESTCASE == 1
     const char* args1[] = {"exe"};
-    BOOST_CHECK_THROW(init(1, args1), UserError);
+    EXPECT_THROWS_AS(init(1, args1), UserError);
 #endif
 
 #if TESTCASE == 2
     const char* args2[] = {"exe", "a1"};
-    BOOST_CHECK_NO_THROW(init(2, args2));
+    EXPECT_NO_THROW(init(2, args2));
 #endif
 
 #if TESTCASE == 3
     const char* args3[] = {"exe", "a1", "a2"};
-    BOOST_CHECK_THROW(init(3, args3), UserError);
+    EXPECT_THROWS_AS(init(3, args3), UserError);
 #endif
 }
 #endif
@@ -77,7 +81,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE >= 4 and TESTCASE <= 6
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_options ) {
+CASE( "test_eckit_option_cmdargs_numbered_args_required_with_options" ) {
     std::vector<Option*> options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
 
@@ -86,17 +90,17 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_opti
 
 #if TESTCASE == 4
     const char* args1[] = {"exe"};
-    BOOST_CHECK_THROW(init(1, args1, options, 1), UserError);
+    EXPECT_THROWS_AS(init(1, args1, options, 1), UserError);
 #endif
 
 #if TESTCASE == 5
     const char* args2[] = {"exe", "a1"};
-    BOOST_CHECK_NO_THROW(init(2, args2, options, 1));
+    EXPECT_NO_THROW(init(2, args2, options, 1));
 #endif
 
 #if TESTCASE == 6
     const char* args3[] = {"exe", "a1", "a2"};
-    BOOST_CHECK_THROW(init(3, args3, options, 1), UserError);
+    EXPECT_THROWS_AS(init(3, args3, options, 1), UserError);
 #endif
 }
 #endif
@@ -104,7 +108,7 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_numbered_args_required_with_opti
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 7
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_string ) {
+CASE( "test_eckit_option_cmdargs_simple_argument_string" ) {
     // Set up he parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -115,20 +119,20 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_string ) {
     Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
-    BOOST_CHECK(args.has("arg1"));
-    BOOST_CHECK(!args.has("arg2"));
+    EXPECT(args.has("arg1"));
+    EXPECT(!args.has("arg2"));
 
     std::string tmpstr;
     args.get("arg1", tmpstr);
-    BOOST_CHECK_EQUAL(tmpstr, "testing");
-    BOOST_CHECK_EQUAL(args.getString("arg1"), "testing");
+    EXPECT(tmpstr == "testing");
+    EXPECT(args.getString("arg1") == "testing");
 }
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 8
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_integer ) {
+CASE( "test_eckit_option_cmdargs_simple_argument_integer" ) {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -139,33 +143,33 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_integer ) {
     Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
-    BOOST_CHECK(args.has("arg2"));
-    BOOST_CHECK(!args.has("arg1"));
+    EXPECT(args.has("arg2"));
+    EXPECT(!args.has("arg1"));
 
     long tmpi;
     args.get("arg2", tmpi);
-    BOOST_CHECK_EQUAL(tmpi, 12345);
-    BOOST_CHECK_EQUAL(args.getLong("arg2"), 12345);
+    EXPECT(tmpi == 12345);
+    EXPECT(args.getLong("arg2") == 12345);
 }
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 9
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_simple_argument_missing ) {
+CASE( "test_eckit_option_cmdargs_simple_argument_missing" ) {
     std::vector<Option*> options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<long>("arg2", ""));
 
     const char* input[] = {"exe", "--arg3=12345"};
-    BOOST_CHECK_THROW(init(2, input, options), UserError);
+    EXPECT_THROWS_AS(init(2, input, options), UserError);
 }
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 10
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector ) {
+CASE( "test_eckit_option_cmdargs_integer_vector" ) {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -175,24 +179,23 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_integer_vector ) {
     Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
-    BOOST_CHECK(args.has("arg"));
+    EXPECT(args.has("arg"));
 
     std::vector<long> tmpv;
     args.get("arg", tmpv);
-    BOOST_CHECK_EQUAL(tmpv.size(), 3);
-    BOOST_CHECK_EQUAL(tmpv[0], -12345);
-    BOOST_CHECK_EQUAL(tmpv[1], 678);
-    BOOST_CHECK_EQUAL(tmpv[2], -123);
+    EXPECT(tmpv.size() == 3);
+    EXPECT(tmpv[0] == -12345);
+    EXPECT(tmpv[1] == 678);
+    EXPECT(tmpv[2] == -123);
 
-    // Check equality directly to avoid exciting operator<< gubbins within BOOST_CHECK_EQUAL.
-    BOOST_CHECK(tmpv == args.getLongVector("arg"));
+    EXPECT(tmpv == args.getLongVector("arg"));
 }
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 11
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_double_vector ) {
+CASE( "test_eckit_option_cmdargs_double_vector" ) {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -202,33 +205,39 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_double_vector ) {
     Main::initialise(2, const_cast<char**>(input));
 
     CmdArgs args(&usage, options, 0, 0, true);
-    BOOST_CHECK(args.has("arg"));
+    EXPECT(args.has("arg"));
 
     std::vector<double> tmpv;
     args.get("arg", tmpv);
-    BOOST_CHECK_EQUAL(tmpv.size(), 4);
-    BOOST_CHECK_CLOSE(tmpv[0], -123.45, 1.0e-8);
-    BOOST_CHECK_CLOSE(tmpv[1], 67.8, 1.0e-8);
-    BOOST_CHECK_CLOSE(tmpv[2], 90, 1.0e-8);
-    BOOST_CHECK_CLOSE(tmpv[3], -123, 1.0e-8);
+    EXPECT(tmpv.size() == 4);
+    EXPECT(is_approximately_equal( tmpv[0], -123.45, 1.0e-8 ) );
+    EXPECT(is_approximately_equal( tmpv[1], 67.8, 1.0e-8 ) );
+    EXPECT(is_approximately_equal( tmpv[2], static_cast<double>(90), 1.0e-8 ) );
+    EXPECT(is_approximately_equal( tmpv[3], static_cast<double>(-123), 1.0e-8 ) );
 
-    // Check equality directly to avoid exciting operator<< gubbins within BOOST_CHECK_EQUAL.
-    BOOST_CHECK(tmpv == args.getDoubleVector("arg"));
+    EXPECT(tmpv == args.getDoubleVector("arg"));
 }
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 12
-BOOST_AUTO_TEST_CASE( test_eckit_option_cmdargs_vector_size_check ) {
+CASE( "test_eckit_option_cmdargs_vector_size_check" ) {
     std::vector<Option*> options;
     options.push_back(new VectorOption<long>("arg", "", 4));
 
     const char* input[] = {"exe", "--arg=1/2/3"};
-    BOOST_CHECK_THROW(init(2, input, options), UserError);
+    EXPECT_THROWS_AS(init(2, input, options), UserError);
 }
 #endif
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv, false );  // will not call main::initialize
+}
+

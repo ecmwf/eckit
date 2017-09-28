@@ -19,7 +19,7 @@
 
 #include "eckit/system/SystemInfoMacOSX.h"
 
-#include "eckit/io/Buffer.h"
+#include "eckit/memory/MemoryBuffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 
@@ -33,7 +33,7 @@ SystemInfoMacOSX::~SystemInfoMacOSX() {
 
 LocalPathName SystemInfoMacOSX::executablePath() const
 {
-    Buffer buffer(MAXPATHLEN);
+    MemoryBuffer buffer(MAXPATHLEN);
 
     int err = 0;
     uint32_t actual = uint32_t(buffer.size());

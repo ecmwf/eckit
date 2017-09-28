@@ -47,7 +47,7 @@ protected: // methods
 
     virtual Value parseJSON();
 
-    virtual void parseKeyValue(std::map<Value, Value> &);
+    virtual void parseKeyValue(ValueMap&, ValueList&);
 
 };
 

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -20,7 +20,7 @@
 //====================================================================
 
 inline const char *opname(const negate<eckit::Value>&)         { return "-";}
-inline const char *opname(const multiplies<eckit::Value>&)          { return "*";}
+inline const char *opname(const multiplies<eckit::Value>&)     { return "*";}
 inline const char *opname(const divides<eckit::Value>&)        { return "/";}
 inline const char *opname(const modulus<eckit::Value>&)        { return "%";}
 inline const char *opname(const plus<eckit::Value>&)           { return "+";}
@@ -55,9 +55,9 @@ public:
 template<class T, class U>
 class CondUnary : public Expression<U> {
 
-	auto_ptr<Expression<U> > cond_;
+	ScopedPtr<Expression<U> > cond_;
 
-	virtual void print(std::ostream& s) const 
+	virtual void print(std::ostream& s) const
 		{ s << opname(T()) << '(' << *cond_ << ')'; }
 
 public:
@@ -69,8 +69,8 @@ public:
 template<class T, class U>
 class CondBinary : public Expression<U> {
 
-	auto_ptr<Expression<U> > left_;
-	auto_ptr<Expression<U> > right_;
+	ScopedPtr<Expression<U> > left_;
+	ScopedPtr<Expression<U> > right_;
 
 	virtual void print(std::ostream& s) const
 		{ s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
@@ -92,7 +92,7 @@ inline eckit::Value CondBinary<T,U>::eval(U& task) const
 template <class T>
 class StringExpression : public Expression<T> {
 	std::string str_;
-	virtual void print(std::ostream& s) const { s << str_; } 
+	virtual void print(std::ostream& s) const { s << str_; }
 public:
 	StringExpression(const std::string& s) : str_(s) {}
 	virtual ~StringExpression(){}
@@ -102,7 +102,7 @@ public:
 template <class T>
 class NumberExpression : public Expression<T> {
 	long long value_;
-	virtual void print(std::ostream& s) const { s << value_; } 
+	virtual void print(std::ostream& s) const { s << value_; }
 protected:
 	long long value() const              { return value_; }
 public:
@@ -150,7 +150,7 @@ eckit::Value ListExpression<T>::eval(T& t) const
 	std::vector<eckit::Value> v;
 	for(size_t i = 0; i < v_.size(); i++)
 		if(v_[i]) v.push_back(v_[i]->eval(t));
-			
+
 	return v;
 }
 

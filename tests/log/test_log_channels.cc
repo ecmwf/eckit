@@ -30,9 +30,14 @@
 #include "eckit/log/WrapperTarget.h"
 #include "eckit/log/OStreamTarget.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
+
+//-----------------------------------------------------------------------------
 
 #if 1
     #define DEBUG_H
@@ -42,7 +47,8 @@ using namespace eckit;
     #define DEBUG_(x)   std::cerr << #x << " : [" << x << "] @ " <<  __FILE__ << " +" << __LINE__ << std::endl;
 #endif
 
-namespace eckit_test {
+namespace eckit {
+namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -91,78 +97,69 @@ static void callback_noctxt( void* , const char* msg )
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TestApp : public Tool {
-public:
 
-    TestApp(int argc,char **argv) : Tool(argc,argv) {}
+CASE ( "test_multi_targets" ) {
 
-    ~TestApp() {}
+    std::cout << "---> test_multi_targets()" << std::endl;
 
-    virtual void run()
-    {
-        test_multi_targets();
-        test_multi_colouring();
-    }
+    int t = 0;
 
-    void test_multi_targets() {
-        std::cout << "---> test_multi_targets()" << std::endl;
+    Channel mychannel;
 
-        int t = 0;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        Channel mychannel;
+    mychannel.addFile("test.txt");
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addFile("test.txt");
+    std::ofstream of ("test.txt.2");
+    mychannel.addStream(of);
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        std::ofstream of ("test.txt.2");
-        mychannel.addStream(of);
+    mychannel.addStream(std::cout);
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addStream(std::cout);
+    mychannel.addStream(std::cerr);
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addStream(std::cerr);
+    std::ostringstream oss;
+    mychannel.addStream(oss);
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        std::ostringstream oss;
-        mychannel.addStream(oss);
+    mychannel.addCallback(&callback_noctxt,0);
+    mychannel.addCallback(&callback_ctxt, &t);
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        mychannel.addCallback(&callback_noctxt,0);
-        mychannel.addCallback(&callback_ctxt, &t);
+    // mychannel.addLogTarget(new CapitalizerTarget(new FileTarget(PathName("capitals.txt"))));
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+    mychannel << "testing [" << t++ << "]" << std::endl;
 
-        // mychannel.addLogTarget(new CapitalizerTarget(new FileTarget(PathName("capitals.txt"))));
+    mychannel << "Final test" << std::endl;
 
-        mychannel << "testing [" << t++ << "]" << std::endl;
+}
 
-        mychannel << "Final test" << std::endl;
-    }
+CASE ( "test_multi_colouring" ) {
 
-    void test_multi_colouring() {
 #if 0
-        Log::info().setLogTarget(    new ColouringTarget(new OStreamTarget(std::cout), &Colour::green));
-        Log::warning().setLogTarget( new ColouringTarget(new OStreamTarget(std::cerr), &Colour::yellow));
-        Log::error().setLogTarget(   new ColouringTarget(new OStreamTarget(std::cerr), &Colour::red));
+    Log::info().setLogTarget(    new ColouringTarget(new OStreamTarget(std::cout), &Colour::green));
+    Log::warning().setLogTarget( new ColouringTarget(new OStreamTarget(std::cerr), &Colour::yellow));
+    Log::error().setLogTarget(   new ColouringTarget(new OStreamTarget(std::cerr), &Colour::red));
 
-        Log::info()    << "Log::info() is green"     << std::endl;
-        Log::warning() << "Log::warning() is yellow" << std::endl;
-        Log::error()   << "Log::error() is red"      << std::endl;
+    Log::info()    << "Log::info() is green"     << std::endl;
+    Log::warning() << "Log::warning() is yellow" << std::endl;
+    Log::error()   << "Log::error() is red"      << std::endl;
 #endif
-    }
-};
+}
 
-} // namespace eckit_test
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
+} // namespace test
+} // namespace eckit
 
 void on_signal_dumpbacktrace(int signum)
 {
@@ -175,7 +172,6 @@ int main(int argc,char **argv)
 {
     signal(SIGSEGV, on_signal_dumpbacktrace );
 
-    eckit_test::TestApp app(argc,argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
 

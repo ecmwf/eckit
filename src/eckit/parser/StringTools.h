@@ -48,9 +48,10 @@ public:
     static std::string back_trim(const std::string &, const std::string &);
 
     static std::vector<std::string> split(const std::string& delim, const std::string& text);
-	static std::string join(const std::string &, const std::vector<std::string>&);
-    static std::string join(const std::string &, std::vector<std::string>::const_iterator begin,
-                                                 std::vector<std::string>::const_iterator end);
+    template<typename T>
+    static std::string join(const std::string &, const T&);
+    template<typename Iterator>
+    static std::string join(const std::string &, Iterator begin, Iterator end);
 
     static bool startsWith( const std::string& str, const std::string& substr );
     static bool beginsWith( const std::string& str, const std::string& substr );
@@ -62,6 +63,24 @@ private:
 
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
+template<typename Iterator>
+std::string StringTools::join(const std::string &delimiter, Iterator begin, Iterator end) {
+    if (begin == end)
+        return "";
+    std::string r(*begin);
+    for (Iterator it = ++begin; it != end; ++it) {
+        r += delimiter;
+        r += *it;
+    }
+    return r;
+}
+
+template <typename T>
+std::string StringTools::join(const std::string &delimiter, const T& words) {
+    return join(delimiter, words.begin(), words.end());
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

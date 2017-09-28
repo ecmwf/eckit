@@ -8,10 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_la_linalg
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/LinearAlgebra.h"
@@ -19,18 +15,19 @@
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 
-#include "util.h"
+#include "./util.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
-
-
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
 using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
     va_list args;
@@ -53,21 +50,7 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
     return mat;
 }
 
-
-
-// Set linear algebra backend
-struct Setup : testing::Setup {
-    Setup() : testing::Setup() {
-        LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
-    }
-};
-
-
 //----------------------------------------------------------------------------------------------------------------------
-
-BOOST_GLOBAL_FIXTURE(Setup);
-
-
 
 struct Fixture {
 
@@ -95,17 +78,15 @@ struct Fixture {
     const LinearAlgebra& linalg;
 };
 
-
-
 template <class T>
 void test(const T& v, const T& r) {
     const size_t s = std::min(v.size(), r.size());
-    BOOST_CHECK_EQUAL_COLLECTIONS(v.data(), v.data() + s, r.data(), r.data() + s);
+    EXPECT( is_approximately_equal( make_view( v.data(), s), make_view( r.data(), s ), 0.1 ) );
 }
 
 template <typename T>
 void test(T* v, T* r, size_t s) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(v, v + s, r, r + s);
+    EXPECT ( make_view( v, s ) == make_view( r, s ) );
 }
 
 void test(const SparseMatrix& A, const Index* outer, const Index* inner, const Scalar* data) {
@@ -117,196 +98,213 @@ void test(const SparseMatrix& A, const Index* outer, const Index* inner, const S
 
 /// Test linear algebra interface
 
-BOOST_FIXTURE_TEST_SUITE(test_eckit_la_sparse, Fixture)
+CASE ( "test_eckit_la_sparse" ) {
 
-BOOST_AUTO_TEST_CASE(test_set_from_triplets) {
+    SETUP("Fixture") {
+        Fixture F;
 
-    {
-        BOOST_CHECK_EQUAL(A.nonZeros(), 4);
+        SECTION ( "test_set_from_triplets" ) {
+        {
+            EXPECT( F.A.nonZeros() == 4 );
 
-        Index outer[4] = {0, 2, 3, 4};
-        Index inner[4] = {0, 2, 1, 2};
-        Scalar data[4] = {2., -3., 2., 2.};
-        test(A, outer, inner, data);
+            Index outer[4] = {0, 2, 3, 4};
+            Index inner[4] = {0, 2, 1, 2};
+            Scalar data[4] = {2., -3., 2., 2.};
+            test(F.A, outer, inner, data);
+        }
+
+        // Pathological case with empty rows
+        {
+            Index outer[7] = {0, 0, 1, 1, 2, 2, 2};
+            Index inner[2] = {0, 3};
+            Scalar data[2] = {1., 2.};
+            test(S(6, 6, 2, 1, 0, 1., 3, 3, 2.), outer, inner, data);
+        }}
+        // Rows in wrong order (not triggering right now since triplets are sorted)
+        // EXPECT_THROWS_AS( S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed );
+
+        SECTION ( "test_set_copy_constructor" ) {
+        {
+            SparseMatrix B(F.A);
+
+            EXPECT( B.nonZeros() == 4 );
+
+            Index outer[4] = {0, 2, 3, 4};
+            Index inner[4] = {0, 2, 1, 2};
+            Scalar data[4] = {2., -3., 2., 2.};
+            test(B, outer, inner, data);
+        }}
+
+        SECTION ( "test_identity" ) {
+        {
+            Vector y1(3);
+
+            SparseMatrix B;
+            B.setIdentity(3, 3);
+
+            F.linalg.spmv(B, F.x, y1);
+            test(y1, F.x);
+        }
+
+        {
+            SparseMatrix C;
+            C.setIdentity(6, 3);
+
+            Vector y2(6);
+            F.linalg.spmv(C, F.x, y2);
+            test(y2, F.x);
+            test(y2.data()+3, V(3, 0., 0., 0.).data(), 3);
+        }
+
+        {
+            SparseMatrix D;
+            D.setIdentity(2, 3);
+
+            Vector y3(2);
+
+            F.linalg.spmv(D, F.x, y3);
+            test(y3, F.x);
+        }}
+
+        SECTION ( "test_prune" ) {
+
+            SparseMatrix A(S(3, 3, 5,
+                            0, 0, 0.,
+                            0, 2, 1.,
+                            1, 0, 0.,
+                            1, 1, 2.,
+                            2, 2, 0.));
+
+            A.prune();
+            EXPECT ( A.nonZeros() == 2 );
+            Index outer[4] = {0, 1, 2, 2};
+            Index inner[2] = {2, 1};
+            Scalar data[2] = {1., 2.};
+            test(A, outer, inner, data);
+        }
+
+        SECTION ( "test_iterator" ) {
+
+            SparseMatrix A(S(3, 3, 5,
+                            0, 0, 0.,
+                            1, 0, 0.,
+                            1, 1, 0.,
+                            1, 2, 1.,
+                            2, 2, 2.));
+
+            A.prune();
+            EXPECT( A.nonZeros() == 2 );
+
+            //  data    [ 1 2 ]
+            //  outer   [ 0 0 1 2 ]
+            //  inner   [ 2 2 ]
+
+            Scalar data[2] = {1., 2.};
+            Index outer[4] = {0, 0, 1, 2};
+            Index inner[2] = {2, 2};
+            test(A, outer, inner, data);
+
+            SparseMatrix::const_iterator it = A.begin();
+
+            // check entry #1
+            EXPECT( it.row() == 1 );
+            EXPECT( it.col() == 2 );
+            EXPECT( *it == 1. );
+
+            // check entry #2
+            ++it;
+
+            EXPECT( it.row() == 2 );
+            EXPECT( it.col() == 2 );
+            EXPECT( *it == 2. );
+
+            // go past the end
+            EXPECT( it != A.end() );
+
+            ++it;
+
+            EXPECT( it == A.end() );
+            EXPECT( !it );
+
+            // go back and re-check entry #1
+            // (row 0 is empty, should relocate to row 1)
+            it = A.begin();
+            EXPECT( it );
+
+            EXPECT( it.row() == 1 );
+            EXPECT( it.col() == 2 );
+            EXPECT( *it == 1. );
+
+            // go way past the end
+            it = A.begin(42);
+            EXPECT( !it );
+
+        }
+
+        SECTION ( "test_transpose_square" ) {
+            Index outer[4] = {0, 1, 2, 4};
+            Index inner[4] = {0, 1, 0, 2};
+            Scalar data[4] = {2., 2., -3., 2.};
+            test( F.A.transpose(), outer, inner, data );
+        }
+
+        SECTION ( "test_transpose_nonsquare" ) {
+            Index outer[4] = {0, 2, 3, 4};
+            Index inner[4] = {0, 1, 1, 0};
+            Scalar data[4] = {1., 3., 4., 2.};
+            test( F.A2.transpose(), outer, inner, data );
+        }
+
+        SECTION ( "test_spmv" ) {
+            Vector y(3);
+            F.linalg.spmv( F.A, F.x, y);
+            test(y, V(3, -7., 4., 6.));
+            Log::info() << "spmv of sparse matrix and vector of nonmatching sizes should fail" << std::endl;
+            EXPECT_THROWS_AS( F.linalg.spmv(F.A, Vector(2), y), AssertionFailed );
+        }
+
+        SECTION ( "test_spmm" ) {
+            Matrix C(3, 2);
+            F.linalg.spmm( F.A, M(3, 2, 1., 2., 3., 4., 5., 6.), C);
+            test(C, M(3, 2, -13., -14., 6., 8., 10., 12.));
+            Log::info() << "spmm of sparse matrix and matrix of nonmatching sizes should fail" << std::endl;
+            EXPECT_THROWS_AS( F.linalg.spmm(F.A, Matrix(2, 2), C), AssertionFailed );
+        }
+
+        SECTION ( "test_dsptd_square" ) {
+            SparseMatrix B;
+            F.linalg.dsptd(F.x, F.A, F.x, B);
+            Index outer[4] = {0, 1, 2, 4};
+            Index inner[4] = {0, 1, 0, 2};
+            Scalar data[4] = {2., 8., -9., 18.};
+            test(B, outer, inner, data);
+            Log::info() << "dsptd with vectors of nonmatching sizes should fail" << std::endl;
+            EXPECT_THROWS_AS( F.linalg.dsptd(F.x, F.A, Vector(2), B), AssertionFailed );
+        }
+
+        SECTION ( "test_dsptd_nonsquare" ) {
+            SparseMatrix B;
+            F.linalg.dsptd(F.x, F.A2, V(2, 1., 2.), B);
+            Index outer[4] = {0, 2, 3, 4};
+            Index inner[4] = {0, 1, 1, 0};
+            Scalar data[4] = {1., 6., 16., 6.};
+            test(B, outer, inner, data);
+            Log::info() << "dsptd with vectors of nonmatching sizes should fail" << std::endl;
+            EXPECT_THROWS_AS( F.linalg.dsptd(F.x, F.A2, F.x, B), AssertionFailed );
+        }
     }
-
-    // Pathological case with empty rows
-    {
-        Index outer[7] = {0, 0, 1, 1, 2, 2, 2};
-        Index inner[2] = {0, 3};
-        Scalar data[2] = {1., 2.};
-        test(S(6, 6, 2, 1, 0, 1., 3, 3, 2.), outer, inner, data);
-    }
-
-    // Rows in wrong order (not triggering right now since triplets are sorted)
-    //BOOST_CHECK_THROW(S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed);
 }
 
-BOOST_AUTO_TEST_CASE(test_identity) {
+//-----------------------------------------------------------------------------
 
-    {
-        Vector y1(3);
+}  // namespace test
+}  // namespace eckit
 
-        SparseMatrix B;
-        B.setIdentity(3, 3);
+int main(int argc, char **argv)
+{
+    eckit::Main::initialise( argc, argv );
+    // Set linear algebra backend
+    LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
 
-        linalg.spmv(B, x, y1);
-        test(y1, x);
-    }
-
-    {
-        SparseMatrix C;
-        C.setIdentity(6, 3);
-
-        Vector y2(6);
-        linalg.spmv(C, x, y2);
-        test(y2, x);
-        test(y2.data()+3, V(3, 0., 0., 0.).data(), 3);
-    }
-
-    {
-        SparseMatrix D;
-        D.setIdentity(2, 3);
-
-        Vector y3(2);
-
-        linalg.spmv(D, x, y3);
-        test(y3, x);
-    }
+    return run_tests ( argc, argv, false );
 }
-
-BOOST_AUTO_TEST_CASE(test_prune) {
-
-    SparseMatrix A(S(3, 3, 5,
-                     0, 0, 0.,
-                     0, 2, 1.,
-                     1, 0, 0.,
-                     1, 1, 2.,
-                     2, 2, 0.));
-
-    A.prune();
-    BOOST_CHECK_EQUAL(A.nonZeros(), 2);
-    Index outer[4] = {0, 1, 2, 2};
-    Index inner[2] = {2, 1};
-    Scalar data[2] = {1., 2.};
-    test(A, outer, inner, data);
-}
-
-BOOST_AUTO_TEST_CASE(test_iterator) {
-
-    SparseMatrix A(S(3, 3, 5,
-                     0, 0, 0.,
-                     1, 0, 0.,
-                     1, 1, 0.,
-                     1, 2, 1.,
-                     2, 2, 2.));
-
-    A.prune();
-    BOOST_CHECK_EQUAL(A.nonZeros(), 2);
-
-    //  data    [ 1 2 ]
-    //  outer   [ 0 0 1 2 ]
-    //  inner   [ 2 2 ]
-
-    Scalar data[2] = {1., 2.};
-    Index outer[4] = {0, 0, 1, 2};
-    Index inner[2] = {2, 2};
-    test(A, outer, inner, data);
-
-    SparseMatrix::const_iterator it = A.begin();
-
-    // check entry #1
-    BOOST_CHECK_EQUAL(it.row(), 1);
-    BOOST_CHECK_EQUAL(it.col(), 2);
-    BOOST_CHECK(*it == 1.);
-
-    // check entry #2
-    ++it;
-
-    BOOST_CHECK_EQUAL(it.row(), 2);
-    BOOST_CHECK_EQUAL(it.col(), 2);
-    BOOST_CHECK(*it == 2.);
-
-    // go past the end
-    BOOST_CHECK(it != A.end());
-
-    ++it;
-
-    BOOST_CHECK(it == A.end());
-    BOOST_CHECK(!it);
-
-    // go back and re-check entry #1
-    // (row 0 is empty, should relocate to row 1)
-    it = A.begin();
-    BOOST_CHECK(it);
-
-    BOOST_CHECK_EQUAL(it.row(), 1);
-    BOOST_CHECK_EQUAL(it.col(), 2);
-    BOOST_CHECK(*it == 1.);
-
-    // go way past the end
-    it = A.begin(42);
-    BOOST_CHECK(!it);
-
-}
-
-
-BOOST_AUTO_TEST_CASE(test_transpose_square) {
-    Index outer[4] = {0, 1, 2, 4};
-    Index inner[4] = {0, 1, 0, 2};
-    Scalar data[4] = {2., 2., -3., 2.};
-    test(A.transpose(), outer, inner, data);
-}
-
-
-BOOST_AUTO_TEST_CASE(test_transpose_nonsquare) {
-    Index outer[4] = {0, 2, 3, 4};
-    Index inner[4] = {0, 1, 1, 0};
-    Scalar data[4] = {1., 3., 4., 2.};
-    test(A2.transpose(), outer, inner, data);
-}
-
-BOOST_AUTO_TEST_CASE(test_spmv) {
-    Vector y(3);
-    linalg.spmv(A, x, y);
-    test(y, V(3, -7., 4., 6.));
-    BOOST_TEST_MESSAGE("spmv of sparse matrix and vector of nonmatching sizes should fail");
-    BOOST_CHECK_THROW(linalg.spmv(A, Vector(2), y), AssertionFailed);
-}
-
-BOOST_AUTO_TEST_CASE(test_spmm) {
-    Matrix C(3, 2);
-    linalg.spmm(A, M(3, 2, 1., 2., 3., 4., 5., 6.), C);
-    test(C, M(3, 2, -13., -14., 6., 8., 10., 12.));
-    BOOST_TEST_MESSAGE("spmm of sparse matrix and matrix of nonmatching sizes should fail");
-    BOOST_CHECK_THROW(linalg.spmm(A, Matrix(2, 2), C), AssertionFailed);
-}
-
-BOOST_AUTO_TEST_CASE(test_dsptd_square) {
-    SparseMatrix B;
-    linalg.dsptd(x, A, x, B);
-    Index outer[4] = {0, 1, 2, 4};
-    Index inner[4] = {0, 1, 0, 2};
-    Scalar data[4] = {2., 8., -9., 18.};
-    test(B, outer, inner, data);
-    BOOST_TEST_MESSAGE("dsptd with vectors of nonmatching sizes should fail");
-    BOOST_CHECK_THROW(linalg.dsptd(x, A, Vector(2), B), AssertionFailed);
-}
-
-BOOST_AUTO_TEST_CASE(test_dsptd_nonsquare) {
-    SparseMatrix B;
-    linalg.dsptd(x, A2, V(2, 1., 2.), B);
-    Index outer[4] = {0, 2, 3, 4};
-    Index inner[4] = {0, 1, 1, 0};
-    Scalar data[4] = {1., 6., 16., 6.};
-    test(B, outer, inner, data);
-    BOOST_TEST_MESSAGE("dsptd with vectors of nonmatching sizes should fail");
-    BOOST_CHECK_THROW(linalg.dsptd(x, A2, x, B), AssertionFailed);
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-//----------------------------------------------------------------------------------------------------------------------
-
-} // namespace test
-} // namespace eckit

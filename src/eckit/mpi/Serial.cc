@@ -175,7 +175,7 @@ Status Serial::wait(Request& req) const {
 
       SendRequest& sendReq = SerialRequestPool::instance().sendRequest(tag).as<SendRequest>();
 
-      memcpy( recvReq.buffer(), sendReq.buffer(), sendReq.count() * dataSize[sendReq.type()] );
+      ::memcpy( recvReq.buffer(), sendReq.buffer(), sendReq.count() * dataSize[sendReq.type()] );
 
       SerialStatus* st = new SerialStatus();
 
@@ -328,12 +328,11 @@ int Serial::communicator() const {
 
 eckit::SharedBuffer Serial::broadcastFile( const PathName& filepath, size_t ) const {
 
-    eckit::Buffer* buffer;
-
     eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
 
     Length len = dh->openForRead(); AutoClose closer(*dh);
-    buffer = new eckit::Buffer(len);
+
+    eckit::SharedBuffer buffer(len);
     dh->read(buffer->data(), len);
 
     if(not len) {
@@ -345,11 +344,11 @@ eckit::SharedBuffer Serial::broadcastFile( const PathName& filepath, size_t ) co
         throw CantOpenFile( filepath );
     }
 
-    return eckit::SharedBuffer(buffer);
+    return buffer;
 }
 
 
-CommBuilder<Serial> SerialBuilder("serial");
+static CommBuilder<Serial> SerialBuilder("serial");
 
 //----------------------------------------------------------------------------------------------------------------------
 

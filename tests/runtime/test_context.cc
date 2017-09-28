@@ -8,25 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_runtime
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Main.h"
 
-#include "eckit/testing/Setup.h"
+#include "eckit/testing/Test.h"
 
+using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
+namespace eckit {
+namespace test {
+
 //-----------------------------------------------------------------------------
 
-BOOST_GLOBAL_FIXTURE(Setup);
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_resource )
 
-BOOST_AUTO_TEST_CASE( test_default )
+CASE ( "test_default" )
 {
     /* log before context build */
 
@@ -41,6 +39,14 @@ BOOST_AUTO_TEST_CASE( test_default )
     Log::error()  << "logging after resetting behavior" << std::endl;
 }
 
+
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

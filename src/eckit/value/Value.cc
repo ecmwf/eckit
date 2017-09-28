@@ -19,20 +19,37 @@
 #include "eckit/value/BoolContent.h"
 #include "eckit/value/DoubleContent.h"
 #include "eckit/value/MapContent.h"
+#include "eckit/value/OrderedMapContent.h"
 #include "eckit/value/Value.h"
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/PathName.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+namespace {
+
+class Nil : public NilContent {
+public:
+    Nil() { attach(); } // the only instance of Nil (below) *will* be leaked at_exit()
+};
+
+static Nil* nil = 0; // must be a pointer, so we control when is created to respect order of destruction at_exit()
+
+static Nil* nill() {
+    if(!nil) nil = new Nil();
+    return nil;
+}
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 Value::Value():
-	content_(new NilContent())
+    content_(nill())
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(int l):
@@ -42,9 +59,9 @@ Value::Value(int l):
 }
 
 Value::Value(long long l):
-	content_(new NumberContent(l))
+    content_(new NumberContent(l))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(unsigned long long l):
@@ -86,33 +103,33 @@ Value::Value(double l):
 }
 
 Value::Value(const std::string& s):
-	content_(new StringContent(s))
+    content_(new StringContent(s))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const char* s):
-	content_(new StringContent(s))
+    content_(new StringContent(s))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const Length& l):
-	content_(new NumberContent(l))
+    content_(new NumberContent(l))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const PathName& p):
-	content_(new StringContent(p.asString()))
+    content_(new StringContent(p.asString()))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const Date& d):
-	content_(new DateContent(d))
+    content_(new DateContent(d))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const Time& d):
@@ -136,13 +153,13 @@ Value::Value(Stream& s):
 
 Value::~Value()
 {
-	content_->detach();
+    content_->detach();
 }
 
 Value::Value(const Value& other):
-	content_(other.content_)
+    content_(other.content_)
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value Value::clone() const {
@@ -155,55 +172,58 @@ bool Value::shared() const {
 
 Value& Value::operator=(const Value& other)
 {
-	other.content_->attach();
-	content_->detach();
-	content_ = other.content_;
+    Content* current = content_;
 
-	return *this;
+    content_ = other.content_;
+    content_->attach();
+    current->detach();
+
+    return *this;
 }
+
 
 Value Value::operator+(const Value& v) const
 {
-	return Value(content_->add(*(v.content_)));
+    return Value(content_->add(*(v.content_)));
 }
 
 Value& Value::operator+=(const Value& v)
 {
-	*this = *this + v;
-	return *this;
+    *this = *this + v;
+    return *this;
 }
 
 Value Value::operator-(const Value& v) const
 {
-	return Value(content_->sub(*(v.content_)));
+    return Value(content_->sub(*(v.content_)));
 }
 
 Value& Value::operator-=(const Value& v)
 {
-	*this = *this - v;
-	return *this;
+    *this = *this - v;
+    return *this;
 }
 
 Value Value::operator*(const Value& v) const
 {
-	return Value(content_->mul(*(v.content_)));
+    return Value(content_->mul(*(v.content_)));
 }
 
 Value& Value::operator*=(const Value& v)
 {
-	*this = *this * v;
-	return *this;
+    *this = *this * v;
+    return *this;
 }
 
 Value Value::operator/(const Value& v) const
 {
-	return Value(content_->div(*(v.content_)));
+    return Value(content_->div(*(v.content_)));
 }
 
 Value& Value::operator/=(const Value& v)
 {
-	*this = *this / v;
-	return *this;
+    *this = *this / v;
+    return *this;
 }
 
 Value Value::operator%(const Value& v) const
@@ -219,7 +239,7 @@ Value& Value::operator%=(const Value& v)
 
 Value Value::makeList()
 {
-	return Value(new ListContent());
+    return Value(new ListContent());
 }
 
 Value Value::makeMap()
@@ -227,14 +247,24 @@ Value Value::makeMap()
     return Value(new MapContent());
 }
 
-Value Value::makeMap(const ValueMap & m)
+Value Value::makeOrderedMap()
+{
+    return Value(new OrderedMapContent());
+}
+
+Value Value::makeMap(const ValueMap& m)
 {
     return Value(new MapContent(m));
 }
 
+Value Value::makeOrderedMap(const ValueMap& m, const ValueList& l)
+{
+    return Value(new OrderedMapContent(m, l));
+}
+
 Value Value::makeList(const Value& v)
 {
-	return Value(new ListContent(v));
+    return Value(new ListContent(v));
 }
 
 Value Value::makeList(const ValueList& v)
@@ -243,110 +273,59 @@ Value Value::makeList(const ValueList& v)
 }
 
 Value::Value(const ValueList& v):
-	content_(new ListContent(v))
+    content_(new ListContent(v))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(const ValueMap& m):
-	content_(new MapContent(m))
+    content_(new MapContent(m))
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value::Value(Content* c):
-	content_(c)
+    content_(c)
 {
-	content_->attach();
+    content_->attach();
 }
 
 Value Value::head() const
 {
-	ValueList v;
-	content_->value(v);
+    ValueList v;
+    content_->value(v);
 
-//	std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
-
-	return v.size() > 0 ? v[0] : Value();
+    return v.size() > 0 ? v[0] : Value();
 }
 
 Value Value::tail() const
 {
-	ValueList v;
-	content_->value(v);
+    ValueList v;
+    content_->value(v);
 
-//	std::cout << __FUNCTION__ << " " << *this << " " << v.size() << std::endl;
-
-	if (v.size() > 1)
-	{
-		v.erase(v.begin());
-		return v;
-	}
-	else
-		return Value();
+    if (v.size() > 1) {
+        v.erase(v.begin());
+        return v;
+    }
+    else {
+        return Value();
+    }
 }
 
 Value::operator ValueList() const
 {
-	ValueList v;
-	content_->value(v);
-	return v;
+    ValueList v;
+    content_->value(v);
+    return v;
 }
 
 Value::operator ValueMap() const
 {
-	ValueMap v;
-	content_->value(v);
-	return v;
+    ValueMap v;
+    content_->value(v);
+    return v;
 }
 
-//=========================================================
-const Value& Value::operator[](const Value& key) const
-{
-    return content_->element(key);
-}
-
-const Value& Value::operator[](const char* key) const
-{
-    return content_->element(Value(std::string(key)));
-}
-
-const Value& Value::operator[](const std::string& key) const
-{
-    return content_->element(Value(key));
-}
-
-//=========================================================
-
-Value& Value::operator[](const Value& key)
-{
-    return content_->element(key);
-}
-
-Value& Value::operator[](const char* key)
-{
-    return content_->element(Value(std::string(key)));
-}
-
-Value& Value::operator[](const std::string& key)
-{
-    return content_->element(Value(key));
-}
-
-Value& Value::operator[](int key)
-{
-    return content_->element(Value(key));
-}
-//=========================================================
-
-Value& Value::element(const std::string& key) {
-    return content_->element(Value(key));
-}
-
-const Value& Value::operator[](int key) const
-{
-    return content_->element(Value(key));
-}
 
 bool Value::contains(const Value& key) const
 {
@@ -355,24 +334,23 @@ bool Value::contains(const Value& key) const
 
 bool Value::contains(const char* key) const
 {
-    return content_->contains(Value(std::string(key)));
+    return content_->contains(key);
 }
 
 bool Value::contains(const std::string& key) const
 {
-    return content_->contains(Value(key));
+    return content_->contains(key);
 }
 
 bool Value::contains(int key) const
 {
-    return content_->contains(Value(key));
+    return content_->contains(key);
 }
 
 Value Value::operator-() const
 {
     return content_->negate();
 }
-
 
 Value Value::keys() const
 {
@@ -383,7 +361,67 @@ size_t Value::size() const
 {
     return content_->size();
 }
-//-----------------------------------------------------------------------------
+
+std::ostream& Value::dump(std::ostream& out, size_t depth, bool indent) const {
+    content_->dump(out, depth, indent);
+    return out;
+}
+
+std::string Value::typeName() const {
+    return content_->typeName();
+}
+
+Value Value::operator[](const char* key) const {
+    return element(Value(key));
+}
+
+Value Value::operator[](const std::string& key) const {
+    return element(Value(key));
+}
+
+Value Value::operator[](const Value& key) const {
+    return element(key);
+}
+
+Value Value::operator[](int key) const {
+    return element(Value(key));
+}
+
+Value& Value::operator[](const char* key) {
+    return element(Value(key));
+}
+
+Value& Value::operator[](const std::string& key) {
+    return element(Value(key));
+}
+
+Value& Value::operator[](const Value& key) {
+    return element(key);
+}
+
+Value& Value::operator[](int key) {
+    return element(Value(key));
+}
+
+Value& Value::element(const Value& key) {
+    update();
+    return content_->element(key);
+}
+
+Value Value::element(const Value& key) const {
+    return content_->element(key);
+}
+
+void Value::update() {
+    if (content_->count() > 1) {
+        Content* c = content_->clone();
+        c->attach();
+        content_->detach();
+        content_ = c;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

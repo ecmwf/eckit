@@ -53,6 +53,13 @@ private: // members
 
 };
 
+class CacheManagerNoLock {
+public:
+    CacheManagerNoLock(const std::string&) {}
+    void lock() {}
+    void unlock() {}
+};
+
 template <class Traits>
 class CacheManager : public CacheManagerBase {
 
@@ -62,7 +69,7 @@ public: // methods
 
     class CacheContentCreator {
     public:
-        virtual void create(const PathName&, value_type& value) = 0;
+        virtual void create(const PathName&, value_type& value, bool& saved) = 0;
     };
 
     typedef std::string key_t;
@@ -108,14 +115,14 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::str
     std::vector<std::string> v;
     parse(roots, v);
 
-    for(std::vector<std::string>::const_iterator i = v.begin(); i != v.end(); ++i) {
+    for (std::vector<std::string>::const_iterator i = v.begin(); i != v.end(); ++i) {
 
         std::string path = *i;
 
         // entries with e.g. {CWDFS}/cache will be expanded with PathExpander factory CWDFS
 
         StringList vl = StringTools::listVariables(path);
-        for(StringList::const_iterator var = vl.begin(); var != vl.end(); ++var) {
+        for (StringList::const_iterator var = vl.begin(); var != vl.end(); ++var) {
             path = PathExpander::expand(*var, path);
         }
 
@@ -204,8 +211,8 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
     if (get(key, path)) {
         eckit::Log::debug() << "Loading cache file "
-                           << path
-                           << std::endl;
+                            << path
+                            << std::endl;
 
         Traits::load(*this, value, path);
         return path;
@@ -219,17 +226,10 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                                << " does not exist"
                                << std::endl;
 
-
-            std::ostringstream oss;
-            oss << entry(key, *j) << ".lock";
-
             try {
 
-                eckit::PathName lockFile(oss.str());
-
-                eckit::FileLock locker(lockFile);
-
-                eckit::AutoLock<eckit::FileLock> lock(locker);
+                typename Traits::Locker locker(entry(key, *j));
+                eckit::AutoLock<typename Traits::Locker> lock(locker);
 
                 // Some
                 if (!get(key, path)) {
@@ -238,9 +238,18 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                                        << std::endl;
 
                     eckit::PathName tmp = stage(key, *j);
-                    creator.create(tmp, value);
-                    Traits::save(*this, value, tmp);
+                    bool saved = false; // The creator may decide to save
+
+                    creator.create(tmp, value, saved);
+                    if (!saved) {
+                        Traits::save(*this, value, tmp);
+                    }
                     ASSERT(commit(key, tmp, *j));
+
+                    // We reload from cache so we use the proper loader
+                    // e.g. mmap of shared-mem...
+                    ASSERT(get(key, path));
+                    Traits::load(*this, value, path);
                 }
                 else {
                     eckit::Log::debug() << "Loading cache file "
@@ -251,13 +260,6 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                 }
 
                 ASSERT(get(key, path));
-
-                if (lockFile.exists()) {
-                    try {
-                        lockFile.unlink();
-                    } catch (...) {
-                    }
-                }
 
                 return path;
 

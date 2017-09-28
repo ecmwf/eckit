@@ -22,6 +22,7 @@
 
 namespace eckit {
 
+static Value toValue(const std::string& s);
 
 struct YAMLItem : public Counted {
 
@@ -44,7 +45,9 @@ struct YAMLItem : public Counted {
         indent_(indent),
         value_(value) {}
 
-    virtual ~YAMLItem() {};
+    virtual ~YAMLItem() {
+        // std::cout << "~YAMLItem " << value_ << std::endl;
+    };
 
     friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item)
     { item.print(s); return s;}
@@ -53,6 +56,23 @@ struct YAMLItem : public Counted {
     virtual bool isStartDocument() const { return false; }
     virtual bool isEndDocument() const { return false; }
     virtual bool isEOF() const { return false; }
+
+};
+
+
+class YAMLItemLock {
+    const YAMLItem* item_;
+public:
+    YAMLItemLock(const YAMLItem* item): item_(0) { set(item); }
+    ~YAMLItemLock() { set(0); }
+
+    void set(const YAMLItem* item) {
+        if (item != item_) {
+            if (item_) item_->detach();
+            item_ = item;
+            if (item_) item_->attach();
+        }
+    }
 
 };
 
@@ -170,18 +190,37 @@ struct YAMLItemReference : public YAMLItem {
 struct YAMLItemKey : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
+        for (size_t i = 0; i < indent_; i++) { s << ' '; }
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    YAMLItemKey(const YAMLItem& item): YAMLItem(item.indent_, item.value_) {
-        item.detach();
+    YAMLItemKey(YAMLItem* item): YAMLItem(item->indent_, item->value_) {
+
+        YAMLItemLock lock(item); // Trigger deletion
+
         std::string v(value_);
         ASSERT(v.size());
-        value_ = v.substr(0, v.size() - 1);
+        value_ = toValue(v.substr(0, v.size() - 1));
+
     }
 
+
+    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v) const {
+
+        if (m.find(k) == m.end()) {
+            l.push_back(k);
+        }
+
+        m[k] = v;
+    }
+
+
     Value value(YAMLParser& parser) const {
-        std::map<Value, Value> m;
+
+        ValueMap _m;
+        ValueList _l;
+
+        YAMLItemLock lock(this);
 
 
         const YAMLItem* key = this;
@@ -192,26 +231,45 @@ struct YAMLItemKey : public YAMLItem {
 
             const YAMLItem& next = parser.peekItem();
 
+            // std::cout << "key " << *key << " next " << next << std::endl;
+
             if (next.indent_ == key->indent_) {
                 // Special case
-                m[key->value_] = Value(); // null
+                set(_m, _l, key->value_, Value()); // null
+
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
+                lock.set(key);
                 continue;
             }
 
             if (next.indent_ < key->indent_) {
                 // Special case
-                m[key->value_] = Value(); // null
+                set(_m, _l, key->value_, Value()); // null
+
                 more = false;
                 continue;
             }
 
             if (next.indent_ > key->indent_) {
-                m[key->value_] = parser.nextItem().parse(parser);
+                static Value import("<<");
+                Value k = key->value_;
+                Value v = parser.nextItem().parse(parser);
+
+                if (k == import) {
+                    Value keys = v.keys();
+                    for (size_t i = 0; i < keys.size(); ++i) {
+                        Value k = keys[i];
+                        set(_m, _l, k, v[k]);
+                    }
+                }
+                else {
+                    set(_m, _l, k, v);
+                }
             }
 
             const YAMLItem& peek = parser.peekItem();
+            // std::cout << "key " << *key << " peek " << peek << std::endl;
 
             if (peek.indent_ < key->indent_) {
                 more = false;
@@ -221,6 +279,7 @@ struct YAMLItemKey : public YAMLItem {
             if (peek.indent_ == key->indent_) {
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
+                lock.set(key);
                 continue;
             }
 
@@ -230,7 +289,7 @@ struct YAMLItemKey : public YAMLItem {
 
         }
 
-        return Value::makeMap(m);
+        return Value::makeOrderedMap(_m, _l);
 
     }
 
@@ -248,6 +307,8 @@ struct YAMLItemEntry : public YAMLItem {
 
     Value value(YAMLParser& parser) const {
         std::vector<Value> l;
+
+        YAMLItemLock lock(this);
 
         bool more = true;
         while (more) {
@@ -282,6 +343,7 @@ struct YAMLItemEntry : public YAMLItem {
 
             if (peek.indent_ == indent_) {
                 const YAMLItem* advance = &parser.nextItem();
+                // std::cout << "advance " << *advance << std::endl;
                 ASSERT(dynamic_cast<const YAMLItemEntry*>(advance));
                 continue;
             }
@@ -332,6 +394,7 @@ YAMLParser::YAMLParser(std::istream &in):
 
 YAMLParser::~YAMLParser() {
     for (std::deque<YAMLItem*>::iterator j = items_.begin(); j != items_.end(); ++j) {
+        // eckit::Log::warning() << "YAMLParser::~YAMLParser left over: " << *(*j) << std::endl;
         (*j)->detach();
     }
     if (last_) {
@@ -379,6 +442,8 @@ static Value toValue(const std::string& s)
     }
     */
 
+    // std::cout << "TO VALUE " << s << std::endl;
+
     if (octal.match(s)) {
         return Value(strtol(s.c_str(), 0, 0));
     }
@@ -409,6 +474,12 @@ static Value toValue(const std::string& s)
     if (s == "true") {
         return Value(true);
     }
+
+    if (s.length()) {
+        ASSERT(s[0] != '"');
+        ASSERT(s[0] != '\'');
+    }
+
 
     return Value(s);
 }
@@ -448,15 +519,15 @@ size_t YAMLParser::consumeChars(char which) {
         cnt++;
     }
 
-    if(c == ' ' || c == '\n'){
+    if (c == ' ' || c == '\n') {
         return cnt;
     }
 
-    while(cnt-- > 0) {
+    while (cnt-- > 0) {
         putback(which);
     }
     return 0;
- }
+}
 
 bool YAMLParser::endOfToken(char c) {
     return (c == '\n' || c == 0 || c == stop_.back() || c == comma_.back() || c == colon_.back());
@@ -469,7 +540,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     bool string = false;
     char c = peek();
 
-    if (c == '"' || c == '\"') {
+    if (c == '"' || c == '\'') {
         return ObjectParser::parseString(c);
     }
 
@@ -602,8 +673,12 @@ void YAMLParser::loadItem()
         item = new YAMLItemValue(indent, consumeJSON(']'));
         break;
 
-    case '\"':
-        item = new YAMLItemValue(indent, parseString());
+    case '"':
+        item = new YAMLItemValue(indent, parseString('"'));
+        break;
+
+    case '\'':
+        item = new YAMLItemValue(indent, parseString('\''));
         break;
 
     case '-':
@@ -612,7 +687,7 @@ void YAMLParser::loadItem()
 
         switch (cnt) {
         case 1:
-            item = new YAMLItemEntry(indent);
+            item = new YAMLItemEntry(indent + 1);
             break;
 
         case 3:
@@ -667,11 +742,11 @@ void YAMLParser::loadItem()
         std::string v(item->value_);
 
         if (v.size() && v[v.size() - 1] == ':') {
-            item = new YAMLItemKey(*item);
+            item = new YAMLItemKey(item);
         }
     }
 
-    // std::cout << "item -> " << (*item) << std::endl;
+    // std::cout << "YAMLItem -> " << (*item) << std::endl;
 
     item->attach();
     items_.push_back(item);
@@ -684,7 +759,11 @@ void YAMLParser::anchor(const Value& key, const Value& value) {
 
 Value YAMLParser::anchor(const Value& key) const {
     std::map<Value, Value>::const_iterator j = anchors_.find(key);
-    ASSERT(j != anchors_.end());
+    if (j == anchors_.end()) {
+        std::ostringstream oss;
+        oss << "YAMLParser: cannot find anchor [" << key << "]";
+        throw eckit::UserError(oss.str());
+    }
     return (*j).second;
 }
 
@@ -697,7 +776,7 @@ const YAMLItem& YAMLParser::nextItem() {
     }
 
     last_ = items_.front();
-    last_->attach();
+    // last_->attach();
 
     items_.pop_front();
 
@@ -711,7 +790,9 @@ const YAMLItem& YAMLParser::peekItem() {
 }
 
 Value YAMLParser::parseValue() {
-    return nextItem().parse(*this);
+    Value v = nextItem().parse(*this);
+    // ASSERT(items_.empty());
+    return v;
 }
 
 

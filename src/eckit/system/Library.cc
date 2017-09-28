@@ -37,6 +37,7 @@ namespace system {
 
 typedef std::map<std::string, Library*> LibraryMap;
 
+// Builds the map on demand, needed for correct static initialization because factories can be initialized first
 struct LibraryRegistry {
 
     static LibraryRegistry& instance() {

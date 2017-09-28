@@ -38,7 +38,7 @@ public:
 
         ScopedPtr<DataHandle> dh ( out.fileHandle() ); AutoClose closer(*dh);
         dh->openForWrite(buffer.size());
-        dh->write(buffer, buffer.size());
+        dh->write(buffer.data(), buffer.size());
     }
 
 };

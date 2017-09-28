@@ -159,8 +159,8 @@ long FileHandle::write(const void* buffer,long length)
 void FileHandle::flush()
 {
     if( file_ == 0 ) return;
-    
-    if (file_) 
+
+    if (file_)
     {
         if (!read_)
         {
@@ -174,7 +174,7 @@ void FileHandle::flush()
             if (ret < 0) {
                 Log::error() << "Cannot fsync(" << name_ << ") " <<fileno(file_) <<  Log::syserr << std::endl;
             }
-            
+
             // On Linux, you must also flush the directory
 			static bool fileHandleSyncsParentDir = eckit::Resource<bool>("fileHandleSyncsParentDir", true);
 			if( fileHandleSyncsParentDir )
@@ -188,17 +188,17 @@ void FileHandle::flush()
 void FileHandle::close()
 {
     if( file_ == 0 ) return;
-    
-    if (file_) 
+
+    if (file_)
     {
-        // Because AIX has large system buffers, 
+        // Because AIX has large system buffers,
         // the close may be successful without the
         // data being physicaly on disk. If there is
         // a power failure, we lose some data. So we
         // need to fsync
 
         flush();
-        
+
         if (::fclose(file_) != 0)
         {
             throw WriteError(std::string("fclose ") + name());
@@ -209,6 +209,7 @@ void FileHandle::close()
         Log::warning() << "Closing FileHandle " << name_ << ", file is not opened" << std::endl;
     }
     buffer_.reset(0);
+    file_ = 0;
 }
 
 void FileHandle::rewind()
@@ -233,29 +234,31 @@ bool FileHandle::isEmpty() const
 
 // Try to be clever ....
 
-Length FileHandle::saveInto(DataHandle& other,TransferWatcher& w)
+Length FileHandle::saveInto(DataHandle& other,TransferWatcher& w, bool dblBufferOK)
 {
     static bool fileHandleSaveIntoOptimisationUsingHardLinks = eckit::Resource<bool>("fileHandleSaveIntoOptimisationUsingHardLinks", false);
-    if(!fileHandleSaveIntoOptimisationUsingHardLinks)
-        return DataHandle::saveInto(other,w);
+    if(!fileHandleSaveIntoOptimisationUsingHardLinks) {
+        return DataHandle::saveInto(other, w, dblBufferOK);
+    }
 
     // Poor man's RTTI,
     // Does not support inheritance
 
-    if ( !sameClass(other) )
-        return DataHandle::saveInto(other,w);
-
+    if ( !sameClass(other) ){
+            return DataHandle::saveInto(other, w, dblBufferOK);
+    }
     // We should be safe to cast now....
 
     FileHandle* handle = dynamic_cast<FileHandle*>(&other);
 
-    if (::link(name_.c_str(),handle->name_.c_str()) == 0)
-        Log::debug() << "Saved ourselves a file to file copy!!!" << std::endl;
+    if (::link(name_.c_str(),handle->name_.c_str()) == 0) {
+            Log::debug() << "Saved ourselves a file to file copy!!!" << std::endl;
+    }
     else {
         Log::debug() << "Failed to link " <<  name_
         << " to " << handle->name_ << Log::syserr << std::endl;
         Log::debug() << "Using defaut method" << std::endl;
-        return DataHandle::saveInto(other,w);
+        return DataHandle::saveInto(other, w, dblBufferOK);
     }
 
     return estimate();

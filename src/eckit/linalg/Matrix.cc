@@ -18,7 +18,7 @@
 namespace eckit {
 namespace linalg {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Matrix::Matrix() :
     array_(0),
@@ -27,7 +27,7 @@ Matrix::Matrix() :
     own_(false) {
 }
 
-//-----------------------------------------------------------------------------
+
 
 Matrix::Matrix(Size rows, Size cols) :
     array_(new Scalar[rows*cols]),
@@ -38,7 +38,7 @@ Matrix::Matrix(Size rows, Size cols) :
     ASSERT(array_);
 }
 
-//-----------------------------------------------------------------------------
+
 
 Matrix::Matrix(Scalar* array, Size rows, Size cols) :
     array_(array),
@@ -49,7 +49,7 @@ Matrix::Matrix(Scalar* array, Size rows, Size cols) :
     ASSERT(array_);
 }
 
-//-----------------------------------------------------------------------------
+
 
 Matrix::Matrix(Stream& stream) :
     array_(0),
@@ -63,11 +63,10 @@ Matrix::Matrix(Stream& stream) :
 
     ASSERT(size()>0);
     ASSERT(array_);
-    Buffer b(array_, (rows*cols)*sizeof(Scalar), /* dummy */ true);
-    stream >> b;
+    stream.readBlob(array_, (rows*cols)*sizeof(Scalar));
 }
 
-//-----------------------------------------------------------------------------
+
 
 Matrix::Matrix(const Matrix& other) :
     array_(new Scalar[other.size()]),
@@ -79,7 +78,7 @@ Matrix::Matrix(const Matrix& other) :
     ::memcpy(array_, other.array_, size() * sizeof(Scalar));
 }
 
-//-----------------------------------------------------------------------------
+
 
 Matrix::~Matrix() {
     if (own_) {
@@ -87,7 +86,7 @@ Matrix::~Matrix() {
     }
 }
 
-//-----------------------------------------------------------------------------
+
 
 Matrix& Matrix::operator=(const Matrix& other) {
     // do not optimize for if size()==other.size(), as using copy constructor
@@ -97,7 +96,7 @@ Matrix& Matrix::operator=(const Matrix& other) {
     return *this;
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Matrix::swap(Matrix& other) {
     std::swap(array_, other.array_);
@@ -106,7 +105,7 @@ void Matrix::swap(Matrix& other) {
     std::swap(own_,   other.own_);
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Matrix::resize(Size rows, Size cols) {
     // avoid reallocation if memory is the same
@@ -118,7 +117,7 @@ void Matrix::resize(Size rows, Size cols) {
     cols_ = cols;
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Matrix::setZero() {
     ASSERT(size()>0);
@@ -126,7 +125,7 @@ void Matrix::setZero() {
     ::memset(array_, 0, size()*sizeof(Scalar));
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Matrix::fill(Scalar value) {
     for (Size i = 0; i < size(); ++i) {
@@ -134,24 +133,22 @@ void Matrix::fill(Scalar value) {
     }
 }
 
-//-----------------------------------------------------------------------------
+
 
 void Matrix::encode(Stream& stream) const {
-  Buffer b(const_cast<Scalar*>(array_), rows_*cols_*sizeof(Scalar), /* dummy */ true);
-
   stream << rows_;
   stream << cols_;
-  stream << b;
+  stream.writeBlob(const_cast<Scalar*>(array_), rows_*cols_*sizeof(Scalar));
 }
 
-//-----------------------------------------------------------------------------
+
 
 Stream& operator<<(Stream& stream, const Matrix& matrix) {
     matrix.encode(stream);
     return stream;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace linalg
 }  // namespace eckit

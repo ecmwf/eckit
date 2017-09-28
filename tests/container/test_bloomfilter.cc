@@ -8,34 +8,39 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE eckit_test_bloomfilter
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/container/BloomFilter.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE( test_eckit_container_bloomfilter )
-
-BOOST_AUTO_TEST_CASE( test_eckit_container_bloomfilter_insert )
-{
+CASE( "test_eckit_container_bloomfilter_insert" ) {
 
     BloomFilter<std::string> f(1024);
 
-    BOOST_CHECK(f.empty());
-    BOOST_CHECK(!f.contains("hello there"));
-    BOOST_CHECK(!f.contains("hello there again"));
+    EXPECT(f.empty());
+    EXPECT(!f.contains("hello there"));
+    EXPECT(!f.contains("hello there again"));
 
     f.insert("hello there");
 
-    BOOST_CHECK(f.contains("hello there"));
-    BOOST_CHECK(!f.contains("hello there again"));
+    EXPECT(f.contains("hello there"));
+    EXPECT(!f.contains("hello there again"));
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
+

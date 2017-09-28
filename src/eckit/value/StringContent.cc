@@ -12,31 +12,31 @@
 #include "eckit/value/StringContent.h"
 #include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-ClassSpec StringContent::classSpec_ = {&Content::classSpec(),"StringContent",};
+ClassSpec StringContent::classSpec_ = {&Content::classSpec(), "StringContent",};
 Reanimator<StringContent> StringContent::reanimator_;
 
 
 StringContent::StringContent(const std::string& s):
-	value_(s)
+    value_(s)
 {
 }
 
 StringContent::StringContent(const char* s):
-	value_(s)
+    value_(s)
 {
 }
 
 StringContent::StringContent(Stream& s):
-	Content(s)
+    Content(s)
 {
-	s >> value_;
+    s >> value_;
 }
 
 Content* StringContent::clone() const {
@@ -46,8 +46,8 @@ Content* StringContent::clone() const {
 
 void StringContent::encode(Stream& s) const
 {
-	Content::encode(s);
-	s << value_;
+    Content::encode(s);
+    s << value_;
 }
 
 StringContent::~StringContent()
@@ -56,7 +56,7 @@ StringContent::~StringContent()
 
 void StringContent::print(std::ostream& s) const
 {
-	s << value_;
+    s << value_;
 }
 
 void StringContent::json(JSON& s) const
@@ -66,52 +66,50 @@ void StringContent::json(JSON& s) const
 
 int StringContent::compare(const Content& other) const
 {
-	return -other.compareString(*this);
+    return -other.compareString(*this);
 }
 
 int StringContent::compareString(const StringContent& other) const
 {
-	return ::strcmp(value_.c_str(),other.value_.c_str());
+    return ::strcmp(value_.c_str(), other.value_.c_str());
 }
 
 void StringContent::value(std::string& s) const
 {
-	s = value_;
+    s = value_;
 }
 
 void StringContent::value(bool& b) const
 {
-    if( value_ == "true" || value_ == "on" || value_ == "yes" || value_ == "1" )
-    {
+    if ( value_ == "true" || value_ == "on" || value_ == "yes" || value_ == "1" ) {
         b = true;
     }
-    else
-    {
-            if( value_ == "false" || value_ == "off" || value_ == "no" || value_ == "0" )
-                b = false;
-            else
-                Content::value(b);
+    else if ( value_ == "false" || value_ == "off" || value_ == "no" || value_ == "0" ) {
+        b = false;
+    }
+    else {
+        Content::value(b);
     }
 }
 
 void StringContent::value(long long& l) const
 {
-	l = Translator<std::string,long long>()(value_);
+    l = Translator<std::string, long long>()(value_);
 }
 
 void StringContent::value(double& d) const
 {
-	d = Translator<std::string,double>()(value_);
+    d = Translator<std::string, double>()(value_);
 }
 
 Content* StringContent::add(const Content& other) const
 {
-	return other.addString(*this);
+    return other.addString(*this);
 }
 
 Content* StringContent::addString(const StringContent& other) const
 {
-	return new StringContent(other.value_ + value_);
+    return new StringContent(other.value_ + value_);
 }
 
 Content* StringContent::sub(const Content& other) const
@@ -134,7 +132,18 @@ Content* StringContent::mod(const Content& other) const
     return other.modString(*this);
 }
 
-//-----------------------------------------------------------------------------
+void StringContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+    // out << "string(" << value_ << ")";
+    out << '"' << value_ << '"';
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

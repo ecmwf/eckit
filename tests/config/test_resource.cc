@@ -10,10 +10,6 @@
 
 #include <cmath>
 
-#define BOOST_TEST_MODULE test_eckit_resource
-
-#include "ecbuild/boost_test_framework.h"
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
@@ -21,93 +17,102 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/testing/Test.h"
 
-#include "eckit/testing/Setup.h"
-
+using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
+using namespace eckit::types;
+
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
-BOOST_GLOBAL_FIXTURE( Setup );
-
-BOOST_AUTO_TEST_SUITE( test_eckit_resource )
-
-BOOST_AUTO_TEST_CASE( test_default )
+CASE( "test_default" )
 {
-    std::string s = Resource<std::string>("s","some");
+    std::string s = Resource<std::string>("s", "some");
 
-    BOOST_CHECK( s == "some" );
+    EXPECT( s == "some" );
 
     double d = Resource<double>("d", 777.7);
 
-	BOOST_CHECK_CLOSE( d , 777.7, 0.0001 ); // accept 0.0001% tolerance
+    EXPECT( is_approximately_equal( d , 777.7, 0.0001 ) );  // accept 0.0001% tolerance
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_vector_long )
+CASE( "test_vector_long" )
 {
-    std::vector<long> def(3,77);
-    std::vector<long> v = Resource< std::vector<long> >("listlong;-listlong",def);
+    std::vector<long> def(3, 77);
+    std::vector<long> v = Resource< std::vector<long> >("listlong;-listlong", def);
 
-    BOOST_CHECK_EQUAL( v[0] , 88 );
-    BOOST_CHECK_EQUAL( v[1] , 99 );
-    BOOST_CHECK_EQUAL( v[2] , 11 );
-    BOOST_CHECK_EQUAL( v[3] , 22 );
+    EXPECT( v[0] == 88 );
+    EXPECT( v[1] == 99 );
+    EXPECT( v[2] == 11 );
+    EXPECT( v[3] == 22 );
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_command_line )
+CASE( "test_command_line" )
 {
-	int myint = Resource<int>("integer;-integer",0);
-	BOOST_CHECK_EQUAL( myint , 100 );
+    int myint = Resource<int>("integer;-integer", 0);
+    EXPECT( myint == 100 );
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_environment_var )
+CASE( "test_environment_var" )
 {
-    char v [] = "TEST_ENV_INT=333";
+    char v[] = "TEST_ENV_INT=333";
     putenv(v);
 
-	int intenv = Resource<int>("intEnv;$TEST_ENV_INT",777);
-	BOOST_CHECK_EQUAL( intenv , 333 );
+    int intenv = Resource<int>("intEnv;$TEST_ENV_INT", 777);
+    EXPECT( intenv == 333 );
 
-    char foo [] = "FOO=1Mb";
+    char foo[] = "FOO=1Mb";
     putenv(foo);
 
-	long l1 = Resource<long>("$FOO",0);
-	BOOST_CHECK_EQUAL( l1 , 1024*1024 );
+    long l1 = Resource<long>("$FOO", 0);
+    EXPECT( l1 == 1024*1024 );
 
-	long l2 = Resource<long>("$FOO;-foo",0);
-	BOOST_CHECK_EQUAL( l2 , 1024*1024);
+    long l2 = Resource<long>("$FOO;-foo", 0);
+    EXPECT( l2 == 1024*1024);
 
-	long l3 = Resource<long>("-foo;$FOO",0);
-	BOOST_CHECK_EQUAL( l3, 1024*1024);
+    long l3 = Resource<long>("-foo;$FOO", 0);
+    EXPECT( l3 == 1024*1024);
 
-	long l4 = Resource<long>("$FOO;foo;-foo",0);
-	BOOST_CHECK_EQUAL( l4 , 1024*1024);
+    long l4 = Resource<long>("$FOO;foo;-foo", 0);
+    EXPECT( l4 == 1024*1024);
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( test_libresource )
+CASE( "test_libresource" )
 {
-    long i = LibResource<long,LibEcKit>("foo-bar;$FOOBAR", 1024*1024);
+    long i = LibResource<long, LibEcKit>("foo-bar;$FOOBAR", 1024*1024);
 
-    BOOST_CHECK_EQUAL(i , 1024*1024);
+    EXPECT(i == 1024*1024);
 
 
-    char v [] = "TEST_FOOBAZ=fooBAZ";
+    char v[] = "TEST_FOOBAZ=fooBAZ";
     putenv(v);
-    std::string foobaz = LibResource<std::string,LibEcKit>("foo-baz;$TEST_FOOBAZ", "foobazzzzzzz");
+    std::string foobaz = LibResource<std::string, LibEcKit>("foo-baz;$TEST_FOOBAZ", "foobazzzzzzz");
 
-    BOOST_CHECK_EQUAL(foobaz, "fooBAZ");
+    EXPECT(foobaz == "fooBAZ");
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+}  // namespace test
+}  // namespace eckit
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
+}
+
+
 

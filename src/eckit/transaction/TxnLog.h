@@ -62,6 +62,7 @@ public:
 
 	void begin(T&);
 	void end(T&,bool);
+	void update(const T&);
 	void recover(TxnRecoverer<T>&,bool,long);
 	void find(TxnFinder<T>&);
 
@@ -74,7 +75,7 @@ private:
 
 // -- Methods
 
-	PathName name(T& event);
+	PathName name(const T& event);
 
 // -- Members
 

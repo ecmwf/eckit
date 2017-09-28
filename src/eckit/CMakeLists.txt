@@ -84,7 +84,10 @@ io/DataBlob.h
 io/DataBlob.cc
 io/Buffer.cc
 io/Buffer.h
-io/Buffer.cc
+io/SharedBuffer.cc
+io/SharedBuffer.h
+io/CircularBuffer.cc
+io/CircularBuffer.h
 io/BufferCache.h
 io/BufferCache.cc
 io/FileLocker.h
@@ -115,6 +118,12 @@ io/SockBuf.h
 io/SockBuf.cc
 io/AIOHandle.h
 io/AIOHandle.cc
+io/BitIO.h
+io/BitIO.cc
+io/Compress.h
+io/Compress.cc
+io/Base64.h
+io/Base64.cc
 io/SharedHandle.h
 io/SharedHandle.cc
 io/BufferedHandle.h
@@ -125,6 +134,10 @@ io/EmptyHandle.h
 io/EmptyHandle.cc
 io/FTPHandle.h
 io/FTPHandle.cc
+io/URLHandle.h
+io/URLHandle.cc
+io/EasyCURL.h
+io/EasyCURL.cc
 io/FileDescHandle.h
 io/FileDescHandle.cc
 io/FileHandle.h
@@ -181,10 +194,6 @@ filesystem/BasePathNameT.cc
 filesystem/BasePathName.h
 filesystem/LocalPathName.h
 filesystem/LocalPathName.cc
-filesystem/FileManager.h
-filesystem/FileManager.cc
-filesystem/FileName.h
-filesystem/FileName.cc
 filesystem/FileSpace.h
 filesystem/FileSpace.cc
 filesystem/FileSpaceStrategies.h
@@ -200,7 +209,11 @@ filesystem/marsfs/MarsFSFile.cc
 filesystem/marsfs/MarsFSPath.h
 filesystem/marsfs/MarsFSPath.cc
 filesystem/marsfs/MarsFSClient.h
-filesystem/marsfs/MarsFSClient.cc )
+filesystem/marsfs/MarsFSClient.cc
+filesystem/URIManager.h
+filesystem/URIManager.cc
+filesystem/URI.h
+filesystem/URI.cc )
 
 list( APPEND eckit_thread_srcs
     thread/AutoLock.h
@@ -329,8 +342,11 @@ log/Statistics.h
 log/Statistics.cc
 log/LogTarget.h
 log/LogTarget.cc
+log/ProgressTimer.h
+log/ProgressTimer.cc
 log/Timer.h
 log/Timer.cc
+log/TraceTimer.h
 log/ResourceUsage.h
 log/ResourceUsage.cc
 log/TimeStamp.h
@@ -420,6 +436,8 @@ value/ListContent.h
 value/ListContent.cc
 value/MapContent.h
 value/MapContent.cc
+value/OrderedMapContent.h
+value/OrderedMapContent.cc
 value/NilContent.h
 value/NilContent.cc
 value/NumberContent.h
@@ -544,6 +562,8 @@ memory/Factory.h
 memory/Owned.h
 memory/MemoryPool.h
 memory/MemoryPool.cc
+memory/MemoryBuffer.h
+memory/MemoryBuffer.cc
 memory/SharedPtr.h
 memory/Padded.h
 memory/MapAllocator.h
@@ -598,8 +618,10 @@ list( APPEND eckit_transaction_srcs
 )
 
 list( APPEND eckit_testing_srcs
-testing/Setup.h
+    testing/Setup.h
+    testing/Test.h
 )
+
 
 list( APPEND eckit_dirs
 	bases
@@ -680,12 +702,14 @@ ecbuild_add_library(TARGET eckit
 					PERSISTENT
 						${eckit_persistent}
                     PRIVATE_INCLUDES
+                        "${CURL_INCLUDE_DIRS}"
                         "${XXHASH_INCLUDE_DIRS}"
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
 					LIBS
                         ${OPENSSL_LIBRARIES}
+                        ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${AIO_LIBRARIES}
                         ${CMATH_LIBRARIES}

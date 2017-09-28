@@ -15,7 +15,21 @@
 
 #include "eckit/mpi/Comm.h"
 
-int main( int argc, char** argv )
+#include "eckit/testing/Test.h"
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
+
+//-----------------------------------------------------------------------------
+
+int argc;
+char ** argv;
+
+CASE( "Test MPI addComm" )
 {
     MPI_Init(&argc, &argv);
 
@@ -26,6 +40,16 @@ int main( int argc, char** argv )
     eckit::mpi::setCommDefault("fort.1");
 
     MPI_Finalize();
+}
 
-    return 0;
+//-----------------------------------------------------------------------------
+
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    eckit::test::argc = argc;
+    eckit::test::argv = argv;
+    return run_tests ( argc, argv );
 }

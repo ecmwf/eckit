@@ -245,9 +245,9 @@ std::string StatsHandle::title() const
     return handle().title();
 }
 
-Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher)
+Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool dblBufferOK)
 {
-    return handle().saveInto(other, watcher);
+    return handle().saveInto(other, watcher, dblBufferOK);
 }
 
 //-----------------------------------------------------------------------------

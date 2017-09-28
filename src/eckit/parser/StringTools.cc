@@ -195,26 +195,6 @@ std::vector<std::string> StringTools::split(const std::string &delim, const std:
 	return ss;
 }
 
-std::string StringTools::join(const std::string &delimiter,
-                             std::vector<std::string>::const_iterator begin,
-                             std::vector<std::string>::const_iterator end) {
-	std::string r;
-    std::vector<std::string>::const_iterator j = begin;
-    size_t i = 0;
-	for (; j != end; ++j, ++i)
-	{
-		if (i > 0)
-			r += delimiter;
-		r += *j;
-	}
-    return r;
-}
-
-std::string StringTools::join(const std::string &delimiter, const std::vector<std::string>& words)
-{
-    return join(delimiter, words.begin(), words.end());
-}
-
 bool StringTools::startsWith(const std::string& str, const std::string& substr)
 {
     if(substr.empty() || str.size() < substr.size() )

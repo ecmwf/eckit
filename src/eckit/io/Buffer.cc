@@ -18,32 +18,22 @@ namespace eckit {
 
 Buffer::Buffer(size_t size):
     buffer_(0),
-    size_(size),
-    owned_(true)
+    size_(size)
 {
 	create();
 }
 
 Buffer::Buffer(const char* p, size_t size):
     buffer_(0),
-    size_(size),
-    owned_(true)
+    size_(size)
 {
     create();
     copy(p,size);
 }
 
-Buffer::Buffer(void* p, size_t size, bool):
-    buffer_(p),
-    size_(size),
-    owned_(false)
-{
-}
-
 Buffer::Buffer(const std::string& s):
     buffer_(0),
-    size_(s.length()+1),
-    owned_(true)
+    size_(s.length()+1)
 {
     create();
     copy(s);
@@ -52,9 +42,7 @@ Buffer::Buffer(const std::string& s):
 
 Buffer::~Buffer()
 {
-    if (owned_) {
-        destroy();
-    }
+    destroy();
 }
 
 void Buffer::create()
@@ -69,7 +57,7 @@ void Buffer::destroy()
 
 void Buffer::copy(const std::string &s)
 {
-    ::strcpy((char*)buffer_,s.c_str());
+    ::strcpy(static_cast<char*>(buffer_), s.c_str());
 }
 
 void Buffer::copy(const char *p, size_t size)
@@ -77,19 +65,17 @@ void Buffer::copy(const char *p, size_t size)
     ::memcpy(buffer_,p,size);
 }
 
-void Buffer::swap(Buffer& rhs) {
-    std::swap(buffer_, rhs.buffer_);
-    std::swap(size_, rhs.size_);
-    std::swap(owned_, rhs.owned_);
-}
+// void Buffer::swap(Buffer& rhs) {
+//     std::swap(buffer_, rhs.buffer_);
+//     std::swap(size_, rhs.size_);
+// }
 
-void eckit::Buffer::resize(size_t size)
-{
-    ASSERT(owned_);
-    destroy();
-    size_ = size;
-    create();
-}
+// void eckit::Buffer::resize(size_t size)
+// {
+//     destroy();
+//     size_ = size;
+//     create();
+// }
 
 //----------------------------------------------------------------------------------------------------------------------
 

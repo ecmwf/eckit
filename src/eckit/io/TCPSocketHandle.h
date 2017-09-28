@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -23,30 +23,35 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class TCPSocketHandle : public DataHandle {
+// Does not takes ownership of the socket
+// See TCPSocketHandle below
+
+
+class InstantTCPSocketHandle : public DataHandle {
 public:
 
 // -- Contructors
-	
-	TCPSocketHandle(TCPSocket&);
+
+	InstantTCPSocketHandle(TCPSocket&);
 
 // -- Destructor
 
-	~TCPSocketHandle();
+	~InstantTCPSocketHandle();
 
 // -- Overridden methods
 
 	// From DataHandle
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+	virtual Length openForRead();
+	virtual void openForWrite(const Length&);
+	virtual void openForAppend(const Length&);
 
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
+	virtual long read(void*, long);
+	virtual long write(const void*, long);
 	virtual void close();
 	virtual void rewind();
 	virtual void print(std::ostream&) const;
+	virtual Offset seek(const Offset&);
 
 	// From Streamable
 
@@ -57,18 +62,37 @@ protected:
 
 // -- Members
 
-	TCPSocket   connection_;
+	TCPSocket&   connection_;
 
 private:
 
 // No copy allowed
 
-	TCPSocketHandle(const TCPSocketHandle&);
-	TCPSocketHandle& operator=(const TCPSocketHandle&);
+	InstantTCPSocketHandle(const InstantTCPSocketHandle&);
+	InstantTCPSocketHandle& operator=(const InstantTCPSocketHandle&);
 
+
+	bool read_;
+	Offset position_;
 
 // -- Class members
 
+
+};
+
+// Takes ownership of the socket
+
+class TCPSocketHandle : public InstantTCPSocketHandle {
+public:
+
+	TCPSocketHandle(TCPSocket&);
+
+private:
+
+	TCPSocket socket_;
+
+	virtual void print(std::ostream&) const;
+	virtual void close();
 
 };
 

@@ -12,13 +12,13 @@
 #include "eckit/utils/Translator.h"
 #include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec BoolContent::classSpec_ = {&Content::classSpec(),"BoolContent",};
+ClassSpec BoolContent::classSpec_ = {&Content::classSpec(), "BoolContent",};
 Reanimator<BoolContent> BoolContent::reanimator_;
 
 BoolContent::BoolContent(bool l):
@@ -27,8 +27,8 @@ BoolContent::BoolContent(bool l):
 }
 
 BoolContent::BoolContent(Stream& s):
-	Content(s),
-	value_(false)
+    Content(s),
+    value_(false)
 {
     s >> value_;
 }
@@ -39,7 +39,7 @@ Content* BoolContent::clone() const {
 
 void BoolContent::encode(Stream& s) const
 {
-	Content::encode(s);
+    Content::encode(s);
     s << value_;
 }
 
@@ -64,12 +64,13 @@ int BoolContent::compare(const Content& other) const
 
 int BoolContent::compareBool(const BoolContent& other) const
 {
-    if(value_ - other.value_)
-        return 0;
-    if(!value_)
-		return -1;
+    bool equal = !(value_ - other.value_);
 
-	return 1;
+    if (equal) return 0; // both equal in value, hence 0
+
+    if (!value_) return -1; // this is false, hence smaller than other
+
+    return 1;  // this is true, hence larger than other
 }
 
 void BoolContent::value(bool& l) const
@@ -82,43 +83,53 @@ void BoolContent::value(std::string& s) const
     s = value_ ? "true" : "false";
 }
 
-void BoolContent::value(long long& l) const
+void BoolContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+
+    out << (value_ ? "true" : "false");
+}
+
+void BoolContent::value(long long & l) const
 {
     l = value_;
 }
 
-void BoolContent::value(double& d) const
+void BoolContent::value(double & d) const
 {
     d = value_;
 }
 
-Content* BoolContent::add(const Content& other) const
+Content* BoolContent::add(const Content & other) const
 {
     return other.addBool(*this);
 }
 
 
-Content* BoolContent::sub(const Content& other) const
+Content* BoolContent::sub(const Content & other) const
 {
     return other.subBool(*this);
 }
 
-Content* BoolContent::mul(const Content& other) const
+Content* BoolContent::mul(const Content & other) const
 {
     return other.mulBool(*this);
 }
 
-Content* BoolContent::div(const Content& other) const
+Content* BoolContent::div(const Content & other) const
 {
     return other.divBool(*this);
 }
 
-Content* BoolContent::mod(const Content& other) const
+Content* BoolContent::mod(const Content & other) const
 {
     return other.modBool(*this);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

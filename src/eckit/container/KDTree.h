@@ -11,6 +11,7 @@
 #ifndef KDTree_H
 #define KDTree_H
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/container/sptree/SPTree.h"
 #include "eckit/container/kdtree/KDNode.h"
 
@@ -41,8 +42,9 @@ public:
     template<typename ITER>
     void build(ITER begin, ITER end)
     {
-        this->root_ = this->alloc_.convert(Node::build(this->alloc_, begin, end));
-        this->alloc_.root(this->root_);
+        Alloc& a = this->alloc_;
+        this->root_ = a.convert(Node::build(a, begin, end));
+        a.root(this->root_);
     }
 
     /// Container must be a random access
@@ -53,6 +55,19 @@ public:
         typename Container::iterator b = c.begin();
         typename Container::iterator e = c.end();
         build(b, e);
+    }
+
+    //
+    void insert(const Value& value)
+    {
+        Alloc& a = this->alloc_;
+        Node* root = Node::insert(a, value, a.convert(this->root_, (Node*)0), 0);
+
+        if(a.convert(root) != this->root_)
+        {
+            a.root(a.convert(root));
+            this->root_ = a.convert(root);
+        }
     }
 
 };

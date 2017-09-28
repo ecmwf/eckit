@@ -22,6 +22,11 @@
 
 namespace eckit {
 
+Stream::BadTag::BadTag(const std::string& what):
+    Exception(what) {
+    dumpStackTrace(std::cerr);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 #if 0
@@ -565,6 +570,22 @@ size_t Stream::blobSize() {
 
 Stream &Stream::operator>>(Buffer &x) {
     readBlob(x, x.size());
+    return *this;
+}
+
+Stream&Stream::operator>>(std::map<std::string, std::string>& m) {
+    unsigned long size;
+    *this >> size;
+
+    m.clear();
+
+    for(unsigned long i = 0; i < size; i++) {
+        std::string k;
+        *this >> k;
+        std::string v;
+        *this >> v;
+        m[k] = v;
+    }
     return *this;
 }
 

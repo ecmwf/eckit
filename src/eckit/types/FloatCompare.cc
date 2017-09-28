@@ -1,6 +1,16 @@
 //#include <cmath>
 
+// Some of the math.h/cmath functions are not clean when switching to C++11
+#if __cplusplus <= 199711L
 #include <math.h>
+#else
+#include <cmath>
+#define fpclassify(x) std::fpclassify((x))
+#define isinf(x) std::isinf((x))
+#define isnan(x) std::isnan((x))
+#define signbit(x) std::signbit((x))
+#endif
+
 #include <limits>
 #include <sys/types.h>
 

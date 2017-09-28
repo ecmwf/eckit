@@ -70,7 +70,7 @@ char StreamParser::peek(bool spaces)
         if (comments_ && comment_.find(c) != comment_.end())
         {
             while (_peek() != '\n' && !_eof()) {
-                c = _get();
+                _get();
             }
             if (_eof()) {
                 return 0;
@@ -85,7 +85,7 @@ char StreamParser::peek(bool spaces)
         }
         else {
 //            std::cout << "skip(" << c << ")" << std::endl;
-            c = _get();
+            _get();
         }
     }
 }
@@ -102,7 +102,7 @@ char StreamParser::next(bool spaces)
         if (comments_ && comment_.find(c) != comment_.end())
         {
             while (_peek() != '\n' && !_eof()) {
-                c = _get();
+                _get();
             }
             if (_eof()) {
                 throw StreamParser::Error(std::string("StreamParser::next reached eof"));

@@ -192,13 +192,22 @@ Value ObjectParser::parseString(char quote)
 
 }
 
-void ObjectParser::parseKeyValue(std::map<Value, Value>& m)
+static void set_(ValueMap& m, ValueList& l, const Value& k, const Value& v) {
+
+    if (m.find(k) == m.end()) {
+        l.push_back(k);
+    }
+
+    m[k] = v;
+}
+
+void ObjectParser::parseKeyValue(ValueMap& m, ValueList& l)
 {
     Value k = parseString();
     consume(':');
     Value v = parseValue();
 
-    m[k] = v;
+    set_(m, l, k, v);
 }
 
 Value ObjectParser::parseObject()
@@ -208,20 +217,21 @@ Value ObjectParser::parseObject()
     if (c == '}')
     {
         consume(c);
-        return Value::makeMap();
+        return Value::makeOrderedMap();
     }
 
-    std::map<Value, Value> m;
+    ValueMap m;
+    ValueList l;
 
     for (;;) {
 
-        parseKeyValue(m);
+        parseKeyValue(m, l);
 
         char c = peek();
         if (c == '}')
         {
             consume(c);
-            return Value::makeMap(m);
+            return Value::makeOrderedMap(m, l);
         }
 
         consume(',');
@@ -240,7 +250,7 @@ Value ObjectParser::parseArray()
         return Value::makeList();
     }
 
-    std::vector<Value> l;
+    ValueList l;
     for (;;) {
 
         l.push_back(parseValue());

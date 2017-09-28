@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -111,6 +111,51 @@ long Translator<std::string,long>::operator()(const std::string& s)
     char *more;
     long result =  strtol(s.c_str(),&more,10);
     return result * multiplier(more);
+}
+
+
+short Translator<std::string,short>::operator()(const std::string& s)
+{
+    char *more;
+    long result =  strtol(s.c_str(),&more,10);
+    result = result * multiplier(more);
+
+    ASSERT( short(result) == result);
+    return result;
+}
+
+
+unsigned char Translator<std::string,unsigned char>::operator()(const std::string& s)
+{
+    char *more;
+    long result =  strtol(s.c_str(),&more,10);
+    result = result * multiplier(more);
+
+    ASSERT( static_cast<unsigned char>(result) == result);
+    return result;
+}
+
+
+std::string Translator<unsigned char,std::string>::operator()(unsigned char value)
+{
+    std::ostringstream s;
+    s << value;
+    return s.str();
+}
+
+std::string Translator<short,std::string>::operator()(short value)
+{
+    std::ostringstream s;
+    s << value;
+    return s.str();
+}
+
+
+std::string Translator<float,std::string>::operator()(float value)
+{
+    std::ostringstream s;
+    s << value;
+    return s.str();
 }
 
 std::string Translator<double,std::string>::operator()(double value)

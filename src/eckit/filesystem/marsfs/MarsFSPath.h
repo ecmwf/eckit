@@ -31,7 +31,7 @@ public:
 
 // -- Contructors
 
-	MarsFSPath(const std::string&);
+	MarsFSPath(const std::string&, bool tildeIsUserHome = false);
 	MarsFSPath(const std::string&, const std::string&);
 	/* MarsFSPath(const PathName&); */
 	MarsFSPath(const MarsFSPath&);

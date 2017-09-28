@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -41,7 +41,7 @@ public:
 	virtual ~Streamable()   {}
 
 // -- Methods
-	
+
     virtual std::string className() const;
 	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
@@ -51,14 +51,14 @@ public:
 
 // -- Operators
 
-	void *operator new(size_t s)          { return MemoryPool::fastAllocate(s);}
-	void *operator new(size_t s,void *p)  { return p;                          }
-	void operator delete(void* p)         { MemoryPool::fastDeallocate(p);     } 
+	// void *operator new(size_t s)          { return MemoryPool::fastAllocate(s);}
+	// void *operator new(size_t s,void *p)  { return p;                          }
+	// void operator delete(void* p)         { MemoryPool::fastDeallocate(p);     }
 
 protected:
 
 // -- Methods
-	
+
 	virtual void encode(Stream&) const;
 
 	bool sameClass(const Streamable&) const;
@@ -66,7 +66,7 @@ protected:
 private:
 
 // -- Class members
-	
+
 	static  ClassSpec classSpec_;
 	static  Reanimator<Streamable> reanimator_;
 

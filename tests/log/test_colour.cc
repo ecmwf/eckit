@@ -14,25 +14,18 @@
 #include "eckit/log/Colour.h"
 #include "eckit/log/Log.h"
 
+#include "eckit/testing/Test.h"
+
 using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 //-----------------------------------------------------------------------------
 
-namespace eckit_test {
-
-//-----------------------------------------------------------------------------
-
-class TestColour : public Tool {
-public:
-
-    TestColour(int argc, char **argv): Tool(argc, argv) {}
-
-    virtual void run();
-};
-
-void TestColour::run()
-{
+CASE( "test_colour" ) {
 
     Log::info() << "Hello, worlds" << std::endl;
 
@@ -48,12 +41,11 @@ void TestColour::run()
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
+} // namespace test
+} // namespace eckit
 
-//-----------------------------------------------------------------------------
-
-int main(int argc, char **argv)
+int main(int argc,char **argv)
 {
-    eckit_test::TestColour app(argc, argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }
+

@@ -83,7 +83,11 @@ void TCPHandle::close()
 
 void TCPHandle::rewind()
 {
-	NOTIMP;
+    NOTIMP;
+}
+
+DataHandle*TCPHandle::clone() const {
+    return new TCPHandle(host_, port_);
 }
 
 std::string TCPHandle::title() const

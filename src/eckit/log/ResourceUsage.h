@@ -52,6 +52,16 @@ private: // members
 
     size_t rss_;
     size_t malloc_;
+    size_t shared_;
+
+    size_t transientUsed_;
+    size_t permanentUsed_;
+    size_t transientFree_;
+    size_t permanentFree_;
+
+    size_t largeUsed_;
+    size_t largeFree_;
+
 };
 
 

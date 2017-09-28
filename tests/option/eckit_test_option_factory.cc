@@ -8,14 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#define BOOST_TEST_MODULE test_eckit_option
-
-#include "ecbuild/boost_test_framework.h"
 
 #include "eckit/option/FactoryOption.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/testing/Test.h"
 
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
+
+//-----------------------------------------------------------------------------
 /// Build some generic factories to demonstrate functionality.
 /// n.b. This does not worry about thread safety in the factory for the purpose of these unit tests.
 ///      Only one thread...
@@ -71,12 +76,9 @@ ObjectBuilder<Object2> factory2("obj2");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using namespace eckit;
 using namespace eckit::option;
 
-BOOST_AUTO_TEST_SUITE( test_eckit_option_factory )
-
-BOOST_AUTO_TEST_CASE( test_eckit_option_factory_list) {
+CASE( "test_eckit_option_factory_list" ) {
 
     FactoryOption<ObjectFactory> opt("arg1", "description");
 
@@ -86,9 +88,15 @@ BOOST_AUTO_TEST_CASE( test_eckit_option_factory_list) {
     std::string opt_str(ss.str());
 
     std::string cmp = "   --arg1=name (description)\n     Values are: obj1, obj2";
-    BOOST_CHECK_EQUAL(opt_str, cmp);
+    EXPECT( opt_str == cmp );
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace test
+} // namespace eckit
+
+int main(int argc,char **argv)
+{
+    return run_tests ( argc, argv );
+}

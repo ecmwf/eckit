@@ -58,7 +58,10 @@ TCPSocket::TCPSocket():
     remotePort_(-1),
     remoteAddr_(none),
     localAddr_(none),
-    bufSize_(0)
+    bufSize_(0),
+    debug_(false),
+    newline_(true),
+    mode_(0)
 {
 }
 
@@ -71,7 +74,10 @@ TCPSocket::TCPSocket(TCPSocket& other):
     remoteAddr_(other.remoteAddr_),
     localHost_(other.remoteHost_),
     localAddr_(other.remoteAddr_),
-    bufSize_(0)
+    bufSize_(0),
+    debug_(false),
+    newline_(true),
+    mode_(0)
 {
     other.socket_ = -1;  // Detach socket from other
 }
@@ -92,6 +98,9 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
     localAddr_  = other.localAddr_ ;
     localHost_  = other.localHost_ ;
     localPort_  = other.remotePort_;
+    debug_      = other.debug_;
+    newline_    = other.newline_;
+    mode_       = other.mode_;
 
     other.socket_ = -1;  // Detach socket from other
 
@@ -100,33 +109,65 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
 
 void TCPSocket::closeOutput()
 {
-  SYSCALL(::shutdown(socket_, SHUT_WR));
+    SYSCALL(::shutdown(socket_, SHUT_WR));
 }
 
 void TCPSocket::closeInput()
 {
-  SYSCALL(::shutdown(socket_, SHUT_RD));
+    SYSCALL(::shutdown(socket_, SHUT_RD));
 }
 
 long TCPSocket::write(const void* buf, long length) {
 
     // Allow zero length packets
-    if(length == 0)
-        return ::write(socket_,buf,length);
+    if (length == 0)
+        return ::write(socket_, buf, length);
+
+    if (debug_) {
+
+        if (mode_ != 'w') {
+            newline_ = true;
+            std::cout << std::endl << std::endl;
+            mode_ = 'w';
+        }
+
+        const char* p = reinterpret_cast<const char *>(buf);
+        for (size_t i = 0; i < std::min(length, 512L); i++) {
+            if (newline_) {
+                std::cout << ">>> ";
+                newline_ = false;
+            }
+
+            if (p[i] == '\r') {
+                std::cout << "\\r";
+            } else if (p[i] == '\n') {
+                std::cout << "\\n" << std::endl;
+                newline_ = true;
+            }
+            else {
+                std::cout << (isprint(p[i]) ? p[i] : '.');
+            }
+        }
+
+        if (length > 512) {
+            std::cout << "..." << std::endl;
+            newline_ = true;
+        }
+    }
 
     long sent     = 0;
     const char *p = (const char*)buf;
 
-    while(length > 0)
+    while (length > 0)
     {
-        long len = ::write(socket_,p,length);
+        long len = ::write(socket_, p, length);
 
-        if(len <  0) {
+        if (len <  0) {
             Log::error() << "Socket write" << Log::syserr << std::endl;
             return len;
         }
 
-        if(len == 0) return sent;
+        if (len == 0) return sent;
 
         sent   += len;
         length -= len;
@@ -137,74 +178,107 @@ long TCPSocket::write(const void* buf, long length) {
     return sent;
 }
 
-long TCPSocket::read(void *buf,long length)
+long TCPSocket::read(void *buf, long length)
 {
-    if(length <= 0 ) return length;
+    if (length <= 0 ) return length;
 
     static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
-		long received = 0;
+    long received = 0;
     char *p = (char*)buf;
     bool nonews = false;
 
-    while(length > 0)
+    while (length > 0)
     {
-			long len;
-			if (useSelectOnTCPSocket) {
-				static long socketSelectTimeout = Resource<long>("socketSelectTimeout", 0);
-				Select select(socket_);
-				bool more = socketSelectTimeout > 0;
-				while(more)
-				{
-					more = false;
-					if(!select.ready(socketSelectTimeout))
-					{
-						SavedStatus save;
+        long len;
+        if (useSelectOnTCPSocket) {
+            static long socketSelectTimeout = Resource<long>("socketSelectTimeout", 0);
+            Select select(socket_);
+            bool more = socketSelectTimeout > 0;
+            while (more)
+            {
+                more = false;
+                if (!select.ready(socketSelectTimeout))
+                {
+                    SavedStatus save;
 
-						Log::warning() << "No news from " << remoteHost()
-						               << " from " << Seconds(socketSelectTimeout) << std::endl;
+                    Log::warning() << "No news from " << remoteHost()
+                                   << " from " << Seconds(socketSelectTimeout) << std::endl;
 
-						Log::status() << "No news from " << remoteHost()
-						              << " from " << Seconds(socketSelectTimeout) << std::endl;
+                    Log::status() << "No news from " << remoteHost()
+                                  << " from " << Seconds(socketSelectTimeout) << std::endl;
 
-						// FIXME: enable the nonews flag here?
-						// nonews = true;
+                    // FIXME: enable the nonews flag here?
+                    // nonews = true;
 
-						// Time out, write 0 bytes to check that peer is alive
-						if(::write(socket_,0,0) != 0)
-						{
-							Log::error() << "TCPSocket::read write" <<
-							                Log::syserr << std::endl;
-							return -1;
-						}
-						more = true;
-						break;
-					}
-				}
+                    // Time out, write 0 bytes to check that peer is alive
+                    if (::write(socket_, 0, 0) != 0)
+                    {
+                        Log::error() << "TCPSocket::read write" <<
+                                     Log::syserr << std::endl;
+                        return -1;
+                    }
+                    more = true;
+                    break;
+                }
+            }
 
-				len = -1;
+            len = -1;
 
-				if(nonews)
-				{
-					AutoAlarm alarm(60,true);
-					Log::status() << "Resuming transfer" << std::endl;
-					len = ::read(socket_,p,length);
-				}
-				else
-					len = ::read(socket_,p,length);
-			} else {
-				len = ::read(socket_,p,length);
-			}
+            if (nonews)
+            {
+                AutoAlarm alarm(60, true);
+                Log::status() << "Resuming transfer" << std::endl;
+                len = ::read(socket_, p, length);
+            }
+            else
+                len = ::read(socket_, p, length);
+        } else {
+            len = ::read(socket_, p, length);
+        }
 
-			if(len <  0) {
-				Log::error() << "Socket read" << Log::syserr << std::endl;
-				return len;
-			}
+        if (len <  0) {
+            Log::error() << "Socket read" << Log::syserr << std::endl;
+            return len;
+        }
 
-			if(len == 0) return received;
+        if (len == 0) return received;
 
-			received  += len;
-			length    -= len;
-			p         += len;
+
+        if (debug_) {
+
+            if (mode_ != 'r') {
+                newline_ = true;
+                std::cout << std::endl << std::endl;
+                mode_ = 'r';
+            }
+
+            for (size_t i = 0; i < std::min(len, 512L); i++) {
+                if (newline_) {
+                    std::cout << "<<< ";
+                    newline_ = false;
+                }
+
+                if (p[i] == '\r') {
+                    std::cout << "\\r";
+                } else if (p[i] == '\n') {
+                    std::cout << "\\n" << std::endl;
+                    newline_ = true;
+                }
+                else {
+                    std::cout << (isprint(p[i]) ? p[i] : '.');
+                }
+            }
+
+            if (len > 512) {
+                std::cout << "..." << std::endl;
+                newline_ = true;
+            }
+        }
+
+
+        received  += len;
+        length    -= len;
+        p         += len;
     }
 
     return received;
@@ -212,7 +286,7 @@ long TCPSocket::read(void *buf,long length)
 
 void TCPSocket::close()
 {
-    if(socket_ != -1) SYSCALL(::close(socket_));
+    if (socket_ != -1) SYSCALL(::close(socket_));
     socket_ = -1;
     remotePort_  = localPort_  = -1;
     localHost_ = remoteHost_ = "";
@@ -223,7 +297,7 @@ static jmp_buf env;
 
 static void catch_alarm(int sig)
 {
-    longjmp(env,1);
+    longjmp(env, 1);
 }
 
 
@@ -235,14 +309,14 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
     std::string host = hostName(remote);
 
     in_addr_t addr;
-    in_addr_t none = (in_addr_t)-1;
+    in_addr_t none = (in_addr_t) - 1;
     hostent *him;
 
     sockaddr_in sin;
-    ::memset(&sin,0,sizeof(sin));
+    ::memset(&sin, 0, sizeof(sin));
 
 
-    { // Block for local_mutex
+    {   // Block for local_mutex
 
         AutoLock<Mutex> lock(local_mutex);
 
@@ -253,7 +327,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
         sin.sin_addr.s_addr = addr;
 
 
-        if(addr == none) {
+        if (addr == none) {
 
 // For some reason, sgi verion of gethostbyname_r is broken
 #if 0
@@ -264,21 +338,21 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
             zero(host);
             zero(data);
 
-            if(gethostbyname_r(remote.c_str(),&host,&data))
+            if (gethostbyname_r(remote.c_str(), &host, &data))
                 him = 0;
             else
                 him = &host;
 #else
-            him=::gethostbyname(remote.c_str());
+            him =::gethostbyname(remote.c_str());
 #endif
             if (him == 0)
             {
-//				Log::error() << "Unknown host [" << remote << "]" << std::endl;
+//              Log::error() << "Unknown host [" << remote << "]" << std::endl;
                 throw UnknownHost(remote);
             }
 
             sin.sin_family = him->h_addrtype;
-            ::memcpy(&sin.sin_addr,him->h_addr_list[0],him->h_length);
+            ::memcpy(&sin.sin_addr, him->h_addr_list[0], him->h_length);
         }
 
     } // End of local_mutex
@@ -293,17 +367,17 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 
         bind();
 
-        if(timeout)
+        if (timeout)
         {
-            if(setjmp(env)==0)
+            if (setjmp(env) == 0)
             {
-                void (*old)(int) = signal(SIGALRM,catch_alarm);
+                void (*old)(int) = signal(SIGALRM, catch_alarm);
                 alarm(timeout);
-                status = ::connect(socket_,reinterpret_cast<sockaddr*>(&sin),sizeof(sin));
+                status = ::connect(socket_, reinterpret_cast<sockaddr*>(&sin), sizeof(sin));
                 save_errno = errno;
                 alarm(0);
                 /// @todo change this to sigaction
-                signal(SIGALRM,old);
+                signal(SIGALRM, old);
             }
             else
             {
@@ -312,7 +386,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
         }
         else
         {
-            status = ::connect(socket_,reinterpret_cast<sockaddr*>(&sin),sizeof(sin));
+            status = ::connect(socket_, reinterpret_cast<sockaddr*>(&sin), sizeof(sin));
             save_errno = errno;
         }
 
@@ -328,68 +402,68 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
             socket_ = -1;
             errno = save_errno;
 
-            switch(errno)
+            switch (errno)
             {
-                case ECONNREFUSED:
-                    if(++tries >= retries)
-                        if(retries >= 0)
-                            throw TooManyRetries(tries);
-                    ::sleep(5);
-                    break;
+            case ECONNREFUSED:
+                if (++tries >= retries)
+                    if (retries >= 0)
+                        throw TooManyRetries(tries);
+                ::sleep(5);
+                break;
 
-                case EINPROGRESS:
-                    //TODO: Potential file descriptor leak
-                    /* ::close(socket_); */
-                    /* socket_ = -1; */
-                    throw FailedSystemCall("connect");
-                    break;
+            case EINPROGRESS:
+                //TODO: Potential file descriptor leak
+                /* ::close(socket_); */
+                /* socket_ = -1; */
+                throw FailedSystemCall("connect");
+                break;
 
 #if 0
-                case ETIMEDOUT:
-                    Log::info() << "Waiting for network "
-                        << host << ":" << port
-                        << Log::syserr << std::endl;
-                    Log::status() << "Waiting for network "
-                        << host << ":" << port
-                        << Log::syserr << std::endl;
-                    break;
+            case ETIMEDOUT:
+                Log::info() << "Waiting for network "
+                            << host << ":" << port
+                            << Log::syserr << std::endl;
+                Log::status() << "Waiting for network "
+                              << host << ":" << port
+                              << Log::syserr << std::endl;
+                break;
 #endif
 #if 0
-                case ENETUNREACH:
-                case ETIMEDOUT:
-                case ECONNRESET:
-                case EADDRNOTAVAIL:
-                case EAGAIN:
+            case ENETUNREACH:
+            case ETIMEDOUT:
+            case ECONNRESET:
+            case EADDRNOTAVAIL:
+            case EAGAIN:
 #endif
-                default:
+            default:
 
-                    Log::status() << "Waiting for network " << host << ":" << port << Log::syserr << std::endl;
+                Log::status() << "Waiting for network " << host << ":" << port << Log::syserr << std::endl;
 
 #if 0
-                    if(++tries >= retries)
-                        if(retries != 0)
-                            throw TooManyRetries(tries);
+                if (++tries >= retries)
+                    if (retries != 0)
+                        throw TooManyRetries(tries);
 #endif
-                    ::sleep(120);
-                    break;
+                ::sleep(120);
+                break;
 
 #if 0
-                default:
-                    throw FailedSystemCall("connect");
-                    break;
+            default:
+                throw FailedSystemCall("connect");
+                break;
 #endif
             }
 
         }
 
-    }while(status<0);
+    } while (status < 0);
 
     remotePort_ = sin.sin_port;
     remoteAddr_ = sin.sin_addr;
     remoteHost_ = addrToHost(sin.sin_addr);
 
     /// @todo change this to sigaction
-    ::signal(SIGPIPE,SIG_IGN);
+    ::signal(SIGPIPE, SIG_IGN);
     return *this;
 }
 
@@ -401,21 +475,21 @@ int TCPSocket::newSocket(int port)
 
     int s = ::socket(AF_INET, SOCK_STREAM, 0);
 
-    if(s < 0)
+    if (s < 0)
         throw FailedSystemCall("::socket");
 
     int flg = 1 ;
-    if(::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg))<0)
+    if (::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg)) < 0)
         Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << std::endl;
 
     flg = 1 ;
-    if(::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg))<0)
+    if (::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg)) < 0)
         Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
 
 
 #ifdef SO_REUSEPORT
     flg = 1 ;
-    if(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg))<0)
+    if (::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)) < 0)
         Log::warning() << "setsockopt SO_REUSEPORT" << Log::syserr << std::endl;
 #endif
 
@@ -423,37 +497,37 @@ int TCPSocket::newSocket(int port)
     linger ling;
     ling.l_onoff  = 0;
     ling.l_linger = 0;
-    if(::setsockopt(s, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling))<0)
+    if (::setsockopt(s, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling)) < 0)
         Log::warning() << "setsockopt SO_LINGER" << Log::syserr << std::endl;
 #endif
 
 #ifdef SO_DONTLINGER
-    if(::setsockopt(s, SOL_SOCKET, SO_DONTLINGER, NULL, 0)<0)
+    if (::setsockopt(s, SOL_SOCKET, SO_DONTLINGER, NULL, 0) < 0)
         Log::warning() << "setsockopt SO_DONTLINGER" << Log::syserr << std::endl;
 #endif
 
-/* #ifdef IPPROTO_IP */
-/* #ifdef IP_TOS */
-/* #ifndef IPTOS_LOWDELAY */
-/* #define IPTOS_LOWDELAY 0x10 */
-/* #endif */
+    /* #ifdef IPPROTO_IP */
+    /* #ifdef IP_TOS */
+    /* #ifndef IPTOS_LOWDELAY */
+    /* #define IPTOS_LOWDELAY 0x10 */
+    /* #endif */
     int tos = IPTOS_LOWDELAY;
 
-    if(::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos))<0)
-          Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
+    if (::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)) < 0)
+        Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
 
-/* #endif */
-/* #endif */
+    /* #endif */
+    /* #endif */
 
 
 
 #if 1
     int flag = 1;
-    if(::setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(flag))<0)
+    if (::setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(flag)) < 0)
         Log::warning() << "setsockopt TCP_NODELAY" << Log::syserr << std::endl;
 #endif
 
-    if(bufSize_)
+    if (bufSize_)
     {
 
         Log::info() << "SOCKET SIZE " << bufSize_ << std::endl;
@@ -461,21 +535,21 @@ int TCPSocket::newSocket(int port)
         int flg = 0;
         socklen_t flgsize = sizeof(flg);
 
-        if(getsockopt(s, SOL_SOCKET, SO_SNDBUF,&flg, &flgsize)<0)
+        if (getsockopt(s, SOL_SOCKET, SO_SNDBUF, &flg, &flgsize) < 0)
             Log::warning() << "getsockopt SO_SNDBUF " << Log::syserr << std::endl;
 
-        if(flg != bufSize_)
+        if (flg != bufSize_)
         {
-            if(setsockopt(s, SOL_SOCKET, SO_SNDBUF,&bufSize_, sizeof(bufSize_)) < 0)
+            if (setsockopt(s, SOL_SOCKET, SO_SNDBUF, &bufSize_, sizeof(bufSize_)) < 0)
                 Log::warning() << "setsockopt SO_SNDBUF " << Log::syserr << std::endl;
         }
 
-        if(getsockopt(s, SOL_SOCKET, SO_RCVBUF,&flg, &flgsize)<0)
+        if (getsockopt(s, SOL_SOCKET, SO_RCVBUF, &flg, &flgsize) < 0)
             Log::warning() << "getsockopt SO_RCVBUF " << Log::syserr << std::endl;
 
-        if(flg != bufSize_)
+        if (flg != bufSize_)
         {
-            if(setsockopt(s, SOL_SOCKET, SO_RCVBUF,&bufSize_, sizeof(bufSize_)) < 0)
+            if (setsockopt(s, SOL_SOCKET, SO_RCVBUF, &bufSize_, sizeof(bufSize_)) < 0)
                 Log::warning() << "setsockopt SO_RCVBUF " << Log::syserr << std::endl;
         }
     }
@@ -488,12 +562,12 @@ int TCPSocket::newSocket(int port)
 
     std::string addr = bindingAddress();
 
-    if(addr.length() == 0)
+    if (addr.length() == 0)
         sin.sin_addr.s_addr = INADDR_ANY;
     else
         sin.sin_addr.s_addr = ::inet_addr(addr.c_str());
 
-    while(::bind(s,reinterpret_cast<sockaddr*>(&sin),sizeof(sin)) == -1)
+    while (::bind(s, reinterpret_cast<sockaddr*>(&sin), sizeof(sin)) == -1)
     {
         Log::warning() << "bind port " << localPort_ << " " << addr << Log::syserr << std::endl;
         ::sleep(5);
@@ -505,24 +579,24 @@ int TCPSocket::newSocket(int port)
 #else
     socklen_t len = sizeof(sin);
 #endif
-    ::getsockname(s,reinterpret_cast<sockaddr*>(&sin),&len);
+    ::getsockname(s, reinterpret_cast<sockaddr*>(&sin), &len);
     localPort_ = ntohs(sin.sin_port);
     localAddr_ = sin.sin_addr;
     localHost_ = addrToHost(sin.sin_addr);
 
-    if(localHost_ == "0.0.0.0")
+    if (localHost_ == "0.0.0.0")
     {
-        if(addr.length() == 0)
+        if (addr.length() == 0)
         {
             AutoLock<Mutex> lock(local_mutex);
-            localHost_= Resource<std::string> ("host", "");
-            if(localHost_.length() == 0)
+            localHost_ = Resource<std::string> ("host", "");
+            if (localHost_.length() == 0)
             {
                 char host[1024];
-                SYSCALL(gethostname(host,sizeof(host)-1));
+                SYSCALL(gethostname(host, sizeof(host) - 1));
                 localHost_ = host;
             }
-		}
+        }
         else
         {
             localHost_ = addr;
@@ -530,7 +604,7 @@ int TCPSocket::newSocket(int port)
     }
 
     // Set the socket 'close on exec'
-    SYSCALL(fcntl(s,F_SETFD,FD_CLOEXEC));
+    SYSCALL(fcntl(s, F_SETFD, FD_CLOEXEC));
 
     return s;
 }
@@ -540,7 +614,7 @@ void TCPSocket::bind()
 }
 
 
-static std::map<uint32_t,std::string> cache;
+static std::map<uint32_t, std::string> cache;
 
 std::string TCPSocket::addrToHost(in_addr addr)
 {
@@ -550,9 +624,9 @@ std::string TCPSocket::addrToHost(in_addr addr)
     // from time to time, so let's cache the result
     // to minimise the cores
 
-    std::map<uint32_t,std::string>::iterator j = cache.find(addr.s_addr);
+    std::map<uint32_t, std::string>::iterator j = cache.find(addr.s_addr);
 
-    if(j != cache.end())
+    if (j != cache.end())
         return (*j).second;
 
     hostent *h;
@@ -569,14 +643,14 @@ std::string TCPSocket::addrToHost(in_addr addr)
     zero(host);
     zero(data);
 
-    if(gethostbyaddr_r(reinterpret_cast<char*>(&addr),
-        sizeof(addr),AF_INET,&host,&data))
+    if (gethostbyaddr_r(reinterpret_cast<char*>(&addr),
+                        sizeof(addr), AF_INET, &host, &data))
         h = 0;
     else
         h = &host;
 #else
     h = gethostbyaddr(reinterpret_cast<char*>(&addr),
-        sizeof(addr),AF_INET);
+                      sizeof(addr), AF_INET);
 #endif
 
     std::string s = h ? h->h_name : ::inet_ntoa(addr);
@@ -588,20 +662,20 @@ std::string TCPSocket::addrToHost(in_addr addr)
 std::string TCPSocket::hostName(const std::string& h, bool full)
 {
     in_addr_t addr = ::inet_addr(h.c_str());
-    if(addr == (in_addr_t)-1)
+    if (addr == (in_addr_t) - 1)
     {
-        if(full)
+        if (full)
             return h;
         else
-            return h.substr(0,h.find('.'));
+            return h.substr(0, h.find('.'));
     }
 
     struct in_addr a;
     a.s_addr = addr;
     std::string s =  addrToHost(a);
 
-    if(!full && !isdigit(s[0])) {
-        return s.substr(0,s.find('.'));
+    if (!full && !isdigit(s[0])) {
+        return s.substr(0, s.find('.'));
     }
 
     return s;
@@ -650,14 +724,14 @@ std::string TCPSocket::bindingAddress() const
     return "";
 }
 
-long TCPSocket::rawRead(void* buf,long length)
+long TCPSocket::rawRead(void* buf, long length)
 {
-    return ::read(socket_,buf,length);
+    return ::read(socket_, buf, length);
 }
 
 bool TCPSocket::stillConnected() const
 {
-    if(socket_ == -1)
+    if (socket_ == -1)
         return false;
 
     fd_set r;
@@ -670,19 +744,19 @@ bool TCPSocket::stillConnected() const
 
     ::timeval tv = { 0, 0};
 
-    if(::select(socket_+1,&r, &w, &e, &tv) >= 0)
+    if (::select(socket_ + 1, &r, &w, &e, &tv) >= 0)
     {
-        if(!FD_ISSET(socket_, &r))
+        if (!FD_ISSET(socket_, &r))
             return true;
 
         int n = 0;
-        if(::ioctl(socket_, FIONREAD, &n) < 0)
+        if (::ioctl(socket_, FIONREAD, &n) < 0)
         {
             Log::info() << "TCPSocket::stillConnected(FIONREAD) failed " << Log::syserr << std::endl;
             return false;
         }
 
-        if(n == 0) {
+        if (n == 0) {
             Log::warning() << "TCPSocket::stillConnected => connection lost" << std::endl;
             return false;
         }
@@ -697,6 +771,32 @@ bool TCPSocket::stillConnected() const
     }
 
 }
+
+void TCPSocket::debug(bool on) {
+    debug_ = on;
+    newline_ = true;
+    mode_ = 0;
+}
+
+void TCPSocket::print(std::ostream& s) const {
+    s << "TCPSocket[fd=" << socket_
+      << "," << remoteHost() << ":" << remotePort()
+      << " (" << remoteAddr_ << ")"
+      // << ",localPort=" << localPort_
+      // << ",remotePort=" << remotePort_
+      // << ",remoteHost=" << remoteHost_
+      // << ",remoteAddr=" << remoteAddr_
+      // << ",localHost=" << localHost_
+      // << ",localAddr_=" << localAddr_
+      << "]";
+
+}
+
+std::ostream& operator<<(std::ostream& s, in_addr a) {
+    s << inet_ntoa(a);
+    return s;
+}
+
 
 //-----------------------------------------------------------------------------
 

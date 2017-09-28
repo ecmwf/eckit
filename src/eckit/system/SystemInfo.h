@@ -28,9 +28,14 @@ namespace system {
 struct Mem {
     size_t resident_size_;
     size_t virtual_size_;
-    Mem(size_t resident_size, size_t virtual_size):
+    size_t shared_memory_;
+
+    Mem(size_t resident_size = 0,
+        size_t virtual_size = 0,
+        size_t shared_memory = 0):
         resident_size_(resident_size),
-        virtual_size_(virtual_size) {}
+        virtual_size_(virtual_size),
+        shared_memory_(shared_memory) {}
 };
 
 class SystemInfo : private eckit::NonCopyable {

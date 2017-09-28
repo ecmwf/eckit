@@ -38,7 +38,7 @@ public: // methods
 
     void reset() { inited_ = false; }
     void dump(std::ostream&) const;
-    void html(std::ostream&, Url&);
+    void GET(std::ostream&, Url&);
 
     std::string name() const;
 

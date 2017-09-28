@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -63,7 +63,7 @@ Length MarsFSHandle::openForRead()
 	read_   = true;
     position_ = 0;
     if(!file_.get())
-        file_ = std::auto_ptr<MarsFSFile>(new MarsFSFile(path_));
+        file_.reset(new MarsFSFile(path_));
     length_ = file_->open("r");
     return length_;
 }
@@ -74,7 +74,7 @@ void MarsFSHandle::openForWrite(const Length& length)
     length_ = length;
     position_ = 0;
     if(!file_.get())
-        file_ = std::auto_ptr<MarsFSFile>(new MarsFSFile(path_));
+        file_.reset(new MarsFSFile(path_));
     file_->open("w", overwrite_);
 }
 
@@ -99,7 +99,7 @@ long MarsFSHandle::write(const void* buffer,long length)
     return len;
 }
 
-Offset MarsFSHandle::position() 
+Offset MarsFSHandle::position()
 {
     return position_;
 }
@@ -108,7 +108,7 @@ void MarsFSHandle::close()
 {
 	if(file_.get()) {
 		file_->close();
-        file_ = std::auto_ptr<MarsFSFile>(0);
+        file_.reset(0);
 	}
 }
 

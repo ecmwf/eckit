@@ -35,10 +35,12 @@ TaskInfo::TaskInfo()
     thread_ = pthread_self();
     pos_    = 0;
     start_  = ::time(0);
-    strncpy(name_, Main::instance().displayName().c_str(), sizeof(name_) - 1);
-    strcpy(kind_, name_);
-    strcpy(application_, name_);
-    strcpy(status_, "Starting");
+    if (Main::ready()) {
+        strncpy(name_, Main::instance().name().c_str(), sizeof(name_) - 1);
+        strcpy(kind_, name_);
+        strcpy(application_, name_);
+        strcpy(status_, "Starting");
+    }
     show_ = true;
     start(0, 0);
     busy_   = true;

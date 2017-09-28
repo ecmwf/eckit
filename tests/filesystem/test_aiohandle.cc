@@ -17,29 +17,23 @@
 #include "eckit/memory/ScopedPtr.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
+#include "eckit/testing/Test.h"
 
+using namespace std;
 using namespace eckit;
+using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-class TestAIOHandle : public Tool {
+class TestAIOHandle {
 public:
-
-    TestAIOHandle(int argc,char **argv): Tool(argc,argv) {}
-
-    ~TestAIOHandle() {}
-
-    virtual void run();
-
     void setup();
     void teardown();
-
     void test_write();
     void test_append();
-
     PathName path_;
 };
 
@@ -49,9 +43,9 @@ void TestAIOHandle::test_write() {
 
     aioh->openForWrite(0);
 
-    const char buf [] = "74e1feb8d0b1d328cbea63832c2dcfb2b4fa1adf";
+    const char buf[] = "74e1feb8d0b1d328cbea63832c2dcfb2b4fa1adf";
 
-    aioh->write(buf,sizeof(buf));
+    aioh->write(buf, sizeof(buf));
 
     aioh->close();
 
@@ -61,10 +55,10 @@ void TestAIOHandle::test_write() {
 
     Buffer buf2(1024);
 
-    fh->read(buf2,buf2.size());
+    fh->read(buf2, buf2.size());
     fh->close();
 
-    ASSERT( buf == std::string(buf2) );
+    EXPECT( buf == std::string(buf2) );
 }
 
 
@@ -73,9 +67,9 @@ void TestAIOHandle::test_append() {
 
     aioh->openForAppend(0);
 
-    const char buf [] = "53d50e63a50fba73f0151028a695a238ff06491c";
+    const char buf[] = "53d50e63a50fba73f0151028a695a238ff06491c";
 
-    aioh->write(buf,sizeof(buf));
+    aioh->write(buf, sizeof(buf));
 
     aioh->close();
 
@@ -87,10 +81,10 @@ void TestAIOHandle::test_append() {
 
     Buffer buf2(1024);
 
-    fh->read(buf2,buf2.size());
+    fh->read(buf2, buf2.size());
     fh->close();
 
-    ASSERT( buf == std::string(buf2) );
+    EXPECT( buf == std::string(buf2) );
 }
 
 
@@ -105,22 +99,20 @@ void TestAIOHandle::teardown() {
 }
 
 
-void TestAIOHandle::run() {
-    setup();
-
-    test_write();
-    test_append();
-
-    teardown();
+CASE("test_aiohandle") {
+    TestAIOHandle test;
+    test.setup();
+    test.test_write();
+    test.test_append();
+    test.teardown();
 }
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int main(int argc,char **argv)
+int main(int argc, char **argv)
 {
-    eckit::test::TestAIOHandle app(argc,argv);
-    return app.start();
+    return run_tests ( argc, argv );
 }

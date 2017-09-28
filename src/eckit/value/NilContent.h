@@ -16,11 +16,9 @@
 
 #include "eckit/value/Content.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class NilContent : public Content {
 protected:
@@ -60,6 +58,7 @@ protected:
     virtual int  compareDate(const DateContent&)            const {return 1; }
     virtual int  compareTime(const TimeContent&)            const {return 1; }
     virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
+    virtual int  compareOrderedMap(const OrderedMapContent&) const { return 1; }
 
     virtual Content* add(const Content&) const;
     virtual Content* sub(const Content&) const;
@@ -77,6 +76,7 @@ protected:
     virtual void     print(std::ostream&) const;
     virtual void   json(JSON&)     const;
     virtual Content* clone() const;
+    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
     virtual bool contains(const Value&) const;
 
@@ -105,7 +105,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

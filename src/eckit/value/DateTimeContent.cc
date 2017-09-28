@@ -13,13 +13,13 @@
 #include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec DateTimeContent::classSpec_ = {&Content::classSpec(),"DateTimeContent",};
+ClassSpec DateTimeContent::classSpec_ = {&Content::classSpec(), "DateTimeContent",};
 Reanimator<DateTimeContent> DateTimeContent::reanimator_;
 
 DateTimeContent::DateTimeContent(const DateTime& d):
@@ -28,18 +28,18 @@ DateTimeContent::DateTimeContent(const DateTime& d):
 }
 
 DateTimeContent::DateTimeContent(Stream& s):
-	Content(s)
+    Content(s)
 {
-	std::string dd;
-	s >> dd;
+    std::string dd;
+    s >> dd;
     value_ = DateTime(dd);
 }
 
 void DateTimeContent::encode(Stream& s) const
 {
-	Content::encode(s);
+    Content::encode(s);
     std::string dd = value_;
-	s << dd;
+    s << dd;
 }
 
 DateTimeContent::~DateTimeContent()
@@ -62,17 +62,14 @@ void DateTimeContent::json(JSON& s) const
 
 int DateTimeContent::compare(const Content& other) const
 {
-	return -other.compareDateTime(*this);
+    return -other.compareDateTime(*this);
 }
 
 int DateTimeContent::compareDateTime(const DateTimeContent& other) const
 {
-    if(value_ < other.value_)
-		return -1;
-    else if(value_ == other.value_)
-		return 1;
+    if (value_ == other.value_) { return 0; }
 
-	return 0;
+    return (value_ < other.value_) ? -1 : 1;
 }
 
 void DateTimeContent::value(DateTime& d) const
@@ -82,12 +79,12 @@ void DateTimeContent::value(DateTime& d) const
 
 Content* DateTimeContent::add(const Content& other) const
 {
-	return other.addDateTime(*this);
+    return other.addDateTime(*this);
 }
 
 Content* DateTimeContent::sub(const Content& other) const
 {
-	return other.subDateTime(*this);
+    return other.subDateTime(*this);
 }
 
 Content* DateTimeContent::mul(const Content& other) const
@@ -105,6 +102,15 @@ Content* DateTimeContent::mod(const Content& other) const
     return other.modDateTime(*this);
 }
 
-//-----------------------------------------------------------------------------
+void DateTimeContent::dump(std::ostream& out, size_t depth, bool indent) const {
+    if (indent) {
+        while (depth-- > 0) {
+            out << ' ';
+        }
+    }
+    out << "datetime(" << value_ << ")";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

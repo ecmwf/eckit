@@ -86,7 +86,7 @@ long MarsFSFile::read(void* buffer, long len) {
             msg << "Mismatch of hash while reading from MarsFS:"
                 << " expected remote hash " << remoteHash
                 << " local computed hash " << localHash;
-            throw eckit::BadValue(msg, Here());
+            throw eckit::BadValue(msg.str(), Here());
         }
     }
     return size;

@@ -45,16 +45,16 @@ Results Spectral::calculate(const data::MIRField& field) const {
 
         // calculate mean, variance and energy norm
         // Note: GRIB-283 suggests alternate method for variance
+        // Note: ECC-551 has been resolved, method implemented below
         const double mean = values[0];
 
         double var = 0;
         for (size_t i = 2; i < 2*J; i += 2) {
-            var += values[i]*values[i];
+            var += values[i] * values[i];
         }
         for (size_t i = 2*J; i < values.size(); i += 2) {
-            var += values[i]*values[i] - values[i+1]*values[i+1];
+            var += 2. * values[i] * values[i] + 2. * values[i + 1] * values[i + 1];
         }
-        ASSERT(var >= 0);
 
         const double enorm = std::sqrt(mean * mean + var);
 

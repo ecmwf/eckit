@@ -40,13 +40,13 @@ ProgressTimer::ProgressTimer(const std::string& name, size_t limit, const std::s
 {
 }
 
-void ProgressTimer::operator++()
+ProgressTimer& ProgressTimer::operator++()
 {
-    bool doOutput = counter_ && (
+    hasOutput_ = counter_ && (
                 (progressCounted_ > 0 && counter_ % progressCounted_ == 0) ||
                 (progressTimed_ > 0. && lastTime_ + progressTimed_ < elapsed()) );
 
-    if (doOutput) {
+    if (hasOutput_) {
         lastTime_ = elapsed();
         double rate = counter_ / lastTime_;
         output() << eckit::Plural(counter_, unit_) << " in "  << eckit::Seconds(lastTime_)
@@ -58,6 +58,13 @@ void ProgressTimer::operator++()
     if (counter_ < limit_) {
         ++counter_;
     }
+
+    return *this;
+}
+
+eckit::ProgressTimer::operator bool() const
+{
+    return hasOutput_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

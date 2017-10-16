@@ -36,9 +36,9 @@ TaskInfo::TaskInfo()
     pos_    = 0;
     start_  = ::time(0);
     if (Main::ready()) {
-        strncpy(name_, Main::instance().name().c_str(), sizeof(name_) - 1);
+        strncpy(name_, Main::instance().displayName().c_str(), sizeof(name_) - 1);
         strcpy(kind_, name_);
-        strcpy(application_, name_);
+        strncpy(application_, Main::instance().name().c_str(), sizeof(application_) - 1);
         strcpy(status_, "Starting");
     }
     show_ = true;

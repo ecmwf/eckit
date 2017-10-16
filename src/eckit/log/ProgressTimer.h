@@ -40,7 +40,9 @@ public:
     /// @param o output stream
     ProgressTimer(const std::string& name, size_t limit, const std::string& unit, double progressTimed = 10., std::ostream& o = Log::info());
 
-    void operator++();
+    ProgressTimer& operator++();
+
+    operator bool() const;
 
 private: // members
 
@@ -52,6 +54,7 @@ private: // members
 
     size_t counter_;
     double lastTime_;
+    bool hasOutput_;
 };
 
 //-----------------------------------------------------------------------------

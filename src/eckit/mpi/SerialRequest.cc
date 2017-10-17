@@ -28,6 +28,7 @@ SerialRequest::~SerialRequest() {
 
 void SerialRequest::print(std::ostream& os) const {
     os << "SerialRequest("
+       <<  "tag->" << tag()
        << ")";
 }
 

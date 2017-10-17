@@ -31,41 +31,6 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SerialSendReceive : private NonCopyable {
-public:
-
-    static SerialSendReceive& instance() {
-        static SerialSendReceive inst;
-        return inst;
-    }
-
-    void addSend( const Request& send_request )
-    {
-      send_queue_.push_back(send_request);
-    }
-
-    Request nextSend()
-    {
-      Request send = send_queue_.front();
-      send_queue_.pop_front();
-      return send;
-    }
-
-    void lock() { mutex_.lock(); }
-    void unlock() { mutex_.unlock(); }
-
-private:
-
-    SerialSendReceive() {}
-    ~SerialSendReceive() {}
-
-    std::deque<Request> send_queue_;
-
-    eckit::Mutex mutex_; ///< instance() creation is thread safe, but access thereon isn't so we need a mutex
-};
-
-
-
 class SerialRequestPool : private NonCopyable {
 public:
 
@@ -76,7 +41,7 @@ public:
 
     Request createSendRequest(const void* buffer, size_t count, Data::Code type, int tag) {
         Request r = registerRequest(new SendRequest(buffer,count,type,tag));
-        send_[tag] = r;
+        send_[tag].push_back(r);
         return r;
     }
 
@@ -89,12 +54,36 @@ public:
         return requests_[request];
     }
 
-    Request sendRequest(int tag) {
-        return send_[tag];
+    SendRequest& matchingSendRequest( const ReceiveRequest& req ) {
+        return matchingSendRequest(req.tag());
+    }
+
+    SendRequest& matchingSendRequest( int tag ) {
+        Request send;
+        if( tag == anyTag() ) {
+          std::map<int,std::deque<Request> >::iterator it = send_.begin();
+          for(; it != send_.end(); ++ it) {
+            std::deque<Request>& sends = it->second;
+            if( sends.size() ) {
+              Request send = sends.front();
+              sends.pop_front();
+              return send.as<SendRequest>();
+            }
+          }
+          throw eckit::Exception("No send requests available",Here());
+        } else {
+          ASSERT( send_.count(tag) > 0 );
+          ASSERT( send_[tag].size() );
+          Request send = send_[tag].front();
+          send_[tag].pop_front();
+          return send.as<SendRequest>();
+        }
     }
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
+
+    static int anyTag() { return std::numeric_limits<int>::max(); }
 
 private:
 
@@ -117,7 +106,7 @@ private:
 
     std::vector<Request> requests_;
 
-    std::map<int,Request> send_;
+    std::map<int, std::deque<Request> > send_;
 
     int n_;
 
@@ -171,9 +160,7 @@ Status Serial::wait(Request& req) const {
 
       ReceiveRequest& recvReq = req.as<ReceiveRequest>();
 
-      int tag = recvReq.tag();
-
-      SendRequest& sendReq = SerialRequestPool::instance().sendRequest(tag).as<SendRequest>();
+      SendRequest& sendReq = SerialRequestPool::instance().matchingSendRequest(recvReq);
 
       ::memcpy( recvReq.buffer(), sendReq.buffer(), sendReq.count() * dataSize[sendReq.type()] );
 
@@ -205,7 +192,7 @@ int Serial::anySource() const {
 }
 
 int Serial::anyTag() const {
-    return std::numeric_limits<int>::max();
+    return SerialRequestPool::anyTag();
 }
 
 size_t Serial::getCount(Status& st, Data::Code) const {
@@ -265,12 +252,11 @@ void Serial::allToAllv(const void* sendbuf, const int sendcounts[], const int[],
        memcpy( recvbuf, sendbuf, sendcounts[0] * dataSize[type] );
 }
 
-Status Serial::receive(void* recv, size_t count, Data::Code type, int source, int tag) const
+Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/, int tag) const
 {
-    AutoLock<SerialSendReceive> lock(SerialSendReceive::instance());
-
-    Request send_request = SerialSendReceive::instance().nextSend();
-    SendRequest& send = send_request.as<SendRequest>();
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
+    ReceiveRequest recv_request( recv, count, type, tag );
+    SendRequest& send = SerialRequestPool::instance().matchingSendRequest(recv_request);
     if( tag != anyTag() ) {
         ASSERT( tag == send.tag() );
     }
@@ -286,25 +272,25 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int source, in
     return Status(st);
 }
 
-void Serial::send(const void* send, size_t count, Data::Code type, int dest, int tag) const
+void Serial::send(const void* send, size_t count, Data::Code type, int /*dest*/, int tag) const
 {
-    AutoLock<SerialSendReceive> lock(SerialSendReceive::instance());
-    SerialSendReceive::instance().addSend( Request( new SendRequest(send,count,type,tag) ) );
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
+    SerialRequestPool::instance().createSendRequest(send,count,type,tag);
 }
 
-void Serial::synchronisedSend(const void* send, size_t count, Data::Code type, int dest, int tag) const
+void Serial::synchronisedSend(const void* send, size_t count, Data::Code type, int /*dest*/, int tag) const
 {
     // TODO: see if this is good enough
-    AutoLock<SerialSendReceive> lock(SerialSendReceive::instance());
-    SerialSendReceive::instance().addSend( Request( new SendRequest(send,count,type,tag) ) );
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
+    SerialRequestPool::instance().createSendRequest(send,count,type,tag);
 }
 
-Request Serial::iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const {
+Request Serial::iReceive(void* recv, size_t count, Data::Code type, int /*source*/, int tag) const {
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     return SerialRequestPool::instance().createReceiveRequest(recv,count,type,tag);
 }
 
-Request Serial::iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const {
+Request Serial::iSend(const void* send, size_t count, Data::Code type, int /*dest*/, int tag) const {
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     return SerialRequestPool::instance().createSendRequest(send,count,type,tag);
 }

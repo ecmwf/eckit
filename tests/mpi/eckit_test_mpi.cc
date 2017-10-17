@@ -482,6 +482,41 @@ CASE( "test_nonblocking_send_receive" )
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE( "test_blocking_send_nonblocking_receive" )
+{
+  mpi::Comm& comm = mpi::comm("world");
+  int tag = 99;
+  double send;
+  double recv[] = {1.,1.};
+  double recv_check[] = {0.5,0.8};
+  std::vector<mpi::Request> recvreqs;
+
+  // Post 2 receive requests
+  if( comm.rank() == 0 ) {
+    recvreqs.push_back( comm.iReceive(&recv[0],1, comm.size()-1,tag) );
+    recvreqs.push_back( comm.iReceive(&recv[1],1, comm.size()-1,tag) );
+  }
+
+
+  // Two blocking sends
+  if( comm.rank() == comm.size()-1 ) {
+    send = 0.5;
+    comm.send(send,0,tag);
+
+    send = 0.8;
+    comm.send(send,0,tag);
+  }
+
+  // Wait for receiving to finish
+  for( int i=0; i<recvreqs.size(); ++i ) {
+    mpi::Status recvstatus = comm.wait(recvreqs[i]);
+    EXPECT( is_approximately_equal( recv[i], recv_check[i], 1.e-9 ) );
+  }
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE( "test_blocking_send_receive" )
 {
   mpi::Comm& comm = mpi::comm("world");

@@ -17,8 +17,7 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_localpathname
 
 ecbuild_add_test( TARGET      eckit_test_filesystem_restarthandle
                   SOURCES     test_restarthandle.cc
-                  LIBS        eckit
-                  ENABLED     OFF )
+                  LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_filesystem_pathexpander
                   SOURCES     test_pathexpander.cc

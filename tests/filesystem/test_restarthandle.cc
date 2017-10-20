@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/MultiHandle.h"
@@ -32,14 +34,14 @@ namespace test {
 
 class Restart : public DataHandle, public HandleHolder {
     Length total_;
-    Length next_;
+    Length nextStop_;
 
 public:
 
-    static size_t increment() { return 4 * 1024  + 1; }
+    static size_t increment() { return 77773; } // a prime larger than 4 KiB
 
     Restart(DataHandle* h): HandleHolder(h), total_(0) {
-        next_ = increment();
+        nextStop_ = increment();
     }
 
     virtual Length openForRead() {
@@ -59,11 +61,17 @@ public:
     }
 
     virtual long write(const void* buffer, long len) {
-        // std::cout << "write len " << len << std::endl;
-        if (total_ > next_) {
-            // std::cout << "next " << next_ << std::endl;
-            next_ += len + increment();;
-            throw RestartTransfer(total_ - Length(77773));
+        if (total_ > nextStop_) {
+
+            nextStop_ += len + increment();
+
+            // 67108879 is first prime after 64*1024*1024 -- the default buffer size in saveInto()
+            // this way we test that we roll back to data position before the whole buffer size
+            Offset backTo = std::max(total_ - Length(67108879), (long long int) 0);
+
+            std::cout << "backTo " << backTo << " nextStop " << nextStop_ << std::endl;
+
+            throw RestartTransfer(backTo);
         }
         total_ += len;
         return handle().write(buffer, len);
@@ -134,8 +142,7 @@ void TestMHHandle::test_write()
     const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
     const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    const size_t N = 1024 * 64 * 25;
-
+    const size_t N = 1024 * 1024 * 10;
 
     // create first file
     {
@@ -176,7 +183,7 @@ void TestMHHandle::test_write()
 
     }
 
-    std::cout << "-----" << std::endl;
+    std::cout << "-------------------------------------------------------" << std::endl;
 
     MultiHandle mh1;
     {

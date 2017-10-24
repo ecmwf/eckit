@@ -8,7 +8,7 @@ ecbuild_add_test( TARGET  eckit_test_datablob
 
 ecbuild_add_test( TARGET  eckit_test_urlhandle
                   SOURCES test_urlhandle.cc
-                  CONDITION ECKIT_HAVE_CURL
+                  CONDITION ECKIT_HAVE_CURL AND OFF
                   LIBS    eckit )
 
 ecbuild_add_test( TARGET  eckit_test_circularbuffer

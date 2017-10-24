@@ -121,7 +121,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
         // triplets are ordered by rows
         ASSERT( it->row() >= row );
         ASSERT( it->row() < shape_.rows_ );
-        ASSERT( it->col() >= 0 );
+        // ASSERT( it->col() >= 0 ); // useless comparison with unsigned int
         ASSERT( it->col() < shape_.cols_ );
 
         // start a new row

@@ -64,6 +64,10 @@ int Request::request() const {
     return content_->request();
 }
 
+void Request::print(std::ostream& out) const {
+    content_->print(out);
+}
+
 RequestContent::~RequestContent() {
 }
 

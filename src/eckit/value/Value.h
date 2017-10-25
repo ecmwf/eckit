@@ -383,23 +383,26 @@ Value toValue(const std::map<K, V>& l) {
 }
 
 #ifdef __GNUC__
-#define DEPRECATED __attribute__((deprecated))
+#define ECKIT_DEPRECATED __attribute__((deprecated))
 #else
-#define DEPRECATED /**/
+#define ECKIT_DEPRECATED /**/
 #endif
 
 
 template < typename T >
-DEPRECATED
+ECKIT_DEPRECATED
 Value makeVectorValue(const std::vector<T>& v) {
     return toValue(v);
 }
 
 template < typename T >
-DEPRECATED
+ECKIT_DEPRECATED
 Value makeVectorValue(const std::list<T>& v) {
     return toValue(v);
 }
+
+#undef ECKIT_DEPRECATED
+
 //----------------------------------------------------------------------------------------------------------------------
 
 template< typename T >

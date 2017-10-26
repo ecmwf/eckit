@@ -543,20 +543,65 @@ static int closefn(void *data) {
 #ifdef EC_HAVE_FOPENCOOKIE
 
 static ssize_t _read(void *cookie, char *buf, size_t size) {
-	return readfn(cookie, buf, size);
+
+    try {
+
+        return readfn(cookie, buf, size);
+
+    } catch(std::exception& e) {
+
+        // Catch all exceptions on a possible C/C++ boundary
+        eckit::Log::error() << "Exception caught in wrapped DataHandle read: " << e.what();
+        // See man fopencookie. Returns -1 on error
+        return -1;
+    }
 }
 
 static ssize_t _write(void *cookie, const char *buf, size_t size) {
-	return writefn(cookie, buf, size);
+
+    try {
+
+        return writefn(cookie, buf, size);
+
+    } catch(std::exception& e) {
+
+        // Catch all exceptions on a possible C/C++ boundary
+        eckit::Log::error() << "Exception caught in wrapped DataHandle write: " << e.what();
+        // See man fopencookie. Returns 0 on error
+        return 0;
+    }
 }
 
 static int _seek(void *cookie, off64_t *offset, int whence) {
-	*offset =  seekfn(cookie, *offset, whence);
-	return *offset >= 0 ? 0 : -1;
+
+    try {
+
+        *offset =  seekfn(cookie, *offset, whence);
+        return *offset >= 0 ? 0 : -1;
+
+    } catch (std::exception& e) {
+
+        // Catch all exceptions on a possible C/C++ boundary, and return an invalid write size.
+        eckit::Log::error() << "Exception caught in wrapped DataHandle seek: " << e.what();
+        // See man fopencookie. Returns -1 on error
+        return -1;
+
+    }
 }
 
 static int _close(void *cookie) {
-	return closefn(cookie);
+
+    try {
+
+        return closefn(cookie);
+
+    } catch (std::exception& e) {
+
+        // Catch all exceptions on a possible C/C++ boundary, and return an invalid write size.
+        eckit::Log::error() << "Exception caught in wrapped DataHandle close: " << e.what();
+        // See man fopencookie. Returns EOF on error
+        return EOF;
+    }
 }
 
 FILE* DataHandle::openf(const char* mode, bool delete_on_close) {

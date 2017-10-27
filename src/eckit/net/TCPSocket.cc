@@ -23,6 +23,7 @@
 #include "eckit/os/AutoAlarm.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Log.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
@@ -580,6 +581,15 @@ int TCPSocket::newSocket(int port)
     socklen_t len = sizeof(sin);
 #endif
     ::getsockname(s, reinterpret_cast<sockaddr*>(&sin), &len);
+    if(localPort_ != 0) {
+        int gotPort = ntohs(sin.sin_port);
+        if(localPort_ != gotPort) {
+            std::ostringstream msg;
+            msg << "TCPSocket::newSocket() asking for port " << localPort_ << " but got " << gotPort << std::endl;
+            throw eckit::SeriousBug(msg.str(), Here());
+        }
+    }
+
     localPort_ = ntohs(sin.sin_port);
     localAddr_ = sin.sin_addr;
     localHost_ = addrToHost(sin.sin_addr);

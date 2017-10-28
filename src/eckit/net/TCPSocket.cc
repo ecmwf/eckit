@@ -37,12 +37,13 @@
 typedef void (*sighandler_t) (int);
 #endif
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
+static const int maxTCPSocketRetries = 100;
 static in_addr none = { INADDR_NONE };
 
 static Once<Mutex> local_mutex;
@@ -161,7 +162,17 @@ long TCPSocket::write(const void* buf, long length) {
 
     while (length > 0)
     {
-        long len = ::write(socket_, p, length);
+        long retries = 0;
+        long len = 0;
+
+        do {
+            len = ::write(socket_, p, length);
+
+            if(!len) {
+                ::usleep(1000);
+                if(++retries == maxTCPSocketRetries) break;
+            }
+        } while(len == 0);
 
         if (len <  0) {
             Log::error() << "Socket write" << Log::syserr << std::endl;
@@ -214,8 +225,7 @@ long TCPSocket::read(void *buf, long length)
                     // Time out, write 0 bytes to check that peer is alive
                     if (::write(socket_, 0, 0) != 0)
                     {
-                        Log::error() << "TCPSocket::read write" <<
-                                     Log::syserr << std::endl;
+                        Log::error() << "TCPSocket::read write" << Log::syserr << std::endl;
                         return -1;
                     }
                     more = true;
@@ -810,7 +820,7 @@ std::ostream& operator<<(std::ostream& s, in_addr a) {
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

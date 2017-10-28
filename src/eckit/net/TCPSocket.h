@@ -125,7 +125,7 @@ protected:
 
 // -- Methods
 
-	int newSocket(int);
+    int newSocket(int, bool reusePort = false);
 
     virtual void print(std::ostream& s) const;
 

@@ -17,18 +17,19 @@
 #include "eckit/io/Select.h"
 #include "eckit/net/TCPServer.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-TCPServer::TCPServer(int port, const std::string& addr):
+TCPServer::TCPServer(int port, const std::string& addr, bool reusePort):
     TCPSocket(),
     port_(port),
     listen_(-1),
     addr_(addr),
-    closeExec_(true)
+    closeExec_(true),
+    reusePort_(reusePort)
 {
 }
 
@@ -110,7 +111,7 @@ void TCPServer::bind()
 {
     if (listen_ == -1)
     {
-        listen_ = newSocket(port_);
+        listen_ = newSocket(port_, reusePort_);
         ::listen(listen_, 5);
 
         //if(!willFork_)
@@ -139,7 +140,7 @@ void TCPServer::print(std::ostream& s) const {
     s << "]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

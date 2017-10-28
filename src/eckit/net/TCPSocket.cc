@@ -469,7 +469,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 }
 
 
-int TCPSocket::newSocket(int port)
+int TCPSocket::newSocket(int port, bool reusePort)
 {
 
     localPort_ = port;
@@ -489,9 +489,11 @@ int TCPSocket::newSocket(int port)
 
 
 #ifdef SO_REUSEPORT
-    flg = 1 ;
-    if (::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)) < 0)
-        Log::warning() << "setsockopt SO_REUSEPORT" << Log::syserr << std::endl;
+    if(reusePort) {
+        flg = 1 ;
+        if (::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)) < 0)
+            Log::warning() << "setsockopt SO_REUSEPORT" << Log::syserr << std::endl;
+    }
 #endif
 
 #ifdef SO_LINGER

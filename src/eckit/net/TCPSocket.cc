@@ -526,13 +526,14 @@ int TCPSocket::newSocket(int port, bool reusePort)
         Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
 
 
-#ifdef SO_REUSEPORT
     if (reusePort) {
-        flg = 1 ;
-        if (::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)) < 0)
-            Log::warning() << "setsockopt SO_REUSEPORT" << Log::syserr << std::endl;
-    }
+#ifdef SO_REUSEPORT
+        flg = 1;
+        SYSCALL(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)));
+#else
+        NOTIMP;
 #endif
+    }
 
 #ifdef SO_LINGER
     linger ling;

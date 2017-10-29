@@ -173,6 +173,7 @@ long TCPSocket::write(const void* buf, long length) {
         while (len == 0) {
 
             Log::warning() << "Socket write returns zero (" << *this << ")" << Log::syserr << std::endl;
+
             if (++retries >= maxTCPSocketRetries) {
                 Log::warning() << "Giving up." << std::endl;
                 break;
@@ -212,6 +213,8 @@ long TCPSocket::write(const void* buf, long length) {
 long TCPSocket::read(void *buf, long length)
 {
     if (length <= 0 ) return length;
+
+    size_t requested = length;
 
     static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
     long received = 0;
@@ -271,8 +274,14 @@ long TCPSocket::read(void *buf, long length)
             return len;
         }
 
-        if (len == 0) return received;
-
+        if (len == 0) {
+            Log::warning() << "Socket read incomplete (" << *this << ") "
+                           << received
+                           << " out of "
+                           << requested
+                           << std::endl;
+            return received;
+        }
 
         if (debug_) {
 

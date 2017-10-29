@@ -270,7 +270,7 @@ long TCPSocket::read(void *buf, long length)
         }
 
         if (len <  0) {
-            Log::error() << "Socket read" << Log::syserr << std::endl;
+            Log::error() << "Socket read failed (" << *this << ")" << Log::syserr << std::endl;
             return len;
         }
 

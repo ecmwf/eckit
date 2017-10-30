@@ -8,19 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-// File TCPServer.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
+/// @date   Jun 96
 
 #ifndef eckit_TCPServer_h
 #define eckit_TCPServer_h
 
 #include "eckit/net/TCPSocket.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // AIX #define accept to naccept. It took me a while :-(
 // this clashes with the method accept()
@@ -32,7 +32,7 @@ public:
 
 // -- Contructors
 
-    TCPServer(int port = 0, const std::string& addr = "");
+    TCPServer(int port = 0, const std::string& addr = "", bool reusePort = false);
 
 
 // -- Destructor
@@ -88,6 +88,7 @@ private:
     virtual std::string bindingAddress() const;
 
     bool closeExec_;
+    bool reusePort_;
 
 };
 

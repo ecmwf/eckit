@@ -8,19 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/MultiHandle.h
-// Manuel Fuentes - ECMWF Jul 96
+/// @author Baudouin Raoult
+/// @date May 96
 
 #ifndef eckit_filesystem_MultiHandle_h
 #define eckit_filesystem_MultiHandle_h
 
 #include "eckit/io/DataHandle.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class MultiHandle : public DataHandle {
 public:
@@ -106,7 +106,7 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

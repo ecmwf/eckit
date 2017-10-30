@@ -78,7 +78,16 @@ long MarsFSFile::read(void* buffer, long len) {
         // Timer t("MarsFSFile::read() hashing");
         std::string remoteHash;
         s >> remoteHash;
-        ASSERT(hash_->compute(buffer, size) == remoteHash);
+
+        const std::string localHash = hash_->compute(buffer, size);
+
+        if(localHash != remoteHash) {
+            std::ostringstream msg;
+            msg << "Mismatch of hash while reading from MarsFS:"
+                << " expected remote hash " << remoteHash
+                << " local computed hash " << localHash;
+            throw eckit::BadValue(msg.str(), Here());
+        }
     }
     return size;
 }

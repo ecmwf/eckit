@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/MultiHandle.h"
@@ -28,16 +30,18 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Restart : public DataHandle, public HandleHolder {
     Length total_;
-    Length next_;
+    Length nextStop_;
 
 public:
 
+    static size_t increment() { return 77773; } // a prime larger than 4 KiB
+
     Restart(DataHandle* h): HandleHolder(h), total_(0) {
-        next_ = 4 * 1024 * 1024  + 1;
+        nextStop_ = increment();
     }
 
     virtual Length openForRead() {
@@ -57,9 +61,17 @@ public:
     }
 
     virtual long write(const void* buffer, long len) {
-        if (total_ > next_) {
-            next_ += len + 4 * 1024 * 1024 + 1;
-            throw RestartTransfer(total_ - Length(12345));
+        if (total_ > nextStop_) {
+
+            nextStop_ += len + increment();
+
+            // 67108879 is first prime after 64*1024*1024 -- the default buffer size in saveInto()
+            // this way we test that we roll back to data position before the whole buffer size
+            Offset backTo = std::max(total_ - Length(67108879), (long long int) 0);
+
+            std::cout << "backTo " << backTo << " nextStop " << nextStop_ << std::endl;
+
+            throw RestartTransfer(backTo);
         }
         total_ += len;
         return handle().write(buffer, len);
@@ -130,10 +142,9 @@ void TestMHHandle::test_write()
     const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
     const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    const size_t N = 1024 * 1024 * 64;
+    const size_t N = 1024 * 1024 * 10;
 
-    // setformat(std::cout, Log::fullFormat);
-
+    // create first file
     {
 
         Buffer b1(N * 26);
@@ -152,6 +163,7 @@ void TestMHHandle::test_write()
         std::cout << path1_ << std::endl;
     }
 
+    // create second file
     {
         Buffer b2(N * 26);
         char *p = b2;
@@ -171,10 +183,9 @@ void TestMHHandle::test_write()
 
     }
 
-    std::cout << "-----" << std::endl;
+    std::cout << "-------------------------------------------------------" << std::endl;
 
     MultiHandle mh1;
-
     {
 
         for (int i = 0; i < 26; i++) {
@@ -184,13 +195,11 @@ void TestMHHandle::test_write()
 
         }
 
-        std::cout << mh1 << std::endl;
-        std::cout << mh1.estimate() << std::endl;
+        std::cout << mh1 << " " << mh1.estimate() << std::endl;
 
         // mh1.compress();
 
-        // std::cout << mh1 << std::endl;
-        // std::cout << mh1.estimate() << std::endl;
+        // std::cout << mh1 << " " << mh1.estimate() << std::endl;
 
         Restart f3(path3_.fileHandle());
         mh1.saveInto(f3);

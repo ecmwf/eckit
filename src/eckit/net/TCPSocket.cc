@@ -23,6 +23,7 @@
 #include "eckit/os/AutoAlarm.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/log/Log.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
@@ -36,11 +37,11 @@
 typedef void (*sighandler_t) (int);
 #endif
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static in_addr none = { INADDR_NONE };
 
@@ -123,6 +124,8 @@ long TCPSocket::write(const void* buf, long length) {
     if (length == 0)
         return ::write(socket_, buf, length);
 
+    size_t requested = length;
+
     if (debug_) {
 
         if (mode_ != 'w') {
@@ -160,14 +163,43 @@ long TCPSocket::write(const void* buf, long length) {
 
     while (length > 0)
     {
-        long len = ::write(socket_, p, length);
+        long len = 0;
+        size_t retries = 0;
+        const size_t maxTCPSocketRetries = 10 * 60; // 10 minutes
+
+        errno = 0;
+        len = ::write(socket_, p, length);
+
+        while (len == 0) {
+
+            Log::warning() << "Socket write returns zero (" << *this << ")" << Log::syserr << std::endl;
+
+            if (++retries >= maxTCPSocketRetries) {
+                Log::warning() << "Giving up." << std::endl;
+                break;
+            }
+
+            Log::warning() << "Sleeping...." << std::endl;
+            ::sleep(1);
+
+            errno = 0;
+            len = ::write(socket_, p, length);
+
+        }
 
         if (len <  0) {
-            Log::error() << "Socket write" << Log::syserr << std::endl;
+            Log::error() << "Socket write failed (" << *this << ")" << Log::syserr << std::endl;
             return len;
         }
 
-        if (len == 0) return sent;
+        if (len == 0) {
+            Log::warning() << "Socket write incomplete (" << *this << ") "
+                           << sent
+                           << " out of "
+                           << requested
+                           << std::endl;
+            return sent;
+        }
 
         sent   += len;
         length -= len;
@@ -181,6 +213,8 @@ long TCPSocket::write(const void* buf, long length) {
 long TCPSocket::read(void *buf, long length)
 {
     if (length <= 0 ) return length;
+
+    size_t requested = length;
 
     static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
     long received = 0;
@@ -213,8 +247,7 @@ long TCPSocket::read(void *buf, long length)
                     // Time out, write 0 bytes to check that peer is alive
                     if (::write(socket_, 0, 0) != 0)
                     {
-                        Log::error() << "TCPSocket::read write" <<
-                                     Log::syserr << std::endl;
+                        Log::error() << "TCPSocket::read write" << Log::syserr << std::endl;
                         return -1;
                     }
                     more = true;
@@ -237,12 +270,18 @@ long TCPSocket::read(void *buf, long length)
         }
 
         if (len <  0) {
-            Log::error() << "Socket read" << Log::syserr << std::endl;
+            Log::error() << "Socket read failed (" << *this << ")" << Log::syserr << std::endl;
             return len;
         }
 
-        if (len == 0) return received;
-
+        if (len == 0) {
+            Log::warning() << "Socket read incomplete (" << *this << ") "
+                           << received
+                           << " out of "
+                           << requested
+                           << std::endl;
+            return received;
+        }
 
         if (debug_) {
 
@@ -468,7 +507,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 }
 
 
-int TCPSocket::newSocket(int port)
+int TCPSocket::newSocket(int port, bool reusePort)
 {
 
     localPort_ = port;
@@ -487,11 +526,14 @@ int TCPSocket::newSocket(int port)
         Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
 
 
+    if (reusePort) {
 #ifdef SO_REUSEPORT
-    flg = 1 ;
-    if (::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)) < 0)
-        Log::warning() << "setsockopt SO_REUSEPORT" << Log::syserr << std::endl;
+        flg = 1;
+        SYSCALL(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)));
+#else
+        NOTIMP;
 #endif
+    }
 
 #ifdef SO_LINGER
     linger ling;
@@ -580,6 +622,15 @@ int TCPSocket::newSocket(int port)
     socklen_t len = sizeof(sin);
 #endif
     ::getsockname(s, reinterpret_cast<sockaddr*>(&sin), &len);
+    if (localPort_ != 0) {
+        int gotPort = ntohs(sin.sin_port);
+        if (localPort_ != gotPort) {
+            std::ostringstream msg;
+            msg << "TCPSocket::newSocket() asking for port " << localPort_ << " but got " << gotPort << std::endl;
+            throw eckit::SeriousBug(msg.str(), Here());
+        }
+    }
+
     localPort_ = ntohs(sin.sin_port);
     localAddr_ = sin.sin_addr;
     localHost_ = addrToHost(sin.sin_addr);
@@ -798,7 +849,7 @@ std::ostream& operator<<(std::ostream& s, in_addr a) {
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

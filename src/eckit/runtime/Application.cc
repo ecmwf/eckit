@@ -107,11 +107,10 @@ LogTarget* Application::createDebugLogTarget() const {
 }
 
 void Application::start() {
+
     int status = 0;
 
-    displayName_ = Resource<std::string>("-name", name_);
-
-    Log::info() << "** Start of " << displayName_ << " ** pid is " << getpid() << std::endl;
+    Log::info() << "** Start of " << displayName() << " ** pid is " << getpid() << std::endl;
 
     try {
         Log::status() << "Running" << std::endl;
@@ -121,10 +120,10 @@ void Application::start() {
     } catch (std::exception& e) {
         status = 1;
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception terminates " << displayName_ << std::endl;
+        Log::error() << "** Exception terminates " << displayName() << std::endl;
     }
 
-    Log::info() << "** End of " << displayName_ << " (" << argv(0) << ")  **" << std::endl;
+    Log::info() << "** End of " << displayName() << " (" << argv(0) << ")  **" << std::endl;
 
     ::exit(status);
 }

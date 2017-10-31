@@ -302,7 +302,7 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 #define CASE(description) \
 void UNIQUE_NAME2(test_, __LINE__) (std::string&); \
-static TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
+static eckit::testing::TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
 void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
 
 #else  // ECKIT_TESTING_SELF_REGISTER_CASES

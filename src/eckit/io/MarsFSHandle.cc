@@ -129,6 +129,7 @@ Offset MarsFSHandle::seek(const Offset& offset)
 {
     ASSERT(file_.get());
     position_ = file_->seek(offset);
+    return position_;
 }
 
 Length MarsFSHandle::estimate()

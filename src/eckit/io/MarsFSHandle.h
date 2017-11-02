@@ -18,11 +18,10 @@
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class MarsFSHandle : public DataHandle {
 public:
@@ -50,11 +49,12 @@ public:
 	virtual void   openForAppend(const Length&);
 
 	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-	virtual void   close();
+    virtual long   write(const void*,long);
+    virtual void   close();
 	virtual void   rewind();
     virtual void   skip(const Length& len);
-	virtual void   print(std::ostream&) const;
+    virtual Offset seek(const Offset&);
+    virtual void   print(std::ostream&) const;
 	virtual Length estimate();
 	virtual Offset position();
 	virtual bool isEmpty() const;

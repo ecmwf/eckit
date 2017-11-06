@@ -82,9 +82,9 @@ TCPSocket::TCPSocket(TCPSocket& other):
     newline_(true),
     mode_(0)
 {
-    other.socket_ = -1;  // Detach socket from other
+    other.socket_     = -1;  // Detach socket from other
     other.remoteAddr_ = none;
-    other.remoteHost_ = "";
+    other.remoteHost_ = std::string();
     other.remotePort_ = -1;
 }
 
@@ -100,7 +100,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
 
     localAddr_  = other.localAddr_ ;
     localHost_  = other.localHost_ ;
-    localPort_  = other.remotePort_;
+    localPort_  = other.localPort_ ;
     remoteAddr_ = other.remoteAddr_;
     remoteHost_ = other.remoteHost_;
     remotePort_ = other.remotePort_;
@@ -112,7 +112,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
     other.socket_ = -1;  // Detach socket from other
 
     other.remoteAddr_ = none;
-    other.remoteHost_ = "";
+    other.remoteHost_ = std::string();
     other.remotePort_ = -1;
 
     return *this;

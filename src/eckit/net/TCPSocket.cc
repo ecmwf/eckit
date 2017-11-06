@@ -70,7 +70,7 @@ TCPSocket::TCPSocket():
 TCPSocket::TCPSocket(TCPSocket& other):
     socket_(other.socket_),
     
-    localAddr_(other.remoteAddr_),
+    localAddr_(other.localAddr_),
     localHost_(other.localHost_),
     localPort_(other.localPort_),
     remoteAddr_(other.remoteAddr_),

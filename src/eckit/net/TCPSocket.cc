@@ -100,7 +100,7 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
 
     localAddr_  = other.localAddr_ ;
     localHost_  = other.localHost_ ;
-    localPort_  = other.remotePort_;
+    localPort_  = other.localPort_ ;
     remoteAddr_ = other.remoteAddr_;
     remoteHost_ = other.remoteHost_;
     remotePort_ = other.remotePort_;

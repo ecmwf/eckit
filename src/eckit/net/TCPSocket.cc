@@ -285,11 +285,6 @@ long TCPSocket::read(void *buf, long length)
         }
 
         if (len == 0) {
-            Log::warning() << "Socket read incomplete (" << *this << ") "
-                           << received
-                           << " out of "
-                           << requested
-                           << std::endl;
             return received;
         }
 

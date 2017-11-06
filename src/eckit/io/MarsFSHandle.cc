@@ -125,6 +125,13 @@ void MarsFSHandle::skip(const Length &n)
     position_ += n;
 }
 
+Offset MarsFSHandle::seek(const Offset& offset)
+{
+    ASSERT(file_.get());
+    position_ = file_->seek(offset);
+    return position_;
+}
+
 Length MarsFSHandle::estimate()
 {
 	return MarsFSClient(path_).size(path_.path());

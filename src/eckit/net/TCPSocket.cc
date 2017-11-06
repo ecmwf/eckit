@@ -69,18 +69,23 @@ TCPSocket::TCPSocket():
 // This contructor performs a cahnge of ownership of the socket
 TCPSocket::TCPSocket(TCPSocket& other):
     socket_(other.socket_),
-    localPort_(other.remotePort_),
-    remotePort_(other.remotePort_),
-    remoteHost_(other.remoteHost_),
+    
+    localAddr_(other.localAddr_),
+    localHost_(other.localHost_),
+    localPort_(other.localPort_),
     remoteAddr_(other.remoteAddr_),
-    localHost_(other.remoteHost_),
-    localAddr_(other.remoteAddr_),
+    remoteHost_(other.remoteHost_),
+    remotePort_(other.remotePort_),
+    
     bufSize_(0),
     debug_(false),
     newline_(true),
     mode_(0)
 {
     other.socket_ = -1;  // Detach socket from other
+    other.remoteAddr_ = none;
+    other.remoteHost_ = none;
+    other.remotePort_ = -1;
 }
 
 TCPSocket::~TCPSocket()
@@ -93,17 +98,22 @@ TCPSocket& TCPSocket::operator=(TCPSocket& other)
 {
     socket_     = other.socket_;
 
-    remotePort_ = other.remotePort_;
-    remoteAddr_ = other.remoteAddr_;
-    remoteHost_ = other.remoteHost_;
     localAddr_  = other.localAddr_ ;
     localHost_  = other.localHost_ ;
     localPort_  = other.remotePort_;
+    remoteAddr_ = other.remoteAddr_;
+    remoteHost_ = other.remoteHost_;
+    remotePort_ = other.remotePort_;
+
     debug_      = other.debug_;
     newline_    = other.newline_;
     mode_       = other.mode_;
 
     other.socket_ = -1;  // Detach socket from other
+
+    other.remoteAddr_ = none;
+    other.remoteHost_ = none;
+    other.remotePort_ = -1;
 
     return *this;
 }

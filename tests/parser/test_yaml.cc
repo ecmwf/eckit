@@ -21,7 +21,7 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static std::string toJSON(const Value& v) {
     std::ostringstream oss;
@@ -368,6 +368,13 @@ CASE ( "test_eckit_yaml_cfg_1" ) {
 }
 
 
+CASE ( "test_eckit_yaml_key_with_space" ) {
+     Value v =  YAMLParser::decodeString("foo : bar");
+     EXPECT( v.contains("foo") );
+     EXPECT( v["foo"] == Value("bar") );
+}
+
+
 #if __cplusplus > 199711L
 
 CASE( "test_eckit_ymal_text_1" ) {
@@ -438,7 +445,7 @@ CASE( "test_eckit_yaml_text_4" ) {
 
 #endif
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit

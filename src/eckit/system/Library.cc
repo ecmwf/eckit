@@ -235,9 +235,13 @@ const Configuration& Library::configuration() const
 
     eckit::PathName cfgpath = eckit::Resource<eckit::PathName>(s.c_str(), p.c_str());
 
+    Log::debug() << "Parsing Lib " << name_ << " config file " << cfgpath << std::endl;
+
     eckit::Configuration* cfg = cfgpath.exists() ?
                                     new eckit::YAMLConfiguration(cfgpath) :
                                     new eckit::YAMLConfiguration(std::string(""));
+
+    Log::debug() << "Lib " << name_ << " configuration: " << *cfg << std::endl;
 
     configuration_.reset(cfg);
 

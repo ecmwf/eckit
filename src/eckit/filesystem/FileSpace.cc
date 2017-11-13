@@ -65,8 +65,6 @@ const std::string& FileSpace::selectionStrategy() const
 
     strategy_ = Resource<std::string>("fileSystemSelection", "leastUsed");
 
-    ASSERT(!strategy_.empty());
-
     return strategy_;
 }
 

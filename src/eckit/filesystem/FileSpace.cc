@@ -55,10 +55,24 @@ const PathName& FileSpace::selectFileSystem(const std::string& s) const
     return FileSpaceStrategies::selectFileSystem(fileSystems_, s);
 }
 
+const std::string& FileSpace::selectionStrategy() const
+{
+    if(!strategy_.empty()) return strategy_;
+
+    strategy_ = Resource<std::string>(std::string(name_ + "FileSystemSelection").c_str(), "");
+
+    if(!strategy_.empty()) return strategy_;
+
+    strategy_ = Resource<std::string>("fileSystemSelection", "leastUsed");
+
+    ASSERT(!strategy_.empty());
+
+    return strategy_;
+}
+
 const PathName& FileSpace::selectFileSystem() const
 {
-	static Resource<std::string> s("fileSystemSelection", "leastUsed");
-	return selectFileSystem(std::string(s));
+    return selectFileSystem(selectionStrategy());
 }
 
 bool FileSpace::owns(const PathName& path) const

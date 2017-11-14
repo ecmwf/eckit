@@ -69,14 +69,14 @@ TCPSocket::TCPSocket():
 // This contructor performs a cahnge of ownership of the socket
 TCPSocket::TCPSocket(TCPSocket& other):
     socket_(other.socket_),
-    
+
     localAddr_(other.localAddr_),
     localHost_(other.localHost_),
     localPort_(other.localPort_),
     remoteAddr_(other.remoteAddr_),
     remoteHost_(other.remoteHost_),
     remotePort_(other.remotePort_),
-    
+
     bufSize_(0),
     debug_(false),
     newline_(true),

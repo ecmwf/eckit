@@ -47,7 +47,7 @@ struct Candidate {
     double probability() const { return probability_; }
     void   probability(double p) { probability_ = p; }
 
-    long percent() const { return long( ( (double(size_.total) - double(size_.available)) / size_.total * 100) + 0.5); }
+    long percent() const { return long( 100. * (double(size_.available) / size_.total )); }
 
     unsigned long long total() const { return size_.total; }
 
@@ -251,9 +251,12 @@ static void attenuateProbabilities(std::vector<Candidate>& candidates) {
 
     ASSERT(!candidates.empty());
 
-    static Resource<bool> attenuateFileSpacePeakProbability("attenuateFileSpacePeakProbability", false);
+    static Resource<double> attenuation("attenuateFileSpacePeakProbability", 0.);
 
-    if(!attenuateFileSpacePeakProbability) return;
+    ASSERT(attenuation >= 0.);
+    ASSERT(attenuation <= 1.);
+
+    if(attenuation == 0.) return;
 
     // compute mean
 
@@ -264,27 +267,33 @@ static void attenuateProbabilities(std::vector<Candidate>& candidates) {
 
     mean /= candidates.size();
 
-    // compute variance
+//    // compute variance
 
-    double variance = 0.;
-    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
-        double diff = (i->probability() - mean);
-        variance += diff*diff;
-    }
+//    double variance = 0.;
+//    for(std::vector<Candidate>::const_iterator i = candidates.begin(); i != candidates.end(); ++i) {
+//        double diff = (i->probability() - mean);
+//        variance += diff*diff;
+//    }
 
-    variance /= candidates.size();
+//    variance /= candidates.size();
 
-    // compute stddev
+//    // compute stddev
 
-    double stddev = std::sqrt(variance);
+//    double stddev = std::sqrt(variance);
 
-    // attenuate the peaks that exceed the stddev to the stddev value
+//    // attenuate the peaks that exceed the stddev to the stddev value
+//    double max = mean + attenuation * stddev;
+//    for(std::vector<Candidate>::iterator i = candidates.begin(); i != candidates.end(); ++i) {
+//        if(i->probability() > max) {
+//            i->probability(max);
+//        }
+//    }
 
-    double max = mean + stddev;
+
     for(std::vector<Candidate>::iterator i = candidates.begin(); i != candidates.end(); ++i) {
-        if(i->probability() > max) {
-            i->probability(max);
-        }
+        double p = i->probability();
+        double newp = attenuation * mean + (1. - attenuation) * p;
+        i->probability(newp);
     }
 }
 

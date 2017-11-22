@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include "eckit/exception/Exceptions.h"
+#include "eckit/parser/JSON.h"
 #include "mir/config/LibMir.h"
 
 
@@ -23,14 +24,6 @@ namespace stats {
 
 
 namespace {
-
-
-template< typename MAP >
-void pretty_print_map(std::ostream& out, const char* sep, MAP& m) {
-    for (typename MAP::const_iterator j = m.begin(); j != m.end(); ++j) {
-        out << sep << j->first << ":\t" << j->second;
-    }
-}
 
 
 template< typename MAP >
@@ -170,21 +163,16 @@ double& Results::uncomparableQuantity(const std::string& name, size_t which) {
 
 
 void Results::print(std::ostream& out) const {
-    out << "Results[\n";
-    for (size_t i = 0; i < size(); ++i) {
-        const char* sep = ",\n\t\t";
-        out << "\t" << (i+1) << "/" << size() << "[";
-
-        pretty_print_map(out, sep, operator[](i).counters_);
-        pretty_print_map(out, sep, operator[](i).absoluteQuantities_);
-        pretty_print_map(out, sep, operator[](i).absoluteSquaredQuantities_);
-        pretty_print_map(out, sep, operator[](i).relativeQuantities_);
-        pretty_print_map(out, sep, operator[](i).integers_);
-        pretty_print_map(out, sep, operator[](i).uncomparableQuantities_);
-
-        out << "\n\t]\n";
+    eckit::JSON j(out);
+    j.startList();
+    for (const auto& m : *this) {
+        if (!m.counters_.empty())                  j << m.counters_;
+        if (!m.absoluteQuantities_.empty())        j << m.absoluteQuantities_;
+        if (!m.absoluteSquaredQuantities_.empty()) j << m.absoluteSquaredQuantities_;
+        if (!m.relativeQuantities_.empty())        j << m.relativeQuantities_;
+        if (!m.uncomparableQuantities_.empty())    j << m.uncomparableQuantities_;
     }
-    out << "]";
+    j.endList();
 }
 
 

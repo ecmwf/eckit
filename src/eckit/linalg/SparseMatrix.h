@@ -192,6 +192,9 @@ public:
     /// Returns the footprint of the matrix in memory
     size_t footprint() const;
 
+    /// Is the memory shared
+    bool shared() const;
+
     void dump(std::ostream& os) const;
 
     void print(std::ostream& os) const;

@@ -321,6 +321,11 @@ size_t SparseMatrix::footprint() const {
     return sizeof(*this) + shape_.allocSize();
 }
 
+bool SparseMatrix::shared() const {
+    ASSERT(owner_.get());
+    return owner_->shared();
+}
+
 void SparseMatrix::dump(std::ostream& os) const
 {
     for(Size i = 0; i < rows(); ++i) {

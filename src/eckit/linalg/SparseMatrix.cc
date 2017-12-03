@@ -66,6 +66,10 @@ public:
     virtual void deallocate(SparseMatrix::Layout p, SparseMatrix::Shape) {
     }
 
+    virtual bool shared() const {
+        return false;
+    }
+
     eckit::MemoryBuffer membuff_;
 };
 
@@ -86,6 +90,10 @@ public:
     }
 
     virtual void deallocate(eckit::linalg::SparseMatrix::Layout, eckit::linalg::SparseMatrix::Shape) {
+    }
+
+    virtual bool shared() const {
+        return false;
     }
 
     MemoryBuffer buffer_;

@@ -109,6 +109,9 @@ public: // types
 
         /// Layout and Shape parameters may be ignored
         virtual void deallocate(Layout, Shape) = 0;
+
+        /// Is the memory shared
+        virtual bool shared() const = 0;
     };
 
 public:  // methods

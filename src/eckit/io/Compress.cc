@@ -51,7 +51,7 @@ static void print_code(std::ostream& out, size_t s) {
         else {
             if (s < 256)
             {
-                out << std::hex << std::setfill('0') << std::setw(2) << s << std::dec;
+                out << std::hex << std::setfill('0') << std::setw(2) << s << std::dec << std::setfill(' ');
             }
             else {
                 out << '(' << s << ')';

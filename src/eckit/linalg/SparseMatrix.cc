@@ -66,7 +66,7 @@ public:
     virtual void deallocate(SparseMatrix::Layout p, SparseMatrix::Shape) {
     }
 
-    virtual bool shared() const {
+    virtual bool inSharedMemory() const {
         return false;
     }
 
@@ -92,7 +92,7 @@ public:
     virtual void deallocate(eckit::linalg::SparseMatrix::Layout, eckit::linalg::SparseMatrix::Shape) {
     }
 
-    virtual bool shared() const {
+    virtual bool inSharedMemory() const {
         return false;
     }
 
@@ -321,9 +321,9 @@ size_t SparseMatrix::footprint() const {
     return sizeof(*this) + shape_.allocSize();
 }
 
-bool SparseMatrix::shared() const {
+bool SparseMatrix::inSharedMemory() const {
     ASSERT(owner_.get());
-    return owner_->shared();
+    return owner_->inSharedMemory();
 }
 
 void SparseMatrix::dump(std::ostream& os) const

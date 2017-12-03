@@ -111,7 +111,7 @@ public: // types
         virtual void deallocate(Layout, Shape) = 0;
 
         /// Is the memory shared
-        virtual bool shared() const = 0;
+        virtual bool inSharedMemory() const = 0;
     };
 
 public:  // methods
@@ -193,7 +193,7 @@ public:
     size_t footprint() const;
 
     /// Is the memory shared
-    bool shared() const;
+    bool inSharedMemory() const;
 
     void dump(std::ostream& os) const;
 

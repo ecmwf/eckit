@@ -46,10 +46,23 @@ Mem SystemInfoLinux::memoryUsage() const {
     struct rusage usage;
     SYSCALL(getrusage(RUSAGE_SELF, &usage));
 
+    static const char* debug = getenv("ECKIT_SYSINFO_DEBUG");
+
+    if (debug) {
+        if (atoi(debug)) {
+            std::ostringstream oss;
+            oss << "/proc/" << ::getpid() << "/smaps";
+            std::ifstream in(oss.str().c_str());
+            char line[10240] = {0,};
+            while (in.getline(line, sizeof(line) - 1)) {
+                eckit::Log::info() << "ECKIT_SYSINFO_DEBUG " << line << std::endl;
+            }
+        }
+    }
+
     std::ostringstream oss;
     oss << "/proc/" << ::getpid() << "/maps";
 
-    static const char* debug = getenv("ECKIT_SYSINFO_DEBUG");
 
     std::ifstream in(oss.str().c_str());
     char line[10240] = {0,};
@@ -60,13 +73,13 @@ Mem SystemInfoLinux::memoryUsage() const {
     size_t execute = 0;
     size_t privy = 0;
 
+    std::map<std::string, size_t> s;
+
+
+
     while (in.getline(line, sizeof(line) - 1)) {
 
-        if(debug) {
-            if(atoi(debug)) {
-                eckit::Log::info() << "ECKIT_SYSINFO_DEBUG " << line << std::endl;
-            }
-        }
+
 
 
         std::istringstream in1(line);
@@ -97,7 +110,8 @@ Mem SystemInfoLinux::memoryUsage() const {
         }
     }
 
-    // std::cout << shared << std::endl;
+
+    // std::cout << shared << std::endl
 
     return Mem(usage.ru_maxrss * 1024,
                0,

@@ -54,6 +54,11 @@ void ResourceUsage::init() {
     malloc_ = sysinfo.memoryAllocated();
     shared_ = usage.shared_memory_;
 
+    mapped_read_ = usage.mapped_read_;
+    mapped_write_ = usage.mapped_write_;
+    mapped_execute_ = usage.mapped_execute_;
+    mapped_private_ = usage.mapped_private_;
+
     MemoryPool::info(transientUsed_, transientFree_, MemPool::transientPool);
     MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
     MemoryPool::large(largeUsed_, largeFree_);
@@ -69,6 +74,26 @@ void ResourceUsage::init() {
              << eckit::Bytes(shared_);
     }
 
+    if (mapped_read_) {
+        out_ << ", mapped (read): "
+             << eckit::Bytes(mapped_read_);
+    }
+
+    if (mapped_write_) {
+        out_ << ", mapped (write): "
+             << eckit::Bytes(mapped_write_);
+    }
+
+    if (mapped_execute_) {
+        out_ << ", mapped (execute): "
+             << eckit::Bytes(mapped_execute_);
+    }
+
+    if (mapped_private_) {
+        out_ << ", mapped (private): "
+             << eckit::Bytes(mapped_private_);
+    }
+    
     if (largeUsed_ || largeFree_) {
         out_ << ", large [used: "
              << eckit::Bytes(largeUsed_)

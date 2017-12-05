@@ -51,7 +51,12 @@ Mem SystemInfoLinux::memoryUsage() const {
 
     std::ifstream in(oss.str().c_str());
     char line[10240] = {0,};
+
     size_t shared = 0;
+    size_t read = 0;
+    size_t write = 0;
+    size_t execute = 0;
+    size_t privy = 0;
 
     while (in.getline(line, sizeof(line) - 1)) {
 
@@ -60,25 +65,39 @@ Mem SystemInfoLinux::memoryUsage() const {
         std::string range, perms;
         in1 >> range >> perms;
 
+        std::replace( range.begin(), range.end(), '-', ' ');
+        std::istringstream in2(range);
 
+        size_t begin, end;
+
+        in2 >> std::hex >> begin >> end;
         // std::cout << begin << " " b<< end << " - "  << perms << std::endl;
 
-        if (!perms.empty() && perms[perms.size() - 1] == 's') {
-            std::replace( range.begin(), range.end(), '-', ' ');
-            std::istringstream in2(range);
+        if (!perms.empty()) {
 
-            size_t begin, end;
+            // http://man7.org/linux/man-pages/man5/proc.5.html
 
-            in2 >> std::hex >> begin >> end;
-            
-            shared += end - begin;
+            switch (perms[perms.size() - 1]) {
+
+            case 'r': read += end - begin; break;
+            case 'w': write += end - begin; break;
+            case 'x': execute += end - begin; break;
+            case 's': shared += end - begin; break;
+            case 'p': privy += end - begin; break;
+
+            }
         }
     }
 
     // std::cout << shared << std::endl;
 
-
-    return Mem(usage.ru_maxrss * 1024, 0, shared) ;
+    return Mem(usage.ru_maxrss * 1024,
+               0,
+               shared,
+               read,
+               write,
+               execute,
+               privy) ;
 }
 
 size_t SystemInfoLinux::memoryAllocated() const {

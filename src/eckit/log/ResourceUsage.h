@@ -54,6 +54,11 @@ private: // members
     size_t malloc_;
     size_t shared_;
 
+    size_t mapped_read_;
+    size_t mapped_write_;
+    size_t mapped_execute_;
+    size_t mapped_private_;
+
     size_t transientUsed_;
     size_t permanentUsed_;
     size_t transientFree_;

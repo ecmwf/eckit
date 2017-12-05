@@ -26,16 +26,29 @@ namespace system {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct Mem {
+
     size_t resident_size_;
     size_t virtual_size_;
     size_t shared_memory_;
+    size_t mapped_read_;
+    size_t mapped_write_;
+    size_t mapped_execute_;
+    size_t mapped_private_;
 
     Mem(size_t resident_size = 0,
         size_t virtual_size = 0,
-        size_t shared_memory = 0):
+        size_t shared_memory = 0, // Same as mapped_shared
+        size_t mapped_read = 0,
+        size_t mapped_write = 0,
+        size_t mapped_execute = 0,
+        size_t mapped_private = 0):
         resident_size_(resident_size),
         virtual_size_(virtual_size),
-        shared_memory_(shared_memory) {}
+        shared_memory_(shared_memory),
+        mapped_read_(mapped_read),
+        mapped_write_(mapped_write),
+        mapped_execute_(mapped_execute),
+        mapped_private_(mapped_private) {}
 };
 
 class SystemInfo : private eckit::NonCopyable {

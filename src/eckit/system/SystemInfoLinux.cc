@@ -53,29 +53,24 @@ Mem SystemInfoLinux::memoryUsage() const {
     char line[10240] = {0,};
     size_t shared = 0;
 
-    while (in.getline(line, sizeof(line)-1)) {
-
-        char *p = line;
-        while(*p) {
-            if(*p == '-') {
-                *p = ' ';
-                }
-                p++;
-            }
-
-        std::istringstream iss(line);
+    while (in.getline(line, sizeof(line) - 1)) {
 
 
-        size_t begin, end;
-        std::string perms;
+        std::istringstream in1(line);
+        std::string range, perms;
+        in1 >> range >> perms;
 
-        iss >> std::hex >> begin >> end >> perms;
 
         // std::cout << begin << " " b<< end << " - "  << perms << std::endl;
 
+        if (!perms.empty() && perms[perms.size() - 1] == 's') {
+            std::replace( range.begin(), range.end(), '-', ' ');
+            std::istringstream in2(range);
 
+            size_t begin, end;
 
-        if(!perms.empty() && perms[perms.size()-1] == 's') {
+            in2 >> std::hex >> begin >> end;
+            
             shared += end - begin;
         }
     }

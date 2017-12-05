@@ -15,7 +15,7 @@
 #include "eckit/memory/MMap.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/BigNum.h"
 
@@ -28,7 +28,7 @@ static long maxCount_;
 static size_t length_;
 static size_t maxLength_;
 
-static eckit::Mutex mutex_;
+static eckit::StaticMutex mutex_;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ void* MMap::mmap(void* addr, size_t length, int prot, int flags, int fd, off_t o
 {
     void* r = ::mmap(addr, length, prot, flags, fd, offset);
     if (r != MAP_FAILED) {
-        AutoLock<Mutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(mutex_);
 
         count_++;
         maxCount_ = std::max(count_, maxCount_);
@@ -51,7 +51,7 @@ int MMap::munmap(void* addr, size_t length)
 {
     int r = ::munmap(addr, length);
     if (r == 0) {
-        AutoLock<Mutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(mutex_);
 
         count_--;
         length_ -= length;
@@ -62,7 +62,7 @@ int MMap::munmap(void* addr, size_t length)
 
 void MMap::dump(std::ostream& out) {
 
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<StaticMutex> lock(mutex_);
 
     if (count_) {
         out << ", mmap count: " << BigNum(count_);

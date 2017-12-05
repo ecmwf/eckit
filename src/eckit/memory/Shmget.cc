@@ -14,7 +14,7 @@
 #include "eckit/memory/Shmget.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/BigNum.h"
 
@@ -30,7 +30,7 @@ static long maxCount_;
 static size_t length_;
 static size_t maxLength_;
 
-static eckit::Mutex mutex_;
+static eckit::StaticMutex mutex_;
 
 static std::map<int, size_t> sizes_;
 static std::map<const void*, int> ids_;
@@ -41,7 +41,7 @@ static std::map<const void*, int> ids_;
 int Shmget::shmget(key_t key, size_t size, int shmflg) {
     int shmid = ::shmget(key, size, shmflg);
     if (shmid >= 0) {
-        AutoLock<Mutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(mutex_);
         sizes_[shmid] = size;
     }
     return shmid;
@@ -50,7 +50,7 @@ int Shmget::shmget(key_t key, size_t size, int shmflg) {
 void *Shmget::shmat(int shmid, const void *shmaddr, int shmflg) {
     void *addr = ::shmat(shmid, shmaddr, shmflg);
     if (addr) {
-        AutoLock<Mutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(mutex_);
         count_++;
         maxCount_ = std::max(count_, maxCount_);
 
@@ -67,7 +67,7 @@ void *Shmget::shmat(int shmid, const void *shmaddr, int shmflg) {
 int Shmget::shmdt(const void *shmaddr) {
     int code = ::shmdt(shmaddr);
     if (code == 0) {
-        AutoLock<Mutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(mutex_);
 
         count_--;
         length_ -= sizes_[ids_[shmaddr]];
@@ -82,7 +82,7 @@ int Shmget::shmdt(const void *shmaddr) {
 
 void Shmget::dump(std::ostream& out) {
 
-    AutoLock<Mutex> lock(mutex_);
+    AutoLock<StaticMutex> lock(mutex_);
 
     if (count_) {
         out << ", shmget count: " << BigNum(count_);

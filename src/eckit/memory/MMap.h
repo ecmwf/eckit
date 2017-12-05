@@ -16,6 +16,7 @@
 #define eckit_memory_MMap_h
 
 #include <map>
+#include <iosfwd>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"

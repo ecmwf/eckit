@@ -18,9 +18,6 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/BigNum.h"
 
-#include <sys/shm.h>
-
-
 namespace eckit {
 
 

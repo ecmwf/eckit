@@ -566,6 +566,8 @@ memory/MemoryBuffer.h
 memory/MemoryBuffer.cc
 memory/MMap.cc
 memory/MMap.h
+memory/Shmget.cc
+memory/Shmget.h
 memory/SharedPtr.h
 memory/Padded.h
 memory/MapAllocator.h

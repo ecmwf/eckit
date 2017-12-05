@@ -12,8 +12,8 @@
 /// @author  Tiago Quintino
 /// @date    Dec 2017
 
-#ifndef eckit_memory_MMap_h
-#define eckit_memory_MMap_h
+#ifndef eckit_memory_Shmget_h
+#define eckit_memory_Shmget_h
 
 #include <iosfwd>
 
@@ -22,11 +22,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class MMap {
+class Shmget {
 public: // methods
 
-    static void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset);
-    static int munmap(void* addr, size_t length);
+
+    static int shmget(key_t key, size_t size, int shmflg);;
+    static void *shmat(int shmid, const void *shmaddr, int shmflg);
+    static int shmdt(const void *shmaddr);
+
     static void dump(std::ostream& os);
 
 };

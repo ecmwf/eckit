@@ -55,7 +55,7 @@ SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmNa
         zero = true;
 	}
 
-    map_ = ::mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd_, 0);
+    map_ = MMap::mmap(0, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd_, 0);
     if(map_ == MAP_FAILED)
     {
         Log::error() << "SharedMemArray name=" << shmName_ << " size=" << size

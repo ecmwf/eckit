@@ -19,6 +19,8 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 
+#include "eckit/memory/MMap.h"
+
 
 namespace eckit {
 
@@ -87,7 +89,7 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
         SYSCALL(::write(fd_,&c,1));
     }
     
-    addr_ = ::mmap(0, size_, mflags, MAP_SHARED, fd_, 0 );
+    addr_ = MMap::mmap(0, size_, mflags, MAP_SHARED, fd_, 0 );
     if(addr_ == MAP_FAILED) {
         Log::error() << "open(" << path << ')'
                      << Log::syserr << std::endl;

@@ -14,12 +14,12 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/ResizableBuffer.h"
 
+#include "eckit/memory/MMap.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ResizableBuffer::ResizableBuffer(size_t size):
     buffer_(0),
@@ -56,7 +56,7 @@ void ResizableBuffer::create()
     if (size_)
     {
         fd_ = -1;
-        buffer_ = ::mmap(0, size_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
+        buffer_ = MMap::mmap(0, size_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
         if (buffer_ == MAP_FAILED)
             throw FailedSystemCall("mmap", Here());
     }
@@ -67,7 +67,7 @@ void ResizableBuffer::destroy()
 //  Log::info() << "ResizableBuffer::destroy " << size_ << std::endl;
     if (size_)
     {
-        munmap(buffer_, size_);
+        MMap::munmap(buffer_, size_);
         if (fd_ >= 0) close(fd_);
         fd_ = -1;
     }
@@ -83,7 +83,7 @@ void ResizableBuffer::resize(size_t size)
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

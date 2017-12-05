@@ -20,6 +20,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/memory/Padded.h"
+#include "eckit/memory/MMap.h"
 
 #include "eckit/os/Stat.h"
 
@@ -64,7 +65,7 @@ MappedArray<T>::MappedArray(const PathName& path, unsigned long size):
 			SYSCALL(write(fd_,buf2,sizeof(buf2)));
 	}
 
-	map_ = ::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
+    map_ = MMap::mmap(0,length,PROT_READ|PROT_WRITE,MAP_SHARED,fd_,0);
     if(map_ == MAP_FAILED)
     {
         Log::error() << "MappedArray path=" << path << " size=" << size

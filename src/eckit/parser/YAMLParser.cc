@@ -563,7 +563,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
     std::string result;
 
-    bool was_indented;
+    bool was_indented = false;
 
     while (pos_ >= indent) {
 

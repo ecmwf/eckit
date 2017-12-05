@@ -8,8 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <sys/mman.h>
+#include <map>
 
 #include "eckit/eckit.h"
 #include "eckit/memory/Shmget.h"
@@ -31,69 +30,66 @@ static size_t maxLength_;
 
 static eckit::Mutex mutex_;
 
-// static std::map<const void*, int> sizes_;
-// static std::map<int, size_t> sizes_;
+static std::map<int, size_t> sizes_;
+static std::map<const void*, int> ids_;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
 int Shmget::shmget(key_t key, size_t size, int shmflg) {
     int shmid = ::shmget(key, size, shmflg);
+    if (shmid >= 0) {
+        AutoLock<Mutex> lock(mutex_);
+        sizes_[shmid] = size;
+    }
     return shmid;
 }
 
 void *Shmget::shmat(int shmid, const void *shmaddr, int shmflg) {
     void *addr = ::shmat(shmid, shmaddr, shmflg);
+    if (addr) {
+        AutoLock<Mutex> lock(mutex_);
+        count_++;
+        maxCount_ = std::max(count_, maxCount_);
+
+        length_ += sizes_[shmid];
+        maxLength_ = std::max(length_, maxLength_);
+
+        ids_[addr] = shmid;
+
+
+    }
     return addr;
 }
 
 int Shmget::shmdt(const void *shmaddr) {
     int code = ::shmdt(shmaddr);
+    if (code == 0) {
+        AutoLock<Mutex> lock(mutex_);
+
+        count_--;
+        length_ -= sizes_[ids_[shmaddr]];
+
+        sizes_.erase(ids_[shmaddr]);
+        ids_.erase(shmaddr);
+    }
     return code;
 }
 
 
-
-
-// void* Shmget::mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset)
-// {
-//     void* r = ::mmap(addr, length, prot, flags, fd, offset);
-//     if (r != MAP_FAILED) {
-//         AutoLock<Mutex> lock(mutex_);
-
-//         count_++;
-//         maxCount_ = std::max(count_, maxCount_);
-
-//         length_ += length;
-//         maxLength_ = std::max(length_, maxLength_);
-//     }
-//     return r;
-// }
-
-// int Shmget::munmap(void* addr, size_t length)
-// {
-//     int r = ::munmap(addr, length);
-//     if (r == 0) {
-//         AutoLock<Mutex> lock(mutex_);
-
-//         count_--;
-//         length_ -= length;
-//     }
-//     return r;
-// }
-
-
-void Shmget::dump(std::ostream& os)
-{
+void Shmget::dump(std::ostream& out) {
 
     AutoLock<Mutex> lock(mutex_);
 
-    os << "Shmget["
-       << "count=" << count_
-       << ",max count=" << maxCount_
-       << ",length=" << length_
-       << ",max length=" << maxLength_
-       << "]";
+    if (count_) {
+        out << ", shmget count: " << count_;
+    }
+
+    if (count_) {
+        out << ", shmget size: " << length_;
+    }
+
+
 }
 
 

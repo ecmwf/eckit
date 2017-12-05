@@ -17,6 +17,8 @@
 
 #include "eckit/system/SystemInfo.h"
 #include "eckit/memory/MemoryPool.h"
+#include "eckit/memory/Shmget.h"
+#include "eckit/memory/MMap.h"
 
 namespace eckit {
 
@@ -93,7 +95,10 @@ void ResourceUsage::init() {
         out_ << ", mapped (private): "
              << eckit::Bytes(mapped_private_);
     }
-    
+
+    MMap::dump(out_);
+    Shmget::dump(out_);
+
     if (largeUsed_ || largeFree_) {
         out_ << ", large [used: "
              << eckit::Bytes(largeUsed_)

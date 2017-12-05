@@ -58,17 +58,17 @@ int MMap::munmap(void* addr, size_t length)
 }
 
 
-void MMap::dump(std::ostream& os)
-{
+void MMap::dump(std::ostream& out) {
 
     AutoLock<Mutex> lock(mutex_);
 
-    os << "MMap["
-       << "count=" << count_
-       << ",max count=" << maxCount_
-       << ",length=" << length_
-       << ",max length=" << maxLength_
-       << "]";
+    if (count_) {
+        out << ", mmap count: " << count_;
+    }
+
+    if (count_) {
+        out << ", mmap size: " << length_;
+    }
 }
 
 

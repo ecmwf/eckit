@@ -16,6 +16,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/BigNum.h"
 
 namespace eckit {
 
@@ -63,11 +65,11 @@ void MMap::dump(std::ostream& out) {
     AutoLock<Mutex> lock(mutex_);
 
     if (count_) {
-        out << ", mmap count: " << count_;
+        out << ", mmap count: " << BigNum(count_);
     }
 
-    if (count_) {
-        out << ", mmap size: " << length_;
+    if (length_) {
+        out << ", mmap size: " << Bytes(length_);
     }
 }
 

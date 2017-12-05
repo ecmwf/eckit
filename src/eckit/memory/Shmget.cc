@@ -15,6 +15,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/BigNum.h"
 
 #include <sys/shm.h>
 
@@ -77,21 +79,19 @@ int Shmget::shmdt(const void *shmaddr) {
 }
 
 
+
 void Shmget::dump(std::ostream& out) {
 
     AutoLock<Mutex> lock(mutex_);
 
     if (count_) {
-        out << ", shmget count: " << count_;
+        out << ", shmget count: " << BigNum(count_);
     }
 
-    if (count_) {
-        out << ", shmget size: " << length_;
+    if (length_) {
+        out << ", shmget size: " << Bytes(length_);
     }
-
-
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

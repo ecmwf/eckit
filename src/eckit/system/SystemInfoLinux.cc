@@ -49,6 +49,8 @@ Mem SystemInfoLinux::memoryUsage() const {
     std::ostringstream oss;
     oss << "/proc/" << ::getpid() << "/maps";
 
+    static const char* debug = getenv("ECKIT_SYSINFO_DEBUG");
+
     std::ifstream in(oss.str().c_str());
     char line[10240] = {0,};
 
@@ -59,6 +61,12 @@ Mem SystemInfoLinux::memoryUsage() const {
     size_t privy = 0;
 
     while (in.getline(line, sizeof(line) - 1)) {
+
+        if(debug) {
+            if(atoi(debug)) {
+                eckit::Log::info() << "ECKIT_SYSINFO_DEBUG " << line << std::endl;
+            }
+        }
 
 
         std::istringstream in1(line);

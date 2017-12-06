@@ -28,20 +28,6 @@ namespace geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-using types::is_approximately_equal;
-
-static inline double between_m180_and_p180(double a)
-{
-    //FIXME: remove this!
-    while (a > 180) {
-        a -= 360;
-    }
-    while (a < -180 ) {
-        a += 360;
-    }
-    return a;
-}
-
 static double normalise_longitude(double a, const double& minimum)
 {
     while (a < minimum) {
@@ -87,14 +73,14 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat)
         std::ostringstream oss;
         oss.precision(max_digits10);
         oss << "Invalid latitude " << Alonlat[1];
-        throw eckit::BadValue(oss.str(), Here());
+        throw BadValue(oss.str(), Here());
     }
 
     if (!(-90. <= Blonlat[1] && Blonlat[1] <= 90.)) {
         std::ostringstream oss;
         oss.precision(max_digits10);
         oss << "Invalid latitude " << Blonlat[1];
-        throw eckit::BadValue(oss.str(), Here());
+        throw BadValue(oss.str(), Here());
     }
 
     const double phi1   = degrees_to_radians * Alonlat[1];
@@ -113,7 +99,7 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat)
                      pow(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda, 2)),
                 sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda );
 
-    if (is_approximately_equal(angle, 0.)) {
+    if (types::is_approximately_equal(angle, 0.)) {
         return 0.;
     }
 
@@ -128,7 +114,7 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
     // Δσ = 2 * asin( chord / 2 )
 
     const double d2 = Point3::distance2(A, B);
-    if (is_approximately_equal(d2, 0.)) {
+    if (types::is_approximately_equal(d2, 0.)) {
         return 0.;
     }
 
@@ -150,41 +136,36 @@ double Sphere::distanceInMeters(const double& radius, const Point3& A, const Poi
 
 double Sphere::areaInSqMeters(const double& radius)
 {
-    return M_PI * 4. * radius * radius;
+    ASSERT(radius > 0.);
+    return 4. * M_PI * radius * radius;
 }
 
 double Sphere::areaInSqMeters(const double& radius, const Point2& WestNorth, const Point2& EastSouth)
 {
-#if 0
+    ASSERT(radius > 0.);
+
     // Set longitude fraction
-    const mir::Longitude
-            W = area[1],
-            E = mir::Longitude(area[3]).normalise(W),
-            longitude_range(W == E && !is_approximately_equal(area[1], area[3]) ? 360. : E - W);
-    ASSERT(0 <= longitude_range);
+    double W = WestNorth[0];
+    double E = normalise_longitude(EastSouth[0], W);
+    double longitude_range(types::is_approximately_equal(W, E) && !types::is_approximately_equal(EastSouth[0], WestNorth[0]) ?
+                360. : E - W);
     ASSERT(longitude_range <= 360.);
 
-    const double longitude_fraction = longitude_range.value() / 360.;
+    double longitude_fraction = longitude_range / 360.;
 
-
-    // Set latitude spherical segment height
-    const mir::Latitude
-            N = area[0] > area[2] ? area[0] : area[2],
-            S = area[0] > area[2] ? area[2] : area[0];
-    ASSERT(-90. <= N.value() && N.value() <= 90.);
-    ASSERT(-90. <= S.value() && S.value() <= 90.);
+    // Set latitude fraction
+    double N = WestNorth[1];
+    double S = EastSouth[1];
+    ASSERT(-90. <= N && N <= 90.);
+    ASSERT(-90. <= S && S <= 90.);
     ASSERT(N >= S);
 
-    const double height = r * (
-            std::sin(mir::util::degree_to_radian(N.value())) -
-            std::sin(mir::util::degree_to_radian(S.value())) );
-    ASSERT(height >= 0.);
-
+    double latitude_fraction = 0.5 * (
+                std::sin(degrees_to_radians * N) -
+                std::sin(degrees_to_radians * S) );
 
     // Calculate area
-    return M_PI * 2. * radius * height * longitude_fraction;
-#endif
-    return 0.;
+    return areaInSqMeters(radius) * latitude_fraction * longitude_fraction;
 }
 
 void Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, Point2& Clonlat)
@@ -193,7 +174,7 @@ void Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Poin
 
     //  Intermediate great circle points (not applicable for meridians), see
     //   http://www.edwilliams.org/avform.htm#Int
-    ASSERT(!is_approximately_equal(Alonlat[0], Blonlat[0]));
+    ASSERT(!types::is_approximately_equal(Alonlat[0], Blonlat[0]));
 
     // NOTE: uses C longitude to set C latitude
     const double phi1     = degrees_to_radians * Alonlat[1];
@@ -215,7 +196,7 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
         std::ostringstream oss;
         oss.precision(max_digits10);
         oss << "Invalid latitude " << Alonlat[1];
-        throw eckit::BadValue(oss.str(), Here());
+        throw BadValue(oss.str(), Here());
     }
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
@@ -223,7 +204,7 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
     const double& a = radius;
     const double& b = radius;
 
-    const double lambda_deg = between_m180_and_p180(Alonlat[0]);
+    const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
     const double lambda = degrees_to_radians * lambda_deg;
     const double phi    = degrees_to_radians * Alonlat[1];
 
@@ -232,7 +213,7 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
     const double cos_lambda = std::abs(lambda_deg) >  90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
-    if (is_approximately_equal(a,b)) { // no eccentricity case
+    if (types::is_approximately_equal(a,b)) { // no eccentricity case
         B[0] = (a + height) * cos_phi * cos_lambda;
         B[1] = (a + height) * cos_phi * sin_lambda;
         B[2] = (a + height) * sin_phi;
@@ -252,7 +233,7 @@ void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, 
     // numerical conditioning for both z (poles) and y
 
     const double x = A[0];
-    const double y = is_approximately_equal(A[1], 0.) ? 0. : A[1];
+    const double y = types::is_approximately_equal(A[1], 0.) ? 0. : A[1];
     const double z = std::min(radius, std::max(-radius, A[2])) / radius;
 
     Blonlat[0] = radians_to_degrees * std::atan2(y, x);

@@ -12,8 +12,6 @@
 #define SphereT_H
 
 #include "eckit/geometry/Sphere.h"
-#include "eckit/geometry/Point2.h"
-#include "eckit/geometry/Point3.h"
 
 //------------------------------------------------------------------------------------------------------
 

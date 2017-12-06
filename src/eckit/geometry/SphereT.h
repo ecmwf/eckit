@@ -26,10 +26,16 @@ namespace geometry {
 template< class DATUM >
 struct SphereT {
 
-    /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
-    inline static double centralAngle(const Point2& Alatlon, const Point2& Blatlon)
+    /// Sphere radius in metres
+    inline static double radiusInMeters()
     {
-        return Sphere::centralAngle(Alatlon, Blatlon);
+        return DATUM::radiusInMeters();
+    }
+
+    /// Great-circle central angle between two points (longitude/latitude coordinates) in radians
+    inline static double centralAngle(const Point2& Alonlat, const Point2& Blonlat)
+    {
+        return Sphere::centralAngle(Alonlat, Blonlat);
     }
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
@@ -38,10 +44,10 @@ struct SphereT {
         return Sphere::centralAngle(DATUM::radiusInMeters(), A, B);
     }
 
-    /// Great-circle distance between two points (latitude/longitude coordinates) in metres
-    inline static double distanceInMeters(const Point2& Alatlon, const Point2& Blatlon)
+    /// Great-circle distance between two points (longitude/latitude coordinates) in metres
+    inline static double distanceInMeters(const Point2& Alonlat, const Point2& Blonlat)
     {
-        return Sphere::distanceInMeters(DATUM::radiusInMeters(), Alatlon, Blatlon);
+        return Sphere::distanceInMeters(DATUM::radiusInMeters(), Alonlat, Blonlat);
     }
 
     /// Great-circle distance between two points (Cartesian coordinates) in metres
@@ -50,22 +56,34 @@ struct SphereT {
         return Sphere::distanceInMeters(DATUM::radiusInMeters(), A, B);
     }
 
-    // Great-circle intermediate position provided two circle points (A, B) and longitude (C) in degrees
-    inline static void greatCircleLatitudeGivenLongitude(const Point2& Alatlon, const Point2& Blatlon, Point2& Clatlon)
+    /// Surface area in square metres
+    inline static double areaInSqMeters()
     {
-        Sphere::greatCircleLatitudeGivenLongitude(Alatlon, Blatlon, Clatlon);
+        return Sphere::areaInSqMeters(DATUM::radiusInMeters());
+    }
+
+    /// Surface area between parallels and meridians defined by two points (longitude/latitude coordinates) in square metres
+    inline static double areaInSqMeters(const Point2& WestNorth, const Point2& EastSouth)
+    {
+        return Sphere::areaInSqMeters(DATUM::radiusInMeters(), WestNorth, EastSouth);
+    }
+
+    // Great-circle intermediate position provided two circle points (A, B) and longitude (C) in degrees
+    inline static void greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, Point2& Clonlat)
+    {
+        Sphere::greatCircleLatitudeGivenLongitude(Alonlat, Blonlat, Clonlat);
     }
 
     // Convert spherical coordinates to Cartesian
-    inline static void convertSphericalToCartesian(const Point2& Alatlon, Point3& B, double height = 0.)
+    inline static void convertSphericalToCartesian(const Point2& Alonlat, Point3& B, double height = 0.)
     {
-        Sphere::convertSphericalToCartesian(DATUM::radiusInMeters(), Alatlon, B, height);
+        Sphere::convertSphericalToCartesian(DATUM::radiusInMeters(), Alonlat, B, height);
     }
 
     // Convert Cartesian coordinates to spherical
-    inline static void convertCartesianToSpherical(const Point3& A, Point2& Blatlon)
+    inline static void convertCartesianToSpherical(const Point3& A, Point2& Blonlat)
     {
-        Sphere::convertCartesianToSpherical(DATUM::radiusInMeters(), A, Blatlon);
+        Sphere::convertCartesianToSpherical(DATUM::radiusInMeters(), A, Blonlat);
     }
 
 };

@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cmath>
 #include <ios>
-//#include <limits> // for std::numeric_limits
+//#include <limits>  // for std::numeric_limits
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
@@ -28,8 +28,11 @@ namespace geometry {
 
 //------------------------------------------------------------------------------------------------------
 
+using types::is_approximately_equal;
+
 static inline double between_m180_and_p180(double a)
 {
+    //FIXME: remove this!
     while (a > 180) {
         a -= 360;
     }
@@ -39,15 +42,28 @@ static inline double between_m180_and_p180(double a)
     return a;
 }
 
+static double normalise_longitude(double a, const double& minimum)
+{
+    while (a < minimum) {
+        a += 360;
+    }
+    while (a >= minimum + 360) {
+        a -= 360;
+    }
+    return a;
+}
+
 static const double radians_to_degrees = 180. * M_1_PI;
 
 static const double degrees_to_radians = M_PI / 180.;
 
-static std::streamsize max_digits10 = 15 + 3;  // C++-11: std::numeric_limits<double>::max_digits10;
+static std::streamsize max_digits10 = 15 + 3;
+
+// C++-11: std::numeric_limits<double>::max_digits10;
 
 //------------------------------------------------------------------------------------------------------
 
-double Sphere::centralAngle(const Point2& Alatlon, const Point2& Blatlon)
+double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat)
 {
     using namespace std;
 
@@ -67,23 +83,23 @@ double Sphere::centralAngle(const Point2& Alatlon, const Point2& Blatlon)
      * }
      */
 
-    if (!(-90. <= Alatlon[0] && Alatlon[0] <= 90.)) {
+    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
         std::ostringstream oss;
         oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alatlon[0];
+        oss << "Invalid latitude " << Alonlat[1];
         throw eckit::BadValue(oss.str(), Here());
     }
 
-    if (!(-90. <= Blatlon[0] && Blatlon[0] <= 90.)) {
+    if (!(-90. <= Blonlat[1] && Blonlat[1] <= 90.)) {
         std::ostringstream oss;
         oss.precision(max_digits10);
-        oss << "Invalid latitude " << Blatlon[0];
+        oss << "Invalid latitude " << Blonlat[1];
         throw eckit::BadValue(oss.str(), Here());
     }
 
-    const double phi1   = degrees_to_radians * Alatlon[0];
-    const double phi2   = degrees_to_radians * Blatlon[0];
-    const double lambda = degrees_to_radians * (Blatlon[1] - Alatlon[1]);
+    const double phi1   = degrees_to_radians * Alonlat[1];
+    const double phi2   = degrees_to_radians * Blonlat[1];
+    const double lambda = degrees_to_radians * (Blonlat[0] - Alonlat[0]);
 
     const double cos_phi1 = cos(phi1);
     const double sin_phi1 = sin(phi1);
@@ -93,11 +109,11 @@ double Sphere::centralAngle(const Point2& Alatlon, const Point2& Blatlon)
     const double sin_lambda = sin(lambda);
 
     const double angle = atan2(
-                             sqrt(pow(cos_phi2 * sin_lambda, 2) +
-                                  pow(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda, 2)),
-                             sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda );
+                sqrt(pow(cos_phi2 * sin_lambda, 2) +
+                     pow(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda, 2)),
+                sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda );
 
-    if (eckit::types::is_approximately_equal(angle, 0.)) {
+    if (is_approximately_equal(angle, 0.)) {
         return 0.;
     }
 
@@ -112,7 +128,7 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
     // Δσ = 2 * asin( chord / 2 )
 
     const double d2 = Point3::distance2(A, B);
-    if (eckit::types::is_approximately_equal(d2, 0.)) {
+    if (is_approximately_equal(d2, 0.)) {
         return 0.;
     }
 
@@ -122,9 +138,9 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
     return angle;
 }
 
-double Sphere::distanceInMeters(const double& radius, const Point2& Alatlon, const Point2& Blatlon)
+double Sphere::distanceInMeters(const double& radius, const Point2& Alonlat, const Point2& Blonlat)
 {
-    return radius * centralAngle(Alatlon, Blatlon);
+    return radius * centralAngle(Alonlat, Blonlat);
 }
 
 double Sphere::distanceInMeters(const double& radius, const Point3& A, const Point3& B)
@@ -132,34 +148,73 @@ double Sphere::distanceInMeters(const double& radius, const Point3& A, const Poi
     return radius * centralAngle(radius, A, B);
 }
 
-void Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alatlon, const Point2& Blatlon, Point2& Clatlon)
+double Sphere::areaInSqMeters(const double& radius)
+{
+    return M_PI * 4. * radius * radius;
+}
+
+double Sphere::areaInSqMeters(const double& radius, const Point2& WestNorth, const Point2& EastSouth)
+{
+#if 0
+    // Set longitude fraction
+    const mir::Longitude
+            W = area[1],
+            E = mir::Longitude(area[3]).normalise(W),
+            longitude_range(W == E && !is_approximately_equal(area[1], area[3]) ? 360. : E - W);
+    ASSERT(0 <= longitude_range);
+    ASSERT(longitude_range <= 360.);
+
+    const double longitude_fraction = longitude_range.value() / 360.;
+
+
+    // Set latitude spherical segment height
+    const mir::Latitude
+            N = area[0] > area[2] ? area[0] : area[2],
+            S = area[0] > area[2] ? area[2] : area[0];
+    ASSERT(-90. <= N.value() && N.value() <= 90.);
+    ASSERT(-90. <= S.value() && S.value() <= 90.);
+    ASSERT(N >= S);
+
+    const double height = r * (
+            std::sin(mir::util::degree_to_radian(N.value())) -
+            std::sin(mir::util::degree_to_radian(S.value())) );
+    ASSERT(height >= 0.);
+
+
+    // Calculate area
+    return M_PI * 2. * radius * height * longitude_fraction;
+#endif
+    return 0.;
+}
+
+void Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, Point2& Clonlat)
 {
     using namespace std;
 
     //  Intermediate great circle points (not applicable for meridians), see
     //   http://www.edwilliams.org/avform.htm#Int
-    ASSERT(!eckit::types::is_approximately_equal(Alatlon[1], Blatlon[1]));
+    ASSERT(!is_approximately_equal(Alonlat[0], Blonlat[0]));
 
     // NOTE: uses C longitude to set C latitude
-    const double phi1     = degrees_to_radians * Alatlon[0];
-    const double phi2     = degrees_to_radians * Blatlon[0];
-    const double lambda1p = degrees_to_radians * (Clatlon[1] - Alatlon[1]);
-    const double lambda2p = degrees_to_radians * (Clatlon[1] - Blatlon[1]);
-    const double lambda   = degrees_to_radians * (Blatlon[1] - Alatlon[1]);
+    const double phi1     = degrees_to_radians * Alonlat[1];
+    const double phi2     = degrees_to_radians * Blonlat[1];
+    const double lambda1p = degrees_to_radians * (Clonlat[0] - Alonlat[0]);
+    const double lambda2p = degrees_to_radians * (Clonlat[0] - Blonlat[0]);
+    const double lambda   = degrees_to_radians * (Blonlat[0] - Alonlat[0]);
 
-    Clatlon[0] = radians_to_degrees * atan(
-                  (tan(phi2) * sin(lambda1p) - tan(phi1) * sin(lambda2p)) /
-                  (sin(lambda)) );
+    Clonlat[1] = radians_to_degrees * atan(
+                (tan(phi2) * sin(lambda1p) - tan(phi1) * sin(lambda2p)) /
+                (sin(lambda)) );
 }
 
-void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alatlon, Point3& B, double height)
+void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height)
 {
     ASSERT(radius > 0.);
 
-    if (!(-90. <= Alatlon[0] && Alatlon[0] <= 90.)) {
+    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
         std::ostringstream oss;
         oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alatlon[0];
+        oss << "Invalid latitude " << Alonlat[1];
         throw eckit::BadValue(oss.str(), Here());
     }
 
@@ -168,16 +223,16 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Ala
     const double& a = radius;
     const double& b = radius;
 
-    const double lambda_deg = between_m180_and_p180(Alatlon[1]);
+    const double lambda_deg = between_m180_and_p180(Alonlat[0]);
     const double lambda = degrees_to_radians * lambda_deg;
-    const double phi    = degrees_to_radians * Alatlon[0];
+    const double phi    = degrees_to_radians * Alonlat[1];
 
     const double sin_phi = std::sin(phi);
     const double cos_phi = std::sqrt(1. - sin_phi * sin_phi);
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
     const double cos_lambda = std::abs(lambda_deg) >  90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
-    if (eckit::types::is_approximately_equal(a,b)) { // no eccentricity case
+    if (is_approximately_equal(a,b)) { // no eccentricity case
         B[0] = (a + height) * cos_phi * cos_lambda;
         B[1] = (a + height) * cos_phi * sin_lambda;
         B[2] = (a + height) * sin_phi;
@@ -190,18 +245,18 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Ala
     B[2] = (N_phi * (b * b) / (a * a) + height) * sin_phi;
 }
 
-void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blatlon)
+void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat)
 {
     ASSERT(radius > 0.);
 
     // numerical conditioning for both z (poles) and y
 
     const double x = A[0];
-    const double y = eckit::types::is_approximately_equal(A[1], 0.) ? 0. : A[1];
+    const double y = is_approximately_equal(A[1], 0.) ? 0. : A[1];
     const double z = std::min(radius, std::max(-radius, A[2])) / radius;
 
-    Blatlon[0] = radians_to_degrees * std::asin(z);
-    Blatlon[1] = radians_to_degrees * std::atan2(y, x);
+    Blonlat[0] = radians_to_degrees * std::atan2(y, x);
+    Blonlat[1] = radians_to_degrees * std::asin(z);
 }
 
 //------------------------------------------------------------------------------------------------------

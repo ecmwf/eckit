@@ -26,13 +26,12 @@ namespace test {
 using namespace geometry;
 
 struct PointLonLat : Point2 {
-    using Point2::Point2;
+    PointLonLat( double x, double y ) : Point2(x, y) {}
     const double& lon() const { return x_[0]; }
     const double& lat() const { return x_[1]; }
 };
 
 struct PointXYZ : Point3 {
-    using Point3::Point3;
     const double& x() const { return x_[0]; }
     const double& y() const { return x_[1]; }
     const double& z() const { return x_[2]; }
@@ -63,24 +62,24 @@ CASE( "test_unit_sphere_radius" )
 
 CASE( "test_unit_sphere_north_pole" )
 {
-    const PointLonLat p1(0., 90.);
-    PointXYZ p2;
-    UnitSphere::convertSphericalToCartesian(p1, p2);
+    const PointLonLat ll1(0., 90.);
+    PointXYZ p;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
 
-    EXPECT(p2.x() == 0);
-    EXPECT(p2.y() == 0);
-    EXPECT(p2.z() == R);
+    EXPECT(p.x() == 0);
+    EXPECT(p.y() == 0);
+    EXPECT(p.z() == R);
 }
 
 CASE( "test_unit_sphere_south_pole" )
 {
-    const PointLonLat p1(0., -90.);
-    PointXYZ p2;
-    UnitSphere::convertSphericalToCartesian(p1, p2);
+    const PointLonLat ll1(0., -90.);
+    PointXYZ p;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
 
-    EXPECT(p2.x() == 0);
-    EXPECT(p2.y() == 0);
-    EXPECT(p2.z() == -R);
+    EXPECT(p.x() == 0);
+    EXPECT(p.y() == 0);
+    EXPECT(p.z() == -R);
 }
 
 // -----------------------------------------------------------------------------
@@ -88,58 +87,62 @@ CASE( "test_unit_sphere_south_pole" )
 
 CASE( "test_unit_sphere_lon_0" )
 {
-    const PointLonLat p1[2] = {{0., 0.}, {-360., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(0., 0.);
+    const PointLonLat ll2(-360., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT(p2[0].x() == R);
-    EXPECT(p2[0].y() == 0);
-    EXPECT(p2[0].z() == 0);
+    EXPECT(p.x() == R);
+    EXPECT(p.y() == 0);
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 CASE( "test_unit_sphere_lon_90" )
 {
-    const PointLonLat p1[2] = {{90., 0.}, {-270., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(90., 0.);
+    const PointLonLat ll2(-270., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT(p2[0].x() == 0);
-    EXPECT(p2[0].y() == R);
-    EXPECT(p2[0].z() == 0);
+    EXPECT(p.x() == 0);
+    EXPECT(p.y() == R);
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 CASE( "test_unit_sphere_lon_180" )
 {
-    const PointLonLat p1[2] = {{180., 0.}, {-180., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(180., 0.);
+    const PointLonLat ll2(-180., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT(p2[0].x() == -R);
-    EXPECT(p2[0].y() == 0);
-    EXPECT(p2[0].z() == 0);
+    EXPECT(p.x() == -R);
+    EXPECT(p.y() == 0);
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 CASE( "test_unit_sphere_lon_270" )
 {
-    const PointLonLat p1[2] = {{270., 0.}, {-90., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(270., 0.);
+    const PointLonLat ll2(-90., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT(p2[0].x() == 0);
-    EXPECT(p2[0].y() == -R);
-    EXPECT(p2[0].z() == 0);
+    EXPECT(p.x() == 0);
+    EXPECT(p.y() == -R);
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 
@@ -150,58 +153,62 @@ const double L = R * std::sqrt(2) / 2.;
 
 CASE( "test_unit_sphere_lon_45" )
 {
-    const PointLonLat p1[2] = {{45., 0.}, {-315., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(45., 0.);
+    const PointLonLat ll2(-315., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT( eckit::types::is_approximately_equal( p2[0].x(), L) );
-    EXPECT( eckit::types::is_approximately_equal( p2[0].y(), L) );
-    EXPECT(p2[0].z() == 0);
+    EXPECT( eckit::types::is_approximately_equal( p.x(), L) );
+    EXPECT( eckit::types::is_approximately_equal( p.y(), L) );
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 CASE( "test_unit_sphere_lon_135" )
 {
-    const PointLonLat p1[2] = {{135., 0.}, {-225., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(135., 0.);
+    const PointLonLat ll2(-225., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT( eckit::types::is_approximately_equal( p2[0].x(), -L) );
-    EXPECT( eckit::types::is_approximately_equal( p2[0].y(), L) );
-    EXPECT(p2[0].z() == 0);
+    EXPECT( eckit::types::is_approximately_equal( p.x(), -L) );
+    EXPECT( eckit::types::is_approximately_equal( p.y(), L) );
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 CASE( "test_unit_sphere_lon_225" )
 {
-    const PointLonLat p1[2] = {{225., 0.}, {-135., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(225., 0.);
+    const PointLonLat ll2(-135., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT( eckit::types::is_approximately_equal( p2[0].x(), -L) );
-    EXPECT( eckit::types::is_approximately_equal( p2[0].y(), -L) );
-    EXPECT(p2[0].z() == 0);
+    EXPECT( eckit::types::is_approximately_equal( p.x(), -L) );
+    EXPECT( eckit::types::is_approximately_equal( p.y(), -L) );
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 CASE( "test_unit_sphere_lon_315" )
 {
-    const PointLonLat p1[2] = {{315., 0.}, {-45., 0.}};
-    PointXYZ p2[2];
-    UnitSphere::convertSphericalToCartesian(p1[0], p2[0]);
-    UnitSphere::convertSphericalToCartesian(p1[1], p2[1]);
+    const PointLonLat ll1(315., 0.);
+    const PointLonLat ll2(-45., 0.);
+    PointXYZ p, q;
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
 
-    EXPECT( eckit::types::is_approximately_equal( p2[0].x(), L) );
-    EXPECT( eckit::types::is_approximately_equal( p2[0].y(), -L) );
-    EXPECT(p2[0].z() == 0);
+    EXPECT( eckit::types::is_approximately_equal( p.x(), L) );
+    EXPECT( eckit::types::is_approximately_equal( p.y(), -L) );
+    EXPECT(p.z() == 0);
 
-    EXPECT(PointXYZ::equal(p2[0], p2[1]));
+    EXPECT(PointXYZ::equal(p, q));
 }
 
 CASE( "test_unit_sphere_great_circle_latitude_given_longitude" )
@@ -226,12 +233,12 @@ CASE( "test_unit_sphere_area_globe" )
 
 CASE( "test_unit_sphere_area_hemispheres" )
 {
-    const PointLonLat p[4] = {
-        {-180., 90.}, {180.,   0.},
-        {-180.,  0.}, {180., -90.}
-    };
-    const double area_hemisphere_north = UnitSphere::area(p[0], p[1]);
-    const double area_hemisphere_south = UnitSphere::area(p[2], p[3]);
+    const PointLonLat ll1(-180.,  90.);
+    const PointLonLat ll2( 180.,   0.);
+    const PointLonLat ll3(-180.,   0.);
+    const PointLonLat ll4( 180., -90.);
+    const double area_hemisphere_north = UnitSphere::area(ll1, ll2);
+    const double area_hemisphere_south = UnitSphere::area(ll3, ll4);
 
     EXPECT(area_hemisphere_north == 0.5 * UnitSphere::area());
     EXPECT(area_hemisphere_north == area_hemisphere_south);

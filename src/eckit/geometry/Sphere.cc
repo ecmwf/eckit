@@ -168,7 +168,7 @@ double Sphere::areaInSqMeters(const double& radius, const Point2& WestNorth, con
     return areaInSqMeters(radius) * latitude_fraction * longitude_fraction;
 }
 
-void Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, Point2& Clonlat)
+double Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon)
 {
     using namespace std;
 
@@ -179,13 +179,14 @@ void Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Poin
     // NOTE: uses C longitude to set C latitude
     const double phi1     = degrees_to_radians * Alonlat[1];
     const double phi2     = degrees_to_radians * Blonlat[1];
-    const double lambda1p = degrees_to_radians * (Clonlat[0] - Alonlat[0]);
-    const double lambda2p = degrees_to_radians * (Clonlat[0] - Blonlat[0]);
+    const double lambda1p = degrees_to_radians * (Clon - Alonlat[0]);
+    const double lambda2p = degrees_to_radians * (Clon - Blonlat[0]);
     const double lambda   = degrees_to_radians * (Blonlat[0] - Alonlat[0]);
 
-    Clonlat[1] = radians_to_degrees * atan(
+    double Clat = radians_to_degrees * atan(
                 (tan(phi2) * sin(lambda1p) - tan(phi1) * sin(lambda2p)) /
                 (sin(lambda)) );
+    return Clat;
 }
 
 void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height)

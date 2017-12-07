@@ -66,10 +66,10 @@ struct SphereT {
         return Sphere::areaInSqMeters(DATUM::radiusInMeters(), WestNorth, EastSouth);
     }
 
-    // Great-circle intermediate position provided two circle points (A, B) and longitude (C) in degrees
-    inline static void greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, Point2& Clonlat)
+    // Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
+    inline static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon)
     {
-        Sphere::greatCircleLatitudeGivenLongitude(Alonlat, Blonlat, Clonlat);
+        return Sphere::greatCircleLatitudeGivenLongitude(Alonlat, Blonlat, Clon);
     }
 
     // Convert spherical coordinates to Cartesian

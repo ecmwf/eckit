@@ -210,10 +210,10 @@ CASE( "test_unit_sphere_great_circle_latitude_given_longitude" )
     const PointLonLat P1(-71.6, -33.);
     const PointLonLat P2(121.8,  31.4);
 
-    PointLonLat midpoint(-159.18, std::numeric_limits<double>::quiet_NaN());
-    UnitSphere::greatCircleLatitudeGivenLongitude(P1, P2, midpoint);
+    double lon = -159.18;
+    double lat = UnitSphere::greatCircleLatitudeGivenLongitude(P1, P2, lon);
 
-    EXPECT( eckit::types::is_approximately_equal( midpoint.lat(), -6.81, 0.01 ) );
+    EXPECT( eckit::types::is_approximately_equal( lat, -6.81, 0.01 ) );
 }
 
 // -----------------------------------------------------------------------------

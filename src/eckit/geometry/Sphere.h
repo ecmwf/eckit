@@ -45,8 +45,8 @@ struct Sphere {
     /// Surface area between parallels and meridians defined by two points (longitude/latitude coordinates) in square metres
     static double areaInSqMeters(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
 
-    // Great-circle intermediate position provided two circle points (A, B) and longitude (C) in degrees
-    static void greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, Point2& Clonlat);
+    // Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
+    static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon);
 
     // Convert spherical coordinates to Cartesian
     static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.);

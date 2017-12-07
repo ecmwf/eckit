@@ -65,11 +65,12 @@ void ResourceUsage::init() {
     MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
     MemoryPool::large(largeUsed_, largeFree_);
 
+    SYSCALL(::gethostname(hostname_, sizeof(hostname_)));
+
     out_ << name_
-         << " => resident size: "
-         << eckit::Bytes(rss_)
-         << ", allocated: "
-         << eckit::Bytes(malloc_);
+         << " => " << hostname_
+         << " resident size: " << eckit::Bytes(rss_)
+         << ", allocated: " << eckit::Bytes(malloc_);
 
     if (shared_) {
         out_ << ", shared: "
@@ -152,7 +153,9 @@ ResourceUsage::~ResourceUsage()
     MemoryPool::large(largeUsed, largeFree);
 
 
-    out_ << name_ << " <= resident size: "
+    out_ << name_
+         << " <= " << hostname_
+         << " resident size: "
          << eckit::Bytes(rss);
 
     if ( rss > rss_) {

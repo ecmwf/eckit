@@ -67,6 +67,8 @@ private: // members
     size_t largeUsed_;
     size_t largeFree_;
 
+    char hostname_[256];
+
 };
 
 

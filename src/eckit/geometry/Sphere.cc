@@ -199,10 +199,18 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
         throw BadValue(oss.str(), Here());
     }
 
-    // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
-    // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
-    const double& a = radius;
-    const double& b = radius;
+    /*
+     * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
+     * numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line).
+     *
+     * cos α = sqrt( 1 - sin^2 α) is better conditioned than explicit cos α, and
+     * coupled with λ in [-180°, 180°[ the accuracy of the trigonometric
+     * functions is the same (before converting/multiplying its angle argument
+     * to radian) and explicitly chosing -180° over 180° for longitude.
+     *
+     * These three conditionings combined project very accurately to the sphere
+     * poles and quadrants.
+     */
 
     const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
     const double lambda = degrees_to_radians * lambda_deg;
@@ -213,17 +221,9 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
     const double cos_lambda = std::abs(lambda_deg) >  90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
-    if (types::is_approximately_equal(a,b)) { // no eccentricity case
-        B[0] = (a + height) * cos_phi * cos_lambda;
-        B[1] = (a + height) * cos_phi * sin_lambda;
-        B[2] = (a + height) * sin_phi;
-    }
-
-    const double N_phi = a * a / std::sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi);
-
-    B[0] = (N_phi + height) * cos_phi * cos_lambda;
-    B[1] = (N_phi + height) * cos_phi * sin_lambda;
-    B[2] = (N_phi * (b * b) / (a * a) + height) * sin_phi;
+    B[0] = (radius + height) * cos_phi * cos_lambda;
+    B[1] = (radius + height) * cos_phi * sin_lambda;
+    B[2] = (radius + height) * sin_phi;
 }
 
 void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat)

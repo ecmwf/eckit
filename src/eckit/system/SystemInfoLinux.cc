@@ -42,14 +42,26 @@ LocalPathName SystemInfoLinux::executablePath() const
     return LocalPathName(path).realName();
 }
 
-void SystemInfoLinux::dumpSysMemInfo(std::ostream& os, const char* prepend) const
+void SystemInfoLinux::dumpProcMemInfo(std::ostream& os, const char* prepend) const
 {
     std::ostringstream oss;
     oss << "/proc/" << ::getpid() << "/smaps";
     std::ifstream in(oss.str().c_str());
     char line[10240] = {0,};
     while (in.getline(line, sizeof(line) - 1)) {
-        if(prepend) os << prepend;
+        if(prepend) os << prepend << ' ';
+        os << line << std::endl;
+    }
+}
+
+void SystemInfoLinux::dumpSysMemInfo(std::ostream& os, const char* prepend) const
+{
+    std::ostringstream oss;
+    oss << "/proc/meminfo";
+    std::ifstream in(oss.str().c_str());
+    char line[10240] = {0,};
+    while (in.getline(line, sizeof(line) - 1)) {
+        if(prepend) os << prepend << ' ';
         os << line << std::endl;
     }
 }
@@ -62,7 +74,7 @@ Mem SystemInfoLinux::memoryUsage() const {
     static const char* debug = getenv("ECKIT_SYSINFO_DEBUG");
 
     if (debug && atoi(debug)) {
-            dumpSysMemInfo(eckit::Log::info());
+            dumpSysMemInfo(eckit::Log::info(), debug);
     }
 
     std::ostringstream oss;

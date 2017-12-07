@@ -67,6 +67,7 @@ public: // methods
 
     virtual Mem memoryUsage() const = 0;
 
+    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = 0) const;
     virtual void dumpSysMemInfo(std::ostream&, const char* prepend = 0) const;
 
 protected: // methods
@@ -82,15 +83,15 @@ private: // members
 //----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
-class TraceMemInfo {
+class TraceProcMemInfo {
 public:
 
-    explicit TraceMemInfo(const char* name) {
-        SystemInfo::instance().dumpSysMemInfo(eckit::Log::debug<T>(), name);
+    explicit TraceProcMemInfo(const char* name) {
+        SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name);
     }
 
-    explicit TraceMemInfo( const std::string& name) {
-        SystemInfo::instance().dumpSysMemInfo(eckit::Log::debug<T>(), name.c_str());
+    explicit TraceProcMemInfo( const std::string& name) {
+        SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name.c_str());
     }
 };
 

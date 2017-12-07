@@ -36,6 +36,7 @@ public: // methods
 
     virtual Mem memoryUsage() const;
 
+    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = 0) const;
     virtual void dumpSysMemInfo(std::ostream&, const char* prepend = 0) const;
 
 protected: // methods

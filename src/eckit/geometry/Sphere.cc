@@ -47,6 +47,11 @@ static std::streamsize max_digits10 = 15 + 3;
 
 // C++-11: std::numeric_limits<double>::max_digits10;
 
+inline double squared(double x)
+{
+    return x * x;
+}
+
 //------------------------------------------------------------------------------------------------------
 
 double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat)
@@ -70,14 +75,14 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat)
      */
 
     if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
-        std::ostringstream oss;
+        ostringstream oss;
         oss.precision(max_digits10);
         oss << "Invalid latitude " << Alonlat[1];
         throw BadValue(oss.str(), Here());
     }
 
     if (!(-90. <= Blonlat[1] && Blonlat[1] <= 90.)) {
-        std::ostringstream oss;
+        ostringstream oss;
         oss.precision(max_digits10);
         oss << "Invalid latitude " << Blonlat[1];
         throw BadValue(oss.str(), Here());
@@ -95,8 +100,8 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat)
     const double sin_lambda = sin(lambda);
 
     const double angle = atan2(
-                sqrt(pow(cos_phi2 * sin_lambda, 2) +
-                     pow(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda, 2)),
+                sqrt(squared(cos_phi2 * sin_lambda) +
+                     squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
                 sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda );
 
     if (types::is_approximately_equal(angle, 0.)) {

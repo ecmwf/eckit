@@ -79,6 +79,14 @@ const SystemInfo& SystemInfo::instance() {
     return *systemInfoPtr;
 }
 
+void SystemInfo::dumpSysMemInfo(std::ostream& os, const char* prepend) const
+{
+    if(prepend)
+        os << prepend;
+
+    os <<  "SystemInfo::dumpSysMemInfo() NOT IMPLEMENTED FOR SYSTEM " << ECKIT_OS_NAME << std::endl;
+}
+
 SystemInfo::~SystemInfo() {
 }
 

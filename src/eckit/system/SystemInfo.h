@@ -51,6 +51,8 @@ struct Mem {
         mapped_private_(mapped_private) {}
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SystemInfo : private eckit::NonCopyable {
 
 public: // methods
@@ -62,7 +64,10 @@ public: // methods
     virtual eckit::LocalPathName executablePath() const = 0;
 
     virtual size_t memoryAllocated() const = 0;
+
     virtual Mem memoryUsage() const = 0;
+
+    virtual void dumpSysMemInfo(std::ostream&, const char* prepend = 0) const;
 
 protected: // methods
 
@@ -72,6 +77,21 @@ protected: // methods
 
 private: // members
 
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template<class T>
+class TraceMemInfo {
+public:
+
+    explicit TraceMemInfo(const char* name) {
+        SystemInfo::instance().dumpSysMemInfo(eckit::Log::debug<T>(), name);
+    }
+
+    explicit TraceMemInfo( const std::string& name) {
+        SystemInfo::instance().dumpSysMemInfo(eckit::Log::debug<T>(), name.c_str());
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

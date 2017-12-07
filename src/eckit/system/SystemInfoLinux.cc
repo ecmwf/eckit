@@ -42,27 +42,31 @@ LocalPathName SystemInfoLinux::executablePath() const
     return LocalPathName(path).realName();
 }
 
+void SystemInfoLinux::dumpSysMemInfo(std::ostream& os, const char* prepend) const
+{
+    std::ostringstream oss;
+    oss << "/proc/" << ::getpid() << "/smaps";
+    std::ifstream in(oss.str().c_str());
+    char line[10240] = {0,};
+    while (in.getline(line, sizeof(line) - 1)) {
+        if(prepend) os << prepend;
+        os << line << std::endl;
+    }
+}
+
 Mem SystemInfoLinux::memoryUsage() const {
+
     struct rusage usage;
     SYSCALL(getrusage(RUSAGE_SELF, &usage));
 
     static const char* debug = getenv("ECKIT_SYSINFO_DEBUG");
 
-    if (debug) {
-        if (atoi(debug)) {
-            std::ostringstream oss;
-            oss << "/proc/" << ::getpid() << "/smaps";
-            std::ifstream in(oss.str().c_str());
-            char line[10240] = {0,};
-            while (in.getline(line, sizeof(line) - 1)) {
-                eckit::Log::info() << "ECKIT_SYSINFO_DEBUG " << line << std::endl;
-            }
-        }
+    if (debug && atoi(debug)) {
+            dumpSysMemInfo(eckit::Log::info());
     }
 
     std::ostringstream oss;
     oss << "/proc/" << ::getpid() << "/maps";
-
 
     std::ifstream in(oss.str().c_str());
     char line[10240] = {0,};

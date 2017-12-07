@@ -24,12 +24,12 @@ namespace geometry {
 struct DatumUnit {
 
     /* C++-11:
-    static constexpr double radiusInMeters() {
+    static constexpr double radius() {
         return 1.;
     }
     */
 
-    static double radiusInMeters() {
+    static double radius() {
         return 1.;
     }
 

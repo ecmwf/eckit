@@ -124,23 +124,23 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
     return angle;
 }
 
-double Sphere::distanceInMeters(const double& radius, const Point2& Alonlat, const Point2& Blonlat)
+double Sphere::distance(const double& radius, const Point2& Alonlat, const Point2& Blonlat)
 {
     return radius * centralAngle(Alonlat, Blonlat);
 }
 
-double Sphere::distanceInMeters(const double& radius, const Point3& A, const Point3& B)
+double Sphere::distance(const double& radius, const Point3& A, const Point3& B)
 {
     return radius * centralAngle(radius, A, B);
 }
 
-double Sphere::areaInSqMeters(const double& radius)
+double Sphere::area(const double& radius)
 {
     ASSERT(radius > 0.);
     return 4. * M_PI * radius * radius;
 }
 
-double Sphere::areaInSqMeters(const double& radius, const Point2& WestNorth, const Point2& EastSouth)
+double Sphere::area(const double& radius, const Point2& WestNorth, const Point2& EastSouth)
 {
     ASSERT(radius > 0.);
 
@@ -165,7 +165,7 @@ double Sphere::areaInSqMeters(const double& radius, const Point2& WestNorth, con
                 std::sin(degrees_to_radians * S) );
 
     // Calculate area
-    return areaInSqMeters(radius) * latitude_fraction * longitude_fraction;
+    return area(radius) * latitude_fraction * longitude_fraction;
 }
 
 double Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon)

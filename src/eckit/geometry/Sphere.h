@@ -34,16 +34,16 @@ struct Sphere {
     static double centralAngle(const double& radius, const Point3& A, const Point3& B);
 
     /// Great-circle distance between two points (latitude/longitude coordinates) in metres
-    static double distanceInMeters(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
+    static double distance(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
 
     /// Great-circle distance between two points (Cartesian coordinates) in metres
-    static double distanceInMeters(const double& radius, const Point3& A, const Point3& B);
+    static double distance(const double& radius, const Point3& A, const Point3& B);
 
     /// Surface area in square metres
-    static double areaInSqMeters(const double& radius);
+    static double area(const double& radius);
 
     /// Surface area between parallels and meridians defined by two points (longitude/latitude coordinates) in square metres
-    static double areaInSqMeters(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
+    static double area(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
 
     // Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
     static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon);

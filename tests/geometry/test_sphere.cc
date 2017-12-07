@@ -40,14 +40,14 @@ struct PointXYZ : Point3 {
 
 // set sphere
 struct DatumTwoUnits {
-    static double radiusInMeters() {
+    static double radius() {
         return 2.;
     }
 };
 
 typedef SphereT<DatumTwoUnits> TwoUnitsSphere;
 
-const double R = UnitSphere::radiusInMeters();
+const double R = UnitSphere::radius();
 
 
 // -----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ const double R = UnitSphere::radiusInMeters();
 
 CASE( "test_unit_sphere_radius" )
 {
-    EXPECT(UnitSphere::radiusInMeters() == 1.);
+    EXPECT(UnitSphere::radius() == 1.);
 }
 
 // -----------------------------------------------------------------------------
@@ -221,7 +221,7 @@ CASE( "test_unit_sphere_great_circle_latitude_given_longitude" )
 
 CASE( "test_unit_sphere_area_globe" )
 {
-    EXPECT(UnitSphere::areaInSqMeters() == 4. * M_PI * R * R);
+    EXPECT(UnitSphere::area() == 4. * M_PI * R * R);
 }
 
 CASE( "test_unit_sphere_area_hemispheres" )
@@ -230,10 +230,10 @@ CASE( "test_unit_sphere_area_hemispheres" )
         {-180., 90.}, {180.,   0.},
         {-180.,  0.}, {180., -90.}
     };
-    const double area_hemisphere_north = UnitSphere::areaInSqMeters(p[0], p[1]);
-    const double area_hemisphere_south = UnitSphere::areaInSqMeters(p[2], p[3]);
+    const double area_hemisphere_north = UnitSphere::area(p[0], p[1]);
+    const double area_hemisphere_south = UnitSphere::area(p[2], p[3]);
 
-    EXPECT(area_hemisphere_north == 0.5 * UnitSphere::areaInSqMeters());
+    EXPECT(area_hemisphere_north == 0.5 * UnitSphere::area());
     EXPECT(area_hemisphere_north == area_hemisphere_south);
 }
 
@@ -242,7 +242,7 @@ CASE( "test_unit_sphere_area_hemispheres" )
 
 CASE( "test_two_units_sphere_radius" )
 {
-    EXPECT(TwoUnitsSphere::radiusInMeters() == 2.);
+    EXPECT(TwoUnitsSphere::radius() == 2.);
 }
 
 CASE( "test_two_units_sphere_distances" )
@@ -250,15 +250,15 @@ CASE( "test_two_units_sphere_distances" )
     const PointLonLat P1(-71.6, -33.);   // Valparaíso
     const PointLonLat P2(121.8,  31.4);  // Shanghai
 
-    const double d_sphere_1 = UnitSphere::distanceInMeters(P1, P2);
-    const double d_sphere_2 = TwoUnitsSphere::distanceInMeters(P1, P2);
+    const double d_sphere_1 = UnitSphere::distance(P1, P2);
+    const double d_sphere_2 = TwoUnitsSphere::distance(P1, P2);
     EXPECT(2. * d_sphere_1 == d_sphere_2);
 }
 
 CASE( "test_two_units_sphere_areas" )
 {
-    const double area_sphere_1 = UnitSphere::areaInSqMeters();
-    const double area_sphere_2 = TwoUnitsSphere::areaInSqMeters();
+    const double area_sphere_1 = UnitSphere::area();
+    const double area_sphere_2 = TwoUnitsSphere::area();
     EXPECT(4. * area_sphere_1 == area_sphere_2);
 }
 
@@ -267,8 +267,8 @@ CASE( "test_two_units_sphere_sub_areas" )
     const PointLonLat P1(-71.6, -33.);   // Valparaíso
     const PointLonLat P2(121.8,  31.4);  // Shanghai
 
-    const double sub_area_sphere_1 = UnitSphere::areaInSqMeters(P2, P1);
-    const double sub_area_sphere_2 = TwoUnitsSphere::areaInSqMeters(P2, P1);
+    const double sub_area_sphere_1 = UnitSphere::area(P2, P1);
+    const double sub_area_sphere_2 = TwoUnitsSphere::area(P2, P1);
     EXPECT(4. * sub_area_sphere_1 == sub_area_sphere_2);
 }
 

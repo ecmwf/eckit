@@ -31,7 +31,6 @@ class ResizableBuffer : private eckit::NonCopyable {
 public: // methods
 
 	ResizableBuffer(size_t size);
-	ResizableBuffer(const std::string& s);
 	ResizableBuffer(const char*, size_t size);
 
 	~ResizableBuffer();
@@ -45,18 +44,18 @@ public: // methods
 	size_t size() const		 { return size_; }
 
     /// @post Invalidates contents of buffer
-    void resize(size_t);
+    void resize(size_t, bool preserveData=false);
 
 private: // methods
 
-	void create();
-	void destroy();
+	static void* allocate(size_t);
+	static void deallocate(void*, size_t size);
+
 
 private: // members
 
     void*  buffer_;
 	size_t size_;
-	int    fd_;
 
 };
 

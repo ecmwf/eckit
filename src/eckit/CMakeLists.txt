@@ -608,6 +608,10 @@ else()
     ecbuild_warn("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
 endif()
 
+if(HAVE_JEMALLOC)
+    list(APPEND ECKIT_SYSTEM_EXTRA_LIBS ${JEMALLOC_LIBRARIES})
+endif()
+
 list( APPEND eckit_bases_srcs
 bases/Watcher.h
 bases/Watcher.cc

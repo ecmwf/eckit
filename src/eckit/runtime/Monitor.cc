@@ -86,14 +86,14 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void taskarray_init(void)
 {
-    std::string  monitor = Resource<std::string>("monitorPath","~/etc/monitor");
+    std::string  monitor = Resource<std::string>("monitorPath", "~/etc/monitor");
     size_t       size    = Resource<size_t>("monitorSize", 1000);
 
-    std::string monitorArrayType = Resource<std::string>("monitorArrayType","MemoryMapped");
+    std::string monitorArrayType = Resource<std::string>("monitorArrayType", "MemoryMapped");
 
-    if(monitorArrayType == "MemoryMapped")
+    if (monitorArrayType == "MemoryMapped")
         mapArray = new MemoryMappedTaskArray(monitor, size);
-    else if(monitorArrayType == "SharedMemory")
+    else if (monitorArrayType == "SharedMemory")
         mapArray = new SharedMemoryTaskArray(monitor, "/etc-monitor", size);
     else {
         std::ostringstream oss;
@@ -104,8 +104,9 @@ static void taskarray_init(void)
 
 Monitor::TaskArray& Monitor::tasks()
 {
+    ASSERT(active_);
     pthread_once(&once, taskarray_init);
-	return *mapArray;
+    return *mapArray;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,69 +117,68 @@ Monitor& Monitor::instance()
 {
     static ThreadSingleton<Monitor> monitor;
     Monitor& m = monitor.instance();
-	if(!m.ready_) m.init();
-	return m;
+    if (!m.ready_) m.init();
+    return m;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 Monitor::Monitor():
-   slot_(0),
-	ready_(false),
-	check_(false)
-{
+    slot_(0),
+    ready_(false),
+    check_(false) {
 }
 
 void Monitor::init()
 {
-	if(ready_) return;
+    if (ready_) return;
 
-    if(!active_) {  ready_ = true;  return; }  // this is for processes that don't use Monitor
+    if (!active_) {  ready_ = true;  return; } // this is for processes that don't use Monitor
 
-	if(check_) return; // safely ignore double initialization
-	check_ = true;
+    if (check_) return; // safely ignore double initialization
+    check_ = true;
 
-	TaskArray& a = tasks();
+    TaskArray& a = tasks();
 
-	AutoLock<TaskArray> lock(a);
+    AutoLock<TaskArray> lock(a);
 
-	int slot = hash() % a.size();
+    int slot = hash() % a.size();
 
-	bool found = false;
+    bool found = false;
 
-	for(bool check = false; !check && !found ; check = true)
-	{
-		for( size_t i = 0 ; i < a.size() && !found ; ++i )
-		{
-			slot_ = (slot+i) % a.size();
-			if(!a[slot_].busy(check))
-			{
-				new(&a[slot_]) TaskInfo();
-				found = true;
-			}
-		}
-	}
+    for (bool check = false; !check && !found ; check = true)
+    {
+        for ( size_t i = 0 ; i < a.size() && !found ; ++i )
+        {
+            slot_ = (slot + i) % a.size();
+            if (!a[slot_].busy(check))
+            {
+                new(&a[slot_]) TaskInfo();
+                found = true;
+            }
+        }
+    }
 
-    if(!found)
+    if (!found)
     {
         std::cout << "No free monitor slots" << std::endl;
         std::cerr << "No free monitor slots" << std::endl;
     }
 
-	// No free monitor slots
+    // No free monitor slots
 
-	PANIC(!found);
+    PANIC(!found);
 
-	check_ = false;
-	ready_ = true;
+    check_ = false;
+    ready_ = true;
 }
 
 Monitor::~Monitor()
 {
-	if(ready_ && active_) {
-		TaskArray& a = tasks();
-		AutoLock<TaskArray> lock(a);
-		a[slot_].TaskInfo::~TaskInfo();
+    if (ready_ && active_) {
+        TaskArray& a = tasks();
+        AutoLock<TaskArray> lock(a);
+        a[slot_].TaskInfo::~TaskInfo();
     }
 }
 
@@ -195,145 +195,148 @@ void Monitor::active( bool a )
 
 void Monitor::startup()
 {
-    if(!ready_) init();
+    if (!ready_) init();
 }
 
 void Monitor::shutdown()
 {
-	if(!active_) return;
+    if (!active_) return;
 
-	TaskArray& a = tasks();
-	AutoLock<TaskArray> lock(a);
+    TaskArray& a = tasks();
+    AutoLock<TaskArray> lock(a);
 
-	pid_t pid = getpid();
+    pid_t pid = getpid();
 
-	for( size_t i = 0; i < a.size() ; ++i )
-		if(a[i].pid() == pid)
-			a[i].TaskInfo::~TaskInfo();
+    for ( size_t i = 0; i < a.size() ; ++i )
+        if (a[i].pid() == pid)
+            a[i].TaskInfo::~TaskInfo();
 
-	// should unmap
+    // should unmap
 }
 
 unsigned long Monitor::hash()
 {
-	return (((unsigned long)pthread_self() << 16) | (unsigned long)getpid());
+    return (((unsigned long)pthread_self() << 16) | (unsigned long)getpid());
 }
 
-TaskInfo* Monitor::task()
+TaskInfo& Monitor::task()
 {
-	if( !active_ || !ready_ )
-	{
-		static TaskInfo info;
-		return &info;
-	}
+    return task(slot_);
+}
+
+TaskInfo& Monitor::task(unsigned long slot)
+{
+    if ( !active_ || !ready_ )
+    {
+        static TaskInfo info;
+        return info;
+    }
 
     TaskArray& a = tasks();
-	return &a[slot_];
+    return a[slot];
 }
-
 
 long Monitor::self()
 {
-	if(!active_) {
+    if (!active_) {
         return Main::instance().taskID();
     }
-	if(!ready_)  return -1;
-	return slot_;
+    if (!ready_)  return -1;
+    return slot_;
 }
 
 void Monitor::out(char* from, char *to)
 {
-    if(!ready_) return;
-    task()->out(from,to);
+    if (!ready_) return;
+    task().out(from, to);
 }
 
 void Monitor::name(const std::string& s)
 {
-    if(!ready_) return;
-	task()->name(s);
+    if (!ready_) return;
+    task().name(s);
 }
 
 void Monitor::kind(const std::string& s)
 {
-    if(!ready_) return;
-	task()->kind(s);
+    if (!ready_) return;
+    task().kind(s);
 }
 
-void Monitor::progress(const std::string& name, unsigned long long min,unsigned long long max)
+void Monitor::progress(const std::string& name, unsigned long long min, unsigned long long max)
 {
-    if(!ready_) return;
-	task()->progressName(name);
-	task()->start(min,max);
+    if (!ready_) return;
+    task().progressName(name);
+    task().start(min, max);
 }
 
 void Monitor::progress(unsigned long long value)
 {
-    if(!ready_) return;
-	task()->progress(value);
+    if (!ready_) return;
+    task().progress(value);
 }
 
 void Monitor::progress()
 {
-    if(!ready_) return;
-	task()->done();
+    if (!ready_) return;
+    task().done();
 }
 
 char Monitor::state(char c)
 {
-	char x = task()->state();
-	task()->state(c);
-	return x;
+    char x = task().state();
+    task().state(c);
+    return x;
 }
 
 void Monitor::status(const std::string& msg)
 {
-	if(!ready_) return;
-	task()->status(msg);
+    if (!ready_) return;
+    task().status(msg);
 }
 
 std::string Monitor::status()
 {
-	if(!ready_) return std::string();
-	return task()->status();
+    if (!ready_) return std::string();
+    return task().status();
 }
 
 void Monitor::message(const std::string& msg)
 {
-	if(!ready_) return;
-	task()->message(msg);
+    if (!ready_) return;
+    task().message(msg);
 }
 
 std::string Monitor::message()
 {
-	if(!ready_) return std::string();
-	return task()->message();
+    if (!ready_) return std::string();
+    return task().message();
 }
 
 void Monitor::stoppable(bool b)
 {
-	task()->stoppable(b);
+    task().stoppable(b);
 }
 
 bool Monitor::stopped()
 {
-	return task()->stopped();
+    return task().stopped();
 }
 
 void Monitor::abort()
 {
-	task()->abort();
+    task().abort();
 }
 
 void Monitor::checkAbort()
 {
-	task()->checkAbort();
+    task().checkAbort();
 }
 
 void Monitor::parent(long p)
 {
-	task()->parent(p);
+    task().parent(p);
 }
-
 
 std::string Monitor::statusTree()
 {
@@ -341,107 +344,107 @@ std::string Monitor::statusTree()
     os << status();
     int n = self();
 
-	TaskArray& p = tasks();
+    TaskArray& p = tasks();
 
-	for( size_t j = 0 ; j < p.size(); ++j )
-		if((p[j].parent() == n) && p[j].show() && p[j].busy(true))
-		{
+    for ( size_t j = 0 ; j < p.size(); ++j )
+        if ((p[j].parent() == n) && p[j].show() && p[j].busy(true))
+        {
             os << "|" << p[j].status();
-		}
+        }
 
     return os.str();
 }
 
 void Monitor::start(const std::string& app)
 {
-	if(!active_) return;
+    if (!active_) return;
 
-	TaskArray& p = tasks();
+    TaskArray& p = tasks();
 
-	for( size_t j = 0 ; j < p.size(); ++j )
-		if(p[j].busy(true) && app == p[j].application() &&
-			p[j].depth() == 0)
-		{
-			Log::warning() << app << " is already running with a pid of "
-				<< p[j].pid() << std::endl;
-			Log::warning() << "Please stop it first" << std::endl;
-			return;
-		}
+    for ( size_t j = 0 ; j < p.size(); ++j )
+        if (p[j].busy(true) && app == p[j].application() &&
+                p[j].depth() == 0)
+        {
+            Log::warning() << app << " is already running with a pid of "
+                           << p[j].pid() << std::endl;
+            Log::warning() << "Please stop it first" << std::endl;
+            return;
+        }
 
-	PathName cmd = Resource<PathName>("startCmd","~/admin/starter");
+    PathName cmd = Resource<PathName>("startCmd", "~/admin/starter");
 
-	std::string s = std::string(cmd) + " " + app;
+    std::string s = std::string(cmd) + " " + app;
 
-	Log::info() << "Executing shell command: " << s << std::endl;
+    Log::info() << "Executing shell command: " << s << std::endl;
 
-	SYSCALL(::system(s.c_str()));
+    SYSCALL(::system(s.c_str()));
 
 }
 
 void Monitor::port(int p)
 {
-	task()->port(p);
+    task().port(p);
 }
 
 int Monitor::port()
 {
-	return task()->port();
+    return task().port();
 }
 
 void Monitor::host(const std::string& h)
 {
-	task()->host(h);
+    task().host(h);
 }
 
 std::string Monitor::host()
 {
-	return task()->host();
+    return task().host();
 }
 
 void Monitor::taskID(const TaskID& id)
 {
-	task()->taskID(id);
+    task().taskID(id);
 }
 
 TaskID Monitor::taskID()
 {
-	return task()->taskID();
+    return task().taskID();
 }
 
 void Monitor::show(bool on)
 {
-	task()->show(on);
+    task().show(on);
 }
 
 int Monitor::kill(const std::string& name, int sig)
 {
 
-	if(!active_) return 0;
+    if (!active_) return 0;
 
     Monitor::TaskArray& info = tasks();
-	pid_t      me   = ::getpid();
-	int        n    = 0;
+    pid_t      me   = ::getpid();
+    int        n    = 0;
 
-	// Name. Look for Unix process ID
-	for( size_t i = 0; i < info.size(); ++i )
-		if(info[i].busy(true) && info[i].application() == name)
-		{
-			pid_t pid = info[i].pid();
-			if(pid == me)
-				Log::info() << pid << ": Suicide avoided ;-)" << std::endl;
-			else
-			{
-				if(::kill(pid,sig))
-					Log::info() << Log::syserr << std::endl;
-				else
-				{
-					Log::info() << pid << ": Killed" << std::endl;
-					n++;
-				}
-			}
-		}
+    // Name. Look for Unix process ID
+    for ( size_t i = 0; i < info.size(); ++i )
+        if (info[i].busy(true) && info[i].application() == name)
+        {
+            pid_t pid = info[i].pid();
+            if (pid == me)
+                Log::info() << pid << ": Suicide avoided ;-)" << std::endl;
+            else
+            {
+                if (::kill(pid, sig))
+                    Log::info() << Log::syserr << std::endl;
+                else
+                {
+                    Log::info() << pid << ": Killed" << std::endl;
+                    n++;
+                }
+            }
+        }
 
-	return n;
+    return n;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

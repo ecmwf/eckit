@@ -118,6 +118,8 @@ io/SockBuf.h
 io/SockBuf.cc
 io/AIOHandle.h
 io/AIOHandle.cc
+io/AsyncHandle.h
+io/AsyncHandle.cc
 io/BitIO.h
 io/BitIO.cc
 io/Compress.h

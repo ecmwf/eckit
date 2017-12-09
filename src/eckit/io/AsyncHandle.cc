@@ -34,13 +34,14 @@ public:
 
 void AsyncHandleWriter::run() {
     while (!stopped()) {
+        Buffer* delme = 0;
         try {
             AutoLock<MutexCond> lock(owner_.cond_);
             while (owner_.buffers_.empty() && !stopped()) {
                 owner_.cond_.wait();
             }
 
-            if(stopped()) {
+            if (stopped()) {
                 break;
             }
 
@@ -49,6 +50,7 @@ void AsyncHandleWriter::run() {
             std::pair<size_t, Buffer*> p = owner_.buffers_.front();
             owner_.buffers_.pop_front();
             owner_.used_ -= p.second->size();
+            delme = p.second;
 
             long written = owner_.handle().write(p.second->data(), p.first);
             if (written != p.first) {
@@ -65,6 +67,8 @@ void AsyncHandleWriter::run() {
             owner_.error_ = e.what();
             owner_.cond_.signal();
         }
+        delete delme;
+        delme = 0;
     }
 
 }

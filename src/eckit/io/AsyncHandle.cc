@@ -70,6 +70,7 @@ AsyncHandle::AsyncHandle(DataHandle* h, size_t maxSize, size_t rounding):
     error_(false),
     thread_(new AsyncHandleWriter(*this))
 {
+    thread_.start();
 }
 
 AsyncHandle::AsyncHandle(DataHandle& h, size_t maxSize, size_t rounding):
@@ -80,6 +81,7 @@ AsyncHandle::AsyncHandle(DataHandle& h, size_t maxSize, size_t rounding):
     error_(false),
     thread_(new AsyncHandleWriter(*this))
 {
+    thread_.start();
 }
 
 AsyncHandle::~AsyncHandle()

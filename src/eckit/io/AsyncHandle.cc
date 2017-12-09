@@ -33,19 +33,26 @@ public:
 };
 
 void AsyncHandleWriter::run() {
+    eckit::Log::info() << "Start thread " << owner_ << std::endl;
     while (!stopped()) {
         try {
             AutoLock<MutexCond> lock(owner_.cond_);
-            while (owner_.buffers_.empty()) {
+            while (owner_.buffers_.empty() && !stopped()) {
                 owner_.cond_.wait();
             }
+
+            if(stopped()) {
+                break;
+            }
+
+            ASSERT(!owner_.buffers_.empty());
 
             std::pair<size_t, Buffer*> p = owner_.buffers_.front();
             owner_.buffers_.pop_front();
             owner_.used_ -= p.second->size();
 
             long written = owner_.handle().write(p.second->data(), p.first);
-            if(written != p.first) {
+            if (written != p.first) {
                 std::ostringstream oss;
                 oss << "AsyncHandleWriter: written " << written << " out of " << p.first << Log::syserr;
                 throw WriteError(oss.str());
@@ -54,12 +61,14 @@ void AsyncHandleWriter::run() {
             owner_.cond_.signal();
         }
         catch (std::exception& e) {
-            eckit::Log::error() << "AsyncHandleWriter got an exception: " << e.what() << std::endl;
+            eckit::Log::error() << "AsyncHandleWriter got an exception: " << e.what() << " " << owner_ << std::endl;
             AutoLock<MutexCond> lock(owner_.cond_);
             owner_.error_ = e.what();
             owner_.cond_.signal();
         }
     }
+    eckit::Log::info() << "End thread " << owner_ << std::endl;
+
 }
 
 AsyncHandle::AsyncHandle(DataHandle* h, size_t maxSize, size_t rounding):
@@ -68,7 +77,7 @@ AsyncHandle::AsyncHandle(DataHandle* h, size_t maxSize, size_t rounding):
     rounding_(rounding),
     used_(0),
     error_(false),
-    thread_(new AsyncHandleWriter(*this))
+    thread_(new AsyncHandleWriter(*this), false)
 {
     thread_.start();
 }
@@ -79,13 +88,14 @@ AsyncHandle::AsyncHandle(DataHandle& h, size_t maxSize, size_t rounding):
     rounding_(rounding),
     used_(0),
     error_(false),
-    thread_(new AsyncHandleWriter(*this))
+    thread_(new AsyncHandleWriter(*this), false)
 {
     thread_.start();
 }
 
 AsyncHandle::~AsyncHandle()
 {
+    eckit::Log::info() << "Destroy " << *this << std::endl;
     {
         AutoLock<MutexCond> lock(cond_);
         while (!buffers_.empty()) {
@@ -95,8 +105,13 @@ AsyncHandle::~AsyncHandle()
         cond_.signal();
     }
 
+    eckit::Log::info() << "Stop " << *this << std::endl;
+
     thread_.stop();
+    cond_.signal();
+    eckit::Log::info() << "Wait " << *this << std::endl;
     thread_.wait();
+    eckit::Log::info() << "Done " << *this << std::endl;
 }
 
 Length AsyncHandle::openForRead()
@@ -106,6 +121,7 @@ Length AsyncHandle::openForRead()
 
 void AsyncHandle::openForWrite(const Length& length)
 {
+    eckit::Log::info() << "AsyncHandle::openForWrite " << *this << std::endl;
     ASSERT(used_ == 0);
     ASSERT(buffers_.size() == 0);
     handle().openForWrite(length);
@@ -113,6 +129,8 @@ void AsyncHandle::openForWrite(const Length& length)
 
 void AsyncHandle::openForAppend(const Length& length)
 {
+    eckit::Log::info() << "AsyncHandle::openForAppend " << *this << std::endl;
+
     ASSERT(used_ == 0);
     ASSERT(buffers_.size() == 0);
     handle().openForAppend(length);
@@ -130,6 +148,8 @@ long AsyncHandle::read(void* buffer, long length)
 
 long AsyncHandle::write(const void* buffer, long length)
 {
+    eckit::Log::info() << "AsyncHandle::write " << *this << " " << length << std::endl;
+
     AutoLock<MutexCond> lock(cond_);
 
     size_t size = eckit::round(length, rounding_);
@@ -158,6 +178,8 @@ long AsyncHandle::write(const void* buffer, long length)
 
 void AsyncHandle::close()
 {
+    eckit::Log::info() << "AsyncHandle::close " << *this << std::endl;
+
     flush();
     handle().close();
 
@@ -170,6 +192,8 @@ void AsyncHandle::close()
 
 void AsyncHandle::flush()
 {
+    eckit::Log::info() << "AsyncHandle::flush " << *this << std::endl;
+
     AutoLock<MutexCond> lock(cond_);
     while (!buffers_.empty() && !error_) {
         cond_.wait();

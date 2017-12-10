@@ -54,7 +54,13 @@ void ResourceUsage::init() {
 
     usage_ = sysinfo.memoryUsage();
 
-    out_ << name_ << " => " << hostname_ << " " << usage_ << std::endl;
+    out_ << "ResourceUsage "
+         << name_
+         << " => "
+         << hostname_
+         << " "
+         << usage_
+         << std::endl;
 }
 
 ResourceUsage::~ResourceUsage()
@@ -64,8 +70,10 @@ ResourceUsage::~ResourceUsage()
 
     MemoryInfo usage = sysinfo.memoryUsage();
 
-    out_ << name_
-         << " <= " << hostname_
+    out_ << "ResourceUsage "
+         << name_
+         << " <= "
+         << hostname_
          << " ";
 
     usage.delta(out_, usage_);

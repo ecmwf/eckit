@@ -146,13 +146,6 @@ MemoryInfo SystemInfoLinux::memoryUsage() const {
     return mem;
 }
 
-size_t SystemInfoLinux::memoryAllocated() const {
-    return mallinfo().uordblks;
-}
-
-size_t SystemInfoLinux::arenaSize() const {
-    return mallinfo().arena;
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 

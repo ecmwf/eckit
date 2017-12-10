@@ -596,6 +596,8 @@ list( APPEND eckit_system_srcs
     system/ResourceUsage.h
     system/SystemInfo.cc
     system/SystemInfo.h
+    system/MemoryInfo.cc
+    system/MemoryInfo.h
 )
 
 set(ECKIT_SYSTEM_EXTRA_LIBS "")

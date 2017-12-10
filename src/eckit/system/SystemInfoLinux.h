@@ -32,13 +32,10 @@ public: // methods
 
     virtual eckit::LocalPathName executablePath() const;
 
-    virtual size_t memoryAllocated() const;
-    virtual size_t arenaSize() const;
+    virtual MemoryInfo memoryUsage() const;
 
-    virtual Mem memoryUsage() const;
-
-    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = 0) const;
-    virtual void dumpSysMemInfo(std::ostream&, const char* prepend = 0) const;
+    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = "") const;
+    virtual void dumpSysMemInfo(std::ostream&, const char* prepend = "") const;
 
 protected: // methods
 

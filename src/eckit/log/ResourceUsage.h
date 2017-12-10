@@ -19,6 +19,8 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/system/SystemInfo.h"
+#include "eckit/system/MemoryInfo.h"
 
 
 
@@ -47,27 +49,9 @@ protected: // methods
 
 private: // members
 
-    std::string    name_;
-    std::ostream&  out_;
-
-    size_t rss_;
-    size_t malloc_;
-    size_t arena_;
-
-    size_t shared_;
-
-    size_t mapped_read_;
-    size_t mapped_write_;
-    size_t mapped_execute_;
-    size_t mapped_private_;
-
-    size_t transientUsed_;
-    size_t permanentUsed_;
-    size_t transientFree_;
-    size_t permanentFree_;
-
-    size_t largeUsed_;
-    size_t largeFree_;
+    std::string        name_;
+    std::ostream&      out_;
+    system::MemoryInfo usage_;
 
     char hostname_[256];
 

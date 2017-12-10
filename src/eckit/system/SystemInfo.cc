@@ -20,6 +20,9 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/ScopedPtr.h"
+#include "eckit/memory/MemoryPool.h"
+#include "eckit/memory/Shmget.h"
+#include "eckit/memory/MMap.h"
 
 #if defined(__APPLE__) && defined(__MACH__)
 #include "eckit/system/SystemInfoMacOSX.h"
@@ -81,7 +84,7 @@ const SystemInfo& SystemInfo::instance() {
 
 void SystemInfo::dumpProcMemInfo(std::ostream& os, const char* prepend) const
 {
-    if(prepend)
+    if (prepend)
         os << prepend;
 
     os << " SystemInfo::dumpProcMemInfo() NOT IMPLEMENTED FOR SYSTEM " << ECKIT_OS_NAME << std::endl;
@@ -89,7 +92,7 @@ void SystemInfo::dumpProcMemInfo(std::ostream& os, const char* prepend) const
 
 void SystemInfo::dumpSysMemInfo(std::ostream& os, const char* prepend) const
 {
-    if(prepend)
+    if (prepend)
         os << prepend;
 
     os << " SystemInfo::dumpSysMemInfo() NOT IMPLEMENTED FOR SYSTEM " << ECKIT_OS_NAME << std::endl;
@@ -104,7 +107,6 @@ void SystemInfo::print(std::ostream &out) const {
         << ")";
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace system
 } // namespace eckit

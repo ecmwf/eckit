@@ -50,83 +50,85 @@ void ResourceUsage::init() {
     using namespace eckit::system;
     const SystemInfo& sysinfo = SystemInfo::instance();
 
-    Mem usage = sysinfo.memoryUsage();
+    usage_ = sysinfo.memoryUsage();
 
-    rss_ = usage.resident_size_;
-    malloc_ = sysinfo.memoryAllocated();
-    arena_ = sysinfo.arenaSize();
+    // rss_ = usage.resident_size_;
+    // malloc_ = sysinfo.memoryAllocated();
+    // arena_ = sysinfo.arenaSize();
 
-    shared_ = usage.shared_memory_;
+    // shared_ = usage.shared_memory_;
 
-    mapped_read_ = usage.mapped_read_;
-    mapped_write_ = usage.mapped_write_;
-    mapped_execute_ = usage.mapped_execute_;
-    mapped_private_ = usage.mapped_private_;
+    // mapped_read_ = usage.mapped_read_;
+    // mapped_write_ = usage.mapped_write_;
+    // mapped_execute_ = usage.mapped_execute_;
+    // mapped_private_ = usage.mapped_private_;
 
-    MemoryPool::info(transientUsed_, transientFree_, MemPool::transientPool);
-    MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
-    MemoryPool::large(largeUsed_, largeFree_);
+    // MemoryPool::info(transientUsed_, transientFree_, MemPool::transientPool);
+    // MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
+    // MemoryPool::large(largeUsed_, largeFree_);
 
-    SYSCALL(::gethostname(hostname_, sizeof(hostname_)));
+    // SYSCALL(::gethostname(hostname_, sizeof(hostname_)));
 
-    out_ << name_
-         << " => " << hostname_
-         << " resident size: " << eckit::Bytes(rss_)
-         << ", arena: " << eckit::Bytes(arena_)
-         << ", allocated: " << eckit::Bytes(malloc_);
+    // out_ << name_
+    //      << " => " << hostname_
+    //      << " resident size: " << eckit::Bytes(rss_)
+    //      << ", arena: " << eckit::Bytes(arena_)
+    //      << ", allocated: " << eckit::Bytes(malloc_);
 
-    if (shared_) {
-        out_ << ", shared: "
-             << eckit::Bytes(shared_);
-    }
+    // if (shared_) {
+    //     out_ << ", shared: "
+    //          << eckit::Bytes(shared_);
+    // }
 
-    if (mapped_read_) {
-        out_ << ", mapped (read): "
-             << eckit::Bytes(mapped_read_);
-    }
+    // if (mapped_read_) {
+    //     out_ << ", mapped (read): "
+    //          << eckit::Bytes(mapped_read_);
+    // }
 
-    if (mapped_write_) {
-        out_ << ", mapped (write): "
-             << eckit::Bytes(mapped_write_);
-    }
+    // if (mapped_write_) {
+    //     out_ << ", mapped (write): "
+    //          << eckit::Bytes(mapped_write_);
+    // }
 
-    if (mapped_execute_) {
-        out_ << ", mapped (execute): "
-             << eckit::Bytes(mapped_execute_);
-    }
+    // if (mapped_execute_) {
+    //     out_ << ", mapped (execute): "
+    //          << eckit::Bytes(mapped_execute_);
+    // }
 
-    if (mapped_private_) {
-        out_ << ", mapped (private): "
-             << eckit::Bytes(mapped_private_);
-    }
+    // if (mapped_private_) {
+    //     out_ << ", mapped (private): "
+    //          << eckit::Bytes(mapped_private_);
+    // }
 
-    MMap::dump(out_);
-    Shmget::dump(out_);
+    // MMap::dump(out_);
+    // Shmget::dump(out_);
 
-    if (largeUsed_ || largeFree_) {
-        out_ << ", large [used: "
-             << eckit::Bytes(largeUsed_)
-             << ", free: "
-             << eckit::Bytes(largeFree_)
-             << "]";
-    }
-    if (transientUsed_ || transientFree_) {
+    // if (largeUsed_ || largeFree_) {
+    //     out_ << ", large [used: "
+    //          << eckit::Bytes(largeUsed_)
+    //          << ", free: "
+    //          << eckit::Bytes(largeFree_)
+    //          << "]";
+    // }
+    // if (transientUsed_ || transientFree_) {
 
-        out_  << ", transient [used: "
-              << eckit::Bytes(transientUsed_)
-              << ", free: "
-              << eckit::Bytes(transientFree_)
-              << "]";
-    }
-    if (permanentUsed_ || permanentFree_) {
+    //     out_  << ", transient [used: "
+    //           << eckit::Bytes(transientUsed_)
+    //           << ", free: "
+    //           << eckit::Bytes(transientFree_)
+    //           << "]";
+    // }
+    // if (permanentUsed_ || permanentFree_) {
 
-        out_ << ", [permanent used: "
-             << eckit::Bytes(permanentUsed_)
-             << ", free: "
-             << eckit::Bytes(permanentFree_)
-             << "]";
-    }
-    out_ << std::endl;
+    //     out_ << ", [permanent used: "
+    //          << eckit::Bytes(permanentUsed_)
+    //          << ", free: "
+    //          << eckit::Bytes(permanentFree_)
+    //          << "]";
+    // }
+    // out_ << std::endl;
+
+    out_ << name_ << " => " << hostname_ << " " << usage_ << std::endl;
 }
 
 ResourceUsage::~ResourceUsage()
@@ -134,162 +136,166 @@ ResourceUsage::~ResourceUsage()
     using namespace eckit::system;
     const SystemInfo& sysinfo = SystemInfo::instance();
 
-    Mem usage = sysinfo.memoryUsage();
+    MemoryInfo usage = sysinfo.memoryUsage();
 
-    size_t rss = usage.resident_size_;
-    size_t malloc = sysinfo.memoryAllocated();
-    size_t arena = sysinfo.arenaSize();
+    // size_t rss = usage.resident_size_;
+    // size_t malloc = sysinfo.memoryAllocated();
+    // size_t arena = sysinfo.arenaSize();
 
-    size_t shared = usage.shared_memory_;
+    // size_t shared = usage.shared_memory_;
 
-    size_t largeUsed;
+    // size_t largeUsed;
 
-    size_t transientUsed;
-    size_t permanentUsed;
+    // size_t transientUsed;
+    // size_t permanentUsed;
 
-    size_t largeFree;
+    // size_t largeFree;
 
-    size_t transientFree;
-    size_t permanentFree;
+    // size_t transientFree;
+    // size_t permanentFree;
 
 
-    MemoryPool::info(transientUsed, transientFree, MemPool::transientPool);
-    MemoryPool::info(permanentUsed, permanentFree, MemPool::permanentPool);
-    MemoryPool::large(largeUsed, largeFree);
+    // MemoryPool::info(transientUsed, transientFree, MemPool::transientPool);
+    // MemoryPool::info(permanentUsed, permanentFree, MemPool::permanentPool);
+    // MemoryPool::large(largeUsed, largeFree);
 
 
     out_ << name_
          << " <= " << hostname_
-         << " resident size: "
-         << eckit::Bytes(rss);
+         << " ";
 
-    if ( rss > rss_) {
-        out_ << " (+" << eckit::Bytes(rss - rss_) << ")";
-    }
+         usage.delta(out_, usage_);
 
-    if ( rss < rss_) {
-        out_ << " (-" << eckit::Bytes(rss_ - rss) << ")";
-    }
+         // << " resident size: "
+         // << eckit::Bytes(rss);
 
-    out_ << ", allocated: "
-         << eckit::Bytes(malloc);
+//     if ( rss > rss_) {
+//         out_ << " (+" << eckit::Bytes(rss - rss_) << ")";
+//     }
 
-    if ( malloc > malloc_) {
-        out_ << " (+" << eckit::Bytes(malloc - malloc_) << ")";
-    }
+//     if ( rss < rss_) {
+//         out_ << " (-" << eckit::Bytes(rss_ - rss) << ")";
+//     }
 
-    if ( malloc < malloc_) {
-        out_ << " (-" << eckit::Bytes(malloc_ - malloc) << ")";
-    }
+//     out_ << ", allocated: "
+//          << eckit::Bytes(malloc);
 
-    out_ << ", arena: "
-         << eckit::Bytes(arena);
+//     if ( malloc > malloc_) {
+//         out_ << " (+" << eckit::Bytes(malloc - malloc_) << ")";
+//     }
 
-    if ( arena > arena_) {
-        out_ << " (+" << eckit::Bytes(arena - arena_) << ")";
-    }
+//     if ( malloc < malloc_) {
+//         out_ << " (-" << eckit::Bytes(malloc_ - malloc) << ")";
+//     }
 
-    if ( arena < arena_) {
-        out_ << " (-" << eckit::Bytes(arena_ - arena) << ")";
-    }
+//     out_ << ", arena: "
+//          << eckit::Bytes(arena);
 
-    if (shared_ || shared) {
-        out_ << ", shared: "
-             << eckit::Bytes(shared);
+//     if ( arena > arena_) {
+//         out_ << " (+" << eckit::Bytes(arena - arena_) << ")";
+//     }
 
-        if ( shared > shared_) {
-            out_ << " (+" << eckit::Bytes(shared - shared_) << ")";
-        }
+//     if ( arena < arena_) {
+//         out_ << " (-" << eckit::Bytes(arena_ - arena) << ")";
+//     }
 
-        if ( shared < shared_) {
-            out_ << " (-" << eckit::Bytes(shared_ - shared) << ")";
-        }
-    }
+//     if (shared_ || shared) {
+//         out_ << ", shared: "
+//              << eckit::Bytes(shared);
 
+//         if ( shared > shared_) {
+//             out_ << " (+" << eckit::Bytes(shared - shared_) << ")";
+//         }
 
-//========================
-    if (largeUsed_ || largeFree_ || largeUsed || largeFree) {
-        out_ << ", large [used: "
-             << eckit::Bytes(largeUsed);
-
-        if ( largeUsed > largeUsed_) {
-            out_ << " (+" << eckit::Bytes(largeUsed - largeUsed_) << ")";
-        }
-
-        if ( largeUsed < largeUsed_) {
-            out_ << " (-" << eckit::Bytes(largeUsed_ - largeUsed) << ")";
-        }
-
-        out_ << ", free: "
-             << eckit::Bytes(largeFree);
-
-        if ( largeFree > largeFree_) {
-            out_ << " (+" << eckit::Bytes(largeFree - largeFree_) << ")";
-        }
-
-        if ( largeFree < largeFree_) {
-            out_ << " (-" << eckit::Bytes(largeFree_ - largeFree) << ")";
-        }
-
-        out_ << "]";
-    }
-    //========================
-    if (transientUsed_ || transientFree_ || transientUsed || transientFree) {
-        out_ << "transient [used: "
-             << eckit::Bytes(transientUsed);
-
-        if ( transientUsed > transientUsed_) {
-            out_ << " (+" << eckit::Bytes(transientUsed - transientUsed_) << ")";
-        }
-
-        if ( transientUsed < transientUsed_) {
-            out_ << " (-" << eckit::Bytes(transientUsed_ - transientUsed) << ")";
-        }
+//         if ( shared < shared_) {
+//             out_ << " (-" << eckit::Bytes(shared_ - shared) << ")";
+//         }
+//     }
 
 
-        out_ << ", free: "
-             << eckit::Bytes(transientFree);
+// //========================
+//     if (largeUsed_ || largeFree_ || largeUsed || largeFree) {
+//         out_ << ", large [used: "
+//              << eckit::Bytes(largeUsed);
 
-        if ( transientFree > transientFree_) {
-            out_ << " (+" << eckit::Bytes(transientFree - transientFree_) << ")";
-        }
+//         if ( largeUsed > largeUsed_) {
+//             out_ << " (+" << eckit::Bytes(largeUsed - largeUsed_) << ")";
+//         }
 
-        if ( transientFree < transientFree_) {
-            out_ << " (-" << eckit::Bytes(transientFree_ - transientFree) << ")";
-        }
-        out_ << "]";
-    }
+//         if ( largeUsed < largeUsed_) {
+//             out_ << " (-" << eckit::Bytes(largeUsed_ - largeUsed) << ")";
+//         }
 
-//========================
-    if (permanentUsed_ || permanentFree_ || permanentUsed || permanentFree) {
+//         out_ << ", free: "
+//              << eckit::Bytes(largeFree);
 
-        out_ << ", permanent [used: "
-             << eckit::Bytes(permanentUsed);
+//         if ( largeFree > largeFree_) {
+//             out_ << " (+" << eckit::Bytes(largeFree - largeFree_) << ")";
+//         }
 
-        if ( permanentUsed > permanentUsed_) {
-            out_ << " (+" << eckit::Bytes(permanentUsed - permanentUsed_) << ")";
-        }
+//         if ( largeFree < largeFree_) {
+//             out_ << " (-" << eckit::Bytes(largeFree_ - largeFree) << ")";
+//         }
 
-        if ( permanentUsed < permanentUsed_) {
-            out_ << " (-" << eckit::Bytes(permanentUsed_ - permanentUsed) << ")";
-        }
+//         out_ << "]";
+//     }
+//     //========================
+//     if (transientUsed_ || transientFree_ || transientUsed || transientFree) {
+//         out_ << "transient [used: "
+//              << eckit::Bytes(transientUsed);
+
+//         if ( transientUsed > transientUsed_) {
+//             out_ << " (+" << eckit::Bytes(transientUsed - transientUsed_) << ")";
+//         }
+
+//         if ( transientUsed < transientUsed_) {
+//             out_ << " (-" << eckit::Bytes(transientUsed_ - transientUsed) << ")";
+//         }
 
 
-        out_ << ", free: "
-             << eckit::Bytes(permanentFree);
+//         out_ << ", free: "
+//              << eckit::Bytes(transientFree);
 
-        if ( permanentFree > permanentFree_) {
-            out_ << " (+" << eckit::Bytes(permanentFree - permanentFree_) << ")";
-        }
+//         if ( transientFree > transientFree_) {
+//             out_ << " (+" << eckit::Bytes(transientFree - transientFree_) << ")";
+//         }
 
-        if ( permanentFree < permanentFree_) {
-            out_ << " (-" << eckit::Bytes(permanentFree_ - permanentFree) << ")";
-        }
+//         if ( transientFree < transientFree_) {
+//             out_ << " (-" << eckit::Bytes(transientFree_ - transientFree) << ")";
+//         }
+//         out_ << "]";
+//     }
 
-//========================
+// //========================
+//     if (permanentUsed_ || permanentFree_ || permanentUsed || permanentFree) {
 
-        out_ << "]";
-    }
+//         out_ << ", permanent [used: "
+//              << eckit::Bytes(permanentUsed);
+
+//         if ( permanentUsed > permanentUsed_) {
+//             out_ << " (+" << eckit::Bytes(permanentUsed - permanentUsed_) << ")";
+//         }
+
+//         if ( permanentUsed < permanentUsed_) {
+//             out_ << " (-" << eckit::Bytes(permanentUsed_ - permanentUsed) << ")";
+//         }
+
+
+//         out_ << ", free: "
+//              << eckit::Bytes(permanentFree);
+
+//         if ( permanentFree > permanentFree_) {
+//             out_ << " (+" << eckit::Bytes(permanentFree - permanentFree_) << ")";
+//         }
+
+//         if ( permanentFree < permanentFree_) {
+//             out_ << " (-" << eckit::Bytes(permanentFree_ - permanentFree) << ")";
+//         }
+
+// //========================
+
+//         out_ << "]";
+//     }
     out_ << std::endl;
 }
 

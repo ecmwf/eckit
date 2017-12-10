@@ -35,7 +35,7 @@ public: // methods
     virtual size_t memoryAllocated() const;
     virtual size_t arenaSize() const;
 
-    virtual Mem memoryUsage() const;
+    virtual MemoryInfo memoryUsage() const;
 
 protected: // methods
 

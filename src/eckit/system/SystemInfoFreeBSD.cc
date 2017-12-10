@@ -27,6 +27,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/system/MemoryInfo.h"
 
 namespace eckit {
 namespace system {
@@ -53,16 +54,14 @@ LocalPathName SystemInfoFreeBSD::executablePath() const
     return LocalPathName(path).realName();
 }
 
-Mem SystemInfoFreeBSD::memoryUsage() const {
-    struct rusage usage;
-    SYSCALL(getrusage(RUSAGE_SELF, &usage));
-    return Mem(usage.ru_maxrss * 1024, 0) ;
+MemoryInfo SystemInfoFreeBSD::memoryUsage() const {
+    // struct rusage usage;
+    // SYSCALL(getrusage(RUSAGE_SELF, &usage));
+    // return Mem(usage.ru_maxrss * 1024, 0) ;
+    MemoryInfo mem;
+    return mem;
 }
 
-size_t SystemInfoFreeBSD::memoryAllocated() const {
-    NOTIMP;
-    // return ::mallinfo().uordblks;
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 

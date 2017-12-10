@@ -65,7 +65,7 @@ void MemoryInfo::print(std::ostream& out) const {
 
     // mallino
     put(out, "arena", arena_, printed);
-    put(out, "ordblks", ordblks_, printed);
+    // put(out, "ordblks", ordblks_, printed);
     put(out, "smblks", smblks_, printed);
     put(out, "hblks", hblks_, printed);
     put(out, "hblkhd", hblkhd_, printed);
@@ -81,9 +81,9 @@ void MemoryInfo::print(std::ostream& out) const {
 
     // shaher
     put(out, "mmap count", mmap_count_, printed, false);
-    put(out, "shmem size", mmap_size_, printed);
+    put(out, "mmap size", mmap_size_, printed);
 
-    put(out, "mmap count", shm_count_, printed, false);
+    put(out, "shmem count", shm_count_, printed, false);
     put(out, "shmem size", shm_size_, printed);
 
     // /proc/pid/smap
@@ -143,7 +143,7 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     bool printed = false;
     // mallino
     diff(out, "arena", arena_, other.arena_, printed);
-    diff(out, "ordblks", ordblks_, other.ordblks_, printed);
+    // diff(out, "ordblks", ordblks_, other.ordblks_, printed);
     diff(out, "smblks", smblks_, other.smblks_, printed);
     diff(out, "hblks", hblks_, other.hblks_, printed);
     diff(out, "hblkhd", hblkhd_, other.hblkhd_, printed);
@@ -159,9 +159,9 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
 
     // ----
     diff(out, "mmap count", mmap_count_, other.mmap_count_, printed, false);
-    diff(out, "shmem size", mmap_size_, other.mmap_size_, printed);
+    diff(out, "mmap size", mmap_size_, other.mmap_size_, printed);
 
-    diff(out, "mmap count", shm_count_, other.shm_count_, printed, false);
+    diff(out, "shmem count", shm_count_, other.shm_count_, printed, false);
     diff(out, "shmem size", shm_size_, other.shm_size_, printed);
 
     // /proc/pid/smap

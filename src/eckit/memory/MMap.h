@@ -27,7 +27,7 @@ public: // methods
 
     static void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset);
     static int munmap(void* addr, size_t length);
-    static void dump(std::ostream& os);
+    static void info(size_t& count, size_t& size);
 
 };
 

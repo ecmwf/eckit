@@ -58,6 +58,15 @@ struct MemoryInfo {
     size_t permanentUsed_;
     size_t permanentFree_;
 
+    // mmap, smgget
+
+    size_t mmap_count_;
+    size_t mmap_size_;
+
+    size_t shm_count_;
+    size_t shm_size_;
+
+
     void print(std::ostream&) const;
     void delta(std::ostream&, const MemoryInfo& other) const;
 

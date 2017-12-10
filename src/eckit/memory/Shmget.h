@@ -30,7 +30,7 @@ public: // methods
     static void *shmat(int shmid, const void *shmaddr, int shmflg);
     static int shmdt(const void *shmaddr);
 
-    static void dump(std::ostream& os);
+    static void info(size_t& count, size_t& size);
 
 };
 

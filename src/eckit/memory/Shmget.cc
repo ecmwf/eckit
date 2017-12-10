@@ -76,19 +76,12 @@ int Shmget::shmdt(const void *shmaddr) {
 }
 
 
-
-void Shmget::dump(std::ostream& out) {
-
+void Shmget::info(size_t& count, size_t& size) {
     AutoLock<StaticMutex> lock(mutex_);
-
-    if (count_) {
-        out << ", shmget count: " << BigNum(count_);
-    }
-
-    if (length_) {
-        out << ", shmget size: " << Bytes(length_);
-    }
+    count = count_;
+    size = length_;
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

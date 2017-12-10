@@ -24,6 +24,7 @@
 #include "eckit/memory/Shmget.h"
 #include "eckit/memory/MMap.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/BigNum.h"
 
 namespace eckit {
 namespace system {
@@ -37,14 +38,23 @@ MemoryInfo::MemoryInfo() {
     MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
     MemoryPool::large(largeUsed_, largeFree_);
 
+    MMap::info(mmap_count_, mmap_size_);
+    Shmget::info(shm_count_, shm_size_);
+
 }
 
-static void put(std::ostream& out, const char* title, size_t value, bool& printed) {
+static void put(std::ostream& out, const char* title, size_t value, bool& printed, bool bytes = true) {
     if (value) {
         if (printed) {
             out << ", ";
         }
-        out << title << ": " << eckit::Bytes(value);
+        out << title << ": " ;
+        if (bytes) {
+            out << eckit::Bytes(value);
+        }
+        else {
+            out << eckit::BigNum(value);
+        }
         printed = true;
     }
 }
@@ -69,6 +79,13 @@ void MemoryInfo::print(std::ostream& out) const {
     put(out, "resident size", resident_size_, printed);
     put(out, "virtual size", virtual_size_, printed);
 
+    // shaher
+    put(out, "mmap count", mmap_count_, printed, false);
+    put(out, "shmem size", mmap_size_, printed);
+
+    put(out, "mmap count", shm_count_, printed, false);
+    put(out, "shmem size", shm_size_, printed);
+
     // /proc/pid/smap
     put(out, "mapped shared", mapped_shared_, printed);
     put(out, "mapped read", mapped_read_, printed);
@@ -91,18 +108,30 @@ void MemoryInfo::print(std::ostream& out) const {
 }
 
 
-static void diff(std::ostream& out, const char* title, size_t value, size_t previous, bool& printed) {
+static void diff(std::ostream& out, const char* title, size_t value, size_t previous, bool& printed, bool bytes = true) {
     if (value != previous) {
         if (printed) {
             out << ", ";
         }
         out << title << ": " << eckit::Bytes(value) << " (";
+        size_t diff = 0;
         if (value > previous) {
-            out << "+" << eckit::Bytes(value - previous);
+            out << "+";
+            diff = value - previous;
         }
         else {
-            out << "-" << eckit::Bytes(previous - value);
+            out << "-" ;
+            diff = previous - value;
         }
+
+        if (bytes) {
+            out << eckit::Bytes(diff);
+        }
+        else {
+            out << eckit::BigNum(diff);
+        }
+
+
         out << ")";
         printed = true;
     }
@@ -127,6 +156,13 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     // getrusage
     diff(out, "resident size", resident_size_, other.resident_size_, printed);
     diff(out, "virtual size", virtual_size_, other.virtual_size_, printed);
+
+    // ----
+    diff(out, "mmap count", mmap_count_, other.mmap_count_, printed, false);
+    diff(out, "shmem size", mmap_size_, other.mmap_size_, printed);
+
+    diff(out, "mmap count", shm_count_, other.shm_count_, printed, false);
+    diff(out, "shmem size", shm_size_, other.shm_size_, printed);
 
     // /proc/pid/smap
     diff(out, "mapped shared", mapped_shared_, other.mapped_shared_, printed);

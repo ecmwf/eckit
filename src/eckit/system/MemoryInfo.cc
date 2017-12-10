@@ -113,7 +113,16 @@ static void diff(std::ostream& out, const char* title, size_t value, size_t prev
         if (printed) {
             out << ", ";
         }
-        out << title << ": " << eckit::Bytes(value) << " (";
+        out << title << ": ";
+
+        if (bytes) {
+            out << eckit::Bytes(value);
+        }
+        else {
+            out << eckit::BigNum(value);
+        }
+
+        out << " (";
         size_t diff = 0;
         if (value > previous) {
             out << "+";

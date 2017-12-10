@@ -64,6 +64,7 @@ public: // methods
     virtual eckit::LocalPathName executablePath() const = 0;
 
     virtual size_t memoryAllocated() const = 0;
+    virtual size_t arenaSize() const = 0;
 
     virtual Mem memoryUsage() const = 0;
 

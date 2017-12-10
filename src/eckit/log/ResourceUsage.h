@@ -52,6 +52,8 @@ private: // members
 
     size_t rss_;
     size_t malloc_;
+    size_t arena_;
+
     size_t shared_;
 
     size_t mapped_read_;

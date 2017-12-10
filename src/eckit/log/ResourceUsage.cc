@@ -54,6 +54,8 @@ void ResourceUsage::init() {
 
     rss_ = usage.resident_size_;
     malloc_ = sysinfo.memoryAllocated();
+    arena_ = sysinfo.arenaSize();
+
     shared_ = usage.shared_memory_;
 
     mapped_read_ = usage.mapped_read_;
@@ -70,6 +72,7 @@ void ResourceUsage::init() {
     out_ << name_
          << " => " << hostname_
          << " resident size: " << eckit::Bytes(rss_)
+         << ", arena: " << eckit::Bytes(arena_)
          << ", allocated: " << eckit::Bytes(malloc_);
 
     if (shared_) {
@@ -135,6 +138,8 @@ ResourceUsage::~ResourceUsage()
 
     size_t rss = usage.resident_size_;
     size_t malloc = sysinfo.memoryAllocated();
+    size_t arena = sysinfo.arenaSize();
+
     size_t shared = usage.shared_memory_;
 
     size_t largeUsed;
@@ -175,6 +180,17 @@ ResourceUsage::~ResourceUsage()
 
     if ( malloc < malloc_) {
         out_ << " (-" << eckit::Bytes(malloc_ - malloc) << ")";
+    }
+
+    out_ << ", arena: "
+         << eckit::Bytes(arena);
+
+    if ( arena > arena_) {
+        out_ << " (+" << eckit::Bytes(arena - arena_) << ")";
+    }
+
+    if ( arena < arena_) {
+        out_ << " (-" << eckit::Bytes(arena_ - arena) << ")";
     }
 
     if (shared_ || shared) {

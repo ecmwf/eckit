@@ -72,6 +72,10 @@ size_t SystemInfoMacOSX::memoryAllocated() const {
     return mstats().bytes_used;
 }
 
+size_t SystemInfoMacOSX::arenaSize() const {
+    return mstats().bytes_total;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace system

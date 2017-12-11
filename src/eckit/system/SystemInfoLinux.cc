@@ -133,9 +133,9 @@ MemoryInfo SystemInfoLinux::memoryUsage() const {
 
     struct mallinfo m = mallinfo();
     mem.arena_ = m.arena;
-    mem.ordblks_ = m.ordblks;
-    mem.smblks_ = m.smblks;
-    mem.hblks_ = m.hblks;
+    //mem.ordblks_ = m.ordblks;
+    //mem.smblks_ = m.smblks;
+    //mem.hblks_ = m.hblks;
     mem.hblkhd_ = m.hblkhd;
     mem.usmblks_ = m.usmblks;
     mem.fsmblks_ = m.fsmblks;

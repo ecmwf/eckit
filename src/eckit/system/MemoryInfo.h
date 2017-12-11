@@ -29,9 +29,9 @@ struct MemoryInfo {
 
     // mallino
     size_t arena_;
-    size_t ordblks_;
-    size_t smblks_;
-    size_t hblks_;
+    // size_t ordblks_;
+    // size_t smblks_;
+    // size_t hblks_;
     size_t hblkhd_;
     size_t usmblks_;
     size_t fsmblks_;

@@ -93,8 +93,8 @@ void MemoryInfo::print(std::ostream& out) const {
         // mallino
     put(out, "arena", arena_, printed);
     // put(out, "ordblks", ordblks_, printed);
-    put(out, "smblks", smblks_, printed);
-    put(out, "hblks", hblks_, printed);
+    // put(out, "smblks", smblks_, printed);
+    // put(out, "hblks", hblks_, printed);
     put(out, "hblkhd", hblkhd_, printed);
     put(out, "usmblks", usmblks_, printed);
     put(out, "fsmblks", fsmblks_, printed);
@@ -183,8 +183,8 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     // mallino
     diff(out, "arena", arena_, other.arena_, printed);
     // diff(out, "ordblks", ordblks_, other.ordblks_, printed);
-    diff(out, "smblks", smblks_, other.smblks_, printed);
-    diff(out, "hblks", hblks_, other.hblks_, printed);
+    // diff(out, "smblks", smblks_, other.smblks_, printed);
+    // diff(out, "hblks", hblks_, other.hblks_, printed);
     diff(out, "hblkhd", hblkhd_, other.hblkhd_, printed);
     diff(out, "usmblks", usmblks_, other.usmblks_, printed);
     diff(out, "fsmblks", fsmblks_, other.fsmblks_, printed);

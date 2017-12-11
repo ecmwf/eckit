@@ -96,11 +96,11 @@ void MemoryInfo::print(std::ostream& out) const {
     // put(out, "smblks", smblks_, printed);
     // put(out, "hblks", hblks_, printed);
     put(out, "malloc mmaped", hblkhd_, printed);
-    put(out, "usmblks", usmblks_, printed);
-    put(out, "fsmblks", fsmblks_, printed);
+    put(out, "malloc peak", usmblks_, printed);
+    put(out, "malloc free bins", fsmblks_, printed);
     put(out, "malloc total", uordblks_, printed);
     put(out, "malloc free", fordblks_, printed);
-    put(out, "keepcost", keepcost_, printed);
+    put(out, "malloc releasable", keepcost_, printed);
 
 
     if (!printed) {
@@ -186,11 +186,11 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     // diff(out, "smblks", smblks_, other.smblks_, printed);
     // diff(out, "hblks", hblks_, other.hblks_, printed);
     diff(out, "malloc mmaped", hblkhd_, other.hblkhd_, printed);
-    diff(out, "usmblks", usmblks_, other.usmblks_, printed);
-    diff(out, "fsmblks", fsmblks_, other.fsmblks_, printed);
+    diff(out, "malloc peak", usmblks_, other.usmblks_, printed);
+    diff(out, "malloc free bins", fsmblks_, other.fsmblks_, printed);
     diff(out, "malloc total", uordblks_, other.uordblks_, printed);
     diff(out, "malloc free", fordblks_, other.fordblks_, printed);
-    diff(out, "keepcost", keepcost_, other.keepcost_, printed);
+    diff(out, "malloc releasable", keepcost_, other.keepcost_, printed);
 
     if (!printed) {
         out << "no change";

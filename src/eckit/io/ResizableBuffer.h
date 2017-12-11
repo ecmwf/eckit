@@ -35,8 +35,8 @@ public: // methods
 
 	~ResizableBuffer();
 
-	operator char*()                 { return (char*)buffer_; }
-	operator const char*() const     { return (char*)buffer_; }
+	operator char*()                 { return buffer_; }
+	operator const char*() const     { return buffer_; }
 
 	operator void*()                 { return buffer_; }
 	operator const void*() const     { return buffer_; }
@@ -48,13 +48,13 @@ public: // methods
 
 private: // methods
 
-	static void* allocate(size_t);
-	static void deallocate(void*, size_t size);
+	static char* allocate(size_t);
+	static void deallocate(char*, size_t size);
 
 
 private: // members
 
-    void*  buffer_;
+    char*  buffer_;
 	size_t size_;
 
 };

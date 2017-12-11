@@ -14,9 +14,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/ResizableBuffer.h"
 
-#include "eckit/memory/MMap.h"
-
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -39,18 +36,14 @@ ResizableBuffer::~ResizableBuffer()
     deallocate(buffer_, size_);
 }
 
-void* ResizableBuffer::allocate(size_t size)
+char* ResizableBuffer::allocate(size_t size)
 {
-    void * buffer = MMap::mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    if (buffer == MAP_FAILED) {
-        throw FailedSystemCall("mmap", Here());
-    }
-    return buffer;
+    return new char[size];
 }
 
-void ResizableBuffer::deallocate(void* buffer, size_t size)
+void ResizableBuffer::deallocate(char* buffer, size_t size)
 {
-    MMap::munmap(buffer, size);
+    delete[] buffer;
 }
 
 void ResizableBuffer::resize(size_t size, bool preserveData)
@@ -58,7 +51,7 @@ void ResizableBuffer::resize(size_t size, bool preserveData)
     if (size != size_) {
 
         if (preserveData) {
-            void *newbuffer = allocate(size);
+            char *newbuffer = allocate(size);
             ::memcpy(newbuffer, buffer_, std::min(size_, size));
             deallocate(buffer_, size_);
             size_ = size;

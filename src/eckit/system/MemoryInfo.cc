@@ -63,17 +63,6 @@ void MemoryInfo::print(std::ostream& out) const {
 
     bool printed = false;
 
-    // mallino
-    put(out, "arena", arena_, printed);
-    // put(out, "ordblks", ordblks_, printed);
-    put(out, "smblks", smblks_, printed);
-    put(out, "hblks", hblks_, printed);
-    put(out, "hblkhd", hblkhd_, printed);
-    put(out, "usmblks", usmblks_, printed);
-    put(out, "fsmblks", fsmblks_, printed);
-    put(out, "uordblks", uordblks_, printed);
-    put(out, "fordblks", fordblks_, printed);
-    put(out, "keepcost", keepcost_, printed);
 
     // getrusage
     put(out, "resident size", resident_size_, printed);
@@ -100,6 +89,19 @@ void MemoryInfo::print(std::ostream& out) const {
     put(out, "transient free", transientFree_, printed);
     put(out, "permanent used", permanentUsed_, printed);
     put(out, "permanent Free", permanentFree_, printed);
+
+        // mallino
+    put(out, "arena", arena_, printed);
+    // put(out, "ordblks", ordblks_, printed);
+    put(out, "smblks", smblks_, printed);
+    put(out, "hblks", hblks_, printed);
+    put(out, "hblkhd", hblkhd_, printed);
+    put(out, "usmblks", usmblks_, printed);
+    put(out, "fsmblks", fsmblks_, printed);
+    put(out, "uordblks", uordblks_, printed);
+    put(out, "fordblks", fordblks_, printed);
+    put(out, "keepcost", keepcost_, printed);
+
 
     if (!printed) {
         out << "no information";
@@ -150,17 +152,7 @@ static void diff(std::ostream& out, const char* title, size_t value, size_t prev
 void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
 
     bool printed = false;
-    // mallino
-    diff(out, "arena", arena_, other.arena_, printed);
-    // diff(out, "ordblks", ordblks_, other.ordblks_, printed);
-    diff(out, "smblks", smblks_, other.smblks_, printed);
-    diff(out, "hblks", hblks_, other.hblks_, printed);
-    diff(out, "hblkhd", hblkhd_, other.hblkhd_, printed);
-    diff(out, "usmblks", usmblks_, other.usmblks_, printed);
-    diff(out, "fsmblks", fsmblks_, other.fsmblks_, printed);
-    diff(out, "uordblks", uordblks_, other.uordblks_, printed);
-    diff(out, "fordblks", fordblks_, other.fordblks_, printed);
-    diff(out, "keepcost", keepcost_, other.keepcost_, printed);
+
 
     // getrusage
     diff(out, "resident size", resident_size_, other.resident_size_, printed);
@@ -187,6 +179,18 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     diff(out, "transient free", transientFree_, other.transientFree_, printed);
     diff(out, "permanent used", permanentUsed_, other.permanentUsed_, printed);
     diff(out, "permanent free", permanentFree_, other.permanentFree_, printed);
+
+    // mallino
+    diff(out, "arena", arena_, other.arena_, printed);
+    // diff(out, "ordblks", ordblks_, other.ordblks_, printed);
+    diff(out, "smblks", smblks_, other.smblks_, printed);
+    diff(out, "hblks", hblks_, other.hblks_, printed);
+    diff(out, "hblkhd", hblkhd_, other.hblkhd_, printed);
+    diff(out, "usmblks", usmblks_, other.usmblks_, printed);
+    diff(out, "fsmblks", fsmblks_, other.fsmblks_, printed);
+    diff(out, "uordblks", uordblks_, other.uordblks_, printed);
+    diff(out, "fordblks", fordblks_, other.fordblks_, printed);
+    diff(out, "keepcost", keepcost_, other.keepcost_, printed);
 
     if (!printed) {
         out << "no change";

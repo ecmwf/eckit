@@ -26,6 +26,7 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/memory/MemoryBuffer.h"
+#include "eckit/log/Bytes.h"
 
 
 namespace eckit {
@@ -48,7 +49,7 @@ public:
 
     virtual SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) {
 
-        if(shape.allocSize() > membuff_.size()) {
+        if (shape.allocSize() > membuff_.size()) {
             membuff_.resize(shape.allocSize());
         }
 
@@ -68,6 +69,10 @@ public:
 
     virtual bool inSharedMemory() const {
         return false;
+    }
+
+    virtual void print(std::ostream& out) const {
+        out << "StandardAllocator[" << Bytes(membuff_.size()) << "]";
     }
 
     eckit::MemoryBuffer membuff_;
@@ -94,6 +99,10 @@ public:
 
     virtual bool inSharedMemory() const {
         return false;
+    }
+
+    virtual void print(std::ostream& out) const {
+        out << "BufferAllocator[" << Bytes(buffer_.size()) << "]";
     }
 
     MemoryBuffer buffer_;
@@ -164,7 +173,7 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) {
 
     owner_.reset( new detail::StandardAllocator() );
 
-    if(!other.empty()) { // in case we copy an other that was constructed empty
+    if (!other.empty()) { // in case we copy an other that was constructed empty
 
         reserve(other.rows(), other.cols(), other.nonZeros());
 
@@ -328,15 +337,15 @@ bool SparseMatrix::inSharedMemory() const {
 
 void SparseMatrix::dump(std::ostream& os) const
 {
-    for(Size i = 0; i < rows(); ++i) {
+    for (Size i = 0; i < rows(); ++i) {
 
         const_iterator itr = begin(i);
         const_iterator iend = end(i);
 
-        if(itr == iend) continue;
+        if (itr == iend) continue;
         os << itr.row();
 
-        for(; itr != iend; ++itr) {
+        for (; itr != iend; ++itr) {
             os << " " << itr.col() << " " << *itr;
         }
         os << std::endl;
@@ -359,16 +368,16 @@ SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
 
     reserve(rows, cols, nnz);
 
-    for(Size i = 0; i < nnz; ++i) {
+    for (Size i = 0; i < nnz; ++i) {
         spm_.outer_[i] = Index(i);
         spm_.inner_[i] = Index(i);
     }
 
-    for(Size i = nnz; i <= shape_.rows_; ++i) {
+    for (Size i = nnz; i <= shape_.rows_; ++i) {
         spm_.outer_[i] = Index(nnz);
     }
 
-    for(Size i = 0; i < shape_.size_; ++i) {
+    for (Size i = 0; i < shape_.size_; ++i) {
         spm_.data_[i] = Scalar(1);
     }
 
@@ -406,11 +415,11 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     std::vector<Index> inner;
 
     Size nnz = 0;
-    for(Size r = 0; r < shape_.rows_; ++r) {
+    for (Size r = 0; r < shape_.rows_; ++r) {
         const Index start = spm_.outer_[r];
         spm_.outer_[r] = Index(nnz);
-        for(Index c = start; c < spm_.outer_[r + 1]; ++c)
-            if(spm_.data_[c] != val) {
+        for (Index c = start; c < spm_.outer_[r + 1]; ++c)
+            if (spm_.data_[c] != val) {
                 v.push_back(spm_.data_[c]);
                 inner.push_back(spm_.inner_[c]);
                 ++nnz;
@@ -428,6 +437,11 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     swap(tmp);
 
     return *this;
+}
+
+const SparseMatrix::Allocator& SparseMatrix::owner() const {
+    ASSERT(owner_.get());
+    return *(owner_.get());
 }
 
 
@@ -528,7 +542,7 @@ SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
     row_(0)
 {
     const Index* outer = matrix_->outer();
-    while(outer[row_+1] == 0) {
+    while (outer[row_ + 1] == 0) {
         ++row_;
     }
 }
@@ -537,7 +551,7 @@ SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix, Size ro
     matrix_(const_cast<SparseMatrix*>(&matrix)),
     row_(row) {
     const Size rows = matrix_->rows();
-    if(row_ > rows) { row_ = rows; }
+    if (row_ > rows) { row_ = rows; }
     index_ = Size(matrix_->outer()[row_]);
 }
 
@@ -552,7 +566,7 @@ Size SparseMatrix::const_iterator::row() const {
 
 
 SparseMatrix::const_iterator& SparseMatrix::const_iterator::operator++() {
-    if(lastOfRow()) {
+    if (lastOfRow()) {
         row_++;
     }
     index_++;

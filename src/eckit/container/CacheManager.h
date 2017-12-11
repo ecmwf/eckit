@@ -32,6 +32,7 @@
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/filesystem/PathExpander.h"
+#include "eckit/os/Semaphore.h"
 
 namespace eckit {
 
@@ -59,6 +60,18 @@ public:
     void lock() {}
     void unlock() {}
 };
+
+class CacheManagerFileLock {
+
+    PathName path_;
+    eckit::Semaphore lock_;
+
+public:
+    CacheManagerFileLock(const std::string&);
+    void lock();
+    void unlock();
+};
+
 
 template <class Traits>
 class CacheManager : public CacheManagerBase {

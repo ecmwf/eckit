@@ -96,6 +96,14 @@ public: // types
         Size         rows_;   ///< Number of rows
         Size         cols_;   ///< Number of columns
 
+        void print(std::ostream& os) const {
+            os << "Shape["
+               << "nnz="  << size_ << ","
+               << "rows=" << rows_ << ","
+               << "cols=" << cols_ << "]";
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Shape& p) { p.print(os); return os; }
     };
 
 

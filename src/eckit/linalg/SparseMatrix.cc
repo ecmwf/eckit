@@ -355,9 +355,8 @@ void SparseMatrix::dump(std::ostream& os) const
 void SparseMatrix::print(std::ostream& os) const
 {
     os << "SparseMatrix["
-       << "nnz="  << shape_.size_ << ","
-       << "rows=" << shape_.rows_ << ","
-       << "cols=" << shape_.cols_ << "]";
+       << shape_ << ","
+       << *owner_ << "]";
 }
 
 SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {

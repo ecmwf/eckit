@@ -20,6 +20,7 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
 static long count_;
 static long maxCount_;
@@ -33,7 +34,6 @@ static std::map<int, size_t> sizes_;
 static std::map<const void*, int> ids_;
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 int Shmget::shmget(key_t key, size_t size, int shmflg) {
     int shmid = ::shmget(key, size, shmflg);

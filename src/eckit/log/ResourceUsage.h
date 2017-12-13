@@ -51,10 +51,10 @@ private: // members
 
     std::string        name_;
     std::ostream&      out_;
+
     system::MemoryInfo usage_;
 
     std::string hostname_;
-
 };
 
 

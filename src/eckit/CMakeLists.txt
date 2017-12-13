@@ -629,6 +629,10 @@ list( APPEND eckit_transaction_srcs
     transaction/TxnLog.cc
 )
 
+list( APPEND eckit_testing_srcs
+    testing/Test.h
+)
+
 list( APPEND eckit_dirs
 	bases
 	compat
@@ -649,6 +653,7 @@ list( APPEND eckit_dirs
 	thread
 	transaction
     types
+    testing
     utils
 	value
     system

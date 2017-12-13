@@ -53,7 +53,7 @@ private: // members
     std::ostream&      out_;
     system::MemoryInfo usage_;
 
-    char hostname_[256];
+    std::string hostname_;
 
 };
 

@@ -49,7 +49,7 @@ public: // methods
 private: // methods
 
 	static char* allocate(size_t);
-	static void deallocate(char*, size_t size);
+    static void deallocate(char*);
 
 
 private: // members

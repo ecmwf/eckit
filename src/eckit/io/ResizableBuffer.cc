@@ -33,7 +33,7 @@ ResizableBuffer::ResizableBuffer(const char* p, size_t size):
 
 ResizableBuffer::~ResizableBuffer()
 {
-    deallocate(buffer_, size_);
+    deallocate(buffer_);
 }
 
 char* ResizableBuffer::allocate(size_t size)
@@ -41,7 +41,7 @@ char* ResizableBuffer::allocate(size_t size)
     return new char[size];
 }
 
-void ResizableBuffer::deallocate(char* buffer, size_t size)
+void ResizableBuffer::deallocate(char* buffer)
 {
     delete[] buffer;
 }
@@ -53,12 +53,12 @@ void ResizableBuffer::resize(size_t size, bool preserveData)
         if (preserveData) {
             char *newbuffer = allocate(size);
             ::memcpy(newbuffer, buffer_, std::min(size_, size));
-            deallocate(buffer_, size_);
+            deallocate(buffer_);
             size_ = size;
             buffer_ = newbuffer;
         }
         else {
-            deallocate(buffer_, size_);
+            deallocate(buffer_);
             size_ = size;
             buffer_ = allocate(size);
         }

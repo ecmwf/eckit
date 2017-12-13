@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/container/CacheManager.h"
 #include <unistd.h>
+
+#include "eckit/container/CacheManager.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit {
 
@@ -50,8 +52,7 @@ void CacheManagerFileLock::lock() {
     eckit::Log::info() << "Got lock " << path_ << std::endl;
 
 
-    char hostname[1024];
-    SYSCALL(gethostname(hostname, sizeof(hostname) - 1));
+    std::string hostname = eckit::Main::hostname();
 
     std::ofstream os(path_.asString().c_str());
     os << hostname << " " << ::getpid() << std::endl;

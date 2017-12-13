@@ -27,6 +27,7 @@
 #include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/config/Resource.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/io/Select.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPSocket.h"
@@ -648,9 +649,7 @@ int TCPSocket::newSocket(int port, bool reusePort)
             localHost_ = Resource<std::string> ("host", "");
             if (localHost_.length() == 0)
             {
-                char host[1024];
-                SYSCALL(gethostname(host, sizeof(host) - 1));
-                localHost_ = host;
+                localHost_ = eckit::Main::hostname();
             }
         }
         else

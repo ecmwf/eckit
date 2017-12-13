@@ -8,8 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// File NodeInfo.h
-// Baudouin Raoult - ECMWF Nov 96
+/// @author Baudouin Raoult
 
 #ifndef eckit_NodeInfo_h
 #define eckit_NodeInfo_h
@@ -23,18 +22,12 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class NodeInfo {
-public:
 
-// -- Contructors
+public: // methods
 
 	NodeInfo();
 
-// -- Destructor
-
 	~NodeInfo();
-
-// -- Methods
-//
 
 	void  port(int p)    { port_ = p; }
 	int   port() const   { return port_; }
@@ -70,33 +63,27 @@ public:
 
 
 
-private:
-
-// No copy allowed
-
-	//NodeInfo(const NodeInfo&);
-	//NodeInfo& operator=(const NodeInfo&);
+private: // members
 
     std::string name_;
     std::string node_;
     std::string user_;
     std::string host_;
+
 	int    port_;
     bool   active_;
 	TaskID id_;
 	long   task_;
 
-// -- Methods
+private: // methods
 
 	void print(std::ostream&) const; 
 
-// -- Friends
-
-	friend std::ostream& operator<<(std::ostream& s,const NodeInfo& p)
-		{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const NodeInfo& p) { p.print(s); return s; }
 
 	friend void operator<<(Stream&,const NodeInfo&);
 	friend void operator>>(Stream&,NodeInfo&);
+
 };
 
 // Used by MappedArray

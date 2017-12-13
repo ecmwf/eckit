@@ -15,6 +15,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 
+#include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
@@ -50,7 +51,22 @@ void ResourceUsage::init() {
     using namespace eckit::system;
     const SystemInfo& sysinfo = SystemInfo::instance();
 
-    SYSCALL(::gethostname(hostname_, sizeof(hostname_)));
+    Mem usage = sysinfo.memoryUsage();
+
+    rss_ = usage.resident_size_;
+    malloc_ = sysinfo.memoryAllocated();
+    shared_ = usage.shared_memory_;
+
+    mapped_read_ = usage.mapped_read_;
+    mapped_write_ = usage.mapped_write_;
+    mapped_execute_ = usage.mapped_execute_;
+    mapped_private_ = usage.mapped_private_;
+
+    MemoryPool::info(transientUsed_, transientFree_, MemPool::transientPool);
+    MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
+    MemoryPool::large(largeUsed_, largeFree_);
+
+    hostname_ = Main::hostname();
 
     usage_ = sysinfo.memoryUsage();
 

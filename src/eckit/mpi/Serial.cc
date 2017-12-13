@@ -15,6 +15,7 @@
 #include <limits>
 #include <deque>
 
+#include "eckit/runtime/Main.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/mpi/SerialData.h"
 #include "eckit/mpi/SerialRequest.h"
@@ -129,9 +130,7 @@ Comm* Serial::self() const {
 }
 
 std::string Serial::processorName() const {
-    char hostname[256];
-    SYSCALL(::gethostname(hostname, sizeof(hostname)));
-    return hostname;
+    return Main::hostname();
 }
 
 size_t Serial::rank() const {

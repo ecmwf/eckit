@@ -143,8 +143,9 @@ void Main::taskID(long id) {
 
 std::string Main::hostname()
 {
-    char hostname[256];
-    SYSCALL(::gethostname(hostname, sizeof(hostname)));
+    // RFC 1035 max length is 255 chars, whilst each label '.' separated is 63 chars
+    char hostname[256] = {0,};
+    SYSCALL(::gethostname(hostname, sizeof(hostname)-1));
     return hostname;
 }
 

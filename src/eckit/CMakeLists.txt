@@ -118,6 +118,8 @@ io/SockBuf.h
 io/SockBuf.cc
 io/AIOHandle.h
 io/AIOHandle.cc
+io/AsyncHandle.h
+io/AsyncHandle.cc
 io/BitIO.h
 io/BitIO.cc
 io/Compress.h
@@ -564,6 +566,10 @@ memory/MemoryPool.h
 memory/MemoryPool.cc
 memory/MemoryBuffer.h
 memory/MemoryBuffer.cc
+memory/MMap.cc
+memory/MMap.h
+memory/Shmget.cc
+memory/Shmget.h
 memory/SharedPtr.h
 memory/Padded.h
 memory/MapAllocator.h
@@ -590,6 +596,8 @@ list( APPEND eckit_system_srcs
     system/ResourceUsage.h
     system/SystemInfo.cc
     system/SystemInfo.h
+    system/MemoryInfo.cc
+    system/MemoryInfo.h
 )
 
 set(ECKIT_SYSTEM_EXTRA_LIBS "")
@@ -602,6 +610,10 @@ elseif( EC_OS_NAME STREQUAL "macosx" )
     list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
 else()
     ecbuild_warn("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
+endif()
+
+if(HAVE_JEMALLOC)
+    list(APPEND ECKIT_SYSTEM_EXTRA_LIBS ${JEMALLOC_LIBRARIES})
 endif()
 
 list( APPEND eckit_bases_srcs
@@ -618,10 +630,8 @@ list( APPEND eckit_transaction_srcs
 )
 
 list( APPEND eckit_testing_srcs
-    testing/Setup.h
     testing/Test.h
 )
-
 
 list( APPEND eckit_dirs
 	bases
@@ -640,7 +650,6 @@ list( APPEND eckit_dirs
 	persist
 	runtime
 	serialisation
-	testing
 	thread
 	transaction
     types

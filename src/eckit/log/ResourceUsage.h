@@ -19,12 +19,14 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/system/SystemInfo.h"
+#include "eckit/system/MemoryInfo.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class ResourceUsage : private NonCopyable {
 public:
@@ -47,25 +49,16 @@ protected: // methods
 
 private: // members
 
-    std::string    name_;
-    std::ostream&  out_;
+    std::string        name_;
+    std::ostream&      out_;
 
-    size_t rss_;
-    size_t malloc_;
-    size_t shared_;
+    system::MemoryInfo usage_;
 
-    size_t transientUsed_;
-    size_t permanentUsed_;
-    size_t transientFree_;
-    size_t permanentFree_;
-
-    size_t largeUsed_;
-    size_t largeFree_;
-
+    std::string hostname_;
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
 class TraceResourceUsage : public ResourceUsage {
@@ -77,6 +70,8 @@ public:
     explicit TraceResourceUsage( const std::string& name):
         ResourceUsage(name, eckit::Log::debug<T>()) {}
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

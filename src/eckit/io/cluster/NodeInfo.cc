@@ -20,11 +20,10 @@
 #include "eckit/config/Resource.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static Once<Mutex> local_mutex;
 
@@ -45,14 +44,11 @@ NodeInfo& NodeInfo::init()
 		name_ = Main::instance().name();
 
 		host_ = myHost;
-		if(host_.length() == 0)
-		{
-			char host[1024];
-			SYSCALL(gethostname(host,sizeof(host)-1));
-			host_ = host;
-			host_ = host_.substr(0, host_.find("."));
-            myHost = host;
-		}
+        if(host_.length() == 0)
+        {
+            myHost = host_ = eckit::Main::hostname();
+            host_ = host_.substr(0, host_.find("."));
+        }
 
 		node_ = myNode;
 
@@ -176,7 +172,7 @@ NodeInfo NodeInfo::sendLogin(Stream& s)
 	return remote;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

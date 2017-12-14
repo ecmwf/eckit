@@ -103,6 +103,14 @@ ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_I
 ecbuild_add_option( FEATURE CURL
                     DESCRIPTION "Curl library for transfering data with URLs"
                     REQUIRED_PACKAGES CURL )
+
+#### Jemalloc
+
+ecbuild_add_option( FEATURE JEMALLOC
+                    DEFAULT OFF
+                    DESCRIPTION "Link against jemalloc memory allocator"
+                    REQUIRED_PACKAGES Jemalloc )
+
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA

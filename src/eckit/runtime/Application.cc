@@ -172,8 +172,8 @@ void Application::unique() {
 
 time_t Application::uptime() {
 
-    Monitor::TaskArray& info = Monitor::instance().tasks();
-    time_t uptime = info[taskID_].start();
+    TaskInfo& info = Monitor::instance().task(taskID_);
+    time_t uptime = info.start();
     time_t now = ::time(0);
 
     return now - uptime;

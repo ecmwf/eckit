@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File TaskInfo.h
-// Baudouin Raoult - ECMWF Nov 96
+/// @author Baudouin Raoult
+/// @date   Nov 96
 
 #ifndef eckit_TaskInfo_h
 #define eckit_TaskInfo_h
@@ -143,8 +143,9 @@ public:
 	double rate()  const             { return progress_.rate_;  }
 	double speed() const             { return progress_.speed_; }
 	const char *progressName() const { return progress_.name_;}
-  const ::timeval& progressStart() const { return progress_.start_;}
-  const ::timeval& progressLast() const  { return progress_.last_;}
+
+    const ::timeval& progressStart() const { return progress_.start_;}
+    const ::timeval& progressLast() const  { return progress_.last_;}
 
 	// ---------------------------------------------------------
 
@@ -154,7 +155,7 @@ public:
 	void message(const std::string&);
 	void progressName(const std::string&);
 
-	// FIXME: potential race condition (reported by Clang ThreadSanitizer)
+    /// @todo FIXME potential race condition (reported by Clang ThreadSanitizer)
 	void show(bool s) { touch(); show_ = s; }
 	bool show() const { return show_; }
 
@@ -178,8 +179,8 @@ public:
 	void  port(int p)    { touch(); port_ = p; }
 	int   port() const   { return port_; }
 
-	void     host(const std::string& h)    { touch();
-			 strncpy(host_,h.c_str(),sizeof(host_)); }
+    void     host(const std::string& h) { touch(); strncpy(host_, h.c_str(), sizeof(host_)); }
+
 	std::string   host() const             { return host_; }
 
 private:

@@ -14,76 +14,58 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/ResizableBuffer.h"
 
-
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ResizableBuffer::ResizableBuffer(size_t size):
-    buffer_(0),
-    size_(size),
-    fd_(-1)
+    buffer_(allocate(size)),
+    size_(size)
 {
-    create();
 }
 
 ResizableBuffer::ResizableBuffer(const char* p, size_t size):
-    buffer_(0),
+    buffer_(allocate(size)),
     size_(size)
 {
-    create();
     ::memcpy(buffer_, p, size);
-}
-
-ResizableBuffer::ResizableBuffer(const std::string& s):
-    buffer_(0),
-    size_(s.length() + 1)
-{
-    create();
-    ::strcpy((char*)buffer_, s.c_str());
 }
 
 ResizableBuffer::~ResizableBuffer()
 {
-    destroy();
+    deallocate(buffer_);
 }
 
-void ResizableBuffer::create()
+char* ResizableBuffer::allocate(size_t size)
 {
-//  Log::info() << "ResizableBuffer::create " << size_ << std::endl;
-    if (size_)
-    {
-        fd_ = -1;
-        buffer_ = ::mmap(0, size_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
-        if (buffer_ == MAP_FAILED)
-            throw FailedSystemCall("mmap", Here());
-    }
+    return new char[size];
 }
 
-void ResizableBuffer::destroy()
+void ResizableBuffer::deallocate(char* buffer)
 {
-//  Log::info() << "ResizableBuffer::destroy " << size_ << std::endl;
-    if (size_)
-    {
-        munmap(buffer_, size_);
-        if (fd_ >= 0) close(fd_);
-        fd_ = -1;
-    }
-    buffer_ = 0;
+    delete[] buffer;
 }
 
-void ResizableBuffer::resize(size_t size)
+void ResizableBuffer::resize(size_t size, bool preserveData)
 {
     if (size != size_) {
-        destroy();
-        size_ = size;
-        create();
+
+        if (preserveData) {
+            char *newbuffer = allocate(size);
+            ::memcpy(newbuffer, buffer_, std::min(size_, size));
+            deallocate(buffer_);
+            size_ = size;
+            buffer_ = newbuffer;
+        }
+        else {
+            deallocate(buffer_);
+            size_ = size;
+            buffer_ = allocate(size);
+        }
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

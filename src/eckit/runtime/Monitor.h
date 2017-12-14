@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -54,12 +54,12 @@ public: // types
     };
 
 public: // methods
-    
-    static Monitor& instance();    
+
+    static Monitor& instance();
 
     static bool active();
     static void active( bool a );
-    
+
 	void startup();
 	void shutdown();
 	void out(char*,char*); // called from Log
@@ -82,7 +82,6 @@ public: // methods
 	void stoppable(bool);
 	bool stopped();
 
-	TaskArray& tasks();
 	long       self();
 	void parent(long);
 
@@ -107,6 +106,10 @@ public: // methods
 	void abort();
 	void checkAbort();
 
+    TaskInfo& task(unsigned long slot);
+    TaskArray& tasks();
+
+
 private: // members
 
 	unsigned long slot_;
@@ -124,14 +127,14 @@ private: // methods
 	~Monitor();
 
 	unsigned long hash();
-    
-    TaskInfo* task();
+
+    TaskInfo& task();
 
 	void init();
 
     friend class ThreadSingleton<Monitor>;
     friend struct NewAlloc0<Monitor>;
-    
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -141,13 +144,13 @@ private: // methods
 class AutoState {
 	char old_;
 public:
-	AutoState(char c): 
+	AutoState(char c):
 		old_(Monitor::instance().state(c)) {}
 
 	~AutoState()
 		{ Monitor::instance().state(old_); }
 
-	void set(char c) 
+	void set(char c)
 		{ Monitor::instance().state(c); }
 };
 
@@ -158,9 +161,9 @@ class AutoLockTag {
 	AutoState state_;
 	AutoLock<T> lock_;
 public:
-    AutoLockTag(T& t): state_(t.tag()), lock_(t) 
+    AutoLockTag(T& t): state_(t.tag()), lock_(t)
 		{ state_.set(t.tag() - 'a' + 'A'); }
-    AutoLockTag(T* t): state_(t->tag()), lock_(t) 
+    AutoLockTag(T* t): state_(t->tag()), lock_(t)
 		{ state_.set(t->tag() - 'a' + 'A'); }
 };
 

@@ -219,8 +219,7 @@ LocalPathName LocalPathName::unique(const LocalPathName& path)
 {
     AutoLock<StaticMutex> lock(local_mutex);
 
-    char hostname[256];
-    SYSCALL(::gethostname(hostname, sizeof(hostname)));
+    std::string hostname = Main::hostname();
 
     static unsigned long long n = (((unsigned long long)::getpid()) << 32);
 

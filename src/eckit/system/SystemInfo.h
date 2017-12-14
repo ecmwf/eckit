@@ -23,20 +23,9 @@
 namespace eckit {
 namespace system {
 
+class MemoryInfo;
+
 //----------------------------------------------------------------------------------------------------------------------
-
-struct Mem {
-    size_t resident_size_;
-    size_t virtual_size_;
-    size_t shared_memory_;
-
-    Mem(size_t resident_size = 0,
-        size_t virtual_size = 0,
-        size_t shared_memory = 0):
-        resident_size_(resident_size),
-        virtual_size_(virtual_size),
-        shared_memory_(shared_memory) {}
-};
 
 class SystemInfo : private eckit::NonCopyable {
 
@@ -48,8 +37,10 @@ public: // methods
 
     virtual eckit::LocalPathName executablePath() const = 0;
 
-    virtual size_t memoryAllocated() const = 0;
-    virtual Mem memoryUsage() const = 0;
+    virtual MemoryInfo memoryUsage() const = 0;
+
+    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = 0) const;
+    virtual void dumpSysMemInfo(std::ostream&, const char* prepend = 0) const;
 
 protected: // methods
 
@@ -59,6 +50,21 @@ protected: // methods
 
 private: // members
 
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template<class T>
+class TraceProcMemInfo {
+public:
+
+    explicit TraceProcMemInfo(const char* name) {
+        SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name);
+    }
+
+    explicit TraceProcMemInfo( const std::string& name) {
+        SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name.c_str());
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

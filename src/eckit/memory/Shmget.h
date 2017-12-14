@@ -8,43 +8,34 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Baudouin Raoult
-/// @author Tiago Quintino
-/// @author Simon Smart
-/// @date   March 2017
+/// @author  Baudouin Raoult
+/// @author  Tiago Quintino
+/// @date    Dec 2017
 
-#ifndef eckit_system_SystemInfoFreeBSD_H
-#define eckit_system_SystemInfoFreeBSD_H
+#ifndef eckit_memory_Shmget_h
+#define eckit_memory_Shmget_h
 
 #include <iosfwd>
-
-#include "eckit/system/SystemInfo.h"
+#include <sys/shm.h> // for key_t
 
 namespace eckit {
-namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SystemInfoFreeBSD : public SystemInfo {
+class Shmget {
 
 public: // methods
 
-    virtual ~SystemInfoFreeBSD();
+    static int shmget(key_t key, size_t size, int shmflg);
+    static void *shmat(int shmid, const void *shmaddr, int shmflg);
+    static int shmdt(const void *shmaddr);
 
-    virtual eckit::LocalPathName executablePath() const;
-
-    virtual MemoryInfo memoryUsage() const;
-
-protected: // methods
-
-private: // members
+    static void info(size_t& count, size_t& size);
 
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
 } // namespace eckit
 
 #endif
-

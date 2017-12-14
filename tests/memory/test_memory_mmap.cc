@@ -23,6 +23,7 @@
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/memory/MMap.h"
 
 #include "eckit/testing/Test.h"
 
@@ -104,7 +105,7 @@ CASE ( "Test memory map" )
     // map the file
     std::cout << "mapping " << Bytes(MAP_SIZE) << " from " << Bytes(SIZE_LW) << " to " << Bytes(SIZE_UP) << std::endl;
 
-    if( (map = (int*) ::mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, ELEM_LW)) ==  MAP_FAILED)
+    if( (map = (int*) MMap::mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, ELEM_LW)) ==  MAP_FAILED)
       close(fd), perror("Error mmapping the file"), exit(EXIT_FAILURE);
 
     // write to file as if it were memory
@@ -112,7 +113,7 @@ CASE ( "Test memory map" )
       map[i] = 2 * i;
 
     // free the mmapped memory
-    if (munmap(map, MAP_SIZE) == -1)
+    if (MMap::munmap(map, MAP_SIZE) == -1)
       perror("Error un-mmapping the file"), exit(EXIT_FAILURE);
 
     // close the file

@@ -8,7 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include "eckit/container/CacheManager.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit {
 
@@ -25,4 +28,43 @@ std::string eckit::CacheManagerBase::loader() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+// We only lock per host, not per cluster
+
+static eckit::PathName lockFile(const std::string& path) {
+    eckit::AutoUmask umask(0);
+
+    eckit::PathName lock(path + ".lock");
+    lock.touch();
+    return lock;
+}
+
+CacheManagerFileLock::CacheManagerFileLock(const std::string& path):
+    path_(lockFile(path)),
+    lock_(path_) {
+}
+
+void CacheManagerFileLock::lock() {
+    eckit::AutoUmask umask(0);
+
+    eckit::Log::info() << "Wait for lock " << path_ << std::endl;
+    lock_.lock();
+    eckit::Log::info() << "Got lock " << path_ << std::endl;
+
+
+    std::string hostname = eckit::Main::hostname();
+
+    std::ofstream os(path_.asString().c_str());
+    os << hostname << " " << ::getpid() << std::endl;
+
+}
+
+void CacheManagerFileLock::unlock() {
+    eckit::AutoUmask umask(0);
+
+    eckit::Log::info() << "Unlock " << path_ << std::endl;
+    std::ofstream os(path_.asString().c_str());
+    os << std::endl;
+    lock_.unlock();
+}
 } // namespace eckit

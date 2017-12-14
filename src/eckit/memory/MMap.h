@@ -8,40 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   Setup.h
-/// @author Baudouin Raoult
-/// @author Tiago Quintino
-/// @date   Aug 2016
+/// @author  Baudouin Raoult
+/// @author  Tiago Quintino
+/// @date    Dec 2017
 
-#ifndef eckit_testing_Setup_h
-#define eckit_testing_Setup_h
+#ifndef eckit_memory_MMap_h
+#define eckit_memory_MMap_h
 
-#include "eckit/runtime/Main.h"
+#include <iosfwd>
+
 
 namespace eckit {
-namespace testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct Setup {
-    Setup() {
-        eckit::Main::initialise(boost::unit_test::framework::master_test_suite().argc,
-                                boost::unit_test::framework::master_test_suite().argv);
+class MMap {
 
-//        eckit::Main::instance().assertDumps(false);
-    }
- };
+public: // methods
 
-//----------------------------------------------------------------------------------------------------------------------
+    static void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset);
+    static int munmap(void* addr, size_t length);
+    static void info(size_t& count, size_t& size);
 
-struct CommSetup : public Setup {
-    CommSetup() : Setup() {
-    }
- };
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace testing
 } // namespace eckit
 
 #endif

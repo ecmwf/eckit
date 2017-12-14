@@ -22,6 +22,7 @@
 #include "eckit/memory/MemoryBuffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/system/MemoryInfo.h"
 
 namespace eckit {
 namespace system {
@@ -53,7 +54,7 @@ LocalPathName SystemInfoMacOSX::executablePath() const
     return LocalPathName(path).realName();
 }
 
-Mem SystemInfoMacOSX::memoryUsage() const {
+MemoryInfo SystemInfoMacOSX::memoryUsage() const {
     struct task_basic_info info;
     mach_msg_type_number_t size = sizeof(info);
 
@@ -66,10 +67,21 @@ Mem SystemInfoMacOSX::memoryUsage() const {
         throw eckit::FailedSystemCall(mach_error_string(err), Here());
     }
 
-    return Mem(info.resident_size, info.virtual_size);}
+    MemoryInfo mem;
+
+    return mem;
+    // (info.resident_size,
+    //     info.virtual_size);
+
+
+}
 
 size_t SystemInfoMacOSX::memoryAllocated() const {
     return mstats().bytes_used;
+}
+
+size_t SystemInfoMacOSX::arenaSize() const {
+    return mstats().bytes_total;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

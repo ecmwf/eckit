@@ -15,11 +15,11 @@
 #include "eckit/memory/MapAllocator.h"
 #include "eckit/exception/Exceptions.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/memory/MMap.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static size_t whole_page(size_t size)
 {
@@ -38,7 +38,7 @@ MapAllocator::MapAllocator(size_t length):
         count_(0),
         more_(0)
 {
-        addr_ = ::mmap(0,length_,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,fd_,0);
+        addr_ = MMap::mmap(0,length_,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,fd_,0);
 
         if(addr_ == MAP_FAILED)
             throw FailedSystemCall("mmap",Here());
@@ -120,7 +120,7 @@ void MapAllocator::deallocate(void* addr)
         }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

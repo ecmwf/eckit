@@ -8,71 +8,59 @@
  * does it submit to any jurisdiction.
  */
 
-// File ResizableBuffer.h
-// Baudouin Raoult - ECMWF Jul 96
+/// @author Baudouin Raoult
+/// @date   Jul 96
 
-#ifndef eckit_ResizableBuffer_h
-#define eckit_ResizableBuffer_h
+#ifndef eckit_io_ResizableBuffer_h
+#define eckit_io_ResizableBuffer_h
 
 #include "eckit/eckit.h"
-
-// A simple class to implement buffers
-
-
-//-----------------------------------------------------------------------------
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-class ResizableBuffer {
-public:
+/// A simple resizable buffer
+/// Takes memory from mmap(/dev/zero),
+/// thus easily recoverable from OS when released hopefully minimising memory fragmentation
+/// Moreover we can trace how much we have allocated, @see Mmap wrapper
 
-// -- Contructors
+class ResizableBuffer : private eckit::NonCopyable {
+
+public: // methods
 
 	ResizableBuffer(size_t size);
-	ResizableBuffer(const std::string& s);
 	ResizableBuffer(const char*, size_t size);
-
-// -- Destructor
 
 	~ResizableBuffer();
 
-// -- Operators
-
-	operator char*()                 { return (char*)buffer_; }
-	operator const char*() const     { return (char*)buffer_; }
+	operator char*()                 { return buffer_; }
+	operator const char*() const     { return buffer_; }
 
 	operator void*()                 { return buffer_; }
 	operator const void*() const     { return buffer_; }
 
-// -- Methods
-
 	size_t size() const		 { return size_; }
-	void resize(size_t);
 
-private:
+    /// @post Invalidates contents of buffer
+    void resize(size_t, bool preserveData=false);
 
-// No copy allowed
+private: // methods
 
-	ResizableBuffer(const ResizableBuffer&);
-	ResizableBuffer& operator=(const ResizableBuffer&);
+	static char* allocate(size_t);
+    static void deallocate(char*);
 
-// -- Methods
 
-	void create();
-	void destroy();
+private: // members
 
-// -- Members
-
-	void*  buffer_;
+    char*  buffer_;
 	size_t size_;
-	int    fd_;
 
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

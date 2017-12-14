@@ -219,14 +219,14 @@ void MemoryPool::large(size_t& used, size_t& free) {
     Lock lock;
 
     unsigned long long total = 0;
-    unsigned long long left = 0;
+    unsigned long long inuse = 0;
 
     if (MemBlk::memList_) {
-        MemBlk::memList_->size(total, left);
+        MemBlk::memList_->size(total, inuse);
     }
 
-    used = total;
-    free = left;
+    used = inuse;
+    free = total - inuse;
 
 }
 

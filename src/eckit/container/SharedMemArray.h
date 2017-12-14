@@ -26,6 +26,7 @@
 #include "eckit/os/Stat.h"
 #include "eckit/log/Log.h"
 #include "eckit/config/LibEcKit.h"
+#include "eckit/memory/MMap.h"
 
 namespace eckit {
 

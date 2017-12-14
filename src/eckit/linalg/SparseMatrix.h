@@ -96,6 +96,14 @@ public: // types
         Size         rows_;   ///< Number of rows
         Size         cols_;   ///< Number of columns
 
+        void print(std::ostream& os) const {
+            os << "Shape["
+               << "nnz="  << size_ << ","
+               << "rows=" << rows_ << ","
+               << "cols=" << cols_ << "]";
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Shape& p) { p.print(os); return os; }
     };
 
 
@@ -109,6 +117,14 @@ public: // types
 
         /// Layout and Shape parameters may be ignored
         virtual void deallocate(Layout, Shape) = 0;
+
+        /// Is the memory shared
+        virtual bool inSharedMemory() const = 0;
+
+        virtual void print(std::ostream&) const = 0;
+
+        friend std::ostream& operator<<(std::ostream& os, const Allocator& a) { a.print(os); return os; }
+
     };
 
 public:  // methods
@@ -189,9 +205,14 @@ public:
     /// Returns the footprint of the matrix in memory
     size_t footprint() const;
 
+    /// Is the memory shared
+    bool inSharedMemory() const;
+
     void dump(std::ostream& os) const;
 
     void print(std::ostream& os) const;
+
+    const Allocator& owner() const;
 
     friend std::ostream& operator<<(std::ostream& os, const SparseMatrix& m) { m.print(os); return os; }
 

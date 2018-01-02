@@ -28,9 +28,6 @@ std::string eckit::CacheManagerBase::loader() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-// We only lock per host, not per cluster
-
 static eckit::PathName lockFile(const std::string& path) {
     eckit::AutoUmask umask(0);
 
@@ -39,12 +36,12 @@ static eckit::PathName lockFile(const std::string& path) {
     return lock;
 }
 
-CacheManagerFileLock::CacheManagerFileLock(const std::string& path):
+CacheManagerFileSemaphoreLock::CacheManagerFileSemaphoreLock(const std::string& path):
     path_(lockFile(path)),
     lock_(path_) {
 }
 
-void CacheManagerFileLock::lock() {
+void CacheManagerFileSemaphoreLock::lock() {
     eckit::AutoUmask umask(0);
 
     eckit::Log::info() << "Wait for lock " << path_ << std::endl;
@@ -59,7 +56,7 @@ void CacheManagerFileLock::lock() {
 
 }
 
-void CacheManagerFileLock::unlock() {
+void CacheManagerFileSemaphoreLock::unlock() {
     eckit::AutoUmask umask(0);
 
     eckit::Log::info() << "Unlock " << path_ << std::endl;
@@ -67,4 +64,21 @@ void CacheManagerFileLock::unlock() {
     os << std::endl;
     lock_.unlock();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path):
+    lock_(lockFile(path)) {
+}
+
+void CacheManagerFileFlock::lock() {
+    lock_.lock();
+}
+
+void CacheManagerFileFlock::unlock() {
+    lock_.unlock();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace eckit

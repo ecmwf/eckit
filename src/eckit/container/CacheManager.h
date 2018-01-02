@@ -54,23 +54,43 @@ private: // members
 
 };
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
 class CacheManagerNoLock {
 public:
-    CacheManagerNoLock(const std::string&) {}
+    CacheManagerNoLock() {}
     void lock() {}
     void unlock() {}
 };
 
-class CacheManagerFileLock {
+//----------------------------------------------------------------------------------------------------------------------
+
+class CacheManagerFileSemaphoreLock {
 
     PathName path_;
     eckit::Semaphore lock_;
 
 public:
-    CacheManagerFileLock(const std::string&);
+    CacheManagerFileSemaphoreLock(const std::string& path);
     void lock();
     void unlock();
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class CacheManagerFileFlock {
+
+    eckit::FileLock lock_;
+
+public:
+    CacheManagerFileFlock(const std::string& path);
+    void lock();
+    void unlock();
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 
 template <class Traits>

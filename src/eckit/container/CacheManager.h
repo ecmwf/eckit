@@ -21,20 +21,28 @@
 #include <functional>
 #include <string>
 
-#include "eckit/eckit.h"
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
-#include "eckit/io/FileLock.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/os/AutoUmask.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
-#include "eckit/parser/Tokenizer.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/eckit.h"
 #include "eckit/filesystem/PathExpander.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/FileLock.h"
+#include "eckit/memory/NonCopyable.h"
+#include "eckit/memory/ScopedPtr.h"
+#include "eckit/os/AutoUmask.h"
 #include "eckit/os/Semaphore.h"
+#include "eckit/parser/StringTools.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/types/FixedString.h"
+#include "eckit/utils/MD5.h"
 
 namespace eckit {
+
+template<class K, class V, int S, class L>
+class BTree;
+
+class BTreeLock;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -44,14 +52,34 @@ class CacheManagerBase : private NonCopyable {
 
 public: // methods
 
-    CacheManagerBase(const std::string& loaderName);
+    CacheManagerBase(const std::string& loaderName, 
+            size_t maxCacheSize,
+            const std::string& extension);
+    ~CacheManagerBase();
 
     std::string loader() const;
+
+protected:
+
+    void touch(const PathName&) const;
 
 private: // members
 
     std::string loaderName_;
+    size_t maxCacheSize_;
+    std::string extension_;
 
+    typedef FixedString<MD5_DIGEST_LENGTH * 2> cache_key_t;
+
+    struct cache_entry_t {
+        size_t size_;
+        size_t count_;
+        time_t last_;
+    };
+
+    typedef BTree<cache_key_t, cache_entry_t, 64 * 1024, BTreeLock> cache_btree_t;
+
+    mutable eckit::ScopedPtr<cache_btree_t> btree_;
 };
 
 
@@ -109,7 +137,10 @@ public: // methods
 
 public: // methods
 
-    explicit CacheManager(const std::string& loaderName, const std::string& roots, bool throwOnCacheMiss);
+    explicit CacheManager(const std::string& loaderName,
+                          const std::string& roots,
+                          bool throwOnCacheMiss,
+                          size_t maxCacheSize);
 
     PathName getOrCreate(const key_t& key,
                          CacheContentCreator& creator,
@@ -140,8 +171,11 @@ private: // members
 // NOTE : this should be in the .cc but we have the non-template CacheManagerBase there not to have duplicate symbols
 
 template<class Traits>
-CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::string& roots, bool throwOnCacheMiss) :
-    CacheManagerBase(loaderName),
+CacheManager<Traits>::CacheManager(const std::string& loaderName,
+                                   const std::string& roots,
+                                   bool throwOnCacheMiss,
+                                   size_t maxCacheSize) :
+    CacheManagerBase(loaderName, maxCacheSize, Traits::extension()),
     throwOnCacheMiss_(throwOnCacheMiss) {
 
     eckit::Tokenizer parse(":");
@@ -248,6 +282,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                             << std::endl;
 
         Traits::load(*this, value, path);
+        touch(path);
         return path;
     }
     else {
@@ -293,6 +328,8 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                 }
 
                 ASSERT(get(key, path));
+
+                touch(path);
 
                 return path;
 

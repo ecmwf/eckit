@@ -101,6 +101,7 @@ public:
     void unlock();
 
     void flush();
+    void sync();
 
     const PathName& path() const { return path_; }
 

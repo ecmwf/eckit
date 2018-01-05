@@ -126,6 +126,12 @@ void BTree<K,V,S,L>::flush()
 }
 
 template<class K, class V, int S, class L>
+void BTree<K,V,S,L>::sync()
+{
+    SYSCALL2( ::fdatasync(fd_), path_ );
+}
+
+template<class K, class V, int S, class L>
 void BTree<K,V,S,L>::dump(std::ostream& s, unsigned long page, int depth) const
 {
     Page p;

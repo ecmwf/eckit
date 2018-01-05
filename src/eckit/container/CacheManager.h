@@ -319,21 +319,18 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                     }
                     ASSERT(commit(key, tmp, *j));
 
-                    // We reload from cache so we use the proper loader
-                    // e.g. mmap of shared-mem...
-                    // ASSERT(get(key, path));
+                    ASSERT(get(key, path)); // this includes the call to touch(path)
+
+                    // We reload from cache so we use the proper loader, e.g. mmap of shared-mem...
                     Traits::load(*this, value, path);
-
-                    // This will call touch(path)
-                    ASSERT(get(key, path));
-
                 }
                 else {
-                    // touch() is done in the get() above
                     eckit::Log::debug() << "Loading cache file "
                                         << entry(key, *j)
                                         << " (created by another process)"
                                         << std::endl;
+
+                    // touch() is done in the (successful) get() above
                     Traits::load(*this, value, path);
                 }
 

@@ -52,9 +52,9 @@ class CacheManagerBase : private NonCopyable {
 
 public: // methods
 
-    CacheManagerBase(const std::string& loaderName, 
-            size_t maxCacheSize,
-            const std::string& extension);
+    CacheManagerBase(const std::string& loaderName,
+                     size_t maxCacheSize,
+                     const std::string& extension);
     ~CacheManagerBase();
 
     std::string loader() const;
@@ -208,6 +208,12 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
         if (p.exists()) {
             v = p;
             Log::debug<LibEcKit>() << "CacheManager found path " << p << std::endl;
+
+            if (j == roots_.begin()) {
+                // Only update first cache
+                touch(p);
+            }
+
             return true;
         }
     }
@@ -282,7 +288,6 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                             << std::endl;
 
         Traits::load(*this, value, path);
-        touch(path);
         return path;
     }
     else {
@@ -316,10 +321,17 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
                     // We reload from cache so we use the proper loader
                     // e.g. mmap of shared-mem...
-                    ASSERT(get(key, path));
+                    // ASSERT(get(key, path));
                     Traits::load(*this, value, path);
+
+                    if (j == roots_.begin()) {
+                        // Only update first cache
+                        touch(path);
+                    }
+
                 }
                 else {
+                    // touch() is done in the get() above
                     eckit::Log::debug() << "Loading cache file "
                                         << entry(key, *j)
                                         << " (created by another process)"
@@ -327,9 +339,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                     Traits::load(*this, value, path);
                 }
 
-                ASSERT(get(key, path));
-
-                touch(path);
+                // ASSERT(get(key, path));
 
                 return path;
 

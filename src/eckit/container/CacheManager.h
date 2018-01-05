@@ -324,10 +324,8 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                     // ASSERT(get(key, path));
                     Traits::load(*this, value, path);
 
-                    if (j == roots_.begin()) {
-                        // Only update first cache
-                        touch(path);
-                    }
+                    // This will call touch(path)
+                    ASSERT(get(key, path));
 
                 }
                 else {
@@ -339,7 +337,6 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                     Traits::load(*this, value, path);
                 }
 
-                // ASSERT(get(key, path));
 
                 return path;
 

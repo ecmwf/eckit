@@ -67,8 +67,9 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         }
 
         // New style with variable
-        if (::strncmp(argv[i], "--debug=", 8) == 0) {
-            debug_ = eckit::Translator<std::string, bool>()(argv[i] + 8);
+        const char* debug = "--debug=";
+        if (::strncmp(argv[i], debug, ::strlen(debug)) == 0) {
+            debug_ = eckit::Translator<std::string, bool>()(argv[i] + ::strlen(debug));
         }
 
         // Old style -name
@@ -78,12 +79,14 @@ Main::Main(int argc, char** argv, const char* homeenv) :
             eckit::Log::warning() << "-name is deprecated, please use --display-name=" << displayName_ << std::endl;
         }
 
-        if (::strncmp(argv[i], "--display-name=", 15) == 0) {
-            displayName_ = argv[i] + 15;
+        const char* display_name = "--display-name=";
+        if (::strncmp(argv[i], display_name, ::strlen(display_name)) == 0) {
+            displayName_ = argv[i] + ::strlen(display_name);
         }
 
-        if (::strncmp(argv[i], "--application-name=", 7) == 0) {
-            name_ = argv[i] + 7;
+        const char* application_name = "--application-name=";
+        if (::strncmp(argv[i], application_name, ::strlen(application_name)) == 0) {
+            name_ = argv[i] + ::strlen(application_name);
         }
 
     }

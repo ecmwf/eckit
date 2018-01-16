@@ -14,6 +14,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/config/LibEcKit.h"
 
 #include "eckit/linalg/LinearAlgebra.h"
 
@@ -90,7 +91,7 @@ const LinearAlgebra&BackendRegistry::find(const std::string& name) const {
             eckit::Log::error() << "   " << (*it).first << std::endl;
         throw BadParameter("Linear algebra backend " + name + " not available.", Here());
     }
-    Log::debug() << "Using LinearAlgebra backend " << it->first << std::endl;
+    Log::debug<LibEcKit>() << "Using LinearAlgebra backend " << it->first << std::endl;
     return *(it->second);
 }
 
@@ -126,7 +127,7 @@ const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
 void LinearAlgebra::backend(const std::string &name) {
     pthread_once(&once, init);
     backends->backend(name);
-    Log::info() << "Setting LinearAlgebra backend to " << name << std::endl;
+    Log::debug<LibEcKit>() << "Setting LinearAlgebra backend to " << name << std::endl;
 }
 
 void LinearAlgebra::list(std::ostream &out) {

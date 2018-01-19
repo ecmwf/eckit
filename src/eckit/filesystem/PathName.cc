@@ -185,12 +185,12 @@ void PathName::link(const PathName& from, const PathName& to)
 	from.path_->link(*to.path_);
 }
 
-void PathName::children(std::vector<PathName>& dirs,std::vector<PathName>& files) const
+void PathName::children(std::vector<PathName>& files,std::vector<PathName>& dirs) const
 {
 	std::vector<BasePathName*> d;
 	std::vector<BasePathName*> f;
 
-	path_->children(d,f);
+	path_->children(f, d);
 
 	for(std::vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j)
 		dirs.push_back(PathName(*j));

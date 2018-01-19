@@ -1,4 +1,4 @@
-/*
+ /*
  * (C) Copyright 1996-2017 ECMWF.
  * 
  * This software is licensed under the terms of the Apache Licence Version 2.0
@@ -37,6 +37,7 @@ namespace eckit {
 template< int SIZE >
 class FixedString {
 public:
+
 
     /// Constructors
     /// @note that constructing FixedStrings initialised from another FixedString of a different SIZE actually

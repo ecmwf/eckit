@@ -223,12 +223,12 @@ const char* MarsFSPath::localPath() const
 }
 
 
-void MarsFSPath::children(std::vector<MarsFSPath>& dirs,std::vector<MarsFSPath>& files) const
+void MarsFSPath::children(std::vector<MarsFSPath>& files,std::vector<MarsFSPath>& dirs) const
 {
     std::vector<std::string> d;
     std::vector<std::string> f;
 
-    MarsFSClient(*this).children(path_, d, f);
+    MarsFSClient(*this).children(path_, f, d);
 
     dirs.clear();
     for(std::vector<std::string>::iterator j = d.begin(); j != d.end(); ++j)

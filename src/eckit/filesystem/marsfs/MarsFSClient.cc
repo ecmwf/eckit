@@ -355,7 +355,7 @@ void MarsFSClient::match(const std::string& path, std::vector<std::string>& resu
 	}
 }
 
-void MarsFSClient::children(const std::string& path, std::vector<std::string>& dirs, std::vector<std::string>& files)
+void MarsFSClient::children(const std::string& path, std::vector<std::string>& files, std::vector<std::string>& dirs)
 {
 	X(MarsFSClient::children);
 
@@ -369,28 +369,24 @@ void MarsFSClient::children(const std::string& path, std::vector<std::string>& d
 			s << "children";
 			s << path;
 
-			dirs.clear();
+            std::string r;
+            long n;
 
-			long n;
-			s >> n;
-
-			std::string r;
-
-			for(long i = 0; i < n; i++)
-			{
-				s >> r;
-				dirs.push_back(r);
-			}
+            /// @note follow the children() signature order, send files first then dirs
 
 			files.clear();
-
-			s >> n;
-
-			for(long i = 0; i < n; i++)
-			{
+            s >> n;
+            for(long i = 0; i < n; i++) {
 				s >> r;
 				files.push_back(r);
 			}
+
+            dirs.clear();
+            s >> n;
+            for(long i = 0; i < n; i++) {
+                s >> r;
+                dirs.push_back(r);
+            }
 
 			return;
 		}

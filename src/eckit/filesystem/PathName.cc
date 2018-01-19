@@ -185,18 +185,18 @@ void PathName::link(const PathName& from, const PathName& to)
 	from.path_->link(*to.path_);
 }
 
-void PathName::children(std::vector<PathName>& files,std::vector<PathName>& dirs) const
+void PathName::children(std::vector<PathName>& files, std::vector<PathName>& dirs) const
 {
-	std::vector<BasePathName*> d;
 	std::vector<BasePathName*> f;
+    std::vector<BasePathName*> d;
 
 	path_->children(f, d);
 
-	for(std::vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j)
-		dirs.push_back(PathName(*j));
-
 	for(std::vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j)
 		files.push_back(PathName(*j));
+
+    for(std::vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j)
+        dirs.push_back(PathName(*j));
 }
 
 void PathName::match(const PathName& path, std::vector<PathName>& result, bool rec)

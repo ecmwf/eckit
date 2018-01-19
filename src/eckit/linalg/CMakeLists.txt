@@ -18,6 +18,7 @@ Matrix.cc
 Matrix.h
 SparseMatrix.cc
 SparseMatrix.h
+Triplet.cc
 Triplet.h
 Vector.cc
 Vector.h

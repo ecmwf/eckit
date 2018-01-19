@@ -59,12 +59,15 @@ struct Fixture {
                     0, 2, -3.,
                     1, 1, 2.,
                     2, 2, 2.)),
+
                 A2(S(2, 3, 4,
                      0, 0, 1.,
                      0, 2, 2.,
                      1, 0, 3.,
                      1, 1, 4.)),
+
                 x(V(3, 1., 2., 3.)),
+
                 linalg(LinearAlgebra::backend()) {}
 
     // A = 2 0 -3
@@ -105,6 +108,11 @@ CASE ( "test_eckit_la_sparse" ) {
 
         SECTION ( "test_set_from_triplets" ) {
         {
+
+            // A = 2 0 -3
+            //     0 2  0
+            //     0 0  2
+
             EXPECT( F.A.nonZeros() == 4 );
 
             Index outer[4] = {0, 2, 3, 4};
@@ -181,6 +189,43 @@ CASE ( "test_eckit_la_sparse" ) {
             Index inner[2] = {2, 1};
             Scalar data[2] = {1., 2.};
             test(A, outer, inner, data);
+        }
+
+        SECTION ( "rowReduction" ) {
+
+            SparseMatrix A(S(4, 3, 6,
+                            0, 0, 2.,
+                            0, 2, 1.,
+                            1, 0, 7.,
+                            1, 1, 2.,
+                            2, 2, 1.,
+                            3, 1, 3.));
+
+            // A
+            // 2 . 1
+            // 7 2 .
+            // . . 1
+            // . 3 .
+
+            vector<size_t> p;
+            p.push_back(1);
+            p.push_back(0);
+
+            SparseMatrix B = A.rowReduction(p);
+
+            // B
+            // 7 2 .
+            // 2 . 1
+
+            EXPECT ( B.rows() == p.size() );
+            EXPECT ( B.nonZeros() == 4 );
+
+             B.dump(Log::info());
+
+            Index outer[3] = {0, 2, 4};
+            Index inner[4] = {0, 1, 0, 2};
+            Scalar data[4] = {7., 2., 2., 1.};
+            test(B, outer, inner, data);
         }
 
         SECTION ( "test_iterator" ) {

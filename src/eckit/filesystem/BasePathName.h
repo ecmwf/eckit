@@ -63,7 +63,7 @@ public:
     virtual void unlink() const = 0;
     virtual void rmdir() const = 0;
     virtual void touch() const = 0;
-    virtual void children(std::vector<BasePathName*>&,std::vector<BasePathName*>&) const = 0;
+    virtual void children(std::vector<BasePathName*>& files, std::vector<BasePathName*>& dirs) const = 0;
     virtual void match(std::vector<BasePathName*>&,bool) const = 0;
     virtual void reserve(const Length&) const = 0;
 

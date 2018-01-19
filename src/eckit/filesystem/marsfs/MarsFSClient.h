@@ -54,7 +54,7 @@ public:
     Length size(const std::string&);
     bool sameAs(const std::string& path1, const std::string& path2);
     void match(const std::string& path,std::vector<std::string>& result,bool recurse);
-    void children(const std::string& path,std::vector<std::string>& dirs, std::vector<std::string>& files);
+    void children(const std::string& path,std::vector<std::string>& files, std::vector<std::string>& dirs);
     std::string baseName(const std::string& path, bool ext);
     std::string dirName(const std::string& path);
     std::string fullName(const std::string& path);

@@ -54,8 +54,8 @@ public: // types
         }
 
         Scalar*      data_;   ///< matrix entries, sized with number of non-zeros (nnz)
-        Index*       outer_;  ///< start of rows
-        Index*       inner_;  ///< column indices
+        Index*       outer_;  ///< start of rows,  sized number of rows + 1
+        Index*       inner_;  ///< column indices, sized with number of non-zeros (nnz)
     };
 
     struct Shape {
@@ -165,6 +165,9 @@ public:
     /// Transpose matrix in-place
     SparseMatrix& transpose();
 
+    /// @returns a sparse matrix that is a row reduction and reorder accoring to indexes passed in vector
+    SparseMatrix rowReduction(const std::vector<size_t>& p) const;
+
     // I/O
 
     void save(const eckit::PathName& path) const;
@@ -243,10 +246,9 @@ public: // iterators
 
         void print(std::ostream& os) const;
 
-    protected:
-
-        /// checks if index is last of row
         bool lastOfRow() const { return ((index_ + 1) == Size(matrix_->outer()[row_ + 1])); }
+
+    protected:
 
         SparseMatrix* matrix_;
         Size index_;

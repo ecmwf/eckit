@@ -230,7 +230,7 @@ public:
     /// Get child files and directories
     /// @param files vector to be filled with child files of path
     /// @param directories vector to be filled with child diretories of path
-    void children(std::vector<LocalPathName>&,std::vector<LocalPathName>&) const;
+    void children(std::vector<LocalPathName>& files, std::vector<LocalPathName>& dirs) const;
 
     const std::string& node() const;
 

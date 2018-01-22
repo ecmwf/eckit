@@ -221,6 +221,7 @@ Length DataHandle::saveInto(const PathName& path,TransferWatcher& w, bool dblBuf
 }
 
 Length DataHandle::copyTo(DataHandle& other) {
+
     static const long bufsize = Resource<long>("bufferSize",64*1024*1024);
 
     Buffer buffer(bufsize);
@@ -246,7 +247,7 @@ Length DataHandle::copyTo(DataHandle& other) {
     if(estimate != 0 && estimate != total)
     {
         std::ostringstream os;
-        os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
+        os << "DataHandle::copyTo got " << total << " bytes out of " << estimate;
         throw ReadError(name() + " into " + other.name() + " " + os.str());
     }
 

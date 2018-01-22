@@ -62,30 +62,6 @@ AutoClose::~AutoClose()
     }
 }
 
-static const char *b="kMGPEZY"; // support until Yottabyte :-)
-static const double yotta = 1024.*1024.*1024.*1024.*1024.*1024.*1024.;
-
-static double rate(double x, char& c)
-{
-    if(x > yotta || std::isinf(x)) {
-        c = 'Y';
-        return 1.;
-    }
-
-    c = ' ';
-    const char* p = b;
-    c = ' ';
-    while(x > 100)
-    {
-        x /= 1024;
-        c = *p++;
-    }
-    if(x>=10)
-        return long(x+0.5);
-    else
-        return long(x*10+0.5)/10.0;
-}
-
 void DataHandle::encode(Stream& s) const
 {
     Streamable::encode(s);
@@ -128,11 +104,10 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
     else
     {
 
-        static const long bufsize = Resource<long>("bufferSize",64*1024*1024);
+        static const long bufsize = Resource<long>("bufferSize", 64*1024*1024);
 
         Buffer buffer(bufsize);
         //ResizableBuffer buffer(bufsize);
-
 
 		watcher.watch(0,0);
 
@@ -149,9 +124,6 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
         double lastWrite = 0;
         Timer timer("Save into");
         bool more = true;
-
-        char c1 = ' ';
-        char c2 = ' ';
 
         while(more)
         {
@@ -173,10 +145,10 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
                     watcher.watch(buffer,length);
                     lastRead = timer.elapsed();
 
-                    double rRate = rate(total/readTime,  c1);
-                    double wRate = rate(total/writeTime, c2);
+                    Bytes rRate(total, readTime);
+                    Bytes wRate(total, writeTime);
 
-                    Log::message() << rRate << c1 << " " << wRate << c2 << std::endl;
+                    Log::message() << rRate.value() << rRate.magnitude() << " " << wRate.value() << wRate.magnitude() << std::endl;
                 }
             }
             catch(RestartTransfer& retry)
@@ -197,8 +169,8 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
         Log::message() <<  "" << std::endl;
 
 
-        Log::info() << "Read  rate: " << Bytes(total/readTime)  << "/s" << std::endl;
-        Log::info() << "Write rate: " << Bytes(total/writeTime) << "/s" << std::endl;
+        Log::info() << "Read  rate: " << Bytes(total, readTime)  << std::endl;
+        Log::info() << "Write rate: " << Bytes(total, writeTime) << std::endl;
 
         if(length < 0)
             throw ReadError(name() + " into " + other.name());

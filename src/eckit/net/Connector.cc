@@ -8,22 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File Connector.cc
-// Baudouin Raoult - (c) ECMWF Jun 11
 
-
+#include "eckit/config/Resource.h"
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/net/Connector.h"
-#include "eckit/config/Resource.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static void offLine( const std::string& host, int port)
 {
@@ -115,12 +111,25 @@ void Connector::print(std::ostream&) const
 {
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
 class ConnectorCache {
 
     typedef std::multimap< std::pair<std::string, int> , Connector*> Cache;
 	Cache cache_;
 
 public:
+
+    /// @note Lazy construction of singleton.
+    ///       This is required to ensure correct and portable order of initialisation and destruction
+    ///       across multiple architectures.
+    ///       Do not remove this function or change it to a static variable in this translation unit.
+    static ConnectorCache& instance() {
+        static ThreadSingleton<ConnectorCache> cache;
+        return cache.instance();
+    }
 
 	Connector& find(const std::string& host, int port)
 	{
@@ -168,6 +177,15 @@ class NodeInfoCache {
 
 public:
 
+    /// @note Lazy construction of singleton.
+    ///       This is required to ensure correct and portable order of initialisation and destruction
+    ///       across multiple architectures.
+    ///       Do not remove this function or change it to a static variable in this translation unit.
+    static NodeInfoCache& instance() {
+        static ThreadSingleton<NodeInfoCache> cache;
+        return cache.instance();
+    }
+
 	NodeInfo& find(Stream& s, const std::string& name, const std::string& node)
 	{
         std::pair<std::string, std::string> p(name, node);
@@ -210,13 +228,14 @@ public:
 
 };
 
-static ThreadSingleton<ConnectorCache> cache;
-static ThreadSingleton<NodeInfoCache> infos;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 Connector& Connector::get(const std::string& host, int port)
 {
 	//Log::info() << "Connector::get(" << host << "," << port << ")" << std::endl;
-	return cache.instance().find(host, port);
+    return ConnectorCache::instance().find(host, port);
 }
 
 Connector& Connector::service(const std::string& name, const std::string& node)
@@ -306,8 +325,8 @@ long Connector::socketIo(F proc, T buf, long len, const char* msg)
 	if (l != len)
 	{
 		reset();
-		cache.instance().reset();
-		infos.instance().reset();
+        ConnectorCache::instance().reset();
+        NodeInfoCache::instance().reset();
         std::ostringstream os;
         os << "Connector::socketIo(" << name() << ") only " << l << " byte(s) " << msg << " intead of " << len << Log::syserr;
 		//throw ConnectorException(std::string(os));
@@ -458,6 +477,6 @@ void Connector::memoize(bool on, unsigned long life)
 
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

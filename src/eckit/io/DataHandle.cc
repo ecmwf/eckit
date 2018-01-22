@@ -12,23 +12,23 @@
 
 #include "eckit/eckit_ecbuild_config.h"
 
+#include "eckit/config/LibEcKit.h"
+#include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/DblBuffer.h"
 #include "eckit/io/MoverTransfer.h"
-#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
-#include "eckit/config/Resource.h"
 #include "eckit/log/Timer.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/memory/ScopedPtr.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
 Reanimator<DataHandle> DataHandle::reanimator_;
@@ -78,14 +78,13 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
 {
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer",0);
 
-
     compress();
 
     Log::status() << Bytes(estimate()) << " " << title() << " => " << other.title() << std::endl;
 
     if(moverTransfer && moveable() && other.moveable())
     {
-        //Log::info() << "Using MoverTransfer" << std::endl;
+        Log::debug<LibEcKit>() << "Using MoverTransfer" << std::endl;
         MoverTransfer mover(watcher);
         return mover.transfer(*this,other);
     }
@@ -95,8 +94,8 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
 
     if(doubleBuffer && dblBufferOK)
     {
-        static const long bufsize = Resource<long>("doubleBufferSize",10*1024*1024/20);
-        static const long count   = Resource<long>("doubleBufferCount",20);
+        static const long bufsize = Resource<long>("doubleBufferSize", 10*1024*1024 / 20);
+        static const long count   = Resource<long>("doubleBufferCount", 20);
 
         DblBuffer buf(count,bufsize,watcher);
         return buf.copy(*this,other);
@@ -114,7 +113,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
         Length estimate = openForRead(); AutoClose closer1(*this);
         other.openForWrite(estimate);    AutoClose closer2(other);
 
-        Progress progress("Moving data",0,estimate);
+        Progress progress("Moving data", 0, estimate);
 
         Length total = 0;
         long length = -1;
@@ -148,7 +147,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
                     Bytes rRate(total, readTime);
                     Bytes wRate(total, writeTime);
 
-                    Log::message() << rRate.value() << rRate.magnitude() << " " << wRate.value() << wRate.magnitude() << std::endl;
+                    Log::message() << rRate.shorten() << " " << wRate.shorten() << std::endl;
                 }
             }
             catch(RestartTransfer& retry)
@@ -166,7 +165,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
             }
         }
 
-        Log::message() <<  "" << std::endl;
+        Log::message() << "" << std::endl;
 
 
         Log::info() << "Read  rate: " << Bytes(total, readTime)  << std::endl;
@@ -250,8 +249,7 @@ Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
 
 bool DataHandle::compare(DataHandle& other)
 {
-
-    long bufsize = Resource<long>("compareBufferSize",10*1024*1024);
+    size_t bufsize = static_cast<size_t>(Resource<long>("compareBufferSize",10*1024*1024));
 
     Buffer buffer1(bufsize);
     Buffer buffer2(bufsize);
@@ -300,7 +298,7 @@ bool DataHandle::compare(DataHandle& other)
 
     }
 
-    return false; // keep linter happy
+    return false; // should never arrive here
 }
 
 Offset DataHandle::position() {
@@ -368,7 +366,9 @@ DataHandle* DataHandle::clone() const
     throw NotImplemented(os.str(), Here());
 }
 
-//-----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 #if defined(EC_HAVE_FOPENCOOKIE) || defined(EC_HAVE_FUNOPEN)
 
@@ -618,5 +618,9 @@ FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
 }
 
 #endif
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 } // namespace eckit

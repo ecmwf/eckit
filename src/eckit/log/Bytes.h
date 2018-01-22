@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date Jul 1996
 
-#ifndef eckit_Bytes_h
-#define eckit_Bytes_h
+#ifndef eckit_log_Bytes_h
+#define eckit_log_Bytes_h
 
 #include "eckit/eckit.h"
 
@@ -52,14 +52,19 @@ public: // methods
     /// Handle rate computations avoiding floating point exceptions
     static double rate(double num, double den);
 
-    double value() const { return bytes_; }
-    double magnitude() const { return magnitude_; }
+    double value() const;
+
+    std::string shorten() const;
 
 private: // members
 
+    int sign() const;
+    std::pair<double, char> reduceTo1024() const;
+    std::pair<double, char> reduceTo100() const;
+
 	double bytes_;
-	bool   rate_;
-    char   magnitude_;
+    size_t scale_;
+    bool   rate_;
 
 };
 

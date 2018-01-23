@@ -217,46 +217,38 @@ void TestSwap( )
 //-----------------------------------------------------------------------------
 
 CASE ( "test_default" ) {
-    SETUP( "" ) {
-        SECTION( "Type FooLock") {
-            TestDefault< FooLock > ();
-        }
-        SECTION( "Type FooNoLock") {
-            TestDefault< FooNoLock > ();
-        }
+    SECTION( "Type FooLock") {
+        TestDefault< FooLock > ();
+    }
+    SECTION( "Type FooNoLock") {
+        TestDefault< FooNoLock > ();
     }
 }
 
 CASE ( "test_copy" ) {
-    SETUP( "" ) {
-        SECTION( "Type FooLock") {
-            TestCopy< FooLock > ();
-        }
-        SECTION( "Type FooNoLock") {
-            TestCopy< FooNoLock > ();
-        }
+    SECTION( "Type FooLock") {
+        TestCopy< FooLock > ();
+    }
+    SECTION( "Type FooNoLock") {
+        TestCopy< FooNoLock > ();
     }
 }
 
 CASE ( "test_release" ) {
-    SETUP( "" ) {
-        SECTION( "Type FooLock") {
-            TestRelease< FooLock > ();
-        }
-        SECTION( "Type FooNoLock") {
-            TestRelease< FooNoLock > ();
-        }
+    SECTION( "Type FooLock") {
+        TestRelease< FooLock > ();
+    }
+    SECTION( "Type FooNoLock") {
+        TestRelease< FooNoLock > ();
     }
 }
 
 CASE ( "test_swap" ) {
-    SETUP( "" ) {
-        SECTION( "Type FooLock") {
-            TestSwap< FooLock > ();
-        }
-        SECTION( "Type FooNoLock") {
-            TestSwap< FooNoLock > ();
-        }
+    SECTION( "Type FooLock") {
+        TestSwap< FooLock > ();
+    }
+    SECTION( "Type FooNoLock") {
+        TestSwap< FooNoLock > ();
     }
 }
 

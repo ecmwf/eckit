@@ -36,6 +36,9 @@ public:
         Exception(w, l) {}
 };
 
+enum  TestVerbosity { Silent = 0, Summary = 1, AllFailures = 2};
+enum  InitEckitMain { NoInitEckitMain = 0, DoInitEckitMain = 1 };
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /// A test is defined by a description and a function pointer.
@@ -44,13 +47,57 @@ class Test {
 
 public:  // methods
 
-    Test(const std::string& description, void (*testFn)(std::string&)) :
+    Test(const std::string& description, void (*testFn)(std::string&, int&, int)) :
         description_(description),
         testFn_(testFn) {}
 
-    void run() {
+    bool run(TestVerbosity v, std::vector<std::string>& failures) {
+
         subsection_ = "";
-        testFn_(subsection_);
+
+        bool success = true;
+
+        int num_sections = 0;
+
+        // n.b. We always try and loop once too many.
+        //  - Allows us to continue after a test fails.
+        //  - Allows us to go around the loop once, before the SECTION() macros have incremented the count
+        //  - Runs the CASE if it has no subsections
+        for (int section = 0; section < (num_sections + 1); section++) {
+
+            // The count is incremented by each subsection in the test, so reset it each loop
+            num_sections = 0;
+
+            try {
+                testFn_(subsection_, num_sections, section);
+            } catch (TestException& e) {
+                success = false;
+                failures.push_back(description());
+                if (v >= Summary)
+                    eckit::Log::info()  << "Test \"" << description() << "\" failed: "
+                                        << e.what() << " @ " << e.location() << std::endl;
+            } catch (eckit::Exception& e) {
+                success = false;
+                failures.push_back(description());
+                if (v >= Summary)
+                    eckit::Log::info() << "Test \"" << description() << "\" failed with unhandled eckit::Exception: "
+                                       << e.what() << " @ " << e.location() << std::endl;
+            } catch (std::exception& e) {
+                success = false;
+                failures.push_back(description());
+                if (v >= Summary)
+                    eckit::Log::info() << "Test \"" << description() << "\" failed with unhandled exception: "
+                                       << e.what() << " @ " << std::endl;
+            } catch (...) {
+                success = false;
+                failures.push_back(description());
+                if (v >= Summary)
+                    eckit::Log::info() << "Test \"" << description() << "\" failed with unknown unhandled exception."
+                                       << std::endl;
+            }
+        }
+
+        return success;
     }
 
     std::string description() const {
@@ -66,7 +113,7 @@ private:  // members
     std::string description_;
     std::string subsection_;
 
-    void (* testFn_)(std::string&);
+    void (* testFn_)(std::string&, int&, int);
 };
 
 std::vector<Test>& specification() {
@@ -80,7 +127,7 @@ std::vector<Test>& specification() {
 
 class TestRegister {
 public:
-    TestRegister(const std::string& description, void (*testFn)(std::string&)) {
+    TestRegister(const std::string& description, void (*testFn)(std::string&, int&, int)) {
         specification().push_back(Test(description, testFn));
     }
 };
@@ -141,7 +188,7 @@ private:
     bool compareEqual_(const U * data, const size_t size) const {
         if ( size != this->size() ) return false;
         if ( size == 0 ) return true;
-        for ( int i = 0; i < this->size(); i++ )
+        for ( size_t i = 0; i < this->size(); i++ )
             if (data[i] != this->at(i))
                 return false;
         return true;
@@ -151,7 +198,7 @@ private:
     bool compareApproxEqual_(const U * data, const size_t size, const U epsilon) const {
         if ( size != this->size() ) return false;
         if ( size == 0 ) return true;
-        for ( int i = 0; i < this->size(); i++ ) {
+        for ( size_t i = 0; i < this->size(); i++ ) {
             if ( !eckit::types::is_approximately_equal(this->at(i), data[i], epsilon))
                 return false;
         }
@@ -209,8 +256,6 @@ bool operator!=(const std::vector<U> & lhs, const ArrayView<U> & rhs) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-enum  TestVerbosity { Silent = 0, Summary = 1, AllFailures = 2};
-enum  InitEckitMain { NoInitEckitMain = 0, DoInitEckitMain = 1 };
 
 inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
@@ -234,29 +279,7 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
         eckit::Log::info() << "Running case \"" << test.description() << "\" ..." << std::endl;
 
-        try {
-            test.run();
-        } catch (TestException& e) {
-            if (v >= Summary)
-                eckit::Log::info()  << "Test \"" << test.description() << "\" failed: "
-                                    << e.what() << " @ " << e.location() << std::endl;
-            failures.push_back(test.description());
-        } catch (eckit::Exception& e) {
-            if (v >= Summary)
-                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled eckit::Exception: "
-                                   << e.what() << " @ " << e.location() << std::endl;
-            failures.push_back(test.description());
-        } catch (std::exception& e) {
-            if (v >= Summary)
-                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unhandled exception: "
-                                   << e.what() << " @ " << std::endl;
-            failures.push_back(test.description());
-        } catch (...) {
-            if (v >= Summary)
-                eckit::Log::info() << "Test \"" << test.description() << "\" failed with unknown unhandled exception."
-                                   << std::endl;
-            failures.push_back(test.description());
-        }
+        test.run(v, failures);
     }
 
     if (v >= AllFailures) {
@@ -303,9 +326,9 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 #if ECKIT_TESTING_SELF_REGISTER_CASES
 
 #define CASE(description) \
-void UNIQUE_NAME2(test_, __LINE__) (std::string&); \
+void UNIQUE_NAME2(test_, __LINE__) (std::string&, int&, int); \
 static eckit::testing::TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description, &UNIQUE_NAME2(test_, __LINE__)); \
-void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
+void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection, int& _num_subsections, int _subsection)
 
 #else  // ECKIT_TESTING_SELF_REGISTER_CASES
 
@@ -360,21 +383,13 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
         throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
     } while (false)
 
-#define SETUP(name) \
-    int _test_num = 0; \
-    int _test = 0; \
-    int _test_count = 1; \
-    _test_subsection = "setup: " name; \
-    for ( ; _test_num = 0, _test < _test_count; _test++)
-
 #define SECTION(name) \
-    _test_num += 1; \
-    _test_count = _test_num; \
+    _num_subsections += 1; \
     _test_subsection = name; \
-    if ((_test_num - 1) == _test) { \
+    if ((_num_subsections - 1) == _subsection) { \
         eckit::Log::info() << "Running section \"" << name << "\" ..." << std::endl; \
     } \
-    if ((_test_num - 1) == _test)
+    if ((_num_subsections - 1) == _subsection)
 
 
 //----------------------------------------------------------------------------------------------------------------------

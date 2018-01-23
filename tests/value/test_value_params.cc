@@ -248,149 +248,135 @@ Params stream_to_from_file(const Params& p)
 
 CASE( "test_properties" ) {
 
-    SETUP( "PropertiesFixture" ) {
-        PropertiesFixture fix;
+    PropertiesFixture fix;
 
-        SECTION( "test_properties_params_init" ) {
-            eckit::Log::info() << "Initialize Properties" << std::endl;
-            eckit::Log::info() << "Params: " << fix.p << std::endl;
-            test_keys(fix.p);
-            test_vals(fix.p);
-        }
+    SECTION( "test_properties_params_init" ) {
+        eckit::Log::info() << "Initialize Properties" << std::endl;
+        eckit::Log::info() << "Params: " << fix.p << std::endl;
+        test_keys(fix.p);
+        test_vals(fix.p);
+    }
 
-        SECTION( "test_properties_params_streaming" ) {
-            eckit::Log::info() << "Stream Properties" << std::endl;
-            eckit::Log::info() << "original: " << fix.p << std::endl;
-            Params params = stream_to_from_file(fix.p);
-            eckit::Log::info() << "streamed: " << params << std::endl;
-            test_keys(params);
-            test_vals(params);
-        }
+    SECTION( "test_properties_params_streaming" ) {
+        eckit::Log::info() << "Stream Properties" << std::endl;
+        eckit::Log::info() << "original: " << fix.p << std::endl;
+        Params params = stream_to_from_file(fix.p);
+        eckit::Log::info() << "streamed: " << params << std::endl;
+        test_keys(params);
+        test_vals(params);
     }
 }
 
 CASE( "test_composite_params" ) {
 
-    SETUP( "CompositeParamsFixture" ) {
-        CompositeParamsFixture fix;
+    CompositeParamsFixture fix;
 
-        SECTION ( "test_composite_params" ) {
-            eckit::Log::info() << "Initialize CompositeParams from Properties" << std::endl;
-            eckit::Log::info() << "Params: " << fix.p << std::endl;
-            test_keys(fix.p);
-            test_vals(fix.p);
-        }
+    SECTION ( "test_composite_params" ) {
+        eckit::Log::info() << "Initialize CompositeParams from Properties" << std::endl;
+        eckit::Log::info() << "Params: " << fix.p << std::endl;
+        test_keys(fix.p);
+        test_vals(fix.p);
+    }
 
-        SECTION( "test_composite_params_streaming" ) {
-            eckit::Log::info() << "Stream CompositeParams initialised from Properties" << std::endl;
-            eckit::Log::info() << "original: " << fix.p << std::endl;
-            Params params = stream_to_from_file(fix.p);
-            eckit::Log::info() << "streamed: " << params << std::endl;
-            test_keys(params);
-            test_vals(params);
-        }
+    SECTION( "test_composite_params_streaming" ) {
+        eckit::Log::info() << "Stream CompositeParams initialised from Properties" << std::endl;
+        eckit::Log::info() << "original: " << fix.p << std::endl;
+        Params params = stream_to_from_file(fix.p);
+        eckit::Log::info() << "streamed: " << params << std::endl;
+        test_keys(params);
+        test_vals(params);
     }
 }
 
 
 CASE ( "test_composite_params_list" ) {
 
-    SETUP ( "ListParamsFixture" ) {
-        ListParamsFixture fix;
+    ListParamsFixture fix;
 
-        SECTION ( "test_composite_params_list_init" ) {
-            eckit::Log::info() << "Initialize CompositeParams from list of Properties" << std::endl;
-            eckit::Log::info() << "Params: " << fix.p << std::endl;
-            test_keys(fix.p);
-            test_vals(fix.p);
-        }
+    SECTION ( "test_composite_params_list_init" ) {
+        eckit::Log::info() << "Initialize CompositeParams from list of Properties" << std::endl;
+        eckit::Log::info() << "Params: " << fix.p << std::endl;
+        test_keys(fix.p);
+        test_vals(fix.p);
+    }
 
-        SECTION ( "test_composite_params_list_streaming" ) {
-            eckit::Log::info() << "Stream CompositeParams initialised from list of Properties" << std::endl;
-            eckit::Log::info() << "original: " << fix.p << std::endl;
-            Params params = stream_to_from_file(fix.p);
-            eckit::Log::info() << "streamed: " << params << std::endl;
-            test_keys(params);
-            test_vals(params);
-        }
+    SECTION ( "test_composite_params_list_streaming" ) {
+        eckit::Log::info() << "Stream CompositeParams initialised from list of Properties" << std::endl;
+        eckit::Log::info() << "original: " << fix.p << std::endl;
+        Params params = stream_to_from_file(fix.p);
+        eckit::Log::info() << "streamed: " << params << std::endl;
+        test_keys(params);
+        test_vals(params);
     }
 }
 
 CASE ( "test_scoped_params" ) {
 
-    SETUP ( "ScopedParamsFixture" ) {
-        ScopedParamsFixture fix;
+    ScopedParamsFixture fix;
 
-        SECTION( "test_scope_params_init" ) {
-            eckit::Log::info() << "Initialize ScopedParams" << std::endl;
-            eckit::Log::info() << "Params: " << fix.p << std::endl;
-            test_scope(fix.p);
-        }
+    SECTION( "test_scope_params_init" ) {
+        eckit::Log::info() << "Initialize ScopedParams" << std::endl;
+        eckit::Log::info() << "Params: " << fix.p << std::endl;
+        test_scope(fix.p);
+    }
 
-        SECTION( "test_scope_params_streaming" ) {
-            eckit::Log::info() << "Stream ScopedParams" << std::endl;
-            eckit::Log::info() << "original: " << fix.p << std::endl;
-            Params params = stream_to_from_file(fix.p);
-            eckit::Log::info() << "streamed: " << params << std::endl;
-            test_scope(params);
-        }
+    SECTION( "test_scope_params_streaming" ) {
+        eckit::Log::info() << "Stream ScopedParams" << std::endl;
+        eckit::Log::info() << "original: " << fix.p << std::endl;
+        Params params = stream_to_from_file(fix.p);
+        eckit::Log::info() << "streamed: " << params << std::endl;
+        test_scope(params);
     }
 }
 
 CASE ( "test_composite_scope_params" ) {
 
-    SETUP ( "CompositeScopedParamsFixture" ) {
-        CompositeScopedParamsFixture fix;
-        
-        SECTION( "test_composite_scope_params_init" ) {
-            eckit::Log::info() << "Initialize CompositeParams from ScopedParams" << std::endl;
-            eckit::Log::info() << "Params: " << fix.p << std::endl;
-            test_composite_scope(fix.p);
-        }
+    CompositeScopedParamsFixture fix;
 
-        SECTION( "test_composite_scope_params_streaming" ) {
-            eckit::Log::info() << "Stream CompositeParams initialised from ScopedParams" << std::endl;
-            eckit::Log::info() << "original: " << fix.p << std::endl;
-            Params params = stream_to_from_file(fix.p);
-            eckit::Log::info() << "streamed: " << params << std::endl;
-            test_composite_scope(params);
-        }
+    SECTION( "test_composite_scope_params_init" ) {
+        eckit::Log::info() << "Initialize CompositeParams from ScopedParams" << std::endl;
+        eckit::Log::info() << "Params: " << fix.p << std::endl;
+        test_composite_scope(fix.p);
+    }
+
+    SECTION( "test_composite_scope_params_streaming" ) {
+        eckit::Log::info() << "Stream CompositeParams initialised from ScopedParams" << std::endl;
+        eckit::Log::info() << "original: " << fix.p << std::endl;
+        Params params = stream_to_from_file(fix.p);
+        eckit::Log::info() << "streamed: " << params << std::endl;
+        test_composite_scope(params);
     }
 }
 
 CASE ( "test_dispatch_params" ) {
 
-    SETUP ( "DispatchParamsFixture" ) {
-        DispatchParamsFixture fix;
+    DispatchParamsFixture fix;
 
-        SECTION( "test_dispatch_params_init" ) {
-            eckit::Log::info() << "Initialize DispatchParams" << std::endl;
-            test_dispatch(fix.p);
-        }
+    SECTION( "test_dispatch_params_init" ) {
+        eckit::Log::info() << "Initialize DispatchParams" << std::endl;
+        test_dispatch(fix.p);
+    }
 
-        SECTION( "test_dispatch_params_streaming" ) {
-            eckit::Log::info() << "Stream DispatchParams" << std::endl;
-            Params params = stream_to_from_file(fix.p);
-            test_dispatch(params);
-        }
+    SECTION( "test_dispatch_params_streaming" ) {
+        eckit::Log::info() << "Stream DispatchParams" << std::endl;
+        Params params = stream_to_from_file(fix.p);
+        test_dispatch(params);
     }
 }
 
 CASE ( "test_custom_params" ) {
 
-    SETUP ( "AnyKeyParamsFixture" ) {
-        AnyKeyParamsFixture fix;
+    AnyKeyParamsFixture fix;
 
-        SECTION( "test_custom_params_init" ) {
-            eckit::Log::info() << "Initialize custom AnyKeyParams" << std::endl;
-            test_custom(fix.p);
-        }
+    SECTION( "test_custom_params_init" ) {
+        eckit::Log::info() << "Initialize custom AnyKeyParams" << std::endl;
+        test_custom(fix.p);
+    }
 
-        SECTION( "test_custom_params_streaming" ) {
-            eckit::Log::info() << "Stream custom AnyKeyParams" << std::endl;
-            Params params = stream_to_from_file(fix.p);
-            test_custom(params);
-        }
+    SECTION( "test_custom_params_streaming" ) {
+        eckit::Log::info() << "Stream custom AnyKeyParams" << std::endl;
+        Params params = stream_to_from_file(fix.p);
+        test_custom(params);
     }
 }
 

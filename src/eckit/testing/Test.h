@@ -232,6 +232,8 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
         Test& test(tests[i]);
 
+        eckit::Log::info() << "Running case \"" << test.description() << "\" ..." << std::endl;
+
         try {
             test.run();
         } catch (TestException& e) {
@@ -369,6 +371,9 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection)
     _test_num += 1; \
     _test_count = _test_num; \
     _test_subsection = name; \
+    if ((_test_num - 1) == _test) { \
+        eckit::Log::info() << "Running section \"" << name << "\" ..." << std::endl; \
+    } \
     if ((_test_num - 1) == _test)
 
 

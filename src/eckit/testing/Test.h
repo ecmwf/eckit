@@ -383,6 +383,10 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection, int& _num_sub
         throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
     } while (false)
 
+
+// Setup no longer does anything. Can be removed where it has been used
+#define SETUP(name)
+
 #define SECTION(name) \
     _num_subsections += 1; \
     _test_subsection = name; \

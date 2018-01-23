@@ -54,7 +54,7 @@ CASE("Expand an environment variable")
 {
     std::string s = "{ENVVAR:FOO}/tmp/bar";
 
-    SYSCALL(::putenv("FOO=/foobar"));
+    SYSCALL(::setenv("FOO", "/foobar", 1));
 
     std::string ps = PathExpander::expand(s);
     std::string pr = "/foobar/tmp/bar";
@@ -66,7 +66,7 @@ CASE("Expand multiple times")
 {
     std::string s = "{CWD}/baz/{ENVVAR:FOO}/tmp/bar";
 
-    SYSCALL(::putenv("FOO=/foobar"));
+    SYSCALL(::setenv("FOO", "/foobar", 1));
 
     std::string r = std::string(::getenv("CURRENT_TEST_DIR"))  + std::string("/baz/foobar/tmp/bar");
 

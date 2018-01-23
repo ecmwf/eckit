@@ -11,27 +11,25 @@
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/config/LibEcKit.h"
 
 #include "eckit/parser/StringTools.h"
 
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static pthread_once_t once  = PTHREAD_ONCE_INIT;
-static eckit::Mutex* local_mutex = 0;
-
-static void init() {
-    local_mutex = new eckit::Mutex();
-}
-
 typedef std::map<std::string, PathExpander*> PathExpanderMap;
 
 struct PathExpanderRegistry {
+
+    eckit::Mutex mutex_;
+
+    void lock() { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
 
     static PathExpanderRegistry& instance() {
         static PathExpanderRegistry reg;
@@ -43,9 +41,6 @@ struct PathExpanderRegistry {
     PathExpanderMap& map() { return map_; }
 
     const PathExpander& lookup(const std::string& name) {
-
-        pthread_once(&once, init);
-        eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
         PathExpanderMap& m = PathExpanderRegistry::instance().map();
 
@@ -83,14 +78,14 @@ std::string PathExpander::expand(const std::string& path)
         size_t pos = incurly.find_first_of(":");
         std::string key = incurly.substr(0, pos);
 
-        ECKIT_DEBUG_VAR(key);
+        eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
 
         PathExpanderRegistry::instance().lookup(key).expand(incurly, path, vars);
     }
 
     std::string newpath = StringTools::substitute(path, vars);
 
-    std::cerr << "Path expansion " << path << " --> " << newpath << std::endl;
+    Log::debug<LibEcKit>() << "Path expansion " << path << " --> " << newpath << std::endl;
 
     return newpath;
 }
@@ -98,8 +93,7 @@ std::string PathExpander::expand(const std::string& path)
 PathExpander::PathExpander(const std::string& name):
         name_(name)
 {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
 
     PathExpanderMap& m = PathExpanderRegistry::instance().map();
 

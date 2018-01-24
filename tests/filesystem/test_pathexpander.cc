@@ -66,7 +66,7 @@ CASE("Expand multiple times")
 {
     std::string s = "{CWD}/baz/{ENVVAR:FOO}/tmp/bar";
 
-    SYSCALL(::setenv("FOO", "/foobar", 1));
+    SYSCALL(::setenv("FOO", "foobar", 1));
 
     std::string r = std::string(::getenv("CURRENT_TEST_DIR"))  + std::string("/baz/foobar/tmp/bar");
 

@@ -198,7 +198,7 @@ public:
     /// Get child files and directories
     /// @param files vector to be filled with child files of path
     /// @param directories vector to be filled with child diretories of path
-    void children(std::vector<PathName>&, std::vector<PathName>&) const;
+    void children(std::vector<PathName>& files, std::vector<PathName>& dirs) const;
 
     void fileSystemSize(FileSystemSize&) const;
 

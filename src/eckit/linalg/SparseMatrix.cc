@@ -336,7 +336,7 @@ bool SparseMatrix::inSharedMemory() const {
 }
 
 void SparseMatrix::dump(std::ostream& os) const
-{
+{    
     for (Size i = 0; i < rows(); ++i) {
 
         const_iterator itr = begin(i);
@@ -405,6 +405,29 @@ SparseMatrix& SparseMatrix::transpose() {
     swap(tmp);
 
     return *this;
+}
+
+SparseMatrix SparseMatrix::rowReduction(const std::vector<size_t>& p) const
+{
+    ASSERT(p.size() <= rows());
+
+    std::vector<Triplet> triplets;
+
+    for(size_t newrow = 0; newrow < p.size(); ++newrow) {
+
+        size_t row = p[newrow];
+
+        const_iterator itr  = begin(row);
+        const_iterator iend = end(row);
+
+        if (itr == iend) continue;
+
+        for (; itr != iend; ++itr) {
+            triplets.push_back(Triplet(newrow, itr.col(), *itr));
+        }
+    }
+
+    return SparseMatrix(p.size(), cols(), triplets);
 }
 
 

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -13,13 +13,12 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-//#define X(a) Log::userInfo() << #a << std::endl; Log::info() << #a << std::endl; 
+//#define X(a) Log::userInfo() << #a << std::endl; Log::info() << #a << std::endl;
 #define X(a) /**/
 
 // TODO: Return errno
@@ -355,7 +354,7 @@ void MarsFSClient::match(const std::string& path, std::vector<std::string>& resu
 	}
 }
 
-void MarsFSClient::children(const std::string& path, std::vector<std::string>& dirs, std::vector<std::string>& files)
+void MarsFSClient::children(const std::string& path, std::vector<std::string>& files, std::vector<std::string>& dirs)
 {
 	X(MarsFSClient::children);
 
@@ -369,28 +368,24 @@ void MarsFSClient::children(const std::string& path, std::vector<std::string>& d
 			s << "children";
 			s << path;
 
-			dirs.clear();
+            std::string r;
+            long n;
 
-			long n;
-			s >> n;
-
-			std::string r;
-
-			for(long i = 0; i < n; i++)
-			{
-				s >> r;
-				dirs.push_back(r);
-			}
+            /// @note follow the children() signature order, send files first then dirs
 
 			files.clear();
-
-			s >> n;
-
-			for(long i = 0; i < n; i++)
-			{
+            s >> n;
+            for(long i = 0; i < n; i++) {
 				s >> r;
 				files.push_back(r);
 			}
+
+            dirs.clear();
+            s >> n;
+            for(long i = 0; i < n; i++) {
+                s >> r;
+                dirs.push_back(r);
+            }
 
 			return;
 		}
@@ -746,7 +741,7 @@ time_t MarsFSClient::lastModified(const std::string& path)
 	}
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -56,25 +56,39 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     for (size_t i = 1; i < size_t(argc); ++i) {
 
         // Old style
-        if (::strcmp(argv[i], "-debug")==0) {
+        if (::strcmp(argv[i], "-debug") == 0) {
+            eckit::Log::warning() << "-debug is deprecated, please use --debug" << std::endl;
             debug_ = true;
         }
 
         // New style
-        if (::strcmp(argv[i], "--debug")==0) {
+        if (::strcmp(argv[i], "--debug") == 0) {
             debug_ = true;
         }
 
         // New style with variable
-        if (::strncmp(argv[i], "--debug=", 8)==0) {
-            debug_ = eckit::Translator<std::string, bool>()(argv[i] + 8);
+        const char* debug = "--debug=";
+        if (::strncmp(argv[i], debug, ::strlen(debug)) == 0) {
+            debug_ = eckit::Translator<std::string, bool>()(argv[i] + ::strlen(debug));
         }
 
         // Old style -name
-        if (::strcmp(argv[i], "-name")==0) {
-            ASSERT(argc > i+1);
-            displayName_ = argv[i+1];
+        if (::strcmp(argv[i], "-name") == 0) {
+            ASSERT(argc > i + 1);
+            displayName_ = argv[i + 1];
+            eckit::Log::warning() << "-name is deprecated, please use --display-name=" << displayName_ << std::endl;
         }
+
+        const char* display_name = "--display-name=";
+        if (::strncmp(argv[i], display_name, ::strlen(display_name)) == 0) {
+            displayName_ = argv[i] + ::strlen(display_name);
+        }
+
+        const char* application_name = "--application-name=";
+        if (::strncmp(argv[i], application_name, ::strlen(application_name)) == 0) {
+            name_ = argv[i] + ::strlen(application_name);
+        }
+
     }
 
     ::srand(::getpid() + ::time(0));
@@ -145,7 +159,7 @@ std::string Main::hostname()
 {
     // RFC 1035 max length is 255 chars, whilst each label '.' separated is 63 chars
     char hostname[256] = {0,};
-    SYSCALL(::gethostname(hostname, sizeof(hostname)-1));
+    SYSCALL(::gethostname(hostname, sizeof(hostname) - 1));
     return hostname;
 }
 

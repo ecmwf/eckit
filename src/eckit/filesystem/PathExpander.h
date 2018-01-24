@@ -18,6 +18,7 @@
 #include <map>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -27,11 +28,11 @@ class PathExpander : private eckit::NonCopyable {
 
 public: // methods
 
-    static std::string expand(const std::string& key, const std::string& path);
-
-    virtual std::string expand(const std::string& path) const = 0;
+    static std::string expand(const std::string& path);
 
 protected: // methods
+
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const = 0;
 
     PathExpander(const std::string&);
 

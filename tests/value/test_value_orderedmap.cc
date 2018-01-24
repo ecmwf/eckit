@@ -111,107 +111,104 @@ CASE( "Types are reported correctly for OrderedMap" ) {
 
 CASE( "Test comparisons using OrderedMap" ) {
 
-    SETUP("Create OrderedMaps") {
+    Value om1 = Value::makeOrderedMap();
+    Value om2 = Value::makeOrderedMap();
+    Value om3 = Value::makeOrderedMap();
+    Value om4 = Value::makeOrderedMap();
 
-        Value om1 = Value::makeOrderedMap();
-        Value om2 = Value::makeOrderedMap();
-        Value om3 = Value::makeOrderedMap();
-        Value om4 = Value::makeOrderedMap();
+    SECTION("Test empty maps") {
+        EXPECT( om1.compare(om2) == 0 );
+        EXPECT( om2.compare(om1) == 0 );
+        om2[123] = 1234;
+        EXPECT( om1.compare(om2) == -1 );
+        EXPECT( om2.compare(om1) ==  1 );
 
-        SECTION("Test empty maps") {
-            EXPECT( om1.compare(om2) == 0 );
-            EXPECT( om2.compare(om1) == 0 );
-            om2[123] = 1234;
-            EXPECT( om1.compare(om2) == -1 );
-            EXPECT( om2.compare(om1) ==  1 );
+    }
+    SECTION("Equal OrderedMaps") {
 
-        }
-        SECTION("Equal OrderedMaps") {
+        om1[123] = 1234;
 
-            om1[123] = 1234;
+        om2[123] = 1234;
 
-            om2[123] = 1234;
+        EXPECT(om1.compare(om1) == 0);
+        EXPECT(om1.compare(om2) == 0);
+        EXPECT(om2.compare(om1) == 0);
+    }
+    SECTION("Number of keys mismatch") {
 
-            EXPECT(om1.compare(om1) == 0);
-            EXPECT(om1.compare(om2) == 0);
-            EXPECT(om2.compare(om1) == 0);
-        }
-        SECTION("Number of keys mismatch") {
+        om1[123] = 1234;
+        om1["xyz"] = "abcd";
 
-            om1[123] = 1234;
-            om1["xyz"] = "abcd";
+        om2[123] = 1234;
 
-            om2[123] = 1234;
+        EXPECT(om1.compare(om2) ==  1); // om1 is greater than om2 (it's got more keys)
+        EXPECT(om2.compare(om1) == -1); // om3 is less than om3 (it's got fewer keys)
+    }
+    SECTION("Keys mismatch") {
 
-            EXPECT(om1.compare(om2) ==  1); // om1 is greater than om2 (it's got more keys)
-            EXPECT(om2.compare(om1) == -1); // om3 is less than om3 (it's got fewer keys)
-        }
-        SECTION("Keys mismatch") {
+        om1["1"] = 2;
+        om1["2"] = 3;
+        om1["3"] = 4;
 
-            om1["1"] = 2;
-            om1["2"] = 3;
-            om1["3"] = 4;
+        om2["2"] = 2;
+        om2["3"] = 3;
+        om2["4"] = 4;
 
-            om2["2"] = 2;
-            om2["3"] = 3;
-            om2["4"] = 4;
+        EXPECT( om2.compare(om1) ==  1 ); // First key is larger
+        EXPECT( om1.compare(om2) == -1 ); // First key is smaller
 
-            EXPECT( om2.compare(om1) ==  1 ); // First key is larger
-            EXPECT( om1.compare(om2) == -1 ); // First key is smaller
+    }
+    SECTION("Values mismatch") {
 
-        }
-        SECTION("Values mismatch") {
+        om1["1"] = 1;
+        om1["2"] = 2;
+        om1["3"] = 3;
 
-            om1["1"] = 1;
-            om1["2"] = 2;
-            om1["3"] = 3;
+        om2["1"] = 2;
+        om2["2"] = 3;
+        om2["3"] = 4;
 
-            om2["1"] = 2;
-            om2["2"] = 3;
-            om2["3"] = 4;
+        EXPECT( om2.compare(om1) ==  1 ); // First value is larger
+        EXPECT( om1.compare(om2) == -1 ); // First value is smaller
+    }
+    SECTION("Check order of insertion is used for comparison, not key order") {
 
-            EXPECT( om2.compare(om1) ==  1 ); // First value is larger
-            EXPECT( om1.compare(om2) == -1 ); // First value is smaller
-        }
-        SECTION("Check order of insertion is used for comparison, not key order") {
+        om1[2] = 100; // < should use this for value comparison, even though 2 > 1
+        om1[1] = 200;
 
-            om1[2] = 100; // < should use this for value comparison, even though 2 > 1
-            om1[1] = 200;
+        om2[2] = 200; // < should use this for value comparison, even though 2 > 1
+        om2[1] = 100;
 
-            om2[2] = 200; // < should use this for value comparison, even though 2 > 1
-            om2[1] = 100;
+        EXPECT( om2.compare(om1) ==  1 ); // First value is larger
+        EXPECT( om1.compare(om2) == -1 ); // First value is smaller
 
-            EXPECT( om2.compare(om1) ==  1 ); // First value is larger
-            EXPECT( om1.compare(om2) == -1 ); // First value is smaller
+        om1[3] = 300;
+        EXPECT( om1.compare(om2) ==  1 ); // More keys in om1
+        EXPECT( om2.compare(om1) == -1 );
 
-            om1[3] = 300;
-            EXPECT( om1.compare(om2) ==  1 ); // More keys in om1
-            EXPECT( om2.compare(om1) == -1 );
+        om2[3] = 500;
+        EXPECT( om1.compare(om2) == -1 ); // 3rd value is larger in om2
+        EXPECT( om2.compare(om1) ==  1 );
 
-            om2[3] = 500;
-            EXPECT( om1.compare(om2) == -1 ); // 3rd value is larger in om2
-            EXPECT( om2.compare(om1) ==  1 );
+    }
+    SECTION("Check keys are compared by order of insertion") {
 
-        }
-        SECTION("Check keys are compared by order of insertion") {
+        om1[2] = 100;
+        om1[1] = 200;
 
-            om1[2] = 100;
-            om1[1] = 200;
+        om2[2] = 100;
+        om2[1] = 200;
 
-            om2[2] = 100;
-            om2[1] = 200;
+        om3[1] = 200;
+        om3[2] = 100;
 
-            om3[1] = 200;
-            om3[2] = 100;
+        om4[1] = 100;
+        om4[2] = 200;
 
-            om4[1] = 100;
-            om4[2] = 200;
-
-            EXPECT( om2.compare(om1) ==  0 ); // Keys are equal and inserted in same order
-            EXPECT( om1.compare(om2) ==  0 ); // Keys are equal and inserted in same order
-            EXPECT( om1.compare(om3) ==  1 ); // Keys are equal but inserted in wrong order, values also in wrong order
-            EXPECT( om1.compare(om4) ==  1 ); // Keys are equal but inserted in wrong order, values in correct order
-        }
+        EXPECT( om2.compare(om1) ==  0 ); // Keys are equal and inserted in same order
+        EXPECT( om1.compare(om2) ==  0 ); // Keys are equal and inserted in same order
+        EXPECT( om1.compare(om3) ==  1 ); // Keys are equal but inserted in wrong order, values also in wrong order
+        EXPECT( om1.compare(om4) ==  1 ); // Keys are equal but inserted in wrong order, values in correct order
     }
 }
 

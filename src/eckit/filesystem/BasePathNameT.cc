@@ -157,17 +157,18 @@ void BasePathNameT<T>::touch() const
 }
 
 template<class T>
-void BasePathNameT<T>::children(std::vector<BasePathName*>& dirs,std::vector<BasePathName*>& files) const
+void BasePathNameT<T>::children(std::vector<BasePathName*>& files, std::vector<BasePathName*>& dirs) const
 {
-	std::vector<T> d;
 	std::vector<T> f;
-	path_.children(d, f);
+    std::vector<T> d;
 
-	for(typename std::vector<T>::iterator j = d.begin(); j != d.end() ; ++j)
-	    	dirs.push_back(new BasePathNameT<T>(*j));
+    path_.children(f, d);
 
 	for(typename std::vector<T>::iterator j = f.begin(); j != f.end() ; ++j)
 	    	files.push_back(new BasePathNameT<T>(*j));
+
+    for(typename std::vector<T>::iterator j = d.begin(); j != d.end() ; ++j)
+            dirs.push_back(new BasePathNameT<T>(*j));
 }
 
 template<class T>

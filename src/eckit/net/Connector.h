@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-// File Connector.h
-// Baudouin Raoult - (c) ECMWF Jun 11
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 2011
 
-#ifndef eckit_Connector_h
-#define eckit_Connector_h
+#ifndef eckit_net_Connector_h
+#define eckit_net_Connector_h
 
 #include "eckit/io/BufferCache.h"
 #include "eckit/io/Length.h"
@@ -20,11 +21,10 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class ConnectorException : public Exception {
 	virtual bool retryOnServer() const        { return true; }
@@ -33,19 +33,12 @@ public:
 	ConnectorException(const std::string& what) : Exception(what) {}
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Connector : public Stream {
 public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
-
 	Connector(const std::string& name, const std::string& node);
-
-// -- Destructor
 
 	~Connector(); 
 
@@ -62,12 +55,8 @@ public:
 
 	void memoize(bool on, unsigned long time);
 
-// -- Class methods
-	// None
-
     static Connector& service(const std::string& name, const std::string& node);
     static Connector& service(const std::string& name, const std::map<std::string,Length>& cost);
-    /* static Connector& clusterNode(); */
 
     static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 
@@ -138,6 +127,10 @@ private:
 
 };
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
 class AutoMemoize {
 	Connector& c_;
 	unsigned long  t_;
@@ -147,7 +140,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -223,20 +223,20 @@ const char* MarsFSPath::localPath() const
 }
 
 
-void MarsFSPath::children(std::vector<MarsFSPath>& dirs,std::vector<MarsFSPath>& files) const
+void MarsFSPath::children(std::vector<MarsFSPath>& files, std::vector<MarsFSPath>& dirs) const
 {
-    std::vector<std::string> d;
     std::vector<std::string> f;
+    std::vector<std::string> d;
 
-    MarsFSClient(*this).children(path_, d, f);
-
-    dirs.clear();
-    for(std::vector<std::string>::iterator j = d.begin(); j != d.end(); ++j)
-        dirs.push_back(MarsFSPath(node(), *j));
+    MarsFSClient(*this).children(path_, f, d);
 
     files.clear();
     for(std::vector<std::string>::iterator j = f.begin(); j != f.end(); ++j)
         files.push_back(MarsFSPath(node(), *j));
+
+    dirs.clear();
+    for(std::vector<std::string>::iterator j = d.begin(); j != d.end(); ++j)
+        dirs.push_back(MarsFSPath(node(), *j));
 }
 
 void MarsFSPath::match(const MarsFSPath& path,std::vector<MarsFSPath>& result,bool recurse)

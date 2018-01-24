@@ -33,6 +33,11 @@ typedef std::vector<Test> Tests;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+// We need some global counters to keep count of some of the CASE functionality
+std::vector<int> global_counters(5, 0);
+
+
 void ThrowStd() {
     throw std::exception();
 }
@@ -50,20 +55,29 @@ Tests tests = {
         EXPECT_THROWS_AS( throw std::exception(), std::exception );
     }},
 
-    { CASE( "EXPECT does not throw exception on success" ) {
+    { CASE( "EXPECT does not cause the test to fail on success" ) {
+
         Test pass = { CASE( "P" ) { EXPECT( true  ); } };
 
-        try { pass.run(); }
-        catch(...) { throw eckit::testing::TestException("Unexpected exception thrown in EXPECT.", Here()); }
+        std::vector<std::string> f;
+        bool ret = pass.run(TestVerbosity::Silent, f);
+        if (!ret || f.size() != 0) {
+            throw eckit::testing::TestException("Unexpected error encountered in EXPECT", Here());
+        }
     }},
 
-    { CASE( "EXPECT creates an exception on failure" ) {
+    { CASE( "EXPECT causes an error to be reported on failure" ) {
+
         Test fail = { CASE("F") { EXPECT( false ); } };
 
-        do {
-            try { fail.run(); } catch ( const TestException& e ) { break; }
-            throw eckit::testing::TestException("No exception thrown in EXPECT.", Here());
-        } while (false);
+        std::vector<std::string> f;
+        bool ret = fail.run(TestVerbosity::Silent, f);
+        if (ret || f.size() == 0) {
+            throw eckit::testing::TestException("No error reported when EXPECT failed", Here());
+        }
+        if (ret || f.size() > 1) {
+            throw eckit::testing::TestException("Too many errors reported when EXPECT failed", Here());
+        }
     }},
 
     { CASE( "EXPECT succeeds for success (true) and failure (false)" ) {
@@ -143,7 +157,18 @@ Tests tests = {
         Tests empty   = {};
         EXPECT( -1 == run( empty , TestVerbosity::Silent ) );
     }},
-    { CASE( "Setup creates a fresh fixture for each section" ) {
+    { CASE( "A fresh fixture is created for each section" ) {
+
+        int i = 7;
+
+        SECTION("S1") {
+            i = 42;
+        }
+        SECTION("S2") {
+           EXPECT( i == 7 );
+        }
+    }},
+    { CASE( "Deprecated SETUP macro may be used.") {
 
         SETUP("Context") {
             int i = 7;
@@ -156,25 +181,23 @@ Tests tests = {
             }
         }
     }},
-    { CASE( "Setup runs as many times as there are sections" ) {
+    { CASE( "Fixture setup runs one more time than the number of sections." ) {
 
-        int i = 0;
-        SETUP("Context") {
-            ++i;
-            SECTION("S1") { }
-            SECTION("S2") { }
-        }
-        EXPECT( i == 2 );
+        ++global_counters[0];
+
+        SECTION("S1") { ++global_counters[1]; }
+        SECTION("S2") { ++global_counters[2]; }
+
     }},
-    { CASE( "Setup runs as many times as there are sections, with for-loop" ) {
+    { CASE( "Sections run correctly inside a for loop" ) {
 
-        int i = 0;
-        SETUP("Context") {
-            ++i;
-            for (int j = 0; j < 10; j++)
-                SECTION("S1") { }
+        ++global_counters[3];
+
+        for (int j = 0; j < 10; j++) {
+            std::stringstream ss;
+            ss << "test-" << j;
+            SECTION(ss.str()) { ++global_counters[4]; }
         }
-        EXPECT( i == 10 );
     }},
     { CASE( "Expect runs multiple times in for-loop" ) {
 
@@ -282,8 +305,33 @@ Tests tests = {
 }  // namespace eckit
 
 
+using eckit::test::global_counters;
+
 
 int main(int argc, char* argv[]) {
+
+    int retval1 = 0;
+
+    if (global_counters.size() != 5 ||
+            std::any_of(global_counters.begin(), global_counters.end(), [](int a){return a != 0;})) {
+        eckit::Log::info() << "Global counters incorrectly configured" << std::endl;
+        retval1 = 1;
+    }
+
     eckit::Main::initialise(argc, argv);
-    return eckit::testing::run_tests(eckit::test::tests, argc, argv);
+    int retval2 = eckit::testing::run_tests(eckit::test::tests, argc, argv);
+
+    int retval3 = 0;
+    if (global_counters[0] != 3 ||
+        global_counters[1] != 1 ||
+        global_counters[2] != 1 ||
+        global_counters[3] != 11 ||
+        global_counters[4] != 10 ) {
+
+        eckit::Log::info() << "Global counters incorrect. Relevant tests FAILED" << std::endl;
+        eckit::Log::info() << "Global counters: " << global_counters << std::endl;
+        retval3 = 1;
+    }
+
+    return std::abs(retval1) + std::abs(retval2) + std::abs(retval3);
 }

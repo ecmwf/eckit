@@ -621,7 +621,7 @@ LocalPathName LocalPathName::relativePath(const LocalPathName& other) const {
 }
 
 
-void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<LocalPathName>& directories)
+void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<LocalPathName>& dirs)
 const
 {
     StdDir d(*this);
@@ -662,7 +662,7 @@ const
 
 #if defined(EC_HAVE_DIRENT_D_TYPE)
         if (e->d_type == DT_DIR)
-            directories.push_back(full);
+            dirs.push_back(full);
         else
             files.push_back(full);
 #else
@@ -670,7 +670,7 @@ const
         if (Stat::stat(full.c_str(), &info) == 0)
         {
             if (S_ISDIR(info.st_mode))
-                directories.push_back(full);
+                dirs.push_back(full);
             else
                 files.push_back(full);
         }

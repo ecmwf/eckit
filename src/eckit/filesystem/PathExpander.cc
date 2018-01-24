@@ -11,27 +11,25 @@
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/config/LibEcKit.h"
 
 #include "eckit/parser/StringTools.h"
 
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Once.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static pthread_once_t once  = PTHREAD_ONCE_INIT;
-static eckit::Mutex* local_mutex = 0;
-
-static void init() {
-    local_mutex = new eckit::Mutex();
-}
-
 typedef std::map<std::string, PathExpander*> PathExpanderMap;
 
 struct PathExpanderRegistry {
+
+    eckit::Mutex mutex_;
+
+    void lock() { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
 
     static PathExpanderRegistry& instance() {
         static PathExpanderRegistry reg;
@@ -44,21 +42,16 @@ struct PathExpanderRegistry {
 
     const PathExpander& lookup(const std::string& name) {
 
-        pthread_once(&once, init);
-        eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
         PathExpanderMap& m = PathExpanderRegistry::instance().map();
 
         PathExpanderMap::const_iterator j = m.find(name);
 
-        // eckit::Log::info() << "Looking for PathExpander '" << name << "'" << std::endl;
-
         if (j == m.end()) {
-            eckit::Log::error() << "No PathExpander found with name '" << name << "'" << std::endl;
-            eckit::Log::error() << "Registered libraries are:" << std::endl;
+            std::ostringstream msg;
+            msg << "No PathExpander found with name '" << name << "'. Registered path expand handlers are:";
             for (j = m.begin() ; j != m.end() ; ++j)
-                eckit::Log::error() << "   " << (*j).first << std::endl;
-            throw eckit::UserError(std::string("No PathExpander found with name ") + name);
+                msg << " '" << (*j).first << "'";
+            throw eckit::UserError(msg.str());
         }
 
         ASSERT(j->second);
@@ -71,17 +64,36 @@ struct PathExpanderRegistry {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-std::string PathExpander::expand(const std::string& key, const std::string& path)
+std::string PathExpander::expand(const std::string& path)
 {
-    return PathExpanderRegistry::instance().lookup(key).expand(path);
-}
+    StringDict vars;
 
+    StringList vl = StringTools::listVariables(path);
+    for (StringList::const_iterator it = vl.begin(); it != vl.end(); ++it) {
+
+        const std::string& incurly = *it;
+
+        if(incurly.empty()) throw BadValue("PathExpander received empty key");
+
+        size_t pos = incurly.find_first_of(":");
+        std::string key = incurly.substr(0, pos);
+
+        eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
+
+        PathExpanderRegistry::instance().lookup(key).expand(incurly, path, vars);
+    }
+
+    std::string newpath = StringTools::substitute(path, vars);
+
+    Log::debug<LibEcKit>() << "Path expansion " << path << " --> " << newpath << std::endl;
+
+    return newpath;
+}
 
 PathExpander::PathExpander(const std::string& name):
         name_(name)
 {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
 
     PathExpanderMap& m = PathExpanderRegistry::instance().map();
 
@@ -100,23 +112,51 @@ void PathExpander::print(std::ostream& s) const
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class ENVVAR : public PathExpander {
+public:
+
+    ENVVAR(const std::string& name) : PathExpander(name) {}
+
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
+
+        size_t pos = var.find_first_of(":");
+        std::string key = var.substr(0, pos);
+        ECKIT_DEBUG_VAR(key);
+
+        ASSERT(key == "ENVVAR");
+
+        if(pos == std::string::npos || pos+1 == std::string::npos) {
+            throw eckit::BadValue(std::string("ENVVAR passed but no variable defined: ") + var, Here());
+        }
+
+        std::string param = var.substr(pos+1, std::string::npos);
+        ECKIT_DEBUG_VAR(param);
+
+        std::string envvar;
+        char* e = ::getenv(param.c_str());
+        if(e) envvar = e;
+
+        ECKIT_DEBUG_VAR(envvar);
+
+        vars[var] = envvar;
+    }
+
+};
+
+static ENVVAR envvar("ENVVAR");
+
+//----------------------------------------------------------------------------------------------------------------------
+
 class CWDFS : public PathExpander {
 public:
 
     CWDFS(const std::string& name) : PathExpander(name) {}
 
-    virtual std::string expand(const std::string& path) const {
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
 
         LocalPathName mnt = LocalPathName::cwd().mountPoint();
 
-        StringDict m;
-        m["CWDFS"] = std::string(mnt);
-
-        std::string newpath = StringTools::substitute(path, m);
-
-//        std::cout << "Path expansion " << path << " --> " << newpath << std::endl;
-
-        return newpath;
+        vars["CWDFS"] = std::string(mnt);
     }
 
 };
@@ -130,18 +170,11 @@ public:
 
     CWD(const std::string& name) : PathExpander(name) {}
 
-    virtual std::string expand(const std::string& path) const {
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
 
         LocalPathName mnt = LocalPathName::cwd();
 
-        StringDict m;
-        m["CWD"] = std::string(mnt);
-
-        std::string newpath = StringTools::substitute(path, m);
-
-//        std::cout << "Path expansion " << path << " --> " << newpath << std::endl;
-
-        return newpath;
+        vars["CWD"] = std::string(mnt);
     }
 
 };

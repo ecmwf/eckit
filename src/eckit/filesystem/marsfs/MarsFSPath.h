@@ -97,7 +97,7 @@ public:
     MarsFSPath mountPoint() const;
     MarsFSPath realName() const;
 
-    void children(std::vector<MarsFSPath>&,std::vector<MarsFSPath>&) const;
+    void children(std::vector<MarsFSPath>& files, std::vector<MarsFSPath>& dirs) const;
 
     static MarsFSPath unique(const MarsFSPath&);
     static void match(const MarsFSPath&,std::vector<MarsFSPath>&,bool=false);

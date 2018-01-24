@@ -15,6 +15,8 @@
 #ifndef eckit_la_Triplet_h
 #define eckit_la_Triplet_h
 
+#include <iosfwd>
+
 #include "eckit/linalg/types.h"
 
 namespace eckit {
@@ -48,6 +50,10 @@ public:
         }
         return row_ < other.row_;
     }
+
+    void print(std::ostream& os) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const Triplet& p);
 
 protected:
     Size row_;

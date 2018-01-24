@@ -8,40 +8,38 @@
  * does it submit to any jurisdiction.
  */
 
-// File Bytes.h
-// Baudouin Raoult - ECMWF Jul 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Jul 1996
 
-#ifndef eckit_Bytes_h
-#define eckit_Bytes_h
+#ifndef eckit_log_Bytes_h
+#define eckit_log_Bytes_h
 
 #include "eckit/eckit.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-// Forward declarations
+//----------------------------------------------------------------------------------------------------------------------
 
 class Timer;
 
 class Bytes {
-public:
 
-// -- Contructors
+public: // methods
 
 	Bytes(double);
-    Bytes(double,Timer&); // computes a rate
-	Bytes(double,double); // computes a rate
 
-// -- Operators
+    /// Computes a rate
+    Bytes(double, Timer&);
+
+    /// Computes a rate
+    Bytes(double, double);
 
     operator std::string() const;
+
     friend std::ostream& operator<<(std::ostream&,const Bytes&);
 
-// -- Class methods
-    
     static unsigned long long KiB( unsigned long long n ) { return 1024*n; }
     static unsigned long long MiB( unsigned long long n ) { return 1024*KiB(n); }
     static unsigned long long GiB( unsigned long long n ) { return 1024*MiB(n); }
@@ -50,19 +48,27 @@ public:
     static unsigned long long EiB( unsigned long long n ) { return 1024*PiB(n); }
     static unsigned long long ZiB( unsigned long long n ) { return 1024*EiB(n); }
     static unsigned long long YiB( unsigned long long n ) { return 1024*ZiB(n); }
-    
-private:
 
-// There is no private copy constructor as this will confuse g++ 4.x.x
+    /// Handle rate computations avoiding floating point exceptions
+    static double rate(double num, double den);
 
-// -- Members
+    double value() const;
+
+    std::string shorten() const;
+
+private: // members
+
+    int sign() const;
+    std::pair<double, char> reduceTo1024() const;
+    std::pair<double, char> reduceTo100() const;
 
 	double bytes_;
-	bool   rate_;
+    size_t scale_;
+    bool   rate_;
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

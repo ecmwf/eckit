@@ -26,22 +26,53 @@ namespace test {
 
 //-----------------------------------------------------------------------------
 
-CASE("test_expands")
+CASE("Expand a CWD")
 {
     std::string s = "{CWD}/tmp/foo";
-    std::string r = std::string(::getenv("CURRENT_TEST_DIR")) + std::string("/tmp/foo");
 
-    LocalPathName ps = LocalPathName(PathExpander::expand("CWD", s)).realName();
+    char* e;
+    e = ::getenv("CURRENT_TEST_DIR");
+
+    EXPECT(e != NULL);
+
+    std::string r = std::string(e) + std::string("/tmp/foo");
+
+    LocalPathName ps = LocalPathName(PathExpander::expand(s)).realName();
     LocalPathName pr = LocalPathName(r).realName();
 
     EXPECT( ::strcmp(ps.c_str(), pr.c_str()) == 0 );
 }
 
-CASE("test_missing_keys")
+CASE("Expand using missing handler")
 {
     std::string s = "{FOO}/tmp/foo";
 
-    EXPECT_THROWS_AS( PathExpander::expand("FOO", s), eckit::UserError );
+    EXPECT_THROWS_AS( PathExpander::expand(s), eckit::UserError );
+}
+
+CASE("Expand an environment variable")
+{
+    std::string s = "{ENVVAR:FOO}/tmp/bar";
+
+    SYSCALL(::setenv("FOO", "/foobar", 1));
+
+    std::string ps = PathExpander::expand(s);
+    std::string pr = "/foobar/tmp/bar";
+
+    EXPECT( ps == pr );
+}
+
+CASE("Expand multiple times")
+{
+    std::string s = "{CWD}/baz/{ENVVAR:FOO}/tmp/bar";
+
+    SYSCALL(::setenv("FOO", "/foobar", 1));
+
+    std::string r = std::string(::getenv("CURRENT_TEST_DIR"))  + std::string("/baz/foobar/tmp/bar");
+
+    LocalPathName px = PathExpander::expand(s);
+
+    EXPECT( px == r );
 }
 
 //-----------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2017 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -13,13 +13,12 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-//#define X(a) Log::userInfo() << #a << std::endl; Log::info() << #a << std::endl; 
+//#define X(a) Log::userInfo() << #a << std::endl; Log::info() << #a << std::endl;
 #define X(a) /**/
 
 // TODO: Return errno
@@ -742,7 +741,7 @@ time_t MarsFSClient::lastModified(const std::string& path)
 	}
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

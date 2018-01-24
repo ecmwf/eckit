@@ -188,16 +188,10 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName,
 
         // entries with e.g. {CWDFS}/cache will be expanded with PathExpander factory CWDFS
 
-        StringList vl = StringTools::listVariables(path);
-        for (StringList::const_iterator var = vl.begin(); var != vl.end(); ++var) {
-            path = PathExpander::expand(*var, path);
-        }
-
-        roots_.push_back(path);
+        roots_.push_back(PathExpander::expand(path));
     }
 
     Log::debug<LibEcKit>() << "CacheManager roots " << roots_ << std::endl;
-
 }
 
 template<class Traits>

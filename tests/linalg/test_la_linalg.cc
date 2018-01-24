@@ -50,30 +50,28 @@ void test(const T& v, const T& r) {
 
 CASE ( "test_eckit_la_sparse" ) {
 
-    SETUP("Fixture") {
-        Fixture F;
+    Fixture F;
 
-        SECTION("test_dot") {
-            EXPECT(F.linalg.dot(F.x, F.x) == 21.);
-            Log::info() << "dot of vectors of different sizes should fail" << std::endl;
-            EXPECT_THROWS_AS(F.linalg.dot(F.x, Vector(2)), AssertionFailed);
-        }
+    SECTION("test_dot") {
+        EXPECT(F.linalg.dot(F.x, F.x) == 21.);
+        Log::info() << "dot of vectors of different sizes should fail" << std::endl;
+        EXPECT_THROWS_AS(F.linalg.dot(F.x, Vector(2)), AssertionFailed);
+    }
 
-        SECTION("test_gemv") {
-            Vector y(2);
-            F.linalg.gemv(F.A, V(2, -1., -2.), y);
-            test(y, V(2, 3., 0.));
-            Log::info() << "gemv of matrix and vector of nonmatching sizes should fail" << std::endl;
-            EXPECT_THROWS_AS(F.linalg.gemv(F.A, F.x, y), AssertionFailed);
-        }
+    SECTION("test_gemv") {
+        Vector y(2);
+        F.linalg.gemv(F.A, V(2, -1., -2.), y);
+        test(y, V(2, 3., 0.));
+        Log::info() << "gemv of matrix and vector of nonmatching sizes should fail" << std::endl;
+        EXPECT_THROWS_AS(F.linalg.gemv(F.A, F.x, y), AssertionFailed);
+    }
 
-        SECTION("test_gemm") {
-            Matrix B(2, 2);
-            F.linalg.gemm(F.A, F.A, B);
-            test(B, M(2, 2, 9., -6., -12., 12.));
-            Log::info() << "gemm of matrices of nonmatching sizes should fail" << std::endl;
-            EXPECT_THROWS_AS(F.linalg.gemm(F.A, Matrix(1, 2), B), AssertionFailed);
-        }
+    SECTION("test_gemm") {
+        Matrix B(2, 2);
+        F.linalg.gemm(F.A, F.A, B);
+        test(B, M(2, 2, 9., -6., -12., 12.));
+        Log::info() << "gemm of matrices of nonmatching sizes should fail" << std::endl;
+        EXPECT_THROWS_AS(F.linalg.gemm(F.A, Matrix(1, 2), B), AssertionFailed);
     }
 }
 

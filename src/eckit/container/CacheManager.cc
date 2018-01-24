@@ -182,20 +182,20 @@ void CacheManagerBase::touch(const eckit::PathName& path) const  {
                 }
 
 
-                std::deque<typename cache_btree_t::result_type> result;
+                std::deque<cache_btree_t::result_type> result;
 
                 cache_key_t first; memset(first.data(), '0', cache_key_t::static_size());
                 cache_key_t last;  memset(last.data(), 'f', cache_key_t::static_size());
 
                 btree.range(first, last, result);
 
-                std::sort(result.begin(), result.end(), compare<typename cache_btree_t::result_type>);
+                std::sort(result.begin(), result.end(), compare<cache_btree_t::result_type>);
 
                 bool rescan = false;
                 size_t deleted = 0;
                 while (deleted < remove && !result.empty()) {
 
-                    typename cache_btree_t::result_type p = result.front();
+                    cache_btree_t::result_type p = result.front();
                     result.pop_front();
 
                     if (p.second.last_ == 0) {

@@ -12,23 +12,23 @@
 
 #include "eckit/eckit_ecbuild_config.h"
 
+#include "eckit/config/LibEcKit.h"
+#include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/DblBuffer.h"
 #include "eckit/io/MoverTransfer.h"
-#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
-#include "eckit/config/Resource.h"
 #include "eckit/log/Timer.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/memory/ScopedPtr.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
 Reanimator<DataHandle> DataHandle::reanimator_;
@@ -62,30 +62,6 @@ AutoClose::~AutoClose()
     }
 }
 
-static const char *b="kMGPEZY"; // support until Yottabyte :-)
-static const double yotta = 1024.*1024.*1024.*1024.*1024.*1024.*1024.;
-
-static double rate(double x, char& c)
-{
-    if(x > yotta || std::isinf(x)) {
-        c = 'Y';
-        return 1.;
-    }
-
-    c = ' ';
-    const char* p = b;
-    c = ' ';
-    while(x > 100)
-    {
-        x /= 1024;
-        c = *p++;
-    }
-    if(x>=10)
-        return long(x+0.5);
-    else
-        return long(x*10+0.5)/10.0;
-}
-
 void DataHandle::encode(Stream& s) const
 {
     Streamable::encode(s);
@@ -102,14 +78,13 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
 {
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer",0);
 
-
     compress();
 
     Log::status() << Bytes(estimate()) << " " << title() << " => " << other.title() << std::endl;
 
     if(moverTransfer && moveable() && other.moveable())
     {
-        //Log::info() << "Using MoverTransfer" << std::endl;
+        Log::debug<LibEcKit>() << "Using MoverTransfer" << std::endl;
         MoverTransfer mover(watcher);
         return mover.transfer(*this,other);
     }
@@ -119,8 +94,8 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
 
     if(doubleBuffer && dblBufferOK)
     {
-        static const long bufsize = Resource<long>("doubleBufferSize",10*1024*1024/20);
-        static const long count   = Resource<long>("doubleBufferCount",20);
+        static const long bufsize = Resource<long>("doubleBufferSize", 10*1024*1024 / 20);
+        static const long count   = Resource<long>("doubleBufferCount", 20);
 
         DblBuffer buf(count,bufsize,watcher);
         return buf.copy(*this,other);
@@ -128,18 +103,17 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
     else
     {
 
-        static const long bufsize = Resource<long>("bufferSize",64*1024*1024);
+        static const long bufsize = Resource<long>("bufferSize", 64*1024*1024);
 
         Buffer buffer(bufsize);
         //ResizableBuffer buffer(bufsize);
-
 
 		watcher.watch(0,0);
 
         Length estimate = openForRead(); AutoClose closer1(*this);
         other.openForWrite(estimate);    AutoClose closer2(other);
 
-        Progress progress("Moving data",0,estimate);
+        Progress progress("Moving data", 0, estimate);
 
         Length total = 0;
         long length = -1;
@@ -149,9 +123,6 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
         double lastWrite = 0;
         Timer timer("Save into");
         bool more = true;
-
-        char c1 = ' ';
-        char c2 = ' ';
 
         while(more)
         {
@@ -173,10 +144,10 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
                     watcher.watch(buffer,length);
                     lastRead = timer.elapsed();
 
-                    double rRate = rate(total/readTime,  c1);
-                    double wRate = rate(total/writeTime, c2);
+                    Bytes rRate(total, readTime);
+                    Bytes wRate(total, writeTime);
 
-                    Log::message() << rRate << c1 << " " << wRate << c2 << std::endl;
+                    Log::message() << rRate.shorten() << " " << wRate.shorten() << std::endl;
                 }
             }
             catch(RestartTransfer& retry)
@@ -194,11 +165,11 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
             }
         }
 
-        Log::message() <<  "" << std::endl;
+        Log::message() << "" << std::endl;
 
 
-        Log::info() << "Read  rate: " << Bytes(total/readTime)  << "/s" << std::endl;
-        Log::info() << "Write rate: " << Bytes(total/writeTime) << "/s" << std::endl;
+        Log::info() << "Read  rate: " << Bytes(total, readTime)  << std::endl;
+        Log::info() << "Write rate: " << Bytes(total, writeTime) << std::endl;
 
         if(length < 0)
             throw ReadError(name() + " into " + other.name());
@@ -221,6 +192,7 @@ Length DataHandle::saveInto(const PathName& path,TransferWatcher& w, bool dblBuf
 }
 
 Length DataHandle::copyTo(DataHandle& other) {
+
     static const long bufsize = Resource<long>("bufferSize",64*1024*1024);
 
     Buffer buffer(bufsize);
@@ -246,7 +218,7 @@ Length DataHandle::copyTo(DataHandle& other) {
     if(estimate != 0 && estimate != total)
     {
         std::ostringstream os;
-        os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
+        os << "DataHandle::copyTo got " << total << " bytes out of " << estimate;
         throw ReadError(name() + " into " + other.name() + " " + os.str());
     }
 
@@ -277,8 +249,7 @@ Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
 
 bool DataHandle::compare(DataHandle& other)
 {
-
-    long bufsize = Resource<long>("compareBufferSize",10*1024*1024);
+    size_t bufsize = static_cast<size_t>(Resource<long>("compareBufferSize",10*1024*1024));
 
     Buffer buffer1(bufsize);
     Buffer buffer2(bufsize);
@@ -327,7 +298,7 @@ bool DataHandle::compare(DataHandle& other)
 
     }
 
-    return false; // keep linter happy
+    return false; // should never arrive here
 }
 
 Offset DataHandle::position() {
@@ -395,7 +366,9 @@ DataHandle* DataHandle::clone() const
     throw NotImplemented(os.str(), Here());
 }
 
-//-----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 #if defined(EC_HAVE_FOPENCOOKIE) || defined(EC_HAVE_FUNOPEN)
 
@@ -645,5 +618,9 @@ FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
 }
 
 #endif
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 } // namespace eckit

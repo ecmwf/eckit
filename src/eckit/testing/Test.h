@@ -333,7 +333,7 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection, int& _num_sub
 #else  // ECKIT_TESTING_SELF_REGISTER_CASES
 
 #define CASE(description, ...) \
-    description, [__VA_ARGS__](std::string& _test_subsection)
+    description, [__VA_ARGS__](std::string& _test_subsection, int& _num_subsections, int _subsection)
 
 #endif  // ECKIT_TESTING_SELF_REGISTER_CASES
 
@@ -389,9 +389,9 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection, int& _num_sub
 
 #define SECTION(name) \
     _num_subsections += 1; \
-    _test_subsection = name; \
+    _test_subsection = (name); \
     if ((_num_subsections - 1) == _subsection) { \
-        eckit::Log::info() << "Running section \"" << name << "\" ..." << std::endl; \
+        eckit::Log::info() << "Running section \"" << _test_subsection << "\" ..." << std::endl; \
     } \
     if ((_num_subsections - 1) == _subsection)
 

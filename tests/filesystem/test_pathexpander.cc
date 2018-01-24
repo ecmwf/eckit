@@ -64,15 +64,15 @@ CASE("Expand an environment variable")
 
 CASE("Expand multiple times")
 {
-    std::string s = "{CWD}/baz/{ENVVAR:FOO}/tmp/bar";
+    std::string s = "{CWD}/{ENVVAR:TDIR}/foo/1";
 
-    SYSCALL(::setenv("FOO", "foobar", 1));
+    SYSCALL(::setenv("TDIR", "testdir", 1));
 
-    std::string r = std::string(::getenv("CURRENT_TEST_DIR"))  + std::string("/baz/foobar/tmp/bar");
+    std::string r = std::string(::getenv("CURRENT_TEST_DIR"))  + std::string("/testdir/foo/1");
 
     LocalPathName px = PathExpander::expand(s);
 
-    EXPECT( px == r );
+    EXPECT( px.realName() == LocalPathName(r).realName() );
 }
 
 //-----------------------------------------------------------------------------

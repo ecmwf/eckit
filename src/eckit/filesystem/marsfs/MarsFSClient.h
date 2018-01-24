@@ -8,21 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-// File MarsFSClient.h
-// Baudouin Raoult - (c) ECMWF Jun 11
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 11
 
-#ifndef eckit_MarsFSClient_h
-#define eckit_MarsFSClient_h
+#ifndef eckit_filesystem_marsfs_MarsFSClient_h
+#define eckit_filesystem_marsfs_MarsFSClient_h
 
 #include "eckit/net/Connector.h"
 #include "eckit/io/Length.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct FileSystemSize;
 class MarsFSPath;
@@ -36,10 +36,10 @@ public:
 
 // -- Destructor
 
-	~MarsFSClient(); 
+	~MarsFSClient();
 
 // -- Methods
-    
+
     void mkdir(const std::string&,short);
     bool exists(const std::string&);
     std::string mountPoint(const std::string&);
@@ -84,6 +84,8 @@ private:
     friend class MarsFSClientCache;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class MarsFSClientRetry {
     bool old_;
 public:
@@ -91,7 +93,7 @@ public:
     ~MarsFSClientRetry();
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -41,7 +41,7 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 ecbuild_add_option( FEATURE MPI
                     DEFAULT ON
                     DESCRIPTION "Use system MPI libraries"
-                    REQUIRED_PACKAGES "MPI COMPONENTS CXX" )
+                    REQUIRED_PACKAGES "MPI COMPONENTS C" )
 
 ### eckit::cmd
 

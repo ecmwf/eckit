@@ -30,9 +30,9 @@ if( HAVE_MPI )
         ParallelRequest.h
         )
 
-    set(eckit_mpi_defs ${MPI_CXX_DEFINITIONS} )
-    set(eckit_mpi_incs ${MPI_CXX_INCLUDE_PATH} )
-    set(eckit_mpi_libs ${MPI_CXX_LIBRARIES} )
+    set(eckit_mpi_defs ${MPI_C_DEFINITIONS} )
+    set(eckit_mpi_incs ${MPI_C_INCLUDE_PATH} )
+    set(eckit_mpi_libs ${MPI_C_LIBRARIES} )
 endif()
 
 ecbuild_add_library(TARGET eckit_mpi

@@ -61,7 +61,7 @@ public: // methods
 
 protected:
 
-    void touch(const PathName& root, const PathName& path) const;
+    void touch(const PathName& base, const PathName& path) const;
 
 private: // members
 
@@ -156,14 +156,15 @@ private: // methods
     bool commit(const key_t& key, const PathName& path, const PathName& root) const;
 
     PathName entry(const key_t& key, const std::string& root) const;
+    PathName base(const std::string& root) const;
 
 
 private: // members
 
     std::vector<PathName> roots_;
+
     bool throwOnCacheMiss_;
 };
-
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -208,7 +209,7 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 
             if (root == roots_.begin()) {
                 // Only update first cache
-                touch(*root, p);
+                touch(base(*root), p);
             }
 
             return true;
@@ -233,11 +234,18 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 }
 
 template<class Traits>
+PathName CacheManager<Traits>::base(const std::string& root) const {
+    std::ostringstream oss;
+    oss << root
+        << "/"
+        << Traits::name();
+    return PathName(oss.str());
+}
+
+template<class Traits>
 PathName CacheManager<Traits>::entry(const key_t &key, const std::string& root) const {
     std::ostringstream oss;
-    oss <<  root
-        << "/"
-        << Traits::name()
+    oss << base(root).asString()
         << "/"
         << Traits::version()
         << "/"

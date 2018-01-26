@@ -24,12 +24,10 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_constructors" )
+CASE( "Building of paths" )
 {
-   Log::info() << "eckit::filesystem:: ...test_constructors" << std::endl;
-
    LocalPathName p;
    EXPECT(p == "/");
 
@@ -40,10 +38,8 @@ CASE( "test_constructors" )
    EXPECT(p1 == p2);
 }
 
-CASE( "test_assignment" )
+CASE( "Assignement of paths" )
 {
-   Log::info() << "eckit::filesystem:: ...test_assignment" << std::endl;
-
    LocalPathName p;
    LocalPathName pd;
    p = pd;
@@ -63,10 +59,8 @@ CASE( "test_assignment" )
    EXPECT(p4 == "/fredd");
 }
 
-CASE( "test_operators" )
+CASE( "Contactenation of paths" )
 {
-   Log::info() << "eckit::filesystem:: ...test_operators" << std::endl;
-
    LocalPathName p;
 
    p += "fred";
@@ -83,10 +77,8 @@ CASE( "test_operators" )
 }
 
 
-CASE( "test_dir_name" )
+CASE( "Extract dirname" )
 {
-   Log::info() << "eckit::filesystem:: ...test_dir_name" << std::endl;
-
    LocalPathName p("/fred/bill");
    EXPECT(p.dirName() == "/fred");
    EXPECT(p.fullName() == "/fred/bill");
@@ -97,10 +89,8 @@ CASE( "test_dir_name" )
    EXPECT(p2.fullName() == expected);
 }
 
-CASE( "test_exists" )
+CASE( "Check a path exists and is a directory" )
 {
-   Log::info() << "eckit::filesystem:: ...test_exists" << std::endl;
-
    LocalPathName cwd = LocalPathName::cwd();
 
    EXPECT(cwd.exists());
@@ -120,7 +110,7 @@ CASE( "test_exists" )
    Log::info() << "created " << cwd.created() << std::endl;
 }
 
-CASE( "test_relative_path" )
+CASE( "Construct relative paths" )
 {
     LocalPathName foobar ("/foo/bar/1/2");
     LocalPathName foozing("/foo/zing/3");
@@ -219,10 +209,8 @@ CASE( "Find children files and dirs" )
     }
 }
 
-CASE( "test_basename" )
+CASE( "Extract basename" )
 {
-   Log::info() << "eckit::filesystem:: ...test_basename" << std::endl;
-
    LocalPathName p1;
    EXPECT(p1.baseName(false) == "");
    EXPECT(p1.baseName(true) == "");
@@ -236,32 +224,21 @@ CASE( "test_basename" )
    EXPECT(p.baseName(true) == "file.ok");
 }
 
-CASE( "test_extension" )
+CASE( "Extract extension from Path" )
 {
-   Log::info() << "eckit::filesystem:: ...test_extension" << std::endl;
+   EXPECT(LocalPathName().extension() == "");
+   EXPECT(LocalPathName("fred").extension() == "");
+   EXPECT(LocalPathName("/path/to/fred").extension() == "");
+   EXPECT(LocalPathName("/path/with.dot/to/fred").extension() == "");
 
-   LocalPathName p1;
-   EXPECT(p1.extension() == "");
-
-   LocalPathName p2("fred");
-   EXPECT(p2.extension() == "");
-   LocalPathName p3("/path/to/fred");
-   EXPECT(p3.extension() == "");
-   LocalPathName p4("/path/with.dot/to/fred");
-   EXPECT(p4.extension() == "");
-
-   LocalPathName p5("fred.");
-   EXPECT(p5.extension() == ".");
-   LocalPathName p6("/path/to/fred.ext");
-   EXPECT(p6.extension() == ".ext");
-   LocalPathName p7("/path/with.dot/to/fred.ext");
-   EXPECT(p7.extension() == ".ext");
+   EXPECT(LocalPathName("fred.").extension() == ".");
+   EXPECT(LocalPathName("fred..").extension() == ".");
+   EXPECT(LocalPathName("/path/to/fred.ext").extension() == ".ext");
+   EXPECT(LocalPathName("/path/with.dot/to/fred.ext").extension() == ".ext");
 }
 
-CASE( "test_fileSystemSize" )
+CASE( "Calculate file system size" )
 {
-   Log::info() << "eckit::filesystem:: ...test_fileSystemSize" << std::endl;
-
    LocalPathName cwd = LocalPathName::cwd();
    FileSystemSize fs;
    cwd.fileSystemSize(fs);
@@ -274,10 +251,8 @@ CASE( "test_fileSystemSize" )
    EXPECT(fs.total > 0);
 }
 
-CASE( "test_unique" )
+CASE( "Create a unique path" )
 {
-   Log::info() << "eckit::filesystem:: ...test_unique" << std::endl;
-
    LocalPathName unique = LocalPathName::unique(LocalPathName::cwd());
 
    unique.mkdir();
@@ -288,7 +263,7 @@ CASE( "test_unique" )
    EXPECT(!unique.exists());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit

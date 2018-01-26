@@ -44,7 +44,7 @@ static bool compare(const T& a, const T& b) {
     return a.second.last_ < b.second.last_;
 }
 
-void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName& path) const  {
+void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName& path) const  {
 
     AutoUmask umask(0);
 
@@ -54,12 +54,11 @@ void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName&
 
     if(!maxCacheSize_) return;
 
-    eckit::PathName db(root / "cache-manager.btree");
-    eckit::PathName mapping(root / "cache-manager.mapping");
+    eckit::PathName db(base / "cache-manager.btree");
+    eckit::PathName mapping(base / "cache-manager.mapping");
 
 
     try {
-
 
         if (!btree_) {
             btree_.reset(new cache_btree_t(db));
@@ -70,7 +69,7 @@ void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName&
         MD5 md5(path);
 
         cache_key_t key(md5.digest());
-        cache_entry_t entry = {0,};
+        cache_entry_t entry = {0, 0, 0};
 
         if (!btree.get(key, entry)) {
 
@@ -79,7 +78,7 @@ void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName&
 
 
             cache_key_t total_key(".total");
-            cache_entry_t total_entry = {0,};
+            cache_entry_t total_entry = {0, 0, 0};
 
             if (mapping.size() == Length(0)) {
 
@@ -90,13 +89,15 @@ void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName&
 
 
                 std::vector<PathName> files;
-                std::ostringstream oss;
-                oss << path.dirName() << "/*" << extension_;
-                PathName::match(oss.str(), files, false);
+                std::vector<PathName> dirs;
+
+                base.childrenRecursive(files, dirs);
 
                 std::ofstream out(mapping.asString().c_str(), std::ios::app);
 
                 for (std::vector<PathName>::const_iterator j = files.begin(); j  != files.end(); ++j) {
+
+                    if(j->extension() == ".lock") continue;
 
                     eckit::Log::info() << "Cache cleanup "
                                        << db
@@ -109,10 +110,10 @@ void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName&
                     out << md5.digest() << " " << (*j) << std::endl;
 
                     cache_key_t key(md5.digest());
-                    cache_entry_t entry = {0,};
+                    cache_entry_t entry = {0, 0, 0};
 
                     if (!btree.get(key, entry)) {
-                        entry.size_ = (*j).size();
+                        entry.size_ = size_t((*j).size());
                         entry.count_ = 1;
                         entry.last_ = ::time(0);
                         btree.set(key, entry);
@@ -129,7 +130,7 @@ void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName&
                 return;
             }
 
-            entry.size_ = path.size();
+            entry.size_ = size_t(path.size());
 
             if (btree.get(total_key, total_entry)) {
                 total_entry.size_ += entry.size_;
@@ -220,7 +221,7 @@ void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName&
                         PathName(file + ".lock").unlink();
                     }
 
-                    cache_entry_t zero = {0,};
+                    cache_entry_t zero = {0, 0, 0};
 
                     total_entry.size_ -= std::min(p.second.size_, total_entry.size_);
                     total_entry.count_ -= std::min(size_t(1), total_entry.count_);

@@ -168,6 +168,7 @@ public:
     /// Remove the directory
     void rmdir() const;
 
+    /// Synchronise the parent directory entries to persistent storage
     void syncParentDirectory() const;
 
     /// Create a copy with a unique path name
@@ -200,9 +201,11 @@ public:
     /// Get child files and directories
     /// @param files vector to be filled with child files of path
     /// @param directories vector to be filled with child diretories of path
-    /// @param recurse down the children directories to keep finding children
     void children(std::vector<PathName>& files, std::vector<PathName>& dirs) const;
 
+    /// Get child files and directories descending recursively on all sub directories
+    /// @param files vector to be filled with child files of path
+    /// @param directories vector to be filled with child diretories of path
     void childrenRecursive(std::vector<PathName>& files, std::vector<PathName>& dirs) const;
 
     void fileSystemSize(FileSystemSize&) const;

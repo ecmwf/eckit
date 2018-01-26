@@ -14,19 +14,21 @@
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 static unsigned long long multiplier(const char* p) {
+
     while(isspace(*p)) p++;
 
     if(*p && *(p+1))
     {
-        if(towlower(*(p+1)) == 'b')
+        // cater for GB or GiB (SI units)
+        if(towlower(*(p+1)) == 'b' || (towlower(*(p+1)) == 'i' && towlower(*(p+2)) == 'b'))
         {
             switch(towlower(*p)) {
                 case 'k': return (1LL << 10);  break;
@@ -334,7 +336,7 @@ std::string Translator<char,std::string>::operator()(char c)
     return s;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

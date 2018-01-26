@@ -61,7 +61,9 @@ public: // methods
 
 protected:
 
-    void touch(const PathName&) const;
+    void touch(const PathName& base, const PathName& path) const;
+
+    bool writable(const PathName& path) const;
 
 private: // members
 
@@ -156,14 +158,14 @@ private: // methods
     bool commit(const key_t& key, const PathName& path, const PathName& root) const;
 
     PathName entry(const key_t& key, const std::string& root) const;
-
+    PathName base(const std::string& root) const;
 
 private: // members
 
     std::vector<PathName> roots_;
+
     bool throwOnCacheMiss_;
 };
-
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -188,25 +190,30 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName,
 
         // entries with e.g. {CWDFS}/cache will be expanded with PathExpander factory CWDFS
 
-        roots_.push_back(PathExpander::expand(path));
+        PathName p = PathExpander::expand(path);
+
+        if(p.exists()) {
+            roots_.push_back(p);
+        }
     }
 
-    Log::debug<LibEcKit>() << "CacheManager roots " << roots_ << std::endl;
+    Log::debug<LibEcKit>() << "CACHE-MANAGER " << Traits::name() << ", roots defined and found: " << roots_ << std::endl;
 }
 
 template<class Traits>
 bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 
-    for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
-        PathName p = entry(key, *j);
-        if (p.exists()) {
-            v = p;
-            Log::debug<LibEcKit>() << "CacheManager found path " << p << std::endl;
+    for (std::vector<PathName>::const_iterator root = roots_.begin(); root != roots_.end(); ++root) {
 
-            if (j == roots_.begin()) {
-                // Only update first cache
-                touch(p);
-            }
+        PathName p = entry(key, *root);
+
+        if (p.exists()) {
+
+            v = p;
+
+            Log::debug<LibEcKit>() << "CACHE-MANAGER found path " << p << std::endl;
+
+            touch(base(*root), p);
 
             return true;
         }
@@ -230,11 +237,18 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 }
 
 template<class Traits>
+PathName CacheManager<Traits>::base(const std::string& root) const {
+    std::ostringstream oss;
+    oss << root
+        << "/"
+        << Traits::name();
+    return PathName(oss.str());
+}
+
+template<class Traits>
 PathName CacheManager<Traits>::entry(const key_t &key, const std::string& root) const {
     std::ostringstream oss;
-    oss <<  root
-        << "/"
-        << Traits::name()
+    oss << base(root).asString()
         << "/"
         << Traits::version()
         << "/"
@@ -288,30 +302,37 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
         for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
 
+            const PathName& root = *j;
+
+            if(not writable(root)) {
+                Log::debug() << "CACHE-MANAGER root " << root << " isn't writable, skipping... " << std::endl;
+                continue;
+            }
+
             eckit::Log::info() << "Cache file "
-                               << entry(key, *j)
+                               << entry(key, root)
                                << " does not exist"
                                << std::endl;
 
             try {
 
-                typename Traits::Locker locker(entry(key, *j));
+                typename Traits::Locker locker(entry(key, root));
                 eckit::AutoLock<typename Traits::Locker> lock(locker);
 
-                // Some
                 if (!get(key, path)) {
+
                     eckit::Log::info() << "Creating cache file "
-                                       << entry(key, *j)
+                                       << entry(key, root)
                                        << std::endl;
 
-                    eckit::PathName tmp = stage(key, *j);
+                    eckit::PathName tmp = stage(key, root);
                     bool saved = false; // The creator may decide to save
 
                     creator.create(tmp, value, saved);
                     if (!saved) {
                         Traits::save(*this, value, tmp);
                     }
-                    ASSERT(commit(key, tmp, *j));
+                    ASSERT(commit(key, tmp, root));
 
                     ASSERT(get(key, path)); // this includes the call to touch(path)
 
@@ -320,7 +341,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                 }
                 else {
                     eckit::Log::debug() << "Loading cache file "
-                                        << entry(key, *j)
+                                        << entry(key, root)
                                         << " (created by another process)"
                                         << std::endl;
 
@@ -328,12 +349,11 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
                     Traits::load(*this, value, path);
                 }
 
-
                 return path;
 
             } catch (FailedSystemCall& e) {
                 eckit::Log::error() << "Error creating cache file: "
-                                    << entry(key, *j)
+                                    << entry(key, root)
                                     << " (" << e.what() << ")" << std::endl;
             }
 
@@ -352,7 +372,6 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
     }
 
     throw UserError(oss.str());
-
 }
 
 

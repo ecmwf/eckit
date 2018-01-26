@@ -27,7 +27,41 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_translator_string_double" ) {
+CASE ( "Translate strings to integers" ) {
+
+    Translator<string, size_t> toSize;
+
+    EXPECT( toSize("0")    == size_t(0));
+    EXPECT( toSize("1")    == size_t(1));
+    EXPECT( toSize("100")  == size_t(100));
+
+    EXPECT( toSize("1KB")  == size_t(1024));
+    EXPECT( toSize("1MB")  == size_t(1024*1024));
+    EXPECT( toSize("1GB")  == size_t(1024*1024*1024));
+//    EXPECT( toSize("1TB")  == size_t(1024*1024*1024*1024));
+//    EXPECT( toSize("1PB")  == size_t(1024*1024*1024*1024*1024));
+//    EXPECT( toSize("1EB")  == size_t(1024*1024*1024*1024*1024*1024));
+
+    EXPECT( toSize("1KiB") == size_t(1024));
+    EXPECT( toSize("1MiB") == size_t(1024*1024));
+    EXPECT( toSize("1GiB") == size_t(1024*1024*1024));
+
+    std::cout << toSize("1GiB") << std::endl;
+    std::cout << toSize("1TiB") << std::endl;
+
+    EXPECT( toSize("1TiB") == size_t(1LL << 40));
+    EXPECT( toSize("1PiB") == size_t(1LL << 50));
+    EXPECT( toSize("1EiB") == size_t(1LL << 60));
+
+
+//    Translator<string, int> toInt;
+//    Translator<string, unsigned int> toUInt;
+//    Translator<string, long> toLong;
+//    Translator<string, unsigned long> toULong;
+
+}
+
+CASE ( "Translate strings to double" ) {
     double half = 0.5;
     double zero = 0.0;
     double hund = 100.0;

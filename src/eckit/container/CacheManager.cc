@@ -97,7 +97,7 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
 
                 for (std::vector<PathName>::const_iterator j = files.begin(); j  != files.end(); ++j) {
 
-                    if(j->extension() == ".lock") continue;
+                    if(j->extension() != extension_) continue;
 
                     eckit::Log::info() << "Cache cleanup "
                                        << db

@@ -10,6 +10,9 @@
 
 #include <string>
 
+#include "eckit/types/Types.h"
+
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/testing/Test.h"
@@ -151,27 +154,68 @@ CASE( "test_relative_path" )
     EXPECT( root.relativePath(foobar) == LocalPathName("../../../..") );
 }
 
-CASE( "test_children" )
+CASE( "Find children files and dirs" )
 {
-    std::set<LocalPathName> reference;
-    reference.insert("testdir/foo");
-    reference.insert("testdir/foo/1");
-    reference.insert("testdir/foo/2");
-    reference.insert("testdir/foo/2/1");
-    reference.insert("testdir/bar");
-    reference.insert("testdir/baz");
+    std::set<LocalPathName> ref_dirs;
+    ref_dirs.insert("testdir/foo");
+    ref_dirs.insert("testdir/foo/1");
+    ref_dirs.insert("testdir/foo/2");
+    ref_dirs.insert("testdir/foo/2/1");
+    ref_dirs.insert("testdir/bar");
+    ref_dirs.insert("testdir/baz");
 
-    LocalPathName t = LocalPathName::cwd() + "/testdir";
+    std::set<LocalPathName> ref_files;
+    ref_files.insert("testdir/foo/file.1");
+    ref_files.insert("testdir/foo/file.2");
+    ref_files.insert("testdir/bar/file.3");
 
-    std::vector<LocalPathName> files;
-    std::vector<LocalPathName> dirs;
+    for(std::set<LocalPathName>::const_iterator j = ref_files.begin(); j != ref_files.end(); ++j) j->touch();
 
-    t.children(files, dirs);
+    PathName t(LocalPathName::cwd());  t += "/testdir";
 
-    for(std::vector<LocalPathName>::const_iterator d = dirs.begin(); d != dirs.end(); ++d) {
-        LocalPathName r = d->relativePath(LocalPathName::cwd());
-//        std::cout << "relative path " << r << std::endl;
-        EXPECT(reference.find(r) != reference.end());
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
+
+    SECTION("Find in one level") {
+
+        t.children(files, dirs);
+
+        EXPECT(files.size() == 0);
+        EXPECT(dirs.size()  == 3);
+
+        std::cout << files << std::endl;
+        std::cout << dirs  << std::endl;
+
+        for(std::vector<PathName>::const_iterator j = dirs.begin(); j != dirs.end(); ++j) {
+            LocalPathName d(j->localPath());
+            LocalPathName r = d.relativePath(LocalPathName::cwd());
+            std::cout << "relative path " << r << std::endl;
+            EXPECT(ref_dirs.find(r) != ref_dirs.end());
+        }
+    }
+
+    SECTION("Find recursively") {
+
+        t.childrenRecursive(files, dirs);
+
+        EXPECT(files.size() == 3);
+        EXPECT(dirs.size()  == 6);
+
+        std::cout << files << std::endl;
+        std::cout << dirs  << std::endl;
+
+        for(std::vector<PathName>::const_iterator j = dirs.begin(); j != dirs.end(); ++j) {
+            LocalPathName d(j->localPath());
+            LocalPathName r = d.relativePath(LocalPathName::cwd());
+            std::cout << "relative path " << r << std::endl;
+            EXPECT(ref_dirs.find(r) != ref_dirs.end());
+        }
+        for(std::vector<PathName>::const_iterator j = files.begin(); j != files.end(); ++j) {
+            LocalPathName d(j->localPath());
+            LocalPathName r = d.relativePath(LocalPathName::cwd());
+            std::cout << "relative path " << r << std::endl;
+            EXPECT(ref_files.find(r) != ref_files.end());
+        }
     }
 }
 

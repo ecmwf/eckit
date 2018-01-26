@@ -8,9 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/PathName.cc
-// Baudouin Raoult - (c) ECMWF Jun 11
-
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/Length.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
@@ -19,7 +16,6 @@
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
-
 
 namespace eckit {
 
@@ -187,16 +183,34 @@ void PathName::link(const PathName& from, const PathName& to)
 
 void PathName::children(std::vector<PathName>& files, std::vector<PathName>& dirs) const
 {
-	std::vector<BasePathName*> f;
+    std::vector<BasePathName*> f;
     std::vector<BasePathName*> d;
 
-	path_->children(f, d);
+    path_->children(f, d);
 
-	for(std::vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j)
-		files.push_back(PathName(*j));
+    for(std::vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j)
+        files.push_back(PathName(*j));
 
-    for(std::vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j)
+    for(std::vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j) {
         dirs.push_back(PathName(*j));
+
+    }
+}
+
+void PathName::childrenRecursive(std::vector<PathName>& files, std::vector<PathName>& dirs) const
+{
+    std::vector<PathName> f;
+    std::vector<PathName> d;
+
+    children(f, d);
+
+    for(std::vector<PathName>::iterator j = f.begin(); j != f.end(); ++j)
+        files.push_back(*j);
+
+    for(std::vector<PathName>::iterator j = d.begin(); j != d.end(); ++j) {
+        dirs.push_back(*j);
+        j->childrenRecursive(files, dirs);
+    }
 }
 
 void PathName::match(const PathName& path, std::vector<PathName>& result, bool rec)

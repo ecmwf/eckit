@@ -44,7 +44,7 @@ static bool compare(const T& a, const T& b) {
     return a.second.last_ < b.second.last_;
 }
 
-void CacheManagerBase::touch(const eckit::PathName& path) const  {
+void CacheManagerBase::touch(const eckit::PathName& root, const eckit::PathName& path) const  {
 
     AutoUmask umask(0);
 
@@ -52,11 +52,10 @@ void CacheManagerBase::touch(const eckit::PathName& path) const  {
     // 2- where do we store the data (path)
     // 3- What is the threshold (size_t)
 
-    if (!maxCacheSize_)
-        return;
+    if(!maxCacheSize_) return;
 
-    eckit::PathName db(path.dirName() / "cache-manager.btree");
-    eckit::PathName mapping(path.dirName() / "cache-manager.mapping");
+    eckit::PathName db(root / "cache-manager.btree");
+    eckit::PathName mapping(root / "cache-manager.mapping");
 
 
     try {

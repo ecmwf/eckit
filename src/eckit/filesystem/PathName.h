@@ -8,8 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/PathName.h
-// B.Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
+/// @author Tiago Quintino
+/// @date   May 1996
+
 
 #ifndef eckit_filesystem_PathName_h
 #define eckit_filesystem_PathName_h
@@ -20,11 +23,10 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Length;
 class BasePathName;
@@ -198,7 +200,10 @@ public:
     /// Get child files and directories
     /// @param files vector to be filled with child files of path
     /// @param directories vector to be filled with child diretories of path
+    /// @param recurse down the children directories to keep finding children
     void children(std::vector<PathName>& files, std::vector<PathName>& dirs) const;
+
+    void childrenRecursive(std::vector<PathName>& files, std::vector<PathName>& dirs) const;
 
     void fileSystemSize(FileSystemSize&) const;
 
@@ -243,7 +248,7 @@ private:
 
 template <> struct VectorPrintSelector<PathName> { typedef VectorPrintSimple selector; };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

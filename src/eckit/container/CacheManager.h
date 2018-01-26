@@ -61,7 +61,7 @@ public: // methods
 
 protected:
 
-    void touch(const PathName&) const;
+    void touch(const PathName& root, const PathName& path) const;
 
 private: // members
 
@@ -197,15 +197,18 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName,
 template<class Traits>
 bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 
-    for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
-        PathName p = entry(key, *j);
+    for (std::vector<PathName>::const_iterator root = roots_.begin(); root != roots_.end(); ++root) {
+
+        PathName p = entry(key, *root);
+
         if (p.exists()) {
+
             v = p;
             Log::debug<LibEcKit>() << "CacheManager found path " << p << std::endl;
 
-            if (j == roots_.begin()) {
+            if (root == roots_.begin()) {
                 // Only update first cache
-                touch(p);
+                touch(*root, p);
             }
 
             return true;

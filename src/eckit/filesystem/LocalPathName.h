@@ -9,7 +9,10 @@
  */
 
 /// @author Baudouin Raoult
-/// @date   May 96
+/// @author Manuel Fuentes
+/// @author Tiago Quintino
+/// @date   May 1996
+
 
 #ifndef eckit_filesystem_LocalPathName_h
 #define eckit_filesystem_LocalPathName_h
@@ -17,6 +20,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -282,6 +286,8 @@ private:
         return LocalPathName(p.path_ + s);
     }
 };
+
+template <> struct VectorPrintSelector<LocalPathName> { typedef VectorPrintSimple selector; };
 
 //----------------------------------------------------------------------------------------------------------------------
 

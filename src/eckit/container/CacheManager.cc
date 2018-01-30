@@ -44,6 +44,77 @@ static bool compare(const T& a, const T& b) {
     return a.second.last_ < b.second.last_;
 }
 
+static bool sub_path_of(const eckit::PathName& base, const eckit::PathName& path) {
+
+    std::string subp = base.asString();
+    std::string p    = path.asString();
+
+//    eckit::Log::debug() << "subp " << subp << std::endl;
+//    eckit::Log::debug() << "p    " << p << std::endl;
+
+    std::size_t f = p.find(subp);
+
+    return f == 0;
+}
+
+void CacheManagerBase::rescanCache(const eckit::PathName& base) const {
+
+    ASSERT(btree_);
+
+    eckit::PathName db(base / "cache-manager.btree");
+    eckit::PathName mapping(base / "cache-manager.mapping"); // already under lock from callee
+
+    cache_btree_t& btree = *btree_;
+
+    eckit::Log::info() << "CACHE-MANAGER cleanup "
+                       << db
+                       << ", rebuilding index"
+                       << std::endl;
+
+
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
+
+    base.childrenRecursive(files, dirs);
+
+    std::ofstream out(mapping.asString().c_str(), std::ios::app);
+
+    for (std::vector<PathName>::const_iterator j = files.begin(); j  != files.end(); ++j) {
+
+        if(j->extension() != extension_) continue;
+
+        eckit::Log::info() << "CACHE-MANAGER cleanup "
+                           << db
+                           << ", indexing "
+                           << (*j)
+                           << std::endl;
+
+        MD5 md5(*j);
+
+        out << md5.digest() << " " << (*j) << std::endl;
+
+        cache_key_t key(md5.digest());
+        cache_entry_t entry = {0, 0, 0};
+
+        cache_key_t total_key(".total");
+        cache_entry_t total_entry = {0, 0, 0};
+
+        if (!btree.get(key, entry)) {
+            entry.size_ = size_t((*j).size());
+            entry.count_ = 1;
+            entry.last_ = ::time(0);
+            btree.set(key, entry);
+
+            if (btree.get(total_key, total_entry)) {
+                total_entry.size_ += entry.size_;
+                total_entry.count_++;
+            }
+            btree.set(total_key, total_entry);
+        }
+
+    }
+}
+
 void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName& path) const  {
 
     if(not writable(base)) {
@@ -75,64 +146,18 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
         cache_key_t key(md5.digest());
         cache_entry_t entry = {0, 0, 0};
 
-        if (!btree.get(key, entry)) {
+        if (!btree.get(key, entry)) {  // entry not in cache-manager.btree
 
             eckit::FileLock lock(mapping);
             eckit::AutoLock<eckit::FileLock> locker(lock);
 
+            if (mapping.size() == Length(0)) {
+                rescanCache(base);
+                return; // entry that was missing got also inserted  with full rescan
+            }
 
             cache_key_t total_key(".total");
             cache_entry_t total_entry = {0, 0, 0};
-
-            if (mapping.size() == Length(0)) {
-
-                eckit::Log::info() << "CACHE-MANAGER cleanup "
-                                   << db
-                                   << ", rebuilding index"
-                                   << std::endl;
-
-
-                std::vector<PathName> files;
-                std::vector<PathName> dirs;
-
-                base.childrenRecursive(files, dirs);
-
-                std::ofstream out(mapping.asString().c_str(), std::ios::app);
-
-                for (std::vector<PathName>::const_iterator j = files.begin(); j  != files.end(); ++j) {
-
-                    if(j->extension() != extension_) continue;
-
-                    eckit::Log::info() << "CACHE-MANAGER cleanup "
-                                       << db
-                                       << ", indexing "
-                                       << (*j)
-                                       << std::endl;
-
-                    MD5 md5(*j);
-
-                    out << md5.digest() << " " << (*j) << std::endl;
-
-                    cache_key_t key(md5.digest());
-                    cache_entry_t entry = {0, 0, 0};
-
-                    if (!btree.get(key, entry)) {
-                        entry.size_ = size_t((*j).size());
-                        entry.count_ = 1;
-                        entry.last_ = ::time(0);
-                        btree.set(key, entry);
-
-                        if (btree.get(total_key, total_entry)) {
-                            total_entry.size_ += entry.size_;
-                            total_entry.count_++;
-                        }
-                        btree.set(total_key, total_entry);
-                    }
-
-                }
-
-                return;
-            }
 
             entry.size_ = size_t(path.size());
 
@@ -166,19 +191,22 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
                 std::ifstream in(mapping.asString().c_str());
                 std::string s, t;
 
+                bool rescan = false;
+
                 while (in >> s >> t) {
 
                     eckit::PathName p(t);
 
-                    if (s.length() != MD5_DIGEST_LENGTH * 2 || p.dirName() != path.dirName() ) {
+                    if (s.length() != MD5_DIGEST_LENGTH * 2 || not sub_path_of(base, p) ) {
                         eckit::Log::warning() << "CACHE-MANAGER cleanup "
                                               << mapping
                                               << ", invalid entry ["
                                               << s
                                               << "] and ["
                                               << t
-                                              << "], ignoring"
+                                              << "], ignoring but will rebuild index later"
                                               << std::endl;
+                        rescan = true;
                         continue;
                     }
 
@@ -195,21 +223,18 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
 
                 std::sort(result.begin(), result.end(), compare<cache_btree_t::result_type>);
 
-                bool rescan = false;
                 size_t deleted = 0;
                 while (deleted < remove && !result.empty()) {
 
                     cache_btree_t::result_type p = result.front();
                     result.pop_front();
 
-                    if (p.second.last_ == 0) {
-                        // Entry was cleared
+                    if (p.second.last_ == 0) { // entry was cleared, its important to skip else below we retrigger scan
                         continue;
                     }
 
                     std::map<std::string, eckit::PathName>::iterator j = md5_to_path.find(p.first);
-                    if (j == md5_to_path.end()) {
-                        // In the btree, but not file mapping. Note: thate path may exist on disk
+                    if (j == md5_to_path.end()) { // in the btree, but not file mapping. Path may exist on disk
                         rescan = true;
                         continue;
                     }
@@ -260,11 +285,11 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
 
                     // TODO: rebuild index + mapping from directory scan
                     mapping.unlink();
+                    mapping.touch();
+                    rescanCache(base);
                 }
 
             }
-
-
         }
 
         entry.last_ = ::time(0);

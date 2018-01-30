@@ -62,6 +62,7 @@ public: // methods
 protected:
 
     void touch(const PathName& base, const PathName& path) const;
+    void rescanCache(const eckit::PathName& base) const;
 
     bool writable(const PathName& path) const;
 

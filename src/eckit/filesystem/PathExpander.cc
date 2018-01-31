@@ -126,7 +126,7 @@ public:
         ASSERT(key == "ENVVAR");
 
         if(pos == std::string::npos || pos+1 == std::string::npos) {
-            throw eckit::BadValue(std::string("ENVVAR passed but no variable defined: ") + var, Here());
+            throw eckit::BadValue(std::string("PathExpander ENVVAR passed but no variable defined: ") + var, Here());
         }
 
         std::string param = var.substr(pos+1, std::string::npos);
@@ -134,6 +134,11 @@ public:
 
         std::string envvar;
         char* e = ::getenv(param.c_str());
+
+        if(!e) {
+            throw eckit::BadValue(std::string("PathExpander ENVVAR passed undefined environment variable: ") + param, Here());
+        }
+
         if(e) envvar = e;
 
         ECKIT_DEBUG_VAR(envvar);

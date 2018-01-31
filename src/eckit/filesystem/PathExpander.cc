@@ -75,7 +75,7 @@ std::string PathExpander::expand(const std::string& path)
 
         if(incurly.empty()) throw BadValue("PathExpander received empty key");
 
-        size_t pos = incurly.find_first_of(":");
+        size_t pos = incurly.find_first_of("?");
         std::string key = incurly.substr(0, pos);
 
         eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
@@ -119,7 +119,7 @@ public:
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
 
-        size_t pos = var.find_first_of(":");
+        size_t pos = var.find_first_of("?");
         std::string key = var.substr(0, pos);
 
         ASSERT(key == "ENVVAR");
@@ -153,7 +153,7 @@ public:
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
 
-        size_t pos = var.find_first_of(":");
+        size_t pos = var.find_first_of("?");
         std::string key = var.substr(0, pos);
 
         ASSERT(key == "FILE");

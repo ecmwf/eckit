@@ -13,6 +13,7 @@
 
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/testing/Test.h"
@@ -30,17 +31,15 @@ CASE("Expand a CWD")
 {
     std::string s = "{CWD}/tmp/foo";
 
-    char* e;
-    e = ::getenv("CURRENT_TEST_DIR");
+    char* e = ::getenv("CURRENT_TEST_DIR");
 
     EXPECT(e != NULL);
 
     std::string r = std::string(e) + std::string("/tmp/foo");
 
-    LocalPathName ps = LocalPathName(PathExpander::expand(s)).realName();
-    LocalPathName pr = LocalPathName(r).realName();
+    LocalPathName px = PathExpander::expand(s);
 
-    EXPECT( ::strcmp(ps.c_str(), pr.c_str()) == 0 );
+    EXPECT( px.realName() == LocalPathName(r).realName());
 }
 
 CASE("Expand using missing handler")
@@ -52,27 +51,56 @@ CASE("Expand using missing handler")
 
 CASE("Expand an environment variable")
 {
-    std::string s = "{ENVVAR:FOO}/tmp/bar";
+    std::string s = "{ENVVAR?FOO}/tmp/bar";
 
     SYSCALL(::setenv("FOO", "/foobar", 1));
 
     std::string ps = PathExpander::expand(s);
     std::string pr = "/foobar/tmp/bar";
 
-    EXPECT( ps == pr );
+    EXPECT( ps == pr ); // paths dont exist, compare strings
 }
 
-CASE("Expand multiple times")
+static std::string write_file() {  // write file contents
+    char* e = ::getenv("CURRENT_TEST_DIR");
+    ASSERT(e != NULL);
+
+    PathName foo(e); foo /= "foo";
+
+    std::ofstream of(foo.asString().c_str(), std::ofstream::trunc);
+    of << "/hoofa/lomp" << std::endl;
+    of.close();
+
+    return foo.asString();
+}
+
+
+CASE("Expand with contents of a file")
 {
-    std::string s = "{CWD}/baz/{ENVVAR:FOO}/tmp/bar";
+    std::string foo = write_file();
 
-    SYSCALL(::setenv("FOO", "/foobar", 1));
-
-    std::string r = std::string(::getenv("CURRENT_TEST_DIR"))  + std::string("/baz/foobar/tmp/bar");
+    std::string s = "/baz/{FILE?" + foo + "}/tmp/bar";
 
     LocalPathName px = PathExpander::expand(s);
 
-    EXPECT( px == r );
+    std::string r = std::string("/baz/hoofa/lomp/tmp/bar");
+
+    EXPECT( px == LocalPathName(r) ); // paths dont exist, compare strings
+}
+
+CASE("Expand multiple times, multiple paths")
+{
+    std::string foo = write_file();
+
+    SYSCALL(::setenv("FOO", "/foobar", 1));
+
+    std::string s = "/baz/{ENVVAR?FOO}/tmp/bar:{FILE?" + foo + "}/xxx";
+
+    LocalPathName px = PathExpander::expand(s);
+
+    std::string r = std::string("/baz/foobar/tmp/bar:/hoofa/lomp/xxx");
+
+    EXPECT( px == LocalPathName(r) ); // paths dont exist, compare strings
 }
 
 //-----------------------------------------------------------------------------

@@ -121,7 +121,6 @@ public:
 
         size_t pos = var.find_first_of(":");
         std::string key = var.substr(0, pos);
-        ECKIT_DEBUG_VAR(key);
 
         ASSERT(key == "ENVVAR");
 
@@ -130,22 +129,17 @@ public:
         }
 
         std::string param = var.substr(pos+1, std::string::npos);
-        ECKIT_DEBUG_VAR(param);
 
-        std::string envvar;
         char* e = ::getenv(param.c_str());
 
         if(!e) {
             throw eckit::BadValue(std::string("PathExpander ENVVAR passed undefined environment variable: ") + param, Here());
         }
 
-        if(e) envvar = e;
-
-        ECKIT_DEBUG_VAR(envvar);
+        std::string envvar(e);
 
         vars[var] = envvar;
     }
-
 };
 
 static ENVVAR envvar("ENVVAR");

@@ -146,6 +146,45 @@ static ENVVAR envvar("ENVVAR");
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class FILE : public PathExpander {
+public:
+
+    FILE(const std::string& name) : PathExpander(name) {}
+
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
+
+        size_t pos = var.find_first_of(":");
+        std::string key = var.substr(0, pos);
+
+        ASSERT(key == "FILE");
+
+        if(pos == std::string::npos || pos+1 == std::string::npos) {
+            throw eckit::BadValue(std::string("PathExpander FILE passed but no file defined: ") + var, Here());
+
+        }
+
+        PathName p = var.substr(pos+1, std::string::npos);
+
+        std::ifstream in(p.localPath());
+        if (!in) {
+            eckit::Log::error() << "PathExpander read error in " << p << " -- " << eckit::Log::syserr << std::endl;
+            return;
+        }
+
+        char line[4*1024];
+        zero(line);
+        in.getline(line, sizeof(line));
+
+        std::string value(line);
+
+        vars[var] = value;
+    }
+};
+
+static FILE file("FILE");
+
+//----------------------------------------------------------------------------------------------------------------------
+
 class CWDFS : public PathExpander {
 public:
 

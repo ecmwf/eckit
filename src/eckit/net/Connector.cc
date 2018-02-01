@@ -35,26 +35,24 @@ Connector::Connector(const std::string& host, int port) :
 	Log::info() << "Connector::Connector(" << host << "," << port << ")" << std::endl;
 }
 
-Connector::~Connector()
-{
-   try
-   {
-      if (socket_.isConnected())
-      {
-         (*this) << "bye";
-      }
-   } catch (std::exception& e)
-   {
-      Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-      Log::error() << "** Exception is ignored" << std::endl;
-   }
+Connector::~Connector() {
 
+    try
+    {
+        if (socket_.isConnected())
+        {
+            (*this) << "bye";
+        }
+    }
+    catch (std::exception& e)
+    {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is ignored" << std::endl;
+    }
 }
 
 TCPSocket& Connector::socket()
 {
-
-
 	if (!socket_.isConnected())
 	{
 	   try
@@ -107,8 +105,9 @@ void Connector::check()
    }
 }
 
-void Connector::print(std::ostream&) const
+void Connector::print(std::ostream& os) const
 {
+    os << "Connector[host=" << host_ << ",port=" << port_ << "]";
 }
 
 

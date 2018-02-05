@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File Stdio/FileHandle.h
-// Piotr Kuchta - ECMWF April 09
+/// @author Piotr Kuchta
+/// @date   April 09
 
 #ifndef eckit_filesystem_StdFileHandle_h
 #define eckit_filesystem_StdFileHandle_h
@@ -18,26 +18,17 @@
 #include "eckit/io/DataHandle.h"
 
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class StdFileHandle : public DataHandle {
 public:
 
-// -- Contructors
-
 	StdFileHandle(FILE *);
 
-// -- Destructor
-
 	~StdFileHandle();
-
-// -- Overridden methods
-
-	// From DataHandle
 
     virtual Length openForRead();
     virtual void openForWrite(const Length&);
@@ -48,25 +39,15 @@ public:
 	virtual void   close();
 	virtual void   print(std::ostream&) const;
 
-	// From Streamable
-
 	virtual void encode(Stream&) const;
 
-// -- Class methods
+private: // members
 
-
-private:
-
-// -- Members
-
-	FILE* f_;
-
-// -- Class members
+    FILE* f_;
 
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

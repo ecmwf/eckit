@@ -117,15 +117,16 @@ void CacheManagerBase::rescanCache(const eckit::PathName& base) const {
 
 void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName& path) const  {
 
-    if(not writable(base)) {
-        Log::warning() << "CACHE-MANAGER base " << base << " isn't writable, cannot update cache management" << std::endl;
-    }
-
     // 1- Do we do it (bool)
     // 2- where do we store the data (path)
     // 3- What is the threshold (size_t)
 
     if(!maxCacheSize_) return;
+
+    if(not writable(base)) {
+        Log::warning() << "CACHE-MANAGER base " << base << " isn't writable, cannot update cache management" << std::endl;
+    }
+
 
     AutoUmask umask(0);
 

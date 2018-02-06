@@ -193,8 +193,22 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName,
 
         PathName p = PathExpander::expand(path);
 
-        if(p.exists()) {
+        if (p.exists()) {
             roots_.push_back(p);
+        }
+        else {
+            Log::warning() << "CACHE-MANAGER " << Traits::name() << ", " << p << " does not exist" << std::endl;
+            try {
+                AutoUmask umask(0);
+                p.mkdir(0777);
+                Log::warning() << "CACHE-MANAGER " << Traits::name() << ", " << p << " created" << std::endl;
+            }
+            catch ( FailedSystemCall& e ) {
+                // ignore
+            }
+            if (p.exists()) {
+                roots_.push_back(p);
+            }
         }
     }
 
@@ -305,7 +319,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key,
 
             const PathName& root = *j;
 
-            if(not writable(root)) {
+            if (not writable(root)) {
                 Log::debug() << "CACHE-MANAGER root " << root << " isn't writable, skipping... " << std::endl;
                 continue;
             }

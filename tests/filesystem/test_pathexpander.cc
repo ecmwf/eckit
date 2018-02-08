@@ -94,11 +94,11 @@ CASE("Expand multiple times, multiple paths")
 
     SYSCALL(::setenv("TDIR", "testdir", 1));
 
-    std::string s = "/baz/{ENVVAR?FOO}/tmp/bar:{FILE?" + foo + "}/xxx";
+    std::string s = "/baz/{ENVVAR?TDIR}/tmp/bar:{FILE?" + foo + "}/xxx";
 
     LocalPathName px = PathExpander::expand(s);
 
-    std::string r = std::string("/baz/foobar/tmp/bar:/hoofa/lomp/xxx");
+    std::string r = std::string("/baz/testdir/tmp/bar:/hoofa/lomp/xxx");
 
     EXPECT( px == LocalPathName(r) ); // paths dont exist, compare strings
 }

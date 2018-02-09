@@ -74,25 +74,25 @@ public:  // methods
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary)
-                    eckit::Log::info()  << "Test \"" << description() << "\" failed: "
+                    eckit::Log::error()  << "Test \"" << description() << "\" failed: "
                                         << e.what() << " @ " << e.location() << std::endl;
             } catch (eckit::Exception& e) {
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary)
-                    eckit::Log::info() << "Test \"" << description() << "\" failed with unhandled eckit::Exception: "
+                    eckit::Log::error() << "Test \"" << description() << "\" failed with unhandled eckit::Exception: "
                                        << e.what() << " @ " << e.location() << std::endl;
             } catch (std::exception& e) {
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary)
-                    eckit::Log::info() << "Test \"" << description() << "\" failed with unhandled exception: "
+                    eckit::Log::error() << "Test \"" << description() << "\" failed with unhandled exception: "
                                        << e.what() << " @ " << std::endl;
             } catch (...) {
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary)
-                    eckit::Log::info() << "Test \"" << description() << "\" failed with unknown unhandled exception."
+                    eckit::Log::error() << "Test \"" << description() << "\" failed with unknown unhandled exception."
                                        << std::endl;
             }
         }

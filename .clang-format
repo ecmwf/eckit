@@ -1,4 +1,19 @@
 Language:        Cpp
 BasedOnStyle:  Google
 ColumnLimit:     120
+IndentWidth: 4
+TabWidth: 4
 AccessModifierOffset: -2
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterEnum:       true
+  AfterClass:      false
+  AfterStruct:     false
+  AfterUnion:      false
+  AfterFunction:   false
+  AfterNamespace:  false
+  # AfterExternBlock: true
+  BeforeCatch:     true
+  BeforeElse:      true
+BreakConstructorInitializers: AfterColon
+SortIncludes: true

@@ -1,10 +1,9 @@
 Language:        Cpp
 BasedOnStyle:  Google
-ColumnLimit:     120
-IndentWidth: 4
-TabWidth: 4
-AccessModifierOffset: -2
-BreakBeforeBraces: Custom
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: true
+AllowShortBlocksOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Inline
 BraceWrapping:
   AfterEnum:       true
   AfterClass:      false
@@ -15,5 +14,16 @@ BraceWrapping:
   # AfterExternBlock: true
   BeforeCatch:     true
   BeforeElse:      true
+BreakBeforeBraces: Custom
+BreakBeforeInheritanceComma: true
 BreakConstructorInitializers: AfterColon
+BreakBeforeTernaryOperators: true
+ColumnLimit:     120
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 4
+CompactNamespaces: false
+IndentWidth: 4
+MaxEmptyLinesToKeep: 2
+PointerAlignment: Left
+TabWidth: 4
 SortIncludes: true

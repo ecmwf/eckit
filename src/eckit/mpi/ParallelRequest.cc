@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <mpi.h>
+#include "eckit/mpi/Parallel.h"
 #include "eckit/mpi/ParallelRequest.h"
 
 namespace eckit {

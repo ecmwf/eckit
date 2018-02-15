@@ -330,7 +330,6 @@ log/FileTarget.h
 log/FileTarget.cc
 log/Log.h
 log/Log.cc
-log/OStreamHandle.h
 log/Plural.h
 log/Progress.h
 log/Progress.cc

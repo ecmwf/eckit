@@ -22,11 +22,9 @@
 #include "eckit/log/Log.h"
 #include "eckit/os/Stat.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 ClassSpec FileHandle::classSpec_ = {&DataHandle::classSpec(),"FileHandle",};
 Reanimator<FileHandle> FileHandle::reanimator_;
@@ -346,7 +344,5 @@ DataHandle* FileHandle::clone() const
 {
     return new FileHandle(name_, overwrite_);
 }
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit

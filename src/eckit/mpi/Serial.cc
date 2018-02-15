@@ -145,6 +145,11 @@ void Serial::barrier() const {
     return;
 }
 
+Request Serial::iBarrier() const
+{
+    return Request();
+}
+
 void Serial::abort(int) const {
     // Don't use std::abort as it would raise SIGABRT.
     // MPI_Abort also does not raise SIGABRT

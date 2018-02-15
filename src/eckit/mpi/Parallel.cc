@@ -232,6 +232,13 @@ void Parallel::barrier() const
     MPI_CALL( MPI_Barrier(comm_) );
 }
 
+Request Parallel::iBarrier() const
+{
+    Request req( new ParallelRequest() );
+    MPI_CALL( MPI_Ibarrier(comm_, toRequest(req)) );
+    return req;
+}
+
 void Parallel::abort(int errorcode) const
 {
     MPI_CALL( MPI_Abort(comm_, errorcode) );

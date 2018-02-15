@@ -36,6 +36,8 @@ public: // methods
 
     virtual bool isReceive() const = 0;
 
+    virtual bool test() { return true; }
+
 private: // methods
 
     virtual void print(std::ostream&) const;

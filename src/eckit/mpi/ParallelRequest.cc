@@ -8,10 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include <mpi.h>
 #include "eckit/mpi/ParallelRequest.h"
 
 namespace eckit {
 namespace mpi {
+
+
+void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc);
+#define MPI_CALL(a) MPICall(a,#a,Here())
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -28,6 +33,12 @@ void ParallelRequest::print(std::ostream& os) const {
 
 int ParallelRequest::request() const {
     return MPI_Request_c2f(request_);
+}
+
+bool ParallelRequest::test() {
+    int requestCompleted;
+    MPI_CALL( MPI_Test(&request_, &requestCompleted, MPI_STATUS_IGNORE) );
+    return requestCompleted;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

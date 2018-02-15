@@ -102,7 +102,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static inline void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc)
+void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc)
 {
     if (code != MPI_SUCCESS) {
 

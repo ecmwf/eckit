@@ -29,6 +29,8 @@ public:
 
     virtual int request() const = 0;
 
+    virtual bool test() = 0;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -62,6 +64,8 @@ public: // methods
     /// Returns this request interpreted as a int by the underlying implementation
     /// Use only for interfacing with Fortran
     int request() const;
+
+    bool test();
 
 private: // methods
 

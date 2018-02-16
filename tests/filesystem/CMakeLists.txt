@@ -14,6 +14,11 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_asynchandle
                   SOURCES     test_asynchandle.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_filesystem_atomic_file_update
+                  SOURCES     test_atomic_file_update.cc
+                  LIBS        eckit )
+
+
 ecbuild_add_test( TARGET      eckit_test_filesystem_localpathname
                   SOURCES     test_localpathname.cc
                   LIBS        eckit )

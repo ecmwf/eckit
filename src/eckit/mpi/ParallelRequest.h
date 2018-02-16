@@ -38,6 +38,8 @@ private: // methods
 
     virtual int request() const;
 
+    virtual bool test();
+
 private: // members
 
     friend class Parallel;

@@ -45,6 +45,8 @@ protected:  // methods
 
     virtual void barrier() const;
 
+    virtual Request iBarrier() const;
+
     virtual void abort(int errorcode = -1) const;
 
     virtual Status wait(Request&) const;

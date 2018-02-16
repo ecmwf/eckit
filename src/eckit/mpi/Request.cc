@@ -26,6 +26,8 @@ public:
 
     virtual int request() const { return -1; }
 
+    virtual bool test() { return true; }
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -62,6 +64,10 @@ Request& Request::operator=(const Request& s) {
 
 int Request::request() const {
     return content_->request();
+}
+
+bool Request::test() {
+    return content_->test();
 }
 
 void Request::print(std::ostream& out) const {

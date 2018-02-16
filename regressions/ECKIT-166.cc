@@ -6,6 +6,7 @@ BUG ECKIT-166
 */
 
 #include <iostream>
+
 #include "eckit/runtime/Main.h"
 #include "eckit/mpi/Comm.h"
 

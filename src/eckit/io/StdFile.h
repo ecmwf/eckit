@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File StdFile.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 96
 
 #ifndef eckit_StdFile_h
 #define eckit_StdFile_h
@@ -19,11 +20,10 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // Simple wrapper around a stdio file
 
@@ -44,8 +44,7 @@ private: // members
 
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

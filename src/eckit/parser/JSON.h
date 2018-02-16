@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   JSON.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date   Aug 2011

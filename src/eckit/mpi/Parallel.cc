@@ -102,7 +102,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static inline void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc)
+void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc)
 {
     if (code != MPI_SUCCESS) {
 
@@ -230,6 +230,13 @@ size_t Parallel::size() const
 void Parallel::barrier() const
 {
     MPI_CALL( MPI_Barrier(comm_) );
+}
+
+Request Parallel::iBarrier() const
+{
+    Request req( new ParallelRequest() );
+    MPI_CALL( MPI_Ibarrier(comm_, toRequest(req)) );
+    return req;
 }
 
 void Parallel::abort(int errorcode) const

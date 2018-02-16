@@ -8,101 +8,84 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/FileHandle.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   May 1996
 
 #ifndef eckit_filesystem_FileHandle_h
 #define eckit_filesystem_FileHandle_h
 
-#include "eckit/io/DataHandle.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/memory/ScopedPtr.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
 class FileHandle : public DataHandle {
+
 public:
+  FileHandle(const std::string&, bool = false);
+  FileHandle(Stream&);
 
-// -- Contructors
+  ~FileHandle();
 
-	FileHandle(const std::string&,bool = false);
-	FileHandle(Stream&);
+  void advance(const Length&);
 
-// -- Destructor
+  const std::string& path() const { return name_; }
 
-	~FileHandle();
+  // -- Overridden methods
 
-// --  Methods
+  // From DataHandle
 
-	void advance(const Length&);
-	const std::string& path() const { return name_; }
+  virtual Length openForRead();
+  virtual void openForWrite(const Length&);
+  virtual void openForAppend(const Length&);
 
-// -- Overridden methods
+  virtual long read(void*, long);
+  virtual long write(const void*, long);
+  virtual void close();
+  virtual void flush();
+  virtual void rewind();
+  virtual void print(std::ostream&) const;
+  virtual Length estimate();
+  virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true);
+  virtual Offset position();
+  virtual bool isEmpty() const;
+  virtual void restartReadFrom(const Offset& from);
+  virtual void restartWriteFrom(const Offset& from);
+  virtual void toRemote(Stream&) const;
+  virtual void cost(std::map<std::string, Length>&, bool) const;
+  virtual std::string title() const;
+  virtual bool moveable() const { return true; }
 
-	// From DataHandle
+  virtual Offset seek(const Offset&);
+  virtual void skip(const Length&);
 
-	virtual Length openForRead();
-	virtual void   openForWrite(const Length&);
-	virtual void   openForAppend(const Length&);
+  virtual DataHandle* clone() const;
 
-	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-    virtual void   close();
-    virtual void   flush();
-	virtual void   rewind();
-	virtual void   print(std::ostream&) const;
-	virtual Length estimate();
-	virtual Length saveInto(DataHandle&,TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true);
-	virtual Offset position();
-	virtual bool isEmpty() const;
-	virtual void restartReadFrom(const Offset& from);
-	virtual void restartWriteFrom(const Offset& from);
-    virtual void toRemote(Stream&) const;
-    virtual void cost(std::map<std::string,Length>&, bool) const;
-    virtual std::string title() const;
-    virtual bool moveable() const { return true; }
+  // From Streamable
 
-    virtual Offset seek(const Offset&);
-    virtual void skip(const Length&);
+  virtual void encode(Stream&) const;
+  virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
-    virtual DataHandle* clone() const;
+  // -- Class methods
 
-	// From Streamable
+  static const ClassSpec& classSpec() { return classSpec_; }
 
-	virtual void encode(Stream&) const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+private:  // members
+  std::string name_;
+  bool overwrite_;
+  FILE* file_;
+  bool read_;
+  eckit::ScopedPtr<Buffer> buffer_;
 
-// -- Class methods
+private:  // methods
+  void open(const char*);
 
-	static  const ClassSpec&  classSpec()        { return classSpec_;}
-
-private:
-
-// -- Members
-
-	std::string              name_;
-	bool                overwrite_;
-	FILE*               file_;
-	bool                read_;
-    eckit::ScopedPtr<Buffer>    buffer_;
-
-// -- Methods
-
-	void open(const char*);
-
-// -- Class members
-
-    static  ClassSpec               classSpec_;
-	static  Reanimator<FileHandle>  reanimator_;
-
+  static ClassSpec classSpec_;
+  static Reanimator<FileHandle> reanimator_;
 };
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -75,7 +75,7 @@ std::string PathExpander::expand(const std::string& path)
 
         if(incurly.empty()) throw BadValue("PathExpander received empty key");
 
-        size_t pos = incurly.find_first_of(":");
+        size_t pos = incurly.find_first_of("?");
         std::string key = incurly.substr(0, pos);
 
         eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
@@ -119,31 +119,69 @@ public:
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
 
-        size_t pos = var.find_first_of(":");
+        size_t pos = var.find_first_of("?");
         std::string key = var.substr(0, pos);
-        ECKIT_DEBUG_VAR(key);
 
         ASSERT(key == "ENVVAR");
 
         if(pos == std::string::npos || pos+1 == std::string::npos) {
-            throw eckit::BadValue(std::string("ENVVAR passed but no variable defined: ") + var, Here());
+            throw eckit::BadValue(std::string("PathExpander ENVVAR passed but no variable defined: ") + var, Here());
         }
 
         std::string param = var.substr(pos+1, std::string::npos);
-        ECKIT_DEBUG_VAR(param);
 
-        std::string envvar;
         char* e = ::getenv(param.c_str());
-        if(e) envvar = e;
 
-        ECKIT_DEBUG_VAR(envvar);
+        if(!e) {
+            throw eckit::BadValue(std::string("PathExpander ENVVAR passed undefined environment variable: ") + param, Here());
+        }
+
+        std::string envvar(e);
 
         vars[var] = envvar;
     }
-
 };
 
 static ENVVAR envvar("ENVVAR");
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class FILE : public PathExpander {
+public:
+
+    FILE(const std::string& name) : PathExpander(name) {}
+
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
+
+        size_t pos = var.find_first_of("?");
+        std::string key = var.substr(0, pos);
+
+        ASSERT(key == "FILE");
+
+        if(pos == std::string::npos || pos+1 == std::string::npos) {
+            throw eckit::BadValue(std::string("PathExpander FILE passed but no file defined: ") + var, Here());
+
+        }
+
+        PathName p = var.substr(pos+1, std::string::npos);
+
+        std::ifstream in(p.localPath());
+        if (!in) {
+            eckit::Log::error() << "PathExpander read error in " << p << " -- " << eckit::Log::syserr << std::endl;
+            return;
+        }
+
+        char line[4*1024];
+        zero(line);
+        in.getline(line, sizeof(line));
+
+        std::string value(line);
+
+        vars[var] = value;
+    }
+};
+
+static FILE file("FILE");
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -12,19 +12,14 @@
 
 #include "eckit/filesystem/TmpFile.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-static PathName tmp()
-{
-    const char *tmpdir = ::getenv("TMPDIR");
-	if(!tmpdir)
-	{
-        tmpdir = "/tmp";
-    }
+static PathName tmp() {
+    const char* tmpdir = ::getenv("TMPDIR");
+    if (!tmpdir) { tmpdir = "/tmp"; }
 
     long max = pathconf(tmpdir, _PC_PATH_MAX);
     char path[max];
@@ -41,16 +36,12 @@ static PathName tmp()
 }
 
 
-TmpFile::TmpFile(): PathName(tmp())
-{
-}
+TmpFile::TmpFile() : PathName(tmp()) {}
 
-TmpFile::~TmpFile()
-{
+TmpFile::~TmpFile() {
     unlink();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

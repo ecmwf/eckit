@@ -81,13 +81,16 @@ public:  // methods
     /// @brief MPI barrier for this communicator
     virtual void barrier() const = 0;
 
+    /// @brief MPI non-blocking barrier for this communicator
+    virtual Request iBarrier() const = 0;
+
     /// @brief MPI abort for this communicator
     virtual void abort(int errorcode = -1) const = 0;
 
     /// @brief Wait for Request to be completed, ignoring the return status
     virtual Status wait(Request&) const = 0;
 
-    /// @brief Probe for incomming messages
+    /// @brief Probe for incoming messages (blocking)
     virtual Status probe(int source, int tag) const = 0;
 
     virtual int anySource() const = 0;

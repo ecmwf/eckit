@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -26,12 +26,12 @@ CASE( "TestMutex" )
     Mutex* m = 0;
 
     EXPECT_NO_THROW( m = new Mutex() );
-    
+
     EXPECT_NO_THROW( m->lock() );
-    
+
     EXPECT_NO_THROW( m->unlock() );
 
-    delete m;   
+    delete m;
 }
 
 

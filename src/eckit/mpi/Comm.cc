@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -168,7 +168,7 @@ public:
       AutoLock<Mutex> lock(mutex_);
       factories.erase(name);
   }
-  
+
   CommFactory& getFactory(const std::string& name) {
 
       AutoLock<Mutex> lock(mutex_);
@@ -184,16 +184,16 @@ public:
 
       throw eckit::SeriousBug(std::string("No CommFactory called ") + name);
   }
-  
-  static CommFactories& instance() { 
+
+  static CommFactories& instance() {
     static CommFactories obj;
     return obj;
   }
- 
+
 private:
-  
+
   CommFactories() {}
-   
+
   std::map<std::string, CommFactory*> factories;
   eckit::Mutex mutex_;
 };

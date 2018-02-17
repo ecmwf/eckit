@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -38,7 +38,7 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
 
     int oflags = O_RDWR|O_CREAT;
     int mflags = PROT_READ|PROT_WRITE;
-    
+
     if(itemCount == 0) {
         oflags = O_RDWR;
         //mflags = PROT_READ;
@@ -88,7 +88,7 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
         lseek(fd_, size_ - 1, SEEK_SET);
         SYSCALL(::write(fd_,&c,1));
     }
-    
+
     addr_ = MMap::mmap(0, size_, mflags, MAP_SHARED, fd_, 0 );
     if(addr_ == MAP_FAILED) {
         Log::error() << "open(" << path << ')'

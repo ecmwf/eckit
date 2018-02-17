@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -42,7 +42,7 @@ static StaticMutex local_mutex;
 URIManager::URIManager(const std::string& name):
         name_(name)
 {
-    
+
     AutoLock<StaticMutex> lock(local_mutex);
     URIManagerMap& m = URIManagerRegistry::instance().map();
 
@@ -60,12 +60,12 @@ URIManager::~URIManager()
 
 URIManager& URIManager::lookUp(const std::string& name)
 {
- 
+
     AutoLock<StaticMutex> lock(local_mutex);
     URIManagerMap& m = URIManagerRegistry::instance().map();
 
     std::map<std::string, URIManager*>::const_iterator j = m.find(name);
-    
+
     Log::info() << "Looking for URIManager [" << name << "]" << std::endl;
 
     if (j == m.end())
@@ -90,19 +90,19 @@ void URIManager::print(std::ostream& s) const
 
 
 class LocalFileManager : public URIManager {
-      
+
     virtual bool exists(const URI& f) {
         return PathName(f.name()).exists();
     }
-    
+
     virtual DataHandle*  newWriteHandle(const URI& f) {
         return PathName(f.name()).fileHandle();
     }
-    
+
     virtual DataHandle*  newReadHandle(const URI& f) {
         return PathName(f.name()).fileHandle();
     }
-    
+
     virtual DataHandle*  newReadHandle(const URI& f,const OffsetList& ol, const LengthList& ll) {
         return PathName(f.name()).partHandle(ol,ll);
     }
@@ -114,19 +114,19 @@ public:
 
 
 class MarsFSManager : public URIManager {
-  
+
     virtual bool exists(const URI& f) {
         return PathName(f.scheme() + ":" + f.name()).exists();
     }
-    
+
     virtual DataHandle*  newWriteHandle(const URI& f) {
         return PathName(f.scheme() + ":" + f.name()).fileHandle();
     }
-    
+
     virtual DataHandle*  newReadHandle(const URI& f) {
         return PathName(f.scheme() + ":" + f.name()).fileHandle();
     }
-    
+
     virtual DataHandle*  newReadHandle(const URI& f,const OffsetList& ol, const LengthList& ll) {
         return PathName(f.scheme() + ":" + f.name()).partHandle(ol,ll);
     }

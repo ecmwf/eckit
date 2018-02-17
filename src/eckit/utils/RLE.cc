@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -323,12 +323,12 @@ Stream& RLEDIFFread(Stream& s,OutputIterator result,T* dummy)
 	s >> diff;
 
 	if(diff) {
-		std::vector<T> tmp; 
+		std::vector<T> tmp;
 		RLEread(s, std::back_inserter(tmp),dummy);
 		DIFFdecode(tmp.begin(),tmp.end(),result);
 	}
 	else {
-		std::vector<T> tmp; 
+		std::vector<T> tmp;
 		s >> tmp;
 		std::copy(tmp.begin(),tmp.end(),result);
 	}

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -32,20 +32,20 @@ CASE ( "substitute" ) {
     m["stream"] = "oper";
 
     string in ( "{class}:none:{stream}" );
-    
+
     string out = StringTools::substitute(in,m);
-    
-    EXPECT( out == "od:none:oper" );    
+
+    EXPECT( out == "od:none:oper" );
 }
 
 CASE ( "listVariables" ) {
     string in ( "{class}:none:{stream}" );
 
     StringList out = StringTools::listVariables(in);
-    
-    EXPECT( out.size() == 2 );    
-    EXPECT( out[0] == "class" );    
-    EXPECT( out[1] == "stream" );    
+
+    EXPECT( out.size() == 2 );
+    EXPECT( out[0] == "class" );
+    EXPECT( out[1] == "stream" );
 }
 
 CASE ( "startsWith" ) {

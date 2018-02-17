@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -38,34 +38,34 @@ public:
 	~ClassExtent();
 
 // -- Methods
-	
+
 	static size_t size();
 
 public: // methods
-    
+
 	static void callAll(void (T::*)());
 	static void callAll(void (T::*)() const);
 
-	template<class P> 
+	template<class P>
 	static void callAll(void (T::*)(P),P);
 
-	template<class P> 
+	template<class P>
 	static void callAll(void (T::*)(P) const,P);
 
-	template<class P1,class P2> 
+	template<class P1,class P2>
 	static void callAll(void (T::*)(P1,P2),P1,P2);
 
-	template<class P> 
+	template<class P>
 	static void callAll(void (T::*)(P&) const,P&);
 
-	template<class P> 
+	template<class P>
 	static void callAll(void (T::*)(P&),P&);
 
-	template<class P1,class P2> 
+	template<class P1,class P2>
 	static void callAll(void (T::*)(P1&,P2&),P1&,P2&);
 
 private: // members
-    
+
 	struct Extent {
         typedef std::map<ClassExtent<T>*,T*,std::less<ClassExtent<T>*> > Map;
 		Mutex   mutex_;
@@ -74,7 +74,7 @@ private: // members
 		Extent();
 		~Extent();
 	};
-    
+
 	static Extent extent_;
 
 };
@@ -118,7 +118,7 @@ size_t ClassExtent<T>::size()
 	return extent_.map_.size();
 }
 
-template<class T>         
+template<class T>
 void ClassExtent<T>::callAll(void (T::*proc)())
 {
 	ASSERT(extent_.inited_);
@@ -134,7 +134,7 @@ void ClassExtent<T>::callAll(void (T::*proc)())
 
 }
 
-template<class T>         
+template<class T>
 void ClassExtent<T>::callAll(void (T::*proc)() const)
 {
 	ASSERT(extent_.inited_);
@@ -148,7 +148,7 @@ void ClassExtent<T>::callAll(void (T::*proc)() const)
 		((*i).second->*proc)();
 }
 
-template<class T> template<class P> 
+template<class T> template<class P>
 void ClassExtent<T>::callAll(void (T::*proc)(P),P arg)
 {
 	ASSERT(extent_.inited_);
@@ -163,7 +163,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P),P arg)
 		((*i).second->*proc)(arg);
 }
 
-template<class T> template<class P> 
+template<class T> template<class P>
 void ClassExtent<T>::callAll(void (T::*proc)(P) const,P arg)
 {
 	ASSERT(extent_.inited_);
@@ -177,7 +177,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P) const,P arg)
 		((*i).second->*proc)(arg);
 }
 
-template<class T> template<class P1,class P2> 
+template<class T> template<class P1,class P2>
 void ClassExtent<T>::callAll(void (T::*proc)(P1,P2),P1 arg1,P2  arg2)
 {
 	ASSERT(extent_.inited_);
@@ -192,7 +192,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1,P2),P1 arg1,P2  arg2)
 		((*i).second->*proc)(arg1,arg2);
 }
 
-template<class T> template<class P> 
+template<class T> template<class P>
 void ClassExtent<T>::callAll(void (T::*proc)(P&),P& arg)
 {
 	ASSERT(extent_.inited_);
@@ -206,7 +206,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P&),P& arg)
 		((*i).second->*proc)(arg);
 }
 
-template<class T> template<class P> 
+template<class T> template<class P>
 void ClassExtent<T>::callAll(void (T::*proc)(P&) const,P& arg)
 {
 	ASSERT(extent_.inited_);
@@ -220,7 +220,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P&) const,P& arg)
 		((*i).second->*proc)(arg);
 }
 
-template<class T> template<class P1,class P2> 
+template<class T> template<class P1,class P2>
 void ClassExtent<T>::callAll(void (T::*proc)(P1&,P2&),P1& arg1,P2&  arg2)
 {
 	ASSERT(extent_.inited_);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -69,7 +69,7 @@ DataHandle*  URI::newReadHandle() const
     return URIManager::lookUp(scheme_).newReadHandle(*this);
 }
 
-void URI::print(std::ostream& s) const 
+void URI::print(std::ostream& s) const
 {
     s << "URI[scheme=" << scheme_ << ",name=" << name_ << "]";
 }

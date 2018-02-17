@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -40,7 +40,7 @@ public: // types
     typedef long long value_t;
 
 public: // methods
-	
+
 	friend std::ostream& operator<<(std::ostream& s,const Length& x)
 		{ return s << x.value_; }
 
@@ -59,13 +59,13 @@ public: // methods
 
 public: // operators
 
-	Length& operator=(const Length& other) 
+	Length& operator=(const Length& other)
 		{ value_ = other.value_; return *this;}
 
 	Length operator+(const Length& other) const
 		{ return Length(value_ + other.value_);}
 
-	Length& operator+=(const Length& other) 
+	Length& operator+=(const Length& other)
 		{ value_ += other.value_; return *this;}
 
 	bool operator==(const Length& other) const
@@ -85,7 +85,7 @@ public: // operators
 private: // members
 
     value_t value_;
-	
+
 	friend class Offset;
 };
 

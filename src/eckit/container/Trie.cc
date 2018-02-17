@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -64,7 +64,7 @@ bool Trie<T>::contains(const std::string& key) const {
 template<class T>
 bool Trie<T>::remove(const unsigned char* key)
 {
-	if(*key == 0) { 
+	if(*key == 0) {
         set_ = 0;
         return (kids_.size() == 0); // Remove me if size if 0
 	}
@@ -94,7 +94,7 @@ bool Trie<T>::remove(const unsigned char* key)
 template<class T>
 Trie<T>* Trie<T>::find(const unsigned char* key, bool make)
 {
-	if(*key == 0) 
+	if(*key == 0)
 		return this;
 
     int pos = int(*key) - int(from_);
@@ -116,7 +116,7 @@ Trie<T>* Trie<T>::find(const unsigned char* key, bool make)
 				from_ = *key;
 			}
 			else if(pos<0)  // Insert before
-			{ 
+			{
                 sz = kids_.size() - pos;
                 from_  = *key;
 				from   = -pos;

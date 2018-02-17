@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -39,7 +39,7 @@ DateTime::DateTime(const std::string& s)
 	std::vector<std::string> result;
 
 	parse(s,result);
-	
+
 	ASSERT(result.size() == 2);
 	date_ = Date(result[0]);
 	time_ = Time(result[1]);
@@ -76,7 +76,7 @@ std::string DateTime::format( const std::string& fmt )
           mm += 12;
           --yy;
       }
-      
+
       convert.tm_wday  = (date().day() + (13 * mm - 27)/5 + yy + yy/4 - yy/100 + yy/400) % 7;
       convert.tm_sec = time().seconds();
       convert.tm_min = time().minutes();
@@ -90,7 +90,7 @@ std::string DateTime::format( const std::string& fmt )
 
       return out.str();
 }
-  
+
 DateTime::DateTime(time_t thetime)
 {
 
@@ -148,7 +148,7 @@ DateTime DateTime::operator+(const Second& s) const
 	Date d = date();
 	long t = time();
 	d += long(s) / (24 * 3600);
-	t += long(s) % (24 * 3600); 
+	t += long(s) % (24 * 3600);
 	while (t >= 3600 * 24)
 	{
 		d += 1;
@@ -162,7 +162,7 @@ DateTime DateTime::round(const Second& rnd) const
 {
 	long long seconds = double(date_.julian_) * 24.0 * 3600 + Second(time_);
 	seconds = (seconds / long(rnd)) * rnd;
-	
+
 	long	d = seconds / (3600 * 24);
 	Second	t = seconds % (3600 * 24);
 

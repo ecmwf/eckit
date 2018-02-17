@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -111,7 +111,7 @@ public:
 };
 std::ostream& operator<<(std::ostream& s, const ClusterDisk& d)
 {
-	s << "ClusterDisk[" << d.node_ << "," << d.type_ << "," << d.path_ << "," << (::time(0) - d.lastSeen_) << 
+	s << "ClusterDisk[" << d.node_ << "," << d.type_ << "," << d.path_ << "," << (::time(0) - d.lastSeen_) <<
         "," << (d.offLine_ ? "off" : "on") << "-line" <<
         "]";
 	return s;
@@ -418,13 +418,13 @@ std::string ClusterDisks::node(const std::string& path)
 	if(j == clusterDisks->end())
 	{
         // Look for local names
-       
+
         // This is ineficent, but is should be called very rarely
 
         if(LocalPathName(path).exists())
             return NodeInfo::thisNode().node();
 
-        
+
         LocalPathName df("~/etc/disks/df");
         std::ifstream in(df.localPath());
         char line[1024];
@@ -451,7 +451,7 @@ std::string ClusterDisks::node(const std::string& path)
             }
         }
 
-    
+
         std::ostringstream os;
         os << "No node found for [" << path << "]";
         throw SeriousBug(os.str());

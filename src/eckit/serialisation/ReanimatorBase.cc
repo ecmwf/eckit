@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -22,7 +22,7 @@ namespace eckit {
 
 typedef std::map<std::string,ReanimatorBase*,std::less<std::string> > Map;
 
-// This trick garanty than a std::map is created 
+// This trick garanty than a std::map is created
 
 static Map& theMap()
 {
@@ -49,9 +49,9 @@ ReanimatorBase::UnknowClass::UnknowClass(const std::string& w):
 {
 }
 
-ReanimatorBase::NotSubClass::NotSubClass(const std::string& found, 
+ReanimatorBase::NotSubClass::NotSubClass(const std::string& found,
 	const std::string& clss):
-	Exception(std::string("Not a sub class: object ") + found + 
+	Exception(std::string("Not a sub class: object ") + found +
 		std::string(" found, but it is not subclass of ") + clss)
 {
 }
@@ -60,8 +60,8 @@ ReanimatorBase::NotSubClass::NotSubClass(const std::string& found,
 Streamable* ReanimatorBase::reanimate(Stream& s,const ClassSpec *c)
 {
 
-	if(!s.next()) return 0;	
-	
+	if(!s.next()) return 0;
+
 	std::string name;
 
 	s >> name;
@@ -79,7 +79,7 @@ Streamable* ReanimatorBase::reanimate(Stream& s,const ClassSpec *c)
 		const ClassSpec *a = &r->spec_;
 		while(a != 0 && a != c)
 			a = a->superClass_;
-					
+
 		if(a == 0) throw NotSubClass(name,c->name_);
 	}
 

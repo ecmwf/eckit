@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -47,7 +47,7 @@ class MoverHandleThread : public Thread {
 	{
 	}
 
-	void run() 
+	void run()
 	{
 		{
 			AutoLock<Mutex> lock(mutex_);
@@ -125,7 +125,7 @@ void MoverHandle::fail(const std::string& error)
 	fail_  = true;
 }
 
-Length MoverHandle::openForRead() 
+Length MoverHandle::openForRead()
 {
 
 	MoverHandleThread* t = new MoverHandleThread(*this, true);

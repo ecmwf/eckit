@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -34,10 +34,10 @@ public:
 
 // -- Destructor
 
-	virtual ~JavaAgent(); 
+	virtual ~JavaAgent();
 
 // -- Methods
-	
+
 	void startObject(const std::string&);
 	void endObject();
 	eckit::Stream& stream()  { return stream_; }
@@ -51,7 +51,7 @@ public:
 	virtual const eckit::ReanimatorBase& reanimator() const { return reanimator_; }
 
 // -- Class methods
-    
+
     static  const eckit::ClassSpec&  classSpec()        { return classSpec_;}
 	static void serve(eckit::Stream&,std::istream&,std::ostream&);
 
@@ -61,11 +61,11 @@ protected: // members
 	std::string  user_;
 
 protected: // methods
-	
-	virtual void print(std::ostream&) const = 0; 	
+
+	virtual void print(std::ostream&) const = 0;
 
 private: // members
-	
+
     static  eckit::ClassSpec               classSpec_;
 	static eckit::Reanimator<JavaAgent>  reanimator_;
 

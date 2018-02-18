@@ -1,9 +1,15 @@
 list( APPEND eckit_geometry_srcs
+EllipsoidOfRevolution.cc
+EllipsoidOfRevolution.h
 KPoint.h
 Point2.cc
 Point2.h
 Point3.cc
 Point3.h
+Sphere.cc
+Sphere.h
+SphereT.h
+UnitSphere.h
 )
 
 ecbuild_add_library(TARGET eckit_geometry

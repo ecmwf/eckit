@@ -8,51 +8,39 @@
  * does it submit to any jurisdiction.
  */
 
-// File TimeStamp.h
-// Baudouin Raoult - ECMWF Jul 96
+/// @author Baudouin Raoul
+/// @date   Jul 96
 
-#ifndef eckit_TimeStamp_h
-#define eckit_TimeStamp_h
+#ifndef eckit_log_TimeStamp_h
+#define eckit_log_TimeStamp_h
 
-#include "eckit/eckit.h"
+#include <time.h>
 
-
-//-----------------------------------------------------------------------------
+#include <string>
+#include <iosfwd>
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class TimeStamp {
-public:
 
-// -- Contructors
+public: // methods
 
 	TimeStamp(const std::string& = defaultFormat_);
 	TimeStamp(time_t,const std::string& = defaultFormat_);
-
-// -- Operators
 
 	operator std::string() const;
 
 	friend std::ostream& operator<<(std::ostream&,const TimeStamp&);
 
-private:
-
-// There is no private copy constructor as this will confuse g++ 4.x.x
-
-// -- Members
+private: // members
 
 	time_t        time_;
 	const std::string& format_;
 
-// -- Class members
-
 	static const char* defaultFormat_;
 };
 
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

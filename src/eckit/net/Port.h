@@ -8,41 +8,27 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   Port.h
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
 /// @date   Jul 96
 
-#ifndef eckit_Port_h
-#define eckit_Port_h
+#ifndef eckit_net_Port_h
+#define eckit_net_Port_h
 
-#include "eckit/eckit.h"
+#include <string>
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
 class Port {
-public:
-
-// -- Contructors
-
-	Port(const std::string&, int );
-
-// -- Operators
+public:  // methods
+    Port(const std::string&, int);
 
     operator int() const { return port_; }
 
-private:
-
-// There is no private copy constructor as this will confuse g++ 4.x.x
-
-// -- Members
-
-	int   port_;
+private:  // members
+    int port_;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

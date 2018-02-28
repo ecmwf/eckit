@@ -45,6 +45,11 @@ Buffer::~Buffer()
     destroy();
 }
 
+void Buffer::zero()
+{
+    ::memset(buffer_, 0, size_);
+}
+
 void Buffer::create()
 {
     buffer_ = MemoryPool::largeAllocate(size_);

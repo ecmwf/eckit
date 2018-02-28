@@ -23,51 +23,45 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
-// A simple class to implement buffers
+/// Simple class to implement static size memory buffers
 
 class Buffer : private NonCopyable {
-
-public: // methods
-
+public:  // methods
     Buffer(size_t size);
     Buffer(const std::string& s);
     Buffer(const char*, size_t size);
 
     ~Buffer();
 
-    operator char*()                 { return static_cast<char*>(buffer_); }
-    operator const char*() const     { return static_cast<const char*>(buffer_); }
+    operator char*() { return static_cast<char*>(buffer_); }
+    operator const char*() const { return static_cast<const char*>(buffer_); }
 
-    operator void*()                 { return buffer_; }
-    operator const void*() const     { return buffer_; }
+    operator void*() { return buffer_; }
+    operator const void*() const { return buffer_; }
 
     void* data() { return buffer_; }
     const void* data() const { return buffer_; }
 
     size_t size() const { return size_; }
 
+    void zero();
+
     // void resize(size_t size);
 
     // void swap(Buffer& rhs);
 
-protected: // methods
-
+protected:  // methods
     void create();
     void destroy();
 
     void copy(const std::string& s);
-    void copy(const char*,size_t size);
+    void copy(const char*, size_t size);
 
-private: // members
-
-    void*  buffer_;
+private:  // members
+    void* buffer_;
     size_t size_;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

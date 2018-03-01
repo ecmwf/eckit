@@ -25,6 +25,7 @@ namespace eckit {
 SysLog::SysLog(const std::string& msg, int msgid, Facility f, Severity s) :
     facility_(f),
     severity_(s),
+    appName_(Main::instance().name()),
     msgid_(msgid),
     msg_(msg)
 {
@@ -38,7 +39,12 @@ std::string SysLog::fqdn() const
 
 std::string SysLog::appName() const
 {
-    return Main::instance().name();
+    return appName_;
+}
+
+void SysLog::appName(const std::string& app)
+{
+    appName_ = app;
 }
 
 int SysLog::procid() const {

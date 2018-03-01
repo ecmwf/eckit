@@ -81,6 +81,7 @@ public:  // methods
     std::string fqdn() const;
 
     std::string appName() const;
+    void appName(const std::string&);
 
     /// Not necessarily a pid, but for now we settled with that
     /// Semantics is application dependent
@@ -108,6 +109,7 @@ private: // members
     Severity severity_;
 
     std::string timestamp_;
+    std::string appName_;
 
     int msgid_;
 

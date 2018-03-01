@@ -51,7 +51,7 @@ public:
         Local4,
         Local5,
         Local6,
-        Local7,
+        Local7, //< we use this for MARS
     };
 
     enum Severity {

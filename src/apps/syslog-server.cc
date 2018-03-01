@@ -45,7 +45,7 @@ private: // members
 };
 
 SysLogServer::SysLogServer(int argc, char** argv) : Application(argc, argv),
-    port_("syslog", 4950)
+    port_("syslog", 6512)
 {
 
 }

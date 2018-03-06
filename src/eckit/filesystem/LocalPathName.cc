@@ -290,7 +290,7 @@ void LocalPathName::mkdir(short mode) const
     }
     catch ( FailedSystemCall& e )
     {
-        Log::error() << "Failed to mkdir " << path_ << std::endl;
+        Log::warning() << "Failed to mkdir " << path_ << std::endl;
         throw;
     }
 }

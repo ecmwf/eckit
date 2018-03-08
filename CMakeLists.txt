@@ -46,8 +46,9 @@ ecbuild_add_option( FEATURE MPI
 ### eckit::cmd
 
 ecbuild_add_option( FEATURE ECKIT_CMD
+                    DEFAULT ON
                     DESCRIPTION "Utilities for administration tools"
-                    REQUIRED_PACKAGES "LEXYACC" )
+                    REQUIRED_PACKAGES "LEXYACC" "Curses" )
 
 ### Eigen
 
@@ -146,10 +147,6 @@ set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asy
 
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 find_package( Threads REQUIRED )
-
-### Curses (for CmdApplication)
-
-find_package( Curses REQUIRED )
 
 ### c math library, needed when including "math.h"
 

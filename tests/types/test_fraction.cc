@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -154,6 +154,20 @@ CASE ( "test_fraction" ) {
     // EXPECT(Fraction(5, 3).decimalPart() == Fraction(1, 3));
 
 
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE ( "test_fraction_with_overflow" ) {
+
+    Fraction A(5934563467713522511, 13567822205000000);  // 437.39985519021053
+    Fraction B(8624662771, 19718023);                    // 437.3999751902105
+
+    EXPECT(A <  B);
+    EXPECT(A <= B);
+    EXPECT(A != B);
+    EXPECT(B >  A);
+    EXPECT(B >= A);
 }
 
 //-----------------------------------------------------------------------------

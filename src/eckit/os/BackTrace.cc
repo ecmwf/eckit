@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -31,14 +31,14 @@ namespace eckit {
 std::string BackTrace::dump()
 {
     /// @todo implement this using the cxxabi demangle, if CMake detects it
-    
+
     std::ostringstream oss;
-    
+
 #if (defined( EC_HAVE_EXECINFO_BACKTRACE ) || defined(__FreeBSD__)) && !defined( _AIX )
 
     static Ordinal count = 0;
     ++count;
-    
+
 #define BS_BUFF_SIZE 256
 
     void*   buffer[BS_BUFF_SIZE];
@@ -47,11 +47,11 @@ std::string BackTrace::dump()
     int addsize = backtrace(buffer, BS_BUFF_SIZE);
 
     oss << "backtrace [" << count << "] stack has " << addsize << " addresses\n";
-    
+
     strings = backtrace_symbols(buffer, addsize);
     if (strings == NULL)
         oss << " --- no backtrace_symbols found ---\n";
-    
+
 #ifndef EC_HAVE_CXXABI_H
     for (int s = 0; s < addsize; ++s)
       oss << strings[s] << std::endl;
@@ -111,15 +111,15 @@ std::string BackTrace::dump()
 
     }
 #endif
-    
+
     free(strings);
-    
+
     oss << "\nend of backtrace dump ...";
-    
+
 #else
     oss << "\ndumping backtrace not supported on this system";
 #endif
-    
+
     return oss.str();
 }
 

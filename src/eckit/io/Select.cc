@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -24,20 +24,20 @@ namespace eckit {
 Select::Select():
 	last_(-1)
 {
-	FD_ZERO(&files_);	
+	FD_ZERO(&files_);
 }
 
 Select::Select(TCPSocket& p):
 	last_(-1)
 {
-	FD_ZERO(&files_);	
+	FD_ZERO(&files_);
 	add(p);
 }
 
 Select::Select(int fd):
 	last_(-1)
 {
-	FD_ZERO(&files_);	
+	FD_ZERO(&files_);
 	add(fd);
 }
 
@@ -128,14 +128,14 @@ bool Select::ready(long sec)
 
 			switch(::select(size,&set_,0,&excep,&timeout) )
 			{
-				case -1: 
-					if(errno != EINTR) 
+				case -1:
+					if(errno != EINTR)
 						throw FailedSystemCall("select");
-					break; 
+					break;
 
-				case 0:  
+				case 0:
 					return false;
-					break; 
+					break;
 
 				default:
 					return true;

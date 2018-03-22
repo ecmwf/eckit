@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -53,7 +53,7 @@ BufferCache& BufferCache::operator=(const BufferCache& other)
 
 bool BufferCache::operator<(const BufferCache& other) const
 {
-	return (count_ < other.count_) || 
+	return (count_ < other.count_) ||
 		((count_ == other.count_) && (::memcmp(buffer_,other.buffer_,count_) < 0));
 }
 
@@ -65,7 +65,7 @@ void BufferCache::reset()
 void BufferCache::add(const void *buffer, size_t len)
 {
 	if(buffer_.size() < count_ + len) {
-		buffer_.resize(count_ + len + 1024);	
+		buffer_.resize(count_ + len + 1024);
 	}
 	::memcpy(((char*)buffer_) + count_, buffer, len);
 	count_ += len;

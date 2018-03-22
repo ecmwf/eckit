@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -87,7 +87,7 @@ CASE ( "Test memory map" )
     // make temporary file name
     int fd;
     char filename [] = "mmaped.XXXXXX";
-    if( (fd = ::mkstemp( filename )) == -1 ) 
+    if( (fd = ::mkstemp( filename )) == -1 )
       perror("cannot create temporary file"), exit(EXIT_FAILURE);
 
 // file is opened in mkstemp, so this is not needed
@@ -99,7 +99,7 @@ CASE ( "Test memory map" )
       perror("Error calling lseek() to 'stretch' the file"), exit(EXIT_FAILURE);
 
     // write something to the end of the file to actually resize it correctly
-    if( ::write(fd, "", 1) != 1 ) 
+    if( ::write(fd, "", 1) != 1 )
       close(fd), perror("Error writing last byte of the file"), exit(EXIT_FAILURE);
 
     // map the file
@@ -117,7 +117,7 @@ CASE ( "Test memory map" )
       perror("Error un-mmapping the file"), exit(EXIT_FAILURE);
 
     // close the file
-    if( close(fd) == -1 ) 
+    if( close(fd) == -1 )
       perror("Error closing file descriptot"), exit(EXIT_FAILURE);
 
     // test that the contents of the file are correct
@@ -125,7 +125,7 @@ CASE ( "Test memory map" )
     // remove the file -- its large!
     if( ::unlink(filename) == -1 )
       perror("Error removing the file"), exit(EXIT_FAILURE);
-      
+
 }
 
 //-----------------------------------------------------------------------------

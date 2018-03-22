@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -40,7 +40,7 @@ public:
 
 	Connector(const std::string& name, const std::string& node);
 
-	~Connector(); 
+	~Connector();
 
 // -- Methods
 
@@ -67,8 +67,8 @@ protected:
 	Connector(const std::string&, int);
 
 // -- Methods
-	
-	void print(std::ostream&) const; 	
+
+	void print(std::ostream&) const;
 
 // -- Class members
 	// None
@@ -88,7 +88,7 @@ private:
     bool locked_;
 
 
-	// Memoisation 
+	// Memoisation
     bool memoize_;
     bool sent_;
 	unsigned long life_;
@@ -112,7 +112,7 @@ private:
 
 // -- Overridden methods
 	// None
-    
+
     // From Stream
 	virtual long write(const void* buf,long len) ;
 	virtual long read(void* buf,long len);

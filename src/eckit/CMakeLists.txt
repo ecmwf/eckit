@@ -339,6 +339,8 @@ log/SavedStatus.h
 log/SavedStatus.cc
 log/Seconds.h
 log/Seconds.cc
+log/SysLog.h
+log/SysLog.cc
 log/Statistics.h
 log/Statistics.cc
 log/LogTarget.h
@@ -496,6 +498,10 @@ net/Connector.h
 net/Connector.cc
 net/TCPServer.h
 net/TCPServer.cc
+net/UDPClient.h
+net/UDPClient.cc
+net/UDPServer.h
+net/UDPServer.cc
 net/Port.h
 net/Port.cc )
 

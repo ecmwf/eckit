@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -111,10 +111,10 @@ int OrderedMapContent::compare(const Content& other)const
 int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
 {
     int b = 1;
-    const ValueList * shorter = &keys_; 
+    const ValueList * shorter = &keys_;
     const ValueList * longer = &other.keys_;
     bool swap = keys_.size() > other.keys_.size();
-    if(swap) { 
+    if(swap) {
         std::swap(shorter, longer);
         b = -1;
     }
@@ -122,13 +122,13 @@ int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
     // compare the keys in order
     ValueList::const_iterator jc = (*longer).begin();
     for (ValueList::const_iterator j = shorter->begin(); j != shorter->end(); ++j, ++jc) {
-        
+
         if(*j == *jc) { continue; }
 
         return (*j < *jc) ? -b : b;
     }
 
-    if(keys_.size() != other.keys_.size()) { return -b; } // the map with more elements is larger 
+    if(keys_.size() != other.keys_.size()) { return -b; } // the map with more elements is larger
 
     // all keys are equal and in same order, compare now the values
     jc = (*longer).begin();

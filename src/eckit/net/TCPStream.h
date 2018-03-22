@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -26,7 +26,7 @@ namespace eckit {
 
 class TCPServer;
 
-// Choose from 
+// Choose from
 
 class TCPStreamBase : public Stream {
 public:
@@ -39,7 +39,7 @@ public:
 
 	// From Stream
 
-	virtual long write(const void* buf,long len) 
+	virtual long write(const void* buf,long len)
 		{ return socket().write(buf,len); }
 
 	virtual long read(void* buf,long len)
@@ -52,7 +52,7 @@ protected:
 	// From Stream
 
 	virtual std::string name() const;
-	
+
 
 private:
 
@@ -70,7 +70,7 @@ public:
 
 	// Take ownership of TCPSocket;
 
-	TCPStream(TCPSocket&); 
+	TCPStream(TCPSocket&);
 
 // -- Destructor
 
@@ -88,13 +88,13 @@ protected:
 
 private:
 
-	TCPStream(TCPServer&); 
+	TCPStream(TCPServer&);
 
 
 // -- Overridden methods
-	
+
 	// From Stream
-	
+
     virtual void closeOutput();
 };
 
@@ -138,7 +138,7 @@ private:
 	~SharedTCPStream();
 
 // -- Contructors
-    
+
 	SharedTCPStream(TCPServer&);
 
 // -- Members

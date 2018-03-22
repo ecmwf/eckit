@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -58,7 +58,7 @@ void TeeHandle::encode(Stream& s) const
 		s << *(datahandles_[i]);
 }
 
-TeeHandle::~TeeHandle() 
+TeeHandle::~TeeHandle()
 {
     for(size_t i=0; i < datahandles_.size(); i++)
 		delete datahandles_[i];
@@ -124,14 +124,14 @@ void TeeHandle::print(std::ostream& s) const
 {
 	if(format(s) == Log::compactFormat)
 		s << "TeeHandle";
-	else 
+	else
     {
 		s << "TeeHandle[";
         for(size_t i=0;i<datahandles_.size();i++)
 		{
-			if(i != 0) 
+			if(i != 0)
 				s << ",(";
-			datahandles_[i]->print(s);	
+			datahandles_[i]->print(s);
 			s << ")";
 		}
 		s << ']';

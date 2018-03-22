@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -40,11 +40,11 @@ CASE ( "TestDoubleCompareSpeed" )
     const size_t n = 30000000; // with this data set, on a modern cpu we expect > 25E6 /s
 
     eckit::Timer t;
-    
+
     compare(n);
 
     eckit::Log::info() << "Double compare speed: " << eckit::BigNum(n / t.elapsed()) << " /s" << std::endl;
-    
+
 }
 
 //-----------------------------------------------------------------------------

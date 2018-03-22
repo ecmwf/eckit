@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -46,7 +46,7 @@ bool FileBase<T>::read(long rec,T& data)
 	//struct flock unlock = { F_UNLCK, SEEK_SET, pos_, sizeof(Record), };
 
 	// SYSCALL(::fcntl(fd_,F_SETLK,&lock));
-	SYSCALL(size = ::read(fd_,&buffer_,sizeof(Record)));	
+	SYSCALL(size = ::read(fd_,&buffer_,sizeof(Record)));
 	// SYSCALL(::fcntl(fd_,F_SETLK,&unlock));
 
 	pos_ += size;
@@ -73,7 +73,7 @@ void FileBase<T>::write(long rec,const T& data)
 	//struct flock lock   = { F_WRLCK, SEEK_SET, pos_, sizeof(Record), };
 	//struct flock unlock = { F_UNLCK, SEEK_SET, pos_, sizeof(Record), };
 	// SYSCALL(::fcntl(fd_,F_SETLK,&lock));
-	SYSCALL(size = ::write(fd_,&buffer_,sizeof(Record)));	
+	SYSCALL(size = ::write(fd_,&buffer_,sizeof(Record)));
 	// SYSCALL(::fcntl(fd_,F_SETLK,&unlock));
 
 	pos_ += size;

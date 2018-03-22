@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -65,7 +65,7 @@ void FTPHandle::ftpCommand(const std::string& s)
 	Log::info() << "send " << s << std::endl;
 	cmds_.write(s.c_str(),s.length());
 	cmds_.write("\r\n",2);
-	std::string out = readLine();	
+	std::string out = readLine();
 
 	if(atoi(out.c_str()) / 100 == 5)
 		throw FTPError();
@@ -80,7 +80,7 @@ FTPHandle::FTPHandle(const std::string& host,const std::string& remote,int port)
 
 void FTPHandle::open(const std::string& cmd)
 {
-	
+
 	cmds_.connect(host_,port_);
 
 	readLine();

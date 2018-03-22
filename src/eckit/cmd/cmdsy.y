@@ -1,8 +1,8 @@
 %{
 
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  * In applying this licence, ECMWF does not waive the privileges and immunities
@@ -17,7 +17,7 @@
 #ifdef YYBISON
 #define YYSTYPE_IS_DECLARED
 int yylex();
-/* int yydebug;*/ 
+/* int yydebug;*/
 extern "C" int isatty(int);
 #endif
 
@@ -70,14 +70,14 @@ inline Value Function(const std::string& op, const Value& a, const Value& b) {
 %token SECOND
 %token YEAR
 
-%token AND 
-%token OR 
-%token LE 
-%token GE 
-%token NE 
-%token NOT 
-%token IN 
-%token MATCH 
+%token AND
+%token OR
+%token LE
+%token GE
+%token NE
+%token NOT
+%token IN
+%token MATCH
 
 %token HEXABYTE
 %token PETABYTE
@@ -106,28 +106,28 @@ eol   : ';'						{ CmdParser::reset(); }
 	  | empty
 	  ;
 
-command : STRING args           { 
-								  CmdParser::arg(0,$1); 
+command : STRING args           {
+								  CmdParser::arg(0,$1);
 								  CmdParser::run(CmdResource::command);
-								} 
-        | '@' STRING args       { 
-								  CmdParser::arg(0,$2); 
+								}
+        | '@' STRING args       {
+								  CmdParser::arg(0,$2);
 								  CmdParser::run(CmdResource::loop);
-								} 
-        | STRING args PIPE      { 
-								  CmdParser::arg("|",$3); 
+								}
+        | STRING args PIPE      {
+								  CmdParser::arg("|",$3);
 								  CmdParser::arg(0,$1);
 								  CmdParser::run(CmdResource::pipe);
 								}
-        | STRING args OUTPUT    { 
-								  CmdParser::arg(">",$3); 
+        | STRING args OUTPUT    {
+								  CmdParser::arg(">",$3);
 								  CmdParser::arg(0,$1);
-								  CmdParser::run(CmdResource::redirect); 
+								  CmdParser::run(CmdResource::redirect);
 								}
-        | STRING args OUTAPPEND { 
-								  CmdParser::arg(">>",$3); 
+        | STRING args OUTAPPEND {
+								  CmdParser::arg(">>",$3);
 								  CmdParser::arg(0,$1);
-								  CmdParser::run(CmdResource::append); 
+								  CmdParser::run(CmdResource::append);
 								}
 		| STRING '=' value       { CmdParser::var($1,$3); }
 		| SHELL                  { CmdParser::shell($1);    }
@@ -210,7 +210,7 @@ list : list ',' value    { $$ = $1 + Value::makeList($3); }
 	 | value             { $$ = Value::makeList($1); }
 	 ;
 
-number    :  ages 
+number    :  ages
           |  sizes
           |  NUMB
 		  ;
@@ -242,7 +242,7 @@ size      : NUMB BYTE      { $$ = $1;}
 		  ;
 
 empty :
-      ;	
+      ;
 
 %%
 #include "cmdsl.c"

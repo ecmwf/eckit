@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -56,7 +56,7 @@ CASE("test_large_file")
   // file is opened in mkstemp, so this is not needed
   //    if( ( fd = ::open(filename, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600) ) == -1 )
   //      perror("Error opening file"),  exit(EXIT_FAILURE);
-    
+
   // stretch the file size
   if( (long long) ::lseek(fd, TOTAL_SIZE-1, SEEK_SET) < 0 )
     ::perror("Error calling lseek() to 'stretch' the file"), ::exit(EXIT_FAILURE);

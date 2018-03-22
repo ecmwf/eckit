@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -34,7 +34,7 @@ public:
 
 	class InvalidGrid : public Exception {
 	public:
-		InvalidGrid(const std::string& s): 
+		InvalidGrid(const std::string& s):
 			Exception("Invalid Mars Grid '" + s + "'") {}
 	};
 
@@ -64,7 +64,7 @@ public:
 	bool operator==(const Grid& other) const
 		{ return northSouth_ == other.northSouth_ && eastWest_ == other.eastWest_; }
 
-	bool operator!=(const Grid& other) const 
+	bool operator!=(const Grid& other) const
 		{ return northSouth_ != other.northSouth_ || eastWest_ != other.eastWest_; }
 
 	bool operator<(const Grid& other) const;
@@ -75,7 +75,7 @@ public:
 // -- Methods
 
 	double northSouth() const { return northSouth_; }
-	double eastWest() const   { return eastWest_; }   
+	double eastWest() const   { return eastWest_; }
 
 	// Score return 2 if the grid is a multiple of the parameter
 	// 1 if only one value is a multiple
@@ -108,7 +108,7 @@ protected:
 	// None
 
 // -- Methods
-	
+
 	void print(std::ostream& s) const;
 
 // -- Overridden methods

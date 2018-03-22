@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -65,19 +65,19 @@ Time::Time(const std::string& s)
 
 		case 2:
 			// hh:mm
-			err =  result[0].length() != 2 
+			err =  result[0].length() != 2
 				|| result[1].length() != 2;
 
 			hh = atol(result[0].c_str());
 			mm = atol(result[1].c_str());
 
 			break;
-			
+
 		case 3:
 			// hh:mm:ss
 
-			err =  result[0].length() != 2 
-			    || result[1].length() != 2 
+			err =  result[0].length() != 2
+			    || result[1].length() != 2
 				|| result[2].length() != 2;
 
 			hh = atol(result[0].c_str());
@@ -86,7 +86,7 @@ Time::Time(const std::string& s)
 
 			break;
 
-		default: 
+		default:
 			err = true;
 			break;
 	}

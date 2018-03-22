@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -26,46 +26,46 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-void _export(eckit::Exporter& out, unsigned char what) { 
+void _export(eckit::Exporter& out, unsigned char what) {
     out.writeUnsigned(what);
-} 
+}
 
-void _export(eckit::Exporter& out, char what) { 
+void _export(eckit::Exporter& out, char what) {
     out.writeSigned(what);
 }
 
-void _export(eckit::Exporter& out, unsigned int what) { 
+void _export(eckit::Exporter& out, unsigned int what) {
     out.writeUnsigned(what);
-} 
-void _export(eckit::Exporter& out, int what) { 
+}
+void _export(eckit::Exporter& out, int what) {
     out.writeSigned(what);
 }
 
-void _export(eckit::Exporter& out, unsigned long what) { 
+void _export(eckit::Exporter& out, unsigned long what) {
     out.writeUnsigned(what);
-} 
+}
 
-void _export(eckit::Exporter& out, long what) { 
+void _export(eckit::Exporter& out, long what) {
     out.writeSigned(what);
 }
 
-void _export(eckit::Exporter& out, unsigned short what) { 
+void _export(eckit::Exporter& out, unsigned short what) {
     out.writeUnsigned(what);
-} 
+}
 
-void _export(eckit::Exporter& out, short what) { 
+void _export(eckit::Exporter& out, short what) {
     out.writeSigned(what);
 }
 
-void _export(eckit::Exporter& out, unsigned long long what) { 
+void _export(eckit::Exporter& out, unsigned long long what) {
     out.writeUnsigned(what);
-} 
+}
 
-void _export(eckit::Exporter& out, long long what) { 
+void _export(eckit::Exporter& out, long long what) {
     out.writeSigned(what);
 }
 
-void _export(eckit::Exporter& out, double what) { 
+void _export(eckit::Exporter& out, double what) {
     out.writeDouble(what);
 }
 
@@ -74,7 +74,7 @@ void _export(eckit::Exporter& out, double what) {
 const int MAX_STRING_LEN = 10240;
 
 enum {
-    
+
     TAG_EOF          = 'X',
 
     TAG_START_CLASS  = 'C',
@@ -172,7 +172,7 @@ void Exporter::writeString(const std::string &s)
 
     writeTag(TAG_STRING);
     writeUnsigned(len);
-    for(size_t i = 0;  i < len; i++) 
+    for(size_t i = 0;  i < len; i++)
         buffer[i] = s[i];
 
     ASSERT( (size_t) handle_.write(buffer,len) == len);
@@ -314,7 +314,7 @@ void Exporter::startObject(unsigned long long type, unsigned long long location,
     subCount_ = 0;
 }
 
-void _startObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
+void _startObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count)
 {
     e.startObject(type, location, id, count);
 }
@@ -356,7 +356,7 @@ void _endSubObject(eckit::Exporter& e)
     e.endSubObject();
 }
 
-void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count) 
+void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count)
 {
     e.endObject(type, location, id, count);
 }
@@ -423,9 +423,9 @@ size_t Exporter::nextObject() {
 
     }
     catch(...) {
-        std::cout << "ERROR reading start object " <<  *this << std::endl; 
+        std::cout << "ERROR reading start object " <<  *this << std::endl;
         throw;
-    }   
+    }
 
 }
 
@@ -691,9 +691,9 @@ Exporter::Datatype::operator double() {
 void Exporter::Datatype::print(std::ostream& out) const
 {
     switch(type_) {
-        case TAG_SIGNED:   out << "S(" << signed_; break; 
-        case TAG_UNSIGNED: out << "U(" << unsigned_; break; 
-        case TAG_DOUBLE:   out << "D(" << double_; break; 
+        case TAG_SIGNED:   out << "S(" << signed_; break;
+        case TAG_UNSIGNED: out << "U(" << unsigned_; break;
+        case TAG_DOUBLE:   out << "D(" << double_; break;
         default: out << "X("; break;
     }
 
@@ -703,7 +703,7 @@ void Exporter::Datatype::print(std::ostream& out) const
 #define X(a) out << " " << #a << "=" << a;
 
 void Exporter::print(std::ostream& out) const
-{ 
+{
     out << "Exporter[";
 
     X(objectCount_);

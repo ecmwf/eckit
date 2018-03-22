@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -25,7 +25,7 @@ class DumpLoad;
 
 class Coord {
 public:
-	
+
 	friend std::ostream& operator<<(std::ostream& s,const Coord& x)
 		{ x.print(s); return s; }
 
@@ -40,13 +40,13 @@ public:
 
 // -- Operators
 
-	Coord& operator=(const Coord& other) 
+	Coord& operator=(const Coord& other)
 		{ value_ = other.value_; return *this;}
 
 	Coord operator+(const Coord& other) const
 		{ return Coord(value_ + other.value_);}
 
-	Coord& operator+=(const Coord& other) 
+	Coord& operator+=(const Coord& other)
 		{ value_ += other.value_; return *this;}
 
 	bool operator==(const Coord& other) const
@@ -64,7 +64,7 @@ public:
 	bool operator>=(const Coord& other) const
 		{ return value_ >= other.value_; }
 
-// -- 
+// --
 #if 0
 	double operator-(const Coord& other) const
 		{ return value_ - other.value_;}
@@ -100,7 +100,7 @@ typedef std::vector<Coord> CoordList;
 
 class Longitude: public Coord {
 public:
-	
+
 // -- Contructors
 
 	Longitude(double l = 0);
@@ -113,7 +113,7 @@ public:
 
 class Latitude: public Coord {
 public:
-	
+
 // -- Contructors
 
 	Latitude(double l = 0);

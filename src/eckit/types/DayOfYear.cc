@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -54,7 +54,7 @@ void DayOfYear::print(std::ostream& s) const
 	Date d(2004,value_+1);         // Take a leap year so it can accept 29th feb
 
 	char oldfill = s.fill();
-	s << std::setw(2) << std::setfill('0') << d.month() << '-' << std::setw(2) << std::setfill('0') << d.day() 
+	s << std::setw(2) << std::setfill('0') << d.month() << '-' << std::setw(2) << std::setfill('0') << d.day()
 	  << std::setfill(oldfill);
 }
 

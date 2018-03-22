@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -43,6 +43,11 @@ Buffer::Buffer(const std::string& s):
 Buffer::~Buffer()
 {
     destroy();
+}
+
+void Buffer::zero()
+{
+    ::memset(buffer_, 0, size_);
 }
 
 void Buffer::create()

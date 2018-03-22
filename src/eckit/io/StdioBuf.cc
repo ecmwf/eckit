@@ -1,9 +1,9 @@
 /*
- * (C) Copyright 1996-2017 ECMWF.
- * 
+ * (C) Copyright 1996- ECMWF.
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -22,15 +22,15 @@ namespace eckit {
 
 StdioBuf::StdioBuf(FILE* file):
 	file_(file)
-{ 
+{
 #ifndef OLD_STREAMBUF
 	/* setg(in_,  in_,  in_  + sizeof(in_) );  */
-	setg(in_,  in_,  in_  ); 
-	setp(out_, out_ + sizeof(out_)); 
+	setg(in_,  in_,  in_  );
+	setp(out_, out_ + sizeof(out_));
 #else
-	setb(in_, in_ + sizeof(in_), 0); 
-	setg(in_, in_, in_); 
-	setp(out_, out_ + sizeof(out_)); 
+	setb(in_, in_ + sizeof(in_), 0);
+	setg(in_, in_, in_);
+	setp(out_, out_ + sizeof(out_));
 #endif
 }
 
@@ -51,7 +51,7 @@ int StdioBuf::sync()
 	return 0;
 }
 
-int StdioBuf::overflow(int c) 
+int StdioBuf::overflow(int c)
 {
 	if(sync())
 		return EOF;
@@ -65,7 +65,7 @@ int StdioBuf::overflow(int c)
 
 int StdioBuf::underflow()
 {
-	if (gptr () < egptr ()) 
+	if (gptr () < egptr ())
 		return *(unsigned char*)gptr ();
 
 #ifndef OLD_STREAMBUF
@@ -78,7 +78,7 @@ int StdioBuf::underflow()
 		return EOF;
 
 #ifndef OLD_STREAMBUF
-	setg(in_,  in_,  in_  + n ); 
+	setg(in_,  in_,  in_  + n );
 #else
 	setg (eback (), base (), base () + n);
 #endif

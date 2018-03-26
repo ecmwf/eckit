@@ -15,10 +15,8 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/MD5.h"
 
+#include <cmath>
 #include <limits>
-#include <cmath>
-#include <cmath>
-
 
 //-----------------------------------------------------------------------------
 
@@ -203,7 +201,7 @@ void Fraction::decode(Stream& s) {
 
 
 inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
-    if (b > 0 && (a > std::numeric_limits<Fraction::value_type>::max() / b)) {
+    if (b > 0 && (std::abs(a) > std::numeric_limits<Fraction::value_type>::max() / b)) {
         overflow = true;
     }
     return a * b;

@@ -168,6 +168,15 @@ CASE ( "test_fraction_with_overflow" ) {
     EXPECT(A != B);
     EXPECT(B >  A);
     EXPECT(B >= A);
+
+    A = Fraction(-34093871309, 378680550);  // -90.033331
+    B = Fraction(   -12621809, 378680550);  //  -0.3333102
+
+    EXPECT(A <  B);
+    EXPECT(A <= B);
+    EXPECT(A != B);
+    EXPECT(B >  A);
+    EXPECT(B >= A);
 }
 
 //-----------------------------------------------------------------------------

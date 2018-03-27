@@ -201,8 +201,12 @@ void Fraction::decode(Stream& s) {
 
 
 inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
-    if (b > 0 && (std::abs(a) > std::numeric_limits<Fraction::value_type>::max() / b)) {
-        overflow = true;
+    // assumes signed 'a' and unsigned 'b'
+    if (b > 0) {
+        if ((a > 0 && a > std::numeric_limits<Fraction::value_type>::max() / b) ||
+            (a < 0 && a < std::numeric_limits<Fraction::value_type>::min() / b)) {
+            overflow = true;
+        }
     }
     return a * b;
 }

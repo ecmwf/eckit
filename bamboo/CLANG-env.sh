@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # No module environment on the Mac
 [[ $(uname) == "Darwin" ]] && return
 # Initialise module environment if it is not

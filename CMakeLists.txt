@@ -77,11 +77,22 @@ set_package_properties( Armadillo PROPERTIES
                         DESCRIPTION "C++ linear algebra"
                       )
 
+### MKL
+
+ecbuild_add_option( FEATURE MKL
+                    DESCRIPTION "MKL linear algebra library"
+                    REQUIRED_PACKAGES MKL )
+
 ### LAPACK
 
-ecbuild_add_option( FEATURE LAPACK
-                    DESCRIPTION "Linear Algebra PACKage"
-                    REQUIRED_PACKAGES "LAPACK QUIET" )
+if( ECKIT_HAVE_MKL )
+    set( ECKIT_HAVE_LAPACK 1 )
+    set( LAPACK_LIBRARIES ${MKL_LIBRARIES} )
+else()
+    ecbuild_add_option( FEATURE LAPACK
+                        DESCRIPTION "Linear Algebra PACKage"
+                        REQUIRED_PACKAGES "LAPACK QUIET" )
+endif()
 
 ### OpenSSL (for SHA1)
 
@@ -118,13 +129,6 @@ ecbuild_add_option( FEATURE CUDA
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
-
-### MKL
-
-ecbuild_add_option( FEATURE MKL
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "MKL linear algebra library"
-                    REQUIRED_PACKAGES MKL )
 
 ### ViennaCL
 

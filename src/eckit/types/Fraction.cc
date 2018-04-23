@@ -104,7 +104,7 @@ Fraction::Fraction(double x) {
         a = x;
         t2 = m10 * a + m11;
 
-        if(cnt > 10000) {
+        if (cnt++ > 10000) {
             std::ostringstream oss;
             oss << "Cannot compute fraction from " << value << std::endl;
             throw eckit::SeriousBug(oss.str());

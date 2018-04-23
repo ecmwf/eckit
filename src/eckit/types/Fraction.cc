@@ -22,8 +22,12 @@
 
 namespace eckit {
 
-const Fraction::value_type MAX_DENOM = std::sqrt(std::numeric_limits<Fraction::value_type>::max());
-// const Fraction::value_type MAX_DENOM = std::numeric_limits<Fraction::value_type>::max() >> 1;
+
+using limits = std::numeric_limits<Fraction::value_type>;
+
+
+const Fraction::value_type MAX_DENOM = std::sqrt(limits::max());
+// const Fraction::value_type MAX_DENOM = limits::max() >> 1;
 
 
 static Fraction::value_type gcd(Fraction::value_type a, Fraction::value_type b) {
@@ -97,7 +101,7 @@ Fraction::Fraction(double x) {
 
         x = 1.0 / (x - a);
 
-        if (x > std::numeric_limits<value_type>::max()) {
+        if (x > limits::max()) {
             break;
         }
 
@@ -125,10 +129,6 @@ Fraction::Fraction(double x) {
 
     top_ = sign * top;
     bottom_ = bottom;
-
-
-
-
 }
 
 Fraction::Fraction(const std::string& s) {
@@ -166,8 +166,7 @@ Fraction::Fraction(const char* c) {
 void Fraction::print(std::ostream& out) const {
     if (bottom_ == 1) {
         out << top_;
-    }
-    else {
+    } else {
         out << top_ << '/' << bottom_;
     }
 }
@@ -201,24 +200,21 @@ void Fraction::decode(Stream& s) {
 
 
 inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
-    // assumes signed 'a' and unsigned 'b'
-    if (b > 0) {
-        if ((a > 0 && a > std::numeric_limits<Fraction::value_type>::max() / b) ||
-            (a < 0 && a < std::numeric_limits<Fraction::value_type>::min() / b)) {
-            overflow = true;
-        }
+
+    if (!overflow && a != 0 && b != 0) {
+        const bool sameSign = (a > 0 && b > 0) || (a < 0 && b < 0);
+        overflow = sameSign ? a > limits::max() / b
+                            : a > limits::lowest() / b;
     }
+
     return a * b;
 }
 
 inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
-    if (a >= 0 && b >= 0 && (a > std::numeric_limits<Fraction::value_type>::max() - b)) {
-        overflow = true;
-    }
-
-    if (a <= 0 && b <= 0 && (-a > std::numeric_limits<Fraction::value_type>::max() + b)) {
-        overflow = true;
+    if (!overflow && a != 0 && b != 0) {
+        overflow = b > 0 ? a > limits::max() - b
+                         : a < limits::lowest() - b;
     }
 
     return a + b;

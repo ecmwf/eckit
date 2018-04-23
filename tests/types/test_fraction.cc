@@ -11,6 +11,7 @@
 #include <cmath>
 
 #include "eckit/types/Fraction.h"
+#include "eckit/log/Log.h"
 
 #include "eckit/testing/Test.h"
 
@@ -179,7 +180,21 @@ CASE ( "test_fraction_with_overflow" ) {
     EXPECT(B >= A);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE ( "test_fraction_with_known_values" ) {
+
+    std::streamsize p(Log::debug().precision(16));
+    for (auto value : { 0.47718059708975263 }) {
+
+        Log::debug() << "Test " << value << "..." << std::endl;
+        Log::debug() << "Test " << value << " = " << Fraction(value) << std::endl;
+
+    }
+    Log::debug().precision(p);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit

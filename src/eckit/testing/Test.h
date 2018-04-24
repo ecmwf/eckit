@@ -81,13 +81,14 @@ public:  // methods
                 failures.push_back(description());
                 if (v >= Summary)
                     eckit::Log::error() << "Test \"" << description() << "\" failed with unhandled eckit::Exception: "
-                                       << e.what() << " @ " << e.location() << std::endl;
+                                        << e.what() << " @ " << e.location() << std::endl;
+                    eckit::Log::error() << "    Stack trace: " << e.callStack() << std::endl;
             } catch (std::exception& e) {
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary)
                     eckit::Log::error() << "Test \"" << description() << "\" failed with unhandled exception: "
-                                       << e.what() << " @ " << std::endl;
+                                        << e.what() << " @ " << std::endl;
             } catch (...) {
                 success = false;
                 failures.push_back(description());

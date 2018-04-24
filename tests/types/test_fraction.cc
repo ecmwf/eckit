@@ -194,6 +194,8 @@ CASE ( "Overflow during comparisons" ) {
         //    EXPECT(B >  A);
         //    EXPECT(B >= A);
 
+        Log::info() << "Max denominator" << Fraction::max_denominator() << std::endl;
+
         Fraction U(1, 1);
 
         /// @note these fail due to the lossy conversion to double of numerators/denominators

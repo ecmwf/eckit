@@ -71,7 +71,7 @@ public: // methods
 
 public: // operators
 
-    static Fraction::value_type max_denon();
+    static Fraction::value_type max_denominator();
 
     operator double() const {
         return double(top_) / double(bottom_);

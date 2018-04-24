@@ -70,8 +70,7 @@ Fraction::Fraction(value_type top, value_type bottom) {
 
 const Fraction::value_type MAX_DENOM = std::sqrt(limits::max());
 
-Fraction::value_type Fraction::max_denon()
-{
+Fraction::value_type Fraction::max_denominator() {
     return MAX_DENOM;
 }
 

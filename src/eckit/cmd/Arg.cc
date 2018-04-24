@@ -41,7 +41,6 @@ class ArgContentOption : public ArgContent {
     virtual ArgContent* clone() const { return new ArgContentOption(name_, type_); }
 
     virtual void completion(const std::vector<std::string>& s, std::vector<std::string>& r) {
-        //  cerr << "Here" << std::endl;
         if (name_.find(s[0]) == 0) {
             r.push_back(name_);
         }

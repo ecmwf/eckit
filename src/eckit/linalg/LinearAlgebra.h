@@ -43,6 +43,12 @@ public:
     /// List all available backends
     static void list(std::ostream &);
 
+    /// Get a backend by name
+    static const LinearAlgebra& getBackend(const std::string& name);
+
+    /// Check if a backend is available
+    static bool hasBackend(const std::string& name);
+
 public:  // virtual methods
 
     /// Compute the inner product of vectors x and y
@@ -72,9 +78,6 @@ public:  // virtual methods
 protected:
 
     LinearAlgebra(const std::string& name);
-
-    /// Get a backend by name
-    static const LinearAlgebra& getBackend(const std::string& name);
 
 private:
 

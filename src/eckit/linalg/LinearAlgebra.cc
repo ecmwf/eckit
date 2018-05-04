@@ -48,6 +48,8 @@ public:
 
     void backend(const std::string& name);
 
+    bool has(const std::string& name) const;
+
     const LinearAlgebra& find() const;
     const LinearAlgebra& find(const std::string& name) const;
 
@@ -76,11 +78,11 @@ void BackendRegistry::backend(const std::string& name) {
     default_ = name;
 }
 
-const LinearAlgebra&BackendRegistry::find() const {
+const LinearAlgebra& BackendRegistry::find() const {
     return find(default_);
 }
 
-const LinearAlgebra&BackendRegistry::find(const std::string& name) const {
+const LinearAlgebra& BackendRegistry::find(const std::string& name) const {
     AutoLock<Mutex> lock(mutex_);
 
     BackendRegistry::Map::const_iterator it = map_.find(name);
@@ -93,6 +95,11 @@ const LinearAlgebra&BackendRegistry::find(const std::string& name) const {
     }
     Log::debug<LibEcKit>() << "Using LinearAlgebra backend " << it->first << std::endl;
     return *(it->second);
+}
+
+bool BackendRegistry::has(const std::string& name) const {
+    AutoLock<Mutex> lock(mutex_);
+    return (map_.find(name) != map_.end());
 }
 
 void BackendRegistry::list(std::ostream& out) const {
@@ -122,6 +129,11 @@ const LinearAlgebra& LinearAlgebra::backend() {
 const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
     pthread_once(&once, init);
     return backends->find(name);
+}
+
+bool LinearAlgebra::hasBackend(const std::string& name) {
+    pthread_once(&once, init);
+    return backends->has(name);
 }
 
 void LinearAlgebra::backend(const std::string &name) {

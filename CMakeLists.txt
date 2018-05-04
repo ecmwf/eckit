@@ -24,7 +24,7 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-cbuild_add_cxx11_flags()
+ecbuild_add_cxx11_flags()
 ecbuild_check_cxx11( PRINT )
 
 ### Experimental features

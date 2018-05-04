@@ -8,22 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-// File Date.h
-// Baudouin Raoult - ECMWF Sep 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Sep 96
+
 
 #ifndef eckit_Date_h
 #define eckit_Date_h
 
 #include "eckit/exception/Exceptions.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class DumpLoad;
 class Bless;
+class Hash;
 
 class Date {
 public:
@@ -98,6 +101,8 @@ public:
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
 
+    void hash(Hash&) const;
+
 // -- Class methods
 
 	static long         parse(const std::string&);
@@ -167,7 +172,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

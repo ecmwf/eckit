@@ -135,6 +135,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Hash;
 class Length;
 class PathName;
 class JSON;
@@ -254,6 +255,8 @@ public:
     std::ostream& dump(std::ostream& out, size_t depth = 0, bool indent = true) const;
 
     std::string typeName() const;
+
+    void hash(eckit::Hash&) const;
 
 public:
     bool contains(const char*) const;

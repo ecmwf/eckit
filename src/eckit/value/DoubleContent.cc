@@ -15,6 +15,9 @@
 #include "eckit/maths/Functions.h"
 #include "eckit/parser/JSON.h"
 
+#include "eckit/utils/Hash.h"
+
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -148,6 +151,9 @@ void DoubleContent::dump(std::ostream& out, size_t depth, bool indent) const {
     out << "double(" << value_ << ")";
 }
 
+void DoubleContent::hash(Hash& h) const {
+    h.add(value_);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

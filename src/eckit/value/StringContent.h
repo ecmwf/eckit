@@ -8,20 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-// File StringContent.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
+/// @author Tiago Quintino
+/// @date   Jun 97
+
 
 #ifndef eckit_StringContent_h
 #define eckit_StringContent_h
 
 #include "eckit/value/Content.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Hash;
 
 class StringContent : public Content {
 
@@ -79,6 +82,8 @@ protected:
     virtual bool    isString() const      { return true; }
     virtual Content* clone() const;
     virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
+
+    virtual void hash(Hash&) const;
 
     // -- From Streamable
 

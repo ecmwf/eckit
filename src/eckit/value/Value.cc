@@ -371,6 +371,10 @@ std::string Value::typeName() const {
     return content_->typeName();
 }
 
+void Value::hash(Hash& h) const {
+    return content_->hash(h);
+}
+
 Value Value::operator[](const char* key) const {
     return element(Value(key));
 }

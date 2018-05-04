@@ -13,7 +13,8 @@
 #include "eckit/value/Value.h"
 #include "eckit/parser/JSON.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/utils/Hash.h"
+
 
 namespace eckit {
 
@@ -127,6 +128,10 @@ void NilContent::dump(std::ostream& out, size_t depth, bool indent) const {
         }
     }
     out << "nil";
+}
+
+void NilContent::hash(Hash& h) const {
+    h.add("nil");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

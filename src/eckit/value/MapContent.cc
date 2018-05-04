@@ -12,6 +12,7 @@
 #include "eckit/value/MapContent.h"
 #include "eckit/parser/JSON.h"
 
+#include "eckit/utils/Hash.h"
 
 
 namespace eckit {
@@ -193,6 +194,12 @@ void MapContent::dump(std::ostream& out, size_t depth, bool indent) const {
     out << "}";
 }
 
+void MapContent::hash(Hash& h) const {
+    for(auto v: value_) {
+        v.first.hash(h);
+        v.second.hash(h);
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

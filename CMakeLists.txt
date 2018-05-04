@@ -24,11 +24,8 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-### C++11 compiler flag
-
-ecbuild_add_option( FEATURE CXX11
-                    DEFAULT ON
-                    DESCRIPTION "Use C++11 compiler flag" )
+cbuild_add_cxx11_flags()
+ecbuild_check_cxx11( PRINT )
 
 ### Experimental features
 
@@ -208,10 +205,6 @@ ecbuild_find_project_files()
 include_directories( ${ECKIT_INCLUDE_DIRS} )
 if( HAVE_EIGEN )
     include_directories( ${EIGEN3_INCLUDE_DIR} )
-endif()
-
-if( HAVE_CXX11 )
-    ecbuild_add_cxx11_flags()
 endif()
 
 add_subdirectory( bamboo )

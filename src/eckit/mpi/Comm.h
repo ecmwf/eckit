@@ -43,6 +43,9 @@ void setCommDefault(const char* name);
 /// Register a communicator comming from Fortran code
 void addComm(const char* name, int comm);
 
+/// Register an existing communicator
+void addComm(const char* name, Comm* comm);
+
 /// Check if a communicator is registered
 bool hasComm(const char* name);
 
@@ -301,6 +304,9 @@ public:  // methods
     ///
 
     virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const = 0;
+    
+    /// @brief Split the communicator based on color & give the new communicator a name
+    virtual Comm * split(  int color, std::string comm_name ) const = 0;
 
     /// @brief The communicator
     virtual int communicator() const = 0;
@@ -347,6 +353,7 @@ public:  // methods
       virtual Request iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
       virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
+
 
 private: // methods
 

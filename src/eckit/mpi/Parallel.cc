@@ -450,6 +450,19 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
     return req;
 }
 
+Comm * Parallel::split( int color, std::string comm_name ) const {
+
+    if (hasComm(comm_name.c_str())) {
+        throw SeriousBug("Communicator with name "+ comm_name + " already exists");
+    }
+
+    MPI_Comm new_mpi_comm;
+    MPI_CALL( MPI_Comm_split( comm_, color, rank(), &new_mpi_comm ));
+    Comm * newcomm = new Parallel(new_mpi_comm,true);
+    addComm(comm_name.c_str(), newcomm);
+    return newcomm;
+}
+
 void Parallel::print(std::ostream& os) const {
     os << "Parallel()";
     /// @note maybe add information about the MPI backend: opem-mpi? mpich? etc...

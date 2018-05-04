@@ -122,18 +122,20 @@ public:
     void addComm(const char* name, int comm) {
 
         AutoLock<Mutex> lock(mutex_);
-
-        std::map<std::string, Comm*>::iterator itr = communicators.find(name);
-        if(itr != communicators.end()) {
-            eckit::Log::error() << "Cannot create communicator '" << name << "', communicator with that name already exists" << std::endl;
-            eckit::Log::error() << "Current communicators are:" << std::endl;
-            for(itr = communicators.begin() ; itr != communicators.end() ; ++itr)
-                eckit::Log::error() << "   " << (*itr).first << std::endl;
-            throw eckit::SeriousBug(std::string("Communicator alredy exists: ") + name);
+        if (hasComm(name)) {
+            throw SeriousBug("Communicator with name "+ std::string(name) + " already exists");
         }
 
         Comm* pComm = CommFactory::build(getDefaultComm(), comm);
         communicators[name] = pComm;
+    }
+
+    void addComm(const char* name, Comm * comm) {
+        AutoLock<Mutex> lock(mutex_);
+        if (hasComm(name)) {
+            throw SeriousBug("Communicator with name "+ std::string(name) + " already exists");
+        }
+        communicators[name] = comm;
     }
 
     Environment() : default_(0) {}
@@ -239,6 +241,10 @@ void addComm(const char* name, int comm)
 {
     Environment::instance().addComm(name, comm);
 }
+void addComm(const char* name, Comm * comm)
+{
+    Environment::instance().addComm(name, comm);
+}
 
 bool hasComm(const char* name) {
     return Environment::instance().hasComm(name);
@@ -247,6 +253,7 @@ bool hasComm(const char* name) {
 void finaliseAllComms() {
     return Environment::instance().finaliseAllComms();
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

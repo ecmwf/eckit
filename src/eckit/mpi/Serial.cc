@@ -150,6 +150,15 @@ Request Serial::iBarrier() const
     return Request();
 }
 
+Comm * Serial::split( int color, std::string comm_name ) const {
+    if (hasComm(comm_name.c_str())) {
+        throw SeriousBug("Communicator with name "+ comm_name + " already exists");
+    }
+    Comm * newcomm = new Serial();
+    addComm(comm_name.c_str(), newcomm);
+    return newcomm;
+}
+
 void Serial::abort(int) const {
     // Don't use std::abort as it would raise SIGABRT.
     // MPI_Abort also does not raise SIGABRT

@@ -41,9 +41,9 @@ CASE( "Test MPI Communicator Split" )
     // Split communicator in half
     Comm * newcomm;
     if (all.rank() < 2) {
-        newcomm = all.split(1, "FirstHalf");
+        newcomm = & all.split(1, "FirstHalf");
     } else {
-        newcomm = all.split(2, "SecondHalf");
+        newcomm = & all.split(2, "SecondHalf");
     }
 
     // Check sizes and ranks
@@ -87,7 +87,6 @@ CASE( "Test MPI Communicator Split" )
     Comm & new_default = eckit::mpi::comm();
     EXPECT(new_default.size() == 2);
 
-    /* Note that newcomm is cleaned up by the environment */
 }
 
 //-----------------------------------------------------------------------------

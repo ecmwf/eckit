@@ -306,7 +306,7 @@ public:  // methods
     virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const = 0;
     
     /// @brief Split the communicator based on color & give the new communicator a name
-    virtual Comm * split(  int color, std::string comm_name ) const = 0;
+    virtual Comm & split(  int color, std::string comm_name ) const = 0;
 
     /// @brief The communicator
     virtual int communicator() const = 0;

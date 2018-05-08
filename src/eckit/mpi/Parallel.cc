@@ -450,16 +450,16 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
     return req;
 }
 
-Comm & Parallel::split( int color, std::string comm_name ) const {
+Comm & Parallel::split( int color, const std::string & name ) const {
 
-    if (hasComm(comm_name.c_str())) {
-        throw SeriousBug("Communicator with name "+ comm_name + " already exists");
+    if (hasComm(name.c_str())) {
+        throw SeriousBug("Communicator with name "+ name + " already exists");
     }
 
     MPI_Comm new_mpi_comm;
     MPI_CALL( MPI_Comm_split( comm_, color, rank(), &new_mpi_comm ));
     Comm * newcomm = new Parallel(new_mpi_comm,true);
-    addComm(comm_name.c_str(), newcomm);
+    addComm(name.c_str(), newcomm);
     return *newcomm;
 }
 

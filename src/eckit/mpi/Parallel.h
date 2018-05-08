@@ -96,7 +96,7 @@ protected:  // methods
 
     virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const;
 
-    virtual Comm & split( int color, std::string comm_name ) const;
+    virtual Comm & split( int color, const std::string & name  ) const;
 
     virtual void print(std::ostream&) const;
 

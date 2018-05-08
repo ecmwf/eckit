@@ -39,32 +39,34 @@ CASE( "Test MPI Communicator Split" )
     EXPECT( all.rank() < 4 );
 
     // Split communicator in half
-    Comm * newcomm;
     if (all.rank() < 2) {
-        newcomm = & all.split(1, "FirstHalf");
+        all.split(1, "FirstHalf");
     } else {
-        newcomm = & all.split(2, "SecondHalf");
+        all.split(2, "SecondHalf");
     }
 
+    // Fetch the new communicator
+    const Comm & newcomm = eckit::mpi::comm( ( all.rank() < 2 ? "FirstHalf" : "SecondHalf" ) );
+
     // Check sizes and ranks
-    EXPECT ( newcomm->size() == 2 );
-    EXPECT ( newcomm->rank() >= 0 );
-    EXPECT ( newcomm->rank() < 2 );
+    EXPECT ( newcomm.size() == 2 );
+    EXPECT ( newcomm.rank() >= 0 );
+    EXPECT ( newcomm.rank() < 2 );
     EXPECT ( all.size() == 4 );
 
     // Check rank order is preserved
     switch( all.rank() ) {
         case 0:
-            EXPECT( newcomm->rank() == 0 );
+            EXPECT( newcomm.rank() == 0 );
             break;
         case 1:
-            EXPECT ( newcomm->rank() == 1 );
+            EXPECT ( newcomm.rank() == 1 );
             break;
         case 2:
-            EXPECT (newcomm->rank() == 0 );
+            EXPECT (newcomm.rank() == 0 );
             break;
         case 3:
-            EXPECT (newcomm->rank() == 1 );
+            EXPECT (newcomm.rank() == 1 );
             break;
     }
 

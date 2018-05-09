@@ -457,6 +457,20 @@ CASE( "Test head/tail functionality for OrderedMap" ) {
     EXPECT(true);
 }
 
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    Value om = Value::makeOrderedMap();
+    om[123] = 1234;
+    om[234] = 2345;
+    om[777] = 7777;
+
+    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "3da9d66f9e40fbcfe7d37679462a1542");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

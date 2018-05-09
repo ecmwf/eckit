@@ -4,7 +4,7 @@
 #
 ########################################################################################################################
 
-cmake_minimum_required( VERSION 2.8.11 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 
 project( eckit CXX )
 
@@ -24,8 +24,8 @@ ecbuild_declare_project()
 ###############################################################################
 # some variables/options of this project
 
-ecbuild_add_cxx11_flags()
-ecbuild_check_cxx11( PRINT )
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ### Experimental features
 

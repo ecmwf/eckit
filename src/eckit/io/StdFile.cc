@@ -27,11 +27,12 @@ StdFile::StdFile(const PathName& name,const std::string& mode)
 		throw CantOpenFile(name);
 }
 
-StdFile::~StdFile()
+StdFile::~StdFile() noexcept(false)
 {
-	if(file_)
-		if(fclose(file_))
-			throw FailedSystemCall("fclose");
+    if(file_) {
+        if(fclose(file_))
+            throw FailedSystemCall("fclose");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

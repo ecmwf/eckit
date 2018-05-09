@@ -9,6 +9,7 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef eckit_io_StdPipe_h
 #define eckit_io_StdPipe_h
@@ -30,7 +31,7 @@ public:
 
 // -- Destructor
 
-	~StdPipe();
+    ~StdPipe() noexcept(false);
 
 // -- Convertors
 

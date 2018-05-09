@@ -23,7 +23,7 @@ StdPipe::StdPipe(const std::string& name,const std::string& mode)
 		throw CantOpenFile(name);
 }
 
-StdPipe::~StdPipe()
+StdPipe::~StdPipe() noexcept(false)
 {
     if (file_) {
         if (::pclose(file_) == -1) {

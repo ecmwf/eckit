@@ -215,7 +215,7 @@ add_subdirectory( tests )
 add_subdirectory( regressions )
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files SOURCES
-                       TODO AUTHORS README NOTICE LICENSE INSTALL ChangeLog COPYING )
+                       TODO AUTHORS README.md NOTICE LICENSE INSTALL ChangeLog COPYING )
 
 ############################################################################################
 # finalize

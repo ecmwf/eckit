@@ -11,6 +11,7 @@
 #include <cmath>
 
 #include "eckit/types/Fraction.h"
+#include "eckit/log/Log.h"
 
 #include "eckit/testing/Test.h"
 
@@ -23,7 +24,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_fraction" ) {
+CASE ( "Contructing fractions" ) {
     // 0
 
     EXPECT( Fraction(0, 1) == Fraction() );
@@ -158,10 +159,70 @@ CASE ( "test_fraction" ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_fraction_with_overflow" ) {
+using limits = std::numeric_limits<Fraction::value_type>;
 
-    Fraction A(5934563467713522511, 13567822205000000);  // 437.39985519021053
-    Fraction B(8624662771, 19718023);                    // 437.3999751902105
+CASE ( "Overflow during comparisons" ) {
+
+    {
+        Fraction A(5934563467713522511, 13567822205000000);  // 437.39985519021053
+        Fraction B(8624662771, 19718023);                    // 437.3999751902105
+
+        EXPECT(A <  B);
+        EXPECT(A <= B);
+        EXPECT(A != B);
+        EXPECT(B >  A);
+        EXPECT(B >= A);
+    }
+
+    {
+        std::streamsize p(Log::info().precision(16));
+
+        Fraction A(limits::max()-6, limits::max()-1);
+        Fraction B(limits::max()-2, limits::max()-1);
+
+        Log::info() << limits::max()-6 << " ?= " << double(limits::max()-6) << std::endl;
+        Log::info() << limits::max()-2 << " ?= " << double(limits::max()-2) << std::endl;
+
+        /// @note this demonstrates that numerators/denominators have a lossy representation in double
+        EXPECT( double(limits::max()-6) == double(limits::max()-2) );
+
+        EXPECT(A != B);
+
+        /// @note these fail due to the lossy conversion to double of numerators/denominators
+        //    EXPECT(A <  B);
+        //    EXPECT(A <= B);
+        //    EXPECT(B >  A);
+        //    EXPECT(B >= A);
+
+        Log::info() << "Max denominator" << Fraction::max_denominator() << std::endl;
+
+        Fraction U(1, 1);
+
+        /// @note these fail due to the lossy conversion to double of numerators/denominators
+
+        EXPECT(A != U);
+        EXPECT(A <  U);
+        EXPECT(A <= U);
+        EXPECT(U >  A);
+        EXPECT(U >= A);
+
+        EXPECT(B != U);
+        EXPECT(B <  U);
+        EXPECT(B <= U);
+        EXPECT(U >  B);
+        EXPECT(U >= B);
+
+        Log::info().precision(p);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+CASE ( "Regression" ) {
+
+    Fraction A(-34093871309, 378680550);  // -90.033331
+    Fraction B(   -12621809, 378680550);  //  -0.3333102
 
     EXPECT(A <  B);
     EXPECT(A <= B);
@@ -170,7 +231,21 @@ CASE ( "test_fraction_with_overflow" ) {
     EXPECT(B >= A);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE ( "Values known to have problematic conversion to fraction" ) {
+
+    std::streamsize p(Log::debug().precision(16));
+    for (auto value : { 0.47718059708975263 }) {
+
+        Log::debug() << "Test " << value << "..." << std::endl;
+        Log::debug() << "Test " << value << " = " << Fraction(value) << std::endl;
+
+    }
+    Log::debug().precision(p);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace test
 } // namespace eckit

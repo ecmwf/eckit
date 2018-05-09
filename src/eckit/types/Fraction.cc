@@ -22,11 +22,6 @@
 
 namespace eckit {
 
-
-using limits = std::numeric_limits<Fraction::value_type>;
-
-
-
 static Fraction::value_type gcd(Fraction::value_type a, Fraction::value_type b) {
     while (b != 0)
     {
@@ -68,7 +63,7 @@ Fraction::Fraction(value_type top, value_type bottom) {
 
 }
 
-const Fraction::value_type MAX_DENOM = std::sqrt(limits::max());
+const Fraction::value_type MAX_DENOM = std::sqrt(std::numeric_limits<Fraction::value_type>::max());
 
 Fraction::value_type Fraction::max_denominator() {
     return MAX_DENOM;
@@ -109,7 +104,7 @@ Fraction::Fraction(double x) {
 
         x = 1.0 / (x - a);
 
-        if (x > limits::max()) {
+        if (x > std::numeric_limits<Fraction::value_type>::max()) {
             break;
         }
 
@@ -212,7 +207,7 @@ inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction
     if(overflow) { return Fraction::value_type(); }
 
     if (b != 0) {
-        overflow = std::abs(a) > limits::max() / std::abs(b);
+        overflow = std::abs(a) > std::numeric_limits<Fraction::value_type>::max() / std::abs(b);
     }
 
     return a * b;
@@ -222,8 +217,8 @@ inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction
 
     if(overflow) { return Fraction::value_type(); }
 
-    overflow = b > 0 ? a > limits::max() - b
-                     : a < limits::lowest() - b;
+    overflow = b > 0 ? a > std::numeric_limits<Fraction::value_type>::max() - b
+                     : a < std::numeric_limits<Fraction::value_type>::lowest() - b;
 
     return a + b;
 }

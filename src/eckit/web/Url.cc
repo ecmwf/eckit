@@ -137,7 +137,7 @@ void Url::parse(std::istream& in)
 	for (;;)
 	{
 		std::string s;
-		while (in.get(c) && c != ':' && c != '\r')
+		while (in.get(c) && c != '\r' && c != ':')
 		{
 			header(c);
 			s += c;
@@ -152,7 +152,7 @@ void Url::parse(std::istream& in)
 		}
 
 		header(c);
-		while (in.get(c) && c == ' ' && c != '\r')
+		while (in.get(c) && c != '\r' && c == ' ')
 			header(c);
 
 		if (c != '\r')

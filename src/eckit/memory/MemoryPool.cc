@@ -289,11 +289,6 @@ eckit::MemPool eckit::MemPool::permanentPool = {
     0, // don't zero
 };
 
-static size_t transientUsed();
-static size_t permanentUsed();
-
-static size_t transientFree();
-static size_t permanentFree();
 
 
 void *MemoryPool::fastAllocate(size_t s, MemPool& pool)

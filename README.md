@@ -5,6 +5,7 @@ eckit
 [![travis master](https://img.shields.io/travis/ecmwf/eckit/master.svg?label=master&logo=travis)](http://travis-ci.org/ecmwf/eckit "master")
 [![travis develop](https://img.shields.io/travis/ecmwf/eckit/develop.svg?label=develop&logo=travis)](http://travis-ci.org/ecmwf/eckit "develop")
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/094b5cd7496e46558d4495e6ec7d3c65)](https://www.codacy.com/app/tlmquintino/eckit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ecmwf/eckit&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/ecmwf/eckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/eckit)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecmwf/eckit/blob/develop/LICENSE)
 
 Project home: https://software.ecmwf.int/wiki/display/ECKIT

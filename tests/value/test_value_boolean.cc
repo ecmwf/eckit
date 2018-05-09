@@ -338,6 +338,23 @@ CASE( "Head/tail tests are disabled for booleans" ) {
     EXPECT(true);
 }
 
+CASE( "Hash a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    Value(true).hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "55a54008ad1ba589aa210d2629c1df41");
+
+    Value(false).hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "013b1a00c5739a37fa9a5a89337ec241");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

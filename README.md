@@ -15,9 +15,8 @@ Historically, the code base pre-dates and in some way can be seen as a leaner su
 
 It features facilities to easily handle, in a cross-platform way:
 * multi-threading
-* serialization
 * json and yaml parsing
-* object persistence
+* object serialization and persistence
 * configuration of user options and resources
 * file-system abstraction
 * regular expressions
@@ -28,11 +27,11 @@ It features facilities to easily handle, in a cross-platform way:
 * asynchronous processing
 * exception handling and stack dumping
 * smart pointers
-* container classes
-* space partition trees
-* file-mapped arrays
 * MPI object-oriented wrapper
 * linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
+* advanced container classes
+    * space partition trees
+    * file-mapped arrays
 
 Requirements
 ------------

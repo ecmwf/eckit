@@ -113,6 +113,8 @@ public: // methods
     ///       we don't wnat to expose eckit::Value out of Configuration.
     const Value& get() const { return root_; }
 
+    virtual void hash(eckit::Hash&) const;
+
 protected: // methods
 
     Configuration(const eckit::Value&, char separator = '.');

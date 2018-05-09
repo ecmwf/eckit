@@ -15,6 +15,8 @@
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/types/Types.h"
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Hash.h"
+#include "eckit/memory/ScopedPtr.h"
 
 using namespace std;
 using namespace eckit;
@@ -273,6 +275,22 @@ CASE( "test_local_configuration" )
   EXPECT( name == std::string("Wiske") );
   EXPECT( office == 3 );
 }
+
+CASE( "Hash a configuration" ) {
+
+    eckit::ScopedPtr<Hash> h(eckit::HashFactory::build("MD5"));
+
+    LocalConfiguration cfg;
+    cfg.set("name", "Sidonia");
+    cfg.set("office", 1);
+
+    cfg.hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "9f060b35735e98b0fdc0bf4c2d6d6d8d");
+}
+
 
 //-----------------------------------------------------------------------------
 

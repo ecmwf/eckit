@@ -180,7 +180,7 @@ void Url::parse(std::istream& in)
 	if (len)
 	{
 		static const std::string FormType      = "application/x-www-form-urlencoded";
-		static const std::string JSONType      = "application/json";
+		// static const std::string JSONType      = "application/json";
 
 		//bool ascii = true;
 		Buffer content(len);

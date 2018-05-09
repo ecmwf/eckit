@@ -65,7 +65,7 @@ void CmdResource::loop(CmdResource* cmd, CmdArg& arg, std::istream& in, std::ost
     std::ostream out(&buf);
 
     // SignalHandler interrupt;
-    std::string strcmd(arg[0]);
+    // std::string strcmd(arg[0]);
 
     for (;;) {
         // Log::status() << "Executing '" << strcmd << "'" << std::endl;

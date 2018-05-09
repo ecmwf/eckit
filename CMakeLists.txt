@@ -30,7 +30,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ### Experimental features
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
-                    DEFAULT ON
+                    DEFAULT OFF
                     DESCRIPTION "Experimental features Armadillo, CUDA, MKL, ViennaCL (not used in production)" )
 
 ### eckit::mpi

@@ -1,6 +1,7 @@
 eckit
 =====
 
+[![eckit release version](https://img.shields.io/github/release/ecmwf/eckit.svg)](https://github.com/ecmwf/eckit/releases/latest)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/094b5cd7496e46558d4495e6ec7d3c65)](https://www.codacy.com/app/tlmquintino/eckit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ecmwf/eckit&amp;utm_campaign=Badge_Grade)
 
 Project home: https://software.ecmwf.int/wiki/display/ECKIT

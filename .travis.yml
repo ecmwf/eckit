@@ -24,7 +24,7 @@ matrix:
       env:
         - CACHE_NAME=linux-clang38
         - CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
       addons:
         apt:
           sources:  ['llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
@@ -35,7 +35,7 @@ matrix:
       env:
         - CACHE_NAME=linux-gcc5
         - CXX_COMPILER='g++-5' C_COMPILER='gcc-5'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
       addons:
         apt:
           sources:  ['ubuntu-toolchain-r-test']
@@ -46,7 +46,7 @@ matrix:
       env:
         - CACHE_NAME=linux-gcc7
         - CXX_COMPILER='g++-7' C_COMPILER='gcc-7'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
       addons:
         apt:
           sources:  ['ubuntu-toolchain-r-test']
@@ -56,7 +56,7 @@ matrix:
       env:
         - CACHE_NAME=osx-clang
         - CXX_COMPILER='clang++' C_COMPILER='clang'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
       osx_image: xcode9
 
 before_install:

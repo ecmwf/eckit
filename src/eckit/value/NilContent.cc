@@ -131,7 +131,7 @@ void NilContent::dump(std::ostream& out, size_t depth, bool indent) const {
 }
 
 void NilContent::hash(Hash& h) const {
-    h.add("nil");
+    h.add("");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

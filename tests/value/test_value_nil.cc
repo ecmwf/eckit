@@ -266,6 +266,17 @@ CASE( "Head/tail tests are disabled for nil" ) {
     EXPECT(true);
 }
 
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    Value().hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "d41d8cd98f00b204e9800998ecf8427e");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

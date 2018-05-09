@@ -465,10 +465,14 @@ CASE( "Hash of a value" ) {
     om[123] = 1234;
     om[234] = 2345;
     om[777] = 7777;
+    om["abc"] = "def";
+    om[true] = false;
 
-    std::cout << "MD5 " << h->digest() << std::endl;
+    om.hash(*h);
 
-    EXPECT(h->digest() == "d41d8cd98f00b204e9800998ecf8427e");
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "d88d5bd6eb0a9d56d9132e0aca7f903f");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

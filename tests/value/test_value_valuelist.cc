@@ -462,6 +462,25 @@ CASE( "Test automatic creation of valuelists from lists" ) {
     EXPECT(val[4].as<long long>() == 55);
 }
 
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    ValueList vl;
+    vl.push_back(123);
+    vl.push_back("abc");
+    vl.push_back(1234.56);
+    vl.push_back(false);
+
+    Value v = Value::makeList(vl);
+
+    v.hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "3fce9e43c4ad2998b6a706eb28a7c060");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

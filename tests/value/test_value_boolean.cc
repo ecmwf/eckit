@@ -338,7 +338,7 @@ CASE( "Head/tail tests are disabled for booleans" ) {
     EXPECT(true);
 }
 
-CASE( "Hash a value" ) {
+CASE( "Hash of a value" ) {
 
     eckit::ScopedPtr<Hash> h(make_hash());
 

@@ -430,7 +430,7 @@ std::string ClusterDisks::node(const std::string& path)
         char line[1024];
         while(in.getline(line,sizeof(line)))
         {
-            if(line[0] != 0  || line[0] != '#')
+            if(line[0] != 0 && line[0] != '#')
             {
                 Tokenizer tokenize(", \t");
                 std::vector<std::string> tokens;

@@ -83,6 +83,8 @@ protected:
     virtual Content* clone() const;
     virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
+    virtual void hash(Hash&) const;
+
     // -- From Streamable
 
     virtual void encode(Stream&) const;

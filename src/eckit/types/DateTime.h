@@ -8,7 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// Baudouin Raoult - ECMWF Sep 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Sep 96
 
 #ifndef eckit_DateTime_h
 #define eckit_DateTime_h
@@ -17,11 +19,13 @@
 #include "eckit/types/Date.h"
 #include "eckit/types/Time.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+class Hash;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class DateTime {
 public:
@@ -35,7 +39,7 @@ public:
 
 #include "eckit/types/DateTime.b"
 
-	~DateTime() {}
+    ~DateTime() {}
 
 	bool operator<(const DateTime& other) const
 		{ return (date_ == other.date_)
@@ -78,6 +82,8 @@ public:
 
     std::string iso(bool UTC = true) const;
 
+    void hash(Hash&) const;
+
 protected: // members
 
 	Date date_;
@@ -92,7 +98,7 @@ private: // methods
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

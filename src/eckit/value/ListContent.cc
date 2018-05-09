@@ -12,7 +12,8 @@
 #include "eckit/value/ListContent.h"
 #include "eckit/parser/JSON.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/utils/Hash.h"
+
 
 namespace eckit {
 
@@ -231,6 +232,12 @@ void ListContent::dump(std::ostream& out, size_t depth, bool indent) const {
     }
 
     out << ']';
+}
+
+void ListContent::hash(Hash& h) const {
+    for(auto v: value_) {
+        v.hash(h);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

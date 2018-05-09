@@ -11,8 +11,8 @@
 #include "eckit/value/BoolContent.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/utils/Hash.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -127,6 +127,10 @@ Content* BoolContent::div(const Content & other) const
 Content* BoolContent::mod(const Content & other) const
 {
     return other.modBool(*this);
+}
+
+void BoolContent::hash(Hash& h) const {
+    h.add(value_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

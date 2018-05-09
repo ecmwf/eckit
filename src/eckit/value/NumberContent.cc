@@ -14,7 +14,7 @@
 #include "eckit/value/NumberContent.h"
 #include "eckit/utils/Translator.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/utils/Hash.h"
 
 namespace eckit {
 
@@ -27,7 +27,7 @@ public:
         Exception(std::string("Bad Bool Conversion: ") + w)   {  }
 };
 
-//=============================================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec NumberContent::classSpec_ = {&Content::classSpec(), "NumberContent",};
 Reanimator<NumberContent> NumberContent::reanimator_;
@@ -174,6 +174,10 @@ void NumberContent::dump(std::ostream& out, size_t depth, bool indent) const {
         }
     }
     out << "number(" << value_ << ")";
+}
+
+void NumberContent::hash(Hash& h) const {
+    h.add(value_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

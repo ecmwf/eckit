@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File DateTimeContent.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @author Tiago Quintino
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
 
 #ifndef eckit_DateTimeContent_h
 #define eckit_DateTimeContent_h
@@ -17,7 +18,6 @@
 #include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -76,6 +76,8 @@ protected:
 	virtual bool    isDate() const         { return true; }
     virtual Content* clone() const;
     virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
+
+    virtual void hash(Hash&) const;
 
     // -- From Streamable
 

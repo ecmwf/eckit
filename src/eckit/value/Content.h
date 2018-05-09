@@ -60,8 +60,9 @@ class Time;
 class DateTime;
 class Value;
 class JSON;
+class Hash;
 
-typedef std::vector<Value>     ValueList;
+typedef std::vector<Value>      ValueList;
 typedef std::map<Value, Value>  ValueMap;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -151,6 +152,7 @@ public:
     virtual Content* modDateTime(const DateTimeContent&) const;
     virtual Content* modOrderedMap(const OrderedMapContent&)      const;
 
+    virtual void hash(Hash&) const = 0;
 
 protected:
 

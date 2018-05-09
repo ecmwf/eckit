@@ -152,7 +152,7 @@ void Url::parse(std::istream& in)
 		}
 
 		header(c);
-		while (in.get(c) && c != '\r' && c == ' ')
+		while (in.get(c) && c == ' ')
 			header(c);
 
 		if (c != '\r')

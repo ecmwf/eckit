@@ -62,12 +62,12 @@ matrix:
 before_install:
 
   # Fixes to pre-installed packages
-  - |
-    ### Fix pre-installed packages
-    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      brew update
-      brew list oclint || brew cask uninstall oclint # Prevent conflict with gcc
-    fi
+  # - |
+  #   ### Fix pre-installed packages
+  #   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+  #     brew update
+  #     brew list oclint || brew cask uninstall oclint # Prevent conflict with gcc
+  #   fi
 
   # Set compilers
   - |
@@ -82,11 +82,11 @@ install:
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
   # Install compilers if needed
-  - |
-    ### Install gcc (homebrew)
-    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      brew upgrade gcc || brew install gcc
-    fi
+  # - |
+  #   ### Install gcc (homebrew)
+  #   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+  #     brew upgrade gcc || brew install gcc
+  #   fi
 
   # # Install MPI
   # - |

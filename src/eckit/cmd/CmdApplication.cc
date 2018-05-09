@@ -72,7 +72,7 @@ void CmdApplication::userMode() {
         try {
             CmdParser::parse(command, std::cout);
         } catch (std::exception& e) {
-            if (fail) throw e;
+            if (fail) throw;
 
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;

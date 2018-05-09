@@ -229,9 +229,9 @@ bool CmdResource::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::os
             proc(cmd, arg, in, out);
             return true;
         } catch (Abort& e) {
-            if (fail) throw e;
+            if (fail) throw;
         } catch (std::exception& e) {
-            if (fail) throw e;
+            if (fail) throw;
 
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;

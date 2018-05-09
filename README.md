@@ -26,7 +26,7 @@ It features facilities to easily handle, in a cross-platform way:
 * asynchronous IO
 * asynchronous processing
 * exception handling and stack dumping
-* smart pointers
+* smart pointers (with intrusive reference counting)
 * MPI object-oriented wrapper
 * linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
 * advanced container classes
@@ -41,6 +41,7 @@ Tested compilers include:
 - GCC 4.9.1, 5.3.0, 6.3.0, 7.2.0
 - Intel 15.0.2, 16.0.3, 17, 18
 - CCE 8.4.5, 8.5.8, 8.6.2
+- Apple LLVM 9.1.0 (clang-902.0.39.1)
 
 Required dependencies:
 

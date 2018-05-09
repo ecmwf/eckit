@@ -141,13 +141,18 @@ script:
 
 after_success:
 
-    # Creating report
-  - cd ${ECKIT_BUILD_DIR}
-  - lcov --directory . --capture --output-file coverage.info # capture coverage info
-  - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
-  - lcov --list coverage.info #debug info
-  # Uploading report to CodeCov
-  - bash <(curl -s https://codecov.io/bash) -t 33404098-c4e6-4701-a89c-36f33ceb3795 || echo "Codecov did not collect coverage reports"
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      if [[ "${CACHE_NAME} == "linux-gcc7" ]]; then
+        # Creating report
+        cd ${ECKIT_BUILD_DIR}
+        lcov --directory . --capture --output-file coverage.info # capture coverage info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+        lcov --list coverage.info #debug info
+        # Uploading report to CodeCov
+        bash <(curl -s https://codecov.io/bash) -t 33404098-c4e6-4701-a89c-36f33ceb3795 || echo "Codecov did not collect coverage reports"
+      fi
+    fi
 
 after_failure:
 

@@ -9,8 +9,8 @@ matrix:
 cache:
   directories:
     - ${HOME}/deps/cmake
-    - ${HOME}/deps/openmpi
-    - ${HOME}/deps/mpich
+    # - ${HOME}/deps/openmpi
+    # - ${HOME}/deps/mpich
 
 matrix:
   exclude:

@@ -10,4 +10,5 @@ module unload eccodes
 module unload emos
 module unload fftw
 module unload libemos
+module load cmake/3.10.2
 module switch gnu intel/16.0.3

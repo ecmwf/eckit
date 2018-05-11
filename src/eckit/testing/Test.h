@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   Setup.h
 /// @author Simon Smart
 /// @date   July 2017
 

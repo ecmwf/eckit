@@ -59,7 +59,7 @@ FileStream::~FileStream()
 
         // On Linux, you must also flush the directory
 
-#ifdef EC_HAVE_DIRFD
+#ifdef ECKIT_HAVE_DIRFD
         PathName directory = PathName(name_).dirName();
         DIR *d = ::opendir(directory.localPath());
         if (!d) SYSCALL(-1);

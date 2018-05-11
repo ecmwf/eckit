@@ -94,7 +94,7 @@ DateTime::DateTime(time_t thetime)
 
     // prefer reentrant version ( gmtime_r )
 
-#ifdef EC_HAVE_GMTIME_R
+#ifdef ECKIT_HAVE_GMTIME_R
 	struct tm t;
 	gmtime_r(&thetime,&t);
 	long td   = (1900 + t.tm_year) * 10000 + (t.tm_mon+1)* 100 + t.tm_mday;

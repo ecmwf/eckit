@@ -182,7 +182,7 @@ Time Time::now()
     time(&now);
 	struct tm *pt;
 
-#ifdef EC_HAVE_GMTIME_R
+#ifdef ECKIT_HAVE_GMTIME_R
     struct tm t;
     gmtime_r(&now,&t);
 	pt = &t;

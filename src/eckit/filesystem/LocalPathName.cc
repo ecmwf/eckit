@@ -539,7 +539,7 @@ void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>&
     for (;;)
     {
         struct dirent *e;
-#ifdef EC_HAVE_READDIR_R
+#ifdef ECKIT_HAVE_READDIR_R
         errno = 0;
         if (readdir_r(d, &buf, &e) != 0)
         {
@@ -638,7 +638,7 @@ const
     for (;;)
     {
         struct dirent *e;
-#ifdef EC_HAVE_READDIR_R
+#ifdef ECKIT_HAVE_READDIR_R
         errno = 0;
         if (readdir_r(d, &buf, &e) != 0)
         {
@@ -660,7 +660,7 @@ const
 
         LocalPathName full = *this + "/" + e->d_name;
 
-#if defined(EC_HAVE_DIRENT_D_TYPE)
+#if defined(ECKIT_HAVE_DIRENT_D_TYPE)
         if (e->d_type == DT_DIR)
             dirs.push_back(full);
         else
@@ -865,7 +865,7 @@ LocalPathName LocalPathName::mountPoint() const
 void LocalPathName::syncParentDirectory() const
 {
     PathName directory = dirName();
-#ifdef EC_HAVE_DIRFD
+#ifdef ECKIT_HAVE_DIRFD
 //    Log::info() << "Syncing directory " << directory << std::endl;
     DIR *d = opendir(directory.localPath());
     if (!d) SYSCALL(-1);

@@ -162,15 +162,6 @@ if( NOT ${CMAKE_USE_PTHREADS_INIT} )
     message( FATAL_ERROR "Only pthreads supported - thread library found is [${CMAKE_THREAD_LIBS_INIT}]" )
 endif()
 
-# fail if we dont have bool
-if( NOT EC_HAVE_CXX_BOOL )
-    message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support bool" )
-endif()
-# fail if we dont have sstream
-if( NOT EC_HAVE_CXX_SSTREAM )
-    message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support stringstream" )
-endif()
-
 ############################################################################################
 # export package info
 

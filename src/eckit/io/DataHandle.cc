@@ -370,7 +370,7 @@ DataHandle* DataHandle::clone() const
 //----------------------------------------------------------------------------------------------------------------------
 
 
-#if defined(EC_HAVE_FOPENCOOKIE) || defined(EC_HAVE_FUNOPEN)
+#if defined(ECKIT_HAVE_FOPENCOOKIE) || defined(ECKIT_HAVE_FUNOPEN)
 
 class FOpenDataHandle {
 
@@ -513,7 +513,7 @@ static int closefn(void *data) {
     return fd->close();
 }
 
-#ifdef EC_HAVE_FOPENCOOKIE
+#ifdef ECKIT_HAVE_FOPENCOOKIE
 
 static ssize_t _read(void *cookie, char *buf, size_t size) {
 

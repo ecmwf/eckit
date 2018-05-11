@@ -62,15 +62,15 @@
 
 //-----------------------------------------------------------------------------
 
-#if (!defined EC_HAVE_MAP_ANONYMOUS) && (defined EC_HAVE_MAP_ANON)
+#if (!defined ECKIT_HAVE_MAP_ANONYMOUS) && (defined ECKIT_HAVE_MAP_ANON)
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-#if (!defined EC_HAVE_FDATASYNC) && (defined EC_HAVE_FSYNC)
+#if (!defined ECKIT_HAVE_FDATASYNC) && (defined ECKIT_HAVE_FSYNC)
 #define fdatasync  fsync
 #endif
 
-#ifndef EC_HAVE_FUNCTION_DEF
+#ifndef ECKIT_HAVE_FUNCTION_DEF
 #define __FUNCTION__ ""
 #endif
 

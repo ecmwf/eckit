@@ -42,7 +42,7 @@ DataHandle::DataHandle(Stream& s):
 {
 }
 
-AutoClose::~AutoClose()
+AutoClose::~AutoClose() noexcept(false)
 {
     bool fail = !Exception::throwing();
 

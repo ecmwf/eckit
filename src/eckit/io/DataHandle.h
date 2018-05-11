@@ -142,7 +142,7 @@ class AutoClose {
 	DataHandle& handle_;
 public:
 	AutoClose(DataHandle& handle) : handle_(handle) {}
-	~AutoClose();
+    ~AutoClose() noexcept(false);
 
 };
 

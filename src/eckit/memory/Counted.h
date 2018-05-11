@@ -92,7 +92,7 @@ public:
 
     Counted() : count_(0) {}
 
-    virtual ~Counted();
+    ~Counted();
 
 private: // members
 

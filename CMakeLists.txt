@@ -1,9 +1,3 @@
-########################################################################################################################
-#
-#   eckit - ECMWF C++ Toolkit
-#
-########################################################################################################################
-
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 
 project( eckit CXX )
@@ -12,22 +6,16 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 2.8 )
+ecbuild_requires_macro_version( 2.9 )
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
-###############################################################################
-# local project
-
 ecbuild_declare_project()
-
-###############################################################################
-# some variables/options of this project
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-### Experimental features
+### dependencies and options
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT OFF

@@ -34,7 +34,7 @@ public:
 
 	StdFile(const PathName& name,const std::string& mode = "r");
 
-    ~StdFile() noexcept(false);
+    ~StdFile();
 
 	operator FILE*() { return file_; } // don't call fclose !!!
 

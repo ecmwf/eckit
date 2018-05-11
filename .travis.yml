@@ -113,7 +113,7 @@ install:
   # Install ecbuild
   - |
     ### Install ecbuild
-    git clone --depth 1 -b master https://github.com/ecmwf/ecbuild ${DEPS_DIR}/ecbuild
+    git clone --depth 1 -b develop https://github.com/ecmwf/ecbuild ${DEPS_DIR}/ecbuild
     export PATH=${DEPS_DIR}/ecbuild/bin:${PATH}
     export ECBUILD_MODULE_PATH=${DEPS_DIR}/ecbuild/cmake
     ecbuild --version

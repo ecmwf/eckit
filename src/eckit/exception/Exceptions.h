@@ -294,9 +294,10 @@ public:
 #define THRCALL(a)    ::eckit::ThrCall(a,#a, __FILE__, __LINE__, __FUNCTION__)
 #define SYSCALL(a)    ::eckit::SysCall(a,#a, __FILE__, __LINE__, __FUNCTION__)
 #define SYSCALL2(a,b) ::eckit::SysCall(a,#a,b, __FILE__, __LINE__, __FUNCTION__)
-#define ASSERT(a)     ::eckit::Assert(!(a),#a, __FILE__, __LINE__, __FUNCTION__)
 #define PANIC(a)      ::eckit::Panic((a),#a,Here())
 #define NOTIMP  throw ::eckit::NotImplemented(Here())
+#define ASSERT(a)     ::eckit::Assert(!(a),#a, __FILE__, __LINE__, __FUNCTION__)
+#define ASSERT_MSG(a,m) ::eckit::Assert(!(a),m, __FILE__, __LINE__, __FUNCTION__)
 
 #define CHECK_CALL_NOLOG(a) ::eckit::PanicNoLog(a,#a,Here())
 

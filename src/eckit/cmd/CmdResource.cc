@@ -285,7 +285,7 @@ void CmdResource::pipe(CmdResource* cmd, CmdArg& args, std::istream& in, std::os
 
     const std::string to = args["|"]; // everything after the pipe
 
-    StdPipe pipe(to, "w");
+    StdPipe pipe(to, "w"); AutoCloser<StdPipe> closer(pipe);
     StdioBuf buf(pipe);
     std::ostream out(&buf);
 

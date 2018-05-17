@@ -11,6 +11,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/io/DblBuffer.h"
 #include "eckit/log/Log.h"
@@ -21,11 +22,10 @@
 #include "eckit/log/Timer.h"
 #include "eckit/runtime/Monitor.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class DblBufferError : public Exception {
 public:

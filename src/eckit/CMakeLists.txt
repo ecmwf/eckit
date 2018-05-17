@@ -158,6 +158,7 @@ io/MoverTransfer.h
 io/MoverTransfer.cc
 io/SockBuf.h
 io/SockBuf.cc
+io/AutoCloser.h
 io/AIOHandle.h
 io/AIOHandle.cc
 io/AsyncHandle.h
@@ -235,6 +236,7 @@ filesystem/PathName.h
 filesystem/PathName.cc
 filesystem/BasePathNameT.h
 filesystem/BasePathNameT.cc
+filesystem/BasePathName.cc
 filesystem/BasePathName.h
 filesystem/LocalPathName.h
 filesystem/LocalPathName.cc

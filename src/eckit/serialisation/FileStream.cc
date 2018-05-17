@@ -16,25 +16,21 @@
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/log/Log.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
-FileStream::FileStream(const PathName& name, const char *mode):
-    file_(::fopen(name.localPath(), mode)),
+FileStream::FileStream(const PathName& name, const char *mode) :
+    file_(name.localPath(), mode),
     read_(std::string(mode) == "r"),
     name_(name)
 {
-    if (file_ == 0)
-        throw CantOpenFile(name);
-    //setbuf(file_,0);
 }
 
-FileStream::~FileStream()
-{
-    ASSERT(file_);
+FileStream::~FileStream() {
+    ASSERT_MSG(!file_.isOpen(), "FileStream being destructed is still open");
+}
+
+void FileStream::close() {
 
     if (!read_)
     {
@@ -79,9 +75,7 @@ FileStream::~FileStream()
 
     }
 
-    if (::fclose(file_))
-        throw WriteError(std::string("FileStream::~FileStream(fclose(") + name_ + "))");
-    file_ = 0;
+    file_.close();
 }
 
 long FileStream::read(void* buf, long length)

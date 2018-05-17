@@ -10,10 +10,10 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   Jun 96
+/// @date   June 96
 
-#ifndef eckit_StdFile_h
-#define eckit_StdFile_h
+#ifndef eckit_io_StdFile_h
+#define eckit_io_StdFile_h
 
 #include <stdio.h>
 
@@ -23,20 +23,26 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
-// Simple wrapper around a stdio file
-
 class PathName;
+
+/// Wrapper around a stdio FILE*
+/// Use this for class members
 
 class StdFile : private NonCopyable {
 public:
 
-	StdFile(const PathName& name,const std::string& mode = "r");
+    StdFile(const PathName& name, const std::string& mode = "r");
 
+    /// @pre must have been closed
     ~StdFile();
 
-	operator FILE*() { return file_; } // don't call fclose !!!
+    /// Get the FILE* but don't call fclose on it
+    operator FILE*() { return file_; }
+
+    bool isOpen() { return file_; }
+
+    /// @throws on fclose failure
+    void close() noexcept(false);
 
 private: // members
 
@@ -44,7 +50,18 @@ private: // members
 
 };
 
-//----------------------------------------------------------------------------------------------------------------------
+
+/// Wrapper around a stdio FILE*
+/// Use this for stack objects that automatically close
+
+class AutoStdFile : public StdFile {
+public:
+    AutoStdFile(const PathName& name, const std::string& mode = "r") : StdFile(name, mode)
+    {}
+    ~AutoStdFile() noexcept(false)
+    { close(); }
+};
+
 
 } // namespace eckit
 

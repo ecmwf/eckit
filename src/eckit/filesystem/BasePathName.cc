@@ -8,27 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_NonCopyable_h
-#define eckit_NonCopyable_h
-
+#include "eckit/filesystem/BasePathName.h"
 
 namespace eckit {
 
-/// Inherit from this class to make a NonCopyable class
+BasePathName::~BasePathName() {}
 
-class NonCopyable {
-protected:
-
-    NonCopyable();
-    ~NonCopyable();
-
-private: // No copy allowed
-
-    NonCopyable(const NonCopyable&) = delete;
-    NonCopyable& operator=(const NonCopyable&) = delete;
-
-};
 
 } // namespace eckit
-
-#endif

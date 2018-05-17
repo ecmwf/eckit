@@ -28,21 +28,10 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
-Reanimator<DataHandle> DataHandle::reanimator_;
+//--------------------------------------------------------------------------------------------------
 
-DataHandle::DataHandle()
-{
-}
-
-DataHandle::DataHandle(Stream& s):
-    Streamable(s)
-{
-}
-
-AutoClose::~AutoClose()
+AutoClose::~AutoClose()  noexcept(false)
 {
     bool fail = !Exception::throwing();
 
@@ -60,6 +49,21 @@ AutoClose::~AutoClose()
         Log::error() << "** An exception is already in progress" << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+
+
+ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
+Reanimator<DataHandle> DataHandle::reanimator_;
+
+DataHandle::DataHandle()
+{
+}
+
+DataHandle::DataHandle(Stream& s):
+    Streamable(s)
+{
 }
 
 void DataHandle::encode(Stream& s) const

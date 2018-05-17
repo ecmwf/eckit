@@ -12,6 +12,7 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/value/CompositeParams.h"
 #include "eckit/value/DispatchParams.h"
 #include "eckit/value/Params.h"
@@ -235,11 +236,11 @@ Params stream_to_from_file(const Params& p)
     PathName filename = PathName::unique( "data" );
     std::string filepath = filename.asString();
     {
-        FileStream sout( filepath.c_str(), "w" );
+        FileStream sout( filepath.c_str(), "w" ); auto c = closer(sout);
         sout << p;
     }
     {
-        FileStream sin( filepath.c_str(), "r" );
+        FileStream sin( filepath.c_str(), "r" ); auto c = closer(sin);
         return Params(Params::decode(sin));
     }
 }

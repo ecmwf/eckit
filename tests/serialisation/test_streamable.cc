@@ -18,6 +18,7 @@
 #include <sys/types.h>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Streamable.h"
 
@@ -125,11 +126,11 @@ CASE ( "test_decode_" #TYPE "_" #SUFFIX ) \
 	std::string filepath = filename.asString(); \
 	TestItem<TYPE> t(INITIAL); \
 	{ \
-		FileStream sout( filepath.c_str(), "w" ); \
+        FileStream sout( filepath.c_str(), "w" ); auto c = closer(sout); \
 		t.encode(sout); \
 	} \
 	{ \
-		FileStream sin( filepath.c_str(), "r" ); \
+        FileStream sin( filepath.c_str(), "r" ); auto c = closer(sin); \
 		TestItem<TYPE> t2(sin); \
 		Log::info()  << "original: " << t.payload_ << std::endl; \
 		Log::info()  << "streamed: " << t2.payload_ << std::endl; \
@@ -146,11 +147,11 @@ CASE ( "test_reanimate_" #TYPE "_" #SUFFIX ) \
 	std::string filepath = filename.asString(); \
 	TestItem<TYPE> t(INITIAL); \
 	{ \
-		FileStream sout( filepath.c_str(), "w" ); \
+        FileStream sout( filepath.c_str(), "w" ); auto c = closer(sout); \
 		sout << t; \
 	} \
 	{ \
-		FileStream sin( filepath.c_str(), "r" ); \
+        FileStream sin( filepath.c_str(), "r" ); auto c = closer(sin); \
 		TestItem<TYPE>* t2 = eckit::Reanimator< TestItem<TYPE> >::reanimate(sin); \
 		Log::info()  << "orginal: " << t.payload_ << std::endl; \
 		Log::info()  << "streamed: " << t2->payload_ << std::endl; \

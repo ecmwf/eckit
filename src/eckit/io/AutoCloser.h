@@ -8,26 +8,34 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_NonCopyable_h
-#define eckit_NonCopyable_h
+/// @author Tiago Quintino
+/// @date   May 2018
 
+#ifndef eckit_io_AutoCloser_h
+#define eckit_io_AutoCloser_h
+
+#include <utility>
 
 namespace eckit {
 
-/// Inherit from this class to make a NonCopyable class
+template <typename T>
+class AutoCloser {
 
-class NonCopyable {
-protected:
+  T& obj_;
 
-    NonCopyable();
-    ~NonCopyable();
+public: // methods
 
-private: // No copy allowed
+  AutoCloser(T& obj) : obj_(obj) {}
 
-    NonCopyable(const NonCopyable&) = delete;
-    NonCopyable& operator=(const NonCopyable&) = delete;
+  ~AutoCloser() noexcept(noexcept(std::declval<T>().close())) {
+      obj_.close();
+  }
 
 };
+
+template<typename T>
+AutoCloser<T> closer(T& obj) { return AutoCloser<T>(obj); }
+
 
 } // namespace eckit
 

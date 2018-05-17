@@ -13,6 +13,7 @@
 #include <sys/types.h>
 
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/io/AutoCloser.h"
 
 #include "eckit/testing/Test.h"
 
@@ -76,7 +77,7 @@ PathName F::filename = PathName::unique( "data" );
 
 CASE ( "write_data" )
 {
-    FileStream sout( F::filename, "w" );
+    FileStream sout( F::filename, "w" ); auto c = closer(sout);
     sout << i_char
         << i_uchar
         << i_bool
@@ -97,7 +98,7 @@ CASE ( "write_data" )
 
 CASE( "read_data" )
 {
-    FileStream sin( F::filename, "r" );
+    FileStream sin( F::filename, "r" ); auto c = closer(sin);
     sin
         >> v_char
         >> v_uchar
@@ -141,14 +142,14 @@ CASE ( "stream_object" ) {
     const std::string k("key");
     const std::string v("value");
     {
-        FileStream sout( F::filename, "w" );
+        FileStream sout( F::filename, "w" ); auto c = closer(sout);
         sout.startObject();
         sout << k;
         sout << v;
         sout.endObject();
     }
     {
-        FileStream sin( F::filename, "r" );
+        FileStream sin( F::filename, "r" ); auto c = closer(sin);
         EXPECT( sin.next() );
         std::string s;
         sin >> s;
@@ -163,11 +164,11 @@ CASE ( "stream_object" ) {
 CASE( "stream_string" ) {
     Log::info() << "Stream a string" << std::endl;
     {
-        FileStream sout( F::filename, "w" );
+        FileStream sout( F::filename, "w" ); auto c = closer(sout);
         sout << i_string;
     }
     {
-        FileStream sin( F::filename, "r" );
+        FileStream sin( F::filename, "r" ); auto c = closer(sin);
         std::string s;
         EXPECT( sin.next(s) );
         EXPECT( s == i_string );

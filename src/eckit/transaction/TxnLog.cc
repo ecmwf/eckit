@@ -16,6 +16,7 @@
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
@@ -155,7 +156,7 @@ void TxnLog<T>::begin(T& event)
     PathName path = name(event);
     ASSERT(!path.exists());
 
-    FileStream log(path, "w");
+    FileStream log(path, "w"); auto c = closer(log);
     log << event;
 }
 
@@ -167,7 +168,7 @@ void TxnLog<T>::update(const T& event)
     PathName path = name(event);
     PathName next = path + ".tmp";
     {
-        FileStream log(next, "w");
+        FileStream log(next, "w"); auto c = closer(log);
         log << event;
     }
     PathName::rename(next, path);
@@ -187,7 +188,7 @@ void TxnLog<T>::end(T& event, bool backup)
 
         // Append to current day's backup
 
-        FileStream log(s.str(), "a");
+        FileStream log(s.str(), "a"); auto c = closer(log);
         log << event;
     }
 
@@ -255,7 +256,7 @@ void RecoverThread<T>::recover()
                         Seconds(now_ - result_[i].created()) << " ago." << std::endl;
         else
             try {
-                FileStream log(result_[i], "r");
+                FileStream log(result_[i], "r"); auto c = closer(log);
                 T *task = Reanimator<T>::reanimate(log);
                 if (task) {
                     ASSERT(task->transactionID() < nextID_[0]);
@@ -298,7 +299,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
     for (Ordinal j = 0; (j < active.size()); ++j)
     {
         try {
-            FileStream log(active[j], "r");
+            FileStream log(active[j], "r"); auto c = closer(log);
             eckit::ScopedPtr<T> task(Reanimator<T>::reanimate(log));
             if (task.get())
                 if (!r.found(*task))
@@ -338,7 +339,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
         {
             Log::info() << "Searching " << dates[k] << std::endl;
             try {
-                FileStream log(dates[k], "r");
+                FileStream log(dates[k], "r"); auto c = closer(log);
                 eckit::ScopedPtr<T> task(Reanimator<T>::reanimate(log));
                 while (task)
                 {

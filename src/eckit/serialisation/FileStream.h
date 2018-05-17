@@ -8,32 +8,30 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileStream.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+///
+/// @date   May 96
 
-#ifndef eckit_FileStream_h
-#define eckit_FileStream_h
+#ifndef eckit_serialisation_FileStream_h
+#define eckit_serialisation_FileStream_h
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/io/StdFile.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+/// Stream to serialise to FILE*
 
 class FileStream : public Stream {
 
 public: // methods
 
-    /// Contructor
+    FileStream(const PathName& name, const char *mode);
 
-	FileStream(const PathName& name,const char *mode);
-
-    /// Destructor
-
-	~FileStream();
+    virtual ~FileStream();
 
     // Overriden from Stream
 
@@ -41,9 +39,11 @@ public: // methods
 	virtual long write(const void*,long);
 	virtual void rewind();
 
+    void close();
+
 protected: // members
 
-    FILE* 		file_;
+    StdFile     file_;
     bool        read_;
     PathName    name_;
 
@@ -52,12 +52,10 @@ protected: // methods
     // Overriden from Stream
 
 	virtual std::string name() const;
+
     virtual void print(std::ostream& s) const;
 
 };
-
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

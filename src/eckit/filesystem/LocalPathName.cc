@@ -682,16 +682,16 @@ const
 void LocalPathName::touch() const
 {
     dirName().mkdir();
-    StdFile f(*this, "a"); // This should touch the file
+    AutoStdFile f(*this, "a"); // This should touch the file
 }
 
-// This routine is used by TxnLog. It is important that
+// This method is used by TxnLog. It is important that
 // the inode is preserved, otherwise ftok will give different
 // result
 
 void LocalPathName::empty() const
 {
-    StdFile f(*this, "w"); // This should clear the file
+    AutoStdFile f(*this, "w"); // This should clear the file
 }
 
 void LocalPathName::copy(const LocalPathName& other) const

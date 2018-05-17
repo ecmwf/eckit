@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File DblBuffer.h
-// Baudouin Raoult - ECMWF Feb 97
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Feb 97
 
 #ifndef eckit_DblBuffer_h
 #define eckit_DblBuffer_h
@@ -20,11 +21,9 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/io/TransferWatcher.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class DblBuffer : private NonCopyable {
 public:
@@ -73,8 +72,6 @@ private: // members
 
 };
 
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

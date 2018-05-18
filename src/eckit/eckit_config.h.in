@@ -14,6 +14,7 @@
 #cmakedefine ECKIT_HAVE_FUNOPEN
 #cmakedefine ECKIT_HAVE_FSYNC
 #cmakedefine ECKIT_HAVE_FDATASYNC
+#cmakedefine ECKIT_HAVE_FMEMOPEN
 #cmakedefine ECKIT_HAVE_FOPENCOOKIE
 #cmakedefine ECKIT_HAVE_EXECINFO_BACKTRACE
 #cmakedefine ECKIT_HAVE_CXXABI_H
@@ -21,6 +22,7 @@
 #cmakedefine ECKIT_HAVE_READDIR_R
 #cmakedefine ECKIT_HAVE_DIRFD
 #cmakedefine ECKIT_HAVE_DIRENT_D_TYPE
+#cmakedefine ECKIT_HAVE_CXX_INT_128
 
 // external packages
 

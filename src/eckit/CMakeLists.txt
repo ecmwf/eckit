@@ -15,6 +15,7 @@ check_symbol_exists( MAP_ANON      "sys/mman.h"  ECKIT_HAVE_MAP_ANON )
 check_symbol_exists( funopen       "stdio.h"     ECKIT_HAVE_FUNOPEN )
 check_symbol_exists( fsync         "unistd.h"    ECKIT_HAVE_FSYNC)
 check_symbol_exists( fdatasync     "unistd.h"    ECKIT_HAVE_FDATASYNC)
+check_symbol_exists( fmemopen      "stdio.h"     ECKIT_HAVE_FMEMOPEN )
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
     ECKIT_HAVE_FOPENCOOKIE )
@@ -39,6 +40,9 @@ check_c_source_compiles( "#include <sys/types.h>\n#include <dirent.h>\nint main(
 
 check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; if(entry->d_type) { dirp = 0; } }\n"
     ECKIT_HAVE_DIRENT_D_TYPE )
+
+check_cxx_source_compiles( "int main() { __int128 i = 0; return 0;}"
+    ECKIT_HAVE_CXX_INT_128 )
 
 ### config headers
 

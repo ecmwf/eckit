@@ -5,6 +5,11 @@
 
 #include "eckit/eckit_version.h"
 
+// endiness
+
+#cmakedefine ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
+#cmakedefine ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
+
 // system
 
 #cmakedefine ECKIT_HAVE_DLFCN_H

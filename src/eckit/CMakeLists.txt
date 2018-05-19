@@ -1,3 +1,18 @@
+### endianess
+
+test_big_endian( _BIG_ENDIAN )
+
+if( _BIG_ENDIAN )
+        set( ECKIT_BIG_ENDIAN    1 )
+        set( ECKIT_LITTLE_ENDIAN 0 )
+else()
+        set( ECKIT_BIG_ENDIAN    0 )
+        set( ECKIT_LITTLE_ENDIAN 1 )
+endif()
+
+set( ECKIT_BIG_ENDIAN    ${ECKIT_BIG_ENDIAN}    )
+set( ECKIT_LITTLE_ENDIAN ${ECKIT_LITTLE_ENDIAN} )
+
 ### check support for DL library
 
 check_include_files( dlfcn.h  ECKIT_HAVE_DLFCN_H )

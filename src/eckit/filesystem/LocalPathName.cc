@@ -45,8 +45,9 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
+
+static StaticMutex local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
 
@@ -96,9 +97,7 @@ static void readPathsTable() {
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-static StaticMutex local_mutex;
+//--------------------------------------------------------------------------------------------------
 
 // I need to come back here when we have a proper std::string class
 
@@ -883,7 +882,7 @@ void LocalPathName::syncParentDirectory() const
 
     ::closedir(d);
 #else
-    Log::info() << "Syncing directory " << directory << " (not supported)" << endl;
+    Log::info() << "Syncing directory " << directory << " (not supported)" << std::endl;
 #endif
 }
 
@@ -904,7 +903,6 @@ std::string LocalPathName::clusterName() const
     return os.str();
 }
 
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

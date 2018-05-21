@@ -9,7 +9,8 @@
  */
 
 /// @author Baudouin Raoult
-/// @date June 2017
+/// @author Tiago Quintino
+/// @date   June 2017
 
 #ifndef eckit_CircularBuffer_h
 #define eckit_CircularBuffer_h
@@ -23,7 +24,6 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 // A simple class to implement buffers
 
@@ -48,6 +48,7 @@ private: // members
     mutable Mutex mutex_;
 
     char*  buffer_;
+
     size_t increment_;
     size_t size_;
     size_t capacity_;
@@ -58,7 +59,6 @@ private: // members
 
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

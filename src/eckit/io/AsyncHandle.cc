@@ -14,11 +14,11 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/maths/Functions.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+
 
 #if 0
 ClassSpec AsyncHandle::classSpec_ = {&DataHandle::classSpec(), "AsyncHandle",};
@@ -230,7 +230,7 @@ DataHandle* AsyncHandle::clone() const
 {
     return new AsyncHandle(handle().clone(), maxSize_, rounding_);
 }
-//-----------------------------------------------------------------------------
+
 
 } // namespace eckit
 

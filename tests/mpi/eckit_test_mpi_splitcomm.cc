@@ -35,7 +35,6 @@ CASE( "Test MPI Communicator Split" )
 
     // Check sizes and ranks
     EXPECT( all.size() == 4 );
-    EXPECT( all.rank() >= 0 );
     EXPECT( all.rank() < 4 );
 
     // Split communicator in half
@@ -50,7 +49,6 @@ CASE( "Test MPI Communicator Split" )
 
     // Check sizes and ranks
     EXPECT ( newcomm.size() == 2 );
-    EXPECT ( newcomm.rank() >= 0 );
     EXPECT ( newcomm.rank() < 2 );
     EXPECT ( all.size() == 4 );
 

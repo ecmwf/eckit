@@ -69,9 +69,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
             Log::status() << message << " (port " << port_ << ")" << std::endl;
         }
 
-        if ((socket_ = ::accept(listen_,
-                                reinterpret_cast<sockaddr*>(&from), &fromlen)) >= 0)
+        if ((socket_ = ::accept(listen_, reinterpret_cast<sockaddr*>(&from), &fromlen)) >= 0) {
             break;
+        }
 
         if (errno != EINTR)
             throw FailedSystemCall("accept");

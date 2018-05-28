@@ -43,6 +43,8 @@ void Client::run()
     TCPClient client;
     TCPStream s ( client.connect(remoteHost, 9013) );
 
+    Log::info() << "Connecting to " << s.socket().remoteHost() << ":" << s.socket().remotePort() << std::endl;
+
     for (int loop = 0; loop < 100; loop++) {
 
         for(const char* data: { "AAAAAAA", "BBBBBBBB", "CCCCCCCCCCCCC"} ) {

@@ -59,6 +59,8 @@ void Client::run()
 
     for(auto s: {0, 3, 6, 9, 12}) {
 
+        ::sleep(3);
+
         TCPClient c;
         c.connect(remoteHost, 10000);
 

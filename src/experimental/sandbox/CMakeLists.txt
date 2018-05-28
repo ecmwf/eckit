@@ -37,3 +37,9 @@ ecbuild_add_executable( TARGET sandbox_arg NOINSTALL
                         CONDITION ENABLE_SANDBOX
                         SOURCES arg.cc
                         LIBS eckit_cmd )
+
+ecbuild_add_executable( TARGET  sandbox_tcp_client_json NOINSTALL
+                        CONDITION ENABLE_SANDBOX
+                        SOURCES tcp_client_json.cc
+                        LIBS eckit )
+

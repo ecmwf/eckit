@@ -54,7 +54,7 @@ CASE( "test_configuration_interface" )
     std::string         value_string          = std::string("string");
     std::vector<int>    value_arr_int         = make_vector(1,2,3);
     std::vector<long>   value_arr_long        = make_vector(4l,5l);
-    std::vector<size_t> value_arr_size_t      = make_vector(6ul,7ul);
+    std::vector<size_t> value_arr_size_t      = make_vector(std::size_t{6},std::size_t{7});
     std::vector<float>  value_arr_float       = make_vector(1.234567f,2.345678f);
     std::vector<double> value_arr_double      = make_vector(1.234567,2.345678);
     std::vector<std::string> value_arr_string = make_vector(std::string("hello"),std::string("world"));

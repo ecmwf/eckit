@@ -127,7 +127,7 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
     mkl_dcsrmm( "N", &m, &n, &k,
                 &alpha, "G__F",
                 a, inner.data(), outer.data(), outer.data()+1,
-                b, &k, &beta, C.data(), &k);
+                b, &k, &beta, C.data(), &m);
 }
 
 //-----------------------------------------------------------------------------

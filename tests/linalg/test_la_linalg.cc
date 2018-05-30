@@ -14,6 +14,7 @@
 
 #include "eckit/linalg/LinearAlgebra.h"
 #include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 #include "./util.h"
 
@@ -44,7 +45,7 @@ void test(const T& v, const T& r) {
     EXPECT( make_view(v.data(), v.data() + v.size()) == make_view(r.data(), r.data() + r.size()));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
@@ -75,6 +76,48 @@ CASE ( "test_eckit_la_sparse" ) {
     }
 }
 
+//-----------------------------------------------------------------------------
+
+CASE ( "test multiply with different backends" ) {
+
+    SparseMatrix A(2, 4 , std::vector<Triplet>{
+                       {0, 0, 2.},
+                       {1, 2, 3.},
+                   });
+
+    Matrix B(4, 2);
+    for (size_t i = 0; i < 4; ++i) {
+        B(i, 0) = 5;
+        B(i, 1) = 7;
+    }
+
+    Matrix C(2, 2);
+    C.fill(-42.);
+
+    for (auto& back : {
+         "generic",
+     #ifdef ECKIT_HAVE_ARMADILLO
+         "armadillo",
+     #endif
+     #ifdef ECKIT_HAVE_CUDA
+         "cuda",
+     #endif
+     #ifdef ECKIT_HAVE_EIGEN
+         "eigen",
+     #endif
+     #ifdef ECKIT_HAVE_MKL
+         "mkl",
+     #endif
+}) {
+        Log::info() << "testing backend: '" << back << "'" << std::endl;
+        LinearAlgebra::getBackend(back).spmm(A, B, C);
+
+        EXPECT(C(0, 0) == 10.);
+        EXPECT(C(0, 1) == 14.);
+        EXPECT(C(1, 0) == 15.);
+        EXPECT(C(1, 1) == 21.);
+}
+}
 
 
 //-----------------------------------------------------------------------------

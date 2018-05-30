@@ -23,6 +23,7 @@
 #cmakedefine ECKIT_HAVE_FOPENCOOKIE
 #cmakedefine ECKIT_HAVE_EXECINFO_BACKTRACE
 #cmakedefine ECKIT_HAVE_CXXABI_H
+#cmakedefine ECKIT_HAVE_FUNCTION_DEF
 #cmakedefine ECKIT_HAVE_GMTIME_R
 #cmakedefine ECKIT_HAVE_READDIR_R
 #cmakedefine ECKIT_HAVE_DIRFD

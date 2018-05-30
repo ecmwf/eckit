@@ -312,7 +312,7 @@ void *MemoryPool::fastAllocate(size_t s, MemPool& pool)
 
         if (s > size - HEADER_SIZE)
         {
-//          std::cerr << "Object of " << s << " bytes is too big for " << __FUNCTION__ << std::endl;
+//          std::cerr << "Object of " << s << " bytes is too big for " << __func__ << std::endl;
 //          std::cerr << "Block size is " << size - HEADER_SIZE << std::endl;
             size = ((s + HEADER_SIZE + (page_size - 1)) / page_size) * page_size;
         }

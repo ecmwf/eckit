@@ -27,7 +27,13 @@ public: // methods
 
   AutoCloser(T& obj) : obj_(obj) {}
 
-  ~AutoCloser() noexcept(noexcept(std::declval<T>().close())) {
+  /// Assume that close() can throw
+  /// Otherwise we could test the interface with:
+  /// \code{.cpp}
+  /// ~AutoCloser() noexcept(noexcept(std::declval<T>().close()))
+  /// \endcode
+  /// but Intel compiler 17 on Cray XC40 has trouble with it
+  ~AutoCloser() noexcept(false) {
       obj_.close();
   }
 

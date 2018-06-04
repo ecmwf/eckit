@@ -22,6 +22,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/BufferedHandle.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/io/MemoryHandle.h"
@@ -32,7 +33,7 @@
 namespace eckit {
 namespace linalg {
 
-#ifdef EC_LITTLE_ENDIAN
+#ifdef ECKIT_LITTLE_ENDIAN
 static const bool littleEndian = true;
 #else
 static const bool littleEndian = false;
@@ -220,13 +221,13 @@ void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
 
 
 void SparseMatrix::save(const eckit::PathName &path) const {
-    FileStream s(path, "w");
+    FileStream s(path, "w"); auto c = closer(s);
     encode(s);
 }
 
 
 void SparseMatrix::load(const eckit::PathName &path)  {
-    FileStream s(path, "r");
+    FileStream s(path, "r"); auto c = closer(s);
     decode(s);
 }
 

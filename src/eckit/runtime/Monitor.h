@@ -60,8 +60,10 @@ public: // methods
     static bool active();
     static void active( bool a );
 
-	void startup();
-	void shutdown();
+    void reset(); //< use in forked processes only
+    void startup();
+    void shutdown();
+
 	void out(char*,char*); // called from Log
 
     void name(const std::string&);

@@ -9,6 +9,8 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   June 1996
 
 #ifndef eckit_io_StdPipe_h
 #define eckit_io_StdPipe_h
@@ -16,40 +18,49 @@
 #include <stdio.h>
 #include <string>
 
+#include "eckit/memory/NonCopyable.h"
+#include "eckit/io/AutoCloser.h"
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
+/// Simple wrapper for pipes
 
-class StdPipe {
+class StdPipe : private NonCopyable {
 public:
 
-// -- Contructors
+    StdPipe(const std::string& name, const std::string& mode = "r");
 
-	StdPipe(const std::string& name,const std::string& mode = "r");
+    /// @pre must have been closed
+    ~StdPipe();
 
-// -- Destructor
+    /// Get the FILE* but don't call fclose on it
+    operator FILE*() { return file_; }
 
-	~StdPipe();
+    bool isOpen() { return file_; }
 
-// -- Convertors
+    /// @throws on fclose failure
+    void close() noexcept(false);
 
-	operator FILE*() { return file_; } // don't call fclose !!!
-
-private:
-
-// No copy allowed
-
-	StdPipe(const StdPipe&);
-	StdPipe& operator=(const StdPipe&);
-
-// -- Members
+private: // members
 
 	FILE *file_;
 
 };
 
-//----------------------------------------------------------------------------------------------------------------------
+
+/// Wrapper around a stdio FILE*
+/// Use this for stack objects that automatically close
+
+class AutoStdPipe : public StdPipe {
+public:
+    AutoStdPipe(const std::string& name, const std::string& mode = "r") : StdPipe(name, mode)
+    {}
+    ~AutoStdPipe() noexcept(false)
+    { close(); }
+};
+
+
+
 
 } // namespace eckit
 

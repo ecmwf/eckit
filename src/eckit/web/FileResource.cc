@@ -14,11 +14,11 @@
 #include "eckit/web/HttpBuf.h"
 #include "eckit/web/Url.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+
 
 FileResource::FileResource():
 	HtmlResource("/html")
@@ -33,20 +33,20 @@ void FileResource::GET(std::ostream& s,Url& url)
 {
 	eckit::PathName path("~/http/" + url.name());
 
-	StdFile file(path,"r");
+    eckit::AutoStdFile f(path,"r");
 	char line[1024];
 
 	s << HttpBuf::dontEncode;
 
-	while(fgets(line,sizeof(line),file))
+    while(fgets(line,sizeof(line), f)) {
 		s << line;
+    }
 
 	s << HttpBuf::doEncode;
 }
 
 static FileResource fileResourceInstance;
 
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cassert>
 #include <iostream>
 
 #include "eckit/log/Timer.h"
@@ -54,7 +55,8 @@ void timeCompute(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     for(int i = 0; i < N; ++i ) {
             std::string s = hash.compute(buffer, buffer.size());
-        }
+            assert(!s.empty());
+    }
 
     timer.stop();
 

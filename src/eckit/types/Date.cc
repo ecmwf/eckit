@@ -12,11 +12,11 @@
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/parser/Tokenizer.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static const char* months[] =
 { "jan","feb","mar","apr","may","jun",
@@ -213,7 +213,7 @@ long Date::today(void)
 	time_t now;
 	time(&now);
 
-#ifdef EC_HAVE_GMTIME_R
+#ifdef ECKIT_HAVE_GMTIME_R
 	struct tm t;
 	gmtime_r(&now,&t);
 	long td = (1900 + t.tm_year) * 10000 + (t.tm_mon+1)* 100 + t.tm_mday;
@@ -331,9 +331,14 @@ void Date::dump(DumpLoad& a) const
 
 void Date::load(DumpLoad& a)
 {
-	a.load(julian_);
+    a.load(julian_);
 }
 
-//-----------------------------------------------------------------------------
+void Date::hash(Hash&) const
+{
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

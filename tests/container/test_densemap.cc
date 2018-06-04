@@ -111,7 +111,7 @@ CASE( "test_map_string_int" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE( "test_map_int_string" ) {
-    DenseMap<unsigned, std::string> m;
+    DenseMap<int, std::string> m;
 
     //
 

@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
+#include <stdio.h>
+#include <string>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/StdPipe.h"
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
-StdPipe::StdPipe(const std::string& name,const std::string& mode)
+StdPipe::StdPipe(const std::string& name,const std::string& mode) :
+    file_(0)
 {
 	file_ = ::popen(name.c_str(),mode.c_str());
 
@@ -23,16 +25,18 @@ StdPipe::StdPipe(const std::string& name,const std::string& mode)
 		throw CantOpenFile(name);
 }
 
-StdPipe::~StdPipe()
-{
-    if (file_) {
+StdPipe::~StdPipe() {
+    ASSERT_MSG(!isOpen(), "StdPipe hasn't been closed before destruction");
+}
+
+void StdPipe::close() noexcept(false) {
+    if (isOpen()) {
         if (::pclose(file_) == -1) {
             throw FailedSystemCall("pclose");
         }
     }
+    file_ = 0;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

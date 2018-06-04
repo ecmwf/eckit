@@ -292,6 +292,17 @@ CASE( "Double has semantics of single list with a double for head and tail" ) {
     EXPECT(val.tail() == Value());
 }
 
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    Value(123.45).hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "3da9d66f9e40fbcfe7d37679462a1542");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

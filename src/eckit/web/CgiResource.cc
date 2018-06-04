@@ -48,7 +48,7 @@ void CgiResource::GET(std::ostream& s,Url& url)
         url.cgiParam(cmd,' ');
 	}
 
-    StdPipe pipe(cmd.str(),"r");
+    StdPipe pipe(cmd.str(),"r");  AutoCloser<StdPipe> closer(pipe);
 	char line[1024];
 
 	s << HttpBuf::dontEncode;

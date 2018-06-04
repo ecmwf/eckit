@@ -25,7 +25,7 @@ namespace eckit_test {
 //-----------------------------------------------------------------------------
 
 struct AnyKeyParams {
-    AnyKeyParams(std::string payload);
+    AnyKeyParams(const std::string& payload);
     AnyKeyParams( eckit::Stream& s );
     static const char* className() { return "AnyKeyParams"; }
 private:

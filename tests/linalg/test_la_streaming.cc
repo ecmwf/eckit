@@ -10,6 +10,7 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/io/AutoCloser.h"
 
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
@@ -50,11 +51,11 @@ template<typename T>
 void stream_test(const T& t) {
     PathName filename = PathName::unique( "data" );
     {
-        FileStream sout( filename, "w" );
+        FileStream sout( filename, "w" ); auto c = closer(sout);
         sout << t;
     }
     {
-        FileStream sin( filename, "r" );
+        FileStream sin( filename, "r" ); auto c = closer(sin);
         T out(sin);
         test(t, out);
     }

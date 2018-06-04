@@ -1,3 +1,64 @@
+### endianess
+
+test_big_endian( _BIG_ENDIAN )
+
+if( _BIG_ENDIAN )
+        set( ECKIT_BIG_ENDIAN    1 )
+        set( ECKIT_LITTLE_ENDIAN 0 )
+else()
+        set( ECKIT_BIG_ENDIAN    0 )
+        set( ECKIT_LITTLE_ENDIAN 1 )
+endif()
+
+set( ECKIT_BIG_ENDIAN    ${ECKIT_BIG_ENDIAN}    )
+set( ECKIT_LITTLE_ENDIAN ${ECKIT_LITTLE_ENDIAN} )
+
+### check support for DL library
+
+check_include_files( dlfcn.h  ECKIT_HAVE_DLFCN_H )
+
+cmake_push_check_state(RESET)
+    set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_DL_LIBS} )
+    check_c_source_compiles( "#define _GNU_SOURCE\n#include <dlfcn.h>\nint main(){ void* addr; Dl_info info; dladdr(addr, &info); }\n"
+        ECKIT_HAVE_DLADDR )
+cmake_pop_check_state()
+
+### system headers and symbols tests for eckit config headers
+
+check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"  ECKIT_HAVE_MAP_ANONYMOUS )
+check_symbol_exists( MAP_ANON      "sys/mman.h"  ECKIT_HAVE_MAP_ANON )
+check_symbol_exists( funopen       "stdio.h"     ECKIT_HAVE_FUNOPEN )
+check_symbol_exists( fsync         "unistd.h"    ECKIT_HAVE_FSYNC)
+check_symbol_exists( fdatasync     "unistd.h"    ECKIT_HAVE_FDATASYNC)
+check_symbol_exists( fmemopen      "stdio.h"     ECKIT_HAVE_FMEMOPEN )
+
+check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
+    ECKIT_HAVE_FOPENCOOKIE )
+
+check_c_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(){ void ** buffer; int i = backtrace(buffer, 256); }\n"
+    ECKIT_HAVE_EXECINFO_BACKTRACE )
+
+check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
+    ECKIT_HAVE_CXXABI_H )
+
+check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
+    ECKIT_HAVE_FUNCTION_DEF )
+
+check_c_source_compiles( "#include <time.h>\nint main(){ time_t now; time(&now); struct tm t; gmtime_r(&now,&t); }\n"
+    ECKIT_HAVE_GMTIME_R )
+
+check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; struct dirent **result; int i = readdir_r(dirp, entry, result); }\n"
+    ECKIT_HAVE_READDIR_R )
+
+check_c_source_compiles( "#include <sys/types.h>\n#include <dirent.h>\nint main(){ DIR *dirp; int i = dirfd(dirp); }\n"
+    ECKIT_HAVE_DIRFD )
+
+check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; if(entry->d_type) { dirp = 0; } }\n"
+    ECKIT_HAVE_DIRENT_D_TYPE )
+
+check_cxx_source_compiles( "int main() { __int128 i = 0; return 0;}"
+    ECKIT_HAVE_CXX_INT_128 )
+
 ### config headers
 
 ecbuild_generate_config_headers( DESTINATION ${INSTALL_INCLUDE_DIR}/eckit )
@@ -116,6 +177,7 @@ io/MoverTransfer.h
 io/MoverTransfer.cc
 io/SockBuf.h
 io/SockBuf.cc
+io/AutoCloser.h
 io/AIOHandle.h
 io/AIOHandle.cc
 io/AsyncHandle.h
@@ -193,6 +255,7 @@ filesystem/PathName.h
 filesystem/PathName.cc
 filesystem/BasePathNameT.h
 filesystem/BasePathNameT.cc
+filesystem/BasePathName.cc
 filesystem/BasePathName.h
 filesystem/LocalPathName.h
 filesystem/LocalPathName.cc

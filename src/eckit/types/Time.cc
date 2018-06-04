@@ -15,11 +15,11 @@
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 inline void printTime(std::ostream& s, long n)
 {
@@ -182,7 +182,7 @@ Time Time::now()
     time(&now);
 	struct tm *pt;
 
-#ifdef EC_HAVE_GMTIME_R
+#ifdef ECKIT_HAVE_GMTIME_R
     struct tm t;
     gmtime_r(&now,&t);
 	pt = &t;
@@ -207,10 +207,14 @@ void Time::dump(DumpLoad& a) const
 
 void Time::load(DumpLoad& a)
 {
-	a.load(seconds_);
+    a.load(seconds_);
 }
 
-//-----------------------------------------------------------------------------
+void Time::hash(Hash&) const {
+    NOTIMP;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

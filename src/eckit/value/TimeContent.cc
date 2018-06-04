@@ -12,8 +12,9 @@
 #include "eckit/value/TimeContent.h"
 #include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/utils/Hash.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 
@@ -111,6 +112,11 @@ void TimeContent::dump(std::ostream& out, size_t depth, bool indent) const {
 
     out << "time(" << value_ << ")";
 }
+
+void TimeContent::hash(Hash& h) const {
+    value_.hash(h);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

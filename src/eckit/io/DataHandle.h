@@ -136,15 +136,17 @@ private:
 
 };
 
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 class AutoClose {
-	DataHandle& handle_;
+    DataHandle& handle_;
 public:
-	AutoClose(DataHandle& handle) : handle_(handle) {}
-	~AutoClose();
+    AutoClose(DataHandle& handle) : handle_(handle) {}
+    ~AutoClose() noexcept(false);
 
 };
+
+//--------------------------------------------------------------------------------------------------
 
 template<>
 Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
@@ -155,7 +157,7 @@ Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
 #endif
 
 
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 
 } // namespace eckit

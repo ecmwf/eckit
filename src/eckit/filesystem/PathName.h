@@ -26,7 +26,6 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 class Length;
 class BasePathName;
@@ -251,7 +250,6 @@ private:
 
 template <> struct VectorPrintSelector<PathName> { typedef VectorPrintSimple selector; };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

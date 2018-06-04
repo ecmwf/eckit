@@ -394,6 +394,17 @@ CASE( "Test eckit string-wrapper types in Value" ) {
     EXPECT(val_pathname.as<std::string>() == "/usr/bin");
 }
 
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    Value("abcdefghijklmnopqrstuvwxyz").hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "c3fcd3d76192e4007dfb496cca67e13b");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File DoubleContent.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @author Tiago Quintino
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
 
 #ifndef eckit_DoubleContent_h
 #define eckit_DoubleContent_h
@@ -17,7 +18,6 @@
 #include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -90,14 +90,16 @@ protected:
         virtual Content* clone() const;
         virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
-    // -- From Streamable
+        virtual void hash(Hash&) const;
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+        // -- From Streamable
 
-// -- Class methods
+        virtual void encode(Stream&) const;
+        virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
-    static  const ClassSpec&  classSpec()            { return classSpec_;}
+        // -- Class methods
+
+        static  const ClassSpec&  classSpec()            { return classSpec_;}
 
 private:
 
@@ -110,15 +112,15 @@ private:
 
 // -- Class Members
 
-	static  ClassSpec                  classSpec_;
-    static  Reanimator<DoubleContent>  reanimator_;
+        static  ClassSpec                  classSpec_;
+        static  Reanimator<DoubleContent>  reanimator_;
 
 // -- Friends
 
         friend class Reanimator<DoubleContent>;
-	friend class Value;
-	friend class DateContent;
-    friend class NumberContent;
+        friend class Value;
+        friend class DateContent;
+        friend class NumberContent;
 };
 
 

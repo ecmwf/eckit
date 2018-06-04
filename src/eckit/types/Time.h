@@ -8,22 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-// File Time.h
-// Manuel Fuentes - ECMWF Oct 96
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
+/// @author Tiago Quintino
+/// @date   Oct 96
 
 #ifndef eckit_Time_h
 #define eckit_Time_h
 
 #include "eckit/exception/Exceptions.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class DumpLoad;
 class Bless;
+class Hash;
 
 // Forwarded declarations
 
@@ -100,6 +103,8 @@ public:
 	void dump(DumpLoad&) const;
 	void load(DumpLoad&);
 
+    void hash(Hash&) const;
+
 // -- Class Methods
 
 	static Time now();
@@ -129,7 +134,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

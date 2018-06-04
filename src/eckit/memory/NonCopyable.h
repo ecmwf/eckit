@@ -11,11 +11,8 @@
 #ifndef eckit_NonCopyable_h
 #define eckit_NonCopyable_h
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
-
-//-----------------------------------------------------------------------------
 
 /// Inherit from this class to make a NonCopyable class
 
@@ -27,12 +24,10 @@ protected:
 
 private: // No copy allowed
 
-    NonCopyable(const NonCopyable&);
-	NonCopyable& operator=(const NonCopyable&);
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
 
 };
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

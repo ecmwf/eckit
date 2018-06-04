@@ -5,6 +5,31 @@
 
 #include "eckit/eckit_version.h"
 
+// endiness
+
+#cmakedefine ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
+#cmakedefine ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
+
+// system
+
+#cmakedefine ECKIT_HAVE_DLFCN_H
+#cmakedefine ECKIT_HAVE_DLADDR
+#cmakedefine ECKIT_HAVE_MAP_ANONYMOUS
+#cmakedefine ECKIT_HAVE_MAP_ANON
+#cmakedefine ECKIT_HAVE_FUNOPEN
+#cmakedefine ECKIT_HAVE_FSYNC
+#cmakedefine ECKIT_HAVE_FDATASYNC
+#cmakedefine ECKIT_HAVE_FMEMOPEN
+#cmakedefine ECKIT_HAVE_FOPENCOOKIE
+#cmakedefine ECKIT_HAVE_EXECINFO_BACKTRACE
+#cmakedefine ECKIT_HAVE_CXXABI_H
+#cmakedefine ECKIT_HAVE_FUNCTION_DEF
+#cmakedefine ECKIT_HAVE_GMTIME_R
+#cmakedefine ECKIT_HAVE_READDIR_R
+#cmakedefine ECKIT_HAVE_DIRFD
+#cmakedefine ECKIT_HAVE_DIRENT_D_TYPE
+#cmakedefine ECKIT_HAVE_CXX_INT_128
+
 // external packages
 
 #cmakedefine ECKIT_HAVE_ARMADILLO
@@ -18,8 +43,6 @@
 #cmakedefine ECKIT_HAVE_XXHASH
 #cmakedefine ECKIT_HAVE_CURL
 #cmakedefine ECKIT_HAVE_JEMALLOC
-
-#cmakedefine ECKIT_HAVE_CXX11
 
 #define ECKIT_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
 #define ECKIT_BUILD_DIR      "@CMAKE_BINARY_DIR@"

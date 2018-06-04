@@ -16,18 +16,17 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 CircularBuffer::CircularBuffer(size_t size, size_t capacity):
     buffer_(new char[size]),
     increment_(size),
     size_(size),
+    capacity_(capacity),
     pos_(0),
-    used_(0),
-    capacity_(capacity)
-
+    used_(0)
 {
     ASSERT(buffer_);
+    ASSERT(size_ <= capacity_);
 }
 
 
@@ -131,7 +130,6 @@ size_t CircularBuffer::capacity() const {
     return capacity_;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -68,8 +68,6 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
                 + header_.metadataSize_
                 + header_.itemSize_ - 1) / header_.itemSize_) * header_.itemSize_;
 
-        std::cout << "Here " << root_ << std::endl;
-
     }
     else
     {

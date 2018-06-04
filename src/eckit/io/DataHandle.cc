@@ -28,21 +28,10 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
-Reanimator<DataHandle> DataHandle::reanimator_;
+//--------------------------------------------------------------------------------------------------
 
-DataHandle::DataHandle()
-{
-}
-
-DataHandle::DataHandle(Stream& s):
-    Streamable(s)
-{
-}
-
-AutoClose::~AutoClose()
+AutoClose::~AutoClose()  noexcept(false)
 {
     bool fail = !Exception::throwing();
 
@@ -60,6 +49,21 @@ AutoClose::~AutoClose()
         Log::error() << "** An exception is already in progress" << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+
+
+ClassSpec DataHandle::classSpec_ = {&Streamable::classSpec(),"DataHandle",};
+Reanimator<DataHandle> DataHandle::reanimator_;
+
+DataHandle::DataHandle()
+{
+}
+
+DataHandle::DataHandle(Stream& s):
+    Streamable(s)
+{
 }
 
 void DataHandle::encode(Stream& s) const
@@ -370,7 +374,7 @@ DataHandle* DataHandle::clone() const
 //----------------------------------------------------------------------------------------------------------------------
 
 
-#if defined(EC_HAVE_FOPENCOOKIE) || defined(EC_HAVE_FUNOPEN)
+#if defined(ECKIT_HAVE_FOPENCOOKIE) || defined(ECKIT_HAVE_FUNOPEN)
 
 class FOpenDataHandle {
 
@@ -513,7 +517,7 @@ static int closefn(void *data) {
     return fd->close();
 }
 
-#ifdef EC_HAVE_FOPENCOOKIE
+#ifdef ECKIT_HAVE_FOPENCOOKIE
 
 static ssize_t _read(void *cookie, char *buf, size_t size) {
 

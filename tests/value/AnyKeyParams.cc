@@ -18,7 +18,7 @@ namespace eckit_test {
 
 //-----------------------------------------------------------------------------
 
-AnyKeyParams::AnyKeyParams(std::string payload) : payload_(payload) {}
+AnyKeyParams::AnyKeyParams(const std::string& payload) : payload_(payload) {}
 
 AnyKeyParams::AnyKeyParams(Stream& s) {
   s >> payload_;

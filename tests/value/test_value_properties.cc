@@ -12,6 +12,7 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/types/Date.h"
 #include "eckit/value/Properties.h"
@@ -70,11 +71,11 @@ CASE( "Test serialization" )
 
     eckit::Log::info() << "encoded Properties: " << p << std::endl;
     {
-        FileStream sout( filepath.c_str(), "w" );
+        FileStream sout( filepath.c_str(), "w" ); auto c = closer(sout);
         sout << p;
     }
     {
-        FileStream sin( filepath.c_str(), "r" );
+        FileStream sin( filepath.c_str(), "r" ); auto c = closer(sin);
         Properties p2(sin);
         eckit::Log::info() << "decoded Properties: " << p2 << std::endl;
         EXPECT((bool)p["bool"] == (bool)p2["bool"]);
@@ -102,7 +103,7 @@ CASE( "Test serialization" )
 
     eckit::Log::info() << "encoded Nested: " << access_nested << std::endl;
     {
-        FileStream sout( filepath.c_str(), "w" );
+        FileStream sout( filepath.c_str(), "w" ); auto c = closer(sout);
         sout << p;
     }
 

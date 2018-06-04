@@ -8,14 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file CodeLocation.h
 /// @author Tiago Quintino
 
 #ifndef eckit_log_CodeLocation_h
 #define eckit_log_CodeLocation_h
 
 #include "eckit/eckit.h"
-
 
 
 namespace eckit {
@@ -65,7 +63,7 @@ protected: // methods
 
 // Macros
 
-#define Here() ::eckit::CodeLocation( __FILE__ , __LINE__ , __FUNCTION__ )
+#define Here() ::eckit::CodeLocation( __FILE__ , __LINE__ , __func__ )
 
 //----------------------------------------------------------------------------------------------------------------------
 

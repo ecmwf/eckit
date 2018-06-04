@@ -272,6 +272,10 @@ bool Configuration::get(const std::string &name, LocalConfiguration& value) cons
     return found;
 }
 
+void Configuration::hash(Hash& h) const {
+    root_.hash(h);
+}
+
 bool Configuration::get(const std::string &name, std::vector<LocalConfiguration> &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);

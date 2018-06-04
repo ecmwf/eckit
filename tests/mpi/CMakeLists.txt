@@ -14,4 +14,12 @@ ecbuild_add_test(
     MPI 4
 )
 
+ecbuild_add_test(
+    TARGET      eckit_test_mpi_splitcomm
+    SOURCES     eckit_test_mpi_splitcomm.cc
+    CONDITION   HAVE_MPI
+    LIBS eckit_mpi
+    MPI 4
+)
+
     

@@ -193,6 +193,15 @@ void Monitor::active( bool a )
     active_ = a;
 }
 
+void Monitor::reset()
+{
+    Monitor::shutdown();
+    slot_ = 0;
+    ready_ = false;
+    check_ = false;
+    Monitor::startup();
+}
+
 void Monitor::startup()
 {
     if (!ready_) init();
@@ -205,7 +214,7 @@ void Monitor::shutdown()
     TaskArray& a = tasks();
     AutoLock<TaskArray> lock(a);
 
-    pid_t pid = getpid();
+    pid_t pid = ::getpid();
 
     for ( size_t i = 0; i < a.size() ; ++i )
         if (a[i].pid() == pid)
@@ -216,7 +225,7 @@ void Monitor::shutdown()
 
 unsigned long Monitor::hash()
 {
-    return (((unsigned long)pthread_self() << 16) | (unsigned long)getpid());
+    return (((unsigned long) ::pthread_self() << 16) | (unsigned long) ::getpid());
 }
 
 TaskInfo& Monitor::task()

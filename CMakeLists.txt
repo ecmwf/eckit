@@ -1,10 +1,4 @@
-########################################################################################################################
-#
-#   eckit - ECMWF C++ Toolkit
-#
-########################################################################################################################
-
-cmake_minimum_required( VERSION 2.8.11 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 
 project( eckit CXX )
 
@@ -12,28 +6,19 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 2.4 )
+ecbuild_requires_macro_version( 2.9 )
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
-###############################################################################
-# local project
-
 ecbuild_declare_project()
 
-###############################################################################
-# some variables/options of this project
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-### C++11 compiler flag
-
-ecbuild_add_option( FEATURE CXX11
-                    DEFAULT OFF
-                    DESCRIPTION "Use C++11 compiler flag" )
-
-### Experimental features
+### dependencies and options
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
-                    DEFAULT ON
+                    DEFAULT OFF
                     DESCRIPTION "Experimental features Armadillo, CUDA, MKL, ViennaCL (not used in production)" )
 
 ### eckit::mpi
@@ -77,11 +62,22 @@ set_package_properties( Armadillo PROPERTIES
                         DESCRIPTION "C++ linear algebra"
                       )
 
+### MKL
+
+ecbuild_add_option( FEATURE MKL
+                    DESCRIPTION "MKL linear algebra library"
+                    REQUIRED_PACKAGES MKL )
+
 ### LAPACK
 
-ecbuild_add_option( FEATURE LAPACK
-                    DESCRIPTION "Linear Algebra PACKage"
-                    REQUIRED_PACKAGES "LAPACK QUIET" )
+if( ECKIT_HAVE_MKL )
+    set( ECKIT_HAVE_LAPACK 1 )
+    set( LAPACK_LIBRARIES ${MKL_LIBRARIES} )
+else()
+    ecbuild_add_option( FEATURE LAPACK
+                        DESCRIPTION "Linear Algebra PACKage"
+                        REQUIRED_PACKAGES "LAPACK QUIET" )
+endif()
 
 ### OpenSSL (for SHA1)
 
@@ -119,13 +115,6 @@ ecbuild_add_option( FEATURE CUDA
                     DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
 
-### MKL
-
-ecbuild_add_option( FEATURE MKL
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "MKL linear algebra library"
-                    REQUIRED_PACKAGES MKL )
-
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL
@@ -159,15 +148,6 @@ find_package( CMath )
 
 if( NOT ${CMAKE_USE_PTHREADS_INIT} )
     message( FATAL_ERROR "Only pthreads supported - thread library found is [${CMAKE_THREAD_LIBS_INIT}]" )
-endif()
-
-# fail if we dont have bool
-if( NOT EC_HAVE_CXX_BOOL )
-    message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support bool" )
-endif()
-# fail if we dont have sstream
-if( NOT EC_HAVE_CXX_SSTREAM )
-    message( FATAL_ERROR "eckit cannot build -- c++ compiler does not support stringstream" )
 endif()
 
 ############################################################################################
@@ -206,10 +186,6 @@ if( HAVE_EIGEN )
     include_directories( ${EIGEN3_INCLUDE_DIR} )
 endif()
 
-if( HAVE_CXX11 )
-    ecbuild_add_cxx11_flags()
-endif()
-
 add_subdirectory( bamboo )
 add_subdirectory( contrib )
 add_subdirectory( doc )
@@ -218,7 +194,7 @@ add_subdirectory( tests )
 add_subdirectory( regressions )
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files SOURCES
-                       TODO AUTHORS README NOTICE LICENSE INSTALL ChangeLog COPYING )
+                       TODO AUTHORS README.md NOTICE LICENSE INSTALL ChangeLog COPYING )
 
 ############################################################################################
 # finalize

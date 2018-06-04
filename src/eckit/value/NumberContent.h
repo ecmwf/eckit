@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File NumberContent.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @author Tiago Quintino
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
 
 #ifndef eckit_NumberContent_h
 #define eckit_NumberContent_h
@@ -17,7 +18,6 @@
 #include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -88,6 +88,8 @@ protected:
 	virtual bool    isNumber()      const { return true; }
     virtual Content* clone() const;
     virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
+
+    virtual void hash(Hash&) const;
 
     // -- From Streamable
 

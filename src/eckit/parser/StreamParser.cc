@@ -92,10 +92,9 @@ char StreamParser::peek(bool spaces)
 
 char StreamParser::next(bool spaces)
 {
-    char c;
     for (;;)
     {
-        c = _get();
+        char c = _get();
         if (_eof())
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
 
@@ -116,7 +115,6 @@ char StreamParser::next(bool spaces)
             return c;
         }
     }
-
 }
 
 void StreamParser::consume(char c)

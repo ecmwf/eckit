@@ -13,7 +13,7 @@
 #include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 
@@ -109,6 +109,10 @@ void DateTimeContent::dump(std::ostream& out, size_t depth, bool indent) const {
         }
     }
     out << "datetime(" << value_ << ")";
+}
+
+void DateTimeContent::hash(Hash& h) const {
+    value_.hash(h);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

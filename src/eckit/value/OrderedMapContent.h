@@ -21,6 +21,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Hash;
+
 class OrderedMapContent : public Content {
 
 protected:
@@ -83,6 +85,8 @@ protected:
     virtual bool   isOrderedMap() const         { return true; }
     virtual Content* clone() const;
     virtual void    dump(std::ostream& out, size_t depth, bool indent = true) const;
+
+    virtual void hash(Hash&) const;
 
     // -- From Streamable
 

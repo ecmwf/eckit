@@ -45,8 +45,9 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
+
+static StaticMutex local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
 
@@ -96,9 +97,7 @@ static void readPathsTable() {
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-static StaticMutex local_mutex;
+//--------------------------------------------------------------------------------------------------
 
 // I need to come back here when we have a proper std::string class
 
@@ -539,7 +538,7 @@ void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>&
     for (;;)
     {
         struct dirent *e;
-#ifdef EC_HAVE_READDIR_R
+#ifdef ECKIT_HAVE_READDIR_R
         errno = 0;
         if (readdir_r(d, &buf, &e) != 0)
         {
@@ -638,7 +637,7 @@ const
     for (;;)
     {
         struct dirent *e;
-#ifdef EC_HAVE_READDIR_R
+#ifdef ECKIT_HAVE_READDIR_R
         errno = 0;
         if (readdir_r(d, &buf, &e) != 0)
         {
@@ -660,7 +659,7 @@ const
 
         LocalPathName full = *this + "/" + e->d_name;
 
-#if defined(EC_HAVE_DIRENT_D_TYPE)
+#if defined(ECKIT_HAVE_DIRENT_D_TYPE)
         if (e->d_type == DT_DIR)
             dirs.push_back(full);
         else
@@ -682,16 +681,16 @@ const
 void LocalPathName::touch() const
 {
     dirName().mkdir();
-    StdFile f(*this, "a"); // This should touch the file
+    AutoStdFile f(*this, "a"); // This should touch the file
 }
 
-// This routine is used by TxnLog. It is important that
+// This method is used by TxnLog. It is important that
 // the inode is preserved, otherwise ftok will give different
 // result
 
 void LocalPathName::empty() const
 {
-    StdFile f(*this, "w"); // This should clear the file
+    AutoStdFile f(*this, "w"); // This should clear the file
 }
 
 void LocalPathName::copy(const LocalPathName& other) const
@@ -865,7 +864,7 @@ LocalPathName LocalPathName::mountPoint() const
 void LocalPathName::syncParentDirectory() const
 {
     PathName directory = dirName();
-#ifdef EC_HAVE_DIRFD
+#ifdef ECKIT_HAVE_DIRFD
 //    Log::info() << "Syncing directory " << directory << std::endl;
     DIR *d = opendir(directory.localPath());
     if (!d) SYSCALL(-1);
@@ -883,7 +882,7 @@ void LocalPathName::syncParentDirectory() const
 
     ::closedir(d);
 #else
-    Log::info() << "Syncing directory " << directory << " (not supported)" << endl;
+    Log::info() << "Syncing directory " << directory << " (not supported)" << std::endl;
 #endif
 }
 
@@ -904,7 +903,6 @@ std::string LocalPathName::clusterName() const
     return os.str();
 }
 
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -53,7 +53,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
     name_ = displayName_ = PathName(argv[0]).baseName(false);
 
-    for (size_t i = 1; i < size_t(argc); ++i) {
+    for (int i = 1; i < argc; ++i) {
 
         // Old style
         if (::strcmp(argv[i], "-debug") == 0) {

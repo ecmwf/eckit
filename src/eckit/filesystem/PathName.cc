@@ -19,7 +19,6 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 static BasePathName* make(const std::string& p, bool tildeIsUserHome) {
 
@@ -446,7 +445,5 @@ PathName &PathName::operator +=(char s)
     *this = PathName(this->asString() + s);
 	return *this;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

@@ -211,10 +211,13 @@ AssertionFailed::AssertionFailed(const std::string& w):
     Exception(std::string("Assertion failed: ") + w)
 {
     if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+
         Log::status() << what() << std::endl;
+        Log::status()  << std::flush;
 
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
+        std::cout << std::flush;
     }
 
     if (::getenv("ECKIT_ASSERT_ABORTS"))
@@ -232,10 +235,13 @@ AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc
     reason(s.str());
 
     if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+
         Log::status() << what() << std::endl;
+        Log::status()  << std::flush;
 
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
+        std::cout << std::flush;
     }
 
     if (::getenv("ECKIT_ASSERT_ABORTS"))
@@ -254,10 +260,13 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc)
     reason(s.str());
 
     if(!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+
         Log::status() << what() << std::endl;
+        Log::status()  << std::flush;
 
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
+        std::cout << std::flush;
     }
 
     if (::getenv("ECKIT_ASSERT_ABORTS"))

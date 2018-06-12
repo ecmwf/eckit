@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/utils/Translator.h"
 #include "eckit/value/StringContent.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/utils/Hash.h"
+#include "eckit/utils/Translator.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -141,6 +141,10 @@ void StringContent::dump(std::ostream& out, size_t depth, bool indent) const {
     // out << "string(" << value_ << ")";
     out << '"' << value_ << '"';
 
+}
+
+void StringContent::hash(Hash& h) const {
+    h.add(value_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

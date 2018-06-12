@@ -65,7 +65,7 @@ void CmdResource::loop(CmdResource* cmd, CmdArg& arg, std::istream& in, std::ost
     std::ostream out(&buf);
 
     // SignalHandler interrupt;
-    std::string strcmd(arg[0]);
+    // std::string strcmd(arg[0]);
 
     for (;;) {
         // Log::status() << "Executing '" << strcmd << "'" << std::endl;
@@ -229,9 +229,9 @@ bool CmdResource::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::os
             proc(cmd, arg, in, out);
             return true;
         } catch (Abort& e) {
-            if (fail) throw e;
+            if (fail) throw;
         } catch (std::exception& e) {
-            if (fail) throw e;
+            if (fail) throw;
 
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;
@@ -285,7 +285,7 @@ void CmdResource::pipe(CmdResource* cmd, CmdArg& args, std::istream& in, std::os
 
     const std::string to = args["|"]; // everything after the pipe
 
-    StdPipe pipe(to, "w");
+    StdPipe pipe(to, "w"); AutoCloser<StdPipe> closer(pipe);
     StdioBuf buf(pipe);
     std::ostream out(&buf);
 

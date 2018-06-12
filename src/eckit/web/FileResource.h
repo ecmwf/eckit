@@ -8,19 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileResource.h
-// Baudouin Raoult - ECMWF Sep 97
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   September 1997
 
 #ifndef FileResource_H
 #define FileResource_H
 
 #include "eckit/web/HtmlResource.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+
 
 class FileResource : public HtmlResource {
 public:
@@ -37,7 +38,6 @@ protected:
 
 };
 
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

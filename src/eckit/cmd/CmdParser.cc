@@ -437,7 +437,7 @@ void CmdParser::addCmd(const char c) {
 //-----------------------------------------------------------------------------
 
 int CmdParser::input() {
-    if (!buffer_.size()) return ';';
+    if (buffer_.empty()) return ';';
 
     int n = buffer_.front();
     buffer_.erase(buffer_.begin());

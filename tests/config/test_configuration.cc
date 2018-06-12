@@ -15,6 +15,8 @@
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/types/Types.h"
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Hash.h"
+#include "eckit/memory/ScopedPtr.h"
 
 using namespace std;
 using namespace eckit;
@@ -52,7 +54,7 @@ CASE( "test_configuration_interface" )
     std::string         value_string          = std::string("string");
     std::vector<int>    value_arr_int         = make_vector(1,2,3);
     std::vector<long>   value_arr_long        = make_vector(4l,5l);
-    std::vector<size_t> value_arr_size_t      = make_vector(6ul,7ul);
+    std::vector<size_t> value_arr_size_t      = make_vector(std::size_t{6},std::size_t{7});
     std::vector<float>  value_arr_float       = make_vector(1.234567f,2.345678f);
     std::vector<double> value_arr_double      = make_vector(1.234567,2.345678);
     std::vector<std::string> value_arr_string = make_vector(std::string("hello"),std::string("world"));
@@ -273,6 +275,22 @@ CASE( "test_local_configuration" )
   EXPECT( name == std::string("Wiske") );
   EXPECT( office == 3 );
 }
+
+CASE( "Hash a configuration" ) {
+
+    eckit::ScopedPtr<Hash> h(eckit::HashFactory::build("MD5"));
+
+    LocalConfiguration cfg;
+    cfg.set("name", "Sidonia");
+    cfg.set("office", 1);
+
+    cfg.hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "9f060b35735e98b0fdc0bf4c2d6d6d8d");
+}
+
 
 //-----------------------------------------------------------------------------
 

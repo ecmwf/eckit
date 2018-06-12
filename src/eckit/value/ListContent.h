@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File ListContent.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @author Tiago Quintino
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
 
 #ifndef eckit_ListContent_h
 #define eckit_ListContent_h
 
 #include "eckit/value/Value.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -85,12 +85,14 @@ protected:
     virtual size_t size() const;
     virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
 
+    virtual void hash(Hash&) const;
+
     // -- From Streamable
 
     virtual void encode(Stream&) const;
     virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
     static  const ClassSpec&  classSpec()         { return classSpec_;}
 

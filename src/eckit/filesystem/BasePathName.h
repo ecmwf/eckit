@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/BasePathName.h
-// Baudouin Raoult - (c) ECMWF Jun 11
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+///
+/// @date Jun 2011
 
 #ifndef eckit_filesystem_BasePathName_h
 #define eckit_filesystem_BasePathName_h
@@ -22,24 +24,15 @@
 
 struct FileSystemSize;
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class BasePathName : protected NonCopyable {
 public:
 
-// -- Contructors
-
 	BasePathName() {}
 
-// -- Destructor
-
-	virtual ~BasePathName() {}
-
-// -- Methods
+    virtual ~BasePathName();
 
     virtual BasePathName* clone() const = 0;
     virtual const char* localPath() const = 0;
@@ -94,12 +87,9 @@ protected:
 
 private:
 
-	friend std::ostream& operator<<(std::ostream& s,const BasePathName& p)
-		{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s,const BasePathName& p) { p.print(s); return s; }
 
 };
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

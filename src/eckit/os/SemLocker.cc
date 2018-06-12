@@ -86,8 +86,8 @@ SemLocker::~SemLocker() {
 
             if (retry >= maxWaitLock_) {
                 std::ostringstream os;
-                os << "Failed to realease semaphore lock for " << path_;
-                throw eckit::SeriousBug(os.str());
+                os << "Failed to release semaphore lock for " << path_;
+                ASSERT_MSG(retry >= maxWaitLock_, os.str().c_str());
             } else {
                 eckit::Log::warning() << "Sleeping for " << SLEEP << " seconds" << std::endl;
                 sleep(SLEEP);

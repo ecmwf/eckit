@@ -270,6 +270,17 @@ CASE( "Test head/tail functionality on dates" ) {
     EXPECT(true);
 }
 
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    Value(Date(2016, 3, 31)).hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "d41d8cd98f00b204e9800998ecf8427e");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

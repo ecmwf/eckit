@@ -366,6 +366,25 @@ CASE( "Test behaviour of maps in value" ) {
     /// EXPECT(val2[3].as<bool>(), false);
 }
 
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    ValueMap vm;
+    vm[123] = 456;
+    vm["abc"] = "def";
+    vm[1234.56] = 666.66;
+    vm[true] = false;
+
+    Value v = Value::makeMap(vm);
+
+    v.hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "7a4dffa7732f430a910dc767a06aff49");
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

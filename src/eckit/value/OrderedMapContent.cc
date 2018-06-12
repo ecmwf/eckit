@@ -241,6 +241,18 @@ void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const
 }
 
 
+void OrderedMapContent::hash(Hash& h) const {
+
+    for(auto v: value_) {
+        v.first.hash(h);
+        v.second.hash(h);
+    }
+
+    for(auto k: keys_) {
+        k.hash(h);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

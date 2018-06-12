@@ -165,7 +165,7 @@ void FileSpace::load() const
 
     char line[1024] = {0,};
     while(in >> line) {
-        if(line[0] != 0 || line[0] != '#') {
+        if(line[0] != 0 && line[0] != '#') {
 			disks.push_back(line);
         }
     }

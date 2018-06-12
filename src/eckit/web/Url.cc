@@ -137,7 +137,7 @@ void Url::parse(std::istream& in)
 	for (;;)
 	{
 		std::string s;
-		while (in.get(c) && c != ':' && c != '\r')
+		while (in.get(c) && c != '\r' && c != ':')
 		{
 			header(c);
 			s += c;
@@ -152,7 +152,7 @@ void Url::parse(std::istream& in)
 		}
 
 		header(c);
-		while (in.get(c) && c == ' ' && c != '\r')
+		while (in.get(c) && c == ' ')
 			header(c);
 
 		if (c != '\r')
@@ -180,7 +180,7 @@ void Url::parse(std::istream& in)
 	if (len)
 	{
 		static const std::string FormType      = "application/x-www-form-urlencoded";
-		static const std::string JSONType      = "application/json";
+		// static const std::string JSONType      = "application/json";
 
 		//bool ascii = true;
 		Buffer content(len);

@@ -9,6 +9,8 @@
  */
 
 #include "eckit/value/Value.h"
+#include "eckit/utils/Hash.h"
+#include "eckit/memory/ScopedPtr.h"
 
 // Disable warnings for old-style casts in these tests. They are intentional
 #ifdef __clang__
@@ -37,6 +39,7 @@ namespace value_helper {
     Value ValueDivSelf(Value& lhs, const Value& rhs) { return lhs /= rhs; }
     Value ValueModSelf(Value& lhs, const Value& rhs) { return lhs %= rhs; }
 
+    Hash* make_hash() { return eckit::HashFactory::build("MD5"); }
 
 //----------------------------------------------------------------------------------------------------------------------
 

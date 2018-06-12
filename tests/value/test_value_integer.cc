@@ -378,7 +378,6 @@ CASE( "Integer has semantics of single list with a double for head and tail" ) {
     EXPECT(val.tail() == Value());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 // There are some constructors that have been added for easy conversion, that aren't actually part of the
 // internal interface
 
@@ -422,6 +421,17 @@ CASE( "Test eckit integer-wrapper types in Value" ) {
     EXPECT(int(val_offset) == 54321);
     EXPECT(val_offset.as<long long>() == 54321);
 
+}
+
+CASE( "Hash of a value" ) {
+
+    eckit::ScopedPtr<Hash> h(make_hash());
+
+    Value(12345).hash(*h);
+
+//    std::cout << "MD5 " << h->digest() << std::endl;
+
+    EXPECT(h->digest() == "89af2df214317989ed233cbeffe82f0c");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -23,7 +23,8 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_eckit_parser_parse_to_value" ) {
+CASE( "Parse JSON to Value" ) {
+
     std::istringstream in("{ \"a\" : [true, false, 3], \"b\" : 42.3 , \"c\" : null, \"d\" : \"y\n\tr\rh\", \"e\" : \"867017db84f4bc2b5078ca56ffd3b9b9\"}");
     JSONParser p(in);
 

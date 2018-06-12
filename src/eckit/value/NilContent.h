@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File NilContent.h
-// Manuel Fuentes - ECMWF Jun 97
+/// @author Tiago Quintino
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
 
 #ifndef eckit_NilContent_h
 #define eckit_NilContent_h
 
 #include "eckit/value/Content.h"
+
 
 namespace eckit {
 
@@ -85,6 +87,7 @@ protected:
     virtual void     encode(Stream&)              const;
     virtual const    ReanimatorBase& reanimator() const { return reanimator_; }
 
+    virtual void hash(Hash&) const;
 
 private:
 

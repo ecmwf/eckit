@@ -12,8 +12,8 @@
 #include "eckit/value/DateContent.h"
 #include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/utils/Hash.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -115,6 +115,10 @@ void DateContent::dump(std::ostream& out, size_t depth, bool indent) const {
         }
     }
     out << "date(" << value_ << ")";
+}
+
+void DateContent::hash(Hash& h) const {
+    value_.hash(h);
 }
 
 

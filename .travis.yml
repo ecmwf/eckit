@@ -1,0 +1,159 @@
+sudo: false
+
+language: cpp
+
+# Workaround for https://github.com/travis-ci/travis-ci/issues/4681
+matrix:
+  - TRAVIS_EMPTY_JOB_WORKAROUND=true
+
+cache:
+  directories:
+    - ${HOME}/deps/cmake
+    # - ${HOME}/deps/openmpi
+    # - ${HOME}/deps/mpich
+
+matrix:
+  exclude:
+
+    - env: TRAVIS_EMPTY_JOB_WORKAROUND
+
+  include:
+
+    - os: linux
+      compiler: clang
+      env:
+        - CACHE_NAME=linux-clang38
+        - CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8'
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
+      addons:
+        apt:
+          sources:  ['llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
+          packages: ['clang-3.8']
+
+    - os: linux
+      compiler: gcc
+      env:
+        - CACHE_NAME=linux-gcc5
+        - CXX_COMPILER='g++-5' C_COMPILER='gcc-5'
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
+      addons:
+        apt:
+          sources:  ['ubuntu-toolchain-r-test']
+          packages: ['g++-5', 'gcc-5']
+
+    - os: linux
+      compiler: gcc
+      env:
+        - CACHE_NAME=linux-gcc7
+        - CXX_COMPILER='g++-7' C_COMPILER='gcc-7'
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_GPROF=ON"
+      addons:
+        apt:
+          sources:  ['ubuntu-toolchain-r-test']
+          packages: ['g++-7', 'gcc-7']
+
+    - os: osx
+      env:
+        - CACHE_NAME=osx-clang
+        - CXX_COMPILER='clang++' C_COMPILER='clang'
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
+      osx_image: xcode9
+
+before_install:
+
+  # Fixes to pre-installed packages
+  # - |
+  #   ### Fix pre-installed packages
+  #   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+  #     brew update
+  #     brew list oclint || brew cask uninstall oclint # Prevent conflict with gcc
+  #   fi
+
+  # Set compilers
+  - |
+    ### Set compilers
+    export CC=${C_COMPILER}
+    export CXX=${CXX_COMPILER}
+
+install:
+
+  # All dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+  - DEPS_DIR=${HOME}/deps
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+
+  # Install compilers if needed -- only for fortran
+  # - |
+  #   ### Install gcc (homebrew)
+  #   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+  #     brew upgrade gcc || brew install gcc
+  #   fi
+
+  # # Install MPI
+  # - |
+  #   ### Install MPI
+  #   install-mpi.sh ${MPI}
+  #   source ${DEPS_DIR}/${MPI}/env.sh
+  #   echo "${MPI_HOME}"
+  #   echo "${PATH}"
+
+  # Install CMake
+  - |
+    ### Install CMake
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      if [[ -z "$(ls -A ${DEPS_DIR}/cmake)" ]]; then
+        CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.tar.gz"
+        mkdir -p ${DEPS_DIR}/cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
+      fi
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    else
+      brew upgrade cmake || brew install cmake
+    fi
+    cmake --version
+
+  # Install ecbuild
+  - |
+    ### Install ecbuild
+    git clone --depth 1 -b develop https://github.com/ecmwf/ecbuild ${DEPS_DIR}/ecbuild
+    export PATH=${DEPS_DIR}/ecbuild/bin:${PATH}
+    export ECBUILD_MODULE_PATH=${DEPS_DIR}/ecbuild/cmake
+    ecbuild --version
+
+script:
+
+  # Environment variables
+  - echo ${CXX}
+  - echo ${CC}
+  # - echo ${FC}
+  # - echo ${MPI_HOME}
+  - echo ${PATH}
+  - |
+    ECKIT_SOURCE_DIR=${TRAVIS_BUILD_DIR}
+    ECKIT_BUILD_DIR=${TRAVIS_BUILD_DIR}/builds/eckit
+
+  # build eckit
+  - mkdir -p ${ECKIT_BUILD_DIR} && cd ${ECKIT_BUILD_DIR}
+  - cmake -DCMAKE_MODULE_PATH=${ECBUILD_MODULE_PATH} ${ECKIT_CMAKE_OPTIONS} ${ECKIT_SOURCE_DIR}
+  - make -j4
+  - bin/eckit-version
+
+  # test eckit
+  - ctest
+
+after_success:
+
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+        # Creating report
+        cd ${ECKIT_BUILD_DIR}
+        lcov --directory . --capture --output-file coverage.info # capture coverage info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+        lcov --list coverage.info #debug info
+        # Uploading report to CodeCov
+        bash <(curl -s https://codecov.io/bash) -t 33404098-c4e6-4701-a89c-36f33ceb3795 || echo "Codecov did not collect coverage reports"
+    fi
+
+after_failure:
+
+  - cd ${ECKIT_BUILD_DIR}
+  - ctest -VV --rerun-failed
+  - cat ecbuild.log

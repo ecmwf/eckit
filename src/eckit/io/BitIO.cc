@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include <bitset>
 
 #include "eckit/io/BitIO.h"
 #include "eckit/io/DataHandle.h"
-#include <bitset>
 
 
 namespace eckit {
@@ -79,7 +79,7 @@ void BitIO::write(size_t code, size_t nbits) {
 
 
 void BitIO::flush() {
-    const size_t BITS = sizeof(buffer_) * 8;
+    // const size_t BITS = sizeof(buffer_) * 8;
 
 
     // buffer_ <<= (BITS - used_);

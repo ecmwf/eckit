@@ -40,16 +40,14 @@ Results ScalarCentralMoments::calculate(const data::MIRField& field) const {
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
 
-        const std::vector<double>& values = field.values(w);
         size_t missing = 0;
 
         stats_.reset();
-        for (size_t i = 0; i < values.size(); ++ i) {
-
-            if (isMissing(values[i])) {
+        for (auto& value : field.values(w)) {
+            if (isMissing(value)) {
                 ++missing;
             } else {
-                stats_(values[i]);
+                stats_(value);
             }
         }
 

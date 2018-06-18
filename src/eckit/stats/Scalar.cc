@@ -35,7 +35,7 @@ Results Scalar::calculate(const data::MIRField& field) const {
     Results results(field.dimensions());
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
-        const std::vector<double>& values = field.values(w);
+        const MIRValuesVector& values = field.values(w);
 
         stats_.reset(field.hasMissing()?
                          field.missingValue() :

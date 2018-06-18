@@ -39,9 +39,7 @@ Results CountOutsideRange::calculate(const data::MIRField& field) const {
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
 
-        const std::vector<double>& values = field.values(w);
         size_t missing = 0;
-
 
         double lowerLimit = std::numeric_limits<double>::quiet_NaN();
         double upperLimit = std::numeric_limits<double>::quiet_NaN();
@@ -49,19 +47,16 @@ Results CountOutsideRange::calculate(const data::MIRField& field) const {
         parametrisation_.get("upper-limit", upperLimit);
 
         stats_.reset(lowerLimit, upperLimit);
-
-
-        for (size_t i = 0; i < values.size(); ++ i) {
-
-            if (isMissing(values[i])) {
+        for (auto& value : field.values(w)) {
+            if (isMissing(value)) {
                 ++missing;
             } else {
-                stats_(values[i]);
+                stats_(value);
             }
         }
 
         results.counter("count-outside-range", w) = stats_.count();
-        results.counter("count-non-missing",   w) = values.size() - missing;
+        results.counter("count-non-missing",   w) = field.values(w).size() - missing;
         results.counter("count-missing",       w) = missing;
 
     }

@@ -50,11 +50,10 @@ Results SimplePackingEntropy::calculate(const data::MIRField& field) const {
     detail::MinMaxStatistics<double> stats(missingValue);
 
     for (size_t w = 0; w < field.dimensions(); ++w) {
-        const std::vector<double>& values = field.values(w);
-        ASSERT(values.size());
+        ASSERT(field.values(w).size());
 
-        for (size_t i = 0; i < values.size(); ++i) {
-            stats(values[i]);
+        for (auto& value : field.values(w)) {
+            stats(value);
         }
         ASSERT(stats.count() != stats.countMissing());
 
@@ -70,17 +69,17 @@ Results SimplePackingEntropy::calculate(const data::MIRField& field) const {
         const double count = double(stats.count());
         const double one_over_log2 = 1 / M_LN2;
 
-        for (size_t i = 0; i < values.size(); ++i) {
-            if (!isMissing(values[i])) {
-                size_t b = size_t((values[i] - minvalue) * scale);
+        for (auto& value : field.values(w)) {
+            if (!isMissing(value)) {
+                size_t b = size_t((value - minvalue) * scale);
                 ASSERT(b < bucketCount_);
                 buckets[b]++;
             }
         }
 
-        for (size_t i = 0; i < buckets.size(); ++i) {
-            double p = double(buckets[i]) / count;
-            if (p) {
+        for (auto& bucket : buckets) {
+            double p = double(bucket) / count;
+            if (p > 0) {
                 entropy += -p * std::log(p) * one_over_log2;
             }
         }

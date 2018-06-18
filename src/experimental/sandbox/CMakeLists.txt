@@ -34,7 +34,7 @@ ecbuild_add_executable( TARGET  sandbox_tcp_server_forked NOINSTALL
                         LIBS eckit )
 
 ecbuild_add_executable( TARGET sandbox_arg NOINSTALL
-                        CONDITION ENABLE_SANDBOX
+                        CONDITION ENABLE_SANDBOX AND HAVE_ECKIT_CMD
                         SOURCES arg.cc
                         LIBS eckit_cmd )
 

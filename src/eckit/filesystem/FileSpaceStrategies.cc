@@ -251,7 +251,7 @@ static void attenuateProbabilities(std::vector<Candidate>& candidates) {
 
     ASSERT(!candidates.empty());
 
-    static Resource<double> attenuation("attenuateFileSpacePeakProbability", 0.);
+    static double attenuation = Resource<double>("attenuateFileSpacePeakProbability", 0.);
 
     ASSERT(attenuation >= 0.);
     ASSERT(attenuation <= 1.);

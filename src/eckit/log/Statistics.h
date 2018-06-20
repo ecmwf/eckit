@@ -65,10 +65,10 @@ class Statistics {
     static void reportRate(std::ostream& out, const std::string& title, size_t bytes, double elapsed, const char* indent = "", bool always=false);
     static void reportCount(std::ostream& out, const char* title, size_t value, const char* indent = "", bool always=false);
     static void reportBytes(std::ostream& out, const char* title, unsigned long long value, const char* indent = "", bool always=false);
-    static void reportBytes(std::ostream& out, const std::string& title, size_t count, size_t bytes, size_t sumsquared, const char* indent = "", bool always=false);
+    static void reportBytesStats(std::ostream& out, const std::string& title, size_t count, size_t bytes, size_t sumsquared, const char* indent = "", bool always=false);
     static void reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent = "", bool always=false);
     static void reportTime(std::ostream& out, const char* title, double value, const char* indent = "", bool always=false);
-    static void reportTimes(std::ostream& out, const std::string& title, size_t count, double sum_times, double sum_times_squared, const char* indent = "", bool always=false);
+    static void reportTimeStats(std::ostream& out, const std::string& title, size_t count, double sum_times, double sum_times_squared, const char* indent = "", bool always=false);
     static Timer timer_;
 };
 

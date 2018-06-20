@@ -98,7 +98,7 @@ void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long
     }
 }
 
-void Statistics::reportBytes(std::ostream& out, const std::string& title, size_t count, size_t bytes, size_t sumsquared, const char* indent, bool always) {
+void Statistics::reportBytesStats(std::ostream& out, const std::string& title, size_t count, size_t bytes, size_t sumsquared, const char* indent, bool always) {
 
     if (count || always) {
 
@@ -146,7 +146,7 @@ void Statistics::reportTime(std::ostream &out, const char *title, double value, 
     }
 }
 
-void Statistics::reportTimes(std::ostream &out, const std::string& title, size_t count, double sum_times, double sum_times_squared, const char *indent, bool always) {
+void Statistics::reportTimeStats(std::ostream &out, const std::string& title, size_t count, double sum_times, double sum_times_squared, const char *indent, bool always) {
 
     if (count || always) {
 
@@ -161,9 +161,9 @@ void Statistics::reportTimes(std::ostream &out, const std::string& title, size_t
             << title
             << std::setw(WIDTH - title.length())
             << " (tot, avg, std dev) : "
-            << Seconds(sum_times)
-            << ", " << Seconds(average)
-            << ", " << Seconds(stdDeviation)
+            << sum_times << " s"
+            << ", " << average << " s"
+            << ", " << stdDeviation << " s"
             << std::endl;
     }
 }

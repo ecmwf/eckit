@@ -225,8 +225,6 @@ long TCPSocket::read(void *buf, long length)
 {
     if (length <= 0 ) return length;
 
-    size_t requested = length;
-
     static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
     long received = 0;
     char *p = (char*)buf;
@@ -461,7 +459,6 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
                 /* ::close(socket_); */
                 /* socket_ = -1; */
                 throw FailedSystemCall("connect");
-                break;
 
 #if 0
             case ETIMEDOUT:

@@ -73,7 +73,6 @@ Value ObjectParser::parseNumber()
         break;
     default:
         throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
-        break;
     }
 
     if (peek() == '.') {
@@ -167,7 +166,6 @@ Value ObjectParser::parseString(char quote)
 
             case 'u':
                 throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
-                break;
 
             default:
                 if (c == quote) {
@@ -275,28 +273,27 @@ Value ObjectParser::parseJSON()
     switch (c)
     {
 
-    case 't': return parseTrue(); break;
-    case 'f': return parseFalse(); break;
-    case 'n': return parseNull(); break;
-    case '{': return parseObject(); break;
-    case '[': return parseArray(); break;
-    case '\"': return parseString(); break;
+    case 't': return parseTrue();
+    case 'f': return parseFalse();
+    case 'n': return parseNull();
+    case '{': return parseObject();
+    case '[': return parseArray();
+    case '\"': return parseString();
 
-    case '-': return parseNumber(); break;
-    case '0': return parseNumber(); break;
-    case '1': return parseNumber(); break;
-    case '2': return parseNumber(); break;
-    case '3': return parseNumber(); break;
-    case '4': return parseNumber(); break;
-    case '5': return parseNumber(); break;
-    case '6': return parseNumber(); break;
-    case '7': return parseNumber(); break;
-    case '8': return parseNumber(); break;
-    case '9': return parseNumber(); break;
+    case '-': return parseNumber();
+    case '0': return parseNumber();
+    case '1': return parseNumber();
+    case '2': return parseNumber();
+    case '3': return parseNumber();
+    case '4': return parseNumber();
+    case '5': return parseNumber();
+    case '6': return parseNumber();
+    case '7': return parseNumber();
+    case '8': return parseNumber();
+    case '9': return parseNumber();
 
     default:
         throw StreamParser::Error(std::string("YAMLParser::parseValue unexpected char '") + c + "'");
-        break;
     }
 }
 

@@ -72,8 +72,8 @@ UDPClient::~UDPClient() {
 }
 
 void UDPClient::send(void* buffer, long length) {
-    ssize_t sent = 0;
-    if ((sent = ::sendto(socketfd_, buffer, length, 0, addr_->ai_addr, addr_->ai_addrlen)) == -1) {
+    ssize_t sent = ::sendto(socketfd_, buffer, length, 0, addr_->ai_addr, addr_->ai_addrlen);
+    if ( sent == -1 ) {
         std::ostringstream msg;
         msg << "UDPClient failed to send " << Bytes(length) << " to host " << hostname_;
         throw FailedSystemCall(msg.str());

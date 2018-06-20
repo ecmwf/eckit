@@ -401,7 +401,6 @@ public:
 			return d;
 		}
 		}
-		return 0.;
 	}
 
 	template<typename S, typename I>

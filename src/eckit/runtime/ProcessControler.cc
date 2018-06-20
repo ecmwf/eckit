@@ -159,7 +159,6 @@ void ProcessControler::start()
 		case -1:
 			Log::error() << "Cannot fork " << Log::syserr << std::endl;
 			throw FailedSystemCall("fork");
-			break;
 
 		default:
 			break;

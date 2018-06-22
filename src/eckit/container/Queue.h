@@ -35,7 +35,7 @@ public:
   void resize(size_t size) {
     ASSERT(size > 0);
     std::unique_lock<std::mutex> locker(mutex_);
-    while (queue_.empty()) {
+    while (queue_.size() > size) {
       cv_.wait(locker);
     }
     max_ = size;

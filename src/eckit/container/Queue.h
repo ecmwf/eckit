@@ -12,68 +12,97 @@
 /// @author Simon Smart
 /// @date   June 2018
 
+#ifndef eckit_container_Queue_h
+#define eckit_container_Queue_h
+
 #include <queue>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 
-#include "eckit/exceptions/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 template <typename ELEM>
 class Queue {
-public:
 
-  Queue(size_t max) : max_(max) {
-    ASSERT(max > 0);
-  }
+public: // public
 
-  Queue(const Queue&) = delete;
-  Queue& operator=(const Queue&) = delete;
-
-  void resize(size_t size) {
-    ASSERT(size > 0);
-    std::unique_lock<std::mutex> locker(mutex_);
-    while (queue_.size() > size) {
-      cv_.wait(locker);
+    Queue(size_t max) : max_(max) {
+        ASSERT(max > 0);
     }
-    max_ = size;
-    locker.unlock();
-    cv_.notify_one();
-  }
 
-  ELEM pop() {
-    std::unique_lock<std::mutex> locker(mutex_);
-    while (queue_.empty()) {
-      cv_.wait(locker);
+    Queue(const Queue&) = delete;
+    Queue& operator=(const Queue&) = delete;
+
+    void resize(size_t size) {
+        ASSERT(size > 0);
+        std::unique_lock<std::mutex> locker(mutex_);
+        while (queue_.size() > size) {
+            cv_.wait(locker);
+        }
+        max_ = size;
+        locker.unlock();
+        cv_.notify_one();
     }
-    auto e = queue_.front();
-    queue_.pop();
-    locker.unlock();
-    cv_.notify_one();
-    return e;
-  }
 
-  void push(const ELEM& e)
-  {
-    std::unique_lock<std::mutex> locker(mutex_);
-    while (queue_.size() >= max_) {
-      cv_.wait(locker);
+    ELEM pop() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        while (queue_.empty()) {
+            cv_.wait(locker);
+        }
+        auto e = queue_.front();
+        queue_.pop();
+        locker.unlock();
+        cv_.notify_one();
+        return e;
     }
-    queue_.push(e);
-    locker.unlock();
-    cv_.notify_one();
-  }
 
+    void pop(ELEM& e) {
+        std::unique_lock<std::mutex> locker(mutex_);
+        while (queue_.empty()) {
+            cv_.wait(locker);
+        }
+        std::swap(e, queue_.front());
+        queue_.pop();
+        locker.unlock();
+        cv_.notify_one();
+    }
 
-private:
-  std::queue<ELEM> queue_;
-  std::mutex mutex_;
-  std::condition_variable cv_;
-  size_t max_;
+    void push(const ELEM& e) {
+        std::unique_lock<std::mutex> locker(mutex_);
+        while (queue_.size() >= max_) {
+            cv_.wait(locker);
+        }
+        queue_.push(e);
+        locker.unlock();
+        cv_.notify_one();
+    }
+
+    void emplace(ELEM&& e) {
+        std::unique_lock<std::mutex> locker(mutex_);
+        while (queue_.size() >= max_) {
+            cv_.wait(locker);
+        }
+        queue_.emplace(std::move(e));
+        locker.unlock();
+        cv_.notify_one();
+    }
+
+private: // members
+
+    std::queue<ELEM> queue_;
+    std::mutex mutex_;
+    std::condition_variable cv_;
+    size_t max_;
 };
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 
-#endif
+#endif // eckit_container_Queue_h

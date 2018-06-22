@@ -61,35 +61,41 @@ public: // public
         return e;
     }
 
-    void pop(ELEM& e) {
+    size_t pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.empty()) {
             cv_.wait(locker);
         }
         std::swap(e, queue_.front());
         queue_.pop();
+        size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
+        return size;
     }
 
-    void push(const ELEM& e) {
+    size_t push(const ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.size() >= max_) {
             cv_.wait(locker);
         }
         queue_.push(e);
+        size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
+        return size;
     }
 
-    void emplace(ELEM&& e) {
+    size_t emplace(ELEM&& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.size() >= max_) {
             cv_.wait(locker);
         }
         queue_.emplace(std::move(e));
+        size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
+        return size;
     }
 
 private: // members

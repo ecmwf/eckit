@@ -43,3 +43,8 @@ ecbuild_add_executable( TARGET  sandbox_tcp_client_json NOINSTALL
                         SOURCES tcp_client_json.cc
                         LIBS eckit )
 
+ecbuild_add_executable( TARGET  sandbox_mpmc NOINSTALL
+                        CONDITION ENABLE_SANDBOX
+                        SOURCES mpmc.cc
+                        LIBS eckit )
+

@@ -41,6 +41,7 @@ Buffer::Buffer(Buffer &&rhs) :
 Buffer& Buffer::operator=(Buffer&& rhs) {
     std::swap(buffer_, rhs.buffer_);
     std::swap(size_, rhs.size_);
+    return *this;
 }
 
 Buffer::Buffer(const std::string& s):

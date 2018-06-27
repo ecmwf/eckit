@@ -31,14 +31,14 @@ static unsigned long long multiplier(const char* p) {
         if(towlower(*(p+1)) == 'b' || (towlower(*(p+1)) == 'i' && towlower(*(p+2)) == 'b'))
         {
             switch(towlower(*p)) {
-                case 'k': return (1LL << 10);  break;
-                case 'm': return (1LL << 20);  break;
-                case 'g': return (1LL << 30);  break;
-                case 't': return (1LL << 40);  break;
-                case 'p': return (1LL << 50);  break;
-                case 'e': return (1LL << 60);  break;
-                //case 'z': return (1LL << 70);  break;
-                //case 'y': return (1LL << 80);  break;
+                case 'k': return (1LL << 10);
+                case 'm': return (1LL << 20);
+                case 'g': return (1LL << 30);
+                case 't': return (1LL << 40);
+                case 'p': return (1LL << 50);
+                case 'e': return (1LL << 60);
+                //case 'z': return (1LL << 70);
+                //case 'y': return (1LL << 80);
             }
         }
     }

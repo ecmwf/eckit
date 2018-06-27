@@ -85,7 +85,6 @@ Grid::Grid(const std::vector<double>& n)
 
 		default:
 			throw UserError("Invalid grid specified");
-			break;
 	}
 }
 
@@ -110,7 +109,6 @@ Grid::Grid(const std::string& s)
 
 		default:
 			throw UserError("Invalid grid specified");
-			break;
 	}
 
 	Log::userInfo() << "GRID: " << s << " ---- " << *this << std::endl;

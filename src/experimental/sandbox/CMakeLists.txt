@@ -48,3 +48,8 @@ ecbuild_add_executable( TARGET  sandbox_mpmc NOINSTALL
                         SOURCES mpmc.cc
                         LIBS eckit )
 
+ecbuild_add_executable( TARGET  sandbox_shint NOINSTALL
+                        CONDITION ENABLE_SANDBOX
+                        SOURCES shint.cc
+                        LIBS eckit )
+

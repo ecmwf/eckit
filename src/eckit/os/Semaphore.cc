@@ -116,14 +116,27 @@ int Semaphore::get(int n) const
 
 void Semaphore::raise(short unsigned int n)
 {
-	struct sembuf op = { n,1,SEM_UNDO};
-	SYSCALL(semop(semaphore_,&op,1));
+    struct sembuf op = { n,1,SEM_UNDO};
+    SYSCALL(semop(semaphore_,&op,1));
+}
+
+void Semaphore::raise(short unsigned int n, short v)
+{
+    struct sembuf op = {n, v,SEM_UNDO};
+    SYSCALL(semop(semaphore_,&op,1));
 }
 
 void Semaphore::lower(short unsigned int n)
 {
-	struct sembuf op = { n,-1,SEM_UNDO};
-	SYSCALL(semop(semaphore_,&op,1));
+    struct sembuf op = { n,-1,SEM_UNDO};
+    SYSCALL(semop(semaphore_,&op,1));
+}
+
+void Semaphore::lower(short unsigned int n, short v)
+{
+    short d = -v;
+    struct sembuf op = {n, d,SEM_UNDO};
+    SYSCALL(semop(semaphore_,&op,1));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

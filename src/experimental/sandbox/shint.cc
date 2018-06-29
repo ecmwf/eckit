@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <semaphore.h>
 
 #include <iostream>
 #include <chrono>
@@ -20,7 +21,8 @@ class SemForker : public ProcessControler {
 
     void run()
     {
-        ::srand(::getpid() + ::time(0));
+        sem_t *sem;
+
         ::srandom(::getpid() + ::time(0));
 
         pid_t pid = ::getpid();
@@ -31,18 +33,20 @@ class SemForker : public ProcessControler {
 
         for(;;) {
 
-            if(shint.free(SLOT) == 0) {
-                std::cout << pid << " -- no free resources" << std::endl;
+            if(shint.free(SLOT) < bs_) {
+                std::cout << pid << " -- not enough resources (" << bs_ << ")" << std::endl;
             }
-            shint.use(SLOT);
-            std::cout << pid << " >>>" << std::endl;
+            shint.use(SLOT, bs_);
+            std::cout << pid << " >>> (" << bs_ << ")" << std::endl;
 
             double ms = 1000*(double(::random()) / double(RAND_MAX));
 
+//            for(;;) { ::sleep(1); }
+
             std::this_thread::sleep_for(std::chrono::milliseconds(int(ms)));
 
-            shint.release(SLOT);
-            std::cout << pid << " <<<" << std::endl;
+            shint.release(SLOT, bs_);
+            std::cout << pid << " <<< (" << bs_ << ")" << std::endl;
 
             std::this_thread::sleep_for(std::chrono::milliseconds(int(ms/3)));
         }
@@ -50,14 +54,14 @@ class SemForker : public ProcessControler {
 
 public:
 
-    SemForker() : ProcessControler(true) {
+    SemForker(short bs) : ProcessControler(true), bs_(bs) {
     }
+
+    short bs_;
 };
 
 
 //--------------------------------------------------------------------------------------------------
-
-const int limit = 20;
 
 class SemApp : public Tool {
 public:
@@ -70,10 +74,23 @@ public:
 
 private:
 
+    short limits(short p) {
+        short lim = 0;
+        for(short i = 1; i <=p; ++i) {
+            lim += i;
+        }
+        return lim;
+    }
+
+
     SemApp(const SemApp&) = delete;
     SemApp& operator=(const SemApp&) = delete;
 
     virtual void run() {
+
+        const short nprocs = 4;
+        const short limit = limits(nprocs) + 8;
+
 
         std::cout << "init main process" << std::endl;
         {
@@ -86,13 +103,14 @@ private:
             else {
                 std::cout << "limit is " << curr  << std::endl;
             }
+            std::cout << "FREE " << shint.free(SLOT) << std::endl;
         }
 
         std::cout << "forking processes" << std::endl;
 
-        for(int i = 0; i < 10; ++i) {
+        for(short i = 1; i <= nprocs; ++i) {
             try {
-                SemForker f;
+                SemForker f(i);
                 f.start();
             }
             catch (std::exception& e) {

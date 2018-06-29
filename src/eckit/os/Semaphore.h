@@ -39,7 +39,9 @@ public: // methods
     void set(int, int n = 0);
 
     void raise(unsigned short n = 0);
+    void raise(unsigned short n, short v);
     void lower(unsigned short n = 0);
+    void lower(unsigned short n, short v);
 
     pid_t getpid()  const;
 

@@ -263,6 +263,10 @@ CASE ( "Fraction inverse" ) {
         EXPECT( test.first == test.second.inverse() );
 
     }
+
+    Fraction zero(0);
+    Log::debug() << "Test (" << zero << ")⁻¹ (throw BadValue)" << std::endl;
+    EXPECT_THROWS_AS(zero.inverse(), BadValue);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

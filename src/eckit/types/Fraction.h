@@ -232,65 +232,72 @@ private: // members
 
 };
 
+template<>
+bool Fraction::operator==(double) const;
+
+template<>
+bool Fraction::operator< (double) const;
+
+template<>
+bool Fraction::operator<=(double) const;
+
+template<>
+bool Fraction::operator!=(double) const;
+
+template<>
+bool Fraction::operator> (double) const;
+
+template<>
+bool Fraction::operator>=(double) const;
+
 template<class T>
-Fraction operator+(T n, const Fraction& f)
-{
-    // static_assert(std::is_same<T, long long>::value,"some meaningful error message");
-    return Fraction(n) + f;
+Fraction operator+(T n, const Fraction& f) {
+    return f.operator+(n);
 }
 
 template<class T>
-Fraction operator-(T n, const Fraction& f)
-{
-    return Fraction(n) - f;
+Fraction operator-(T n, const Fraction& f) {
+    return (-f).operator+(n);
 }
 
 template<class T>
-Fraction operator/(T n, const Fraction& f)
-{
-    return Fraction(n) / f;
+Fraction operator/(T n, const Fraction& f) {
+    return f.inverse().operator*(n);
 }
 
 template<class T>
-Fraction operator*(T n, const Fraction& f)
-{
-    return Fraction(n) * f;
+Fraction operator*(T n, const Fraction& f) {
+    return f.operator*(n);
 }
 
 template<class T>
-bool operator==(T n, const Fraction& f)
-{
-    return Fraction(n) == f;
+bool operator==(T n, const Fraction& f) {
+    return f.operator==(n);
 }
 
 template<class T>
-bool operator<(T n, const Fraction& f)
-{
-    return Fraction(n) < f;
+bool operator<(T n, const Fraction& f) {
+    return f.operator>(n);
 }
 
 template<class T>
-bool operator<=(T n, const Fraction& f)
-{
-    return Fraction(n) <= f;
+bool operator<=(T n, const Fraction& f) {
+    return f.operator>=(n);
 }
 
 template<class T>
-bool operator!=(T n, const Fraction& f)
-{
-    return Fraction(n) != f;
+bool operator!=(T n, const Fraction& f) {
+    return f.operator!=(n);
 }
 
 template<class T>
-bool operator>(T n, const Fraction& f)
-{
-    return Fraction(n) > f;
+bool operator>(T n, const Fraction& f) {
+    return f.operator<(n);
 }
 
 template<class T>
-bool operator>=(T n, const Fraction& f)
-{
-    return Fraction(n) >= f;
+bool operator>=(T n, const Fraction& f) {
+    return f.operator<=(n);
 }
 
 //-----------------------------------------------------------------------------

@@ -183,6 +183,15 @@ Fraction::operator value_type() const {
     throw eckit::SeriousBug(oss.str());
 }
 
+eckit::Fraction Fraction::inverse() const {
+    if (top_ == 0) {
+        std::ostringstream oss;
+        oss << "Cannot compute inverse of " << *this << std::endl;
+        throw eckit::BadValue(oss.str());
+    }
+    return { bottom_, top_ };
+}
+
 void Fraction::hash(MD5& md5) const {
     md5 << top_;
     md5 << bottom_;

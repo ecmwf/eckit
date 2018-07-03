@@ -9,6 +9,7 @@
  */
 
 #include <cmath>
+#include <utility>
 
 #include "eckit/types/Fraction.h"
 #include "eckit/log/Log.h"
@@ -244,6 +245,24 @@ CASE ( "Values known to have problematic conversion to fraction" ) {
 
     }
     Log::debug().precision(p);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE ( "Fraction inverse" ) {
+
+    for (auto& test : {
+         std::make_pair(Fraction{1,2}, Fraction{2,1}),
+         std::make_pair(Fraction{1,3}, Fraction{3,1}),
+         }) {
+
+        Log::debug() << "Test (" << test.first << ")⁻¹ = " << test.second << std::endl;
+        EXPECT( test.first.inverse() == test.second );
+
+        Log::debug() << "Test " << test.first << " = (" << test.second << ")⁻¹" << std::endl;
+        EXPECT( test.first == test.second.inverse() );
+
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

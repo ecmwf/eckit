@@ -91,6 +91,10 @@ public: // operators
         return *this - integralPart();
     }
 
+    Fraction inverse() const;
+
+    void hash(eckit::MD5&) const;
+
     Fraction operator+(const Fraction& other) const;
 
     Fraction operator-(const Fraction& other) const;
@@ -202,8 +206,6 @@ public: // operators
     Fraction& operator*=(T other) {
         return (*this) *= Fraction(other);
     }
-
-    void hash(eckit::MD5&) const;
 
 private: // members
 

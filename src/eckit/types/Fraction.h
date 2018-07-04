@@ -262,7 +262,7 @@ Fraction operator-(T n, const Fraction& f) {
 
 template<class T>
 Fraction operator/(T n, const Fraction& f) {
-    return f.inverse().operator*(n);
+    return Fraction(n) / f;
 }
 
 template<class T>

@@ -9,14 +9,15 @@
  */
 
 #include "eckit/types/Fraction.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/parser/Tokenizer.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/serialisation/Stream.h"
-#include "eckit/utils/MD5.h"
 
 #include <cmath>
 #include <limits>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/utils/MD5.h"
+#include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
 
@@ -134,6 +135,15 @@ Fraction::Fraction(double x) {
     bottom_ = bottom;
 }
 
+Fraction::Fraction(double n, const Fraction& precision) {
+    value_type bottom = precision.inverse().integralPart();
+    value_type top = value_type(std::round(bottom * n));
+
+    Fraction f(top, bottom);
+    top_ = f.top_;
+    bottom_ = f.bottom_;
+}
+
 Fraction::Fraction(const std::string& s) {
     static Tokenizer parse("/");
 
@@ -166,6 +176,10 @@ Fraction::Fraction(const char* c) {
     bottom_ = f.bottom_;
 }
 
+Fraction Fraction::abs(const Fraction& f) {
+    return { f.top_ < 0 ? -f.top_ : f.top_, f.bottom_ };
+}
+
 void Fraction::print(std::ostream& out) const {
     if (bottom_ == 1) {
         out << top_;
@@ -181,6 +195,15 @@ Fraction::operator value_type() const {
     std::ostringstream oss;
     oss << "Cannot convert fraction " << *this << " (" << double(*this) << ") to integer";
     throw eckit::SeriousBug(oss.str());
+}
+
+eckit::Fraction Fraction::inverse() const {
+    if (top_ == 0) {
+        std::ostringstream oss;
+        oss << "Cannot compute inverse of " << *this << std::endl;
+        throw eckit::BadValue(oss.str());
+    }
+    return { bottom_, top_ };
 }
 
 void Fraction::hash(MD5& md5) const {

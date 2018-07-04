@@ -9,14 +9,15 @@
  */
 
 #include "eckit/types/Fraction.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/parser/Tokenizer.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/serialisation/Stream.h"
-#include "eckit/utils/MD5.h"
 
 #include <cmath>
 #include <limits>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/utils/MD5.h"
+#include "eckit/utils/Translator.h"
 
 //-----------------------------------------------------------------------------
 
@@ -164,6 +165,10 @@ Fraction::Fraction(const char* c) {
     Fraction f(s);
     top_ = f.top_;
     bottom_ = f.bottom_;
+}
+
+Fraction Fraction::abs(const Fraction& f) {
+    return { f.top_ < 0 ? -f.top_ : f.top_, f.bottom_ };
 }
 
 void Fraction::print(std::ostream& out) const {

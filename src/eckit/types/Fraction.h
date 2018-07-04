@@ -15,9 +15,6 @@
 #define eckit_Fraction_h
 
 #include <string>
-#include "eckit/exception/Exceptions.h"
-#include <limits>
-#include "eckit/types/FloatCompare.h"
 
 
 //-----------------------------------------------------------------------------
@@ -68,6 +65,8 @@ public: // methods
     bool integer() const {
         return bottom_ == 1;
     }
+
+    static Fraction abs(const Fraction& f);
 
 public: // operators
 

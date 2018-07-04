@@ -9,6 +9,7 @@
  */
 
 #include <cmath>
+#include <limits>
 #include <utility>
 
 #include "eckit/types/Fraction.h"
@@ -160,8 +161,6 @@ CASE ( "Contructing fractions" ) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using limits = std::numeric_limits<Fraction::value_type>;
-
 CASE ( "Overflow during comparisons" ) {
 
     {
@@ -176,6 +175,7 @@ CASE ( "Overflow during comparisons" ) {
     }
 
     {
+        using limits = std::numeric_limits<Fraction::value_type>;
         std::streamsize p(Log::info().precision(16));
 
         Fraction A(limits::max()-6, limits::max()-1);
@@ -267,6 +267,32 @@ CASE ( "Fraction inverse" ) {
     Fraction zero(0);
     Log::debug() << "Test (" << zero << ")⁻¹ (throw BadValue)" << std::endl;
     EXPECT_THROWS_AS(zero.inverse(), BadValue);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE ( "Fraction precision" ) {
+    auto old = Log::debug().precision(16);
+
+    for (Fraction::value_type prime : { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 }) {
+        Fraction exact_p(1, prime);
+        Fraction exact_m(-exact_p);
+
+        for (Fraction::value_type p : { 10, 100, 1000, 10000, 100000, 1000000, 10000000, 2, 4, 8, 16, 32, 64 }) {
+            const Fraction precision{ 1, p };
+            double value_p = round(double(exact_p) * p) / p;
+            double value_m = round(double(exact_m) * p) / p;
+
+            Log::debug() << "Test  " << exact_p << " ≅  " << value_p << " ± " << precision << endl;
+            EXPECT(Fraction::abs(exact_p - Fraction(value_p, precision)) < precision);
+
+            Log::debug() << "Test " << exact_m << " ≅ " << value_m << " ± " << precision << endl;
+            EXPECT(Fraction::abs(exact_m - Fraction(value_m, precision)) < precision);
+
+        }
+    }
+
+    Log::debug().precision(old);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

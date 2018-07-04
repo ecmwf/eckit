@@ -46,6 +46,7 @@ public: // methods
     Fraction(value_type top, value_type bottom);
 
     explicit Fraction(double n);
+    explicit Fraction(double n, const Fraction& precision);
     explicit Fraction(int n): top_(n), bottom_(1) {}
     explicit Fraction(short n): top_(n), bottom_(1) {}
     explicit Fraction(long n): top_(n), bottom_(1) {}

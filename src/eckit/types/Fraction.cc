@@ -135,6 +135,15 @@ Fraction::Fraction(double x) {
     bottom_ = bottom;
 }
 
+Fraction::Fraction(double n, const Fraction& precision) {
+    value_type bottom = precision.inverse().integralPart();
+    value_type top = value_type(std::round(bottom * n));
+
+    Fraction f(top, bottom);
+    top_ = f.top_;
+    bottom_ = f.bottom_;
+}
+
 Fraction::Fraction(const std::string& s) {
     static Tokenizer parse("/");
 

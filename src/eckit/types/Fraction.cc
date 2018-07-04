@@ -188,7 +188,6 @@ void Fraction::hash(MD5& md5) const {
     md5 << bottom_;
 }
 
-
 void Fraction::encode(Stream& s) const {
     s << top_;
     s << bottom_;
@@ -199,8 +198,7 @@ void Fraction::decode(Stream& s) {
     s >> bottom_;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------
 
 inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
@@ -335,6 +333,37 @@ bool Fraction::operator>=(const Fraction& other) const {
     return result;
 }
 
+//-----------------------------------------------------------------------------
+
+template<>
+bool Fraction::operator==(double other) const {
+    return double(*this) == other;
+}
+
+template<>
+bool Fraction::operator<(double other) const {
+    return double(*this) <  other;
+}
+
+template<>
+bool Fraction::operator<=(double other) const {
+    return double(*this) <= other;
+}
+
+template<>
+bool Fraction::operator!=(double other) const {
+    return double(*this) != other;
+}
+
+template<>
+bool Fraction::operator>(double other) const {
+    return double(*this) >  other;
+}
+
+template<>
+bool Fraction::operator>=(double other) const {
+    return double(*this) >= other;
+}
 
 } // namespace eckit
 

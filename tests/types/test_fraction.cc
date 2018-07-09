@@ -283,16 +283,16 @@ CASE ( "Fraction inverse" ) {
          std::make_pair(Fraction{1,3}, Fraction{3,1}),
          }) {
 
-        Log::debug() << "Test (" << test.first << ")⁻¹ = " << test.second << std::endl;
+        Log::debug() << "Test (" << test.first << ")**-1 = " << test.second << std::endl;
         EXPECT( test.first.inverse() == test.second );
 
-        Log::debug() << "Test " << test.first << " = (" << test.second << ")⁻¹" << std::endl;
+        Log::debug() << "Test " << test.first << " = (" << test.second << ")**-1" << std::endl;
         EXPECT( test.first == test.second.inverse() );
 
     }
 
     Fraction zero(0);
-    Log::debug() << "Test (" << zero << ")⁻¹ (throw BadValue)" << std::endl;
+    Log::debug() << "Test (" << zero << ")**-1 (throw BadValue)" << std::endl;
     EXPECT_THROWS_AS(zero.inverse(), BadValue);
 }
 
@@ -310,10 +310,10 @@ CASE ( "Fraction precision" ) {
             double value_p = round(double(exact_p) * p) / p;
             double value_m = round(double(exact_m) * p) / p;
 
-            Log::debug() << "Test  " << exact_p << " ≅  " << value_p << " ± " << precision << endl;
+            Log::debug() << "Test  " << exact_p << " ~=  " << value_p << " +- " << precision << endl;
             EXPECT(Fraction::abs(exact_p - Fraction(value_p, precision)) < precision);
 
-            Log::debug() << "Test " << exact_m << " ≅ " << value_m << " ± " << precision << endl;
+            Log::debug() << "Test " << exact_m << " ~= " << value_m << " +- " << precision << endl;
             EXPECT(Fraction::abs(exact_m - Fraction(value_m, precision)) < precision);
 
         }

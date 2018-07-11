@@ -89,13 +89,38 @@ void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
 void LinearAlgebraLAPACK::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT(x.size() == A.cols() && y.size() == A.rows());
 
-    // TODO
+    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
+
+    const Index* outer = A.outer();
+    const Index* inner = A.inner();
+    const Scalar* val  = A.data();
+
+    for (Size r = 0; r < A.rows(); ++r) {
+        double sum = 0.;
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
+            sum += val[oi] * x[static_cast<Size>(inner[oi])];
+        }
+        y[r] = sum;
+    }
 }
 
 void LinearAlgebraLAPACK::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
 
-    // TODO
+    ASSERT(A.outer()[0] == 0); // expect indices to be 0-based
+
+    const Index* outer = A.outer();
+    const Index* inner = A.inner();
+    const Scalar* val = A.data();
+
+    C.setZero();
+    for (Size r = 0; r < A.rows(); ++r){
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi){
+            for (Size c = 0; c < B.cols(); ++c) {
+                C(r, c) += val[oi] * B(static_cast<Size>(inner[oi]), c);
+            }
+        }
+    }
 }
 
 void LinearAlgebraLAPACK::print(std::ostream& out) const {

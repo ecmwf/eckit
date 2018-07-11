@@ -8,6 +8,9 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <string>
+#include <vector>
+
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/runtime/Main.h"
@@ -80,10 +83,48 @@ CASE ( "test_eckit_la_sparse" ) {
 
 CASE ( "test multiply with different backends" ) {
 
+    std::vector<std::string> backends{
+        "generic",
+#ifdef ECKIT_HAVE_ARMADILLO
+        "armadillo",
+#endif
+#ifdef ECKIT_HAVE_CUDA
+        "cuda",
+#endif
+#ifdef ECKIT_HAVE_EIGEN
+        "eigen",
+#endif
+#ifdef ECKIT_HAVE_MKL
+        "mkl",
+#endif
+#ifdef ECKIT_HAVE_LAPACK
+        "lapack",
+#endif
+    };
+
     SparseMatrix A(2, 4 , std::vector<Triplet>{
                        {0, 0, 2.},
                        {1, 2, 3.},
                    });
+
+    SECTION("test_spmv") {
+
+        Vector B(4);
+        B.fill(5.);
+
+        Vector C(2);
+
+        for (auto& back : backends) {
+            // don't reuse another backend results
+            C.fill(-42.);
+
+            Log::info() << "testing backend: '" << back << "'" << std::endl;
+            LinearAlgebra::getBackend(back).spmv(A, B, C);
+
+            EXPECT(C[0] == 10.);
+            EXPECT(C[1] == 15.);
+        }
+    }
 
     SECTION("test_spmm") {
 
@@ -95,24 +136,7 @@ CASE ( "test multiply with different backends" ) {
 
         Matrix C(2, 2);
 
-        for (auto& back : {
-             "generic",
-         #ifdef ECKIT_HAVE_ARMADILLO
-             "armadillo",
-         #endif
-         #ifdef ECKIT_HAVE_CUDA
-             "cuda",
-         #endif
-         #ifdef ECKIT_HAVE_EIGEN
-             "eigen",
-         #endif
-         #ifdef ECKIT_HAVE_MKL
-             "mkl",
-         #endif
-         #ifdef ECKIT_HAVE_LAPACK
-             "lapack",
-         #endif
-        }) {
+        for (auto& back : backends) {
             // don't reuse another backend results
             C.fill(-42.);
 

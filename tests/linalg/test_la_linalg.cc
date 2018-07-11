@@ -108,6 +108,9 @@ CASE ( "test multiply with different backends" ) {
      #ifdef ECKIT_HAVE_MKL
          "mkl",
      #endif
+     #ifdef ECKIT_HAVE_LAPACK
+         "lapack",
+     #endif
 }) {
         Log::info() << "testing backend: '" << back << "'" << std::endl;
         LinearAlgebra::getBackend(back).spmm(A, B, C);

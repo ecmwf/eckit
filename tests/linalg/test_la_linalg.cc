@@ -85,41 +85,46 @@ CASE ( "test multiply with different backends" ) {
                        {1, 2, 3.},
                    });
 
-    Matrix B(4, 2);
-    for (size_t i = 0; i < 4; ++i) {
-        B(i, 0) = 5;
-        B(i, 1) = 7;
+    SECTION("test_spmm") {
+
+        Matrix B(4, 2);
+        for (size_t i = 0; i < 4; ++i) {
+            B(i, 0) = 5;
+            B(i, 1) = 7;
+        }
+
+        Matrix C(2, 2);
+
+        for (auto& back : {
+             "generic",
+         #ifdef ECKIT_HAVE_ARMADILLO
+             "armadillo",
+         #endif
+         #ifdef ECKIT_HAVE_CUDA
+             "cuda",
+         #endif
+         #ifdef ECKIT_HAVE_EIGEN
+             "eigen",
+         #endif
+         #ifdef ECKIT_HAVE_MKL
+             "mkl",
+         #endif
+         #ifdef ECKIT_HAVE_LAPACK
+             "lapack",
+         #endif
+        }) {
+            // don't reuse another backend results
+            C.fill(-42.);
+
+            Log::info() << "testing backend: '" << back << "'" << std::endl;
+            LinearAlgebra::getBackend(back).spmm(A, B, C);
+
+            EXPECT(C(0, 0) == 10.);
+            EXPECT(C(0, 1) == 14.);
+            EXPECT(C(1, 0) == 15.);
+            EXPECT(C(1, 1) == 21.);
+        }
     }
-
-    Matrix C(2, 2);
-    C.fill(-42.);
-
-    for (auto& back : {
-         "generic",
-     #ifdef ECKIT_HAVE_ARMADILLO
-         "armadillo",
-     #endif
-     #ifdef ECKIT_HAVE_CUDA
-         "cuda",
-     #endif
-     #ifdef ECKIT_HAVE_EIGEN
-         "eigen",
-     #endif
-     #ifdef ECKIT_HAVE_MKL
-         "mkl",
-     #endif
-     #ifdef ECKIT_HAVE_LAPACK
-         "lapack",
-     #endif
-}) {
-        Log::info() << "testing backend: '" << back << "'" << std::endl;
-        LinearAlgebra::getBackend(back).spmm(A, B, C);
-
-        EXPECT(C(0, 0) == 10.);
-        EXPECT(C(0, 1) == 14.);
-        EXPECT(C(1, 0) == 15.);
-        EXPECT(C(1, 1) == 21.);
-}
 }
 
 

@@ -9,7 +9,6 @@
  */
 
 #include <string>
-#include <vector>
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
@@ -19,149 +18,114 @@
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
-#include "./util.h"
-
 #include "eckit/testing/Test.h"
-
-using namespace eckit;
-using namespace eckit::testing;
+#include "./util.h"
 
 namespace eckit {
 namespace test {
 
 //-----------------------------------------------------------------------------
 
-struct Fixture {
-
-    Fixture() : x(V(3, 1., 2., 4.)),
-                A(M(2, 2, 1., -2., -4., 2.)),
-                linalg(LinearAlgebra::backend()) {}
-
-    Vector x;
-    Matrix A;
-    const LinearAlgebra& linalg;
-};
-
-
 template <class T>
-void test(const T& v, const T& r) {
-    EXPECT( make_view(v.data(), v.data() + v.size()) == make_view(r.data(), r.data() + r.size()));
+bool equals(const T& a, const T& b) {
+    return testing::make_view(a.data(), a.data() + a.size()) ==
+           testing::make_view(b.data(), b.data() + b.size());
 }
 
 //-----------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
-CASE ( "test_eckit_la_sparse" ) {
+CASE ( "test backends" ) {
+    using namespace linalg;
 
-    Fixture F;
+    Matrix A = M(2, 2, 1., -2., -4., 2.);
+    SparseMatrix S(2, 4, {{0, 0, 2.}, {1, 2, 3.}});
 
-    SECTION("test_dot") {
-        EXPECT(F.linalg.dot(F.x, F.x) == 21.);
-        Log::info() << "dot of vectors of different sizes should fail" << std::endl;
-        EXPECT_THROWS_AS(F.linalg.dot(F.x, Vector(2)), AssertionFailed);
-    }
+    for (auto& back : {
+         "generic",
+ #ifdef ECKIT_HAVE_ARMADILLO
+         "armadillo",
+ #endif
+ #ifdef ECKIT_HAVE_CUDA
+         "cuda",
+ #endif
+ #ifdef ECKIT_HAVE_EIGEN
+         "eigen",
+ #endif
+ #ifdef ECKIT_HAVE_MKL
+         "mkl",
+ #endif
+ #ifdef ECKIT_HAVE_LAPACK
+         "lapack",
+ #endif
+     }) {
+        auto& linalg = LinearAlgebra::getBackend(back);
 
-    SECTION("test_gemv") {
-        Vector y(2);
-        F.linalg.gemv(F.A, V(2, -1., -2.), y);
-        test(y, V(2, 3., 0.));
-        Log::info() << "gemv of matrix and vector of nonmatching sizes should fail" << std::endl;
-        EXPECT_THROWS_AS(F.linalg.gemv(F.A, F.x, y), AssertionFailed);
-    }
+        Log::info() << linalg << " dot" << std::endl;
+        {
+            Vector a = V(3, 1., 2., 4.);
 
-    SECTION("test_gemm") {
-        Matrix B(2, 2);
-        F.linalg.gemm(F.A, F.A, B);
-        test(B, M(2, 2, 9., -6., -12., 12.));
-        Log::info() << "gemm of matrices of nonmatching sizes should fail" << std::endl;
-        EXPECT_THROWS_AS(F.linalg.gemm(F.A, Matrix(1, 2), B), AssertionFailed);
-    }
-}
-
-//-----------------------------------------------------------------------------
-
-CASE ( "test multiply with different backends" ) {
-
-    std::vector<std::string> backends{
-        "generic",
-#ifdef ECKIT_HAVE_ARMADILLO
-        "armadillo",
-#endif
-#ifdef ECKIT_HAVE_CUDA
-        "cuda",
-#endif
-#ifdef ECKIT_HAVE_EIGEN
-        "eigen",
-#endif
-#ifdef ECKIT_HAVE_MKL
-        "mkl",
-#endif
-#ifdef ECKIT_HAVE_LAPACK
-        "lapack",
-#endif
-    };
-
-    SparseMatrix A(2, 4 , std::vector<Triplet>{
-                       {0, 0, 2.},
-                       {1, 2, 3.},
-                   });
-
-    SECTION("test_spmv") {
-
-        Vector B(4);
-        B.fill(5.);
-
-        Vector C(2);
-
-        for (auto& back : backends) {
-            // don't reuse another backend results
-            C.fill(-42.);
-
-            Log::info() << "testing backend: '" << back << "'" << std::endl;
-            LinearAlgebra::getBackend(back).spmv(A, B, C);
-
-            EXPECT(C[0] == 10.);
-            EXPECT(C[1] == 15.);
-        }
-    }
-
-    SECTION("test_spmm") {
-
-        Matrix B(4, 2);
-        for (size_t i = 0; i < 4; ++i) {
-            B(i, 0) = 5;
-            B(i, 1) = 7;
+            EXPECT(linalg.dot(a, a) == 21.);
+            EXPECT_THROWS_AS(linalg.dot(a, Vector(2)), AssertionFailed);
         }
 
-        Matrix C(2, 2);
+        Log::info() << linalg << " gemv" << std::endl;
+        {
+            Vector y = V(2, -42., -42.);
+            Vector z = V(2, 3., 0.);
 
-        for (auto& back : backends) {
-            // don't reuse another backend results
-            C.fill(-42.);
+            linalg.gemv(A, V(2, -1., -2.), y);
+            EXPECT(equals(y, z));
+            EXPECT_THROWS_AS(linalg.gemv(A, Vector(3), y), AssertionFailed);
+        }
 
-            Log::info() << "testing backend: '" << back << "'" << std::endl;
-            LinearAlgebra::getBackend(back).spmm(A, B, C);
+        Log::info() << linalg << " gemm" << std::endl;
+        {
+            Matrix Y = M(2, 2, -42., -42., -42., -42.);
+            Matrix Z = M(2, 2, 9., -6., -12., 12.);
 
-            EXPECT(C(0, 0) == 10.);
-            EXPECT(C(0, 1) == 14.);
-            EXPECT(C(1, 0) == 15.);
-            EXPECT(C(1, 1) == 21.);
+            linalg.gemm(A, A, Y);
+            EXPECT(equals(Y, Z));
+            EXPECT_THROWS_AS(linalg.gemm(A, Matrix(1, 2), Y), AssertionFailed);
+        }
+
+        Log::info() << linalg << " spmv" << std::endl;
+        {
+            Vector b = V(4, 5., 5., 5., 5.);
+            Vector y = V(2, -42., -42.);
+            Vector z = V(2,  10.,  15.);
+
+            linalg.spmv(S, b, y);
+            EXPECT(equals(y, z));
+            EXPECT_THROWS_AS(linalg.spmv(S, Vector(3), y), AssertionFailed);
+        }
+
+        Log::info() << linalg << " spmm" << std::endl;
+        {
+            Matrix B = M(4, 2, 5., 7., 5., 7., 5., 7., 5., 7.);
+            Matrix Y = M(2, 2, -42., -42., -42., -42.);
+            Matrix Z = M(2, 2,  10.,  14.,  15.,  21.);
+
+            linalg.spmm(S, B, Y);
+            EXPECT(equals(Y, Z));
+            EXPECT_THROWS_AS(linalg.spmm(S, Matrix(2, 2), Y), AssertionFailed);
         }
     }
 }
-
 
 //-----------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    eckit::Main::initialise( argc, argv );
-    // Set linear algebra backend
-    LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
+int main(int argc, char **argv) {
+    using namespace eckit;
 
-    return run_tests ( argc, argv, false );
+    Main::initialise(argc, argv);
+
+    // Set linear algebra backend
+    linalg::LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
+
+    return testing::run_tests(argc, argv, false);
 }

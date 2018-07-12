@@ -8,16 +8,18 @@
  * nor does it submit to any jurisdiction.
  */
 
-#ifndef eckit_test_linalg_util_h
-#define eckit_test_linalg_util_h
+#ifndef eckit_test_la_util_h
+#define eckit_test_la_util_h
 
 #include <cstdarg>
 
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 
+using namespace eckit::linalg;
+
 namespace eckit {
-namespace linalg {
+namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -44,7 +46,7 @@ Matrix M(Matrix::Size rows, Matrix::Size cols, ...) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace test
+} // namespace eckit
 
 #endif

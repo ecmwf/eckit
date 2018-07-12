@@ -31,9 +31,11 @@ static void dsp(const Vector& d, SparseMatrix& A) {
     const Index* outer = A.outer();
     // FIXME: better use InnerIterator
     Scalar* data = const_cast<Scalar*>(A.data());
-    for (Size r = 0; r < A.rows(); ++r)
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi)
+    for (Size r = 0; r < A.rows(); ++r) {
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
             data[oi] *= d[r];
+        }
+    }
 }
 
 
@@ -55,7 +57,9 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
 
     ASSERT(x.size() == y.size());
     Scalar r = 0;
-    for (size_t i = 0; i < x.size(); ++i) r += x[i] * y[i];
+    for (Size i = 0; i < x.size(); ++i) {
+        r += x[i] * y[i];
+    }
     return r;
 }
 
@@ -65,9 +69,12 @@ void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) con
 
     ASSERT( x.size() == A.cols() && y.size() == A.rows() );
 
-    for (size_t r = 0; r < A.rows(); ++r) {
-        y[r] = 0.;
-        for (Size c = 0; c < A.cols(); ++c) y[r] += A(r, c) * x[c];
+    for (Size r = 0; r < A.rows(); ++r) {
+        double sum = 0.;
+        for (Size c = 0; c < A.cols(); ++c) {
+            sum += A(r, c) * x[c];
+        }
+        y[r] = sum;
     }
 }
 
@@ -78,10 +85,13 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
 
     C.setZero();
-    for (size_t c = 0; c < B.cols(); ++c)
-        for (size_t r = 0; r < A.rows(); ++r)
-            for (size_t k = 0; k < A.cols(); ++k)
+    for (Size c = 0; c < B.cols(); ++c) {
+        for (Size r = 0; r < A.rows(); ++r) {
+            for (Size k = 0; k < A.cols(); ++k) {
                 C(r, c) += A(r, k) * B(k, c);
+            }
+        }
+    }
 }
 
 
@@ -94,12 +104,14 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
     const Index* outer = A.outer();
     const Index* inner = A.inner();
-    const Scalar* val  = A.data();
+    const Scalar* val = A.data();
 
-    for (size_t r = 0; r < A.rows(); ++r) {
-        y[r] = 0.;
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi)
-            y[r] += val[oi] * x[inner[oi]];
+    for (Size r = 0; r < A.rows(); ++r) {
+        double sum = 0.;
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
+            sum += val[oi] * x[static_cast<Size>(inner[oi])];
+        }
+        y[r] = sum;
     }
 }
 
@@ -109,17 +121,20 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
     ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
 
-    C.setZero();
-
     ASSERT( A.outer()[0] == 0 ); // expect indices to be 0-based
 
     const Index* outer = A.outer();
     const Index* inner = A.inner();
     const Scalar* val = A.data();
-    for (size_t r = 0; r < A.rows(); ++r)
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi)
-            for (size_t c = 0; c < B.cols(); ++c)
-                C(r, c) += val[oi] * B(inner[oi], c);
+
+    C.setZero();
+    for (Size r = 0; r < A.rows(); ++r) {
+        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
+            for (Size c = 0; c < B.cols(); ++c) {
+                C(r, c) += val[oi] * B(static_cast<Size>(inner[oi]), c);
+            }
+        }
+    }
 }
 
 

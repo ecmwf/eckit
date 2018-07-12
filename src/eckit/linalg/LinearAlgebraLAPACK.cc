@@ -10,12 +10,12 @@
 
 #include "eckit/linalg/LinearAlgebraLAPACK.h"
 
-#include "eckit/eckit_config.h"
+#ifdef ECKIT_HAVE_LAPACK
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
-#include "eckit/linalg/types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ extern "C" {
 
 double ddot_(const int* n, const double* x, const int* incx, const double* y, const int* incy);
 
-void dgemv_(const char* transA, const int* m, const int* n,
+void dgemv_(const char* transa, const int* m, const int* n,
             const double* alpha, const double* a, const int* lda, const double* x, const int* incx,
             const double* beta, double* y, const int* incy);
 
@@ -33,6 +33,11 @@ void dgemm_(const char* transa, const char* transb,
             const double* beta, double* c, const int* ldc);
 
 }
+
+static const char* trans = "N";
+static const int inc = 1;
+static const double alpha = 1.;
+static const double beta  = 0.;
 
 //-----------------------------------------------------------------------------
 
@@ -48,7 +53,6 @@ Scalar LinearAlgebraLAPACK::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
 
     const int n = int(x.size());
-    const int inc = 1;
 
     return ddot_(&n, x.data(), &inc, y.data(), &inc);
 }
@@ -58,11 +62,6 @@ void LinearAlgebraLAPACK::gemv(const Matrix& A, const Vector& x, Vector& y) cons
 
     const int m = int(A.rows());
     const int n = int(A.cols());
-
-    const char* trans = "N";
-    const int inc = 1;
-    const double alpha = 1.;
-    const double beta  = 0.;
 
     dgemv_(trans, &m, &n,
            &alpha, A.data(), &m, x.data(), &inc,
@@ -76,10 +75,6 @@ void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
     const int n = int(B.cols());
     const int k = int(A.cols());
 
-    const char* trans = "N";
-    const double alpha = 1.;
-    const double beta  = 0.;
-
     dgemm_(trans, trans,
            &m, &n, &k,
            &alpha, A.data(), &m, B.data(), &k,
@@ -87,40 +82,15 @@ void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
 }
 
 void LinearAlgebraLAPACK::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
-
-    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
-
-    const Index* outer = A.outer();
-    const Index* inner = A.inner();
-    const Scalar* val  = A.data();
-
-    for (Size r = 0; r < A.rows(); ++r) {
-        double sum = 0.;
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
-            sum += val[oi] * x[static_cast<Size>(inner[oi])];
-        }
-        y[r] = sum;
-    }
+    LinearAlgebra::getBackend("generic").spmv(A, x, y);
 }
 
 void LinearAlgebraLAPACK::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
+    LinearAlgebra::getBackend("generic").spmm(A, B, C);
+}
 
-    ASSERT(A.outer()[0] == 0); // expect indices to be 0-based
-
-    const Index* outer = A.outer();
-    const Index* inner = A.inner();
-    const Scalar* val = A.data();
-
-    C.setZero();
-    for (Size r = 0; r < A.rows(); ++r){
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi){
-            for (Size c = 0; c < B.cols(); ++c) {
-                C(r, c) += val[oi] * B(static_cast<Size>(inner[oi]), c);
-            }
-        }
-    }
+void LinearAlgebraLAPACK::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
+    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
 }
 
 void LinearAlgebraLAPACK::print(std::ostream& out) const {
@@ -135,3 +105,5 @@ static LinearAlgebraLAPACK __la;
 
 }  // namespace linalg
 }  // namespace eckit
+
+#endif  // ECKIT_HAVE_LAPACK

@@ -11,6 +11,10 @@
 #ifndef eckit_linalg_LinearAlgebraLAPACK_h
 #define eckit_linalg_LinearAlgebraLAPACK_h
 
+#include "eckit/eckit_config.h"
+
+#ifdef ECKIT_HAVE_LAPACK
+
 #include "eckit/linalg/LinearAlgebra.h"
 
 namespace eckit {
@@ -32,6 +36,7 @@ private:
     void gemm(const Matrix&, const Matrix&, Matrix&) const;
     void spmv(const SparseMatrix&, const Vector&, Vector&) const;
     void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
+    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
 
     void print(std::ostream&) const;
 
@@ -40,6 +45,7 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit
 
+#endif  // ECKIT_HAVE_LAPACK
 #endif

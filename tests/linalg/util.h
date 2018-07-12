@@ -16,30 +16,40 @@
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 
-using namespace eckit::linalg;
-
 namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Vector V(Size s, ...) {
+linalg::Vector V(linalg::Size s, ...) {
+    using linalg::Scalar;
+    using linalg::Size;
+    using linalg::Vector;
+
     Vector vec(s);
     va_list args;
     va_start(args, s);
-    for (Size i = 0; i < s; ++i) vec[i] = va_arg(args, Scalar);
+    for (Size i = 0; i < s; ++i) {
+        vec[i] = va_arg(args, Scalar);
+    }
     va_end(args);
     return vec;
 }
 
 
-Matrix M(Matrix::Size rows, Matrix::Size cols, ...) {
+linalg::Matrix M(linalg::Size rows, linalg::Size cols, ...) {
+    using linalg::Scalar;
+    using linalg::Size;
+    using linalg::Matrix;
+
     Matrix mat(rows, cols);
     va_list args;
     va_start(args, cols);
-    for (Matrix::Size r = 0; r < rows; ++r)
-        for (Matrix::Size c = 0; c < cols; ++c)
+    for (Size r = 0; r < rows; ++r) {
+        for (Size c = 0; c < cols; ++c) {
             mat(r, c) = va_arg(args, Scalar);
+        }
+    }
     va_end(args);
     return mat;
 }

@@ -18,6 +18,7 @@
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "./util.h"
 
@@ -36,81 +37,58 @@ bool equals(const T& a, const T& b) {
 
 /// Test linear algebra interface
 
-CASE ( "test backends" ) {
+CASE("test backend") {
     using namespace linalg;
 
     Matrix A = M(2, 2, 1., -2., -4., 2.);
     SparseMatrix S(2, 4, {{0, 0, 2.}, {1, 2, 3.}});
 
-    for (auto& back : {
-         "generic",
- #ifdef ECKIT_HAVE_ARMADILLO
-         "armadillo",
- #endif
- #ifdef ECKIT_HAVE_CUDA
-         "cuda",
- #endif
- #ifdef ECKIT_HAVE_EIGEN
-         "eigen",
- #endif
- #ifdef ECKIT_HAVE_MKL
-         "mkl",
- #endif
- #ifdef ECKIT_HAVE_LAPACK
-         "lapack",
- #endif
-     }) {
-        auto& linalg = LinearAlgebra::getBackend(back);
+    auto& linalg = LinearAlgebra::backend();
+    Log::info() << linalg << std::endl;
 
-        Log::info() << linalg << " dot" << std::endl;
-        {
-            Vector a = V(3, 1., 2., 4.);
+    SECTION("dot") {
+        Vector a = V(3, 1., 2., 4.);
 
-            EXPECT(linalg.dot(a, a) == 21.);
-            EXPECT_THROWS_AS(linalg.dot(a, Vector(2)), AssertionFailed);
-        }
+        EXPECT(linalg.dot(a, a) == 21.);
+        EXPECT_THROWS_AS(linalg.dot(a, Vector(2)), AssertionFailed);
+    }
 
-        Log::info() << linalg << " gemv" << std::endl;
-        {
-            Vector y = V(2, -42., -42.);
-            Vector z = V(2, 3., 0.);
+    SECTION("gemv") {
+        Vector y = V(2, -42., -42.);
+        Vector z = V(2, 3., 0.);
 
-            linalg.gemv(A, V(2, -1., -2.), y);
-            EXPECT(equals(y, z));
-            EXPECT_THROWS_AS(linalg.gemv(A, Vector(3), y), AssertionFailed);
-        }
+        linalg.gemv(A, V(2, -1., -2.), y);
+        EXPECT(equals(y, z));
+        EXPECT_THROWS_AS(linalg.gemv(A, Vector(3), y), AssertionFailed);
+    }
 
-        Log::info() << linalg << " gemm" << std::endl;
-        {
-            Matrix Y = M(2, 2, -42., -42., -42., -42.);
-            Matrix Z = M(2, 2, 9., -6., -12., 12.);
+    SECTION("gemm") {
+        Matrix Y = M(2, 2, -42., -42., -42., -42.);
+        Matrix Z = M(2, 2, 9., -6., -12., 12.);
 
-            linalg.gemm(A, A, Y);
-            EXPECT(equals(Y, Z));
-            EXPECT_THROWS_AS(linalg.gemm(A, Matrix(1, 2), Y), AssertionFailed);
-        }
+        linalg.gemm(A, A, Y);
+        EXPECT(equals(Y, Z));
+        EXPECT_THROWS_AS(linalg.gemm(A, Matrix(1, 2), Y), AssertionFailed);
+    }
 
-        Log::info() << linalg << " spmv" << std::endl;
-        {
-            Vector b = V(4, 5., 5., 5., 5.);
-            Vector y = V(2, -42., -42.);
-            Vector z = V(2,  10.,  15.);
+    SECTION("spmv") {
+        Vector b = V(4, 5., 5., 5., 5.);
+        Vector y = V(2, -42., -42.);
+        Vector z = V(2,  10.,  15.);
 
-            linalg.spmv(S, b, y);
-            EXPECT(equals(y, z));
-            EXPECT_THROWS_AS(linalg.spmv(S, Vector(3), y), AssertionFailed);
-        }
+        linalg.spmv(S, b, y);
+        EXPECT(equals(y, z));
+        EXPECT_THROWS_AS(linalg.spmv(S, Vector(3), y), AssertionFailed);
+    }
 
-        Log::info() << linalg << " spmm" << std::endl;
-        {
-            Matrix B = M(4, 2, 5., 7., 5., 7., 5., 7., 5., 7.);
-            Matrix Y = M(2, 2, -42., -42., -42., -42.);
-            Matrix Z = M(2, 2,  10.,  14.,  15.,  21.);
+    SECTION("spmm") {
+        Matrix B = M(4, 2, 5., 7., 5., 7., 5., 7., 5., 7.);
+        Matrix Y = M(2, 2, -42., -42., -42., -42.);
+        Matrix Z = M(2, 2,  10.,  14.,  15.,  21.);
 
-            linalg.spmm(S, B, Y);
-            EXPECT(equals(Y, Z));
-            EXPECT_THROWS_AS(linalg.spmm(S, Matrix(2, 2), Y), AssertionFailed);
-        }
+        linalg.spmm(S, B, Y);
+        EXPECT(equals(Y, Z));
+        EXPECT_THROWS_AS(linalg.spmm(S, Matrix(2, 2), Y), AssertionFailed);
     }
 }
 

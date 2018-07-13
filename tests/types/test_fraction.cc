@@ -26,7 +26,7 @@ namespace test {
 
 //-----------------------------------------------------------------------------
 
-CASE ( "Contructing fractions" ) {
+CASE ( "Constructing fractions" ) {
     // 0
 
     EXPECT( Fraction(0, 1) == Fraction() );
@@ -155,8 +155,6 @@ CASE ( "Contructing fractions" ) {
 
     // EXPECT(Fraction(5, 3).intergralPart() == 1);
     // EXPECT(Fraction(5, 3).decimalPart() == Fraction(1, 3));
-
-
 }
 
 //-----------------------------------------------------------------------------
@@ -301,11 +299,14 @@ CASE ( "Fraction inverse" ) {
 CASE ( "Fraction precision" ) {
     auto old = Log::debug().precision(16);
 
-    for (Fraction::value_type prime : { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 }) {
+    const std::vector<Fraction::value_type> primes{ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
+    const std::vector<Fraction::value_type> den{ 10, 100, 1000, 10000, 100000, 1000000, 10000000, 2, 4, 8, 16, 32, 64 };
+
+    for (auto& prime : primes) {
         Fraction exact_p(1, prime);
         Fraction exact_m(-exact_p);
 
-        for (Fraction::value_type p : { 10, 100, 1000, 10000, 100000, 1000000, 10000000, 2, 4, 8, 16, 32, 64 }) {
+        for (auto& p : den) {
             const Fraction precision{ 1, p };
             double value_p = round(double(exact_p) * p) / p;
             double value_m = round(double(exact_m) * p) / p;

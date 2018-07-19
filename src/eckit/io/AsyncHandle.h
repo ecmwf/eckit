@@ -86,13 +86,16 @@ private: // methods
 
 private: // members
 
-    bool               error_;
     std::string        message_;
     size_t             maxSize_;
     size_t             used_;
     size_t             rounding_;
+    bool               error_;
+
     MutexCond          cond_;
+
     std::deque<std::pair<size_t,Buffer*> > buffers_;
+
     ThreadControler    thread_; // must be last
 
     virtual std::string title() const;

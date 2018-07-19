@@ -317,7 +317,7 @@ Stream &Stream::operator<<(float x) {
     T("w float", x);
     writeTag(tag_float);
     NOTIMP;
-    return *this;
+    //return *this;
 }
 
 union Double {
@@ -526,8 +526,8 @@ Stream &Stream::operator>>(unsigned long long &x) {
 Stream &Stream::operator>>(float &x) {
     readTag(tag_float);
     NOTIMP;
-    T("r float", x);
-    return *this;
+    //T("r float", x);
+    //return *this;
 }
 
 void Stream::readLargeBlob(void *buffer, size_t size) {
@@ -751,31 +751,31 @@ void Stream::dump(std::ostream &out, const char *p, size_t len) {
             StreamDecoder d(&p[i]);
 
             switch (p[i]) {
-            case tag_zero: NOTIMP; break;
-            case tag_start_obj: NOTIMP; break;
-            case tag_end_obj: NOTIMP; break;
-            case tag_char: NOTIMP; break;
-            case tag_unsigned_char: NOTIMP; break;
+            case tag_zero: NOTIMP;
+            case tag_start_obj: NOTIMP;
+            case tag_end_obj: NOTIMP;
+            case tag_char: NOTIMP;
+            case tag_unsigned_char: NOTIMP;
             case tag_int: {
                 int s;
                 d >> s;
                 out << s;
             };
             break;
-            case tag_unsigned_int: NOTIMP; break;
-            case tag_short: NOTIMP; break;
-            case tag_unsigned_short: NOTIMP; break;
-            case tag_long: NOTIMP; break;
-            case tag_unsigned_long: NOTIMP; break;
-            case tag_long_long: NOTIMP; break;
+            case tag_unsigned_int: NOTIMP;
+            case tag_short: NOTIMP;
+            case tag_unsigned_short: NOTIMP;
+            case tag_long: NOTIMP;
+            case tag_unsigned_long: NOTIMP;
+            case tag_long_long: NOTIMP;
             case tag_unsigned_long_long: {
                 unsigned long long s;
                 d >> s;
                 out << s;
             };
             break;
-            case tag_float: NOTIMP; break;
-            case tag_double: NOTIMP; break;
+            case tag_float: NOTIMP;
+            case tag_double: NOTIMP;
 
             case tag_string: {
                 std::string s;
@@ -784,12 +784,12 @@ void Stream::dump(std::ostream &out, const char *p, size_t len) {
             };
             break;
 
-            case tag_blob: NOTIMP; break;
-            case tag_exception: NOTIMP; break;
-            case tag_start_rec: NOTIMP; break;
-            case tag_end_rec: NOTIMP; break;
-            case tag_eof: NOTIMP; break;
-            default: NOTIMP; break;
+            case tag_blob: NOTIMP;
+            case tag_exception: NOTIMP;
+            case tag_start_rec: NOTIMP;
+            case tag_end_rec: NOTIMP;
+            case tag_eof: NOTIMP;
+            default: NOTIMP;
             }
 
             i +=  d.len();

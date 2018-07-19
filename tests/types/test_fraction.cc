@@ -9,6 +9,8 @@
  */
 
 #include <cmath>
+#include <limits>
+#include <utility>
 
 #include "eckit/types/Fraction.h"
 #include "eckit/log/Log.h"
@@ -22,9 +24,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-CASE ( "Contructing fractions" ) {
+CASE ( "Constructing fractions" ) {
     // 0
 
     EXPECT( Fraction(0, 1) == Fraction() );
@@ -153,13 +155,9 @@ CASE ( "Contructing fractions" ) {
 
     // EXPECT(Fraction(5, 3).intergralPart() == 1);
     // EXPECT(Fraction(5, 3).decimalPart() == Fraction(1, 3));
-
-
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-using limits = std::numeric_limits<Fraction::value_type>;
+//-----------------------------------------------------------------------------
 
 CASE ( "Overflow during comparisons" ) {
 
@@ -175,6 +173,7 @@ CASE ( "Overflow during comparisons" ) {
     }
 
     {
+        using limits = std::numeric_limits<Fraction::value_type>;
         std::streamsize p(Log::info().precision(16));
 
         Fraction A(limits::max()-6, limits::max()-1);
@@ -216,10 +215,9 @@ CASE ( "Overflow during comparisons" ) {
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-
-CASE ( "Regression" ) {
+CASE ( "Regression (Fraction <=> Fraction)" ) {
 
     Fraction A(-34093871309, 378680550);  // -90.033331
     Fraction B(   -12621809, 378680550);  //  -0.3333102
@@ -231,7 +229,35 @@ CASE ( "Regression" ) {
     EXPECT(B >= A);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+CASE ( "Regression (double <=> Fraction)" ) {
+
+    double A(    253.07432399999999006467987783253);
+    Fraction B(/*253.07435716708162*/ 1591682572, 6289387);
+
+    EXPECT(A <  B);
+    EXPECT(A <= B);
+    EXPECT(A != B);
+    EXPECT(B >  A);
+    EXPECT(B >= A);
+}
+
+//-----------------------------------------------------------------------------
+
+CASE ( "Regression (Fraction <=> double)" ) {
+
+    Fraction A(/*-253.07435716708162*/ -1591682572, 6289387);
+    double B(    -253.07432399999999006467987783253);
+
+    EXPECT(A <  B);
+    EXPECT(A <= B);
+    EXPECT(A != B);
+    EXPECT(B >  A);
+    EXPECT(B >= A);
+}
+
+//-----------------------------------------------------------------------------
 
 CASE ( "Values known to have problematic conversion to fraction" ) {
 
@@ -244,6 +270,57 @@ CASE ( "Values known to have problematic conversion to fraction" ) {
 
     }
     Log::debug().precision(p);
+}
+
+//-----------------------------------------------------------------------------
+
+CASE ( "Fraction inverse" ) {
+
+    for (auto& test : {
+         std::make_pair(Fraction{1,2}, Fraction{2,1}),
+         std::make_pair(Fraction{1,3}, Fraction{3,1}),
+         }) {
+
+        Log::debug() << "Test (" << test.first << ")**-1 = " << test.second << std::endl;
+        EXPECT( test.first.inverse() == test.second );
+
+        Log::debug() << "Test " << test.first << " = (" << test.second << ")**-1" << std::endl;
+        EXPECT( test.first == test.second.inverse() );
+
+    }
+
+    Fraction zero(0);
+    Log::debug() << "Test (" << zero << ")**-1 (throw BadValue)" << std::endl;
+    EXPECT_THROWS_AS(zero.inverse(), BadValue);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE ( "Fraction precision" ) {
+    auto old = Log::debug().precision(16);
+
+    const std::vector<Fraction::value_type> primes{ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
+    const std::vector<Fraction::value_type> den{ 10, 100, 1000, 10000, 100000, 1000000, 10000000, 2, 4, 8, 16, 32, 64 };
+
+    for (auto& prime : primes) {
+        Fraction exact_p(1, prime);
+        Fraction exact_m(-exact_p);
+
+        for (auto& p : den) {
+            const Fraction precision{ 1, p };
+            double value_p = round(double(exact_p) * p) / p;
+            double value_m = round(double(exact_m) * p) / p;
+
+            Log::debug() << "Test  " << exact_p << " ~=  " << value_p << " +- " << precision << endl;
+            EXPECT(Fraction::abs(exact_p - Fraction(value_p, precision)) < precision);
+
+            Log::debug() << "Test " << exact_m << " ~= " << value_m << " +- " << precision << endl;
+            EXPECT(Fraction::abs(exact_m - Fraction(value_m, precision)) < precision);
+
+        }
+    }
+
+    Log::debug().precision(old);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

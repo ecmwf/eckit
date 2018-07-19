@@ -224,7 +224,7 @@ std::string MemoryHandle::title() const {
 DataHandle* MemoryHandle::clone() const
 {
     NOTIMP; // Not sure what is the semantics here
-    return new MemoryHandle(address_, size_);
+    // return new MemoryHandle(address_, size_);
 }
 
 const void* MemoryHandle::data() const {

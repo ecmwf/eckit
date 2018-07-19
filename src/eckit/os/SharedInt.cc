@@ -31,12 +31,22 @@ SharedInt::~SharedInt()
 
 void SharedInt::use(int n)
 {
-	Semaphore::lower(2*n);
+    Semaphore::lower(2*n);
+}
+
+void SharedInt::use(int n, short v)
+{
+    Semaphore::lower(2*n, v);
 }
 
 void SharedInt::release(int n)
 {
-	Semaphore::raise(2*n);
+    Semaphore::raise(2*n);
+}
+
+void SharedInt::release(int n, short v)
+{
+    Semaphore::raise(2*n, v);
 }
 
 void SharedInt::newLimit(short val,unsigned short n)

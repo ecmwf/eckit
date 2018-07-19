@@ -76,8 +76,8 @@ void AsyncHandleWriter::run() {
 AsyncHandle::AsyncHandle(DataHandle* h, size_t maxSize, size_t rounding):
     HandleHolder(h),
     maxSize_(maxSize),
-    rounding_(rounding),
     used_(0),
+    rounding_(rounding),
     error_(false),
     thread_(new AsyncHandleWriter(*this), false)
 {
@@ -87,8 +87,8 @@ AsyncHandle::AsyncHandle(DataHandle* h, size_t maxSize, size_t rounding):
 AsyncHandle::AsyncHandle(DataHandle& h, size_t maxSize, size_t rounding):
     HandleHolder(h),
     maxSize_(maxSize),
-    rounding_(rounding),
     used_(0),
+    rounding_(rounding),
     error_(false),
     thread_(new AsyncHandleWriter(*this), false)
 {

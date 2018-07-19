@@ -15,6 +15,9 @@
 #include "eckit/log/Seconds.h"
 #include "eckit/serialisation/Stream.h"
 
+#include <cmath>
+#include <algorithm>
+
 namespace eckit {
 
 const size_t WIDTH = 34;
@@ -63,6 +66,25 @@ void Statistics::reportRate(std::ostream &out, const char *title, unsigned long 
     }
 }
 
+void Statistics::reportRate(std::ostream& out, const std::string& title, size_t bytes, double elapsed, const char* indent, bool always) {
+
+    if (bytes || always) {
+
+        double rate = 0;
+        if (bytes != 0 and elapsed > 0) {
+            rate = bytes / elapsed;
+        }
+
+        out << indent
+            << title
+            << std::setw(WIDTH - title.length())
+            << " : "
+            << BigNum(size_t(rate)) << " bytes/s"
+            << " (" << Bytes(rate) << " per second)"
+            << std::endl;
+    }
+}
+
 void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent, bool always) {
     if (value || always)
     {
@@ -75,6 +97,29 @@ void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long
             << ")" << std::endl;
     }
 }
+
+void Statistics::reportBytesStats(std::ostream& out, const std::string& title, size_t count, size_t bytes, size_t sumsquared, const char* indent, bool always) {
+
+    if (count || always) {
+
+        double average = 0;
+        double stdDeviation = 0;
+        if (count != 0) {
+            average = bytes / count;
+            stdDeviation = std::sqrt(std::max((count * sumsquared) - (bytes * bytes), size_t(0))) / count;
+        }
+
+        out << indent
+            << title
+            << std::setw(WIDTH - title.length())
+            << " (tot, avg, std dev) : "
+            << BigNum(bytes) << " (" << Bytes(bytes) << ")"
+            << ", " << BigNum(size_t(average)) << " (" << Bytes(average) << ")"
+            << ", " << BigNum(size_t(stdDeviation)) << " (" << Bytes(stdDeviation) << ")"
+            << std::endl;
+    }
+}
+
 
 void Statistics::reportTime(std::ostream &out, const char *title, const Timing &value, const char *indent, bool always) {
     if (value.updates_ || always)
@@ -101,6 +146,27 @@ void Statistics::reportTime(std::ostream &out, const char *title, double value, 
     }
 }
 
+void Statistics::reportTimeStats(std::ostream &out, const std::string& title, size_t count, double sum_times, double sum_times_squared, const char *indent, bool always) {
+
+    if (count || always) {
+
+        double average = 0;
+        double stdDeviation = 0;
+        if (count != 0) {
+            average = sum_times / count;
+            stdDeviation = std::sqrt(std::max((count * sum_times_squared) - (sum_times * sum_times), 0.0)) / count;
+        }
+
+        out << indent
+            << title
+            << std::setw(WIDTH - title.length())
+            << " (tot, avg, std dev) : "
+            << sum_times << " s"
+            << ", " << average << " s"
+            << ", " << stdDeviation << " s"
+            << std::endl;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

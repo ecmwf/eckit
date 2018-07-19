@@ -26,75 +26,94 @@ std::string RendezvousHash::md5(const std::string& str) {
 }
 
 RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) :
-    hash_(hash)
-{
-}
+    hash_(hash) {}
 
-RendezvousHash::RendezvousHash(const std::set<RendezvousHash::Node>& nodes, const RendezvousHash::hash_func_ptr hash) :
+RendezvousHash::RendezvousHash(const std::vector<RendezvousHash::Node>& nodes, const RendezvousHash::hash_func_ptr hash) :
     hash_(hash),
-    nodes_(nodes)
-{
-}
+    nodes_(nodes) {}
 
 RendezvousHash::~RendezvousHash()
 {
+}
+
+void RendezvousHash::hashOrder(const RendezvousHash::Key &key, std::vector<RendezvousHash::Node>& nodes) {
+
+    std::vector<size_t> indexes;
+
+    AutoLock<Mutex> lock(mutex_);
+    hashOrder(key, indexes);
+
+    ASSERT(indexes.size() == nodes_.size());
+
+    nodes.clear();
+    nodes.reserve(indexes.size());
+
+    for (size_t idx : indexes) {
+        nodes.push_back(nodes_[idx]);
+    }
+}
+
+void RendezvousHash::hashOrder(const RendezvousHash::Key& key, std::vector<size_t>& indices) {
+
+    AutoLock<Mutex> lock(mutex_);
+    hashOrderInternal(key, indices);
+}
+
+void RendezvousHash::hashOrderInternal(const RendezvousHash::Key& key, std::vector<size_t>& indices) {
+
+    if (nodes_.size() == 0) {
+        throw BadParameter("Cannot return hashed order with no nodes", Here());
+    }
+
+    // n.b. Does not do locking. That is delegated to the public calling functions.
+
+    indices.resize(nodes_.size());
+    std::iota(indices.begin(), indices.end(), 0);
+
+    // We hash based on a stringized key
+    std::string skey = flatten(key);
+
+    std::vector<std::string> hashes;
+    hashes.reserve(nodes_.size());
+
+    // Calculate hashes of the key with each of the available nodes
+
+    for (const auto& node : nodes_) {
+        std::string toHash = skey + "+" + node;
+        hashes.emplace_back(hash_(toHash));
+        Log::debug<LibEcKit>() << "node=" << node << ", str=" << toHash << ", hash=" << hashes.back() << std::endl;
+    }
+
+    // TODO: We don't necessarily need N results, could do a subset.
+    std::sort(indices.begin(), indices.end(), [&hashes](size_t lhs, size_t rhs) { return hashes[lhs] < hashes[rhs]; });
 }
 
 bool RendezvousHash::addNode(const RendezvousHash::Node& node)
 {
     AutoLock<Mutex> lock(mutex_);
 
-    std::pair<iterator, bool> r = nodes_.insert(node);
+    auto it = std::find(nodes_.begin(), nodes_.end(), node);
+    if (it == nodes_.end()) {
+        nodes_.push_back(node);
+        return true;
+    }
 
-    return r.second;
+    return false;
 }
 
 bool RendezvousHash::removeNode(const RendezvousHash::Node& node)
 {
     AutoLock<Mutex> lock(mutex_);
 
-    return bool(nodes_.erase(node));
-}
-
-RendezvousHash::Node RendezvousHash::selectNode(const RendezvousHash::Key& key)
-{
-    AutoLock<Mutex> lock(mutex_);
-
-    std::string skey = flatten(key);
-
-    iterator highest = nodes_.end();
-    std::string hashest;
-
-    std::vector<std::string> vs;
-
-    for(iterator itr = nodes_.begin(); itr != nodes_.end(); ++itr) {
-        std::string toHash = skey + "+" + *itr;
-        std::string h = hash_(toHash);
-
-        Log::debug<LibEcKit>() << "node=" << *itr << ", str=" << toHash << ", hash = " << h << std::endl;
-
-        if(h > hashest) {
-            hashest = h;
-            highest = itr;
-        }
-
-        vs.push_back(h);
+    auto it = std::find(nodes_.begin(), nodes_.end(), node);
+    if (it != nodes_.end()) {
+        nodes_.erase(it);
+        return true;
     }
 
-    std::sort(vs.begin(), vs.end());
-
-    Log::debug<LibEcKit>() << vs << std::endl;
-
-    if(highest == nodes_.end()) {
-        std::ostringstream oss;
-        oss << "Couldn't find highest rendezvous hash, node list is likely empty. Nodes: " << nodes_;
-        throw eckit::BadParameter(oss.str(), Here());
-    }
-
-    Log::debug<LibEcKit>() << "highest=" << *highest << ", hashest=" << hashest << std::endl;
-
-    return *highest;
+    return false;
 }
+
 
 std::string RendezvousHash::flatten(const RendezvousHash::Key& key) const
 {

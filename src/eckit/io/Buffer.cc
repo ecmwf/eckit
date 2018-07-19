@@ -31,6 +31,19 @@ Buffer::Buffer(const char* p, size_t size):
     copy(p,size);
 }
 
+Buffer::Buffer(Buffer &&rhs) :
+    buffer_(rhs.buffer_),
+    size_(rhs.size_) {
+    rhs.buffer_ = 0;
+    rhs.size_ = 0;
+}
+
+Buffer& Buffer::operator=(Buffer&& rhs) {
+    std::swap(buffer_, rhs.buffer_);
+    std::swap(size_, rhs.size_);
+    return *this;
+}
+
 Buffer::Buffer(const std::string& s):
     buffer_(0),
     size_(s.length()+1)
@@ -57,7 +70,9 @@ void Buffer::create()
 
 void Buffer::destroy()
 {
-    MemoryPool::largeDeallocate(buffer_);
+    if (buffer_) {
+        MemoryPool::largeDeallocate(buffer_);
+    }
 }
 
 void Buffer::copy(const std::string &s)

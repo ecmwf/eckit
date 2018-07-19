@@ -86,7 +86,7 @@ container/Trie.h
 container/Trie.cc
 container/BloomFilter.h
 container/BloomFilter.cc
-
+container/Queue.h
 container/Cache.h
 container/CacheLRU.h
 container/CacheLRU.cc

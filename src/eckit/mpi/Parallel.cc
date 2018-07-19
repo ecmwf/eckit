@@ -515,7 +515,6 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
 
         } catch (Exception& e) {
             op.err_ = errno;
-            op.len_ = -1;
         }
     }
 

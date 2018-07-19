@@ -31,6 +31,9 @@ public:  // methods
     Buffer(const std::string& s);
     Buffer(const char*, size_t size);
 
+    Buffer(Buffer&& rhs);
+    Buffer& operator=(Buffer&& rhs);
+
     ~Buffer();
 
     operator char*() { return static_cast<char*>(buffer_); }

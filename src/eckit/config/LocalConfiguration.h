@@ -19,6 +19,7 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
+#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -73,6 +74,8 @@ private:
     void setValue(const std::string &s, const Value &value);
 
 };
+
+template <> struct VectorPrintSelector<LocalConfiguration> { typedef VectorPrintSimple selector; };
 
 //----------------------------------------------------------------------------------------------------------------------
 

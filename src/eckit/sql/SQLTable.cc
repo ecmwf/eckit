@@ -132,20 +132,20 @@ unsigned long long SQLTable::noRows() const
 }
 
 
-SQLColumn* SQLTable::column(const std::string& name)
+SQLColumn& SQLTable::column(const std::string& name)
 {
 	std::map<std::string,SQLColumn*>::iterator j = columnsByName_.find(name);
 	if(j != columnsByName_.end())
-		return (*j).second;
+        return *(j->second);
 
 	std::vector<std::string> v;
 	Tokenizer(".")(name, v);
 
 	if(v.size() > 1)
 	{
-		SQLColumn* col = column(v[0]);
-		columnsByName_[name] = new SQLBitColumn(*col,v[1]);
-		return columnsByName_[name];
+        SQLColumn& col = column(v[0]);
+        columnsByName_[name] = new SQLBitColumn(col, v[1]);
+        return *columnsByName_[name];
 	}
 
 	throw eckit::UserError("Column not found",name);
@@ -161,24 +161,26 @@ SQLPool* SQLTable::pool(int index)
 		return (*j).second;
 }
 
-void SQLTable::addLinkFrom(const SQLTable* from)
+void SQLTable::addLinkFrom(const SQLTable& from)
 {
 	linksFrom_.insert(from);
 }
 
 bool SQLTable::hasLinkFrom(const SQLTable& from) const
 {
-	return linksFrom_.find(&from) != linksFrom_.end();
+//    return linksFrom_.find(from) != linksFrom_.end();
+    return false;
 }
 
-void SQLTable::addLinkTo(const SQLTable* to)
+void SQLTable::addLinkTo(const SQLTable& to)
 {
 	linksTo_.insert(to);
 }
 
 bool SQLTable::hasLinkTo(const SQLTable& to) const
 {
-	return linksTo_.find(&to) != linksTo_.end();
+//    return linksTo_.find(to) != linksTo_.end();
+    return false;
 }
 
 bool SQLTable::isParentOf(const SQLTable& other) const
@@ -186,10 +188,10 @@ bool SQLTable::isParentOf(const SQLTable& other) const
 	if(hasLinkTo(other))
 		return true;
 
-	for(std::set<const SQLTable*>::const_iterator j = linksTo_.begin();
-		j != linksTo_.end(); ++j)
-			if((*j)->isParentOf(other))
-				return true;
+    for (const auto& l : linksTo_) {
+        if(l.get().isParentOf(other))
+            return true;
+    }
 
 	return false;
 }
@@ -208,16 +210,6 @@ void SQLTable::master(SQLTable* master)
 std::string SQLTable::fullName() const
 {
 	return owner_.name() + "." + name_;
-}
-
-bool SQLTable::sameAs(const SQLTable& other) const
-{
-	return owner_.sameAs(other.owner_) && (name_ == other.name_);
-}
-
-bool SQLTable::sameDatabase(const SQLTable& other) const
-{
-	return &owner_ == &other.owner_;
 }
 
 void SQLTable::print(std::ostream& s) const

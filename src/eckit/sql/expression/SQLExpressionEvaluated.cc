@@ -9,7 +9,7 @@
  */
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/sql/SQLExpressionEvaluated.h"
+#include "eckit/sql/expression/SQLExpressionEvaluated.h"
 
 namespace eckit {
 namespace sql {

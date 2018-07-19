@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-// File SQLTable.h
-// Baudouin Raoult - ECMWF Dec 03
+/// @author Baudouin Raoult
+/// @author Simon Smart
+// @date Dec 03
 
-#ifndef SQLTable_H
-#define SQLTable_H
+#ifndef eckit_sql_SQLTable_H
+#define eckit_sql_SQLTable_H
+
+#include <functional>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
@@ -21,6 +24,8 @@
 
 namespace eckit {
 namespace sql {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 //class SQLFile;
 class SQLPool;
@@ -44,15 +49,15 @@ public:
     void loadIOMAP(std::istream&);
 	void addColumn(const std::string&, int, const type::SQLType&, bool, double, bool, const BitfieldDef&);
 
-	void addLinkFrom(const SQLTable*);
+    void addLinkFrom(const SQLTable&);
 	bool hasLinkFrom(const SQLTable&) const;
 
-	void addLinkTo(const SQLTable*);
+    void addLinkTo(const SQLTable&);
 	bool hasLinkTo(const SQLTable&) const;
 
 	bool isParentOf(const SQLTable&) const;
 
-	virtual SQLColumn* column(const std::string&);
+    virtual SQLColumn& column(const std::string&);
 	SQLPool*   pool(int);
 
 	SQLTable* master() const;
@@ -72,9 +77,6 @@ public:
 
 	SQLDatabase& owner() const { return owner_; }
 
-	bool sameAs(const SQLTable& other) const;
-	bool sameDatabase(const SQLTable& other) const;
-
     const std::string& path() const { return path_; }
 
 	virtual void print(std::ostream& s) const;
@@ -92,8 +94,8 @@ protected:
     std::map<std::string, SQLColumn*>  columnsByName_;
     std::map<int, SQLColumn*>     columnsByIndex_;
 
-    std::set<const SQLTable*> linksFrom_;
-    std::set<const SQLTable*> linksTo_;
+    std::set<std::reference_wrapper<const SQLTable>> linksFrom_;
+    std::set<std::reference_wrapper<const SQLTable>> linksTo_;
 
 // -- Methods
 	void clearColumns();
@@ -113,6 +115,14 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+// helper
+
+inline bool operator<(std::reference_wrapper<const SQLTable> lhs, std::reference_wrapper<const SQLTable> rhs) {
+    return lhs.get() < rhs.get();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

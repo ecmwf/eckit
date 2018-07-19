@@ -23,7 +23,6 @@ namespace sql {
 
 class SQLSelect;
 class SQLTable;
-class SQLIndex;
 class SQLOutput;
 
 namespace expression {
@@ -58,7 +57,7 @@ public:
     virtual void title(const std::string&);
     virtual std::string title() const;
 
-	virtual const odb::sql::type::SQLType* type() const = 0;
+    virtual const type::SQLType* type() const = 0;
 	// ----
 
 	virtual SQLExpression* clone() const = 0;
@@ -75,10 +74,6 @@ public:
 
 	virtual bool hasMissingValue() const { return hasMissingValue_; }
 	double missingValue() const { return missingValue_; }
-
-	virtual bool indexed()  { return false; }
-	virtual bool useIndex() { return false; }
-	virtual SQLIndex* getIndex(double* = 0) { return 0; }
 
 	static SQLExpression* number(double);
 
@@ -107,7 +102,7 @@ private:
 } // namespace sql
 } // namespace eckit
 
-//#include "odb_api/Expressions.h"
+//#include "eckit/sql/expression/SQLExpressions.h"
 
 using namespace eckit::sql::expression;
 

@@ -23,7 +23,6 @@ namespace eckit {
 namespace sql {
 
 class SQLBitColumn;
-class SQLIndex;
 class SQLTable;
 
 class SQLColumn : public SQLIterator {
@@ -55,12 +54,6 @@ public:
 	virtual double next(bool& missing);
 	virtual void advance(unsigned long);
 
-	bool hasIndex() const { return indexing_.get() != 0; }
-	void createIndex();
-	void loadIndex();
-	SQLIndex* getIndex(double*);
-
-	eckit::PathName indexPath();
 protected:
 	unsigned long long noRows_;
 
@@ -85,9 +78,7 @@ protected:
 	long long position_;
 	SQLIterator* iterator_;
 
-    std::unique_ptr<SQLIndex> indexing_;
-
-	bool hasMissingValue_;
+    bool hasMissingValue_;
 	double missingValue_;
 	bool isBitfield_;
 	const BitfieldDef bitfieldDef_;

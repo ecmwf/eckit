@@ -9,7 +9,6 @@
  */
 
 #include "eckit/sql/SQLColumn.h"
-#include "eckit/sql/SQLIndex.h"
 #include "eckit/sql/SQLTable.h"
 
 using namespace eckit;
@@ -97,12 +96,6 @@ void SQLColumn::setPool(int n)
 	// cout << "pool " << n << " " << last_ << std::endl;
 }
 
-PathName SQLColumn::indexPath()
-{
-	PathName path  = owner_.path();
-	return path + "/" + name_ + "@" + owner_.name() + ".index";
-}
-
 double SQLColumn::next(bool& missing)
 {
 	if(position_ == last_)
@@ -141,24 +134,6 @@ SQLTable* SQLColumn::table() const
 	return &owner_;
 }
 
-void SQLColumn::createIndex()
-{
-    indexing_.reset(new SQLIndex(*this));
-	indexing_->update();
-}
-
-SQLIndex* SQLColumn::getIndex(double* value)
-{
-	ASSERT(indexing_.get());
-	indexing_->rewind(value);
-	return indexing_.get();
-}
-
-void SQLColumn::loadIndex()
-{
-	PathName path = indexPath();
-	if(path.exists()) createIndex();
-}
 
 } // namespace sql
 } // namespace eckit

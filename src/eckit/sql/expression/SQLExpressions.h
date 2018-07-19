@@ -8,20 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-/// \file Expressions.h
-/// Piotr Kuchta - ECMWF Nov 11
+/// @author Piotr Kuchta
+/// @author Simon Smart
+/// @date Nov 11
 
-#ifndef odb_api_Expressions_H
-#define odb_api_Expressions_H
+#ifndef eckit_api_Expressions_H
+#define eckit_api_Expressions_H
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/sql/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpression.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 
-typedef std::vector<odb::sql::expression::SQLExpression*> ExpressionsVector;
+typedef std::vector<SQLExpression*> ExpressionsVector;
 
 class Expressions : public SQLExpression, public ExpressionsVector
 {

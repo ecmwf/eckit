@@ -37,16 +37,15 @@ namespace sql {
 class SQLStatement;
 namespace expression { class SQLExpression; }
 
-
 typedef std::map<std::string, std::set<std::string> > Links;
-typedef std::map<std::string, expression::SQLExpression*> Variables;
+typedef std::map<std::string, std::unique_ptr<expression::SQLExpression>> Variables;
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class SQLDatabase {
 public:
-	typedef enum { ODA, CSV } DataFormat;
-
-	SQLDatabase(const eckit::PathName&,const std::string&);
-	SQLDatabase(const std::string& = "default");
+    SQLDatabase(const std::string& name = "default");
 	virtual ~SQLDatabase(); 
 
 // -- Methods
@@ -54,12 +53,12 @@ public:
 	virtual void close();
 
     //virtual SQLTable* table(const std::string&);
-    SQLTable& table(const Table&);
+    //SQLTable& table(const Table&);
     SQLTable& defaultTable();
-    SQLTable& openDataHandle(eckit::DataHandle&, DataFormat = ODA);
-    SQLTable& openDataStream(std::istream&, const std::string& delimiter);
+//    SQLTable& openDataHandle(eckit::DataHandle&);
+//    SQLTable& openDataStream(std::istream&, const std::string& delimiter);
 
-    void addTable(SQLTable* table) { tablesByName_[table->name()] = table; }
+    void addTable(SQLTable* table);
 
 	void setLinks(const Links&);
 	void setLinks() { setLinks(links_); }
@@ -69,11 +68,10 @@ public:
 
 	virtual const std::string& name() const { return name_; }
 
-    expression::SQLExpression* getVariable(const std::string&) const;
-    void   setVariable(const std::string&, expression::SQLExpression*);
+    expression::SQLExpression& getVariable(const std::string&) const;
+    void setVariable(const std::string&, expression::SQLExpression*);
 	Variables& variables() { return variables_; }
 
-	virtual bool sameAs(const SQLDatabase& other) const;
 //	SchemaAnalyzer& schemaAnalyzer() { return schemaAnalyzer_; }
 
     void setIncludePath(const std::string& includePath);
@@ -83,7 +81,6 @@ protected:
 	Links links_;
     std::map<std::string, std::unique_ptr<SQLTable>> tablesByName_;
 
-    eckit::PathName path_;
     std::vector<eckit::PathName> includePath_;
 
 	Variables variables_;
@@ -99,14 +96,13 @@ private:
 	void loadDD();
 	void loadFLAGS();
 
-	void setUpVariablesTable();
-
 // -- Friends
     friend std::ostream& operator<< (std::ostream& s, const SQLDatabase& p)
 	{ 
         s << "[SQLDatabase@" << &p << " tables: ";
-        for (std::map<std::string,SQLTable*>::const_iterator it (p.tablesByName_.begin()); it != p.tablesByName_.end(); ++it)
-            s << it->first << ",";
+        for (const auto& it : p.tablesByName_) {
+            s << it.first << ",";
+        }
 
         s << "]";
         return s; 

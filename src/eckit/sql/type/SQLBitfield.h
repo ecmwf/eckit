@@ -23,7 +23,7 @@ namespace type {
 
 class SQLBitfield : public SQLType {
 public:
-	SQLBitfield(const std::string&, const odb::FieldNames&, const odb::Sizes&, const std::string&);
+    SQLBitfield(const std::string&, const FieldNames&, const Sizes&, const std::string&);
 	~SQLBitfield();
 
 	unsigned long mask(const std::string& n) const;
@@ -36,8 +36,11 @@ public:
 	static std::string make(const std::string&, const FieldNames&, const Sizes&, const char *ddlName = NULL);
 
 private:
+
 	SQLBitfield(const SQLBitfield&);
 	SQLBitfield& operator=(const SQLBitfield&);
+
+    static unsigned long makeMask(unsigned long size);
 
 	BitfieldDef bitfieldDef_;
     std::map<std::string, unsigned long> mask_;

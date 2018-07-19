@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/Expressions.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 
 namespace eckit {
 namespace sql {

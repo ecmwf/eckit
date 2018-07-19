@@ -32,7 +32,7 @@ SQLBitfield::SQLBitfield(const std::string& name, const FieldNames& fields, cons
 	for(size_t i = 0; i < fields.size(); i++ )
 	{
 		shift_[fields[i]] = shift;
-		mask_[fields[i]]  = Decoder::makeMask(sizes[i]) << shift;
+        mask_[fields[i]]  = makeMask(sizes[i]) << shift;
 		shift += sizes[i];
 	}
 	width_ = shift;
@@ -109,6 +109,14 @@ const SQLType* SQLBitfield::subType(const std::string& name) const
 
 	return SQLType::registerType(new SQLBit(full, mask(field), shift(field)));
 }
+
+
+unsigned long SQLBitfield::makeMask(unsigned long size) {
+    unsigned long mask = 0;
+    while(size--) { mask <<= 1; mask |= 1; }
+    return mask;
+}
+
 
 } // namespace type 
 } // namespace sql 

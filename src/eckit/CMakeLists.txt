@@ -525,8 +525,8 @@ value/Value.cc
 #sql/SQLMATCHSubquerySessionOutput.cc
 #sql/SQLAST.cc
 #sql/SQLAST.h
-#sql/SQLBitColumn.cc
-#sql/SQLBitColumn.h
+sql/SQLBitColumn.cc
+sql/SQLBitColumn.h
 sql/SQLColumn.cc
 sql/SQLColumn.h
 #sql/SQLDataColumn.cc
@@ -537,12 +537,10 @@ sql/SQLColumn.h
 #sql/SQLDataTable.h
 #sql/SQLDataTableIterator.cc
 #sql/SQLDataTableIterator.h
-#sql/SQLDatabase.cc
-#sql/SQLDatabase.h
+sql/SQLDatabase.cc
+sql/SQLDatabase.h
 #sql/SQLDistinctOutput.cc
 #sql/SQLDistinctOutput.h
-#sql/SQLIndex.cc
-#sql/SQLIndex.h
 #sql/SQLInteractiveSession.cc
 #sql/SQLInteractiveSession.h
 #sql/SQLNonInteractiveSession.cc
@@ -578,27 +576,29 @@ sql/SQLTable.cc
 sql/SQLTable.h
 #sql/SQLTypedefs.h
 
-#sql/expression/SQLExpression.cc
-#sql/expression/SQLExpression.h
+sql/expression/NumberExpression.cc
+sql/expression/NumberExpression.h
+sql/expression/SQLExpression.cc
+sql/expression/SQLExpression.h
 #sql/expression/SQLExpressions.cc
 #sql/expression/SQLExpressions.h
 #sql/expression/SQLExpressionEvaluated.cc
 #sql/expression/SQLExpressionEvaluated.h
 
-#sql/type/SQLBit.cc
-#sql/type/SQLBit.h
-#sql/type/SQLBitfield.cc
-#sql/type/SQLBitfield.h
-#sql/type/SQLDouble.cc
-#sql/type/SQLDouble.h
-#sql/type/SQLInt.cc
-#sql/type/SQLInt.h
-#sql/type/SQLReal.cc
-#sql/type/SQLReal.h
-#sql/type/SQLString.cc
-#sql/type/SQLString.h
-#sql/type/SQLType.cc
-#sql/type/SQLType.h
+sql/type/SQLBit.cc
+sql/type/SQLBit.h
+sql/type/SQLBitfield.cc
+sql/type/SQLBitfield.h
+sql/type/SQLDouble.cc
+sql/type/SQLDouble.h
+sql/type/SQLInt.cc
+sql/type/SQLInt.h
+sql/type/SQLReal.cc
+sql/type/SQLReal.h
+sql/type/SQLString.cc
+sql/type/SQLString.h
+sql/type/SQLType.cc
+sql/type/SQLType.h
 )
 
 list( APPEND eckit_os_srcs

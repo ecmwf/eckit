@@ -9,11 +9,11 @@
  */
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/sql/SQLExpression.h"
-#include "odb_api/NumberExpression.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/NumberExpression.h"
 //#include "eckit/sql/type/SQLType.h"
 #include "eckit/sql/SQLOutput.h"
-#include "odb_api/Expressions.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 
 using namespace eckit;
 

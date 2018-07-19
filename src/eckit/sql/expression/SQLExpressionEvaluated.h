@@ -14,7 +14,7 @@
 #ifndef SQLExpressionEvaluated_H
 #define SQLExpressionEvaluated_H
 
-#include "eckit/sql/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpression.h"
 
 namespace eckit {
 namespace sql {

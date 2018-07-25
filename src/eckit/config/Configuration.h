@@ -16,7 +16,7 @@
 #ifndef eckit_Configuration_H
 #define eckit_Configuration_H
 
-
+#include <cstdint>
 #include "eckit/config/Parametrisation.h"
 #include "eckit/value/Value.h"
 
@@ -45,14 +45,18 @@ public: // methods
     bool getBool(const std::string &name) const;
     int getInt(const std::string &name) const;
     long getLong(const std::string &name) const;
-    size_t getUnsigned(const std::string &name) const;
+    std::size_t getUnsigned(const std::string &name) const;
+    std::int32_t getInt32(const std::string &name) const;
+    std::int64_t getInt64(const std::string &name) const;
     float getFloat(const std::string &name) const;
     double getDouble(const std::string &name) const;
     std::string getString(const std::string &name) const;
 
     std::vector<int> getIntVector(const std::string &name) const;
     std::vector<long> getLongVector(const std::string &name) const;
-    std::vector<size_t> getUnsignedVector(const std::string &name) const;
+    std::vector<std::size_t> getUnsignedVector(const std::string &name) const;
+    std::vector<std::int32_t> getInt32Vector(const std::string &name) const;
+    std::vector<std::int64_t> getInt64Vector(const std::string &name) const;
     std::vector<float> getFloatVector(const std::string &name) const;
     std::vector<double> getDoubleVector(const std::string &name) const;
     std::vector<std::string> getStringVector(const std::string &name) const;
@@ -62,14 +66,18 @@ public: // methods
     bool getBool(const std::string &name, const bool& defaultValue) const;
     int getInt(const std::string &name, const int& defaultValue) const;
     long getLong(const std::string &name, const long& defaultValue) const;
-    size_t getUnsigned(const std::string &name, const size_t& defaultValue) const;
+    std::size_t getUnsigned(const std::string &name, const std::size_t& defaultValue) const;
+    std::int32_t getInt32(const std::string &name, const std::int32_t& defaultValue) const;
+    std::int64_t getInt64(const std::string &name, const std::int64_t& defaultValue) const;
     float getFloat(const std::string &name, const float& defaultValue) const;
     double getDouble(const std::string &name, const double& defaultValue) const;
     std::string getString(const std::string &name, const std::string& defaultValue) const;
 
     std::vector<int> getIntVector(const std::string &name, const std::vector<int>& defaultValue) const;
     std::vector<long> getLongVector(const std::string &name, const std::vector<long>& defaultValue) const;
-    std::vector<size_t> getUnsignedVector(const std::string &name, const std::vector<size_t>& defaultValue) const;
+    std::vector<std::size_t> getUnsignedVector(const std::string &name, const std::vector<std::size_t>& defaultValue) const;
+    std::vector<std::int32_t> getInt32Vector(const std::string &name, const std::vector<std::int32_t>& defaultValue) const;
+    std::vector<std::int64_t> getInt64Vector(const std::string &name, const std::vector<std::int64_t>& defaultValue) const;
     std::vector<float> getFloatVector(const std::string &name, const std::vector<float>& defaultValue) const;
     std::vector<double> getDoubleVector(const std::string &name, const std::vector<double>& defaultValue) const;
     std::vector<std::string> getStringVector(const std::string &name, const std::vector<std::string>& defaultValue) const;
@@ -95,13 +103,15 @@ public: // methods
     virtual bool get(const std::string &name, bool &value) const;
     virtual bool get(const std::string &name, int &value) const;
     virtual bool get(const std::string &name, long &value) const;
-    virtual bool get(const std::string &name, size_t &value) const;
+    virtual bool get(const std::string &name, long long &value) const;
+    virtual bool get(const std::string &name, std::size_t &value) const;
     virtual bool get(const std::string &name, float &value) const;
     virtual bool get(const std::string &name, double &value) const;
 
     virtual bool get(const std::string &name, std::vector<int> &value) const;
     virtual bool get(const std::string &name, std::vector<long> &value) const;
-    virtual bool get(const std::string &name, std::vector<size_t> &value) const;
+    virtual bool get(const std::string &name, std::vector<long long> &value) const;
+    virtual bool get(const std::string &name, std::vector<std::size_t> &value) const;
     virtual bool get(const std::string &name, std::vector<float> &value) const;
     virtual bool get(const std::string &name, std::vector<double> &value) const;
     virtual bool get(const std::string &name, std::vector<std::string> &value) const;
@@ -156,4 +166,3 @@ private: // methods
 } // namespace eckit
 
 #endif
-

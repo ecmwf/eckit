@@ -145,6 +145,16 @@ bool Configuration::get(const std::string &name, long &value) const {
     return found;
 }
 
+bool Configuration::get(const std::string &name, long long &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        using long_long_t = long long;
+        value = long_long_t(v);
+    }
+    return found;
+}
+
 bool Configuration::get(const std::string &name, size_t &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
@@ -190,6 +200,21 @@ bool Configuration::get(const std::string &name, std::vector<int> &value) const 
 }
 
 bool Configuration::get(const std::string &name, std::vector<long> &value) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found) {
+        ASSERT(v.isList());
+        value.clear();
+        int i = 0;
+        while (v.contains(i)) {
+            value.push_back(v[i]);
+            i++;
+        }
+    }
+    return found;
+}
+
+bool Configuration::get(const std::string &name, std::vector<long long> &value) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);
     if (found) {
@@ -324,6 +349,18 @@ size_t Configuration::getUnsigned(const std::string &name) const {
     return result;
 }
 
+std::int32_t Configuration::getInt32(const std::string &name) const {
+    std::int32_t  result;
+    _get(name, result);
+    return result;
+}
+
+std::int64_t Configuration::getInt64(const std::string &name) const {
+    std::int64_t  result;
+    _get(name, result);
+    return result;
+}
+
 float Configuration::getFloat(const std::string &name) const {
     float result;
     _get(name, result);
@@ -357,6 +394,18 @@ std::vector<long> Configuration::getLongVector(const std::string &name) const {
 
 std::vector<size_t> Configuration::getUnsignedVector(const std::string &name) const {
     std::vector<size_t> result;
+    _get(name, result);
+    return result;
+}
+
+std::vector<std::int32_t> Configuration::getInt32Vector(const std::string &name) const {
+    std::vector<std::int32_t> result;
+    _get(name, result);
+    return result;
+}
+
+std::vector<std::int64_t> Configuration::getInt64Vector(const std::string &name) const {
+    std::vector<std::int64_t> result;
     _get(name, result);
     return result;
 }
@@ -416,7 +465,7 @@ bool Configuration::getBool(const std::string &name, const bool& defaultVal) con
     return result;
 }
 
-int Configuration::getInt (const std::string &name, const int& defaultVal) const {
+int Configuration::getInt(const std::string &name, const int& defaultVal) const {
     int result;
     _getWithDefault(name, result, defaultVal);
     return result;
@@ -430,6 +479,18 @@ long Configuration::getLong(const std::string &name, const long& defaultVal) con
 
 size_t Configuration::getUnsigned(const std::string &name, const size_t& defaultVal) const {
     size_t result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+std::int32_t Configuration::getInt32(const std::string &name, const std::int32_t& defaultVal) const {
+    std::int32_t result;
+    _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+std::int64_t Configuration::getInt64(const std::string &name, const std::int64_t& defaultVal) const {
+    std::int64_t result;
     _getWithDefault(name, result, defaultVal);
     return result;
 }
@@ -466,6 +527,18 @@ std::vector<long> Configuration::getLongVector(const std::string &name, const st
 
 std::vector<size_t> Configuration::getUnsignedVector(const std::string &name, const std::vector<size_t>& defaultValue) const {
     std::vector<size_t> result;
+    _getWithDefault(name, result, defaultValue);
+    return result;
+}
+
+std::vector<std::int32_t> Configuration::getInt32Vector(const std::string &name, const std::vector<std::int32_t>& defaultValue) const {
+    std::vector<std::int32_t> result;
+    _getWithDefault(name, result, defaultValue);
+    return result;
+}
+
+std::vector<std::int64_t> Configuration::getInt64Vector(const std::string &name, const std::vector<std::int64_t>& defaultValue) const {
+    std::vector<std::int64_t> result;
     _getWithDefault(name, result, defaultValue);
     return result;
 }

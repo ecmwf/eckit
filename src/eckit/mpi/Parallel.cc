@@ -47,6 +47,7 @@ static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
     /*[Data::SHORT]                = */ MPI_SHORT,
     /*[Data::INT]                  = */ MPI_INT,
     /*[Data::LONG]                 = */ MPI_LONG,
+    /*[Data::LONG_LONG]            = */ MPI_LONG_LONG,
     /*[Data::SIGNED_CHAR]          = */ MPI_SIGNED_CHAR,
     /*[Data::SIGNED_CHAR]          = */ MPI_UNSIGNED_CHAR,
     /*[Data::UNSIGNED_SHORT]       = */ MPI_UNSIGNED_SHORT,

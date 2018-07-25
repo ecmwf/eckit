@@ -33,6 +33,7 @@ public:
         SHORT,
         INT,
         LONG,
+        LONG_LONG,
         SIGNED_CHAR,
         UNSIGNED_CHAR,
         UNSIGNED_SHORT,

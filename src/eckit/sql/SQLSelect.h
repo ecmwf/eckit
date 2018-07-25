@@ -8,45 +8,50 @@
  * does it submit to any jurisdiction.
  */
 
-// File SQLSelect.h
-// Baudouin Raoult - ECMWF Dec 03
+/// @author Baudouin Raoult
+/// @author Simon SMart
+/// ECMWF Dec 03
 
-#ifndef SQLSelect_H
-#define SQLSelect_H
+#ifndef eckit_sql_SQLSelect_H
+#define eckit_sql_SQLSelect_H
 
 #include "eckit/filesystem/PathName.h"
 
-#include "odb_api/SelectOneTable.h"
+#include "eckit/sql/SelectOneTable.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLStatement.h"
-#include "odb_api/Stack.h"
+#include "eckit/sql/Stack.h"
 
 namespace eckit {
-
 	class SelectIterator;
-
-namespace sql {
-
-namespace expression {
-    namespace function {
-        class FunctionROWNUMBER;
-        class FunctionTHIN;
+    namespace sql {
+        class SQLTableIterator;
+        namespace expression {
+            namespace function {
+                class FunctionROWNUMBER;
+                class FunctionTHIN;
+            }
+        }
     }
 }
 
-class SQLTableIterator;
+
+namespace eckit {
+namespace sql {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 
 class SQLSelect : public SQLStatement {
-	friend class odb::SelectIterator;
+    friend class SelectIterator;
 
 public:
-	SQLSelect(const Expressions&, const std::vector<SQLTable*>&, odb::sql::expression::SQLExpression*, SQLOutput*, SQLOutputConfig, bool all);
+    SQLSelect(const Expressions&, std::vector<std::reference_wrapper<SQLTable>>&, expression::SQLExpression*, SQLOutput*, SQLOutputConfig, bool all);
 	~SQLSelect(); 
 
 // -- Methods
 	void prepareExecute(); //SQLExpression*& where);
-    unsigned long long process(odb::sql::expression::SQLExpression*,SortedTables::iterator);
+    unsigned long long process();
     bool processOneRow();
     void postExecute();
 
@@ -57,7 +62,7 @@ public:
     std::pair<double*,bool&> column(const std::string& name, SQLTable*);
 	const type::SQLType* typeOf(const std::string& name, SQLTable*) const;
 	// FIXME: do we really need all these optional parameters?
-	SQLTable* findTable(const std::string& name, std::string *fullName = 0, bool *hasMissingValue=0, double *missingValue=0, bool* isBitfield=0, BitfieldDef* =0) const;
+    SQLTable& findTable(const std::string& name, std::string *fullName = 0, bool *hasMissingValue=0, double *missingValue=0, bool* isBitfield=0, BitfieldDef* =0) const;
 
 	virtual Expressions output() const; 
 
@@ -67,7 +72,7 @@ public:
     void outputFiles(const std::vector<eckit::PathName>& files);
     bool all() const { return all_; }
     std::vector<SQLTable*>& tables() { return tables_; }
-    odb::sql::expression::SQLExpression* where() { return where_.get(); }
+    expression::SQLExpression* where() { return where_.get(); }
 
 // -- Overridden methods
     unsigned long long execute();
@@ -82,18 +87,22 @@ private:
 
 // -- Members
 	Expressions select_;
-	std::vector<SQLTable*> tables_;
+    std::vector<SQLTable*> tables_;
 	SortedTables sortedTables_;
 
-    std::auto_ptr<odb::sql::expression::SQLExpression> where_;
-	odb::sql::expression::SQLExpression* simplifiedWhere_;
+    std::shared_ptr<expression::SQLExpression> where_;
+    std::shared_ptr<expression::SQLExpression> simplifiedWhere_;
 
 	Stack env;
 
-    std::auto_ptr<SQLOutput> output_;
+    std::unique_ptr<SQLOutput> output_;
 	Expressions  results_;
 
-    typedef std::map<std::vector<std::pair<double,bool> >, expression::Expressions*> AggregatedResults;
+    typedef std::map<
+        std::vector<std::pair<double,bool>>,
+        std::shared_ptr<expression::Expressions>
+    > AggregatedResults;
+
 	AggregatedResults aggregatedResults_;
 
     // n.b. we don't use std::vector<bool> as you cannot take a reference to a single element.
@@ -122,15 +131,17 @@ private:
 
 	void reset();
     bool resultsOut();
-    bool output(odb::sql::expression::SQLExpression*);
-    SQLExpression* findAliasedExpression(const std::string& alias);
+    bool output(std::shared_ptr<expression::SQLExpression>);
+    std::shared_ptr<SQLExpression> findAliasedExpression(const std::string& alias);
 
-	friend class odb::sql::expression::function::FunctionROWNUMBER; // needs access to count_
-	friend class odb::sql::expression::function::FunctionTHIN; // needs access to count_
+    friend class expression::function::FunctionROWNUMBER; // needs access to count_
+    friend class expression::function::FunctionTHIN; // needs access to count_
 
 	friend std::ostream& operator<<(std::ostream& s,const SQLSelect& p)
 		{ p.print(s); return s; }
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

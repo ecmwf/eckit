@@ -10,24 +10,25 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "odb_api/BitColumnExpression.h"
-#include "odb_api/ColumnExpression.h"
-#include "odb_api/Dictionary.h"
-#include "odb_api/FunctionFactory.h"
-#include "odb_api/NumberExpression.h"
-#include "odb_api/ParameterExpression.h"
-#include "eckit/sql/SQLAST.h"
+#include "eckit/sql/expression/BitColumnExpression.h"
+#include "eckit/sql/expression/ColumnExpression.h"
+//#include "odb_api/Dictionary.h"
+//#include "odb_api/FunctionFactory.h"
+//#include "odb_api/NumberExpression.h"
+//#include "odb_api/ParameterExpression.h"
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/sql/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/SQLParser.h"
-#include "eckit/sql/SQLInsertFactory.h"
-#include "eckit/sql/SQLSelect.h"
+//#include "eckit/sql/SQLInsertFactory.h"
+//#include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSession.h"
+#include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/type/SQLBitfield.h"
-#include "odb_api/StringExpression.h"
-#include "odb_api/StringTool.h"
-#include "odb_api/FunctionMATCH.h"
-#include "eckit/sql/SQLAST.h"
+#include "eckit/parser/StringTools.h"
+//#include "odb_api/StringExpression.h"
+//#include "odb_api/FunctionMATCH.h"
+//#include "eckit/sql/SQLAST.h"
 
 using namespace eckit;
 
@@ -35,43 +36,42 @@ using namespace eckit;
 
 namespace SQLYacc {
 
-typedef void * odblib_scan_t;
+typedef void * eckit_sql_scan_t;
 
-void odblib_error(odblib_scan_t, odb::sql::SQLSession*, const char* msg);
+void eckit_sql_error(eckit_sql_scan_t, eckit::sql::SQLSession*, const char* msg);
 
 using namespace eckit;
 using namespace eckit::sql;
 using namespace eckit::sql::expression;
-using namespace eckit::sql::expression::function;
+//using namespace eckit::sql::expression::function;
 
-#include "odb_api/odblib_lex.h"
 #include "eckit/sql/sqly.c"
 
-void odblib_error(odblib_scan_t scanner, odb::sql::SQLSession*, const char* msg)
+void eckit_sql_error(eckit_sql_scan_t scanner, eckit::sql::SQLSession*, const char* msg)
 {
     std::stringstream os;
 
-    struct odblib_guts_t * odblib_g = (struct odblib_guts_t*) scanner;
+    struct eckit_sql_guts_t * eckit_sql_g = (struct eckit_sql_guts_t*) scanner;
     // internally we count the lines from 0...
-    int lineNumber (1 + odblib_g->odblib_lineno_r);
+    int lineNumber (1 + eckit_sql_g->eckit_sql_lineno_r);
 
     os << "SQL "
-	<< (msg ? msg : "syntax error") 
+    << (msg ? msg : "syntax error")
     << ", line " << lineNumber // << " of " << yypath;
     << ". See https://software.ecmwf.int/wiki/display/ODBAPI/SQL\n";
-	throw SyntaxError(os.str()); 
+    throw SyntaxError(os.str());
 }
 
 } // namespace SQLYacc
 
-SQLYacc::Stack& includeStack(void* odblib_scanner)
+SQLYacc::Stack& includeStack(void* eckit_sql_scanner)
 {
-    SQLYacc::Stack* stack (static_cast<SQLYacc::Stack*>(((struct SQLYacc::odblib_guts_t*) odblib_scanner)->odblib_extra_r));
+    SQLYacc::Stack* stack (static_cast<SQLYacc::Stack*>(((struct SQLYacc::eckit_sql_guts_t*) eckit_sql_scanner)->eckit_sql_extra_r));
     ASSERT (stack);
     return *stack;
 }
 
-extern "C" int odblib_wrap(void *scanner)
+extern "C" int eckit_sql_wrap(void *scanner)
 { 
     return includeStack(scanner).pop(scanner); 
 }
@@ -86,23 +86,17 @@ struct SessionResetter {
     {
         if (! resetSession_)
             return;
-#if YY_FLEX_MAJOR_VERSION >= 2
-#if YY_FLEX_MINOR_VERSION >= 5
-#if YY_FLEX_SUBMINOR_VERSION >=33
-    //SQLYacc::yylex_destroy(); 
-#endif
-#endif
-#endif
+
         session_.selectFactory().implicitFromTableSource(0);
         session_.selectFactory().implicitFromTableSourceStream(0);
-        session_.selectFactory().database(0);
+//        session_.selectFactory().database(0);
     }
 private:
     SQLSession& session_;
     bool resetSession_;
 };
 
-void SQLParser::parseString(odb::sql::SQLSession& session, const std::string& s, std::istream* is, SQLOutputConfig cfg, const std::string& csvDelimiter)
+void SQLParser::parseString(SQLSession& session, const std::string& s, std::istream* is, SQLOutputConfig cfg, const std::string& csvDelimiter)
 {
     SessionResetter ar (session);
 
@@ -110,57 +104,42 @@ void SQLParser::parseString(odb::sql::SQLSession& session, const std::string& s,
     session.selectFactory().config(cfg);
     session.selectFactory().csvDelimiter(csvDelimiter);
 
-    SQLYacc::odblib_scan_t scanner;
-    SQLYacc::odblib_lex_init(&scanner);
+    parseStringInternal(session, s);
 
-    SQLYacc::include_stack stack;
-    SQLYacc::odblib_lex_init_extra(&stack, &scanner);
-
-    stack.push(cleanUpSQLText(s), "", (SQLYacc::YY_BUFFER_STATE) scanner, (SQLYacc::odblib_scan_t) scanner);
-    SQLYacc::odblib_parse(scanner, &session);
-
-    session.statement();
-    session.interactive();
-
-    SQLYacc::odblib_lex_init(&scanner); // TODO: handle unwind
+//    SQLYacc::eckit_sql_lex_init(&scanner); // TODO: handle unwind
 }
 
-void SQLParser::parseString(odb::sql::SQLSession& session, const std::string& s, DataHandle* dh, SQLOutputConfig cfg, bool resetSession)
+void SQLParser::parseString(SQLSession& session, const std::string& s, DataHandle* dh, SQLOutputConfig cfg, bool resetSession)
 {
     SessionResetter ar (session, resetSession);
 
     session.selectFactory().implicitFromTableSource(dh);
     session.selectFactory().config(cfg);
 
-    SQLYacc::odblib_scan_t scanner;
-    SQLYacc::odblib_lex_init(&scanner);
-
-    SQLYacc::include_stack stack;
-    SQLYacc::odblib_lex_init_extra(&stack, &scanner);
-
-    stack.push(cleanUpSQLText(s), "", (SQLYacc::YY_BUFFER_STATE) scanner, (SQLYacc::odblib_scan_t) scanner);
-    SQLYacc::odblib_parse(scanner, &session);
-
-    session.statement();
-    session.interactive();
+    parseStringInternal(session, s);
 }
 
-void SQLParser::parseString(odb::sql::SQLSession& session,const std::string& s, SQLDatabase& db, SQLOutputConfig cfg)
-{
-    SessionResetter ar (session);
+//void SQLParser::parseString(SQLSession& session,const std::string& s, SQLDatabase& db, SQLOutputConfig cfg)
+//{
+//    SessionResetter ar (session);
 
-    session.currentDatabase(&db);
-    session.selectFactory().database(&db);
-    session.selectFactory().config(cfg);
+//    session.currentDatabase(&db);
+//    session.selectFactory().database(&db);
+//    session.selectFactory().config(cfg);
 
-    SQLYacc::odblib_scan_t scanner;
-    SQLYacc::odblib_lex_init(&scanner);
+//    parseStringInternal(session, s);
+//}
+
+void SQLParser::parseStringInternal(SQLSession& session, const std::string& s) {
+
+    SQLYacc::eckit_sql_scan_t scanner;
+    SQLYacc::eckit_sql_lex_init(&scanner);
 
     SQLYacc::include_stack stack;
-    SQLYacc::odblib_lex_init_extra(&stack, &scanner);
+    SQLYacc::eckit_sql_lex_init_extra(&stack, &scanner);
 
-    stack.push(cleanUpSQLText(s), "", (SQLYacc::YY_BUFFER_STATE) scanner, (SQLYacc::odblib_scan_t) scanner);
-    SQLYacc::odblib_parse(scanner, &session);
+    stack.push(cleanUpSQLText(s), "", (SQLYacc::YY_BUFFER_STATE) scanner, (SQLYacc::eckit_sql_scan_t) scanner);
+    SQLYacc::eckit_sql_parse(scanner, &session);
 
     session.statement();
     session.interactive();
@@ -172,11 +151,9 @@ std::string SQLParser::cleanUpSQLText(const std::string& sql) {
 
     std::string s(sql);
 
-    StringTool::trimInPlace(s);
-    if (StringTool::isInQuotes(s)) {
-        s = StringTool::unQuote(s);
-    }
-    StringTool::trimInPlace(s);
+    s = eckit::StringTools::trim(s);
+    s = eckit::StringTools::unQuote(s);
+    s = eckit::StringTools::trim(s);
 
     if (!s.empty() && *s.rbegin() != ';') {
         s.push_back(';');

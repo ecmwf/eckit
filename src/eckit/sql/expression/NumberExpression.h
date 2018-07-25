@@ -29,7 +29,7 @@ public:
 	NumberExpression(const NumberExpression&);
 	~NumberExpression();
 
-	SQLExpression* clone() const;
+    virtual std::shared_ptr<SQLExpression> clone() const override;
 
 	void value(double v) { value_ = v; }
 

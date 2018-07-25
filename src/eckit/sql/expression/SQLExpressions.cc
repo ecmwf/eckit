@@ -17,26 +17,14 @@ namespace expression {
 
 const type::SQLType* Expressions::type() const { return &type::SQLType::lookup("real"); }
 
-Expressions& Expressions::operator=(const Expressions& e)
-{
-	ExpressionsVector::operator=(e);
-	return *this;
-}
 
-//Expressions * Expressions::clone() const
-SQLExpression * Expressions::clone() const
+std::shared_ptr<SQLExpression> Expressions::clone() const
 {
-	Expressions *r = new Expressions(this->size());
+    std::shared_ptr<Expressions> r = std::make_shared<Expressions>(this->size());
 	for (size_t i = 0; i < this->size(); ++i)
 		(*r)[i] = (*this)[i]->clone();
 
 	return r;
-}
-
-void Expressions::release()
-{
-	for (size_t i = 0; i < this->size(); ++i)
-		delete at(i);
 }
 
 void Expressions::print(std::ostream& o) const

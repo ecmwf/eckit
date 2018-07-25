@@ -8,45 +8,58 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef odb_api_SQLSelectFactory_H
-#define odb_api_SQLSelectFactory_H
+#ifndef eckit_sql_SQLSelectFactory_H
+#define eckit_sql_SQLSelectFactory_H
 
-#include "odb_api/Expressions.h"
-#include "odb_api/SchemaAnalyzer.h"
-#include "eckit/sql/SQLAST.h"
+#include <vector>
+#include <memory>
+
+//#include "odb_api/SchemaAnalyzer.h"
 #include "eckit/sql/SQLOutputConfig.h"
 
-namespace eckit { class DataHandle; }
-namespace eckit { namespace sql { class DataTable; } }
-namespace eckit { namespace sql { class SQLDatabase; } }
-namespace eckit { namespace sql { class SQLSession; } }
+// Forward declarations
+
+namespace eckit {
+    class DataHandle;
+    namespace sql {
+        class SQLDatabase;
+        class SQLSession;
+        class SQLTable;
+        class SQLSelect;
+        namespace expression {
+            class Expressions;
+            class SQLExpression;
+        }
+    }
+}
+
 
 namespace eckit { 
 namespace sql {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SQLSelectFactory {
 public:
-    SQLSelectFactory(const SQLOutputConfig&, const std::string&);
-
-	SQLSelect* create(odb::sql::SQLSession&, const SelectAST&);
+    SQLSelectFactory(SQLSession& session);
 
 	SQLSelect* create(
-        odb::sql::SQLSession&,
         bool distinct,
         bool all,
-        Expressions select_list,
+        const expression::Expressions& select_list,
         const std::string& into,
-        std::vector<Table> from,
-        odb::sql::expression::SQLExpression *where,
-        Expressions group_by,
-        std::pair<Expressions,std::vector<bool> > order_by);
+        const std::vector<std::reference_wrapper<SQLTable>>& from
+//        expression::SQLExpression *where,
+//        const Expressions& group_by,
+//        std::pair<Expressions, std::vector<bool> > order_by);
+            );
 
-	SQLExpression* createColumn(
+    expression::SQLExpression* createColumn(
 		const std::string& columnName,
 		const std::string& bitfieldName,
-		const SQLExpression* vectorIndex,
-		const Table& table,
-		const SQLExpression* pshift);
+        const expression::SQLExpression* vectorIndex,
+        const SQLTable& table,
+        const expression::SQLExpression* pshift);
 
     eckit::DataHandle* implicitFromTableSource() { return implicitFromTableSource_; }
     void implicitFromTableSource(eckit::DataHandle* h) { implicitFromTableSource_ = h; }
@@ -63,28 +76,33 @@ public:
 	std::string csvDelimiter() { return csvDelimiter_; }
 	void csvDelimiter(const std::string& d) { csvDelimiter_ = d; }
 
-    static odb::MetaData toODAColumns(odb::sql::SQLSession&, const odb::sql::TableDef&);
+//    static odb::MetaData toODAColumns(odb::sql::SQLSession&, const odb::sql::TableDef&);
 
-private:
+private: // methods
+
     // No copy allowed
     SQLSelectFactory(const SQLSelectFactory&);
     SQLSelectFactory& operator=(const SQLSelectFactory&);
 
-	std::string index(const std::string& columnName, const SQLExpression* index);
+    std::string index(const std::string& columnName, const expression::SQLExpression* index);
 
-	void reshift(Expressions&);
+    void reshift(expression::Expressions&);
 
-	SQLExpression* reshift(SQLExpression*);
+    std::shared_ptr<expression::SQLExpression> reshift(std::shared_ptr<expression::SQLExpression>&);
 
     //void resolveImplicitFrom(SQLSession&, std::vector<SQLTable*>& from);
-    std::vector<SQLTable*> resolveImplicitFrom(SQLSession&, std::vector<Table>& from);
+//    std::vector<SQLTable*> resolveImplicitFrom(SQLSession&, std::vector<Table>& from);
+
+private: // members
+
+    SQLSession& session_;
 
     eckit::DataHandle* implicitFromTableSource_;
 
     std::istream* implicitFromTableSourceStream_;
 
     //SchemaAnalyzer& analyzer();
-    MetaData columns(const std::string& tableName);
+//    MetaData columns(const std::string& tableName);
     SQLOutput* createOutput(SQLSession&, const std::string& into, size_t orderBySize );
 
     SQLDatabase* database_;
@@ -95,6 +113,8 @@ private:
 
     //friend class eckit::NewAlloc0<SQLSelectFactory>;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

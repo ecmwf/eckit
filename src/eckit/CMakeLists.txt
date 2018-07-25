@@ -525,6 +525,8 @@ value/Value.cc
 #sql/SQLMATCHSubquerySessionOutput.cc
 #sql/SQLAST.cc
 #sql/SQLAST.h
+sql/Environment.cc
+sql/Environment.h
 sql/SQLBitColumn.cc
 sql/SQLBitColumn.h
 sql/SQLColumn.cc
@@ -554,36 +556,51 @@ sql/SQLDatabase.h
 #sql/SQLOrderOutput.h
 #sql/SQLOutput.cc
 #sql/SQLOutput.h
-#sql/SQLOutputConfig.cc
-#sql/SQLOutputConfig.h
-#sql/SQLParser.cc
-#sql/SQLParser.h
-#sql/SQLSelect.cc
-#sql/SQLSelect.h
+sql/SQLOutputConfig.cc
+sql/SQLOutputConfig.h
+sql/SQLParser.cc
+sql/SQLParser.h
+sql/SelectOneTable.cc
+sql/SelectOneTable.h
+sql/SQLSelect.cc
+sql/SQLSelect.h
 #sql/SQLInsert.cc
 #sql/SQLInsert.h
-#sql/SQLSelectFactory.cc
-#sql/SQLSelectFactory.h
+sql/SQLSelectFactory.cc
+sql/SQLSelectFactory.h
 #sql/SQLInsertFactory.cc
 #sql/SQLInsertFactory.h
-#sql/SQLSession.cc
-#sql/SQLSession.h
+sql/SQLSession.cc
+sql/SQLSession.h
 #sql/SQLSimpleOutput.cc
 #sql/SQLSimpleOutput.h
-#sql/SQLStatement.cc
-#sql/SQLStatement.h
+sql/SQLStatement.cc
+sql/SQLStatement.h
 sql/SQLTable.cc
 sql/SQLTable.h
-#sql/SQLTypedefs.h
+sql/Stack.cc
+sql/Stack.h
+sql/SQLTypedefs.h
 
+sql/expression/BitColumnExpression.cc
+sql/expression/BitColumnExpression.h
+sql/expression/ColumnExpression.cc
+sql/expression/ColumnExpression.h
+sql/expression/ConstantExpression.cc
+sql/expression/ConstantExpression.h
 sql/expression/NumberExpression.cc
 sql/expression/NumberExpression.h
 sql/expression/SQLExpression.cc
 sql/expression/SQLExpression.h
-#sql/expression/SQLExpressions.cc
-#sql/expression/SQLExpressions.h
+sql/expression/SQLExpressions.cc
+sql/expression/SQLExpressions.h
+sql/expression/ShiftedColumnExpression.cc
+sql/expression/ShiftedColumnExpression.h
 #sql/expression/SQLExpressionEvaluated.cc
 #sql/expression/SQLExpressionEvaluated.h
+
+sql/expression/function/FunctionExpression.cc
+sql/expression/function/FunctionExpression.h
 
 sql/type/SQLBit.cc
 sql/type/SQLBit.h
@@ -831,6 +848,7 @@ list( APPEND eckit_templates
 					types/Types.cc
 					utils/RLE.cc
                     sql/SQLIteratorOutput.cc
+                    sql/expression/ShiftedColumnExpression.cc
 )
 
 list( APPEND eckit_persistent
@@ -877,6 +895,14 @@ ecbuild_add_library(TARGET eckit
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
                    LINKER_LANGUAGE CXX )
+
+### Parser for SQL functionality
+
+ecbuild_generate_yy( YYPREFIX           eckit_sql_
+                     YACC               sql/sqly
+                     LEX                sql/sqll
+                     FLEX_FLAGS         "-d"
+                     DEPENDANT          sql/SQLParser.cc )
 
 ### sub-directories
 

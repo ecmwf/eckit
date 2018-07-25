@@ -8,22 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-/// \file SQLOutputConfig.h
-/// Piotr Kuchta - ECMWF Jul 2010
+/// @author Piotr Kuchta
+/// @author Simon Smart
+/// ECMWF Jul 2010
 
-#ifndef odb_api_SQLOutputConfig_H
-#define odb_api_SQLOutputConfig_H
+#ifndef eckit_sql_SQLOutputConfig_H
+#define eckit_sql_SQLOutputConfig_H
 
 #include <string>
 
 namespace eckit {
 namespace sql {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SQLOutputConfig {
 public:
 
-	SQLOutputConfig(const SQLOutputConfig&);
-	SQLOutputConfig& operator=(const SQLOutputConfig&);
 	SQLOutputConfig(bool cn = false,
                     bool n = false,
                     const std::string& d = defaultDelimiter(),
@@ -33,6 +34,7 @@ public:
                     bool displayBitfieldsHexadecimal = false,                    
                     bool disableAlignmentOfColumns = false,
                     bool fullPrecision = false);
+
 	bool doNotWriteColumnNames () const;
     void doNotWriteColumnNames(bool b);
 
@@ -77,6 +79,8 @@ private:
     static const char* defaultOutputFile();
     static const char* defaultFormat();
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

@@ -57,6 +57,9 @@ public:
     static bool beginsWith( const std::string& str, const std::string& substr );
     static bool endsWith( const std::string& str, const std::string& substr );
 
+    static bool isQuoted(const std::string& value);
+    static std::string unQuote(const std::string& value);
+
 private:
 
     StringTools(); // Non instantiable

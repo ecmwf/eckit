@@ -226,6 +226,19 @@ bool StringTools::endsWith(const std::string& str, const std::string& substr)
     return true;
 }
 
+bool StringTools::isQuoted(const std::string& value) {
+    return value.size() > 1
+        && ((value[0] == '"' && value[value.size() - 1] == '"')
+         || (value[0] == '\'' && value[value.size() - 1] == '\''));
+}
+
+std::string StringTools::unQuote(const std::string &value) {
+    if (isQuoted(value)) {
+        return value.substr(1, value.size() - 2);
+    }
+    return value;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit

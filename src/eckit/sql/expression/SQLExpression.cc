@@ -46,14 +46,14 @@ Dictionary& SQLExpression::dictionary()
 
 SQLExpression* SQLExpression::number(double value) { return new NumberExpression(value); } 
 
-SQLExpression* SQLExpression::simplify(bool& changed)
+std::shared_ptr<SQLExpression> SQLExpression::simplify(bool& changed)
 {
 	if(isConstant() && !isNumber())
 	{
 		changed = true;
 		bool missing = false;
 		Log::info() << "SIMPLIFY " << *this << " to " << eval(missing) << std::endl;
-		return new NumberExpression(eval(missing));
+        return std::make_shared<NumberExpression>(eval(missing));
 	}
 	return 0;
 }
@@ -84,9 +84,9 @@ std::string SQLExpression::title() const
 
 //const type::SQLType* SQLExpression::type() const { const type::SQLType& x = type::SQLType::lookup("real"); return &x; }
 
-void SQLExpression::expandStars(const std::vector<SQLTable*>&, expression::Expressions& e)
+void SQLExpression::expandStars(const std::vector<std::reference_wrapper<SQLTable>>&, expression::Expressions& e)
 {
-	e.push_back(this);
+    e.push_back(shared_from_this());
 }
 
 } // namespace expression

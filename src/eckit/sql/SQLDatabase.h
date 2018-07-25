@@ -24,8 +24,7 @@
 // TODO: SchemaAnalyzer
 //#include "odb_api/SchemaAnalyzer.h"
 
-namespace eckit { class DataHandle; }
-namespace eckit { class DataTable; }
+//namespace eckit { class DataHandle; }
 
 namespace eckit {
 namespace sql {
@@ -49,11 +48,10 @@ public:
 	virtual ~SQLDatabase(); 
 
 // -- Methods
-	virtual void open();
-	virtual void close();
+    void open();
+    void close();
 
-    //virtual SQLTable* table(const std::string&);
-    //SQLTable& table(const Table&);
+    SQLTable& table(const std::string&);
     SQLTable& defaultTable();
 //    SQLTable& openDataHandle(eckit::DataHandle&);
 //    SQLTable& openDataStream(std::istream&, const std::string& delimiter);
@@ -66,7 +64,7 @@ public:
 	void addLinks(const Links& ls) { links_.insert(ls.begin(), ls.end()); }
 	Links& links() { return links_; }
 
-	virtual const std::string& name() const { return name_; }
+    const std::string& name() const { return name_; }
 
     expression::SQLExpression& getVariable(const std::string&) const;
     void setVariable(const std::string&, expression::SQLExpression*);

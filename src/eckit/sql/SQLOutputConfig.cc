@@ -13,30 +13,7 @@
 namespace eckit {
 namespace sql {
 
-SQLOutputConfig::SQLOutputConfig(const SQLOutputConfig& that)
-: doNotWriteColumnNames_(that.doNotWriteColumnNames_),
-  doNotWriteNULL_(that.doNotWriteNULL_),
-  fieldDelimiter_(that.fieldDelimiter_),
-  outputFile_(that.outputFile_),
-  outputFormat_(that.outputFormat_),
-  displayBitfieldsBinary_(that.displayBitfieldsBinary_),
-  displayBitfieldsHexadecimal_(that.displayBitfieldsHexadecimal_),      
-  disableAlignmentOfColumns_(that.disableAlignmentOfColumns_)
-{}
-
-SQLOutputConfig& SQLOutputConfig::operator=(const SQLOutputConfig& that)
-{
-    doNotWriteColumnNames_ = that.doNotWriteColumnNames_;
-    doNotWriteNULL_ = that.doNotWriteNULL_;
-    fieldDelimiter_ = that.fieldDelimiter_;
-    outputFile_ = that.outputFile_;
-    outputFormat_ = that.outputFormat_;
-    displayBitfieldsBinary_ = that.displayBitfieldsBinary_;
-    displayBitfieldsHexadecimal_ = that.displayBitfieldsHexadecimal_;        
-    disableAlignmentOfColumns_ = that.disableAlignmentOfColumns_;
-    fullPrecision_ = that.fullPrecision_;
-    return *this;
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 SQLOutputConfig::SQLOutputConfig(bool cn,
                 bool n,
@@ -89,6 +66,8 @@ const SQLOutputConfig SQLOutputConfig::defaultConfig() { return SQLOutputConfig(
 const char* SQLOutputConfig::defaultDelimiter() { return "	"; }
 const char* SQLOutputConfig::defaultOutputFile() { return "output.odb"; }
 const char* SQLOutputConfig::defaultFormat() { return "default"; }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

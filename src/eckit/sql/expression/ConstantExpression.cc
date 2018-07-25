@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/sql/expression//NumberExpression.h"
+#include "eckit/sql/expression/ConstantExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -16,32 +16,22 @@ namespace expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-NumberExpression::NumberExpression(double value)
-: value_(value)
+ConstantExpression::ConstantExpression(double v, bool missing, const type::SQLType* type)
+: value_(v), missing_(missing), type_(*type)
 {}
 
-NumberExpression::NumberExpression(const NumberExpression& other)
-: value_(other.value_)
-{}
+ConstantExpression::~ConstantExpression() {}
 
-std::shared_ptr<SQLExpression> NumberExpression::clone() const {
-    return std::make_shared<NumberExpression>(*this);
+void ConstantExpression::output(SQLOutput& o) const 
+{ 
+    type_.output(o, value_, missing_);
 }
 
-NumberExpression::~NumberExpression() {}
-
-const type::SQLType* NumberExpression::type() const { return &type::SQLType::lookup("real"); }
-
-double NumberExpression::eval(bool& missing) const { return value_; }
-
-void NumberExpression::prepare(SQLSelect& sql) {}
-
-void NumberExpression::cleanup(SQLSelect& sql) {}
-
-void NumberExpression::print(std::ostream& s) const { s << value_; }
+const type::SQLType* ConstantExpression::type() const { return &type_; }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace expression
 } // namespace sql
-} // namespace odb
+} // namespace eckit
+

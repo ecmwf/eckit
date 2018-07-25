@@ -12,19 +12,19 @@
 #include "eckit/sql/SQLBitColumn.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
+#include "eckit/config/LibEcKit.h"
 
 using namespace eckit;
 
 namespace eckit {
 namespace sql {
 
-SQLTable::SQLTable(SQLDatabase& owner,const std::string& path,const std::string& name):
+SQLTable::SQLTable(SQLDatabase& owner, const std::string& path, const std::string& name):
 	path_(path),
 	name_(name),
-	owner_(owner),
-	master_(0)
+    owner_(owner)
 {
-	//Log::info() << "SQLTable[path=" << path_ << ",name=" << name << ",no_rows=" << no_rows_ << ",index=" << index_ << "]" << std::endl;
+    Log::debug<LibEcKit>() << "new SQLTable[path=" << path_ << ",name=" << name << "]" << std::endl;
 }
 
 SQLTable::~SQLTable() { clearColumns(); }
@@ -152,15 +152,6 @@ SQLColumn& SQLTable::column(const std::string& name)
 
 }
 
-SQLPool* SQLTable::pool(int index)
-{
-	std::map<int,SQLPool*>::iterator j = pools_.find(index);
-	if(j == pools_.end())
-		return 0;
-	else
-		return (*j).second;
-}
-
 void SQLTable::addLinkFrom(const SQLTable& from)
 {
 	linksFrom_.insert(from);
@@ -194,17 +185,6 @@ bool SQLTable::isParentOf(const SQLTable& other) const
     }
 
 	return false;
-}
-
-SQLTable* SQLTable::master() const      
-{ 
-	return master_? master_ : const_cast<SQLTable*>(this); 
-}
-
-void SQLTable::master(SQLTable* master) 
-{ 
-//	std::cout << "MASTER of " << name() << " " << master->name() << std::endl;
-	master_ = master;            
 }
 
 std::string SQLTable::fullName() const

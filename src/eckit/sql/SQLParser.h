@@ -12,8 +12,8 @@
 // Baudouin Raoult - ECMWF Mar 98
 // Piotr Kuchta - ECMWF Mar 2012
 
-#ifndef odb_api_SQLParser_H
-#define odb_api_SQLParser_H
+#ifndef eckit_sql_SQLParser_H
+#define eckit_sql_SQLParser_H
 
 #include "eckit/exception/Exceptions.h"
 #include "SQLOutputConfig.h"
@@ -26,12 +26,13 @@ namespace eckit { class DataHandle; }
 namespace eckit {
 namespace sql {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SQLDatabase;
 class SQLSession;
 
 class SyntaxError : public eckit::Exception {
-public:
-	SyntaxError(const std::string& s): eckit::Exception(s) {}
+    using eckit::Exception::Exception;
 };
 
 struct ParseFrame {
@@ -47,17 +48,21 @@ class SQLParser {
 public:
 	static int line();
 
-	static void parseString(odb::sql::SQLSession&, const std::string&, eckit::DataHandle*, SQLOutputConfig, bool resetSession = true);
-    static void parseString(odb::sql::SQLSession&, const std::string&, std::istream*, SQLOutputConfig, const std::string& cvsDelimiter);
-	static void parseString(odb::sql::SQLSession&, const std::string&, SQLDatabase&, SQLOutputConfig);
+    static void parseString(SQLSession&, const std::string&, eckit::DataHandle*, SQLOutputConfig, bool resetSession = true);
+    static void parseString(SQLSession&, const std::string&, std::istream*, SQLOutputConfig, const std::string& cvsDelimiter);
+//    static void parseString(SQLSession&, const std::string&, SQLDatabase&, SQLOutputConfig);
 
 	static std::stack<ParseFrame> frames_;
 
 private:
 
+    static void parseStringInternal(SQLSession&, const std::string&);
+
     // Migrated from SQLHandler (ecml verb) as part of removal of ecml.
     static std::string cleanUpSQLText(const std::string&);
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

@@ -4,42 +4,6 @@
 %option yylineno
 %{
 
-// %option noyywrap // few lines higher!
-// #define YY_USER_ACTION yyset_column(yyget_column(yyscanner) + yyget_leng(yyscanner), yyscanner);
-//#define YY_USER_ACTION \
-//    printf("yyget_column(yyscanner): %i, yyget_leng(yyscanner): %i\n", yyget_column(yyscanner), yyget_leng(yyscanner)); \
-//    yyset_column(yyget_column(yyscanner) + yyget_leng(yyscanner), yyscanner);
-/*
-static void update_loc(void* yyscanner)
-{
-    struct ::yyguts_t * yyg ((struct yyguts_t*) yyscanner);
-
-    int curr_line = 1;
-    int curr_col  = 1;
-
-    yyg->yylloc.first_line = 1;
-
-    yylloc.first_line   = curr_line;
-    yylloc.first_column = curr_col;
-
-    {
-        char * s; 
-        for(s = yytext; *s != '\0'; s++)
-        {
-            if(*s == '\n') {
-                curr_line++;
-                curr_col = 1;
-            } else {
-                curr_col++;
-            }
-        }
-    }
-
-    yylloc.last_line   = curr_line;
-    yylloc.last_column = curr_col-1;
-}
-*/
-
 #define YY_USER_ACTION do { \
         struct yyguts_t * yyg ((struct yyguts_t*) yyscanner); \
         /* fprintf(stderr, "location <%d,%d>,<%d,%d>\n", yyg->yylloc_r.first_line, yyg->yylloc_r.first_column, yyg->yylloc_r.last_line, yyg->yylloc_r.last_column); */ \
@@ -60,23 +24,23 @@ static void update_loc(void* yyscanner)
 #include <string.h>
 #include <vector>
 
-#include "odb_api/odblib_lex.h"
+//#include "odb_api/eckit_sql_lex.h"
 
 // http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html#Multiple-Input-Buffers
 
 class Stack {
     static const size_t maxIncludeDepth = 2000;
 public:
-    void push(const std::string& sql, const std::string& yypath, YY_BUFFER_STATE state, odblib_scan_t scanner)
+    void push(const std::string& sql, const std::string& yypath, YY_BUFFER_STATE state, eckit_sql_scan_t scanner)
     {
         if (stack_.size() > maxIncludeDepth)
             throw eckit::UserError("Includes nested too deeply");
 
         stack_.push_back(state);
-        odblib__switch_to_buffer(odblib__scan_bytes(sql.c_str(), sql.size(), scanner), scanner);
+        eckit_sql__switch_to_buffer(eckit_sql__scan_bytes(sql.c_str(), sql.size(), scanner), scanner);
     }
 
-    int pop(odblib_scan_t scanner)
+    int pop(eckit_sql_scan_t scanner)
     {
         if (stack_.size() <= 1)
             return 1; 
@@ -84,7 +48,7 @@ public:
         YY_BUFFER_STATE currentState (stack_.back());
         stack_.pop_back();
 
-        odblib__switch_to_buffer(currentState, scanner);
+        eckit_sql__switch_to_buffer(currentState, scanner);
         return 0;
     }
 
@@ -174,20 +138,20 @@ SEMICOLON [;]
 <incl>[^ \t\n]+ {                 /* name of the file to be included */
     //cerr << "include " << yytext << std::endl;
 
-    eckit::PathName fileName(StringTool::unQuote(yytext));
+    eckit::PathName fileName(eckit::StringTools::unQuote(yytext));
 
     //cerr << "Opening " << fileName << std::endl;
     std::string text (SQLSession::readIncludeFile(fileName));
 
-    Stack* includeStack (static_cast<Stack*>(((struct SQLYacc::odblib_guts_t*) odblib_scanner)->odblib_extra_r));
+    Stack* includeStack (static_cast<Stack*>(((struct SQLYacc::eckit_sql_guts_t*) eckit_sql_scanner)->eckit_sql_extra_r));
     ASSERT(includeStack);
-    includeStack->push(text, fileName, YY_CURRENT_BUFFER, odblib_scanner);
+    includeStack->push(text, fileName, YY_CURRENT_BUFFER, eckit_sql_scanner);
     BEGIN(INITIAL);
 }
 
 <<EOF>> { 
     //cerr << "** EOF **" << std::endl;
-    odblib_terminate();
+    eckit_sql_terminate();
 }
 
 \"|\'   {

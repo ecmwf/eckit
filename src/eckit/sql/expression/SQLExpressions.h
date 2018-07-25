@@ -15,6 +15,9 @@
 #ifndef eckit_api_Expressions_H
 #define eckit_api_Expressions_H
 
+#include <memory>
+#include <vector>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/SQLExpression.h"
 
@@ -22,24 +25,23 @@ namespace eckit {
 namespace sql {
 namespace expression {
 
-typedef std::vector<SQLExpression*> ExpressionsVector;
+// n.b. shared pointer not unique_ptr.
+//      needs to be copyable to be used by YACC
+typedef std::vector<std::shared_ptr<SQLExpression>> ExpressionsVector;
 
 class Expressions : public SQLExpression, public ExpressionsVector
 {
 public:
 	Expressions() : ExpressionsVector() {}
-	Expressions(size_t i) : ExpressionsVector(i, 0) {}
-	Expressions(size_t i, SQLExpression* e) : ExpressionsVector(i, e) {}
+    Expressions(size_t i) : ExpressionsVector(i, 0) {}
 
-	Expressions(const Expressions& e)
-	: SQLExpression(), ExpressionsVector(e)
-	{}
+    Expressions(const Expressions&) = default;
+    Expressions& operator=(const Expressions&) = default;
 
-	Expressions& operator=(const Expressions&);
+    Expressions(Expressions&&) = default;
+    Expressions& operator=(Expressions&&) = default;
 
-	virtual void release();
-
-	virtual void print(std::ostream& s) const;
+    virtual void print(std::ostream& s) const;
 
 	friend std::ostream& operator<<(std::ostream& o, const Expressions& e)
 		{ e.print(o); return o; }
@@ -59,16 +61,16 @@ public:
 	virtual bool isVector() const { return true; }
 	virtual Expressions& vector() { return *this; }
 
-	virtual SQLExpression* simplify(bool&) { return this; }
+    virtual std::shared_ptr<SQLExpression> simplify(bool&) { return shared_from_this(); }
 
-	virtual SQLExpression* clone() const;
+    virtual std::shared_ptr<SQLExpression> clone() const;
 	
 	virtual bool isAggregate() const { return false; }
 	// For select expression
 
 	virtual void output(SQLOutput&) const { return NOTIMP; }
 	virtual void partialResult() {}
-	virtual void expandStars(const std::vector<SQLTable*>&,expression::Expressions&) { NOTIMP; }
+    virtual void expandStars(const std::vector<std::reference_wrapper<SQLTable>>&,expression::Expressions&) { NOTIMP; }
 //////////////////////////////////////////////////////////////////////////////////////
 };
 

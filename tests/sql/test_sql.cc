@@ -14,22 +14,50 @@
 
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace {
     
 //----------------------------------------------------------------------------------------------------------------------
+
+class TestTable : public eckit::sql::SQLTable {
+
+public:
+
+    using eckit::sql::SQLTable::SQLTable;
+
+private:
+
+    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>&) const {
+        NOTIMP;
+    }
+
+    virtual eckit::sql::SQLColumn* createSQLColumn(const eckit::sql::type::SQLType& type,
+                                                   const std::string& name,
+                                                   int index,
+                                                   bool hasMissingValue,
+                                                   double missingValue,
+                                                   const eckit::sql::BitfieldDef&) { NOTIMP; }
+
+    virtual eckit::sql::SQLColumn* createSQLColumn(const eckit::sql::type::SQLType& type,
+                                                   const std::string& name,
+                                                   int index,
+                                                   bool hasMissingValue,
+                                                   double missingValue) { NOTIMP; }
+
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE( "Test SQL database setup" ) {
 
     eckit::sql::SQLDatabase db;
+
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+    db.addTable(new TestTable(db, "d/e/f.path", "table2"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}
 
 
 int main(int argc, char* argv[]) {

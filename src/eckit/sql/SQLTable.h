@@ -28,7 +28,6 @@ namespace sql {
 //----------------------------------------------------------------------------------------------------------------------
 
 //class SQLFile;
-class SQLPool;
 class SQLColumn;
 class SQLDatabase;
 
@@ -58,10 +57,6 @@ public:
 	bool isParentOf(const SQLTable&) const;
 
     virtual SQLColumn& column(const std::string&);
-	SQLPool*   pool(int);
-
-	SQLTable* master() const;
-	void master(SQLTable* master);
 
 	//virtual bool hasColumn(const std::string&, std::string* fullName = 0, bool *hasMissingValue=0, double *missingValue=0, BitfieldDef*=0);
 	virtual bool hasColumn(const std::string&, std::string* fullName = 0);//, std::string* fullName = 0, bool *hasMissingValue=0, double *missingValue=0, BitfieldDef*=0);
@@ -74,21 +69,19 @@ public:
 	const std::string& name()  const { return name_; }
 
 	std::string fullName() const;
-
 	SQLDatabase& owner() const { return owner_; }
 
     const std::string& path() const { return path_; }
 
 	virtual void print(std::ostream& s) const;
 
-	virtual SQLTableIterator* iterator(const std::vector<SQLColumn*>&) const = 0;
+    virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<SQLColumn>>&) const = 0;
 
 protected:
     std::string path_;
 	std::string   name_;
 
 	//std::map<int,SQLFile*> files_;
-    std::map<int, SQLPool*> pools_;
 
     std::map<std::string, FieldNames > bitColumnNames_;
     std::map<std::string, SQLColumn*>  columnsByName_;
@@ -109,7 +102,6 @@ protected:
 private:
 
 	SQLDatabase& owner_;
-	SQLTable* master_;
 
 	friend std::ostream& operator<<(std::ostream& s,const SQLTable& p)
 		{ p.print(s); return s; }

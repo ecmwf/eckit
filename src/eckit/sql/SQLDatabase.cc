@@ -70,12 +70,11 @@ SQLTable& SQLDatabase::defaultTable()
     return *(it->second);
 }
 
-//SQLTable* SQLDatabase::table(const Table& t)
-//{
-//	std::map<std::string,SQLTable*>::iterator j (tablesByName_.find(t.name));
-//	ASSERT(j != tablesByName_.end());
-//	return (*j).second;
-//}
+SQLTable& SQLDatabase::table(const std::string& nm) {
+    auto it = tablesByName_.find(nm);
+    ASSERT(it != tablesByName_.end());
+    return *(it->second);
+}
 
 void SQLDatabase::setVariable(const std::string& name, expression::SQLExpression* value) {
     variables_.emplace(Variables::value_type(name, value));

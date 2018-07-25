@@ -14,6 +14,8 @@
 #ifndef SQLExpression_H
 #define SQLExpression_H
 
+#include <memory>
+
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/sql/SQLTypedefs.h"
 
@@ -31,7 +33,7 @@ class Expressions;
 class SQLExpression;
 class Dictionary;
 
-class SQLExpression {
+class SQLExpression : public std::enable_shared_from_this<SQLExpression> {
 public:
 	SQLExpression();
 	virtual ~SQLExpression(); 
@@ -52,7 +54,7 @@ public:
 	virtual bool isDictionary() const { return false; }
 	virtual Dictionary& dictionary();
 
-	virtual SQLExpression* simplify(bool&);
+    virtual std::shared_ptr<SQLExpression> simplify(bool&);
 
     virtual void title(const std::string&);
     virtual std::string title() const;
@@ -60,14 +62,14 @@ public:
     virtual const type::SQLType* type() const = 0;
 	// ----
 
-	virtual SQLExpression* clone() const = 0;
+    virtual std::shared_ptr<SQLExpression> clone() const = 0;
 	
 	virtual bool isAggregate() const { return false; }
 	// For select expression
 
 	virtual void output(SQLOutput&) const;
 	virtual void partialResult() {}
-	virtual void expandStars(const std::vector<SQLTable*>&,expression::Expressions&);
+    virtual void expandStars(const std::vector<std::reference_wrapper<SQLTable>>&,expression::Expressions&);
 
 	virtual bool isBitfield() const { return isBitfield_; }
 	BitfieldDef bitfieldDef() const { return bitfieldDef_; }
@@ -80,7 +82,9 @@ public:
     virtual void print(std::ostream&) const = 0;
 
 protected:
-	SQLExpression(Expressions*);
+
+    SQLExpression(const SQLExpression&) = default;
+    SQLExpression& operator=(const SQLExpression&) = default;
 
 	bool isBitfield_;
 	BitfieldDef bitfieldDef_;
@@ -90,8 +94,6 @@ protected:
 	//Vector* vector_;
 
 private:
-	SQLExpression(const SQLExpression&);
-	SQLExpression& operator=(const SQLExpression&);
 
     std::string title_;
 

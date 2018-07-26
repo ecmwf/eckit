@@ -20,6 +20,7 @@
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/NumberExpression.h"
 #include "eckit/sql/SQLParser.h"
+#include "eckit/sql/SQLSelect.h"
 //#include "eckit/sql/SQLInsertFactory.h"
 //#include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSession.h"

@@ -50,7 +50,7 @@ public:
 //    virtual SQLTable* openDataHandle(eckit::DataHandle &);
 //    virtual SQLTable* openDataStream(std::istream &, const std::string &);
 
-    virtual void statement(SQLStatement*);
+    virtual void setStatement(SQLStatement*);
     virtual SQLStatement& statement();
     virtual SQLOutput& output();
 

@@ -73,7 +73,7 @@ SQLTable& SQLSession::findTable(const std::string& database, const std::string& 
     NOTIMP;
 }
 
-void SQLSession::statement(SQLStatement* s) {
+void SQLSession::setStatement(SQLStatement* s) {
     statement_.reset(s);
 }
 

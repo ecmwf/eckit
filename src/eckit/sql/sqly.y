@@ -463,7 +463,10 @@ select_statement: SELECT distinct all select_list into from // where group_by or
 
                     //session->setStatement();
                     //$$ = SelectAST(distinct, all, select_list, into, from, where, group_by, order_by);
-                    session->selectFactory().create(distinct, all, select_list, into, from);
+
+                    session->setStatement(
+                        session->selectFactory().create(distinct, all, select_list, into, from)
+                    );
                 }
                 ;
 

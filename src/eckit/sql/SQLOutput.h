@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File SQLOutput.h
-// Baudouin Raoult - ECMWF Dec 03
+/// @author Baudouin Raoult
+/// @author Simon Smart
+/// ECMWF Dec 03
 
 #ifndef odb_api_SQLOutput_H
 #define odb_api_SQLOutput_H
@@ -20,10 +21,12 @@ namespace eckit {
 namespace sql {
 
 namespace expression {
-class Expressions;
+    class Expressions;
 }
 
 class SQLSelect;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class SQLOutput {
 public:
@@ -47,14 +50,9 @@ public:
 	virtual void outputString(double, bool) = 0;
 	virtual void outputBitfield(double, bool) = 0;
 
-	virtual const SQLOutputConfig& config();
-	virtual	void config(SQLOutputConfig&);
-
 	virtual unsigned long long count() = 0;
 
 protected:
-	SQLOutputConfig config_;
-
 	virtual void print(std::ostream&) const; 	
 
 private:
@@ -66,6 +64,8 @@ private:
 		{ p.print(s); return s; }
 
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

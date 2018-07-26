@@ -54,12 +54,12 @@ public:
 //        std::pair<Expressions, std::vector<bool> > order_by);
             );
 
-    expression::SQLExpression* createColumn(
+    std::shared_ptr<expression::SQLExpression> createColumn(
 		const std::string& columnName,
 		const std::string& bitfieldName,
-        const expression::SQLExpression* vectorIndex,
-        const SQLTable& table,
-        const expression::SQLExpression* pshift);
+        std::shared_ptr<expression::SQLExpression>& vectorIndex,
+        const std::string& tableReference,
+        std::shared_ptr<expression::SQLExpression>& pshift);
 
     eckit::DataHandle* implicitFromTableSource() { return implicitFromTableSource_; }
     void implicitFromTableSource(eckit::DataHandle* h) { implicitFromTableSource_ = h; }
@@ -69,12 +69,6 @@ public:
 
 	SQLDatabase* database() { return database_; }
 	void database(SQLDatabase* db) { database_ = db; }
-
-	SQLOutputConfig config() { return config_; }
-	void config(const SQLOutputConfig& cfg) { config_ = cfg; }
-
-	std::string csvDelimiter() { return csvDelimiter_; }
-	void csvDelimiter(const std::string& d) { csvDelimiter_ = d; }
 
 //    static odb::MetaData toODAColumns(odb::sql::SQLSession&, const odb::sql::TableDef&);
 
@@ -103,13 +97,12 @@ private: // members
 
     //SchemaAnalyzer& analyzer();
 //    MetaData columns(const std::string& tableName);
-    SQLOutput* createOutput(SQLSession&, const std::string& into, size_t orderBySize );
+    SQLOutput& createOutput(const std::string& into, size_t orderBySize );
 
     SQLDatabase* database_;
     SQLOutputConfig config_;
     int maxColumnShift_;
     int minColumnShift_;
-    std::string csvDelimiter_;
 
     //friend class eckit::NewAlloc0<SQLSelectFactory>;
 };

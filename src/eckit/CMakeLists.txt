@@ -550,12 +550,10 @@ sql/SQLDatabase.h
 #sql/SQLIterator.h
 #sql/SQLIteratorOutput.cc
 #sql/SQLIteratorOutput.h
-#sql/SQLIteratorSession.cc
-#sql/SQLIteratorSession.h
 #sql/SQLOrderOutput.cc
 #sql/SQLOrderOutput.h
-#sql/SQLOutput.cc
-#sql/SQLOutput.h
+sql/SQLOutput.cc
+sql/SQLOutput.h
 sql/SQLOutputConfig.cc
 sql/SQLOutputConfig.h
 sql/SQLParser.cc

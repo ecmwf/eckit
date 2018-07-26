@@ -13,6 +13,7 @@
 #include "eckit/io/FileHandle.h"
 
 #include "eckit/sql/SQLDatabase.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSession.h"
@@ -38,6 +39,13 @@ SQLSession::SQLSession(const SQLOutputConfig& config, const std::string& csvDeli
     database_.open();
 }
 
+SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, const std::string &csvDelimiter) :
+    selectFactory_(*this),
+    config_(SQLOutputConfig::defaultConfig()),
+    output_(std::move(out)),
+    csvDelimiter_(csvDelimiter) {}
+
+
 SQLSession::~SQLSession() {}
 
 SQLSelectFactory& SQLSession::selectFactory() { return selectFactory_; }
@@ -62,6 +70,24 @@ SQLDatabase& SQLSession::currentDatabase() {
 
 SQLTable& SQLSession::findTable(const std::string& database, const std::string& name) {
     // Multiple database support in session not yet implemented
+    NOTIMP;
+}
+
+void SQLSession::statement(SQLStatement* s) {
+    statement_.reset(s);
+}
+
+SQLStatement& SQLSession::statement() {
+    ASSERT(statement_);
+    return *statement_;
+}
+
+SQLOutput &SQLSession::output() {
+    if (output_) {
+        return *output_;
+    }
+
+    // TODO: Implement logic to build an output file from the output config
     NOTIMP;
 }
 
@@ -94,10 +120,9 @@ void SQLSession::loadDefaultSchema()
     size_t sz = dh.openForRead();
     std::string schema(sz, ' ');
     ASSERT(dh.read(&schema[0], sz) == sz);
-    SQLOutputConfig config (selectFactory().config());
     SQLParser parser;
     // TODO: update include path
-    parser.parseString(*this, schema, static_cast<DataHandle*>(0), config);
+    parser.parseString(*this, schema);
 }
 
 std::string SQLSession::schemaFile()

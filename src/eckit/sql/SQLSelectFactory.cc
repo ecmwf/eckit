@@ -38,10 +38,8 @@ SQLSelectFactory::SQLSelectFactory(SQLSession& session) :
     implicitFromTableSource_(0),
     implicitFromTableSourceStream_(0),
     database_(0),
-    config_(session.outputConfig()), //SQLOutputConfig::defaultConfig()),
     maxColumnShift_(0),
-    minColumnShift_(0),
-    csvDelimiter_(session.csvDelimiter()) {}
+    minColumnShift_(0) {}
 
 /*void SQLSelectFactory::reset()
 {
@@ -52,7 +50,6 @@ SQLSelectFactory::SQLSelectFactory(SQLSession& session) :
     config_ = SQLOutputConfig::defaultConfig();
     maxColumnShift_ = 0;
     minColumnShift_ = 0;
-    //csvDelimiter_ = ",";
 }
 */
 
@@ -67,12 +64,12 @@ std::string SQLSelectFactory::index(const std::string& columnName, const SQLExpr
 	return columnName + "_" + idx;
 }
 
-SQLExpression* SQLSelectFactory::createColumn(
+std::shared_ptr<SQLExpression> SQLSelectFactory::createColumn(
     const std::string& columnName,
     const std::string& bitfieldName,
-	const SQLExpression* vectorIndex,
-    const SQLTable& table,
-	const SQLExpression* pshift)
+    std::shared_ptr<SQLExpression>& vectorIndex,
+    const std::string& tableReference,
+    std::shared_ptr<SQLExpression>& pshift)
 {
 	if (! pshift->isConstant()) throw eckit::UserError("Value of shift operator must be constant");
 	bool missing = false;
@@ -83,13 +80,13 @@ SQLExpression* SQLSelectFactory::createColumn(
 	if (shift > maxColumnShift_) maxColumnShift_ = shift;
 	if (shift < minColumnShift_) minColumnShift_ = shift;
 
-    std::string expandedColumnName( index(columnName, vectorIndex) );
+    std::string expandedColumnName( index(columnName, vectorIndex.get()) );
     // TODO: handle .<database>
 	return bitfieldName.size()
-        ? (shift == 0 ? new BitColumnExpression(expandedColumnName, bitfieldName, table.name())
-                      : new ShiftedColumnExpression<BitColumnExpression>(expandedColumnName, bitfieldName, table.name(), shift, -shift))
-        : (shift == 0 ? new ColumnExpression(expandedColumnName + table.name(), table.name())
-                      : new ShiftedColumnExpression<ColumnExpression>(expandedColumnName + table.name(), table.name(), shift, -shift));
+        ? (shift == 0 ? std::make_shared<BitColumnExpression>(expandedColumnName, bitfieldName, tableReference)
+                      : std::make_shared<ShiftedColumnExpression<BitColumnExpression>>(expandedColumnName, bitfieldName, tableReference, shift, -shift))
+        : (shift == 0 ? std::make_shared<ColumnExpression>(expandedColumnName + tableReference, tableReference)
+                      : std::make_shared<ShiftedColumnExpression<ColumnExpression>>(expandedColumnName + tableReference, tableReference, shift, -shift));
 }
 
 std::shared_ptr<SQLExpression> SQLSelectFactory::reshift(std::shared_ptr<SQLExpression>& e)
@@ -259,13 +256,13 @@ SQLSelect* SQLSelectFactory::create (
 //        Log::info() << "GROUP BY clause seen and ignored. Non aggregated values on select list will be used instead." << std::endl;
 
 //    SQLOutput *out (createOutput(session_, into, order_by.first.size()));
-    SQLOutput *out (createOutput(session_, into, 0));
+    SQLOutput& out (createOutput(into, 0));
 
     // TODO: Special outputs
     if(distinct)              { NOTIMP; } // out = new SQLDistinctOutput(out); }
    //// if(order_by.first.size()) { NOTIMP; } // out = new SQLOrderOutput(out, order_by); }
     ///r = new SQLSelect(select, fromTables, where, out, config_, all);
-    r = new SQLSelect(select, fromTables, 0, out, config_, all);
+    r = new SQLSelect(select, fromTables, 0, out, all);
 
 	maxColumnShift_ = 0;
 	return r;
@@ -300,19 +297,19 @@ SQLSelect* SQLSelectFactory::create (
 //    return md;
 //}
 
-SQLOutput* SQLSelectFactory::createOutput (SQLSession& session, const std::string& into, size_t orderBySize)
+SQLOutput& SQLSelectFactory::createOutput (const std::string& into, size_t orderBySize)
 {
-    // TODO: FIXME
-    //size_t maxOpenFiles ( ! context ? 100 : atoi(context->environment().lookup("maxOpenFiles", "100", *context).c_str()));
-    size_t maxOpenFiles ( 100);
-    //TODO: pass parameter into to defaultFormat
-    SQLOutput *r (NULL);
-    //if (config_.outputFormat() == "callback") return session.defaultOutput();
+    //// TODO: FIXME
+    ////size_t maxOpenFiles ( ! context ? 100 : atoi(context->environment().lookup("maxOpenFiles", "100", *context).c_str()));
+    //size_t maxOpenFiles ( 100);
+    ////TODO: pass parameter into to defaultFormat
+    //SQLOutput *r (NULL);
+    ////if (config_.outputFormat() == "callback") return session.defaultOutput();
 
-    std::string outputFile ((config_.outputFormat() == "odb") ? config_.outputFile() : into);
-    Log::debug() << "SQLSelectFactory::createOutput: outputFile: '" << outputFile << "'" << std::endl;
-    if (! outputFile.size())
-        return r = session.defaultOutput();
+    //std::string outputFile ((config_.outputFormat() == "odb") ? config_.outputFile() : into);
+    //Log::debug() << "SQLSelectFactory::createOutput: outputFile: '" << outputFile << "'" << std::endl;
+    //if (! outputFile.size())
+        return session_.output();
 
     NOTIMP;
 //    TemplateParameters templateParameters;
@@ -336,7 +333,7 @@ SQLOutput* SQLSelectFactory::createOutput (SQLSession& session, const std::strin
 ////            r = new SQLODAOutput<Writer<> >(new Writer<>(outputFile), toODAColumns(session, *tableDef));
 //        }
 //    }
-    return r;
+//    return r;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

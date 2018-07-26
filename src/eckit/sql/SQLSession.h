@@ -37,7 +37,8 @@ class SQLOutputConfig;
 
 class SQLSession {
 public:
-    SQLSession(const SQLOutputConfig& config, const std::string& csvDelimiter);
+    SQLSession(const SQLOutputConfig& config=SQLOutputConfig(), const std::string& csvDelimiter=",");
+    SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter=",");
     virtual ~SQLSession(); 
 
     virtual SQLSelectFactory& selectFactory();
@@ -49,10 +50,9 @@ public:
 //    virtual SQLTable* openDataHandle(eckit::DataHandle &);
 //    virtual SQLTable* openDataStream(std::istream &, const std::string &);
 
-//    virtual void statement(const SelectAST& s);
-    virtual void statement(SQLStatement*) = 0;
-    virtual SQLStatement* statement() = 0;
-    virtual SQLOutput* defaultOutput() = 0;
+    virtual void statement(SQLStatement*);
+    virtual SQLStatement& statement();
+    virtual SQLOutput& output();
 
     virtual const SQLDatabase& currentDatabase() const;
     virtual SQLDatabase& currentDatabase();
@@ -62,10 +62,6 @@ public:
     virtual void interactive() {}
 
     unsigned long long lastExecuteResult() { return lastExecuteResult_; }
-
-//    bool gotSelectAST() const;
-//    void gotSelectAST(bool);
-//    const SelectAST& selectAST() const;
 
     std::string csvDelimiter() { return csvDelimiter_; }
     const SQLOutputConfig& outputConfig() { return config_; }
@@ -92,11 +88,12 @@ private:
     SQLSelectFactory selectFactory_;
 //    SQLInsertFactory insertFactory_;
 
-//    SelectAST selectAST_;
-//    bool gotSelectAST_;
     unsigned long long lastExecuteResult_;
 
     const SQLOutputConfig config_;
+
+    std::unique_ptr<SQLStatement> statement_;
+    std::unique_ptr<SQLOutput> output_;
     const std::string csvDelimiter_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLSession& p)

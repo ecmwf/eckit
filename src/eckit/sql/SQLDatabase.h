@@ -37,7 +37,7 @@ class SQLStatement;
 namespace expression { class SQLExpression; }
 
 typedef std::map<std::string, std::set<std::string> > Links;
-typedef std::map<std::string, std::unique_ptr<expression::SQLExpression>> Variables;
+typedef std::map<std::string, std::shared_ptr<expression::SQLExpression>> Variables;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,8 +66,9 @@ public:
 
     const std::string& name() const { return name_; }
 
-    expression::SQLExpression& getVariable(const std::string&) const;
-    void setVariable(const std::string&, expression::SQLExpression*);
+    std::shared_ptr<expression::SQLExpression> getVariable(const std::string&) const;
+    void setVariable(const std::string&, std::shared_ptr<expression::SQLExpression>);
+
 	Variables& variables() { return variables_; }
 
 //	SchemaAnalyzer& schemaAnalyzer() { return schemaAnalyzer_; }

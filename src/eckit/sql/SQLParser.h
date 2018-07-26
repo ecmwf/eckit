@@ -48,8 +48,9 @@ class SQLParser {
 public:
 	static int line();
 
-    static void parseString(SQLSession&, const std::string&, eckit::DataHandle*, SQLOutputConfig, bool resetSession = true);
-    static void parseString(SQLSession&, const std::string&, std::istream*, SQLOutputConfig, const std::string& cvsDelimiter);
+//    static void parseString(SQLSession&, const std::string&, eckit::DataHandle*, SQLOutputConfig, bool resetSession = true);
+//    static void parseString(SQLSession&, const std::string&, std::istream*, SQLOutputConfig, const std::string& cvsDelimiter);
+    static void parseString(SQLSession&, const std::string&);
 //    static void parseString(SQLSession&, const std::string&, SQLDatabase&, SQLOutputConfig);
 
 	static std::stack<ParseFrame> frames_;

@@ -14,11 +14,11 @@
 #include "eckit/sql/expression/ColumnExpression.h"
 //#include "odb_api/Dictionary.h"
 //#include "odb_api/FunctionFactory.h"
-//#include "odb_api/NumberExpression.h"
 //#include "odb_api/ParameterExpression.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/expression/NumberExpression.h"
 #include "eckit/sql/SQLParser.h"
 //#include "eckit/sql/SQLInsertFactory.h"
 //#include "eckit/sql/SQLSelect.h"
@@ -96,25 +96,36 @@ private:
     bool resetSession_;
 };
 
-void SQLParser::parseString(SQLSession& session, const std::string& s, std::istream* is, SQLOutputConfig cfg, const std::string& csvDelimiter)
+//void SQLParser::parseString(SQLSession& session, const std::string& s, std::istream* is)
+//{
+//    SessionResetter ar (session);
+//
+//    session.selectFactory().implicitFromTableSourceStream(is);
+//    NOTIMP;
+////    session.selectFactory().config(cfg);
+////    session.selectFactory().csvDelimiter(csvDelimiter);
+//
+//    parseStringInternal(session, s);
+//
+////    SQLYacc::eckit_sql_lex_init(&scanner); // TODO: handle unwind
+//}
+//
+//void SQLParser::parseString(SQLSession& session, const std::string& s, DataHandle* dh)
+//{
+//    SessionResetter ar (session, resetSession);
+//
+//    session.selectFactory().implicitFromTableSource(dh);
+//    NOTIMP;
+////    session.selectFactory().config(cfg);
+//
+//    parseStringInternal(session, s);
+//}
+
+void SQLParser::parseString(SQLSession& session, const std::string& s)
 {
     SessionResetter ar (session);
 
-    session.selectFactory().implicitFromTableSourceStream(is);
-    session.selectFactory().config(cfg);
-    session.selectFactory().csvDelimiter(csvDelimiter);
-
-    parseStringInternal(session, s);
-
-//    SQLYacc::eckit_sql_lex_init(&scanner); // TODO: handle unwind
-}
-
-void SQLParser::parseString(SQLSession& session, const std::string& s, DataHandle* dh, SQLOutputConfig cfg, bool resetSession)
-{
-    SessionResetter ar (session, resetSession);
-
-    session.selectFactory().implicitFromTableSource(dh);
-    session.selectFactory().config(cfg);
+    session.selectFactory().database(&session.currentDatabase());
 
     parseStringInternal(session, s);
 }

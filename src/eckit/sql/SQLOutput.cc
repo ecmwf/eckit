@@ -15,6 +15,8 @@
 namespace eckit {
 namespace sql {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 SQLOutput::SQLOutput() {}
 
 SQLOutput::~SQLOutput() {}
@@ -24,9 +26,7 @@ void SQLOutput::print(std::ostream& s) const
 	s << "SQLOutput" << std::endl;
 }
 
-const SQLOutputConfig& SQLOutput::config() { return config_; }
-
-void SQLOutput::config(SQLOutputConfig& cfg) { config_ = cfg; }
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

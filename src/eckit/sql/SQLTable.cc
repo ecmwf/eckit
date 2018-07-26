@@ -43,6 +43,11 @@ void SQLTable::clearColumns()
 
 std::vector<std::string> SQLTable::columnNames() const
 {
+    for (const auto& kv : columnsByName_)
+        std::cout << "n: " << kv.first << std::endl;
+    for (const auto& kv : columnsByIndex_)
+        std::cout << "N: " << kv.second->name() << std::endl;
+
 	std::vector<std::string> results;
 	for(std::map<int,SQLColumn*>::const_iterator j = columnsByIndex_.begin(); j != columnsByIndex_.end(); ++j)
 		results.push_back((*j).second->name());

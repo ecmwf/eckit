@@ -147,11 +147,13 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLT
 	
 	unsigned int matched = 0;
     for (SQLTable& table : tables) {
+        std::cout << "TABLE" << std::endl;
 
         std::vector<std::string> names = table.columnNames();
 
 		for(size_t i = 0; i < names.size(); i++)
 		{
+            std::cout << "Name: " << names[i] << std::endl;
 			if ((tableReference_.size())
 				&& ((names[i].rfind(tableReference_) == std::string::npos)
 					|| (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size())))
@@ -169,7 +171,6 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLT
 		throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_ + " found.");
 
 	L << "ColumnExpression::expandStars: added " << ss.str() << std::endl;
-	delete this;
 }
 
 void ColumnExpression::tables(std::set<SQLTable*>& t) 

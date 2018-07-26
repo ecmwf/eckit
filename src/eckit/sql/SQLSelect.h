@@ -46,7 +46,7 @@ class SQLSelect : public SQLStatement {
     friend class SelectIterator;
 
 public:
-    SQLSelect(const Expressions&, std::vector<std::reference_wrapper<SQLTable>>&, expression::SQLExpression*, SQLOutput*, SQLOutputConfig, bool all);
+    SQLSelect(const Expressions&, std::vector<std::reference_wrapper<SQLTable>>&, expression::SQLExpression*, SQLOutput&, bool all);
 	~SQLSelect(); 
 
 // -- Methods
@@ -95,7 +95,7 @@ private:
 
 	Stack env;
 
-    std::unique_ptr<SQLOutput> output_;
+    SQLOutput& output_;
 	Expressions  results_;
 
     typedef std::map<
@@ -123,7 +123,6 @@ private:
 	Expressions aggregated_;
 	Expressions nonAggregated_;
 	std::vector<bool> mixedResultColumnIsAggregated_;
-	SQLOutputConfig outputConfig_;
     std::vector<eckit::PathName> outputFiles_;
     bool all_;
 

@@ -137,24 +137,12 @@ Expressions emptyExpressionList;
 %token RESET
 %token ONELOOPER
 
-//%type <exp>column;
-//%type <exp>vector_index;
-//
-//%type <exp>condition;
-//%type <exp>atom_or_number;
-%type <exp> expression;
+%type <exp>     expression assignment_rhs;
+%type <exp>     column factor term conjonction disjonction condition atom_or_number vector_index optional_hash;
+%type <explist> expression_list;
 
-//%type <exp>factor;
-//%type <exp>power;
-//%type <exp>term;
-//%type <exp>conjonction;
-//%type <exp>disjonction;
-//%type <exp>optional_hash;
-//
 //%type <exp>where;
 //
-//%type <exp>assignment_rhs;
-//%type <explist>expression_list;
 
 %type <tablist> table_list;
 %type <table> table
@@ -178,7 +166,7 @@ Expressions emptyExpressionList;
 //
 //%type <r>vector_range_decl;
 //%type <val>column_name;
-//%type <val>bitfield_ref;
+%type <val> bitfield_ref;
 //%type <coldefs>column_def_list;
 //%type <coldefs>column_def_list_;
 //%type <coldef>column_def;
@@ -520,56 +508,52 @@ from : FROM table_list   { $$ = $2; }
 //values_list: '?'                  { $$ = std::vector<std::string>(); $$.insert($$.begin(), "?" /*$1*/); }
 //           | values_list ',' '?'  { $$ = $1; $$.push_back("?"/*$3*/); }
 //           ;
-//
-//assignment_rhs	: expression
-//		;
-//
+
+assignment_rhs	: expression
+        ;
+
 //set_statement : SET DATABASE STRING { session->openDatabase($3); }
 //	;
 //
 //set_statement : SET DATABASE STRING AS IDENT { session->openDatabase($3,$5); }
 //	;
-//
-//set_statement : SET VAR EQ assignment_rhs
-//	{
-//        //using namespace std;
-//		//cout << "== set variable " << $2 << " to "; if ($4) cout << *($4) << std::endl; else cout << "NULL" << std::endl;
-//		session->currentDatabase().setVariable($2, $4);
-//	}
-//	;
-//
-//bitfield_ref: '.' IDENT  { $$ = $2; }
-//            |            { $$ = std::string(); }
-//
-//column: IDENT vector_index table_reference optional_hash
-//		  {
-//
-//			std::string columnName($1);
-//			SQLExpression* vectorIndex($2);
-//			Table table($3, "", false); // TODO: table_reference should handle .<database> suffix
-//			SQLExpression* pshift($4);
-//
-//            bool missing;
-//			std::string bitfieldName;
-//			$$ = session->selectFactory().createColumn(columnName, bitfieldName, vectorIndex, table /*TODO: handle .<database> */, pshift);
-//		  }
-//	   | IDENT bitfield_ref table_reference optional_hash
-//		{
-//
-//			std::string columnName      ($1);
-//			std::string bitfieldName    ($2);
-//			SQLExpression* vectorIndex  (0);
-//			Table table($3, "", false); // TODO: table_reference should handle .<database> suffix
-//			SQLExpression* pshift       ($4);
-//
-//            bool missing;
-//			$$ = session->selectFactory().createColumn(columnName, bitfieldName, vectorIndex, table /*TODO: handle .<database> */, pshift);
-//		 }
-//	  ;
-//
-//vector_index : '[' expression ']'    { $$ = $2; }
-//             | empty                 { $$ = NULL; }
-//             ;
+
+set_statement : SET VAR EQ assignment_rhs
+    {
+        //using namespace std;
+        //cout << "== set variable " << $2 << " to "; if ($4) cout << *($4) << std::endl; else cout << "NULL" << std::endl;
+        session->currentDatabase().setVariable($2, $4);
+    }
+    ;
+
+bitfield_ref: '.' IDENT  { $$ = $2; }
+            |            { $$ = std::string(); }
+            ;
+
+column: IDENT vector_index table_reference optional_hash {
+            std::string columnName = $1;
+            std::shared_ptr<SQLExpression> vectorIndex = $2;
+            std::string tableReference($3); // TODO: table_reference should handle .<database> suffix
+            std::shared_ptr<SQLExpression> pshift($4);
+
+            std::string bitfieldName;
+            $$ = session->selectFactory().createColumn(columnName, bitfieldName, vectorIndex, tableReference /*TODO: handle .<database> */, pshift);
+         }
+         | IDENT bitfield_ref table_reference optional_hash {
+
+            std::string columnName = $1;
+            std::string bitfieldName = $2;
+            std::shared_ptr<SQLExpression> vectorIndex;
+            std::string tableReference($3); // TODO: table_reference should handle .<database> suffix
+            std::shared_ptr<SQLExpression> pshift       ($4);
+
+            $$ = session->selectFactory().createColumn(columnName, bitfieldName, vectorIndex, tableReference /*TODO: handle .<database> */, pshift);
+         }
+      ;
+
+vector_index : '[' expression ']'    { $$ = $2; }
+             | empty                 { $$ = NULL; }
+             ;
 
 table_reference: '@' IDENT   { $$ = std::string("@") + $2; }
                | empty       { $$ = std::string(""); }
@@ -640,57 +624,57 @@ access_decl: UPDATED
 //	  ;
 //
 //
-///*================= EXPRESSION =========================================*/
-//
-//expression_list : expression         {  $$ = Expressions(1, $1); }
-//				| expression_list ',' expression { $$ = $1; $$.push_back($3); }
-//				;
-//
-//optional_hash : HASH DOUBLE { $$ = new NumberExpression($2); }
-//			  |             { $$ = new NumberExpression(0); }
-//			  ;
-//
-//
-//atom_or_number : '(' expression ')'           { $$ = $2; }
-//			   | '-' expression               { $$ = ast("-",$2); }
-//			   | DOUBLE                       { $$ = new NumberExpression($1); }
-//			   | column
-//			   | VAR                          { $$ = session->currentDatabase().getVariable($1); }
-//			   | '?' DOUBLE                   { $$ = new ParameterExpression($2); }
-//			   | func '(' expression_list ')' { $$ = ast($1, $3); }
-//			   | func '(' empty ')'           { $$ = ast($1, emptyExpressionList); }
-//			   | func '(' '*' ')'
-//				{
-//                    if (std::string("count") != $1)
-//                        throw eckit::UserError(std::string("Only function COUNT can accept '*' as parameter (") + $1 + ")");
+/*================= EXPRESSION =========================================*/
+
+expression_list : expression         {  $$ = Expressions(1, $1); }
+                | expression_list ',' expression { $$ = $1; $$.push_back($3); }
+                ;
+
+optional_hash : HASH DOUBLE { $$ = std::make_shared<NumberExpression>($2); }
+              |             { $$ = std::make_shared<NumberExpression>(0); }
+              ;
+
+
+atom_or_number : //'(' expression ')'           { $$ = $2; }
+               //| '-' expression               { $$ = ast("-",$2); }
+               //| DOUBLE                       { $$ = new NumberExpression($1); }
+               //|
+               column
+               //| VAR                          { $$ = session->currentDatabase().getVariable($1); }
+               //| '?' DOUBLE                   { $$ = new ParameterExpression($2); }
+               //| func '(' expression_list ')' { $$ = ast($1, $3); }
+               //| func '(' empty ')'           { $$ = ast($1, emptyExpressionList); }
+               //| func '(' '*' ')'
+               // {
+               //     if (std::string("count") != $1)
+               //         throw eckit::UserError(std::string("Only function COUNT can accept '*' as parameter (") + $1 + ")");
 //
 //                    $$ = ast("count", new NumberExpression(1.0));
-//				}
-//			   | STRING                       { $$ = new StringExpression($1); }
-//			   ;
-//
-//
+//                }
+//               | STRING                       { $$ = new StringExpression($1); }
+               ;
+
+
 //func : IDENT { $$ = $1;      }
-//	 | COUNT { $$ = "count"; }
-//	 ;
-//
-///* note: a^b^c -> a^(b^c) as in fortran */
-//
-//power       : atom_or_number
-//			;
-//
-//factor      : factor '*' power          { $$ = ast("*",$1,$3);   }
-//            | factor '/' power          { $$ = ast("/",$1,$3); }
-//            /* | factor '%' power          { $$ = new CondMOD($1,$3); } */
-//            | power
-//            ;
-//
-//term        : term '+' factor           { $$ = ast("+",$1,$3);   }
-//            | term '-' factor           { $$ = ast("-",$1,$3);   }
-//            /* | term '&' factor */
-//            | factor
-//            ;
-//
+//     | COUNT { $$ = "count"; }
+//     ;
+
+/* note: a^b^c -> a^(b^c) as in fortran */
+
+factor      : //NOTIMP//factor '*' atom_or_number          { $$ = ast("*",$1,$3);   }
+            //NOTIMP//| factor '/' atom_or_number          { $$ = ast("/",$1,$3); }
+            /* | factor '%' atom_or_number          { $$ = new CondMOD($1,$3); } */
+            //|
+            atom_or_number
+            ;
+
+term        : //NOTIMP// term '+' factor           { $$ = ast("+",$1,$3);   }
+            //NOTIMP// | term '-' factor           { $$ = ast("-",$1,$3);   }
+            /* | term '&' factor */
+            // |
+            factor
+            ;
+
 //relational_operator: '>' { $$ = ">"; }
 //                   | EQ  { $$ = "="; }
 //                   | '<' { $$ = "<"; }
@@ -698,66 +682,68 @@ access_decl: UPDATED
 //                   | LE  { $$ = "<="; }
 //                   | NE  { $$ = "<>"; }
 //                   ;
+
+condition   : //term relational_operator term relational_operator term { NOTIMP; //$$ = ast("and", ast($2,$1,$3), ast($4,$3,$5)); }
+            //| term relational_operator term                          { NOTIMP; //$$ = ast($2, $1, $3); }
+            //| MATCH '(' expression_list ')' IN QUERY '(' select_statement ')'
+           // {
+           //     const Expressions& matchList ($3);
+           //     const SelectAST& subquery ($8);
+           //     NOTIMP; //$$ = ast("match", matchList, subquery);
+           // }
+           // | condition  IN '(' expression_list ')'                  { $4.push_back($1); NOTIMP; } //$$ = ast("in",$4);   }
+           // | condition  IN VAR
+           // {
+           //     SQLExpression* v = session->currentDatabase().getVariable($3);
+           //     ASSERT(v && v->isVector());
+           //     Expressions e(v->vector());
+           //     e.push_back($1);
+           //     NOTIMP;
+           //     //$$ = ast("in", e);
+           // }
+           // | condition  NOT IN '(' expression_list ')'  { NOTIMP; } //$5.push_back($1); $$ = ast("not_in",$5);   }
+           // | condition  NOT IN VAR
+           // {
+           //     // This has not been implemented yet.
+//                throw UserError("Syntax: 'condition NOT IN VAR' not yet supported");
 //
-//condition   : term relational_operator term relational_operator term { $$ = ast("and", ast($2,$1,$3), ast($4,$3,$5)); }
-//            | term relational_operator term                          { $$ = ast($2, $1, $3); }
-//            | MATCH '(' expression_list ')' IN QUERY '(' select_statement ')'
-//            {
-//                const Expressions& matchList ($3);
-//                const SelectAST& subquery ($8);
-//                $$ = ast("match", matchList, subquery);
-//            }
-//            | condition  IN '(' expression_list ')'                  { $4.push_back($1); $$ = ast("in",$4);   }
-//            | condition  IN VAR
-//			{
-//                SQLExpression* v = session->currentDatabase().getVariable($3);
+//                SQLExpression* v = session->currentDatabase().getVariable($4);
 //                ASSERT(v && v->isVector());
 //                Expressions e(v->vector());
 //                e.push_back($1);
-//                $$ = ast("in", e);
-//			}
-//            | condition  NOT IN '(' expression_list ')'  { $5.push_back($1); $$ = ast("not_in",$5);   }
-//            | condition  NOT IN VAR
-//			{
-//                // This has not been implemented yet.
-//                throw UserError("Syntax: 'condition NOT IN VAR' not yet supported");
-//
-//				SQLExpression* v = session->currentDatabase().getVariable($4);
-//				ASSERT(v && v->isVector());
-//				Expressions e(v->vector());
-//				e.push_back($1);
-//				$$ = ast("not_in", e);
-//			}
-//
-//            | NOT condition             { $$ = ast("not",$2);   }
-//			| condition IS NIL          { $$ = ast("null",$1);   }
-//			| condition IS NOT NIL      { $$ = ast("not_null",$1);   }
-//			| condition BETWEEN term AND term { $$ = ast("between",$1,$3,$5); }
-//			| condition NOT BETWEEN term AND term { $$ = ast("not_between",$1,$4,$6); }
-//            | condition LIKE term       { $$ = ast("like", $1, $3); }
-//            | condition RLIKE term      { $$ = ast("rlike", $1, $3); }
-//            | term
-//            ;
-
-//conjonction : conjonction AND condition       { $$ = ast("and",$2,$3);   }
-//            | condition
-//            ;
-//
-//disjonction : disjonction OR conjonction      { $$ = ast("or",$1,$3);   }
-//            | conjonction
-//            ;
-//
-
-expression  : empty;
-
-//disjonction
-//            | expression '[' expression ']'
-//            {
-//                // This has not been implemented yet.
-//                // SDS: n.b. seems to be in old versions. Not sure why deprecated
-//                throw UserError("Syntax: 'expression [ expression ]' not yet supported");
+//                $$ = ast("not_in", e);
 //            }
-//            ;
+
+//            | NOT condition             { NOTIMP; } //$$ = ast("not",$2);   }
+//            | condition IS NIL          { NOTIMP; } //$$ = ast("null",$1);   }
+//            | condition IS NOT NIL      { NOTIMP; } //$$ = ast("not_null",$1);   }
+//            | condition BETWEEN term AND term { NOTIMP; } //$$ = ast("between",$1,$3,$5); }
+//            | condition NOT BETWEEN term AND term { NOTIMP; } //$$ = ast("not_between",$1,$4,$6); }
+//            | condition LIKE term       { NOTIMP; } //$$ = ast("like", $1, $3); }
+//            | condition RLIKE term      { NOTIMP; } //$$ = ast("rlike", $1, $3); }
+            //|
+            term
+            ;
+
+conjonction : //NOTIMP// conjonction AND condition       { $$ = ast("and",$2,$3);   }
+            //|
+            condition
+            ;
+
+disjonction : //NOTIMP// disjonction OR conjonction      { $$ = ast("or",$1,$3);   }
+            //|
+            conjonction
+            ;
+
+
+expression  : disjonction
+            | expression '[' expression ']'
+            {
+                // This has not been implemented yet.
+                // SDS: n.b. seems to be in old versions. Not sure why deprecated
+                throw UserError("Syntax: 'expression [ expression ]' not yet supported");
+            }
+            ;
 
 empty :
       ;

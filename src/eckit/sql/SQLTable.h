@@ -46,7 +46,7 @@ public:
 	virtual ~SQLTable(); 
 
     void loadIOMAP(std::istream&);
-	void addColumn(const std::string&, int, const type::SQLType&, bool, double, bool, const BitfieldDef&);
+    void addColumn(const std::string&, int, const type::SQLType&, bool, double, bool isBitfield=false, const BitfieldDef& d=BitfieldDef());
 
     void addLinkFrom(const SQLTable&);
 	bool hasLinkFrom(const SQLTable&) const;

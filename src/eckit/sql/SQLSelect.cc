@@ -31,8 +31,7 @@ void SQLSelect::pushFirstFrame() { env.pushFrame(sortedTables_.begin()); }
 SQLSelect::SQLSelect(const Expressions& columns, 
     std::vector<std::reference_wrapper<SQLTable>>& tables,
 	SQLExpression* where,
-	SQLOutput* output,
-	SQLOutputConfig cfg,
+    SQLOutput& output,
     bool all)
 : select_(columns),
   where_(where),
@@ -42,12 +41,10 @@ SQLSelect::SQLSelect(const Expressions& columns,
   skips_(0),
   aggregate_(false),
   mixedAggregatedAndScalar_(false),
-  outputConfig_(cfg),
   all_(all)
 {
     // TODO: Convert tables_, allTables_ to use references rather than pointers.
     for (SQLTable& t : tables) tables_.push_back(&t);
-	output->config(cfg);
 }
 
 SQLSelect::~SQLSelect() {}
@@ -140,7 +137,7 @@ static bool compareTables(SelectOneTable* a,SelectOneTable *b)
 
 inline bool SQLSelect::resultsOut()
 {
-    return output_->output(results_);
+    return output_.output(results_);
 }
 
 std::shared_ptr<SQLExpression> SQLSelect::findAliasedExpression(const std::string& alias)
@@ -174,9 +171,9 @@ void SQLSelect::prepareExecute() {
 	ASSERT(select_.size() == mixedResultColumnIsAggregated_.size());
 	ASSERT(select_.size() == aggregated_.size() + nonAggregated_.size());
 
-	output_->prepare(*this);
+    output_.prepare(*this);
 	results_ = select_;
-	output_->size(results_.size());
+    output_.size(results_.size());
 
 	if(aggregated_.size()) {
 		aggregate_ = true;
@@ -400,7 +397,7 @@ void SQLSelect::postExecute()
 				}
 			}
 
-            output_->output(results);
+            output_.output(results);
             results.clear();
 		}
 	}
@@ -409,14 +406,14 @@ void SQLSelect::postExecute()
         resultsOut();
 	}
 
-    output_->flush();
-	output_->cleanup(*this);
+    output_.flush();
+    output_.cleanup(*this);
 	if(simplifiedWhere_) simplifiedWhere_->cleanup(*this);
 	
 	for(expression::Expressions::iterator c (results_.begin()); c != results_.end() ; ++c)
 		(*c)->cleanup(*this);
 
-    Log::info() << "Matching row(s): " << BigNum(output_->count()) << " out of " << BigNum(total_) << std::endl;
+    Log::info() << "Matching row(s): " << BigNum(output_.count()) << " out of " << BigNum(total_) << std::endl;
     Log::info() << "Skips: " << BigNum(skips_) << std::endl;
 	reset();
 }
@@ -442,7 +439,7 @@ void SQLSelect::reset()
 
 	skips_ = total_ = 0;
 
-	output_->reset();
+    output_.reset();
 	count_ = 0;
 }
 
@@ -591,7 +588,7 @@ void SQLSelect::print(std::ostream& s) const
 	if(where_.get())
 		s << " WHERE " << *where_;
 
-	s << " " << *output_;
+    s << " " << output_;
 }
 
 expression::Expressions SQLSelect::output() const { return select_; }

@@ -50,16 +50,6 @@ ColumnExpression::ColumnExpression(const std::string& name, const std::string& t
   nominalShift_(0)
 {}
 
-ColumnExpression::ColumnExpression(const ColumnExpression& e)
-: type_(e.type_),
-  value_(e.value_),
-  columnName_(e.columnName_),
-  table_(e.table_),
-  tableReference_(e.tableReference_),
-  beginIndex_(e.beginIndex_),
-  endIndex_(e.endIndex_),
-  nominalShift_(e.nominalShift_)
-{}
 
 std::shared_ptr<SQLExpression> ColumnExpression::clone() const { return std::make_shared<ColumnExpression>(*this); }
 

@@ -89,7 +89,8 @@ private:
     std::shared_ptr<expression::SQLExpression> where_;
     std::shared_ptr<expression::SQLExpression> simplifiedWhere_;
 
-    Environment env;
+    // Cursors provide the environment for the iteration over the tables
+    std::vector<std::unique_ptr<SQLTableIterator>> cursors_;
 
     SQLOutput& output_;
 
@@ -127,6 +128,8 @@ private:
     bool resultsOut();
     bool writeOutput();
     std::shared_ptr<SQLExpression> findAliasedExpression(const std::string& alias);
+
+    bool processNextTableRow(size_t tableIndex);
 
     friend class expression::function::FunctionROWNUMBER; // needs access to count_
     friend class expression::function::FunctionTHIN; // needs access to count_

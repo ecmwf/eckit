@@ -34,8 +34,8 @@ SQLSelect::SQLSelect(const Expressions& columns,
 : select_(columns),
   where_(where),
   simplifiedWhere_(0),
-  env(sortedTables_.end()),
   output_(output),
+  count_(0),
   total_(0),
   skips_(0),
   aggregate_(false),
@@ -53,6 +53,8 @@ SQLTable& SQLSelect::findTable(const std::string& name,
 	std::string *fullName, bool *hasMissingValue, double *missingValue, bool* isBitfield, BitfieldDef* bitfieldDef) const
 {
 	std::set<SQLTable*> names;
+
+    Log::info() << "Looking for column: " << name << std::endl;
 
 	for(std::vector<SQLTable*>::const_iterator t = tables_.begin(); 
 		t != tables_.end() ; ++t)
@@ -351,6 +353,15 @@ void SQLSelect::prepareExecute() {
 		where = 0;
 	}
 
+    // Construct the cursors that will be used for the output
+
+    for (SelectOneTable* table : sortedTables_) {
+        cursors_.emplace_back(table->table_->iterator(table->fetch_));
+        cursors_.back()->rewind();
+    }
+
+    // Debug output
+
 	Log::debug() << "SQLSelect:prepareExecute: TABLE order:" << std::endl;
 	for(SortedTables::iterator k = sortedTables_.begin(); k != sortedTables_.end(); ++k)
 	{
@@ -365,9 +376,9 @@ void SQLSelect::prepareExecute() {
 unsigned long long SQLSelect::execute()
 {
 	prepareExecute();
-    unsigned long long n = process();
+    process();
     postExecute();
-	return n;
+    return count_;
 }
 
 void SQLSelect::postExecute()
@@ -437,6 +448,7 @@ void SQLSelect::reset()
 	skips_ = total_ = 0;
 
     output_.reset();
+    cursors_.clear();
 	count_ = 0;
 }
 
@@ -488,58 +500,81 @@ bool SQLSelect::writeOutput() {
 
 unsigned long long SQLSelect::process() {
 
-    env.tableIterator = sortedTables_.begin();
+    ASSERT(cursors_.size() != 0);
+    ASSERT(count_ == 0);
 
-	unsigned long long n = 0;
     while (processOneRow())
-		++n;
-	return n;
+        /* Intentionally blank */ ;
+
+    return count_;
+}
+
+
+
+bool SQLSelect::processNextTableRow(size_t tableIndex) {
+
+    ASSERT(cursors_.size() > tableIndex);
+    ASSERT(cursors_.size() == sortedTables_.size());
+
+    /// For one table, obtain the next row that also validates, or return false if there is not one.
+
+    while (cursors_[tableIndex]->next()) {
+
+        // Test the returned row against the validation conditions.
+
+        bool ok = true;
+
+        for (auto& check : sortedTables_[tableIndex]->check_) {
+            bool missing;
+            if (!check->eval(missing) || missing) {
+                ok = false;
+                break;
+            }
+        }
+
+        if (ok) return true;
+    }
+
+    return false;
 }
 
 
 bool SQLSelect::processOneRow() {
 
-    while (env.tableIterator != sortedTables_.end()) {
+    ASSERT(cursors_.size() > 0);
+    ASSERT(cursors_.size() == sortedTables_.size());
 
-        // If we are just starting on a table, generate an iterator to the table data
+    // If this is the first retrieve, we need to initialise all tables
 
-        if (!env.cursor) {
-            env.cursor.reset(env.table().table_->iterator(env.table().fetch_));
-            env.cursor->rewind();
+    if (count_ == 0) {
+        for (size_t idx = 0; idx < cursors_.size(); idx++) {
+            if (!processNextTableRow(idx)) return false; // If false, there is no data
         }
 
-        // Increment the table iterator.
+        if (writeOutput()) return true;;
+    }
 
-        if (env.cursor->next()) {
+    // Otherwise, start by incrementing the first table. If that is exhausted, reset that table
+    // and increment the second, and continue until we have enumerated all possible combinations
+    // of valid data across the tables.
 
-            // Check the where / valid conditions
+    for (size_t idx = 0; idx < cursors_.size(); idx++) {
 
-            bool ok = true;
-            for (auto& check : env.table().check_) {
-                bool missing;
-                if (!check->eval(missing) || missing) {
-                    ok = false;
-                    break;
-                }
-            }
-
-            if (!ok) continue;
-
-            // Do the output. If nothing to output, try again.
-
-            if (!writeOutput()) continue;
-
-            return true;
+        if (processNextTableRow(idx)) {
+            if (writeOutput()) return true;
         }
 
-        // And go on to the next table!
+        // If we have exhausted the available rows, rewind and increment those in the next table
 
-        env.cursor.reset();
-        ++env.tableIterator;
-    };
+        if (idx != cursors_.size()-1) {
+            cursors_[idx]->rewind();
+            ASSERT(processNextTableRow(idx));
+        }
+    }
 
     return false;
 }
+
 
 void SQLSelect::print(std::ostream& s) const
 {

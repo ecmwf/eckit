@@ -29,9 +29,9 @@ namespace expression {
 
 class ColumnExpression : public SQLExpression {
 public:
-	ColumnExpression(const std::string&, SQLTable*, int begin = -1, int end = -1);
-	ColumnExpression(const std::string&, const std::string& tableReference, int begin = -1, int end = -1);
-	ColumnExpression(const ColumnExpression&);
+    ColumnExpression(const std::string&, SQLTable*, int begin = -1, int end = -1);
+    ColumnExpression(const std::string&, const std::string& tableReference, int begin = -1, int end = -1);
+    ColumnExpression(const ColumnExpression&) = default;
 	~ColumnExpression(); 
 
 	SQLTable* table() { return table_; }
@@ -46,9 +46,9 @@ protected:
 	std::string                 columnName_;
 	SQLTable*              table_;
 	std::string                 tableReference_;
-	int                    beginIndex_;
-	int                    endIndex_;
-	int                    nominalShift_;
+    int                    beginIndex_;
+    int                    endIndex_;
+    int                    nominalShift_;
 
 // -- Overridden methods
 	virtual void print(std::ostream& s) const;

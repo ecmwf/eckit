@@ -15,6 +15,7 @@
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLColumn.h"
+#include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 
 using namespace eckit::testing;
@@ -42,30 +43,34 @@ public:
 
 private:
 
-    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>&) const {
-        NOTIMP;
+    class TestTableIterator : public eckit::sql::SQLTableIterator {
+    public:
+        TestTableIterator(const TestTable& owner) : owner_(owner), idx_(0) {}
+    private:
+        virtual ~TestTableIterator() {}
+        virtual void rewind() {
+            eckit::Log::info() << "REWIND: " << std::endl;
+            idx_ = 0;
+        }
+        virtual bool next() {
+            eckit::Log::info() << "NEXT: " << idx_ << std::endl;
+            return (idx_++ < INTEGER_DATA.size());
+        }
+        const TestTable& owner_;
+        size_t idx_;
+    };
+
+    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns) const {
+        return new TestTableIterator(*this);
     }
 
     virtual eckit::sql::SQLColumn* createSQLColumn(const eckit::sql::type::SQLType& type,
                                                    const std::string& name,
-                                                   int index,
                                                    bool hasMissingValue,
                                                    double missingValue,
                                                    const eckit::sql::BitfieldDef& defs) {
-        return new eckit::sql::SQLColumn(type, *this, name, index, hasMissingValue, missingValue, defs);
+        return new eckit::sql::SQLColumn(type, *this, name, hasMissingValue, missingValue, defs);
     }
-
-    virtual eckit::sql::SQLColumn* createSQLColumn(const eckit::sql::type::SQLType& type,
-                                                   const std::string& name,
-                                                   int index,
-                                                   bool hasMissingValue,
-                                                   double missingValue) {
-        return new eckit::sql::SQLColumn(type, *this, name, index, hasMissingValue, missingValue);
-    }
-
-    std::vector<int64_t> integerData_;
-    std::vector<double> realData_;
-    std::vector<std::string> stringData_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -121,6 +126,11 @@ CASE( "Test SQL select columns" ) {
 
     std::string sql = "select icol,scol from table1";
     eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+    eckit::Log::info() << o.intOutput << std::endl;
 }
 
 
@@ -134,6 +144,11 @@ CASE( "Test SQL select all" ) {
 
     std::string sql = "select * from table1";
     eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+    eckit::Log::info() << o.intOutput << std::endl;
 }
 
 

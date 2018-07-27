@@ -26,8 +26,6 @@ namespace sql {
 
 using namespace expression;
 
-void SQLSelect::pushFirstFrame() { env.pushFrame(sortedTables_.begin()); }
-
 SQLSelect::SQLSelect(const Expressions& columns, 
     std::vector<std::reference_wrapper<SQLTable>>& tables,
 	SQLExpression* where,
@@ -36,6 +34,7 @@ SQLSelect::SQLSelect(const Expressions& columns,
 : select_(columns),
   where_(where),
   simplifiedWhere_(0),
+  env(sortedTables_.end()),
   output_(output),
   total_(0),
   skips_(0),
@@ -137,7 +136,7 @@ static bool compareTables(SelectOneTable* a,SelectOneTable *b)
 
 inline bool SQLSelect::resultsOut()
 {
-    return output_.output(results_);
+    return output_.output(select_);
 }
 
 std::shared_ptr<SQLExpression> SQLSelect::findAliasedExpression(const std::string& alias)
@@ -172,14 +171,13 @@ void SQLSelect::prepareExecute() {
 	ASSERT(select_.size() == aggregated_.size() + nonAggregated_.size());
 
     output_.prepare(*this);
-	results_ = select_;
-    output_.size(results_.size());
+    output_.size(select_.size());
 
 	if(aggregated_.size()) {
 		aggregate_ = true;
 		Log::debug() << "SELECT is aggregated" << std::endl;
 
-		if(aggregated_.size() != results_.size())
+        if(aggregated_.size() != select_.size())
 		{
 			mixedAggregatedAndScalar_ = true;
 			Log::info() << "SELECT has aggregated and non-aggregated results" << std::endl;
@@ -410,7 +408,7 @@ void SQLSelect::postExecute()
     output_.cleanup(*this);
 	if(simplifiedWhere_) simplifiedWhere_->cleanup(*this);
 	
-	for(expression::Expressions::iterator c (results_.begin()); c != results_.end() ; ++c)
+    for(expression::Expressions::iterator c (select_.begin()); c != select_.end() ; ++c)
 		(*c)->cleanup(*this);
 
     Log::info() << "Matching row(s): " << BigNum(output_.count()) << " out of " << BigNum(total_) << std::endl;
@@ -430,7 +428,6 @@ void SQLSelect::reset()
 	mixedResultColumnIsAggregated_.clear();
 
 	values_.clear();
-	results_.clear();
 
 	tablesToFetch_.clear();
 	allTables_.clear();
@@ -445,9 +442,10 @@ void SQLSelect::reset()
 
 
 
-bool SQLSelect::output(std::shared_ptr<SQLExpression> where)
-{
-	//if (where) Log::info() << "SQLSelect::output: where: " << *where << std::endl;
+bool SQLSelect::writeOutput() {
+
+    std::shared_ptr<SQLExpression>& where(simplifiedWhere_);
+    //if (where) Log::info() << "SQLSelect::output: where: " << *where << std::endl;
 
 	bool newRow = false;
 	bool missing = false;
@@ -460,11 +458,11 @@ bool SQLSelect::output(std::shared_ptr<SQLExpression> where)
             newRow = resultsOut();
 		else
 		{
-			size_t n = results_.size();
+            size_t n = select_.size();
 			if (! mixedAggregatedAndScalar_)
 			{
 				for(size_t i = 0; i < n; i++)
-					results_[i]->partialResult();
+                    select_[i]->partialResult();
 			} else {
                 std::vector<std::pair<double,bool> > nonAggregatedValues;
 				for (size_t i = 0; i < nonAggregated_.size(); ++i)
@@ -490,8 +488,7 @@ bool SQLSelect::output(std::shared_ptr<SQLExpression> where)
 
 unsigned long long SQLSelect::process() {
 
-    SortedTables::iterator j = sortedTables_.begin();
-	env.pushFrame(j);
+    env.tableIterator = sortedTables_.begin();
 
 	unsigned long long n = 0;
     while (processOneRow())
@@ -501,67 +498,47 @@ unsigned long long SQLSelect::process() {
 
 
 bool SQLSelect::processOneRow() {
-	++count_;
-	//Log::info() << "SQLSelect::processOneRow: count = " << count_ << std::endl;
-	bool recursiveCall;
-	do
-	{
-		recursiveCall = false;
-		if(sortedTables_.size() == 0 || env.tablesIterator() == sortedTables_.end())
-		{
-            bool rowProduced = output(simplifiedWhere_);
-			env.popFrame();
-			if (rowProduced)
-				return true;
-		}
 
-		if (env.tablePtr() == 0)
-		{
-			env.table( *(env.tablesIterator()) );
+    while (env.tableIterator != sortedTables_.end()) {
 
-			size_t n = env.table().fetch_.size();
-			for(size_t i = 0; i < n; i++) {
-                SQLColumn& fetchCol(env.table().fetch_[i]);
-                fetchCol.rewind();
-			}
-			env.cursor(env.table().table_->iterator(env.table().fetch_));
-			env.cursor().rewind();
-		}
+        // If we are just starting on a table, generate an iterator to the table data
 
-		while(env.cursor().next())
-		{
-			total_++;
-			size_t n = env.table().fetch_.size();
-			for(size_t i = 0; i < n; i++)
-			{
-                SQLColumn& fetchColumn(env.table().fetch_[i]);
-				//Log::info() << "SQLSelect::processOneRow: fetchColumn.name() => " << fetchColumn.name() << std::endl;
-				//Log::info() << "SQLSelect::processOneRow: fetchColumn.type() => " << fetchColumn.type() << std::endl;
-                bool& missing{env.table().values_[i].second};
-                *(env.table().values_[i].first) = fetchColumn.next(missing);
-			}
-			bool ok = true;
-			n = env.table().check_.size();
-			for(size_t i = 0; i < n; i++)
-			{
-				bool missing = false;
-				if(!env.table().check_[i]->eval(missing) || missing) {
-					ok = false;
-					break;
-				} 
-			}
-			if(!ok) skips_++;
-			else {
-				SortedTables::iterator k = env.tablesIterator();
-				env.pushFrame(++k);
-				//processOneRow();
-				recursiveCall = true;
-				break;
-			}
-		}
-	} while(recursiveCall);
-	env.popFrame();
-	return false;
+        if (!env.cursor) {
+            env.cursor.reset(env.table().table_->iterator(env.table().fetch_));
+            env.cursor->rewind();
+        }
+
+        // Increment the table iterator.
+
+        if (env.cursor->next()) {
+
+            // Check the where / valid conditions
+
+            bool ok = true;
+            for (auto& check : env.table().check_) {
+                bool missing;
+                if (!check->eval(missing) || missing) {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (!ok) continue;
+
+            // Do the output. If nothing to output, try again.
+
+            if (!writeOutput()) continue;
+
+            return true;
+        }
+
+        // And go on to the next table!
+
+        env.cursor.reset();
+        ++env.tableIterator;
+    };
+
+    return false;
 }
 
 void SQLSelect::print(std::ostream& s) const

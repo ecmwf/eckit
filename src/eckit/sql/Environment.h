@@ -21,27 +21,17 @@ namespace sql {
 class SQLTableIterator;
 
 struct Environment {
-	Environment (const SortedTables::iterator);
-	~Environment ();
 
-    // these functions **must** be inline for performance reasons
-    // see ODB-357
-    SelectOneTable*   table()  { return table_; }
-    void              table(SelectOneTable* t)  { table_ = t; }
+    Environment (SortedTables::iterator it) : tableIterator(it) {}
+    ~Environment () {}
 
-    // these functions **must** be inline for performance reasons
-    // see ODB-357
-    SQLTableIterator* cursor() { return cursor_; }
-    void              cursor(SQLTableIterator* c) { cursor_ = c; }
+    const SelectOneTable& table() const { return **tableIterator; }
 
-	void print(std::ostream& s) const;
+    // n.b. ODB-357 and performance issues.
 
-	const SortedTables::iterator tablesIterator_;
+    SortedTables::iterator tableIterator;
 
-private:
-
-    SelectOneTable* table_;
-	SQLTableIterator* cursor_;
+    std::unique_ptr<SQLTableIterator> cursor;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

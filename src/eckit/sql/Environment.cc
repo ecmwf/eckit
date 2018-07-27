@@ -17,11 +17,6 @@ namespace sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Environment::Environment(const SortedTables::iterator ti)
-: tablesIterator_(ti), table_(0), cursor_(0) {}
-
-Environment::~Environment() { delete cursor_; }
-
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql 

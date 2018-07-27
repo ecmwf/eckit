@@ -20,7 +20,7 @@
 #include "eckit/sql/SelectOneTable.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLStatement.h"
-#include "eckit/sql/Stack.h"
+#include "eckit/sql/Environment.h"
 
 namespace eckit {
 	class SelectIterator;
@@ -55,9 +55,7 @@ public:
     bool processOneRow();
     void postExecute();
 
-	void pushFirstFrame();
-
-	bool isAggregate() { return aggregate_; }
+    bool isAggregate() { return aggregate_; }
 
     std::pair<double*,bool&> column(const std::string& name, SQLTable*);
 	const type::SQLType* typeOf(const std::string& name, SQLTable*) const;
@@ -65,8 +63,6 @@ public:
     SQLTable& findTable(const std::string& name, std::string *fullName = 0, bool *hasMissingValue=0, double *missingValue=0, bool* isBitfield=0, BitfieldDef* =0) const;
 
 	virtual Expressions output() const; 
-
-	Expressions& results() { return results_; }
 
     std::vector<eckit::PathName> outputFiles() const;
     void outputFiles(const std::vector<eckit::PathName>& files);
@@ -93,10 +89,9 @@ private:
     std::shared_ptr<expression::SQLExpression> where_;
     std::shared_ptr<expression::SQLExpression> simplifiedWhere_;
 
-	Stack env;
+    Environment env;
 
     SQLOutput& output_;
-	Expressions  results_;
 
     typedef std::map<
         std::vector<std::pair<double,bool>>,
@@ -130,7 +125,7 @@ private:
 
 	void reset();
     bool resultsOut();
-    bool output(std::shared_ptr<expression::SQLExpression>);
+    bool writeOutput();
     std::shared_ptr<SQLExpression> findAliasedExpression(const std::string& alias);
 
     friend class expression::function::FunctionROWNUMBER; // needs access to count_

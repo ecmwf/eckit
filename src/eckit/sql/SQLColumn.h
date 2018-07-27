@@ -27,8 +27,7 @@ class SQLTable;
 
 class SQLColumn : public SQLIterator {
 public:
-	SQLColumn(const type::SQLType&, SQLTable&, const std::string&, int, bool hasMissingValue, double missingValue, const BitfieldDef&);
-	SQLColumn(const type::SQLType&, SQLTable&, const std::string&, int, bool hasMissingValue, double missingValue);
+    SQLColumn(const type::SQLType&, SQLTable&, const std::string&, bool hasMissingValue, double missingValue, const BitfieldDef& d=BitfieldDef());
 	virtual ~SQLColumn();
 
 	void scan();

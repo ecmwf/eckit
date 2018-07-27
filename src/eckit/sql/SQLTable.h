@@ -96,8 +96,7 @@ protected:
 	// void print(std::ostream&) const; 	
 	void addColumn(SQLColumn*, const std::string&, int);
 
-	virtual SQLColumn* createSQLColumn(const type::SQLType& type, const std::string& name, int index, bool hasMissingValue, double missingValue, const BitfieldDef&) = 0;
-	virtual SQLColumn* createSQLColumn(const type::SQLType& type, const std::string& name, int index, bool hasMissingValue, double missingValue) = 0;
+    virtual SQLColumn* createSQLColumn(const type::SQLType& type, const std::string& name, bool hasMissingValue, double missingValue, const BitfieldDef& d=BitfieldDef()) = 0;
 
 private:
 

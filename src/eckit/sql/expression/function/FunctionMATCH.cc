@@ -10,8 +10,8 @@
 
 #include "eckit/types/Types.h"
 
-#include "odb_api/FunctionEQ.h"
-#include "odb_api/FunctionMATCH.h"
+#include "eckit/sql/expression/function/FunctionEQ.h"
+#include "eckit/sql/expression/function/FunctionMATCH.h"
 #include "eckit/sql/SQLMATCHSubquerySession.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/SQLSelect.h"
@@ -68,7 +68,7 @@ void FunctionMATCH::collect(const std::vector<double>& v)
 
 const type::SQLType* FunctionMATCH::type() const { return &type::SQLType::lookup("real"); } //TODO: bool?
 
-SQLExpression* FunctionMATCH::clone() const { return new FunctionMATCH(*this); }
+std::shared_ptr<SQLExpression> FunctionMATCH::clone() const { return std::make_shared<FunctionMATCH>(*this); }
 
 double FunctionMATCH::eval(bool& missing) const
 {

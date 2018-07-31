@@ -14,7 +14,7 @@
 #ifndef FunctionVAR_H
 #define FunctionVAR_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -35,7 +35,7 @@ public:
 
 	bool isAggregate() const { return true; }
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 protected:
 
 // -- Overridden methods

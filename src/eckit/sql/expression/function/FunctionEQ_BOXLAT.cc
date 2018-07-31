@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/EqRegionCache.h"
-#include "odb_api/FunctionEQ_BOXLAT.h"
+#include "eckit/sql/expression/function/EqRegionCache.h"
+#include "eckit/sql/expression/function/FunctionEQ_BOXLAT.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +28,7 @@ FunctionEQ_BOXLAT::FunctionEQ_BOXLAT(const FunctionEQ_BOXLAT& other)
 
 FunctionEQ_BOXLAT::~FunctionEQ_BOXLAT() {}
 
-SQLExpression* FunctionEQ_BOXLAT::clone() const { return new FunctionEQ_BOXLAT(*this); }
+std::shared_ptr<SQLExpression> FunctionEQ_BOXLAT::clone() const { return std::make_shared<FunctionEQ_BOXLAT>(*this); }
 
 double FunctionEQ_BOXLAT::eval(bool& missing) const
 {

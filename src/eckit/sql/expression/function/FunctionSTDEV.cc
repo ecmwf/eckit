@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "odb_api/FunctionSTDEV.h"
+#include "eckit/sql/expression/function/FunctionSTDEV.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ FunctionSTDEV::FunctionSTDEV(const FunctionSTDEV& other)
 
 FunctionSTDEV::~FunctionSTDEV() {}
 
-SQLExpression* FunctionSTDEV::clone() const { return new FunctionSTDEV(*this); }
+std::shared_ptr<SQLExpression> FunctionSTDEV::clone() const { return std::make_shared<FunctionSTDEV>(*this); }
 
 const type::SQLType* FunctionSTDEV::type() const { return &type::SQLType::lookup("double"); }
 

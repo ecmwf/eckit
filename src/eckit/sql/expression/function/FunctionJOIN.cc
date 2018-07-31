@@ -9,7 +9,7 @@
  */
 
 #include "odb_api/ColumnExpression.h"
-#include "odb_api/FunctionJOIN.h"
+#include "eckit/sql/expression/function/FunctionJOIN.h"
 
 namespace eckit {
 namespace sql {
@@ -24,7 +24,7 @@ FunctionJOIN::FunctionJOIN(const FunctionJOIN& other)
 : FunctionExpression(other.name_, other.args_)
 {}
 
-SQLExpression* FunctionJOIN::clone() const { return new FunctionJOIN(*this); }
+std::shared_ptr<SQLExpression> FunctionJOIN::clone() const { return std::make_shared<FunctionJOIN>(*this); }
 
 FunctionJOIN::~FunctionJOIN() {}
 

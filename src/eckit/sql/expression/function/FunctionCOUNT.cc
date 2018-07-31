@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionCOUNT.h"
+#include "eckit/sql/expression/function/FunctionCOUNT.h"
 
 namespace eckit {
 namespace sql {
@@ -27,8 +27,8 @@ FunctionCOUNT::FunctionCOUNT(const FunctionCOUNT& other)
   count_(other.count_)
 {}
 
-SQLExpression* FunctionCOUNT::clone() const
-{ return new FunctionCOUNT(*this); }
+std::shared_ptr<SQLExpression> FunctionCOUNT::clone() const
+{ return std::make_shared<FunctionCOUNT>(*this); }
 
 FunctionCOUNT::~FunctionCOUNT() {}
 

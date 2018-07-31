@@ -14,7 +14,7 @@
 #ifndef FunctionRMS_H
 #define FunctionRMS_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -30,7 +30,7 @@ public:
 // -- Overridden methods
 	virtual double eval(bool& missing) const;
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 private:
 // No copy allowed

@@ -11,7 +11,7 @@
 #include <climits>
 #include <cfloat>
 
-#include "odb_api/FunctionMAX.h"
+#include "eckit/sql/expression/function/FunctionMAX.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +28,7 @@ FunctionMAX::FunctionMAX(const FunctionMAX& other)
   value_(other.value_)
 {}
 
-SQLExpression* FunctionMAX::clone() const { return new FunctionMAX(*this); }
+std::shared_ptr<SQLExpression> FunctionMAX::clone() const { return std::make_shared<FunctionMAX>(*this); }
 
 const eckit::sql::type::SQLType* FunctionMAX::type() const { return args_[0]->type(); }
 

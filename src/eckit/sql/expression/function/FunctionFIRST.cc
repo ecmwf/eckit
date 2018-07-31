@@ -11,7 +11,7 @@
 #include <climits>
 #include <cfloat>
 
-#include "odb_api/FunctionFIRST.h"
+#include "eckit/sql/expression/function/FunctionFIRST.h"
 
 namespace eckit {
 namespace sql {
@@ -30,7 +30,7 @@ FunctionFIRST::FunctionFIRST(const FunctionFIRST& other)
   notFirst_(other.notFirst_)
 {}
 
-SQLExpression* FunctionFIRST::clone() const { return new FunctionFIRST(*this); }
+std::shared_ptr<SQLExpression> FunctionFIRST::clone() const { return std::make_shared<FunctionFIRST>(*this); }
 
 const eckit::sql::type::SQLType* FunctionFIRST::type() const { return args_[0]->type(); }
 

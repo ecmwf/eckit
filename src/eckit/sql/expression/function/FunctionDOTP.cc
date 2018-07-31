@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionDOTP.h"
+#include "eckit/sql/expression/function/FunctionDOTP.h"
 
 namespace eckit {
 namespace sql {
@@ -29,7 +29,7 @@ FunctionDOTP::FunctionDOTP(const FunctionDOTP& other)
   resultNULL_(other.resultNULL_)
 {}
 
-SQLExpression* FunctionDOTP::clone() const { return new FunctionDOTP(*this); }
+std::shared_ptr<SQLExpression> FunctionDOTP::clone() const { return std::make_shared<FunctionDOTP>(*this); }
 
 FunctionDOTP::~FunctionDOTP() {}
 

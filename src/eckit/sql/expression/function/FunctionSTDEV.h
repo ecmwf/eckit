@@ -14,7 +14,7 @@
 #ifndef FunctionSTDEV_H
 #define FunctionSTDEV_H
 
-#include "odb_api/FunctionVAR.h"
+#include "eckit/sql/expression/function/FunctionVAR.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionSTDEV(const FunctionSTDEV&);
 	~FunctionSTDEV(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 private:
 // No copy allowed

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionOR.h"
+#include "eckit/sql/expression/function/FunctionOR.h"
 
 namespace eckit {
 namespace sql {
@@ -25,7 +25,7 @@ FunctionOR::FunctionOR(const FunctionOR& other)
 
 FunctionOR::~FunctionOR() {}
 
-SQLExpression* FunctionOR::clone() const { return new FunctionOR(*this); }
+std::shared_ptr<SQLExpression> FunctionOR::clone() const { return std::make_shared<FunctionOR>(*this); }
 
 const type::SQLType* FunctionOR::type() const { return &type::SQLType::lookup("real"); }
 

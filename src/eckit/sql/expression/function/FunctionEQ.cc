@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/ColumnExpression.h"
-#include "odb_api/FunctionEQ.h"
-#include "odb_api/FunctionFactory.h"
+#include "eckit/sql/expression/ColumnExpression.h"
+#include "eckit/sql/expression/function/FunctionEQ.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/type/SQLType.h"
 
 namespace eckit {
@@ -32,7 +32,7 @@ FunctionEQ::FunctionEQ(const std::string& name, const expression::Expressions& a
   tmp_(0)
 {}
 
-SQLExpression* FunctionEQ::clone() const { return new FunctionEQ(*this); }
+std::shared_ptr<SQLExpression> FunctionEQ::clone() const { return std::make_shared<FunctionEQ>(*this); }
 
 FunctionEQ::~FunctionEQ() {}
 

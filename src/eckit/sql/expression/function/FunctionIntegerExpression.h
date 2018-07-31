@@ -14,7 +14,7 @@
 #ifndef FUNCTION_INTEGER_EXPRESSION_H
 #define FUNCTION_INTEGER_EXPRESSION_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {

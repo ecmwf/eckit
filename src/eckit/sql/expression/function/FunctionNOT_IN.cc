@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionEQ.h"
-#include "odb_api/FunctionNOT_IN.h"
+#include "eckit/sql/expression/function/FunctionEQ.h"
+#include "eckit/sql/expression/function/FunctionNOT_IN.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +28,7 @@ FunctionNOT_IN::FunctionNOT_IN(const FunctionNOT_IN& other)
 
 FunctionNOT_IN::~FunctionNOT_IN() {}
 
-SQLExpression* FunctionNOT_IN::clone() const { return new FunctionNOT_IN(*this); }
+std::shared_ptr<SQLExpression> FunctionNOT_IN::clone() const { return std::make_shared<FunctionNOT_IN>(*this); }
 
 const type::SQLType* FunctionNOT_IN::type() const { return &type::SQLType::lookup("double"); }
 

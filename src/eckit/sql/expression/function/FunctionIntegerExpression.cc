@@ -10,9 +10,8 @@
 
 #include <cmath>
 
-#include "odb_api/FunctionFactory.h"
-#include "odb_api/FunctionIntegerExpression.h"
-#include "odb_api/MDI.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "odb_api/StringTool.h"
 
 #define ftrunc(x) ((x) -fmod((x), 1))
@@ -54,7 +53,7 @@ class MathFunctionIntegerExpression_1 : public FunctionIntegerExpression {
 		double v = args_[0]->eval(m);
 		return m ? this->missingValue_ : T(v);
 	}
-	SQLExpression* clone() const { return new MathFunctionIntegerExpression_1<T>(this->name_,this->args_); }
+    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionIntegerExpression_1<T>>(this->name_,this->args_); }
 public:
 	MathFunctionIntegerExpression_1(const std::string& name,const expression::Expressions& args)
 	: FunctionIntegerExpression(name, args), myArgs_(0) { this->missingValue_ = eckit::MDI::integerMDI(); }

@@ -14,7 +14,7 @@
 #ifndef FunctionJULIAN_H
 #define FunctionJULIAN_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionJULIAN(const FunctionJULIAN&);
 	~FunctionJULIAN(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 private:
 // No copy allowed
 	FunctionJULIAN& operator=(const FunctionJULIAN&);

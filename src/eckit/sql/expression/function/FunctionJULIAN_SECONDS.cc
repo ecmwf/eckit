@@ -9,7 +9,7 @@
  */
 
 #include "eckit/types/Date.h"
-#include "odb_api/FunctionJULIAN_SECONDS.h"
+#include "eckit/sql/expression/function/FunctionJULIAN_SECONDS.h"
 
 #define trunc(x) ((x) -fmod((x), 1))
 
@@ -26,7 +26,7 @@ FunctionJULIAN_SECONDS::FunctionJULIAN_SECONDS(const FunctionJULIAN_SECONDS& oth
 : FunctionExpression(other.name_, other.args_)
 {}
 
-SQLExpression* FunctionJULIAN_SECONDS::clone() const { return new FunctionJULIAN_SECONDS(*this); }
+std::shared_ptr<SQLExpression> FunctionJULIAN_SECONDS::clone() const { return std::make_shared<FunctionJULIAN_SECONDS>(*this); }
 
 FunctionJULIAN_SECONDS::~FunctionJULIAN_SECONDS() {}
 

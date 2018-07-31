@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "odb_api/FunctionRMS.h"
+#include "eckit/sql/expression/function/FunctionRMS.h"
 
 namespace eckit {
 namespace sql {
@@ -31,7 +31,7 @@ FunctionRMS::FunctionRMS(const FunctionRMS& other)
 
 FunctionRMS::~FunctionRMS() {}
 
-SQLExpression* FunctionRMS::clone() const { return new FunctionRMS(*this); } 
+std::shared_ptr<SQLExpression> FunctionRMS::clone() const { return std::make_shared<FunctionRMS>(*this); } 
 
 const type::SQLType* FunctionRMS::type() const { return &type::SQLType::lookup("double"); }
 

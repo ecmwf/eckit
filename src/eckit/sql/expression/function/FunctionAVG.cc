@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionAVG.h"
+#include "eckit/sql/expression/function/FunctionAVG.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +28,7 @@ FunctionAVG::FunctionAVG(const FunctionAVG& other)
 {}
 
 
-SQLExpression* FunctionAVG::clone() const { return new FunctionAVG(*this); }
+std::shared_ptr<SQLExpression> FunctionAVG::clone() const { return std::make_shared<FunctionAVG>(*this); }
 
 const type::SQLType* FunctionAVG::type() const { return &type::SQLType::lookup("double"); }
 

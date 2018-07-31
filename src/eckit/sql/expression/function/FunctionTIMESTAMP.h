@@ -14,7 +14,7 @@
 #ifndef FunctionTIMESTAMP_H
 #define FunctionTIMESTAMP_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionTIMESTAMP(const FunctionTIMESTAMP&);
 	~FunctionTIMESTAMP(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;

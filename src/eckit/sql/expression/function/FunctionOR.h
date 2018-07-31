@@ -14,7 +14,7 @@
 #ifndef FunctionOR_H
 #define FunctionOR_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +28,7 @@ public:
 	~FunctionOR();
 
 // -- Overridden methods
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 	virtual double eval(bool& missing) const;
 	virtual const eckit::sql::type::SQLType* type() const;

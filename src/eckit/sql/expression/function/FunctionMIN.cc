@@ -11,7 +11,7 @@
 #include <climits>
 #include <cfloat>
 
-#include "odb_api/FunctionMIN.h"
+#include "eckit/sql/expression/function/FunctionMIN.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +28,7 @@ FunctionMIN::FunctionMIN(const FunctionMIN& other)
   value_(other.value_)
 {}
 
-SQLExpression* FunctionMIN::clone() const { return new FunctionMIN(*this); }
+std::shared_ptr<SQLExpression> FunctionMIN::clone() const { return std::make_shared<FunctionMIN>(*this); }
 
 const eckit::sql::type::SQLType* FunctionMIN::type() const { return args_[0]->type(); }
 

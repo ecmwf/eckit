@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionRGG_BOXLAT.h"
-#include "odb_api/RggRegionCache.h"
+#include "eckit/sql/expression/function/FunctionRGG_BOXLAT.h"
+#include "eckit/sql/expression/function//RggRegionCache.h"
 
 namespace eckit {
 namespace sql {
@@ -25,7 +25,7 @@ FunctionRGG_BOXLAT::FunctionRGG_BOXLAT(const FunctionRGG_BOXLAT& other)
 : FunctionExpression(other.name_, other.args_)
 {}
 
-SQLExpression* FunctionRGG_BOXLAT::clone() const { return new FunctionRGG_BOXLAT(*this); }
+std::shared_ptr<SQLExpression> FunctionRGG_BOXLAT::clone() const { return std::make_shared<FunctionRGG_BOXLAT>(*this); }
 
 FunctionRGG_BOXLAT::~FunctionRGG_BOXLAT() {}
 

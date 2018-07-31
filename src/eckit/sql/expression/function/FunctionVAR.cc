@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionVAR.h"
+#include "eckit/sql/expression/function/FunctionVAR.h"
 
 namespace eckit {
 namespace sql {
@@ -33,7 +33,7 @@ FunctionVAR::FunctionVAR(const FunctionVAR& other)
 
 FunctionVAR::~FunctionVAR() {}
 
-SQLExpression* FunctionVAR::clone() const { return new FunctionVAR(*this); }
+std::shared_ptr<SQLExpression> FunctionVAR::clone() const { return std::make_shared<FunctionVAR>(*this); }
 
 double FunctionVAR::eval(bool& missing) const
 {

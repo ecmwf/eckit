@@ -9,8 +9,7 @@
  */
 
 #include "odb_api/DateTime.h"
-#include "odb_api/FunctionTDIFF.h"
-#include "odb_api/MDI.h"
+#include "eckit/sql/expression/function/FunctionTDIFF.h"
 
 namespace eckit {
 namespace sql {
@@ -25,7 +24,7 @@ FunctionTDIFF::FunctionTDIFF(const FunctionTDIFF& other)
 : FunctionExpression(other.name_, other.args_)
 {}
 
-SQLExpression* FunctionTDIFF::clone() const { return new FunctionTDIFF(*this);  }
+std::shared_ptr<SQLExpression> FunctionTDIFF::clone() const { return std::make_shared<FunctionTDIFF>(*this);  }
 
 FunctionTDIFF::~FunctionTDIFF() {}
 
@@ -50,16 +49,12 @@ double FunctionTDIFF::eval(bool& missing) const
     int min_anal = (antime%10000)/100;
     int sec_anal = antime%100;
 
-    int seconds = eckit::MDI::realMDI();
-
     utils::DateTime d1(year_target, month_target, day_target,
                    hour_target, min_target, sec_target);
     utils::DateTime d2(year_anal, month_anal, day_anal, 
                    hour_anal, min_anal, sec_anal);
 
-    seconds = d1.secondsDateMinusDate(d2);
-
-    return seconds;
+    return d1.secondsDateMinusDate(d2);
 }
 
 const eckit::sql::type::SQLType* FunctionTDIFF::type() const { return &eckit::sql::type::SQLType::lookup("integer"); }

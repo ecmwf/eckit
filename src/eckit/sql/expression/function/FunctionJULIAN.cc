@@ -9,7 +9,7 @@
  */
 
 #include "odb_api/DateTime.h"
-#include "odb_api/FunctionJULIAN.h"
+#include "eckit/sql/expression/function/FunctionJULIAN.h"
 
 namespace eckit {
 namespace sql {
@@ -25,7 +25,7 @@ FunctionJULIAN::FunctionJULIAN(const FunctionJULIAN& other)
 {}
 
 
-SQLExpression* FunctionJULIAN::clone() const { return new FunctionJULIAN(*this); }
+std::shared_ptr<SQLExpression> FunctionJULIAN::clone() const { return std::make_shared<FunctionJULIAN>(*this); }
 
 
 FunctionJULIAN::~FunctionJULIAN() {}

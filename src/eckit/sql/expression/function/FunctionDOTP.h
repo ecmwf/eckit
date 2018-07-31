@@ -14,7 +14,7 @@
 #ifndef FunctionDOTP_H
 #define FunctionDOTP_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionDOTP(const FunctionDOTP&);
 	~FunctionDOTP(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 private:
 // No copy allowed

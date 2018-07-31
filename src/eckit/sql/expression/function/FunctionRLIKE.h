@@ -14,7 +14,7 @@
 #ifndef FunctionRLIKE_H
 #define FunctionRLIKE_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/utils/Regex.h"
 
 namespace eckit {
@@ -31,7 +31,7 @@ public:
 	bool match(const SQLExpression& l, const SQLExpression& r, bool& missing) const;
 	static void trimStringInDouble(char* &p, size_t& len);
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
     void prepare(SQLSelect&);
 private:
 // No copy allowed

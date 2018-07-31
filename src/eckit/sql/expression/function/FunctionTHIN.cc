@@ -11,7 +11,7 @@
 /// \file FunctionTHIN.h
 /// (C) ECMWF July 2010
 
-#include "odb_api/FunctionTHIN.h"
+#include "eckit/sql/expression/function/FunctionTHIN.h"
 #include "eckit/sql/SQLSelect.h"
 
 namespace eckit {
@@ -31,7 +31,7 @@ FunctionTHIN::FunctionTHIN(const FunctionTHIN& other)
 
 FunctionTHIN::~FunctionTHIN() {}
 
-SQLExpression* FunctionTHIN::clone() const { return new FunctionTHIN(*this); }
+std::shared_ptr<SQLExpression> FunctionTHIN::clone() const { return std::make_shared<FunctionTHIN>(*this); }
 
 const eckit::sql::type::SQLType* FunctionTHIN::type() const { return &eckit::sql::type::SQLType::lookup("integer"); }
 

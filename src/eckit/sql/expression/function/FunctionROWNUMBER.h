@@ -14,7 +14,7 @@
 #ifndef FunctionROWNUMBER_H
 #define FunctionROWNUMBER_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -31,7 +31,7 @@ public:
 	virtual const eckit::sql::type::SQLType* type() const;
 	virtual void output(std::ostream& s) const;
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 protected:
 // -- Overridden methods

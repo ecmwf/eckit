@@ -11,10 +11,10 @@
 // File FunctionLAST.h
 // Piotr Kuchta - ECMWF Nov 2016
 
-#ifndef odb_api_FunctionLAST_H
-#define odb_api_FunctionLAST_H
+#ifndef eckit_sql_function_FunctionLAST_H
+#define eckit_sql_function_FunctionLAST_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionLAST(const FunctionLAST&);
 	~FunctionLAST(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 private:
 // No copy allowed

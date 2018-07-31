@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionNVL.h"
+#include "eckit/sql/expression/function/FunctionNVL.h"
 
 namespace eckit {
 namespace sql {
@@ -25,7 +25,7 @@ FunctionNVL::FunctionNVL(const FunctionNVL& other)
 
 FunctionNVL::~FunctionNVL() {}
 
-SQLExpression* FunctionNVL::clone() const { return new FunctionNVL(*this); }
+std::shared_ptr<SQLExpression> FunctionNVL::clone() const { return std::make_shared<FunctionNVL>(*this); }
 
 const type::SQLType* FunctionNVL::type() const { return &type::SQLType::lookup("real"); }
 

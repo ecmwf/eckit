@@ -14,7 +14,7 @@
 #ifndef FunctionEQ_BOXLAT_H
 #define FunctionEQ_BOXLAT_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionEQ_BOXLAT(const FunctionEQ_BOXLAT&);
 	~FunctionEQ_BOXLAT();
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 private:
 // No copy allowed

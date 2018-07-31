@@ -14,41 +14,41 @@
 #include "eckit/eckit.h"
 #include "eckit/thread/ThreadSingleton.h"
  
-#include "odb_api/FunctionAND.h"
-#include "odb_api/FunctionAVG.h"
-#include "odb_api/FunctionCOUNT.h"
-#include "odb_api/FunctionDOTP.h"
-#include "odb_api/FunctionEQ_BOXLAT.h"
-#include "odb_api/FunctionEQ_BOXLON.h"
-#include "odb_api/FunctionEQ.h"
-#include "odb_api/FunctionFactory.h"
-#include "odb_api/FunctionIN.h"
-#include "odb_api/FunctionIntegerExpression.h"
-#include "odb_api/FunctionJOIN.h"
-#include "odb_api/FunctionJULIAN.h"
-#include "odb_api/FunctionJULIAN_SECONDS.h"
-#include "odb_api/FunctionMAX.h"
-#include "odb_api/FunctionMIN.h"
-#include "odb_api/FunctionFIRST.h"
-#include "odb_api/FunctionLAST.h"
-#include "odb_api/FunctionNORM.h"
-#include "odb_api/FunctionNOT_IN.h"
-#include "odb_api/FunctionNOT_NULL.h"
-#include "odb_api/FunctionNULL.h"
-#include "odb_api/FunctionNVL.h"
-#include "odb_api/FunctionOR.h"
-#include "odb_api/FunctionRGG_BOXLAT.h"
-#include "odb_api/FunctionRGG_BOXLON.h"
-#include "odb_api/FunctionRMS.h"
-#include "odb_api/FunctionROWNUMBER.h"
-#include "odb_api/FunctionSTDEV.h"
-#include "odb_api/FunctionSUM.h"
-#include "odb_api/FunctionTDIFF.h"
-#include "odb_api/FunctionTHIN.h"
-#include "odb_api/FunctionTIMESTAMP.h"
-#include "odb_api/FunctionVAR.h"
-#include "odb_api/FunctionRLIKE.h"
-#include "odb_api/FunctionMATCH.h"
+#include "eckit/sql/expression/function/FunctionAND.h"
+#include "eckit/sql/expression/function/FunctionAVG.h"
+#include "eckit/sql/expression/function/FunctionCOUNT.h"
+#include "eckit/sql/expression/function/FunctionDOTP.h"
+#include "eckit/sql/expression/function/FunctionEQ_BOXLAT.h"
+#include "eckit/sql/expression/function/FunctionEQ_BOXLON.h"
+#include "eckit/sql/expression/function/FunctionEQ.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/expression/function/FunctionIN.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
+#include "eckit/sql/expression/function/FunctionJOIN.h"
+#include "eckit/sql/expression/function/FunctionJULIAN.h"
+#include "eckit/sql/expression/function/FunctionJULIAN_SECONDS.h"
+#include "eckit/sql/expression/function/FunctionMAX.h"
+#include "eckit/sql/expression/function/FunctionMIN.h"
+#include "eckit/sql/expression/function/FunctionFIRST.h"
+#include "eckit/sql/expression/function/FunctionLAST.h"
+#include "eckit/sql/expression/function/FunctionNORM.h"
+#include "eckit/sql/expression/function/FunctionNOT_IN.h"
+#include "eckit/sql/expression/function/FunctionNOT_NULL.h"
+#include "eckit/sql/expression/function/FunctionNULL.h"
+#include "eckit/sql/expression/function/FunctionNVL.h"
+#include "eckit/sql/expression/function/FunctionOR.h"
+#include "eckit/sql/expression/function/FunctionRGG_BOXLAT.h"
+#include "eckit/sql/expression/function/FunctionRGG_BOXLON.h"
+#include "eckit/sql/expression/function/FunctionRMS.h"
+#include "eckit/sql/expression/function/FunctionROWNUMBER.h"
+#include "eckit/sql/expression/function/FunctionSTDEV.h"
+#include "eckit/sql/expression/function/FunctionSUM.h"
+#include "eckit/sql/expression/function/FunctionTDIFF.h"
+#include "eckit/sql/expression/function/FunctionTHIN.h"
+#include "eckit/sql/expression/function/FunctionTIMESTAMP.h"
+#include "eckit/sql/expression/function/FunctionVAR.h"
+#include "eckit/sql/expression/function/FunctionRLIKE.h"
+#include "eckit/sql/expression/function/FunctionMATCH.h"
 #include "odb_api/piconst.h"
 
 namespace eckit {
@@ -170,7 +170,7 @@ FunctionExpression* FunctionFactoryBase::build(const std::string& name, const ex
 template<double (*T)(double)> 
 class MathFunctionExpression_1 : public FunctionExpression {
 	double eval(bool& m) const { double v = args_[0]->eval(m); return m ? this->missingValue_ : T(v); }
-	SQLExpression* clone() const { return new MathFunctionExpression_1<T>(*this); }
+    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionExpression_1<T>>(*this); }
 public:
 	MathFunctionExpression_1(const std::string& name, const expression::Expressions& args) : FunctionExpression(name, args) {}
 	MathFunctionExpression_1(const MathFunctionExpression_1& o) : FunctionExpression(o) {}
@@ -185,7 +185,7 @@ class MathFunctionExpression_2 : public FunctionExpression {
 		if (m) return this->missingValue_;
 		return T(left, right);
 	}
-	SQLExpression* clone() const { return new MathFunctionExpression_2<T>(*this); }
+    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionExpression_2<T>>(*this); }
 public:
 	MathFunctionExpression_2(const std::string& name, const expression::Expressions& args) : FunctionExpression(name,args) {}
 	MathFunctionExpression_2(const MathFunctionExpression_2& o) : FunctionExpression(o) {}
@@ -202,7 +202,7 @@ class MathFunctionExpression_3 : public FunctionExpression {
 		if (m) return this->missingValue_;
 		return T(a0, a1, a2);
 	}
-	SQLExpression* clone() const { return new MathFunctionExpression_3<T>(*this); }
+    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionExpression_3<T>>(*this); }
 public:
 	MathFunctionExpression_3(const std::string& name,const expression::Expressions& args) : FunctionExpression(name,args) {}
 	MathFunctionExpression_3(const MathFunctionExpression_3& o) : FunctionExpression(o) {}
@@ -221,7 +221,7 @@ class MathFunctionExpression_4 : public FunctionExpression {
 		if (m) return this->missingValue_;
 		return T(a0, a1, a2, a3);
 	}
-	SQLExpression* clone() const { return new MathFunctionExpression_4<T>(*this); }
+    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionExpression_4<T>>(*this); }
 public:
 	MathFunctionExpression_4(const std::string& name,const expression::Expressions& args) : FunctionExpression(name,args) {}
 	MathFunctionExpression_4(const MathFunctionExpression_4& o) : FunctionExpression(o) {}
@@ -242,7 +242,7 @@ class MathFunctionExpression_5 : public FunctionExpression {
 		if (m) return this->missingValue_;
 		return T(a0, a1, a2, a3, a4);
 	}
-	SQLExpression* clone() const { return new MathFunctionExpression_5<T>(*this); }
+    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionExpression_5<T>>(*this); }
 public:
 	MathFunctionExpression_5(const std::string& name, const expression::Expressions& args) : FunctionExpression(name,args), myArgs_(0) {}
 	MathFunctionExpression_5(const std::string& name, expression::Expressions* args) : FunctionExpression(name,*args), myArgs_(args) {}
@@ -491,7 +491,7 @@ class MultiplyExpression : public FunctionExpression {
 				? this->missingValue_ 
 				: left * right;
 	}
-	SQLExpression* clone() const { return new MultiplyExpression(name_, 2); }
+    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MultiplyExpression>(name_, 2); }
 public:
 	MultiplyExpression(const std::string& name, const expression::Expressions& args)
 	: FunctionExpression(name,args) {}

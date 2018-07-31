@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionNULL.h"
+#include "eckit/sql/expression/function/FunctionNULL.h"
 
 namespace eckit {
 namespace sql {
@@ -25,7 +25,7 @@ FunctionNULL::FunctionNULL(const FunctionNULL& other)
 
 FunctionNULL::~FunctionNULL() {}
 
-SQLExpression* FunctionNULL::clone() const { return new FunctionNULL(*this); }
+std::shared_ptr<SQLExpression> FunctionNULL::clone() const { return std::make_shared<FunctionNULL>(*this); }
 
 const type::SQLType* FunctionNULL::type() const { return &type::SQLType::lookup("real"); }
 

@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionEQ.h"
-#include "odb_api/FunctionIN.h"
+#include "eckit/sql/expression/function/FunctionEQ.h"
+#include "eckit/sql/expression/function/FunctionIN.h"
 
 namespace eckit {
 namespace sql {
@@ -30,7 +30,7 @@ FunctionIN::~FunctionIN() {}
 
 const type::SQLType* FunctionIN::type() const { return &type::SQLType::lookup("real"); } //TODO: bool?
 
-SQLExpression* FunctionIN::clone() const { return new FunctionIN(*this); }
+std::shared_ptr<SQLExpression> FunctionIN::clone() const { return std::make_shared<FunctionIN>(*this); }
 
 double FunctionIN::eval(bool& missing) const
 {

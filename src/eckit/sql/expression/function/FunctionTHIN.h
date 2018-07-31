@@ -14,7 +14,7 @@
 #ifndef FunctionTHIN_H
 #define FunctionTHIN_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionTHIN(const FunctionTHIN&);
 	~FunctionTHIN(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;

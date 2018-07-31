@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionAND.h"
+#include "eckit/sql/expression/function/FunctionAND.h"
 
 namespace eckit {
 namespace sql {
@@ -23,7 +23,7 @@ FunctionAND::FunctionAND(const FunctionAND& other)
 : FunctionExpression(other.name_, other.args_)
 {}
 
-SQLExpression* FunctionAND::clone() const { return new FunctionAND(*this); }
+std::shared_ptr<SQLExpression> FunctionAND::clone() const { return std::make_shared<FunctionAND>(*this); }
 
 FunctionAND::~FunctionAND() {}
 

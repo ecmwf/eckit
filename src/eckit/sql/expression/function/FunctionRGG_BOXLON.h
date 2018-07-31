@@ -14,7 +14,7 @@
 #ifndef FunctionRGG_BOXLON_H
 #define FunctionRGG_BOXLON_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionRGG_BOXLON(const FunctionRGG_BOXLON&);
 	~FunctionRGG_BOXLON(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 
 private:
 // No copy allowed

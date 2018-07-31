@@ -17,7 +17,7 @@
 #include <vector>
 #include <set>
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/sql/SQLAST.h"
 
@@ -34,7 +34,7 @@ public:
 
     FunctionMATCH& operator=(const FunctionMATCH&);
 
-    SQLExpression* clone() const;
+    std::shared_ptr<SQLExpression> clone() const;
 
     void collect(const std::vector<double>&);
 

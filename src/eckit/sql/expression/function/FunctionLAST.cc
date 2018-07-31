@@ -11,7 +11,7 @@
 #include <climits>
 #include <cfloat>
 
-#include "odb_api/FunctionLAST.h"
+#include "eckit/sql/expression/function/FunctionLAST.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +28,7 @@ FunctionLAST::FunctionLAST(const FunctionLAST& other)
   value_(other.value_)
 {}
 
-SQLExpression* FunctionLAST::clone() const { return new FunctionLAST(*this); }
+std::shared_ptr<SQLExpression> FunctionLAST::clone() const { return std::make_shared<FunctionLAST>(*this); }
 
 const eckit::sql::type::SQLType* FunctionLAST::type() const { return args_[0]->type(); }
 

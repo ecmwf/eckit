@@ -11,8 +11,7 @@
 #include <cmath>
 #include <limits.h>
 
-#include "odb_api/FunctionTIMESTAMP.h"
-#include "odb_api/MDI.h"
+#include "eckit/sql/expression/function/FunctionTIMESTAMP.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +26,7 @@ FunctionTIMESTAMP::FunctionTIMESTAMP(const FunctionTIMESTAMP& other)
 : FunctionExpression(other.name_, other.args_)
 {}
 
-SQLExpression* FunctionTIMESTAMP::clone() const { return new FunctionTIMESTAMP(*this); }
+std::shared_ptr<SQLExpression> FunctionTIMESTAMP::clone() const { return std::make_shared<FunctionTIMESTAMP>(*this); }
 
 FunctionTIMESTAMP::~FunctionTIMESTAMP() {}
 
@@ -36,7 +35,7 @@ double FunctionTIMESTAMP::eval(bool& missing) const
     double indate = args_[0]->eval(missing);
     double intime = args_[1]->eval(missing);
 // Merge "YYYYMMDD" and "HHMMSS" into "YYYYMMDDHHMMSS"
-    double outstamp = eckit::MDI::realMDI(); // initialized to missing data indicator; indicates error
+    double outstamp = 0;
     if (indate >=0 && indate <= INT_MAX &&
         intime >= 0 && intime <= 240000) {
       long long int lldate = (long long int) indate;
@@ -44,6 +43,8 @@ double FunctionTIMESTAMP::eval(bool& missing) const
       long long int tstamp = lldate * 1000000ll + lltime;
       outstamp = tstamp;
       outstamp = trunc(outstamp);
+    } else {
+        missing = true;
     }
 
 	return outstamp;

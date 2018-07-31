@@ -14,7 +14,7 @@
 #ifndef FunctionNOT_NULL_H
 #define FunctionNOT_NULL_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionNOT_NULL(const FunctionNOT_NULL&);
 	~FunctionNOT_NULL(); 
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 private:
 // No copy allowed
 	virtual const eckit::sql::type::SQLType* type() const;

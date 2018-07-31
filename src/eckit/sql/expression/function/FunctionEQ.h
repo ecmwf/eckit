@@ -14,7 +14,7 @@
 #ifndef FunctionEQ_H
 #define FunctionEQ_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -30,7 +30,7 @@ public:
 	static bool equal(const SQLExpression& l, const SQLExpression& r, bool& missing);
 	static void trimStringInDouble(char* &p, size_t& len);
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 private:
 // No copy allowed
 	FunctionEQ& operator=(const FunctionEQ&);

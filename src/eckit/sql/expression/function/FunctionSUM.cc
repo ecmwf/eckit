@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/FunctionSUM.h"
+#include "eckit/sql/expression/function/FunctionSUM.h"
 
 namespace eckit {
 namespace sql {
@@ -29,7 +29,7 @@ FunctionSUM::FunctionSUM(const FunctionSUM& other)
 
 FunctionSUM::~FunctionSUM() {}
 
-SQLExpression* FunctionSUM::clone() const { return new FunctionSUM(*this); }
+std::shared_ptr<SQLExpression> FunctionSUM::clone() const { return std::make_shared<FunctionSUM>(*this); }
 
 const type::SQLType* FunctionSUM::type() const { return &type::SQLType::lookup("double"); }
 

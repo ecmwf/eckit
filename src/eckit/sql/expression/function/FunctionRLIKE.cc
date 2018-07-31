@@ -9,8 +9,8 @@
  */
 
 #include "odb_api/ColumnExpression.h"
-#include "odb_api/FunctionRLIKE.h"
-#include "odb_api/FunctionFactory.h"
+#include "eckit/sql/expression/function/FunctionRLIKE.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/exception/Exceptions.h"
@@ -34,7 +34,7 @@ FunctionRLIKE::FunctionRLIKE(const std::string& name, const expression::Expressi
   re_()
 {}
 
-SQLExpression* FunctionRLIKE::clone() const { return new FunctionRLIKE(*this); }
+std::shared_ptr<SQLExpression> FunctionRLIKE::clone() const { return std::make_shared<FunctionRLIKE>(*this); }
 
 FunctionRLIKE::~FunctionRLIKE() {}
 

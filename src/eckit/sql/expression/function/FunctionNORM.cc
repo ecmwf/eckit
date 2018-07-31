@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "odb_api/FunctionNORM.h"
+#include "eckit/sql/expression/function/FunctionNORM.h"
 
 namespace eckit {
 namespace sql {
@@ -29,7 +29,7 @@ FunctionNORM::FunctionNORM(const FunctionNORM& other)
   resultNULL_(other.resultNULL_)
 {}
 
-SQLExpression* FunctionNORM::clone() const { return new FunctionNORM(*this); }
+std::shared_ptr<SQLExpression> FunctionNORM::clone() const { return std::make_shared<FunctionNORM>(*this); }
 
 FunctionNORM::~FunctionNORM() {}
 

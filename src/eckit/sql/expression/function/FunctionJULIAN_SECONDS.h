@@ -14,7 +14,7 @@
 #ifndef FunctionJULIAN_SECONDS_H
 #define FunctionJULIAN_SECONDS_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -27,7 +27,7 @@ public:
 	FunctionJULIAN_SECONDS(const FunctionJULIAN_SECONDS&);
 	~FunctionJULIAN_SECONDS(); // Change to virtual if base class
 
-	SQLExpression* clone() const;
+	std::shared_ptr<SQLExpression> clone() const;
 private:
 // No copy allowed
 	FunctionJULIAN_SECONDS& operator=(const FunctionJULIAN_SECONDS&);

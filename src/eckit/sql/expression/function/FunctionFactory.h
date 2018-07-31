@@ -11,10 +11,10 @@
 // File FunctionFactory.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef odb_api_FunctionFactory_H
-#define odb_api_FunctionFactory_H
+#ifndef eckit_sql_expression_FunctionFactory_H
+#define eckit_sql_expression_FunctionFactory_H
 
-#include "odb_api/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/sql/SQLAST.h"
 
 namespace eckit { namespace sql { class SelectAST; } }

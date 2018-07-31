@@ -11,7 +11,7 @@
 /// \file FunctionROWNUMBER.h
 /// Piotr Kuchta - (C) ECMWF July 2009
 
-#include "odb_api/FunctionROWNUMBER.h"
+#include "eckit/sql/expression/function/FunctionROWNUMBER.h"
 #include "eckit/sql/SQLSelect.h"
 
 namespace eckit {
@@ -30,7 +30,7 @@ FunctionROWNUMBER::FunctionROWNUMBER(const FunctionROWNUMBER& other)
   count_(other.count_)
 {}
 
-SQLExpression* FunctionROWNUMBER::clone() const { return new FunctionROWNUMBER(*this); }
+std::shared_ptr<SQLExpression> FunctionROWNUMBER::clone() const { return std::make_shared<FunctionROWNUMBER>(*this); }
 
 FunctionROWNUMBER::~FunctionROWNUMBER() {}
 

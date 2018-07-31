@@ -140,7 +140,7 @@ Expressions emptyExpressionList;
 %type <exp>     expression assignment_rhs;
 %type <exp>     column factor term conjonction disjonction condition atom_or_number vector_index optional_hash;
 %type <exp>     where
-%type <explist> expression_list;
+%type <explist> expression_list group_by;
 
 %type <tablist> table_list;
 %type <table> table
@@ -148,8 +148,6 @@ Expressions emptyExpressionList;
 %type <val> table_reference;
 %type <tablist> from;
 
-//%type <explist>group_by;
-//
 //%type <orderlist>order_by;
 //%type <orderlist>order_list;
 //%type <orderexp>order;
@@ -447,7 +445,7 @@ statement: select_statement
 //create_view_statement: CREATE VIEW IDENT AS select_statement { $$ = $5; }
 //	;
 
-select_statement: SELECT distinct all select_list into from where // group_by order_by
+select_statement: SELECT distinct all select_list into from where group_by // order_by
                 {
                     bool                                          distinct($2);
                     bool                                          all($3);
@@ -455,14 +453,11 @@ select_statement: SELECT distinct all select_list into from where // group_by or
                     std::string                                   into($5);
                     std::vector<std::reference_wrapper<SQLTable>> from ($6);
                     std::shared_ptr<SQLExpression>                where($7);
-                    //Expressions                                 group_by($8);
+                    Expressions                                   group_by($8);
                     //std::pair<Expressions,std::vector<bool> >   order_by($9);
 
-                    //session->setStatement();
-                    //$$ = SelectAST(distinct, all, select_list, into, from, where, group_by, order_by);
-
                     session->setStatement(
-                        session->selectFactory().create(distinct, all, select_list, into, from, where)
+                        session->selectFactory().create(distinct, all, select_list, into, from, where, group_by)
                     );
                 }
                 ;
@@ -603,10 +598,11 @@ access_decl: UPDATED
            ;
 
 ///*================= GROUP BY ======================================*/
-//group_by: GROUP BY expression_list { $$ = $3;                       }
-//        | empty                    { $$ = Expressions(); }
-//	    ;
-//
+
+group_by: GROUP BY expression_list { $$ = $3;                       }
+      | empty                    { $$ = Expressions(); }
+        ;
+
 ///*================= ORDER =========================================*/
 //
 //order_by: ORDER BY order_list { $$ = $3;                       }

@@ -197,9 +197,8 @@ SQLSelect* SQLSelectFactory::create (
     const Expressions& select_list,
     const std::string& into,
     const std::vector<std::reference_wrapper<SQLTable>>& from,
-    std::shared_ptr<SQLExpression> where)
-//    SQLExpression *where,
-//    Expressions group_by,
+    std::shared_ptr<SQLExpression> where,
+    const Expressions& group_by)
 //    std::pair<Expressions,std::vector<bool> > order_by)
 {
     std::ostream& L(Log::debug());
@@ -253,8 +252,8 @@ SQLSelect* SQLSelectFactory::create (
 	maxColumnShift_ = 0;
 	minColumnShift_ = 0;
 
-//	if (group_by.size())
-//        Log::info() << "GROUP BY clause seen and ignored. Non aggregated values on select list will be used instead." << std::endl;
+    if (group_by.size())
+        Log::info() << "GROUP BY clause seen and ignored. Non aggregated values on select list will be used instead." << std::endl;
 
 //    SQLOutput *out (createOutput(session_, into, order_by.first.size()));
     SQLOutput& out (createOutput(into, 0));

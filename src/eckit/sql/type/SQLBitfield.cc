@@ -83,7 +83,7 @@ size_t SQLBitfield::width() const { return width_; }
 
 size_t SQLBitfield::size() const
 {
-	return sizeof(long);
+    return sizeof(long);
 }
 
 void SQLBitfield::output(SQLOutput& o, double d, bool missing) const

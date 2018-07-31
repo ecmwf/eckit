@@ -47,7 +47,7 @@ public:
 	// None
 
 // -- Overridden methods
-	virtual void output(SQLOutput&, double, bool) const;
+    virtual void output(SQLOutput&, double, bool) const;
 
 // -- Class members
 	// None
@@ -89,8 +89,8 @@ private:
 // -- Overridden methods
 	// None
 
-	virtual size_t size() const;
-	virtual int getKind() const { return realType; }
+    virtual size_t size() const;
+    virtual int getKind() const { return realType; }
 
 // -- Class members
 	// None

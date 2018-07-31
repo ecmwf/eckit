@@ -29,15 +29,15 @@ public:
 	~SQLDouble(); 
 
 // -- Overridden methods
-	virtual void output(SQLOutput&, double, bool) const;
+    virtual void output(SQLOutput&, double, bool) const;
 
 private:
 // No copy allowed
 	SQLDouble(const SQLDouble&);
 	SQLDouble& operator=(const SQLDouble&);
 
-	virtual size_t size() const;
-	virtual int getKind() const { return doubleType; }
+    virtual size_t size() const;
+    virtual int getKind() const { return doubleType; }
 
 // -- Friends
 	//friend std::ostream& operator<<(std::ostream& s,const SQLDouble& p)

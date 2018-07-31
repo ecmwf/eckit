@@ -33,9 +33,9 @@ private:
 	SQLInt(const SQLInt&);
 	SQLInt& operator=(const SQLInt&);
 
-	virtual size_t size() const;
-	virtual void output(SQLOutput& s, double, bool) const;
-	virtual int getKind() const { return integerType; }
+    virtual size_t size() const;
+    virtual void output(SQLOutput& s, double, bool) const;
+    virtual int getKind() const { return integerType; }
 
 	//friend std::ostream& operator<<(std::ostream& s,const SQLInt& p)
 	//	{ p.print(s); return s; }

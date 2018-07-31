@@ -38,6 +38,9 @@ public:
 	SQLExpression();
 	virtual ~SQLExpression(); 
 
+    /// pre-prepare ideally wouldn't exist. To enable a two-pass prepare of SQL columns
+    /// for SQLSelect, this is here.
+    virtual void preprepare(SQLSelect&) {}
 	virtual void prepare(SQLSelect&) = 0;
 	virtual void cleanup(SQLSelect&) = 0;
 

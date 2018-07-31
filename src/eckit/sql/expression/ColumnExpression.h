@@ -46,12 +46,14 @@ protected:
 	std::string                 columnName_;
 	SQLTable*              table_;
 	std::string                 tableReference_;
+    std::string            fullName_;
     int                    beginIndex_;
     int                    endIndex_;
     int                    nominalShift_;
 
 // -- Overridden methods
 	virtual void print(std::ostream& s) const;
+    virtual void preprepare(SQLSelect& sql);
 	virtual void prepare(SQLSelect& sql);
 	virtual void cleanup(SQLSelect& sql);
 	virtual double eval(bool& missing) const;

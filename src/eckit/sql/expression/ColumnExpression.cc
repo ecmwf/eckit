@@ -57,37 +57,46 @@ ColumnExpression::~ColumnExpression() {}
 
 double ColumnExpression::eval(bool& missing) const
 {
+    // n.b. we should only ever get here for numerical columns. Probably should ASSERT()
     if (value_.second) missing = true;
     return *value_.first;
 }
 
+void ColumnExpression::preprepare(SQLSelect& sql) {
+
+    /// pre-prepare exists to determine the Table/SQL column combination that is needed.
+    ///
+    /// This is then used in the SQLSelect to determine buffer sizes and data offsets, which
+    /// can then be used to initialise value_ and name_ in the prepare() function.
+    ///
+    /// There is no straightforward way to do these both in one prepare() statement, without
+    /// shifting the functionality outside.
+
+    if (!table_) table_ = &sql.findTable(columnName_, &fullName_, &hasMissingValue_, &missingValue_, &isBitfield_, &bitfieldDef_);
+    sql.ensureFetch(*table_, columnName_);
+
+    if (columnName_ == title() && columnName_ != fullName_)
+    {
+        title(fullName_);
+
+        Log::debug() << "ColumnExpression::preprepare: columnName_=" << columnName_
+        << ", title[PATCHED]=" << title()
+        << std::endl;
+    }
+}
+
 void ColumnExpression::prepare(SQLSelect& sql)
 {
-	std::string fullName;
-
-    SQLTable& table = sql.findTable(columnName_, &fullName, &hasMissingValue_, &missingValue_, &isBitfield_, &bitfieldDef_);
-
-    if(!table_) table_ = &table;
- 
-	value_ = sql.column(columnName_, table_);
+    value_ = sql.column(columnName_, table_);
 	type_  = sql.typeOf(columnName_, table_);
 
 	Log::debug() << "ColumnExpression::prepare: columnName_=" << columnName_ 
 	<< ", title=" << title()
 	<< ", table=" << table_->name()
-	<< ", fullName =" << fullName
+    << ", fullName =" << fullName_
 	<< " type=" << *type_ 
 	<< " bitfieldDef.first.size =" << bitfieldDef_.first.size()
 	<< std::endl;
-
-	if (columnName_ == title() && columnName_ != fullName)
-	{
-		title(fullName);
-
-		Log::debug() << "ColumnExpression::prepare: columnName_=" << columnName_ 
-		<< ", title[PATCHED]=" << title()
-		<< std::endl;
-	}
 }
 
 void ColumnExpression::cleanup(SQLSelect& sql)
@@ -105,11 +114,8 @@ void ColumnExpression::print(std::ostream& s) const
 	//if(table_) s << "@" << table_->fullName();
 }
 
-void ColumnExpression::output(SQLOutput& o) const 
-{ 
-	bool missing = false;
-	double v = eval(missing);
-	type_->output(o, v, missing); 
+void ColumnExpression::output(SQLOutput& o) const  {
+    type_->output(o, value_.first, value_.second);
 }
 
 void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLTable>>& tables, expression::Expressions& e)
@@ -137,13 +143,10 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLT
 	
 	unsigned int matched = 0;
     for (SQLTable& table : tables) {
-        std::cout << "TABLE" << std::endl;
-
         std::vector<std::string> names = table.columnNames();
 
 		for(size_t i = 0; i < names.size(); i++)
 		{
-            std::cout << "Name: " << names[i] << std::endl;
 			if ((tableReference_.size())
 				&& ((names[i].rfind(tableReference_) == std::string::npos)
 					|| (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size())))

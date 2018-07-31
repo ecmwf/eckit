@@ -11,6 +11,7 @@
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Log.h"
 #include "eckit/sql/expression/ConstantExpression.h"
+#include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
@@ -50,26 +51,29 @@ SQLSelect::~SQLSelect() {}
 
 
 SQLTable& SQLSelect::findTable(const std::string& name,
-	std::string *fullName, bool *hasMissingValue, double *missingValue, bool* isBitfield, BitfieldDef* bitfieldDef) const
-{
+                               std::string *fullName,
+                               bool *hasMissingValue,
+                               double *missingValue,
+                               bool* isBitfield,
+                               BitfieldDef* bitfieldDef) const {
+
 	std::set<SQLTable*> names;
 
-    Log::info() << "Looking for column: " << name << std::endl;
-
-	for(std::vector<SQLTable*>::const_iterator t = tables_.begin(); 
+    for(std::vector<SQLTable*>::const_iterator t = tables_.begin();
 		t != tables_.end() ; ++t)
 	{
 		SQLTable* table = const_cast<SQLTable*>(*t);
 		if(table->hasColumn(name, fullName))
 		{
-			//if(table->hasColumn(name, fullName, hasMissingValue, missingValue, bitfieldDef))
+            //if(table->hasColumn(name, fullName, hasMissingValue, missingValue, bitfieldDef))
 			names.insert(table);
             SQLColumn& column(table->column(name));
 			if (hasMissingValue) *hasMissingValue = column.hasMissingValue();
 			if (missingValue) *missingValue = column.missingValue();
 			if (isBitfield) *isBitfield = column.isBitfield();
 			if (bitfieldDef) *bitfieldDef = column.bitfieldDef();
-		}
+
+        }
 	}
 
 	if(names.size() == 0)
@@ -83,40 +87,37 @@ SQLTable& SQLSelect::findTable(const std::string& name,
     return **names.begin();
 }
 
-std::pair<double*, bool&> SQLSelect::column(const std::string& name, SQLTable* table)
-{
 
-    if(!table) table = &findTable(name);
-    SQLColumn& column(table->column(name));
+void SQLSelect::ensureFetch(SQLTable& table, const std::string& columnName) {
+    // Add the column to the fetch list associated with the table
 
-    std::string full = column.fullName();
+    SQLColumn& column(table.column(columnName));
+    std::string fullname = column.fullName();
 
-    auto it = values_.find(full);
-    if(it != values_.end()) {
-        return std::pair<double*, bool&>(&it->second.first[0], it->second.second);
-    }
+    allTables_.insert(&table);
+    if (tablesToFetch_.find(&table) == tablesToFetch_.end())
+        tablesToFetch_[&table] = SelectOneTable(&table);
 
-    allTables_.insert(table);
-
-    if(tablesToFetch_.find(table) == tablesToFetch_.end())
-        tablesToFetch_[table] = SelectOneTable(table);
-
-    tablesToFetch_[table].fetch_.push_back(column);
-
-    std::pair<std::vector<double>, bool>& newValue(values_[full]);
-    newValue.first.resize(column.dataSizeDoubles());
-
-    std::pair<double*, bool&> referenceValue(&newValue.first[0], newValue.second);
-
-    tablesToFetch_[table].values_.push_back(referenceValue);
-
-	Log::debug() << "Accessing column " << full << std::endl;
-
-    return referenceValue;
-
+    tablesToFetch_[&table].fetch_.push_back(column);
+    tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
 }
 
-const type::SQLType* SQLSelect::typeOf(const std::string& name, SQLTable* table) const
+
+std::pair<double*, bool&> SQLSelect::column(const std::string& name, SQLTable* table)
+{
+    ASSERT(table);
+    SQLColumn& column(table->column(name));
+
+    std::string fullname = column.fullName();
+    Log::debug() << "Accessing column " << fullname << std::endl;
+
+    auto it = values_.find(fullname);
+    ASSERT(it != values_.end());
+
+    return std::pair<double*, bool&>(it->second.first, it->second.second);
+}
+
+const type::SQLType* SQLSelect::typeOf(const std::string& name, SQLTable* table)
 {
     if(!table) table = &findTable(name);
     SQLColumn& column(table->column(name));
@@ -152,15 +153,44 @@ std::shared_ptr<SQLExpression> SQLSelect::findAliasedExpression(const std::strin
 void SQLSelect::prepareExecute() {
 	reset();
 
-	for(Expressions::iterator c = select_.begin(); c != select_.end(); ++c)
-	{
-		if((*c)->isAggregate())
-		{
+    // Associate ColumnExpressions, SQLTable and SQLColumns.
+    // n.b. it is a bit yucky to do the prepare() in two steps, but this allows us to
+    //      allocate buffers and associate them with iterators appropriately.
+
+    for (Expressions::iterator c = select_.begin(); c != select_.end(); ++c) {
+        if (dynamic_cast<ColumnExpression*>(&(**c))) {
+            (*c)->preprepare(*this);
+        }
+    }
+
+    // Construct the cursors that will be used for the selection, and pass these in to the
+    // constructed cursors/iterators
+
+    for (auto& tablePair : tablesToFetch_) {
+        SelectOneTable& tbl(tablePair.second);
+        cursors_.emplace_back(tbl.table_->iterator(tbl.fetch_));
+        cursors_.back()->rewind();
+
+        double* data(cursors_.back()->data());
+        const std::vector<size_t> offsets(cursors_.back()->columnOffsets());
+
+        for (size_t i = 0; i < tbl.fetch_.size(); i++) {
+            std::string fullname(tbl.fetch_[i].get().fullName());
+            ASSERT(values_.find(fullname) == values_.end());
+
+            std::pair<double*, bool>& newValue(values_[fullname]);
+            newValue.first = &data[offsets[i]];
+        }
+    }
+
+    // Prepare the columns
+
+    for(Expressions::iterator c = select_.begin(); c != select_.end(); ++c) {
+
+        if((*c)->isAggregate()) {
 			aggregated_.push_back(*c);
 			mixedResultColumnIsAggregated_.push_back(true);
-		}
-		else
-		{
+        } else {
 			nonAggregated_.push_back(*c);
 			mixedResultColumnIsAggregated_.push_back(false);
 		}
@@ -169,6 +199,7 @@ void SQLSelect::prepareExecute() {
 
         Log::debug() << "SQLSelect::prepareExecute: '" << *(*c) << "'" << std::endl;
 	}
+
 	ASSERT(select_.size() == mixedResultColumnIsAggregated_.size());
 	ASSERT(select_.size() == aggregated_.size() + nonAggregated_.size());
 
@@ -353,13 +384,6 @@ void SQLSelect::prepareExecute() {
 		where = 0;
 	}
 
-    // Construct the cursors that will be used for the output
-
-    for (SelectOneTable* table : sortedTables_) {
-        cursors_.emplace_back(table->table_->iterator(table->fetch_));
-        cursors_.back()->rewind();
-    }
-
     // Debug output
 
 	Log::debug() << "SQLSelect:prepareExecute: TABLE order:" << std::endl;
@@ -533,6 +557,7 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
         }
 
         if (ok) return true;
+        skips_++;
     }
 
     return false;
@@ -551,7 +576,12 @@ bool SQLSelect::processOneRow() {
             if (!processNextTableRow(idx)) return false; // If false, there is no data
         }
 
-        if (writeOutput()) return true;;
+        total_ = 1;
+
+        if (writeOutput()) {
+            count_++;
+            return true;;
+        }
     }
 
     // Otherwise, start by incrementing the first table. If that is exhausted, reset that table
@@ -561,7 +591,11 @@ bool SQLSelect::processOneRow() {
     for (size_t idx = 0; idx < cursors_.size(); idx++) {
 
         if (processNextTableRow(idx)) {
-            if (writeOutput()) return true;
+            total_++;
+            if (writeOutput()) {
+                count_++;
+                return true;
+            }
         }
 
         // If we have exhausted the available rows, rewind and increment those in the next table

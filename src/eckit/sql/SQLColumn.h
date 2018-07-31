@@ -27,7 +27,7 @@ class SQLTable;
 
 class SQLColumn : public SQLIterator {
 public:
-    SQLColumn(const type::SQLType&, SQLTable&, const std::string&, bool hasMissingValue, double missingValue, const BitfieldDef& d=BitfieldDef());
+    SQLColumn(const type::SQLType&, SQLTable&, const std::string&, size_t index, bool hasMissingValue, double missingValue, size_t sizeDoubles, const BitfieldDef& d=BitfieldDef());
 	virtual ~SQLColumn();
 
 	void scan();
@@ -45,6 +45,7 @@ public:
 	double missingValue() const { return missingValue_; }
 	bool isBitfield() const { return isBitfield_; }
 	const BitfieldDef& bitfieldDef() const { return bitfieldDef_; }
+    size_t dataSizeDoubles() const { return sizeDoubles_; }
 
 // -- Overridden methods
 	// From SQLIterator
@@ -81,6 +82,7 @@ protected:
 	double missingValue_;
 	bool isBitfield_;
 	const BitfieldDef bitfieldDef_;
+    size_t sizeDoubles_;
 };
 
 } // namespace sql 

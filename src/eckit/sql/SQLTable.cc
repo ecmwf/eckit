@@ -43,14 +43,7 @@ void SQLTable::clearColumns()
 
 std::vector<std::string> SQLTable::columnNames() const
 {
-    for (const auto& kv : columnsByName_) {
-        std::cout << "n: " << kv.first << std::endl;
-    }
-    for (const auto& kv : columnsByIndex_) {
-        std::cout << "N: " << kv.second->name() << std::endl;
-    }
-
-	std::vector<std::string> results;
+    std::vector<std::string> results;
 	for(std::map<int,SQLColumn*>::const_iterator j = columnsByIndex_.begin(); j != columnsByIndex_.end(); ++j)
 		results.push_back((*j).second->name());
 	return results;
@@ -64,7 +57,6 @@ FieldNames SQLTable::bitColumnNames(const std::string& name) const
 		return (*i).second;
 
 	ASSERT("name not found" && name.find("@") == std::string::npos);
-
 
 	std::string columnName;
 	FieldNames fieldNames;
@@ -86,12 +78,11 @@ FieldNames SQLTable::bitColumnNames(const std::string& name) const
 
 
 //void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, const FieldNames& bitmap)
-void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, bool hasMissingValue, double missingValue, bool
-isBitfield, const BitfieldDef& bitfieldDef)
+void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, bool hasMissingValue, double missingValue, size_t sizeDoubles, bool isBitfield, const BitfieldDef& bitfieldDef)
 {
 	const FieldNames& bitmap = bitfieldDef.first;
-    SQLColumn *col = isBitfield ? createSQLColumn(type, name, hasMissingValue, missingValue, bitfieldDef)
-                                : createSQLColumn(type, name, hasMissingValue, missingValue);
+    SQLColumn *col = isBitfield ? createSQLColumn(type, name, index, hasMissingValue, missingValue, sizeDoubles, bitfieldDef)
+                                : createSQLColumn(type, name, index, hasMissingValue, missingValue, sizeDoubles);
 
 	columnsByName_[name]   = col;
 	columnsByIndex_[index] = col;
@@ -120,7 +111,11 @@ isBitfield, const BitfieldDef& bitfieldDef)
 void SQLTable::addColumn(SQLColumn *col, const std::string& name, int index)
 {
 	columnsByName_[name]   = col;	
-	columnsByIndex_[index] = col;	
+    columnsByIndex_[index] = col;
+}
+
+SQLColumn *SQLTable::createSQLColumn(const type::SQLType &type, const std::string &name, size_t index, size_t sizeDoubles, bool hasMissingValue, double missingValue, const BitfieldDef& defs) {
+    return new SQLColumn(type, *this, name, index, hasMissingValue, missingValue, sizeDoubles, defs);
 }
 
 //bool SQLTable::hasColumn(const std::string& name, std::string* fullName, bool *hasMissingValue, double *missingValue, BitfieldDef* bitfieldDef)

@@ -10,22 +10,39 @@
 
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/type/SQLString.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace sql {
 namespace type {
 
-SQLString::SQLString(const std::string& name) : SQLType(name) {} 
+SQLString::SQLString(const std::string& name, size_t maxLen) :
+    SQLType(name),
+    maxLen_(maxLen) {
+    ASSERT(maxLen_ != 0);
+    ASSERT(maxLen_ % 8 == 0);
+}
 
 SQLString::~SQLString() {}
 
-size_t SQLString::size() const { return sizeof(double); }
+size_t SQLString::size() const { return maxLen_; }
 
-void SQLString::output(SQLOutput& o, double d, bool missing) const { o.outputString(d, missing); }
+void SQLString::output(SQLOutput& o, double d, bool missing) const {
+    throw SeriousBug("We should never hit this override", Here());
+}
 
-SQLType::manipulator SQLString::format() const { return &std::left; }
+void SQLString::output(SQLOutput& o, const double* d, bool missing) const {
+    if (missing) {
+        o.outputString(0, maxLen_, missing);
+    } else {
+        const char* c(reinterpret_cast<const char*>(d));
+        o.outputString(c, ::strnlen(c, maxLen_), missing);
+    }
+}
 
-size_t SQLString::width() const { return 10; }
+SQLType::manipulator SQLString::format() const { return& std::left; }
+
+size_t SQLString::width() const { return maxLen_ + 2; }
 
 } // namespace type 
 } // namespace sql

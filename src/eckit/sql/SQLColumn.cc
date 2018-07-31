@@ -16,12 +16,13 @@ using namespace eckit;
 namespace eckit {
 namespace sql {
 
-SQLColumn::SQLColumn(const type::SQLType& type, SQLTable& owner, const std::string& name, bool hasMissingValue, double missingValue,
-                     const BitfieldDef& bitfieldDef):
+SQLColumn::SQLColumn(const type::SQLType& type, SQLTable& owner, const std::string& name, size_t index, bool hasMissingValue, double missingValue,
+                     size_t sizeDoubles, const BitfieldDef& bitfieldDef):
 	SQLIterator(type),
 	noRows_(0),
 	owner_(owner),
 	name_(name),
+    index_(index),
 	current_(0),
 	last_(0),
 	position_(0),
@@ -29,7 +30,8 @@ SQLColumn::SQLColumn(const type::SQLType& type, SQLTable& owner, const std::stri
 	hasMissingValue_(hasMissingValue),
 	missingValue_(missingValue),
 	isBitfield_(true),
-	bitfieldDef_(bitfieldDef)
+    bitfieldDef_(bitfieldDef),
+    sizeDoubles_(sizeDoubles)
 {}
 
 SQLColumn::SQLColumn(const SQLColumn& other):
@@ -37,14 +39,16 @@ SQLColumn::SQLColumn(const SQLColumn& other):
 	noRows_(0),
 	owner_(other.owner_),
 	name_(other.name_),
-	current_(0),
+    index_(other.index_),
+    current_(0),
 	last_(0),
 	position_(0),
 	iterator_(0),
 	hasMissingValue_(other.hasMissingValue_),
 	missingValue_(other.missingValue_),
 	isBitfield_(other.isBitfield_),
-	bitfieldDef_(other.bitfieldDef_)
+    bitfieldDef_(other.bitfieldDef_),
+    sizeDoubles_(other.sizeDoubles_)
 {}
 
 SQLColumn::~SQLColumn()

@@ -47,7 +47,7 @@ public:
 	virtual void outputDouble(double, bool) = 0;
 	virtual void outputInt(double, bool) = 0;
 	virtual void outputUnsignedInt(double, bool) = 0;
-	virtual void outputString(double, bool) = 0;
+    virtual void outputString(const char*, size_t, bool) = 0;
 	virtual void outputBitfield(double, bool) = 0;
 
 	virtual unsigned long long count() = 0;

@@ -44,9 +44,10 @@ public:
 
 	const std::string& name() const { return name_; }
 
-	virtual size_t size() const = 0;
-	virtual void output(SQLOutput&, double, bool) const = 0;
-	virtual const SQLType* subType(const std::string&) const;
+    virtual size_t size() const = 0;
+    virtual void output(SQLOutput&, double, bool) const = 0;
+    virtual void output(SQLOutput& out, const double* val, bool missing) const { output(out, *val, missing); }
+    virtual const SQLType* subType(const std::string&) const;
 
 	virtual int getKind() const = 0;
 
@@ -55,7 +56,7 @@ public:
 	typedef std::ios_base& (*manipulator)(std::ios_base&);
 	virtual manipulator format() const;
 
-	static const SQLType& lookup(const std::string&);
+    static const SQLType& lookup(const std::string&, size_t sizeDoubles=1);
 	static void createAlias(const std::string&, const std::string&);
     static SQLType* registerType(SQLType*);
 

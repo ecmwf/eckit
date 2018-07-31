@@ -46,9 +46,9 @@ private:
     std::map<std::string, unsigned long> mask_;
     std::map<std::string, unsigned long> shift_;
 
-	virtual size_t size() const;
-	virtual void output(SQLOutput& s, double, bool) const;
-	virtual const SQLType* subType(const std::string&) const;
+    virtual size_t size() const;
+    virtual void output(SQLOutput& s, double, bool) const;
+    virtual const SQLType* subType(const std::string&) const;
 	virtual int getKind() const { return bitmapType; }
 
 	size_t width_;

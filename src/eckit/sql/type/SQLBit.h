@@ -39,8 +39,8 @@ private:
 // -- Overridden methods
 	// None
 
-	virtual size_t size() const;
-	void output(SQLOutput&, double, bool) const;
+    virtual size_t size() const;
+    void output(SQLOutput&, double, bool) const;
 	virtual int getKind() const { return integerType; }
 
 	//friend std::ostream& operator<<(std::ostream& s,const SQLBit& p)

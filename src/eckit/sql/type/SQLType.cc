@@ -16,6 +16,7 @@
 #include "eckit/sql/type/SQLReal.h"
 #include "eckit/sql/type/SQLString.h"
 #include "eckit/sql/type/SQLType.h"
+#include "eckit/utils/Translator.h"
 
 using namespace eckit;
 
@@ -42,7 +43,8 @@ TypeRegistry::TypeRegistry()
 {
     registerType(new SQLInt("integer"));
     registerType(new SQLReal("real"));
-    registerType(new SQLString("string"));
+    // n.b. don't need to register "string". See special cases in lookup()
+    //registerType(new SQLString("string"));
     registerType(new SQLDouble("double"));
 }
 
@@ -84,13 +86,24 @@ bool SQLType::exists(const std::string& name)
     return map.find(name) != map.end();
 }
 
-const SQLType& SQLType::lookup(const std::string& name)
+const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles)
 {
-    std::map<std::string,SQLType*>& map (TypeRegistry::typeMap());
-    std::map<std::string,SQLType*>::iterator j (map.find(name));
-    if(j == map.end())
+    auto& map (TypeRegistry::typeMap());
+
+    std::map<std::string, SQLType*>::iterator it;
+    if (name == "string") {
+        const std::string fullname = name + Translator<size_t, std::string>()(sizeof(double) * sizeDoubles);
+        if ((it = map.find(fullname)) == map.end()) {
+            it = map.insert(std::make_pair(fullname, new SQLString(fullname, sizeof(double) * sizeDoubles))).first;
+        }
+    } else {
+        ASSERT(sizeDoubles == 1);
+        it = map.find(name);
+    }
+
+    if(it == map.end())
         throw eckit::SeriousBug(name + ": type not defined");
-    return *(*j).second;
+    return *it->second;
 }
 
 void SQLType::createAlias(const std::string& name, const std::string& alias)

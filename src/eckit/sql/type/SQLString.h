@@ -25,8 +25,8 @@ namespace type {
 
 class SQLString : public SQLType {
 public:
-	SQLString(const std::string& );
-	~SQLString(); 
+    SQLString(const std::string& name, size_t maxLen);
+    ~SQLString();
 
 private:
 // No copy allowed
@@ -34,15 +34,18 @@ private:
 	SQLString& operator=(const SQLString&);
 
 // -- Overridden methods
-	virtual size_t size() const;
-	virtual void output(SQLOutput&, double, bool) const;
-	virtual int getKind() const { return stringType; }
+    virtual size_t size() const;
+    virtual void output(SQLOutput&, double, bool) const;
+    virtual void output(SQLOutput&, const double*, bool) const;
+    virtual int getKind() const { return stringType; }
 	virtual manipulator format() const;
 
 	size_t width() const;
 
 	//friend std::ostream& operator<<(std::ostream& s,const SQLString& p)
 	//	{ p.print(s); return s; }
+
+    size_t maxLen_;
 };
 
 } // namespace type 

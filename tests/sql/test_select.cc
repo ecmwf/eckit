@@ -37,39 +37,48 @@ public:
     TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name) :
         SQLTable(db, path, name) {
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
-        addColumn("rcol", 1, eckit::sql::type::SQLType::lookup("real"), false, 0);
-        addColumn("scol", 2, eckit::sql::type::SQLType::lookup("string"), false, 0);
+        addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 16), false, 0);
+        addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
     }
 
 private:
 
     class TestTableIterator : public eckit::sql::SQLTableIterator {
     public:
-        TestTableIterator(const TestTable& owner) : owner_(owner), idx_(0) {}
+        TestTableIterator(const TestTable& owner,
+                          const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(4) {
+            std::vector<size_t> offsets {0, 1, 3};
+            for (const auto& col : columns) {
+                offsets_.push_back(offsets[col.get().index()]);
+            }
+        }
     private:
         virtual ~TestTableIterator() {}
-        virtual void rewind() {
-            eckit::Log::info() << "REWIND: " << std::endl;
-            idx_ = 0;
-        }
+        virtual void rewind() { idx_ = 0; }
         virtual bool next() {
-            eckit::Log::info() << "NEXT: " << idx_ << std::endl;
-            return (idx_++ < INTEGER_DATA.size());
+            if (idx_ < INTEGER_DATA.size()) {
+                copyRow();
+                idx_++;
+                return true;
+            }
+            return false;
         }
+        void copyRow() {
+            data_[0] = INTEGER_DATA[idx_];
+            ::strncpy(reinterpret_cast<char*>(&data_[1]), STRING_DATA[idx_].c_str(), 16);
+            data_[3] = REAL_DATA[idx_];
+        }
+        virtual std::vector<size_t> columnOffsets() const { return offsets_; }
+        virtual double* data() { return &data_[0]; }
+
         const TestTable& owner_;
         size_t idx_;
+        std::vector<size_t> offsets_;
+        std::vector<double> data_;
     };
 
     virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns) const {
-        return new TestTableIterator(*this);
-    }
-
-    virtual eckit::sql::SQLColumn* createSQLColumn(const eckit::sql::type::SQLType& type,
-                                                   const std::string& name,
-                                                   bool hasMissingValue,
-                                                   double missingValue,
-                                                   const eckit::sql::BitfieldDef& defs) {
-        return new eckit::sql::SQLColumn(type, *this, name, hasMissingValue, missingValue, defs);
+        return new TestTableIterator(*this, columns);
     }
 };
 
@@ -93,10 +102,12 @@ class TestOutput : public eckit::sql::SQLOutput {
     virtual void outputDouble(double d, bool) { floatOutput.push_back(d); }
     virtual void outputInt(double d, bool) { intOutput.push_back(d); }
     virtual void outputUnsignedInt(double d, bool) { intOutput.push_back(d); }
-    virtual void outputString(double d, bool) { strOutput.push_back(std::string((char*)&d, ::strnlen((char*)&d, 8))); }
+    virtual void outputString(const char* s, size_t l, bool) { strOutput.push_back(std::string(s, l)); }
     virtual void outputBitfield(double d, bool) { intOutput.push_back(d); }
 
-    virtual unsigned long long count() { return std::min(intOutput.size(), std::min(floatOutput.size(), strOutput.size())); };
+    virtual unsigned long long count() {
+        return std::max(intOutput.size(), std::max(floatOutput.size(), strOutput.size()));
+    };
 
 public: // visible members
 
@@ -124,13 +135,16 @@ CASE( "Test SQL select columns" ) {
     db.addTable(new TestTable(db, "a/b/c.path", "table1"));
     db.addTable(new TestTable(db, "d/e/f.path", "table2"));
 
-    std::string sql = "select icol,scol from table1";
+    std::string sql = "select scol,icol from table1";
     eckit::sql::SQLParser().parseString(session, sql);
 
     session.statement().execute();
 
     TestOutput& o(static_cast<TestOutput&>(session.output()));
-    eckit::Log::info() << o.intOutput << std::endl;
+
+    EXPECT(o.intOutput == INTEGER_DATA);
+    EXPECT(o.floatOutput.empty());
+    EXPECT(o.strOutput == STRING_DATA);
 }
 
 
@@ -148,7 +162,10 @@ CASE( "Test SQL select all" ) {
     session.statement().execute();
 
     TestOutput& o(static_cast<TestOutput&>(session.output()));
-    eckit::Log::info() << o.intOutput << std::endl;
+
+    EXPECT(o.intOutput == INTEGER_DATA);
+    EXPECT(o.floatOutput == REAL_DATA);
+    EXPECT(o.strOutput == STRING_DATA);
 }
 
 

@@ -16,6 +16,7 @@
 //#include "odb_api/FunctionFactory.h"
 //#include "odb_api/ParameterExpression.h"
 #include "eckit/sql/SQLDatabase.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/NumberExpression.h"

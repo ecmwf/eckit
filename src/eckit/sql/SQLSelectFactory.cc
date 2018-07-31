@@ -196,14 +196,15 @@ SQLSelect* SQLSelectFactory::create (
     bool all,
     const Expressions& select_list,
     const std::string& into,
-    const std::vector<std::reference_wrapper<SQLTable>>& from)
+    const std::vector<std::reference_wrapper<SQLTable>>& from,
+    std::shared_ptr<SQLExpression> where)
 //    SQLExpression *where,
 //    Expressions group_by,
 //    std::pair<Expressions,std::vector<bool> > order_by)
 {
     std::ostream& L(Log::debug());
 
-    ////// if (where) L << "SQLSelectFactory::create: where = " << *where << std::endl;
+    if (where) L << "SQLSelectFactory::create: where = " << *where << std::endl;
 
 	SQLSelect* r (0);
 	//SQLSession& session (SQLSession::current());
@@ -262,7 +263,7 @@ SQLSelect* SQLSelectFactory::create (
     if(distinct)              { NOTIMP; } // out = new SQLDistinctOutput(out); }
    //// if(order_by.first.size()) { NOTIMP; } // out = new SQLOrderOutput(out, order_by); }
     ///r = new SQLSelect(select, fromTables, where, out, config_, all);
-    r = new SQLSelect(select, fromTables, 0, out, all);
+    r = new SQLSelect(select, fromTables, where, out, all);
 
 	maxColumnShift_ = 0;
 	return r;

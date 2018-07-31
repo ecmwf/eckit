@@ -48,8 +48,8 @@ public:
         bool all,
         const expression::Expressions& select_list,
         const std::string& into,
-        const std::vector<std::reference_wrapper<SQLTable>>& from
-//        expression::SQLExpression *where,
+        const std::vector<std::reference_wrapper<SQLTable>>& from,
+        std::shared_ptr<expression::SQLExpression> where
 //        const Expressions& group_by,
 //        std::pair<Expressions, std::vector<bool> > order_by);
             );

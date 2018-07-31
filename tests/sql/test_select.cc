@@ -169,6 +169,27 @@ CASE( "Test SQL select all" ) {
 }
 
 
+CASE( "Test SQL select all" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+    db.addTable(new TestTable(db, "d/e/f.path", "table2"));
+
+    std::string sql = "select rcol from table1 where icol > 4000";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.intOutput == INTEGER_DATA);
+    EXPECT(o.floatOutput == REAL_DATA);
+    EXPECT(o.strOutput == STRING_DATA);
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }

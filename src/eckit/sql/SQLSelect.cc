@@ -29,7 +29,7 @@ using namespace expression;
 
 SQLSelect::SQLSelect(const Expressions& columns, 
     std::vector<std::reference_wrapper<SQLTable>>& tables,
-	SQLExpression* where,
+    std::shared_ptr<SQLExpression> where,
     SQLOutput& output,
     bool all)
 : select_(columns),

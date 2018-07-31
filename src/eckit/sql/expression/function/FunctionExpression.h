@@ -63,6 +63,6 @@ private:
 } // namespace function
 } // namespace expression 
 } // namespace sql
-} // namespace odb
+} // namespace eckit
 
 #endif

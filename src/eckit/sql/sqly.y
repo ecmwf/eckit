@@ -139,10 +139,8 @@ Expressions emptyExpressionList;
 
 %type <exp>     expression assignment_rhs;
 %type <exp>     column factor term conjonction disjonction condition atom_or_number vector_index optional_hash;
+%type <exp>     where
 %type <explist> expression_list;
-
-//%type <exp>where;
-//
 
 %type <tablist> table_list;
 %type <table> table
@@ -161,8 +159,7 @@ Expressions emptyExpressionList;
 //
 %type <bol> distinct all;
 %type <val> into;
-//%type <val>func;
-//%type <val>relational_operator;
+%type <val> func relational_operator;
 //
 //%type <r>vector_range_decl;
 //%type <val>column_name;
@@ -450,14 +447,14 @@ statement: select_statement
 //create_view_statement: CREATE VIEW IDENT AS select_statement { $$ = $5; }
 //	;
 
-select_statement: SELECT distinct all select_list into from // where group_by order_by
+select_statement: SELECT distinct all select_list into from where // group_by order_by
                 {
                     bool                                          distinct($2);
                     bool                                          all($3);
                     Expressions                                   select_list($4);
                     std::string                                   into($5);
                     std::vector<std::reference_wrapper<SQLTable>> from ($6);
-                    //SQLExpression*                              where($7);
+                    std::shared_ptr<SQLExpression>                where($7);
                     //Expressions                                 group_by($8);
                     //std::pair<Expressions,std::vector<bool> >   order_by($9);
 
@@ -465,7 +462,7 @@ select_statement: SELECT distinct all select_list into from // where group_by or
                     //$$ = SelectAST(distinct, all, select_list, into, from, where, group_by, order_by);
 
                     session->setStatement(
-                        session->selectFactory().create(distinct, all, select_list, into, from)
+                        session->selectFactory().create(distinct, all, select_list, into, from, where)
                     );
                 }
                 ;
@@ -488,11 +485,11 @@ into: empty { $$ = ""; }
 from : FROM table_list   { $$ = $2; }
      | empty             { $$ = std::vector<std::reference_wrapper<SQLTable>>(); }
      ;
-//
-//where : WHERE expression { $$ = $2; }
-//	  |                  { $$ = 0;  }
-//	  ;
-//
+
+where : WHERE expression { $$ = $2; }
+      |                  { $$ = 0;  }
+      ;
+
 //insert_statement: INSERT INTO table optional_columns VALUES values
 //                { $$ = InsertAST($3, $4, $6); }
 //                ;
@@ -638,104 +635,99 @@ optional_hash : HASH DOUBLE { $$ = std::make_shared<NumberExpression>($2); }
               ;
 
 
-atom_or_number : //'(' expression ')'           { $$ = $2; }
-               //| '-' expression               { $$ = ast("-",$2); }
-               //| DOUBLE                       { $$ = new NumberExpression($1); }
-               //|
+atom_or_number : '(' expression ')'           { $$ = $2; }
+               | '-' expression               { $$ = FunctionFactory::instance().build("-",$2); }
+               | DOUBLE                       { $$ = new NumberExpression($1); }
+               |
                column
-               //| VAR                          { $$ = session->currentDatabase().getVariable($1); }
-               //| '?' DOUBLE                   { $$ = new ParameterExpression($2); }
-               //| func '(' expression_list ')' { $$ = ast($1, $3); }
-               //| func '(' empty ')'           { $$ = ast($1, emptyExpressionList); }
-               //| func '(' '*' ')'
-               // {
-               //     if (std::string("count") != $1)
-               //         throw eckit::UserError(std::string("Only function COUNT can accept '*' as parameter (") + $1 + ")");
-//
-//                    $$ = ast("count", new NumberExpression(1.0));
-//                }
-//               | STRING                       { $$ = new StringExpression($1); }
+               | VAR                          { $$ = session->currentDatabase().getVariable($1); }
+               | '?' DOUBLE                   { $$ = new ParameterExpression($2); }
+               | func '(' expression_list ')' { $$ = FunctionFactory::instance().build($1, $3); }
+               | func '(' empty ')'           { $$ = FunctionFactory::instance().build($1, emptyExpressionList); }
+               | func '(' '*' ')'
+                {
+                    if (std::string("count") != $1)
+                        throw eckit::UserError(std::string("Only function COUNT can accept '*' as parameter (") + $1 + ")");
+
+                    $$ = FunctionFactory::instance().build("count", new NumberExpression(1.0));
+                }
+               | STRING                       { $$ = new StringExpression($1); }
                ;
 
 
-//func : IDENT { $$ = $1;      }
-//     | COUNT { $$ = "count"; }
-//     ;
+func : IDENT { $$ = $1;      }
+     | COUNT { $$ = "count"; }
+     ;
 
 /* note: a^b^c -> a^(b^c) as in fortran */
 
-factor      : //NOTIMP//factor '*' atom_or_number          { $$ = ast("*",$1,$3);   }
-            //NOTIMP//| factor '/' atom_or_number          { $$ = ast("/",$1,$3); }
+factor      : factor '*' atom_or_number          { $$ = FunctionFactory::instance().build("*",$1,$3);   }
+            | factor '/' atom_or_number          { $$ = FunctionFactory::instance().build("/",$1,$3); }
             /* | factor '%' atom_or_number          { $$ = new CondMOD($1,$3); } */
-            //|
-            atom_or_number
+            | atom_or_number
             ;
 
-term        : //NOTIMP// term '+' factor           { $$ = ast("+",$1,$3);   }
-            //NOTIMP// | term '-' factor           { $$ = ast("-",$1,$3);   }
+term        : term '+' factor           { $$ = FunctionFactory::instance().build("+",$1,$3);   }
+            | term '-' factor           { $$ = FunctionFactory::instance().build("-",$1,$3);   }
             /* | term '&' factor */
-            // |
-            factor
+            | factor
             ;
 
-//relational_operator: '>' { $$ = ">"; }
-//                   | EQ  { $$ = "="; }
-//                   | '<' { $$ = "<"; }
-//                   | GE  { $$ = ">="; }
-//                   | LE  { $$ = "<="; }
-//                   | NE  { $$ = "<>"; }
-//                   ;
+relational_operator: '>' { $$ = ">"; }
+                   | EQ  { $$ = "="; }
+                   | '<' { $$ = "<"; }
+                   | GE  { $$ = ">="; }
+                   | LE  { $$ = "<="; }
+                   | NE  { $$ = "<>"; }
+                   ;
 
-condition   : //term relational_operator term relational_operator term { NOTIMP; //$$ = ast("and", ast($2,$1,$3), ast($4,$3,$5)); }
-            //| term relational_operator term                          { NOTIMP; //$$ = ast($2, $1, $3); }
-            //| MATCH '(' expression_list ')' IN QUERY '(' select_statement ')'
-           // {
-           //     const Expressions& matchList ($3);
-           //     const SelectAST& subquery ($8);
-           //     NOTIMP; //$$ = ast("match", matchList, subquery);
-           // }
-           // | condition  IN '(' expression_list ')'                  { $4.push_back($1); NOTIMP; } //$$ = ast("in",$4);   }
-           // | condition  IN VAR
-           // {
-           //     SQLExpression* v = session->currentDatabase().getVariable($3);
-           //     ASSERT(v && v->isVector());
-           //     Expressions e(v->vector());
-           //     e.push_back($1);
-           //     NOTIMP;
-           //     //$$ = ast("in", e);
-           // }
-           // | condition  NOT IN '(' expression_list ')'  { NOTIMP; } //$5.push_back($1); $$ = ast("not_in",$5);   }
-           // | condition  NOT IN VAR
-           // {
-           //     // This has not been implemented yet.
-//                throw UserError("Syntax: 'condition NOT IN VAR' not yet supported");
-//
-//                SQLExpression* v = session->currentDatabase().getVariable($4);
-//                ASSERT(v && v->isVector());
-//                Expressions e(v->vector());
-//                e.push_back($1);
-//                $$ = ast("not_in", e);
-//            }
+condition   : term relational_operator term relational_operator term { $$ = FunctionFactory::instance().build("and", FunctionFactory::instance().build($2,$1,$3), FunctionFactory::instance().build($4,$3,$5)); }
+            | term relational_operator term                          { $$ = FunctionFactory::instance().build($2, $1, $3); }
+            | MATCH '(' expression_list ')' IN QUERY '(' select_statement ')'
+            {
+                 NOTIMP;
+            //    const Expressions& matchList ($3);
+            //    const SelectAST& subquery ($8);
+            //    $$ = FunctionFactory::instance().build("match", matchList, subquery);
+            }
+            | condition  IN '(' expression_list ')'                  { $4.push_back($1); $$ = FunctionFactory::instance().build("in",$4);   }
+            | condition  IN VAR
+            {
+                SQLExpression* v = session->currentDatabase().getVariable($3);
+                ASSERT(v && v->isVector());
+                Expressions e(v->vector());
+                e.push_back($1);
+                $$ = FunctionFactory::instance().build("in", e);
+            }
+            | condition  NOT IN '(' expression_list ')'  { $5.push_back($1); $$ = FunctionFactory::instance().build("not_in",$5);   }
+            | condition  NOT IN VAR
+            {
+                // This has not been implemented yet.
+                throw UserError("Syntax: 'condition NOT IN VAR' not yet supported");
 
-//            | NOT condition             { NOTIMP; } //$$ = ast("not",$2);   }
-//            | condition IS NIL          { NOTIMP; } //$$ = ast("null",$1);   }
-//            | condition IS NOT NIL      { NOTIMP; } //$$ = ast("not_null",$1);   }
-//            | condition BETWEEN term AND term { NOTIMP; } //$$ = ast("between",$1,$3,$5); }
-//            | condition NOT BETWEEN term AND term { NOTIMP; } //$$ = ast("not_between",$1,$4,$6); }
-//            | condition LIKE term       { NOTIMP; } //$$ = ast("like", $1, $3); }
-//            | condition RLIKE term      { NOTIMP; } //$$ = ast("rlike", $1, $3); }
-            //|
-            term
+                SQLExpression* v = session->currentDatabase().getVariable($4);
+                ASSERT(v && v->isVector());
+                Expressions e(v->vector());
+                e.push_back($1);
+                $$ = FunctionFactory::instance().build("not_in", e);
+            }
+
+            | NOT condition             { $$ = FunctionFactory::instance().build("not",$2);   }
+            | condition IS NIL          { $$ = FunctionFactory::instance().build("null",$1);   }
+            | condition IS NOT NIL      { $$ = FunctionFactory::instance().build("not_null",$1);   }
+            | condition BETWEEN term AND term { $$ = FunctionFactory::instance().build("between",$1,$3,$5); }
+            | condition NOT BETWEEN term AND term { $$ = FunctionFactory::instance().build("not_between",$1,$4,$6); }
+            | condition LIKE term       { $$ = FunctionFactory::instance().build("like", $1, $3); }
+            | condition RLIKE term      { $$ = FunctionFactory::instance().build("rlike", $1, $3); }
+            | term
             ;
 
-conjonction : //NOTIMP// conjonction AND condition       { $$ = ast("and",$2,$3);   }
-            //|
-            condition
+conjonction : conjonction AND condition       { $$ = FunctionFactory::instance().build("and",$1,$3);   }
+            | condition
             ;
 
-disjonction : //NOTIMP// disjonction OR conjonction      { $$ = ast("or",$1,$3);   }
-            //|
-            conjonction
+disjonction : disjonction OR conjonction      { $$ = FunctionFactory::instance().build("or",$1,$3);   }
+            | conjonction
             ;
 
 

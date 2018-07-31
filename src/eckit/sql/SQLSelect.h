@@ -46,7 +46,11 @@ class SQLSelect : public SQLStatement {
     friend class SelectIterator;
 
 public:
-    SQLSelect(const Expressions&, std::vector<std::reference_wrapper<SQLTable>>&, expression::SQLExpression*, SQLOutput&, bool all);
+    SQLSelect(const Expressions& columns,
+              std::vector<std::reference_wrapper<SQLTable>>& tables,
+              std::shared_ptr<expression::SQLExpression> where,
+              SQLOutput& out,
+              bool all);
 	~SQLSelect(); 
 
 // -- Methods

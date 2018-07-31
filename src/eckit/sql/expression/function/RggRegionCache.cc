@@ -13,7 +13,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/sql/exception/function/RggRegionCache.h"
+#include "eckit/sql/expression/function/RggRegionCache.h"
 
 namespace eckit {
 namespace sql {

@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "odb_api/piconst.h"
+#include "eckit/sql/expression/function/piconst.h"
 
 namespace eckit {
 namespace sql {

@@ -41,7 +41,7 @@ protected:
 	virtual bool isConstant() const;
 	virtual void partialResult();
 	virtual double eval(bool& missing) const;
-	virtual SQLExpression* simplify(bool&);
+    virtual std::shared_ptr<SQLExpression> simplify(bool&);
 	bool isAggregate() const { return false; }
 
 private:

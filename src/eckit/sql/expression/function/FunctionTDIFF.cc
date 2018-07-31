@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/DateTime.h"
+#include "eckit/types/DateTime.h"
 #include "eckit/sql/expression/function/FunctionTDIFF.h"
 
 namespace eckit {
@@ -35,26 +35,16 @@ double FunctionTDIFF::eval(bool& missing) const
     int andate = (int) args_[2]->eval(missing);
     int antime = (int) args_[3]->eval(missing);
 
-    int year_target = indate/10000;
-    int month_target = (indate%10000)/100;
-    int day_target = indate%100;
-    int hour_target = intime/10000;
-    int min_target = (intime%10000)/100;
-    int sec_target = intime%100;
+    eckit::Date d1(indate);
+    eckit::Date d2(andate);
 
-    int year_anal = andate/10000;
-    int month_anal = (andate%10000)/100;
-    int day_anal = andate%100;
-    int hour_anal = antime/10000;
-    int min_anal = (antime%10000)/100;
-    int sec_anal = antime%100;
+    eckit::Time t1(intime/10000, (intime % 10000) / 100, intime % 100);
+    eckit::Time t2(antime/10000, (antime % 10000) / 100, antime % 100);
 
-    utils::DateTime d1(year_target, month_target, day_target,
-                   hour_target, min_target, sec_target);
-    utils::DateTime d2(year_anal, month_anal, day_anal, 
-                   hour_anal, min_anal, sec_anal);
+    eckit::DateTime dt1(d1, t1);
+    eckit::DateTime dt2(d2, t2);
 
-    return d1.secondsDateMinusDate(d2);
+    return d1 - d2;
 }
 
 const eckit::sql::type::SQLType* FunctionTDIFF::type() const { return &eckit::sql::type::SQLType::lookup("integer"); }

@@ -591,7 +591,7 @@ select_: '*' table_reference                             { $$ = std::make_shared
 //			int begin ($3->eval(missing)); //ASSERT(!missing);
 //			int end ($5->eval(missing)); //ASSERT(!missing);
 //            Table table ($7);
-//			$$ = new ColumnExpression($1, table.name /*TODO: handle .<database> */, begin, end);
+//			$$ = std::make_shared<ColumnExpression>($1, table.name /*TODO: handle .<database> */, begin, end);
 //		}
        | expression AS IDENT table_reference { $$ = $1; $$->title($3 + $4); }
        | expression
@@ -626,7 +626,7 @@ access_decl: UPDATED
 //
 /*================= EXPRESSION =========================================*/
 
-expression_list : expression         {  $$ = Expressions(1, $1); }
+expression_list : expression         {  $$ = Expressions(); $$.push_back($1); }
                 | expression_list ',' expression { $$ = $1; $$.push_back($3); }
                 ;
 
@@ -637,11 +637,11 @@ optional_hash : HASH DOUBLE { $$ = std::make_shared<NumberExpression>($2); }
 
 atom_or_number : '(' expression ')'           { $$ = $2; }
                | '-' expression               { $$ = FunctionFactory::instance().build("-",$2); }
-               | DOUBLE                       { $$ = new NumberExpression($1); }
+               | DOUBLE                       { $$ = std::make_shared<NumberExpression>($1); }
                |
                column
                | VAR                          { $$ = session->currentDatabase().getVariable($1); }
-               | '?' DOUBLE                   { $$ = new ParameterExpression($2); }
+               | '?' DOUBLE                   { $$ = std::make_shared<ParameterExpression>($2); }
                | func '(' expression_list ')' { $$ = FunctionFactory::instance().build($1, $3); }
                | func '(' empty ')'           { $$ = FunctionFactory::instance().build($1, emptyExpressionList); }
                | func '(' '*' ')'
@@ -649,9 +649,9 @@ atom_or_number : '(' expression ')'           { $$ = $2; }
                     if (std::string("count") != $1)
                         throw eckit::UserError(std::string("Only function COUNT can accept '*' as parameter (") + $1 + ")");
 
-                    $$ = FunctionFactory::instance().build("count", new NumberExpression(1.0));
+                    $$ = FunctionFactory::instance().build("count", std::make_shared<NumberExpression>(1.0));
                 }
-               | STRING                       { $$ = new StringExpression($1); }
+               | STRING                       { $$ = std::make_shared<StringExpression>($1); }
                ;
 
 
@@ -663,7 +663,7 @@ func : IDENT { $$ = $1;      }
 
 factor      : factor '*' atom_or_number          { $$ = FunctionFactory::instance().build("*",$1,$3);   }
             | factor '/' atom_or_number          { $$ = FunctionFactory::instance().build("/",$1,$3); }
-            /* | factor '%' atom_or_number          { $$ = new CondMOD($1,$3); } */
+            /* | factor '%' atom_or_number          { $$ = std::make_shared<CondMOD>($1,$3); } */
             | atom_or_number
             ;
 
@@ -693,7 +693,7 @@ condition   : term relational_operator term relational_operator term { $$ = Func
             | condition  IN '(' expression_list ')'                  { $4.push_back($1); $$ = FunctionFactory::instance().build("in",$4);   }
             | condition  IN VAR
             {
-                SQLExpression* v = session->currentDatabase().getVariable($3);
+                std::shared_ptr<SQLExpression> v = session->currentDatabase().getVariable($3);
                 ASSERT(v && v->isVector());
                 Expressions e(v->vector());
                 e.push_back($1);
@@ -705,7 +705,7 @@ condition   : term relational_operator term relational_operator term { $$ = Func
                 // This has not been implemented yet.
                 throw UserError("Syntax: 'condition NOT IN VAR' not yet supported");
 
-                SQLExpression* v = session->currentDatabase().getVariable($4);
+                std::shared_ptr<SQLExpression> v = session->currentDatabase().getVariable($4);
                 ASSERT(v && v->isVector());
                 Expressions e(v->vector());
                 e.push_back($1);

@@ -32,7 +32,7 @@ public:
 
 	virtual double eval(bool& missing) const;
 	virtual const eckit::sql::type::SQLType* type() const;
-	virtual SQLExpression* simplify(bool&);
+    virtual std::shared_ptr<SQLExpression> simplify(bool&);
 
 private:
 // No copy allowed

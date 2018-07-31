@@ -586,6 +586,10 @@ sql/expression/ConstantExpression.cc
 sql/expression/ConstantExpression.h
 sql/expression/NumberExpression.cc
 sql/expression/NumberExpression.h
+sql/expression/ParameterExpression.cc
+sql/expression/ParameterExpression.h
+sql/expression/StringExpression.cc
+sql/expression/StringExpression.h
 sql/expression/SQLExpression.cc
 sql/expression/SQLExpression.h
 sql/expression/SQLExpressions.cc
@@ -595,6 +599,7 @@ sql/expression/ShiftedColumnExpression.h
 #sql/expression/SQLExpressionEvaluated.cc
 #sql/expression/SQLExpressionEvaluated.h
 
+sql/expression/function/piconst.h
 sql/expression/function/EqRegionCache.cc
 sql/expression/function/EqRegionCache.h
 sql/expression/function/RggRegionCache.cc
@@ -619,8 +624,8 @@ sql/expression/function/FunctionEQ_BOXLAT.cc
 sql/expression/function/FunctionEQ_BOXLAT.h
 sql/expression/function/FunctionEQ_BOXLON.cc
 sql/expression/function/FunctionEQ_BOXLON.h
-sql/expression/function/FunctionMATCH.h
-sql/expression/function/FunctionMATCH.cc
+#sql/expression/function/FunctionMATCH.h
+#sql/expression/function/FunctionMATCH.cc
 sql/expression/function/FunctionFactory.cc
 sql/expression/function/FunctionFactory.h
 sql/expression/function/FunctionIN.cc

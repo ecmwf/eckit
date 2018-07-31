@@ -54,11 +54,10 @@ bool FunctionAND::andSplit(expression::Expressions& e)
 
 }
 
-SQLExpression* FunctionAND::simplify(bool& changed) 
+std::shared_ptr<SQLExpression> FunctionAND::simplify(bool& changed)
 {
-	SQLExpression* x = FunctionExpression::simplify(changed);
+    std::shared_ptr<SQLExpression> x = FunctionExpression::simplify(changed);
 	if(x) return x;
-
 	
 	for(int i = 0; i < 2 ; i++)
 	{
@@ -70,14 +69,10 @@ SQLExpression* FunctionAND::simplify(bool& changed)
                 std::cout << "SYMPLIFY " << *this << " to ";
 				changed = true;
 
-				SQLExpression* x = args_[1-i];
-
-				args_[1-i] = 0; // So we don't delete it
-				delete args_[i];
+                std::shared_ptr<SQLExpression> x = args_[1-i];
 				args_.clear();
 
                 std::cout << *x << std::endl;
-
 				return x;
 			}
 			else

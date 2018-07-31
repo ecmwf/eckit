@@ -14,10 +14,9 @@
 #ifndef eckit_sql_expression_FunctionFactory_H
 #define eckit_sql_expression_FunctionFactory_H
 
-#include "eckit/sql/expression/function/FunctionExpression.h"
-#include "eckit/sql/SQLAST.h"
+#include <memory>
 
-namespace eckit { namespace sql { class SelectAST; } }
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit {
 namespace sql {
@@ -29,18 +28,17 @@ protected:
 	int    arity_;
 	std::string name_;
 	std::string help_;
-	virtual FunctionExpression* make(const std::string&,const expression::Expressions&) = 0;
+    virtual std::shared_ptr<FunctionExpression> make(const std::string&,const expression::Expressions&) = 0;
 
 public:
 	//FunctionFactoryBase() : name_("FunctionFactory"), arity_(-1) {}
 	FunctionFactoryBase(const std::string& name, int arity, const std::string& help);
 	~FunctionFactoryBase();
 
-	FunctionExpression* build(const std::string&, SQLExpression*);
-	FunctionExpression* build(const std::string&, SQLExpression*, SQLExpression*);
-	FunctionExpression* build(const std::string&, SQLExpression*, SQLExpression*, SQLExpression*);
-	FunctionExpression* build(const std::string&, const expression::Expressions&);
-    FunctionExpression* build(const std::string&, const expression::Expressions&, const SelectAST&);
+    std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>);
+    std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>);
+    std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>);
+    std::shared_ptr<FunctionExpression> build(const std::string&, const expression::Expressions&);
 };
 
 class FunctionFactory : public FunctionFactoryBase {
@@ -53,7 +51,7 @@ public:
 	FunctionInfo& functionsInfo();
 
 private:
-	FunctionExpression* make(const std::string&,const expression::Expressions&) { NOTIMP; return 0; }
+    std::shared_ptr<FunctionExpression> make(const std::string&,const expression::Expressions&) { NOTIMP; return 0; }
 
 
     std::map<std::pair<std::string,int>, FunctionFactoryBase*> map_;
@@ -62,10 +60,12 @@ private:
 
 template<class T>
 class FunctionMaker : public FunctionFactoryBase {
-	FunctionExpression* make(const std::string& name, const expression::Expressions& args)
-	{ return new T(name, args); }
+    std::shared_ptr<FunctionExpression> make(const std::string& name, const expression::Expressions& args) {
+        return std::make_shared<T>(name, args);
+    }
 public:
-	FunctionMaker(const std::string& name, int arity, const std::string& help) : FunctionFactoryBase(name, arity, help) {}
+    FunctionMaker(const std::string& name, int arity, const std::string& help) :
+        FunctionFactoryBase(name, arity, help) {}
 };
 
 } // namespace function

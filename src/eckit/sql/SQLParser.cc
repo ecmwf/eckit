@@ -13,24 +13,21 @@
 #include "eckit/sql/expression/BitColumnExpression.h"
 #include "eckit/sql/expression/ColumnExpression.h"
 //#include "odb_api/Dictionary.h"
-//#include "odb_api/FunctionFactory.h"
-//#include "odb_api/ParameterExpression.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/NumberExpression.h"
+#include "eckit/sql/expression/ParameterExpression.h"
+#include "eckit/sql/expression/StringExpression.h"
 #include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSelect.h"
 //#include "eckit/sql/SQLInsertFactory.h"
-//#include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/type/SQLBitfield.h"
 #include "eckit/parser/StringTools.h"
-//#include "odb_api/StringExpression.h"
 //#include "odb_api/FunctionMATCH.h"
-//#include "eckit/sql/SQLAST.h"
 
 using namespace eckit;
 
@@ -45,7 +42,7 @@ void eckit_sql_error(eckit_sql_scan_t, eckit::sql::SQLSession*, const char* msg)
 using namespace eckit;
 using namespace eckit::sql;
 using namespace eckit::sql::expression;
-//using namespace eckit::sql::expression::function;
+using namespace eckit::sql::expression::function;
 
 #include "eckit/sql/sqly.c"
 

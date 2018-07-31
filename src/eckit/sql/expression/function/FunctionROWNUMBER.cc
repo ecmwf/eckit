@@ -13,6 +13,7 @@
 
 #include "eckit/sql/expression/function/FunctionROWNUMBER.h"
 #include "eckit/sql/SQLSelect.h"
+#include "eckit/sql/SQLTable.h"
 
 namespace eckit {
 namespace sql {
@@ -47,7 +48,7 @@ void FunctionROWNUMBER::cleanup(SQLSelect& sql) {}
 
 bool FunctionROWNUMBER::isConstant() const { return false; }
 
-SQLExpression* FunctionROWNUMBER::simplify(bool&) { return 0; }
+std::shared_ptr<SQLExpression> FunctionROWNUMBER::simplify(bool&) { return 0; }
 
 void FunctionROWNUMBER::partialResult() { /*NOTIMP;*/ }
 

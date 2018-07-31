@@ -37,7 +37,7 @@ private:
 // No copy allowed
 	FunctionRLIKE& operator=(const FunctionRLIKE&);
 
-	std::auto_ptr<eckit::Regex> re_;
+    std::unique_ptr<eckit::Regex> re_;
 
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;

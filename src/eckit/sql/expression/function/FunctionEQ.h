@@ -40,7 +40,7 @@ private:
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;
 	virtual double eval(bool& missing) const;
-	virtual SQLExpression* simplify(bool&);
+    virtual std::shared_ptr<SQLExpression> simplify(bool&);
 
 // -- Friends
 	//friend std::ostream& operator<<(std::ostream& s,const FunctionEQ& p)

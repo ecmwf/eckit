@@ -12,7 +12,7 @@
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
-#include "odb_api/StringTool.h"
+#include "eckit/utils/Translator.h"
 
 #define ftrunc(x) ((x) -fmod((x), 1))
 #define F90nint(x) ( ((x) > 0) ? (int)((x) + 0.5) : (int)((x) - 0.5) )
@@ -47,19 +47,24 @@ void FunctionIntegerExpression::output(std::ostream& s) const
 
 //#include <math.h>
 
+// TODO: This is REALLY the wrong place for this to be.
+constexpr double DEFAULT_MDI = 2147483647;
+
 template<double (*T)(double)> 
 class MathFunctionIntegerExpression_1 : public FunctionIntegerExpression {
 	double eval(bool& m) const {
 		double v = args_[0]->eval(m);
-		return m ? this->missingValue_ : T(v);
+        if (v == DEFAULT_MDI) m = false;
+        if (!m) return this->missingValue_;
+        return T(v);
 	}
     std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionIntegerExpression_1<T>>(this->name_,this->args_); }
 public:
 	MathFunctionIntegerExpression_1(const std::string& name,const expression::Expressions& args)
-	: FunctionIntegerExpression(name, args), myArgs_(0) { this->missingValue_ = eckit::MDI::integerMDI(); }
+    : FunctionIntegerExpression(name, args), myArgs_(0) { this->missingValue_ = DEFAULT_MDI; }
 
 	MathFunctionIntegerExpression_1(const std::string& name,expression::Expressions* args)
-	: FunctionIntegerExpression(name, *args), myArgs_(args) { this->missingValue_ = eckit::MDI::integerMDI(); }
+    : FunctionIntegerExpression(name, *args), myArgs_(args) { this->missingValue_ = DEFAULT_MDI; }
 
 	~MathFunctionIntegerExpression_1() { delete myArgs_; }
 private:
@@ -71,22 +76,22 @@ static FunctionMaker<MathFunctionIntegerExpression_1<FuncName> > make_1_##FuncNa
 
 
 //--------------------------------------------------------------
-inline double year(double x) { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)((int)((x)/10000)) : (double)MDI::integerMDI());}
-inline double month(double x) { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(((int)((x)/100))%100) : (double)MDI::integerMDI());}
-inline double day(double x)   { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(((int)(x))%100) : (double)MDI::integerMDI());}
-inline double hour(double x)   {return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)((int)((x)/10000)) : (double)MDI::integerMDI());}
-inline double minute(double x) {return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(((int)((x)/100))%100) : (double)MDI::integerMDI());}
+inline double year(double x) { return (double)((int)((x)/10000));}
+inline double month(double x) { return (double)(((int)((x)/100))%100);}
+inline double day(double x)   { return (double)(((int)(x))%100);}
+inline double hour(double x)   {return (double)((int)((x)/10000));}
+inline double minute(double x) {return (double)(((int)((x)/100))%100);}
 inline double minutes(double x) {return minute(x);}
-inline double second(double x) {return ((fabs(x) != fabs((double)MDI::realMDI())) ? (double)(((int)(x))%100) : (double)MDI::integerMDI());}
+inline double second(double x) {return (double)(((int)(x))%100);}
 inline double seconds(double x) {return second(x);}
 
 
-inline double Func_ftrunc(double x) { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(ftrunc(x)) : (double) MDI::integerMDI()); }
-inline double Func_dnint(double x) { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(F90nint(x)) : (double)MDI::integerMDI()); }
-inline double Func_dint(double x) { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(ftrunc(x)) : (double) MDI::integerMDI());}
-inline double Func_ceil(double x) { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(ceil(x)) : (double) MDI::integerMDI());}
-inline double Func_floor(double x) { return ((fabs(x) != fabs((double) MDI::realMDI())) ? (double)(floor(x)) : (double) MDI::integerMDI());}
-inline double Func_atoi(double x) { return (fabs(x) != fabs((double) MDI::realMDI())) ? (double) atoi(StringTool::double_as_string(x).c_str()) : (double) MDI::integerMDI(); }
+inline double Func_ftrunc(double x) { return (double)(ftrunc(x)); }
+inline double Func_dnint(double x) { return (double)(F90nint(x)); }
+inline double Func_dint(double x) { return (double)(ftrunc(x)); }
+inline double Func_ceil(double x) { return (double)(ceil(x)); }
+inline double Func_floor(double x) { return (double)(floor(x)); }
+inline double Func_atoi(double x) { return (double) atoi(Translator<double, std::string>()(x).c_str()); }
 
 void FunctionIntegerExpression::registerIntegerFunctions()
 {

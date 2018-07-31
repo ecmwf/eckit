@@ -48,8 +48,8 @@
 #include "eckit/sql/expression/function/FunctionTIMESTAMP.h"
 #include "eckit/sql/expression/function/FunctionVAR.h"
 #include "eckit/sql/expression/function/FunctionRLIKE.h"
-#include "eckit/sql/expression/function/FunctionMATCH.h"
-#include "odb_api/piconst.h"
+//#include "eckit/sql/expression/function/FunctionMATCH.h"
+#include "eckit/sql/expression/function/piconst.h"
 
 namespace eckit {
 namespace sql {
@@ -109,7 +109,7 @@ FunctionFactoryBase::~FunctionFactoryBase()
 //	}
 }
 
-FunctionExpression* FunctionFactoryBase::build(const std::string& name, const expression::Expressions& args)
+std::shared_ptr<FunctionExpression> FunctionFactoryBase::build(const std::string& name, const expression::Expressions& args)
 {
 	std::pair<std::string,int> p(name,args.size());	
     std::map<std::pair<std::string,int>,FunctionFactoryBase*>::iterator j = FFMap::instance().find(p);
@@ -128,14 +128,14 @@ FunctionExpression* FunctionFactoryBase::build(const std::string& name, const ex
 
 }
 
-FunctionExpression* FunctionFactoryBase::build(const std::string& name, SQLExpression* arg)
+std::shared_ptr<FunctionExpression> FunctionFactoryBase::build(const std::string& name, std::shared_ptr<SQLExpression> arg)
 {
 	expression::Expressions args;
 	args.push_back(arg);
 	return build(name,args);
 }
 
-FunctionExpression* FunctionFactoryBase::build(const std::string& name, SQLExpression* arg1, SQLExpression* arg2)
+std::shared_ptr<FunctionExpression> FunctionFactoryBase::build(const std::string& name, std::shared_ptr<SQLExpression> arg1, std::shared_ptr<SQLExpression> arg2)
 {
 	expression::Expressions args;
 	args.push_back(arg1);
@@ -143,7 +143,7 @@ FunctionExpression* FunctionFactoryBase::build(const std::string& name, SQLExpre
 	return build(name,args);
 }
 
-FunctionExpression* FunctionFactoryBase::build(const std::string& name, SQLExpression* arg1, SQLExpression* arg2, SQLExpression *arg3)
+std::shared_ptr<FunctionExpression> FunctionFactoryBase::build(const std::string& name, std::shared_ptr<SQLExpression> arg1, std::shared_ptr<SQLExpression> arg2, std::shared_ptr<SQLExpression> arg3)
 {
 	expression::Expressions args;
 	args.push_back(arg1);
@@ -152,15 +152,15 @@ FunctionExpression* FunctionFactoryBase::build(const std::string& name, SQLExpre
 	return build(name,args);
 }
 
-FunctionExpression* FunctionFactoryBase::build(const std::string& name, const expression::Expressions& matchList, const SelectAST& selectAST)
-{
-    using namespace std;
-    ostream& L( eckit::Log::info() );
-    //eckit::Log::info() << "FunctionFactoryBase::build: name: " << name << std::endl;
-    ASSERT(name == "match"); // this only for now
-
-    return new FunctionMATCH(name, matchList, selectAST);
-}
+//std::shared_ptr<FunctionExpression> FunctionFactoryBase::build(const std::string& name, const expression::Expressions& matchList, const SelectAST& selectAST)
+//{
+//    using namespace std;
+//    ostream& L( eckit::Log::info() );
+//    //eckit::Log::info() << "FunctionFactoryBase::build: name: " << name << std::endl;
+//    ASSERT(name == "match"); // this only for now
+//
+//    return new FunctionMATCH(name, matchList, selectAST);
+//}
 
 
 //===============================

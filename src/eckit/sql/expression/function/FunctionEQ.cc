@@ -83,18 +83,16 @@ double FunctionEQ::eval(bool& missing) const
 	return equal(*args_[0], *args_[1], missing);
 }
 
-SQLExpression* FunctionEQ::simplify(bool& changed) 
+std::shared_ptr<SQLExpression> FunctionEQ::simplify(bool& changed)
 {
-	SQLExpression* x = FunctionExpression::simplify(changed);
+    std::shared_ptr<SQLExpression> x = FunctionExpression::simplify(changed);
 	if(x) return x;
 
-	ColumnExpression* a = dynamic_cast<ColumnExpression*>(args_[0]);
-	ColumnExpression* b = dynamic_cast<ColumnExpression*>(args_[1]);
+    ColumnExpression* a = dynamic_cast<ColumnExpression*>(args_[0].get());
+    ColumnExpression* b = dynamic_cast<ColumnExpression*>(args_[1].get());
 
 	if(a && b) {
-		args_[0] = 0;
-		args_[1] = 0;
-		return FunctionFactory::instance().build("join",a,b);
+        return FunctionFactory::instance().build("join", args_[0], args_[1]);
 	}
 
 	//

@@ -100,9 +100,9 @@ int RegionCache::find_lonbox(const int & jb, const double & lon,
 //==============================================================================
 {
   const double three_sixty = 360;
-  double mid = odb::MDI::realMDI();
-  double left = odb::MDI::realMDI();
-  double right = odb::MDI::realMDI();
+  double mid = 0; //odb::MDI::realMDI();
+  double left = 0; //odb::MDI::realMDI();
+  double right = 0; //odb::MDI::realMDI();
   int boxid = -1;
   if (jb >= 0 && jb < *nbands_) {
     double Lon = mfmod(lon + three_sixty, three_sixty);
@@ -183,7 +183,7 @@ int RegionCache::find_latband(const double & lat) {
 double RegionCache::get_midlat(const double & resol, const double & lat)
 //==============================================================================
 {
-   double res = odb::MDI::realMDI(); // should be initialised to missing
+   double res = 0; //odb::MDI::realMDI(); // should be initialised to missing
    get_cache(resol);
    int jb = find_latband(lat);
     if (jb >= 0 && jb < *nbands_) {
@@ -196,7 +196,7 @@ double RegionCache::get_midlat(const double & resol, const double & lat)
 double RegionCache::get_midlon(const double & resol, const double & lat, const double & lon)
 //==============================================================================
 {
-   double res = odb::MDI::realMDI(); // should be initialised to missing
+   double res = 0; //odb::MDI::realMDI(); // should be initialised to missing
    get_cache(resol);
    int jb = find_latband(lat);
    int boxid = find_lonbox(jb, lon, &res, NULL, NULL);

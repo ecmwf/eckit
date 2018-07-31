@@ -44,7 +44,7 @@ Dictionary& SQLExpression::dictionary()
 	return *((Dictionary*) 0);
 }
 
-SQLExpression* SQLExpression::number(double value) { return new NumberExpression(value); } 
+std::shared_ptr<SQLExpression> SQLExpression::number(double value) { return std::make_shared<NumberExpression>(value); }
 
 std::shared_ptr<SQLExpression> SQLExpression::simplify(bool& changed)
 {

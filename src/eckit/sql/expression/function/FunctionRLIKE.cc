@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/ColumnExpression.h"
+#include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/function/FunctionRLIKE.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/type/SQLType.h"

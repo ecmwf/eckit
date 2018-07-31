@@ -80,7 +80,7 @@ public:
 	virtual bool hasMissingValue() const { return hasMissingValue_; }
 	double missingValue() const { return missingValue_; }
 
-	static SQLExpression* number(double);
+    static std::shared_ptr<SQLExpression> number(double);
 
     virtual void print(std::ostream&) const = 0;
 

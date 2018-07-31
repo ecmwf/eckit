@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/DateTime.h"
+#include "eckit/types/Date.h"
 #include "eckit/sql/expression/function/FunctionJULIAN.h"
 
 namespace eckit {
@@ -35,19 +35,11 @@ const type::SQLType* FunctionJULIAN::type() const { return &type::SQLType::looku
 double FunctionJULIAN::eval(bool& missing) const
 {
     int indate = (int) args_[0]->eval(missing);
-    int intime = (int) args_[1]->eval(missing);
+    int intime = (int) args_[1]->eval(missing); // unused
 	// TODO: shold we return MISSING_VALUE_INT in case missing == true here?
-    int year_target = indate/10000;
-    int month_target = (indate%10000)/100;
-    int day_target = indate%100;
-    int hour_target = intime/10000;
-    int min_target = (intime%10000)/100;
-    int sec_target = intime%100;
 
-    utils::DateTime d1(year_target, month_target, day_target,
-                   hour_target, min_target, sec_target);
-
-    return d1.dateToJulian();
+    eckit::Date date(indate);
+    return date.julian();
 }
 
 } // namespace function

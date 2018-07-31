@@ -34,9 +34,9 @@ double FunctionOR::eval(bool& missing) const
 	return args_[0]->eval(missing) || args_[1]->eval(missing);
 }
 
-SQLExpression* FunctionOR::simplify(bool& changed) 
+std::shared_ptr<SQLExpression> FunctionOR::simplify(bool& changed)
 {
-	SQLExpression* x = FunctionExpression::simplify(changed);
+    std::shared_ptr<SQLExpression> x = FunctionExpression::simplify(changed);
 	if(x) return x;
 
 	for(int i = 0; i < 2 ; i++)

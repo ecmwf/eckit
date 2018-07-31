@@ -13,6 +13,7 @@
 
 #include "eckit/sql/expression/function/FunctionTHIN.h"
 #include "eckit/sql/SQLSelect.h"
+#include "eckit/sql/SQLTable.h"
 
 namespace eckit {
 namespace sql {
@@ -70,7 +71,7 @@ bool FunctionTHIN::isConstant() const
     return false;
 }
 
-SQLExpression* FunctionTHIN::simplify(bool&)
+std::shared_ptr<SQLExpression> FunctionTHIN::simplify(bool&)
 {
     return 0;
 }

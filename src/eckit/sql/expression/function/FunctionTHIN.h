@@ -39,7 +39,7 @@ protected:
 	virtual void cleanup(SQLSelect&);
 	virtual bool isConstant() const;
 	virtual double eval(bool& missing) const;
-	virtual SQLExpression* simplify(bool&);
+    virtual std::shared_ptr<SQLExpression> simplify(bool&);
 	bool isAggregate() const { return false; }
 
 private:

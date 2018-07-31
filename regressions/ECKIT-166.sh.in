@@ -6,7 +6,7 @@ cd @CMAKE_CURRENT_BINARY_DIR@
 
 exe="./ECKIT-166.x"
 
-if [ "@ECKIT_HAVE_MPI@" == "1" ]; then
+if [ "@ECKIT_HAVE_MPI@" == "1" ] && [ "@MPIEXEC@" != "MPIEXEC-NOTFOUND" ]; then
 
   @MPIEXEC@ -np 1 $exe
 

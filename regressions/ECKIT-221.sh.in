@@ -26,7 +26,7 @@ cmp "$fname" "$fname.0"
 
 ### Case 2 - Parallel
 
-if [ "@ECKIT_HAVE_MPI@" == "1" ]; then
+if [ "@ECKIT_HAVE_MPI@" == "1" ] && [ "@MPIEXEC@" != "MPIEXEC-NOTFOUND" ]; then
 
   create_file
 

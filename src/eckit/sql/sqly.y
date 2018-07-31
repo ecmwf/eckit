@@ -28,15 +28,15 @@ typedef SQLExpression* SQLExpressionPtr; // For casts.
 //      --> Convert to references on the output boundary
 
 struct YYSTYPE {
-    std::shared_ptr<SQLExpression>                exp;
-    SQLTable*                                     table;
-    double                                        num;
-    std::string                                   val;
-    std::vector<std::string>                      list;
-    Expressions                                   explist;
-    std::pair<SQLExpression*,bool>                orderexp;
-    std::pair<Expressions,std::vector<bool>>      orderlist;
-    std::vector<std::reference_wrapper<SQLTable>> tablist;
+    std::shared_ptr<SQLExpression>                 exp;
+    SQLTable*                                      table;
+    double                                         num;
+    std::string                                    val;
+    std::vector<std::string>                       list;
+    Expressions                                    explist;
+    std::pair<std::shared_ptr<SQLExpression>,bool> orderexp;
+    std::pair<Expressions, std::vector<bool>>      orderlist;
+    std::vector<std::reference_wrapper<SQLTable>>  tablist;
     ///ColumnDefs             coldefs;
     ///ColumnDef              coldef;
     ///ConstraintDefs         condefs;
@@ -148,9 +148,8 @@ Expressions emptyExpressionList;
 %type <val> table_reference;
 %type <tablist> from;
 
-//%type <orderlist>order_by;
-//%type <orderlist>order_list;
-//%type <orderexp>order;
+%type <orderlist> order_by order_list;
+%type <orderexp> order;
 
 %type <explist> select_list select_list_;
 %type <exp> select select_;
@@ -445,7 +444,7 @@ statement: select_statement
 //create_view_statement: CREATE VIEW IDENT AS select_statement { $$ = $5; }
 //	;
 
-select_statement: SELECT distinct all select_list into from where group_by // order_by
+select_statement: SELECT distinct all select_list into from where group_by order_by
                 {
                     bool                                          distinct($2);
                     bool                                          all($3);
@@ -454,10 +453,10 @@ select_statement: SELECT distinct all select_list into from where group_by // or
                     std::vector<std::reference_wrapper<SQLTable>> from ($6);
                     std::shared_ptr<SQLExpression>                where($7);
                     Expressions                                   group_by($8);
-                    //std::pair<Expressions,std::vector<bool> >   order_by($9);
+                    std::pair<Expressions,std::vector<bool>>      order_by($9);
 
                     session->setStatement(
-                        session->selectFactory().create(distinct, all, select_list, into, from, where, group_by)
+                        session->selectFactory().create(distinct, all, select_list, into, from, where, group_by, order_by)
                     );
                 }
                 ;
@@ -604,22 +603,22 @@ group_by: GROUP BY expression_list { $$ = $3;                       }
         ;
 
 ///*================= ORDER =========================================*/
-//
-//order_by: ORDER BY order_list { $$ = $3;                       }
-//        | empty               { $$ = std::make_pair(Expressions(),std::vector<bool>()); }
-//	    ;
-//
-//
-//order_list : order                  { $$ = std::make_pair(Expressions(1, $1 .first),std::vector<bool>(1, $1 .second)); }
-//           | order_list ',' order   { $$ = $1; $$.first.push_back($3 .first); $$.second.push_back($3 .second); }
-//		   ;
-//
-//order : expression DESC      { $$ = std::make_pair($1, false); }
-//      | expression ASC       { $$ = std::make_pair($1, true); }
-//      | expression			 { $$ = std::make_pair($1, true); }
-//	  ;
-//
-//
+
+order_by: ORDER BY order_list { $$ = $3;                       }
+        | empty               { $$ = std::make_pair(Expressions(),std::vector<bool>()); }
+        ;
+
+
+order_list : order                  { $$ = std::make_pair(Expressions(), std::vector<bool>()); $$.first.push_back($1.first); $$.second.push_back($1.second); }
+           | order_list ',' order   { $$ = $1; $$.first.push_back($3.first); $$.second.push_back($3.second); }
+           ;
+
+order : expression DESC      { $$ = std::make_pair($1, false); }
+      | expression ASC       { $$ = std::make_pair($1, true); }
+      | expression			 { $$ = std::make_pair($1, true); }
+      ;
+
+
 /*================= EXPRESSION =========================================*/
 
 expression_list : expression         {  $$ = Expressions(); $$.push_back($1); }

@@ -118,54 +118,23 @@ public: // visible members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Test SQL database setup" ) {
-
-    eckit::sql::SQLDatabase db;
-
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
-    db.addTable(new TestTable(db, "d/e/f.path", "table2"));
-}
-
-
-CASE( "Test SQL select columns" ) {
+CASE( "Test SQL comparisons" ) {
 
     eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
     eckit::sql::SQLDatabase& db(session.currentDatabase());
-
     db.addTable(new TestTable(db, "a/b/c.path", "table1"));
-    db.addTable(new TestTable(db, "d/e/f.path", "table2"));
 
-    std::string sql = "select scol,icol from table1";
+    std::string sql = "select icol > 3333, icol >= 3333 from table1";
     eckit::sql::SQLParser().parseString(session, sql);
 
     session.statement().execute();
-
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    EXPECT(o.intOutput == INTEGER_DATA);
-    EXPECT(o.floatOutput.empty());
-    EXPECT(o.strOutput == STRING_DATA);
-}
+    for (size_t i = 0; i < 12; i++) EXPECT(o.floatOutput[i]);
+    EXPECT(!o.floatOutput[12]);
+    EXPECT(o.floatOutput[13]);
+    for (size_t i = 14; i < 18; i++) EXPECT(!o.floatOutput[i]);
 
-
-CASE( "Test SQL select all" ) {
-
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
-    db.addTable(new TestTable(db, "d/e/f.path", "table2"));
-
-    std::string sql = "select * from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
-
-    session.statement().execute();
-
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
-
-    EXPECT(o.intOutput == INTEGER_DATA);
-    EXPECT(o.floatOutput == REAL_DATA);
-    EXPECT(o.strOutput == STRING_DATA);
 }
 
 

@@ -198,8 +198,8 @@ SQLSelect* SQLSelectFactory::create (
     const std::string& into,
     const std::vector<std::reference_wrapper<SQLTable>>& from,
     std::shared_ptr<SQLExpression> where,
-    const Expressions& group_by)
-//    std::pair<Expressions,std::vector<bool> > order_by)
+    const Expressions& group_by,
+    std::pair<Expressions,std::vector<bool>> order_by)
 {
     std::ostream& L(Log::debug());
 
@@ -260,7 +260,7 @@ SQLSelect* SQLSelectFactory::create (
 
     // TODO: Special outputs
     if(distinct)              { NOTIMP; } // out = new SQLDistinctOutput(out); }
-   //// if(order_by.first.size()) { NOTIMP; } // out = new SQLOrderOutput(out, order_by); }
+    if(order_by.first.size()) { NOTIMP; } // out = new SQLOrderOutput(out, order_by); }
     ///r = new SQLSelect(select, fromTables, where, out, config_, all);
     r = new SQLSelect(select, fromTables, where, out, all);
 

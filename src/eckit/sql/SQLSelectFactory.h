@@ -50,9 +50,8 @@ public:
         const std::string& into,
         const std::vector<std::reference_wrapper<SQLTable>>& from,
         std::shared_ptr<expression::SQLExpression> where,
-        const expression::Expressions& group_by
-//        std::pair<Expressions, std::vector<bool> > order_by);
-            );
+        const expression::Expressions& group_by,
+        std::pair<expression::Expressions, std::vector<bool> > order_by);
 
     std::shared_ptr<expression::SQLExpression> createColumn(
 		const std::string& columnName,

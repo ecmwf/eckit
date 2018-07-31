@@ -98,8 +98,11 @@ void SQLSelect::ensureFetch(SQLTable& table, const std::string& columnName) {
     if (tablesToFetch_.find(&table) == tablesToFetch_.end())
         tablesToFetch_[&table] = SelectOneTable(&table);
 
-    tablesToFetch_[&table].fetch_.push_back(column);
-    tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
+    auto& fetch(tablesToFetch_[&table].fetch_);
+    if (std::find_if(fetch.begin(), fetch.end(), [&](SQLColumn& c){ return &c == &column; }) == fetch.end()) {
+        fetch.push_back(column);
+        tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
+    }
 }
 
 
@@ -158,9 +161,7 @@ void SQLSelect::prepareExecute() {
     //      allocate buffers and associate them with iterators appropriately.
 
     for (Expressions::iterator c = select_.begin(); c != select_.end(); ++c) {
-        if (dynamic_cast<ColumnExpression*>(&(**c))) {
-            (*c)->preprepare(*this);
-        }
+        (*c)->preprepare(*this);
     }
 
     if(where_) where_->preprepare(*this);

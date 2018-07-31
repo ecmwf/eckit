@@ -163,6 +163,8 @@ void SQLSelect::prepareExecute() {
         }
     }
 
+    if(where_) where_->preprepare(*this);
+
     // Construct the cursors that will be used for the selection, and pass these in to the
     // constructed cursors/iterators
 

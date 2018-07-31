@@ -35,6 +35,12 @@ const type::SQLType* FunctionExpression::type() const { return &type::SQLType::l
 
 FunctionExpression::~FunctionExpression() {}
 
+void FunctionExpression::preprepare(SQLSelect& sql)
+{
+    for(expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+        (*j)->preprepare(sql);
+}
+
 void FunctionExpression::prepare(SQLSelect& sql)
 {
 	for(expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)

@@ -169,7 +169,7 @@ CASE( "Test SQL select all" ) {
 }
 
 
-CASE( "Test SQL select all" ) {
+CASE( "Test SQL select where" ) {
 
     eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
     eckit::sql::SQLDatabase& db(session.currentDatabase());
@@ -184,9 +184,10 @@ CASE( "Test SQL select all" ) {
 
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    EXPECT(o.intOutput == INTEGER_DATA);
-    EXPECT(o.floatOutput == REAL_DATA);
-    EXPECT(o.strOutput == STRING_DATA);
+    EXPECT(o.intOutput.empty());
+    std::vector<double> expected {99.9, 88.8, 77.7, 66.6, 55.5, 44.4};
+    EXPECT(o.floatOutput == expected);
+    EXPECT(o.strOutput.empty());
 }
 
 

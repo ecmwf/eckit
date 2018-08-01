@@ -1,5 +1,5 @@
 list( APPEND regressions ECKIT-175 ECKIT-221 ECKIT-166 )
-
+message("MPIEXEC = ${MPIEXEC}")
 foreach( r ${regressions} )
 
   configure_file( ${r}.sh.in ${r}.sh @ONLY )

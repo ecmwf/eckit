@@ -106,7 +106,7 @@ void SQLSelect::ensureFetch(SQLTable& table, const std::string& columnName) {
 }
 
 
-std::pair<double*, bool&> SQLSelect::column(const std::string& name, SQLTable* table)
+SQLSelect::ValueLookup SQLSelect::column(const std::string& name, SQLTable* table)
 {
     ASSERT(table);
     SQLColumn& column(table->column(name));
@@ -117,7 +117,7 @@ std::pair<double*, bool&> SQLSelect::column(const std::string& name, SQLTable* t
     auto it = values_.find(fullname);
     ASSERT(it != values_.end());
 
-    return std::pair<double*, bool&>(it->second.first, it->second.second);
+    return ValueLookup(it->second.first, it->second.second);
 }
 
 const type::SQLType* SQLSelect::typeOf(const std::string& name, SQLTable* table)
@@ -174,14 +174,14 @@ void SQLSelect::prepareExecute() {
         cursors_.emplace_back(tbl.table_->iterator(tbl.fetch_));
         cursors_.back()->rewind();
 
-        double* data(cursors_.back()->data());
+        const double* data(cursors_.back()->data());
         const std::vector<size_t> offsets(cursors_.back()->columnOffsets());
 
         for (size_t i = 0; i < tbl.fetch_.size(); i++) {
             std::string fullname(tbl.fetch_[i].get().fullName());
             ASSERT(values_.find(fullname) == values_.end());
 
-            std::pair<double*, bool>& newValue(values_[fullname]);
+            std::pair<const double*, bool>& newValue(values_[fullname]);
             newValue.first = &data[offsets[i]];
         }
     }
@@ -271,10 +271,10 @@ void SQLSelect::prepareExecute() {
 
 					//
 				std::string o                  = name2 + ".offset";
-                std::pair<double*,bool&> offset = column(o,table1);
+                ValueLookup offset = column(o,table1);
 
 				std::string l                  = name2 + ".length";
-                std::pair<double*,bool&> length = column(l,table1);
+                ValueLookup length = column(l,table1);
 
 				// There should not be 2 tables with a link on the same table
 				

@@ -69,7 +69,7 @@ private:
             data_[3] = REAL_DATA[idx_];
         }
         virtual std::vector<size_t> columnOffsets() const { return offsets_; }
-        virtual double* data() { return &data_[0]; }
+        virtual const double* data() const { return &data_[0]; }
 
         const TestTable& owner_;
         size_t idx_;

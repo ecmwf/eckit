@@ -37,7 +37,7 @@ public:
 	virtual void rewind() = 0;
 	virtual bool next()   = 0;
     virtual std::vector<size_t> columnOffsets() const = 0;
-    virtual double* data() = 0;
+    virtual const double* data() const = 0;
 };
 
 typedef std::vector<std::string> ColumnNames;

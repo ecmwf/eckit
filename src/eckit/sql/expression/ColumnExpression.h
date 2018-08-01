@@ -35,14 +35,14 @@ public:
 	~ColumnExpression(); 
 
 	SQLTable* table() { return table_; }
-    double* current() { return value_.first; }
+    const double* current() { return value_.first; }
     std::shared_ptr<SQLExpression> clone() const;
 
 	SQLExpression* nominalShift(int n) { nominalShift_ = n; return this; }
 
 protected:
 	const type::SQLType*   type_;
-    std::pair<double*,bool&>    value_;
+    std::pair<const double*,bool&>    value_;
 	std::string                 columnName_;
 	SQLTable*              table_;
 	std::string                 tableReference_;

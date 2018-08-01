@@ -46,8 +46,8 @@ struct SelectOneTable {
 
 
 	// For links
-    std::pair<double*,bool&>   offset_;
-    std::pair<double*,bool&>   length_;
+    std::pair<const double*,bool&>   offset_;
+    std::pair<const double*,bool&>   length_;
 	SQLColumn*           column_; // Reference column
 
 	// For checking/debugging

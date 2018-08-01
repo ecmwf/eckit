@@ -48,7 +48,13 @@ public:
 	virtual ~SQLTable(); 
 
     void loadIOMAP(std::istream&);
-    void addColumn(const std::string&, int, const type::SQLType&, bool, double, size_t sizeDoubles=1, bool isBitfield=false, const BitfieldDef& d=BitfieldDef());
+    void addColumn(const std::string& name,
+                   int index,
+                   const type::SQLType& type,
+                   bool hasMissingValue,
+                   double missingValue,
+                   bool isBitfield=false,
+                   const BitfieldDef& bitfieldDef=BitfieldDef());
 
     void addLinkFrom(const SQLTable&);
 	bool hasLinkFrom(const SQLTable&) const;
@@ -98,7 +104,7 @@ protected:
 	// void print(std::ostream&) const; 	
 	void addColumn(SQLColumn*, const std::string&, int);
 
-    virtual SQLColumn* createSQLColumn(const type::SQLType& type, const std::string& name, size_t index, size_t sizeDoubles, bool hasMissingValue, double missingValue, const BitfieldDef& d=BitfieldDef());
+    virtual SQLColumn* createSQLColumn(const type::SQLType& type, const std::string& name, size_t index, bool hasMissingValue, double missingValue, const BitfieldDef& d=BitfieldDef());
 
 private:
 

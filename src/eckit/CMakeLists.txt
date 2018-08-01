@@ -545,8 +545,8 @@ sql/SQLDatabase.h
 #sql/SQLDistinctOutput.h
 #sql/SQLInteractiveSession.cc
 #sql/SQLInteractiveSession.h
-#sql/SQLNonInteractiveSession.cc
-#sql/SQLNonInteractiveSession.h
+#sql/SQLSession.cc
+#sql/SQLSession.h
 #sql/SQLIterator.h
 #sql/SQLIteratorOutput.cc
 #sql/SQLIteratorOutput.h

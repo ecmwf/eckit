@@ -10,7 +10,7 @@
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/sql/SQLNonInteractiveSession.h"
+#include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLSimpleOutput.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/SQLOutputConfig.h"
@@ -18,28 +18,28 @@
 namespace eckit {
 namespace sql {
 
-SQLNonInteractiveSession::SQLNonInteractiveSession(const odb::sql::SQLOutputConfig& config, const std::string& csvDelimiter)
+SQLSession::SQLSession(const odb::sql::SQLOutputConfig& config, const std::string& csvDelimiter)
 : SQLSession(config, csvDelimiter),
   statement_(0)
 {
     loadDefaultSchema();
 }
 
-SQLNonInteractiveSession::~SQLNonInteractiveSession()
+SQLSession::~SQLSession()
 {}
 
-SQLOutput* SQLNonInteractiveSession::defaultOutput()
+SQLOutput* SQLSession::defaultOutput()
 {
     return new SQLSimpleOutput(std::cout);
 }
 
-void SQLNonInteractiveSession::statement(SQLStatement *sql)
+void SQLSession::statement(SQLStatement *sql)
 {
     delete statement_;
     statement_ = sql;
 }
 
-SQLStatement * SQLNonInteractiveSession::statement()
+SQLStatement * SQLSession::statement()
 {
     typedef odb::sql::SQLStatement* P;
     if (gotSelectAST())

@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File SQLNonInteractiveSession.h
+// File SQLSession.h
 // Piotr Kuchta - ECMWF May 2015
 
-#ifndef odb_api_SQLNonInteractiveSession_H
-#define odb_api_SQLNonInteractiveSession_H
+#ifndef odb_api_SQLSession_H
+#define odb_api_SQLSession_H
 
 #include "eckit/sql/SQLSession.h"
 
@@ -21,16 +21,16 @@ namespace sql {
 
 class SQLOutputConfig;
 
-class SQLNonInteractiveSession : public SQLSession {
+class SQLSession : public SQLSession {
 public:
-    SQLNonInteractiveSession(const odb::sql::SQLOutputConfig&, const std::string&);
-	~SQLNonInteractiveSession(); 
+    SQLSession(const odb::sql::SQLOutputConfig&, const std::string&);
+	~SQLSession(); 
 
 	SQLStatement* statement();
 private:
 // No copy allowed
-	SQLNonInteractiveSession(const SQLNonInteractiveSession&);
-	SQLNonInteractiveSession& operator=(const SQLNonInteractiveSession&);
+	SQLSession(const SQLSession&);
+	SQLSession& operator=(const SQLSession&);
 
     SQLStatement* statement_;
 

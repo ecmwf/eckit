@@ -36,9 +36,12 @@ std::shared_ptr<SQLExpression> FunctionEQ::clone() const { return std::make_shar
 
 FunctionEQ::~FunctionEQ() {}
 
+
 void FunctionEQ::trimStringInDouble(char* &p, size_t& len)
 {
-	len = 0;
+    // n.b. Duplicated into odb::WriterDispatchingIterator
+    //      TODO: Put somewhere better.
+    len = 0;
 	for(; len < sizeof(double) && isprint(p[len]); ++len)
 		;
 	for(; len > 0 && isspace(p[len - 1]); --len)

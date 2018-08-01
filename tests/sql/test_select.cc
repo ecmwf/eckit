@@ -37,7 +37,7 @@ public:
     TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name) :
         SQLTable(db, path, name) {
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
-        addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 16), false, 0);
+        addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 2), false, 0);
         addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
     }
 

@@ -78,11 +78,11 @@ FieldNames SQLTable::bitColumnNames(const std::string& name) const
 
 
 //void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, const FieldNames& bitmap)
-void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, bool hasMissingValue, double missingValue, size_t sizeDoubles, bool isBitfield, const BitfieldDef& bitfieldDef)
+void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, bool hasMissingValue, double missingValue, bool isBitfield, const BitfieldDef& bitfieldDef)
 {
 	const FieldNames& bitmap = bitfieldDef.first;
-    SQLColumn *col = isBitfield ? createSQLColumn(type, name, index, hasMissingValue, missingValue, sizeDoubles, bitfieldDef)
-                                : createSQLColumn(type, name, index, hasMissingValue, missingValue, sizeDoubles);
+    SQLColumn *col = isBitfield ? createSQLColumn(type, name, index, hasMissingValue, missingValue, bitfieldDef)
+                                : createSQLColumn(type, name, index, hasMissingValue, missingValue);
 
 	columnsByName_[name]   = col;
 	columnsByIndex_[index] = col;
@@ -114,8 +114,9 @@ void SQLTable::addColumn(SQLColumn *col, const std::string& name, int index)
     columnsByIndex_[index] = col;
 }
 
-SQLColumn *SQLTable::createSQLColumn(const type::SQLType &type, const std::string &name, size_t index, size_t sizeDoubles, bool hasMissingValue, double missingValue, const BitfieldDef& defs) {
-    return new SQLColumn(type, *this, name, index, hasMissingValue, missingValue, sizeDoubles, defs);
+SQLColumn *SQLTable::createSQLColumn(const type::SQLType &type, const std::string &name, size_t index, bool hasMissingValue, double missingValue, const BitfieldDef& defs) {
+    ASSERT(type.size() % 8 == 0);
+    return new SQLColumn(type, *this, name, index, hasMissingValue, missingValue, defs);
 }
 
 //bool SQLTable::hasColumn(const std::string& name, std::string* fullName, bool *hasMissingValue, double *missingValue, BitfieldDef* bitfieldDef)

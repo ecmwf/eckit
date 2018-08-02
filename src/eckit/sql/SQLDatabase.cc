@@ -40,6 +40,10 @@ void SQLDatabase::addTable(SQLTable* table) {
     tablesByName_.emplace(std::pair<std::string, std::unique_ptr<SQLTable>>(table->name(), table));
 }
 
+void SQLDatabase::addImplicitTable(SQLTable* table) {
+    implicitTables_.emplace_back(table);
+}
+
 void SQLDatabase::setLinks(const Links& links)
 {
 	for(Links::const_iterator j = links.begin(); j != links.end() ; ++j)
@@ -66,6 +70,9 @@ SQLTable& SQLDatabase::defaultTable()
 {
     auto it = tablesByName_.find("defaultTable");
     if (it == tablesByName_.end())
+        if (tablesByName_.empty() && implicitTables_.size() == 0) {
+            return *implicitTables_.back();
+        }
         throw UserError("No default table");
     return *(it->second);
 }

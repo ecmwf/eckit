@@ -379,6 +379,8 @@ log/MonitorTarget.h
 log/MonitorTarget.cc
 log/MessageTarget.h
 log/MessageTarget.cc
+log/Number.h
+log/Number.cc
 log/ChannelBuffer.h
 log/ChannelBuffer.cc
 log/CodeLocation.h
@@ -570,8 +572,8 @@ sql/SQLSelectFactory.h
 #sql/SQLInsertFactory.h
 sql/SQLSession.cc
 sql/SQLSession.h
-#sql/SQLSimpleOutput.cc
-#sql/SQLSimpleOutput.h
+sql/SQLSimpleOutput.cc
+sql/SQLSimpleOutput.h
 sql/SQLStatement.cc
 sql/SQLStatement.h
 sql/SQLTable.cc

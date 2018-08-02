@@ -26,6 +26,7 @@ namespace eckit {
         class SQLSession;
         class SQLTable;
         class SQLSelect;
+        class SQLOutput;
         namespace expression {
             class Expressions;
             class SQLExpression;

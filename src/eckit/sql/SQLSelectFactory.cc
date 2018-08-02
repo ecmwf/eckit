@@ -309,9 +309,13 @@ SQLOutput& SQLSelectFactory::createOutput (const std::string& into, size_t order
     //std::string outputFile ((config_.outputFormat() == "odb") ? config_.outputFile() : into);
     //Log::debug() << "SQLSelectFactory::createOutput: outputFile: '" << outputFile << "'" << std::endl;
     //if (! outputFile.size())
-        return session_.output();
 
-    NOTIMP;
+    if (!into.empty()) {
+        session_.setOutputFile(into);
+    }
+
+    return session_.output();
+
 //    TemplateParameters templateParameters;
 //    TemplateParameters::parse(outputFile, templateParameters);
 //    if (templateParameters.size())

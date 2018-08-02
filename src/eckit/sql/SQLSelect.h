@@ -23,7 +23,6 @@
 #include "eckit/sql/Environment.h"
 
 namespace eckit {
-	class SelectIterator;
     namespace sql {
         class SQLTableIterator;
         namespace expression {
@@ -43,7 +42,6 @@ namespace sql {
 
 
 class SQLSelect : public SQLStatement {
-    friend class SelectIterator;
 
 public:
 

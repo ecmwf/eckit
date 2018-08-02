@@ -107,7 +107,7 @@ class TestOutput : public eckit::sql::SQLOutput {
 
     virtual unsigned long long count() {
         return std::max(intOutput.size(), std::max(floatOutput.size(), strOutput.size()));
-    };
+    }
 
 public: // visible members
 

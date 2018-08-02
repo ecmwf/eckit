@@ -12,6 +12,7 @@
 #define eckit_sql_Environment_H
 
 #include "eckit/sql/SelectOneTable.h"
+#include "eckit/sql/SQLTable.h"
 
 namespace eckit {
 namespace sql {

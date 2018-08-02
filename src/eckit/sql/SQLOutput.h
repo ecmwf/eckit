@@ -16,6 +16,7 @@
 #define odb_api_SQLOutput_H
 
 #include "eckit/sql/SQLOutputConfig.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 namespace sql {
@@ -28,7 +29,7 @@ class SQLSelect;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SQLOutput {
+class SQLOutput : private eckit::NonCopyable {
 public:
 	SQLOutput();
 	virtual ~SQLOutput(); 

@@ -57,6 +57,7 @@ public:
 //    SQLTable& openDataStream(std::istream&, const std::string& delimiter);
 
     void addTable(SQLTable* table);
+    void addImplicitTable(SQLTable* table);
 
 	void setLinks(const Links&);
 	void setLinks() { setLinks(links_); }
@@ -79,6 +80,7 @@ public:
 protected:
 	Links links_;
     std::map<std::string, std::unique_ptr<SQLTable>> tablesByName_;
+    std::vector<std::unique_ptr<SQLTable>> implicitTables_;
 
     std::vector<eckit::PathName> includePath_;
 

@@ -9,63 +9,76 @@
  */
 
 #include "eckit/sql/SQLOutputConfig.h"
+#include "eckit/sql/SQLSimpleOutput.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 namespace sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SQLOutputConfig::SQLOutputConfig(bool cn,
-                bool n,
-                const std::string& d,
-                const std::string& output,
-                const std::string& format,
-                bool displayBitfieldsBinary,
-                bool displayBitfieldsHexadecimal,                    
-                bool disableAlignmentOfColumns,
-                bool fullPrecision)
-: doNotWriteColumnNames_(cn),
-  doNotWriteNULL_(n),
-  fieldDelimiter_(d),
-  outputFile_(output),
-  outputFormat_(format),
-  displayBitfieldsBinary_(displayBitfieldsBinary),
-  displayBitfieldsHexadecimal_(displayBitfieldsHexadecimal),
-  disableAlignmentOfColumns_(disableAlignmentOfColumns),
-  fullPrecision_(fullPrecision)
-{}
+SQLOutputConfig::SQLOutputConfig(bool noColumnNames,
+                                 bool noNULL,
+                                 const std::string& delimiter,
+                                 const std::string& format,
+                                 bool bitfieldsBinary,
+                                 bool noColumnAlignment,
+                                 bool fullPrecision) :
+    outputFile_(""),
+    doNotWriteColumnNames_(noColumnNames),
+    fieldDelimiter_(delimiter),
+    outputFormat_(format),
+    displayBitfieldsBinary_(bitfieldsBinary),
+    disableAlignmentOfColumns_(noColumnAlignment),
+    fullPrecision_(fullPrecision),
+    doNotWriteNULL_(noNULL) {}
 
-bool SQLOutputConfig::doNotWriteColumnNames () const { return doNotWriteColumnNames_; }
-void SQLOutputConfig::doNotWriteColumnNames(bool b) { doNotWriteColumnNames_ = b; }
+SQLOutputConfig::~SQLOutputConfig() {}
 
-bool SQLOutputConfig::doNotWriteNULL () const { return  doNotWriteNULL_; }
-void SQLOutputConfig::doNotWriteNULL (bool b) { doNotWriteNULL_ = b; }
+void SQLOutputConfig::setOutputFile(const eckit::PathName& filename) {
+    outputFile_ = filename;
+}
 
-const std::string& SQLOutputConfig::fieldDelimiter() const { return fieldDelimiter_; }
-void SQLOutputConfig::fieldDelimiter(const std::string& d) { fieldDelimiter_ = d; }
+SQLOutput* SQLOutputConfig::buildOutput() const {
+    ASSERT(outputFile_.asString().empty());
+    if (outputFormat_ != "default" && outputFormat_ != "wide") {
+        throw UserError("Unsupported output format: " + outputFormat_, Here());
+    }
+    return new SQLSimpleOutput(*this, eckit::Log::info());
+}
 
-const std::string& SQLOutputConfig::outputFile () const { return outputFile_; }
-void SQLOutputConfig::outputFile (const std::string& fn) { outputFile_ = fn; }
+const std::string& SQLOutputConfig::fieldDelimiter() const {
+    return fieldDelimiter_;
+}
 
-const std::string& SQLOutputConfig::outputFormat () const { return outputFormat_; }
-void SQLOutputConfig::outputFormat (const std::string& s) { outputFormat_ = s; }
+const std::string& SQLOutputConfig::outputFormat() const {
+    return outputFormat_;
+}
 
-bool SQLOutputConfig::displayBitfieldsBinary () const { return displayBitfieldsBinary_; }
-void SQLOutputConfig::displayBitfieldsBinary (bool b) { displayBitfieldsBinary_ = b; }
+bool SQLOutputConfig::doNotWriteNULL () const {
+    return  doNotWriteNULL_;
+}
 
-bool SQLOutputConfig::displayBitfieldsHexadecimal () const { return displayBitfieldsHexadecimal_; }
-void SQLOutputConfig::displayBitfieldsHexadecimal (bool b) { displayBitfieldsHexadecimal_ = b; }
+bool SQLOutputConfig::fullPrecision() const {
+    return fullPrecision_;
+}
 
-bool SQLOutputConfig::disableAlignmentOfColumns () const { return disableAlignmentOfColumns_; }
-void SQLOutputConfig::disableAlignmentOfColumns (bool b) { disableAlignmentOfColumns_ = b; }
+bool SQLOutputConfig::displayBitfieldsBinary () const {
+    return displayBitfieldsBinary_;
+}
 
-bool SQLOutputConfig::fullPrecision() const { return fullPrecision_; }
-void SQLOutputConfig::fullPrecision(bool b) { fullPrecision_ = b; }
+bool SQLOutputConfig::disableAlignmentOfColumns () const {
+    return disableAlignmentOfColumns_;
+}
 
-const SQLOutputConfig SQLOutputConfig::defaultConfig() { return SQLOutputConfig(); }
-const char* SQLOutputConfig::defaultDelimiter() { return "	"; }
-const char* SQLOutputConfig::defaultOutputFile() { return "output.odb"; }
-const char* SQLOutputConfig::defaultFormat() { return "default"; }
+bool SQLOutputConfig::doNotWriteColumnNames () const {
+    return doNotWriteColumnNames_;
+}
+
+
+const char* SQLOutputConfig::defaultDelimiter = "	";
+//const char* SQLOutputConfig::defaultOutputFile = "output.odb";
+const char* SQLOutputConfig::defaultOutputFormat = "default";
 
 //----------------------------------------------------------------------------------------------------------------------
 

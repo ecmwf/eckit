@@ -8,41 +8,39 @@
  * does it submit to any jurisdiction.
  */
 
-/// \file SQLSimpleOutput.h
-/// Baudouin Raoult - ECMWF Dec 03
+/// @author Baudouin Raoult
+/// @author Simon Smart
+/// ECMWF Dec 03
 
-#ifndef odb_api_SQLSimpleOutput_H
-#define odb_api_SQLSimpleOutput_H
+#ifndef eckit_sql_SQLSimpleOutput_H
+#define eckit_sql_SQLSimpleOutput_H
 
 #include "eckit/sql/SQLOutput.h"
 
 namespace eckit {
 namespace sql {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SQLSimpleOutput : public SQLOutput {
-public:
-    SQLSimpleOutput(std::ostream& = std::cout);
+
+public: // methods
+
+    SQLSimpleOutput(const SQLOutputConfig& config, std::ostream& out);
 	virtual ~SQLSimpleOutput(); 
 
-protected:
-	virtual void print(std::ostream&) const; 	
+private: // methods
 
-private:
-	SQLSimpleOutput(const SQLSimpleOutput&);
-	SQLSimpleOutput& operator=(const SQLSimpleOutput&);
-
-    std::ostream& out_;
-	unsigned long long count_;
-	std::vector<size_t> columnWidths_;
-	typedef std::ios_base& (*manipulator)(std::ios_base&);
-	std::vector<manipulator> columnAlignments_;
-	size_t currentColumn_;
+    template <typename T> void outputValue(double x, bool missing);
 
     std::ostream& format(std::ostream&, size_t) const;
 
-	void printHeader(SQLSelect&);
+    void printHeader(SQLSelect&);
 
-// -- Overridden methods
+private: // methods (overrides)
+
+    virtual void print(std::ostream&) const;
+
 	virtual void size(int);
 	virtual void reset();
     virtual void flush();
@@ -51,15 +49,26 @@ private:
 	virtual void cleanup(SQLSelect&);
 	virtual unsigned long long count();
 
-    template <typename T> void outputValue(double x, bool missing);
-
 	virtual void outputReal(double, bool);
 	virtual void outputDouble(double, bool);
 	virtual void outputInt(double, bool);
 	virtual void outputUnsignedInt(double, bool);
-	virtual void outputString(double, bool);
-	virtual void outputBitfield(double, bool);
+    virtual void outputString(const char*, size_t, bool);
+    virtual void outputBitfield(double, bool);
+
+private: // members
+
+    std::ostream& out_;
+    unsigned long long count_;
+    std::vector<size_t> columnWidths_;
+    typedef std::ios_base& (*manipulator)(std::ios_base&);
+    std::vector<manipulator> columnAlignments_;
+    size_t currentColumn_;
+
+    const SQLOutputConfig& config_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

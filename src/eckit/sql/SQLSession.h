@@ -37,9 +37,11 @@ class SQLOutputConfig;
 
 class SQLSession {
 public:
-    SQLSession(const SQLOutputConfig& config=SQLOutputConfig(), const std::string& csvDelimiter=",");
+    SQLSession(std::unique_ptr<SQLOutput> out=0, std::unique_ptr<SQLOutputConfig> config=0, const std::string& csvDelimiter=",");
+    SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter=",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter=",");
-    virtual ~SQLSession(); 
+    SQLSession(const std::string& csvDelimiter=",");
+    virtual ~SQLSession();
 
     virtual SQLSelectFactory& selectFactory();
 //    virtual SQLInsertFactory& insertFactory();
@@ -64,7 +66,8 @@ public:
     unsigned long long lastExecuteResult() { return lastExecuteResult_; }
 
     std::string csvDelimiter() { return csvDelimiter_; }
-    const SQLOutputConfig& outputConfig() { return config_; }
+//    const SQLOutputConfig& outputConfig() { ASSERT(config_); return *config_; }
+    void setOutputFile(const eckit::PathName& path);
 
     static std::string readIncludeFile(const std::string&);
 
@@ -90,7 +93,7 @@ private:
 
     unsigned long long lastExecuteResult_;
 
-    const SQLOutputConfig config_;
+    std::unique_ptr<SQLOutputConfig> config_;
 
     std::unique_ptr<SQLStatement> statement_;
     std::unique_ptr<SQLOutput> output_;

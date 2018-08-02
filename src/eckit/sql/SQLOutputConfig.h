@@ -15,70 +15,123 @@
 #ifndef eckit_sql_SQLOutputConfig_H
 #define eckit_sql_SQLOutputConfig_H
 
-#include <string>
+#include "eckit/filesystem/PathName.h"
 
 namespace eckit {
 namespace sql {
 
+class SQLOutput;
+
 //----------------------------------------------------------------------------------------------------------------------
 
+// SQLOutputConfig provides a mechanism for an application to construct output functionality
+// according to its requirements:
+//
+//   i) User specification (e.g. command line options)
+//  ii) Application requirements (e.g. output file format)
+// iii) SQL statements (i.e. INTO, which cannot be specified before the SQL command is run).
+
 class SQLOutputConfig {
-public:
 
-	SQLOutputConfig(bool cn = false,
-                    bool n = false,
-                    const std::string& d = defaultDelimiter(),
-                    const std::string& output = defaultOutputFile(),
-                    const std::string& format = defaultFormat(),
-                    bool displayBitfieldsBinary = false,
-                    bool displayBitfieldsHexadecimal = false,                    
-                    bool disableAlignmentOfColumns = false,
-                    bool fullPrecision = false);
+public: // methods
 
-	bool doNotWriteColumnNames () const;
-    void doNotWriteColumnNames(bool b);
+    SQLOutputConfig(bool noColumnNames=false,
+                    bool noNULL=false,
+                    const std::string& delimiter=defaultDelimiter,
+                    const std::string& format=defaultOutputFormat,
+                    bool bitfieldsBinary=false,
+                    bool noColumnAlignment=false,
+                    bool fullPrecision=false);
 
-	bool doNotWriteNULL () const;
-	void doNotWriteNULL (bool b);
+    virtual ~SQLOutputConfig();
+
+    virtual SQLOutput* buildOutput() const;
+
+    void setOutputFile(const eckit::PathName& filename);
+
+    // Standard format properties (may not be applicable to all output types, but needed for
+    // compatibility with SQLSimpleOutput).
 
     const std::string& fieldDelimiter() const;
-    void fieldDelimiter(const std::string& d);
-
-    const std::string& outputFile () const;
-    void outputFile (const std::string& fn);
-
-    const std::string& outputFormat () const;
-    void outputFormat (const std::string& s);
-
+    const std::string& outputFormat() const;
+    bool doNotWriteNULL() const;
+    bool fullPrecision() const;
     bool displayBitfieldsBinary () const;
-    void displayBitfieldsBinary (bool b);
-
-    bool displayBitfieldsHexadecimal () const;
-    void displayBitfieldsHexadecimal (bool b);
-    
     bool disableAlignmentOfColumns () const;
-    void disableAlignmentOfColumns (bool b);
+    bool doNotWriteColumnNames () const;
 
-    bool fullPrecision () const;
-    void fullPrecision (bool);
+    // Defaults!
 
-	static const SQLOutputConfig defaultConfig();
+    static const char* defaultDelimiter;
+    static const char* defaultOutputFormat;
 
-private:
-	bool doNotWriteColumnNames_;
-	bool doNotWriteNULL_;
+protected: // members
+
+    eckit::PathName outputFile_;
+
+    bool doNotWriteColumnNames_;
     std::string fieldDelimiter_;
-    std::string outputFile_;          // -o
-    std::string outputFormat_;        // -f
+    std::string outputFormat_;
     bool displayBitfieldsBinary_;     // --binary
-    bool displayBitfieldsHexadecimal_; // --hex
     bool disableAlignmentOfColumns_;  // --no_alignment
     bool fullPrecision_;              // --full_precision
-
-    static const char* defaultDelimiter();
-    static const char* defaultOutputFile();
-    static const char* defaultFormat();
+    bool doNotWriteNULL_;
 };
+
+
+// TODO: Move into odb_api
+// 	SQLOutputConfig(bool cn = false,
+//                     bool n = false,
+//                     const std::string& d = defaultDelimiter(),
+//                     const std::string& output = defaultOutputFile(),
+//                     const std::string& format = defaultFormat(),
+//                     bool displayBitfieldsBinary = false,
+//                     bool displayBitfieldsHexadecimal = false,
+//                     bool disableAlignmentOfColumns = false,
+//                     bool fullPrecision = false);
+//
+// 	bool doNotWriteColumnNames () const;
+//     void doNotWriteColumnNames(bool b);
+//
+// 	bool doNotWriteNULL () const;
+// 	void doNotWriteNULL (bool b);
+//
+// void fieldDelimiter(const std::string& d);
+//
+//     const std::string& outputFile () const;
+//     void outputFile (const std::string& fn);
+//
+//     const std::string& outputFormat () const;
+//     void outputFormat (const std::string& s);
+//
+//     bool displayBitfieldsBinary () const;
+//     void displayBitfieldsBinary (bool b);
+//
+//     bool displayBitfieldsHexadecimal () const;
+//     void displayBitfieldsHexadecimal (bool b);
+//
+//     bool disableAlignmentOfColumns () const;
+//     void disableAlignmentOfColumns (bool b);
+//
+//     bool fullPrecision () const;
+//     void fullPrecision (bool);
+//
+// 	static const SQLOutputConfig defaultConfig();
+//
+// private:
+// 	bool doNotWriteColumnNames_;
+// 	bool doNotWriteNULL_;
+//     std::string fieldDelimiter_;
+//     std::string outputFile_;          // -o
+//     std::string outputFormat_;        // -f
+//     bool displayBitfieldsBinary_;     // --binary
+//     bool displayBitfieldsHexadecimal_; // --hex
+//     bool disableAlignmentOfColumns_;  // --no_alignment
+//     bool fullPrecision_;              // --full_precision
+//    std::string outputFormat_;        // -f
+//    bool displayBitfieldsHexadecimal_; // --hex
+//
+// };
 
 //----------------------------------------------------------------------------------------------------------------------
 

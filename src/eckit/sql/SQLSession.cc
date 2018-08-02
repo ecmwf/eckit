@@ -29,22 +29,25 @@ namespace sql {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-SQLSession::SQLSession(const SQLOutputConfig& config, const std::string& csvDelimiter) :
+SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config, const std::string &csvDelimiter) :
     selectFactory_(*this),
-//  insertFactory_(),
-  lastExecuteResult_(),
-  config_(config),
-  csvDelimiter_(csvDelimiter)
-{
+    lastExecuteResult_(),
+    config_(config ? std::move(config) : std::unique_ptr<SQLOutputConfig>(new SQLOutputConfig())),
+    output_(std::move(out)),
+    csvDelimiter_(csvDelimiter) {
+
+    ASSERT(output_ || config_);
     database_.open();
 }
 
-SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, const std::string &csvDelimiter) :
-    selectFactory_(*this),
-    config_(SQLOutputConfig::defaultConfig()),
-    output_(std::move(out)),
-    csvDelimiter_(csvDelimiter) {}
+SQLSession::SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter) :
+    SQLSession(0, std::move(config), csvDelimiter) {}
 
+SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, const std::string &csvDelimiter) :
+    SQLSession(std::move(out), 0, csvDelimiter) {}
+
+SQLSession::SQLSession(const std::string &csvDelimiter) :
+    SQLSession(0, 0, csvDelimiter) {}
 
 SQLSession::~SQLSession() {}
 
@@ -58,6 +61,19 @@ unsigned long long SQLSession::execute(SQLStatement& sql)
 
     unsigned long long n = sql.execute();
     return lastExecuteResult_ = n;
+}
+
+void SQLSession::setOutputFile(const PathName& path) {
+
+    // We should not be calling this function with a null path
+    ASSERT(!path.asString().empty());
+
+    if (output_) throw SeriousBug("Attempting to set output path to \"" + path + "\", but output "
+                                  "has already been created", Here());
+
+    if (!config_) throw SeriousBug("Attemptin to set output path with no outputConfig specified", Here());
+
+    config_->setOutputFile(path);
 }
 
 const SQLDatabase& SQLSession::currentDatabase() const {
@@ -83,12 +99,12 @@ SQLStatement& SQLSession::statement() {
 }
 
 SQLOutput &SQLSession::output() {
-    if (output_) {
-        return *output_;
-    }
 
-    // TODO: Implement logic to build an output file from the output config
-    NOTIMP;
+    ASSERT(output_ || config_);
+
+    if (!output_) output_.reset(config_->buildOutput());
+
+    return *output_;
 }
 
 SQLTable& SQLSession::findTable(const std::string& name) {

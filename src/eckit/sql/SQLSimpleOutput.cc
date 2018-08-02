@@ -9,8 +9,7 @@
  */
 
 #include "eckit/eckit.h"
-#include "odb_api/Decoder.h"
-#include "odb_api/Expressions.h"
+#include "eckit/log/Number.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSimpleOutput.h"
 
@@ -19,9 +18,13 @@
 namespace eckit {
 namespace sql {
 
-SQLSimpleOutput::SQLSimpleOutput(std::ostream& out)
-: out_(out), count_(0)
-{
+//----------------------------------------------------------------------------------------------------------------------
+
+SQLSimpleOutput::SQLSimpleOutput(const SQLOutputConfig& config, std::ostream& out) :
+    out_(out),
+    count_(0),
+    config_(config) {
+
     out_ << std::fixed;
 }
 
@@ -79,22 +82,13 @@ void SQLSimpleOutput::outputDouble(double x, bool missing) { outputValue<double>
 void SQLSimpleOutput::outputInt(double x, bool missing) { outputValue<long long>(x, missing); }
 void SQLSimpleOutput::outputUnsignedInt(double x, bool missing) { outputValue<unsigned long>(x, missing); }
 
-void SQLSimpleOutput::outputString(double x, bool missing)
+void SQLSimpleOutput::outputString(const char* s, size_t len, bool missing)
 {
 	format(out_, currentColumn_);
-	if (missing && !config_.doNotWriteNULL())
+    if (missing && !config_.doNotWriteNULL()) {
 		out_ << "NULL";
-	else
-	{
-        std::stringstream ss;
-		ss << "'";
-		char *p = reinterpret_cast<char*>(&x);
-		for(size_t i = 0; i < sizeof(x); i++)
-			if(p[i] != ' ' && isprint(p[i]))
-				ss << p[i];
-		ss << "'";
-
-		out_ << ss.str();
+    } else {
+        out_ << std::string(s, len);
 	}
 }
 
@@ -112,7 +106,7 @@ void SQLSimpleOutput::outputBitfield(double x, bool missing)
 	else
 	{
         std::stringstream ss;
-		Decoder::printBinary(ss, static_cast<unsigned long>(x));
+        log::Number::printBinary(ss, static_cast<unsigned long>(x));
 		out_ << ss.str();
 	}
 }
@@ -157,6 +151,8 @@ void SQLSimpleOutput::printHeader(SQLSelect& sql)
 
 void SQLSimpleOutput::cleanup(SQLSelect& sql) {}
 unsigned long long SQLSimpleOutput::count() { return count_; }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

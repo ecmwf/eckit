@@ -61,14 +61,7 @@ public:
         const std::string& tableReference,
         std::shared_ptr<expression::SQLExpression>& pshift);
 
-    eckit::DataHandle* implicitFromTableSource() { return implicitFromTableSource_; }
-    void implicitFromTableSource(eckit::DataHandle* h) { implicitFromTableSource_ = h; }
-
-    std::istream* implicitFromTableSourceStream() { return implicitFromTableSourceStream_; }
-    void implicitFromTableSourceStream(std::istream* is) { implicitFromTableSourceStream_ = is; }
-
-	SQLDatabase* database() { return database_; }
-	void database(SQLDatabase* db) { database_ = db; }
+    SQLDatabase& database() { return database_; }
 
 //    static odb::MetaData toODAColumns(odb::sql::SQLSession&, const odb::sql::TableDef&);
 
@@ -84,22 +77,15 @@ private: // methods
 
     std::shared_ptr<expression::SQLExpression> reshift(std::shared_ptr<expression::SQLExpression>&);
 
-    //void resolveImplicitFrom(SQLSession&, std::vector<SQLTable*>& from);
-//    std::vector<SQLTable*> resolveImplicitFrom(SQLSession&, std::vector<Table>& from);
-
 private: // members
 
     SQLSession& session_;
-
-    eckit::DataHandle* implicitFromTableSource_;
-
-    std::istream* implicitFromTableSourceStream_;
 
     //SchemaAnalyzer& analyzer();
 //    MetaData columns(const std::string& tableName);
     SQLOutput& createOutput(const std::string& into, size_t orderBySize );
 
-    SQLDatabase* database_;
+    SQLDatabase& database_;
     SQLOutputConfig config_;
     int maxColumnShift_;
     int minColumnShift_;

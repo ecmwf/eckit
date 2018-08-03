@@ -35,18 +35,13 @@ namespace sql {
 
 SQLSelectFactory::SQLSelectFactory(SQLSession& session) :
     session_(session),
-    implicitFromTableSource_(0),
-    implicitFromTableSourceStream_(0),
-    database_(0),
+    database_(session.currentDatabase()),
     maxColumnShift_(0),
     minColumnShift_(0) {}
 
 /*void SQLSelectFactory::reset()
 {
     // TODO> we may need to delete things here...
-    implicitFromTableSource_ = 0;
-    implicitFromTableSourceStream_ = 0;
-    database_ = 0;
     config_ = SQLOutputConfig::defaultConfig();
     maxColumnShift_ = 0;
     minColumnShift_ = 0;
@@ -155,27 +150,6 @@ void SQLSelectFactory::reshift(Expressions& select)
         L << "reshift: -> select[" << i << "]=" << *select[i] << std::endl;
 }
 
-//std::vector<SQLTable*> SQLSelectFactory::resolveImplicitFrom(SQLSession& session, std::vector<Table>& from)
-//{
-//    std::ostream& L (Log::debug());
-//
-//    L << "No <from> clause" << std::endl;
-//
-//    // TODO: SQLTable => std::string.
-//
-//    SQLTable* table = implicitFromTableSource_ ? session.openDataHandle(*implicitFromTableSource_)
-//        : implicitFromTableSourceStream_ ? session.openDataStream(*implicitFromTableSourceStream_, csvDelimiter_)
-//        //: database_ ? database_->table("defaultTable")
-//        : database_ ? database_->defaultTable()
-//        : session.currentDatabase().dualTable();
-//
-//    L << "Implicit FROM: " << *table << std::endl;
-//
-//    std::vector<SQLTable*> fromTables;
-//    fromTables.push_back(table);
-//    return fromTables;
-//}
-
 /*
 SchemaAnalyzer& SQLSelectFactory::analyzer()
 { return SQLSession::current().currentDatabase().schemaAnalyzer(); }
@@ -206,23 +180,18 @@ SQLSelect* SQLSelectFactory::create (
     if (where) L << "SQLSelectFactory::create: where = " << *where << std::endl;
 
 	SQLSelect* r (0);
-	//SQLSession& session (SQLSession::current());
+
+    // Which tables are we selecting from?
 
     std::vector<std::reference_wrapper<SQLTable>> fromTables;
 
-    // TODO: Implicit tables
-    ////if (! from.size())
- ////   {
- ////       std::vector<SQLTable*> implicitTables (resolveImplicitFrom(session_, from));
- ////       fromTables.insert( fromTables.begin(), implicitTables.begin(), implicitTables.end() );
- ////   }
-
-    //table : IDENT '.' IDENT { SQLSession& s  = SQLSession::current(); $$ = s.findTable($1,$3); }
-    for (size_t i(0); i < from.size(); ++i)
-    {
-        SQLTable& t (from[i]);
-        fromTables.push_back(session_.findTable(t.name()));
+    if (!from.size()) L << "No from clause in SQL statement. Using implicit tables" << std::endl;
+    for (SQLTable& tbl : from.size() ? from : database_.implicitTables()) {
+        fromTables.push_back(tbl);
     }
+    if (!fromTables.size()) throw UserError("No tables found for SQL Select", Here());
+
+    // Expand any wildcards in the select statement
 
 	Expressions select;
     for (Expressions::size_type i (0); i < select_list.size(); ++i)

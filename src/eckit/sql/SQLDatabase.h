@@ -51,8 +51,11 @@ public:
     void open();
     void close();
 
-    SQLTable& table(const std::string&);
+    /// Access SQLTables in DB
+    SQLTable& table(const std::string& name);
     SQLTable& defaultTable();
+    std::vector<std::reference_wrapper<SQLTable>> implicitTables();
+
 //    SQLTable& openDataHandle(eckit::DataHandle&);
 //    SQLTable& openDataStream(std::istream&, const std::string& delimiter);
 

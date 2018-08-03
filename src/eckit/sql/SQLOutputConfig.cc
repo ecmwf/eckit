@@ -44,7 +44,7 @@ SQLOutput* SQLOutputConfig::buildOutput() const {
     if (outputFormat_ != "default" && outputFormat_ != "wide") {
         throw UserError("Unsupported output format: " + outputFormat_, Here());
     }
-    return new SQLSimpleOutput(*this, eckit::Log::info());
+    return new SQLSimpleOutput(*this, std::cout);
 }
 
 const std::string& SQLOutputConfig::fieldDelimiter() const {

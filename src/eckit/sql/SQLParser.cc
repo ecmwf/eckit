@@ -78,26 +78,8 @@ extern "C" int eckit_sql_wrap(void *scanner)
 namespace eckit {
 namespace sql {
 
-struct SessionResetter {
-    SessionResetter (SQLSession& s) : session_(s), resetSession_(true) {}
-    SessionResetter (SQLSession& s, bool r) : session_(s), resetSession_(r) {}
-    ~SessionResetter () 
-    {
-        if (! resetSession_)
-            return;
-
-        session_.selectFactory().implicitFromTableSource(0);
-        session_.selectFactory().implicitFromTableSourceStream(0);
-//        session_.selectFactory().database(0);
-    }
-private:
-    SQLSession& session_;
-    bool resetSession_;
-};
-
 //void SQLParser::parseString(SQLSession& session, const std::string& s, std::istream* is)
 //{
-//    SessionResetter ar (session);
 //
 //    session.selectFactory().implicitFromTableSourceStream(is);
 //    NOTIMP;
@@ -111,7 +93,6 @@ private:
 //
 //void SQLParser::parseString(SQLSession& session, const std::string& s, DataHandle* dh)
 //{
-//    SessionResetter ar (session, resetSession);
 //
 //    session.selectFactory().implicitFromTableSource(dh);
 //    NOTIMP;
@@ -120,27 +101,16 @@ private:
 //    parseStringInternal(session, s);
 //}
 
-void SQLParser::parseString(SQLSession& session, const std::string& s)
-{
-    SessionResetter ar (session);
-
-    session.selectFactory().database(&session.currentDatabase());
-
-    parseStringInternal(session, s);
-}
-
 //void SQLParser::parseString(SQLSession& session,const std::string& s, SQLDatabase& db, SQLOutputConfig cfg)
 //{
-//    SessionResetter ar (session);
 
-//    session.currentDatabase(&db);
 //    session.selectFactory().database(&db);
 //    session.selectFactory().config(cfg);
 
 //    parseStringInternal(session, s);
 //}
 
-void SQLParser::parseStringInternal(SQLSession& session, const std::string& s) {
+void SQLParser::parseString(SQLSession& session, const std::string& s) {
 
     SQLYacc::eckit_sql_scan_t scanner;
     SQLYacc::eckit_sql_lex_init(&scanner);

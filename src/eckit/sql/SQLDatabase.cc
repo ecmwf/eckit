@@ -77,6 +77,16 @@ SQLTable& SQLDatabase::defaultTable()
     return *(it->second);
 }
 
+std::vector<std::reference_wrapper<SQLTable>> SQLDatabase::implicitTables()
+{
+    std::vector<std::reference_wrapper<SQLTable>> tables;
+    for (std::unique_ptr<SQLTable>& ptable : implicitTables_) {
+        ASSERT(ptable);
+        tables.push_back(*ptable);
+    }
+    return tables;
+}
+
 SQLTable& SQLDatabase::table(const std::string& nm) {
     auto it = tablesByName_.find(nm);
     ASSERT(it != tablesByName_.end());

@@ -120,10 +120,7 @@ double ShiftedColumnExpression<T>::eval(bool& missing) const
 template <typename T>
 void ShiftedColumnExpression<T>::cleanup(SQLSelect& sql)
 {
-    static double dzero_ = 0;
-    static bool mzero_ = false;
-    static std::pair<double*,bool&> zero_(&dzero_, mzero_);
-    this->value_ = zero_;
+    this->value_ = 0;
 	this->type_  = 0;
 	oldValues_.clear();
 }

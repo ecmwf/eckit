@@ -45,7 +45,7 @@ class SQLSelect : public SQLStatement {
 
 public:
 
-    typedef std::pair<const double*, bool&> ValueLookup;
+    typedef std::pair<const double*, bool> ValueLookup;
 
     SQLSelect(const Expressions& columns,
               std::vector<std::reference_wrapper<SQLTable>>& tables,
@@ -62,7 +62,7 @@ public:
 
     bool isAggregate() { return aggregate_; }
 
-    ValueLookup column(const std::string& name, SQLTable*);
+    ValueLookup& column(const std::string& name, SQLTable*);
     const type::SQLType* typeOf(const std::string& name, SQLTable*);
 	// FIXME: do we really need all these optional parameters?
     SQLTable& findTable(const std::string& name, std::string *fullName = 0, bool *hasMissingValue=0, double *missingValue=0, bool* isBitfield=0, BitfieldDef* =0) const;
@@ -87,6 +87,10 @@ private:
 	SQLSelect(const SQLSelect&);
 	SQLSelect& operator=(const SQLSelect&);
 
+    /// Retrive a data pointer and offsets from the cursor (SQLTableIterator) associated
+    /// with the given SQL table.
+    void refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor);
+
 // -- Members
 	Expressions select_;
     std::vector<SQLTable*> tables_;
@@ -109,7 +113,7 @@ private:
 
     // n.b. we don't use std::vector<bool> as you cannot take a reference to a single element.
 
-    std::map<std::string, std::pair<const double*, bool>> values_;
+    std::map<std::string, ValueLookup> values_;
 
     std::set<SQLTable*> allTables_;
 

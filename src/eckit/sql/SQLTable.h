@@ -83,7 +83,8 @@ public:
 
 	virtual void print(std::ostream& s) const;
 
-    virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<SQLColumn>>&) const = 0;
+    virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<SQLColumn>>&,
+                                       std::function<void(SQLTableIterator&)> metadataUpdateCallback) const = 0;
 
 protected:
     std::string path_;

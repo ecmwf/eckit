@@ -77,7 +77,9 @@ private:
         std::vector<double> data_;
     };
 
-    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns) const {
+    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns,
+                                                   std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
+        // TODO: Test callback
         return new TestTableIterator(*this, columns);
     }
 };
@@ -189,6 +191,8 @@ CASE( "Test SQL select where" ) {
     EXPECT(o.floatOutput == expected);
     EXPECT(o.strOutput.empty());
 }
+
+// TODO: Test metadata update callback.
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -26,11 +26,10 @@ namespace expression {
 
 static double dzero = 0;
 static bool mzero = false;
-static std::pair<double*,bool&> zero_(&dzero, mzero);
 
 ColumnExpression::ColumnExpression(const std::string& name, SQLTable* table, int begin, int end)
 : type_(0),
-  value_(zero_),
+  value_(0),
   columnName_(name),
   table_(table),
   tableReference_(),
@@ -41,7 +40,7 @@ ColumnExpression::ColumnExpression(const std::string& name, SQLTable* table, int
 
 ColumnExpression::ColumnExpression(const std::string& name, const std::string& tableReference, int begin, int end)
 : type_(0),
-  value_(zero_),
+  value_(0),
   columnName_(name),
   table_(0),
   tableReference_(tableReference),
@@ -58,8 +57,8 @@ ColumnExpression::~ColumnExpression() {}
 double ColumnExpression::eval(bool& missing) const
 {
     // n.b. we should only ever get here for numerical columns. Probably should ASSERT()
-    if (value_.second) missing = true;
-    return *value_.first;
+    if (value_->second) missing = true;
+    return *(value_->first);
 }
 
 void ColumnExpression::preprepare(SQLSelect& sql) {
@@ -87,7 +86,7 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
 
 void ColumnExpression::prepare(SQLSelect& sql)
 {
-    value_ = sql.column(columnName_, table_);
+    value_ = &sql.column(columnName_, table_);
 	type_  = sql.typeOf(columnName_, table_);
 
 	Log::debug() << "ColumnExpression::prepare: columnName_=" << columnName_ 
@@ -101,7 +100,7 @@ void ColumnExpression::prepare(SQLSelect& sql)
 
 void ColumnExpression::cleanup(SQLSelect& sql)
 {
-    value_ = zero_;
+    value_ = 0;
 	type_  = 0;
 }
 
@@ -115,7 +114,7 @@ void ColumnExpression::print(std::ostream& s) const
 }
 
 void ColumnExpression::output(SQLOutput& o) const  {
-    type_->output(o, value_.first, value_.second);
+    type_->output(o, value_->first, value_->second);
 }
 
 void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLTable>>& tables, expression::Expressions& e)

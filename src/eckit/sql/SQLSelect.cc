@@ -106,7 +106,7 @@ void SQLSelect::ensureFetch(SQLTable& table, const std::string& columnName) {
 }
 
 
-SQLSelect::ValueLookup SQLSelect::column(const std::string& name, SQLTable* table)
+SQLSelect::ValueLookup& SQLSelect::column(const std::string& name, SQLTable* table)
 {
     ASSERT(table);
     SQLColumn& column(table->column(name));
@@ -117,7 +117,7 @@ SQLSelect::ValueLookup SQLSelect::column(const std::string& name, SQLTable* tabl
     auto it = values_.find(fullname);
     ASSERT(it != values_.end());
 
-    return ValueLookup(it->second.first, it->second.second);
+    return it->second;
 }
 
 const type::SQLType* SQLSelect::typeOf(const std::string& name, SQLTable* table)
@@ -171,19 +171,11 @@ void SQLSelect::prepareExecute() {
 
     for (auto& tablePair : tablesToFetch_) {
         SelectOneTable& tbl(tablePair.second);
-        cursors_.emplace_back(tbl.table_->iterator(tbl.fetch_));
+        SQLTable* sqlTable = tablePair.first;
+        cursors_.emplace_back(tbl.table_->iterator(tbl.fetch_, [this, sqlTable](SQLTableIterator& cursor){refreshCursorMetadata(sqlTable, cursor);}));
         cursors_.back()->rewind();
 
-        const double* data(cursors_.back()->data());
-        const std::vector<size_t> offsets(cursors_.back()->columnOffsets());
-
-        for (size_t i = 0; i < tbl.fetch_.size(); i++) {
-            std::string fullname(tbl.fetch_[i].get().fullName());
-            ASSERT(values_.find(fullname) == values_.end());
-
-            std::pair<const double*, bool>& newValue(values_[fullname]);
-            newValue.first = &data[offsets[i]];
-        }
+        refreshCursorMetadata(sqlTable, *cursors_.back());
     }
 
     // Prepare the columns
@@ -452,6 +444,26 @@ void SQLSelect::postExecute()
     Log::info() << "Matching row(s): " << BigNum(output_.count()) << " out of " << BigNum(total_) << std::endl;
     Log::info() << "Skips: " << BigNum(skips_) << std::endl;
 	reset();
+}
+
+void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor) {
+
+    ASSERT(tablesToFetch_.size() == cursors_.size());
+
+    SelectOneTable& tbl(tablesToFetch_[table]);
+
+    const double* data(cursor.data());
+    const std::vector<size_t> offsets(cursor.columnOffsets());
+
+    for (size_t i = 0; i < tbl.fetch_.size(); i++) {
+        std::string fullname(tbl.fetch_[i].get().fullName());
+        // ASSERT is no longer true if using to refresh values
+        // ASSERT(values_.find(fullname) == values_.end());
+
+        // This will create the value if it does not exist.
+        std::pair<const double*, bool>& value(values_[fullname]);
+        value.first = &data[offsets[i]];
+    }
 }
 
 void SQLSelect::reset()

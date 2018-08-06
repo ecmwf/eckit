@@ -58,9 +58,10 @@ private:
 	}
 
 	virtual long read(void* buf, long len) {
+		std::streampos here = f_.tellp();
 		f_.read(static_cast<char*>(buf), len);
 		ASSERT(!f_.eof() && !f_.bad());
-		return len;
+		return f_.tellp() - here;
 	}
 
 	virtual std::string name() const {

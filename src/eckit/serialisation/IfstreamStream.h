@@ -55,7 +55,9 @@ private:
 	}
 
 	virtual long read(void* buf, long len) {
-		return f_.readsome(static_cast<char*>(buf), len);
+		f_.read(static_cast<char*>(buf), len);
+		ASSERT(!f_.eof() && !f_.bad());
+		return len;
 	}
 
 	virtual std::string name() const {

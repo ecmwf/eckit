@@ -53,11 +53,14 @@ private:
 	virtual long write(const void* buf, long len) {
 		std::streampos here = f_.tellp();
 		f_.write(static_cast<const char*>(buf), len);
+		ASSERT(!f_.bad());
 		return f_.tellp() - here;
 	}
 
 	virtual long read(void* buf, long len) {
-		return f_.readsome(static_cast<char*>(buf), len);
+		f_.read(static_cast<char*>(buf), len);
+		ASSERT(!f_.eof() && !f_.bad());
+		return len;
 	}
 
 	virtual std::string name() const {

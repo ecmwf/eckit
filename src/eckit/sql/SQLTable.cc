@@ -14,7 +14,6 @@
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/config/LibEcKit.h"
 
-using namespace eckit;
 
 namespace eckit {
 namespace sql {

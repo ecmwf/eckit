@@ -8,18 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Timer.h"
+#include <libgen.h>
+
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/FileHandle.h"
+#include "eckit/log/Timer.h"
+#include "eckit/parser/StringTools.h"
 
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
-#include "eckit/parser/StringTools.h"
-#include <libgen.h>
+#include "eckit/sql/SQLTableFactory.h"
 
 using namespace eckit;
 
@@ -108,6 +111,10 @@ SQLOutput &SQLSession::output() {
 }
 
 SQLTable& SQLSession::findTable(const std::string& name) {
+    if (!currentDatabase().hasTable(name)) {
+        Log::debug<LibEcKit>() << "No table named \"" << name << "\" found. Looking in table factory" << std::endl;
+        currentDatabase().addTable(SQLTableFactory::build(currentDatabase(), name));
+    }
     return currentDatabase().table(name);
 }
 
@@ -130,7 +137,7 @@ void SQLSession::loadDefaultSchema()
     if (schemaPathName.empty())
         return;
 
-    Log::debug() << "Loading schema " << schemaPathName << std::endl;
+    Log::debug<LibEcKit>() << "Loading schema " << schemaPathName << std::endl;
     
     FileHandle dh(schemaPathName);
     size_t sz = dh.openForRead();
@@ -159,12 +166,12 @@ std::string SQLSession::schemaFile()
 std::string SQLSession::readIncludeFile(const std::string& fileName)
 {
     std::vector<std::string> dirs (includePaths());
-    Log::debug() << "read include: " << fileName << std::endl;
+    Log::debug<LibEcKit>() << "read include: " << fileName << std::endl;
 
     for (size_t i(0); i < dirs.size(); ++i)
     {
         PathName pathName (dirs[i] + fileName);
-        Log::debug() << "Looking for include file " << fileName << " in " << dirs[i] << std::endl;
+        Log::debug<LibEcKit>() << "Looking for include file " << fileName << " in " << dirs[i] << std::endl;
         if (!pathName.exists())
             continue;
 

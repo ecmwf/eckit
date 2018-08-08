@@ -55,7 +55,7 @@ public:
 	~SQLSelect(); 
 
 // -- Methods
-	void prepareExecute(); //SQLExpression*& where);
+    void prepareExecute();
     unsigned long long process();
     bool processOneRow();
     void postExecute();

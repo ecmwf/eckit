@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File SQLSession.h
-// Baudouin Raoult - ECMWF Dec 03
+/// @author Baudouin Raoult
+/// @author Simon Smart
+/// @date Dec 03
 
 #ifndef odb_sql_SQLSession_H
 #define odb_sql_SQLSession_H
@@ -37,9 +38,9 @@ class SQLOutputConfig;
 
 class SQLSession {
 public:
-    SQLSession(std::unique_ptr<SQLOutput> out=0, std::unique_ptr<SQLOutputConfig> config=0, const std::string& csvDelimiter=",");
+    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config=0, const std::string& csvDelimiter=",");
     SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter=",");
-    SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter=",");
+    SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);
     SQLSession(const std::string& csvDelimiter=",");
     virtual ~SQLSession();
 

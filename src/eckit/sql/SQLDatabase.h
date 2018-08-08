@@ -52,6 +52,7 @@ public:
     void close();
 
     /// Access SQLTables in DB
+    bool hasTable(const std::string& name) const;
     SQLTable& table(const std::string& name);
     SQLTable& defaultTable();
     std::vector<std::reference_wrapper<SQLTable>> implicitTables();

@@ -41,7 +41,7 @@ public:
 	SQLExpression* nominalShift(int n) { nominalShift_ = n; return this; }
 
 protected:
-	const type::SQLType*   type_;
+    const type::SQLType*   type_; // non-owning
     std::pair<const double*,bool>*    value_;
 	std::string                 columnName_;
 	SQLTable*              table_;

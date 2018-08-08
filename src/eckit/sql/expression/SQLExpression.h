@@ -62,7 +62,7 @@ public:
     virtual void title(const std::string&);
     virtual std::string title() const;
 
-    virtual const type::SQLType* type() const = 0;
+    virtual const type::SQLType* type() const = 0; // non-owning, do not delete result
 	// ----
 
     virtual std::shared_ptr<SQLExpression> clone() const = 0;

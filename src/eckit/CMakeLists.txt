@@ -578,6 +578,8 @@ sql/SQLStatement.cc
 sql/SQLStatement.h
 sql/SQLTable.cc
 sql/SQLTable.h
+sql/SQLTableFactory.cc
+sql/SQLTableFactory.h
 sql/SQLTypedefs.h
 
 sql/expression/BitColumnExpression.cc

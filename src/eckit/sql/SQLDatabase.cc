@@ -35,7 +35,6 @@ void SQLDatabase::close() {
     tablesByName_.clear();
 }
 
-
 void SQLDatabase::addTable(SQLTable* table) {
     tablesByName_.emplace(std::pair<std::string, std::unique_ptr<SQLTable>>(table->name(), table));
 }
@@ -85,6 +84,10 @@ std::vector<std::reference_wrapper<SQLTable>> SQLDatabase::implicitTables()
         tables.push_back(*ptable);
     }
     return tables;
+}
+
+bool SQLDatabase::hasTable(const std::string &name) const {
+    return tablesByName_.find(name) != tablesByName_.end();
 }
 
 SQLTable& SQLDatabase::table(const std::string& nm) {

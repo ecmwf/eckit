@@ -36,6 +36,7 @@ private:
     virtual size_t size() const;
     virtual void output(SQLOutput& s, double, bool) const;
     virtual int getKind() const { return integerType; }
+    virtual std::string asString(const double* val) const override;
 
 	//friend std::ostream& operator<<(std::ostream& s,const SQLInt& p)
 	//	{ p.print(s); return s; }

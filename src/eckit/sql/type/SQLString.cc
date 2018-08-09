@@ -40,6 +40,11 @@ void SQLString::output(SQLOutput& o, const double* d, bool missing) const {
     }
 }
 
+std::string SQLString::asString(const double* val) const {
+    const char* c(reinterpret_cast<const char*>(val));
+    return std::string(c, ::strnlen(c, maxLen_));
+}
+
 SQLType::manipulator SQLString::format() const { return& std::left; }
 
 size_t SQLString::width() const { return maxLen_ + 2; }

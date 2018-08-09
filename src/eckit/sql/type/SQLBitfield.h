@@ -48,6 +48,7 @@ private:
 
     virtual size_t size() const;
     virtual void output(SQLOutput& s, double, bool) const;
+    virtual std::string asString(const double* val) const override;
     virtual const SQLType* subType(const std::string&) const;
 	virtual int getKind() const { return bitmapType; }
 

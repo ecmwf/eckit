@@ -88,7 +88,11 @@ size_t SQLBitfield::size() const
 
 void SQLBitfield::output(SQLOutput& o, double d, bool missing) const
 {
-	o.outputBitfield(d, missing);
+    o.outputBitfield(d, missing);
+}
+
+std::string SQLBitfield::asString(const double* val) const {
+    return eckit::Translator<long, std::string>()(*val);
 }
 
 const SQLType* SQLBitfield::subType(const std::string& name) const

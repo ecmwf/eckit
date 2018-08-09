@@ -47,6 +47,7 @@ public:
     virtual size_t size() const = 0;
     virtual void output(SQLOutput&, double, bool) const = 0;
     virtual void output(SQLOutput& out, const double* val, bool missing) const { output(out, *val, missing); }
+    virtual std::string asString(const double* val) const = 0;
     virtual const SQLType* subType(const std::string&) const;
 
 	virtual int getKind() const = 0;

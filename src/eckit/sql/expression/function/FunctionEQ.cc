@@ -12,6 +12,7 @@
 #include "eckit/sql/expression/function/FunctionEQ.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/type/SQLType.h"
+#include "eckit/parser/StringTools.h"
 
 namespace eckit {
 namespace sql {
@@ -56,33 +57,23 @@ void FunctionEQ::trimStringInDouble(char* &p, size_t& len)
 
 bool FunctionEQ::equal(const SQLExpression& l, const SQLExpression& r, bool& missing)
 {
-	if (l.type()->getKind() == SQLType::stringType)
-	{
-		double v1 = l.eval(missing);
-		double v2 = r.eval(missing);
-		if (missing)
-			return false;
+    if (l.type()->getKind() == SQLType::stringType) {
 
-		char *p1 = reinterpret_cast<char*>(&v1);
-		char *p2 = reinterpret_cast<char*>(&v2);
-		
-		size_t len1 = sizeof(double);
-		size_t len2 = sizeof(double);
+        std::string v1(l.evalAsString(missing));
+        std::string v2(r.evalAsString(missing));
 
-		trimStringInDouble(p1, len1);
-		trimStringInDouble(p2, len2);
+        if (missing) return false;
 
-		if (len1 != len2)
-			return false;
+        v1 = StringTools::trim(v1, "\t\n\v\f\r ");
+        v2 = StringTools::trim(v2, "\t\n\v\f\r ");
 
-		return 0 == strncmp(p1, p2, len1);
+        return (v1 == v2);
 	}
 
 	return l.eval(missing) == r.eval(missing);
 }
 
-double FunctionEQ::eval(bool& missing) const
-{
+double FunctionEQ::eval(bool& missing) const {
 	return equal(*args_[0], *args_[1], missing);
 }
 

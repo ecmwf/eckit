@@ -57,7 +57,8 @@ protected:
 	virtual void prepare(SQLSelect& sql);
 	virtual void cleanup(SQLSelect& sql);
 	virtual double eval(bool& missing) const;
-	virtual bool isConstant() const { return false; }
+    virtual std::string evalAsString(bool& missing) const override;
+    virtual bool isConstant() const { return false; }
 	virtual void output(SQLOutput& s) const;
 
 private:

@@ -58,6 +58,11 @@ double ColumnExpression::eval(bool& missing) const
     return *(value_->first);
 }
 
+std::string ColumnExpression::evalAsString(bool& missing) const {
+    if (value_->second) missing = true;
+    return type_->asString(value_->first);
+}
+
 void ColumnExpression::preprepare(SQLSelect& sql) {
 
     /// pre-prepare exists to determine the Table/SQL column combination that is needed.

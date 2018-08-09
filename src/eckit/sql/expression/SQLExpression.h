@@ -46,6 +46,7 @@ public:
 
 	// -- For WHERE
 	virtual double eval(bool& missing) const = 0;
+    virtual std::string evalAsString(bool& missing) const;
 
 	virtual bool andSplit(expression::Expressions&) { return false; }
     virtual void tables(std::set<const SQLTable*>&) {}

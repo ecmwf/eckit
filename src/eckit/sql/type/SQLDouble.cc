@@ -10,6 +10,7 @@
 
 #include "eckit/sql/type/SQLDouble.h"
 #include "eckit/sql/SQLOutput.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 namespace sql {
@@ -22,6 +23,11 @@ SQLDouble::~SQLDouble() {}
 size_t SQLDouble::size() const { return sizeof(double); }
 
 void SQLDouble::output(SQLOutput& o, double d, bool m) const { o.outputDouble(d, m); }
+
+std::string SQLDouble::asString(const double* val) const {
+    return eckit::Translator<double, std::string>()(*val);
+}
+
 
 } // namespace type 
 } // namespace sql

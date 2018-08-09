@@ -39,6 +39,10 @@ void SQLBit::output(SQLOutput& o, double x, bool missing) const
     o.outputUnsignedInt(x, missing);
 }
 
+std::string SQLBit::asString(const double *val) const {
+    return ((decltype(mask_)(*val) & mask_) == 0) ? "0" : "1";
+}
+
 } // namespace type 
 } // namespace sql 
 } // namespace eckit 

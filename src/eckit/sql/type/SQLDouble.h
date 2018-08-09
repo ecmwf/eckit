@@ -38,6 +38,7 @@ private:
 
     virtual size_t size() const;
     virtual int getKind() const { return doubleType; }
+    virtual std::string asString(const double* val) const override;
 
 // -- Friends
 	//friend std::ostream& operator<<(std::ostream& s,const SQLDouble& p)

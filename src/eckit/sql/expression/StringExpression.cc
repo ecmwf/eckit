@@ -51,27 +51,31 @@ namespace expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const eckit::sql::type::SQLType* StringExpression::type() const { return &eckit::sql::type::SQLType::lookup("string"); }
+const eckit::sql::type::SQLType* StringExpression::type() const {
+    return type_;
+}
 
 StringExpression::StringExpression(const std::string& name)
 : name_(name)
 {
-	ASSERT(name.length() <= sizeof(value_));
+    size_t len = name.length();
+    size_t lenDoubles = (len == 0) ? 0 : ((len - 1) / sizeof(double)) + 1;
+    size_t lenChars = lenDoubles * sizeof(double);
 
-	char* buf = (char*)&value_;
-	memset(buf,' ',sizeof(value_));
+    value_.resize(lenDoubles);
 
-	int  off = sizeof(value_) - name.length();
-	for(size_t i = 0; i < name.length(); i++)
-		buf[off+i] = name[i];
+    char* val = reinterpret_cast<char*>(&value_[0]);
 
-	std::string s(buf, sizeof(double));
-	//Log::info() << "StringExpression::StringExpression: '" << s << "'" << std::endl;
+    ::memcpy(val, name.c_str(), len);
+    if (len != lenChars) {
+        ::memset(val+len, 0, lenChars-len);
+    }
+
+    type_ = &type::SQLType::lookup("string", lenDoubles);
 }
 
-StringExpression::StringExpression(const StringExpression& o)
-: name_(o.name_), value_(o.value_)
-{}
+StringExpression::StringExpression(const StringExpression& o) :
+    name_(o.name_), value_(o.value_) {}
 
 void StringExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables, expression::Expressions& e)
 {
@@ -112,13 +116,19 @@ std::shared_ptr<SQLExpression> StringExpression::clone() const { return std::mak
 
 StringExpression::~StringExpression() {}
 
-double StringExpression::eval(bool& missing) const { return value_; }
+double StringExpression::eval(bool& missing) const { return value_[0]; }
+
+std::string StringExpression::evalAsString(bool& missing) const {
+    return name_;
+}
 
 void StringExpression::prepare(SQLSelect& sql) {}
 
 void StringExpression::cleanup(SQLSelect& sql) {}
 
-void StringExpression::output(std::ostream& s) const { s << name_; }
+void StringExpression::output(SQLOutput& o) const {
+    type_->output(o, &value_[0], false);
+}
 
 void StringExpression::print(std::ostream& s) const { s << "'" << name_ << "'"; }
 

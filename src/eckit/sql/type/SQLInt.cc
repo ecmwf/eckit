@@ -11,6 +11,7 @@
 
 #include "eckit/sql/type/SQLInt.h"
 #include "eckit/sql/SQLOutput.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 namespace sql {
@@ -23,6 +24,10 @@ SQLInt::~SQLInt() {}
 size_t SQLInt::size() const { return sizeof(long); }
 
 void SQLInt::output(SQLOutput& o, double d, bool missing) const { o.outputInt(d, missing); }
+
+std::string SQLInt::asString(const double* val) const {
+    return eckit::Translator<long, std::string>()(*val);
+}
 
 } // namespace type 
 } // namespace sql

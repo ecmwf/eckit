@@ -27,7 +27,7 @@ namespace {
 static const std::vector<long> INTEGER_DATA {9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111};
 static const std::vector<double> REAL_DATA {99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1};
 static const std::vector<std::string> STRING_DATA {"aaaabbbb", "cccc", "dddd", "eeffg", "hijklmno",
-                                                   "a-string", "a-longer-string", "another-string", ""};
+                                                   "a-string", "a-longer-string", "another-string", "another-string2"};
 
 
 class TestTable : public eckit::sql::SQLTable {
@@ -188,6 +188,27 @@ CASE( "Test SQL select where" ) {
 
     EXPECT(o.intOutput.empty());
     std::vector<double> expected {99.9, 88.8, 77.7, 66.6, 55.5, 44.4};
+    EXPECT(o.floatOutput == expected);
+    EXPECT(o.strOutput.empty());
+}
+
+
+CASE( "Test SQL select where long string" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select rcol from table1 where scol == \"another-string\"";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.intOutput.empty());
+    std::vector<double> expected {22.2};
+    eckit::Log::info() << "out: " << o.floatOutput << std::endl;
     EXPECT(o.floatOutput == expected);
     EXPECT(o.strOutput.empty());
 }

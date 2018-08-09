@@ -35,7 +35,8 @@ private:
 	StringExpression& operator=(const StringExpression&);
 
 	std::string name_;
-	double value_;
+    std::vector<double> value_;
+    const type::SQLType*   type_; // non-owning
 
 // -- Overridden methods
 	virtual void print(std::ostream& s) const;
@@ -43,11 +44,12 @@ private:
 	virtual void prepare(SQLSelect& sql);
 	virtual void cleanup(SQLSelect& sql);
 
-	const type::SQLType* type() const;
-	virtual double eval(bool& missing) const;
-	virtual bool isConstant() const { return true; }
-	virtual bool isNumber() const { return true; }
-	virtual void output(std::ostream& s) const;
+    virtual const type::SQLType* type() const override;
+    virtual double eval(bool& missing) const override;
+    virtual std::string evalAsString(bool& missing) const override;
+    virtual bool isConstant() const override { return true; }
+    virtual bool isNumber() const override { return true; }
+    virtual void output(SQLOutput& o) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

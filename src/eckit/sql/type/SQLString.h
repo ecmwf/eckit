@@ -37,6 +37,7 @@ private:
     virtual size_t size() const;
     virtual void output(SQLOutput&, double, bool) const;
     virtual void output(SQLOutput&, const double*, bool) const;
+    virtual std::string asString(const double* val) const override;
     virtual int getKind() const { return stringType; }
 	virtual manipulator format() const;
 

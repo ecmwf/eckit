@@ -91,6 +91,7 @@ private:
 
     virtual size_t size() const;
     virtual int getKind() const { return realType; }
+    virtual std::string asString(const double* val) const override;
 
 // -- Class members
 	// None

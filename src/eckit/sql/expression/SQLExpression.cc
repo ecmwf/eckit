@@ -58,6 +58,17 @@ std::shared_ptr<SQLExpression> SQLExpression::simplify(bool& changed)
 	return 0;
 }
 
+std::string SQLExpression::evalAsString(bool& missing) const {
+    bool m;
+    double d = eval(m);
+    if (m) {
+        missing = true;
+    } else {
+        return this->type()->asString(&d);
+    }
+    return std::string();
+}
+
 void SQLExpression::output(SQLOutput& s) const 
 { 
 	bool missing = false;

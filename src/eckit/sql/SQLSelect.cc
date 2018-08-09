@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Log.h"
 #include "eckit/sql/expression/ConstantExpression.h"
@@ -28,7 +29,7 @@ namespace sql {
 using namespace expression;
 
 SQLSelect::SQLSelect(const Expressions& columns, 
-    std::vector<std::reference_wrapper<SQLTable>>& tables,
+    const std::vector<std::reference_wrapper<const SQLTable>>& tables,
     std::shared_ptr<SQLExpression> where,
     SQLOutput& output,
     bool all)
@@ -44,35 +45,19 @@ SQLSelect::SQLSelect(const Expressions& columns,
   all_(all)
 {
     // TODO: Convert tables_, allTables_ to use references rather than pointers.
-    for (SQLTable& t : tables) tables_.push_back(&t);
+    for (const SQLTable& t : tables) tables_.push_back(&t);
 }
 
 SQLSelect::~SQLSelect() {}
 
 
-SQLTable& SQLSelect::findTable(const std::string& name,
-                               std::string *fullName,
-                               bool *hasMissingValue,
-                               double *missingValue,
-                               bool* isBitfield,
-                               BitfieldDef* bitfieldDef) const {
+const SQLTable& SQLSelect::findTable(const std::string& name) const {
 
-	std::set<SQLTable*> names;
+    std::set<const SQLTable*> names;
 
-    for(std::vector<SQLTable*>::const_iterator t = tables_.begin();
-		t != tables_.end() ; ++t)
-	{
-		SQLTable* table = const_cast<SQLTable*>(*t);
-		if(table->hasColumn(name, fullName))
-		{
-            //if(table->hasColumn(name, fullName, hasMissingValue, missingValue, bitfieldDef))
+    for (const SQLTable* table : tables_) {
+        if(table->hasColumn(name)) {
 			names.insert(table);
-            SQLColumn& column(table->column(name));
-			if (hasMissingValue) *hasMissingValue = column.hasMissingValue();
-			if (missingValue) *missingValue = column.missingValue();
-			if (isBitfield) *isBitfield = column.isBitfield();
-			if (bitfieldDef) *bitfieldDef = column.bitfieldDef();
-
         }
 	}
 
@@ -82,16 +67,16 @@ SQLTable& SQLSelect::findTable(const std::string& name,
 	if(names.size() != 1)
 		throw eckit::UserError("Ambiguous column name", name);
 
-	Log::debug() << "SQLSelect::findTable: name='" << name << "', fullName=" << (fullName ? (std::string("'")+ *fullName+"'") : "") << std::endl;
+    Log::debug<LibEcKit>() << "SQLSelect::findTable: name='" << name << "'" << std::endl;
 
     return **names.begin();
 }
 
 
-void SQLSelect::ensureFetch(SQLTable& table, const std::string& columnName) {
+void SQLSelect::ensureFetch(const SQLTable& table, const std::string& columnName) {
     // Add the column to the fetch list associated with the table
 
-    SQLColumn& column(table.column(columnName));
+    const SQLColumn& column(table.column(columnName));
     std::string fullname = column.fullName();
 
     allTables_.insert(&table);
@@ -99,20 +84,20 @@ void SQLSelect::ensureFetch(SQLTable& table, const std::string& columnName) {
         tablesToFetch_[&table] = SelectOneTable(&table);
 
     auto& fetch(tablesToFetch_[&table].fetch_);
-    if (std::find_if(fetch.begin(), fetch.end(), [&](SQLColumn& c){ return &c == &column; }) == fetch.end()) {
+    if (std::find_if(fetch.begin(), fetch.end(), [&](const SQLColumn& c){ return &c == &column; }) == fetch.end()) {
         fetch.push_back(column);
         tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
     }
 }
 
 
-SQLSelect::ValueLookup& SQLSelect::column(const std::string& name, SQLTable* table)
+SQLSelect::ValueLookup& SQLSelect::column(const std::string& name, const SQLTable* table)
 {
     ASSERT(table);
-    SQLColumn& column(table->column(name));
+    const SQLColumn& column(table->column(name));
 
     std::string fullname = column.fullName();
-    Log::debug() << "Accessing column " << fullname << std::endl;
+    Log::debug<LibEcKit>() << "Accessing column " << fullname << std::endl;
 
     auto it = values_.find(fullname);
     ASSERT(it != values_.end());
@@ -120,10 +105,10 @@ SQLSelect::ValueLookup& SQLSelect::column(const std::string& name, SQLTable* tab
     return it->second;
 }
 
-const type::SQLType* SQLSelect::typeOf(const std::string& name, SQLTable* table)
+const type::SQLType* SQLSelect::typeOf(const std::string& name, const SQLTable* table) const
 {
     if(!table) table = &findTable(name);
-    SQLColumn& column(table->column(name));
+    const SQLColumn& column(table->column(name));
 
     const type::SQLType& type = column.type();
 	return type.subType(name); // This should take care of bitfields
@@ -171,7 +156,7 @@ void SQLSelect::prepareExecute() {
 
     for (auto& tablePair : tablesToFetch_) {
         SelectOneTable& tbl(tablePair.second);
-        SQLTable* sqlTable = tablePair.first;
+        const SQLTable* sqlTable = tablePair.first;
         cursors_.emplace_back(tbl.table_->iterator(tbl.fetch_, [this, sqlTable](SQLTableIterator& cursor){refreshCursorMetadata(sqlTable, cursor);}));
         cursors_.back()->rewind();
 
@@ -192,7 +177,7 @@ void SQLSelect::prepareExecute() {
 
 		(*c)->prepare(*this);
 
-        Log::debug() << "SQLSelect::prepareExecute: '" << *(*c) << "'" << std::endl;
+        Log::debug<LibEcKit>() << "SQLSelect::prepareExecute: '" << *(*c) << "'" << std::endl;
 	}
 
 	ASSERT(select_.size() == mixedResultColumnIsAggregated_.size());
@@ -203,7 +188,7 @@ void SQLSelect::prepareExecute() {
 
 	if(aggregated_.size()) {
 		aggregate_ = true;
-		Log::debug() << "SELECT is aggregated" << std::endl;
+        Log::debug<LibEcKit>() << "SELECT is aggregated" << std::endl;
 
         if(aggregated_.size() != select_.size())
 		{
@@ -225,7 +210,7 @@ void SQLSelect::prepareExecute() {
 			simplifiedWhere_ = where;
 		}
 		
-		Log::debug() << "Simplified WHERE " << *where << std::endl;
+        Log::debug<LibEcKit>() << "Simplified WHERE " << *where << std::endl;
 		if(where->isConstant()) {
 			bool missing = false;
 			if(where->eval(missing)) {
@@ -239,12 +224,12 @@ void SQLSelect::prepareExecute() {
 	}
 
 	// Check for links
-	for(std::set<SQLTable*>::iterator j = allTables_.begin(); j != allTables_.end() ; ++j) {
-		SQLTable* table1 = *j;
+    for(std::set<const SQLTable*>::iterator j = allTables_.begin(); j != allTables_.end() ; ++j) {
+        const SQLTable* table1 = *j;
 		const std::string& name1    = table1->name();
 
-		for(std::set<SQLTable*>::iterator k = allTables_.begin(); k != allTables_.end() ; ++k) {
-			SQLTable* table2 = *k;
+        for(std::set<const SQLTable*>::iterator k = allTables_.begin(); k != allTables_.end() ; ++k) {
+            const SQLTable* table2 = *k;
             SelectOneTable& x      = tablesToFetch_[table2];
 
 			if(table1->hasLinkTo(*table2)) {
@@ -298,40 +283,40 @@ void SQLSelect::prepareExecute() {
 			e.push_back(where);
 
 		for(size_t i = 0 ; i < e.size() ; ++i) {
-			Log::debug() << "WHERE AND split " << *(e[i]) << std::endl;
+            Log::debug<LibEcKit>() << "WHERE AND split " << *(e[i]) << std::endl;
 
 			// Get tables accessed
-			std::set<SQLTable*> t;
+            std::set<const SQLTable*> t;
 			e[i]->tables(t);
 
-			for(std::set<SQLTable*>::iterator j = t.begin(); j != t.end(); ++j)
-				Log::debug() << "  tables -> " << (*j)->fullName() << std::endl;
+            for(std::set<const SQLTable*>::iterator j = t.begin(); j != t.end(); ++j)
+                Log::debug<LibEcKit>() << "  tables -> " << (*j)->fullName() << std::endl;
 
 				
 			if(t.size() == 1) {
-				SQLTable* table = *(t.begin());
+                const SQLTable* table = *(t.begin());
 
                 tablesToFetch_[table].check_.push_back(e[i]);
-                Log::debug() << "WHERE quick check for " << table->fullName() << " " << (*e[i]) << std::endl;
+                Log::debug<LibEcKit>() << "WHERE quick check for " << table->fullName() << " " << (*e[i]) << std::endl;
 			}
 		}
 	}
 
 	// Needed, for example, if we do: select count(*) from "file.oda"
 	if (sortedTables_.size() == 0)
-		for (std::vector<SQLTable*>::iterator i = tables_.begin(); i != tables_.end(); ++i)
+        for (std::vector<const SQLTable*>::iterator i = tables_.begin(); i != tables_.end(); ++i)
 			sortedTables_.push_back(new SelectOneTable(*i)); // TODO: release the objects!
 
 	std::sort(sortedTables_.begin(), sortedTables_.end(), compareTables);
-	Log::debug() << "TABLE order " << std::endl;
+    Log::debug<LibEcKit>() << "TABLE order " << std::endl;
 	for(SortedTables::iterator k = sortedTables_.begin(); k != sortedTables_.end(); ++k) {
-		Log::debug() << (*k)->table_->fullName() << " " << (*k)->order_ << std::endl;
+        Log::debug<LibEcKit>() << (*k)->table_->fullName() << " " << (*k)->order_ << std::endl;
 
 		for(size_t i = 0; i < (*k)->check_.size(); i++)
-			Log::debug() << "    QUICK CHECK " << *((*k)->check_[i]) << std::endl;
+            Log::debug<LibEcKit>() << "    QUICK CHECK " << *((*k)->check_[i]) << std::endl;
 
 		for(size_t i = 0; i < (*k)->index_.size(); i++)
-			Log::debug() << "    INDEX CHECK " << *((*k)->index_[i]) << std::endl;
+            Log::debug<LibEcKit>() << "    INDEX CHECK " << *((*k)->index_[i]) << std::endl;
 	}
 
 
@@ -349,12 +334,12 @@ void SQLSelect::prepareExecute() {
 			for(size_t i = 0; i < e.size(); ++i)
 				if(e[i]) {
 					// Get tables accessed
-					std::set<SQLTable*> t;
+                    std::set<const SQLTable*> t;
 					e[i]->tables(t);
 
 					if(t.size() != 1) {
 						bool ok = true;
-						for(std::set<SQLTable*>::iterator j = t.begin() ; j != t.end(); ++j)
+                        for(std::set<const SQLTable*>::iterator j = t.begin() ; j != t.end(); ++j)
 							if(ordered.find(*j) == ordered.end())
 								ok = false;
 
@@ -381,14 +366,14 @@ void SQLSelect::prepareExecute() {
 
     // Debug output
 
-	Log::debug() << "SQLSelect:prepareExecute: TABLE order:" << std::endl;
+    Log::debug<LibEcKit>() << "SQLSelect:prepareExecute: TABLE order:" << std::endl;
 	for(SortedTables::iterator k = sortedTables_.begin(); k != sortedTables_.end(); ++k)
 	{
-		Log::debug() << "SQLSelect:prepareExecute: TABLE order " <<  (*k)->table_->fullName() << " " <<
+        Log::debug<LibEcKit>() << "SQLSelect:prepareExecute: TABLE order " <<  (*k)->table_->fullName() << " " <<
 			(*k)->order_ << std::endl;
 
 		for(size_t i = 0; i < (*k)->check_.size(); i++)
-			Log::debug() << "    QUICK CHECK " << *((*k)->check_[i]) << std::endl;
+            Log::debug<LibEcKit>() << "    QUICK CHECK " << *((*k)->check_[i]) << std::endl;
 	}
 }
 
@@ -446,7 +431,7 @@ void SQLSelect::postExecute()
 	reset();
 }
 
-void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor) {
+void SQLSelect::refreshCursorMetadata(const SQLTable* table, SQLTableIterator& cursor) {
 
     ASSERT(tablesToFetch_.size() == cursors_.size());
 
@@ -640,7 +625,7 @@ void SQLSelect::print(std::ostream& s) const
 
 	s << " FROM";
 	sep = ' ';
-	for(std::vector<SQLTable*>::const_iterator t = tables_.begin(); t != tables_.end() ; ++t)
+    for(std::vector<const SQLTable*>::const_iterator t = tables_.begin(); t != tables_.end() ; ++t)
 	{
 		s << sep << (*t)->name();
 		sep = ',';

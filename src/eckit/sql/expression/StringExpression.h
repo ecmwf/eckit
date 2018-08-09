@@ -39,7 +39,7 @@ private:
 
 // -- Overridden methods
 	virtual void print(std::ostream& s) const;
-    virtual void expandStars(const std::vector<std::reference_wrapper<SQLTable>>&, expression::Expressions&);
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, expression::Expressions&);
 	virtual void prepare(SQLSelect& sql);
 	virtual void cleanup(SQLSelect& sql);
 

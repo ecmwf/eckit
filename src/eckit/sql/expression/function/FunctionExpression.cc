@@ -106,7 +106,7 @@ void FunctionExpression::print(std::ostream& s) const
 		
 }
 
-void FunctionExpression::tables(std::set<SQLTable*>& t)
+void FunctionExpression::tables(std::set<const SQLTable*>& t)
 {
 	for(expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
 		(*j)->tables(t);

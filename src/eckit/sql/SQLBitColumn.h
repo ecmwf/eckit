@@ -21,7 +21,7 @@ namespace sql {
 
 class SQLBitColumn : public SQLColumn {
 public:
-	SQLBitColumn(SQLColumn&,const std::string&);
+    SQLBitColumn(const SQLColumn&, const std::string&);
 	~SQLBitColumn(); 
 private:
 // No copy allowed

@@ -24,10 +24,7 @@ namespace expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-static double dzero = 0;
-static bool mzero = false;
-
-ColumnExpression::ColumnExpression(const std::string& name, SQLTable* table, int begin, int end)
+ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* table, int begin, int end)
 : type_(0),
   value_(0),
   columnName_(name),
@@ -71,8 +68,16 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
     /// There is no straightforward way to do these both in one prepare() statement, without
     /// shifting the functionality outside.
 
-    if (!table_) table_ = &sql.findTable(columnName_, &fullName_, &hasMissingValue_, &missingValue_, &isBitfield_, &bitfieldDef_);
+    if (!table_) table_ = &sql.findTable(columnName_);
     sql.ensureFetch(*table_, columnName_);
+
+    // Get the details into the ColumnExpression
+    const SQLColumn& column(table_->column(columnName_));
+    fullName_ = column.fullName();
+    hasMissingValue_ = column.hasMissingValue();
+    missingValue_ = column.missingValue();
+    isBitfield_ = column.isBitfield();
+    bitfieldDef_ = column.bitfieldDef();
 
     if (columnName_ == title() && columnName_ != fullName_)
     {
@@ -86,6 +91,12 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
 
 void ColumnExpression::prepare(SQLSelect& sql)
 {
+    // Get the memory address associated with reading from the column. (this is _not_
+    // the SQLColumn object used in preprepare (which describe the columns requested
+    // in the Select statement), but instead describes the mapping to the
+    // SQLTableIterator object -- which describes what/how we are actually getting the
+    // data.
+
     value_ = &sql.column(columnName_, table_);
 	type_  = sql.typeOf(columnName_, table_);
 
@@ -117,7 +128,7 @@ void ColumnExpression::output(SQLOutput& o) const  {
     type_->output(o, value_->first, value_->second);
 }
 
-void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLTable>>& tables, expression::Expressions& e)
+void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables, expression::Expressions& e)
 {
     std::ostream& L(Log::debug());
 	L << "ColumnExpression::expandStars: expanding '" << columnName_ << "' (" << tableReference_ << ")" << std::endl;
@@ -141,7 +152,7 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLT
     std::stringstream ss;
 	
 	unsigned int matched = 0;
-    for (SQLTable& table : tables) {
+    for (const SQLTable& table : tables) {
         std::vector<std::string> names = table.columnNames();
 
 		for(size_t i = 0; i < names.size(); i++)
@@ -165,7 +176,7 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLT
 	L << "ColumnExpression::expandStars: added " << ss.str() << std::endl;
 }
 
-void ColumnExpression::tables(std::set<SQLTable*>& t) 
+void ColumnExpression::tables(std::set<const SQLTable*>& t)
 { 
 	ASSERT(table_);
 	t.insert(table_); 

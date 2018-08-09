@@ -29,12 +29,12 @@ namespace expression {
 
 class ColumnExpression : public SQLExpression {
 public:
-    ColumnExpression(const std::string&, SQLTable*, int begin = -1, int end = -1);
+    ColumnExpression(const std::string&, const SQLTable*, int begin = -1, int end = -1);
     ColumnExpression(const std::string&, const std::string& tableReference, int begin = -1, int end = -1);
     ColumnExpression(const ColumnExpression&) = default;
 	~ColumnExpression(); 
 
-	SQLTable* table() { return table_; }
+    const SQLTable* table() { return table_; }
     const double* current() { return value_->first; }
     std::shared_ptr<SQLExpression> clone() const;
 
@@ -44,7 +44,7 @@ protected:
     const type::SQLType*   type_; // non-owning
     std::pair<const double*,bool>*    value_;
 	std::string                 columnName_;
-	SQLTable*              table_;
+    const SQLTable*              table_;
 	std::string                 tableReference_;
     std::string            fullName_;
     int                    beginIndex_;
@@ -65,8 +65,8 @@ private:
 
 // -- Overridden methods
 	virtual const type::SQLType* type() const { return type_; }
-    virtual void expandStars(const std::vector<std::reference_wrapper<SQLTable>>&, Expressions&);
-	virtual void tables(std::set<SQLTable*>&);
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, Expressions&);
+    virtual void tables(std::set<const SQLTable*>&);
 
 	friend class SQLSelectFactory;
 

@@ -70,7 +70,7 @@ public:
 
 	virtual void output(SQLOutput&) const { return NOTIMP; }
 	virtual void partialResult() {}
-    virtual void expandStars(const std::vector<std::reference_wrapper<SQLTable>>&,expression::Expressions&) { NOTIMP; }
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&) { NOTIMP; }
 //////////////////////////////////////////////////////////////////////////////////////
 };
 

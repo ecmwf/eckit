@@ -18,8 +18,8 @@ using namespace eckit;
 namespace eckit {
 namespace sql {
 
-SQLBitColumn::SQLBitColumn(SQLColumn& column,const std::string& field):
-	SQLColumn(column),
+SQLBitColumn::SQLBitColumn(const SQLColumn& column,const std::string& field):
+    SQLColumn(column),
 	field_(field),
 	mask_(0),
 	shift_(0)

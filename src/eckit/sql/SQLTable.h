@@ -64,10 +64,10 @@ public:
 
 	bool isParentOf(const SQLTable&) const;
 
-    virtual SQLColumn& column(const std::string&);
+    virtual const SQLColumn& column(const std::string&) const;
+//    virtual SQLColumn& column(const std::string&);
 
-	//virtual bool hasColumn(const std::string&, std::string* fullName = 0, bool *hasMissingValue=0, double *missingValue=0, BitfieldDef*=0);
-	virtual bool hasColumn(const std::string&, std::string* fullName = 0);//, std::string* fullName = 0, bool *hasMissingValue=0, double *missingValue=0, BitfieldDef*=0);
+    virtual bool hasColumn(const std::string& name) const;
 
 	unsigned long long noRows() const;
 
@@ -83,7 +83,7 @@ public:
 
 	virtual void print(std::ostream& s) const;
 
-    virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<SQLColumn>>&,
+    virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<const SQLColumn>>&,
                                        std::function<void(SQLTableIterator&)> metadataUpdateCallback) const = 0;
 
 protected:
@@ -95,6 +95,8 @@ protected:
     std::map<std::string, FieldNames > bitColumnNames_;
     std::map<std::string, SQLColumn*>  columnsByName_;
     std::map<int, SQLColumn*>     columnsByIndex_;
+
+    std::vector<std::unique_ptr<SQLColumn>> ownedColumns_;
 
     std::set<std::reference_wrapper<const SQLTable>> linksFrom_;
     std::set<std::reference_wrapper<const SQLTable>> linksTo_;

@@ -52,7 +52,7 @@ protected:
 
 // -- Overridden methods
 
-    void tables(std::set<SQLTable*>&);
+    void tables(std::set<const SQLTable*>&);
 private:
 // No copy allowed
 	//FunctionExpression(const FunctionExpression&);

@@ -35,7 +35,7 @@ struct SelectOneTable {
 
     // Information about the data to be retrieved.
 
-    std::vector<std::reference_wrapper<SQLColumn>> fetch_;
+    std::vector<std::reference_wrapper<const SQLColumn>> fetch_;
 //    std::vector<std::pair<double*,bool&>>    values_;
 
     // How do we find the data inside the allocated buffer in SQLSelect?
@@ -48,7 +48,7 @@ struct SelectOneTable {
 	// For links
     std::pair<const double*,bool&>   offset_;
     std::pair<const double*,bool&>   length_;
-	SQLColumn*           column_; // Reference column
+    const SQLColumn*                 column_; // Reference column
 
 	// For checking/debugging
 	const SQLTable*    table1_;

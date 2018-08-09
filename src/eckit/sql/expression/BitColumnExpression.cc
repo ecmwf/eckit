@@ -97,7 +97,7 @@ double BitColumnExpression::eval(bool& missing) const
 	return (x & mask_) >> bitShift_;
 }
 
-void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<SQLTable>>& tables, expression::Expressions& e)
+void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables, expression::Expressions& e)
 {
     using namespace eckit;
     using namespace std;

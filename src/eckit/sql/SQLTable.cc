@@ -28,17 +28,7 @@ SQLTable::SQLTable(SQLDatabase& owner, const std::string& path, const std::strin
 
 SQLTable::~SQLTable() { clearColumns(); }
 
-void SQLTable::clearColumns()
-{
-	// Don't loop on names, as we have all bitmap entries pointing to the same
-	for(std::map<int,SQLColumn*>::iterator m = columnsByIndex_.begin(); m != columnsByIndex_.end(); ++m)
-	{
-		SQLColumn* p = (*m).second;
-		delete p;
-	}
-	columnsByName_.clear();
-	columnsByIndex_.clear();
-}
+void SQLTable::clearColumns() {}
 
 std::vector<std::string> SQLTable::columnNames() const
 {
@@ -68,7 +58,7 @@ FieldNames SQLTable::bitColumnNames(const std::string& name) const
 			fieldNames = i->second;
 			++counter;
 		}
-	}
+    }
 	if (counter == 0) throw eckit::UserError(std::string("Column '") + name + "' not found.");
 	if (counter != 1) throw eckit::UserError(std::string("Ambiguous column name: '") + name + "'");
 
@@ -79,12 +69,17 @@ FieldNames SQLTable::bitColumnNames(const std::string& name) const
 //void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, const FieldNames& bitmap)
 void SQLTable::addColumn(const std::string& name, int index, const type::SQLType& type, bool hasMissingValue, double missingValue, bool isBitfield, const BitfieldDef& bitfieldDef)
 {
-	const FieldNames& bitmap = bitfieldDef.first;
-    SQLColumn *col = isBitfield ? createSQLColumn(type, name, index, hasMissingValue, missingValue, bitfieldDef)
-                                : createSQLColumn(type, name, index, hasMissingValue, missingValue);
+    const FieldNames& bitmap = bitfieldDef.first;
+    std::unique_ptr<SQLColumn> col(isBitfield ?
+                                       createSQLColumn(type, name, index, hasMissingValue, missingValue, bitfieldDef)
+                                     : createSQLColumn(type, name, index, hasMissingValue, missingValue));
 
-	columnsByName_[name]   = col;
-	columnsByIndex_[index] = col;
+    // ownedColumns_ describes columns for deletion. Once we sort out the bitfield/SQLBitColumn
+    // ambiguity in this file, ownedColumns_ should hopefully become superfluous, and
+    // columnsByName_ can do the owning.
+
+    columnsByName_[name]   = col.get();
+    columnsByIndex_[index] = col.get();
 
 	bitColumnNames_[name] = bitmap;
 
@@ -101,10 +96,12 @@ void SQLTable::addColumn(const std::string& name, int index, const type::SQLType
 	{
 		std::string fieldName = *j;
 		std::string n = columnName + "." + fieldName + "@" + tableName;
-		columnsByName_[n] = col;
+        columnsByName_[n] = col.get();
 
 		//Log::info() << "SQLTable::addColumn: columnsByName_[" << n << "] = " << *col << std::endl;
 	}
+
+    ownedColumns_.push_back(std::move(col));
 }
 
 void SQLTable::addColumn(SQLColumn *col, const std::string& name, int index)
@@ -118,10 +115,9 @@ SQLColumn *SQLTable::createSQLColumn(const type::SQLType &type, const std::strin
     return new SQLColumn(type, *this, name, index, hasMissingValue, missingValue, defs);
 }
 
-//bool SQLTable::hasColumn(const std::string& name, std::string* fullName, bool *hasMissingValue, double *missingValue, BitfieldDef* bitfieldDef)
-bool SQLTable::hasColumn(const std::string& name, std::string* fullName)
+bool SQLTable::hasColumn(const std::string& name) const
 {
-	std::map<std::string,SQLColumn*>::iterator j = columnsByName_.find(name);
+    std::map<std::string,SQLColumn*>::const_iterator j = columnsByName_.find(name);
 	return j != columnsByName_.end();
 }
 
@@ -134,21 +130,38 @@ unsigned long long SQLTable::noRows() const
 }
 
 
-SQLColumn& SQLTable::column(const std::string& name)
+const SQLColumn& SQLTable::column(const std::string& name) const
 {
-	std::map<std::string,SQLColumn*>::iterator j = columnsByName_.find(name);
+    std::map<std::string,SQLColumn*>::const_iterator j = columnsByName_.find(name);
 	if(j != columnsByName_.end())
         return *(j->second);
 
 	std::vector<std::string> v;
 	Tokenizer(".")(name, v);
 
-	if(v.size() > 1)
-	{
-        SQLColumn& col = column(v[0]);
-        columnsByName_[name] = new SQLBitColumn(col, v[1]);
-        return *columnsByName_[name];
+    // *** HACK alert ***
+    // TODO: this does not seem to be the correct place to construct SQLBitColumns
+
+    // If we are referring to a bit column, construct it here. This is essentially a
+    // "caching" trick, so it is sorta-ok that we mutate state despite this function
+    // being logically const...
+
+    // TODO: The combination of this and SQLTable::addColumn() construction seems duplicative
+    // something is not right, and one of these should be removed.
+
+    if(v.size() > 1) {
+        if (hasColumn(v[0])) {
+            const SQLColumn& col = column(v[0]);
+            SQLTable* mutableThis = const_cast<SQLTable*>(this);
+            std::unique_ptr<SQLColumn> newCol(new SQLBitColumn(col, v[1]));
+            SQLColumn* pnewCol = newCol.get();
+            mutableThis->columnsByName_[name] = pnewCol;
+            mutableThis->ownedColumns_.push_back(std::move(newCol));
+            return *pnewCol;
+        }
 	}
+
+    // *** End HACK ****
 
 	throw eckit::UserError("Column not found",name);
 

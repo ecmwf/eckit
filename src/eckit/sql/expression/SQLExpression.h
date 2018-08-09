@@ -48,7 +48,7 @@ public:
 	virtual double eval(bool& missing) const = 0;
 
 	virtual bool andSplit(expression::Expressions&) { return false; }
-    virtual void tables(std::set<SQLTable*>&) {}
+    virtual void tables(std::set<const SQLTable*>&) {}
 
 	virtual bool isConstant() const = 0;
 	virtual bool isNumber() const { return false; }
@@ -72,7 +72,7 @@ public:
 
 	virtual void output(SQLOutput&) const;
 	virtual void partialResult() {}
-    virtual void expandStars(const std::vector<std::reference_wrapper<SQLTable>>&,expression::Expressions&);
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&);
 
 	virtual bool isBitfield() const { return isBitfield_; }
 	BitfieldDef bitfieldDef() const { return bitfieldDef_; }

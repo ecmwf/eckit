@@ -35,7 +35,7 @@ public:
 	unsigned long long noRows() const;
 
 	const std::string& name() const { return name_; }
-	int index() { return index_; }
+    int index() const { return index_; }
 	void index(int i) { index_ = i; }
 	std::string fullName()    const;
 	SQLTable* table()    const;

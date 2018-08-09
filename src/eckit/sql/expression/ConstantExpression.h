@@ -60,7 +60,7 @@ public:
 
 	virtual void output(SQLOutput& s) const;
 	virtual void partialResult() { NOTIMP; }
-    virtual void expandStars(const std::vector<std::reference_wrapper<SQLTable>>&,expression::Expressions&) { NOTIMP; }
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&) { NOTIMP; }
 
 	virtual bool isBitfield() const { return isBitfield_; }
 	BitfieldDef bitfieldDef() const { return bitfieldDef_; }

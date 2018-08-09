@@ -84,7 +84,7 @@ std::string SQLExpression::title() const
 
 //const type::SQLType* SQLExpression::type() const { const type::SQLType& x = type::SQLType::lookup("real"); return &x; }
 
-void SQLExpression::expandStars(const std::vector<std::reference_wrapper<SQLTable>>&, expression::Expressions& e)
+void SQLExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, expression::Expressions& e)
 {
     e.push_back(shared_from_this());
 }

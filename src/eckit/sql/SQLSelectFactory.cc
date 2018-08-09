@@ -183,10 +183,10 @@ SQLSelect* SQLSelectFactory::create (
 
     // Which tables are we selecting from?
 
-    std::vector<std::reference_wrapper<SQLTable>> fromTables;
+    std::vector<std::reference_wrapper<const SQLTable>> fromTables;
 
     if (!from.size()) L << "No from clause in SQL statement. Using implicit tables" << std::endl;
-    for (SQLTable& tbl : from.size() ? from : database_.implicitTables()) {
+    for (const SQLTable& tbl : from.size() ? from : database_.implicitTables()) {
         fromTables.push_back(tbl);
     }
     if (!fromTables.size()) throw UserError("No tables found for SQL Select", Here());

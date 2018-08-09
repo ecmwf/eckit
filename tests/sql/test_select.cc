@@ -46,7 +46,7 @@ private:
     class TestTableIterator : public eckit::sql::SQLTableIterator {
     public:
         TestTableIterator(const TestTable& owner,
-                          const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(4) {
+                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(4) {
             std::vector<size_t> offsets {0, 1, 3};
             for (const auto& col : columns) {
                 offsets_.push_back(offsets[col.get().index()]);
@@ -77,7 +77,7 @@ private:
         std::vector<double> data_;
     };
 
-    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns,
+    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
                                                    std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
         // TODO: Test callback
         return new TestTableIterator(*this, columns);

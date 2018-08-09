@@ -48,7 +48,7 @@ public:
     typedef std::pair<const double*, bool> ValueLookup;
 
     SQLSelect(const Expressions& columns,
-              std::vector<std::reference_wrapper<SQLTable>>& tables,
+              const std::vector<std::reference_wrapper<const SQLTable>>& tables,
               std::shared_ptr<expression::SQLExpression> where,
               SQLOutput& out,
               bool all);
@@ -62,18 +62,17 @@ public:
 
     bool isAggregate() { return aggregate_; }
 
-    ValueLookup& column(const std::string& name, SQLTable*);
-    const type::SQLType* typeOf(const std::string& name, SQLTable*);
-	// FIXME: do we really need all these optional parameters?
-    SQLTable& findTable(const std::string& name, std::string *fullName = 0, bool *hasMissingValue=0, double *missingValue=0, bool* isBitfield=0, BitfieldDef* =0) const;
-    void ensureFetch(SQLTable& table, const std::string& columnName);
+    ValueLookup& column(const std::string& name, const SQLTable*);
+    const type::SQLType* typeOf(const std::string& name, const SQLTable*) const;
+    const SQLTable& findTable(const std::string& name) const;
+    void ensureFetch(const SQLTable& table, const std::string& columnName);
 
 	virtual Expressions output() const; 
 
     std::vector<eckit::PathName> outputFiles() const;
     void outputFiles(const std::vector<eckit::PathName>& files);
     bool all() const { return all_; }
-    std::vector<SQLTable*>& tables() { return tables_; }
+    const std::vector<const SQLTable*>& tables() { return tables_; }
     expression::SQLExpression* where() { return where_.get(); }
 
 // -- Overridden methods
@@ -89,11 +88,11 @@ private:
 
     /// Retrive a data pointer and offsets from the cursor (SQLTableIterator) associated
     /// with the given SQL table.
-    void refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor);
+    void refreshCursorMetadata(const SQLTable* table, SQLTableIterator& cursor);
 
 // -- Members
 	Expressions select_;
-    std::vector<SQLTable*> tables_;
+    std::vector<const SQLTable*> tables_;
 	SortedTables sortedTables_;
 
     std::shared_ptr<expression::SQLExpression> where_;
@@ -115,9 +114,9 @@ private:
 
     std::map<std::string, ValueLookup> values_;
 
-    std::set<SQLTable*> allTables_;
+    std::set<const SQLTable*> allTables_;
 
-	typedef std::map<SQLTable*,SelectOneTable> TableMap;
+    typedef std::map<const SQLTable*,SelectOneTable> TableMap;
 	TableMap tablesToFetch_;
 
 	unsigned long long count_;

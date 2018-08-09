@@ -73,7 +73,7 @@ StringExpression::StringExpression(const StringExpression& o)
 : name_(o.name_), value_(o.value_)
 {}
 
-void StringExpression::expandStars(const std::vector<std::reference_wrapper<SQLTable>>& tables, expression::Expressions& e)
+void StringExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables, expression::Expressions& e)
 {
     std::ostream& L(Log::info());
 

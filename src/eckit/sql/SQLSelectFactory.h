@@ -49,6 +49,7 @@ public:
         bool all,
         const expression::Expressions& select_list,
         const std::string& into,
+        // n.b. not const SQLTable only for ease of integration with sqly.y
         const std::vector<std::reference_wrapper<SQLTable>>& from,
         std::shared_ptr<expression::SQLExpression> where,
         const expression::Expressions& group_by,

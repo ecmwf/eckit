@@ -37,7 +37,7 @@ public:
     TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name) :
         SQLTable(db, path, name) {
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
-        addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 16), false, 0);
+        addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 2), false, 0);
         addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
     }
 
@@ -46,7 +46,7 @@ private:
     class TestTableIterator : public eckit::sql::SQLTableIterator {
     public:
         TestTableIterator(const TestTable& owner,
-                          const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(4) {
+                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(4) {
             std::vector<size_t> offsets {0, 1, 3};
             for (const auto& col : columns) {
                 offsets_.push_back(offsets[col.get().index()]);
@@ -69,7 +69,7 @@ private:
             data_[3] = REAL_DATA[idx_];
         }
         virtual std::vector<size_t> columnOffsets() const { return offsets_; }
-        virtual double* data() { return &data_[0]; }
+        virtual const double* data() const { return &data_[0]; }
 
         const TestTable& owner_;
         size_t idx_;
@@ -77,10 +77,13 @@ private:
         std::vector<double> data_;
     };
 
-    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<eckit::sql::SQLColumn>>& columns) const {
+    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
+                                                   std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
+        // TODO: Test callback
         return new TestTableIterator(*this, columns);
     }
 };
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

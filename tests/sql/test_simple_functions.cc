@@ -89,7 +89,6 @@ private:
 
 class TestOutput : public eckit::sql::SQLOutput {
 
-    virtual void size(int) {}
     virtual void prepare(eckit::sql::SQLSelect&) {}
     virtual void cleanup(eckit::sql::SQLSelect&) {}
     virtual void reset() {}

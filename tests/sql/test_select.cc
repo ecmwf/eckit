@@ -209,7 +209,6 @@ CASE( "Select from constructed table") {
         EXPECT(o.strOutput.empty());
     }
 
-
     SECTION( "Test SQL select distinct" ) {
 
         std::vector<std::string> queries = {
@@ -242,6 +241,42 @@ CASE( "Select from constructed table") {
 
             }
         }
+    }
+
+    SECTION( "Test SQL select order_by" ) {
+
+        std::vector<std::string> queries = {
+            "select icol from table1 order by icol ASC",
+            "select icol from table1 order by icol",
+            "select icol from table1 order by icol DESC",
+            "select distinct icol from table1 order by icol",
+            "select distinct rcol,scol from table1 order by scol DESC, icol ASC", // n.b. different order and result contents
+        };
+
+        std::vector<std::vector<long>> vals = {
+            {1111, 2222, 3333, 4444, 6666, 6666, 6666, 7777, 8888, 9999},
+            {1111, 2222, 3333, 4444, 6666, 6666, 6666, 7777, 8888, 9999},
+            {9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111},
+            {1111, 2222, 3333, 4444, 6666, 7777, 8888, 9999}
+        };
+
+        for (size_t i = 0; i < queries.size(); i++) {
+
+            eckit::sql::SQLParser().parseString(session, queries[i]);
+            session.statement().execute();
+
+            if (i < 4) {
+                EXPECT(o.intOutput == vals[i]);
+                EXPECT(o.floatOutput.empty() && o.strOutput.empty());
+            } else {
+                EXPECT(o.intOutput.empty());
+                EXPECT(o.floatOutput == std::vector<double>({88.8, 66.6, 77.7, 88.8, 11.1, 22.2, 44.4, 33.3, 99.9}));
+                EXPECT(o.strOutput == std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2",
+                                                                "another-string",  "aaaabbbb", "a-longer-string",
+                                                                "a-longer-string"}));
+            }
+        }
+
     }
 
 } // Testing SQL select from standard table

@@ -8,27 +8,44 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/sql/SQLOutput.h"
+/// @author Piotr Kuchta
+/// @author Simon Smart
+/// @date Nov 2011
+/// @date Aug 2018
 
-#include <ostream>
+#ifndef eckit_sql_expression_OrderByExpressions_H
+#define eckit_sql_expression_OrderByExpressions_H
+
+#include "eckit/sql/expression/SQLExpressions.h"
 
 namespace eckit {
 namespace sql {
+namespace expression {
+
+/// @note This is fundamentally used only for the purpose of the SQLOrderOutput class
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SQLOutput::SQLOutput() {}
-
-SQLOutput::~SQLOutput() {}
-
-void SQLOutput::preprepare(SQLSelect&) {}
-
-void SQLOutput::print(std::ostream& s) const
+class OrderByExpressions : public Expressions
 {
-	s << "SQLOutput" << std::endl;
-}
+public:
+    OrderByExpressions(const OrderByExpressions& o);
+
+    OrderByExpressions(const std::vector<bool>& ascending);
+
+    ~OrderByExpressions();
+
+	bool operator<(const OrderByExpressions&) const;
+
+private:
+
+	const std::vector<bool>& ascending_;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace expression
 } // namespace sql
-} // namespace eckit
+} // namespace odb
+
+#endif

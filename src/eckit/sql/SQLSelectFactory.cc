@@ -20,8 +20,8 @@
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
-//#include "eckit/sql/SQLDistinctOutput.h"
-//#include "eckit/sql/SQLOrderOutput.h"
+#include "eckit/sql/SQLDistinctOutput.h"
+#include "eckit/sql/SQLOrderOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLSelectFactory.h"
 #include "eckit/sql/SQLSelect.h"
@@ -227,9 +227,20 @@ SQLSelect* SQLSelectFactory::create (
     SQLOutput& out (createOutput(into, 0));
 
     // TODO: Special outputs
-    if(order_by.first.size()) { NOTIMP; } // out = new SQLOrderOutput(out, order_by); }
-    ///r = new SQLSelect(select, fromTables, where, out, config_, all);
-    r = new SQLSelect(select, fromTables, where, out, distinct);
+
+    SQLOutput* outputEndpoint = &out;
+    std::vector<std::unique_ptr<SQLOutput>> newOutputs;
+
+    if (distinct) {
+        newOutputs.emplace_back(new SQLDistinctOutput(*outputEndpoint));
+        outputEndpoint = newOutputs.back().get();
+    }
+    if (order_by.first.size()) {
+        newOutputs.emplace_back(new SQLOrderOutput(*outputEndpoint, order_by));
+        outputEndpoint = newOutputs.back().get();
+    }
+
+    r = new SQLSelect(select, fromTables, where, *outputEndpoint, std::move(newOutputs));
 
 	maxColumnShift_ = 0;
 	return r;

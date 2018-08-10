@@ -18,6 +18,7 @@
 #include "eckit/filesystem/PathName.h"
 
 #include "eckit/sql/SelectOneTable.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/Environment.h"
@@ -51,7 +52,7 @@ public:
               const std::vector<std::reference_wrapper<const SQLTable>>& tables,
               std::shared_ptr<expression::SQLExpression> where,
               SQLOutput& out,
-              bool distinct);
+              std::vector<std::unique_ptr<SQLOutput>>&& ownedOutputs_=std::vector<std::unique_ptr<SQLOutput>>());
 	~SQLSelect(); 
 
 // -- Methods
@@ -100,7 +101,9 @@ private:
     // Cursors provide the environment for the iteration over the tables
     std::vector<std::unique_ptr<SQLTableIterator>> cursors_;
 
-    std::unique_ptr<SQLOutput> ownOutput_;
+    /// ownedOutputs allows us to create wrapping SQLOutputs with the same lifetime as the
+    /// SQLSelect object.
+    std::vector<std::unique_ptr<SQLOutput>> ownedOutputs_;
     SQLOutput& output_;
 
     typedef std::map<

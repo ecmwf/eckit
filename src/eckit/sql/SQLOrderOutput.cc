@@ -8,80 +8,78 @@
  * does it submit to any jurisdiction.
  */
 
-#include "odb_api/Expressions.h"
-#include "eckit/sql/SQLExpressionEvaluated.h"
+#include "eckit/sql/expression/SQLExpressionEvaluated.h"
 #include "eckit/sql/SQLOrderOutput.h"
+
+using namespace eckit::sql::expression;
 
 namespace eckit {
 namespace sql {
 
-SQLOrderOutput::SQLOrderOutput(SQLOutput* output, const std::pair<Expressions,std::vector<bool> >& by)
-: output_(output),
-  by_(by)
-{
-	eckit::Log::debug() << *this << std::endl;
-}
+//----------------------------------------------------------------------------------------------------------------------
 
-SQLOrderOutput::~SQLOrderOutput()
-{
-	for (SortedResults::iterator it(sortedResults_.begin()); it != sortedResults_.end(); ++it)
-	{
-		VectorOfExpressions& v(it->second);
-		for (size_t i = 0; i < v.size(); ++i)
-		{
-			Expressions& es(v[i]);
-			for (size_t j = 0; j < es.size(); ++j)
-				delete es[j];
-		}
-	}
-}
+SQLOrderOutput::SQLOrderOutput(SQLOutput& output, const std::pair<Expressions,std::vector<bool>>& by)
+: output_(output),
+  by_(by) {}
+
+SQLOrderOutput::~SQLOrderOutput() {}
 
 void SQLOrderOutput::print(std::ostream& s) const
 {
-	s << "SQLOrderOutput[" << *output_ << " ORDER BY ";
+    s << "SQLOrderOutput[" << output_ << " ORDER BY ";
 	for(size_t i = 0; i < by_.first.size(); i++)
 		s << *(by_.first[i]) << (by_.second[i] ? " ASC " : " DESC ") << ", ";
 	s << "]";
 }
 
-void SQLOrderOutput::size(int count) { output_->size(count); }
+unsigned long long SQLOrderOutput::count() { return output_.count(); }
 
-unsigned long long SQLOrderOutput::count() { return output_->count(); }
-
-void SQLOrderOutput::reset() { output_->reset(); }
+void SQLOrderOutput::reset() { output_.reset(); }
 
 void SQLOrderOutput::flush()
 {
-	for (SortedResults::iterator it = sortedResults_.begin(); it != sortedResults_.end(); ++it)
-	{
+    // n.b. std::map iteration order is sorted by key.
+    for (SortedResults::iterator it = sortedResults_.begin(); it != sortedResults_.end(); ++it) {
+        // Given identical sorted keys, we use the order that rows are appended
 		std::vector<Expressions>& rows = it->second;
-		for (size_t i = 0; i < rows.size(); ++i)
-            output_->output(rows[i]);
+        for (size_t i = 0; i < rows.size(); ++i) {
+            output_.output(rows[i]);
+        }
 	}
-    output_->flush();
+    output_.flush();
 }
 
 bool SQLOrderOutput::output(const Expressions& results)
 {
-	OrderByExpressions byValues(by_.second);
+    OrderByExpressions byValues(by_.second);
     Expressions& byExpressions(by_.first);
-	for (size_t i = 0; i < byExpressions.size(); ++i)
-		byValues.push_back(new SQLExpressionEvaluated(
+    for (size_t i = 0; i < byExpressions.size(); ++i) {
+        byValues.push_back(std::make_shared<SQLExpressionEvaluated>(
             byIndices_[i]
             ? *results[byIndices_[i] - 1]
             : *byExpressions[i]));
+    }
 
 	Expressions resultValues;
-	for (size_t i = 0; i < results.size(); ++i)
-		resultValues.push_back(new SQLExpressionEvaluated(*results[i]));
+    for (size_t i = 0; i < results.size(); ++i) {
+        resultValues.push_back(std::make_shared<SQLExpressionEvaluated>(*results[i]));
+    }
 
 	sortedResults_[byValues].push_back(resultValues);
 	return false;
 }
 
+void SQLOrderOutput::preprepare(SQLSelect& sql) {
+    output_.preprepare(sql);
+
+    for (auto& exprn : by_.first) {
+        exprn->preprepare(sql);
+    }
+}
+
 void SQLOrderOutput::prepare(SQLSelect& sql)
 {
-	output_->prepare(sql);
+    output_.prepare(sql);
     Expressions& ex(by_.first);
     for(size_t i(0); i < ex.size(); ++i)
     {
@@ -103,14 +101,21 @@ void SQLOrderOutput::prepare(SQLSelect& sql)
 
 void SQLOrderOutput::cleanup(SQLSelect& sql)
 {
-	output_->cleanup(sql);
+    output_.cleanup(sql);
 	for(Expressions::iterator j = by_.first.begin(); j != by_.first.end() ; ++j)
 		(*j)->cleanup(sql);
 }
 
-const SQLOutputConfig& SQLOrderOutput::config() { return output_->config(); }
-void SQLOrderOutput::config(SQLOutputConfig& cfg) { output_->config(cfg); }
+// Direct output functions removed in order output
 
+void SQLOrderOutput::outputReal(double, bool) { NOTIMP; }
+void SQLOrderOutput::outputDouble(double, bool) { NOTIMP; }
+void SQLOrderOutput::outputInt(double, bool) { NOTIMP; }
+void SQLOrderOutput::outputUnsignedInt(double, bool) { NOTIMP; }
+void SQLOrderOutput::outputString(const char*, size_t, bool) { NOTIMP; }
+void SQLOrderOutput::outputBitfield(double, bool) { NOTIMP; }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

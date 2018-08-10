@@ -8,63 +8,62 @@
  * does it submit to any jurisdiction.
  */
 
-/// \file SQLOrderOutput.h
-/// Piotr Kuchta - ECMWF Nov 11
+/// @author Piotr Kuchta
+/// @author Simon Smart
+/// @date Nov 2011
+/// @date Aug 2018
 
-#ifndef SQLOrderOutput_H
-#define SQLOrderOutput_H
+#ifndef eckit_sql_SQLOrderOutput_H
+#define eckit_sql_SQLOrderOutput_H
 
-#include "odb_api/Expressions.h"
-#include "odb_api/OrderByExpressions.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/SQLOutput.h"
 
 namespace eckit {
 namespace sql {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SQLOrderOutput : public SQLOutput {
 public:
-    SQLOrderOutput(SQLOutput* output, const std::pair<Expressions,std::vector<bool> >& by);
+    SQLOrderOutput(SQLOutput& output, const std::pair<expression::Expressions,std::vector<bool>>& by);
 	virtual ~SQLOrderOutput();
 
-protected:
+private: // methods
+
 	virtual void print(std::ostream&) const;
 
-private:
-// No copy allowed
-	SQLOrderOutput(const SQLOrderOutput&);
-	SQLOrderOutput& operator=(const SQLOrderOutput&);
-
 // -- Members
-    std::auto_ptr<SQLOutput> output_;
-	std::pair<Expressions,std::vector<bool> > by_;
+
+    SQLOutput& output_;
+    std::pair<expression::Expressions, std::vector<bool>> by_;
 	
-	typedef std::map<OrderByExpressions, VectorOfExpressions> SortedResults;
+    typedef std::map<expression::OrderByExpressions, VectorOfExpressions> SortedResults;
 
 	SortedResults sortedResults_;
     std::vector<size_t> byIndices_;
 
 // -- Overridden methods
-	virtual void size(int);
-	virtual void reset();
-    virtual void flush();
-    virtual bool output(const Expressions&);
-	virtual void prepare(SQLSelect&);
-	virtual void cleanup(SQLSelect&);
-	virtual unsigned long long count();
+    virtual void reset() override;
+    virtual void flush() override;
+    virtual bool output(const expression::Expressions&) override;
+    virtual void preprepare(SQLSelect&) override;
+    virtual void prepare(SQLSelect&) override;
+    virtual void cleanup(SQLSelect&) override;
+    virtual unsigned long long count() override;
 
-	virtual void outputReal(double, bool) { NOTIMP; };
-	virtual void outputDouble(double, bool) { NOTIMP; };
-	virtual void outputInt(double, bool) { NOTIMP; };
-	virtual void outputUnsignedInt(double, bool) { NOTIMP; };
-	virtual void outputString(double, bool) { NOTIMP; };
-	virtual void outputBitfield(double, bool) { NOTIMP; };
+    // Overridden (and removed) functions
 
-	virtual const SQLOutputConfig& config();
-	virtual void config(SQLOutputConfig&);
-
-	friend std::ostream& operator<<(std::ostream& s, const SQLOrderOutput& o)
-		{ o.print(s); return s; }
+    virtual void outputReal(double, bool) override;
+    virtual void outputDouble(double, bool) override;
+    virtual void outputInt(double, bool) override;
+    virtual void outputUnsignedInt(double, bool) override;
+    virtual void outputString(const char*, size_t, bool) override;
+    virtual void outputBitfield(double, bool) override;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

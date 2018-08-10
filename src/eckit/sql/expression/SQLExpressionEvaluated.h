@@ -8,11 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-/// \file SQLExpressionEvaluated.h
-/// Piotr Kuchta - ECMWF Nov 11
+/// @author Piotr Kuchta
+/// @author Simon Smart
+/// @date Nov 2011
+/// @date Aug 2018
 
-#ifndef SQLExpressionEvaluated_H
-#define SQLExpressionEvaluated_H
+#ifndef eckit_sql_expressiono_SQLExpressionEvaluated_H
+#define eckit_sql_expressiono_SQLExpressionEvaluated_H
 
 #include "eckit/sql/expression/SQLExpression.h"
 
@@ -20,40 +22,42 @@ namespace eckit {
 namespace sql {
 namespace expression {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SQLExpressionEvaluated : public SQLExpression {
 public:
 	SQLExpressionEvaluated(SQLExpression&);
-	~SQLExpressionEvaluated(); 
+    virtual ~SQLExpressionEvaluated();
 
 	// Overriden
 
-    virtual void prepare(SQLSelect&);
-    virtual void cleanup(SQLSelect&);
-    virtual double eval(bool& missing) const ;
-    virtual bool isConstant() const ;
-    virtual bool isNumber() const ;
-    virtual SQLExpression* simplify(bool&) ;
-    virtual SQLExpression* clone() const;
-    virtual bool isAggregate() const ;
+    virtual void prepare(SQLSelect&) override;
+    virtual void cleanup(SQLSelect&) override;
+    virtual double eval(bool& missing) const override;
+    virtual void eval(double* out, bool& missing) const override;
+    virtual std::string evalAsString(bool& missing) const override;
+    virtual bool isConstant() const override;
+    virtual bool isNumber() const override;
+    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
+    virtual std::shared_ptr<SQLExpression> clone() const override;
+    virtual bool isAggregate() const  override;
 
-    virtual const odb::sql::type::SQLType* type() const ;
+    virtual const type::SQLType* type() const ;
 
     virtual void output(SQLOutput& o) const ;
 
 protected:
 	virtual void print(std::ostream&) const;
 
-private:
-	SQLExpressionEvaluated(const SQLExpressionEvaluated&);
-	SQLExpressionEvaluated& operator=(const SQLExpressionEvaluated&);
-
 	friend std::ostream& operator<<(std::ostream& s, const SQLExpressionEvaluated& p) { p.print(s); return s; }
 
-	const odb::sql::type::SQLType* type_;
+    const type::SQLType* type_;
 	bool missing_;
-	double value_;
+    std::vector<double> value_;
 	double missingValue_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace expression
 } // namespace sql

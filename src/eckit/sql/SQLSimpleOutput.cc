@@ -41,7 +41,6 @@ std::ostream& SQLSimpleOutput::format(std::ostream& o, size_t i) const
 	return o << *columnAlignments_[i];
 }
 
-void SQLSimpleOutput::size(int) {}
 void SQLSimpleOutput::reset() { count_ = 0; }
 void SQLSimpleOutput::flush() { out_ << std::flush; }
 

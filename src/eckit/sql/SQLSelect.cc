@@ -16,7 +16,6 @@
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/sql/SQLDistinctOutput.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
@@ -32,12 +31,12 @@ using namespace expression;
 SQLSelect::SQLSelect(const Expressions& columns, 
     const std::vector<std::reference_wrapper<const SQLTable>>& tables,
     std::shared_ptr<SQLExpression> where,
-    SQLOutput& output, bool distinct)
+    SQLOutput& output, std::vector<std::unique_ptr<SQLOutput>>&& ownedOutputs)
 : select_(columns),
   where_(where),
   simplifiedWhere_(0),
-  ownOutput_(distinct ? new SQLDistinctOutput(output) : 0),
-  output_(distinct ? *ownOutput_ : output),
+  ownedOutputs_(std::move(ownedOutputs)),
+  output_(output),
   count_(0),
   total_(0),
   skips_(0),
@@ -92,6 +91,8 @@ void SQLSelect::ensureFetch(const SQLTable& table, const std::string& columnName
 
 SQLSelect::ValueLookup& SQLSelect::column(const std::string& name, const SQLTable* table)
 {
+    // if this ASSERT fails, we are likely missing a call to preprepare() on the expression
+    // in SQlSelect::prepareExecute()
     ASSERT(table);
     const SQLColumn& column(table->column(name));
 
@@ -149,6 +150,7 @@ void SQLSelect::prepareExecute() {
     }
 
     if(where_) where_->preprepare(*this);
+    output_.preprepare(*this);
 
     // Construct the cursors that will be used for the selection, and pass these in to the
     // constructed cursors/iterators
@@ -613,9 +615,6 @@ bool SQLSelect::processOneRow() {
 void SQLSelect::print(std::ostream& s) const
 {
 	s << "SELECT"; char sep = ' ';
-
-	//if(distinct_)
-	//	s << " DISTINCT";
 
 	for(expression::Expressions::const_iterator c = select_.begin(); c != select_.end() ; ++c)
 	{

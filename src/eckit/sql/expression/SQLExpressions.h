@@ -25,6 +25,8 @@ namespace eckit {
 namespace sql {
 namespace expression {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 // n.b. shared pointer not unique_ptr.
 //      needs to be copyable to be used by YACC
 typedef std::vector<std::shared_ptr<SQLExpression>> ExpressionsVector;
@@ -76,6 +78,8 @@ public:
 
 typedef std::vector<Expressions> VectorOfExpressions;
 //class VectorOfExpressions : public vector<Expressions> { public: ~VectorOfExpressions() { for (size_t i=0; i < size(); ++i) ; } };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace expression
 } // namespace sql

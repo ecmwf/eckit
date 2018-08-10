@@ -545,15 +545,11 @@ sql/SQLDatabase.cc
 sql/SQLDatabase.h
 sql/SQLDistinctOutput.cc
 sql/SQLDistinctOutput.h
-#sql/SQLInteractiveSession.cc
-#sql/SQLInteractiveSession.h
-#sql/SQLSession.cc
-#sql/SQLSession.h
 #sql/SQLIterator.h
 #sql/SQLIteratorOutput.cc
 #sql/SQLIteratorOutput.h
-#sql/SQLOrderOutput.cc
-#sql/SQLOrderOutput.h
+sql/SQLOrderOutput.cc
+sql/SQLOrderOutput.h
 sql/SQLOutput.cc
 sql/SQLOutput.h
 sql/SQLOutputConfig.cc
@@ -600,8 +596,10 @@ sql/expression/SQLExpressions.cc
 sql/expression/SQLExpressions.h
 sql/expression/ShiftedColumnExpression.cc
 sql/expression/ShiftedColumnExpression.h
-#sql/expression/SQLExpressionEvaluated.cc
-#sql/expression/SQLExpressionEvaluated.h
+sql/expression/SQLExpressionEvaluated.cc
+sql/expression/SQLExpressionEvaluated.h
+sql/expression/OrderByExpressions.cc
+sql/expression/OrderByExpressions.h
 
 sql/expression/function/piconst.h
 sql/expression/function/EqRegionCache.cc

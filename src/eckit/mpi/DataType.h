@@ -33,7 +33,6 @@ public:
         SHORT,
         INT,
         LONG,
-        LONG_LONG,
         SIGNED_CHAR,
         UNSIGNED_CHAR,
         UNSIGNED_SHORT,
@@ -54,6 +53,7 @@ public:
         FLOAT_INT,
         DOUBLE_INT,
         LONG_DOUBLE_INT,
+        LONG_LONG,
         MAX_DATA_CODE
     };
 

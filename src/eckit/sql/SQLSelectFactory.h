@@ -46,7 +46,6 @@ public:
 
 	SQLSelect* create(
         bool distinct,
-        bool all,
         const expression::Expressions& select_list,
         const std::string& into,
         // n.b. not const SQLTable only for ease of integration with sqly.y

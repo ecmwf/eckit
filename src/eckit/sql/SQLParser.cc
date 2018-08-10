@@ -112,7 +112,6 @@ namespace sql {
 
 void SQLParser::parseString(SQLSession& session, const std::string& s) {
 
-    Log::info() << "Parsing: " << s << std::endl;
     SQLYacc::eckit_sql_scan_t scanner;
     SQLYacc::eckit_sql_lex_init(&scanner);
 

@@ -30,6 +30,13 @@ SQLExpression::SQLExpression()
 
 SQLExpression::~SQLExpression() {}
 
+void SQLExpression::eval(double* out, bool& missing) const {
+    // In the common case we are just dealing with a double, so we can use the normal
+    // eval function.
+    // --> In the cases of strings, there may be more data.
+    *out = eval(missing);
+}
+
 bool SQLExpression::isVector() const { return false; }
 
 Expressions& SQLExpression::vector()

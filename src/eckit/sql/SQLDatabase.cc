@@ -13,6 +13,7 @@
 #include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/type/SQLType.h"
+#include "eckit/config/LibEcKit.h"
 
 using namespace eckit;
 
@@ -28,7 +29,7 @@ SQLDatabase::SQLDatabase(const std::string& name)
 SQLDatabase::~SQLDatabase() {}
 
 void SQLDatabase::open() {
-    Log::info() << "Opening " << name_ << std::endl;
+    Log::debug<LibEcKit>() << "Opening database: " << name_ << std::endl;
 }
 
 void SQLDatabase::close() {
@@ -68,11 +69,12 @@ void SQLDatabase::setLinks(const Links& links)
 SQLTable& SQLDatabase::defaultTable()
 {
     auto it = tablesByName_.find("defaultTable");
-    if (it == tablesByName_.end())
-        if (tablesByName_.empty() && implicitTables_.size() == 0) {
+    if (it == tablesByName_.end()) {
+        if (tablesByName_.empty() && implicitTables_.size() != 0) {
             return *implicitTables_.back();
         }
         throw UserError("No default table");
+    }
     return *(it->second);
 }
 

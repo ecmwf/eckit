@@ -46,6 +46,7 @@ private:
 
     virtual const type::SQLType* type() const override;
     virtual double eval(bool& missing) const override;
+    virtual void eval(double* out, bool& missing) const override;
     virtual std::string evalAsString(bool& missing) const override;
     virtual bool isConstant() const override { return true; }
     virtual bool isNumber() const override { return true; }

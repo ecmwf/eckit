@@ -543,8 +543,8 @@ sql/SQLColumn.h
 #sql/SQLDataTableIterator.h
 sql/SQLDatabase.cc
 sql/SQLDatabase.h
-#sql/SQLDistinctOutput.cc
-#sql/SQLDistinctOutput.h
+sql/SQLDistinctOutput.cc
+sql/SQLDistinctOutput.h
 #sql/SQLInteractiveSession.cc
 #sql/SQLInteractiveSession.h
 #sql/SQLSession.cc

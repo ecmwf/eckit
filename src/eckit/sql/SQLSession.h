@@ -36,13 +36,23 @@ class SQLStatement;
 class SQLTable;
 class SQLOutputConfig;
 
-class SQLSession {
+class SQLSession : private eckit::NonCopyable {
 public:
+
+    // Constructors
+
     SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config=0, const std::string& csvDelimiter=",");
     SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter=",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);
     SQLSession(const std::string& csvDelimiter=",");
     virtual ~SQLSession();
+
+    // Enable move constructor
+
+    SQLSession(SQLSession&& rhs) = default;
+    SQLSession& operator=(SQLSession&& rhs) = default;
+
+    // For sqly.y (used parsing SQL strings)
 
     virtual SQLSelectFactory& selectFactory();
 //    virtual SQLInsertFactory& insertFactory();
@@ -76,10 +86,6 @@ protected:
     void loadDefaultSchema();
 
 private:
-// No copy allowed
-
-    SQLSession(const SQLSession&);
-    SQLSession& operator=(const SQLSession&);
 
     static std::string schemaFile();
     static std::vector<std::string> includePaths();

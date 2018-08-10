@@ -8,52 +8,59 @@
  * does it submit to any jurisdiction.
  */
 
-// File SQLDistinctOutput..h
-// Baudouin Raoult - ECMWF Dec 03
+/// @author Baudouin Raoult
+/// @author Simon Smart
+/// @date Dec 2003
+/// @date Aug 2018
 
-#ifndef SQLDistinctOutput_H
-#define SQLDistinctOutput_H
+#ifndef eckit_sql_SQLDistinctOutput_H
+#define eckit_sql_SQLDistinctOutput_H
 
-#include "eckit/exception/Exceptions.h"
+
 #include "eckit/sql/SQLOutput.h"
 
 namespace eckit {
 namespace sql {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class SQLDistinctOutput : public SQLOutput {
-public:
-	SQLDistinctOutput(SQLOutput* output);
+
+public: // methods
+
+    SQLDistinctOutput(SQLOutput& output);
 	virtual ~SQLDistinctOutput(); 
 
-protected:
-	virtual void print(std::ostream&) const; 	
-private:
-// No copy allowed
-	SQLDistinctOutput(const SQLDistinctOutput&);
-	SQLDistinctOutput& operator=(const SQLDistinctOutput&);
+private: // methods
 
-	virtual const SQLOutputConfig& config();
-	virtual	void config(SQLOutputConfig&);
+    virtual void print(std::ostream&) const;
+
 // -- Members
-    std::auto_ptr<SQLOutput>   output_;
-	std::set<std::vector<double> >  seen_;
-	std::vector<double>        tmp_;
-// -- Overridden methods
-	virtual void size(int);
-	virtual void reset();
-    virtual void flush();
-    virtual bool output(const expression::Expressions&);
-	virtual void prepare(SQLSelect&);
-	virtual void cleanup(SQLSelect&);
-	virtual unsigned long long count();
 
-	virtual void outputReal(double, bool) { NOTIMP; };
-	virtual void outputDouble(double, bool) { NOTIMP; };
-	virtual void outputInt(double, bool) { NOTIMP; };
-	virtual void outputUnsignedInt(double, bool) { NOTIMP; };
-	virtual void outputString(double, bool) { NOTIMP; };
-	virtual void outputBitfield(double, bool) { NOTIMP; };
+    SQLOutput& output_;
+    std::set<std::vector<double>>   seen_;
+    std::vector<double>             tmp_;
+    std::vector<size_t>             offsets_;
+
+// -- Overridden methods
+    virtual void reset() override;
+    virtual void flush() override;
+    virtual bool output(const expression::Expressions&) override;
+    virtual void prepare(SQLSelect&) override;
+    virtual void cleanup(SQLSelect&) override;
+    virtual unsigned long long count() override;
+
+    // Overridden (and removed) functions
+
+    virtual void outputReal(double, bool) override;
+    virtual void outputDouble(double, bool) override;
+    virtual void outputInt(double, bool) override;
+    virtual void outputUnsignedInt(double, bool) override;
+    virtual void outputString(const char*, size_t, bool) override;
+    virtual void outputBitfield(double, bool) override;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql 
 } // namespace eckit 

@@ -34,8 +34,6 @@ public:
 	SQLOutput();
 	virtual ~SQLOutput(); 
 
-	virtual void size(int) = 0;
-
 	virtual void prepare(SQLSelect&) = 0;
 	virtual void cleanup(SQLSelect&) = 0;
 

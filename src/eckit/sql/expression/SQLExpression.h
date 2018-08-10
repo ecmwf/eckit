@@ -44,8 +44,13 @@ public:
 	virtual void prepare(SQLSelect&) = 0;
 	virtual void cleanup(SQLSelect&) = 0;
 
-	// -- For WHERE
+    // @note Original SQL implementation used double for everything, but strings may
+    // have more than 8 characters, so we need a way of getting bigger data out.
+    // --> where relevant the eval(double*, bool&) method is used. Otherwise it just
+    //     forwards to the normal eval.
+
 	virtual double eval(bool& missing) const = 0;
+    virtual void eval(double* out, bool& missing) const;
     virtual std::string evalAsString(bool& missing) const;
 
 	virtual bool andSplit(expression::Expressions&) { return false; }

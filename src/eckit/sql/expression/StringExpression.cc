@@ -118,6 +118,10 @@ StringExpression::~StringExpression() {}
 
 double StringExpression::eval(bool& missing) const { return value_[0]; }
 
+void StringExpression::eval(double* out, bool& missing) const {
+    ::memcpy(out, &value_[0], value_.size()*sizeof(value_[0]));
+}
+
 std::string StringExpression::evalAsString(bool& missing) const {
     return name_;
 }

@@ -11,11 +11,12 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Log.h"
-#include "eckit/sql/expression/ConstantExpression.h"
 #include "eckit/sql/expression/ColumnExpression.h"
+#include "eckit/sql/expression/ConstantExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
+#include "eckit/sql/SQLDistinctOutput.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
@@ -31,19 +32,17 @@ using namespace expression;
 SQLSelect::SQLSelect(const Expressions& columns, 
     const std::vector<std::reference_wrapper<const SQLTable>>& tables,
     std::shared_ptr<SQLExpression> where,
-    SQLOutput& output,
-    bool all)
+    SQLOutput& output, bool distinct)
 : select_(columns),
   where_(where),
   simplifiedWhere_(0),
-  output_(output),
+  ownOutput_(distinct ? new SQLDistinctOutput(output) : 0),
+  output_(distinct ? *ownOutput_ : output),
   count_(0),
   total_(0),
   skips_(0),
   aggregate_(false),
-  mixedAggregatedAndScalar_(false),
-  all_(all)
-{
+  mixedAggregatedAndScalar_(false) {
     // TODO: Convert tables_, allTables_ to use references rather than pointers.
     for (const SQLTable& t : tables) tables_.push_back(&t);
 }
@@ -184,7 +183,6 @@ void SQLSelect::prepareExecute() {
 	ASSERT(select_.size() == aggregated_.size() + nonAggregated_.size());
 
     output_.prepare(*this);
-    output_.size(select_.size());
 
 	if(aggregated_.size()) {
 		aggregate_ = true;
@@ -426,8 +424,8 @@ void SQLSelect::postExecute()
     for(expression::Expressions::iterator c (select_.begin()); c != select_.end() ; ++c)
 		(*c)->cleanup(*this);
 
-    Log::info() << "Matching row(s): " << BigNum(output_.count()) << " out of " << BigNum(total_) << std::endl;
-    Log::info() << "Skips: " << BigNum(skips_) << std::endl;
+    Log::debug<LibEcKit>() << "Matching row(s): " << BigNum(output_.count()) << " out of " << BigNum(total_) << std::endl;
+    Log::debug<LibEcKit>() << "Skips: " << BigNum(skips_) << std::endl;
 	reset();
 }
 
@@ -590,7 +588,9 @@ bool SQLSelect::processOneRow() {
 
     for (size_t idx = 0; idx < cursors_.size(); idx++) {
 
-        if (processNextTableRow(idx)) {
+        // n.b. keep going until writeOutput() has done something - i.e. a row has been
+        // returned. This allows us to have filtering/unique/aggregation in the Output
+        while (processNextTableRow(idx)) {
             total_++;
             if (writeOutput()) {
                 count_++;

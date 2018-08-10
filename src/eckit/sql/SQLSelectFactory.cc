@@ -167,7 +167,6 @@ MetaData SQLSelectFactory::columns(const std::string& tableName)
 
 SQLSelect* SQLSelectFactory::create (
     bool distinct,
-    bool all,
     const Expressions& select_list,
     const std::string& into,
     const std::vector<std::reference_wrapper<SQLTable>>& from,
@@ -228,10 +227,9 @@ SQLSelect* SQLSelectFactory::create (
     SQLOutput& out (createOutput(into, 0));
 
     // TODO: Special outputs
-    if(distinct)              { NOTIMP; } // out = new SQLDistinctOutput(out); }
     if(order_by.first.size()) { NOTIMP; } // out = new SQLOrderOutput(out, order_by); }
     ///r = new SQLSelect(select, fromTables, where, out, config_, all);
-    r = new SQLSelect(select, fromTables, where, out, all);
+    r = new SQLSelect(select, fromTables, where, out, distinct);
 
 	maxColumnShift_ = 0;
 	return r;

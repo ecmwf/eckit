@@ -51,7 +51,7 @@ public:
               const std::vector<std::reference_wrapper<const SQLTable>>& tables,
               std::shared_ptr<expression::SQLExpression> where,
               SQLOutput& out,
-              bool all);
+              bool distinct);
 	~SQLSelect(); 
 
 // -- Methods
@@ -71,7 +71,6 @@ public:
 
     std::vector<eckit::PathName> outputFiles() const;
     void outputFiles(const std::vector<eckit::PathName>& files);
-    bool all() const { return all_; }
     const std::vector<const SQLTable*>& tables() { return tables_; }
     expression::SQLExpression* where() { return where_.get(); }
 
@@ -101,6 +100,7 @@ private:
     // Cursors provide the environment for the iteration over the tables
     std::vector<std::unique_ptr<SQLTableIterator>> cursors_;
 
+    std::unique_ptr<SQLOutput> ownOutput_;
     SQLOutput& output_;
 
     typedef std::map<
@@ -129,7 +129,6 @@ private:
 	Expressions nonAggregated_;
 	std::vector<bool> mixedResultColumnIsAggregated_;
     std::vector<eckit::PathName> outputFiles_;
-    bool all_;
 
 // -- Methods
 

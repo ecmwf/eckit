@@ -58,6 +58,11 @@ double ColumnExpression::eval(bool& missing) const
     return *(value_->first);
 }
 
+void ColumnExpression::eval(double* out, bool& missing) const {
+    if (value_->second) missing = true;
+    ::memcpy(out, value_->first, type_->size());
+}
+
 std::string ColumnExpression::evalAsString(bool& missing) const {
     if (value_->second) missing = true;
     return type_->asString(value_->first);

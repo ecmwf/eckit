@@ -153,13 +153,14 @@ Expressions emptyExpressionList;
 
 %type <explist> select_list select_list_;
 %type <exp> select select_;
-//
-%type <bol> distinct all;
+
 %type <val> into;
 %type <val> func relational_operator;
+
+%type <bol> distinct;
+
 //
 //%type <r>vector_range_decl;
-//%type <val>column_name;
 %type <val> bitfield_ref;
 //%type <coldefs>column_def_list;
 //%type <coldefs>column_def_list_;
@@ -444,19 +445,18 @@ statement: select_statement
 //create_view_statement: CREATE VIEW IDENT AS select_statement { $$ = $5; }
 //	;
 
-select_statement: SELECT distinct all select_list into from where group_by order_by
+select_statement: SELECT distinct select_list into from where group_by order_by
                 {
                     bool                                          distinct($2);
-                    bool                                          all($3);
-                    Expressions                                   select_list($4);
-                    std::string                                   into($5);
-                    std::vector<std::reference_wrapper<SQLTable>> from ($6);
-                    std::shared_ptr<SQLExpression>                where($7);
-                    Expressions                                   group_by($8);
-                    std::pair<Expressions,std::vector<bool>>      order_by($9);
+                    Expressions                                   select_list($3);
+                    std::string                                   into($4);
+                    std::vector<std::reference_wrapper<SQLTable>> from ($5);
+                    std::shared_ptr<SQLExpression>                where($6);
+                    Expressions                                   group_by($7);
+                    std::pair<Expressions,std::vector<bool>>      order_by($8);
 
                     session->setStatement(
-                        session->selectFactory().create(distinct, all, select_list, into, from, where, group_by, order_by)
+                        session->selectFactory().create(distinct, select_list, into, from, where, group_by, order_by)
                     );
                 }
                 ;
@@ -464,11 +464,6 @@ select_statement: SELECT distinct all select_list into from where group_by order
 distinct: DISTINCT { $$ = true; }
         | empty    { $$ = false; }
         ;
-
-all: ALL      { $$ = true; }
-   | empty    { $$ = false; }
-   ;
-
 
 into: empty { $$ = ""; }
 // INTO IDENT   { $$ = $2; }

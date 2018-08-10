@@ -9,62 +9,87 @@
  */
 
 #include "eckit/sql/SQLDistinctOutput.h"
-#include "odb_api/Expressions.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/SQLSelect.h"
 
 namespace eckit {
 namespace sql {
 
-SQLDistinctOutput::SQLDistinctOutput(SQLOutput* output)
-: output_(output)
-{} 
+//----------------------------------------------------------------------------------------------------------------------
+
+SQLDistinctOutput::SQLDistinctOutput(SQLOutput& output) :
+    output_(output) {}
 
 SQLDistinctOutput::~SQLDistinctOutput() {}
 
-const SQLOutputConfig& SQLDistinctOutput::config() { return output_->config(); }
-void SQLDistinctOutput::config(SQLOutputConfig& cfg) { output_->config(cfg); }
-
 void SQLDistinctOutput::print(std::ostream& s) const
 {
-	s << "SQLDistinctOutput[" << *output_ << "]";
+    s << "SQLDistinctOutput[" << output_ << "]";
 }
 
-void SQLDistinctOutput::size(int count)
-{
-	output_->size(count);
-	tmp_ = std::vector<double>(count);
-}
-
-void SQLDistinctOutput::reset()
-{
-	output_->reset();
+void SQLDistinctOutput::reset() {
+    output_.reset();
 	seen_.clear();
 }
 
-void SQLDistinctOutput::flush() { output_->flush(); }
+void SQLDistinctOutput::flush() { output_.flush(); }
 
-unsigned long long SQLDistinctOutput::count() { return output_->count(); }
+unsigned long long SQLDistinctOutput::count() { return output_.count(); }
 
-bool SQLDistinctOutput::output(const expression::Expressions& results)
-{
-	for(size_t i = 0; i < results.size(); i++)
-	{
+bool SQLDistinctOutput::output(const expression::Expressions& results) {
+
+    // Get the data into a temporary buffer we can compare
+
+    ASSERT(results.size() == offsets_.size());
+
+    for (size_t i = 0; i < results.size(); i++) {
 		bool missing = false;
-		tmp_[i] = results[i]->eval(missing);
+        results[i]->eval(&tmp_[offsets_[i]], missing);
 		// What do we do with missing? Or has it been already evaluated somewhere before and it doesn't matter???...
 	}
 
-	if(seen_.find(tmp_) == seen_.end())
-	{
+    if(seen_.find(tmp_) == seen_.end()) {
 		seen_.insert(tmp_);
-        output_->output(results);
+        output_.output(results);
 		return true;
 	}
+
 	return false;
 }
 
-void SQLDistinctOutput::prepare(SQLSelect& sql) { output_->prepare(sql); }
+void SQLDistinctOutput::prepare(SQLSelect& sql) {
+    output_.prepare(sql);
 
-void SQLDistinctOutput::cleanup(SQLSelect& sql) { output_->cleanup(sql); }
+    // How much space is needed to store each row of selected data
+
+    offsets_.clear();
+    seen_.clear();
+    size_t offset = 0;
+
+    for (const auto& column : sql.output()) {
+        size_t colSizeBytes = column->type()->size();
+        ASSERT(colSizeBytes % 8 == 0);
+        offsets_.push_back(offset);
+        offset += colSizeBytes / 8;
+    }
+
+    // And buffers to do the storage
+
+    tmp_.resize(offset);
+}
+
+void SQLDistinctOutput::cleanup(SQLSelect& sql) { output_.cleanup(sql); }
+
+// Direct output functions removed in distinct output
+
+void SQLDistinctOutput::outputReal(double, bool) { NOTIMP; }
+void SQLDistinctOutput::outputDouble(double, bool) { NOTIMP; }
+void SQLDistinctOutput::outputInt(double, bool) { NOTIMP; }
+void SQLDistinctOutput::outputUnsignedInt(double, bool) { NOTIMP; }
+void SQLDistinctOutput::outputString(const char*, size_t, bool) { NOTIMP; }
+void SQLDistinctOutput::outputBitfield(double, bool) { NOTIMP; }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql
 } // namespace eckit

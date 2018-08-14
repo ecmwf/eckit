@@ -72,6 +72,12 @@ struct SphereT {
         return Sphere::greatCircleLatitudeGivenLongitude(Alonlat, Blonlat, Clon);
     }
 
+    // Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate latitude (C) in degrees
+    inline static void greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clat, double& Clon1, double& Clon2)
+    {
+        return Sphere::greatCircleLongitudeGivenLatitude(Alonlat, Blonlat, Clat, Clon1, Clon2);
+    }
+
     // Convert spherical coordinates to Cartesian
     inline static void convertSphericalToCartesian(const Point2& Alonlat, Point3& B, double height = 0.)
     {

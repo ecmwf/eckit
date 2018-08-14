@@ -1,6 +1,8 @@
 list( APPEND eckit_geometry_srcs
 EllipsoidOfRevolution.cc
 EllipsoidOfRevolution.h
+GreatCircle.cc
+GreatCircle.h
 KPoint.h
 Point2.cc
 Point2.h

@@ -73,17 +73,9 @@ void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static constexpr MPI_Datatype unsupported_datatype() {
-    return nullptr;
-}
-
-// Define MPI_LONG_LONG if not existing to avoid compilation errors
+// define MPI_LONG_LONG if not existing to avoid compilation errors
 #ifndef MPI_LONG_LONG
-#define MPI_LONG_LONG MPI_LONG_LONG_fallback()
-
-static constexpr MPI_Datatype MPI_LONG_LONG_fallback() {
-    return ( sizeof(long long) == sizeof(long) ) ? MPI_LONG : unsupported_datatype();
-}
+#define MPI_LONG_LONG MPI_LONG
 #endif
 
 static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
@@ -117,9 +109,6 @@ static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
 
 static MPI_Datatype toType(Data::Code code) {
     MPI_Datatype datatype = mpi_datacode[code];
-    if( datatype == unsupported_datatype() ) {
-        throw MPIError( "MPI Datatype not supported" , Here() );
-    }
     return datatype;
 }
 

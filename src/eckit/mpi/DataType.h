@@ -53,6 +53,7 @@ public:
         FLOAT_INT,
         DOUBLE_INT,
         LONG_DOUBLE_INT,
+        LONG_LONG,
         MAX_DATA_CODE
     };
 

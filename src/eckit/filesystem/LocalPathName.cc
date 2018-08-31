@@ -154,11 +154,9 @@ LocalPathName LocalPathName::dirName() const
     {
     case -1:
         return std::string(".");
-        break;
 
     case 0:
         return std::string("/");
-        break;
 
     }
 

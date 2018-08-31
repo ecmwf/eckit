@@ -33,6 +33,11 @@ ecbuild_add_test( TARGET     eckit_test_linalg_linalg_eigen
                   CONDITION  ECKIT_HAVE_EIGEN
                   ARGS       --log_level=message -linearAlgebraBackend eigen )
 
+ecbuild_add_test( TARGET     eckit_test_linalg_linalg_lapack
+                  COMMAND    eckit_test_linalg_linalg
+                  CONDITION  ECKIT_HAVE_LAPACK
+                  ARGS       --log_level=message -linearAlgebraBackend lapack )
+
 ecbuild_add_test( TARGET     eckit_test_linalg_linalg_mkl
                   COMMAND    eckit_test_linalg_linalg
                   CONDITION  ECKIT_HAVE_MKL
@@ -64,6 +69,11 @@ ecbuild_add_test( TARGET     eckit_test_linalg_sparse_eigen
                   COMMAND    eckit_test_linalg_sparse
                   CONDITION  ECKIT_HAVE_EIGEN
                   ARGS       --log_level=message -linearAlgebraBackend eigen )
+
+ecbuild_add_test( TARGET     eckit_test_linalg_sparse_lapack
+                  COMMAND    eckit_test_linalg_sparse
+                  CONDITION  ECKIT_HAVE_LAPACK
+                  ARGS       --log_level=message -linearAlgebraBackend lapack )
 
 ecbuild_add_test( TARGET     eckit_test_linalg_sparse_mkl
                   COMMAND    eckit_test_linalg_sparse

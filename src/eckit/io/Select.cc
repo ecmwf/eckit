@@ -135,11 +135,9 @@ bool Select::ready(long sec)
 
 				case 0:
 					return false;
-					break;
 
 				default:
 					return true;
-					break;
 			}
 		}
 	}

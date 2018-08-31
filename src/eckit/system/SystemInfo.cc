@@ -108,6 +108,19 @@ void SystemInfo::print(std::ostream &out) const {
 }
 
 
+//--------------------------------------------------------------------------------------------------
+
+bool SystemInfo::isBigEndian() {
+#if defined(ECKIT_BIG_ENDIAN)
+    return true;
+#elif defined(ECKIT_LITTLE_ENDIAN)
+    return false;
+#else
+    throw SeriousBug("Unsupported endianess -- neither BIG or LITTLE detected");
+#endif
+}
+
+
 } // namespace system
 } // namespace eckit
 

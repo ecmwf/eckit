@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File ProcessControler.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   May 96
 
 #ifndef eckit_ProcessControler_h
 #define eckit_ProcessControler_h
@@ -18,11 +19,10 @@
 #include "eckit/runtime/Task.h"
 
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 class ProcessControler : public Task,
                          public ClassExtent<ProcessControler> {
@@ -80,7 +80,7 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

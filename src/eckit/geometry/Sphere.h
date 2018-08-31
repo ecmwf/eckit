@@ -48,6 +48,9 @@ struct Sphere {
     // Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
     static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon);
 
+    // Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate latitude (C) in degrees
+    static void greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clat, double& Clon1, double& Clon2);
+
     // Convert spherical coordinates to Cartesian
     static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.);
 

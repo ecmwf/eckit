@@ -15,9 +15,6 @@
 #define eckit_Fraction_h
 
 #include <string>
-#include "eckit/exception/Exceptions.h"
-#include <limits>
-#include "eckit/types/FloatCompare.h"
 
 
 //-----------------------------------------------------------------------------
@@ -49,6 +46,7 @@ public: // methods
     Fraction(value_type top, value_type bottom);
 
     explicit Fraction(double n);
+    explicit Fraction(double n, const Fraction& precision);
     explicit Fraction(int n): top_(n), bottom_(1) {}
     explicit Fraction(short n): top_(n), bottom_(1) {}
     explicit Fraction(long n): top_(n), bottom_(1) {}
@@ -68,6 +66,8 @@ public: // methods
     bool integer() const {
         return bottom_ == 1;
     }
+
+    static Fraction abs(const Fraction& f);
 
 public: // operators
 
@@ -90,6 +90,10 @@ public: // operators
     Fraction decimalPart() const {
         return *this - integralPart();
     }
+
+    Fraction inverse() const;
+
+    void hash(eckit::MD5&) const;
 
     Fraction operator+(const Fraction& other) const;
 
@@ -203,8 +207,6 @@ public: // operators
         return (*this) *= Fraction(other);
     }
 
-    void hash(eckit::MD5&) const;
-
 private: // members
 
     value_type top_;
@@ -232,65 +234,72 @@ private: // members
 
 };
 
+template<>
+bool Fraction::operator==(double) const;
+
+template<>
+bool Fraction::operator< (double) const;
+
+template<>
+bool Fraction::operator<=(double) const;
+
+template<>
+bool Fraction::operator!=(double) const;
+
+template<>
+bool Fraction::operator> (double) const;
+
+template<>
+bool Fraction::operator>=(double) const;
+
 template<class T>
-Fraction operator+(T n, const Fraction& f)
-{
-    // static_assert(std::is_same<T, long long>::value,"some meaningful error message");
-    return Fraction(n) + f;
+Fraction operator+(T n, const Fraction& f) {
+    return f.operator+(n);
 }
 
 template<class T>
-Fraction operator-(T n, const Fraction& f)
-{
-    return Fraction(n) - f;
+Fraction operator-(T n, const Fraction& f) {
+    return (-f).operator+(n);
 }
 
 template<class T>
-Fraction operator/(T n, const Fraction& f)
-{
-    return Fraction(n) / f;
+Fraction operator/(T n, const Fraction& f) {
+    return f.inverse().operator*(n);
 }
 
 template<class T>
-Fraction operator*(T n, const Fraction& f)
-{
-    return Fraction(n) * f;
+Fraction operator*(T n, const Fraction& f) {
+    return f.operator*(n);
 }
 
 template<class T>
-bool operator==(T n, const Fraction& f)
-{
-    return Fraction(n) == f;
+bool operator==(T n, const Fraction& f) {
+    return f.operator==(n);
 }
 
 template<class T>
-bool operator<(T n, const Fraction& f)
-{
-    return Fraction(n) < f;
+bool operator<(T n, const Fraction& f) {
+    return f.operator>(n);
 }
 
 template<class T>
-bool operator<=(T n, const Fraction& f)
-{
-    return Fraction(n) <= f;
+bool operator<=(T n, const Fraction& f) {
+    return f.operator>=(n);
 }
 
 template<class T>
-bool operator!=(T n, const Fraction& f)
-{
-    return Fraction(n) != f;
+bool operator!=(T n, const Fraction& f) {
+    return f.operator!=(n);
 }
 
 template<class T>
-bool operator>(T n, const Fraction& f)
-{
-    return Fraction(n) > f;
+bool operator>(T n, const Fraction& f) {
+    return f.operator<(n);
 }
 
 template<class T>
-bool operator>=(T n, const Fraction& f)
-{
-    return Fraction(n) >= f;
+bool operator>=(T n, const Fraction& f) {
+    return f.operator<=(n);
 }
 
 //-----------------------------------------------------------------------------

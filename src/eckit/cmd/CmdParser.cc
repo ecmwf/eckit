@@ -215,10 +215,11 @@ void CmdParser::historize() {
 //-----------------------------------------------------------------------------
 
 void CmdParser::shell(const std::string& s) {
-    if (s.length() > 0)
-        ::system(s.c_str());
+    int ret = 0;
+    if (not s.empty())
+        ret = ::system(s.c_str());
     else
-        ::system("$SHELL");
+        ret = ::system("$SHELL");
 }
 
 //-----------------------------------------------------------------------------

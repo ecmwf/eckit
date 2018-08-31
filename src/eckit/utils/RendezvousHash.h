@@ -39,7 +39,7 @@ public: // types
 
 private: // types
 
-    typedef std::set<Node>::iterator iterator;
+    typedef std::vector<Node>::iterator iterator;
 
 public: // methods
 
@@ -47,13 +47,15 @@ public: // methods
 
   RendezvousHash(const hash_func_ptr hash = &md5);
 
-  RendezvousHash(const std::set<Node>& nodes, const hash_func_ptr hash = &md5);
+  RendezvousHash(const std::vector<Node>& nodes, const hash_func_ptr hash = &md5);
 
   ~RendezvousHash();
 
-  /// Selects the rendezvous node based on a Key
-  /// @returns Rendezvous Node
-  Node selectNode(const Key& key);
+  /// Provide a list of nodes / indices in the list of nodes for the given key
+
+  void hashOrder(const Key& key, std::vector<Node>& nodes);
+
+  void hashOrder(const Key& key, std::vector<size_t>& indices);
 
   /// Adds node to node list. No effect if node already present
   /// @returns true is node insertion was successful
@@ -67,13 +69,15 @@ private: // methods
 
   std::string flatten(const Key&) const;
 
+  void hashOrderInternal(const Key& key, std::vector<size_t>& indexes);
+
 private:  // types
 
   eckit::Mutex mutex_;   //< protects addition and removal of nodes
 
   hash_func_ptr hash_;
 
-  std::set<Node> nodes_;
+  std::vector<Node> nodes_;
 
 };
 

@@ -109,25 +109,27 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
     // FIXME: with 0-based indexing, MKL assumes row-major ordering for B and C
     // We need to use 1-based indexing i.e. offset outer and inner indices by 1
 
-    std::vector<MKL_INT> outer(m+1, 1);
-    for (size_t i = 0; i < A.rows()+1; ++i)
-        outer[i] += A.outer()[i];
+    std::vector<MKL_INT> pntrb(A.rows() + 1);
+    for (Size i = 0; i < A.rows() + 1; ++i) {
+        pntrb[i] = A.outer()[i] + 1;
+    }
 
-    std::vector<MKL_INT> inner(A.nonZeros(), 1);
-    for (size_t i = 0; i < A.nonZeros(); ++i)
-        inner[i] += A.inner()[i];
+    std::vector<MKL_INT> indx(A.nonZeros());
+    for (Size i = 0; i < A.nonZeros(); ++i) {
+        indx[i] = A.inner()[i] + 1;
+    }
 
-    // void mkl_dcsrmm (char *transa, MKL_INT *m, MKL_INT *n, MKL_INT *k,
-    //                  double *alpha, char *matdescra,
-    //                  double *val, MKL_INT *indx, MKL_INT *pntrb, MKL_INT *pntre,
-    //                  double *b, MKL_INT *ldb, double *beta, double *c, MKL_INT *ldc);
+    // void mkl_dcsrmm (const char *transa, const MKL_INT *m, const MKL_INT *n, const MKL_INT *k,
+    //                  const double *alpha, const char *matdescra,
+    //                  const double *val, const MKL_INT *indx, const MKL_INT *pntrb, const MKL_INT *pntre,
+    //                  const double *b, const MKL_INT *ldb, const double *beta,
+    //                  double *c, const MKL_INT *ldc);
 
-    double* a = const_cast<double*>(A.data());
-    double* b = const_cast<double*>(B.data());
-    mkl_dcsrmm( "N", &m, &n, &k,
-                &alpha, "G__F",
-                a, inner.data(), outer.data(), outer.data()+1,
-                b, &k, &beta, C.data(), &k);
+    mkl_dcsrmm("N", &m, &n, &k,
+               &alpha, "G__F",
+               A.data(), indx.data(), pntrb.data(), pntrb.data() + 1,
+               B.data(), &k, &beta,
+               C.data(), &m);
 }
 
 //-----------------------------------------------------------------------------

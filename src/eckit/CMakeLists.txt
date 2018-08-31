@@ -86,7 +86,7 @@ container/Trie.h
 container/Trie.cc
 container/BloomFilter.h
 container/BloomFilter.cc
-
+container/Queue.h
 container/Cache.h
 container/CacheLRU.h
 container/CacheLRU.cc
@@ -578,6 +578,8 @@ serialisation/FileStream.cc
 serialisation/MemoryStream.h
 serialisation/MemoryStream.cc
 serialisation/HandleStream.h
+serialisation/FstreamStream.h
+serialisation/IfstreamStream.h
 serialisation/PipeStream.h
 serialisation/PipeStream.cc
 serialisation/Reanimator.h

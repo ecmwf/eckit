@@ -13,10 +13,11 @@
 #include <algorithm>
 #include <cmath>
 #include <ios>
-//#include <limits>  // for std::numeric_limits
+#include <limits>
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/GreatCircle.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 #include "eckit/types/FloatCompare.h"
@@ -43,9 +44,7 @@ static const double radians_to_degrees = 180. * M_1_PI;
 
 static const double degrees_to_radians = M_PI / 180.;
 
-static std::streamsize max_digits10 = 15 + 3;
-
-// C++-11: std::numeric_limits<double>::max_digits10;
+static constexpr std::streamsize max_digits10 = std::numeric_limits<double>::max_digits10;
 
 inline double squared(double x)
 {
@@ -175,23 +174,18 @@ double Sphere::area(const double& radius, const Point2& WestNorth, const Point2&
 
 double Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon)
 {
-    using namespace std;
+    GreatCircle gc(Alonlat, Blonlat);
+    auto lat = gc.latitude(Clon);
+    return lat.size() == 1 ? lat[0] : std::numeric_limits<double>::signaling_NaN();
+}
 
-    //  Intermediate great circle points (not applicable for meridians), see
-    //   http://www.edwilliams.org/avform.htm#Int
-    ASSERT(!types::is_approximately_equal(Alonlat[0], Blonlat[0]));
+void Sphere::greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clat, double& Clon1, double& Clon2)
+{
+    GreatCircle gc(Alonlat, Blonlat);
+    auto lon = gc.longitude(Clat);
 
-    // NOTE: uses C longitude to set C latitude
-    const double phi1     = degrees_to_radians * Alonlat[1];
-    const double phi2     = degrees_to_radians * Blonlat[1];
-    const double lambda1p = degrees_to_radians * (Clon - Alonlat[0]);
-    const double lambda2p = degrees_to_radians * (Clon - Blonlat[0]);
-    const double lambda   = degrees_to_radians * (Blonlat[0] - Alonlat[0]);
-
-    double Clat = radians_to_degrees * atan(
-                (tan(phi2) * sin(lambda1p) - tan(phi1) * sin(lambda2p)) /
-                (sin(lambda)) );
-    return Clat;
+    Clon1 = lon.size() > 0 ? lon[0] : std::numeric_limits<double>::signaling_NaN();
+    Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
 }
 
 void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height)

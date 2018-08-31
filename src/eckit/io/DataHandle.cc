@@ -302,7 +302,7 @@ bool DataHandle::compare(DataHandle& other)
 
     }
 
-    return false; // should never arrive here
+    // should never arrive here
 }
 
 Offset DataHandle::position() {
@@ -468,7 +468,6 @@ long FOpenDataHandle::seek(long pos, int whence) {
 
             default:
                 NOTIMP;
-                break;
         }
 
         if(where == position_) {

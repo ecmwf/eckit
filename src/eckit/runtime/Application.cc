@@ -166,7 +166,7 @@ void Application::unique() {
     sem->lock();  // OS should reset the semaphore
 
     std::ofstream os(lockFile.localPath());
-    os << getpid();
+    os << ::getpid();
 }
 
 

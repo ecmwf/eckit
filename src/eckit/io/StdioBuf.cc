@@ -42,11 +42,12 @@ StdioBuf::~StdioBuf()
 int StdioBuf::sync()
 {
     size_t s = pptr() - pbase();
-    if(s)
+    if(s) {
         if(::fwrite(pbase(),1,s,file_) != s)
             return EOF;
+    }
 
-	setp(pbase(), epptr());
+    setp(pbase(), epptr());
 
 	return 0;
 }

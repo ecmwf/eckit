@@ -45,11 +45,15 @@ public:
 
 // -- Methods
 
-	void use(int n = 0);
-	void release(int n = 0);
+    void use(int n = 0);
+    void use(int n, short v);
+
+    void release(int n = 0);
+    void release(int n, short v);
 
 	int  free(int n = 0) const;
 	int  limit(int n = 0)   const;
+
     void newLimit(short val,unsigned short n = 0);
 
 // -- Overridden methods

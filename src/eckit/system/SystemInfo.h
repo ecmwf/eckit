@@ -31,7 +31,7 @@ class SystemInfo : private eckit::NonCopyable {
 
 public: // methods
 
-    static constexpr bool isBigEndian();
+    static bool isBigEndian();
 
     virtual ~SystemInfo();
 
@@ -54,17 +54,6 @@ private: // members
 
 };
 
-//--------------------------------------------------------------------------------------------------
-
-constexpr bool SystemInfo::isBigEndian() {
-    #if defined(ECKIT_BIG_ENDIAN)
-        return true;
-    #elif defined(ECKIT_LITTLE_ENDIAN)
-        return false;
-    #else
-        throw SeriousBug("Unsupported endianess -- neither BIG or LITTLE detected");
-    #endif
-}
 
 //--------------------------------------------------------------------------------------------------
 

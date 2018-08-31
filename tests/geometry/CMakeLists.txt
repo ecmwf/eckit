@@ -1,11 +1,5 @@
-ecbuild_add_test(
-    TARGET    eckit_test_geometry_kdtree
-    LIBS      eckit_geometry
-    SOURCES   test_kdtree.cc
-    )
-
-ecbuild_add_test(
-    TARGET    eckit_test_geometry_sphere
-    LIBS      eckit_geometry
-    SOURCES   test_sphere.cc
-    )
+foreach( _test great_circle kdtree sphere )
+    ecbuild_add_test( TARGET  eckit_test_geometry_${_test}
+                      SOURCES test_${_test}.cc
+                      LIBS    eckit_geometry )
+endforeach()

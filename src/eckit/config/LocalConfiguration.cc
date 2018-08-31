@@ -86,6 +86,10 @@ LocalConfiguration& LocalConfiguration::set(const std::string &s, long value)  {
     return *this;
 }
 
+LocalConfiguration& LocalConfiguration::set(const std::string &s, long long value)  {
+    setValue(s, eckit::Value(value));
+    return *this;
+}
 
 LocalConfiguration& LocalConfiguration::set(const std::string &s, const char *value)  {
     setValue(s, eckit::Value(value));
@@ -136,6 +140,14 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
     return *this;
 }
 
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<long long>& value) {
+    ValueList values;
+    for (std::vector<long long>::const_iterator v = value.begin(); v != value.end(); ++v) {
+        values.push_back(eckit::Value(*v));
+    }
+    setValue(s, values);
+    return *this;
+}
 
 LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<size_t>& value) {
     ValueList values;

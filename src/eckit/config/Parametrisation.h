@@ -34,12 +34,14 @@ public: // methods
     virtual bool get(const std::string& name, bool& value) const = 0;
     virtual bool get(const std::string& name, int& value) const = 0;
     virtual bool get(const std::string& name, long& value) const = 0;
+    // virtual bool get(const std::string& name, long long& value) const = 0;
     virtual bool get(const std::string& name, size_t& value) const = 0;
     virtual bool get(const std::string& name, float& value) const = 0;
     virtual bool get(const std::string& name, double& value) const = 0;
 
     virtual bool get(const std::string& name, std::vector<int>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<long>& value) const = 0;
+    // virtual bool get(const std::string& name, std::vector<long long>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<size_t>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<float>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<double>& value) const = 0;
@@ -52,4 +54,3 @@ public: // methods
 } // namespace eckit
 
 #endif
-

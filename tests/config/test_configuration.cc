@@ -45,97 +45,130 @@ template<typename T> std::vector<T> make_vector( const T& t1, const T& t2, const
 
 CASE( "test_configuration_interface" )
 {
-    bool                value_bool            = bool(true);
-    int                 value_int             = int(1);
-    long                value_long            = long(2);
-    size_t              value_size_t          = size_t(3);
-    float               value_float           = float(1.234567);
-    double              value_double          = double(1.2345678912345789123456789);
-    std::string         value_string          = std::string("string");
-    std::vector<int>    value_arr_int         = make_vector(1,2,3);
-    std::vector<long>   value_arr_long        = make_vector(4l,5l);
-    std::vector<size_t> value_arr_size_t      = make_vector(std::size_t{6},std::size_t{7});
-    std::vector<float>  value_arr_float       = make_vector(1.234567f,2.345678f);
-    std::vector<double> value_arr_double      = make_vector(1.234567,2.345678);
-    std::vector<std::string> value_arr_string = make_vector(std::string("hello"),std::string("world"));
+    bool                value_bool             = bool(true);
+    int                 value_int              = int(1);
+    long                value_long             = long(2);
+    long long           value_long_long        = 2ll;
+    size_t              value_size_t           = size_t(3);
+    float               value_float            = float(1.234567);
+    double              value_double           = double(1.2345678912345789123456789);
+    std::string         value_string           = std::string("string");
+    std::vector<int>    value_arr_int          = make_vector(1,2,3);
+    std::vector<long>   value_arr_long         = make_vector(4l,5l);
+    std::vector<long long> value_arr_long_long = make_vector(4ll,5ll);
+    std::vector<size_t> value_arr_size_t       = make_vector(std::size_t{6},std::size_t{7});
+    std::vector<float>  value_arr_float        = make_vector(1.234567f,2.345678f);
+    std::vector<double> value_arr_double       = make_vector(1.234567,2.345678);
+    std::vector<std::string> value_arr_string  = make_vector(std::string("hello"),std::string("world"));
+    std::int32_t value_int32 = value_int;
+    std::int64_t value_int64 = value_long_long;
+    std::vector<std::int32_t> value_arr_int32 { 4, 5 };
+    std::vector<std::int64_t> value_arr_int64 { 4ll, 5ll };
 
     bool                      result_bool;
     int                       result_int;
     long                      result_long;
+    long long                 result_long_long;
     size_t                    result_size_t;
     float                     result_float;
     double                    result_double;
     std::string               result_string;
     std::vector<int>          result_arr_int;
     std::vector<long>         result_arr_long;
+    std::vector<long long>    result_arr_long_long;
     std::vector<size_t>       result_arr_size_t;
     std::vector<float>        result_arr_float;
     std::vector<double>       result_arr_double;
     std::vector<std::string>  result_arr_string;
+    std::int32_t              result_int32;
+    std::int64_t              result_int64;
+    std::vector<std::int32_t> result_arr_int32;
+    std::vector<std::int64_t> result_arr_int64;
 
     LocalConfiguration local;
     {
-        local.set("bool",       value_bool      );
-        local.set("int",        value_int       );
-        local.set("long",       value_long      );
-        local.set("size_t",     value_size_t    );
-        local.set("float",      value_float     );
-        local.set("double",     value_double    );
-        local.set("string",     value_string    );
-        local.set("arr_int",    value_arr_int   );
-        local.set("arr_long",   value_arr_long  );
-        local.set("arr_size_t", value_arr_size_t);
-        local.set("arr_float",  value_arr_float );
-        local.set("arr_double", value_arr_double);
-        local.set("arr_string", value_arr_string);
+        local.set("bool",          value_bool          );
+        local.set("int",           value_int           );
+        local.set("long",          value_long          );
+        local.set("long long",     value_long_long     );
+        local.set("size_t",        value_size_t        );
+        local.set("float",         value_float         );
+        local.set("double",        value_double        );
+        local.set("string",        value_string        );
+        local.set("arr_int",       value_arr_int       );
+        local.set("arr_long",      value_arr_long      );
+        local.set("arr_long_long", value_arr_long_long );
+        local.set("arr_size_t",    value_arr_size_t    );
+        local.set("arr_float",     value_arr_float     );
+        local.set("arr_double",    value_arr_double    );
+        local.set("arr_string",    value_arr_string    );
+        local.set("int32",         value_int32         );
+        local.set("int64",         value_int64         );
+        local.set("arr_int32",     value_arr_int32     );
+        local.set("arr_int64",     value_arr_int64     );
     }
     const Configuration& conf = local;
 
-    EXPECT( !conf.get("missing", result_bool)       );
-    EXPECT( !conf.get("missing", result_int)        );
-    EXPECT( !conf.get("missing", result_long)       );
-    EXPECT( !conf.get("missing", result_size_t)     );
-    EXPECT( !conf.get("missing", result_float)      );
-    EXPECT( !conf.get("missing", result_double)     );
-    EXPECT( !conf.get("missing", result_string)     );
-    EXPECT( !conf.get("missing", result_arr_int)    );
-    EXPECT( !conf.get("missing", result_arr_long)   );
-    EXPECT( !conf.get("missing", result_arr_size_t) );
-    EXPECT( !conf.get("missing", result_arr_float)  );
-    EXPECT( !conf.get("missing", result_arr_double) );
-    EXPECT( !conf.get("missing", result_arr_string) );
+    EXPECT( !conf.get("missing", result_bool)          );
+    EXPECT( !conf.get("missing", result_int)           );
+    EXPECT( !conf.get("missing", result_long)          );
+    EXPECT( !conf.get("missing", result_long_long)     );
+    EXPECT( !conf.get("missing", result_size_t)        );
+    EXPECT( !conf.get("missing", result_float)         );
+    EXPECT( !conf.get("missing", result_double)        );
+    EXPECT( !conf.get("missing", result_string)        );
+    EXPECT( !conf.get("missing", result_arr_int)       );
+    EXPECT( !conf.get("missing", result_arr_long)      );
+    EXPECT( !conf.get("missing", result_arr_long_long) );
+    EXPECT( !conf.get("missing", result_arr_size_t)    );
+    EXPECT( !conf.get("missing", result_arr_float)     );
+    EXPECT( !conf.get("missing", result_arr_double)    );
+    EXPECT( !conf.get("missing", result_arr_string)    );
+    EXPECT( !conf.get("missing", result_int32)         );
+    EXPECT( !conf.get("missing", result_int64)         );
+    EXPECT( !conf.get("missing", result_arr_int32)     );
+    EXPECT( !conf.get("missing", result_arr_int64)     );
 
-    EXPECT( conf.get("bool",       result_bool)       );
-    EXPECT( conf.get("int",        result_int)        );
-    EXPECT( conf.get("long",       result_long)       );
-    EXPECT( conf.get("size_t",     result_size_t)     );
-    EXPECT( conf.get("float",      result_float)      );
-    EXPECT( conf.get("double",     result_double)     );
-    EXPECT( conf.get("string",     result_string)     );
-    EXPECT( conf.get("arr_int",    result_arr_int)    );
-    EXPECT( conf.get("arr_long",   result_arr_long)   );
-    EXPECT( conf.get("arr_size_t", result_arr_size_t) );
-    EXPECT( conf.get("arr_float",  result_arr_float)  );
-    EXPECT( conf.get("arr_double", result_arr_double) );
-    EXPECT( conf.get("arr_string", result_arr_string) );
+    EXPECT( conf.get("bool",          result_bool)          );
+    EXPECT( conf.get("int",           result_int)           );
+    EXPECT( conf.get("long",          result_long)          );
+    EXPECT( conf.get("long long",     result_long_long)     );
+    EXPECT( conf.get("size_t",        result_size_t)        );
+    EXPECT( conf.get("float",         result_float)         );
+    EXPECT( conf.get("double",        result_double)        );
+    EXPECT( conf.get("string",        result_string)        );
+    EXPECT( conf.get("arr_int",       result_arr_int)       );
+    EXPECT( conf.get("arr_long",      result_arr_long)      );
+    EXPECT( conf.get("arr_long_long", result_arr_long_long) );
+    EXPECT( conf.get("arr_size_t",    result_arr_size_t)    );
+    EXPECT( conf.get("arr_float",     result_arr_float)     );
+    EXPECT( conf.get("arr_double",    result_arr_double)    );
+    EXPECT( conf.get("arr_string",    result_arr_string)    );
+    EXPECT( conf.get("int32",         result_int32)         );
+    EXPECT( conf.get("int64",         result_int64)         );
+    EXPECT( conf.get("arr_int32",     result_arr_int32)     );
+    EXPECT( conf.get("arr_int64",     result_arr_int64)     );
 
-    EXPECT( result_bool       == value_bool      );
-    EXPECT( result_int        == value_int       );
-    EXPECT( result_long       == value_long      );
-    EXPECT( result_size_t     == value_size_t    );
-    EXPECT( result_float      == value_float     );
-    EXPECT( result_double     == value_double    );
-    EXPECT( result_string     == value_string    );
-    EXPECT( result_arr_int    == value_arr_int   );
-    EXPECT( result_arr_long   == value_arr_long  );
-    EXPECT( result_arr_size_t == value_arr_size_t);
-    EXPECT( result_arr_float  == value_arr_float );
-    EXPECT( result_arr_double == value_arr_double);
-    EXPECT( result_arr_string == value_arr_string);
+    EXPECT( result_bool          == value_bool          );
+    EXPECT( result_int           == value_int           );
+    EXPECT( result_long          == value_long          );
+    EXPECT( result_long_long     == value_long_long     );
+    EXPECT( result_size_t        == value_size_t        );
+    EXPECT( result_float         == value_float         );
+    EXPECT( result_double        == value_double        );
+    EXPECT( result_string        == value_string        );
+    EXPECT( result_arr_int       == value_arr_int       );
+    EXPECT( result_arr_long_long == value_arr_long_long );
+    EXPECT( result_arr_size_t    == value_arr_size_t    );
+    EXPECT( result_arr_float     == value_arr_float     );
+    EXPECT( result_arr_double    == value_arr_double    );
+    EXPECT( result_arr_string    == value_arr_string    );
+    EXPECT( result_arr_int64     == value_arr_int64     );
 
     EXPECT( conf.getBool          ("bool")       == value_bool       );
     EXPECT( conf.getInt           ("int")        == value_int        );
     EXPECT( conf.getLong          ("long")       == value_long       );
+    EXPECT( conf.getLong          ("long long")  == value_long_long  );
     EXPECT( conf.getUnsigned      ("size_t")     == value_size_t     );
     EXPECT( conf.getFloat         ("float")      == value_float      );
     EXPECT( conf.getDouble        ("double")     == value_double     );
@@ -146,6 +179,10 @@ CASE( "test_configuration_interface" )
     EXPECT( conf.getFloatVector   ("arr_float")  == value_arr_float  );
     EXPECT( conf.getDoubleVector  ("arr_double") == value_arr_double );
     EXPECT( conf.getStringVector  ("arr_string") == value_arr_string );
+    EXPECT( conf.getInt32         ("int32")      == value_int32      );
+    EXPECT( conf.getInt64         ("int64")      == value_int64      );
+    EXPECT( conf.getInt32Vector   ("arr_int32")  == value_arr_int32  );
+    EXPECT( conf.getInt64Vector   ("arr_int64")  == value_arr_int64  );
 
     // Get throwing
 
@@ -162,6 +199,10 @@ CASE( "test_configuration_interface" )
     EXPECT_THROWS_AS( conf.getFloatVector   ("missing"), eckit::Exception );
     EXPECT_THROWS_AS( conf.getDoubleVector  ("missing"), eckit::Exception );
     EXPECT_THROWS_AS( conf.getStringVector  ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getInt32         ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getInt64         ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getInt32Vector   ("missing"), eckit::Exception );
+    EXPECT_THROWS_AS( conf.getInt64Vector   ("missing"), eckit::Exception );
 
 
     // Get with default values instead of throwing
@@ -178,6 +219,10 @@ CASE( "test_configuration_interface" )
     EXPECT( conf.getFloatVector   ("missing", value_arr_float)  == value_arr_float  );
     EXPECT( conf.getDoubleVector  ("missing", value_arr_double) == value_arr_double );
     EXPECT( conf.getStringVector  ("missing", value_arr_string) == value_arr_string );
+    EXPECT( conf.getInt32         ("missing", value_int32)      == value_int32      );
+    EXPECT( conf.getInt64         ("missing", value_int64)      == value_int64      );
+    EXPECT( conf.getInt32Vector   ("missing", value_arr_int32)  == value_arr_int32  );
+    EXPECT( conf.getInt64Vector   ("missing", value_arr_int64)  == value_arr_int64  );
 
 }
 

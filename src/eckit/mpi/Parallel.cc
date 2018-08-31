@@ -39,54 +39,6 @@ static void init() {
     localMutex = new eckit::Mutex();
     initCounter = 0;
 }
-//----------------------------------------------------------------------------------------------------------------------
-
-static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
-    /*[Data::CHAR]                 = */ MPI_CHAR,
-    /*[Data::WCHAR]                = */ MPI_WCHAR,
-    /*[Data::SHORT]                = */ MPI_SHORT,
-    /*[Data::INT]                  = */ MPI_INT,
-    /*[Data::LONG]                 = */ MPI_LONG,
-    /*[Data::SIGNED_CHAR]          = */ MPI_SIGNED_CHAR,
-    /*[Data::SIGNED_CHAR]          = */ MPI_UNSIGNED_CHAR,
-    /*[Data::UNSIGNED_SHORT]       = */ MPI_UNSIGNED_SHORT,
-    /*[Data::UNSIGNED]             = */ MPI_UNSIGNED,
-    /*[Data::UNSIGNED_LONG]        = */ MPI_UNSIGNED_LONG,
-    /*[Data::FLOAT]                = */ MPI_FLOAT,
-    /*[Data::DOUBLE]               = */ MPI_DOUBLE,
-    /*[Data::LONG_DOUBLE]          = */ MPI_LONG_DOUBLE,
-//    /*[Data::BOOL]                 = */ MPI_BOOL,
-    /*[Data::COMPLEX]              = */ MPI_COMPLEX,
-    /*[Data::DOUBLE_COMPLEX]       = */ MPI_DOUBLE_COMPLEX,
-//    /*[Data::LONG_DOUBLE_COMPLEX]  = */ MPI_LONG_DOUBLE_COMPLEX,
-    /*[Data::BYTE]                 = */ MPI_BYTE,
-    /*[Data::PACKED]               = */ MPI_PACKED,
-    /*[Data::SHORT_INT]            = */ MPI_SHORT_INT,
-    /*[Data::INT_INT]              = */ MPI_2INT,
-    /*[Data::LONG_INT]             = */ MPI_LONG_INT,
-    /*[Data::FLOAT_INT]            = */ MPI_FLOAT_INT,
-    /*[Data::DOUBLE_INT]           = */ MPI_DOUBLE_INT,
-    /*[Data::LONG_DOUBLE_INT]      = */ MPI_LONG_DOUBLE_INT
-};
-
-static MPI_Datatype toType(Data::Code code) {
-    return mpi_datacode[code];
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static MPI_Op mpi_opcode[Operation::MAX_OPERATION_CODE] = {
-    /*[Data::SUM]       = */ MPI_SUM,
-    /*[Data::PROD]      = */ MPI_PROD,
-    /*[Data::MAX]       = */ MPI_MAX,
-    /*[Data::MIN]       = */ MPI_MIN,
-    /*[Data::MAXLOC]    = */ MPI_MAXLOC,
-    /*[Data::MINLOC]    = */ MPI_MINLOC
-};
-
-static MPI_Op toOp(Operation::Code code) {
-    return mpi_opcode[code];
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -118,6 +70,62 @@ void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc)
 }
 
 #define MPI_CALL(a) MPICall(a,#a,Here())
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// define MPI_LONG_LONG if not existing to avoid compilation errors
+#ifndef MPI_LONG_LONG
+#define MPI_LONG_LONG MPI_LONG
+#endif
+
+static MPI_Datatype mpi_datacode [Data::MAX_DATA_CODE] = {
+    /*[Data::CHAR]                 = */ MPI_CHAR,
+    /*[Data::WCHAR]                = */ MPI_WCHAR,
+    /*[Data::SHORT]                = */ MPI_SHORT,
+    /*[Data::INT]                  = */ MPI_INT,
+    /*[Data::LONG]                 = */ MPI_LONG,
+    /*[Data::SIGNED_CHAR]          = */ MPI_SIGNED_CHAR,
+    /*[Data::SIGNED_CHAR]          = */ MPI_UNSIGNED_CHAR,
+    /*[Data::UNSIGNED_SHORT]       = */ MPI_UNSIGNED_SHORT,
+    /*[Data::UNSIGNED]             = */ MPI_UNSIGNED,
+    /*[Data::UNSIGNED_LONG]        = */ MPI_UNSIGNED_LONG,
+    /*[Data::FLOAT]                = */ MPI_FLOAT,
+    /*[Data::DOUBLE]               = */ MPI_DOUBLE,
+    /*[Data::LONG_DOUBLE]          = */ MPI_LONG_DOUBLE,
+//    /*[Data::BOOL]                 = */ MPI_BOOL,
+    /*[Data::COMPLEX]              = */ MPI_COMPLEX,
+    /*[Data::DOUBLE_COMPLEX]       = */ MPI_DOUBLE_COMPLEX,
+//    /*[Data::LONG_DOUBLE_COMPLEX]  = */ MPI_LONG_DOUBLE_COMPLEX,
+    /*[Data::BYTE]                 = */ MPI_BYTE,
+    /*[Data::PACKED]               = */ MPI_PACKED,
+    /*[Data::SHORT_INT]            = */ MPI_SHORT_INT,
+    /*[Data::INT_INT]              = */ MPI_2INT,
+    /*[Data::LONG_INT]             = */ MPI_LONG_INT,
+    /*[Data::FLOAT_INT]            = */ MPI_FLOAT_INT,
+    /*[Data::DOUBLE_INT]           = */ MPI_DOUBLE_INT,
+    /*[Data::LONG_DOUBLE_INT]      = */ MPI_LONG_DOUBLE_INT,
+    /*[Data::LONG_LONG]            = */ MPI_LONG_LONG,
+};
+
+static MPI_Datatype toType(Data::Code code) {
+    MPI_Datatype datatype = mpi_datacode[code];
+    return datatype;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static MPI_Op mpi_opcode[Operation::MAX_OPERATION_CODE] = {
+    /*[Data::SUM]       = */ MPI_SUM,
+    /*[Data::PROD]      = */ MPI_PROD,
+    /*[Data::MAX]       = */ MPI_MAX,
+    /*[Data::MIN]       = */ MPI_MIN,
+    /*[Data::MAXLOC]    = */ MPI_MAXLOC,
+    /*[Data::MINLOC]    = */ MPI_MINLOC
+};
+
+static MPI_Op toOp(Operation::Code code) {
+    return mpi_opcode[code];
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

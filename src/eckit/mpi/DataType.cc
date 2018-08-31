@@ -33,6 +33,10 @@ template<> const char* Data::Type<long>::name() { return "long"; }
 template<> Data::Code  Data::Type<long>::code() { return Data::LONG; }
 template<> size_t      Data::Type<long>::size() { return sizeof(long); }
 
+template<> const char* Data::Type<long long>::name() { return "long long"; }
+template<> Data::Code  Data::Type<long long>::code() { return Data::LONG_LONG; }
+template<> size_t      Data::Type<long long>::size() { return sizeof(long long); }
+
 template<> const char* Data::Type<float>::name() { return "float"; }
 template<> Data::Code  Data::Type<float>::code() { return Data::FLOAT; }
 template<> size_t      Data::Type<float>::size() { return sizeof(float); }

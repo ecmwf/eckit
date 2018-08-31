@@ -18,8 +18,6 @@
 #include "eckit/testing/Test.h"
 
 
-using namespace eckit::testing;
-
 namespace eckit {
 namespace test {
 
@@ -44,23 +42,23 @@ struct DatumTwoUnits {
     }
 };
 
-typedef SphereT<DatumTwoUnits> TwoUnitsSphere;
+using TwoUnitsSphere = SphereT<DatumTwoUnits>;
 
 const double R = UnitSphere::radius();
 
 
 // -----------------------------------------------------------------------------
-// test_unit_sphere_radius
+// test unit sphere radius
 
-CASE( "test_unit_sphere_radius" )
+CASE( "test unit sphere radius" )
 {
     EXPECT(UnitSphere::radius() == 1.);
 }
 
 // -----------------------------------------------------------------------------
-// test_unit_sphere_poles
+// test unit sphere poles
 
-CASE( "test_unit_sphere_north_pole" )
+CASE( "test unit sphere north pole" )
 {
     const PointLonLat ll1(0., 90.);
     PointXYZ p;
@@ -71,7 +69,7 @@ CASE( "test_unit_sphere_north_pole" )
     EXPECT(p.z() == R);
 }
 
-CASE( "test_unit_sphere_south_pole" )
+CASE( "test unit sphere south pole" )
 {
     const PointLonLat ll1(0., -90.);
     PointXYZ p;
@@ -83,9 +81,9 @@ CASE( "test_unit_sphere_south_pole" )
 }
 
 // -----------------------------------------------------------------------------
-// test_unit_sphere_quadrants
+// test unit sphere quadrants
 
-CASE( "test_unit_sphere_lon_0" )
+CASE( "test unit sphere lon 0" )
 {
     const PointLonLat ll1(0., 0.);
     const PointLonLat ll2(-360., 0.);
@@ -100,7 +98,7 @@ CASE( "test_unit_sphere_lon_0" )
     EXPECT(PointXYZ::equal(p, q));
 }
 
-CASE( "test_unit_sphere_lon_90" )
+CASE( "test unit sphere lon 90" )
 {
     const PointLonLat ll1(90., 0.);
     const PointLonLat ll2(-270., 0.);
@@ -115,7 +113,7 @@ CASE( "test_unit_sphere_lon_90" )
     EXPECT(PointXYZ::equal(p, q));
 }
 
-CASE( "test_unit_sphere_lon_180" )
+CASE( "test unit sphere lon 180" )
 {
     const PointLonLat ll1(180., 0.);
     const PointLonLat ll2(-180., 0.);
@@ -130,7 +128,7 @@ CASE( "test_unit_sphere_lon_180" )
     EXPECT(PointXYZ::equal(p, q));
 }
 
-CASE( "test_unit_sphere_lon_270" )
+CASE( "test unit sphere lon 270" )
 {
     const PointLonLat ll1(270., 0.);
     const PointLonLat ll2(-90., 0.);
@@ -147,11 +145,11 @@ CASE( "test_unit_sphere_lon_270" )
 
 
 // -----------------------------------------------------------------------------
-// test_unit_sphere_octants
+// test unit sphere octants
 
 const double L = R * std::sqrt(2) / 2.;
 
-CASE( "test_unit_sphere_lon_45" )
+CASE( "test unit sphere lon 45" )
 {
     const PointLonLat ll1(45., 0.);
     const PointLonLat ll2(-315., 0.);
@@ -166,7 +164,7 @@ CASE( "test_unit_sphere_lon_45" )
     EXPECT(PointXYZ::equal(p, q));
 }
 
-CASE( "test_unit_sphere_lon_135" )
+CASE( "test unit sphere lon 135" )
 {
     const PointLonLat ll1(135., 0.);
     const PointLonLat ll2(-225., 0.);
@@ -181,7 +179,7 @@ CASE( "test_unit_sphere_lon_135" )
     EXPECT(PointXYZ::equal(p, q));
 }
 
-CASE( "test_unit_sphere_lon_225" )
+CASE( "test unit sphere lon 225" )
 {
     const PointLonLat ll1(225., 0.);
     const PointLonLat ll2(-135., 0.);
@@ -196,7 +194,7 @@ CASE( "test_unit_sphere_lon_225" )
     EXPECT(PointXYZ::equal(p, q));
 }
 
-CASE( "test_unit_sphere_lon_315" )
+CASE( "test unit sphere lon 315" )
 {
     const PointLonLat ll1(315., 0.);
     const PointLonLat ll2(-45., 0.);
@@ -211,27 +209,15 @@ CASE( "test_unit_sphere_lon_315" )
     EXPECT(PointXYZ::equal(p, q));
 }
 
-CASE( "test_unit_sphere_great_circle_latitude_given_longitude" )
-{
-    // latitude at Valparaíso-Shanghai mid-point
-    const PointLonLat P1(-71.6, -33.);
-    const PointLonLat P2(121.8,  31.4);
-
-    double lon = -159.18;
-    double lat = UnitSphere::greatCircleLatitudeGivenLongitude(P1, P2, lon);
-
-    EXPECT( eckit::types::is_approximately_equal( lat, -6.81, 0.01 ) );
-}
-
 // -----------------------------------------------------------------------------
-// test_unit_sphere_area
+// test unit sphere area
 
-CASE( "test_unit_sphere_area_globe" )
+CASE( "test unit sphere area globe" )
 {
     EXPECT(UnitSphere::area() == 4. * M_PI * R * R);
 }
 
-CASE( "test_unit_sphere_area_hemispheres" )
+CASE( "test unit sphere area hemispheres" )
 {
     const PointLonLat ll1(-180.,  90.);
     const PointLonLat ll2( 180.,   0.);
@@ -245,14 +231,14 @@ CASE( "test_unit_sphere_area_hemispheres" )
 }
 
 // -----------------------------------------------------------------------------
-// test_two_units_sphere
+// test two units sphere
 
-CASE( "test_two_units_sphere_radius" )
+CASE( "test two units sphere radius" )
 {
     EXPECT(TwoUnitsSphere::radius() == 2.);
 }
 
-CASE( "test_two_units_sphere_distances" )
+CASE( "test two units sphere distances" )
 {
     const PointLonLat P1(-71.6, -33.);   // Valparaíso
     const PointLonLat P2(121.8,  31.4);  // Shanghai
@@ -262,14 +248,14 @@ CASE( "test_two_units_sphere_distances" )
     EXPECT(2. * d_sphere_1 == d_sphere_2);
 }
 
-CASE( "test_two_units_sphere_areas" )
+CASE( "test two units sphere areas" )
 {
     const double area_sphere_1 = UnitSphere::area();
     const double area_sphere_2 = TwoUnitsSphere::area();
     EXPECT(4. * area_sphere_1 == area_sphere_2);
 }
 
-CASE( "test_two_units_sphere_sub_areas" )
+CASE( "test two units sphere sub areas" )
 {
     const PointLonLat P1(-71.6, -33.);   // Valparaíso
     const PointLonLat P2(121.8,  31.4);  // Shanghai
@@ -285,5 +271,5 @@ CASE( "test_two_units_sphere_sub_areas" )
 }  // namespace eckit
 
 int main(int argc, char **argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

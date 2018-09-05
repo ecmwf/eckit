@@ -14,6 +14,8 @@
 #include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/ConstantExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/expression/SQLExpressionEvaluated.h"
+#include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutput.h"
@@ -37,6 +39,7 @@ SQLSelect::SQLSelect(const Expressions& columns,
   simplifiedWhere_(0),
   ownedOutputs_(std::move(ownedOutputs)),
   output_(output),
+  aggregatedResultsIterator_(aggregatedResults_.end()),
   count_(0),
   total_(0),
   skips_(0),
@@ -387,37 +390,7 @@ unsigned long long SQLSelect::execute()
 
 void SQLSelect::postExecute()
 {
-	if (mixedAggregatedAndScalar_)
-	{
-		for (AggregatedResults::iterator it (aggregatedResults_.begin()); it != aggregatedResults_.end(); ++it)
-		{
-            const std::vector<std::pair<double,bool> >& nonAggregatedValues (it->first);
-            const Expressions& aggregated (*(it->second));
-			Expressions results;
-			size_t ai(0), ni(0);
-			for (size_t i (0); i < mixedResultColumnIsAggregated_.size(); ++i)
-			{
-				if (mixedResultColumnIsAggregated_[i])
-					results.push_back(aggregated[ai++]->clone());
-				else
-				{
-                    results.push_back(
-                            std::make_shared<ConstantExpression>(
-                                    nonAggregatedValues[ni].first,
-                                    nonAggregatedValues[ni].second,
-                                    nonAggregated_[ni]->type()));
-					++ni;
-				}
-			}
-
-            output_.output(results);
-            results.clear();
-		}
-	}
-	else if (aggregate_)
-	{
-        resultsOut();
-	}
+    if (aggregate_ && !mixedAggregatedAndScalar_) resultsOut();
 
     output_.flush();
     output_.cleanup(*this);
@@ -499,23 +472,28 @@ bool SQLSelect::writeOutput() {
 			{
 				for(size_t i = 0; i < n; i++)
                     select_[i]->partialResult();
-			} else {
-                std::vector<std::pair<double,bool> > nonAggregatedValues;
-				for (size_t i = 0; i < nonAggregated_.size(); ++i)
-				{
-					bool missing = false;
-					double v = nonAggregated_[i]->eval(missing);
-                    nonAggregatedValues.push_back(std::make_pair(v, missing));
+            } else {
+
+                // For each set of non-aggregated values, keep track of the aggregated values
+                // n.b. newRow=false, as we are accumulating the values
+
+                OrderByExpressions nonAggregatedValues;
+                for (size_t i = 0; i < nonAggregated_.size(); ++i) {
+                    nonAggregatedValues.emplace_back(std::make_shared<SQLExpressionEvaluated>(*nonAggregated_[i]));
 				}
 	
 				AggregatedResults::iterator results = aggregatedResults_.find(nonAggregatedValues);
-				if (results == aggregatedResults_.end())
-                    aggregatedResults_[nonAggregatedValues] = std::dynamic_pointer_cast<Expressions>(aggregated_.clone());
+                if (results == aggregatedResults_.end()) {
+                    Expressions& aggregated = aggregatedResults_[nonAggregatedValues];
+                    for (const auto& expr : aggregated_) {
+                        aggregated.emplace_back(expr->clone());
+                    }
+                }
 
-                Expressions& aggregated = *aggregatedResults_[nonAggregatedValues];
+                Expressions& aggregated = aggregatedResults_[nonAggregatedValues];
 				for (size_t i = 0; i < aggregated.size(); ++i)
 					aggregated[i]->partialResult();
-			}
+            }
 		}
 	}
 	return newRow;
@@ -588,25 +566,60 @@ bool SQLSelect::processOneRow() {
     // and increment the second, and continue until we have enumerated all possible combinations
     // of valid data across the tables.
 
-    for (size_t idx = 0; idx < cursors_.size(); idx++) {
+    if (!mixedAggregatedAndScalar_ || aggregatedResultsIterator_ == aggregatedResults_.end()) {
 
-        // n.b. keep going until writeOutput() has done something - i.e. a row has been
-        // returned. This allows us to have filtering/unique/aggregation in the Output
-        while (processNextTableRow(idx)) {
-            total_++;
-            if (writeOutput()) {
-                count_++;
-                return true;
+        for (size_t idx = 0; idx < cursors_.size(); idx++) {
+
+            // n.b. keep going until writeOutput() has done something - i.e. a row has been
+            // returned. This allows us to have filtering/unique/aggregation in the Output
+            while (processNextTableRow(idx)) {
+                total_++;
+                if (writeOutput()) {
+                    count_++;
+                    return true;
+                }
+            }
+
+            // If we have exhausted the available rows, rewind and increment those in the next table
+
+            if (idx != cursors_.size()-1) {
+                cursors_[idx]->rewind();
+                ASSERT(processNextTableRow(idx));
             }
         }
-
-        // If we have exhausted the available rows, rewind and increment those in the next table
-
-        if (idx != cursors_.size()-1) {
-            cursors_[idx]->rewind();
-            ASSERT(processNextTableRow(idx));
-        }
     }
+
+    // If we are considering mixed aggregate/non-aggregate results, then we need to output
+    // them here
+    // We put this here rather than in postExecute such that the Select class in odb can
+    // iterate over one entry at a time.
+
+    if (aggregatedResultsIterator_ == aggregatedResults_.end()) {
+        aggregatedResultsIterator_ = aggregatedResults_.begin();
+    } else {
+        ++aggregatedResultsIterator_;
+    }
+    if (aggregatedResultsIterator_ != aggregatedResults_.end()) {
+        const OrderByExpressions& nonAggregated = aggregatedResultsIterator_->first;
+        Expressions& aggregated = aggregatedResultsIterator_->second;
+        Expressions results;
+        size_t ai = 0;
+        size_t ni = 0;
+        for (size_t i = 0; i < mixedResultColumnIsAggregated_.size(); i++) {
+            if (mixedResultColumnIsAggregated_[i]) {
+                results.push_back(aggregated[ai++]);
+            } else {
+                results.push_back(nonAggregated[ni++]);
+            }
+        }
+        // n.b. We assert resultsOut here as we know the row will be unique.
+        //      May have odd effects if used with ORDER BY expression, that need further thought
+        ASSERT(output_.output(results));
+        count_++;
+        return true;
+    }
+
+    // Nothing to return.
 
     return false;
 }

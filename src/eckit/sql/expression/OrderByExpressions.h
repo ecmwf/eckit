@@ -32,10 +32,13 @@ public:
     OrderByExpressions(const OrderByExpressions& o);
 
     OrderByExpressions(const std::vector<bool>& ascending);
+    OrderByExpressions();
 
     ~OrderByExpressions();
 
 	bool operator<(const OrderByExpressions&) const;
+
+    bool operator==(const OrderByExpressions&) const;
 
 private:
 

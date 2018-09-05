@@ -17,6 +17,8 @@ namespace expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+const static std::vector<bool> nullAscending;
+
 OrderByExpressions::OrderByExpressions(const OrderByExpressions& o) :
     Expressions(o),
     ascending_(o.ascending_) {}
@@ -24,17 +26,21 @@ OrderByExpressions::OrderByExpressions(const OrderByExpressions& o) :
 OrderByExpressions::OrderByExpressions(const std::vector<bool>& ascending) :
     ascending_(ascending) {}
 
+OrderByExpressions::OrderByExpressions() :
+    ascending_(nullAscending) {}
+
 OrderByExpressions::~OrderByExpressions() {}
 
 
 bool OrderByExpressions::operator<(const OrderByExpressions& o) const
 {
 	size_t n = size();
-	//ASSERT(n == o.size());
+    //ASSERT(n == o.size());
+    ASSERT(ascending_.size() == n || ascending_.empty());
 
 	for (size_t i = 0; i < n; ++i)
 	{
-		bool asc = ascending_[i];
+        bool asc = ascending_.empty() ? true : ascending_[i];
 
 		const SQLExpression& left = asc ? *(*this)[i] : *o[i];
 		const SQLExpression& right = asc ? *o[i] : *(*this)[i];
@@ -71,7 +77,54 @@ bool OrderByExpressions::operator<(const OrderByExpressions& o) const
 	}
 
     // They are equal
-	return false;
+    return false;
+}
+
+bool OrderByExpressions::operator==(const OrderByExpressions& o) const {
+
+    size_t n = size();
+    //ASSERT(n == o.size());
+    ASSERT(ascending_.size() == n || ascending_.empty());
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        bool asc = ascending_[i];
+
+        const SQLExpression& left = asc ? *(*this)[i] : *o[i];
+        const SQLExpression& right = asc ? *o[i] : *(*this)[i];
+
+        if (left.type()->getKind() == type::SQLType::stringType) {
+
+            if (right.type()->getKind() != type::SQLType::stringType) return false;
+
+            bool missing1 = false;
+            bool missing2 = false;
+
+            std::string v1(left.evalAsString(missing1));
+            std::string v2(right.evalAsString(missing2));
+
+            if (missing1 != missing2) return false;
+
+            v1 = StringTools::trim(v1, "\t\n\v\f\r ");
+            v2 = StringTools::trim(v2, "\t\n\v\f\r ");
+
+            if (v1 != v2) return false;
+
+        } else {
+
+            bool leftMissing = false;
+            bool rightMissing = false;
+
+            double leftValue = left.eval(leftMissing);
+            double rightValue = right.eval(rightMissing);
+
+            if (leftMissing != rightMissing) return false;
+            if (leftValue != rightValue) return false;
+        }
+    }
+
+    // They are equal
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

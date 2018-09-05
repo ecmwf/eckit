@@ -79,6 +79,7 @@ public:
     std::string csvDelimiter() { return csvDelimiter_; }
 //    const SQLOutputConfig& outputConfig() { ASSERT(config_); return *config_; }
     void setOutputFile(const eckit::PathName& path);
+    void setOutputFile(const eckit::PathName& path, const std::string& format);
 
     static std::string readIncludeFile(const std::string&);
 

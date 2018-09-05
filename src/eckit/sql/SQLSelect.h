@@ -17,6 +17,7 @@
 
 #include "eckit/filesystem/PathName.h"
 
+#include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/SelectOneTable.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
@@ -107,11 +108,12 @@ private:
     SQLOutput& output_;
 
     typedef std::map<
-        std::vector<std::pair<double,bool>>,
-        std::shared_ptr<expression::Expressions>
+        expression::OrderByExpressions,
+        expression::Expressions
     > AggregatedResults;
 
 	AggregatedResults aggregatedResults_;
+    AggregatedResults::iterator aggregatedResultsIterator_;
 
     // n.b. we don't use std::vector<bool> as you cannot take a reference to a single element.
 

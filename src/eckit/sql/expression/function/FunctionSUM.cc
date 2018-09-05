@@ -42,7 +42,7 @@ double FunctionSUM::eval(bool& missing) const
 
 void FunctionSUM::prepare(SQLSelect& sql)
 {
-	FunctionExpression::prepare(sql);
+    FunctionExpression::prepare(sql);
 	value_ = 0;
 }
 
@@ -56,7 +56,7 @@ void FunctionSUM::partialResult()
 {
 	bool missing = false;
 	double value = args_[0]->eval(missing);
-	if(! missing)
+    if(! missing)
 	{
 		value_ += value;
 		resultNULL_ = false;

@@ -223,8 +223,17 @@ std::string MemoryHandle::title() const {
 
 DataHandle* MemoryHandle::clone() const
 {
-    NOTIMP; // Not sure what is the semantics here
-    // return new MemoryHandle(address_, size_);
+    if (owned_) {
+        MemoryHandle* h = new MemoryHandle(size_, grow_);
+        ::memcpy(h->address_, address_, size_);
+        return h;
+    } else {
+        if (readOnly_) {
+            return new MemoryHandle((const void*)address_, size_);
+        } else {
+            return new MemoryHandle(address_, size_);
+        }
+    }
 }
 
 const void* MemoryHandle::data() const {

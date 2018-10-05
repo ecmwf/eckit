@@ -69,6 +69,10 @@ public: // methods
 
     static Fraction abs(const Fraction& f);
 
+    // Convert string to fraction by shifting
+    // the decimal point: e.g. 14.5 in 145/10
+    static Fraction fromString(const std::string&);
+
 public: // operators
 
     static Fraction::value_type max_denominator();

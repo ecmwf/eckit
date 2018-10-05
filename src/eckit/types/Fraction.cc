@@ -358,6 +358,64 @@ bool Fraction::operator>=(const Fraction& other) const {
 
 //-----------------------------------------------------------------------------
 
+
+Fraction Fraction::fromString(const std::string& s) {
+    long numerator = 0;
+    long denumerator = 1;
+    int sgn = 1;
+    size_t err = 0;
+    bool decimal = false;
+
+    for (size_t i = 0; i < s.length(); ++i) {
+
+        switch (s[i]) {
+        case '-':
+            if (i != 0) {
+                err++;
+            }
+            sgn = -1;
+            break;
+
+        case '.':
+            if (decimal) {
+                err++;
+            }
+            decimal = true;
+            break;
+
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            numerator *= 10;
+            numerator += s[i] - '0';
+            if(decimal) {
+                denumerator *= 10;
+            }
+            break;
+
+        default:
+            break;
+        }
+
+    }
+
+    if (err) {
+        throw eckit::UserError("Fraction::fromString: invalid value [" + s + "]");
+    }
+
+    return eckit::Fraction(sgn*numerator, denumerator);
+ }
+
+
+//-----------------------------------------------------------------------------
+
 template<>
 bool Fraction::operator==(double other) const {
     return double(*this) == other;

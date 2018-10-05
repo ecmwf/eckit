@@ -53,7 +53,7 @@ protected:
     virtual void print(std::ostream& out) const;
 
 public:
-    TreeMemory(const repres::Representation&, const param::MIRParametrisation&, size_t);
+    TreeMemory(const repres::Representation&, const param::MIRParametrisation&);
 };
 
 

@@ -25,15 +25,12 @@ namespace mir {
 namespace search {
 
 
-PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const repres::Representation& r) :
-    parametrisation_(parametrisation) {
-    const size_t npts = r.numberOfPoints();
-    ASSERT(npts > 0);
+PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const repres::Representation& r) {
 
     std::string name = "mapped-cache-file";
     parametrisation.get("point-search-trees", name);
 
-    tree_.reset(TreeFactory::build(name, r, parametrisation, npts));
+    tree_.reset(TreeFactory::build(name, r, parametrisation));
 
     eckit::AutoLock<Tree> lock(*tree_);
 
@@ -47,10 +44,11 @@ PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const
 
 
 void PointSearch::build(const repres::Representation& r) {
-    const size_t npts = r.numberOfPoints();
+    const size_t npts = tree_->itemCount();
+    ASSERT(npts > 0);
 
-    eckit::Timer timer("Building KDTree");
-    eckit::Log::info() << "Building " << *tree_ << " for " << r << " (" << eckit::Plural(npts, "point") << ")"
+    eckit::Timer timer("PointSearch: building k-d tree");
+    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << eckit::Plural(npts, "point") << ")"
                        << std::endl;
 
     static bool fastBuildKDTrees =
@@ -68,6 +66,7 @@ void PointSearch::build(const repres::Representation& r) {
             ++i;
         }
 
+        ASSERT(npts == i);
         tree_->build(points);
     } else {
         const eckit::ScopedPtr<repres::Iterator> it(r.iterator());
@@ -77,6 +76,8 @@ void PointSearch::build(const repres::Representation& r) {
             tree_->insert(PointValueType(it->point3D(), i));
             ++i;
         }
+
+        ASSERT(npts == i);
     }
 }
 

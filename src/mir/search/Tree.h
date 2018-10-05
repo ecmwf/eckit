@@ -46,6 +46,7 @@ public:
     using PointValueType = eckit::SPValue<Tree>;
 
 public:
+    Tree(const repres::Representation&);
     virtual ~Tree();
 
     virtual void build(std::vector<PointValueType>&);
@@ -65,33 +66,35 @@ public:
     virtual void lock();
     virtual void unlock();
 
+    size_t itemCount() const {
+        return itemCount_;
+    }
+
     friend std::ostream& operator<<(std::ostream& s, const Tree& p) {
         p.print(s);
         return s;
     }
+
+private:
+    const size_t itemCount_;
 };
 
 class TreeFactory {
 
-    std::string name_;
-
-    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation&, size_t itemCount) = 0;
-
 protected:
+    std::string name_;
+    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation&) = 0;
     TreeFactory(const std::string&);
-
     virtual ~TreeFactory();
 
 public:
-    static Tree* build(const std::string&, const repres::Representation& r, const param::MIRParametrisation&,
-                       size_t itemCount);
-
+    static Tree* build(const std::string&, const repres::Representation& r, const param::MIRParametrisation&);
     static void list(std::ostream&);
 };
 
 template <class T> class TreeBuilder : public TreeFactory {
-    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation& param, size_t itemCount) {
-        return new T(r, param, itemCount);
+    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation& param) {
+        return new T(r, param);
     }
 
 public:

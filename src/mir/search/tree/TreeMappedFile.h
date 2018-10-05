@@ -86,9 +86,8 @@ protected:
 public:
 
     TreeMappedFile(const repres::Representation& r,
-                   const param::MIRParametrisation&,
-                   size_t itemCount) :
-        TreeMapped(treePath(r, true), itemCount),
+                   const param::MIRParametrisation&) :
+        TreeMapped(r, treePath(r, true)),
         real_(treePath(r, false)),
         lock_(lockFile(real_)) {
 

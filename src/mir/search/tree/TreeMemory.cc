@@ -81,7 +81,8 @@ void TreeMemory::print(std::ostream& out) const {
 }
 
 
-TreeMemory::TreeMemory(const repres::Representation&, const param::MIRParametrisation&, size_t) {
+TreeMemory::TreeMemory(const repres::Representation& r, const param::MIRParametrisation&) :
+    Tree(r) {
 }
 
 

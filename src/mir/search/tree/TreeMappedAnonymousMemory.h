@@ -42,8 +42,7 @@ class TreeMappedAnonymousMemory : public TreeMapped {
 public:
 
     TreeMappedAnonymousMemory(const repres::Representation&,
-                              const param::MIRParametrisation&,
-                              size_t itemCount);
+                              const param::MIRParametrisation&);
 };
 
 

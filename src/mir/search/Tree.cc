@@ -20,13 +20,8 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "eckit/container/KDTree.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Timer.h"
 #include "eckit/os/AutoUmask.h"
-#include "eckit/os/Semaphore.h"
-#include "eckit/parser/Tokenizer.h"
-#include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
@@ -38,10 +33,13 @@ namespace mir {
 namespace search {
 
 
-// -----------------------------------------------------------------------------
-
-
 Tree::~Tree() = default;
+
+
+Tree::Tree(const repres::Representation& r) : itemCount_(r.numberOfPoints()) {
+    ASSERT(itemCount_ > 0);
+}
+
 
 void Tree::build(std::vector<PointValueType>&) {
     std::ostringstream os;
@@ -49,11 +47,13 @@ void Tree::build(std::vector<PointValueType>&) {
     throw eckit::SeriousBug(os.str());
 }
 
+
 void Tree::insert(const PointValueType&) {
     std::ostringstream os;
     os << "Tree::insert() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
 }
+
 
 void Tree::statsPrint(std::ostream&, bool) {
     std::ostringstream os;
@@ -61,11 +61,13 @@ void Tree::statsPrint(std::ostream&, bool) {
     throw eckit::SeriousBug(os.str());
 }
 
+
 void Tree::statsReset() {
     std::ostringstream os;
     os << "Tree::statsReset() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
 }
+
 
 Tree::PointValueType Tree::nearestNeighbour(const Point&) {
     std::ostringstream os;
@@ -73,11 +75,13 @@ Tree::PointValueType Tree::nearestNeighbour(const Point&) {
     throw eckit::SeriousBug(os.str());
 }
 
+
 std::vector<Tree::PointValueType> Tree::kNearestNeighbours(const Point&, size_t) {
     std::ostringstream os;
     os << "Tree::kNearestNeighbours() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
 }
+
 
 std::vector<Tree::PointValueType> Tree::findInSphere(const Point&, double) {
     std::ostringstream os;
@@ -85,11 +89,13 @@ std::vector<Tree::PointValueType> Tree::findInSphere(const Point&, double) {
     throw eckit::SeriousBug(os.str());
 }
 
+
 bool Tree::ready() const {
     std::ostringstream os;
     os << "Tree::ready() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
 }
+
 
 void Tree::commit() {
     std::ostringstream os;
@@ -97,13 +103,16 @@ void Tree::commit() {
     throw eckit::SeriousBug(os.str());
 }
 
+
 void Tree::print(std::ostream& out) const {
     out << "Tree[]" << std::endl;
 }
 
+
 void Tree::lock() {
     // Empty
 }
+
 
 void Tree::unlock() {
     // Empty
@@ -115,17 +124,16 @@ void Tree::unlock() {
 
 namespace {
 static pthread_once_t once = PTHREAD_ONCE_INIT;
-static eckit::Mutex *local_mutex = nullptr;
-static std::map< std::string, TreeFactory* >* m = nullptr;
+static eckit::Mutex* local_mutex = nullptr;
+static std::map<std::string, TreeFactory*>* m = nullptr;
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map<std::string, TreeFactory* >();
+    m = new std::map<std::string, TreeFactory*>();
 }
-}  // (anonymous namespace)
+} // (anonymous namespace)
 
 
-TreeFactory::TreeFactory(const std::string& name):
-    name_(name) {
+TreeFactory::TreeFactory(const std::string& name) : name_(name) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -145,11 +153,9 @@ TreeFactory::~TreeFactory() {
 }
 
 
-Tree *TreeFactory::build(
-        const std::string& name,
-        const repres::Representation& r,
-        const param::MIRParametrisation& params,
-        size_t itemCount) {
+Tree* TreeFactory::build(const std::string& name,
+                         const repres::Representation& r,
+                         const param::MIRParametrisation& params) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -161,7 +167,7 @@ Tree *TreeFactory::build(
         throw eckit::SeriousBug("TreeFactory: unknown '" + name + "'");
     }
 
-    return (*j).second->make(r, params, itemCount);
+    return (*j).second->make(r, params);
 }
 
 

@@ -44,30 +44,28 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             + ".kdtree";
 
     auto writable = [](const eckit::PathName& path) -> bool {
-        return (::access(path.asString().c_str(), W_OK) == 0);
-    };
-
-    for (const eckit::PathName root : T::roots()) {
-
-        // mkdir if not exists
         try {
-            root.mkdir();
+            path.mkdir();
         } catch (eckit::FailedSystemCall&) {
             // ...
         }
+        return (::access(path.asString().c_str(), W_OK) == 0);
+    };
 
-        if (not writable(root)) {
-            eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << root << "' isn't writable" << std::endl;
+    for (eckit::PathName path : T::roots()) {
+
+        if (not writable(path)) {
+            eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path << "' isn't writable" << std::endl;
             continue;
         }
 
-        eckit::PathName p = root + "/" + relative;
-        if (makeUnique && !p.exists()) {
-            p = eckit::PathName::unique(p);
+        path += "/" + relative;
+        if (makeUnique && !path.exists()) {
+            path = eckit::PathName::unique(path);
         }
 
-        eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << p  << "'" << (makeUnique ? " (unique)" : "") << std::endl;
-        return p;
+        eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path  << "'" << (makeUnique ? " (unique)" : "") << std::endl;
+        return path;
     }
 
     throw eckit::SeriousBug("TreeMappedFile: no paths are viable for caching");

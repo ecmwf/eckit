@@ -33,8 +33,7 @@ public:
 
 public:
 
-    PointSearch(const param::MIRParametrisation& parametrisation,
-           const repres::Representation&);
+    PointSearch(const param::MIRParametrisation&, const repres::Representation&);
 
 public:
 
@@ -52,10 +51,9 @@ public:
 
 private:
 
-    const param::MIRParametrisation& parametrisation_;
     eckit::ScopedPtr<Tree> tree_;
 
-    void build(const repres::Representation& r);
+    void build(const repres::Representation&);
 };
 
 
@@ -64,4 +62,3 @@ private:
 
 
 #endif
-

@@ -56,7 +56,7 @@ protected:
     virtual void print(std::ostream& out) const = 0;
 
 public:
-    TreeMapped(const eckit::PathName&, size_t itemCount);
+    TreeMapped(const repres::Representation&, const eckit::PathName&);
 };
 
 

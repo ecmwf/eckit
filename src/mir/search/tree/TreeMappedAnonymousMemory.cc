@@ -23,10 +23,9 @@ namespace search {
 namespace tree {
 
 
-TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representation&,
-                                                     const param::MIRParametrisation&,
-                                                     size_t itemCount) :
-    TreeMapped("/dev/zero", itemCount) {
+TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representation& r,
+                                                     const param::MIRParametrisation&) :
+    TreeMapped(r, "/dev/zero") {
 }
 
 

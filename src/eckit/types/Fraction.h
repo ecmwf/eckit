@@ -211,6 +211,10 @@ public: // operators
         return (*this) *= Fraction(other);
     }
 
+    //====================================
+    // Return a version that can be converted to double and back
+    Fraction stableVersion(size_t max = 1000000) const;
+
 private: // members
 
     value_type top_;

@@ -225,7 +225,7 @@ void Fraction::decode(Stream& s) {
 
 inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
-    if(overflow) { return Fraction::value_type(); }
+    if (overflow) { return Fraction::value_type(); }
 
     if (b != 0) {
         overflow = std::abs(a) > std::numeric_limits<Fraction::value_type>::max() / std::abs(b);
@@ -236,10 +236,10 @@ inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction
 
 inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
-    if(overflow) { return Fraction::value_type(); }
+    if (overflow) { return Fraction::value_type(); }
 
     overflow = b > 0 ? a > std::numeric_limits<Fraction::value_type>::max() - b
-                     : a < std::numeric_limits<Fraction::value_type>::lowest() - b;
+               : a < std::numeric_limits<Fraction::value_type>::lowest() - b;
 
     return a + b;
 }
@@ -395,7 +395,7 @@ Fraction Fraction::fromString(const std::string& s) {
         case '9':
             numerator *= 10;
             numerator += s[i] - '0';
-            if(decimal) {
+            if (decimal) {
                 denumerator *= 10;
             }
             break;
@@ -410,9 +410,34 @@ Fraction Fraction::fromString(const std::string& s) {
         throw eckit::UserError("Fraction::fromString: invalid value [" + s + "]");
     }
 
-    return eckit::Fraction(sgn*numerator, denumerator);
- }
+    return eckit::Fraction(sgn * numerator, denumerator);
+}
 
+Fraction Fraction::stableVersion(size_t max) const {
+    Fraction x(*this);
+
+    size_t n = 0;
+    for (;;) {
+        Fraction y = Fraction(double(x));
+        if (y == x) {
+            break;
+        }
+        x = y;
+        n++;
+        if (n >= max) {
+            std::ostringstream oss;
+            oss << "Fraction::stableVersion("
+                << *this
+                << ") did not converge after "
+                << max
+                << " iterations. Last value: "
+                << x;
+            throw eckit::SeriousBug(oss.str());
+        }
+    }
+
+    return x;
+}
 
 //-----------------------------------------------------------------------------
 

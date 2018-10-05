@@ -360,6 +360,7 @@ bool Fraction::operator>=(const Fraction& other) const {
 
 
 Fraction Fraction::fromString(const std::string& s) {
+
     long numerator = 0;
     long denumerator = 1;
     int sgn = 1;
@@ -420,6 +421,10 @@ Fraction Fraction::stableVersion(size_t max) const {
     for (;;) {
         Fraction y = Fraction(double(x));
         if (y == x) {
+//             std::cout << "STABLE =========== " << n << " "
+//             << double(*this) << " " << *this
+// << " -> " << double(x) << " " << x <<
+//             std::endl;
             break;
         }
         x = y;

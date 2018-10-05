@@ -107,7 +107,7 @@ public:
 };
 
 
-static TreeBuilder<TreeMappedCacheFile> builder1("tree-mapped-cache-file");
+static TreeBuilder<TreeMappedCacheFile> builder1("mapped-cache-file");
 
 
 // -----------------------------------------------------------------------------
@@ -124,7 +124,8 @@ public:
 };
 
 
-static TreeBuilder<TreeMappedTempFile> builder2("tree-mapped-temporary-file");
+static TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
+
 
 }  // namespace tree
 }  // namespace search

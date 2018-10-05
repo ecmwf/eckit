@@ -30,8 +30,8 @@ PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const
     const size_t npts = r.numberOfPoints();
     ASSERT(npts > 0);
 
-    std::string name = "tree-mapped-cache-file";
-    parametrisation.get("point-search", name);
+    std::string name = "mapped-cache-file";
+    parametrisation.get("point-search-trees", name);
 
     tree_.reset(TreeFactory::build(name, r, parametrisation, npts));
 

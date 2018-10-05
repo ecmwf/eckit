@@ -30,7 +30,7 @@ TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representatio
 }
 
 
-static TreeBuilder<TreeMappedAnonymousMemory> builder("tree-mapped-anonymous-memory");
+static TreeBuilder<TreeMappedAnonymousMemory> builder("mapped-anonymous-memory");
 
 
 }  // namespace tree

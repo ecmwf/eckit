@@ -85,7 +85,7 @@ TreeMemory::TreeMemory(const repres::Representation&, const param::MIRParametris
 }
 
 
-static TreeBuilder<TreeMemory> builder("tree-memory");
+static TreeBuilder<TreeMemory> builder("memory");
 
 
 } // namespace tree

@@ -31,7 +31,7 @@ CodeLocation::operator bool() const {
 void CodeLocation::print(std::ostream& os) const {
     if ( file_ ) {
         os << " (" << file_ << " +" << line_;
-        if ( ::strlen(func_) )
+        if ( func_ && ::strlen(func_) )
             os << " " << func_;
         os << ")";
     }

@@ -23,6 +23,7 @@
 
 #include "eckit/container/sptree/SPValue.h"
 #include "eckit/geometry/Point3.h"
+#include "mir/util/Types.h"
 
 
 namespace mir {
@@ -41,7 +42,7 @@ namespace search {
 
 class Tree {
 public:
-    using Point = eckit::geometry::Point3;
+    using Point = Point3;
     using Payload = size_t;
     using PointValueType = eckit::SPValue<Tree>;
 

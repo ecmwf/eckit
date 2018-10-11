@@ -14,7 +14,9 @@
 #ifndef eckit_Types_h
 #define eckit_Types_h
 
+#include <cstddef>
 #include <utility>
+#include <array>
 
 #include "eckit/eckit.h"
 
@@ -108,6 +110,17 @@ inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, Vect
     return s;
 }
 
+template <typename T, std::size_t N>
+inline std::ostream& __print_list( std::ostream& s, const std::array<T, N>& t, VectorPrintSimple ) {
+    s << '[';
+    for ( Ordinal i = 0; i < t.size(); i++ ) {
+        if ( i != 0 ) s << ',';
+        s << t[i];
+    }
+    s << ']';
+    return s;
+}
+
 template<typename K, typename V>
 inline std::ostream& __print_container(std::ostream& s, const std::map<K,V>& m)
 {
@@ -154,6 +167,12 @@ namespace std {
     inline std::ostream& operator<<(std::ostream& s,const std::vector<T>& v)
     {
         return eckit::__print_list(s, v, typename eckit::VectorPrintSelector<T>::selector());
+    }
+
+    template <class T, std::size_t N>
+    inline std::ostream& operator<<( std::ostream& s, const std::array<T, N>& v )
+    {
+        return eckit::__print_list( s, v, typename eckit::VectorPrintSelector<T>::selector() );
     }
 
     template<typename K, typename V>

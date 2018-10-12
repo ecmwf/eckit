@@ -35,7 +35,7 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
     // LocalPathName::unique and LocalPathName::mkdir call mkdir, make sure to use umask = 0
     eckit::AutoUmask umask(0);
 
-    static const long VERSION = 1;
+    static const long VERSION = 2;
 
     const std::string relative = "mir/search/"
             + std::to_string(VERSION)

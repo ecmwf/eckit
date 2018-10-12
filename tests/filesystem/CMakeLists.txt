@@ -1,6 +1,8 @@
 # aio system calls are know to fail on the Cray
 # see https://sourceware.org/bugzilla/show_bug.cgi?id=11787
 
+option( ENABLE_ECKIT-352 "Control if ECKIT-352 tests should be enabled" ON )
+
 ecbuild_add_test( TARGET      eckit_test_filesystem_multihandle
                   SOURCES     test_multihandle.cc
                   LIBS        eckit )
@@ -21,7 +23,8 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_atomic_file_update
 
 ecbuild_add_test( TARGET      eckit_test_filesystem_localpathname
                   SOURCES     test_localpathname.cc
-                  LIBS        eckit )
+                  LIBS        eckit
+                  CONDITION   ENABLE_ECKIT-352 )
 
 
 ecbuild_add_test( TARGET      eckit_test_filesystem_restarthandle

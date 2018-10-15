@@ -348,7 +348,7 @@ CASE ( "test_comparisons_ulps" )
 
 //-----------------------------------------------------------------------------
 
-#ifdef __GNUC__
+#if ! defined( __APPLE__ ) && defined( __GNUC__ )
 #include <fenv.h>
 #else
 static int feenableexcept(int excepts) { return 0; }

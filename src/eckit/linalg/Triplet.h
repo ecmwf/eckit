@@ -29,8 +29,7 @@ namespace linalg {
 
 class Triplet {
 public:
-    Triplet() : row_(unassigned()), col_(0), val_(0) {}
-
+    Triplet() : row_(0), col_(0), val_(0.) {}
 
     Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0)) :
         row_(i),
@@ -51,7 +50,7 @@ public:
         return row_ < other.row_;
     }
 
-    bool assigned() const { return row_ != unassigned(); }
+    bool nonZero() const { return val_ != 0.; }
 
     void print(std::ostream& os) const;
 
@@ -61,9 +60,6 @@ protected:
     Size row_;
     Size col_;
     Scalar val_;
-
-private:
-    static constexpr Size unassigned() { return std::numeric_limits<Size>::max(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -136,7 +136,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     // Build vectors of inner indices and values, update outer index per row
     for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
 
-        if( it->assigned() ) {
+        if( it->nonZero() ) {
 
             // triplets are ordered by rows
             ASSERT( it->row() >= row );
@@ -159,7 +159,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
         spm_.outer_[++row] = Index(pos);
     }
 
-    // Number of non-zeroes is not necessarily the same as the size of triplets!
+    // Number of non-zeros is not necessarily the same as size of triplets!
     shape_.size_ = pos;
 
     ASSERT(Size(spm_.outer_[ shape_.outerSize() - 1 ]) == nonZeros()); /* last entry is always the nnz */

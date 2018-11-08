@@ -341,37 +341,47 @@ CASE ( "test_eckit_la_sparse" ) {
 //-----------------------------------------------------------------------------
 
 CASE( "test SparseMatrix creation with unassigned triplets ( ECKIT-361 )" ) {
+
     Size N{10};
     Size M{8};
     Size max_stencil_size = 4;
 
-    auto compute_row_triplets = [&]( Size row ) {
-        std::vector<Triplet> row_triplets( 3 );
-        for( Size i=0; i<3; ++i) {
-            row_triplets[i] = Triplet(row, i , 1./3.);
-        }
-        return row_triplets;
-    };
-    auto skip_point = [&]( Size row ) {
-        if( row == 5 ) return true;
-        return false;
-    };
 
-    Size nonzeros{0};
-    std::vector<Triplet> triplets( N * max_stencil_size );
-    for( Size i=0; i<N; ++i ) {
-        if( ! skip_point( i ) ) {
-            auto row = compute_row_triplets(i);
-            for( Size j=0; j<row.size(); ++j ) {
-              triplets[i * max_stencil_size + j ] = row[j];
-              ++nonzeros;
+    SECTION( "only zero triplets, expects throw" ) {
+        std::vector<Triplet> triplets( N * max_stencil_size );
+        EXPECT_THROWS(SparseMatrix matrix( N, M, triplets));
+    }
+
+    SECTION( "mixed zero / non-zero triplets") {
+        auto compute_row_triplets = [&]( Size row ) {
+            std::vector<Triplet> row_triplets( 3 );
+            for( Size i=0; i<3; ++i) {
+                row_triplets[i] = Triplet(row, i , 1./3.);
+            }
+            return row_triplets;
+        };
+        auto skip_point = []( Size row ) {
+            if( row == 5 ) return true;
+            return false;
+        };
+
+        std::vector<Triplet> triplets( N * max_stencil_size );
+
+        Size nonzeros{0};
+        for( Size i=0; i<N; ++i ) {
+            if( ! skip_point( i ) ) {
+                auto row = compute_row_triplets(i);
+                for( Size j=0; j<row.size(); ++j ) {
+                    triplets[i * max_stencil_size + j ] = row[j];
+                    ++nonzeros;
+                }
             }
         }
+        SparseMatrix matrix( N, M, triplets);
+        EXPECT( matrix.rows() == N );
+        EXPECT( matrix.cols() == M );
+        EXPECT( matrix.nonZeros() == nonzeros );
     }
-    SparseMatrix matrix( N, M, triplets);
-    EXPECT( matrix.rows() == N );
-    EXPECT( matrix.cols() == M );
-    EXPECT( matrix.nonZeros() == nonzeros );
 }
 
 //-----------------------------------------------------------------------------

@@ -126,7 +126,15 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) {
 SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets) :
     owner_(new detail::StandardAllocator()) {
 
-    reserve(rows, cols, triplets.size()); // allocate memory 1 triplet per non-zero
+    // Count number of non-zeros
+    Size nnz{0};
+    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
+        if( it->nonZero() ) {
+            ++nnz;
+        }
+    }
+
+    reserve(rows, cols, nnz); // allocate memory 1 triplet per non-zero
 
     Size pos = 0;
     Size row = 0;
@@ -158,9 +166,6 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     while (row < shape_.rows_) {
         spm_.outer_[++row] = Index(pos);
     }
-
-    // Number of non-zeros is not necessarily the same as size of triplets!
-    shape_.size_ = pos;
 
     ASSERT(Size(spm_.outer_[ shape_.outerSize() - 1 ]) == nonZeros()); /* last entry is always the nnz */
 }
@@ -213,7 +218,7 @@ void SparseMatrix::reset() {
 // variables into this method must be by value
 void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
 
-    ASSERT( nnz );
+    ASSERT( nnz > 0);
     ASSERT( nnz <= rows * cols );
     ASSERT( rows > 0 && cols > 0 ); /* rows and columns must have some size */
 

@@ -16,7 +16,6 @@
 #define eckit_la_Triplet_h
 
 #include <iosfwd>
-#include <limits>
 
 #include "eckit/linalg/types.h"
 

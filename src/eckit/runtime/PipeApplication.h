@@ -48,6 +48,10 @@ private: // members
 
     /// overridden from Application
     virtual void run();
+
+protected: // members
+
+    bool terminate_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

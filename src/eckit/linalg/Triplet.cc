@@ -18,10 +18,15 @@ namespace linalg {
 //----------------------------------------------------------------------------------------------------------------------
 
 void Triplet::print(std::ostream& os) const {
-    os << "Triplet["
-       << "row=" << row_ << ","
-       << "col=" << col_ << ","
-       << "val=" << val_ << "]";
+    if( assigned() ) {
+        os << "Triplet["
+           << "row=" << row_ << ","
+           << "col=" << col_ << ","
+           << "val=" << val_ << "]";
+    }
+    else {
+        os << "Triplet[ unassigned ]";
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const eckit::linalg::Triplet& p) {

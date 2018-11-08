@@ -134,26 +134,33 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     spm_.outer_[0] = 0; /* first entry is always zero */
 
     // Build vectors of inner indices and values, update outer index per row
-    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
+    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
 
-        // triplets are ordered by rows
-        ASSERT( it->row() >= row );
-        ASSERT( it->row() < shape_.rows_ );
-        // ASSERT( it->col() >= 0 ); // useless comparison with unsigned int
-        ASSERT( it->col() < shape_.cols_ );
+        if( it->assigned() ) {
 
-        // start a new row
-        while (it->row() > row) {
-            spm_.outer_[++row] = Index(pos);
+            // triplets are ordered by rows
+            ASSERT( it->row() >= row );
+            ASSERT( it->row() < shape_.rows_ );
+            // ASSERT( it->col() >= 0 ); // useless comparison with unsigned int
+            ASSERT( it->col() < shape_.cols_ );
+
+            // start a new row
+            while (it->row() > row) {
+                spm_.outer_[++row] = Index(pos);
+            }
+
+            spm_.inner_[pos] = Index(it->col());
+            spm_.data_[pos] = it->value();
+            ++pos;
         }
-
-        spm_.inner_[pos] = Index(it->col());
-        spm_.data_[pos] = it->value();
     }
 
     while (row < shape_.rows_) {
         spm_.outer_[++row] = Index(pos);
     }
+
+    // Number of non-zeroes is not necessarily the same as the size of triplets!
+    shape_.size_ = pos;
 
     ASSERT(Size(spm_.outer_[ shape_.outerSize() - 1 ]) == nonZeros()); /* last entry is always the nnz */
 }

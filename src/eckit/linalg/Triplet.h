@@ -16,6 +16,7 @@
 #define eckit_la_Triplet_h
 
 #include <iosfwd>
+#include <limits>
 
 #include "eckit/linalg/types.h"
 
@@ -28,12 +29,13 @@ namespace linalg {
 
 class Triplet {
 public:
+    Triplet() : row_(unassigned()), col_(0), val_(0) {}
 
-    Triplet() : row_(0), col_(0), val_(0) {}
 
-    Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0))
-        : row_(i), col_(j), val_(v)
-    {}
+    Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0)) :
+        row_(i),
+        col_(j),
+        val_(v) {}
 
     const Size& row() const { return row_; }
 
@@ -42,14 +44,14 @@ public:
     const Scalar& value() const { return val_; }
     Scalar& value() { return val_; }
 
-    bool operator< (const Triplet& other) const
-    {
-        if(row_ == other.row_)
-        {
+    bool operator<(const Triplet& other) const {
+        if (row_ == other.row_) {
             return col_ < other.col_;
         }
         return row_ < other.row_;
     }
+
+    bool assigned() const { return row_ != unassigned(); }
 
     void print(std::ostream& os) const;
 
@@ -59,11 +61,14 @@ protected:
     Size row_;
     Size col_;
     Scalar val_;
+
+private:
+    static constexpr Size unassigned() { return std::numeric_limits<Size>::max(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace linalg
-} // namespace eckit
+}  // namespace linalg
+}  // namespace eckit
 
 #endif

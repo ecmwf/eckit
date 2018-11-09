@@ -28,12 +28,12 @@ namespace linalg {
 
 class Triplet {
 public:
+    Triplet() : row_(0), col_(0), val_(0.) {}
 
-    Triplet() : row_(0), col_(0), val_(0) {}
-
-    Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0))
-        : row_(i), col_(j), val_(v)
-    {}
+    Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0)) :
+        row_(i),
+        col_(j),
+        val_(v) {}
 
     const Size& row() const { return row_; }
 
@@ -42,14 +42,14 @@ public:
     const Scalar& value() const { return val_; }
     Scalar& value() { return val_; }
 
-    bool operator< (const Triplet& other) const
-    {
-        if(row_ == other.row_)
-        {
+    bool operator<(const Triplet& other) const {
+        if (row_ == other.row_) {
             return col_ < other.col_;
         }
         return row_ < other.row_;
     }
+
+    bool nonZero() const { return val_ != 0.; }
 
     void print(std::ostream& os) const;
 
@@ -63,7 +63,7 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace linalg
-} // namespace eckit
+}  // namespace linalg
+}  // namespace eckit
 
 #endif

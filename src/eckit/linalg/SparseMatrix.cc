@@ -126,7 +126,15 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) {
 SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets) :
     owner_(new detail::StandardAllocator()) {
 
-    reserve(rows, cols, triplets.size()); // allocate memory 1 triplet per non-zero
+    // Count number of non-zeros
+    Size nnz{0};
+    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
+        if( it->nonZero() ) {
+            ++nnz;
+        }
+    }
+
+    reserve(rows, cols, nnz); // allocate memory 1 triplet per non-zero
 
     Size pos = 0;
     Size row = 0;
@@ -134,21 +142,25 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     spm_.outer_[0] = 0; /* first entry is always zero */
 
     // Build vectors of inner indices and values, update outer index per row
-    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it, ++pos) {
+    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
 
-        // triplets are ordered by rows
-        ASSERT( it->row() >= row );
-        ASSERT( it->row() < shape_.rows_ );
-        // ASSERT( it->col() >= 0 ); // useless comparison with unsigned int
-        ASSERT( it->col() < shape_.cols_ );
+        if( it->nonZero() ) {
 
-        // start a new row
-        while (it->row() > row) {
-            spm_.outer_[++row] = Index(pos);
+            // triplets are ordered by rows
+            ASSERT( it->row() >= row );
+            ASSERT( it->row() < shape_.rows_ );
+            // ASSERT( it->col() >= 0 ); // useless comparison with unsigned int
+            ASSERT( it->col() < shape_.cols_ );
+
+            // start a new row
+            while (it->row() > row) {
+                spm_.outer_[++row] = Index(pos);
+            }
+
+            spm_.inner_[pos] = Index(it->col());
+            spm_.data_[pos] = it->value();
+            ++pos;
         }
-
-        spm_.inner_[pos] = Index(it->col());
-        spm_.data_[pos] = it->value();
     }
 
     while (row < shape_.rows_) {
@@ -206,7 +218,7 @@ void SparseMatrix::reset() {
 // variables into this method must be by value
 void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
 
-    ASSERT( nnz );
+    ASSERT( nnz > 0);
     ASSERT( nnz <= rows * cols );
     ASSERT( rows > 0 && cols > 0 ); /* rows and columns must have some size */
 

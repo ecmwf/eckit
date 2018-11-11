@@ -28,7 +28,7 @@ public:
 
 // -- Contructors
 
-	HandleBuf(DataHandle& handle);
+	HandleBuf(DataHandle& handle, bool throwOnError=false);
 
 // -- Destructor
 
@@ -46,6 +46,7 @@ private:
 	char in_[1];
 	char out_[80];
 	DataHandle& handle_;
+	bool throwOnError_;
 
 // -- Overridden methods
 

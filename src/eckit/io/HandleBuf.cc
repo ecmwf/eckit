@@ -17,18 +17,12 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-HandleBuf::HandleBuf(DataHandle& handle):
-	handle_(handle)
+HandleBuf::HandleBuf(DataHandle& handle, bool throwOnError):
+	handle_(handle),
+	throwOnError_(throwOnError)
 {
-#ifndef OLD_STREAMBUF
-	/* setg(in_,  in_,  in_  + sizeof(in_) );  */
-    setg(in_, in_, in_);
-    setp(out_, out_ + sizeof(out_));
-#else
-    setb(in_, in_ + sizeof(in_), 0);
-    setg(in_, in_, in_);
-    setp(out_, out_ + sizeof(out_));
-#endif
+	setg(in_, in_, in_);
+	setp(out_, out_ + sizeof(out_));
 }
 
 HandleBuf::~HandleBuf()
@@ -38,8 +32,19 @@ HandleBuf::~HandleBuf()
 
 int HandleBuf::sync()
 {
-	if(handle_.write(pbase(),pptr() - pbase()) < 0)
+
+	int len = pptr() - pbase();
+	int written = handle_.write(pbase(), len);
+
+	if (len != written) {
+		if (throwOnError_) {
+			std::ostringstream oss;
+			oss << "HandleBuf: failed to write to " << handle_;
+			throw WriteError(oss.str());
+		}
+
 		return EOF;
+	}
 
 	setp(pbase(), epptr());
 
@@ -48,10 +53,10 @@ int HandleBuf::sync()
 
 int HandleBuf::overflow(int c)
 {
-	if(sync())
+	if (sync())
 		return EOF;
 
-	if(c == EOF)
+	if (c == EOF)
 		return 0;
 
 	sputc(c);
@@ -63,20 +68,20 @@ int HandleBuf::underflow()
 	if (gptr () < egptr ())
 		return *(unsigned char*)gptr ();
 
-#ifndef OLD_STREAMBUF
-	int n = handle_.read(in_,sizeof(in_));
-#else
-	int n = handle_.read(base(),sizeof(in_));
-#endif
+	int n = handle_.read(in_, sizeof(in_));
 
-	if(n == EOF || n == 0)
+	if (n == EOF || n == 0) {
+
+		if (throwOnError_) {
+			std::ostringstream oss;
+			oss << "HandleBuf: failed to read from " << handle_;
+			throw ReadError(oss.str());
+		}
+
 		return EOF;
+	}
 
-#ifndef OLD_STREAMBUF
-	setg(in_,  in_,  in_  + n );
-#else
-	setg (eback (), base (), base () + n);
-#endif
+	setg(in_, in_, in_ + n);
 
 	return *(unsigned char*)gptr ();
 

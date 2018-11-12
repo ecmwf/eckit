@@ -18,6 +18,8 @@
 #include "mir/search/tree/TreeMappedFile.h"
 
 #include "eckit/parser/Tokenizer.h"
+#include "eckit/filesystem/PathExpander.h"
+
 #include "mir/repres/Representation.h"
 
 
@@ -90,10 +92,14 @@ class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
     static std::vector<std::string> getRoots() {
         static std::string cacheDir = LibMir::cacheDir();
 
-        std::vector<std::string> roots;
+        std::vector<std::string> tmp;
         eckit::Tokenizer parse(":");
+        parse(cacheDir, tmp);
 
-        parse(cacheDir, roots);
+        std::vector<std::string> roots;
+        for(const auto& root : tmp)
+            roots.emplace_back(eckit::PathExpander::expand(root));
+
         return roots;
     }
 public:

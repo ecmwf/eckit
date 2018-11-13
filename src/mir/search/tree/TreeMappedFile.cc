@@ -97,8 +97,9 @@ class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
         parse(cacheDir, tmp);
 
         std::vector<std::string> roots;
-        for(const auto& root : tmp)
+        for (const auto& root : tmp) {
             roots.emplace_back(eckit::PathExpander::expand(root));
+        }
 
         return roots;
     }

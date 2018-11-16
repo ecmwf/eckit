@@ -151,7 +151,6 @@ public: // methods
 
 private: // methods
 
-
     bool get(const key_t& key, PathName& path) const;
 
     PathName stage(const key_t& key, const PathName& root) const;
@@ -187,32 +186,33 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName,
 
     for (std::vector<std::string>::const_iterator i = v.begin(); i != v.end(); ++i) {
 
-        std::string path = *i;
-
         // entries with e.g. {CWDFS}/cache will be expanded with PathExpander factory CWDFS
 
-        PathName p = PathExpander::expand(path);
+        PathName p = PathExpander::expand(*i);
 
-        if (p.exists()) {
-            roots_.push_back(p);
-        }
-        else {
+        if (not p.exists()) {
             Log::warning() << "CACHE-MANAGER " << Traits::name() << ", " << p << " does not exist" << std::endl;
             try {
-                AutoUmask umask(0);
-                p.mkdir(0777);
+                if(writable(p.dirName())) {
+                    AutoUmask umask(0);
+                    p.mkdir(0777);
+                }
+                else {
+                    Log::debug<LibEcKit>() << "CACHE-MANAGER " << Traits::name() << ", " << p.dirName() << " not writable" << std::endl;
+                }
                 Log::warning() << "CACHE-MANAGER " << Traits::name() << ", " << p << " created" << std::endl;
             }
-            catch ( FailedSystemCall& e ) {
+            catch ( FailedSystemCall& ) {
                 // ignore
             }
-            if (p.exists()) {
-                roots_.push_back(p);
-            }
+        }
+
+        if (p.exists()) { // test again, we may have created it
+            roots_.push_back(p);
         }
     }
 
-    Log::debug<LibEcKit>() << "CACHE-MANAGER " << Traits::name() << ", roots defined and found: " << roots_ << std::endl;
+    Log::debug<LibEcKit>() << "CACHE-MANAGER " << Traits::name() << ", roots defined and found or created: " << roots_ << std::endl;
 }
 
 template<class Traits>

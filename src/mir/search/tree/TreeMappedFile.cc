@@ -46,12 +46,7 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             + ".kdtree";
 
     auto writable = [](const eckit::PathName& path) -> bool {
-        try {
-            path.mkdir();
-        } catch (eckit::FailedSystemCall&) {
-            // ...
-        }
-        return (::access(path.asString().c_str(), W_OK) == 0);
+        return path.exists() && (::access(path.asString().c_str(), W_OK) == 0);
     };
 
     for (eckit::PathName path : T::roots()) {
@@ -61,7 +56,7 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             continue;
         }
 
-        path += "/" + relative;
+        path /= relative;
         if (makeUnique && !path.exists()) {
             path = eckit::PathName::unique(path);
         }

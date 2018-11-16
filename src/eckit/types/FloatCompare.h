@@ -108,6 +108,12 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+// Forward declaration of explicit template instatiations, to avoid warnings
+extern template bool is_approximately_equal( float a, float b, float epsilon, int maxUlpsDiff );
+extern template bool is_approximately_equal( double a, double b, double epsilon, int maxUlpsDiff );
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace types
 
 //----------------------------------------------------------------------------------------------------------------------

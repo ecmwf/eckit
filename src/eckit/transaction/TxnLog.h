@@ -62,9 +62,10 @@ public:
 
 	void begin(T&);
 	void end(T&,bool);
-	void update(const T&);
-	void recover(TxnRecoverer<T>&,bool,long);
-	void find(TxnFinder<T>&);
+    void update(const T&);
+    void recover(TxnRecoverer<T>&,bool,long);
+    void find(TxnFinder<T>&);
+    bool exists(T&);
 
 private:
 

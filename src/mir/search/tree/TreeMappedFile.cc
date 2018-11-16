@@ -51,7 +51,11 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
 
     for (eckit::PathName path : T::roots()) {
 
-        if(!path.exists() && writable(path.dirName())) {
+        if(not path.exists()) {
+
+            if(not writable(path.dirName()))
+                continue;
+
             try {
                 path.mkdir(0777);
             } catch (eckit::FailedSystemCall&) {

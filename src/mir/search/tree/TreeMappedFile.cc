@@ -46,10 +46,18 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             + ".kdtree";
 
     auto writable = [](const eckit::PathName& path) -> bool {
-        return path.exists() && (::access(path.asString().c_str(), W_OK) == 0);
+        return (::access(path.asString().c_str(), W_OK) == 0);
     };
 
     for (eckit::PathName path : T::roots()) {
+
+        if(!path.exists() && writable(path.dirName())) {
+            try {
+                path.mkdir(0777);
+            } catch (eckit::FailedSystemCall&) {
+                // ignore
+            }
+        }
 
         if (not writable(path)) {
             eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path << "' isn't writable" << std::endl;

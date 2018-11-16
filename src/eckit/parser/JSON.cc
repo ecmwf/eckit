@@ -9,6 +9,7 @@
  */
 
 #include "eckit/parser/JSON.h"
+#include "eckit/types/DateTime.h"
 
 namespace eckit {
 
@@ -24,24 +25,24 @@ JSON::JSON(std::ostream& out):
 
 JSON::~JSON()
 {
-    if(null_) out_ << "null";
+    if (null_) out_ << "null";
 }
 
 void JSON::sep()
 {
     null_ = false;
     out_ << sep_.back();
-    if(indict() && sep_.back() != ":")
+    if (indict() && sep_.back() != ":")
         sep_.back() = ":";
     else
         sep_.back() = ",";
 }
 
-static std::ostream& encode(std::ostream& s,const char *p) {
+static std::ostream& encode(std::ostream& s, const char *p) {
     s << '"';
-    while(*p)
+    while (*p)
     {
-        switch(*p) {
+        switch (*p) {
 
         case '\\':
             s << "\\\\";
@@ -131,7 +132,7 @@ JSON& JSON::operator<<(bool n)
 {
     null_ = false;
     sep();
-    out_ << (n ? "true": "false");
+    out_ << (n ? "true" : "false");
     return *this;
 }
 
@@ -231,10 +232,25 @@ JSON& JSON::operator<<(const char* s)
     return *this;
 }
 
+JSON& JSON::operator<<(const Date& date) {
+    *this << std::string(date);
+    return *this;
+}
+
+JSON& JSON::operator<<(const Time& time) {
+    *this << std::string(time);
+    return *this;
+}
+
+JSON& JSON::operator<<(const DateTime& datetime) {
+    *this << datetime.iso(false);
+    return *this;
+}
+
 JSON& JSON::precision(int n)
 {
-  out_ << std::setprecision(n);
-  return *this;
+    out_ << std::setprecision(n);
+    return *this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

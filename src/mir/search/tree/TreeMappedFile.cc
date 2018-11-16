@@ -18,6 +18,8 @@
 #include "mir/search/tree/TreeMappedFile.h"
 
 #include "eckit/parser/Tokenizer.h"
+#include "eckit/filesystem/PathExpander.h"
+
 #include "mir/repres/Representation.h"
 
 
@@ -44,22 +46,29 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             + ".kdtree";
 
     auto writable = [](const eckit::PathName& path) -> bool {
-        try {
-            path.mkdir();
-        } catch (eckit::FailedSystemCall&) {
-            // ...
-        }
         return (::access(path.asString().c_str(), W_OK) == 0);
     };
 
     for (eckit::PathName path : T::roots()) {
+
+        if(not path.exists()) {
+
+            if(not writable(path.dirName()))
+                continue;
+
+            try {
+                path.mkdir(0777);
+            } catch (eckit::FailedSystemCall&) {
+                // ignore
+            }
+        }
 
         if (not writable(path)) {
             eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path << "' isn't writable" << std::endl;
             continue;
         }
 
-        path += "/" + relative;
+        path /= relative;
         if (makeUnique && !path.exists()) {
             path = eckit::PathName::unique(path);
         }
@@ -90,10 +99,15 @@ class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
     static std::vector<std::string> getRoots() {
         static std::string cacheDir = LibMir::cacheDir();
 
-        std::vector<std::string> roots;
+        std::vector<std::string> tmp;
         eckit::Tokenizer parse(":");
+        parse(cacheDir, tmp);
 
-        parse(cacheDir, roots);
+        std::vector<std::string> roots;
+        for (const auto& root : tmp) {
+            roots.emplace_back(eckit::PathExpander::expand(root));
+        }
+
         return roots;
     }
 public:

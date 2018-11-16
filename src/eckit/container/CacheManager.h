@@ -196,18 +196,16 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName,
                 if(writable(p.dirName())) {
                     AutoUmask umask(0);
                     p.mkdir(0777);
+                    Log::warning() << "CACHE-MANAGER " << Traits::name() << ", " << p << " created" << std::endl;
                 }
                 else {
                     Log::debug<LibEcKit>() << "CACHE-MANAGER " << Traits::name() << ", " << p.dirName() << " not writable" << std::endl;
                 }
-                Log::warning() << "CACHE-MANAGER " << Traits::name() << ", " << p << " created" << std::endl;
             }
-            catch ( FailedSystemCall& ) {
-                // ignore
-            }
+            catch ( FailedSystemCall& ) { /* ignore */ }
         }
 
-        if (p.exists()) { // test again, we may have created it
+        if (p.exists()) { // test again, we may have just created it
             roots_.push_back(p);
         }
     }

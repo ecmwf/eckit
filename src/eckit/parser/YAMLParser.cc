@@ -590,6 +590,14 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
             // std::cout << "++++ " << s << " " << colon << " " << (endOfToken(c) || c == ' ') << std::endl;
 
             if (colon && (endOfToken(c) || c == ' ')) {
+                while(s.length() >= 2 && isspace(s[s.length()-2])) {
+                    s = s.substr(0, s.length()-1);
+                    last--;
+                    s[s.length()-1] = ':';
+                }
+
+                // std::cout << s << std::endl;
+
                 isKey = true;
                 break;
             }
@@ -613,6 +621,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
                 result += ' ';
             }
         }
+
 
         result += s.substr(0, last + 1);
         line = line_;

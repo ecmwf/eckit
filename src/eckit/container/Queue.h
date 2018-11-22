@@ -31,12 +31,15 @@ class Queue {
 
 public: // public
 
-    Queue(size_t max) : max_(max) {
+    Queue(size_t max) : max_(max), done_(false) {
         ASSERT(max > 0);
     }
 
     Queue(const Queue&) = delete;
     Queue& operator=(const Queue&) = delete;
+
+    Queue(Queue&&) = default;
+    Queue& operator=(Queue&&) = default;
 
     void resize(size_t size) {
         ASSERT(size > 0);
@@ -49,9 +52,23 @@ public: // public
         cv_.notify_one();
     }
 
+    void set_done() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        done_ = true;
+        locker.unlock();
+        cv_.notify_one();
+    }
+
+    bool done() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        return done_;
+    }
+
+    // n.b. no done mechanism implemented here.
     ELEM pop() {
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.empty()) {
+            ASSERT(!done_);
             cv_.wait(locker);
         }
         auto e = queue_.front();
@@ -61,9 +78,10 @@ public: // public
         return e;
     }
 
-    size_t pop(ELEM& e) {
+    long pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.empty()) {
+            if (done_) return -1;
             cv_.wait(locker);
         }
         std::swap(e, queue_.front());
@@ -79,6 +97,7 @@ public: // public
         while (queue_.size() >= max_) {
             cv_.wait(locker);
         }
+        ASSERT(!done_);
         queue_.push(e);
         size_t size = queue_.size();
         locker.unlock();
@@ -91,6 +110,7 @@ public: // public
         while (queue_.size() >= max_) {
             cv_.wait(locker);
         }
+        ASSERT(!done_);
         queue_.emplace(std::move(e));
         size_t size = queue_.size();
         locker.unlock();
@@ -104,6 +124,7 @@ private: // members
     std::mutex mutex_;
     std::condition_variable cv_;
     size_t max_;
+    bool done_;
 };
 
 

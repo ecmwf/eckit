@@ -39,6 +39,29 @@ Stream& operator>>(Stream& s, std::vector<T>& t) {
     return s;
 }
 
+template<class T>
+Stream& operator<<(Stream& s,const std::set<T>& t) {
+    s << Ordinal(t.size());
+    for(typename std::set<T>::const_iterator i = t.begin(); i != t.end() ; ++i)
+        s << (*i);
+    return s;
+}
+
+template<class T>
+Stream& operator>>(Stream& s, std::set<T>& t) {
+    Ordinal size;
+    s >> size;
+
+    t.clear();
+
+    for(Ordinal i = 0; i < size; i++) {
+        T n;
+        s >> n;
+        t.emplace(std::move(n));
+    }
+    return s;
+}
+
 template<class K, class V>
 Stream& operator<<(Stream& s,const std::map<K,V>& t) {
     s << Ordinal(t.size());

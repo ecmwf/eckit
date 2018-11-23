@@ -70,7 +70,7 @@ public: // public
         interrupt_ = false;
         interruptException_ = nullptr;
         done_ = false;
-        queue_ = {};
+        queue_ = std::queue<ELEM>();
     }
 
     void set_done() {

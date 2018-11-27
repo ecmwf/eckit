@@ -734,21 +734,24 @@ time_t LocalPathName::lastModified() const
 time_t LocalPathName::lastAccess() const
 {
     Stat::Struct info;
-    SYSCALL(Stat::stat(path_.c_str(), &info));
+    if (Stat::stat(path_.c_str(), &info) < 0)
+        throw FailedSystemCall(path_);
     return info.st_atime;
 }
 
 bool LocalPathName::isDir() const
 {
     Stat::Struct info;
-    SYSCALL(Stat::stat(path_.c_str(), &info));
+    if (Stat::stat(path_.c_str(), &info) < 0)
+        throw FailedSystemCall(path_);
     return S_ISDIR(info.st_mode);
 }
 
 bool LocalPathName::isLink() const
 {
     Stat::Struct info;
-    SYSCALL(Stat::lstat(path_.c_str(), &info));
+    if (Stat::stat(path_.c_str(), &info) < 0)
+        throw FailedSystemCall(path_);
     return S_ISLNK(info.st_mode);
 }
 

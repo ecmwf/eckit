@@ -283,7 +283,7 @@ inline void PanicNoLog(int code, const char *msg, const CodeLocation& loc)
 /// For compatibility
 class OutOfMemory : public Exception {
     virtual bool terminateApplication() const { return true; }
-    virtual const char *what() const throw() {  return "OutOfMemory"; }
+    virtual const char *what() const noexcept {  return "OutOfMemory"; }
 public:
     OutOfMemory();
 

@@ -29,7 +29,7 @@ public:
 
 // -- Exceptions
 
-    class FTPError : public std::exception { virtual const char *what() const throw(); };
+    class FTPError : public std::exception { virtual const char *what() const noexcept; };
 
 // -- Contructors
 

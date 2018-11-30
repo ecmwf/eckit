@@ -40,7 +40,7 @@ Exception::Exception():  next_(first())
     }
 }
 
-Exception::~Exception() throw()
+Exception::~Exception() noexcept
 {
     first() = next_;
 }

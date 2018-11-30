@@ -42,9 +42,9 @@ public: // methods
 
     /// Destructor
     /// @throws nothing
-    virtual ~Exception() throw();
+    virtual ~Exception() noexcept;
 
-    virtual const char *what() const throw() {  return what_.c_str(); }
+    virtual const char *what() const noexcept {  return what_.c_str(); }
     virtual bool retryOnServer() const        { return false; }
     virtual bool retryOnClient() const        { return false; }
     virtual bool terminateApplication() const { return false; }

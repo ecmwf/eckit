@@ -312,6 +312,7 @@ config/LibEcKit.cc
 config/LibEcKit.h
 config/LocalConfiguration.cc
 config/LocalConfiguration.h
+config/Parametrisation.cc
 config/Parametrisation.h
 config/Resource.h
 config/ResourceBase.h

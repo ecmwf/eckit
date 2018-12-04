@@ -18,6 +18,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <exception>
 #include <condition_variable>
 
 #include "eckit/exception/Exceptions.h"
@@ -26,33 +27,79 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class QueueInterruptedError : public Exception {
+public:
+    QueueInterruptedError(const std::string& msg, const CodeLocation& here) :
+        Exception(std::string("Threaded queue interrupted") + (msg.size() ? (std::string(": ") + msg): std::string()), here) {}
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 template <typename ELEM>
 class Queue {
 
 public: // public
 
-    Queue(size_t max) : max_(max) {
+    Queue(size_t max) : max_(max), interruptException_(nullptr), done_(false), interrupt_(false) {
         ASSERT(max > 0);
     }
 
     Queue(const Queue&) = delete;
     Queue& operator=(const Queue&) = delete;
 
+    Queue(Queue&&) = default;
+    Queue& operator=(Queue&&) = default;
+
     void resize(size_t size) {
         ASSERT(size > 0);
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.size() > size) {
             cv_.wait(locker);
+            if (interrupt_) std::rethrow_exception(interruptException_);
         }
         max_ = size;
         locker.unlock();
         cv_.notify_one();
     }
 
+    void reset() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        while (queue_.size()) {
+            cv_.wait(locker);
+        }
+        interrupt_ = false;
+        interruptException_ = nullptr;
+        done_ = false;
+        queue_ = std::queue<ELEM>();
+    }
+
+    void set_done() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        done_ = true;
+        locker.unlock();
+        cv_.notify_one();
+    }
+
+    bool done() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        return done_ || interrupt_;
+    }
+
+    void interrupt(std::exception_ptr expn) {
+        std::unique_lock<std::mutex> locker(mutex_);
+        interrupt_ = true;
+        interruptException_ = expn;
+        locker.unlock();
+        cv_.notify_all();
+    }
+
+    // n.b. no done mechanism implemented here.
     ELEM pop() {
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.empty()) {
+            ASSERT(!done_);
             cv_.wait(locker);
+            if (interrupt_) std::rethrow_exception(interruptException_);
         }
         auto e = queue_.front();
         queue_.pop();
@@ -61,10 +108,12 @@ public: // public
         return e;
     }
 
-    size_t pop(ELEM& e) {
+    long pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.empty()) {
+            if (done_) return -1;
             cv_.wait(locker);
+            if (interrupt_) std::rethrow_exception(interruptException_);
         }
         std::swap(e, queue_.front());
         queue_.pop();
@@ -78,7 +127,9 @@ public: // public
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.size() >= max_) {
             cv_.wait(locker);
+            if (interrupt_) std::rethrow_exception(interruptException_);
         }
+        ASSERT(!done_);
         queue_.push(e);
         size_t size = queue_.size();
         locker.unlock();
@@ -90,7 +141,9 @@ public: // public
         std::unique_lock<std::mutex> locker(mutex_);
         while (queue_.size() >= max_) {
             cv_.wait(locker);
+            if (interrupt_) std::rethrow_exception(interruptException_);
         }
+        ASSERT(!done_);
         queue_.emplace(std::move(e));
         size_t size = queue_.size();
         locker.unlock();
@@ -104,6 +157,9 @@ private: // members
     std::mutex mutex_;
     std::condition_variable cv_;
     size_t max_;
+    std::exception_ptr interruptException_;
+    bool done_;
+    bool interrupt_;
 };
 
 

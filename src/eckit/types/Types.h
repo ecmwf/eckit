@@ -200,6 +200,10 @@ class Stream; // forward
 template<class T> Stream& operator<<(Stream&, const std::vector<T>&);
 template<class T> Stream& operator>>(Stream&, std::vector<T>&);
 
+/// Operators to send sets in streams
+template<class T> Stream& operator<<(Stream&, const std::vector<T>&);
+template<class T> Stream& operator>>(Stream&, std::vector<T>&);
+
 /// Operators to send maps in streams
 /// Note: the value type V must have a constructor from Stream&
 template<class K, class V> Stream& operator<<(Stream&, const std::map<K,V>&);

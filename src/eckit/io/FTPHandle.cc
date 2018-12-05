@@ -23,7 +23,7 @@ namespace eckit {
 ClassSpec FTPHandle::classSpec_ = {&DataHandle::classSpec(),"FTPHandle",};
 Reanimator<FTPHandle> FTPHandle::reanimator_;
 
-const char* FTPHandle::FTPError::what() const throw()
+const char* FTPHandle::FTPError::what() const noexcept
 {
 	return "FTP Error";
 }

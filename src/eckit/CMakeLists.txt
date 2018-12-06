@@ -267,6 +267,8 @@ filesystem/FileSystem.h
 filesystem/FileSystem.cc
 filesystem/TempFile.h
 filesystem/TempFile.cc
+filesystem/TmpDir.h
+filesystem/TmpDir.cc
 filesystem/TmpFile.h
 filesystem/TmpFile.cc
 filesystem/marsfs/MarsFSFile.h

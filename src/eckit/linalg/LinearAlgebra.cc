@@ -158,6 +158,8 @@ LinearAlgebra::LinearAlgebra(const std::string &name):
     backends->add(name, this);
 }
 
+LinearAlgebra::~LinearAlgebra() {}
+
 const std::string& LinearAlgebra::name() const {
     return name_;
 }

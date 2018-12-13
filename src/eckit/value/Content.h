@@ -14,6 +14,10 @@
 #ifndef eckit_Content_h
 #define eckit_Content_h
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include "eckit/memory/Counted.h"
 #include "eckit/serialisation/Streamable.h"
 

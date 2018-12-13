@@ -12,6 +12,7 @@
 
 #include <fstream>
 #include <deque>
+#include <algorithm>
 
 #include "eckit/container/CacheManager.h"
 #include "eckit/runtime/Main.h"

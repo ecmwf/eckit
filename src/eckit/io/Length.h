@@ -14,6 +14,8 @@
 #ifndef eckit_Length_h
 #define eckit_Length_h
 
+#include <vector>
+
 #include "eckit/serialisation/Stream.h"
 
 #include "eckit/persist/Bless.h"

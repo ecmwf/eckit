@@ -14,6 +14,9 @@
 #ifndef eckit_Grid_h
 #define eckit_Grid_h
 
+#include <string>
+#include <vector>
+
 #include "eckit/persist/Bless.h"
 #include "eckit/exception/Exceptions.h"
 

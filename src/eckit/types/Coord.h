@@ -13,9 +13,12 @@
 #ifndef eckit_Coord_h
 #define eckit_Coord_h
 
+#include <vector>
+#include <iosfwd>
+
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 

@@ -16,7 +16,6 @@
 #define eckit_StringTools_h
 
 
-#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>

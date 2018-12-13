@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 
 #include "eckit/value/Value.h"
 #include "eckit/types/FloatCompare.h"

@@ -9,6 +9,8 @@
  */
 
 
+#include <iomanip>
+
 #include "eckit/io/Compress.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/BitIO.h"
@@ -74,7 +76,6 @@ public:
 
     Entry operator+(unsigned char) const;
     Entry& operator=(unsigned char);
-    bool operator<(const Entry& other) const;
     bool empty() const;
 
     void code(size_t c) {
@@ -86,13 +87,29 @@ public:
         return chars_[0];
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const Entry& e) {
-        e.print(out);
-        return out;
-    }
+     bool operator<(const Entry& other) const {
+         return chars_ < other.chars_;
+     }
 
-    void output(BitIO& out) const;
-    void output(BitIO& out, size_t nbits) const;
+    /* unused */
+    //    friend std::ostream& operator<<(std::ostream& out, const Entry& e) {
+    //        e.print(out);
+    //        return out;
+    //    }
+
+    /* unused */
+    //    void Entry::print(std::ostream& out) const {
+    //        out << '[';
+    //        print_code(out, code_);
+    //        out << " -> ";
+    //        for(size_t i = 0; i < chars_.size(); ++i) {
+    //            print_code(out, chars_[i]);
+    //        }
+    //        out << ']';
+    //    }
+
+    void output(eckit::BitIO& out) const;
+    void output(eckit::BitIO& out, size_t nbits) const;
 
 };
 
@@ -117,27 +134,12 @@ Entry& Entry::operator=(unsigned char c) {
     return *this;
 }
 
-bool Entry::operator<(const Entry& other) const {
-    return chars_ < other.chars_;
-}
-
 void Entry::output(eckit::BitIO& out) const {
     // std::cout << "Output " << *this << std::endl;
 
     for(size_t i = 0; i < chars_.size(); ++i) {
         out.write(chars_[i], 8);
     }
-}
-
-void Entry::print(std::ostream& out) const {
-    out << '[';
-    print_code(out, code_);
-    out << " -> ";
-    for(size_t i = 0; i < chars_.size(); ++i) {
-        print_code(out, chars_[i]);
-    }
-    out << ']';
-
 }
 
 bool Entry::empty() const {

@@ -15,7 +15,10 @@
 #ifndef eckit_StringTools_h
 #define eckit_StringTools_h
 
-#include "eckit/eckit.h"
+
+#include <string>
+#include <map>
+#include <vector>
 
 #include "eckit/memory/NonCopyable.h"
 

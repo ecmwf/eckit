@@ -14,9 +14,13 @@
 #ifndef eckit_Types_h
 #define eckit_Types_h
 
+#include <set>
+#include <vector>
+#include <map>
 #include <cstddef>
 #include <utility>
 #include <array>
+#include <iostream>
 
 #include "eckit/eckit.h"
 

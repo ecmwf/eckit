@@ -12,14 +12,9 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
+#include <iostream>
+
 #include "eckit/system/MemoryInfo.h"
-
-// #include "eckit/eckit_ecbuild_config.h"
-// #include "eckit/parser/StringTools.h"
-
-// #include "eckit/filesystem/LocalPathName.h"
-// #include "eckit/exception/Exceptions.h"
-// #include "eckit/memory/ScopedPtr.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
 #include "eckit/memory/MMap.h"

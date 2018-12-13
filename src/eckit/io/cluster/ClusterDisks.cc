@@ -12,6 +12,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
+#include <fstream>
 
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
@@ -196,7 +197,7 @@ public:
     {}
 };
 
-static DiskArray* clusterDisks = 0;
+static DiskArray* clusterDisks = nullptr;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void diskarray_init()

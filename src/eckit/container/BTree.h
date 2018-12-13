@@ -89,12 +89,12 @@ public:
 
     void dump(std::ostream& s = std::cout) const;
 
-	/// Counts the entries in the whole tree
-	/// This is not an efficient call since it visits the whole tree. Use with care.
-	size_t count() const;
+    /// Counts the entries in the whole tree
+    /// This is not an efficient call since it visits the whole tree. Use with care.
+    size_t count() const;
 
-	/// Counts the entries in a page of the tree
-	size_t count(unsigned long page) const;
+    /// Counts the entries in a page of the tree
+    size_t count(unsigned long page) const;
 
     void lock();
     void lockShared();

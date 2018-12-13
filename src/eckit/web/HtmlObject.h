@@ -14,9 +14,8 @@
 #ifndef HtmlObject_H
 #define HtmlObject_H
 
-#include "eckit/eckit.h"
+#include "eckit/persist/Bless.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

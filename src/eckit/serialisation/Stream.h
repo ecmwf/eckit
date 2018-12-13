@@ -14,11 +14,12 @@
 #ifndef eckit_Stream_h
 #define eckit_Stream_h
 
+#include <map>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

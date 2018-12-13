@@ -9,6 +9,8 @@
  */
 
 
+#include <fstream>
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/web/HttpBuf.h"
 #include "eckit/web/JavaResource.h"

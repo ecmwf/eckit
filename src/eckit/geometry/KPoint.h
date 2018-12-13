@@ -15,8 +15,8 @@
 #include <cassert>
 #include <cmath>
 #include <limits>
+#include <vector>
 
-#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 
 //------------------------------------------------------------------------------------------------------

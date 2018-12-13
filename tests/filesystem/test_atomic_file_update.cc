@@ -9,6 +9,7 @@
  */
 
 #include <string>
+#include <fstream>
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"

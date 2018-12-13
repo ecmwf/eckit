@@ -8,17 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
+#include <numeric>
 
 #include "eckit/log/Log.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartFileHandle.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 
 ClassSpec MarsFSPartHandle::classSpec_ = {&DataHandle::classSpec(), "MarsFSPartHandle",};
@@ -264,7 +265,7 @@ bool MarsFSPartHandle::merge(DataHandle* other)
 
 Length MarsFSPartHandle::estimate()
 {
-    return accumulate(length_.begin(), length_.end(), Length(0));
+    return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
 void MarsFSPartHandle::toLocal(Stream& s) const

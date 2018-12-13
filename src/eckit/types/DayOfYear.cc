@@ -8,9 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iomanip>
+
 #include "eckit/types/DayOfYear.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

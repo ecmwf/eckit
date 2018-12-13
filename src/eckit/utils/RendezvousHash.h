@@ -12,6 +12,8 @@
 #define eckit_utils_RendezvousHash_H
 
 #include <string>
+#include <map>
+#include <vector>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"

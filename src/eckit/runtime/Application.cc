@@ -9,6 +9,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <unistd.h>
 
 #include "eckit/bases/Loader.h"
@@ -22,7 +23,7 @@
 
 namespace eckit {
 
-static char* reserve_ = 0;
+static char* reserve_ = nullptr;
 
 static void end(const char* msg) {
     static bool in_end = false;

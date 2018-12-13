@@ -8,10 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/types/Month.h"
+#include "Month.h"
+
+#include <vector>
+#include <iomanip>
+
 #include "eckit/parser/Tokenizer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

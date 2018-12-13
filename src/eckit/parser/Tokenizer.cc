@@ -8,16 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include "Tokenizer.h"
+
 #include <iterator>
-
-#include "eckit/parser/Tokenizer.h"
-
-
-//-----------------------------------------------------------------------------
+#include <iostream>
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 template < class Container >
 void tokenizeInsert(const std::set<char, std::less<char> >& separator,
@@ -51,7 +49,8 @@ void tokenizeInsert(const std::set<char, std::less<char> >& separator,
     }
 }
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+
 
 Tokenizer::Tokenizer(char c, bool keepEmpty) :
     keepEmpty_(keepEmpty)
@@ -102,7 +101,7 @@ void Tokenizer::operator()(std::istream& in, std::set<std::string>& s) const
     tokenizeInsert( separator_, raw, std::inserter(s, s.end()), keepEmpty_);
 }
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -9,6 +9,7 @@
  */
 
 #include <cstring>
+#include <map>
 
 #include "eckit/utils/Hash.h"
 

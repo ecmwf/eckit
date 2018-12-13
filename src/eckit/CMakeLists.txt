@@ -590,10 +590,12 @@ serialisation/Reanimator.cc
 serialisation/ReanimatorBase.cc )
 
 list( APPEND eckit_persist_srcs
+persist/Bless.h
 persist/Exporter.h
 persist/Exporter.cc
 persist/DumpLoad.h
 persist/DumpLoad.cc
+persist/Isa.h
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs

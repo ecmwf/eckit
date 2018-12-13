@@ -14,12 +14,14 @@
 #ifndef eckit_ClassExtent_h
 #define eckit_ClassExtent_h
 
+#include <map>
+
 #include "eckit/thread/AutoLock.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 

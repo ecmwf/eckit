@@ -8,13 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include <map>
+
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/Tokenizer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -225,6 +226,9 @@ void Grid::load(DumpLoad& a)
 	a.load(northSouth_);
 	a.load(eastWest_);
 }
+
+Grid::InvalidGrid::InvalidGrid(const std::string& s):
+    Exception("Invalid Mars Grid '" + s + "'") {}
 
 //-----------------------------------------------------------------------------
 

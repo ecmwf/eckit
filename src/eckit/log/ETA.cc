@@ -8,9 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/ETA.h"
+#include "ETA.h"
 
-//-----------------------------------------------------------------------------
+#include <iomanip>
+#include <sstream>
 
 namespace eckit {
 

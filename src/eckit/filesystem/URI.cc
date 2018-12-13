@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <vector>
 
 #include "eckit/filesystem/URI.h"
 #include "eckit/parser/Tokenizer.h"

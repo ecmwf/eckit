@@ -13,6 +13,8 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
+#include <fstream>
+
 #include "eckit/value/Value.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/utils/Translator.h"
@@ -47,7 +49,7 @@ struct YAMLItem : public Counted {
 
     virtual ~YAMLItem() {
         // std::cout << "~YAMLItem " << value_ << std::endl;
-    };
+    }
 
     friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item)
     { item.print(s); return s;}

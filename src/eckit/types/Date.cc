@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iomanip>
+
 #include "eckit/types/Date.h"
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/parser/Tokenizer.h"
-
-
 
 namespace eckit {
 

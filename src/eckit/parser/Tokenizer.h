@@ -14,12 +14,11 @@
 #ifndef eckit_Tokenizer_h
 #define eckit_Tokenizer_h
 
-#include "eckit/eckit.h"
+#include <set>
+#include <string>
+#include <vector>
 
 #include "eckit/memory/NonCopyable.h"
-
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

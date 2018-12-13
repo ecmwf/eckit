@@ -11,6 +11,8 @@
 /// @author Baudouin Raoult
 /// @date Jul 2015
 
+#include <fstream>
+
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/parser/YAMLParser.h"
 

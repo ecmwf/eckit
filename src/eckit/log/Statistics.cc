@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Statistics.h"
+#include "Statistics.h"
+
+#include <cmath>
+#include <algorithm>
+#include <iomanip>
 
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/serialisation/Stream.h"
-
-#include <cmath>
-#include <algorithm>
 
 namespace eckit {
 

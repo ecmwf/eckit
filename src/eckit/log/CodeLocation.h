@@ -13,8 +13,8 @@
 #ifndef eckit_log_CodeLocation_h
 #define eckit_log_CodeLocation_h
 
-#include "eckit/eckit.h"
-
+#include <string>
+#include <iosfwd>
 
 namespace eckit {
 
@@ -28,7 +28,7 @@ public: // methods
 
     /// Empty contructor
     CodeLocation():
-        line_(0), file_(0), func_(0) {}
+        line_(0), file_(nullptr), func_(nullptr) {}
 
     /// Full Contructor
     CodeLocation( const char * file, int line, const char * func):
@@ -38,7 +38,7 @@ public: // methods
     std::string asString() const;
 
     /// conversion operator
-    operator std::string() const { return asString(); }
+    operator std::string() const;
 
     /// conversion to bool for checking if location was set
     operator bool() const;

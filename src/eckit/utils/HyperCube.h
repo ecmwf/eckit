@@ -14,9 +14,10 @@
 #ifndef eckit_HyperCube_h
 #define eckit_HyperCube_h
 
+#include <numeric>
+
 #include "eckit/types/Types.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

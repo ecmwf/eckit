@@ -24,6 +24,8 @@ std::string CodeLocation::asString() const {
     return oss.str();
 }
 
+eckit::CodeLocation::operator std::string() const { return asString(); }
+
 CodeLocation::operator bool() const {
     return file_ && ::strlen(file_);
 }

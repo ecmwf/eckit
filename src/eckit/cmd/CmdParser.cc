@@ -8,6 +8,9 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <iomanip>
+#include <stack>
+
 #include "eckit/cmd/CmdParser.h"
 #include "eckit/cmd/CmdResource.h"
 #include "eckit/log/Log.h"

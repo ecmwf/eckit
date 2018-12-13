@@ -13,18 +13,16 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/persist/Exporter.h"
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 void *operator new(size_t, void* addr, eckit::Evolve&)
 {
     return addr;
 }
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 void _export(eckit::Exporter& out, unsigned char what) {
     out.writeUnsigned(what);
@@ -754,13 +752,13 @@ void Exporter::startDatabase(const std::string& path, unsigned long id, unsigned
 
 }
 
-void Exporter::endDatabase(const std::string&, unsigned long id)
+void Exporter::endDatabase(const std::string&, unsigned long)
 {
     writeTag(TAG_END_DATABASE);
     writeUnsigned(objectCount_);
     objectCount_ = 0;
 }
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 } // namespace eckit

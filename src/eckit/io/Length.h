@@ -16,7 +16,7 @@
 
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/persist/Bless.h"
 
 namespace eckit {
 

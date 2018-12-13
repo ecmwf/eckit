@@ -89,13 +89,13 @@ BTree<K,V,S,L>::BTree( const PathName& path, bool readOnly, off_t offset ):
         // TODO: Check header
     }
 
-	eckit::compile_assert< (maxLeafEntries_ > 3) >::check();
-	eckit::compile_assert< (maxNodeEntries_ > 3) >::check();
+    static_assert(maxLeafEntries_ > 3, "maxLeafEntries_ > 3");
+    static_assert(maxNodeEntries_ > 3, "maxNodeEntries_ > 3");
 
-    compile_assert< (sizeof(Page) == sizeof(LeafPage)) >::check();
-    compile_assert< (sizeof(Page) == sizeof(NodePage)) >::check();
+    static_assert(sizeof(Page) == sizeof(LeafPage), "sizeof Page must be equal to sizeof LeafPage");
+    static_assert(sizeof(Page) == sizeof(NodePage), "sizeof Page must be equal to sizeof NodePage");
 
-	// std::cout << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_ << std::endl;
+    // std::cout << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_ << std::endl;
 }
 
 

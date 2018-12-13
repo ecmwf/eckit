@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <fstream>
+
 #include "eckit/config/ResourceMgr.h"
 
 #include "eckit/filesystem/LocalPathName.h"

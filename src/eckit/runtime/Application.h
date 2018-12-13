@@ -31,7 +31,7 @@ public:
 
     // -- Contructors
 
-    Application(int argc, char **argv, const char* homeenv = 0);
+    Application(int argc, char **argv, const char* homeenv = nullptr);
 
     // -- Destructor
 

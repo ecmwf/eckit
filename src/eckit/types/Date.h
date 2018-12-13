@@ -17,12 +17,11 @@
 #define eckit_Date_h
 
 #include "eckit/exception/Exceptions.h"
-
-
+#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 class DumpLoad;
 class Bless;
@@ -115,21 +114,6 @@ public:
 protected:
 
 	Date(long julian,bool) : julian_(julian) {}
-
-// -- Members
-	// None
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 private:
 

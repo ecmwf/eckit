@@ -8,13 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include <fstream>
+
+#include "EtcTable.h"
 
 #include "eckit/thread/AutoLock.h"
-#include "eckit/config/EtcTable.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/parser/Tokenizer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -100,7 +101,7 @@ void EtcTable::load()
         while( i < s.size() )
 		{
 			if(s[i].length() == 0)
-				s.erase(s.begin()+i);
+                                s.erase(s.begin() + i);
 			else
 				i++;
 		}
@@ -114,6 +115,14 @@ void EtcTable::load()
         lines_.push_back(s);
 	}
 
+}
+
+EtcStartWithTable::EtcStartWithTable(const std::string& name, int size, const std::string& dir):
+    EtcTable(name, size, dir) {
+}
+
+EtcKeyTable::EtcKeyTable(const std::string& name, int size, const std::string& dir):
+    EtcTable(name, size, dir) {
 }
 
 //-----------------------------------------------------------------------------

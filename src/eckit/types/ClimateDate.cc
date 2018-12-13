@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iomanip>
+
 #include "eckit/types/ClimateDate.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 // Climate date is a 30 day date
 
@@ -35,6 +35,8 @@ ClimateDate::ClimateDate(long year,long month,long day):
 {
 }
 
+ClimateDate::~ClimateDate() {}
+
 static Date makeDate(const std::string& s)
 {
 	Date date(s);
@@ -47,8 +49,12 @@ static Date makeDate(const std::string& s)
 	return Date(year,day);
 }
 
+ClimateDate::ClimateDate() {}
+
+ClimateDate::ClimateDate(const Date& date) : date_(date) {}
+
 ClimateDate::ClimateDate(const std::string& s):
-	date_(makeDate(s))
+    date_(makeDate(s))
 {
 }
 
@@ -88,8 +94,6 @@ void ClimateDate::load(DumpLoad& a)
 {
 	date_.load(a);
 }
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -10,6 +10,9 @@
 
 #include <unistd.h>
 
+#include <fstream>
+#include <iomanip>
+
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/cmd/CmdResource.h"
 #include "eckit/cmd/TermBuf.h"

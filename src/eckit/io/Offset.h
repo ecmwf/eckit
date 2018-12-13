@@ -14,10 +14,11 @@
 #ifndef eckit_Offset_h
 #define eckit_Offset_h
 
+#include <vector>
+
+#include "eckit/persist/Bless.h"
 #include "eckit/io/Length.h"
 #include "eckit/serialisation/Stream.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

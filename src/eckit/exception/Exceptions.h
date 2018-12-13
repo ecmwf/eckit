@@ -12,7 +12,8 @@
 #define eckit_Exceptions_h
 
 #include <errno.h>
-#include <iosfwd>
+#include <iostream>
+#include <sstream>
 
 #include "eckit/eckit.h"
 #include "eckit/eckit_version.h"

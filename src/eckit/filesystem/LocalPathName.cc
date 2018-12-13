@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
 
 #include <dirent.h>
 #include <limits.h>
@@ -19,7 +18,9 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#include "eckit/filesystem/LocalPathName.h"
+#include <fstream>
+
+#include "LocalPathName.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"

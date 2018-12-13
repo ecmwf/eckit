@@ -14,13 +14,14 @@
 #ifndef eckit_io_AsyncHandle_h
 #define eckit_io_AsyncHandle_h
 
+#include <deque>
+
 #include "eckit/io/Buffer.h"
 #include "eckit/io/HandleHolder.h"
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/io/Buffer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

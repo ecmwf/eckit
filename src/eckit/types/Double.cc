@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <math.h>
+#include <cmath>
+#include <sstream>
 
 #include "eckit/types/Double.h"
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/utils/Translator.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

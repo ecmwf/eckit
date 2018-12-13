@@ -19,6 +19,7 @@
 
 #include <climits>
 #include <cstdlib>
+#include <fstream>
 
 #include "eckit/system/SystemInfoLinux.h"
 

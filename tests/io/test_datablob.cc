@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <string>
-#include <algorithm>
 
 #include "eckit/io/DataBlob.h"
 #include "eckit/io/DataHandle.h"

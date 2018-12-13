@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <map>
 
 #include "eckit/persist/DumpLoad.h"

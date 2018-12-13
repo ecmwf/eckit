@@ -9,6 +9,7 @@
  */
 
 #include <cctype>
+#include <algorithm>
 
 #include "eckit/exception/Exceptions.h"
 

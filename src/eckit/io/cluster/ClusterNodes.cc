@@ -11,6 +11,7 @@
 // File ClusterNodes.cc
 // Baudouin Raoult - (c) ECMWF Jul 11
 
+#include <algorithm>
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/io/cluster/ClusterNodes.h"

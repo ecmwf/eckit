@@ -13,6 +13,7 @@
 
 #include <limits>
 #include <queue>
+#include <algorithm>
 
 
 namespace eckit {

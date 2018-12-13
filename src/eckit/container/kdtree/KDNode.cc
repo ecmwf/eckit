@@ -10,16 +10,15 @@
 
 #ifndef KDNode_CC
 #define KDNode_CC
-#include "eckit/eckit.h"
-
-#include <stdio.h>
-#include <limits>
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <cstdio>
+#include <limits>
+#include <algorithm>
 
 #include "KDNode.h"
 

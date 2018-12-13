@@ -12,6 +12,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/cmd/CmdResource.h"

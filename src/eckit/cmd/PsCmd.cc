@@ -8,6 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <iomanip>
 
 #include "eckit/cmd/PsCmd.h"

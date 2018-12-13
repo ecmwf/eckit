@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+
 #include "eckit/types/Types.h"
 #include "eckit/utils/RendezvousHash.h"
 #include "eckit/utils/Translator.h"

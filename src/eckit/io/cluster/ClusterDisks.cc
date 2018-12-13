@@ -13,6 +13,7 @@
 /// @author Tiago Quintino
 
 #include <fstream>
+#include <algorithm>
 
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"

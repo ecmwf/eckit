@@ -14,15 +14,14 @@
 #ifndef eckit_UUID_h
 #define eckit_UUID_h
 
-#include <stdint.h>
+#include <algorithm>
+#include <cstdint>
 
 #include "eckit/eckit.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 class UUID {
 
@@ -38,7 +37,7 @@ public:
 	UUID();
 	UUID( const std::string& );
 
-	~UUID() {}
+        ~UUID();
 
 public: // methods
 
@@ -49,15 +48,7 @@ public: // methods
 	static size_t size() { return 16; }
 	static size_t hexSize() { return 32; } // 16 hex digits
 
-	bool isNil() const
-	{
-		for(size_t i=0; i < size(); ++i)
-		{
-			if ( data_[i] != 0U )
-				return false;
-		}
-		return true;
-	}
+        bool isNil() const;
 
 	operator std::string() const;
 
@@ -77,7 +68,8 @@ private: // members
 
 };
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+
 
 inline bool operator==(UUID const& lhs, UUID const& rhs)
 {
@@ -109,7 +101,7 @@ inline bool operator>=(UUID const& lhs, UUID const& rhs)
 	return !(lhs < rhs);
 }
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -14,8 +14,6 @@
 
 #include "eckit/types/UUID.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
 //-----------------------------------------------------------------------------
@@ -41,13 +39,25 @@ UUID::UUID(const std::string& s)
 	fromString(s);
 }
 
+UUID::~UUID() {}
+
+bool UUID::isNil() const
+{
+    for(size_t i=0; i < size(); ++i)
+    {
+        if ( data_[i] != 0U )
+            return false;
+    }
+    return true;
+}
+
 std::string UUID::asString() const
 {
-	std::string result;
-	result.reserve( hexSize() );
+    std::string result;
+    result.reserve( hexSize() );
 
-	std::size_t i=0;
-	for (UUID::const_iterator it = begin(); it != end(); ++it, ++i)
+    std::size_t i=0;
+    for (UUID::const_iterator it = begin(); it != end(); ++it, ++i)
 	{
 		const size_t hi = ((*it) >> 4) & 0x0F;
 		result += to_char(hi);

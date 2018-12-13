@@ -9,6 +9,7 @@
  */
 
 #include <iomanip>
+#include <iostream>
 
 #include "eckit/log/BigNum.h"
 

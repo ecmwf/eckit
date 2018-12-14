@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include "eckit/io/AIOHandle.h"
+#include "eckit/memory/Zero.h"
 
 #include "eckit/maths/Functions.h"
 

@@ -18,6 +18,7 @@
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/log/Timer.h"
 #include "eckit/os/SignalHandler.h"
+#include "eckit/memory/Zero.h"
 
 
 

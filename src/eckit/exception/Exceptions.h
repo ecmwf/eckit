@@ -15,13 +15,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "eckit/eckit.h"
-#include "eckit/eckit_version.h"
-
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/SavedStatus.h"
-
 
 namespace eckit {
 

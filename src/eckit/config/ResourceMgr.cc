@@ -9,6 +9,7 @@
  */
 
 #include <fstream>
+#include <cstring> // for strlen
 
 #include "eckit/config/ResourceMgr.h"
 
@@ -94,7 +95,7 @@ bool ResourceMgr::parse(const char* p)
         p = skip_spaces(p);
 
         // Remove trailing blanks
-        int l = strlen(p) - 1;
+        int l = ::strlen(p) - 1;
         while (l >= 0 && isspace(p[l])) l--;
 
 

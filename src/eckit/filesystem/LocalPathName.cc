@@ -19,6 +19,7 @@
 #include <pwd.h>
 
 #include <fstream>
+#include <cstring> // for strlen
 
 #include "LocalPathName.h"
 

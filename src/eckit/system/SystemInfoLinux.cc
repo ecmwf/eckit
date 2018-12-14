@@ -20,6 +20,7 @@
 #include <climits>
 #include <cstdlib>
 #include <fstream>
+#include <algorithm>
 
 #include "eckit/system/SystemInfoLinux.h"
 

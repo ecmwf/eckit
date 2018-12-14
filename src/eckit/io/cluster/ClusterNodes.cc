@@ -19,6 +19,7 @@
 #include "eckit/container/MappedArray.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/config/Resource.h"
+#include "eckit/memory/Zero.h"
 
 //-----------------------------------------------------------------------------
 

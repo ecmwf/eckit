@@ -16,8 +16,7 @@
 
 #include <algorithm>
 #include <cstdint>
-
-#include "eckit/eckit.h"
+#include <string>
 
 namespace eckit {
 

@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <cstring> // for memcpy
 
 #include "eckit/memory/MMap.h"
 

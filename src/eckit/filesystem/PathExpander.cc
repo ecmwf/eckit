@@ -10,13 +10,12 @@
 
 #include <fstream>
 
+#include "eckit/config/LibEcKit.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/config/LibEcKit.h"
-
+#include "eckit/memory/Zero.h"
 #include "eckit/parser/StringTools.h"
-
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 

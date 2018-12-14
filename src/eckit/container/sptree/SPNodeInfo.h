@@ -11,7 +11,8 @@
 #ifndef SPNodeInfo_H
 #define SPNodeInfo_H
 
-
+#include <vector>
+#include <iostream>
 
 namespace eckit {
 

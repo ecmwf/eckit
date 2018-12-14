@@ -14,15 +14,14 @@
 #ifndef eckit_Types_h
 #define eckit_Types_h
 
-#include <set>
-#include <vector>
-#include <map>
-#include <cstddef>
-#include <utility>
 #include <array>
+#include <cstddef>
 #include <iostream>
-
-#include "eckit/eckit.h"
+#include <iterator>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
 
 #include "eckit/runtime/TaskID.h" // to be removed
 
@@ -62,6 +61,14 @@ public:
 	void push_back(const T&);
 	output_list(std::ostream&);
 	~output_list();
+};
+
+struct output_iterator {
+  typedef std::output_iterator_tag iterator_category;
+  typedef void                value_type;
+  typedef void                difference_type;
+  typedef void                pointer;
+  typedef void                reference;
 };
 
 template<class T>

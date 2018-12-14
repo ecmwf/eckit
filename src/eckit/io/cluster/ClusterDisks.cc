@@ -25,6 +25,7 @@
 #include "eckit/parser/JSON.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/thread/AutoLock.h"
+#include "eckit/memory/Zero.h"
 
 
 namespace eckit {

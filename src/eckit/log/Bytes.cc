@@ -16,7 +16,6 @@
 #include "eckit/log/Timer.h"
 #include "eckit/exception/Exceptions.h"
 
-
 namespace eckit {
 
 

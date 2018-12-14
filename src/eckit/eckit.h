@@ -13,35 +13,6 @@
 
 #include "eckit/eckit_config.h"
 
-//-----------------------------------------------------------------------------
-
-/* POSIX */
-
-#include <cstring>  // for memset
-
-//-----------------------------------------------------------------------------
-
-/* STL */
-
-// #include <set>
-// #include <map>
-// #include <list>
-// #include <vector>
-// #include <stack>
-// #include <queue>
-// #include <algorithm>
-// #include <memory>
-// #include <numeric>
-
-// #include <iostream>
-// #include <iomanip>
-// #include <fstream>
-// #include <new>
-// #include <sstream>
-
-#include <iterator>  // for std::output_iterator_tag
-//#include <iosfwd>
-
 //--------------------------------------------------------------------------------------------------
 
 #if (!defined ECKIT_HAVE_MAP_ANONYMOUS) && (defined ECKIT_HAVE_MAP_ANON)
@@ -57,23 +28,6 @@
 #ifndef NUMBER
 #define NUMBER(x) (sizeof(x)/sizeof(x[0]))
 #endif
-
-//--------------------------------------------------------------------------------------------------
-
-namespace eckit {
-
-struct output_iterator {
-  typedef std::output_iterator_tag iterator_category;
-  typedef void                value_type;
-  typedef void                difference_type;
-  typedef void                pointer;
-  typedef void                reference;
-};
-
-template<class T>
-inline void zero(T& p) { ::memset(&p,0,sizeof(T)); }
-
-} // namespace eckit
 
 //--------------------------------------------------------------------------------------------------
 

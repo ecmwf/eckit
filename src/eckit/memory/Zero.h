@@ -8,29 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file SavedStatus.h
-/// @author Tiago Quintino
+///@author Baudouin Raoult
+///@author Tiago Quintino
+///@date   Dec 2018
 
-#ifndef eckit_log_SavedStatus_h
-#define eckit_log_SavedStatus_h
+#ifndef eckit_memory_Zero_h
+#define eckit_memory_Zero_h
 
-#include <string>
 
+#include <cstring>  // for memset
 
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-/// Saves and Restores Monitor status line
-class SavedStatus {
-    std::string status_;
-public:
-    SavedStatus();
-    ~SavedStatus();
-};
-
-//-----------------------------------------------------------------------------
+template<class T>
+inline void zero(T& p) { ::memset(&p, 0, sizeof(T)); }
 
 } // namespace eckit
 

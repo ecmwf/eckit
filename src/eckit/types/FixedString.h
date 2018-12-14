@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <string>
 
-#include "eckit/eckit.h"
+#include "eckit/memory/Zero.h"
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {

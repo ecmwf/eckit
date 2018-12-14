@@ -651,7 +651,8 @@ memory/MapAllocator.h
 memory/MapAllocator.cc
 memory/NonCopyable.h
 memory/NonCopyable.cc
-memory/ScopedPtr.h )
+memory/ScopedPtr.h
+memory/Zero.h )
 
 list( APPEND eckit_compat_srcs
 compat/Inited.h

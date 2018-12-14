@@ -11,9 +11,10 @@
 #include <cctype>
 #include <algorithm>
 
-#include "eckit/exception/Exceptions.h"
 
 #include "eckit/types/UUID.h"
+#include "eckit/memory/Zero.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 

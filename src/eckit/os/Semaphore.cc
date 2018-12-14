@@ -12,9 +12,8 @@
 #include <errno.h>
 #include <sys/sem.h>
 
+#include "eckit/eckit.h"
 #include "eckit/os/Semaphore.h"
-
-
 
 namespace eckit {
 

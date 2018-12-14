@@ -9,11 +9,11 @@
  */
 
 
+#include <cstring>
+
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/maths/Functions.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -81,7 +81,7 @@ MemoryHandle::MemoryHandle(void* address, size_t size):
 
 
 MemoryHandle::MemoryHandle(size_t size, bool grow):
-    address_(0),
+    address_(nullptr),
     size_(0),
     capacity_(size),
     opened_(false),

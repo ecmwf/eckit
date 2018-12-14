@@ -9,6 +9,9 @@
  */
 
 
+#include <cstring>
+
+
 #include "eckit/io/AsyncHandle.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/AutoLock.h"

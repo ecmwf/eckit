@@ -14,11 +14,13 @@
 #ifndef eckit_BufferCache_h
 #define eckit_BufferCache_h
 
-#include "eckit/eckit.h"
+#include <cstring>
+#include <cstdint>
+#include <ctime>
+#include <iosfwd>
 
 #include "eckit/io/ResizableBuffer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

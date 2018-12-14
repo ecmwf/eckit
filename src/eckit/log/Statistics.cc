@@ -13,6 +13,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iomanip>
+#include <cstring>
 
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"

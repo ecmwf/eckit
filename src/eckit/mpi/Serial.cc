@@ -12,8 +12,10 @@
 
 #include <errno.h>
 #include <unistd.h>
+
 #include <limits>
 #include <deque>
+#include <cstring>
 
 #include "eckit/runtime/Main.h"
 #include "eckit/exception/Exceptions.h"

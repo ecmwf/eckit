@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <iomanip>
 
 #include "eckit/config/Resource.h"

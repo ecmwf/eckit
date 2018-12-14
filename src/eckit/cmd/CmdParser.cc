@@ -10,6 +10,7 @@
 
 #include <iomanip>
 #include <stack>
+#include <cstring>
 
 #include "eckit/cmd/CmdParser.h"
 #include "eckit/cmd/CmdResource.h"

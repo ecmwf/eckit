@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"

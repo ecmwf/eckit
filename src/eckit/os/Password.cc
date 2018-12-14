@@ -9,11 +9,12 @@
  */
 
 #include <pwd.h>
+#include <cstring>
 
 #include "eckit/log/Log.h"
 #include "eckit/os/Password.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
@@ -53,7 +54,7 @@ std::string Password::salt(const std::string& user) {
     }
 
     char salt[3];
-    strncpy(salt, p.pw_passwd, 2);
+    ::strncpy(salt, p.pw_passwd, 2);
     salt[2] = 0;
 
     return salt;

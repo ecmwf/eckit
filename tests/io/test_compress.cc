@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/io/Compress.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/testing/Test.h"

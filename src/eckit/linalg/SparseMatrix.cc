@@ -14,9 +14,9 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <cstring>
 
-// For endianness
-#include "eckit/eckit.h"
+#include "eckit/eckit.h" // for endianness
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"

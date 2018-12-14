@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/MultiHandle.h"

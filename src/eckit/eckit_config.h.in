@@ -44,7 +44,4 @@
 #cmakedefine ECKIT_HAVE_CURL
 #cmakedefine ECKIT_HAVE_JEMALLOC
 
-#define ECKIT_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
-#define ECKIT_BUILD_DIR      "@CMAKE_BINARY_DIR@"
-
 #endif // eckit_config_h

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
+#include <cstring>
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/persist/Exporter.h"

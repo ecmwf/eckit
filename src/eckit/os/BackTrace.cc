@@ -9,6 +9,7 @@
  */
 
 #include <unistd.h>
+#include <cstring>
 
 #include "eckit/eckit.h"
 

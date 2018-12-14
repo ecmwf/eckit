@@ -10,6 +10,7 @@
 
 #include <unistd.h>
 #include <pthread.h>
+#include <cstring>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"

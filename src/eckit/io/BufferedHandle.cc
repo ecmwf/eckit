@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
 
 #include "eckit/io/BufferedHandle.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

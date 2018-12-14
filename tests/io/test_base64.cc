@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/io/Base64.h"
 #include "eckit/io/MemoryHandle.h"
 

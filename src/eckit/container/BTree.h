@@ -16,8 +16,7 @@
 
 #include <sys/stat.h>
 #include <fcntl.h>
-
-#include "eckit/eckit.h"
+#include <cstring>
 
 #include "eckit/container/BTree.h"
 #include "eckit/filesystem/PathName.h"

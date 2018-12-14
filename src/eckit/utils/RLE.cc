@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <vector>
+
 #include "eckit/serialisation/Stream.h"
 
 

@@ -14,7 +14,8 @@
 #ifndef eckit_MemoryPool_h
 #define eckit_MemoryPool_h
 
-#include "eckit/eckit.h"
+#include <cstddef>
+#include <iosfwd>
 
 #include "eckit/memory/NonCopyable.h"
 

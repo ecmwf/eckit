@@ -12,6 +12,7 @@
 #include <limits>
 #include <utility>
 
+#include "eckit/eckit.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
 #include "eckit/exception/Exceptions.h"

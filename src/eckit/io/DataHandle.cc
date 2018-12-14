@@ -9,6 +9,7 @@
  */
 
 #include <cmath>
+#include <cstring>
 
 #include "eckit/eckit_ecbuild_config.h"
 

@@ -13,6 +13,7 @@
 /// @date   May 2016
 
 #include <iostream>
+#include <cstring>
 
 #include "eckit/system/MemoryInfo.h"
 #include "eckit/memory/MemoryPool.h"

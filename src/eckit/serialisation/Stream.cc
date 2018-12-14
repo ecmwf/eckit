@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
 #include <assert.h>
 #include <stdint.h>
 #include <sys/types.h>

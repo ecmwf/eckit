@@ -16,6 +16,7 @@
 
 #include <unistd.h>
 #include <list>
+#include <algorithm>
 
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"

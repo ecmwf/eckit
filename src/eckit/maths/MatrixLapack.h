@@ -38,6 +38,8 @@
 #define eckit_maths_MatrixLapack_h
 
 #include <cmath>
+#include <cstring>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Lapack.h"
 

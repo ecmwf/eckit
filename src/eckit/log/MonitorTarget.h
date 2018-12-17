@@ -14,6 +14,7 @@
 #ifndef eckit_log_MonitorTarget_h
 #define eckit_log_MonitorTarget_h
 
+#include <iosfwd>
 #include <utility>
 
 #include "eckit/log/WrapperTarget.h"
@@ -23,25 +24,22 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class MonitorTarget : public WrapperTarget {
-
 public:
-
     MonitorTarget(LogTarget* target = 0);
 
     virtual ~MonitorTarget();
 
 private:
-
     virtual void write(const char* start, const char* end);
 
-    virtual void writePrefix(){}
-    virtual void writeSuffix(){}
+    virtual void writePrefix() {}
+    virtual void writeSuffix() {}
 
-    void print(std::ostream& s) const { s << "MonitorTarget()"; }
+    void print(std::ostream& s) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -9,8 +9,8 @@
  */
 
 
-#include "eckit/value/Value.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 
 #include "eckit/testing/Test.h"
 #include "test_value_helper.h"
@@ -28,9 +28,9 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-CASE( "Test casting values into ValueList" ) {
-    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Test casting values into ValueList") {
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just
+    // test what it does when wrapped.
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -40,8 +40,10 @@ CASE( "Test casting values into ValueList" ) {
     Value val(vl);
 
     // Extract the ValueList
-    // n.b. We cannot compare eqality of ValueLists, as the internal Values have been copied, and as a result the
-    //      operator== will return false, as it depends only on the memory address of the internal Content.
+    // n.b. We cannot compare eqality of ValueLists, as the internal Values have been copied, and as
+    // a result the
+    //      operator== will return false, as it depends only on the memory address of the internal
+    //      Content.
 
     ValueList casted_vl = val;
     EXPECT(casted_vl[0].as<long long>() == 123);
@@ -59,9 +61,9 @@ CASE( "Test casting values into ValueList" ) {
     EXPECT_THROWS_AS(val.as<ValueMap>(), BadConversion);
 }
 
-CASE( "Test type knowledge for ValueList" ) {
-    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Test type knowledge for ValueList") {
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just
+    // test what it does when wrapped.
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -83,9 +85,9 @@ CASE( "Test type knowledge for ValueList" ) {
     EXPECT(!val.isDateTime());
 }
 
-CASE( "Test comparisons by value for ValueList" ) {
-    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Test comparisons by value for ValueList") {
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just
+    // test what it does when wrapped.
     ValueList vl;
     vl.push_back(123);
 
@@ -107,24 +109,24 @@ CASE( "Test comparisons by value for ValueList" ) {
 
     // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(val1.compare(Value(true))                < 0);
-    EXPECT(val1.compare(Value(1))                   < 0);
-    EXPECT(val1.compare(Value(1234.5))              < 0);
-    EXPECT(val1.compare(Value("test str"))          < 0);
-    EXPECT(val1.compare(Value())                    < 0);
-    EXPECT(val1.compare(val1)                      == 0);
-    EXPECT(val1.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val1.compare(Value(Time(1000)))          > 0);
-    EXPECT(val1.compare(Value(DateTime()))          > 0);
-    EXPECT(val1.compare(Value::makeOrderedMap())    > 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value(1)) < 0);
+    EXPECT(val1.compare(Value(1234.5)) < 0);
+    EXPECT(val1.compare(Value("test str")) < 0);
+    EXPECT(val1.compare(Value()) < 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val1.compare(Value(Time(1000))) > 0);
+    EXPECT(val1.compare(Value(DateTime())) > 0);
+    EXPECT(val1.compare(Value::makeOrderedMap()) > 0);
 
     /// This is currently correct in MapContent.h
     /// EXPECT(Value(Date(2016, 3, 30)).compare(val1) < 0);
 }
 
-CASE( "Test that indexing has the correct semantics for ValueList" ) {
-    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Test that indexing has the correct semantics for ValueList") {
+    // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just
+    // test what it does when wrapped.
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -193,7 +195,7 @@ CASE( "Test that indexing has the correct semantics for ValueList" ) {
     EXPECT_THROWS_AS(val.contains(Value(Date(2016, 3, 31))), BadConversion);
 }
 
-CASE( "Test that addititon has the correct semantics for ValueList" ) {
+CASE("Test that addititon has the correct semantics for ValueList") {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -247,7 +249,7 @@ CASE( "Test that addititon has the correct semantics for ValueList" ) {
     EXPECT(val[3].as<Date>() == Date(2016, 3, 31));
 }
 
-CASE( "Test that subtraction is invalid for ValueLists" ) {
+CASE("Test that subtraction is invalid for ValueLists") {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -278,7 +280,7 @@ CASE( "Test that subtraction is invalid for ValueLists" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that multiplication is invalid for ValueList" ) {
+CASE("Test that multiplication is invalid for ValueList") {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -309,7 +311,7 @@ CASE( "Test that multiplication is invalid for ValueList" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that division is invalid for ValueList" ) {
+CASE("Test that division is invalid for ValueList") {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -340,7 +342,7 @@ CASE( "Test that division is invalid for ValueList" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that modulo is an invalid operator for ValueList" ) {
+CASE("Test that modulo is an invalid operator for ValueList") {
     ValueList vl;
     vl.push_back(123);
     vl.push_back("abc");
@@ -371,7 +373,7 @@ CASE( "Test that modulo is an invalid operator for ValueList" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that head/tail work correctly for ValueList" ) {
+CASE("Test that head/tail work correctly for ValueList") {
     ValueList vl;
     vl.push_back(123);
     vl.push_back(666.66);
@@ -389,7 +391,7 @@ CASE( "Test that head/tail work correctly for ValueList" ) {
 //----------------------------------------------------------------------------------------------------------------------
 // Test list helper functions
 
-CASE( "Test creation of lists in Value" ) {
+CASE("Test creation of lists in Value") {
     // Test the trivial version
 
     Value val1 = Value::makeList();
@@ -434,8 +436,9 @@ CASE( "Test creation of lists in Value" ) {
     EXPECT(val4[0].as<long long>() == 1234);
 }
 
-CASE( "Test automatic creation of valuelists from vectors" ) {
-    // n.b. This is templated, so will work for a std::vector<T> for any T for which a Value can be constructed.
+CASE("Test automatic creation of valuelists from vectors") {
+    // n.b. This is templated, so will work for a std::vector<T> for any T for which a Value can be
+    // constructed.
 
     std::vector<int> vint;
     for (int i = 99; i > 0; i -= 11)
@@ -448,8 +451,9 @@ CASE( "Test automatic creation of valuelists from vectors" ) {
     EXPECT(val[4].as<long long>() == 55);
 }
 
-CASE( "Test automatic creation of valuelists from lists" ) {
-    // n.b. This is templated, so will work for a std::list<T> for any T for which a Value can be constructed.
+CASE("Test automatic creation of valuelists from lists") {
+    // n.b. This is templated, so will work for a std::list<T> for any T for which a Value can be
+    // constructed.
 
     std::list<int> lint;
     for (int i = 99; i > 0; i -= 11)
@@ -462,9 +466,8 @@ CASE( "Test automatic creation of valuelists from lists" ) {
     EXPECT(val[4].as<long long>() == 55);
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     ValueList vl;
     vl.push_back(123);
@@ -476,7 +479,7 @@ CASE( "Hash of a value" ) {
 
     v.hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "3fce9e43c4ad2998b6a706eb28a7c060");
 }

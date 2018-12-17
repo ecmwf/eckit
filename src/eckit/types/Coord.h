@@ -13,11 +13,10 @@
 #ifndef eckit_Coord_h
 #define eckit_Coord_h
 
-#include <vector>
 #include <iosfwd>
+#include <vector>
 
 #include "eckit/serialisation/Stream.h"
-
 
 
 namespace eckit {
@@ -28,44 +27,42 @@ class DumpLoad;
 
 class Coord {
 public:
+    friend std::ostream& operator<<(std::ostream& s, const Coord& x) {
+        x.print(s);
+        return s;
+    }
 
-	friend std::ostream& operator<<(std::ostream& s,const Coord& x)
-		{ x.print(s); return s; }
+    friend Stream& operator>>(Stream& s, Coord& x) { return s >> x.value_; }
 
-	friend Stream& operator>>(Stream& s,Coord& x)
-		{ return s >> x.value_; }
+    // -- Contructors
 
-// -- Contructors
-
-	Coord(double l = 0) : value_(l) {}
-	Coord(const Coord& other) : value_(other.value_) {}
+    Coord(double l = 0) : value_(l) {}
+    Coord(const Coord& other) : value_(other.value_) {}
 
 
-// -- Operators
+    // -- Operators
 
-	Coord& operator=(const Coord& other)
-		{ value_ = other.value_; return *this;}
+    Coord& operator=(const Coord& other) {
+        value_ = other.value_;
+        return *this;
+    }
 
-	Coord operator+(const Coord& other) const
-		{ return Coord(value_ + other.value_);}
+    Coord operator+(const Coord& other) const { return Coord(value_ + other.value_); }
 
-	Coord& operator+=(const Coord& other)
-		{ value_ += other.value_; return *this;}
+    Coord& operator+=(const Coord& other) {
+        value_ += other.value_;
+        return *this;
+    }
 
-	bool operator==(const Coord& other) const
-		{ return value_ == other.value_; }
+    bool operator==(const Coord& other) const { return value_ == other.value_; }
 
-	bool operator<(const Coord& other) const
-		{ return value_ < other.value_; }
+    bool operator<(const Coord& other) const { return value_ < other.value_; }
 
-	bool operator<=(const Coord& other) const
-		{ return value_ <= other.value_; }
+    bool operator<=(const Coord& other) const { return value_ <= other.value_; }
 
-	bool operator>(const Coord& other) const
-		{ return value_ > other.value_; }
+    bool operator>(const Coord& other) const { return value_ > other.value_; }
 
-	bool operator>=(const Coord& other) const
-		{ return value_ >= other.value_; }
+    bool operator>=(const Coord& other) const { return value_ >= other.value_; }
 
 // --
 #if 0
@@ -73,26 +70,24 @@ public:
 		{ return value_ - other.value_;}
 #endif
 
-// -- Methods
+    // -- Methods
 
-	void print(std::ostream& s) const { s << value_; }
+    void print(std::ostream& s) const;
 
-	void dump(DumpLoad&) const;
-	void load(DumpLoad&);
+    void dump(DumpLoad&) const;
+    void load(DumpLoad&);
 
-// -- Class methods
+    // -- Class methods
 
-	double value() { return value_; }
+    double value() { return value_; }
 
 protected:
+    // -- Members
+
+    double value_;
 
 
-// -- Members
-
-	double value_;
-
-
-	friend class Area;
+    friend class Area;
 };
 
 typedef std::vector<Coord> CoordList;
@@ -101,30 +96,26 @@ typedef std::vector<Coord> CoordList;
 // Longitude
 //---------------------------------------------------------
 
-class Longitude: public Coord {
+class Longitude : public Coord {
 public:
+    // -- Contructors
 
-// -- Contructors
-
-	Longitude(double l = 0);
-
+    Longitude(double l = 0);
 };
 
 //---------------------------------------------------------
 // Latitude
 //---------------------------------------------------------
 
-class Latitude: public Coord {
+class Latitude : public Coord {
 public:
+    // -- Contructors
 
-// -- Contructors
-
-	Latitude(double l = 0);
-
+    Latitude(double l = 0);
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -10,6 +10,7 @@
 
 #include <bitset>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/BitIO.h"
 #include "eckit/io/DataHandle.h"
 
@@ -19,7 +20,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BitIO::BitIO(DataHandle& handle, bool padded):
+BitIO::BitIO(DataHandle& handle, bool padded) :
     handle_(handle),
     buffer_(0),
     used_(0),
@@ -27,9 +28,7 @@ BitIO::BitIO(DataHandle& handle, bool padded):
     write_(false),
     eof_(false),
     padded_(padded),
-    opened_(false) {
-
-}
+    opened_(false) {}
 
 BitIO::~BitIO() {
     if (write_) {
@@ -40,15 +39,14 @@ BitIO::~BitIO() {
     }
 }
 
-static unsigned char masks[] =  {
+static unsigned char masks[] = {
     0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF,
 };
 
 
 void BitIO::write(size_t code, size_t nbits) {
-
     const size_t BITS = sizeof(buffer_) * 8;
-    write_ = true;
+    write_            = true;
 
     if (!opened_) {
         handle_.openForWrite(0);
@@ -56,7 +54,6 @@ void BitIO::write(size_t code, size_t nbits) {
     }
 
     while (nbits) {
-
         if (used_ == BITS) {
             flush();
             ASSERT(used_ == 0);
@@ -72,9 +69,7 @@ void BitIO::write(size_t code, size_t nbits) {
         used_ += s;
         nbits -= s;
         bits_ += s;
-
     }
-
 }
 
 
@@ -89,12 +84,11 @@ void BitIO::flush() {
     // std::cout << "bits " << bitCount() << std::endl;
 
     size_t nbits = used_;
-// ccc-cccc.cccc
-    while (nbits)
-    {
+    // ccc-cccc.cccc
+    while (nbits) {
         size_t s = std::min(nbits, size_t(8));
 
-        unsigned char c =  (buffer_ >> (nbits - s )) & masks[s];
+        unsigned char c = (buffer_ >> (nbits - s)) & masks[s];
 
         c <<= (8 - s);
 
@@ -108,11 +102,11 @@ void BitIO::flush() {
         ASSERT(handle_.write(&c, 1) == 1);
 
         // buffer_ <<= s;
-        nbits    -= s;
+        nbits -= s;
     }
 
     buffer_ = 0;
-    used_ = 0;
+    used_   = 0;
 }
 
 
@@ -120,27 +114,24 @@ void BitIO::flush() {
 
 
 size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
-
     if (!opened_) {
         handle_.openForRead();
         opened_ = true;
     }
 
-    size_t result  = 0;
+    size_t result     = 0;
     const size_t BITS = sizeof(buffer_) * 8;
-    size_t count = 0;
-    size_t asked = nbits;
+    size_t count      = 0;
+    size_t asked      = nbits;
 
     while (nbits) {
-
         if (used_ == 0) {
-
             if (!eof_) {
                 buffer_ = 0;
 
                 for (size_t i = 0; i < sizeof(buffer_); i++) {
                     unsigned char c;
-                    if (handle_.read(&c, 1) <= 0 ) {
+                    if (handle_.read(&c, 1) <= 0) {
                         eof_ = true;
                         break;
                     }
@@ -152,7 +143,6 @@ size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
             }
 
             if (used_ == 0) {
-
                 if (padded_ && count > 0) {
                     padded_ = false;
                     return result << (asked - count);
@@ -178,13 +168,9 @@ size_t BitIO::read(size_t nbits, size_t EOF_MARKER) {
         used_ -= s;
         nbits -= s;
         count += s;
-
-
     }
 
     return result;
-
-
 }
 
 size_t BitIO::bitCount() const {
@@ -198,4 +184,4 @@ size_t BitIO::byteCount() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,8 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Nil cast correctly in/out of Value" ) {
-
+CASE("Nil cast correctly in/out of Value") {
     Value val_nil;
 
     //
@@ -52,7 +50,7 @@ CASE( "Nil cast correctly in/out of Value" ) {
     // EXPECT_THROWS_AS(Offset(val_nil), BadConversion); // FIXME: These are valid
 }
 
-CASE( "Type knowledge is correct for nil" ) {
+CASE("Type knowledge is correct for nil") {
     Value val_nil;
 
     EXPECT(val_nil.isNil());
@@ -66,10 +64,9 @@ CASE( "Type knowledge is correct for nil" ) {
     EXPECT(!val_nil.isDate());
     EXPECT(!val_nil.isTime());
     EXPECT(!val_nil.isDateTime());
-
 }
 
-CASE( "Nil compare with other nils, and are well ordered to other Value" ) {
+CASE("Nil compare with other nils, and are well ordered to other Value") {
     Value val_nil1;
     Value val_nil2;
 
@@ -81,21 +78,19 @@ CASE( "Nil compare with other nils, and are well ordered to other Value" ) {
     // Check comparisons with other types of data (see test_value_typeordering).
 
     Value val;
-    EXPECT(val.compare(Value(true))                < 0);
-    EXPECT(val.compare(Value(1))                   < 0);
-    EXPECT(val.compare(Value(1234.5))              < 0);
-    EXPECT(val.compare(Value("test str"))          < 0);
-    EXPECT(val.compare(Value())                   == 0);
-    EXPECT(val.compare(Value::makeList())          > 0);
-    EXPECT(val.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val.compare(Value(Time(1000)))          > 0);
-    EXPECT(val.compare(Value(DateTime()))          > 0);
-    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
-
+    EXPECT(val.compare(Value(true)) < 0);
+    EXPECT(val.compare(Value(1)) < 0);
+    EXPECT(val.compare(Value(1234.5)) < 0);
+    EXPECT(val.compare(Value("test str")) < 0);
+    EXPECT(val.compare(Value()) == 0);
+    EXPECT(val.compare(Value::makeList()) > 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val.compare(Value(Time(1000))) > 0);
+    EXPECT(val.compare(Value(DateTime())) > 0);
+    EXPECT(val.compare(Value::makeOrderedMap()) > 0);
 }
 
-CASE( "Indexing is not a valid operation for nil" ) {
-
+CASE("Indexing is not a valid operation for nil") {
     Value val_nil;
 
     EXPECT_THROWS_AS(val_nil["idx"], BadOperator);
@@ -106,15 +101,13 @@ CASE( "Indexing is not a valid operation for nil" ) {
     // Test the matching contains() function too
 
     // These should probably throw BadOperator, instead they just return false
-    //EXPECT_THROWS_AS(val_nil.contains("idx"), BadOperator);
-    //EXPECT_THROWS_AS(val_nil.contains(std::string("idx")), BadOperator);
-    //EXPECT_THROWS_AS(val_nil.contains(123), BadOperator);
-    //EXPECT_THROWS_AS(val_nil.contains(Value(123)), BadOperator);
-
+    // EXPECT_THROWS_AS(val_nil.contains("idx"), BadOperator);
+    // EXPECT_THROWS_AS(val_nil.contains(std::string("idx")), BadOperator);
+    // EXPECT_THROWS_AS(val_nil.contains(123), BadOperator);
+    // EXPECT_THROWS_AS(val_nil.contains(Value(123)), BadOperator);
 }
 
-CASE( "Addition is not a valid operation for nil" ) {
-
+CASE("Addition is not a valid operation for nil") {
     Value val;
 
     EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
@@ -142,8 +135,7 @@ CASE( "Addition is not a valid operation for nil" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Subtraction is not a valid operation for nil" ) {
-
+CASE("Subtraction is not a valid operation for nil") {
     Value val;
 
     EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
@@ -171,8 +163,7 @@ CASE( "Subtraction is not a valid operation for nil" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Multiplication is not a valid operation for nil" ) {
-
+CASE("Multiplication is not a valid operation for nil") {
     Value val;
 
     EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
@@ -200,8 +191,7 @@ CASE( "Multiplication is not a valid operation for nil" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Division is not a valid operation for nil" ) {
-
+CASE("Division is not a valid operation for nil") {
     Value val;
 
     EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
@@ -229,8 +219,7 @@ CASE( "Division is not a valid operation for nil" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "The modulo operator is not a valid operation for nil" ) {
-
+CASE("The modulo operator is not a valid operation for nil") {
     Value val;
 
     EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
@@ -258,7 +247,7 @@ CASE( "The modulo operator is not a valid operation for nil" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Head/tail tests are disabled for nil" ) {
+CASE("Head/tail tests are disabled for nil") {
     Value val;
 
     /// EXPECT_THROWS_AS(val.head(), AssertationError);
@@ -266,13 +255,12 @@ CASE( "Head/tail tests are disabled for nil" ) {
     EXPECT(true);
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     Value().hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "d41d8cd98f00b204e9800998ecf8427e");
 }

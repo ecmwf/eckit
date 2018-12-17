@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstdio>
 #include <errno.h>
 #include <sys/sem.h>
+#include <cstdio>
 
 #include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/os/Semaphore.h"
 
 namespace eckit {
@@ -20,125 +21,107 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct sembuf _lock[] = {
-	{ 0, 0,  SEM_UNDO }, /* test */
-	{ 0, 1,  SEM_UNDO }, /* lock */
+    {0, 0, SEM_UNDO}, /* test */
+    {0, 1, SEM_UNDO}, /* lock */
 };
 
 struct sembuf _unlock[] = {
-	{ 0, -1, SEM_UNDO }, /* ulck */
+    {0, -1, SEM_UNDO}, /* ulck */
 };
 
-Semaphore::Semaphore(const PathName& name,int count):
-    semaphore_(-1),
-	count_(count),
-	level_(0)
-{
-	key_t key = ftok(name.localPath(),1);
+Semaphore::Semaphore(const PathName& name, int count) : semaphore_(-1), count_(count), level_(0) {
+    key_t key = ftok(name.localPath(), 1);
 
-	if(key == key_t(-1) && errno == ENOENT)
-	{
-		name.touch();
-		key = ftok(name.localPath(),1);
-	}
+    if (key == key_t(-1) && errno == ENOENT) {
+        name.touch();
+        key = ftok(name.localPath(), 1);
+    }
 
-	if(key == key_t(-1))
-		throw FailedSystemCall(std::string("ftok(") + name + std::string(")"));
+    if (key == key_t(-1))
+        throw FailedSystemCall(std::string("ftok(") + name + std::string(")"));
 
     /// @note cannot use Log::debug() of SYSCALL here, because Log may not yet be initialized
-    // std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex << key << dec << std::endl;
-	if( (semaphore_ = semget(key, count_, 0666 | IPC_CREAT)) < 0 )
+    // std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex <<
+    // key << dec << std::endl;
+    if ((semaphore_ = semget(key, count_, 0666 | IPC_CREAT)) < 0)
         perror("semget failed"), throw FailedSystemCall("semget");
 }
 
-Semaphore::~Semaphore()
-{
-	ASSERT(level_ == 0);
+Semaphore::~Semaphore() {
+    ASSERT(level_ == 0);
 }
 
-void Semaphore::lock(void)
-{
-	mutex_.lock();
-	if(++level_ == 1)
-		while(semop(semaphore_,_lock,NUMBER(_lock)) < 0)
-		{
-			if(errno != EINTR)
-				throw FailedSystemCall("semop lock");
-		}
+void Semaphore::lock(void) {
+    mutex_.lock();
+    if (++level_ == 1)
+        while (semop(semaphore_, _lock, NUMBER(_lock)) < 0) {
+            if (errno != EINTR)
+                throw FailedSystemCall("semop lock");
+        }
 }
 
-void Semaphore::unlock(void)
-{
-	ASSERT(level_ > 0);
+void Semaphore::unlock(void) {
+    ASSERT(level_ > 0);
 
-	if(--level_ == 0)
-		while(semop(semaphore_,_unlock,NUMBER(_unlock)) < 0)
-		{
-			if(errno != EINTR)
-				throw FailedSystemCall("semop unlock");
-		}
+    if (--level_ == 0)
+        while (semop(semaphore_, _unlock, NUMBER(_unlock)) < 0) {
+            if (errno != EINTR)
+                throw FailedSystemCall("semop unlock");
+        }
 
-	mutex_.unlock();
+    mutex_.unlock();
 }
 
-bool Semaphore::test(short unsigned int n)
-{
-	struct sembuf test = { n, 0 , IPC_NOWAIT};
+bool Semaphore::test(short unsigned int n) {
+    struct sembuf test = {n, 0, IPC_NOWAIT};
 
-	if(semop(semaphore_,&test,1) == 0)
-		return false;  // Free
+    if (semop(semaphore_, &test, 1) == 0)
+        return false;  // Free
 
-	if(errno == EAGAIN)
-		return true;  // in use
+    if (errno == EAGAIN)
+        return true;  // in use
 
-	throw FailedSystemCall("semop test");
+    throw FailedSystemCall("semop test");
 }
 
-pid_t  Semaphore::getpid() const
-{
+pid_t Semaphore::getpid() const {
     int val;
-    SYSCALL(val = semctl(semaphore_,0,GETPID));
+    SYSCALL(val = semctl(semaphore_, 0, GETPID));
     return val;
 }
 
-void Semaphore::set(int val,int n)
-{
-	SYSCALL(semctl(semaphore_,n,SETVAL,val));
+void Semaphore::set(int val, int n) {
+    SYSCALL(semctl(semaphore_, n, SETVAL, val));
 }
 
 
-int Semaphore::get(int n) const
-{
-	int val;
-	SYSCALL(val = semctl(semaphore_,n,GETVAL,0));
-	return val;
+int Semaphore::get(int n) const {
+    int val;
+    SYSCALL(val = semctl(semaphore_, n, GETVAL, 0));
+    return val;
 }
 
-void Semaphore::raise(short unsigned int n)
-{
-    struct sembuf op = { n,1,SEM_UNDO};
-    SYSCALL(semop(semaphore_,&op,1));
+void Semaphore::raise(short unsigned int n) {
+    struct sembuf op = {n, 1, SEM_UNDO};
+    SYSCALL(semop(semaphore_, &op, 1));
 }
 
-void Semaphore::raise(short unsigned int n, short v)
-{
-    struct sembuf op = {n, v,SEM_UNDO};
-    SYSCALL(semop(semaphore_,&op,1));
+void Semaphore::raise(short unsigned int n, short v) {
+    struct sembuf op = {n, v, SEM_UNDO};
+    SYSCALL(semop(semaphore_, &op, 1));
 }
 
-void Semaphore::lower(short unsigned int n)
-{
-    struct sembuf op = { n,-1,SEM_UNDO};
-    SYSCALL(semop(semaphore_,&op,1));
+void Semaphore::lower(short unsigned int n) {
+    struct sembuf op = {n, -1, SEM_UNDO};
+    SYSCALL(semop(semaphore_, &op, 1));
 }
 
-void Semaphore::lower(short unsigned int n, short v)
-{
-    short d = -v;
-    struct sembuf op = {n, d,SEM_UNDO};
-    SYSCALL(semop(semaphore_,&op,1));
+void Semaphore::lower(short unsigned int n, short v) {
+    short d          = -v;
+    struct sembuf op = {n, d, SEM_UNDO};
+    SYSCALL(semop(semaphore_, &op, 1));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

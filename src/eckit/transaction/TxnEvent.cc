@@ -8,42 +8,36 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/transaction/TxnEvent.h"
+#include <ostream>
 
+#include "eckit/transaction/TxnEvent.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec TxnEvent::classSpec_ = {&Streamable::classSpec(),"TxnEvent",};
+ClassSpec TxnEvent::classSpec_ = {
+    &Streamable::classSpec(),
+    "TxnEvent",
+};
 Reanimator<TxnEvent> TxnEvent::reanimator_;
 
-TxnEvent::TxnEvent():
-	txnID_(0)
-{
+TxnEvent::TxnEvent() : txnID_(0) {}
+
+TxnEvent::TxnEvent(Stream& s) : txnID_(0) {
+    s >> txnID_;
 }
 
-TxnEvent::TxnEvent(Stream& s):
-	txnID_(0)
-{
-	s >> txnID_;
+void TxnEvent::encode(Stream& s) const {
+    s << txnID_;
 }
 
-void TxnEvent::encode(Stream& s) const
-{
-	s << txnID_;
-}
+TxnEvent::~TxnEvent() {}
 
-TxnEvent::~TxnEvent()
-{
-}
-
-void TxnEvent::print(std::ostream& s) const
-{
-	s << "TxnEvent " << txnID_;
+void TxnEvent::print(std::ostream& s) const {
+    s << "TxnEvent " << txnID_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

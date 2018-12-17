@@ -16,8 +16,9 @@
 
 #include <stdint.h>
 
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/os/Semaphore.h"
 
 
@@ -27,47 +28,45 @@ namespace eckit {
 
 // Used to std::map an array to a file
 
-template<class T>
+template <class T>
 class MappedArray : private NonCopyable {
 public:
+    // stl compatibility
 
-	// stl compatibility
+    typedef T* iterator;
+    typedef const T* const_iterator;
 
-	typedef T*       iterator;
-	typedef const T* const_iterator;
+    // -- Contructors
 
-// -- Contructors
+    MappedArray(const PathName&, unsigned long);
 
-	MappedArray(const PathName&,unsigned long);
+    // -- Destructor
 
-// -- Destructor
+    ~MappedArray();
 
-	~MappedArray();
+    // -- Methods
 
-// -- Methods
+    void sync();
+    void lock() { sem_.lock(); }
+    void unlock() { sem_.unlock(); }
 
-	void sync();
-	void lock()    { sem_.lock() ; }
-	void unlock()  { sem_.unlock();}
+    // stl compatibility
 
-	// stl compatibility
+    iterator begin() { return array_; }
+    iterator end() { return array_ + size_; }
+    const_iterator begin() const { return array_; }
+    const_iterator end() const { return array_ + size_; }
 
-	iterator begin()               { return array_;        }
-	iterator end()                 { return array_ + size_; }
-	const_iterator begin() const   { return array_;        }
-	const_iterator end()   const   { return array_ + size_; }
+    unsigned long size() { return size_; }
+    T& operator[](unsigned long n) { return array_[n]; }
 
-	unsigned long size()           { return size_;     }
-	T& operator[](unsigned long n) { return array_[n]; }
+private:  // members
+    Semaphore sem_;
+    void* map_;
+    int fd_;
 
-private: // members
-
-	Semaphore     sem_;
-	void*         map_;
-	int           fd_;
-
-	T*            array_;
-	unsigned long size_;
+    T* array_;
+    unsigned long size_;
 
     static unsigned long mapped_array_version() { return 1; }
 
@@ -75,16 +74,14 @@ private: // members
         uint32_t version_;
         uint32_t headerSize_;
         uint32_t elemSize_;
-        Header():
+        Header() :
             version_(mapped_array_version()),
             headerSize_(sizeof(Header)),
-            elemSize_(sizeof(T))
-        {}
-        void validate()
-        {
-            ASSERT(version_    == mapped_array_version());
+            elemSize_(sizeof(T)) {}
+        void validate() {
+            ASSERT(version_ == mapped_array_version());
             ASSERT(headerSize_ == sizeof(Header));
-            ASSERT(elemSize_   == sizeof(T));
+            ASSERT(elemSize_ == sizeof(T));
         }
     };
 };
@@ -92,7 +89,7 @@ private: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "MappedArray.cc"
 

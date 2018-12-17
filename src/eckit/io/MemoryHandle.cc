@@ -11,8 +11,9 @@
 
 #include <cstring>
 
-#include "eckit/io/MemoryHandle.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/MemoryHandle.h"
 #include "eckit/maths/Functions.h"
 
 namespace eckit {
@@ -25,7 +26,7 @@ Reanimator<MemoryHandle> MemoryHandle::reanimator_;
 #endif
 
 
-MemoryHandle::MemoryHandle(const Buffer& buffer):
+MemoryHandle::MemoryHandle(const Buffer& buffer) :
     address_(const_cast<Buffer&>(buffer)),
     size_(buffer.size()),
     capacity_(buffer.size()),
@@ -34,12 +35,10 @@ MemoryHandle::MemoryHandle(const Buffer& buffer):
     read_(false),
     grow_(false),
     owned_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
 
-MemoryHandle::MemoryHandle(Buffer& buffer):
+MemoryHandle::MemoryHandle(Buffer& buffer) :
     address_(buffer),
     size_(buffer.size()),
     capacity_(buffer.size()),
@@ -48,11 +47,9 @@ MemoryHandle::MemoryHandle(Buffer& buffer):
     read_(false),
     grow_(false),
     owned_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
-MemoryHandle::MemoryHandle(const void* address, size_t size):
+MemoryHandle::MemoryHandle(const void* address, size_t size) :
     address_(const_cast<char*>(reinterpret_cast<const char*>(address))),
     size_(size),
     capacity_(size),
@@ -61,12 +58,10 @@ MemoryHandle::MemoryHandle(const void* address, size_t size):
     read_(false),
     grow_(false),
     owned_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
 
-MemoryHandle::MemoryHandle(void* address, size_t size):
+MemoryHandle::MemoryHandle(void* address, size_t size) :
     address_(reinterpret_cast<char*>(address)),
     size_(size),
     capacity_(size),
@@ -75,12 +70,10 @@ MemoryHandle::MemoryHandle(void* address, size_t size):
     read_(false),
     grow_(false),
     owned_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
 
-MemoryHandle::MemoryHandle(size_t size, bool grow):
+MemoryHandle::MemoryHandle(size_t size, bool grow) :
     address_(nullptr),
     size_(0),
     capacity_(size),
@@ -89,48 +82,41 @@ MemoryHandle::MemoryHandle(size_t size, bool grow):
     read_(false),
     grow_(grow),
     owned_(true),
-    position_(0)
-{
+    position_(0) {
     address_ = new char[capacity_];
     ASSERT(address_);
 }
 
-MemoryHandle::~MemoryHandle()
-{
+MemoryHandle::~MemoryHandle() {
     if (owned_) {
         delete[] address_;
     }
 }
 
-Length MemoryHandle::openForRead()
-{
-    read_ = true;
+Length MemoryHandle::openForRead() {
+    read_     = true;
     position_ = 0;
-    opened_ = true;
+    opened_   = true;
     return size_;
 }
 
-void MemoryHandle::openForWrite(const Length& length)
-{
+void MemoryHandle::openForWrite(const Length& length) {
     ASSERT(!readOnly_);
-    read_ = false;
+    read_     = false;
     position_ = 0;
-    opened_ = true;
+    opened_   = true;
 }
 
-void MemoryHandle::openForAppend(const Length& )
-{
+void MemoryHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
-void MemoryHandle::skip(const Length& len)
-{
+void MemoryHandle::skip(const Length& len) {
     ASSERT(read_);
     seek(position() + len);
 }
 
-long MemoryHandle::read(void* buffer, long length)
-{
+long MemoryHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(read_);
 
@@ -142,8 +128,7 @@ long MemoryHandle::read(void* buffer, long length)
     return size;
 }
 
-long MemoryHandle::write(const void* buffer, long length)
-{
+long MemoryHandle::write(const void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(!read_);
 
@@ -151,17 +136,15 @@ long MemoryHandle::write(const void* buffer, long length)
 
 
     if (grow_ && (left < length)) {
-
         if ((capacity_ - position_) < length) {
             size_t newcapacity = round(capacity_ + length, 1024 * 1024);
-            char* newdata = new char[newcapacity];
+            char* newdata      = new char[newcapacity];
             ASSERT(newdata);
 
             ::memcpy(newdata, address_, position_);
             delete[] address_;
-            address_ = newdata;
+            address_  = newdata;
             capacity_ = newcapacity;
-
         }
 
         size_ += length;
@@ -176,24 +159,18 @@ long MemoryHandle::write(const void* buffer, long length)
     return size;
 }
 
-void MemoryHandle::close()
-{
+void MemoryHandle::close() {
     opened_ = false;
 }
 
-void MemoryHandle::flush()
-{
+void MemoryHandle::flush() {}
 
-}
-
-void MemoryHandle::rewind()
-{
+void MemoryHandle::rewind() {
     ASSERT(opened_);
     position_ = 0;
 }
 
-Offset MemoryHandle::seek(const Offset& off)
-{
+Offset MemoryHandle::seek(const Offset& off) {
     ASSERT(opened_);
     ASSERT(size_t(off) < size_);
     position_ = off;
@@ -201,18 +178,15 @@ Offset MemoryHandle::seek(const Offset& off)
 }
 
 
-void MemoryHandle::print(std::ostream& s) const
-{
+void MemoryHandle::print(std::ostream& s) const {
     s << "MemoryHandle[size=" << size_ << ']';
 }
 
-Length MemoryHandle::estimate()
-{
+Length MemoryHandle::estimate() {
     return size_;
 }
 
-Offset MemoryHandle::position()
-{
+Offset MemoryHandle::position() {
     ASSERT(opened_);
     return position_;
 }
@@ -221,9 +195,8 @@ std::string MemoryHandle::title() const {
     return "<mem>";
 }
 
-DataHandle* MemoryHandle::clone() const
-{
-    NOTIMP; // Not sure what is the semantics here
+DataHandle* MemoryHandle::clone() const {
+    NOTIMP;  // Not sure what is the semantics here
     // return new MemoryHandle(address_, size_);
 }
 
@@ -242,5 +215,4 @@ std::string MemoryHandle::str() const {
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

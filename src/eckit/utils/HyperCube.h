@@ -16,6 +16,7 @@
 
 #include <numeric>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/types/Types.h"
 
 
@@ -28,97 +29,92 @@ namespace eckit {
 
 class HyperCube {
 public:
+    typedef std::vector<Ordinal> Dimensions;
+    typedef std::vector<Ordinal> Coordinates;
+    typedef std::vector<Ordinal> Remapping;
 
+    // -- Contructors
 
-	typedef std::vector<Ordinal> Dimensions;
-	typedef std::vector<Ordinal> Coordinates;
-	typedef std::vector<Ordinal> Remapping;
+    HyperCube(const Dimensions& d) : dimensions_(d) {}
 
-// -- Contructors
+    // -- Methods
 
-	HyperCube(const Dimensions& d) : dimensions_(d) {}
+    // Translate coordinates into an index to a 1 dimension array.
 
-// -- Methods
+    Ordinal index(const Coordinates&) const;
 
-	// Translate coordinates into an index to a 1 dimension array.
+    // Return the number of elemets
 
-	Ordinal index(const Coordinates&) const;
+    Ordinal count() const;
 
-	// Return the number of elemets
+    // Translate index to coordinates
 
-	Ordinal count() const;
+    void coordinates(Ordinal index, Coordinates&) const;
 
-	// Translate index to coordinates
+    // Accessors
 
-	void coordinates(Ordinal index, Coordinates&) const;
+    const Dimensions& dimensions() const { return dimensions_; }
+    Dimensions& dimensions() { return dimensions_; }
+    Ordinal dimensions(Ordinal n) const { return dimensions_[n]; }
+    Ordinal size() const { return dimensions_.size(); }
 
-	// Accessors
+    // Return the 'remapping' std::vector needing to add 'count' labels
+    // for the dimension 'which' at position 'where'
 
-	const Dimensions& dimensions() const    { return dimensions_;        }
-	Dimensions& dimensions()                { return dimensions_;        }
-	Ordinal     dimensions(Ordinal n) const { return dimensions_[n];     }
-	Ordinal     size() const                { return dimensions_.size(); }
+    HyperCube addToDimension(Ordinal which, Ordinal where, Ordinal count, Remapping&) const;
 
-	// Return the 'remapping' std::vector needing to add 'count' labels
-	// for the dimension 'which' at position 'where'
+    // Combine two 'remapping' vectors
 
-	HyperCube addToDimension(Ordinal which,Ordinal where,Ordinal count,Remapping&) const;
-
-	// Combine two 'remapping' vectors
-
-	static void combine(Remapping&,const Remapping&);
+    static void combine(Remapping&, const Remapping&);
 
 private:
+    // -- Members
 
-// -- Members
-
-	Dimensions dimensions_;
-
+    Dimensions dimensions_;
 };
 
 inline  // For speed
-Ordinal HyperCube::count() const
-{
-    return accumulate(dimensions_.begin(),dimensions_.end(),1,std::multiplies<Ordinal>());
+    Ordinal
+    HyperCube::count() const {
+    return accumulate(dimensions_.begin(), dimensions_.end(), 1, std::multiplies<Ordinal>());
 }
 
 
-inline // For speed
-Ordinal HyperCube::index(const Coordinates& coord) const
-{
-	Ordinal n = 1;
-	Ordinal a = 0;
+inline  // For speed
+    Ordinal
+    HyperCube::index(const Coordinates& coord) const {
+    Ordinal n = 1;
+    Ordinal a = 0;
 
-	ASSERT(coord.size() == dimensions_.size());
+    ASSERT(coord.size() == dimensions_.size());
 
-	// The fact that this is in reverse is important for addToDimension
+    // The fact that this is in reverse is important for addToDimension
 
-	for(int i = coord.size()-1; i >= 0; i--)
-	{
-		ASSERT(/*coord[i] >= 0 &&*/ coord[i] < dimensions_[i]);
-		a += coord[i] * n;
-		n *= dimensions_[i];
-	}
+    for (int i = coord.size() - 1; i >= 0; i--) {
+        ASSERT(/*coord[i] >= 0 &&*/ coord[i] < dimensions_[i]);
+        a += coord[i] * n;
+        n *= dimensions_[i];
+    }
 
-	return a;
+    return a;
 }
 
 
-inline // For speed
-void HyperCube::combine(Remapping& map1,const Remapping& map2)
-{
-	if(map1.size() == 0)
-		map1 = map2;
-	else for(Remapping::iterator i = map1.begin() ; i != map1.end() ; ++i)
-	{
-		ASSERT(*i < map2.size());
-		*i = map2[*i];
-	}
+inline  // For speed
+    void
+    HyperCube::combine(Remapping& map1, const Remapping& map2) {
+    if (map1.size() == 0)
+        map1 = map2;
+    else
+        for (Remapping::iterator i = map1.begin(); i != map1.end(); ++i) {
+            ASSERT(*i < map2.size());
+            *i = map2[*i];
+        }
 }
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

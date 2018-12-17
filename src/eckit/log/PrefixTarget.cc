@@ -9,6 +9,7 @@
  */
 
 #include <cstring>
+#include <iostream>
 
 #include "eckit/log/PrefixTarget.h"
 
@@ -17,14 +18,12 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-PrefixTarget::PrefixTarget(const std::string& prefix, LogTarget* target, const char* space):
+PrefixTarget::PrefixTarget(const std::string& prefix, LogTarget* target, const char* space) :
     WrapperTarget(target),
     prefix_(prefix),
     space_(space),
     prefixLength_(prefix.size()),
-    spaceLength_(::strlen(space))
-{
-}
+    spaceLength_(::strlen(space)) {}
 
 void PrefixTarget::writePrefix() {
     const char* p = prefix_.c_str();
@@ -33,14 +32,12 @@ void PrefixTarget::writePrefix() {
 }
 
 
-void PrefixTarget::writeSuffix() {
-}
+void PrefixTarget::writeSuffix() {}
 
-void PrefixTarget::print(std::ostream& s) const
-{
+void PrefixTarget::print(std::ostream& s) const {
     s << "PrefixTarget(prefix=" << prefix_ << ", space=" << space_ << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

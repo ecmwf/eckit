@@ -16,36 +16,30 @@
 
 #include <map>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/thread/Mutex.h"
 
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-template<class T> class BufferedWriter;
-template<class T> class BufferedReader;
-template<class T> class IOBuffer;
+template <class T>
+class BufferedWriter;
+template <class T>
+class BufferedReader;
+template <class T>
+class IOBuffer;
 
 class Buffer;
 
 class Stream : private NonCopyable {
 public:
-
-// -- Exceptions
-
-    class BadTag : public Exception {
-    public:
-        BadTag(const std::string& what);
-    };
-
-// -- Destructor
+    // -- Destructor
 
     virtual ~Stream();
 
-// -- Operators
+    // -- Operators
 
     // Output
 
@@ -107,7 +101,7 @@ public:
 
     Stream& operator>>(std::map<std::string, std::string>&);
 
-// -- Methods
+    // -- Methods
 
     bool next(std::string&);
 
@@ -123,40 +117,39 @@ public:
     void writeLargeBlob(const void*, size_t);
     void readLargeBlob(void*, size_t);
 
-    virtual void rewind()      { NOTIMP; }
-    virtual void closeOutput() { NOTIMP; }
-    virtual void closeInput()  { NOTIMP; }
+    virtual void rewind();
+    virtual void closeOutput();
+    virtual void closeInput();
 
     long long bytesWritten() { return writeCount_; }
     void resetBytesWritten() { writeCount_ = 0; }
 
     void startRecord(unsigned long);
     void endRecord();
-    bool nextRecord(unsigned long&,bool sync = false);
+    bool nextRecord(unsigned long&, bool sync = false);
 
-    void lock()   { mutex_.lock(); }
+    void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
 
-    static void dump(std::ostream&,const char*, size_t);
+    static void dump(std::ostream&, const char*, size_t);
 
 
 protected:
-
-// -- Contructors
+    // -- Contructors
 
     Stream();
 
-// -- Methods
+    // -- Methods
 
-    virtual std::string name() const 			= 0;
-    virtual void print(std::ostream& s) const  	{ s << name();  }
+    virtual std::string name() const = 0;
+    virtual void print(std::ostream& s) const { s << name(); }
 
     size_t blobSize();
 
 private:
-
-    enum tag {
+    enum tag
+    {
         tag_zero,
         tag_start_obj,
         tag_end_obj,
@@ -178,22 +171,22 @@ private:
         tag_start_rec,
         tag_end_rec,
         tag_eof,
-        tag_large_blob, // For blobs >= 2Gb
+        tag_large_blob,  // For blobs >= 2Gb
         last_tag
     };
 
-// -- Members
+    // -- Members
 
-    tag			lastTag_;
-    Mutex		mutex_;
-    long		writeCount_;
+    tag lastTag_;
+    Mutex mutex_;
+    long writeCount_;
 
-// -- Methods
+    // -- Methods
 
     // These are the two methods to override
 
-    virtual long write(const void*,long) = 0;
-    virtual long read(void*,long) = 0;
+    virtual long write(const void*, long) = 0;
+    virtual long read(void*, long)        = 0;
 
     unsigned char getChar();
     unsigned long getLong();
@@ -201,15 +194,15 @@ private:
     void putChar(unsigned char);
     void putLong(unsigned long);
 
-    void badTag(tag,tag);
-    tag  nextTag();
-    tag  readTag(tag = tag_zero);
+    void badTag(tag, tag);
+    tag nextTag();
+    tag readTag(tag = tag_zero);
     void writeTag(tag);
 
-    void getBytes(void*,long);
-    void putBytes(const void*,long);
+    void getBytes(void*, long);
+    void putBytes(const void*, long);
 
-    friend std::ostream& operator<<(std::ostream&,tag);
+    friend std::ostream& operator<<(std::ostream&, tag);
 
     friend class BufferedWriter<Stream>;
     friend class BufferedReader<Stream>;
@@ -219,12 +212,11 @@ private:
         s.print(out);
         return out;
     }
-
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

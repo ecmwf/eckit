@@ -10,8 +10,8 @@
 
 #include <cstring>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/BufferedHandle.h"
-
 
 namespace eckit {
 
@@ -23,7 +23,7 @@ Reanimator<BufferedHandle> BufferedHandle::reanimator_;
 #endif
 
 
-BufferedHandle::BufferedHandle(DataHandle* h, size_t size):
+BufferedHandle::BufferedHandle(DataHandle* h, size_t size) :
     HandleHolder(h),
     buffer_(size),
     pos_(0),
@@ -31,11 +31,9 @@ BufferedHandle::BufferedHandle(DataHandle* h, size_t size):
     used_(0),
     eof_(false),
     read_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
-BufferedHandle::BufferedHandle(DataHandle& h, size_t size):
+BufferedHandle::BufferedHandle(DataHandle& h, size_t size) :
     HandleHolder(h),
     buffer_(size),
     pos_(0),
@@ -43,38 +41,30 @@ BufferedHandle::BufferedHandle(DataHandle& h, size_t size):
     used_(0),
     eof_(false),
     read_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
-BufferedHandle::~BufferedHandle()
-{
-}
+BufferedHandle::~BufferedHandle() {}
 
-Length BufferedHandle::openForRead()
-{
+Length BufferedHandle::openForRead() {
     read_ = true;
     used_ = pos_ = 0;
-    eof_ = false;
-    position_ = 0;
+    eof_         = false;
+    position_    = 0;
     return handle().openForRead();
 }
 
-void BufferedHandle::openForWrite(const Length& length)
-{
-    read_ = false;
-    pos_ = 0;
+void BufferedHandle::openForWrite(const Length& length) {
+    read_     = false;
+    pos_      = 0;
     position_ = 0;
     handle().openForWrite(length);
 }
 
-void BufferedHandle::openForAppend(const Length& )
-{
+void BufferedHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
-void BufferedHandle::skip(const Length& len)
-{
+void BufferedHandle::skip(const Length& len) {
     ASSERT(read_);
     unsigned long long left = used_ - pos_;
     unsigned long long n    = len;
@@ -88,11 +78,10 @@ void BufferedHandle::skip(const Length& len)
     seek(position() + len);
 }
 
-long BufferedHandle::read(void* buffer, long length)
-{
+long BufferedHandle::read(void* buffer, long length) {
     long len  = 0;
     long size = length;
-    char *buf = (char*)buffer;
+    char* buf = (char*)buffer;
 
     ASSERT(read_);
 
@@ -103,35 +92,38 @@ long BufferedHandle::read(void* buffer, long length)
         long left = used_ - pos_;
         ASSERT(left >= 0);
 
-        if (left == 0 && !eof_ )
-        {
-            used_   = handle().read(buffer_, size_);
-            pos_    = 0;
-            if (used_ <= 0)
-            {
+        if (left == 0 && !eof_) {
+            used_ = handle().read(buffer_, size_);
+            pos_  = 0;
+            if (used_ <= 0) {
                 eof_ = true;
-                len = len ? len : used_;
-                if (len > 0) position_ += len;
-                if (len == 0) return -1;
+                len  = len ? len : used_;
+                if (len > 0)
+                    position_ += len;
+                if (len == 0)
+                    return -1;
                 return len;
             }
             left = used_;
         }
 
         char* p = buffer_;
-        long s = size < left ? size : left;
+        long s  = size < left ? size : left;
         ::memcpy(buf + len, p + pos_, s);
-        len  += s; ASSERT(len <= length);
-        pos_ += s; ASSERT(pos_ <= used_);
-        size -= s; ASSERT(size >= 0);
+        len += s;
+        ASSERT(len <= length);
+        pos_ += s;
+        ASSERT(pos_ <= used_);
+        size -= s;
+        ASSERT(size >= 0);
     }
 
-    if (len > 0) position_ += len;
+    if (len > 0)
+        position_ += len;
     return len;
 }
 
-long BufferedHandle::write(const void* buffer, long length)
-{
+long BufferedHandle::write(const void* buffer, long length) {
     long written = 0;
 
     ASSERT(!read_);
@@ -143,8 +135,8 @@ long BufferedHandle::write(const void* buffer, long length)
         size_t len = std::min(left, length);
         ASSERT(len > 0);
 
-        char* p = buffer_;
-        const char *q = static_cast<const char*>(buffer);
+        char* p       = buffer_;
+        const char* q = static_cast<const char*>(buffer);
         ::memcpy(p + pos_, q + written, len);
         pos_ += len;
         written += len;
@@ -156,66 +148,56 @@ long BufferedHandle::write(const void* buffer, long length)
         if (pos_ == size_) {
             bufferFlush();
         }
-
     }
     position_ += written;
     return written;
 }
 
-void BufferedHandle::close()
-{
+void BufferedHandle::close() {
     if (!read_)
         bufferFlush();
     handle().close();
 }
 
-void BufferedHandle::flush()
-{
+void BufferedHandle::flush() {
     bufferFlush();
     handle().flush();
 }
 
-void BufferedHandle::rewind()
-{
+void BufferedHandle::rewind() {
     position_ = 0;
     used_ = pos_ = 0;
-    eof_  = false;
+    eof_         = false;
     handle().rewind();
 }
 
-Offset BufferedHandle::seek(const Offset& off)
-{
+Offset BufferedHandle::seek(const Offset& off) {
     used_ = pos_ = 0;
-    eof_  = false;
-    position_ = handle().seek(off);
+    eof_         = false;
+    position_    = handle().seek(off);
     return position_;
 }
 
 
-void BufferedHandle::print(std::ostream& s) const
-{
+void BufferedHandle::print(std::ostream& s) const {
     s << "BufferedHandle[";
     handle().print(s);
     s << ']';
 }
 
-Length BufferedHandle::estimate()
-{
+Length BufferedHandle::estimate() {
     return handle().estimate();
 }
 
-Offset BufferedHandle::position()
-{
+Offset BufferedHandle::position() {
     // ASSERT(read_);
     return position_;
 }
 
-void BufferedHandle::bufferFlush()
-{
-    if (pos_)
-    {
+void BufferedHandle::bufferFlush() {
+    if (pos_) {
         long len = handle().write(buffer_, pos_);
-        ASSERT( (size_t) len == pos_ );
+        ASSERT((size_t)len == pos_);
         pos_ = 0;
     }
 }
@@ -224,11 +206,9 @@ std::string BufferedHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
-DataHandle* BufferedHandle::clone() const
-{
+DataHandle* BufferedHandle::clone() const {
     return new BufferedHandle(handle().clone(), buffer_.size());
 }
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

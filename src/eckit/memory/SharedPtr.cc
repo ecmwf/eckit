@@ -8,31 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file IndentTarget.h
-/// @author Baudouin Raoult
-
-#ifndef eckit_log_IndentTarget_h
-#define eckit_log_IndentTarget_h
-
-#include <iosfwd>
-#include <utility>
-
-#include "eckit/log/PrefixTarget.h"
+#include "eckit/memory/SharedPtr.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class IndentTarget : public PrefixTarget {
-public:
-    IndentTarget(const std::string& prefix, LogTarget* target, const char* space = " ");
-
-protected:
-    void print(std::ostream& s) const;
-};
+namespace detail {
+void assert_valid_SharedPtr(bool is_null) {
+    ASSERT(!is_null);
+}
+}  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

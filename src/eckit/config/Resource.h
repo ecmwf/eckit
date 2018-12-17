@@ -17,54 +17,50 @@
 
 #include <string>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/config/ResourceBase.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class Resource : public ResourceBase {
-
-public: // methods
-
+public:  // methods
     // Standalone
 
-    Resource(const std::string& str, const T& value):
-        ResourceBase(0, str),     value_(value) {}
+    Resource(const std::string& str, const T& value) : ResourceBase(nullptr, str), value_(value) {}
 
     // Part of a configurable
 
-    Resource(Configurable* owner, const std::string& str, const T& value):
-        ResourceBase(owner, str), value_(value) {}
+    Resource(Configurable* owner, const std::string& str, const T& value) :
+        ResourceBase(owner, str),
+        value_(value) {}
 
-    Resource(const std::string& str,const std::string& value, bool):
-        ResourceBase(0,str),     value_(eckit::Translator<std::string,T>()(value)) {}
+    Resource(const std::string& str, const std::string& value, bool) :
+        ResourceBase(nullptr, str),
+        value_(eckit::Translator<std::string, T>()(value)) {}
 
-// -- Convertors
+    // -- Convertors
 
-    operator const T&()  const { const_cast<Resource<T>*>(this)->init(); return value_; }
+    operator const T&() const {
+        const_cast<Resource<T>*>(this)->init();
+        return value_;
+    }
 
-private: // members
-
+private:  // members
     T value_;
 
     // From ResourceBase
 
-    virtual void setValue(const std::string& s)
-    {
-        value_ = Translator<std::string, T>()(s);
-    }
+    virtual void setValue(const std::string& s) { value_ = Translator<std::string, T>()(s); }
 
-    virtual std::string getValue() const
-    {
-        return Translator<T, std::string>()(value_);
-    }
-
+    virtual std::string getValue() const { return Translator<T, std::string>()(value_); }
 };
 
-template<class T>
+template <class T>
 std::ostream& operator<<(std::ostream& os, const Resource<T>& r) {
     os << static_cast<const T&>(r);
     return os;
@@ -73,41 +69,36 @@ std::ostream& operator<<(std::ostream& os, const Resource<T>& r) {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-template<class T, class LIB>
+template <class T, class LIB>
 class LibResource : public ResourceBase {
+public:  // methods
+    LibResource(const std::string& str, const T& value) :
+        ResourceBase(nullptr, str),
+        value_(value) {}
 
-public: // methods
+    operator const T&() const {
+        const_cast<LibResource<T, LIB>*>(this)->init();
+        return value_;
+    }
 
-    LibResource(const std::string& str, const T& value) : ResourceBase(0, str), value_(value) {}
-
-    operator const T&()  const { const_cast<LibResource<T,LIB>*>(this)->init(); return value_; }
-
-    friend std::ostream& operator<< (std::ostream& os, const LibResource<T,LIB>& r) {
+    friend std::ostream& operator<<(std::ostream& os, const LibResource<T, LIB>& r) {
         os << static_cast<const T&>(r);
         return os;
     }
 
-private: // members
-
+private:  // members
     T value_;
 
     // From ResourceBase
 
-    virtual void setValue(const std::string& s)
-    {
-        value_ = Translator<std::string, T>()(s);
-    }
+    virtual void setValue(const std::string& s) { value_ = Translator<std::string, T>()(s); }
 
-    virtual std::string getValue() const
-    {
-        return Translator<T, std::string>()(value_);
-    }
+    virtual std::string getValue() const { return Translator<T, std::string>()(value_); }
 
     virtual bool setFromConfigFile() {
-
         std::string value;
 
-        if(LIB::instance().configuration().get(name(), value)) {
+        if (LIB::instance().configuration().get(name(), value)) {
             setValue(value);
             return true;
         }
@@ -117,6 +108,6 @@ private: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

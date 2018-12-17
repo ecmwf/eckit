@@ -11,15 +11,15 @@
 
 #include <iomanip>
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/BitIO.h"
 #include "eckit/io/Compress.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/BitIO.h"
 
 // This code is written for readibility, not speed
 // See https://users.cs.cf.ac.uk/Dave.Marshall/Multimedia/node214.html
 // for a description of the algorythm
 // and https://www.cs.duke.edu/csed/curious/compression/lzw.html
-
 
 
 namespace eckit {
@@ -30,66 +30,63 @@ inline static size_t MAX_CODE(size_t nbits) {
     return (1 << nbits) - 1;
 }
 
-enum {
+enum
+{
     RESET_TABLE = 256,
     END_MARKER  = 257,
     FIRST_CODE  = 258,
 
-    MIN_BITS =  9,
+    MIN_BITS = 9,
 
 };
 
 static void print_code(std::ostream& out, size_t s) {
-
     switch (s) {
+        case RESET_TABLE:
+            out << "(reset)";
+            break;
+        case END_MARKER:
+            out << "(end)";
+            break;
 
-    case RESET_TABLE : out << "(reset)"; break;
-    case END_MARKER : out << "(end)"; break;
-
-    default:
-        if (::isprint(s)) {
-            out << char(s);
-        }
-        else {
-            if (s < 256)
-            {
-                out << std::hex << std::setfill('0') << std::setw(2) << s << std::dec << std::setfill(' ');
+        default:
+            if (::isprint(s)) {
+                out << char(s);
             }
             else {
-                out << '(' << s << ')';
+                if (s < 256) {
+                    out << std::hex << std::setfill('0') << std::setw(2) << s << std::dec
+                        << std::setfill(' ');
+                }
+                else {
+                    out << '(' << s << ')';
+                }
             }
-        }
-        break;
+            break;
     }
 }
 
-class Entry  {
-
+class Entry {
     void print(std::ostream& out) const;
 
     std::vector<unsigned char> chars_;
     size_t code_;
 
 public:
-
     Entry(size_t = END_MARKER);
 
     Entry operator+(unsigned char) const;
     Entry& operator=(unsigned char);
     bool empty() const;
 
-    void code(size_t c) {
-        code_ = c;
-    }
+    void code(size_t c) { code_ = c; }
 
     unsigned char firstChar() const {
         ASSERT(chars_.size());
         return chars_[0];
     }
 
-     bool operator<(const Entry& other) const {
-         return chars_ < other.chars_;
-     }
+    bool operator<(const Entry& other) const { return chars_ < other.chars_; }
 
     /* unused */
     //    friend std::ostream& operator<<(std::ostream& out, const Entry& e) {
@@ -110,14 +107,11 @@ public:
 
     void output(eckit::BitIO& out) const;
     void output(eckit::BitIO& out, size_t nbits) const;
-
 };
 
-Entry::Entry(size_t code) :
-    code_(code) {
-
+Entry::Entry(size_t code) : code_(code) {
     if (code < 256) {
-        chars_.push_back(code) ;
+        chars_.push_back(code);
     }
 }
 
@@ -137,7 +131,7 @@ Entry& Entry::operator=(unsigned char c) {
 void Entry::output(eckit::BitIO& out) const {
     // std::cout << "Output " << *this << std::endl;
 
-    for(size_t i = 0; i < chars_.size(); ++i) {
+    for (size_t i = 0; i < chars_.size(); ++i) {
         out.write(chars_[i], 8);
     }
 }
@@ -174,15 +168,12 @@ static void init_table(std::set<Entry>& table) {
         table.insert(Entry(c));
     }
 }
-}
+}  // namespace
 
-Compress::Compress(size_t maxBits):
-    maxBits_(maxBits) {
-}
+Compress::Compress(size_t maxBits) : maxBits_(maxBits) {}
 
 
-size_t Compress::encode(DataHandle& in, DataHandle& out)
-{
+size_t Compress::encode(DataHandle& in, DataHandle& out) {
     Entry eoi(END_MARKER);
     Entry reset(RESET_TABLE);
 
@@ -192,15 +183,14 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
     BitIO bin(in);
     BitIO bout(out);
 
-    size_t nbits = MIN_BITS;
+    size_t nbits     = MIN_BITS;
     size_t next_code = FIRST_CODE;
-    size_t max_code = MAX_CODE(nbits);
+    size_t max_code  = MAX_CODE(nbits);
 
     reset.output(bout, nbits);
 
     Entry w;
-    for (;;)
-    {
+    for (;;) {
         size_t k = next_byte(bin);
 
         if (k == END_MARKER) {
@@ -218,7 +208,6 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
             w = *j;
         }
         else {
-
             w.output(bout, nbits);
             wk.code(next_code++);
             code_table.insert(wk);
@@ -226,11 +215,10 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
 
             if (next_code >= max_code) {
                 if (nbits == maxBits_) {
-
                     reset.output(bout, nbits);
 
-                    nbits = MIN_BITS;
-                    max_code = MAX_CODE(nbits);
+                    nbits     = MIN_BITS;
+                    max_code  = MAX_CODE(nbits);
                     next_code = FIRST_CODE;
                     init_table(code_table);
                 }
@@ -239,9 +227,7 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
                     max_code = MAX_CODE(nbits);
                 }
             }
-
         }
-
     }
 
     if (!w.empty()) {
@@ -251,20 +237,18 @@ size_t Compress::encode(DataHandle& in, DataHandle& out)
     eoi.output(bout, nbits);
 
     return bout.byteCount();
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 
-static void init_table( std::map<size_t, Entry>& table) {
+static void init_table(std::map<size_t, Entry>& table) {
     table.clear();
     for (size_t i = 0; i < 256; ++i) {
         table[i] = Entry(i);
     }
 }
 
-size_t Compress::decode(DataHandle& in, DataHandle& out)
-{
+size_t Compress::decode(DataHandle& in, DataHandle& out) {
     std::map<size_t, Entry> table;
     init_table(table);
 
@@ -276,12 +260,11 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
     Entry w;
 
     size_t next_code = FIRST_CODE;
-    size_t max_code = MAX_CODE(nbits) - 1;
+    size_t max_code  = MAX_CODE(nbits) - 1;
 
     for (;;) {
-
         if (next_code >= max_code) {
-            nbits = std::min(maxBits_, nbits+1);
+            nbits    = std::min(maxBits_, nbits + 1);
             max_code = MAX_CODE(nbits) - 1;
             // std::cout << "DECODE nbits " << nbits << std::endl;
         }
@@ -297,12 +280,11 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
         }
 
         /* This should be the first code */
-        if (k == RESET_TABLE)
-        {
+        if (k == RESET_TABLE) {
             // std::cout << "RESET_TABLE" << std::endl;
 
-            nbits = MIN_BITS;
-            max_code = MAX_CODE(nbits) - 1;
+            nbits     = MIN_BITS;
+            max_code  = MAX_CODE(nbits) - 1;
             next_code = FIRST_CODE;
             init_table(table);
 
@@ -343,10 +325,9 @@ size_t Compress::decode(DataHandle& in, DataHandle& out)
         // std::cout << "Add code " << n << std::endl;
 
         w = e;
-
     }
 
     return bout.byteCount();
 }
 //----------------------------------------------------------------------------------------------------------------------
-} // namespace eckit
+}  // namespace eckit

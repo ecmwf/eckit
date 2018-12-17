@@ -14,6 +14,7 @@
 #ifndef eckit_log_CallbackTarget_h
 #define eckit_log_CallbackTarget_h
 
+#include <iosfwd>
 #include <utility>
 
 #include "eckit/log/LineBasedTarget.h"
@@ -24,15 +25,13 @@ namespace eckit {
 
 class CallbackTarget : public LineBasedTarget {
 public:
-
-    typedef void (*callback_t) (void* ctxt, const char* msg);
+    typedef void (*callback_t)(void* ctxt, const char* msg);
 
     CallbackTarget(callback_t callback, void* context = 0);
 
     virtual ~CallbackTarget();
 
 private:
-
     virtual void line(const char* line);
 
     virtual void print(std::ostream& s) const;
@@ -44,6 +43,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

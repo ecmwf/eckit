@@ -12,7 +12,6 @@
 #define GreatCircle_H
 
 #include <vector>
-#include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Point2.h"
 
 //------------------------------------------------------------------------------------------------------
@@ -23,9 +22,7 @@ namespace geometry {
 //------------------------------------------------------------------------------------------------------
 
 class GreatCircle {
-
 public:
-
     /// Great circle given two points in geographic coordinates
     GreatCircle(const Point2&, const Point2&);
 
@@ -38,18 +35,15 @@ public:
     bool crossesPoles() const;
 
 private:
-
     const Point2 A_;
     const Point2 B_;
 
     bool crossesPoles_;
-
 };
 
 //------------------------------------------------------------------------------------------------------
 
-} // namespace geometry
-} // namespace eckit
+}  // namespace geometry
+}  // namespace eckit
 
 #endif
-

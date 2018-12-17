@@ -16,27 +16,24 @@
 #define eckit_system_Library_H
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/config/Configuration.h"
 
 namespace eckit {
 
 class Channel;
+class Configuration;
 
 namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Library : private eckit::NonCopyable {
-
-public: // methods
-
-
+public:  // methods
     Library(const std::string& name);
 
     virtual ~Library();
@@ -63,36 +60,35 @@ public: // methods
 
     virtual const Configuration& configuration() const;
 
-public: // class methods
-
+public:  // class methods
     static std::vector<std::string> list();
     static void list(std::ostream&);
 
     static bool exists(const std::string& name);
     static const Library& lookup(const std::string& name);
 
-    void lock()   { mutex_.lock(); }
+    void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
-protected: // methods
-
+protected:  // methods
     virtual std::string home() const;
 
     virtual const void* addr() const = 0;
 
     void print(std::ostream&) const;
 
-    friend std::ostream& operator<<(std::ostream& s, const Library& p) { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const Library& p) {
+        p.print(s);
+        return s;
+    }
 
-private: // methods
-
+private:  // methods
     std::string location() const;
 
-private: // members
-
+private:  // members
     std::string name_;
     std::string prefix_;
-    std::string home_;    // if not set explicitly, will be empty
+    std::string home_;  // if not set explicitly, will be empty
 
     bool debug_;
 
@@ -101,31 +97,28 @@ private: // members
     mutable std::string libraryPath_;
     mutable std::string prefixDirectory_;
 
-    mutable eckit::ScopedPtr<eckit::Channel> debugChannel_;
+    mutable std::unique_ptr<eckit::Channel> debugChannel_;
 
-    mutable eckit::ScopedPtr<eckit::Configuration> configuration_;
-
+    mutable std::unique_ptr<eckit::Configuration> configuration_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
 struct LibraryRegistration {
-    LibraryRegistration() {
-        T::instance();
-    }
+    LibraryRegistration() { T::instance(); }
 };
 
-#define REGISTER_LIBRARY(X)                             \
-static eckit::system::LibraryRegistration<X> libregist; \
-void force_link_library_register_##X(void* p) {         \
-    if(!p) force_link_library_register_##X(&libregist); \
-}
+#define REGISTER_LIBRARY(X)                                 \
+    static eckit::system::LibraryRegistration<X> libregist; \
+    void force_link_library_register_##X(void* p) {         \
+        if (!p)                                             \
+            force_link_library_register_##X(&libregist);    \
+    }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
+}  // namespace system
+}  // namespace eckit
 
 #endif
-

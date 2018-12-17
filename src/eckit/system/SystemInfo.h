@@ -18,6 +18,7 @@
 #include <iosfwd>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
@@ -28,9 +29,7 @@ struct MemoryInfo;
 //--------------------------------------------------------------------------------------------------
 
 class SystemInfo : private eckit::NonCopyable {
-
-public: // methods
-
+public:  // methods
     static bool isBigEndian();
 
     virtual ~SystemInfo();
@@ -41,39 +40,38 @@ public: // methods
 
     virtual MemoryInfo memoryUsage() const = 0;
 
-    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = 0) const;
-    virtual void dumpSysMemInfo(std::ostream&, const char* prepend = 0) const;
+    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = nullptr) const;
+    virtual void dumpSysMemInfo(std::ostream&, const char* prepend = nullptr) const;
 
-protected: // methods
-
+protected:  // methods
     void print(std::ostream&) const;
 
-    friend std::ostream& operator<<(std::ostream& s, const SystemInfo& p) { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const SystemInfo& p) {
+        p.print(s);
+        return s;
+    }
 
-private: // members
-
+private:  // members
 };
 
 
 //--------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class TraceProcMemInfo {
 public:
-
     explicit TraceProcMemInfo(const char* name) {
         SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name);
     }
 
-    explicit TraceProcMemInfo( const std::string& name) {
+    explicit TraceProcMemInfo(const std::string& name) {
         SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name.c_str());
     }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
+}  // namespace system
+}  // namespace eckit
 
 #endif
-

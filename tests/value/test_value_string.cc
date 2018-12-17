@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,7 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Values cast in- and out- of strings as required" ) {
+CASE("Values cast in- and out- of strings as required") {
     Value val_null("");
     Value val_char("test string");
     Value val_str(std::string("test string 2"));
@@ -51,25 +50,27 @@ CASE( "Values cast in- and out- of strings as required" ) {
     // And the invalid conversions
 
     EXPECT_THROWS_AS(val_str.as<bool>(), BadConversion);
-    /// EXPECT_THROWS_AS(val_str.as<long long>(), BadConversion); // This will return zero, not throw
-    EXPECT_THROWS_AS(val_str.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion
+    /// EXPECT_THROWS_AS(val_str.as<long long>(), BadConversion); // This will return zero, not
+    /// throw
+    EXPECT_THROWS_AS(val_str.as<double>(), BadParameter);  // n.b. BadParameter, not BadConversion
     EXPECT_THROWS_AS(val_str.as<Time>(), BadConversion);
     EXPECT_THROWS_AS(val_str.as<Date>(), BadConversion);
     EXPECT_THROWS_AS(val_str.as<DateTime>(), BadConversion);
     EXPECT_THROWS_AS(val_str.as<ValueMap>(), BadConversion);
 
     EXPECT_THROWS_AS(val_null.as<bool>(), BadConversion);
-    /// EXPECT_THROWS_AS(val_null.as<long long>(), BadConversion); // This will return zero, not throw
-    EXPECT_THROWS_AS(val_null.as<double>(), BadParameter); // n.b. BadParameter, not BadConversion`
+    /// EXPECT_THROWS_AS(val_null.as<long long>(), BadConversion); // This will return zero, not
+    /// throw
+    EXPECT_THROWS_AS(val_null.as<double>(), BadParameter);  // n.b. BadParameter, not BadConversion`
     EXPECT_THROWS_AS(val_null.as<Time>(), BadConversion);
     EXPECT_THROWS_AS(val_null.as<Date>(), BadConversion);
     EXPECT_THROWS_AS(val_null.as<DateTime>(), BadConversion);
     EXPECT_THROWS_AS(val_null.as<ValueMap>(), BadConversion);
 }
 
-CASE( "Boolean strings automatically cast to bools as required" ) {
-    // Boolean casting for Value(StringContent) types is a bit complicated, as it allows strings to be used to
-    // represent truthy values, but nothing else
+CASE("Boolean strings automatically cast to bools as required") {
+    // Boolean casting for Value(StringContent) types is a bit complicated, as it allows strings to
+    // be used to represent truthy values, but nothing else
 
     Value val_true1("true");
     Value val_true2("on");
@@ -106,7 +107,7 @@ CASE( "Boolean strings automatically cast to bools as required" ) {
     EXPECT_THROWS_AS(val_other.as<bool>(), BadConversion);
 }
 
-CASE( "Numerical strings automatically cast to numbers as required" ) {
+CASE("Numerical strings automatically cast to numbers as required") {
     Value val_double("123.45");
     Value val_int("12345");
     Value val_other("string");
@@ -133,7 +134,7 @@ CASE( "Numerical strings automatically cast to numbers as required" ) {
     EXPECT_THROWS_AS(val_other.as<double>(), BadParameter);
 }
 
-CASE( "Types are reported correctly for strings" ) {
+CASE("Types are reported correctly for strings") {
     Value val_null("");
     Value val_str("This is a test string");
 
@@ -161,7 +162,7 @@ CASE( "Types are reported correctly for strings" ) {
     EXPECT(!val_str.isDateTime());
 }
 
-CASE( "Ensure a well defined ordering of strings with other Values()" ) {
+CASE("Ensure a well defined ordering of strings with other Values()") {
     Value val1("a");
     Value val2("a");
     Value val3("b");
@@ -178,19 +179,19 @@ CASE( "Ensure a well defined ordering of strings with other Values()" ) {
     // Check comparisons with other types of data (see test_value_typeordering).
 
     Value val("test str");
-    EXPECT(val.compare(Value(true))                < 0);
-    EXPECT(val.compare(Value(1))                   < 0);
-    EXPECT(val.compare(Value(1234.5))              < 0);
-    EXPECT(val.compare(Value("test str"))         == 0);
-    EXPECT(val.compare(Value())                    > 0);
-    EXPECT(val.compare(Value::makeList())          > 0);
-    EXPECT(val.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val.compare(Value(Time(1000)))          > 0);
-    EXPECT(val.compare(Value(DateTime()))          > 0);
-    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
+    EXPECT(val.compare(Value(true)) < 0);
+    EXPECT(val.compare(Value(1)) < 0);
+    EXPECT(val.compare(Value(1234.5)) < 0);
+    EXPECT(val.compare(Value("test str")) == 0);
+    EXPECT(val.compare(Value()) > 0);
+    EXPECT(val.compare(Value::makeList()) > 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val.compare(Value(Time(1000))) > 0);
+    EXPECT(val.compare(Value(DateTime())) > 0);
+    EXPECT(val.compare(Value::makeOrderedMap()) > 0);
 }
 
-CASE( "Indexing on a string is not done through Value()" ) {
+CASE("Indexing on a string is not done through Value()") {
     // No indexing operations should work on a string...
 
     Value val_char("test string 1");
@@ -219,7 +220,7 @@ CASE( "Indexing on a string is not done through Value()" ) {
     EXPECT_THROWS_AS(val_str.contains(Value(123)), BadOperator);
 }
 
-CASE( "Addition is only valid for pairs of strings" ) {
+CASE("Addition is only valid for pairs of strings") {
     Value val("test string");
 
     EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
@@ -248,7 +249,7 @@ CASE( "Addition is only valid for pairs of strings" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Subtraction is invalid for strings" ) {
+CASE("Subtraction is invalid for strings") {
     Value val("test string");
 
     EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
@@ -276,7 +277,7 @@ CASE( "Subtraction is invalid for strings" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Multiplication is invalid for strings" ) {
+CASE("Multiplication is invalid for strings") {
     Value val("test string");
 
     EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
@@ -304,7 +305,7 @@ CASE( "Multiplication is invalid for strings" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Division is invalid for strings" ) {
+CASE("Division is invalid for strings") {
     Value val("test string");
 
     EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
@@ -332,7 +333,7 @@ CASE( "Division is invalid for strings" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "The modulo operator is invalid for strings" ) {
+CASE("The modulo operator is invalid for strings") {
     Value val("test string");
 
     EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
@@ -360,7 +361,7 @@ CASE( "The modulo operator is invalid for strings" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Head/tail tests are disabled for strings" ) {
+CASE("Head/tail tests are disabled for strings") {
     Value val("this is a test string");
 
     /// EXPECT_THROWS_AS(val.head(), AssertationError);
@@ -369,11 +370,10 @@ CASE( "Head/tail tests are disabled for strings" ) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// There are some constructors that have been added for easy conversion, that aren't actually part of the
-// internal interface
+// There are some constructors that have been added for easy conversion, that aren't actually part
+// of the internal interface
 
-CASE( "Test eckit string-wrapper types in Value" ) {
-
+CASE("Test eckit string-wrapper types in Value") {
     // PathName type
 
     Value val_pathname(PathName("/usr/bin"));
@@ -394,13 +394,12 @@ CASE( "Test eckit string-wrapper types in Value" ) {
     EXPECT(val_pathname.as<std::string>() == "/usr/bin");
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     Value("abcdefghijklmnopqrstuvwxyz").hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "c3fcd3d76192e4007dfb496cca67e13b");
 }

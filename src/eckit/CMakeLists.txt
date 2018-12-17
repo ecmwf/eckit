@@ -646,6 +646,7 @@ memory/MMap.h
 memory/Shmget.cc
 memory/Shmget.h
 memory/SharedPtr.h
+memory/SharedPtr.cc
 memory/Padded.h
 memory/MapAllocator.h
 memory/MapAllocator.cc

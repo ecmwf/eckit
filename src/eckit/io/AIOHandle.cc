@@ -9,20 +9,20 @@
  */
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <limits.h>
+#include <unistd.h>
 #include <algorithm>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/AIOHandle.h"
-#include "eckit/memory/Zero.h"
-
 #include "eckit/maths/Functions.h"
+#include "eckit/memory/Zero.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync):
+AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync) :
     path_(path),
     buffers_(count),
     aiop_(count),
@@ -34,7 +34,6 @@ AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync
     fd_(-1),
     pos_(0),
     fsync_(fsync) {
-
 #ifdef AIO_LISTIO_MAX
     count_ = std::min<size_t>(count_, AIO_LISTIO_MAX);
 #endif
@@ -43,17 +42,17 @@ AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync
     count_ = std::min<size_t>(count_, AIO_MAX);
 #endif
 
-    for (size_t i = 0; i < count_ ; i++) {
+    for (size_t i = 0; i < count_; i++) {
         buffers_[i] = 0;
         zero(aio_[i]);
-        aiop_[i] = &aio_[i];
+        aiop_[i]   = &aio_[i];
         active_[i] = false;
     }
 }
 
 AIOHandle::~AIOHandle() {
     close();
-    for (size_t i = 0; i < count_ ; i++) {
+    for (size_t i = 0; i < count_; i++) {
         delete buffers_[i];
     }
 }
@@ -64,14 +63,14 @@ Length AIOHandle::openForRead() {
 
 void AIOHandle::openForWrite(const Length&) {
     used_ = 0;
-    SYSCALL2( fd_ = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_TRUNC, 0777), path_);
+    SYSCALL2(fd_ = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_TRUNC, 0777), path_);
     pos_ = 0;
 }
 
 void AIOHandle::openForAppend(const Length& length) {
     used_ = 0;
-    SYSCALL2( fd_  = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_APPEND, 0777), path_);
-    SYSCALL2( pos_ = ::lseek(fd_, 0, SEEK_CUR), path_ );
+    SYSCALL2(fd_ = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_APPEND, 0777), path_);
+    SYSCALL2(pos_ = ::lseek(fd_, 0, SEEK_CUR), path_);
 }
 
 long AIOHandle::read(void* buffer, long length) {
@@ -84,19 +83,21 @@ long AIOHandle::write(const void* buffer, long length) {
 
     size_t n = 0;
 
-    if (used_ <  count_) {
+    if (used_ < count_) {
         n = used_++;
-    } else {
+    }
+    else {
         /* wait */
-        while (aio_suspend(&aiop_[0], count_, NULL) < 0) {
+        while (aio_suspend(&aiop_[0], count_, nullptr) < 0) {
             if (errno != EINTR)
                 throw FailedSystemCall("aio_suspend");
         }
 
         bool ok = false;
-        for (n = 0 ; n < count_ ; n++) {
+        for (n = 0; n < count_; n++) {
             int e = aio_error(&aio_[n]);
-            if (e == EINPROGRESS) continue;
+            if (e == EINPROGRESS)
+                continue;
 
             active_[n] = false;
 
@@ -110,25 +111,25 @@ long AIOHandle::write(const void* buffer, long length) {
                 }
                 ok = true;
                 break;
-            } else {
+            }
+            else {
                 throw FailedSystemCall("aio_error");
             }
-
         }
         ASSERT(ok);
     }
 
-    if ( buffers_[n] == 0 || buffers_[n]->size() < (size_t) length ) {
+    if (buffers_[n] == 0 || buffers_[n]->size() < (size_t)length) {
         delete buffers_[n];
         buffers_[n] = new Buffer(eckit::round(length, 64 * 1024));
 
         ASSERT(buffers_[n]);
     }
 
-    memcpy( *(buffers_[n]), buffer, length);
+    memcpy(*(buffers_[n]), buffer, length);
     len_[n] = length;
 
-    struct aiocb  *aio = &aio_[n];
+    struct aiocb* aio = &aio_[n];
 
     memset(aio, 0, sizeof(struct aiocb));
 
@@ -136,8 +137,8 @@ long AIOHandle::write(const void* buffer, long length) {
     aio->aio_offset = pos_;
     pos_ += length;
 
-    aio->aio_buf = *(buffers_[n]);
-    aio->aio_nbytes = length;
+    aio->aio_buf                   = *(buffers_[n]);
+    aio->aio_nbytes                = length;
     aio->aio_sigevent.sigev_notify = SIGEV_NONE;
 
     SYSCALL(aio_write(aio));
@@ -145,27 +146,23 @@ long AIOHandle::write(const void* buffer, long length) {
     active_[n] = true;
 
     return length;
-
 }
 
 void AIOHandle::close() {
     if (fd_ != -1) {
-        flush(); // this should wait for the async requests to finish
+        flush();  // this should wait for the async requests to finish
 
-        SYSCALL( ::close(fd_) );
+        SYSCALL(::close(fd_));
         fd_ = -1;
     }
 }
 
 void AIOHandle::flush() {
-
-
     bool more = true;
     while (more) {
         more = false;
 
-        for ( size_t n = 0 ; n < used_ ; ++n ) {
-
+        for (size_t n = 0; n < used_; ++n) {
             if (!active_[n]) {
                 continue;
             }
@@ -192,14 +189,14 @@ void AIOHandle::flush() {
                     os << "AIOHandle: only " << len << " bytes written instead of " << len_[n];
                     throw WriteError(os.str());
                 }
-            } else {
+            }
+            else {
                 throw FailedSystemCall("aio_return");
             }
-
         }
     }
 
-    if (fsync_) { // request all current operations to the synchronized I/O completion state
+    if (fsync_) {  // request all current operations to the synchronized I/O completion state
         struct aiocb aio;
 
         zero(aio);
@@ -223,7 +220,8 @@ void AIOHandle::flush() {
 
             if (e == EINPROGRESS) {
                 more = 1;
-            } else if (e != 0) {
+            }
+            else if (e != 0) {
                 throw FailedSystemCall("aio_error");
             }
         }
@@ -255,4 +253,4 @@ std::string AIOHandle::title() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

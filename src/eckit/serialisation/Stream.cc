@@ -71,12 +71,21 @@ const int tag_count = sizeof(tag_names) / sizeof(tag_names[0]);
 
 Stream::Stream() : lastTag_(tag_zero), writeCount_(0) {}
 
+void Stream::print(std::ostream& s) const {
+    s << name();
+}
+
 Stream::~Stream() {}
 
 void Stream::putBytes(const void* buf, long len) {
     writeCount_ += len;
     if (write(buf, len) != len)
         throw WriteError(name());
+}
+
+std::ostream& operator<<(std::ostream& out, const Stream& s) {
+    s.print(out);
+    return out;
 }
 
 void Stream::getBytes(void* buf, long len) {

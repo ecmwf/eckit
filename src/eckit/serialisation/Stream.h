@@ -15,6 +15,7 @@
 #define eckit_Stream_h
 
 #include <map>
+#include <string>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
@@ -143,7 +144,7 @@ protected:
     // -- Methods
 
     virtual std::string name() const = 0;
-    virtual void print(std::ostream& s) const { s << name(); }
+    virtual void print(std::ostream& s) const;
 
     size_t blobSize();
 
@@ -208,10 +209,7 @@ private:
     friend class BufferedReader<Stream>;
     friend class IOBuffer<Stream>;
 
-    friend std::ostream& operator<<(std::ostream& out, const Stream& s) {
-        s.print(out);
-        return out;
-    }
+    friend std::ostream& operator<<(std::ostream& out, const Stream& s);
 };
 
 

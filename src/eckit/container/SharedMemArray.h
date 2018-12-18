@@ -20,13 +20,13 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/os/Semaphore.h"
 
-#include "eckit/thread/AutoLock.h"
 #include "eckit/memory/Padded.h"
+#include "eckit/thread/AutoLock.h"
 
-#include "eckit/os/Stat.h"
-#include "eckit/log/Log.h"
 #include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/memory/MMap.h"
+#include "eckit/os/Stat.h"
 
 namespace eckit {
 
@@ -34,41 +34,37 @@ namespace eckit {
 
 /// Maps an array to shared memory
 
-template<class T>
+template <class T>
 class SharedMemArray : private NonCopyable {
+public:  // types
+    typedef T* iterator;
+    typedef const T* const_iterator;
 
-public: // types
-
-	typedef T*       iterator;
-	typedef const T* const_iterator;
-
-public: // methods
-
+public:  // methods
     SharedMemArray(const PathName&, const std::string& shmName, size_t);
 
-	~SharedMemArray();
+    ~SharedMemArray();
 
-	void sync();
-	void lock()    { sem_.lock() ; }
-	void unlock()  { sem_.unlock();}
+    void sync();
+    void lock() { sem_.lock(); }
+    void unlock() { sem_.unlock(); }
 
-	iterator begin()               { return array_;        }
-	iterator end()                 { return array_ + size_; }
+    iterator begin() { return array_; }
+    iterator end() { return array_ + size_; }
 
-    const_iterator begin() const   { return array_;        }
-	const_iterator end()   const   { return array_ + size_; }
+    const_iterator begin() const { return array_; }
+    const_iterator end() const { return array_ + size_; }
 
-	unsigned long size()           { return size_;     }
-	T& operator[](unsigned long n) { return array_[n]; }
+    unsigned long size() { return size_; }
+    T& operator[](unsigned long n) { return array_[n]; }
 
-private: // members
+private:  // members
+    Semaphore sem_;
+    void* map_;
+    int fd_;
 
-	Semaphore     sem_;
-	void*         map_;
-	int           fd_;
-
-	T*            array_;
-    size_t        size_;
+    T* array_;
+    size_t size_;
 
     std::string shmName_;
 
@@ -78,24 +74,21 @@ private: // members
         uint32_t version_;
         uint32_t headerSize_;
         uint32_t elemSize_;
-        Header():
+        Header() :
             version_(shared_mem_array_version()),
             headerSize_(sizeof(Header)),
-            elemSize_(sizeof(T))
-        {}
-        void validate()
-        {
-            ASSERT(version_    == shared_mem_array_version());
+            elemSize_(sizeof(T)) {}
+        void validate() {
+            ASSERT(version_ == shared_mem_array_version());
             ASSERT(headerSize_ == sizeof(Header));
-            ASSERT(elemSize_   == sizeof(T));
+            ASSERT(elemSize_ == sizeof(T));
         }
     };
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "SharedMemArray.cc"
 

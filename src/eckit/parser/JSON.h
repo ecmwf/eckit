@@ -21,6 +21,10 @@
 
 namespace eckit {
 
+class Time;
+class Date;
+class DateTime;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class JSON : private NonCopyable {
@@ -44,6 +48,10 @@ public: // methods
 	JSON& operator<<(unsigned long long);
 	JSON& operator<<(float);
 	JSON& operator<<(double);
+
+    JSON& operator<<(const Date&);
+    JSON& operator<<(const Time&);
+    JSON& operator<<(const DateTime&);
 
 	JSON& operator<<(const std::string&);
 	JSON& operator<<(const char*);

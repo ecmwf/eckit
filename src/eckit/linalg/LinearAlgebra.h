@@ -10,6 +10,7 @@
 
 /// @file   LinearAlgebra.h
 /// @author Florian Rathgeber
+/// @author Tiago Quintino
 /// @date   June 2015
 
 #ifndef eckit_la_LinearAlgebra_h
@@ -79,6 +80,8 @@ protected:
 
     LinearAlgebra(const std::string& name);
 
+    virtual ~LinearAlgebra();
+
 private:
 
     std::string name_;
@@ -95,7 +98,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-}  // namespace linalg
+} // namespace linalg
 } // namespace eckit
 
 #endif

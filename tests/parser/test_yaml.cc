@@ -444,6 +444,34 @@ CASE( "test_eckit_yaml_text_4" ) {
      v.dump(std::cout) << std::endl;
 }
 
+
+CASE( "test_eckit_yaml_text_5" ) {
+
+    {
+        const char* text = "foo : bar";
+
+        Value v =  YAMLParser::decodeString(text);
+        v.dump(std::cout) << std::endl;
+        EXPECT(v["foo"] == Value("bar"));
+    }
+
+    // {
+    //     const char* text = "'foo ': bar";
+
+    //     Value v =  YAMLParser::decodeString(text);
+    //     v.dump(std::cout) << std::endl;
+    //     EXPECT(v["foo "] == Value("bar"));
+    // }
+
+    // {
+    //     const char* text = "'foo ' : bar";
+
+    //     Value v =  YAMLParser::decodeString(text);
+    //     v.dump(std::cout) << std::endl;
+    //     EXPECT(v["foo "] == Value("bar"));
+    // }
+}
+
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------

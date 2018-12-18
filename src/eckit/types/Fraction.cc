@@ -225,7 +225,7 @@ void Fraction::decode(Stream& s) {
 
 inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
-    if(overflow) { return Fraction::value_type(); }
+    if (overflow) { return Fraction::value_type(); }
 
     if (b != 0) {
         overflow = std::abs(a) > std::numeric_limits<Fraction::value_type>::max() / std::abs(b);
@@ -236,10 +236,10 @@ inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction
 
 inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
-    if(overflow) { return Fraction::value_type(); }
+    if (overflow) { return Fraction::value_type(); }
 
     overflow = b > 0 ? a > std::numeric_limits<Fraction::value_type>::max() - b
-                     : a < std::numeric_limits<Fraction::value_type>::lowest() - b;
+               : a < std::numeric_limits<Fraction::value_type>::lowest() - b;
 
     return a + b;
 }
@@ -354,6 +354,94 @@ bool Fraction::operator>=(const Fraction& other) const {
         return double(*this) >= double(other);
     }
     return result;
+}
+
+//-----------------------------------------------------------------------------
+
+
+Fraction Fraction::fromString(const std::string& s) {
+
+    long numerator = 0;
+    long denumerator = 1;
+    int sgn = 1;
+    size_t err = 0;
+    bool decimal = false;
+
+    for (size_t i = 0; i < s.length(); ++i) {
+
+        switch (s[i]) {
+        case '-':
+            if (i != 0) {
+                err++;
+            }
+            sgn = -1;
+            break;
+
+        case '.':
+            if (decimal) {
+                err++;
+            }
+            decimal = true;
+            break;
+
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            numerator *= 10;
+            numerator += s[i] - '0';
+            if (decimal) {
+                denumerator *= 10;
+            }
+            break;
+
+        default:
+            break;
+        }
+
+    }
+
+    if (err) {
+        throw eckit::UserError("Fraction::fromString: invalid value [" + s + "]");
+    }
+
+    return eckit::Fraction(sgn * numerator, denumerator);
+}
+
+Fraction Fraction::stableVersion(size_t max) const {
+    Fraction x(*this);
+
+    size_t n = 0;
+    for (;;) {
+        Fraction y = Fraction(double(x));
+        if (y == x) {
+//             std::cout << "STABLE =========== " << n << " "
+//             << double(*this) << " " << *this
+// << " -> " << double(x) << " " << x <<
+//             std::endl;
+            break;
+        }
+        x = y;
+        n++;
+        if (n >= max) {
+            std::ostringstream oss;
+            oss << "Fraction::stableVersion("
+                << *this
+                << ") did not converge after "
+                << max
+                << " iterations. Last value: "
+                << x;
+            throw eckit::SeriousBug(oss.str());
+        }
+    }
+
+    return x;
 }
 
 //-----------------------------------------------------------------------------

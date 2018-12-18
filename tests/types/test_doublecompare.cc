@@ -95,7 +95,7 @@ CASE ( "test_large_numbers_of_opposite_sign" )
     EXPECT(! is_equal(-1000000.0,     1000001.0    ));
     EXPECT(! is_equal(-1000001.0,     1000000.0    ));
 
-    // -----------------------------------------------
+    // Overflow occurs here in eckit::types::is_approximately_equal
     EXPECT(! is_equal(-dMax, dMax      ));
     EXPECT(! is_equal(-dMax, dMax, dEps));
 }
@@ -341,7 +341,17 @@ CASE ( "test_comparisons_ulps" )
 } // namespace test
 } // namespace eckit
 
+//-----------------------------------------------------------------------------
+
+#if defined( _CRAYC )
+#include <fenv.h>
+#else
+static int fedisableexcept(int excepts) { return 0; }
+static int FE_ALL_EXCEPT = 0;
+#endif
+
 int main(int argc,char **argv)
 {
+    fedisableexcept(FE_ALL_EXCEPT);
     return run_tests ( argc, argv );
 }

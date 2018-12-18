@@ -34,6 +34,7 @@ ecbuild_add_library( TARGET             eckit_linalg
                                         "${CUDA_INCLUDE_DIRS}"
                                         "${MKL_INCLUDE_DIRS}"
                                         "${VIENNACL_INCLUDE_DIRS}"
+                                        "${EIGEN3_INCLUDE_DIRS}"
                      LIBS               eckit
                                         "${ARMADILLO_LIBRARIES}"
                                         "${CUDA_LIBRARIES}" "${CUDA_cusparse_LIBRARY}"

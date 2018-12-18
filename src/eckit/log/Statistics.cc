@@ -177,6 +177,15 @@ Timing &Timing::operator+=(const Timing & other) {
     return *this;
 }
 
+Timing &Timing::operator-=(const Timing & other) {
+    elapsed_ -= other.elapsed_;
+    cpu_ -= other.cpu_;
+    // We don't remove the number of update because
+    // we use this operator to remove sub-timers
+    // updates_ -= other.updates_;
+    return *this;
+}
+
 
 Timing &Timing::operator/=(size_t n) {
     elapsed_ /= n;

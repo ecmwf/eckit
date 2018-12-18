@@ -8,36 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
-#include <cstring>
+/// @author SimonSmart
+/// @date   Dec 2018
 
-#include "eckit/log/CodeLocation.h"
+#ifndef eckit_TmpDir_h
+#define eckit_TmpDir_h
+
+#include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::string CodeLocation::asString() const {
-    std::ostringstream oss;
-    print(oss);
-    return oss.str();
-}
+class TmpDir : public PathName, private NonCopyable {
+public:
+    TmpDir();
 
-CodeLocation::operator bool() const {
-    return file_ && ::strlen(file_);
-}
-
-void CodeLocation::print(std::ostream& os) const {
-    if ( file_ ) {
-        os << " (" << file_ << " +" << line_;
-        if ( func_ && ::strlen(func_) )
-            os << " " << func_;
-        os << ")";
-    }
-}
+    ~TmpDir() noexcept(false);
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
+#endif

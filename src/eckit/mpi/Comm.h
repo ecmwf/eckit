@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SharedBuffer.h"
 #include "eckit/memory/NonCopyable.h"
@@ -424,6 +423,15 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace eckit {
+namespace mpi {
+namespace detail {
+void Assert(int code, const char* msg, const char* file, int line, const char* func);
+#define ECKIT_MPI_ASSERT(a) eckit::mpi::detail::Assert(!(a), #a, __FILE__, __LINE__, __func__)
+}  // namespace detail
+}  // namespace mpi
+}  // namespace eckit
+
 
 template <typename T>
 size_t eckit::mpi::Comm::getCount(Status& status) const {
@@ -437,7 +445,7 @@ size_t eckit::mpi::Comm::getCount(Status& status) const {
 template <typename T>
 void eckit::mpi::Comm::broadcast(T& value, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
 
     T* p = &value;
 
@@ -447,7 +455,7 @@ void eckit::mpi::Comm::broadcast(T& value, size_t root) const {
 template <typename T>
 void eckit::mpi::Comm::broadcast(T* first, T* last, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
 
     broadcast(first, (last - first), Data::Type<T>::code(), root);
 }
@@ -455,7 +463,7 @@ void eckit::mpi::Comm::broadcast(T* first, T* last, size_t root) const {
 template <typename T>
 void eckit::mpi::Comm::broadcast(T buffer[], size_t count, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
 
     broadcast(buffer, count, Data::Type<T>::code(), root);
 }
@@ -463,7 +471,7 @@ void eckit::mpi::Comm::broadcast(T buffer[], size_t count, size_t root) const {
 template <typename T>
 void eckit::mpi::Comm::broadcast(typename std::vector<T>& v, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
 
     broadcast(v.begin(), v.end(), root);
 }
@@ -471,7 +479,7 @@ void eckit::mpi::Comm::broadcast(typename std::vector<T>& v, size_t root) const 
 template <class Iter>
 void eckit::mpi::Comm::broadcast(Iter first, Iter last, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
 
     typename std::iterator_traits<Iter>::difference_type n = std::distance(first, last);
     Data::Code type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
@@ -488,17 +496,17 @@ void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, 
     typedef typename std::iterator_traits<CIter>::difference_type diff_t;
 
     const size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
 
     const diff_t sendcount = std::distance(first, last);
     const diff_t rsize     = std::distance(rfirst, rlast);
-    ASSERT(rsize % commsize == 0); /* receiving size is multiple of comm().size() */
+    ECKIT_MPI_ASSERT(rsize % commsize == 0); /* receiving size is multiple of comm().size() */
     const diff_t recvcount = rsize / commsize;
-    ASSERT(sendcount == recvcount);
+    ECKIT_MPI_ASSERT(sendcount == recvcount);
 
     Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
     Data::Code type  = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
-    ASSERT(ctype == type);
+    ECKIT_MPI_ASSERT(ctype == type);
 
     gather(&(*first), sendcount, &(*rfirst), recvcount, type, root);
 }
@@ -506,11 +514,11 @@ void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, 
 template <typename T>
 void eckit::mpi::Comm::gather(const T send, std::vector<T>& recv, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
-    ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
+    ECKIT_MPI_ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
     size_t recvcount = recv.size() / commsize;
     size_t sendcount = 1;
-    ASSERT(recvcount == sendcount);
+    ECKIT_MPI_ASSERT(recvcount == sendcount);
 
     gather(&send, sendcount, recv.data(), recvcount, Data::Type<T>::code(), root);
 }
@@ -518,10 +526,10 @@ void eckit::mpi::Comm::gather(const T send, std::vector<T>& recv, size_t root) c
 template <typename T>
 void eckit::mpi::Comm::gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
-    ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
+    ECKIT_MPI_ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
     size_t recvcount = recv.size() / commsize;
-    ASSERT(send.size() == recvcount);
+    ECKIT_MPI_ASSERT(send.size() == recvcount);
 
     gather(send.data(), send.size(), recv.data(), recvcount, Data::Type<T>::code(), root);
 }
@@ -545,7 +553,7 @@ void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast,
     // rlast);
     Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
     Data::Code type  = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
-    ASSERT(ctype == type);
+    ECKIT_MPI_ASSERT(ctype == type);
 
     gatherv(&(*first), sendcount, &(*rfirst), recvcounts, displs, type, root);
 }
@@ -555,9 +563,9 @@ void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast,
                                const std::vector<int>& recvcounts, const std::vector<int>& displs,
                                size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
-    ASSERT(recvcounts.size() == commsize);
-    ASSERT(displs.size() == commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(recvcounts.size() == commsize);
+    ECKIT_MPI_ASSERT(displs.size() == commsize);
 
     gatherv(first, last, rfirst, rlast, recvcounts.data(), displs.data(), root);
 }
@@ -567,9 +575,9 @@ void eckit::mpi::Comm::gatherv(const std::vector<T>& send, std::vector<T>& recv,
                                const std::vector<int>& recvcounts, const std::vector<int>& displs,
                                size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
-    ASSERT(recvcounts.size() == commsize);
-    ASSERT(displs.size() == commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(recvcounts.size() == commsize);
+    ECKIT_MPI_ASSERT(displs.size() == commsize);
 
     gatherv(send.begin(), send.end(), recv.begin(), recv.end(), recvcounts.data(), displs.data(),
             root);
@@ -582,11 +590,11 @@ void eckit::mpi::Comm::gatherv(const std::vector<T>& send, std::vector<T>& recv,
 template <typename T>
 void eckit::mpi::Comm::scatter(const std::vector<T>& send, T& recv, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
-    ASSERT(send.size() % commsize == 0);
+    ECKIT_MPI_ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(send.size() % commsize == 0);
     size_t sendcount = send.size() / commsize;
     size_t recvcount = 1;
-    ASSERT(recvcount == sendcount);
+    ECKIT_MPI_ASSERT(recvcount == sendcount);
 
     scatter(send.data(), sendcount, &recv, recvcount, Data::Type<T>::code(), root);
 }
@@ -595,11 +603,11 @@ template <typename T>
 void eckit::mpi::Comm::scatter(const std::vector<T>& send, std::vector<T>& recv,
                                size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
-    ASSERT(send.size() % commsize == 0);
+    ECKIT_MPI_ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(send.size() % commsize == 0);
     size_t sendcount = send.size() / commsize;
     size_t recvcount = recv.size();
-    ASSERT(recvcount == sendcount);
+    ECKIT_MPI_ASSERT(recvcount == sendcount);
 
     scatter(send.data(), sendcount, recv.data(), recvcount, Data::Type<T>::code(), root);
 }
@@ -613,7 +621,7 @@ template <typename Value>
 void eckit::mpi::Comm::scatterv(const Value* sendbuf, const int sendcounts[], const int displs[],
                                 Value* recvbuf, int recvcount, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
     scatterv(sendbuf, sendcounts, displs, recvbuf, recvcount, Data::Type<Value>::code(), root);
 }
 
@@ -621,13 +629,13 @@ template <class CIter, class Iter>
 void eckit::mpi::Comm::scatterv(CIter first, CIter last, const int sendcounts[], const int displs[],
                                 Iter rfirst, Iter rlast, size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
 
     typename std::iterator_traits<Iter>::difference_type recvcounts = std::distance(rfirst, rlast);
     // typename std::iterator_traits<Iter>::difference_type sendsize   = std::distance(first, last);
     Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
     Data::Code type  = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
-    ASSERT(ctype == type);
+    ECKIT_MPI_ASSERT(ctype == type);
 
     scatterv(&(*first), sendcounts, displs, &(*rfirst), recvcounts, type, root);
 }
@@ -637,9 +645,9 @@ void eckit::mpi::Comm::scatterv(CIter first, CIter last, const std::vector<int>&
                                 const std::vector<int>& displs, Iter rfirst, Iter rlast,
                                 size_t root) const {
     size_t commsize = size();
-    ASSERT(root < commsize);
-    ASSERT(sendcounts.size() == commsize);
-    ASSERT(displs.size() == commsize);
+    ECKIT_MPI_ASSERT(root < commsize);
+    ECKIT_MPI_ASSERT(sendcounts.size() == commsize);
+    ECKIT_MPI_ASSERT(displs.size() == commsize);
 
     scatterv(first, last, sendcounts.data(), displs.data(), rfirst, rlast, root);
 }
@@ -661,7 +669,7 @@ void eckit::mpi::Comm::allReduce(const T* send, T* recv, size_t count, Operation
 template <typename T>
 void eckit::mpi::Comm::allReduce(const std::vector<T>& send, std::vector<T>& recv,
                                  Operation::Code op) const {
-    ASSERT(send.size() == recv.size());
+    ECKIT_MPI_ASSERT(send.size() == recv.size());
     allReduce(send.data(), recv.data(), send.size(), Data::Type<T>::code(), op);
 }
 
@@ -695,12 +703,12 @@ template <typename T, typename Iter>
 void eckit::mpi::Comm::allGather(T sendval, Iter rfirst, Iter rlast) const {
     Data::Code ctype = Data::Type<T>::code();
     Data::Code type  = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
-    ASSERT(ctype == type);
+    ECKIT_MPI_ASSERT(ctype == type);
 
     typename std::iterator_traits<Iter>::difference_type rsize = std::distance(rfirst, rlast);
-    ASSERT(rsize % size() == 0);
+    ECKIT_MPI_ASSERT(rsize % size() == 0);
     size_t recvcount = rsize / size();
-    ASSERT(recvcount == 1);
+    ECKIT_MPI_ASSERT(recvcount == 1);
 
     allGather(&sendval, 1, &(*rfirst), recvcount, type);
 }
@@ -715,7 +723,7 @@ void eckit::mpi::Comm::allGatherv(CIter first, CIter last, Iter recvbuf, const i
     typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
     Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
     Data::Code type  = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
-    ASSERT(ctype == type);
+    ECKIT_MPI_ASSERT(ctype == type);
     allGatherv(&(*first), sendcount, &(*recvbuf), recvcounts, displs, type);
 }
 
@@ -726,8 +734,8 @@ void eckit::mpi::Comm::allGatherv(CIter first, CIter last, Iter recvbuf, const i
 template <typename T>
 void eckit::mpi::Comm::allToAll(const std::vector<T>& send, std::vector<T>& recv) const {
     size_t commsize = size();
-    ASSERT(send.size() % commsize == 0);
-    ASSERT(recv.size() % commsize == 0);
+    ECKIT_MPI_ASSERT(send.size() % commsize == 0);
+    ECKIT_MPI_ASSERT(recv.size() % commsize == 0);
 
     size_t sendcount = send.size() / commsize;
     size_t recvcount = recv.size() / commsize;
@@ -837,8 +845,8 @@ void eckit::mpi::Comm::allToAll(const std::vector<std::vector<T> >& sendvec,
                                 std::vector<std::vector<T> >& recvvec) const {
     size_t commsize = size();
 
-    ASSERT(sendvec.size() == commsize);
-    ASSERT(recvvec.size() == commsize);
+    ECKIT_MPI_ASSERT(sendvec.size() == commsize);
+    ECKIT_MPI_ASSERT(recvvec.size() == commsize);
 
     // Get send-information
     std::vector<int> sendcounts(commsize);
@@ -892,5 +900,7 @@ void eckit::mpi::Comm::allToAll(const std::vector<std::vector<T> >& sendvec,
 }
 
     //----------------------------------------------------------------------------------------------------------------------
+
+#undef ECKIT_MPI_ASSERT
 
 #endif

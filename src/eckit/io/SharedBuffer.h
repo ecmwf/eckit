@@ -15,11 +15,10 @@
 #ifndef eckit_io_SharedBuffer_h
 #define eckit_io_SharedBuffer_h
 
+#include <iosfwd>
 #include <string>
 
 #include "eckit/io/Buffer.h"
-
-#include "eckit/exception/Exceptions.h"
 #include "eckit/memory/Counted.h"
 
 namespace eckit {
@@ -39,16 +38,9 @@ public:  // methods
 
 class SharedBuffer {
 public:  // methods
-    SharedBuffer(size_t size) : buffer_(new CountedBuffer(size)) {
-        ASSERT(buffer_);
-        buffer_->attach();
-    }
+    SharedBuffer(size_t size);
 
-    SharedBuffer(CountedBuffer* b) {
-        ASSERT(b);
-        buffer_ = b;
-        buffer_->attach();
-    }
+    SharedBuffer(CountedBuffer* b);
 
     ~SharedBuffer() { buffer_->detach(); }
 

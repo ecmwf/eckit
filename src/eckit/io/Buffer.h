@@ -15,9 +15,8 @@
 #ifndef eckit_io_Buffer_h
 #define eckit_io_Buffer_h
 
+#include <cstddef>
 #include <string>
-
-#include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"
 

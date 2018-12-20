@@ -572,6 +572,8 @@ net/Port.h
 net/Port.cc )
 
 list( APPEND eckit_serialisation_srcs
+serialisation/BadTag.h
+serialisation/BadTag.cc
 serialisation/Stream.h
 serialisation/Stream.cc
 serialisation/Streamable.h

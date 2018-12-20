@@ -24,6 +24,7 @@
 #include "eckit/container/Recycler.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
+#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

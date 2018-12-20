@@ -8,31 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#include <assert.h>
+#include "eckit/serialisation/Stream.h"
+
 #include <netinet/in.h>
 #include <stdint.h>
 #include <sys/types.h>
-#include <cstring>
 
-#include "eckit/exception/Exceptions.h"
+#include <cstring>
+#include <cassert>
+
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
-#include "eckit/serialisation/Stream.h"
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/serialisation/BadTag.h"
 
 namespace eckit {
 
-class BadTag : public Exception {
-public:
-    BadTag(const std::string& what);
-};
-
-
-BadTag::BadTag(const std::string& what) : Exception(what) {
-    dumpStackTrace(std::cerr);
-}
-
-    //----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 #if 0
 #define T(a, x)                                                    \
@@ -845,6 +837,6 @@ void Stream::dump(std::ostream& out, const char* p, size_t len) {
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

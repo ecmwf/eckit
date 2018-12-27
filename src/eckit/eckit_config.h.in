@@ -7,8 +7,8 @@
 
 // endiness
 
-#cmakedefine ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
-#cmakedefine ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
+#define ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
+#define ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
 
 // system
 

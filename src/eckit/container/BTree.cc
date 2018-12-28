@@ -9,7 +9,9 @@
  */
 
 #include <ostream>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/FDataSync.h"
 
 namespace eckit {
 
@@ -117,7 +119,7 @@ void BTree<K, V, S, L>::flush() {
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::sync() {
-    SYSCALL2(::fdatasync(fd_), path_);
+    SYSCALL2(eckit::fdatasync(fd_), path_);
 }
 
 template <class K, class V, int S, class L>

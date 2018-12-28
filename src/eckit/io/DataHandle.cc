@@ -11,7 +11,7 @@
 #include <cmath>
 #include <cstring>
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"

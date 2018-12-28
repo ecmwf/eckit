@@ -30,6 +30,7 @@ check_symbol_exists( MAP_ANON      "sys/mman.h"  ECKIT_HAVE_MAP_ANON )
 check_symbol_exists( funopen       "stdio.h"     ECKIT_HAVE_FUNOPEN )
 check_symbol_exists( fsync         "unistd.h"    ECKIT_HAVE_FSYNC)
 check_symbol_exists( fdatasync     "unistd.h"    ECKIT_HAVE_FDATASYNC)
+check_symbol_exists( F_FULLFSYNC   "fcntl.h"     ECKIT_HAVE_F_FULLFSYNC)
 check_symbol_exists( fmemopen      "stdio.h"     ECKIT_HAVE_FMEMOPEN )
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"

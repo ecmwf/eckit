@@ -13,6 +13,6 @@
 #ifndef eckit_cmd_cmdlib_h
 #define eckit_cmd_cmdlib_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #endif

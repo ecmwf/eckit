@@ -11,7 +11,7 @@
 // File MarsFSFile.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/config/Resource.h"

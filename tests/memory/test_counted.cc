@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #include "eckit/memory/Counted.h"
 #include "eckit/memory/Owned.h"

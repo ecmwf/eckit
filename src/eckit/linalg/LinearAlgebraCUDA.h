@@ -15,7 +15,7 @@
 #ifndef eckit_la_LinearAlgebraCUDA_h
 #define eckit_la_LinearAlgebraCUDA_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_CUDA
 

@@ -12,6 +12,8 @@
 
 #include <sstream>
 
+#include "eckit/eckit.h"
+
 #include "eckit/log/TimeStamp.h"
 
 

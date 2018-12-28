@@ -10,6 +10,8 @@
 
 #include <iomanip>
 
+#include "eckit/eckit.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/persist/DumpLoad.h"

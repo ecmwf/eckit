@@ -15,7 +15,7 @@
 #ifndef eckit_la_LinearAlgebraEigen_h
 #define eckit_la_LinearAlgebraEigen_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_EIGEN
 

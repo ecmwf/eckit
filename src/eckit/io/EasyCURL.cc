@@ -10,6 +10,8 @@
 
 #include <arpa/inet.h>
 
+#include "eckit/eckit.h"
+
 #include "eckit/io/EasyCURL.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/StringTools.h"

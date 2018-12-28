@@ -16,7 +16,7 @@
 
 #include <map>
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 
 

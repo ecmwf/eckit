@@ -24,10 +24,6 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-#if (!defined ECKIT_HAVE_FDATASYNC) && (defined ECKIT_HAVE_FSYNC)
-#define fdatasync  fsync
-#endif
-
 /* Usefull macros */
 
 #ifndef NUMBER

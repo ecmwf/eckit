@@ -16,14 +16,13 @@
 #ifndef eckit_DataHandle_h
 #define eckit_DataHandle_h
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/serialisation/Streamable.h"
 #include "eckit/io/TransferWatcher.h"
-
 
 namespace eckit {
 

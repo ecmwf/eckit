@@ -132,6 +132,8 @@ io/Length.h
 io/Length.cc
 io/DataHandle.h
 io/DataHandle.cc
+io/FDataSync.h
+io/FDataSync.cc
 io/Select.h
 io/Select.cc
 io/CommandStream.h

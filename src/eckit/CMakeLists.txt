@@ -523,164 +523,6 @@ value/StringContent.h
 value/StringContent.cc
 value/Value.h
 value/Value.cc
-
-#sql/SQLMATCHSubquerySession.h
-#sql/SQLMATCHSubquerySession.cc
-#sql/SQLMATCHSubquerySessionOutput.h
-#sql/SQLMATCHSubquerySessionOutput.cc
-sql/Environment.cc
-sql/Environment.h
-sql/SQLBitColumn.cc
-sql/SQLBitColumn.h
-sql/SQLColumn.cc
-sql/SQLColumn.h
-sql/SQLDatabase.cc
-sql/SQLDatabase.h
-sql/SQLDistinctOutput.cc
-sql/SQLDistinctOutput.h
-sql/SQLOrderOutput.cc
-sql/SQLOrderOutput.h
-sql/SQLOutput.cc
-sql/SQLOutput.h
-sql/SQLOutputConfig.cc
-sql/SQLOutputConfig.h
-sql/SQLParser.cc
-sql/SQLParser.h
-sql/SelectOneTable.cc
-sql/SelectOneTable.h
-sql/SQLSelect.cc
-sql/SQLSelect.h
-sql/SQLSelectFactory.cc
-sql/SQLSelectFactory.h
-sql/SQLSession.cc
-sql/SQLSession.h
-sql/SQLSimpleOutput.cc
-sql/SQLSimpleOutput.h
-sql/SQLStatement.cc
-sql/SQLStatement.h
-sql/SQLTable.cc
-sql/SQLTable.h
-sql/SQLTableFactory.cc
-sql/SQLTableFactory.h
-sql/SQLTypedefs.h
-
-sql/expression/BitColumnExpression.cc
-sql/expression/BitColumnExpression.h
-sql/expression/ColumnExpression.cc
-sql/expression/ColumnExpression.h
-sql/expression/ConstantExpression.cc
-sql/expression/ConstantExpression.h
-sql/expression/NumberExpression.cc
-sql/expression/NumberExpression.h
-sql/expression/ParameterExpression.cc
-sql/expression/ParameterExpression.h
-sql/expression/StringExpression.cc
-sql/expression/StringExpression.h
-sql/expression/SQLExpression.cc
-sql/expression/SQLExpression.h
-sql/expression/SQLExpressions.cc
-sql/expression/SQLExpressions.h
-sql/expression/ShiftedColumnExpression.cc
-sql/expression/ShiftedColumnExpression.h
-sql/expression/SQLExpressionEvaluated.cc
-sql/expression/SQLExpressionEvaluated.h
-sql/expression/OrderByExpressions.cc
-sql/expression/OrderByExpressions.h
-
-sql/expression/function/piconst.h
-sql/expression/function/EqRegionCache.cc
-sql/expression/function/EqRegionCache.h
-sql/expression/function/RggRegionCache.cc
-sql/expression/function/RggRegionCache.h
-sql/expression/function/RegionCache.cc
-sql/expression/function/RegionCache.h
-sql/expression/function/FunctionExpression.cc
-sql/expression/function/FunctionExpression.h
-sql/expression/function/FunctionAND.cc
-sql/expression/function/FunctionAND.h
-sql/expression/function/FunctionAVG.cc
-sql/expression/function/FunctionAVG.h
-sql/expression/function/FunctionCOUNT.cc
-sql/expression/function/FunctionCOUNT.h
-sql/expression/function/FunctionDOTP.cc
-sql/expression/function/FunctionDOTP.h
-sql/expression/function/FunctionEQ.cc
-sql/expression/function/FunctionEQ.h
-sql/expression/function/FunctionRLIKE.cc
-sql/expression/function/FunctionRLIKE.h
-sql/expression/function/FunctionEQ_BOXLAT.cc
-sql/expression/function/FunctionEQ_BOXLAT.h
-sql/expression/function/FunctionEQ_BOXLON.cc
-sql/expression/function/FunctionEQ_BOXLON.h
-#sql/expression/function/FunctionMATCH.h
-#sql/expression/function/FunctionMATCH.cc
-sql/expression/function/FunctionFactory.cc
-sql/expression/function/FunctionFactory.h
-sql/expression/function/FunctionIN.cc
-sql/expression/function/FunctionIN.h
-sql/expression/function/FunctionIntegerExpression.cc
-sql/expression/function/FunctionIntegerExpression.h
-sql/expression/function/FunctionJOIN.cc
-sql/expression/function/FunctionJOIN.h
-sql/expression/function/FunctionJULIAN.cc
-sql/expression/function/FunctionJULIAN.h
-sql/expression/function/FunctionJULIAN_SECONDS.cc
-sql/expression/function/FunctionJULIAN_SECONDS.h
-sql/expression/function/FunctionMAX.cc
-sql/expression/function/FunctionMAX.h
-sql/expression/function/FunctionMIN.cc
-sql/expression/function/FunctionMIN.h
-sql/expression/function/FunctionFIRST.cc
-sql/expression/function/FunctionFIRST.h
-sql/expression/function/FunctionLAST.cc
-sql/expression/function/FunctionLAST.h
-sql/expression/function/FunctionNORM.cc
-sql/expression/function/FunctionNORM.h
-sql/expression/function/FunctionNOT_IN.cc
-sql/expression/function/FunctionNOT_IN.h
-sql/expression/function/FunctionNOT_NULL.cc
-sql/expression/function/FunctionNOT_NULL.h
-sql/expression/function/FunctionNULL.cc
-sql/expression/function/FunctionNULL.h
-sql/expression/function/FunctionNVL.cc
-sql/expression/function/FunctionNVL.h
-sql/expression/function/FunctionOR.cc
-sql/expression/function/FunctionOR.h
-sql/expression/function/FunctionRGG_BOXLAT.cc
-sql/expression/function/FunctionRGG_BOXLAT.h
-sql/expression/function/FunctionRGG_BOXLON.cc
-sql/expression/function/FunctionRGG_BOXLON.h
-sql/expression/function/FunctionRMS.cc
-sql/expression/function/FunctionRMS.h
-sql/expression/function/FunctionROWNUMBER.cc
-sql/expression/function/FunctionROWNUMBER.h
-sql/expression/function/FunctionSTDEV.cc
-sql/expression/function/FunctionSTDEV.h
-sql/expression/function/FunctionSUM.cc
-sql/expression/function/FunctionSUM.h
-sql/expression/function/FunctionTDIFF.cc
-sql/expression/function/FunctionTDIFF.h
-sql/expression/function/FunctionTHIN.cc
-sql/expression/function/FunctionTHIN.h
-sql/expression/function/FunctionTIMESTAMP.cc
-sql/expression/function/FunctionTIMESTAMP.h
-sql/expression/function/FunctionVAR.cc
-sql/expression/function/FunctionVAR.h
-
-sql/type/SQLBit.cc
-sql/type/SQLBit.h
-sql/type/SQLBitfield.cc
-sql/type/SQLBitfield.h
-sql/type/SQLDouble.cc
-sql/type/SQLDouble.h
-sql/type/SQLInt.cc
-sql/type/SQLInt.h
-sql/type/SQLReal.cc
-sql/type/SQLReal.h
-sql/type/SQLString.cc
-sql/type/SQLString.h
-sql/type/SQLType.cc
-sql/type/SQLType.h
 )
 
 list( APPEND eckit_os_srcs
@@ -920,8 +762,6 @@ list( APPEND eckit_templates
 					transaction/TxnLog.cc
 					types/Types.cc
 					utils/RLE.cc
-                    sql/SQLIteratorOutput.cc
-                    sql/expression/ShiftedColumnExpression.cc
 )
 
 list( APPEND eckit_persistent
@@ -969,14 +809,6 @@ ecbuild_add_library(TARGET eckit
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
                    LINKER_LANGUAGE CXX )
 
-### Parser for SQL functionality
-
-ecbuild_generate_yy( YYPREFIX           eckit_sql_
-                     YACC               sql/sqly
-                     LEX                sql/sqll
-                     FLEX_FLAGS         "-d"
-                     DEPENDANT          sql/SQLParser.cc )
-
 ### sub-directories
 
 if( HAVE_ECKIT_CMD )
@@ -988,4 +820,5 @@ add_subdirectory( linalg )
 add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
+add_subdirectory( sql )
 add_subdirectory( web )

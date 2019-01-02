@@ -7,5 +7,5 @@ set (_sql_tests
 foreach( _tst ${_sql_tests} )
     ecbuild_add_test( TARGET   eckit_test_sql_${_tst}
                       SOURCES  test_${_tst}.cc
-                      LIBS     eckit )
+                      LIBS     eckit_sql )
 endforeach()

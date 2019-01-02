@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef odb_api_Types_h
-#define odb_api_Types_h
+#ifndef eckit_sql_SQLTypes_h
+#define eckit_sql_SQLTypes_h
 
 #include <stdint.h>
 #include <vector>

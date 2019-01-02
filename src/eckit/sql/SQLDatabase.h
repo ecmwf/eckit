@@ -21,10 +21,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/sql/SQLTable.h"
 
-// TODO: SchemaAnalyzer
-//#include "odb_api/SchemaAnalyzer.h"
-
-//namespace eckit { class DataHandle; }
 
 namespace eckit {
 namespace sql {

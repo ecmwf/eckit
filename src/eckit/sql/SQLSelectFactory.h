@@ -14,7 +14,6 @@
 #include <vector>
 #include <memory>
 
-//#include "odb_api/SchemaAnalyzer.h"
 #include "eckit/sql/SQLOutputConfig.h"
 
 // Forward declarations

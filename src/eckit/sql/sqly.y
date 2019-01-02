@@ -37,16 +37,7 @@ struct YYSTYPE {
     std::pair<std::shared_ptr<SQLExpression>,bool> orderexp;
     std::pair<Expressions, std::vector<bool>>      orderlist;
     std::vector<std::reference_wrapper<SQLTable>>  tablist;
-    ///ColumnDefs             coldefs;
-    ///ColumnDef              coldef;
-    ///ConstraintDefs         condefs;
-    ///ConstraintDef          condef;
-    ///Range                  r;
     bool                   bol;
-    ///SelectAST              select_statement;
-    ///InsertAST              insert_statement;
-    ///EmbeddedAST            embedded_statement;
-    ///std::pair<ColumnDefs, ConstraintDefs> tablemd;
 };
 
 #ifdef YY_DECL
@@ -159,39 +150,7 @@ Expressions emptyExpressionList;
 
 %type <bol> distinct;
 
-//
-//%type <r>vector_range_decl;
 %type <val> bitfield_ref;
-//%type <coldefs>column_def_list;
-//%type <coldefs>column_def_list_;
-//%type <coldef>column_def;
-//%type <coldefs>bitfield_def_list;
-//%type <coldefs>bitfield_def_list_;
-//%type <coldef>bitfield_def;
-//%type <val>data_type;
-//%type <val>default_value;
-//%type <bol>temporary;
-//%type <val>location;
-//%type <tablemd>table_md;
-//%type <list>inherits;
-//%type <list>inheritance_list;
-//%type <list>inheritance_list_;
-//%type <list>optional_columns;
-//%type <list>columns;
-//%type <list>values;
-//%type <list>values_list;
-//
-//%type <condefs>constraint_list;
-//%type <condefs>constraint_list_;
-//%type <condef>constraint;
-//%type <val>constraint_name;
-//%type <condef>primary_key;
-//%type <condef>foreign_key;
-//%type <list>column_reference_list;
-//%type <val>column_reference;
-//%type <select_statement>select_statement;
-//%type <insert_statement>insert_statement;
-//%type <select_statement>create_view_statement;
 
 %%
 

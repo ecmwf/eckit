@@ -79,7 +79,7 @@ protected: // members
 };
 
 
-// TODO: Move into odb_api
+// TODO: Move into odc
 // 	SQLOutputConfig(bool cn = false,
 //                     bool n = false,
 //                     const std::string& d = defaultDelimiter(),

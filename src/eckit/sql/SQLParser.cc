@@ -12,7 +12,6 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/sql/expression/BitColumnExpression.h"
 #include "eckit/sql/expression/ColumnExpression.h"
-//#include "odb_api/Dictionary.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/SQLExpression.h"
@@ -22,12 +21,10 @@
 #include "eckit/sql/expression/StringExpression.h"
 #include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSelect.h"
-//#include "eckit/sql/SQLInsertFactory.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/type/SQLBitfield.h"
 #include "eckit/parser/StringTools.h"
-//#include "odb_api/FunctionMATCH.h"
 
 using namespace eckit;
 

@@ -12,8 +12,8 @@
 /// @author Simon Smart
 /// ECMWF Dec 03
 
-#ifndef odb_api_SQLOutput_H
-#define odb_api_SQLOutput_H
+#ifndef eckit_sql_SQLOutput_H
+#define eckit_sql_SQLOutput_H
 
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/memory/NonCopyable.h"

@@ -24,8 +24,6 @@
 #include <string.h>
 #include <vector>
 
-//#include "odb_api/eckit_sql_lex.h"
-
 // http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html#Multiple-Input-Buffers
 
 class Stack {

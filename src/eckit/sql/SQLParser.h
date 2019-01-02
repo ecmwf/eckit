@@ -21,8 +21,6 @@
 namespace eckit { class PathName; }
 namespace eckit { class DataHandle; }
 
-#define ODB_API_HAS_REENTRANT_SQL_PARSER 1
-
 namespace eckit {
 namespace sql {
 

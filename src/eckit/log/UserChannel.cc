@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <vector>
+#include <algorithm>
+
 #include "eckit/exception/Exceptions.h"
 
 #include "eckit/log/UserChannel.h"
@@ -27,7 +30,7 @@ public:
         std::streambuf(),
         buffer_( size + 1 ),
         msgType_(UserChannel::NONE),
-        user_(0)
+        user_(nullptr)
     {
         ASSERT( size );
         char *base = &buffer_.front();

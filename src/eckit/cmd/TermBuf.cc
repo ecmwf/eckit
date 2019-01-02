@@ -8,6 +8,9 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <iostream>
+#include <iomanip>
+
 #include "eckit/cmd/TermBuf.h"
 
 extern "C" {

@@ -10,6 +10,8 @@
 
 #include <cstring>
 
+#include <algorithm>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"
 #include "eckit/parser/Tokenizer.h"
@@ -129,16 +131,16 @@ std::vector<std::string> StringTools::listVariables(const std::string& s)
 
 std::string StringTools::upper(const std::string& v)
 {
-	std::string r = v;
-	transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (toupper));
-	return r;
+    std::string r = v;
+    std::transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (toupper));
+    return r;
 }
 
 std::string StringTools::lower(const std::string& v)
 {
-	std::string r = v;
-	transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (tolower));
-	return r;
+    std::string r = v;
+    std::transform(r.begin(), r.end(), r.begin(), static_cast < int(*)(int) > (tolower));
+    return r;
 }
 
 std::string StringTools::trim(const std::string& str)

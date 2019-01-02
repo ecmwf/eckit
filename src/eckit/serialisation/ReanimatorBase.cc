@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Streamable.h"
 
 
@@ -16,79 +16,79 @@
 
 namespace eckit {
 
+
+class NotSubClass : public Exception {
+public:
+    NotSubClass(const std::string&, const std::string&);
+};
+
+class UnknowClass : public Exception {
+public:
+    UnknowClass(const std::string&);
+};
+
+
 //-----------------------------------------------------------------------------
 
 // Should protected with a mutex...
 
-typedef std::map<std::string,ReanimatorBase*,std::less<std::string> > Map;
+typedef std::map<std::string, ReanimatorBase*, std::less<std::string> > Map;
 
 // This trick garanty than a std::map is created
 
-static Map& theMap()
-{
-	static Map m;
-	return m;
+static Map& theMap() {
+    static Map m;
+    return m;
 }
 
-ReanimatorBase::ReanimatorBase(const ClassSpec& spec):
-	spec_(spec)
-{
-	theMap()[std::string(spec_.name_)] = this;
-//	std::cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
+ReanimatorBase::ReanimatorBase(const ClassSpec& spec) : spec_(spec) {
+    theMap()[std::string(spec_.name_)] = this;
+    //	std::cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
 }
 
-ReanimatorBase::~ReanimatorBase()
-{
-	// Should not be there
-	// remove ReanimatorBase form list
+ReanimatorBase::~ReanimatorBase() {
+    // Should not be there
+    // remove ReanimatorBase form list
 }
 
 
-ReanimatorBase::UnknowClass::UnknowClass(const std::string& w):
-	Exception(std::string("Unknow class: ") + w)
-{
-}
+UnknowClass::UnknowClass(const std::string& w) : Exception(std::string("Unknow class: ") + w) {}
 
-ReanimatorBase::NotSubClass::NotSubClass(const std::string& found,
-	const std::string& clss):
-	Exception(std::string("Not a sub class: object ") + found +
-		std::string(" found, but it is not subclass of ") + clss)
-{
-}
+NotSubClass::NotSubClass(const std::string& found, const std::string& clss) :
+    Exception(std::string("Not a sub class: object ") + found +
+              std::string(" found, but it is not subclass of ") + clss) {}
 
 
-Streamable* ReanimatorBase::reanimate(Stream& s,const ClassSpec *c)
-{
+Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {
+    if (!s.next())
+        return 0;
 
-	if(!s.next()) return 0;
+    std::string name;
 
-	std::string name;
+    s >> name;
 
-	s >> name;
+    Map::iterator i = theMap().find(name);
+    if (i == theMap().end())
+        throw UnknowClass(name);
 
-	Map::iterator i = theMap().find(name);
-	if(i == theMap().end())
-		throw UnknowClass(name);
+    ReanimatorBase* r = (*i).second;
 
-	ReanimatorBase *r = (*i).second;
+    // Check for the class
 
-	// Check for the class
+    if (c) {
+        const ClassSpec* a = &r->spec_;
+        while (a != 0 && a != c)
+            a = a->superClass_;
 
-	if(c)
-	{
-		const ClassSpec *a = &r->spec_;
-		while(a != 0 && a != c)
-			a = a->superClass_;
+        if (a == 0)
+            throw NotSubClass(name, c->name_);
+    }
 
-		if(a == 0) throw NotSubClass(name,c->name_);
-	}
-
-	Streamable* x = r->ressucitate(s);
-	s.skipEndObject();
-	return x;
+    Streamable* x = r->ressucitate(s);
+    s.skipEndObject();
+    return x;
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

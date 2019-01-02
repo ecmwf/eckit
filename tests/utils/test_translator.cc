@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/StringTools.h"

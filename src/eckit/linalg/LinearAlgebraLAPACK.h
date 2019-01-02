@@ -11,7 +11,7 @@
 #ifndef eckit_linalg_LinearAlgebraLAPACK_h
 #define eckit_linalg_LinearAlgebraLAPACK_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_LAPACK
 

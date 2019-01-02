@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File Double.h
-// Baudouin Raoult - ECMWF Dec 97
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Dec 1997
 
 #ifndef eckit_Double_h
 #define eckit_Double_h
 
-#include "eckit/eckit.h"
+#include <string>
 
-//-----------------------------------------------------------------------------
+#include "eckit/persist/Bless.h"
 
 namespace eckit {
 

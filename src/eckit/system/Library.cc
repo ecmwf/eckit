@@ -12,23 +12,23 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#include <map>
 #include <algorithm>
 #include <cctype>
+#include <map>
 
 #include "eckit/system/Library.h"
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
-#include "eckit/utils/Translator.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 namespace system {
@@ -37,9 +37,9 @@ namespace system {
 
 typedef std::map<std::string, Library*> LibraryMap;
 
-// Builds the map on demand, needed for correct static initialization because factories can be initialized first
+// Builds the map on demand, needed for correct static initialization because factories can be
+// initialized first
 struct LibraryRegistry {
-
     static LibraryRegistry& instance() {
         static LibraryRegistry reg;
         return reg;
@@ -51,8 +51,8 @@ struct LibraryRegistry {
 };
 
 
-static pthread_once_t once  = PTHREAD_ONCE_INIT;
-static eckit::Mutex* local_mutex = 0;
+static pthread_once_t once       = PTHREAD_ONCE_INIT;
+static eckit::Mutex* local_mutex = nullptr;
 
 static void init() {
     local_mutex = new eckit::Mutex();
@@ -61,7 +61,6 @@ static void init() {
 //----------------------------------------------------------------------------------------------------------------------
 
 std::vector<std::string> Library::list() {
-
     std::vector<std::string> result;
 
     pthread_once(&once, init);
@@ -69,28 +68,26 @@ std::vector<std::string> Library::list() {
 
     LibraryMap& m = LibraryRegistry::instance().map();
 
-    for (LibraryMap::const_iterator j = m.begin() ; j != m.end() ; ++j) {
+    for (LibraryMap::const_iterator j = m.begin(); j != m.end(); ++j) {
         result.push_back(j->first);
     }
     return result;
 }
 
 void Library::list(std::ostream& out) {
-
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     LibraryMap& m = LibraryRegistry::instance().map();
 
     const char* sep = "";
-    for (LibraryMap::const_iterator j = m.begin() ; j != m.end() ; ++j) {
+    for (LibraryMap::const_iterator j = m.begin(); j != m.end(); ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
 }
 
 bool Library::exists(const std::string& name) {
-
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -102,7 +99,6 @@ bool Library::exists(const std::string& name) {
 }
 
 const Library& Library::lookup(const std::string& name) {
-
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -115,7 +111,7 @@ const Library& Library::lookup(const std::string& name) {
     if (j == m.end()) {
         eckit::Log::error() << "No Library found with name '" << name << "'" << std::endl;
         eckit::Log::error() << "Registered libraries are:" << std::endl;
-        for (j = m.begin() ; j != m.end() ; ++j)
+        for (j = m.begin(); j != m.end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
         throw eckit::SeriousBug(std::string("No Library found with name ") + name);
     }
@@ -125,11 +121,7 @@ const Library& Library::lookup(const std::string& name) {
     return *(j->second);
 }
 
-Library::Library(const std::string& name) :
-    name_(name),
-    prefix_(name),
-    debug_(false) {
-
+Library::Library(const std::string& name) : name_(name), prefix_(name), debug_(false) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -154,8 +146,7 @@ Library::Library(const std::string& name) :
     }
 }
 
-Library::~Library() {
-}
+Library::~Library() {}
 
 const std::string& Library::name() const {
     return name_;
@@ -171,15 +162,16 @@ std::string Library::prefixDirectory() const {
     return prefixDirectory_;
 }
 
-std::string Library::home() const
-{
+std::string Library::home() const {
     eckit::AutoLock<Mutex> lock(mutex_);
 
     std::string libhome = prefix_ + "_HOME";
-    char* home = ::getenv(libhome.c_str());
-    if(home) { return home; }
+    char* home          = ::getenv(libhome.c_str());
+    if (home) {
+        return home;
+    }
 
-    return home_; // may return empty string (meaning not set)
+    return home_;  // may return empty string (meaning not set)
 }
 
 std::string Library::libraryHome() const {
@@ -190,8 +182,7 @@ std::string Library::libraryHome() const {
     return prefixDirectory();
 }
 
-void Library::libraryHome(const std::string& home)
-{
+void Library::libraryHome(const std::string& home) {
     eckit::AutoLock<Mutex> lock(mutex_);
     home_ = home;
 }
@@ -201,16 +192,17 @@ std::string Library::libraryPath() const {
 
     if (libraryPath_.empty()) {
         std::string p = eckit::System::addrToPath(addr());
-        libraryPath_ = LocalPathName(p).realName();
+        libraryPath_  = LocalPathName(p).realName();
     }
     return libraryPath_;
 }
 
-Channel& Library::debugChannel() const
-{
+Channel& Library::debugChannel() const {
     eckit::AutoLock<Mutex> lock(mutex_);
 
-    if (debugChannel_) { return *debugChannel_; }
+    if (debugChannel_) {
+        return *debugChannel_;
+    }
 
     std::string s = prefix_ + "_DEBUG";
 
@@ -224,11 +216,11 @@ Channel& Library::debugChannel() const
     return *debugChannel_;
 }
 
-const Configuration& Library::configuration() const
-{
+const Configuration& Library::configuration() const {
     eckit::AutoLock<Mutex> lock(mutex_);
 
-    if(configuration_) return *configuration_;
+    if (configuration_)
+        return *configuration_;
 
     std::string s = "$" + prefix_ + "_CONFIG_PATH";
     std::string p = "~" + name_ + "/etc/" + name_ + "/config.yaml";
@@ -237,9 +229,8 @@ const Configuration& Library::configuration() const
 
     Log::debug() << "Parsing Lib " << name_ << " config file " << cfgpath << std::endl;
 
-    eckit::Configuration* cfg = cfgpath.exists() ?
-                                    new eckit::YAMLConfiguration(cfgpath) :
-                                    new eckit::YAMLConfiguration(std::string(""));
+    eckit::Configuration* cfg = cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath)
+                                                 : new eckit::YAMLConfiguration(std::string(""));
 
     Log::debug() << "Lib " << name_ << " configuration: " << *cfg << std::endl;
 
@@ -249,7 +240,6 @@ const Configuration& Library::configuration() const
 }
 
 std::string Library::expandPath(const std::string& p) const {
-
     std::string s = "~" + name_;
 
     ASSERT(p.substr(0, s.size()) == s);
@@ -259,7 +249,7 @@ std::string Library::expandPath(const std::string& p) const {
     //    or set in code expand ~lib/ to its content
 
     const std::string h = home();
-    if(!h.empty()) {
+    if (!h.empty()) {
         std::string result = h + "/" + p.substr(s.size());
         return result;
     }
@@ -271,13 +261,14 @@ std::string Library::expandPath(const std::string& p) const {
     eckit::LocalPathName path = prefixDirectory();
     eckit::LocalPathName root("/");
 
-    while(true) {
-
+    while (true) {
         LocalPathName tmp = path + extra;
 
-        if(tmp.exists()) return tmp;
+        if (tmp.exists())
+            return tmp;
 
-        if(path == root) break;
+        if (path == root)
+            break;
 
         path = path.dirName();
     }
@@ -287,16 +278,13 @@ std::string Library::expandPath(const std::string& p) const {
     return prefixDirectory() + extra;
 }
 
-void Library::print(std::ostream &out) const {
+void Library::print(std::ostream& out) const {
     out << "Library("
-        << "name=" << name_
-        << ", path=" << libraryPath()
-        << ", prefix=" << prefixDirectory()
+        << "name=" << name_ << ", path=" << libraryPath() << ", prefix=" << prefixDirectory()
         << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
-
+}  // namespace system
+}  // namespace eckit

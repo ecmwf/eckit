@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,7 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Test that integers cast correctly in value" ) {
+CASE("Test that integers cast correctly in value") {
     // Note that _all_ the integer types are stored as a signed long long
     // --> There are constraints on the size that can be stored
     Value val_zero(0U);
@@ -51,12 +50,13 @@ CASE( "Test that integers cast correctly in value" ) {
     EXPECT((long long)(val_int) == 12345);
     EXPECT((unsigned long long)(val_int) == 12345);
 
-    // Note that using an unsigned variable does NOT cause the check to fail, unless there is an overflow. The
-    // compiler will assume that everything is fine, and just do a bitwise check...
+    // Note that using an unsigned variable does NOT cause the check to fail, unless there is an
+    // overflow. The compiler will assume that everything is fine, and just do a bitwise check...
     EXPECT(int(val_long) == -2147483647);
     EXPECT((unsigned int)(val_long) == -2147483647);
-//    EXPECT(short(val_long) != -2147483647);             // a short ranges [−32767, +32767] so this is always true
-//    EXPECT((unsigned short)(val_long) != -2147483647);  // unsigned is always positive
+    //    EXPECT(short(val_long) != -2147483647);             // a short ranges [−32767, +32767] so
+    //    this is always true EXPECT((unsigned short)(val_long) != -2147483647);  // unsigned is
+    //    always positive
     EXPECT(long(val_long) == -2147483647);
     EXPECT((unsigned long)(val_long) == -2147483647);
     EXPECT((long long)(val_long) == -2147483647);
@@ -98,7 +98,7 @@ CASE( "Test that integers cast correctly in value" ) {
     // And the conversions to Length/Offset, oooer.
     // It would be nicer if these didn't work...
 
-    Length len = val_int; // Avoid ambiguities. Gah.
+    Length len = val_int;  // Avoid ambiguities. Gah.
     Offset off = val_int;
     EXPECT(len == Length(12345));
     EXPECT(off == Offset(12345));
@@ -111,9 +111,9 @@ CASE( "Test that integers cast correctly in value" ) {
     EXPECT_THROWS_AS(val_int.as<ValueMap>(), BadConversion);
 }
 
-CASE( "Test the overflow behaviour of integers" ) {
-    // Internally a Value(unsigned long long) is stored as a long long, as with all the other integer types. This should
-    // give very predictable overflow behaviour
+CASE("Test the overflow behaviour of integers") {
+    // Internally a Value(unsigned long long) is stored as a long long, as with all the other
+    // integer types. This should give very predictable overflow behaviour
 
     Value val_max(9223372036854775807);
     Value val_min(-9223372036854775807);
@@ -124,7 +124,7 @@ CASE( "Test the overflow behaviour of integers" ) {
     EXPECT((unsigned long long)(val_min) != 9223372036854775808U);
 }
 
-CASE( "Test type knowledge of integers in Value" ) {
+CASE("Test type knowledge of integers in Value") {
     Value val_int(12345);
     Value val_long(2147483647);
     Value val_longlong(-9223372036854775807);
@@ -164,13 +164,13 @@ CASE( "Test type knowledge of integers in Value" ) {
     EXPECT(!val_longlong.isDateTime());
 }
 
-CASE( "Test comparisons with integers" ) {
+CASE("Test comparisons with integers") {
     Value val1(1234);
     Value val2(1234);
     Value val3(4321);
 
-    // n.b. These comparisons are designed to define a well defined order between different data types
-    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+    // n.b. These comparisons are designed to define a well defined order between different data
+    // types bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
 
     // Check comparisons with same type of data
 
@@ -196,19 +196,19 @@ CASE( "Test comparisons with integers" ) {
     // Check comparisons with other types of data (see test_value_typeordering).
 
     Value val(1);
-    EXPECT(val.compare(Value(true))                < 0);
-    EXPECT(val.compare(Value(1))                  == 0);
-    EXPECT(val.compare(Value(1234.5))              < 0); // Special case
-    EXPECT(val.compare(Value("test str"))          > 0);
-    EXPECT(val.compare(Value())                    > 0);
-    EXPECT(val.compare(Value::makeList())          > 0);
-    EXPECT(val.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val.compare(Value(Time(1000)))          > 0);
-    EXPECT(val.compare(Value(DateTime()))          > 0);
-    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
+    EXPECT(val.compare(Value(true)) < 0);
+    EXPECT(val.compare(Value(1)) == 0);
+    EXPECT(val.compare(Value(1234.5)) < 0);  // Special case
+    EXPECT(val.compare(Value("test str")) > 0);
+    EXPECT(val.compare(Value()) > 0);
+    EXPECT(val.compare(Value::makeList()) > 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val.compare(Value(Time(1000))) > 0);
+    EXPECT(val.compare(Value(DateTime())) > 0);
+    EXPECT(val.compare(Value::makeOrderedMap()) > 0);
 }
 
-CASE( "Indexing is not a valid operatior for integers" ) {
+CASE("Indexing is not a valid operatior for integers") {
     // No indexing operations should work on an integer...
 
     Value val(1234);
@@ -226,7 +226,7 @@ CASE( "Indexing is not a valid operatior for integers" ) {
     EXPECT_THROWS_AS(val.contains(Value(123)), BadOperator);
 }
 
-CASE( "Addition only works between two integers" ) {
+CASE("Addition only works between two integers") {
     Value val(123);
 
     EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
@@ -246,7 +246,8 @@ CASE( "Addition only works between two integers" ) {
     EXPECT_THROWS_AS(ValueAdd(ValueMap(), val), BadOperator);
 
     EXPECT_THROWS_AS(ValueAddSelf(val, true), BadOperator);
-    EXPECT(ValueAddSelf(val, 1234).as<long long>() == 1357);;
+    EXPECT(ValueAddSelf(val, 1234).as<long long>() == 1357);
+    ;
     val = Value(123);
     EXPECT_THROWS_AS(ValueAddSelf(val, 66.6), BadOperator);
     EXPECT_THROWS_AS(ValueAddSelf(val, "hi"), BadOperator);
@@ -255,7 +256,7 @@ CASE( "Addition only works between two integers" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Subtraction only works between two integers" ) {
+CASE("Subtraction only works between two integers") {
     Value val(123);
 
     EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
@@ -284,7 +285,7 @@ CASE( "Subtraction only works between two integers" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Multiplication only works between 2 integers" ) {
+CASE("Multiplication only works between 2 integers") {
     Value val(123);
 
     EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
@@ -313,7 +314,7 @@ CASE( "Multiplication only works between 2 integers" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Division only works between 2 integers" ) {
+CASE("Division only works between 2 integers") {
     Value val(1476);
 
     EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
@@ -342,7 +343,7 @@ CASE( "Division only works between 2 integers" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Module operator currently not defined for integers" ) {
+CASE("Module operator currently not defined for integers") {
     Value val(123);
 
     EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
@@ -370,19 +371,17 @@ CASE( "Module operator currently not defined for integers" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Integer has semantics of single list with a double for head and tail" ) {
-
+CASE("Integer has semantics of single list with a double for head and tail") {
     Value val(12345);
 
     EXPECT(val.head() == Value(12345));
     EXPECT(val.tail() == Value());
 }
 
-// There are some constructors that have been added for easy conversion, that aren't actually part of the
-// internal interface
+// There are some constructors that have been added for easy conversion, that aren't actually part
+// of the internal interface
 
-CASE( "Test eckit integer-wrapper types in Value" ) {
-
+CASE("Test eckit integer-wrapper types in Value") {
     // Length type
 
     Value val_length(Length(12345));
@@ -420,16 +419,14 @@ CASE( "Test eckit integer-wrapper types in Value" ) {
 
     EXPECT(int(val_offset) == 54321);
     EXPECT(val_offset.as<long long>() == 54321);
-
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     Value(12345).hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "89af2df214317989ed233cbeffe82f0c");
 }

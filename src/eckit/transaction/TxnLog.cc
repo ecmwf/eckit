@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+#include <iomanip>
+
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/container/SharedMemArray.h"

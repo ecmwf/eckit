@@ -8,7 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_CUDA
 

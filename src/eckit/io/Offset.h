@@ -14,10 +14,11 @@
 #ifndef eckit_Offset_h
 #define eckit_Offset_h
 
-#include "eckit/io/Length.h"
-#include "eckit/serialisation/Stream.h"
+#include <iosfwd>
+#include <vector>
 
-//-----------------------------------------------------------------------------
+#include "eckit/io/Length.h"
+#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
@@ -26,84 +27,70 @@ namespace eckit {
 // Forwarded declarations
 
 class Bless;
+class Stream;
 
 // But because the compiler aligns long longs
 // on 64bits boundaries and longs on 32 bits boundaries,
 // we need the help of a little pragma here, to make ObjectStore happy
 
 #ifdef _AIX
-#pragma options align=twobyte
+#pragma options align = twobyte
 #endif
 
 class Offset {
-
-public: // types
-
+public:  // types
     typedef long long value_t;
 
 public:
+    friend std::ostream& operator<<(std::ostream& s, const Offset& x);
 
-	friend std::ostream& operator<<(std::ostream& s,const Offset& x)
-		{ return s << x.value_; }
+    friend Stream& operator<<(Stream& s, const Offset& x);
 
-	friend Stream& operator<<(Stream& s,const Offset& x)
-		{ return s << x.value_; }
+    friend Stream& operator>>(Stream& s, Offset& x);
 
-	friend Stream& operator>>(Stream& s,Offset& x)
-		{ s >> x.value_; return s;}
-
-	//Offset(fpos_t); <- To implement
+    // Offset(fpos_t); <- To implement
     Offset(value_t l = 0) : value_(l) {}
-	Offset(const Offset& other) : value_(other.value_) {}
+    Offset(const Offset& other) : value_(other.value_) {}
 
 #include "eckit/io/Offset.b"
 
-	Offset& operator=(const Offset& other)
-		{ value_ = other.value_; return *this;}
+    Offset& operator=(const Offset& other) {
+        value_ = other.value_;
+        return *this;
+    }
 
-	bool operator==(const Offset& other) const
-		{ return value_ == other.value_; }
+    bool operator==(const Offset& other) const { return value_ == other.value_; }
 
-	bool operator!=(const Offset& other) const
-		{ return value_ != other.value_; }
+    bool operator!=(const Offset& other) const { return value_ != other.value_; }
 
-	bool operator<(const Offset& other) const
-		{ return value_ < other.value_; }
+    bool operator<(const Offset& other) const { return value_ < other.value_; }
 
-	bool operator>(const Offset& other) const
-		{ return value_ > other.value_; }
+    bool operator>(const Offset& other) const { return value_ > other.value_; }
 
-	bool operator<=(const Offset& other) const
-		{ return value_ <= other.value_; }
+    bool operator<=(const Offset& other) const { return value_ <= other.value_; }
 
-	bool operator>=(const Offset& other) const
-		{ return value_ >= other.value_; }
+    bool operator>=(const Offset& other) const { return value_ >= other.value_; }
 
-	Offset operator+(const Length& other) const
-		{ return Offset(value_ + other.value_);}
+    Offset operator+(const Length& other) const { return Offset(value_ + other.value_); }
 
-	void operator+=(const Length& other)
-		{ value_ += other.value_;}
+    void operator+=(const Length& other) { value_ += other.value_; }
 
-	void operator-=(const Length& other)
-		{ value_ -= other.value_;}
+    void operator-=(const Length& other) { value_ -= other.value_; }
 
-	Length operator-(const Offset& other) const
-		{ return value_ - other.value_;}
+    Length operator-(const Offset& other) const { return value_ - other.value_; }
 
 
     operator value_t() const { return value_; }
 
-	void dump(DumpLoad&) const;
-	void load(DumpLoad&);
+    void dump(DumpLoad&) const;
+    void load(DumpLoad&);
 
 private:
-
-// -- Members
+    // -- Members
 
     value_t value_;
 
-	friend class Length;
+    friend class Length;
 };
 
 typedef std::vector<Offset> OffsetList;
@@ -118,11 +105,11 @@ bool compress(OffsetList&, LengthList&);
 void accumulate(const LengthList&, OffsetList&, const Offset& = 0);
 
 #ifdef _AIX
-#pragma options align=reset
+#pragma options align = reset
 #endif
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

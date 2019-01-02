@@ -9,27 +9,23 @@
  */
 
 #include <unistd.h>
+#include <cstring>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/log/Log.h"
-
-#include "eckit/thread/AutoLock.h"
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Channel.h"
-#include "eckit/log/UserChannel.h"
-#include "eckit/log/StatusTarget.h"
+#include "eckit/log/FileTarget.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/MessageTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/log/FileTarget.h"
-
+#include "eckit/log/StatusTarget.h"
+#include "eckit/log/UserChannel.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
-
-#include "eckit/exception/Exceptions.h"
-
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 

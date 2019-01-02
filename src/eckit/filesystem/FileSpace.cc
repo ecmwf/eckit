@@ -10,6 +10,8 @@
 
 #include <unistd.h>
 
+#include <fstream>
+
 #include "eckit/filesystem/FileSpace.h"
 #include "eckit/filesystem/FileSpaceStrategies.h"
 #include "eckit/io/cluster/ClusterDisks.h"
@@ -150,7 +152,7 @@ void FileSpace::load() const
 	if(last_ == modified)
 		return;
 
-	::srandom(::getpid());
+    ::srandom( static_cast<unsigned>(::getpid()) );
 
 	self->last_ = modified;
 	self->fileSystems_.clear();

@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+
 #include "eckit/parser/JSONMetadata.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/types/FloatCompare.h"

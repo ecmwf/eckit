@@ -14,10 +14,12 @@
 #ifndef HtmlResource_H
 #define HtmlResource_H
 
+#include <string>
+#include <map>
+
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/web/HtmlObject.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -40,7 +42,7 @@ public:
 	~HtmlResourceMap() {
 		if (ptr_) {
 			delete ptr_;
-			ptr_ = 0;
+                        ptr_ = nullptr;
 		}
 	}
 

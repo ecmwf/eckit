@@ -11,7 +11,7 @@
 #ifndef eckit_utils_Hash_H
 #define eckit_utils_Hash_H
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #include <stdlib.h>
 #include <stdint.h>

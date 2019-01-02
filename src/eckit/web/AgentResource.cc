@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <fstream>
+
+
 #include "eckit/io/Buffer.h"
 #include "eckit/io/ResizableBuffer.h"
 #include "eckit/web/AgentResource.h"

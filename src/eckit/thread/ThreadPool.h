@@ -11,10 +11,11 @@
 #ifndef eckit_ThreadPool_h
 #define eckit_ThreadPool_h
 
-#include "eckit/eckit.h"
+#include <list>
+#include <string>
+
 #include "eckit/thread/MutexCond.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -22,12 +23,11 @@ namespace eckit {
 
 class ThreadPool;
 
-//-----------------------------------------------------------------------------
 
 class ThreadPoolTask {
 public:
 
-    virtual ~ThreadPoolTask() {}
+    virtual ~ThreadPoolTask();
     virtual void execute() = 0;
 
     friend class ThreadPoolThread;

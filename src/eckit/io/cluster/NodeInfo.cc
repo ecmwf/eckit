@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include <pwd.h>
 
+#include <iomanip>
+
 #include "eckit/thread/AutoLock.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
@@ -65,7 +67,7 @@ NodeInfo& NodeInfo::init()
             user_ = "<nobody>";
             char buf[4096];
             struct passwd pwbuf;
-            struct passwd *pwbufp = 0;
+            struct passwd *pwbufp = nullptr;
             SYSCALL(getpwuid_r(getuid(), &pwbuf, buf, sizeof(buf), &pwbufp));
             if(pwbufp)
             {

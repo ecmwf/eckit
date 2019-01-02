@@ -11,28 +11,26 @@
 #ifndef eckit_Plural_h
 #define eckit_Plural_h
 
+#include <iostream>
+
 #include "eckit/log/BigNum.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
-class Plural {
-public:
+class Plural : private eckit::NonCopyable {
 
-// -- Contructors
+public: // methods
 
-	Plural(int count,const std::string& s) : s_(s),count_(count) {}
-
-// -- Destructor
+        Plural(int count,const std::string& s) :
+        s_(s),
+        count_(count) {}
 
 	~Plural() {}
 
-protected:
-
-// -- Methods
+protected: // methods
 
 	void print(std::ostream& s) const
 	{
@@ -40,22 +38,19 @@ protected:
 		if(count_>1) s << 's';
 	}
 
-private:
+private: // members
 
-// There is no private copy constructor as this will confuse g++ 4.x.x
+    friend std::ostream& operator<<(std::ostream& s,const Plural& p)
+    { p.print(s); return s; }
 
-	std::string s_;
-	int count_;
+private: // members
 
-// -- Friends
+    std::string s_;
 
-	friend std::ostream& operator<<(std::ostream& s,const Plural& p)
-		{ p.print(s); return s; }
+    int count_;
 
 };
 
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -8,9 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iostream>
 
 #include "eckit/runtime/Application.h"
 #include "eckit/cmd/Arg.h"
+#include "eckit/log/Log.h"
 
 using namespace eckit;
 
@@ -38,8 +40,6 @@ void Test::run()
     Log::info() << a << std::endl;
 
 }
-
-//=============================================================
 
 int main(int argc,char **argv)
 {

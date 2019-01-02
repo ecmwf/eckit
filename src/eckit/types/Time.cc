@@ -144,10 +144,16 @@ Time::~Time()
 {
 }
 
+bool Time::operator==(const Time& other) const
+{ return seconds_ == other.seconds_; }
+
+bool Time::operator!=(const Time& other) const
+{ return (seconds_ != other.seconds_); }
+
 long Time::hours() const
 {
-	long l = seconds_;
-	return l / 3600;
+    long l = seconds_;
+    return l / 3600;
 }
 
 long Time::minutes() const

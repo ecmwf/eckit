@@ -14,11 +14,12 @@
 #ifndef eckit_Exporter_h
 #define eckit_Exporter_h
 
-#include "eckit/eckit.h"
+
+#include <map>
+#include <vector>
 
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

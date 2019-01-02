@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <fstream>
+
 #include "eckit/log/RotationTarget.h"
 
 #include "eckit/config/Resource.h"
@@ -23,7 +25,7 @@ namespace eckit {
 
 static StaticMutex local_mutex;
 
-static std::ofstream* last      = 0;
+static std::ofstream* last      = nullptr;
 static time_t         lastTime  = 0;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -32,7 +34,7 @@ static std::ostream& rotout() {
 
     time_t now = ::time(0) / 86400;
 
-    if(now != lastTime || last == 0) {
+    if(now != lastTime || last == nullptr) {
 
         static std::string logfileFormat = Resource<std::string>("logfileFormat","~/log/%Y-%m-%d/out");
 

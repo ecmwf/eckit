@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
+#include <numeric>
+
 #include "eckit/io/MultiHandle.h"
 #include "eckit/types/Types.h"
 #include "eckit/io/MultiPartHandle.h"
 #include "eckit/log/Timer.h"
 #include "eckit/config/Resource.h"
-
-
 
 namespace eckit {
 
@@ -117,7 +117,7 @@ Length MultiHandle::openForRead()
 
 void MultiHandle::openForWrite(const Length& length)
 {
-    ASSERT(length == accumulate(length_.begin(), length_.end(), Length(0)));
+    ASSERT(length == std::accumulate(length_.begin(), length_.end(), Length(0)));
     ASSERT(datahandles_.size() == length_.size());
 
     read_ = false;

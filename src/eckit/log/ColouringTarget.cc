@@ -9,6 +9,7 @@
  */
 
 #include <ostream>
+#include <sstream>
 
 #include "eckit/log/ColouringTarget.h"
 
@@ -17,9 +18,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc begin, ColouringTarget::colourproc end) :
+ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc begin,
+                                 ColouringTarget::colourproc end) :
     WrapperTarget(target) {
-
     std::ostringstream beginss;
     beginss << *begin;
     begin_ = beginss.str();
@@ -29,9 +30,7 @@ ColouringTarget::ColouringTarget(LogTarget* target, ColouringTarget::colourproc 
     end_ = endss.str();
 }
 
-ColouringTarget::~ColouringTarget()
-{
-}
+ColouringTarget::~ColouringTarget() {}
 
 void ColouringTarget::writePrefix() {
     target_->write(begin_.c_str(), begin_.c_str() + begin_.size());
@@ -41,13 +40,14 @@ void ColouringTarget::writeSuffix() {
     target_->write(end_.c_str(), end_.c_str() + end_.size());
 }
 
-void ColouringTarget::print(std::ostream& s) const
-{
+void ColouringTarget::print(std::ostream& s) const {
     s << "ColouringTarget(";
-    if(target_)  {s << "target=" << *target_;}
+    if (target_) {
+        s << "target=" << *target_;
+    }
     s << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

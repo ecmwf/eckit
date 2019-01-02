@@ -9,6 +9,7 @@
  */
 
 #include <cmath>
+#include <cstring>
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"

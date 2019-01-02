@@ -13,6 +13,7 @@
 /// @date   June 2015
 
 #include <unistd.h>
+#include <fstream>
 
 #include "eckit/cmd/CmdApplication.h"
 #include "eckit/config/Resource.h"

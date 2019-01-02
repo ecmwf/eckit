@@ -9,8 +9,9 @@
  */
 
 #include <cmath>
+#include <cstring>
 
-#include "eckit/eckit_ecbuild_config.h"
+#include "eckit/eckit.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"

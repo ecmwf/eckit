@@ -10,7 +10,7 @@
 
 #include "eckit/cmd/Arg.h"
 
-//-----------------------------------------------------------------------------
+#include <iostream>
 
 namespace eckit {
 
@@ -18,7 +18,7 @@ namespace eckit {
 
 class ArgContent {
 public:
-    virtual ~ArgContent(){};
+    virtual ~ArgContent(){}
     virtual void print(std::ostream&, bool) const = 0;
     virtual ArgContent* clone() const = 0;
     virtual void completion(const std::vector<std::string>&, std::vector<std::string>&) = 0;
@@ -72,7 +72,7 @@ class ArgContentParam : public ArgContent {
     virtual void print(std::ostream& s, bool) const { s << name_; }
     virtual ArgContent* clone() const { return new ArgContentParam(name_, type_); }
 
-    virtual void completion(const std::vector<std::string>& s, std::vector<std::string>& r) {}
+    virtual void completion(const std::vector<std::string>&, std::vector<std::string>&) {}
 
     virtual void consume(std::vector<std::string>&) {}
 
@@ -81,7 +81,8 @@ public:
 };
 
 class ArgContentOptional : public ArgContent {
-    eckit::ScopedPtr<ArgContent> content_;
+
+    std::unique_ptr<ArgContent> content_;
 
     virtual void print(std::ostream& s, bool) const {
         s << "[";
@@ -138,7 +139,7 @@ template <class T>
 ArgContentList<T>::~ArgContentList() {
     for (size_t i = 0; i < list_.size(); i++) {
         delete list_[i];
-        list_[i] = 0;
+        list_[i] = nullptr;
     }
 }
 

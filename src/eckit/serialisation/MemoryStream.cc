@@ -9,10 +9,11 @@
  */
 
 
+#include <cstring>
+
 #include "eckit/serialisation/MemoryStream.h"
 #include "eckit/io/Buffer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

@@ -14,7 +14,8 @@
 #ifndef eckit_io_ResizableBuffer_h
 #define eckit_io_ResizableBuffer_h
 
-#include "eckit/eckit.h"
+#include <cstring>
+
 #include "eckit/memory/NonCopyable.h"
 
 namespace eckit {

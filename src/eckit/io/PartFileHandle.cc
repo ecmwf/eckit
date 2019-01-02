@@ -8,7 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
+
+#include <numeric>
 
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
@@ -19,11 +20,11 @@
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartFileHandle.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 ClassSpec PartFileHandle::classSpec_ = {&DataHandle::classSpec(), "PartFileHandle",};
 Reanimator<PartFileHandle> PartFileHandle::reanimator_;
@@ -366,7 +367,7 @@ bool PartFileHandle::merge(DataHandle* other)
 
 Length PartFileHandle::estimate()
 {
-    return accumulate(length_.begin(), length_.end(), Length(0));
+    return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
 void PartFileHandle::toRemote(Stream& s) const
@@ -391,7 +392,7 @@ std::string PartFileHandle::title() const
     return os.str();
 }
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

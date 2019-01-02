@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/io/BitIO.h"
 #include "eckit/io/Buffer.h"
 

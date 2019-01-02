@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <fstream>
+#include <numeric>
+
 #include "eckit/log/Log.h"
 #include "eckit/types/Types.h"
 #include "eckit/types/FloatCompare.h"

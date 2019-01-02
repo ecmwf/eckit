@@ -11,12 +11,12 @@
 #ifndef eckit_utils_MD4_H
 #define eckit_utils_MD4_H
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_SSL
 #include <openssl/md4.h>
 #else
-#error "eckit was not configured with OpenSSL, SHA1 is disabled. Use conditional ECKIT_HAVE_SSL from eckit/eckit_config.h"
+#error "eckit was not configured with OpenSSL, SHA1 is disabled. Use conditional ECKIT_HAVE_SSL from eckit/eckit.h"
 #endif
 
 #ifndef MD4_DIGEST_LENGTH

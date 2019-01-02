@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 
 #include "eckit/value/Value.h"
 #include "eckit/types/FloatCompare.h"
@@ -50,7 +51,7 @@ Tests tests = {
     { CASE( "EXPECT macros are defined correctly" ) {
         EXPECT( true );
         EXPECT_NOT( false );
-        EXPECT_NO_THROW( true );
+        EXPECT_NO_THROW( { bool b = true; } );
         EXPECT_THROWS ( throw std::exception() );
         EXPECT_THROWS_AS( throw std::exception(), std::exception );
     }},

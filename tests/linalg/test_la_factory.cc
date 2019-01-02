@@ -13,7 +13,7 @@
 /// @date   July 2015
 
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/LinearAlgebra.h"
 

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
+#include "LocalPathName.h"
 
 #include <dirent.h>
 #include <limits.h>
@@ -19,7 +19,10 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#include "eckit/filesystem/LocalPathName.h"
+#include <fstream>
+#include <cstring> // for strlen
+
+#include "eckit/eckit.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
@@ -45,7 +48,7 @@
 
 namespace eckit {
 
-
+//--------------------------------------------------------------------------------------------------
 
 static StaticMutex local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
@@ -98,8 +101,6 @@ static void readPathsTable() {
 }
 
 //--------------------------------------------------------------------------------------------------
-
-// I need to come back here when we have a proper std::string class
 
 LocalPathName LocalPathName::baseName(bool ext) const
 {

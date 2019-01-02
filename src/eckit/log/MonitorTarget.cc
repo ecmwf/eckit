@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iostream>
 
 #include "eckit/log/MonitorTarget.h"
 #include "eckit/runtime/Monitor.h"
@@ -17,20 +18,19 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MonitorTarget::MonitorTarget(LogTarget* target) : WrapperTarget(target)
-{
-}
+MonitorTarget::MonitorTarget(LogTarget* target) : WrapperTarget(target) {}
 
-MonitorTarget::~MonitorTarget()
-{
-}
+MonitorTarget::~MonitorTarget() {}
 
-void MonitorTarget::write(const char* start, const char* end)
-{
+void MonitorTarget::write(const char* start, const char* end) {
     Monitor::instance().out(const_cast<char*>(start), const_cast<char*>(end));
     target_->write(start, end);
 }
 
+void MonitorTarget::print(std::ostream& s) const {
+    s << "MonitorTarget()";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

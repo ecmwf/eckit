@@ -16,9 +16,9 @@
 #ifndef eckit_Translator_h
 #define eckit_Translator_h
 
-#include "eckit/eckit.h"
-
-
+#include <set>
+#include <vector>
+#include <string>
 
 namespace eckit {
 

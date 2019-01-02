@@ -15,7 +15,10 @@
 #ifndef eckit_StringTools_h
 #define eckit_StringTools_h
 
-#include "eckit/eckit.h"
+
+#include <map>
+#include <string>
+#include <vector>
 
 #include "eckit/memory/NonCopyable.h"
 
@@ -35,8 +38,8 @@ public:
 
     static std::vector<std::string>  listVariables(const std::string&);
 
-	static std::string upper(const std::string &);
-	static std::string lower(const std::string &);
+    static std::string upper(const std::string &);
+    static std::string lower(const std::string &);
 
     static std::string trim(const std::string &);
     static std::string trim(const std::string &, const std::string &);

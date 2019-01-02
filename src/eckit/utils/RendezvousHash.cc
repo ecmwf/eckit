@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+#include <numeric>
+
 #include "eckit/utils/RendezvousHash.h"
 
 #include "eckit/config/LibEcKit.h"

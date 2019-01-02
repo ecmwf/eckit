@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iomanip>
+
 #include "eckit/parser/JSON.h"
 #include "eckit/types/DateTime.h"
 

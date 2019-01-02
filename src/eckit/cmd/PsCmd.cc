@@ -8,6 +8,9 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+#include <iomanip>
+
 #include "eckit/cmd/PsCmd.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/log/Colour.h"

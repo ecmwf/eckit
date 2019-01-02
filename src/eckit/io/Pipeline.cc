@@ -10,18 +10,18 @@
 
 #include <unistd.h>
 
-#include "eckit/thread/AutoLock.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/log/Bytes.h"
+#include "eckit/io/FileDescHandle.h"
 #include "eckit/io/Pipeline.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
-#include "eckit/thread/MutexCond.h"
 #include "eckit/log/Progress.h"
+#include "eckit/log/Timer.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/log/Timer.h"
-#include "eckit/io/FileDescHandle.h"
-
 
 
 namespace eckit {
@@ -30,9 +30,9 @@ namespace eckit {
 
 
 class PipelineReader : public Thread {
-    Pipeline&     owner_;
-    DataHandle&   in_;
-    DataHandle&   out_;
+    Pipeline& owner_;
+    DataHandle& in_;
+    DataHandle& out_;
 
 public:
     PipelineReader(Pipeline& owner_, DataHandle& in, DataHandle& out);
@@ -40,8 +40,10 @@ public:
 };
 
 
-PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out):
-    owner_(owner), in_(in), out_(out) {}
+PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out) :
+    owner_(owner),
+    in_(in),
+    out_(out) {}
 
 void PipelineReader::run() {
     try {
@@ -54,18 +56,19 @@ void PipelineReader::run() {
 
 
 class PipelineExecutor : public Thread {
-    Pipeline&     owner_;
-    DataHandle&   in_;
-    DataHandle&   out_;
+    Pipeline& owner_;
+    DataHandle& in_;
+    DataHandle& out_;
 
 public:
     PipelineExecutor(Pipeline& owner_, DataHandle& in, DataHandle& out);
     virtual void run();
 };
 
-PipelineExecutor::PipelineExecutor(Pipeline& owner, DataHandle& in, DataHandle& out):
-    owner_(owner), in_(in), out_(out) {}
-
+PipelineExecutor::PipelineExecutor(Pipeline& owner, DataHandle& in, DataHandle& out) :
+    owner_(owner),
+    in_(in),
+    out_(out) {}
 
 
 void PipelineExecutor::run() {
@@ -77,33 +80,25 @@ void PipelineExecutor::run() {
     }
 }
 
-Pipeline::Pipeline(TransferWatcher& watcher):
+Pipeline::Pipeline(TransferWatcher& watcher) :
 
     error_(false),
-    watcher_(watcher)
-{
-}
+    watcher_(watcher) {}
 
-Pipeline::~Pipeline()
-{
-}
+Pipeline::~Pipeline() {}
 
-inline void Pipeline::error(const std::string& why)
-{
+inline void Pipeline::error(const std::string& why) {
     AutoLock<Mutex> lock(mutex_);
     error_ = true;
     why_   = why;
 }
 
-inline bool Pipeline::error()
-{
+inline bool Pipeline::error() {
     AutoLock<Mutex> lock(mutex_);
     return error_;
 }
 
-Length Pipeline::copy(DataHandle& in, DataHandle& out)
-{
-
+Length Pipeline::copy(DataHandle& in, DataHandle& out) {
     int reader[2];
     SYSCALL(::pipe(reader));
 
@@ -157,5 +152,4 @@ Length Pipeline::copy(DataHandle& in, DataHandle& out)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

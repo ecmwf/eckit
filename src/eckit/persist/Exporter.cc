@@ -8,23 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
+#include <cstring>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/persist/Exporter.h"
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
-void *operator new(size_t, void* addr, eckit::Evolve&)
-{
+void* operator new(size_t, void* addr, eckit::Evolve&) {
     return addr;
 }
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 void _export(eckit::Exporter& out, unsigned char what) {
     out.writeUnsigned(what);
@@ -73,9 +71,10 @@ void _export(eckit::Exporter& out, double what) {
 
 const int MAX_STRING_LEN = 10240;
 
-enum {
+enum
+{
 
-    TAG_EOF          = 'X',
+    TAG_EOF = 'X',
 
     TAG_START_CLASS  = 'C',
     TAG_END_CLASS    = 'c',
@@ -87,130 +86,125 @@ enum {
     TAG_START_SUBOBJECT = 'L',
     TAG_END_SUBOBJECT   = 'l',
 
-    TAG_UNSIGNED     = 'u',
-    TAG_SIGNED       = 's',
-    TAG_STRING       = 'S',
-    TAG_DOUBLE       = 'D',
+    TAG_UNSIGNED = 'u',
+    TAG_SIGNED   = 's',
+    TAG_STRING   = 'S',
+    TAG_DOUBLE   = 'D',
 
-    TAG_START_SCHEMAS   = '{',
+    TAG_START_SCHEMAS = '{',
     TAG_END_SCHEMAS   = '}',
 
-    TAG_START_DATABASE  = '[',
-    TAG_END_DATABASE    = ']'
+    TAG_START_DATABASE = '[',
+    TAG_END_DATABASE   = ']'
 
 };
 
-template<class T> struct Swap {
-
+template <class T>
+struct Swap {
     static const int half = sizeof(T) >> 1;
     static const int last = sizeof(T) - 1;
-    T operator()(T v)
-    {
-        unsigned char *p = (unsigned char*)&v;
-        for(int i = 0; i < half ; i++) std::swap(p[i],p[last-i]);
+    T operator()(T v) {
+        unsigned char* p = (unsigned char*)&v;
+        for (int i = 0; i < half; i++)
+            std::swap(p[i], p[last - i]);
         return v;
     }
 };
 
 // xlc needs this,
 // others will complain about double initialization
-#if defined( __xlC__ )
-template<class T> const int Swap<T>::half = sizeof(T) >> 1;
-template<class T> const int Swap<T>::last = sizeof(T) - 1;
+#if defined(__xlC__)
+template <class T>
+const int Swap<T>::half = sizeof(T) >> 1;
+template <class T>
+const int Swap<T>::last = sizeof(T) - 1;
 #endif
 
 class Endian {
-    public:
-
+public:
 #ifdef ECKIT_LITTLE_ENDIAN
-        template<class T> static T transform(T x)  { return Swap<T>()(x); }
+    template <class T>
+    static T transform(T x) {
+        return Swap<T>()(x);
+    }
 #else
-        template<class T> static T transform(T x)  { return x; }
+    template <class T>
+    static T transform(T x) {
+        return x;
+    }
 #endif
-
 };
 
-Exporter::Exporter(DataHandle& handle):
+Exporter::Exporter(DataHandle& handle) :
     handle_(handle),
     type_(0),
     location_(0),
     objectId_(0),
     objectCount_(0),
     subCount_(0),
-    inObject_(false)
-{
-}
+    inObject_(false) {}
 
-Exporter::~Exporter()
-{
-}
+Exporter::~Exporter() {}
 
-void Exporter::writeTag(char tag)
-{
+void Exporter::writeTag(char tag) {
     ASSERT(sizeof(tag) == 1);
-    ASSERT(handle_.write(&tag,1) == 1);
+    ASSERT(handle_.write(&tag, 1) == 1);
 }
 
-char Exporter::readTag()
-{
+char Exporter::readTag() {
     char tag;
     ASSERT(sizeof(tag) == 1);
-    ASSERT(handle_.read(&tag,1) == 1);
+    ASSERT(handle_.read(&tag, 1) == 1);
     return tag;
 }
 
 
-void Exporter::writeString(const std::string &s)
-{
+void Exporter::writeString(const std::string& s) {
     size_t len = s.length();
     char buffer[MAX_STRING_LEN];
 
-    if(len) {
+    if (len) {
         ASSERT(sizeof(s[0]) == 1);
         ASSERT(len <= sizeof(buffer));
     }
 
     writeTag(TAG_STRING);
     writeUnsigned(len);
-    for(size_t i = 0;  i < len; i++)
+    for (size_t i = 0; i < len; i++)
         buffer[i] = s[i];
 
-    ASSERT( (size_t) handle_.write(buffer,len) == len);
+    ASSERT((size_t)handle_.write(buffer, len) == len);
 }
 
-void Exporter::writeString(const char* s)
-{
+void Exporter::writeString(const char* s) {
     size_t len = strlen(s);
 
     writeTag(TAG_STRING);
     writeUnsigned(len);
-	ASSERT(sizeof(s[0]) == 1);
+    ASSERT(sizeof(s[0]) == 1);
 
-    ASSERT( (size_t) handle_.write(s,len) == len);
+    ASSERT((size_t)handle_.write(s, len) == len);
 }
 
-std::string Exporter::_readString()
-{
+std::string Exporter::_readString() {
     try {
         std::string s;
 
         size_t len = readUnsigned();
-        for( size_t i = 0;  i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
             char c;
-            ASSERT(handle_.read(&c,1) == 1);
+            ASSERT(handle_.read(&c, 1) == 1);
             s += c;
         }
         return s;
     }
-    catch(...)
-    {
+    catch (...) {
         std::cout << "Error reading std::string " << *this << std::endl;
         throw;
     }
 }
 
-std::string Exporter::readString()
-{
+std::string Exporter::readString() {
     ASSERT(readTag() == TAG_STRING);
     return _readString();
 }
@@ -219,13 +213,13 @@ void Exporter::writeDouble(double d) {
     writeTag(TAG_DOUBLE);
     ASSERT(sizeof(double) == 8);
     d = Endian::transform(d);
-    ASSERT(handle_.write(&d,sizeof(d)) == sizeof(d));
+    ASSERT(handle_.write(&d, sizeof(d)) == sizeof(d));
 }
 
 double Exporter::_readDouble() {
     double d;
     ASSERT(sizeof(double) == 8);
-    ASSERT(handle_.read(&d,sizeof(d)) == sizeof(d));
+    ASSERT(handle_.read(&d, sizeof(d)) == sizeof(d));
     return Endian::transform(d);
 }
 
@@ -238,13 +232,13 @@ void Exporter::writeSigned(long long d) {
     writeTag(TAG_SIGNED);
     ASSERT(sizeof(long long) == 8);
     d = Endian::transform(d);
-    ASSERT(handle_.write(&d,sizeof(d)) == sizeof(d));
+    ASSERT(handle_.write(&d, sizeof(d)) == sizeof(d));
 }
 
 long long Exporter::_readSigned() {
     long long d;
     ASSERT(sizeof(long long) == 8);
-    ASSERT(handle_.read(&d,sizeof(d)) == sizeof(d));
+    ASSERT(handle_.read(&d, sizeof(d)) == sizeof(d));
     return Endian::transform(d);
 }
 
@@ -257,13 +251,13 @@ void Exporter::writeUnsigned(unsigned long long d) {
     writeTag(TAG_UNSIGNED);
     ASSERT(sizeof(unsigned long long) == 8);
     d = Endian::transform(d);
-    ASSERT(handle_.write(&d,sizeof(d)) == sizeof(d));
+    ASSERT(handle_.write(&d, sizeof(d)) == sizeof(d));
 }
 
 unsigned long long Exporter::_readUnsigned() {
     unsigned long long d;
     ASSERT(sizeof(unsigned long long) == 8);
-    ASSERT(handle_.read(&d,sizeof(d)) == sizeof(d));
+    ASSERT(handle_.read(&d, sizeof(d)) == sizeof(d));
     return Endian::transform(d);
 }
 
@@ -279,7 +273,7 @@ void _startClass(eckit::Exporter& out, const std::string& name) {
 
 void _endClass(eckit::Exporter& out, const std::string& name) {
     out.writeTag(TAG_END_CLASS);
-    //out.writeString(name);
+    // out.writeString(name);
 }
 
 void _startClass(eckit::Exporter& out, const char* name) {
@@ -289,7 +283,7 @@ void _startClass(eckit::Exporter& out, const char* name) {
 
 void _endClass(eckit::Exporter& out, const char* name) {
     out.writeTag(TAG_END_CLASS);
-    //out.writeString(name);
+    // out.writeString(name);
 }
 
 void _startMember(eckit::Exporter& out, const char* name) {
@@ -299,10 +293,11 @@ void _startMember(eckit::Exporter& out, const char* name) {
 
 void _endMember(eckit::Exporter& out, const char* name) {
     out.writeTag(TAG_END_MEMBER);
-    //out.writeString(name);
+    // out.writeString(name);
 }
 
-void Exporter::startObject(unsigned long long type, unsigned long long location, unsigned long long id, size_t count) {
+void Exporter::startObject(unsigned long long type, unsigned long long location,
+                           unsigned long long id, size_t count) {
     writeTag(TAG_START_OBJECT);
     writeUnsigned(type);
     writeUnsigned(location);
@@ -314,12 +309,13 @@ void Exporter::startObject(unsigned long long type, unsigned long long location,
     subCount_ = 0;
 }
 
-void _startObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count)
-{
+void _startObject(eckit::Exporter& e, unsigned long long type, unsigned long long location,
+                  unsigned long long id, size_t count) {
     e.startObject(type, location, id, count);
 }
 
-void Exporter::endObject(unsigned long long type, unsigned long long location, unsigned long long id, size_t count) {
+void Exporter::endObject(unsigned long long type, unsigned long long location,
+                         unsigned long long id, size_t count) {
     writeTag(TAG_END_OBJECT);
     ASSERT(inObject_);
     inObject_ = false;
@@ -335,79 +331,73 @@ void Exporter::endObject(unsigned long long type, unsigned long long location, u
 }
 
 
-void Exporter::startSubObject()
-{
+void Exporter::startSubObject() {
     writeTag(TAG_START_SUBOBJECT);
     subCount_++;
 }
 
-void _startSubObject(eckit::Exporter& e)
-{
+void _startSubObject(eckit::Exporter& e) {
     e.startSubObject();
 }
 
-void Exporter::endSubObject()
-{
+void Exporter::endSubObject() {
     writeTag(TAG_END_SUBOBJECT);
 }
 
-void _endSubObject(eckit::Exporter& e)
-{
+void _endSubObject(eckit::Exporter& e) {
     e.endSubObject();
 }
 
-void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id, size_t count)
-{
+void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long location,
+                unsigned long long id, size_t count) {
     e.endObject(type, location, id, count);
 }
 
 void Exporter::endObject() {
     ASSERT(readTag() == TAG_END_OBJECT);
     ASSERT(subCount_);
-    for(std::map<std::string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
-        if(!(*j).second.used())
+    for (std::map<std::string, Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
+        if (!(*j).second.used())
             std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
 
     members_.clear();
     stack_.clear();
 }
 
-bool Exporter::nextDatabase(std::string& name,unsigned long long& id, unsigned long long& count)
-{
+bool Exporter::nextDatabase(std::string& name, unsigned long long& id, unsigned long long& count) {
     char tag = readTag();
-    if(tag == TAG_EOF) {
+    if (tag == TAG_EOF) {
         return false;
     }
 
-    if(tag != TAG_START_DATABASE) {
+    if (tag != TAG_START_DATABASE) {
         std::cout << "tag " << int(tag) << std::endl;
         std::cout << "tag " << tag << std::endl;
     }
 
     ASSERT(tag == TAG_START_DATABASE);
 
-    if(tag == TAG_START_DATABASE) {
+    if (tag == TAG_START_DATABASE) {
         name  = readString();
         id    = readUnsigned();
         count = readUnsigned();
     }
-    return true; // should only exit with (tag == TAG_START_DATABASE)
+    return true;  // should only exit with (tag == TAG_START_DATABASE)
 }
 
 size_t Exporter::nextObject() {
     char tag = readTag();
 
-    if(tag == TAG_END_DATABASE) {
+    if (tag == TAG_END_DATABASE) {
         unsigned long long objectCount = readUnsigned();
         std::cout << "objectCount " << objectCount << " " << objectCount_ << std::endl;
         ASSERT(objectCount == objectCount_);
         return 0;
     }
 
-	if(tag != TAG_START_OBJECT) {
+    if (tag != TAG_START_OBJECT) {
         std::cout << tag << std::endl;
-
-	}
+    }
 
     ASSERT(tag == TAG_START_OBJECT);
     objectCount_++;
@@ -415,29 +405,26 @@ size_t Exporter::nextObject() {
     stack_.clear();
 
     try {
-
         type_     = readUnsigned();
         location_ = readUnsigned();
         objectId_ = readUnsigned();
-        return     readUnsigned(); // count
-
+        return readUnsigned();  // count
     }
-    catch(...) {
-        std::cout << "ERROR reading start object " <<  *this << std::endl;
+    catch (...) {
+        std::cout << "ERROR reading start object " << *this << std::endl;
         throw;
     }
-
 }
 
-void _nextSubObject(eckit::Exporter& e)
-{
+void _nextSubObject(eckit::Exporter& e) {
     e.nextSubObject();
 }
 
 std::string Exporter::path() const {
     std::string s;
-    for(std::vector<std::string>::const_iterator j = stack_.begin(); j != stack_.end(); ++j) {
-        if(s.length()) s += ".";
+    for (std::vector<std::string>::const_iterator j = stack_.begin(); j != stack_.end(); ++j) {
+        if (s.length())
+            s += ".";
         s += (*j);
     }
     return s;
@@ -445,25 +432,24 @@ std::string Exporter::path() const {
 
 void Exporter::nextSubObject() {
     ASSERT(readTag() == TAG_START_SUBOBJECT);
-    subCount_ ++;
+    subCount_++;
 
-    for(std::map<std::string,Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
-        if(!(*j).second.used())
+    for (std::map<std::string, Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
+        if (!(*j).second.used())
             std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
 
     members_.clear();
 
     std::string s;
-    for(;;) {
+    for (;;) {
         char tag = readTag();
-        switch(tag) {
-
+        switch (tag) {
             case TAG_START_CLASS:
                 s = readString();
-                //cout << s << std::endl;
-                //stack_.push_back(s.substr(0,s.find('<')));
-				stack_.push_back(s);
-                //stack_.push_back(s);
+                // cout << s << std::endl;
+                // stack_.push_back(s.substr(0,s.find('<')));
+                stack_.push_back(s);
+                // stack_.push_back(s);
                 break;
 
             case TAG_START_MEMBER:
@@ -478,35 +464,29 @@ void Exporter::nextSubObject() {
                 stack_.pop_back();
                 break;
 
-            case TAG_UNSIGNED:
-                {
-                    std::string p = path();
-                    Datatype& x = members_[p];
-                    ASSERT(x.empty());
-                    x = Datatype(_readUnsigned());
-                    //cout << "read [" << p << "] = " << x << std::endl;
-                }
-                break;
+            case TAG_UNSIGNED: {
+                std::string p = path();
+                Datatype& x   = members_[p];
+                ASSERT(x.empty());
+                x = Datatype(_readUnsigned());
+                // cout << "read [" << p << "] = " << x << std::endl;
+            } break;
 
-            case TAG_SIGNED:
-                {
-                    std::string p = path();
-                    Datatype& x = members_[p];
-                    ASSERT(x.empty());
-                    x = Datatype(_readSigned());
-                    //cout << "read [" << p << "] = " << x << std::endl;
-                }
-                break;
+            case TAG_SIGNED: {
+                std::string p = path();
+                Datatype& x   = members_[p];
+                ASSERT(x.empty());
+                x = Datatype(_readSigned());
+                // cout << "read [" << p << "] = " << x << std::endl;
+            } break;
 
-            case TAG_DOUBLE:
-                {
-                    std::string p = path();
-                    Datatype& x = members_[p];
-                    ASSERT(x.empty());
-                    x = Datatype(_readDouble());
-                    //cout << "read [" << p << "] = " << x << std::endl;
-                }
-                break;
+            case TAG_DOUBLE: {
+                std::string p = path();
+                Datatype& x   = members_[p];
+                ASSERT(x.empty());
+                x = Datatype(_readDouble());
+                // cout << "read [" << p << "] = " << x << std::endl;
+            } break;
 
             case TAG_END_SUBOBJECT:
                 return;
@@ -519,57 +499,47 @@ void Exporter::nextSubObject() {
     }
 }
 
-double Exporter::getDoubleMember(const std::string& name)
-{
-    std::map<std::string,Datatype>::iterator j = members_.find(name);
-    if(j != members_.end())
-    {
-        //cout << "consume [" << name << "] = " << (*j).second << std::endl;
+double Exporter::getDoubleMember(const std::string& name) {
+    std::map<std::string, Datatype>::iterator j = members_.find(name);
+    if (j != members_.end()) {
+        // cout << "consume [" << name << "] = " << (*j).second << std::endl;
         return (*j).second;
     }
     std::cout << name << " not found" << std::endl;
     return 0;
 }
 
-long long Exporter::getSignedMember(const std::string& name)
-{
-    std::map<std::string,Datatype>::iterator j = members_.find(name);
-    if(j != members_.end())
-    {
-        //cout << "consume [" << name << "] = " << (*j).second << std::endl;
+long long Exporter::getSignedMember(const std::string& name) {
+    std::map<std::string, Datatype>::iterator j = members_.find(name);
+    if (j != members_.end()) {
+        // cout << "consume [" << name << "] = " << (*j).second << std::endl;
         return (*j).second;
     }
     std::cout << name << " not found" << std::endl;
     return 0;
 }
 
-unsigned long long Exporter::getUnsignedMember(const std::string& name)
-{
-    std::map<std::string,Datatype>::iterator j = members_.find(name);
-    if(j != members_.end())
-    {
-        //cout << "consume [" << name << "] = " << (*j).second << std::endl;
+unsigned long long Exporter::getUnsignedMember(const std::string& name) {
+    std::map<std::string, Datatype>::iterator j = members_.find(name);
+    if (j != members_.end()) {
+        // cout << "consume [" << name << "] = " << (*j).second << std::endl;
         return (*j).second;
     }
     std::cout << name << " not found" << std::endl;
     return 0;
 }
 
-Evolve::Evolve(eckit::Exporter& e):
-    e_(e),
-    parent_(0)
-{
-}
+Evolve::Evolve(eckit::Exporter& e) : e_(e), parent_(nullptr) {}
 
-Evolve::Evolve(Evolve* e, char const* klass, char const* name):
+Evolve::Evolve(Evolve* e, char const* klass, char const* name) :
     e_(e->e_),
     path_(e->path()),
-    parent_(e)
-{
-    if(path_.length()) path_ += ".";
+    parent_(e) {
+    if (path_.length())
+        path_ += ".";
     path_ += klass;
 
-    if(name) {
+    if (name) {
         path_ += ".";
         path_ += name;
     }
@@ -577,94 +547,71 @@ Evolve::Evolve(Evolve* e, char const* klass, char const* name):
 
 
 Evolve Evolve::operator()(char const* klass, char const* name) {
-    return Evolve(this,klass,name);
+    return Evolve(this, klass, name);
 }
 
-Evolve::operator unsigned char()
-{
+Evolve::operator unsigned char() {
     return e_.getUnsignedMember(path_);
 }
 
-Evolve::operator unsigned int()
-{
+Evolve::operator unsigned int() {
     return e_.getUnsignedMember(path_);
 }
 
-Evolve::operator int()
-{
+Evolve::operator int() {
     return e_.getSignedMember(path_);
 }
 
-Evolve::operator char()
-{
+Evolve::operator char() {
     return e_.getSignedMember(path_);
 }
 
-Evolve::operator unsigned short()
-{
+Evolve::operator unsigned short() {
     return e_.getUnsignedMember(path_);
 }
 
-Evolve::operator unsigned long()
-{
+Evolve::operator unsigned long() {
     return e_.getUnsignedMember(path_);
 }
 
-Evolve::operator long long()
-{
+Evolve::operator long long() {
     return e_.getSignedMember(path_);
 }
 
-Evolve::operator unsigned long long()
-{
+Evolve::operator unsigned long long() {
     return e_.getUnsignedMember(path_);
 }
 
-Evolve::operator double()
-{
+Evolve::operator double() {
     return e_.getDoubleMember(path_);
 }
 
-Evolve::operator long()
-{
+Evolve::operator long() {
     return e_.getSignedMember(path_);
 }
 
-Exporter::Datatype::Datatype():
-    type_(0),
-    used_(false),
-    double_(0),
-    signed_(0),
-    unsigned_(0)
-{
-}
+Exporter::Datatype::Datatype() : type_(0), used_(false), double_(0), signed_(0), unsigned_(0) {}
 
-Exporter::Datatype::Datatype(double d):
+Exporter::Datatype::Datatype(double d) :
     type_(TAG_DOUBLE),
     used_(false),
     double_(d),
     signed_(0),
-    unsigned_(0)
-{
-}
+    unsigned_(0) {}
 
-Exporter::Datatype::Datatype(long long d):
+Exporter::Datatype::Datatype(long long d) :
     type_(TAG_SIGNED),
     used_(false),
     double_(0),
     signed_(d),
-    unsigned_(0)
-{
-}
+    unsigned_(0) {}
 
-Exporter::Datatype::Datatype(unsigned long long d):
+Exporter::Datatype::Datatype(unsigned long long d) :
     type_(TAG_UNSIGNED),
     used_(false),
     double_(0),
     signed_(0),
-    unsigned_(d)
-{
-}
+    unsigned_(d) {}
 
 Exporter::Datatype::operator long long() {
     ASSERT(type_ == TAG_SIGNED);
@@ -688,22 +635,28 @@ Exporter::Datatype::operator double() {
 }
 
 
-void Exporter::Datatype::print(std::ostream& out) const
-{
-    switch(type_) {
-        case TAG_SIGNED:   out << "S(" << signed_; break;
-        case TAG_UNSIGNED: out << "U(" << unsigned_; break;
-        case TAG_DOUBLE:   out << "D(" << double_; break;
-        default: out << "X("; break;
+void Exporter::Datatype::print(std::ostream& out) const {
+    switch (type_) {
+        case TAG_SIGNED:
+            out << "S(" << signed_;
+            break;
+        case TAG_UNSIGNED:
+            out << "U(" << unsigned_;
+            break;
+        case TAG_DOUBLE:
+            out << "D(" << double_;
+            break;
+        default:
+            out << "X(";
+            break;
     }
 
-    out <<"," << (used_?"used":"new") << ")";
+    out << "," << (used_ ? "used" : "new") << ")";
 }
 
 #define X(a) out << " " << #a << "=" << a;
 
-void Exporter::print(std::ostream& out) const
-{
+void Exporter::print(std::ostream& out) const {
     out << "Exporter[";
 
     X(objectCount_);
@@ -717,50 +670,43 @@ void Exporter::print(std::ostream& out) const
     out << "]";
 }
 
-void Exporter::openForWrite()
-{
+void Exporter::openForWrite() {
     handle().openForWrite(0);
 }
 
-void Exporter::close()
-{
+void Exporter::close() {
     writeTag(TAG_EOF);
     handle().close();
 }
 
-void Exporter::startSchemas()
-{
+void Exporter::startSchemas() {
     writeTag(TAG_START_SCHEMAS);
 }
 
-void Exporter::endSchemas()
-{
+void Exporter::endSchemas() {
     writeTag(TAG_END_SCHEMAS);
 }
 
-void Exporter::startDatabase(const std::string& path, unsigned long id, unsigned long  long count)
-{
+void Exporter::startDatabase(const std::string& path, unsigned long id, unsigned long long count) {
     PathName home("~");
     std::string p = path;
 
-    if(p.find(home) == 0) {
-         p = std::string("~/") + p.substr(std::string(home).length());
+    if (p.find(home) == 0) {
+        p = std::string("~/") + p.substr(std::string(home).length());
     }
 
     writeTag(TAG_START_DATABASE);
     writeString(p);
     writeUnsigned(id);
     writeUnsigned(count);
-
 }
 
-void Exporter::endDatabase(const std::string&, unsigned long id)
-{
+void Exporter::endDatabase(const std::string&, unsigned long) {
     writeTag(TAG_END_DATABASE);
     writeUnsigned(objectCount_);
     objectCount_ = 0;
 }
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

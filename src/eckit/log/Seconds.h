@@ -16,9 +16,7 @@
 
 #include <time.h>
 #include <sys/time.h>
-
-#include "eckit/eckit.h"
-
+#include <iosfwd>
 
 //-----------------------------------------------------------------------------
 

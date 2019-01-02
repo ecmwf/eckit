@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <ostream>
+
 #include "eckit/mpi/ParallelStatus.h"
 
 namespace eckit {
@@ -17,13 +19,10 @@ namespace mpi {
 
 void ParallelStatus::print(std::ostream& os) const {
     os << "ParallelStatus("
-       << "source=" << source()
-       << ",tag=" << tag()
-       << ",error=" << error()
-       << ")";
+       << "source=" << source() << ",tag=" << tag() << ",error=" << error() << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit

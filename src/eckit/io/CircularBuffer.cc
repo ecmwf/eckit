@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/CircularBuffer.h"
 #include "eckit/memory/MemoryPool.h"

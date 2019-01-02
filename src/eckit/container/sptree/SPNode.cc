@@ -11,7 +11,8 @@
 #ifndef SPNode_CC
 #define SPNode_CC
 
-#include <stdio.h>
+#include <cstdio>
+#include <algorithm>
 #include <limits>
 
 #include <sys/mman.h>

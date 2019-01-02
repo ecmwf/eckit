@@ -10,6 +10,7 @@
 
 
 #include <string>
+#include <fstream>
 
 
 #include "eckit/exception/Exceptions.h"

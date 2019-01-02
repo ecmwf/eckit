@@ -8,15 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-// Baudouin Raoult - (c) ECMWF Feb 12
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Feb 12
 
 #ifndef eckit_types_FixedString_h
 #define eckit_types_FixedString_h
 
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
+#include <cstring>
 
-//-----------------------------------------------------------------------------
+#include <algorithm>
+#include <string>
+
+#include "eckit/memory/Zero.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -48,24 +53,24 @@ public:
     FixedString(const FixedString&);
     FixedString(const char*);
 
-	FixedString& operator=(const FixedString&);
-	FixedString& operator=(const std::string&);
+    FixedString& operator=(const FixedString&);
+    FixedString& operator=(const std::string&);
 
-	bool operator<(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) < 0; }
+    bool operator<(const FixedString& other) const { return ::memcmp(data_, other.data_, SIZE) < 0; }
 
-	bool operator>(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) > 0; }
+    bool operator>(const FixedString& other) const { return ::memcmp(data_, other.data_, SIZE) > 0; }
 
-	bool operator==(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) == 0; }
+    bool operator==(const FixedString& other) const { return ::memcmp(data_, other.data_, SIZE) == 0; }
 
-	bool operator!=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) != 0; }
+    bool operator!=(const FixedString& other) const { return ::memcmp(data_, other.data_, SIZE) != 0; }
 
-	bool operator>=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) >= 0; }
+    bool operator>=(const FixedString& other) const { return ::memcmp(data_, other.data_, SIZE) >= 0; }
 
-	bool operator<=(const FixedString& other) const { return memcmp(data_, other.data_, SIZE) <= 0; }
+    bool operator<=(const FixedString& other) const { return ::memcmp(data_, other.data_, SIZE) <= 0; }
 
     /// The number of characters in the stored string,
     /// excluding the termination character if the string is shorter than SIZE.
-	size_t length() const;
+    size_t length() const;
 
     bool empty() const { return length() == 0; }
 
@@ -73,13 +78,13 @@ public:
 
     operator std::string() const;
 
-	char* data() { return data_; }
-	const char* data() const { return data_; }
+    char* data() { return data_; }
+    const char* data() const { return data_; }
 
     /// The number of bytes in the managed array (always equal to SIZE).
     size_t size() const { return SIZE; }
 
-	static size_t static_size() { return SIZE; }
+    static size_t static_size() { return SIZE; }
 
 private:
 

@@ -30,6 +30,7 @@ check_symbol_exists( MAP_ANON      "sys/mman.h"  ECKIT_HAVE_MAP_ANON )
 check_symbol_exists( funopen       "stdio.h"     ECKIT_HAVE_FUNOPEN )
 check_symbol_exists( fsync         "unistd.h"    ECKIT_HAVE_FSYNC)
 check_symbol_exists( fdatasync     "unistd.h"    ECKIT_HAVE_FDATASYNC)
+check_symbol_exists( F_FULLFSYNC   "fcntl.h"     ECKIT_HAVE_F_FULLFSYNC)
 check_symbol_exists( fmemopen      "stdio.h"     ECKIT_HAVE_FMEMOPEN )
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
@@ -40,9 +41,6 @@ check_c_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(
 
 check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
     ECKIT_HAVE_CXXABI_H )
-
-check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
-    ECKIT_HAVE_FUNCTION_DEF )
 
 check_c_source_compiles( "#include <time.h>\nint main(){ time_t now; time(&now); struct tm t; gmtime_r(&now,&t); }\n"
     ECKIT_HAVE_GMTIME_R )
@@ -135,6 +133,8 @@ io/Length.h
 io/Length.cc
 io/DataHandle.h
 io/DataHandle.cc
+io/FDataSync.h
+io/FDataSync.cc
 io/Select.h
 io/Select.cc
 io/CommandStream.h
@@ -733,6 +733,8 @@ net/Port.h
 net/Port.cc )
 
 list( APPEND eckit_serialisation_srcs
+serialisation/BadTag.h
+serialisation/BadTag.cc
 serialisation/Stream.h
 serialisation/Stream.cc
 serialisation/Streamable.h
@@ -751,10 +753,12 @@ serialisation/Reanimator.cc
 serialisation/ReanimatorBase.cc )
 
 list( APPEND eckit_persist_srcs
+persist/Bless.h
 persist/Exporter.h
 persist/Exporter.cc
 persist/DumpLoad.h
 persist/DumpLoad.cc
+persist/Isa.h
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
@@ -805,12 +809,14 @@ memory/MMap.h
 memory/Shmget.cc
 memory/Shmget.h
 memory/SharedPtr.h
+memory/SharedPtr.cc
 memory/Padded.h
 memory/MapAllocator.h
 memory/MapAllocator.cc
 memory/NonCopyable.h
 memory/NonCopyable.cc
-memory/ScopedPtr.h )
+memory/ScopedPtr.h
+memory/Zero.h )
 
 list( APPEND eckit_compat_srcs
 compat/Inited.h

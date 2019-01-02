@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,54 +26,53 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// Note that orderedMap[1] would intepret "1" as a key (as it should). To check the underlying order we can dereference
-// the ordered list of keys, then use that key in orderedMap[key].
-static Value& atIndex(Value & orderedMap, int index) {
-    return orderedMap.element( orderedMap.keys()[index] );
+// Note that orderedMap[1] would intepret "1" as a key (as it should). To check the underlying order
+// we can dereference the ordered list of keys, then use that key in orderedMap[key].
+static Value& atIndex(Value& orderedMap, int index) {
+    return orderedMap.element(orderedMap.keys()[index]);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Data is correctly moved into/out of OrderedMap" ) {
+CASE("Data is correctly moved into/out of OrderedMap") {
+    Value om          = Value::makeOrderedMap();
+    om[123]           = 1234;
+    om["abc"]         = "abcd";
+    om[Value(123.45)] = 123.456;
+    om[Value(true)]   = false;
 
-    Value om = Value::makeOrderedMap();
-    om[123]             = 1234;
-    om["abc"]           = "abcd";
-    om[Value(123.45)]   = 123.456;
-    om[Value(true)]     = false;
+    EXPECT(om.keys()[0] == Value(123));
+    EXPECT(om[123] == Value(1234));
+    EXPECT(atIndex(om, 0) == Value(1234));
 
-    EXPECT( om.keys()[0]     == Value(123)  );
-    EXPECT( om[123]          == Value(1234) );
-    EXPECT( atIndex( om, 0 ) == Value(1234) );
+    EXPECT(om.keys()[1] == Value("abc"));
+    EXPECT(om["abc"] == Value("abcd"));
+    EXPECT(atIndex(om, 1) == Value("abcd"));
 
-    EXPECT( om.keys()[1]     == Value("abc")  );
-    EXPECT( om["abc"]        == Value("abcd") );
-    EXPECT( atIndex( om, 1 ) == Value("abcd") );
+    EXPECT(Value(123.456) != Value(123.45));
+    EXPECT(om.keys()[2] == Value(123.45));
+    EXPECT(om[Value(123.45)] == Value(123.456));
+    EXPECT(atIndex(om, 2) == Value(123.456));
 
-    EXPECT( Value(123.456) != Value(123.45) );
-    EXPECT( om.keys()[2]      == Value(123.45)  );
-    EXPECT( om[Value(123.45)] == Value(123.456) );
-    EXPECT( atIndex( om, 2 )  == Value(123.456) );
-
-    EXPECT( om.keys()[3]     == Value(true)  );
-    EXPECT( om[Value(true)]  == Value(false) );
-    EXPECT( atIndex( om, 3 ) == Value(false) );
+    EXPECT(om.keys()[3] == Value(true));
+    EXPECT(om[Value(true)] == Value(false));
+    EXPECT(atIndex(om, 3) == Value(false));
 
     Value om_clone(om);
     // EXPECT(om == om_clone); // compare not implemented
 
-    EXPECT ( atIndex( om, 0 ) == atIndex( om_clone, 0 ) );
-    EXPECT ( om[123] == om_clone[123] );
+    EXPECT(atIndex(om, 0) == atIndex(om_clone, 0));
+    EXPECT(om[123] == om_clone[123]);
 
     om_clone[123] = 4321;
-    EXPECT ( atIndex( om, 0 ) != atIndex( om_clone, 0 ) );
-    EXPECT ( om[123] != om_clone[123] );
+    EXPECT(atIndex(om, 0) != atIndex(om_clone, 0));
+    EXPECT(om[123] != om_clone[123]);
     // EXPECT(om != om_clone); // compare not implemented
 
-    EXPECT( om.keys().size() == om_clone.keys().size() );
+    EXPECT(om.keys().size() == om_clone.keys().size());
 
     om_clone["new_key"] = Value("new_value");
-    EXPECT( om.keys().size() != om_clone.keys().size() );
+    EXPECT(om.keys().size() != om_clone.keys().size());
 
     // Invalid conversions
 
@@ -87,13 +85,12 @@ CASE( "Data is correctly moved into/out of OrderedMap" ) {
     EXPECT_THROWS_AS(om.as<DateTime>(), BadConversion);
 }
 
-CASE( "Types are reported correctly for OrderedMap" ) {
-
-    Value om = Value::makeOrderedMap();
-    om[123]             = 1234;
-    om["abc"]           = "abcd";
-    om[Value(123.45)]   = 123.456;
-    om[Value(true)]     = false;
+CASE("Types are reported correctly for OrderedMap") {
+    Value om          = Value::makeOrderedMap();
+    om[123]           = 1234;
+    om["abc"]         = "abcd";
+    om[Value(123.45)] = 123.456;
+    om[Value(true)]   = false;
 
     EXPECT(om.isOrderedMap());
 
@@ -109,23 +106,20 @@ CASE( "Types are reported correctly for OrderedMap" ) {
     EXPECT(!om.isMap());
 }
 
-CASE( "Test comparisons using OrderedMap" ) {
-
+CASE("Test comparisons using OrderedMap") {
     Value om1 = Value::makeOrderedMap();
     Value om2 = Value::makeOrderedMap();
     Value om3 = Value::makeOrderedMap();
     Value om4 = Value::makeOrderedMap();
 
     SECTION("Test empty maps") {
-        EXPECT( om1.compare(om2) == 0 );
-        EXPECT( om2.compare(om1) == 0 );
+        EXPECT(om1.compare(om2) == 0);
+        EXPECT(om2.compare(om1) == 0);
         om2[123] = 1234;
-        EXPECT( om1.compare(om2) == -1 );
-        EXPECT( om2.compare(om1) ==  1 );
-
+        EXPECT(om1.compare(om2) == -1);
+        EXPECT(om2.compare(om1) == 1);
     }
     SECTION("Equal OrderedMaps") {
-
         om1[123] = 1234;
 
         om2[123] = 1234;
@@ -135,17 +129,15 @@ CASE( "Test comparisons using OrderedMap" ) {
         EXPECT(om2.compare(om1) == 0);
     }
     SECTION("Number of keys mismatch") {
-
-        om1[123] = 1234;
+        om1[123]   = 1234;
         om1["xyz"] = "abcd";
 
         om2[123] = 1234;
 
-        EXPECT(om1.compare(om2) ==  1); // om1 is greater than om2 (it's got more keys)
-        EXPECT(om2.compare(om1) == -1); // om3 is less than om3 (it's got fewer keys)
+        EXPECT(om1.compare(om2) == 1);   // om1 is greater than om2 (it's got more keys)
+        EXPECT(om2.compare(om1) == -1);  // om3 is less than om3 (it's got fewer keys)
     }
     SECTION("Keys mismatch") {
-
         om1["1"] = 2;
         om1["2"] = 3;
         om1["3"] = 4;
@@ -154,12 +146,10 @@ CASE( "Test comparisons using OrderedMap" ) {
         om2["3"] = 3;
         om2["4"] = 4;
 
-        EXPECT( om2.compare(om1) ==  1 ); // First key is larger
-        EXPECT( om1.compare(om2) == -1 ); // First key is smaller
-
+        EXPECT(om2.compare(om1) == 1);   // First key is larger
+        EXPECT(om1.compare(om2) == -1);  // First key is smaller
     }
     SECTION("Values mismatch") {
-
         om1["1"] = 1;
         om1["2"] = 2;
         om1["3"] = 3;
@@ -168,31 +158,28 @@ CASE( "Test comparisons using OrderedMap" ) {
         om2["2"] = 3;
         om2["3"] = 4;
 
-        EXPECT( om2.compare(om1) ==  1 ); // First value is larger
-        EXPECT( om1.compare(om2) == -1 ); // First value is smaller
+        EXPECT(om2.compare(om1) == 1);   // First value is larger
+        EXPECT(om1.compare(om2) == -1);  // First value is smaller
     }
     SECTION("Check order of insertion is used for comparison, not key order") {
-
-        om1[2] = 100; // < should use this for value comparison, even though 2 > 1
+        om1[2] = 100;  // < should use this for value comparison, even though 2 > 1
         om1[1] = 200;
 
-        om2[2] = 200; // < should use this for value comparison, even though 2 > 1
+        om2[2] = 200;  // < should use this for value comparison, even though 2 > 1
         om2[1] = 100;
 
-        EXPECT( om2.compare(om1) ==  1 ); // First value is larger
-        EXPECT( om1.compare(om2) == -1 ); // First value is smaller
+        EXPECT(om2.compare(om1) == 1);   // First value is larger
+        EXPECT(om1.compare(om2) == -1);  // First value is smaller
 
         om1[3] = 300;
-        EXPECT( om1.compare(om2) ==  1 ); // More keys in om1
-        EXPECT( om2.compare(om1) == -1 );
+        EXPECT(om1.compare(om2) == 1);  // More keys in om1
+        EXPECT(om2.compare(om1) == -1);
 
         om2[3] = 500;
-        EXPECT( om1.compare(om2) == -1 ); // 3rd value is larger in om2
-        EXPECT( om2.compare(om1) ==  1 );
-
+        EXPECT(om1.compare(om2) == -1);  // 3rd value is larger in om2
+        EXPECT(om2.compare(om1) == 1);
     }
     SECTION("Check keys are compared by order of insertion") {
-
         om1[2] = 100;
         om1[1] = 200;
 
@@ -205,20 +192,21 @@ CASE( "Test comparisons using OrderedMap" ) {
         om4[1] = 100;
         om4[2] = 200;
 
-        EXPECT( om2.compare(om1) ==  0 ); // Keys are equal and inserted in same order
-        EXPECT( om1.compare(om2) ==  0 ); // Keys are equal and inserted in same order
-        EXPECT( om1.compare(om3) ==  1 ); // Keys are equal but inserted in wrong order, values also in wrong order
-        EXPECT( om1.compare(om4) ==  1 ); // Keys are equal but inserted in wrong order, values in correct order
+        EXPECT(om2.compare(om1) == 0);  // Keys are equal and inserted in same order
+        EXPECT(om1.compare(om2) == 0);  // Keys are equal and inserted in same order
+        EXPECT(om1.compare(om3) ==
+               1);  // Keys are equal but inserted in wrong order, values also in wrong order
+        EXPECT(om1.compare(om4) ==
+               1);  // Keys are equal but inserted in wrong order, values in correct order
     }
 }
 
 CASE("Check comparisons with other types of data.") {
-
-    Value om1 = Value::makeOrderedMap();
-    om1[123]             = 1234;
-    om1["abc"]           = "abcd";
-    om1[Value(123.45)]   = 123.456;
-    om1[Value(true)]     = false;
+    Value om1          = Value::makeOrderedMap();
+    om1[123]           = 1234;
+    om1["abc"]         = "abcd";
+    om1[Value(123.45)] = 123.456;
+    om1[Value(true)]   = false;
 
     EXPECT(om1.compare(Value(true)) < 0);
     EXPECT(om1.compare(Value(123)) < 0);
@@ -234,32 +222,32 @@ CASE("Check comparisons with other types of data.") {
 
     // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(om1.compare(Value(true))                < 0);
-    EXPECT(om1.compare(Value(1))                   < 0);
-    EXPECT(om1.compare(Value(1234.5))              < 0);
-    EXPECT(om1.compare(Value("test str"))          < 0);
-    EXPECT(om1.compare(Value())                    < 0);
-    EXPECT(om1.compare(Value::makeList())          < 0);
-    EXPECT(om1.compare(Value(Date(2016, 5, 1)))    < 0);
-    EXPECT(om1.compare(Value(Time(1000)))          < 0);
-    EXPECT(om1.compare(Value(DateTime()))          < 0);
-    EXPECT(om1.compare(om1)                       == 0);
+    EXPECT(om1.compare(Value(true)) < 0);
+    EXPECT(om1.compare(Value(1)) < 0);
+    EXPECT(om1.compare(Value(1234.5)) < 0);
+    EXPECT(om1.compare(Value("test str")) < 0);
+    EXPECT(om1.compare(Value()) < 0);
+    EXPECT(om1.compare(Value::makeList()) < 0);
+    EXPECT(om1.compare(Value(Date(2016, 5, 1))) < 0);
+    EXPECT(om1.compare(Value(Time(1000))) < 0);
+    EXPECT(om1.compare(Value(DateTime())) < 0);
+    EXPECT(om1.compare(om1) == 0);
 }
 
-CASE( "Test indexing for OrderedMap" ) {
-
-    Value om = Value::makeOrderedMap();
-    om[123]             = 1234;
-    om["abc"]           = "abcd";
-    om[Value(123.45)]   = 123.456;
-    om[Value(true)]     = false;
+CASE("Test indexing for OrderedMap") {
+    Value om          = Value::makeOrderedMap();
+    om[123]           = 1234;
+    om["abc"]         = "abcd";
+    om[Value(123.45)] = 123.456;
+    om[Value(true)]   = false;
 
     // Check with existent keys of the various types
 
     EXPECT(om[123].as<long long>() == 1234);
     EXPECT(om["abc"].as<std::string>() == "abcd");
     EXPECT(om[std::string("abc")].as<std::string>() == "abcd");
-    EXPECT(om[Value(true)].as<bool>() == false); // indexing without wrapping "true" as "Value(true)" does not work
+    EXPECT(om[Value(true)].as<bool>() ==
+           false);  // indexing without wrapping "true" as "Value(true)" does not work
 
     EXPECT(om[Value(123)].as<long long>() == 1234);
     EXPECT(om[Value("abc")].as<std::string>() == "abcd");
@@ -276,16 +264,16 @@ CASE( "Test indexing for OrderedMap" ) {
 
     /// This code should not work!!! const has gone screwey
     const Value const_om = Value::makeOrderedMap();
-    const_om[123]             = 1234;
+    const_om[123]        = 1234;
     Log::info() << const_om << std::endl;
-    //EXPECT(!const_om.contains(123));
+    // EXPECT(!const_om.contains(123));
 }
 
-CASE( "Test that addition is invalid for OrderedMap" ) {
+CASE("Test that addition is invalid for OrderedMap") {
     // There are no valid OrderedMap addition operations.
 
     Value om = Value::makeOrderedMap();
-    om[123] = 1234;
+    om[123]  = 1234;
 
     EXPECT_THROWS_AS(ValueAdd(om, true), BadOperator);
     EXPECT_THROWS_AS(ValueAdd(om, 1234), BadOperator);
@@ -315,11 +303,11 @@ CASE( "Test that addition is invalid for OrderedMap" ) {
     EXPECT_THROWS_AS(ValueAddSelf(om, Value::makeOrderedMap()), BadOperator);
 }
 
-CASE( "Test that subtraction is invalid for OrderedMap" ) {
+CASE("Test that subtraction is invalid for OrderedMap") {
     // There are no valid OrderedMap subtraction operations.
 
     Value om = Value::makeOrderedMap();
-    om[123] = 1234;
+    om[123]  = 1234;
 
     EXPECT_THROWS_AS(ValueSub(om, true), BadOperator);
     EXPECT_THROWS_AS(ValueSub(om, 1234), BadOperator);
@@ -349,11 +337,11 @@ CASE( "Test that subtraction is invalid for OrderedMap" ) {
     EXPECT_THROWS_AS(ValueSubSelf(om, Value::makeOrderedMap()), BadOperator);
 }
 
-CASE( "Tets that multiplication is invalid for OrderedMap" ) {
+CASE("Tets that multiplication is invalid for OrderedMap") {
     // There are no valid OrderedMap multiplication operations.
 
     Value om = Value::makeOrderedMap();
-    om[123] = 1234;
+    om[123]  = 1234;
 
     EXPECT_THROWS_AS(ValueMul(om, true), BadOperator);
     EXPECT_THROWS_AS(ValueMul(om, 1234), BadOperator);
@@ -383,11 +371,11 @@ CASE( "Tets that multiplication is invalid for OrderedMap" ) {
     EXPECT_THROWS_AS(ValueMulSelf(om, Value::makeOrderedMap()), BadOperator);
 }
 
-CASE( "Test that division is invalid for OrderedMap" ) {
+CASE("Test that division is invalid for OrderedMap") {
     // There are no valid OrderedMap division operations.
 
     Value om = Value::makeOrderedMap();
-    om[123] = 1234;
+    om[123]  = 1234;
 
     EXPECT_THROWS_AS(ValueDiv(om, true), BadOperator);
     EXPECT_THROWS_AS(ValueDiv(om, 1234), BadOperator);
@@ -417,11 +405,11 @@ CASE( "Test that division is invalid for OrderedMap" ) {
     EXPECT_THROWS_AS(ValueDivSelf(om, Value::makeOrderedMap()), BadOperator);
 }
 
-CASE( "Test that the module operator is invalid for OrderedMap" ) {
+CASE("Test that the module operator is invalid for OrderedMap") {
     // There are no valid OrderedMap modulo operations.
 
     Value om = Value::makeOrderedMap();
-    om[123] = 1234;
+    om[123]  = 1234;
 
     EXPECT_THROWS_AS(ValueMod(om, true), BadOperator);
     EXPECT_THROWS_AS(ValueMod(om, 1234), BadOperator);
@@ -448,29 +436,28 @@ CASE( "Test that the module operator is invalid for OrderedMap" ) {
     EXPECT_THROWS_AS(ValueModSelf(om, ValueMap()), BadOperator);
 }
 
-CASE( "Test head/tail functionality for OrderedMap" ) {
+CASE("Test head/tail functionality for OrderedMap") {
     Value om = Value::makeOrderedMap();
-    om[123] = 1234;
+    om[123]  = 1234;
 
     /// EXPECT_THROWS_AS(om.head(), AssertationError);
     /// EXPECT_THROWS_AS(om.tail(), AssertationError);
     EXPECT(true);
 }
 
-CASE( "Hash of a value" ) {
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
-    eckit::ScopedPtr<Hash> h(make_hash());
-
-    Value om = Value::makeOrderedMap();
-    om[123] = 1234;
-    om[234] = 2345;
-    om[777] = 7777;
+    Value om  = Value::makeOrderedMap();
+    om[123]   = 1234;
+    om[234]   = 2345;
+    om[777]   = 7777;
     om["abc"] = "def";
-    om[true] = false;
+    om[true]  = false;
 
     om.hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "d88d5bd6eb0a9d56d9132e0aca7f903f");
 }

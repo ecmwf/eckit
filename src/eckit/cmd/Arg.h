@@ -15,11 +15,11 @@
 #ifndef eckit_cmd_Arg_H
 #define eckit_cmd_Arg_H
 
-#include "eckit/eckit.h"
+#include <vector>
+#include <memory>
+#include <string>
+#include <iosfwd>
 
-#include "eckit/memory/ScopedPtr.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -62,7 +62,7 @@ private:
 
     // -- Members
 
-    eckit::ScopedPtr<ArgContent> content_;
+    std::unique_ptr<ArgContent> content_;
 
     // -- Friends
 

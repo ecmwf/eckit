@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 #include "eckit/io/CircularBuffer.h"
 
 #include "eckit/testing/Test.h"

@@ -14,6 +14,7 @@
 #ifndef eckit_log_IndentTarget_h
 #define eckit_log_IndentTarget_h
 
+#include <iosfwd>
 #include <utility>
 
 #include "eckit/log/PrefixTarget.h"
@@ -24,7 +25,6 @@ namespace eckit {
 
 class IndentTarget : public PrefixTarget {
 public:
-
     IndentTarget(const std::string& prefix, LogTarget* target, const char* space = " ");
 
 protected:
@@ -33,6 +33,6 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -8,10 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/value/StringContent.h"
+
+#include <ostream>
+
 #include "eckit/parser/JSON.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/StringContent.h"
 
 
 namespace eckit {
@@ -19,23 +22,18 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-ClassSpec StringContent::classSpec_ = {&Content::classSpec(), "StringContent",};
+ClassSpec StringContent::classSpec_ = {
+    &Content::classSpec(),
+    "StringContent",
+};
 Reanimator<StringContent> StringContent::reanimator_;
 
 
-StringContent::StringContent(const std::string& s):
-    value_(s)
-{
-}
+StringContent::StringContent(const std::string& s) : value_(s) {}
 
-StringContent::StringContent(const char* s):
-    value_(s)
-{
-}
+StringContent::StringContent(const char* s) : value_(s) {}
 
-StringContent::StringContent(Stream& s):
-    Content(s)
-{
+StringContent::StringContent(Stream& s) : Content(s) {
     s >> value_;
 }
 
@@ -44,47 +42,38 @@ Content* StringContent::clone() const {
 }
 
 
-void StringContent::encode(Stream& s) const
-{
+void StringContent::encode(Stream& s) const {
     Content::encode(s);
     s << value_;
 }
 
-StringContent::~StringContent()
-{
-}
+StringContent::~StringContent() {}
 
-void StringContent::print(std::ostream& s) const
-{
+void StringContent::print(std::ostream& s) const {
     s << value_;
 }
 
-void StringContent::json(JSON& s) const
-{
+void StringContent::json(JSON& s) const {
     s << value_;
 }
 
-int StringContent::compare(const Content& other) const
-{
+int StringContent::compare(const Content& other) const {
     return -other.compareString(*this);
 }
 
-int StringContent::compareString(const StringContent& other) const
-{
+int StringContent::compareString(const StringContent& other) const {
     return ::strcmp(value_.c_str(), other.value_.c_str());
 }
 
-void StringContent::value(std::string& s) const
-{
+void StringContent::value(std::string& s) const {
     s = value_;
 }
 
-void StringContent::value(bool& b) const
-{
-    if ( value_ == "true" || value_ == "on" || value_ == "yes" || value_ == "1" ) {
+void StringContent::value(bool& b) const {
+    if (value_ == "true" || value_ == "on" || value_ == "yes" || value_ == "1") {
         b = true;
     }
-    else if ( value_ == "false" || value_ == "off" || value_ == "no" || value_ == "0" ) {
+    else if (value_ == "false" || value_ == "off" || value_ == "no" || value_ == "0") {
         b = false;
     }
     else {
@@ -92,43 +81,35 @@ void StringContent::value(bool& b) const
     }
 }
 
-void StringContent::value(long long& l) const
-{
+void StringContent::value(long long& l) const {
     l = Translator<std::string, long long>()(value_);
 }
 
-void StringContent::value(double& d) const
-{
+void StringContent::value(double& d) const {
     d = Translator<std::string, double>()(value_);
 }
 
-Content* StringContent::add(const Content& other) const
-{
+Content* StringContent::add(const Content& other) const {
     return other.addString(*this);
 }
 
-Content* StringContent::addString(const StringContent& other) const
-{
+Content* StringContent::addString(const StringContent& other) const {
     return new StringContent(other.value_ + value_);
 }
 
-Content* StringContent::sub(const Content& other) const
-{
+Content* StringContent::sub(const Content& other) const {
     return other.subString(*this);
 }
 
-Content* StringContent::mul(const Content& other) const
-{
+Content* StringContent::mul(const Content& other) const {
     return other.mulString(*this);
 }
 
-Content* StringContent::div(const Content& other) const
-{
+Content* StringContent::div(const Content& other) const {
     return other.divString(*this);
 }
 
-Content* StringContent::mod(const Content& other) const
-{
+Content* StringContent::mod(const Content& other) const {
     return other.modString(*this);
 }
 
@@ -140,7 +121,6 @@ void StringContent::dump(std::ostream& out, size_t depth, bool indent) const {
     }
     // out << "string(" << value_ << ")";
     out << '"' << value_ << '"';
-
 }
 
 void StringContent::hash(Hash& h) const {
@@ -149,5 +129,4 @@ void StringContent::hash(Hash& h) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

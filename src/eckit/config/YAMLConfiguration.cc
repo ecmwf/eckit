@@ -11,12 +11,15 @@
 /// @author Baudouin Raoult
 /// @date Jul 2015
 
+#include <fstream>
+
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
-static Value root(std::istream &in) {
+static Value root(std::istream& in) {
     ASSERT(in);
     eckit::YAMLParser parser(in);
     Value root = parser.parse();
@@ -24,9 +27,9 @@ static Value root(std::istream &in) {
 }
 
 
-static Value root(const std::string &path) {
+static Value root(const std::string& path) {
     std::ifstream in(path.c_str());
-    if(!in)
+    if (!in)
         throw eckit::CantOpenFile(path);
     return root(in);
 }
@@ -38,42 +41,35 @@ static Value root(Stream& in) {
     return root(iss);
 }
 
-static Value root_from_string(const std::string &str) {
+static Value root_from_string(const std::string& str) {
     std::istringstream in(str);
     return root(in);
 }
 
-YAMLConfiguration::YAMLConfiguration(const PathName &path, char separator):
+YAMLConfiguration::YAMLConfiguration(const PathName& path, char separator) :
     Configuration(root(path), separator),
-    path_(path) {
-}
+    path_(path) {}
 
-YAMLConfiguration::YAMLConfiguration(std::istream &in, char separator):
+YAMLConfiguration::YAMLConfiguration(std::istream& in, char separator) :
     Configuration(root(in), separator),
-    path_("<istream>") {
-}
+    path_("<istream>") {}
 
-YAMLConfiguration::YAMLConfiguration(Stream& in, char separator):
+YAMLConfiguration::YAMLConfiguration(Stream& in, char separator) :
     Configuration(root(in), separator),
-    path_("<Stream>") {
-}
+    path_("<Stream>") {}
 
-YAMLConfiguration::YAMLConfiguration(const std::string& str, char separator):
+YAMLConfiguration::YAMLConfiguration(const std::string& str, char separator) :
     Configuration(root_from_string(str), separator),
-    path_("<string>") {
-}
+    path_("<string>") {}
 
-YAMLConfiguration::YAMLConfiguration(const SharedBuffer& buffer, char separator):
+YAMLConfiguration::YAMLConfiguration(const SharedBuffer& buffer, char separator) :
     Configuration(root_from_string(buffer.str()), separator),
-    path_("<Buffer>") {
+    path_("<Buffer>") {}
+
+YAMLConfiguration::~YAMLConfiguration() {}
+
+void YAMLConfiguration::print(std::ostream& out) const {
+    out << "YAMLConfiguration[path=" << path_ << ", root=" << *root_ << "]";
 }
 
-YAMLConfiguration::~YAMLConfiguration() {
-}
-
-void YAMLConfiguration::print(std::ostream &out) const {
-    out << "YAMLConfiguration[path=" << path_ << ", root=" << root_ << "]";
-}
-
-} // namespace eckit
-
+}  // namespace eckit

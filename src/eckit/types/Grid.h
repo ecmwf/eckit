@@ -14,10 +14,11 @@
 #ifndef eckit_Grid_h
 #define eckit_Grid_h
 
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
+#include <string>
+#include <vector>
 
-//-----------------------------------------------------------------------------
+#include "eckit/persist/Bless.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -34,8 +35,7 @@ public:
 
 	class InvalidGrid : public Exception {
 	public:
-		InvalidGrid(const std::string& s):
-			Exception("Invalid Mars Grid '" + s + "'") {}
+                InvalidGrid(const std::string& s);
 	};
 
 // -- Contructors

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
 */
 
-#include "eckit/eckit.h"
+#include <numeric>
 
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
@@ -19,7 +19,6 @@
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartHandle.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -172,7 +171,7 @@ long PartHandle::read1(char *buffer,long length)
 
 long PartHandle::read(void* buffer,long length)
 {
-    char *p = (char*)buffer;
+    char *p = static_cast<char*>(buffer);
 
     long n = 0;
     long total = 0;
@@ -188,7 +187,7 @@ long PartHandle::read(void* buffer,long length)
 
 }
 
-long PartHandle::write(const void* buffer,long length)
+long PartHandle::write(const void*, long)
 {
     return -1;
 }
@@ -228,7 +227,7 @@ void PartHandle::restartReadFrom(const Offset& from)
 
 Length PartHandle::estimate()
 {
-    return accumulate(length_.begin(),length_.end(),Length(0));
+    return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
 

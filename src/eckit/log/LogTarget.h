@@ -15,9 +15,7 @@
 #define eckit_log_LogTarget_h
 
 #include <iosfwd>
-#include <vector>
 
-#include "eckit/log/CodeLocation.h"
 #include "eckit/memory/Counted.h"
 
 namespace eckit {
@@ -25,21 +23,19 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LogTarget : public Counted {
-
-public: // methods
-
+public:  // methods
     LogTarget();
 
 
     virtual void write(const char* start, const char* end) = 0;
-    virtual void flush() = 0;
+    virtual void flush()                                   = 0;
 
     virtual ~LogTarget();
 
 protected:
-
-    friend std::ostream& operator<< (std::ostream& os, const LogTarget& c) {
-        c.print(os); return os;
+    friend std::ostream& operator<<(std::ostream& os, const LogTarget& c) {
+        c.print(os);
+        return os;
     }
 
     virtual void print(std::ostream& s) const;
@@ -47,6 +43,6 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

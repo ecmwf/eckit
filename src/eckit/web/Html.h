@@ -11,7 +11,7 @@
 #ifndef Html_H
 #define Html_H
 
-#include "eckit/eckit.h"
+#include <map>
 
 #include "eckit/web/HtmlObject.h"
 

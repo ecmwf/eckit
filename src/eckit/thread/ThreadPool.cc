@@ -231,6 +231,9 @@ void ThreadPool::resize(size_t size) {
         count_++;
     }
 }
+
+ThreadPoolTask::~ThreadPoolTask() {}
+
 //-----------------------------------------------------------------------------
 
 } // namespace eckit

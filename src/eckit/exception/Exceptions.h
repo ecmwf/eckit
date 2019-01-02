@@ -12,15 +12,12 @@
 #define eckit_Exceptions_h
 
 #include <errno.h>
-#include <iosfwd>
-
-#include "eckit/eckit.h"
-#include "eckit/eckit_version.h"
+#include <iostream>
+#include <sstream>
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/SavedStatus.h"
-
 
 namespace eckit {
 

@@ -8,14 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
+#include <vector>
+#include <vector>
+
 #include "eckit/serialisation/Stream.h"
+#include "eckit/log/Log.h"
 
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 // Version 2: warning all numbers must be signed but positive...
 
@@ -243,8 +246,8 @@ Stream& RLEwrite(Stream& s,InputIterator first,InputIterator last,
 {
 	std::vector<T> tmp; tmp.reserve(last-first);
 	RLEencode2(first,last, std::back_inserter(tmp),maxLoop);
-	s << tmp;
-    std::cout << "RLEwrite : " << last-first << " -> " << tmp.size() << std::endl;
+        s << tmp;
+        Log::info() << "RLEwrite : " << last-first << " -> " << tmp.size() << std::endl;
 	return s;
 }
 

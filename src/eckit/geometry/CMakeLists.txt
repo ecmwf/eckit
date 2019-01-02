@@ -3,6 +3,7 @@ EllipsoidOfRevolution.cc
 EllipsoidOfRevolution.h
 GreatCircle.cc
 GreatCircle.h
+KPoint.cc
 KPoint.h
 Point2.cc
 Point2.h

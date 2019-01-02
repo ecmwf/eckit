@@ -14,14 +14,13 @@
 #ifndef eckit_ResourceUsage_h
 #define eckit_ResourceUsage_h
 
-#include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/time.h>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/system/MemoryInfo.h"
-
 
 
 namespace eckit {
@@ -30,27 +29,24 @@ namespace eckit {
 
 class ResourceUsage : private NonCopyable {
 public:
-
     explicit ResourceUsage();
 
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
-    explicit ResourceUsage( const std::string& name, std::ostream& o = Log::info() );
+    explicit ResourceUsage(const std::string& name, std::ostream& o = Log::info());
 
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
-    explicit ResourceUsage( const char* name, std::ostream& o = Log::info() );
+    explicit ResourceUsage(const char* name, std::ostream& o = Log::info());
 
     ~ResourceUsage();
 
-protected: // methods
-
+protected:  // methods
     void init();
 
-private: // members
-
-    std::string        name_;
-    std::ostream&      out_;
+private:  // members
+    std::string name_;
+    std::ostream& out_;
 
     system::MemoryInfo usage_;
 
@@ -60,19 +56,17 @@ private: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class TraceResourceUsage : public ResourceUsage {
 public:
+    explicit TraceResourceUsage(const char* name) : ResourceUsage(name, eckit::Log::debug<T>()) {}
 
-    explicit TraceResourceUsage( const char* name):
-        ResourceUsage(name, eckit::Log::debug<T>()) {}
-
-    explicit TraceResourceUsage( const std::string& name):
+    explicit TraceResourceUsage(const std::string& name) :
         ResourceUsage(name, eckit::Log::debug<T>()) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

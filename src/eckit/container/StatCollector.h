@@ -14,8 +14,11 @@
 #ifndef eckit_StatCollector_h
 #define eckit_StatCollector_h
 
+#include <cstddef>
+#include <iostream>
 
 #include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/BigNum.h"
 
 
@@ -26,40 +29,44 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 struct StatCollector {
-
-    StatCollector() { statsReset(); depth_ = 0; }
+    StatCollector() {
+        statsReset();
+        depth_ = 0;
+    }
 
 
     // -- Methods
 
     void statsCall() { calls_++; }
     void statsVisitNode() { nodes_++; }
-    void statsDepth(size_t d) { if(d>depth_) depth_ = d; }
+    void statsDepth(size_t d) {
+        if (d > depth_)
+            depth_ = d;
+    }
 
-    void statsNewCandidateOK()   { newCandidateOK_++; }
+    void statsNewCandidateOK() { newCandidateOK_++; }
     void statsNewCandidateMiss() { newCandidateMiss_++; }
-    void statsCrossOver()        { crossOvers_++; }
+    void statsCrossOver() { crossOvers_++; }
     void statsReset() { crossOvers_ = calls_ = newCandidateOK_ = newCandidateMiss_ = nodes_ = 0; }
 
     void print(std::ostream& s) const {
-        s << "Stats calls: " << BigNum(calls_)
-          << " avg candidates: " << BigNum(double(newCandidateMiss_ + newCandidateOK_)/double(calls_) + 0.5)
-          << ", avg nodes: " << BigNum(double(nodes_)/double(calls_) + 0.5)
-          <<", depth: " << depth_
-            ;
+        s << "Stats calls: " << BigNum(calls_) << " avg candidates: "
+          << BigNum(double(newCandidateMiss_ + newCandidateOK_) / double(calls_) + 0.5)
+          << ", avg nodes: " << BigNum(double(nodes_) / double(calls_) + 0.5)
+          << ", depth: " << depth_;
     }
 
     void statsPrint(std::ostream& s, bool fancy) const {
-        if(fancy) {
+        if (fancy) {
             s << *this << std::endl;
         }
         else {
             s << "   calls: " << BigNum(calls_) << std::endl;
-            s << "   miss: "  << BigNum(newCandidateMiss_) << std::endl;
-            s << "   hit: "   << BigNum(newCandidateOK_) << std::endl;
+            s << "   miss: " << BigNum(newCandidateMiss_) << std::endl;
+            s << "   hit: " << BigNum(newCandidateOK_) << std::endl;
             s << "   nodes: " << BigNum(nodes_) << std::endl;
-            s << "   depth: " << BigNum(depth_)  << std::endl;
-            s << "   crossovers: " << BigNum(crossOvers_)  << std::endl;
+            s << "   depth: " << BigNum(depth_) << std::endl;
+            s << "   crossovers: " << BigNum(crossOvers_) << std::endl;
         }
     }
 
@@ -76,16 +83,14 @@ struct StatCollector {
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& s,const StatCollector& p)
-    {
+    friend std::ostream& operator<<(std::ostream& s, const StatCollector& p) {
         p.print(s);
         return s;
     }
-
 };
 
 //-----------------------------------------------------------------------------
 //
-} // Namespace
+}  // namespace eckit
 
 #endif

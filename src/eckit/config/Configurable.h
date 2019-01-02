@@ -14,10 +14,11 @@
 #ifndef eckit_Configurable_h
 #define eckit_Configurable_h
 
+#include <set>
+
 #include "eckit/container/ClassExtent.h"
 #include "eckit/thread/Mutex.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

@@ -10,6 +10,8 @@
 
 #include <cmath>
 
+#include <set>
+
 #include "eckit/memory/Owned.h"
 #include "eckit/memory/SharedPtr.h"
 #include "eckit/log/Log.h"

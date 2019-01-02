@@ -11,11 +11,7 @@
 #ifndef eckit_Base64_h
 #define eckit_Base64_h
 
-
-#include "eckit/eckit.h"
-
-
-//-----------------------------------------------------------------------------
+#include <cstddef>
 
 namespace eckit {
 
@@ -28,7 +24,6 @@ class Base64  {
 public: // methods
 
     Base64(bool url = false);
-// --
 
     size_t decode(DataHandle& in, DataHandle& out);
     size_t encode(DataHandle& in, DataHandle& out);

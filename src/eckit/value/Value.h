@@ -15,6 +15,8 @@
 #ifndef eckit_Value_h
 #define eckit_Value_h
 
+#include <list>
+
 #include "eckit/value/Content.h"
 #include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"

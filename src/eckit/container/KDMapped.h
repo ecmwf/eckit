@@ -11,9 +11,9 @@
 #ifndef KDMapped_H
 #define KDMapped_H
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/container/StatCollector.h"
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 
 namespace eckit {
 
@@ -23,7 +23,7 @@ struct KDMappedHeader {
     size_t itemSize_;
     size_t metadataSize_;
 
-    KDMappedHeader(size_t itemCount, size_t itemSize, size_t metadataSize):
+    KDMappedHeader(size_t itemCount, size_t itemSize, size_t metadataSize) :
         headerSize_(sizeof(KDMappedHeader)),
         itemCount_(itemCount),
         itemSize_(itemSize),
@@ -33,9 +33,7 @@ struct KDMappedHeader {
 
 class KDMapped : public StatCollector {
 public:
-
-
-    KDMapped(const PathName&,  size_t itemCount , size_t itemSize, size_t metadataSize);
+    KDMapped(const PathName&, size_t itemCount, size_t itemSize, size_t metadataSize);
     ~KDMapped();
 
     KDMapped(const KDMapped& other);
@@ -43,58 +41,54 @@ public:
 
     typedef size_t Ptr;
 
-    template<class Node>
+    template <class Node>
     Node* base(const Node*) {
         ASSERT(sizeof(Node) == header_.itemSize_);
         return reinterpret_cast<Node*>(base_);
     }
 
-    Ptr root() const {
-        return root_;
-    }
+    Ptr root() const { return root_; }
 
-     void root(Ptr r) {
-         ASSERT(r == 1);
-     }
+    void root(Ptr r) { ASSERT(r == 1); }
 
-    template<class Node>
+    template <class Node>
     Ptr convert(Node* p) {
         return p ? p - base(p) : 0;
     }
 
-    template<class Node>
+    template <class Node>
     Node* convert(Ptr p, const Node* dummy) {
         Node* r = base(dummy);
         /* ASSERT(p < count_); */
         return p ? &r[p] : NULL;
     }
 
-    template<class Node, class A>
+    template <class Node, class A>
     Node* newNode1(const A& a, const Node* dummy) {
         Node* r = base(dummy);
         ASSERT(count_ > 0);
-        //ASSERT(count_ * sizeof(Node) < size_);
-        return new(&r[count_++]) Node(a);
+        // ASSERT(count_ * sizeof(Node) < size_);
+        return new (&r[count_++]) Node(a);
     }
 
-    template<class Node, class A, class B>
+    template <class Node, class A, class B>
     Node* newNode2(const A& a, const B& b, const Node* dummy) {
         Node* r = base(dummy);
         ASSERT(count_ > 0);
-        //ASSERT(count_ * sizeof(Node) < size_);
-        return new(&r[count_++]) Node(a, b);
+        // ASSERT(count_ * sizeof(Node) < size_);
+        return new (&r[count_++]) Node(a, b);
     }
 
-    template<class Node, class A, class B, class C>
+    template <class Node, class A, class B, class C>
     Node* newNode3(const A& a, const B& b, const C& c, const Node* dummy) {
         Node* r = base(dummy);
         ASSERT(count_ > 0);
-        //ASSERT(count_ * sizeof(Node) < size_);
-        return new(&r[count_++]) Node(a, b, c);
+        // ASSERT(count_ * sizeof(Node) < size_);
+        return new (&r[count_++]) Node(a, b, c);
     }
 
 
-    template<class Node>
+    template <class Node>
     void deleteNode(Ptr p, Node* n) {
         // Ignore
         // TODO: recycle space if needed
@@ -103,18 +97,17 @@ public:
     void setMetadata(const void*, size_t);
     void getMetadata(void*, size_t);
 
-    template<class Metadata>
+    template <class Metadata>
     void setMetadata(const Metadata& meta) {
         setMetadata(&meta, sizeof(meta));
     }
 
-    template<class Metadata>
+    template <class Metadata>
     void getMetadata(Metadata& meta) {
         getMetadata(&meta, sizeof(meta));
     }
 
 private:
-
     PathName path_;
 
     KDMappedHeader header_;
@@ -127,10 +120,9 @@ private:
 
     void* addr_;
     int fd_;
-
 };
 
-} // end namespace
+}  // namespace eckit
 
 
 #endif

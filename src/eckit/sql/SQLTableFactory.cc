@@ -9,6 +9,9 @@
  */
 
 #include "eckit/sql/SQLTableFactory.h"
+
+#include <algorithm>
+
 #include "eckit/exception/Exceptions.h"
 
 

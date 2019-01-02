@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/types/Date.h"
 #include "eckit/sql/expression/function/FunctionJULIAN.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/types/Date.h"
 
 namespace eckit {
 namespace sql {
@@ -35,7 +37,7 @@ const type::SQLType* FunctionJULIAN::type() const { return &type::SQLType::looku
 double FunctionJULIAN::eval(bool& missing) const
 {
     int indate = (int) args_[0]->eval(missing);
-    int intime = (int) args_[1]->eval(missing); // unused
+    // int intime = (int) args_[1]->eval(missing); // unused
 	// TODO: shold we return MISSING_VALUE_INT in case missing == true here?
 
     eckit::Date date(indate);

@@ -16,6 +16,7 @@
 #define eckit_sql_SQLTable_H
 
 #include <functional>
+#include <memory>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"

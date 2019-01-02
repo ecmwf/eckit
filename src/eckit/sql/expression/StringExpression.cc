@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/sql/expression/StringExpression.h"
+
+#include <cstring>
+
 #include "eckit/exception/Exceptions.h"
-#include "eckit/sql/expression//ColumnExpression.h"
+#include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/SQLTable.h"
-#include "eckit/sql/expression/StringExpression.h"
 #include "eckit/utils/Regex.h"
 
 

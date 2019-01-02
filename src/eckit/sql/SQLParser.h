@@ -15,6 +15,8 @@
 #ifndef eckit_sql_SQLParser_H
 #define eckit_sql_SQLParser_H
 
+#include <stack>
+
 #include "eckit/exception/Exceptions.h"
 #include "SQLOutputConfig.h"
 

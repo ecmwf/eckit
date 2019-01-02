@@ -8,8 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/SQLExpressionEvaluated.h"
+
+#include <cstring>
+
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 namespace sql {

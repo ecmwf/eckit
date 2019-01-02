@@ -8,9 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/type/SQLString.h"
+
+#include <cstring>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/sql/SQLOutput.h"
 
 namespace eckit {
 namespace sql {

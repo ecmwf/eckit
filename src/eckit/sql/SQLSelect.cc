@@ -8,6 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/sql/SQLSelect.h"
+
+#include <algorithm>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Log.h"
@@ -19,7 +23,6 @@
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutput.h"
-#include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
 
 

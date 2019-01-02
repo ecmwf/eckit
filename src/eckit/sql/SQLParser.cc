@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <stack>
+
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/sql/expression/BitColumnExpression.h"

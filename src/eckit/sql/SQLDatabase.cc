@@ -8,12 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/parser/Tokenizer.h"
-
-#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/sql/type/SQLType.h"
+
 #include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/parser/Tokenizer.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/type/SQLType.h"
 
 using namespace eckit;
 

@@ -9,6 +9,8 @@
  */
 
 #include "eckit/sql/SQLColumn.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLTable.h"
 
 using namespace eckit;

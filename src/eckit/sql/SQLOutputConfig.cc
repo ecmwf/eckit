@@ -9,8 +9,10 @@
  */
 
 #include "eckit/sql/SQLOutputConfig.h"
-#include "eckit/sql/SQLSimpleOutput.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
+#include "eckit/sql/SQLSimpleOutput.h"
 
 namespace eckit {
 namespace sql {

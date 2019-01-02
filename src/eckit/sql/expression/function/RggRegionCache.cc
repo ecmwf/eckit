@@ -9,6 +9,8 @@
  */
 
 #include <cmath>
+#include <cstring>
+#include <fstream>
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"

@@ -9,6 +9,8 @@
  */
 
 #include "eckit/sql/expression/ParameterExpression.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLSession.h"
 
 namespace eckit {

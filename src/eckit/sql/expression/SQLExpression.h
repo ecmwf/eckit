@@ -15,6 +15,7 @@
 #define SQLExpression_H
 
 #include <memory>
+#include <set>
 
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/sql/SQLTypedefs.h"

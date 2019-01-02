@@ -8,7 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/sql/expression//NumberExpression.h"
+#include "eckit/sql/expression/NumberExpression.h"
+
+#include <ostream>
 
 namespace eckit {
 namespace sql {

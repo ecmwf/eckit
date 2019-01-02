@@ -8,14 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-//#include <sstream>
+#include "eckit/sql/expression/ColumnExpression.h"
 
-#include "eckit/eckit.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/sql/expression//ColumnExpression.h"
+#include <cstring>
+#include <ostream>
+
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 namespace sql {

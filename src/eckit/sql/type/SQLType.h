@@ -11,13 +11,15 @@
 // File SQLType.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLType_H
-#define SQLType_H
+#ifndef eckit_sql_SQLType_H
+#define eckit_sql_SQLType_H
 
-#include "eckit/eckit.h"
+#include <string>
 
 namespace eckit {
 namespace sql {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class SQLOutput;
 
@@ -81,6 +83,8 @@ public:
 	static SQLType* registerType(SQLType*);
 	~DynamicallyCreatedTypesDestroyer ();
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace type 
 } // namespace sql

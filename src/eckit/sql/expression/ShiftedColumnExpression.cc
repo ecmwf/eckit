@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
+
 namespace eckit {
 namespace sql {
 namespace expression {
@@ -133,6 +135,17 @@ void ShiftedColumnExpression<T>::output(SQLOutput& o) const
 	bool missing = false;
 	double v = eval(missing);
 	this->type_->output(o, v, missing); 
+}
+
+template <typename T>
+SQLTable* ShiftedColumnExpression<T>::table() {
+    return this->table_;
+}
+
+template <typename T>
+double* ShiftedColumnExpression<T>::current() {
+    NOTIMP;
+    return &(this->value_->first);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

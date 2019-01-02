@@ -9,6 +9,7 @@
  */
 
 #include <libgen.h>
+#include <cstring>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"

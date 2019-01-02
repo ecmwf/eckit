@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
 
 #include "eckit/testing/Test.h"
 #include "eckit/sql/SQLDatabase.h"

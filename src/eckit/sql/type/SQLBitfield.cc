@@ -8,15 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
-#include "eckit/log/Log.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/types/Types.h"
-#include "eckit/parser/Tokenizer.h"
 #include "eckit/sql/type/SQLBitfield.h"
-#include "eckit/sql/type/SQLBit.h"
+
+#include <sstream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/parser/Tokenizer.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLTypedefs.h"
+#include "eckit/sql/type/SQLBit.h"
+#include "eckit/types/Types.h"
+#include "eckit/utils/Translator.h"
 
 using namespace eckit;
 

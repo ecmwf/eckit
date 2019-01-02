@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/sql/SQLTable.h"
+
+#include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/parser/Tokenizer.h"
 #include "eckit/sql/SQLBitColumn.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/config/LibEcKit.h"
 
 
 namespace eckit {

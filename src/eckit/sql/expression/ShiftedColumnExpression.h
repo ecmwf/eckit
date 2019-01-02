@@ -17,6 +17,7 @@
 #define eckit_sql_ShiftedColumnExpression_H
 
 #include <string>
+#include <list>
 
 namespace eckit {
 namespace sql {
@@ -44,9 +45,9 @@ public:
 
 	~ShiftedColumnExpression(); 
 
-	SQLTable* table() { return this->table_; }
+	SQLTable* table();
 
-	double* current() { NOTIMP; return &(this->value_->first); }
+	double* current();
 
     virtual std::shared_ptr<SQLExpression> clone() const override;
 

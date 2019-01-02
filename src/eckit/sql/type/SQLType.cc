@@ -8,14 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/sql/type/SQLType.h"
+
+#include <map>
+
 #include "eckit/exception/Exceptions.h"
-#include "eckit/thread/ThreadSingleton.h"
 #include "eckit/log/Log.h"
 #include "eckit/sql/type/SQLDouble.h"
 #include "eckit/sql/type/SQLInt.h"
 #include "eckit/sql/type/SQLReal.h"
 #include "eckit/sql/type/SQLString.h"
-#include "eckit/sql/type/SQLType.h"
+#include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
 
 using namespace eckit;

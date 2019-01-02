@@ -22,19 +22,18 @@ namespace expression {
 namespace function {
 
 namespace piconst {
-//  const double  pi                = ((double)3.14159265358979323844e0);
 
-  constexpr double  pi                = atan2(1.0,1.0)*4;
-  constexpr double  half_pi           = (pi / 2);
-  constexpr double  two_pi            = (2 * pi);
-  constexpr double  four_pi           = (4 * pi);
-  constexpr double  pi_over_180       = (pi/180);
-  constexpr double  recip_pi_over_180 = (180/pi);
-  constexpr double  sphere_area       = four_pi; /* Actually: 4 * pi * R^2 */
+  constexpr double  pi                = M_PI;
+  constexpr double  half_pi           = M_PI_2;
+  constexpr double  two_pi            = (2. * pi);
+  constexpr double  four_pi           = (4. * pi);
+  constexpr double  pi_over_180       = (pi/180.);
+  constexpr double  recip_pi_over_180 = (180./pi);
 
 }
 }
 }
 }
 }
+
 #endif

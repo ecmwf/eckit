@@ -31,7 +31,9 @@ namespace eckit {
 PipeApplication::PipeApplication(int argc, char** argv, const char* homeenv):
     Application(argc, argv, homeenv),
     in_("-in", -1),
-    out_("-out", -1) {
+    out_("-out", -1),
+    terminate_(false)
+    {
     // Establish relationship with 'parent' thread for the monitoring
 
     long parent = Resource<long>("-parent", 0);
@@ -119,6 +121,11 @@ void PipeApplication::run()
                     << ", Memory: "      << Bytes(usage.ru_maxrss * 1024)
                     << ", Swaps: "       << BigNum(usage.ru_nswap)
                     << std::endl;
+
+        if(terminate_) {
+            Log::info() << "Process termination requested, exiting" << std::endl;
+            return;
+        }
 
         if (maxRequests && (count >= maxRequests)) {
             Log::info() << "Maximum number of requests reached ("

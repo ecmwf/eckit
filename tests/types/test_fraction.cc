@@ -14,6 +14,7 @@
 
 #include "eckit/types/Fraction.h"
 #include "eckit/log/Log.h"
+#include "eckit/utils/Translator.h"
 
 #include "eckit/testing/Test.h"
 
@@ -321,6 +322,23 @@ CASE ( "Fraction precision" ) {
     }
 
     Log::debug().precision(old);
+}
+
+
+CASE ( "String to double to fraction to double to string" ) {
+    auto old = Log::debug().precision(16);
+
+    Translator<std::string, double> s2d;
+
+    std::string s("-17.9229");
+
+    Fraction f(s2d(s));
+
+    std::ostringstream oss;
+    oss << double(f);
+
+    EXPECT(oss.str() == s);
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

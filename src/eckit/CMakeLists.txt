@@ -267,6 +267,8 @@ filesystem/FileSystem.h
 filesystem/FileSystem.cc
 filesystem/TempFile.h
 filesystem/TempFile.cc
+filesystem/TmpDir.h
+filesystem/TmpDir.cc
 filesystem/TmpFile.h
 filesystem/TmpFile.cc
 filesystem/marsfs/MarsFSFile.h
@@ -312,6 +314,7 @@ config/LibEcKit.cc
 config/LibEcKit.h
 config/LocalConfiguration.cc
 config/LocalConfiguration.h
+config/Parametrisation.cc
 config/Parametrisation.h
 config/Resource.h
 config/ResourceBase.h
@@ -739,6 +742,8 @@ serialisation/FileStream.cc
 serialisation/MemoryStream.h
 serialisation/MemoryStream.cc
 serialisation/HandleStream.h
+serialisation/FstreamStream.h
+serialisation/IfstreamStream.h
 serialisation/PipeStream.h
 serialisation/PipeStream.cc
 serialisation/Reanimator.h

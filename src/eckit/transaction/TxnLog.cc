@@ -198,6 +198,13 @@ void TxnLog<T>::end(T& event, bool backup)
 }
 
 template<class T>
+bool TxnLog<T>::exists(T& event)
+{
+    PathName path = name(event);
+    return path.exists();
+}
+
+template<class T>
 class RecoverThread : public Thread {
     TxnArray& nextID_;
     TxnRecoverer<T>&    client_;

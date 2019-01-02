@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File HandleBuf.h
-// Baudouin Raoult - ECMWF Mar 97
+// File IfstreamStream.h
+// Baudouin Raoult - ECMWF Aug 18
 
-#ifndef eckit_HandleBuf_h
-#define eckit_HandleBuf_h
+#ifndef eckit_IfstreamStream_h
+#define eckit_IfstreamStream_h
 
-#include "eckit/io/DataHandle.h"
+#include <fstream>
+
+#include "eckit/serialisation/Stream.h"
+#include "eckit/exception/Exceptions.h"
 
 
 //-----------------------------------------------------------------------------
@@ -23,39 +26,43 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class HandleBuf : public std::streambuf  {
+
+// Adaptor: allow Stream operations on a DataHandle;
+
+class IfstreamStream : public Stream {
 public:
 
 // -- Contructors
 
-	HandleBuf(DataHandle& handle, bool throwOnError=false);
+	IfstreamStream(std::ifstream& f) : f_(f) {}
 
 // -- Destructor
 
-	~HandleBuf();
+	~IfstreamStream() {}
 
 private:
 
-// No copy allowed
-
-	HandleBuf(const HandleBuf&);
-	HandleBuf& operator=(const HandleBuf&);
-
 // -- Members
 
-	char in_[1];
-	char out_[80];
-	DataHandle& handle_;
-	bool throwOnError_;
+	std::ifstream& f_;
 
 // -- Overridden methods
 
-	// From streambuf
+	// From Stream
 
-	virtual int overflow(int c);
-	virtual int underflow();
-	virtual int sync();
-//	virtual int uflow();
+	virtual long write(const void* buf, long len) {
+		NOTIMP;
+	}
+
+	virtual long read(void* buf, long len) {
+		f_.read(static_cast<char*>(buf), len);
+		ASSERT(!f_.eof() && !f_.bad());
+		return len;
+	}
+
+	virtual std::string name() const {
+		return "IfstreamStream";
+	}
 
 };
 

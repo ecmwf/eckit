@@ -10,7 +10,7 @@
 
 /// @author Tiago Quintino
 ///
-/// @note Include this header for accessing build time configurations detected byt the build system
+/// @note Include this header for accessing build time configurations detected by the build system
 ///       introspection.
 
 #ifndef eckit_eckit_h

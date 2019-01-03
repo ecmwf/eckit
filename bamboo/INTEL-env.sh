@@ -14,4 +14,4 @@ module unload metview
 
 module load cmake/3.10.2
 
-module switch gnu intel/16.0.3
+module switch gnu intel/17.0.3

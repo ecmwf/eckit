@@ -2,6 +2,8 @@ ecbuild_add_library(
 
     TARGET eckit_option
 
+    TYPE SHARED
+
     INSTALL_HEADERS LISTED
 
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/option

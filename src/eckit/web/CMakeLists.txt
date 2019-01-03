@@ -43,6 +43,7 @@ Url.h)
 
 
 ecbuild_add_library( TARGET eckit_web
+                     TYPE SHARED
 					 INSTALL_HEADERS LISTED
 					 SOURCES
 						${eckit_web_srcs}

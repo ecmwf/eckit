@@ -35,6 +35,13 @@ ecbuild_add_option( FEATURE ECKIT_CMD
                     DESCRIPTION "Utilities for administration tools"
                     REQUIRED_PACKAGES "LEXYACC" "Curses" )
 
+### eckit::sql
+
+ecbuild_add_option( FEATURE ECKIT_SQL
+                    DEFAULT ON
+                    DESCRIPTION "An SQL engine"
+                    REQUIRED_PACKAGES "LEXYACC" )
+
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN

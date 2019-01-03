@@ -27,6 +27,7 @@ Vector.h
 )
 
 ecbuild_add_library( TARGET             eckit_linalg
+                     TYPE SHARED
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/linalg
                      SOURCES            ${eckit_la_srcs}

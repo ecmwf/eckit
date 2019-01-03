@@ -36,6 +36,7 @@ if( HAVE_MPI )
 endif()
 
 ecbuild_add_library(TARGET eckit_mpi
+                    TYPE SHARED
                     INSTALL_HEADERS ALL
                     HEADER_DESTINATION
                         ${INSTALL_INCLUDE_DIR}/eckit/mpi

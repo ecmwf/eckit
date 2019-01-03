@@ -70,8 +70,7 @@ ecbuild_generate_yy( YYPREFIX eckit_cmd_
                      LEX  cmdsl
                      DEPENDANT CmdParser.cc )
 
-ecbuild_add_library( TARGET             eckit_cmd
-                     TYPE SHARED
+ecbuild_add_library( TARGET             eckit_cmd TYPE SHARED
                      INSTALL_HEADERS    LISTED
                      SOURCES            ${eckit_cmd_srcs}
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/cmd

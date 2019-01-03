@@ -1,16 +1,16 @@
 ecbuild_append_to_rpath( "./" )
 
-ecbuild_add_library( TARGET      eckit_test_experimental_singleton_factory
+ecbuild_add_library( TARGET      eckit_test_experimental_singleton_factory  TYPE SHARED
                      NOINSTALL
                      SOURCES     TestFactory.cc TestFactory.h
                      LIBS        eckit )
 
-ecbuild_add_library( TARGET      eckit_test_experimental_singleton_builder1
+ecbuild_add_library( TARGET      eckit_test_experimental_singleton_builder1  TYPE SHARED
                      NOINSTALL
                      SOURCES     TestBuilder1.cc
                      LIBS        eckit_test_experimental_singleton_factory )
 
-ecbuild_add_library( TARGET      eckit_test_experimental_singleton_builder2
+ecbuild_add_library( TARGET      eckit_test_experimental_singleton_builder2  TYPE SHARED
                      NOINSTALL
                      SOURCES     TestBuilder2.cc
                      LIBS        eckit_test_experimental_singleton_factory )

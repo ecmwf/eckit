@@ -15,8 +15,7 @@ SphereT.h
 UnitSphere.h
 )
 
-ecbuild_add_library(TARGET eckit_geometry
-                    TYPE SHARED
+ecbuild_add_library(TARGET eckit_geometry TYPE SHARED
 					INSTALL_HEADERS ALL
 					HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit/geometry

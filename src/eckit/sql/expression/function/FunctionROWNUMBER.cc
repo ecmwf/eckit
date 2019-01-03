@@ -56,7 +56,7 @@ const eckit::sql::type::SQLType* FunctionROWNUMBER::type() const { return &eckit
 
 void FunctionROWNUMBER::output(std::ostream& s) const
 {
-    bool missing;
+    bool missing = false;
     s << static_cast<unsigned long>(eval(missing));
 }
 

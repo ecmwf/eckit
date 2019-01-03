@@ -206,6 +206,7 @@ void SQLSelect::prepareExecute() {
 
     std::shared_ptr<SQLExpression> where(where_);
 	if(where) {
+        Log::info() << "WHERE: " << *where << std::endl;
 		where->prepare(*this);
 		
 		bool more = true;
@@ -530,7 +531,7 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
         bool ok = true;
 
         for (auto& check : sortedTables_[tableIndex]->check_) {
-            bool missing;
+            bool missing = false;
             if (!check->eval(missing) || missing) {
                 ok = false;
                 break;

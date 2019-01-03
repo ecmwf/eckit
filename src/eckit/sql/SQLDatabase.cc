@@ -10,6 +10,9 @@
 
 #include "eckit/sql/SQLDatabase.h"
 
+#include <memory>
+#include <utility>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/Tokenizer.h"
@@ -38,7 +41,7 @@ void SQLDatabase::close() {
 }
 
 void SQLDatabase::addTable(SQLTable* table) {
-    tablesByName_.emplace(std::pair<std::string, std::unique_ptr<SQLTable>>(table->name(), table));
+    tablesByName_.emplace(table->name(), std::unique_ptr<SQLTable>(table));
 }
 
 void SQLDatabase::addImplicitTable(SQLTable* table) {

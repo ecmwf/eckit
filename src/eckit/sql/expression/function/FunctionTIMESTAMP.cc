@@ -54,7 +54,7 @@ const eckit::sql::type::SQLType* FunctionTIMESTAMP::type() const { return &eckit
 
 void FunctionTIMESTAMP::output(std::ostream& s) const
 {
-	bool missing;
+    bool missing = false;
     s << static_cast<long long int>(eval(missing));
 }
 

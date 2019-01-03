@@ -51,7 +51,7 @@ const eckit::sql::type::SQLType* FunctionTDIFF::type() const { return &eckit::sq
 
 void FunctionTDIFF::output(std::ostream& s) const
 {
-	bool missing;
+    bool missing = false;
     s << static_cast<long long int>(eval(missing));
 }
 

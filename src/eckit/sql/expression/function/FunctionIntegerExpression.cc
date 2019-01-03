@@ -35,7 +35,7 @@ const eckit::sql::type::SQLType* FunctionIntegerExpression::type() const
 
 void FunctionIntegerExpression::output(std::ostream& s) const
 {
-	bool missing;
+    bool missing = false;
     double v = eval(missing);
 
 	//Log::info() << "FunctionIntegerExpression::output: v=" << v << ", missing=" << missing << std::endl;

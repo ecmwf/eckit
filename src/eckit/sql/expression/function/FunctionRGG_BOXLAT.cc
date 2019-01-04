@@ -10,12 +10,16 @@
 
 #include "eckit/sql/expression/function/FunctionRGG_BOXLAT.h"
 #include "eckit/sql/expression/function//RggRegionCache.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
 
+/* Static self-registration */
+
+static FunctionBuilder<FunctionRGG_BOXLAT> rgg_boxlatFunctionBuilder("rgg_boxlat");
 
 FunctionRGG_BOXLAT::FunctionRGG_BOXLAT(const std::string& name, const expression::Expressions& args)
 : FunctionExpression(name, args)

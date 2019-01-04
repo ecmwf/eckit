@@ -12,11 +12,16 @@
 #include <cfloat>
 
 #include "eckit/sql/expression/function/FunctionLAST.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionLAST> lastFunctionBuilder("last");
 
 FunctionLAST::FunctionLAST(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name, args),

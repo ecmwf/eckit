@@ -10,6 +10,7 @@
 
 #include "eckit/sql/expression/function/FunctionJULIAN.h"
 
+#include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/Date.h"
 
@@ -17,6 +18,12 @@ namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionJULIAN> julianFunctionBuilder("julian");
+static FunctionBuilder<FunctionJULIAN> jdFunctionBuilder("jd");
+static FunctionBuilder<FunctionJULIAN> julian_dateFunctionBuilder("julian_date");
 
 FunctionJULIAN::FunctionJULIAN(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name,args)

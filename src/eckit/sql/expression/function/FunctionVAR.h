@@ -36,6 +36,9 @@ public:
 	bool isAggregate() const { return true; }
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 1; }
+
 protected:
 
 // -- Overridden methods

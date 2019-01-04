@@ -12,11 +12,16 @@
 #include <limits.h>
 
 #include "eckit/sql/expression/function/FunctionTIMESTAMP.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionTIMESTAMP> timestampFunctionBuilder("timestamp");
 
 FunctionTIMESTAMP::FunctionTIMESTAMP(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name,args)

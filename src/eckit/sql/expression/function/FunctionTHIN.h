@@ -32,6 +32,9 @@ public:
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;
 	virtual void output(std::ostream& s) const;
+
+    static int arity() { return 2; }
+
 protected:
 // -- Overridden methods
 	virtual void print(std::ostream& s) const;

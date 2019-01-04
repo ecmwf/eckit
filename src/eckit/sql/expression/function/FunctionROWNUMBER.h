@@ -33,6 +33,8 @@ public:
 
 	std::shared_ptr<SQLExpression> clone() const;
 
+    static int arity() { return 0; }
+
 protected:
 // -- Overridden methods
 	virtual void print(std::ostream& s) const;

@@ -31,6 +31,9 @@ public:
 	static void trimStringInDouble(char* &p, size_t& len);
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 2; }
+
 private:
 // No copy allowed
 	FunctionEQ& operator=(const FunctionEQ&);

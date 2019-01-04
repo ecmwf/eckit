@@ -64,6 +64,7 @@ expression/OrderByExpressions.cc
 expression/OrderByExpressions.h
 
 expression/function/piconst.h
+expression/function/DoubleFunctions.cc
 expression/function/EqRegionCache.cc
 expression/function/EqRegionCache.h
 expression/function/RggRegionCache.cc

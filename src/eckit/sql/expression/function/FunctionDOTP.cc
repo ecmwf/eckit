@@ -10,10 +10,16 @@
 
 #include "eckit/sql/expression/function/FunctionDOTP.h"
 
+#include "eckit/sql/expression/function/FunctionFactory.h"
+
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionDOTP> dotpFunctionBuilder("dotp");
 
 const type::SQLType* FunctionDOTP::type() const { return &type::SQLType::lookup("double"); }
 
@@ -37,7 +43,7 @@ double FunctionDOTP::eval(bool& missing) const
 {
 	if (resultNULL_)
 		missing = true;
-	return value_;
+    return value_;
 }
 
 void FunctionDOTP::prepare(SQLSelect& sql)

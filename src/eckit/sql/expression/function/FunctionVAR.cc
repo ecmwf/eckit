@@ -9,11 +9,17 @@
  */
 
 #include "eckit/sql/expression/function/FunctionVAR.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionVAR> varFunctionBuilder("var");
+static FunctionBuilder<FunctionVAR> varpFunctionBuilder("varp");
 
 const type::SQLType* FunctionVAR::type() const { return &type::SQLType::lookup("double"); }
 

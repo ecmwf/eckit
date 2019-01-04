@@ -10,10 +10,17 @@
 
 #include "eckit/sql/expression/function/FunctionAVG.h"
 
+#include "eckit/sql/expression/function/FunctionFactory.h"
+
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionAVG> avgFunctionBuilder("avg");
+static FunctionBuilder<FunctionAVG> meanFunctionBuilder("mean");
 
 FunctionAVG::FunctionAVG(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name,args),
@@ -42,7 +49,7 @@ double FunctionAVG::eval(bool& missing) const
 		return 0;
 	}
 
-	return value_ / count_;
+    return value_ / count_;
 }
 
 void FunctionAVG::prepare(SQLSelect& sql)

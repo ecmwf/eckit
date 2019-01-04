@@ -33,6 +33,8 @@ public:
 	virtual const eckit::sql::type::SQLType* type() const;
 	virtual void output(std::ostream& s) const;
 
+    static int arity() { return 2; }
+
 private:
 	FunctionTIMESTAMP& operator=(const FunctionTIMESTAMP&);
 

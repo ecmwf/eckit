@@ -14,11 +14,16 @@
 #include "eckit/sql/expression/function/FunctionTHIN.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionTHIN> thinFunctionBuilder("thin");
 
 FunctionTHIN::FunctionTHIN(const std::string& name, const expression::Expressions& args)
 : FunctionExpression(name, args),

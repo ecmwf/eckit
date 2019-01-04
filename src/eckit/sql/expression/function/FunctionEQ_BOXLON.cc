@@ -10,11 +10,16 @@
 
 #include "eckit/sql/expression/function/EqRegionCache.h"
 #include "eckit/sql/expression/function/FunctionEQ_BOXLON.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionEQ_BOXLON> eq_boxlonFunctionBuilder("eq_boxlon");
 
 const type::SQLType* FunctionEQ_BOXLON::type() const { return &type::SQLType::lookup("double"); }
 

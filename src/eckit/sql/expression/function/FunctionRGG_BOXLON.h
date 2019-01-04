@@ -29,6 +29,8 @@ public:
 
 	std::shared_ptr<SQLExpression> clone() const;
 
+    static int arity() { return 3; }
+
 private:
 // No copy allowed
 	FunctionRGG_BOXLON& operator=(const FunctionRGG_BOXLON&);

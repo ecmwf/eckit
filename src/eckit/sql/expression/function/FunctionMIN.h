@@ -29,6 +29,8 @@ public:
 
 	std::shared_ptr<SQLExpression> clone() const;
 
+    static int arity() { return 1; }
+
 private:
 // No copy allowed
 	FunctionMIN& operator=(const FunctionMIN&);
@@ -44,6 +46,7 @@ private:
 	bool isAggregate() const { return true; }
 
 	virtual void output(SQLOutput&) const;
+
 // -- Friends
 	//friend std::ostream& operator<<(std::ostream& s,const FunctionMIN& p)
 	//	{ p.print(s); return s; }

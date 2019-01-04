@@ -36,6 +36,7 @@ public:
 	virtual void cleanup(SQLSelect& sql);
 	virtual bool isConstant() const;
     virtual std::shared_ptr<SQLExpression> simplify(bool&);
+
 	//virtual double eval() const;
 	bool isAggregate() const;
 	void partialResult();
@@ -44,6 +45,8 @@ public:
 
 	// For SQLSelectFactory (maybe it should just friend SQLSelectFactory).
 	expression::Expressions& args() { return args_; }
+
+    static const char* help() { return ""; }
 
 protected:
 	std::string name_;

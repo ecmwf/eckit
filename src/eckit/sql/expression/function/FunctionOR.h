@@ -34,6 +34,9 @@ public:
 	virtual const eckit::sql::type::SQLType* type() const;
     virtual std::shared_ptr<SQLExpression> simplify(bool&);
 
+    static int arity() { return 2; }
+    static const char* help() { return ""; }
+
 private:
 // No copy allowed
 	FunctionOR& operator=(const FunctionOR&);

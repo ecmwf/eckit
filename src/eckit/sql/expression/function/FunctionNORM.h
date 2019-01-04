@@ -28,6 +28,9 @@ public:
 	~FunctionNORM();
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 2; }
+
 private:
 // No copy allowed
 	FunctionNORM& operator=(const FunctionNORM&);

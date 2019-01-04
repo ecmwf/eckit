@@ -19,6 +19,10 @@ namespace sql {
 namespace expression {
 namespace function {
 
+/* Static self-registration */
+
+static FunctionBuilder<FunctionEQ> eqFunctionBuilder("=");
+
 using namespace eckit::sql::type;
 
 const type::SQLType* FunctionEQ::type() const { return &type::SQLType::lookup("double"); }
@@ -93,7 +97,7 @@ std::shared_ptr<SQLExpression> FunctionEQ::simplify(bool& changed)
 	if(args_[0]->isConstant() && !args_[1]->isConstant())
         std::swap(args_[0],args_[1]);
 
-	return 0;
+    return 0;
 }
 
 } // namespace function

@@ -14,11 +14,17 @@
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionRLIKE> rlikeFunctionBuilder("rlike");
+static FunctionBuilder<FunctionRLIKE> likeFunctionBuilder("like");
 
 using namespace eckit::sql::type;
 

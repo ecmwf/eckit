@@ -28,6 +28,9 @@ public:
 	~FunctionNOT_NULL(); 
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 1; }
+
 private:
 // No copy allowed
 	virtual const eckit::sql::type::SQLType* type() const;

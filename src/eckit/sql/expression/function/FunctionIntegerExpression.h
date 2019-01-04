@@ -32,6 +32,8 @@ public:
 	virtual const eckit::sql::type::SQLType* type() const;
 	virtual void output(std::ostream& s) const;
 
+    static int arity() { return 1; }
+
 private:
 // No copy allowed
 	FunctionIntegerExpression(const FunctionIntegerExpression&);

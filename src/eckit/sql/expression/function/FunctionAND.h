@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File FunctionAND.h
-// Baudouin Raoult - ECMWF Dec 03
+// @author Baudouin Raoult
+// @author Simon Smart
+// @date December 2003
+// @date January 2019
 
 #ifndef FunctionAND_H
 #define FunctionAND_H
@@ -21,6 +23,8 @@ namespace sql {
 namespace expression {
 namespace function {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class FunctionAND : public FunctionExpression {
 public:
 	FunctionAND(const std::string&, const expression::Expressions&);
@@ -29,20 +33,24 @@ public:
 
 	std::shared_ptr<SQLExpression> clone() const;
 
+    static int arity() { return 2; }
+    static const char* help() { return ""; }
+
 private:
 // No copy allowed
 	FunctionAND& operator=(const FunctionAND&);
 
-// -- Overridden methods
-	virtual const eckit::sql::type::SQLType* type() const;
-	virtual double eval(bool& missing) const;
+    virtual const eckit::sql::type::SQLType* type() const;
+    virtual double eval(bool& missing) const;
     virtual std::shared_ptr<SQLExpression> simplify(bool&);
-	virtual bool andSplit(expression::Expressions&);
+    virtual bool andSplit(expression::Expressions&);
 
 // -- Friends
 	//friend std::ostream& operator<<(std::ostream& s,const FunctionAND& p)
 	//	{ p.print(s); return s; }
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace function
 } // namespace expression 

@@ -10,11 +10,16 @@
 
 #include "eckit/sql/expression/function/FunctionEQ.h"
 #include "eckit/sql/expression/function/FunctionNOT_IN.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionNOT_IN> not_inFunctionBuilder("not_in");
 
 FunctionNOT_IN::FunctionNOT_IN(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name,args),

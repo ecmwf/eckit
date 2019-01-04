@@ -10,10 +10,17 @@
 
 #include "eckit/sql/expression/function/FunctionAND.h"
 
+#include "eckit/sql/expression/function/FunctionFactory.h"
+
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionAND> andFunctionBuilder("and");
+
 
 FunctionAND::FunctionAND(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name, args)

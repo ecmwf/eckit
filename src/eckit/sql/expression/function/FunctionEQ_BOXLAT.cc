@@ -10,11 +10,16 @@
 
 #include "eckit/sql/expression/function/EqRegionCache.h"
 #include "eckit/sql/expression/function/FunctionEQ_BOXLAT.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionEQ_BOXLAT> eq_boxlatFunctionBuilder("eq_boxlat");
 
 const type::SQLType* FunctionEQ_BOXLAT::type() const { return &type::SQLType::lookup("real"); }
 

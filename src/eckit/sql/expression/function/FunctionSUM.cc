@@ -9,11 +9,16 @@
  */
 
 #include "eckit/sql/expression/function/FunctionSUM.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionSUM> sumFunctionBuilder("sum");
 
 FunctionSUM::FunctionSUM(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name,args),

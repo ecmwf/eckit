@@ -16,6 +16,10 @@ namespace sql {
 namespace expression {
 namespace function {
 
+/* Static self-registration */
+
+static FunctionBuilder<FunctionTDIFF> tdiffFunctionBuilder("tdiff");
+
 FunctionTDIFF::FunctionTDIFF(const std::string& name, const expression::Expressions& args)
 : FunctionExpression(name, args)
 {}

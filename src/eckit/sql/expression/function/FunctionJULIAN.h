@@ -28,6 +28,9 @@ public:
 	~FunctionJULIAN(); 
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 2; }
+
 private:
 // No copy allowed
 	FunctionJULIAN& operator=(const FunctionJULIAN&);

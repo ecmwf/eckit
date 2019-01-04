@@ -45,37 +45,36 @@ void FunctionIntegerExpression::output(std::ostream& s) const
 
 //===============================
 
-//#include <math.h>
-
 // TODO: This is REALLY the wrong place for this to be.
 constexpr double DEFAULT_MDI = 2147483647;
 
-template<double (*T)(double)> 
+template<double (*FN)(double)>
 class MathFunctionIntegerExpression_1 : public FunctionIntegerExpression {
+
+public: // methods
+
+    MathFunctionIntegerExpression_1(const std::string& name, const expression::Expressions& args) :
+        FunctionIntegerExpression(name, args) {
+        this->missingValue_ = DEFAULT_MDI;
+    }
+
+private: // methods
+
 	double eval(bool& m) const {
 		double v = args_[0]->eval(m);
         if (v == DEFAULT_MDI) m = false;
         if (!m) return this->missingValue_;
-        return T(v);
+        return FN(v);
 	}
-    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<MathFunctionIntegerExpression_1<T>>(this->name_,this->args_); }
-public:
-	MathFunctionIntegerExpression_1(const std::string& name,const expression::Expressions& args)
-    : FunctionIntegerExpression(name, args), myArgs_(0) { this->missingValue_ = DEFAULT_MDI; }
 
-	MathFunctionIntegerExpression_1(const std::string& name,expression::Expressions* args)
-    : FunctionIntegerExpression(name, *args), myArgs_(args) { this->missingValue_ = DEFAULT_MDI; }
-
-	~MathFunctionIntegerExpression_1() { delete myArgs_; }
-private:
-	Expressions* myArgs_;
+    std::shared_ptr<SQLExpression> clone() const {
+        return std::make_shared<MathFunctionIntegerExpression_1<FN>>(this->name_,this->args_);
+    }
 };
 
-#define DEFINE_MATH_INT_FUNC_1F(FuncName, Name, Help) \
-static FunctionMaker<MathFunctionIntegerExpression_1<FuncName> > make_1_##FuncName(#Name,1,Help)
 
+//----------------------------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------
 inline double year(double x) { return (double)((int)((x)/10000));}
 inline double month(double x) { return (double)(((int)((x)/100))%100);}
 inline double day(double x)   { return (double)(((int)(x))%100);}
@@ -93,24 +92,31 @@ inline double Func_ceil(double x) { return (double)(ceil(x)); }
 inline double Func_floor(double x) { return (double)(floor(x)); }
 inline double Func_atoi(double x) { return (double) atoi(Translator<double, std::string>()(x).c_str()); }
 
-void FunctionIntegerExpression::registerIntegerFunctions()
-{
 
-	DEFINE_MATH_INT_FUNC_1F(year,year,"");
-	DEFINE_MATH_INT_FUNC_1F(month,month,"");
-	DEFINE_MATH_INT_FUNC_1F(day,day,"");
-	DEFINE_MATH_INT_FUNC_1F(hour,hour,"");
-	DEFINE_MATH_INT_FUNC_1F(minute,minute,"");
-	DEFINE_MATH_INT_FUNC_1F(minutes,minutes,"");
-	DEFINE_MATH_INT_FUNC_1F(second,second,"");
-	DEFINE_MATH_INT_FUNC_1F(seconds, seconds,"");
-	DEFINE_MATH_INT_FUNC_1F(Func_ceil,ceil,"");
-	DEFINE_MATH_INT_FUNC_1F(Func_floor,floor,"");
-	DEFINE_MATH_INT_FUNC_1F(Func_ftrunc,trunc,"");
-	DEFINE_MATH_INT_FUNC_1F(Func_dint,int,"");
-	DEFINE_MATH_INT_FUNC_1F(Func_dnint,nint,"");
-	DEFINE_MATH_INT_FUNC_1F(Func_atoi,atoi,"Convert string to integer. Return NULL if argument is NULL ");
-}
+//----------------------------------------------------------------------------------------------------------------------
+
+/* Static self-registration */
+
+template <double (*FN)(double)>
+using IntegerFunctionBuilder = FunctionBuilder<MathFunctionIntegerExpression_1<FN>>;
+
+static IntegerFunctionBuilder<year> yearFunctionBuilder("year");
+static IntegerFunctionBuilder<month> monthFunctionBuilder("month");
+static IntegerFunctionBuilder<day> dayFunctionBuilder("day");
+static IntegerFunctionBuilder<hour> hourFunctionBuilder("hour");
+static IntegerFunctionBuilder<minute> minuteFunctionBuilder("minute");
+static IntegerFunctionBuilder<minutes> minutesFunctionBuilder("minutes");
+static IntegerFunctionBuilder<second> secondFunctionBuilder("second");
+static IntegerFunctionBuilder<seconds> secondsFunctionBuilder("seconds");
+
+static IntegerFunctionBuilder<Func_ftrunc> ftruncFunctionBuilder("trunc");
+static IntegerFunctionBuilder<Func_dnint> dnintFunctionBuilder("nint");
+static IntegerFunctionBuilder<Func_dint> dintFunctionBuilder("int");
+static IntegerFunctionBuilder<Func_ceil> ceilFunctionBuilder("ceil");
+static IntegerFunctionBuilder<Func_floor> floorFunctionBuilder("floor");
+static IntegerFunctionBuilder<Func_atoi> atoiFunctionBuilder("atoi");
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace function
 } // namespace expression

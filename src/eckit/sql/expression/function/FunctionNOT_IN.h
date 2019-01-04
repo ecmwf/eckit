@@ -29,6 +29,8 @@ public:
 
 	std::shared_ptr<SQLExpression> clone() const;
 
+    static int arity() { return -1; }
+
 private:
 // No copy allowed
 	FunctionNOT_IN& operator=(const FunctionNOT_IN&);

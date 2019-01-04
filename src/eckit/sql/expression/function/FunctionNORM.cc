@@ -11,11 +11,16 @@
 #include <cmath>
 
 #include "eckit/sql/expression/function/FunctionNORM.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionNORM> normFunctionBuilder("norm");
 
 FunctionNORM::FunctionNORM(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name,args),

@@ -28,6 +28,9 @@ public:
 	~FunctionRGG_BOXLAT(); 
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 3; }
+
 private:
 // No copy allowed
 	FunctionRGG_BOXLAT& operator=(const FunctionRGG_BOXLAT&);

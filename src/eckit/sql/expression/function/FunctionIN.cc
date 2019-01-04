@@ -10,11 +10,16 @@
 
 #include "eckit/sql/expression/function/FunctionEQ.h"
 #include "eckit/sql/expression/function/FunctionIN.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionIN> inFunctionBuilder("in");
 
 FunctionIN::FunctionIN(const std::string& name, const expression::Expressions& args)
 : FunctionExpression(name, args),

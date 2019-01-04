@@ -29,6 +29,9 @@ public:
 
 	std::shared_ptr<SQLExpression> clone() const;
 
+    static int arity() { return 1; }
+    static const char* help() { return ""; }
+
 private:
 // No copy allowed
 	FunctionLAST& operator=(const FunctionLAST&);

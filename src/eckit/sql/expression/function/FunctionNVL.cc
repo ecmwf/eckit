@@ -9,11 +9,16 @@
  */
 
 #include "eckit/sql/expression/function/FunctionNVL.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionNVL> nvlFunctionBuilder("nvl");
 
 FunctionNVL::FunctionNVL(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name, args)

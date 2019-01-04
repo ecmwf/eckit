@@ -9,11 +9,16 @@
  */
 
 #include "eckit/sql/expression/function/FunctionNOT_NULL.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionNOT_NULL> not_nullFunctionBuilder("not_null");
 
 FunctionNOT_NULL::FunctionNOT_NULL(const std::string& name,const expression::Expressions& args)
 : FunctionExpression(name, args)

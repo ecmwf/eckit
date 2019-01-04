@@ -33,6 +33,9 @@ public:
 
 	std::shared_ptr<SQLExpression> clone() const;
     void prepare(SQLSelect&);
+
+    static int arity() { return 2; }
+
 private:
 // No copy allowed
 	FunctionRLIKE& operator=(const FunctionRLIKE&);

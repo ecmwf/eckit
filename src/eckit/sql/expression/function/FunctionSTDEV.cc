@@ -11,11 +11,18 @@
 #include <cmath>
 
 #include "eckit/sql/expression/function/FunctionSTDEV.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionSTDEV> stdevFunctionBuilder("stdev");
+static FunctionBuilder<FunctionSTDEV> stddevFunctionBuilder("stddev");
+static FunctionBuilder<FunctionSTDEV> stdevpFunctionBuilder("stdevp");
 
 FunctionSTDEV::FunctionSTDEV(const std::string& name,const expression::Expressions& args)
 : FunctionVAR(name, args)

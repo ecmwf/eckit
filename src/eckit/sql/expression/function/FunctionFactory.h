@@ -8,6 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+// @author Simon Smart
+// @date January 2019
+
+// @note Based on
 // File FunctionFactory.h
 // Baudouin Raoult - ECMWF Dec 03
 
@@ -15,6 +19,7 @@
 #define eckit_sql_expression_FunctionFactory_H
 
 #include <memory>
+#include <mutex>
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
@@ -22,6 +27,84 @@ namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class FunctionBuilderBase;
+
+class FunctionFactory {
+
+public: // types
+
+    struct FuncInfo {
+        std::string name;
+        int arity;
+        std::string help;
+    };
+
+public: // methods
+
+    static FunctionFactory& instance();
+
+    void enregister(const std::string& name, int arity_, const FunctionBuilderBase* builder);
+    void deregister(const std::string& name, int arity_, const FunctionBuilderBase* builder);
+
+    std::vector<FuncInfo> functionsInfo();
+
+    std::shared_ptr<FunctionExpression> build(const std::string& name, const expression::Expressions& args) const;
+    std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>);
+    std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>);
+    std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>);
+
+private: // methods
+
+    FunctionFactory();
+    ~FunctionFactory();
+
+private: // members
+
+    mutable std::mutex m_;
+
+    std::map<std::pair<std::string, int>, const FunctionBuilderBase*> builders_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class FunctionBuilderBase {
+
+    std::string name_;
+    int arity_;
+    std::string help_;
+
+public: // methods
+
+    FunctionBuilderBase(const std::string& name, int arity, const char* help);
+    virtual ~FunctionBuilderBase();
+
+    virtual std::shared_ptr<FunctionExpression> make(const std::string& name, const expression::Expressions& args) const = 0;
+    int arity() const;
+    std::string help() const;
+};
+
+
+template <typename FunctionType>
+class FunctionBuilder : public FunctionBuilderBase {
+
+    std::shared_ptr<FunctionExpression> make(const std::string& name, const expression::Expressions& args) const override {
+        return std::make_shared<FunctionType>(name, args);
+    }
+
+public: // methods
+
+    FunctionBuilder(const std::string& name, const char* help=0) :
+        FunctionBuilderBase(name, FunctionType::arity(), help ? help : FunctionType::help()) {}
+
+    ~FunctionBuilder() override {}
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#if 0
 
 class FunctionFactoryBase {
 protected:
@@ -68,6 +151,10 @@ public:
     FunctionMaker(const std::string& name, int arity, const std::string& help) :
         FunctionFactoryBase(name, arity, help) {}
 };
+
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace function
 } // namespace expression 

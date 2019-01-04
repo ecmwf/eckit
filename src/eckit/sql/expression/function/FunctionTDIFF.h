@@ -15,11 +15,14 @@
 #define FunctionTDIFF_H
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
 
 class FunctionTDIFF : public FunctionExpression {
 public:
@@ -31,6 +34,8 @@ public:
 	virtual void output(std::ostream& s) const;
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 4; }
 
 private:
 // No copy allowed

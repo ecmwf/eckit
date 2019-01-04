@@ -10,10 +10,16 @@
 
 #include "eckit/sql/expression/function/FunctionCOUNT.h"
 
+#include "eckit/sql/expression/function/FunctionFactory.h"
+
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionCOUNT> countFunctionBuilder("count");
 
 const type::SQLType* FunctionCOUNT::type() const { const type::SQLType& x = type::SQLType::lookup("double"); return &x; }
 
@@ -35,7 +41,7 @@ FunctionCOUNT::~FunctionCOUNT() {}
 double FunctionCOUNT::eval(bool& missing) const
 {
 //cout << "FunctionCOUNT " << count_ << std::endl;
-	return count_;
+    return count_;
 }
 
 void FunctionCOUNT::prepare(SQLSelect& sql)

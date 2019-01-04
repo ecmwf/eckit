@@ -10,6 +10,7 @@
 
 #include "eckit/types/Date.h"
 #include "eckit/sql/expression/function/FunctionJULIAN_SECONDS.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 #define trunc(x) ((x) -fmod((x), 1))
 
@@ -17,6 +18,10 @@ namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionJULIAN_SECONDS> julian_secondsFunctionBuilder("julian_seconds");
 
 FunctionJULIAN_SECONDS::FunctionJULIAN_SECONDS(const std::string& name, const expression::Expressions& args)
 : FunctionExpression(name,args)

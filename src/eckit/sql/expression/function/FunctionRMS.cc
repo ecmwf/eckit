@@ -11,11 +11,16 @@
 #include <cmath>
 
 #include "eckit/sql/expression/function/FunctionRMS.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
+
+/* Static self-registration */
+
+static FunctionBuilder<FunctionRMS> rmsFunctionBuilder("rms");
 
 FunctionRMS::FunctionRMS(const std::string& name, const expression::Expressions& args)
 : FunctionExpression(name, args),

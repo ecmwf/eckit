@@ -28,6 +28,10 @@ public:
 	~FunctionAVG(); 
 
 	std::shared_ptr<SQLExpression> clone() const;
+
+    static int arity() { return 1; }
+    static const char* help() { return "Average (aggregate function)"; }
+
 private:
 // No copy allowed
 	FunctionAVG& operator=(const FunctionAVG&);

@@ -73,7 +73,7 @@ std::shared_ptr<SQLExpression> FunctionExpression::simplify(bool& changed)
         }
 	}
 	
-	return SQLExpression::simplify(changed);
+    return SQLExpression::simplify(changed);
 }
 
 

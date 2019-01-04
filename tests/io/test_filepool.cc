@@ -10,6 +10,8 @@
 
 #include <cmath>
 #include <cstring>
+#include <thread>
+#include <algorithm>
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
@@ -17,7 +19,6 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/FilePool.h"
-#include "eckit/thread/ThreadPool.h"
 
 #include "eckit/testing/Test.h"
 
@@ -28,38 +29,38 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 static const size_t BUF_SIZE = 1024;
 
 static const char* files[] = {"foo.data", "bar.data", "baz.data", "marco.data", "polo.data"};
 
-class FilePoolUser : public ThreadPoolTask {
-public:
-    FilePoolUser(FilePool& pool, int id) : pool_(pool), id_(id) {}
-private:
-    virtual void execute() {
-        std::vector<char> buffer(BUF_SIZE, id_);
-        DataHandle* foo = pool_.checkout("foo.data");
-        foo->write(&buffer[0], buffer.size());
-        pool_.checkin(foo);
-    }
-
-    FilePool& pool_;
-    int id_;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 CASE ( "test_eckit_io_filepool_threads" ) {
-    const size_t nThreads = Resource<size_t>("$ECKIT_TEST_THREADS", 16);
 
-    ThreadPool threads("filepool", nThreads);
     FilePool pool(1);
+
+    size_t nThreads = Resource<size_t>("$ECKIT_TEST_THREADS", 16);
+
+    nThreads = std::min(size_t(255), nThreads);
+
+    std::vector<std::thread> threads;
+
     for (size_t i = 0; i < nThreads; ++i) {
-        threads.push(new FilePoolUser(pool, i + 1));
+        threads.emplace_back( std::thread(
+        [&pool,i]() {
+            std::vector<unsigned char> buffer(BUF_SIZE, i+1);
+            DataHandle* foo = pool.checkout("foo.data");
+            foo->write(&buffer[0], buffer.size());
+            pool.checkin(foo);
+        }
+        ));
     }
-    threads.waitForThreads();
+
+    for(auto& t: threads) { t.join(); }
+
+    // verfy the data
 
     DataHandle* foo = pool.checkout("foo.data");
     EXPECT( foo->openForRead() >= Length(nThreads * BUF_SIZE) );
@@ -67,12 +68,12 @@ CASE ( "test_eckit_io_filepool_threads" ) {
     // Check we have nThreads blocks of BUF_SIZE with Bytes 1 to nThreads
     std::vector<bool> found(nThreads);
     for (size_t i = 0; i < nThreads; ++i) {
-        std::vector<char> buffer(BUF_SIZE);
+        std::vector<unsigned char> buffer(BUF_SIZE);
         foo->read(&buffer[0], BUF_SIZE);
-        const char c = buffer[0];
+        const unsigned char c = buffer[0];
         EXPECT( c > 0 );
         EXPECT( !found[c-1] );
-        std::vector<char> expect(BUF_SIZE, c);
+        std::vector<unsigned char> expect(BUF_SIZE, c);
         EXPECT( buffer == expect );
         found[c-1] = true;
     }

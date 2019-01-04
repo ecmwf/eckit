@@ -284,6 +284,8 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
         eckit::Log::info() << "Running case \"" << test.description() << "\" ..." << std::endl;
 
         test.run(v, failures);
+
+        eckit::Log::info() << "Completed case \"" << test.description() << "\"" << std::endl;
     }
 
     if (v >= AllFailures) {

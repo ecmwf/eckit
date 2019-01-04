@@ -46,7 +46,7 @@ double FunctionROWNUMBER::eval(bool& missing) const { return *count_; }
 
 void FunctionROWNUMBER::prepare(SQLSelect& sql)
 {
-	count_ = &sql.total_;
+    count_ = &sql.total_;
 }
 
 void FunctionROWNUMBER::cleanup(SQLSelect& sql) {}

@@ -158,6 +158,16 @@ void SQLSelect::prepareExecute() {
     if(where_) where_->preprepare(*this);
     output_.preprepare(*this);
 
+    // If no tables have been required, but there are expressions, it implies that we are
+    // just using functions that don't depend on the data (e.g. rownumber()). Just ensure
+    // that we do something...
+
+    if (!select_.empty() && tablesToFetch_.empty()) {
+        for (const SQLTable* table : tables_) {
+            tablesToFetch_[table] = SelectOneTable(table);
+        }
+    }
+
     // Construct the cursors that will be used for the selection, and pass these in to the
     // constructed cursors/iterators
 

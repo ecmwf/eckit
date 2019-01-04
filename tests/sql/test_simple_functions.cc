@@ -278,6 +278,8 @@ CASE( "Test SQL comparisons" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.intOutput.size() == 0);
+    EXPECT(o.strOutput.size() == 0);
     EXPECT(o.floatOutput.size() == 18);
     for (size_t i = 0; i < 12; i++) EXPECT(o.floatOutput[i]);
     EXPECT(!o.floatOutput[12]);
@@ -298,7 +300,9 @@ CASE( "Test simple arithmetic -- addition/subtraction" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.intOutput.size() == 0);
     EXPECT(o.floatOutput.size() == 54);
+    EXPECT(o.strOutput.size() == 0);
 
     // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
     // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
@@ -332,7 +336,9 @@ CASE( "Test simple arithmetic -- multiplication/division" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.intOutput.size() == 0);
     EXPECT(o.floatOutput.size() == 54);
+    EXPECT(o.strOutput.size() == 0);
 
     // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
     // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
@@ -366,7 +372,10 @@ CASE( "Test SQL conditional composition AND" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.intOutput.size() == 0);
     EXPECT(o.floatOutput.size() == 9);
+    EXPECT(o.strOutput.size() == 0);
+
     for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
     for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
     for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
@@ -384,7 +393,10 @@ CASE( "Test SQL conditional composition OR" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.intOutput.size() == 0);
     EXPECT(o.floatOutput.size() == 9);
+    EXPECT(o.strOutput.size() == 0);
+
     for (size_t i = 0; i < 3; i++) EXPECT(o.floatOutput[i]);
     for (size_t i = 3; i < 5; i++) EXPECT(!o.floatOutput[i]);
     for (size_t i = 6; i < 9; i++) EXPECT(o.floatOutput[i]);
@@ -402,7 +414,10 @@ CASE( "Test SQL conditional composition NOT OR" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.intOutput.size() == 0);
     EXPECT(o.floatOutput.size() == 9);
+    EXPECT(o.strOutput.size() == 0);
+
     for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
     for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
     for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
@@ -420,10 +435,53 @@ CASE( "Test SQL aggregates" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.intOutput.size() == 0);
     EXPECT(o.floatOutput.size() == 4);
+    EXPECT(o.strOutput.size() == 0);
 
     std::vector<double> expected { 9, 9, 5555, 49995 };
     EXPECT( o.floatOutput == expected );
+}
+
+CASE( "Test SQL rownumber() with other column" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select icol,rownumber() from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.intOutput.size() == 9);
+    EXPECT(o.floatOutput.size() == 9);
+    EXPECT(o.strOutput.size() == 0);
+
+    std::vector<double> expectedDoub { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    EXPECT(o.floatOutput == expectedDoub);
+    EXPECT(o.intOutput == INTEGER_DATA);
+}
+
+CASE( "Test SQL rownumber() alone" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select rownumber() from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.intOutput.size() == 0);
+    EXPECT(o.floatOutput.size() == 9);
+    EXPECT(o.strOutput.size() == 0);
+
+    std::vector<double> expectedDoub { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    EXPECT(o.floatOutput == expectedDoub);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

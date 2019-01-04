@@ -9,6 +9,7 @@
  */
 
 #include <cstring>
+#include <set>
 
 #include "eckit/testing/Test.h"
 #include "eckit/sql/SQLDatabase.h"
@@ -18,8 +19,10 @@
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
 
 using namespace eckit::testing;
+using eckit::Log;
 
 namespace {
     
@@ -121,6 +124,148 @@ public: // visible members
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+CASE( "Test available SQL functions" ) {
+
+    // Test that the functions provided as part of eckit are found
+
+    std::set<std::pair<std::string, int>> functions {
+        { "+", 2 },
+        { "-", 1 }, // Unary negative
+        { "-", 2 },
+        { "/", 2 },
+        { "*", 2 },
+        { "<", 2 },
+        { ">", 2 },
+        { "<=", 2 },
+        { ">=", 2 },
+        { "<>", 2 },
+        { "=", 2 },
+        { "abs", 1 },
+        { "acos", 1 },
+        { "and", 2 },
+        { "asin", 1 },
+        { "atan", 1 },
+        { "atan2", 2 },
+        { "atoi", 1 },
+        { "avg", 1 },
+        { "between", 3 },
+        { "between_exclude_both", 3 },
+        { "between_exclude_second", 3 },
+        { "c2f", 1 },
+        { "c2k", 1 },
+        { "ceil", 1 },
+        { "celsius", 1 },
+        { "circle", 5 },
+        { "cos", 1 },
+        { "cosh", 1 },
+        { "count", 1 }, // Aggregate fn
+        { "day", 1 },
+        { "dd", 2 },
+        { "deg2rad", 1 },
+        { "degrees", 1 },
+        { "dir", 2 },
+        { "direction", 2 },
+        { "dist", 5 },
+        { "distance", 4 },
+        { "dotp", 2 },
+        { "exp", 1 },
+        { "f2c", 1 },
+        { "f2k", 1 },
+        { "fabs", 1 },
+        { "fahrenheit", 1 },
+        { "ff", 2 },
+        { "first", 1 },
+        { "floor", 1 },
+        { "fmod", 2 },
+        { "hour", 1 },
+        { "ibits", 3 },
+        { "in", -1 },
+        { "int", 1 },
+        { "isnull", 1 },
+        { "jd", 2 },
+        { "join", 2 },
+        { "julian", 2 },
+        { "julian_date", 2 },
+        { "julian_seconds", 2 },
+        { "k2c", 1 },
+        { "k2f", 1 },
+        { "kelvin", 1 },
+        { "km", 1 },
+        { "km", 4 },
+        { "last", 1 },
+        { "ldexp_double", 2 },
+        { "lg", 1 },
+        { "like", 2 },
+        { "ln", 1 },
+        { "log", 1 },
+        { "log10", 1 },
+        { "max", 1 },
+        { "mean", 1 },
+        { "min", 1 },
+        { "minute", 1 },
+        { "minutes", 1 },
+        { "mod", 2 },
+        { "month", 1 },
+        { "nint", 1 },
+        { "norm", 2 },
+        { "not", 1 },
+        { "not_between", 3 },
+        { "not_in", -1 },
+        { "not_null", 1 },
+        { "null", 1 },
+        { "nvl", 2 },
+        { "or", 2 },
+        { "pow", 2 },
+        { "rad", 5 },
+        { "rad2deg", 1 },
+        { "radians", 1 },
+        { "rlike", 2 },
+        { "rms", 1 },
+        { "rownumber", 0 },
+        { "second", 1 },
+        { "seconds", 1 },
+        { "sin", 1 },
+        { "sinh", 1 },
+        { "speed", 2 },
+        { "sqrt", 1 },
+        { "stddev", 1 },
+        { "stdev", 1 },
+        { "stdevp", 1 },
+        { "sum", 1 },
+        { "tan", 1 },
+        { "tanh", 1 },
+        { "tdiff", 4 },
+        { "thin", 2 },
+        { "timestamp", 2 },
+        { "trunc", 1 },
+        { "twice", 1 },
+        { "var", 1 },
+        { "varp", 1 },
+        { "year", 1 }
+    };
+
+    auto info = eckit::sql::expression::function::FunctionFactory::instance().functionsInfo();
+
+    for (const auto& i : info) {
+        auto it = functions.find(std::make_pair(i.name, i.arity));
+        if (it != functions.end()) {
+            functions.erase(it);
+        } else {
+            Log::info() << "Not matching: " << i.name << ": " << i.arity << std::endl;
+        }
+    }
+
+    if (!functions.empty()) {
+        Log::error() << "Not all functions found: " << std::endl;
+        for (const auto& f : functions) {
+            Log::error() << "  name: " << f.first << ", arity: " << f.second << std::endl;
+        }
+    }
+
+    EXPECT(functions.empty());
+}
+
 CASE( "Test SQL comparisons" ) {
 
     eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
@@ -133,6 +278,7 @@ CASE( "Test SQL comparisons" ) {
     session.statement().execute();
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
+    EXPECT(o.floatOutput.size() == 18);
     for (size_t i = 0; i < 12; i++) EXPECT(o.floatOutput[i]);
     EXPECT(!o.floatOutput[12]);
     EXPECT(o.floatOutput[13]);
@@ -140,6 +286,127 @@ CASE( "Test SQL comparisons" ) {
 
 }
 
+CASE( "Test simple arithmetic -- addition/subtraction" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select icol + 15.3, rcol + 13.5, icol + rcol, icol - 15.3, rcol - 13.5, icol - rcol from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.floatOutput.size() == 54);
+
+    // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
+    // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
+    // for ii, rr in zip(i, r):
+    //    print ", ".join("{:7.1f}".format(v) for v in (ii+15.3, rr+13.5, ii+rr, ii-15.3, rr-13.5, ii-rr))
+
+    std::vector<double> expected {
+        10014.3,   113.4, 10098.9,  9983.7,    86.4,  9899.1,
+         8903.3,   102.3,  8976.8,  8872.7,    75.3,  8799.2,
+         7792.3,    91.2,  7854.7,  7761.7,    64.2,  7699.3,
+         6681.3,    80.1,  6732.6,  6650.7,    53.1,  6599.4,
+         5570.3,    69.0,  5610.5,  5539.7,    42.0,  5499.5,
+         4459.3,    57.9,  4488.4,  4428.7,    30.9,  4399.6,
+         3348.3,    46.8,  3366.3,  3317.7,    19.8,  3299.7,
+         2237.3,    35.7,  2244.2,  2206.7,     8.7,  2199.8,
+         1126.3,    24.6,  1122.1,  1095.7,    -2.4,  1099.9,
+    };
+
+    EXPECT(is_approximately_equal(o.floatOutput, expected, 0.000001));
+}
+
+CASE( "Test simple arithmetic -- multiplication/division" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select icol * 15.3, rcol * 13.5, icol * rcol, icol / 15.3, rcol / 13.5, icol / rcol from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.floatOutput.size() == 54);
+
+    // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
+    // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
+    // for ii, rr in zip(i, r):
+    //     print ", ".join("{:7.4f}".format(v) for v in (ii*15.3, rr*13.5, ii*rr, ii/15.3, rr/13.5, ii/rr))
+
+    std::vector<double> expected {
+        152984.7000, 1348.6500, 998900.1000, 653.5294,  7.4000, 100.0901,
+        135986.4000, 1198.8000, 789254.4000, 580.9150,  6.5778, 100.0901,
+        118988.1000, 1048.9500, 604272.9000, 508.3007,  5.7556, 100.0901,
+        101989.8000, 899.1000, 443955.6000, 435.6863,  4.9333, 100.0901,
+        84991.5000, 749.2500, 308302.5000, 363.0719,  4.1111, 100.0901,
+        67993.2000, 599.4000, 197313.6000, 290.4575,  3.2889, 100.0901,
+        50994.9000, 449.5500, 110988.9000, 217.8431,  2.4667, 100.0901,
+        33996.6000, 299.7000, 49328.4000, 145.2288,  1.6444, 100.0901,
+        16998.3000, 149.8500, 12332.1000, 72.6144,  0.8222, 100.0901
+    };
+
+    EXPECT(is_approximately_equal(o.floatOutput, expected, 0.0001));
+}
+
+CASE( "Test SQL conditional composition AND" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select icol > 3333 and rcol <= 66.6 from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.floatOutput.size() == 9);
+    for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
+    for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
+    for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
+}
+
+CASE( "Test SQL conditional composition OR" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select icol <= 3333 or rcol > 66.6 from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.floatOutput.size() == 9);
+    for (size_t i = 0; i < 3; i++) EXPECT(o.floatOutput[i]);
+    for (size_t i = 3; i < 5; i++) EXPECT(!o.floatOutput[i]);
+    for (size_t i = 6; i < 9; i++) EXPECT(o.floatOutput[i]);
+}
+
+CASE( "Test SQL conditional composition NOT OR" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select not (icol <= 3333 or rcol > 66.6) from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.floatOutput.size() == 9);
+    for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
+    for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
+    for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

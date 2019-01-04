@@ -408,6 +408,24 @@ CASE( "Test SQL conditional composition NOT OR" ) {
     for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
 }
 
+CASE( "Test SQL aggregates" ) {
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::sql::SQLDatabase& db(session.currentDatabase());
+    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+
+    std::string sql = "select count(*), count(icol), mean(icol), sum(icol) from table1";
+    eckit::sql::SQLParser().parseString(session, sql);
+
+    session.statement().execute();
+    TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+    EXPECT(o.floatOutput.size() == 4);
+
+    std::vector<double> expected { 9, 9, 5555, 49995 };
+    EXPECT( o.floatOutput == expected );
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }

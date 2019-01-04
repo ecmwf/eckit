@@ -1,6 +1,4 @@
-ecbuild_add_library(
-
-    TARGET eckit_option
+ecbuild_add_library( TARGET eckit_option TYPE SHARED
 
     INSTALL_HEADERS LISTED
 

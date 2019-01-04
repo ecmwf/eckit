@@ -168,7 +168,7 @@ ecbuild_generate_yy( YYPREFIX           eckit_sql_
                      DEPENDANT          SQLParser.cc )
 
 
-ecbuild_add_library( TARGET              eckit_sql
+ecbuild_add_library( TARGET              eckit_sql TYPE SHARED
                      INSTALL_HEADERS     ALL
                      HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/eckit/sql
                      SOURCES             ${eckit_sql_lib_srcs}

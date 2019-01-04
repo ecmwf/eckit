@@ -780,7 +780,7 @@ list( APPEND eckit_persistent
 
 ### eckit library
 
-ecbuild_add_library(TARGET eckit
+ecbuild_add_library(TARGET eckit TYPE SHARED
 					INSTALL_HEADERS LISTED
 					HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit
@@ -815,10 +815,13 @@ if( HAVE_ECKIT_CMD )
   add_subdirectory( cmd )
 endif()
 
+if( HAVE_ECKIT_SQL )
+  add_subdirectory( sql )
+endif()
+
 add_subdirectory( geometry )
 add_subdirectory( linalg )
 add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
-add_subdirectory( sql )
 add_subdirectory( web )

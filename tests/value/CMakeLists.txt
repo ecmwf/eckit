@@ -1,4 +1,4 @@
-ecbuild_add_library( TARGET     eckit_test_value_custom_params
+ecbuild_add_library( TARGET     eckit_test_value_custom_params TYPE SHARED
                      NOINSTALL
                      SOURCES    AnyKeyParams.cc
                      LIBS       eckit )

@@ -19,7 +19,10 @@ add_subdirectory( types )
 add_subdirectory( utils )
 add_subdirectory( value )
 add_subdirectory( system )
-add_subdirectory( sql )
+
+if( HAVE_ECKIT_SQL )
+  add_subdirectory( sql )
+endif()
 
 if( HAVE_EXPERIMENTAL )
   add_subdirectory( experimental )

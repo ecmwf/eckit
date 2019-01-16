@@ -85,10 +85,6 @@ expression/function/FunctionEQ.cc
 expression/function/FunctionEQ.h
 expression/function/FunctionRLIKE.cc
 expression/function/FunctionRLIKE.h
-expression/function/FunctionEQ_BOXLAT.cc
-expression/function/FunctionEQ_BOXLAT.h
-expression/function/FunctionEQ_BOXLON.cc
-expression/function/FunctionEQ_BOXLON.h
 #expression/function/FunctionMATCH.h
 #expression/function/FunctionMATCH.cc
 expression/function/FunctionFactory.cc
@@ -123,10 +119,6 @@ expression/function/FunctionNVL.cc
 expression/function/FunctionNVL.h
 expression/function/FunctionOR.cc
 expression/function/FunctionOR.h
-expression/function/FunctionRGG_BOXLAT.cc
-expression/function/FunctionRGG_BOXLAT.h
-expression/function/FunctionRGG_BOXLON.cc
-expression/function/FunctionRGG_BOXLON.h
 expression/function/FunctionRMS.cc
 expression/function/FunctionRMS.h
 expression/function/FunctionROWNUMBER.cc

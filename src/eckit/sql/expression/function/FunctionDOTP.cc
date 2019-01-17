@@ -64,7 +64,7 @@ void FunctionDOTP::partialResult()
 	double x = args_[0]->eval(missing);
 	double y = args_[1]->eval(missing);
 	if(! missing)
-	{
+    {
 		value_ += x*y;
 		resultNULL_ = false;
 	}

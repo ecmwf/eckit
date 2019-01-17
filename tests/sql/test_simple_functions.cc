@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <set>
+#include <iomanip>
 
 #include "eckit/testing/Test.h"
 #include "eckit/sql/SQLDatabase.h"
@@ -22,6 +23,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
 using namespace eckit::testing;
+using namespace eckit::types;
 using eckit::Log;
 
 namespace {
@@ -32,7 +34,7 @@ static const std::vector<long> INTEGER_DATA {9999, 8888, 7777, 6666, 5555, 4444,
 static const std::vector<double> REAL_DATA {99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1};
 static const std::vector<std::string> STRING_DATA {"aaaabbbb", "cccc", "dddd", "eeffg", "hijklmno",
                                                    "a-string", "a-longer-string", "another-string", ""};
-
+static const std::vector<double> REAL_DATA2 {3.0, 4.0, -12.3, 93.7, 11.11, 3.1415, -5.4321, 1.0, -2.0};
 
 class TestTable : public eckit::sql::SQLTable {
 
@@ -43,6 +45,7 @@ public:
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
         addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 2), false, 0);
         addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
+        addColumn("rcol2", 3, eckit::sql::type::SQLType::lookup("real"), false, 0);
     }
 
 private:
@@ -50,8 +53,8 @@ private:
     class TestTableIterator : public eckit::sql::SQLTableIterator {
     public:
         TestTableIterator(const TestTable& owner,
-                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(4) {
-            std::vector<size_t> offsets {0, 1, 3};
+                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(5) {
+            std::vector<size_t> offsets {0, 1, 3, 4};
             for (const auto& col : columns) {
                 offsets_.push_back(offsets[col.get().index()]);
             }
@@ -71,6 +74,7 @@ private:
             data_[0] = INTEGER_DATA[idx_];
             ::strncpy(reinterpret_cast<char*>(&data_[1]), STRING_DATA[idx_].c_str(), 16);
             data_[3] = REAL_DATA[idx_];
+            data_[4] = REAL_DATA2[idx_];
         }
         virtual std::vector<size_t> columnOffsets() const { return offsets_; }
         virtual const double* data() const { return &data_[0]; }
@@ -266,222 +270,211 @@ CASE( "Test available SQL functions" ) {
     EXPECT(functions.empty());
 }
 
-CASE( "Test SQL comparisons" ) {
+
+CASE( "Functions using test data" ) {
+
+    // Construct session with TestOutput to get the output
 
     eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
     eckit::sql::SQLDatabase& db(session.currentDatabase());
     db.addTable(new TestTable(db, "a/b/c.path", "table1"));
 
-    std::string sql = "select icol > 3333, icol >= 3333 from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+    SECTION( "Test SQL comparisons" ) {
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+        std::string sql = "select icol > 3333, icol >= 3333 from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.strOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 18);
-    for (size_t i = 0; i < 12; i++) EXPECT(o.floatOutput[i]);
-    EXPECT(!o.floatOutput[12]);
-    EXPECT(o.floatOutput[13]);
-    for (size_t i = 14; i < 18; i++) EXPECT(!o.floatOutput[i]);
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-}
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.strOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 18);
+        for (size_t i = 0; i < 12; i++) EXPECT(o.floatOutput[i]);
+        EXPECT(!o.floatOutput[12]);
+        EXPECT(o.floatOutput[13]);
+        for (size_t i = 14; i < 18; i++) EXPECT(!o.floatOutput[i]);
 
-CASE( "Test simple arithmetic -- addition/subtraction" ) {
+    }
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+    SECTION( "Test simple arithmetic -- addition/subtraction" ) {
 
-    std::string sql = "select icol + 15.3, rcol + 13.5, icol + rcol, icol - 15.3, rcol - 13.5, icol - rcol from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+        std::string sql = "select icol + 15.3, rcol + 13.5, icol + rcol, icol - 15.3, rcol - 13.5, icol - rcol from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 54);
-    EXPECT(o.strOutput.size() == 0);
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 54);
+        EXPECT(o.strOutput.size() == 0);
 
-    // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
-    // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
-    // for ii, rr in zip(i, r):
-    //    print ", ".join("{:7.1f}".format(v) for v in (ii+15.3, rr+13.5, ii+rr, ii-15.3, rr-13.5, ii-rr))
+        // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
+        // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
+        // for ii, rr in zip(i, r):
+        //    print ", ".join("{:7.1f}".format(v) for v in (ii+15.3, rr+13.5, ii+rr, ii-15.3, rr-13.5, ii-rr))
 
-    std::vector<double> expected {
-        10014.3,   113.4, 10098.9,  9983.7,    86.4,  9899.1,
-         8903.3,   102.3,  8976.8,  8872.7,    75.3,  8799.2,
-         7792.3,    91.2,  7854.7,  7761.7,    64.2,  7699.3,
-         6681.3,    80.1,  6732.6,  6650.7,    53.1,  6599.4,
-         5570.3,    69.0,  5610.5,  5539.7,    42.0,  5499.5,
-         4459.3,    57.9,  4488.4,  4428.7,    30.9,  4399.6,
-         3348.3,    46.8,  3366.3,  3317.7,    19.8,  3299.7,
-         2237.3,    35.7,  2244.2,  2206.7,     8.7,  2199.8,
-         1126.3,    24.6,  1122.1,  1095.7,    -2.4,  1099.9,
-    };
+        std::vector<double> expected {
+            10014.3,   113.4, 10098.9,  9983.7,    86.4,  9899.1,
+             8903.3,   102.3,  8976.8,  8872.7,    75.3,  8799.2,
+             7792.3,    91.2,  7854.7,  7761.7,    64.2,  7699.3,
+             6681.3,    80.1,  6732.6,  6650.7,    53.1,  6599.4,
+             5570.3,    69.0,  5610.5,  5539.7,    42.0,  5499.5,
+             4459.3,    57.9,  4488.4,  4428.7,    30.9,  4399.6,
+             3348.3,    46.8,  3366.3,  3317.7,    19.8,  3299.7,
+             2237.3,    35.7,  2244.2,  2206.7,     8.7,  2199.8,
+             1126.3,    24.6,  1122.1,  1095.7,    -2.4,  1099.9,
+        };
 
-    EXPECT(is_approximately_equal(o.floatOutput, expected, 0.000001));
-}
+        EXPECT(is_approximately_equal(o.floatOutput, expected, 0.000001));
+    }
 
-CASE( "Test simple arithmetic -- multiplication/division" ) {
+    SECTION( "Test simple arithmetic -- multiplication/division" ) {
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+        std::string sql = "select icol * 15.3, rcol * 13.5, icol * rcol, icol / 15.3, rcol / 13.5, icol / rcol from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    std::string sql = "select icol * 15.3, rcol * 13.5, icol * rcol, icol / 15.3, rcol / 13.5, icol / rcol from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 54);
+        EXPECT(o.strOutput.size() == 0);
 
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 54);
-    EXPECT(o.strOutput.size() == 0);
+        // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
+        // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
+        // for ii, rr in zip(i, r):
+        //     print ", ".join("{:7.4f}".format(v) for v in (ii*15.3, rr*13.5, ii*rr, ii/15.3, rr/13.5, ii/rr))
 
-    // i = [9999, 8888, 7777, 6666, 5555, 4444, 3333, 2222, 1111]
-    // r = [99.9, 88.8, 77.7, 66.6, 55.5, 44.4, 33.3, 22.2, 11.1]
-    // for ii, rr in zip(i, r):
-    //     print ", ".join("{:7.4f}".format(v) for v in (ii*15.3, rr*13.5, ii*rr, ii/15.3, rr/13.5, ii/rr))
+        std::vector<double> expected {
+            152984.7000, 1348.6500, 998900.1000, 653.5294,  7.4000, 100.0901,
+            135986.4000, 1198.8000, 789254.4000, 580.9150,  6.5778, 100.0901,
+            118988.1000, 1048.9500, 604272.9000, 508.3007,  5.7556, 100.0901,
+            101989.8000, 899.1000, 443955.6000, 435.6863,  4.9333, 100.0901,
+            84991.5000, 749.2500, 308302.5000, 363.0719,  4.1111, 100.0901,
+            67993.2000, 599.4000, 197313.6000, 290.4575,  3.2889, 100.0901,
+            50994.9000, 449.5500, 110988.9000, 217.8431,  2.4667, 100.0901,
+            33996.6000, 299.7000, 49328.4000, 145.2288,  1.6444, 100.0901,
+            16998.3000, 149.8500, 12332.1000, 72.6144,  0.8222, 100.0901
+        };
 
-    std::vector<double> expected {
-        152984.7000, 1348.6500, 998900.1000, 653.5294,  7.4000, 100.0901,
-        135986.4000, 1198.8000, 789254.4000, 580.9150,  6.5778, 100.0901,
-        118988.1000, 1048.9500, 604272.9000, 508.3007,  5.7556, 100.0901,
-        101989.8000, 899.1000, 443955.6000, 435.6863,  4.9333, 100.0901,
-        84991.5000, 749.2500, 308302.5000, 363.0719,  4.1111, 100.0901,
-        67993.2000, 599.4000, 197313.6000, 290.4575,  3.2889, 100.0901,
-        50994.9000, 449.5500, 110988.9000, 217.8431,  2.4667, 100.0901,
-        33996.6000, 299.7000, 49328.4000, 145.2288,  1.6444, 100.0901,
-        16998.3000, 149.8500, 12332.1000, 72.6144,  0.8222, 100.0901
-    };
+        EXPECT(is_approximately_equal(o.floatOutput, expected, 0.0001));
+    }
 
-    EXPECT(is_approximately_equal(o.floatOutput, expected, 0.0001));
-}
+    SECTION( "Test SQL conditional composition AND" ) {
 
-CASE( "Test SQL conditional composition AND" ) {
+        std::string sql = "select icol > 3333 and rcol <= 66.6 from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    std::string sql = "select icol > 3333 and rcol <= 66.6 from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 9);
+        EXPECT(o.strOutput.size() == 0);
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+        for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
+        for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
+        for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
+    }
 
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 9);
-    EXPECT(o.strOutput.size() == 0);
+    SECTION( "Test SQL conditional composition OR" ) {
 
-    for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
-    for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
-    for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
-}
+        std::string sql = "select icol <= 3333 or rcol > 66.6 from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-CASE( "Test SQL conditional composition OR" ) {
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 9);
+        EXPECT(o.strOutput.size() == 0);
 
-    std::string sql = "select icol <= 3333 or rcol > 66.6 from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+        for (size_t i = 0; i < 3; i++) EXPECT(o.floatOutput[i]);
+        for (size_t i = 3; i < 5; i++) EXPECT(!o.floatOutput[i]);
+        for (size_t i = 6; i < 9; i++) EXPECT(o.floatOutput[i]);
+    }
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+    SECTION( "Test SQL conditional composition NOT OR" ) {
 
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 9);
-    EXPECT(o.strOutput.size() == 0);
+        std::string sql = "select not (icol <= 3333 or rcol > 66.6) from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    for (size_t i = 0; i < 3; i++) EXPECT(o.floatOutput[i]);
-    for (size_t i = 3; i < 5; i++) EXPECT(!o.floatOutput[i]);
-    for (size_t i = 6; i < 9; i++) EXPECT(o.floatOutput[i]);
-}
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-CASE( "Test SQL conditional composition NOT OR" ) {
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 9);
+        EXPECT(o.strOutput.size() == 0);
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+        for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
+        for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
+        for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
+    }
 
-    std::string sql = "select not (icol <= 3333 or rcol > 66.6) from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+    SECTION( "Test SQL aggregates" ) {
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+        std::string sql = "select count(*), count(icol), mean(icol), sum(icol) from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 9);
-    EXPECT(o.strOutput.size() == 0);
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    for (size_t i = 0; i < 3; i++) EXPECT(!o.floatOutput[i]);
-    for (size_t i = 3; i < 5; i++) EXPECT(o.floatOutput[i]);
-    for (size_t i = 6; i < 9; i++) EXPECT(!o.floatOutput[i]);
-}
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 4);
+        EXPECT(o.strOutput.size() == 0);
 
-CASE( "Test SQL aggregates" ) {
+        std::vector<double> expected { 9, 9, 5555, 49995 };
+        EXPECT( o.floatOutput == expected );
+    }
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+    SECTION( "Test SQL rownumber() with other column" ) {
 
-    std::string sql = "select count(*), count(icol), mean(icol), sum(icol) from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+        std::string sql = "select icol,rownumber() from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 4);
-    EXPECT(o.strOutput.size() == 0);
+        EXPECT(o.intOutput.size() == 9);
+        EXPECT(o.floatOutput.size() == 9);
+        EXPECT(o.strOutput.size() == 0);
 
-    std::vector<double> expected { 9, 9, 5555, 49995 };
-    EXPECT( o.floatOutput == expected );
-}
+        std::vector<double> expectedDoub { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        EXPECT(o.floatOutput == expectedDoub);
+        EXPECT(o.intOutput == INTEGER_DATA);
+    }
 
-CASE( "Test SQL rownumber() with other column" ) {
+    SECTION( "Test SQL rownumber() alone" ) {
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+        std::string sql = "select rownumber() from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    std::string sql = "select icol,rownumber() from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 9);
+        EXPECT(o.strOutput.size() == 0);
 
-    EXPECT(o.intOutput.size() == 9);
-    EXPECT(o.floatOutput.size() == 9);
-    EXPECT(o.strOutput.size() == 0);
+        std::vector<double> expectedDoub { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        EXPECT(o.floatOutput == expectedDoub);
+    }
 
-    std::vector<double> expectedDoub { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    EXPECT(o.floatOutput == expectedDoub);
-    EXPECT(o.intOutput == INTEGER_DATA);
-}
+    SECTION( "Test dotp()" ) {
 
-CASE( "Test SQL rownumber() alone" ) {
+        std::string sql = "select dotp(rcol, rcol2) from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
-    eckit::sql::SQLDatabase& db(session.currentDatabase());
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-    std::string sql = "select rownumber() from table1";
-    eckit::sql::SQLParser().parseString(session, sql);
+        EXPECT(o.intOutput.size() == 0);
+        EXPECT(o.floatOutput.size() == 1);
+        EXPECT(o.strOutput.size() == 0);
 
-    session.statement().execute();
-    TestOutput& o(static_cast<TestOutput&>(session.output()));
-
-    EXPECT(o.intOutput.size() == 0);
-    EXPECT(o.floatOutput.size() == 9);
-    EXPECT(o.strOutput.size() == 0);
-
-    std::vector<double> expectedDoub { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    EXPECT(o.floatOutput == expectedDoub);
+        EXPECT(is_approximately_equal(o.floatOutput[0], 6514.80867, 1e-7));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

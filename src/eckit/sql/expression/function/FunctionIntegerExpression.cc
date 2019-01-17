@@ -61,9 +61,12 @@ public: // methods
 private: // methods
 
 	double eval(bool& m) const {
-		double v = args_[0]->eval(m);
-        if (v == DEFAULT_MDI) m = false;
-        if (!m) return this->missingValue_;
+        bool missing = false;
+        double v = args_[0]->eval(missing);
+        if (missing) {
+            m = missing;
+            return this->missingValue_;
+        }
         return FN(v);
 	}
 

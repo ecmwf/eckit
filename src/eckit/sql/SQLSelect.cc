@@ -402,9 +402,7 @@ unsigned long long SQLSelect::execute()
     return count_;
 }
 
-void SQLSelect::postExecute()
-{
-    if (aggregate_ && !mixedAggregatedAndScalar_) resultsOut();
+void SQLSelect::postExecute() {
 
     output_.flush();
     output_.cleanup(*this);
@@ -610,6 +608,7 @@ bool SQLSelect::processOneRow() {
 
     if (aggregatedResultsIterator_ == aggregatedResults_.end()) {
         aggregatedResultsIterator_ = aggregatedResults_.begin();
+        Log::info() << "restart aggregate results: " << aggregatedResults_.size() << std::endl;
     } else {
         ++aggregatedResultsIterator_;
     }
@@ -633,8 +632,19 @@ bool SQLSelect::processOneRow() {
         return true;
     }
 
+    // If this is an aggregate (not mixed aggregate) case, then we are done the
+    // first time we pass through. But ensure that the caller is told that there
+    // is at least some data!
+
+    if (aggregate_ && !mixedAggregatedAndScalar_ && count_ == 0) {
+        resultsOut();
+        count_++;
+        return true;
+    }
+
     // Nothing to return.
 
+    Log::info() << "nothing to return ... " << std::endl;
     return false;
 }
 

@@ -218,13 +218,15 @@ SQLSelect* SQLSelectFactory::create (
     if (group_by.size())
         Log::info() << "GROUP BY clause seen and ignored. Non aggregated values on select list will be used instead." << std::endl;
 
-//    SQLOutput *out (createOutput(session_, into, order_by.first.size()));
-    SQLOutput& out (createOutput(into, 0));
-
-    // TODO: Special outputs
-
-    SQLOutput* outputEndpoint = &out;
+    SQLOutput* outputEndpoint = 0;
     std::vector<std::unique_ptr<SQLOutput>> newOutputs;
+
+    if (!into.empty()) {
+        newOutputs.emplace_back(session_.newFileOutput(into));
+        outputEndpoint = newOutputs.back().get();
+    } else {
+        outputEndpoint = &session_.output();
+    }
 
     if (order_by.first.size()) {
         newOutputs.emplace_back(new SQLOrderOutput(*outputEndpoint, order_by));
@@ -270,8 +272,8 @@ SQLSelect* SQLSelectFactory::create (
 //    return md;
 //}
 
-SQLOutput& SQLSelectFactory::createOutput (const std::string& into, size_t orderBySize)
-{
+//SQLOutput& SQLSelectFactory::createOutput (const std::string& into, size_t orderBySize)
+//{
     //// TODO: FIXME
     ////size_t maxOpenFiles ( ! context ? 100 : atoi(context->environment().lookup("maxOpenFiles", "100", *context).c_str()));
     //size_t maxOpenFiles ( 100);
@@ -283,11 +285,6 @@ SQLOutput& SQLSelectFactory::createOutput (const std::string& into, size_t order
     //Log::debug() << "SQLSelectFactory::createOutput: outputFile: '" << outputFile << "'" << std::endl;
     //if (! outputFile.size())
 
-    if (!into.empty()) {
-        session_.setOutputFile(into);
-    }
-
-    return session_.output();
 
 //    TemplateParameters templateParameters;
 //    TemplateParameters::parse(outputFile, templateParameters);
@@ -311,7 +308,7 @@ SQLOutput& SQLSelectFactory::createOutput (const std::string& into, size_t order
 //        }
 //    }
 //    return r;
-}
+//}
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -67,17 +67,8 @@ unsigned long long SQLSession::execute(SQLStatement& sql)
     return lastExecuteResult_ = n;
 }
 
-void SQLSession::setOutputFile(const PathName& path) {
-
-    // We should not be calling this function with a null path
-    ASSERT(!path.asString().empty());
-
-    if (output_) throw SeriousBug("Attempting to set output path to \"" + path + "\", but output "
-                                  "has already been created", Here());
-
-    if (!config_) throw SeriousBug("Attemptin to set output path with no outputConfig specified", Here());
-
-    config_->setOutputFile(path);
+std::unique_ptr<SQLOutput> SQLSession::newFileOutput(const eckit::PathName& path) {
+    return std::unique_ptr<SQLOutput>(config_->buildOutput(path));
 }
 
 const SQLDatabase& SQLSession::currentDatabase() const {

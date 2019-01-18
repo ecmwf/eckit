@@ -424,11 +424,10 @@ distinct: DISTINCT { $$ = true; }
         | empty    { $$ = false; }
         ;
 
-into: empty { $$ = ""; }
-// INTO IDENT   { $$ = $2; }
-//    | INTO STRING  { $$ = $2; }
-//    | empty        { $$ = ""; }
-//    ;
+into: INTO IDENT   { $$ = $2; }
+    | INTO STRING  { $$ = $2; }
+    | empty        { $$ = ""; }
+    ;
 
 from : FROM table_list   { $$ = $2; }
      | empty             { $$ = std::vector<std::reference_wrapper<SQLTable>>(); }

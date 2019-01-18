@@ -14,6 +14,8 @@
 #include "eckit/log/Log.h"
 #include "eckit/sql/SQLSimpleOutput.h"
 
+#include "eckit/os/BackTrace.h"
+
 namespace eckit {
 namespace sql {
 
@@ -42,7 +44,12 @@ void SQLOutputConfig::setOutputFile(const eckit::PathName& filename) {
 }
 
 SQLOutput* SQLOutputConfig::buildOutput() const {
-    ASSERT(outputFile_.asString().empty());
+    return buildOutput(outputFile_);
+}
+
+SQLOutput* SQLOutputConfig::buildOutput(const eckit::PathName& path) const {
+    // Output file not supported in base config
+    ASSERT(path.asString().empty());
     if (outputFormat_ != "default" && outputFormat_ != "wide") {
         throw UserError("Unsupported output format: " + outputFormat_, Here());
     }

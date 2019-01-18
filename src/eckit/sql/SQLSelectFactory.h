@@ -82,7 +82,6 @@ private: // members
 
     //SchemaAnalyzer& analyzer();
 //    MetaData columns(const std::string& tableName);
-    SQLOutput& createOutput(const std::string& into, size_t orderBySize );
 
     SQLDatabase& database_;
     SQLOutputConfig config_;

@@ -45,7 +45,8 @@ public: // methods
 
     virtual ~SQLOutputConfig();
 
-    virtual SQLOutput* buildOutput() const;
+    SQLOutput* buildOutput() const;
+    virtual SQLOutput* buildOutput(const eckit::PathName& path) const;
 
     void setOutputFile(const eckit::PathName& filename);
 

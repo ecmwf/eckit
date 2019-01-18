@@ -226,12 +226,12 @@ SQLSelect* SQLSelectFactory::create (
     SQLOutput* outputEndpoint = &out;
     std::vector<std::unique_ptr<SQLOutput>> newOutputs;
 
-    if (distinct) {
-        newOutputs.emplace_back(new SQLDistinctOutput(*outputEndpoint));
-        outputEndpoint = newOutputs.back().get();
-    }
     if (order_by.first.size()) {
         newOutputs.emplace_back(new SQLOrderOutput(*outputEndpoint, order_by));
+        outputEndpoint = newOutputs.back().get();
+    }
+    if (distinct) {
+        newOutputs.emplace_back(new SQLDistinctOutput(*outputEndpoint));
         outputEndpoint = newOutputs.back().get();
     }
 

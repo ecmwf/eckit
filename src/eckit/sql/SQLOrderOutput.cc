@@ -38,15 +38,32 @@ void SQLOrderOutput::reset() { output_.reset(); }
 
 void SQLOrderOutput::flush()
 {
-    // n.b. std::map iteration order is sorted by key.
-    for (SortedResults::iterator it = sortedResults_.begin(); it != sortedResults_.end(); ++it) {
-        // Given identical sorted keys, we use the order that rows are appended
-		std::vector<Expressions>& rows = it->second;
-        for (size_t i = 0; i < rows.size(); ++i) {
-            output_.output(rows[i]);
-        }
-	}
     output_.flush();
+}
+
+bool SQLOrderOutput::cachedNext() {
+
+    while (true) {
+
+        auto it = sortedResults_.begin();
+
+        // If there are no more results, we are done
+
+        if (it == sortedResults_.end()) return false;
+
+        // Given identical sorted keys, we use the order that rows are appended
+
+        std::queue<Expressions>& rows = it->second;
+        ASSERT(rows.size() >= 1);
+        bool success = output_.output(rows.front());
+
+        // Remove entries that have been output
+
+        rows.pop();
+        if (rows.empty()) sortedResults_.erase(it);
+
+        if (success) return true;
+    }
 }
 
 bool SQLOrderOutput::output(const Expressions& results)
@@ -65,8 +82,8 @@ bool SQLOrderOutput::output(const Expressions& results)
         resultValues.push_back(std::make_shared<SQLExpressionEvaluated>(*results[i]));
     }
 
-	sortedResults_[byValues].push_back(resultValues);
-	return false;
+    sortedResults_[byValues].push(resultValues);
+    return false;
 }
 
 void SQLOrderOutput::preprepare(SQLSelect& sql) {
@@ -95,7 +112,7 @@ void SQLOrderOutput::prepare(SQLSelect& sql)
             ASSERT(! missing);
             if (index < 1) throw eckit::UserError("ORDER BY: indices of columns must be positive");
             byIndices_.push_back(index);
-        } 
+        }
     }
 }
 

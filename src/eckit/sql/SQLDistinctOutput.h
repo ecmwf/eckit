@@ -45,7 +45,9 @@ private: // methods
 // -- Overridden methods
     virtual void reset() override;
     virtual void flush() override;
+    virtual bool cachedNext() override;
     virtual bool output(const expression::Expressions&) override;
+    virtual void preprepare(SQLSelect&) override;
     virtual void prepare(SQLSelect&) override;
     virtual void cleanup(SQLSelect&) override;
     virtual unsigned long long count() override;

@@ -16,6 +16,8 @@
 #ifndef eckit_sql_SQLOrderOutput_H
 #define eckit_sql_SQLOrderOutput_H
 
+#include <queue>
+
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/SQLOutput.h"
@@ -39,7 +41,7 @@ private: // methods
     SQLOutput& output_;
     std::pair<expression::Expressions, std::vector<bool>> by_;
 	
-    typedef std::map<expression::OrderByExpressions, VectorOfExpressions> SortedResults;
+    typedef std::map<expression::OrderByExpressions, std::queue<Expressions>> SortedResults;
 
 	SortedResults sortedResults_;
     std::vector<size_t> byIndices_;
@@ -47,6 +49,10 @@ private: // methods
 // -- Overridden methods
     virtual void reset() override;
     virtual void flush() override;
+
+    /// OrderBy builds a std::map of sorted results. Now we start outputting them.
+    virtual bool cachedNext() override;
+
     virtual bool output(const expression::Expressions&) override;
     virtual void preprepare(SQLSelect&) override;
     virtual void prepare(SQLSelect&) override;

@@ -130,7 +130,8 @@ private:
 
 	bool aggregate_;
 	bool mixedAggregatedAndScalar_;
-	Expressions aggregated_;
+    bool doOutputCached_;
+    Expressions aggregated_;
 	Expressions nonAggregated_;
 	std::vector<bool> mixedResultColumnIsAggregated_;
     std::vector<eckit::PathName> outputFiles_;

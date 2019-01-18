@@ -23,6 +23,10 @@ SQLOutput::~SQLOutput() {}
 
 void SQLOutput::preprepare(SQLSelect&) {}
 
+bool SQLOutput::cachedNext() {
+    return false;
+}
+
 void SQLOutput::print(std::ostream& s) const
 {
 	s << "SQLOutput" << std::endl;

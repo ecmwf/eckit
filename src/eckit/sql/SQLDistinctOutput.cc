@@ -34,6 +34,10 @@ void SQLDistinctOutput::reset() {
 
 void SQLDistinctOutput::flush() { output_.flush(); }
 
+bool SQLDistinctOutput::cachedNext() {
+    return output_.cachedNext();
+}
+
 unsigned long long SQLDistinctOutput::count() { return output_.count(); }
 
 bool SQLDistinctOutput::output(const expression::Expressions& results) {
@@ -50,11 +54,14 @@ bool SQLDistinctOutput::output(const expression::Expressions& results) {
 
     if(seen_.find(tmp_) == seen_.end()) {
 		seen_.insert(tmp_);
-        output_.output(results);
-		return true;
+        return output_.output(results);
 	}
 
-	return false;
+    return false;
+}
+
+void SQLDistinctOutput::preprepare(SQLSelect& sql) {
+    output_.preprepare(sql);
 }
 
 void SQLDistinctOutput::prepare(SQLSelect& sql) {

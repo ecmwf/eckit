@@ -41,6 +41,11 @@ public:
 	virtual void reset() = 0;
     virtual void flush() = 0;
 
+    /// If an iterator in the chain has started caching output (e.g. the
+    /// OrderBy iterator), start flushing those through. Returns true
+    /// when row is output, false otherwise.
+    virtual bool cachedNext();
+
     virtual bool output(const expression::Expressions&) = 0;
 
 	virtual void outputReal(double, bool) = 0;

@@ -47,7 +47,8 @@ SQLSelect::SQLSelect(const Expressions& columns,
   total_(0),
   skips_(0),
   aggregate_(false),
-  mixedAggregatedAndScalar_(false) {
+  mixedAggregatedAndScalar_(false),
+  doOutputCached_(false) {
     // TODO: Convert tables_, allTables_ to use references rather than pointers.
     for (const SQLTable& t : tables) tables_.push_back(&t);
 }
@@ -440,6 +441,7 @@ void SQLSelect::reset()
 {
 	aggregate_ = false;
 	mixedAggregatedAndScalar_ = false;
+    doOutputCached_ = false;
 
 	aggregated_.clear();
 	nonAggregated_.clear();
@@ -559,6 +561,19 @@ bool SQLSelect::processOneRow() {
     ASSERT(cursors_.size() > 0);
     ASSERT(cursors_.size() == sortedTables_.size());
 
+    // If we are using and output iterator that caches the output, and are now replaying
+    // that data (say using OrderBy), then do that.
+
+    if (doOutputCached_) {
+        if (output_.cachedNext()) {
+            count_++;
+            return true;
+        } else {
+            doOutputCached_ = false;
+            return false;
+        }
+    }
+
     // If this is the first retrieve, we need to initialise all tables
 
     if (count_ == 0) {
@@ -608,7 +623,6 @@ bool SQLSelect::processOneRow() {
 
     if (aggregatedResultsIterator_ == aggregatedResults_.end()) {
         aggregatedResultsIterator_ = aggregatedResults_.begin();
-        Log::info() << "restart aggregate results: " << aggregatedResults_.size() << std::endl;
     } else {
         ++aggregatedResultsIterator_;
     }
@@ -642,9 +656,17 @@ bool SQLSelect::processOneRow() {
         return true;
     }
 
+    // If we still get here, we might be using an output that caches all the results
+    // (e.g. OrderBy). Give it the chance to do its output
+
+    if (output_.cachedNext()) {
+        doOutputCached_ = true;
+        count_++;
+        return true;
+    }
+
     // Nothing to return.
 
-    Log::info() << "nothing to return ... " << std::endl;
     return false;
 }
 

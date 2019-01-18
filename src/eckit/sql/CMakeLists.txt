@@ -40,6 +40,11 @@ SQLTableFactory.cc
 SQLTableFactory.h
 SQLTypedefs.h
 
+SchemaAnalyzer.cc
+SchemaAnalyzer.h
+SchemaComponents.cc
+SchemaComponents.h
+
 expression/BitColumnExpression.cc
 expression/BitColumnExpression.h
 expression/ColumnExpression.cc

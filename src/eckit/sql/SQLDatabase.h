@@ -19,6 +19,7 @@
 #include <map>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/sql/SchemaAnalyzer.h"
 #include "eckit/sql/SQLTable.h"
 
 
@@ -72,7 +73,7 @@ public:
 
 	Variables& variables() { return variables_; }
 
-//	SchemaAnalyzer& schemaAnalyzer() { return schemaAnalyzer_; }
+    SchemaAnalyzer& schemaAnalyzer() { return schemaAnalyzer_; }
 
     void setIncludePath(const std::string& includePath);
     const std::vector<eckit::PathName>& includePath() const { return includePath_; }
@@ -86,7 +87,7 @@ protected:
 
 	Variables variables_;
 	std::string name_;
-//	SchemaAnalyzer schemaAnalyzer_;
+    SchemaAnalyzer schemaAnalyzer_;
 
 private:
 // No copy allowed

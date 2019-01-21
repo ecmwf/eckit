@@ -41,14 +41,15 @@ private:
 	double value_;
 
 // -- Overridden methods
-	virtual void print(std::ostream& s) const;
-	virtual void prepare(SQLSelect& sql);
-	virtual void cleanup(SQLSelect& sql);
+	virtual void print(std::ostream& s) const override;
+	virtual void prepare(SQLSelect& sql) override;
+	virtual void cleanup(SQLSelect& sql) override;
 
-    virtual const type::SQLType* type() const;
-	virtual double eval(bool& missing) const;
-	virtual bool isConstant() const { return true; }
-	virtual bool isNumber() const { return true; }
+    virtual const type::SQLType* type() const override;
+    using SQLExpression::eval;
+	virtual double eval(bool& missing) const override;
+	virtual bool isConstant() const override { return true; }
+	virtual bool isNumber() const override { return true; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

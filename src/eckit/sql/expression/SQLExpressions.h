@@ -56,6 +56,7 @@ public:
 	const type::SQLType* type() const;
 
 	// -- For WHERE
+    using SQLExpression::eval;
 	virtual double eval(bool& missing) const  { NOTIMP; }
 
 	virtual bool isConstant() const  { NOTIMP; }

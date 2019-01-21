@@ -34,14 +34,14 @@ private:
 	SQLString& operator=(const SQLString&);
 
 // -- Overridden methods
-    virtual size_t size() const;
-    virtual void output(SQLOutput&, double, bool) const;
-    virtual void output(SQLOutput&, const double*, bool) const;
+    virtual size_t size() const override;
+    virtual void output(SQLOutput&, double, bool) const override;
+    virtual void output(SQLOutput&, const double*, bool) const override;
     virtual std::string asString(const double* val) const override;
-    virtual int getKind() const { return stringType; }
-	virtual manipulator format() const;
+    virtual int getKind() const override { return stringType; }
+	virtual manipulator format() const override;
 
-	size_t width() const;
+	size_t width() const override;
 
 	//friend std::ostream& operator<<(std::ostream& s,const SQLString& p)
 	//	{ p.print(s); return s; }

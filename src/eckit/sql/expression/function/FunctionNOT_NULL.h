@@ -37,6 +37,7 @@ private:
 	FunctionNOT_NULL& operator=(const FunctionNOT_NULL&);
 
 // -- Overridden methods
+	using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
 
 // -- Friends

@@ -265,7 +265,6 @@ int RggRegionCache::gauaw(double pa[], double pw[], const int &k)
 void RggRegionCache::create_cache(const double & resol, const int & n) 
 {
     // nothing done for this resolution
-    int iret = 0;
     int ndgl = n + 1; // Number of latitude bands i.e. "nb"
     int nlons = 0;
     int *loncnt = read_rtablel_2_file(n, &ndgl, &nlons);
@@ -283,7 +282,7 @@ void RggRegionCache::create_cache(const double & resol, const int & n)
     zlmu = new double [ndgl];
     zw = new double [ndgl];
 
-    iret=gauaw(zlmu,zw,ndgl);
+    gauaw(zlmu,zw,ndgl);
 
     midlat = zlmu;
     for (ii=0; ii<ndgl; ii++)

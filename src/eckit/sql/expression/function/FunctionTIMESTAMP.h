@@ -31,6 +31,7 @@ public:
 
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;
+	using FunctionExpression::output;
 	virtual void output(std::ostream& s) const;
 
     static int arity() { return 2; }
@@ -39,6 +40,7 @@ private:
 	FunctionTIMESTAMP& operator=(const FunctionTIMESTAMP&);
 
 // -- Overridden methods
+	using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
 
 // -- Friends

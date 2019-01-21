@@ -58,7 +58,7 @@ public:
 	virtual unsigned long long count() = 0;
 
 protected:
-	virtual void print(std::ostream&) const; 	
+	virtual void print(std::ostream&) const;
 
 private:
 // No copy allowed

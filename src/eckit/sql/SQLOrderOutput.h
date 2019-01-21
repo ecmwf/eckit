@@ -34,7 +34,7 @@ public:
 
 private: // methods
 
-	virtual void print(std::ostream&) const;
+	virtual void print(std::ostream&) const override;
 
 // -- Members
 

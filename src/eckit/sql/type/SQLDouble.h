@@ -29,15 +29,16 @@ public:
 	~SQLDouble(); 
 
 // -- Overridden methods
-    virtual void output(SQLOutput&, double, bool) const;
+    using SQLType::output;
+    virtual void output(SQLOutput&, double, bool) const override;
 
 private:
 // No copy allowed
 	SQLDouble(const SQLDouble&);
 	SQLDouble& operator=(const SQLDouble&);
 
-    virtual size_t size() const;
-    virtual int getKind() const { return doubleType; }
+    virtual size_t size() const override;
+    virtual int getKind() const override { return doubleType; }
     virtual std::string asString(const double* val) const override;
 
 // -- Friends

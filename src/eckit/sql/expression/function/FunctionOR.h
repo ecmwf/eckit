@@ -30,6 +30,7 @@ public:
 // -- Overridden methods
 	std::shared_ptr<SQLExpression> clone() const;
 
+    using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
 	virtual const eckit::sql::type::SQLType* type() const;
     virtual std::shared_ptr<SQLExpression> simplify(bool&);

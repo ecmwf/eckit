@@ -167,6 +167,7 @@ ecbuild_generate_yy( YYPREFIX           eckit_sql_
 list( APPEND suppress_warnings
   $<$<CXX_COMPILER_ID:GNU>:-Wno-unused-function>
   $<$<CXX_COMPILER_ID:GNU>:-Wno-sign-compare>
+  $<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-register>
 )
 set_source_files_properties( SQLParser.cc PROPERTIES COMPILE_OPTIONS "${suppress_warnings}" )
 
@@ -179,3 +180,4 @@ ecbuild_add_library( TARGET              eckit_sql TYPE SHARED
                                          SQLIteratorOutput.cc
                                          expression/ShiftedColumnExpression.cc
                      LIBS                eckit )
+                 

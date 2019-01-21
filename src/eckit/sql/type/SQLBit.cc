@@ -27,8 +27,7 @@ SQLBit::~SQLBit() {}
 size_t SQLBit::size() const
 {
     NOTIMP;
-    // This should not be calles
-    return sizeof(long);
+    // This should not be called
 }
 
     void SQLBit::output(SQLOutput& o, double x, bool missing) const {

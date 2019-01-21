@@ -45,10 +45,11 @@ protected:
 	std::string name_;
 
 // -- Overridden methods
-	virtual void prepare(SQLSelect& sql);
-	virtual double eval(bool& missing) const;
-    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&);
-    virtual const eckit::sql::type::SQLType* type() const;
+	virtual void prepare(SQLSelect& sql) override;
+    using ColumnExpression::eval;
+	virtual double eval(bool& missing) const override;
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&) override;
+    virtual const eckit::sql::type::SQLType* type() const override;
 
 	//friend std::ostream& operator<<(std::ostream& s,const BitColumnExpression& p)
 	//	{ p.print(s); return s; }

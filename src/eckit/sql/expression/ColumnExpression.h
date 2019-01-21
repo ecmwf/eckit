@@ -53,23 +53,24 @@ protected:
     int                    nominalShift_;
 
 // -- Overridden methods
-	virtual void print(std::ostream& s) const;
-    virtual void preprepare(SQLSelect& sql);
-	virtual void prepare(SQLSelect& sql);
-	virtual void cleanup(SQLSelect& sql);
-	virtual double eval(bool& missing) const;
+	virtual void print(std::ostream& s) const override;
+    virtual void preprepare(SQLSelect& sql) override;
+	virtual void prepare(SQLSelect& sql) override;
+	virtual void cleanup(SQLSelect& sql) override;
+	virtual double eval(bool& missing) const override;
+    using SQLExpression::eval;
     virtual void eval(double* out, bool& missing) const override;
     virtual std::string evalAsString(bool& missing) const override;
-    virtual bool isConstant() const { return false; }
-	virtual void output(SQLOutput& s) const;
+    virtual bool isConstant() const override { return false; }
+	virtual void output(SQLOutput& s) const override;
 
 private:
 	ColumnExpression& operator=(const ColumnExpression&);
 
 // -- Overridden methods
-	virtual const type::SQLType* type() const { return type_; }
-    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, Expressions&);
-    virtual void tables(std::set<const SQLTable*>&);
+	virtual const type::SQLType* type() const override { return type_; }
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, Expressions&) override;
+    virtual void tables(std::set<const SQLTable*>&) override;
 
 	friend class SQLSelectFactory;
 

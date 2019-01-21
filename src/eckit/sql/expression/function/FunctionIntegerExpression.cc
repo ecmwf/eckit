@@ -60,6 +60,7 @@ public: // methods
 
 private: // methods
 
+    using FunctionIntegerExpression::eval;
 	double eval(bool& m) const {
         bool missing = false;
         double v = args_[0]->eval(missing);

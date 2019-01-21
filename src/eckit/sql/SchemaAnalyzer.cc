@@ -41,6 +41,42 @@ void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& 
     bitfieldTypes_[name] = make_pair(fields, sizes);
 }
 
+std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipTables) const {
+
+    std::string from;
+    std::string selectlist;
+
+    if (tableDefs_.empty()) {
+        return "";
+    }
+
+    for (const auto& table : tableDefs_) {
+
+        // Tables to skip?
+
+        if (skipTables.find(table.name()) != skipTables.end()) {
+            continue;
+        }
+
+        if (!from.empty()) from += ", ";
+        from += table.name();
+
+        for (const auto& col : table.columns()) {
+
+            std::string fullname = col.name() + "@" + table.name();
+
+            if (col.type() == "@LINK") {
+                Log::info() << "SchemaAnalyzer::generateSelectAll(): Skipping " << fullname << std::endl;
+            } else {
+                if (!selectlist.empty()) selectlist += ", ";
+                selectlist += fullname;
+            }
+        }
+        selectlist += "\n";
+    }
+    return "\nSELECT\n" + selectlist + "\n FROM\n" + from;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql

@@ -390,7 +390,7 @@ column_name: IDENT { $$ = $1; }
            ;
 
 data_type: IDENT                 { $$ = $1; }
-//         | LINK                  { $$ = "@LINK"; }
+         | LINK                  { $$ = "@LINK"; }
 //         | TYPEOF '(' column ')' {
 //                                    std::stringstream ss;
 //                                    ss << *($3);

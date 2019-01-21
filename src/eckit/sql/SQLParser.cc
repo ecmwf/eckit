@@ -120,9 +120,6 @@ void SQLParser::parseString(SQLSession& session, const std::string& s) {
 
     stack.push(cleanUpSQLText(s), "", (SQLYacc::YY_BUFFER_STATE) scanner, (SQLYacc::eckit_sql_scan_t) scanner);
     SQLYacc::eckit_sql_parse(scanner, &session);
-
-    session.statement();
-    session.interactive();
 }
 
 std::string SQLParser::cleanUpSQLText(const std::string& sql) {

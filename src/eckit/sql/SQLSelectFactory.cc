@@ -221,6 +221,8 @@ SQLSelect* SQLSelectFactory::create (
     SQLOutput* outputEndpoint = 0;
     std::vector<std::unique_ptr<SQLOutput>> newOutputs;
 
+    Log::info() << "SELECT factory -- INTO: " << into << std::endl;
+
     if (!into.empty()) {
         newOutputs.emplace_back(session_.newFileOutput(into));
         outputEndpoint = newOutputs.back().get();

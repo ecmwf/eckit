@@ -137,7 +137,6 @@ Expressions emptyExpressionList;
 
 %type <tablist> table_list;
 %type <table> table
-//%type <val>table_name;
 %type <val> table_reference;
 %type <tablist> from;
 
@@ -150,9 +149,9 @@ Expressions emptyExpressionList;
 %type <val> into;
 %type <val> func relational_operator;
 
-%type <val> data_type column_name;
+%type <val> data_type column_name table_name;
 %type <coldef> column_def bitfield_def;
-%type <coldefs> bitfield_def_list bitfield_def_list_;
+%type <coldefs> bitfield_def_list bitfield_def_list_ column_def_list column_def_list_;
 
 %type <bol> distinct;
 
@@ -343,39 +342,38 @@ bitfield_def: column_def
 //location: ON STRING { $$ = $2; }
 //        | empty     { $$ = ""; }
 //        ;
-//
-//table_md: AS '(' column_def_list constraint_list ')' { $$ = make_pair($3, $4); }
-//        | empty                                      { $$ = make_pair(ColumnDefs(), ConstraintDefs()); }
-//        ;
-//
+
+// table_md: AS '(' column_def_list ')' { $$ = $3; }             //constraint_list ')' { $$ = make_pair($3, $4); }
+//         | empty                      { $$ = ColumnDefs(); }   //make_pair(ColumnDefs(), ConstraintDefs()); }
+//         ;
+
 //create_table_statement: CREATE temporary TABLE table_name table_md inherits location
-//	{
-//        bool temporary ($2);
-//		std::string name ($4);
-//
-//        ColumnDefs cols ($5.first);
-//        ConstraintDefs constraints ($5.second);
-//		std::vector<std::string> inheritance($6);
-//        std::string location($7);
-//        TableDef tableDef(name, cols, constraints, inheritance, location);
-//
-//        session->currentDatabase().schemaAnalyzer().addTable(tableDef);
-//	}
-//	;
-//
-//table_name: IDENT { $$ = $1; }
-//          | IDENT '.' IDENT { $$ = $1 + std::string(".") + $3; }
-//          | expression { SQLExpression* e($1); $$ = e->title(); }
-//          ;
-//
-//column_def_list: column_def_list_     { $$ = $1; }
-//               | column_def_list_ ',' { $$ = $1; }
-//               | empty                { $$ = ColumnDefs(); }
-//               ;
-//
-//column_def_list_: column_def                      { $$ = ColumnDefs(1, $1); }
-//                | column_def_list_ ',' column_def { $$ = $1; $$.push_back($3); }
-//                ;
+
+create_table_statement: CREATE TABLE table_name AS '(' column_def_list ')'
+    {
+        std::string name = $3;
+        ColumnDefs cols = $6;
+
+        TableDef tableDef(name, cols);
+        session->currentDatabase().schemaAnalyzer().addTable(tableDef);
+    }
+    ;
+
+// TODO: Do we need ot be able to construct a table name from an expression?
+
+table_name: IDENT { $$ = $1; }
+          | IDENT '.' IDENT { $$ = $1 + std::string(".") + $3; }
+          | expression { std::shared_ptr<SQLExpression> e($1); $$ = e->title(); }
+          ;
+
+column_def_list: column_def_list_     { $$ = $1; }
+               | column_def_list_ ',' { $$ = $1; }
+               | empty                { $$ = ColumnDefs(); }
+               ;
+
+column_def_list_: column_def                      { $$ = ColumnDefs(); $$.push_back($1); }
+                | column_def_list_ ',' column_def { $$ = $1; $$.push_back($3); }
+                ;
 
 column_def: column_name data_type // vector_range_decl default_value
     {

@@ -15,6 +15,7 @@
 #define eckit_sql_SchemaComponents_H
 
 #include <string>
+#include <vector>
 
 
 namespace eckit {
@@ -42,8 +43,27 @@ private: // members
     std::string type_;
 };
 
+using ColumnDefs = std::vector<ColumnDef>;
+
 //----------------------------------------------------------------------------------------------------------------------
 
+class TableDef {
+
+public: // methods
+
+    TableDef(const std::string& name, const ColumnDefs& columns);
+    ~TableDef();
+
+    const std::string& name() const { return name_; }
+    const ColumnDefs& columns() const { return columns_; }
+
+private: // members
+
+    std::string name_;
+    ColumnDefs columns_;
+};
+
+using TableDefs = std::vector<TableDef>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

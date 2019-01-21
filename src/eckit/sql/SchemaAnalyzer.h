@@ -33,13 +33,10 @@ public: // methods
     SchemaAnalyzer();
     ~SchemaAnalyzer();
 
-    void addTable(const std::string& name,
-                  const ColumnDefs& columns,
-                  const ConstraintDefs& constraints,
-                  const std::vector<std::string>& parents,
-                  const std::string& location);
+    void addTable(TableDef& table);
 
     void addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes, const std::string& typeSignature);
+
 //    bool isBitfield(const std::string& columnName) const;
 //    const BitfieldDef& getBitfieldTypeDefinition(const std::string& columnName);
 
@@ -54,7 +51,12 @@ public: // methods
 //    std::string findColumnType(const std::string&);
 
 private:
+
     BitfieldDefs bitfieldTypes_;
+    TableDefs tableDefs_;
+
+    std::map<std::string, std::string> columnTypes_;
+
     //std::string currentSchema_;
     //SchemaDefs schemas_;
     //TableDefs tableDefs_;

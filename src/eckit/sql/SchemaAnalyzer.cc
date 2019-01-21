@@ -24,6 +24,19 @@ SchemaAnalyzer::SchemaAnalyzer() {}
 
 SchemaAnalyzer::~SchemaAnalyzer() {}
 
+void SchemaAnalyzer::addTable(TableDef& table) {
+
+    tableDefs_.push_back(table);
+
+    for (const auto& col : table.columns()) {
+        std::string fullname = col.name() + "@" + table.name();
+        columnTypes_[fullname] = col.type();
+        // Log::debug<LibOdc>() << "SchemaAnalyzer::addTable(): columnTypes_[" << fullname << "] = "
+        //                      << columnTypes_[fullname] << std::endl;
+    }
+
+}
+
 void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes, const std::string& typeSignature) {
     bitfieldTypes_[name] = make_pair(fields, sizes);
 }

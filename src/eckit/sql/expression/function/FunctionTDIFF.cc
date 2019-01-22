@@ -48,7 +48,7 @@ double FunctionTDIFF::eval(bool& missing) const
     eckit::DateTime dt1(d1, t1);
     eckit::DateTime dt2(d2, t2);
 
-    return d1 - d2;
+    return dt1 - dt2;
 }
 
 const eckit::sql::type::SQLType* FunctionTDIFF::type() const { return &eckit::sql::type::SQLType::lookup("integer"); }

@@ -79,11 +79,6 @@ SQLDatabase& SQLSession::currentDatabase() {
     return database_;
 }
 
-SQLTable& SQLSession::findTable(const std::string& database, const std::string& name) {
-    // Multiple database support in session not yet implemented
-    NOTIMP;
-}
-
 void SQLSession::setStatement(SQLStatement* s) {
     statement_.reset(s);
 }

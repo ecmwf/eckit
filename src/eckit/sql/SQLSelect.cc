@@ -419,9 +419,10 @@ void SQLSelect::postExecute() {
 
 void SQLSelect::refreshCursorMetadata(const SQLTable* table, SQLTableIterator& cursor) {
 
-    ASSERT(tablesToFetch_.size() == cursors_.size());
+    auto it = tablesToFetch_.find(table);
 
-    SelectOneTable& tbl(tablesToFetch_[table]);
+    ASSERT(it != tablesToFetch_.end());
+    SelectOneTable& tbl(it->second);
 
     const double* data(cursor.data());
     const std::vector<size_t> offsets(cursor.columnOffsets());
@@ -536,7 +537,7 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
 
     while (cursors_[tableIndex]->next()) {
 
-        // Test the returned row against the validation conditions.
+        // Test thereturned row against the validation conditions.
 
         bool ok = true;
 
@@ -558,7 +559,8 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
 
 bool SQLSelect::processOneRow() {
 
-    ASSERT(cursors_.size() > 0);
+    // n.b. it is acceptable for fromTables.size() == 0, if the expressions
+    //      are all constant. So we just check the number of used tables.
     ASSERT(cursors_.size() == sortedTables_.size());
 
     // If we are using and output iterator that caches the output, and are now replaying

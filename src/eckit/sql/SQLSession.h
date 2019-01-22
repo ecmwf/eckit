@@ -58,7 +58,6 @@ public:
 //    virtual SQLInsertFactory& insertFactory();
 
     virtual SQLTable& findTable(const std::string& name);
-    virtual SQLTable& findTable(const std::string& database, const std::string& name);
 
 //    virtual SQLTable* openDataHandle(eckit::DataHandle &);
 //    virtual SQLTable* openDataStream(std::istream &, const std::string &);

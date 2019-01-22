@@ -128,6 +128,7 @@ Expressions emptyExpressionList;
 %token QUERY
 %token ALIGN
 %token RESET
+%token DUAL
 %token ONELOOPER
 
 %type <exp>     expression assignment_rhs;
@@ -511,13 +512,14 @@ table_reference: '@' IDENT   { $$ = std::string("@") + $2; }
                ;
 
 // n.b. convert SQLTable& into SQLTable* as we need to store a ptr to keep YACC happy
-table : IDENT '.' IDENT { $$ = &session->findTable($1, $3); }
+// table : IDENT '.' IDENT { $$ = &session->findTable($1, $3);  // Multiple databases not supported
+table : DUAL            { $$ = 0; }
       | IDENT           { $$ = &session->findTable($1); }
       | STRING			{ $$ = &session->findTable($1); }
       ;
 
-table_list : table                  { $$ = std::vector<std::reference_wrapper<SQLTable>>(); $$.push_back(*$1); }
-           | table_list  ',' table  { $$ = $1; $$.push_back(*$3); }
+table_list : table                  { $$ = std::vector<std::reference_wrapper<SQLTable>>(); if($1) { $$.push_back(*$1); } }
+           | table_list  ',' table  { $$ = $1; if ($3) { $$.push_back(*$3); } }
            ;
 
 ///*================= SELECT =========================================*/

@@ -183,7 +183,9 @@ SQLSelect* SQLSelectFactory::create (
     for (const SQLTable& tbl : from.size() ? from : database_.implicitTables()) {
         fromTables.push_back(tbl);
     }
-    if (!fromTables.size()) throw UserError("No tables found for SQL Select", Here());
+
+    // n.b. it is acceptable for fromTables.size() == 0, if the expressions
+    //      are all constant. So we defer this check to later.
 
     // Expand any wildcards in the select statement
 
@@ -220,8 +222,6 @@ SQLSelect* SQLSelectFactory::create (
 
     SQLOutput* outputEndpoint = 0;
     std::vector<std::unique_ptr<SQLOutput>> newOutputs;
-
-    Log::info() << "SELECT factory -- INTO: " << into << std::endl;
 
     if (!into.empty()) {
         newOutputs.emplace_back(session_.newFileOutput(into));

@@ -55,7 +55,7 @@ void FunctionTHIN::print(std::ostream& s) const
 double FunctionTHIN::eval(bool& missing) const
 {
     int every_nth = (int) args_[0]->eval(missing);
-    if ((*count_ - 1) % every_nth == 0)
+    if ((*count_) % every_nth == 0)
       return 1.0;
     else
       return 0.0;

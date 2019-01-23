@@ -106,8 +106,7 @@ void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<c
 	// TODO: regex
 	if(field_ != "*")
 	{
-        NOTIMP;
-//		e.push_back(this);
+        e.push_back(shared_from_this());
 		return;
 	}
 

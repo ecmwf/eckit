@@ -628,7 +628,7 @@ bool SQLSelect::processOneRow() {
     } else {
         ++aggregatedResultsIterator_;
     }
-    if (aggregatedResultsIterator_ != aggregatedResults_.end()) {
+    while (aggregatedResultsIterator_ != aggregatedResults_.end()) {
         const OrderByExpressions& nonAggregated = aggregatedResultsIterator_->first;
         Expressions& aggregated = aggregatedResultsIterator_->second;
         Expressions results;
@@ -641,11 +641,13 @@ bool SQLSelect::processOneRow() {
                 results.push_back(nonAggregated[ni++]);
             }
         }
-        // n.b. We assert resultsOut here as we know the row will be unique.
-        //      May have odd effects if used with ORDER BY expression, that need further thought
-        ASSERT(output_.output(results));
-        count_++;
-        return true;
+
+        if (output_.output(results)) {
+            count_++;
+            return true;
+        }
+
+        ++aggregatedResultsIterator_;
     }
 
     // If this is an aggregate (not mixed aggregate) case, then we are done the

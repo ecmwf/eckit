@@ -31,12 +31,9 @@ size_t SQLBit::size() const
     return sizeof(long);
 }
 
-void SQLBit::output(SQLOutput& o, double x, bool missing) const
-{
-	//Log::info() << "SQLBit::output: x=" << x << ", missing=" << missing << std::endl;
-	//s << ((m & mask_) >> shift_);
-    // TODO: does it work like this? test!
-    o.outputUnsignedInt(x, missing);
+    void SQLBit::output(SQLOutput& o, double x, bool missing) const {
+    double val = (missing ? 0 : ((static_cast<unsigned long>(x) & mask_) >> shift_));
+    o.outputUnsignedInt(val, missing);
 }
 
 std::string SQLBit::asString(const double *val) const {

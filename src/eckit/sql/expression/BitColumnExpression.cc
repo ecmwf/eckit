@@ -16,6 +16,7 @@
 #include "eckit/sql/type/SQLBit.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
+#include "eckit/os/BackTrace.h"
 
 namespace eckit {
 namespace sql {
@@ -30,7 +31,7 @@ BitColumnExpression::BitColumnExpression(const std::string& name, const std::str
   field_(field),
   name_(name)
 {
-	Log::debug() << "BitColumnExpression::BitColumnExpression: name=" << name
+    Log::debug() << "BitColumnExpression::BitColumnExpression: name=" << name
 		<< ", field=" << field << ", table->name() =" << table->name()
 		<< ": name_=" << name_
 		<< std::endl;
@@ -43,7 +44,7 @@ BitColumnExpression::BitColumnExpression(const std::string& name, const std::str
   field_(field),
   name_(name)
 {
-	Log::debug() << "BitColumnExpression::BitColumnExpression: name=" << name
+    Log::debug() << "BitColumnExpression::BitColumnExpression: name=" << name
 		<< ", field=" << field << ", tableReference=" << tableReference
 		<< ": name_=" << name_
 		<< std::endl;
@@ -94,7 +95,7 @@ double BitColumnExpression::eval(bool& missing) const
 {
     if (value_->second) missing = true;
     unsigned long x = static_cast<unsigned long>(*value_->first);
-	return (x & mask_) >> bitShift_;
+    return (x & mask_) >> bitShift_;
 }
 
 void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables, expression::Expressions& e)
@@ -102,7 +103,6 @@ void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<c
     using namespace eckit;
     using namespace std;
 
-    Log::debug() << "BitColumnExpression::expandStars: " << e << endl;
 	// TODO: regex
 	if(field_ != "*")
 	{
@@ -120,8 +120,6 @@ void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<c
             e.push_back(std::make_shared<BitColumnExpression>(name_, names[i], tableReference_ /*table*/));
 		}
 	}
-
-	delete this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

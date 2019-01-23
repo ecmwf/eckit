@@ -213,6 +213,7 @@ public:
 class ShortFile : public ReadError {
 public:
     ShortFile(const std::string&);
+    ShortFile(const std::string&, const CodeLocation&);
 };
 
 class RemoteException : public Exception {

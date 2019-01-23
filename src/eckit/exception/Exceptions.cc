@@ -461,6 +461,11 @@ ShortFile::ShortFile(const std::string& file):
 {
 }
 
+ShortFile::ShortFile(const std::string& file, const CodeLocation& loc):
+    ReadError(std::string("Short file while reading ") + file, loc)
+{
+}
+
 RemoteException::RemoteException(const std::string& msg, const std::string& from):
     Exception(msg + "(RemoteException from " + from + ")")
 {

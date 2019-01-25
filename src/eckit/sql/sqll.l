@@ -134,7 +134,7 @@ SEMICOLON [;]
 [dD][uU][aA][lL]                  return DUAL;
 [oO][nN][eE][lL][oO][oO][pP][eE][rR] return ONELOOPER;
 <incl>[ \t]*                      /* eat the whitespace */
-<incl>[^ \t\n]+ {                 /* name of the file to be included */
+<incl>[^ \t\n;]+ {                 /* name of the file to be included */
     //cerr << "include " << yytext << std::endl;
 
     eckit::PathName fileName(eckit::StringTools::unQuote(yytext));

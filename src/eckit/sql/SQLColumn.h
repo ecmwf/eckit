@@ -44,6 +44,10 @@ public:
 	bool hasMissingValue() const { return hasMissingValue_; }
 	double missingValue() const { return missingValue_; }
 	bool isBitfield() const { return isBitfield_; }
+    bool isMissingValue(const double* val) const {
+        //return hasMissingValue_ && (*val == missingValue_);
+        return (*val == missingValue_);
+    }
 	const BitfieldDef& bitfieldDef() const { return bitfieldDef_; }
     size_t dataSizeDoubles() const { return sizeDoubles_; }
 

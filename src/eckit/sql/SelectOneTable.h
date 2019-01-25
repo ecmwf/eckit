@@ -36,6 +36,7 @@ struct SelectOneTable {
     // Information about the data to be retrieved.
 
     std::vector<std::reference_wrapper<const SQLColumn>> fetch_;
+    std::vector<std::pair<const double*, bool>*> values_;
 //    std::vector<std::pair<double*,bool&>>    values_;
 
     // How do we find the data inside the allocated buffer in SQLSelect?

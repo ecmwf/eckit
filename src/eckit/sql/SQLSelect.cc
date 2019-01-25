@@ -92,6 +92,9 @@ void SQLSelect::ensureFetch(const SQLTable& table, const std::string& columnName
     if (std::find_if(fetch.begin(), fetch.end(), [&](const SQLColumn& c){ return &c == &column; }) == fetch.end()) {
         fetch.push_back(column);
         tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
+        // This will create the value if it doesn't exist
+        ValueLookup& value(values_[fullname]);
+        tablesToFetch_[&table].values_.push_back(&value);
     }
 }
 
@@ -535,13 +538,21 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
 
     /// For one table, obtain the next row that also validates, or return false if there is not one.
 
+    SelectOneTable& fetchTable(*sortedTables_[tableIndex]);
+
     while (cursors_[tableIndex]->next()) {
+
+        // Extract the missing values
+
+        for (size_t i = 0; i < fetchTable.fetch_.size(); i++) {
+            fetchTable.values_[i]->second = fetchTable.fetch_[i].get().isMissingValue(fetchTable.values_[i]->first);
+        }
 
         // Test thereturned row against the validation conditions.
 
         bool ok = true;
 
-        for (auto& check : sortedTables_[tableIndex]->check_) {
+        for (auto& check : fetchTable.check_) {
             bool missing = false;
             if (!check->eval(missing) || missing) {
                 ok = false;

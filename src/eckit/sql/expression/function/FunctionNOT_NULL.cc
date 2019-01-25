@@ -42,7 +42,7 @@ double FunctionNOT_NULL::eval(bool&) const
 	std::cout << "FunctionNOT_NULL " << (*args_[0])  << " " << args_[0]->eval(missing);
 	std::cout << " missing = " << missing << std::endl;
 #else
-	args_[0]->eval(missing);
+    args_[0]->eval(missing);
 #endif
 
 	return !missing;

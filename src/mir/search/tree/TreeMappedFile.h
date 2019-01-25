@@ -19,9 +19,13 @@
 #define mir_search_tree_TreeMappedFile_h
 
 #include <unistd.h>
+
+#include <fstream>
+
 #include "eckit/log/Log.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Main.h"
+
 #include "mir/config/LibMir.h"
 #include "mir/search/tree/TreeMapped.h"
 

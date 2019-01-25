@@ -8,22 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "mir/search/PointSearch.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/log/Plural.h"
 #include "eckit/log/Timer.h"
+#include "eckit/thread/AutoLock.h"
 
 #include "mir/config/LibMir.h"
 #include "mir/param/MIRParametrisation.h"
 #include "mir/repres/Iterator.h"
 #include "mir/repres/Representation.h"
 
-
 namespace mir {
 namespace search {
-
 
 PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const repres::Representation& r) {
 
@@ -42,14 +40,13 @@ PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const
     }
 }
 
-
 void PointSearch::build(const repres::Representation& r) {
     const size_t npts = tree_->itemCount();
     ASSERT(npts > 0);
 
     eckit::Timer timer("PointSearch: building k-d tree");
-    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << eckit::Plural(npts, "point") << ")"
-                       << std::endl;
+    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << eckit::Plural(npts, "point")
+                       << ")" << std::endl;
 
     static bool fastBuildKDTrees =
         eckit::Resource<bool>("$ATLAS_FAST_BUILD_KDTREES", true); // We use the same Resource as ATLAS for now
@@ -81,21 +78,17 @@ void PointSearch::build(const repres::Representation& r) {
     }
 }
 
-
 void PointSearch::statsPrint(std::ostream& out, bool fancy) const {
     tree_->statsPrint(out, fancy);
 }
-
 
 void PointSearch::statsReset() const {
     tree_->statsReset();
 }
 
-
 PointSearch::PointValueType PointSearch::closestPoint(const PointSearch::PointType& pt) const {
     return tree_->nearestNeighbour(pt);
 }
-
 
 void PointSearch::closestNPoints(const PointType& pt, size_t n, std::vector<PointValueType>& closest) const {
 
@@ -109,11 +102,9 @@ void PointSearch::closestNPoints(const PointType& pt, size_t n, std::vector<Poin
     closest = tree_->kNearestNeighbours(pt, n);
 }
 
-
 void PointSearch::closestWithinRadius(const PointType& pt, double radius, std::vector<PointValueType>& closest) const {
     closest = tree_->findInSphere(pt, radius);
 }
-
 
 } // namespace search
 } // namespace mir

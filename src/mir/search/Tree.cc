@@ -17,8 +17,9 @@
 
 #include "mir/search/Tree.h"
 
-#include <iostream>
 #include <unistd.h>
+#include <iostream>
+#include <map>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/os/AutoUmask.h"

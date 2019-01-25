@@ -30,6 +30,7 @@ public:
 	~NumberExpression();
 
     virtual std::shared_ptr<SQLExpression> clone() const override;
+    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
 
 	void value(double v) { value_ = v; }
 

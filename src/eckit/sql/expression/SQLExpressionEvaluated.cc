@@ -87,6 +87,10 @@ std::shared_ptr<SQLExpression> SQLExpressionEvaluated::clone() const {
     return std::make_shared<SQLExpressionEvaluated>(*this);
 }
 
+std::shared_ptr<SQLExpression> SQLExpressionEvaluated::reshift(int minColumnShift) const {
+    throw eckit::SeriousBug("Attempting to row-shift already-evaluated expression", Here());
+}
+
 const type::SQLType* SQLExpressionEvaluated::type() const {
     return type_;
 }

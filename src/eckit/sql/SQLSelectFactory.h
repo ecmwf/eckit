@@ -72,10 +72,6 @@ private: // methods
 
     std::string index(const std::string& columnName, const expression::SQLExpression* index);
 
-    void reshift(expression::Expressions&);
-
-    std::shared_ptr<expression::SQLExpression> reshift(std::shared_ptr<expression::SQLExpression>&);
-
 private: // members
 
     SQLSession& session_;

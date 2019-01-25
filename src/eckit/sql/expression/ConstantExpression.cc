@@ -17,8 +17,17 @@ namespace expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 ConstantExpression::ConstantExpression(double v, bool missing, const type::SQLType* type)
-: value_(v), missing_(missing), type_(*type)
+    : value_(v), missing_(missing), type_(*type)
 {}
+
+ConstantExpression::ConstantExpression(const ConstantExpression& rhs, const ConstantExpression::PrivateKey&) :
+    isBitfield_(rhs.isBitfield_),
+    bitfieldDef_(rhs.bitfieldDef_),
+    hasMissingValue_(rhs.hasMissingValue_),
+    missingValue_(rhs.missingValue_),
+    value_(rhs.value_),
+    missing_(rhs.missing_),
+    type_(rhs.type_) {}
 
 ConstantExpression::~ConstantExpression() {}
 

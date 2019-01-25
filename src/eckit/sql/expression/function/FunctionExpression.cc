@@ -33,6 +33,12 @@ FunctionExpression::FunctionExpression(const FunctionExpression& other)
 
 const type::SQLType* FunctionExpression::type() const { return &type::SQLType::lookup("double"); }
 
+std::shared_ptr<SQLExpression> FunctionExpression::reshift(int minColumnShift) const {
+    std::shared_ptr<SQLExpression> shifted = clone();
+    static_cast<FunctionExpression&>(*shifted).shiftArgs(minColumnShift);
+    return shifted;
+}
+
 FunctionExpression::~FunctionExpression() {}
 
 void FunctionExpression::preprepare(SQLSelect& sql)
@@ -109,7 +115,11 @@ void FunctionExpression::print(std::ostream& s) const
 void FunctionExpression::tables(std::set<const SQLTable*>& t)
 {
 	for(expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
-		(*j)->tables(t);
+        (*j)->tables(t);
+}
+
+void FunctionExpression::shiftArgs(int minColumnShift) {
+    args_ = args_.reshift_expressions(minColumnShift);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

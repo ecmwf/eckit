@@ -30,9 +30,15 @@ namespace expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 class ConstantExpression : public SQLExpression {
+
+    struct PrivateKey {}; // This is just to allow make_shared to access private constructor.
+
 public:
     ConstantExpression(double, bool, const type::SQLType*);
-	virtual ~ConstantExpression(); 
+    ConstantExpression(const ConstantExpression&, const PrivateKey&);
+    ConstantExpression& operator=(const ConstantExpression&) = delete;
+
+    virtual ~ConstantExpression();
 
 	virtual void prepare(SQLSelect&) { NOTIMP; }
 	virtual void cleanup(SQLSelect&) { NOTIMP; }
@@ -53,7 +59,8 @@ public:
     virtual const type::SQLType* type() const;
 	// ----
 
-    virtual std::shared_ptr<SQLExpression> clone() const { NOTIMP; return 0; }
+    virtual std::shared_ptr<SQLExpression> clone() const { return std::make_shared<ConstantExpression>(*this, PrivateKey()); }
+    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override { return clone(); }
 	
 	virtual bool isAggregate() const { return false; }
 	// For select expression
@@ -68,16 +75,12 @@ public:
 	double missingValue() const { return missingValue_; }
 
 protected:
-	virtual void print(std::ostream&) const { NOTIMP; }; 
+    virtual void print(std::ostream&) const { NOTIMP; }
 
 	bool isBitfield_;
 	BitfieldDef bitfieldDef_;
 	bool hasMissingValue_;
 	double missingValue_;
-
-private:
-	ConstantExpression(const ConstantExpression&);
-	ConstantExpression& operator=(const ConstantExpression&);
 
 	double value_;
 	bool missing_;

@@ -73,6 +73,7 @@ public:
 	// ----
 
     virtual std::shared_ptr<SQLExpression> clone() const = 0;
+    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const = 0;
 	
 	virtual bool isAggregate() const { return false; }
 	// For select expression

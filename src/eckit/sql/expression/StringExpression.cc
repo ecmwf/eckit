@@ -117,6 +117,8 @@ void StringExpression::expandStars(const std::vector<std::reference_wrapper<cons
 
 std::shared_ptr<SQLExpression> StringExpression::clone() const { return std::make_shared<StringExpression>(name_); }
 
+std::shared_ptr<SQLExpression> StringExpression::reshift(int minColumnShift) const { return clone(); }
+
 StringExpression::~StringExpression() {}
 
 double StringExpression::eval(bool& missing) const { return value_[0]; }

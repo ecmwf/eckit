@@ -79,72 +79,6 @@ std::shared_ptr<SQLExpression> SQLSelectFactory::createColumn(
                       : std::make_shared<ShiftedColumnExpression<ColumnExpression>>(expandedColumnName + tableReference, tableReference, shift, -shift));
 }
 
-std::shared_ptr<SQLExpression> SQLSelectFactory::reshift(std::shared_ptr<SQLExpression>& e)
-{
-    if (!e) return e;
-
-    ShiftedColumnExpression<BitColumnExpression>* c1 = dynamic_cast<ShiftedColumnExpression<BitColumnExpression>*>(e.get());
-    if (c1) {
-        int newShift = c1->shift() - minColumnShift_;
-        ASSERT(newShift >= 0);
-        if (newShift > 0) {
-            return std::make_shared<ShiftedColumnExpression<BitColumnExpression>>(*c1, newShift, c1->nominalShift());
-        } else {
-            auto r = std::make_shared<BitColumnExpression>(*c1);
-            r->nominalShift(c1->nominalShift());
-            return r;
-        }
-    } 
-
-    ShiftedColumnExpression<ColumnExpression>* c2 = dynamic_cast<ShiftedColumnExpression<ColumnExpression>*>(e.get());
-    if (c2) {
-        int newShift = c2->shift() - minColumnShift_ ;
-        ASSERT(newShift >= 0);
-        if (newShift > 0) {
-            return std::make_shared<ShiftedColumnExpression<ColumnExpression>>(*c2, newShift, c2->nominalShift());
-        } else {
-            auto r = std::make_shared<ColumnExpression>(*c2);
-            r->nominalShift(c2->nominalShift());
-            return r;
-        }
-    } 
-
-    BitColumnExpression* c3 = dynamic_cast<BitColumnExpression*>(e.get());
-    if(c3) {
-        return std::make_shared<ShiftedColumnExpression<BitColumnExpression>>(*c3, -minColumnShift_, 0);
-    }
-
-    ColumnExpression* c4 = dynamic_cast<ColumnExpression*>(e.get());
-    if(c4) {
-        return std::make_shared<ShiftedColumnExpression<ColumnExpression>>(*c4, -minColumnShift_, 0);
-    }
-    
-    expression::function::FunctionExpression* f = dynamic_cast<expression::function::FunctionExpression*>(e.get());
-    if (f) {
-        reshift(f->args());
-        return e;
-    }
-
-    Log::info() << "SQLSelectFactory::reshift: SKIP " << *e << std::endl;
-    return e;
-}
-
-void SQLSelectFactory::reshift(Expressions& select)
-{
-    std::ostream& L(Log::debug());
-    L << "reshift: maxColumnShift_ = " << maxColumnShift_ << std::endl;
-    L << "reshift: minColumnShift_ = " << minColumnShift_ << std::endl;
-	for (size_t i = 0; i < select.size(); ++i)
-        L << "reshift: <- select[" << i << "]=" << *select[i] << std::endl;
-
-	for (size_t i = 0; i < select.size(); ++i)
-        select[i] = reshift(select[i]);
-
-    L << std::endl;
-	for (size_t i = 0; i < select.size(); ++i)
-        L << "reshift: -> select[" << i << "]=" << *select[i] << std::endl;
-}
-
 /*
 SchemaAnalyzer& SQLSelectFactory::analyzer()
 { return SQLSession::current().currentDatabase().schemaAnalyzer(); }
@@ -196,23 +130,24 @@ SQLSelect* SQLSelectFactory::create (
 		select_list[i]->expandStars(fromTables, select);
 	}
 
-////	ASSERT(maxColumnShift_ >= 0);
-////	ASSERT(minColumnShift_ <= 0);
-////	if (minColumnShift_ < 0)
-////    {
-////        L << std::endl << "SELECT_LIST before reshifting:" << select << std::endl;
-////		reshift(select);
-////        L << "SELECT_LIST after reshifting:" << select << std::endl << std::endl;
-////
-////        if (where)
-////        {
-////            L << std::endl << "WHERE before reshifting:" << *where << std::endl;
-////            where = reshift(where);
-////            L << "WHERE after reshifting:" << *where << std::endl << std::endl;
-////        }
-////
-////        reshift(order_by.first);
-////    }
+    ASSERT(maxColumnShift_ >= 0);
+    ASSERT(minColumnShift_ <= 0);
+    if (minColumnShift_ < 0) {
+
+        L << std::endl << "SELECT_LIST before reshifting:" << select << std::endl;
+        select = select.reshift_expressions(minColumnShift_);
+        L << std::endl << "SELECT_LIST after reshifting:" << select << std::endl;
+
+        if (where) {
+            L << std::endl << "WHERE before reshifting:" << *where << std::endl;
+            where = where->reshift(minColumnShift_);
+            L << std::endl << "WHERE after reshifting:" << *where << std::endl;
+        }
+
+        if (!order_by.first.empty()) {
+            order_by.first = order_by.first.reshift_expressions(minColumnShift_);
+        }
+    }
 
 	maxColumnShift_ = 0;
 	minColumnShift_ = 0;

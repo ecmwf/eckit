@@ -42,6 +42,7 @@ public:
 	void partialResult();
 
     virtual const type::SQLType* type() const;
+    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const;
 
 	// For SQLSelectFactory (maybe it should just friend SQLSelectFactory).
 	expression::Expressions& args() { return args_; }
@@ -57,9 +58,11 @@ protected:
 
     void tables(std::set<const SQLTable*>&);
 private:
-// No copy allowed
-	//FunctionExpression(const FunctionExpression&);
+
 	FunctionExpression& operator=(const FunctionExpression&);
+
+    // For use inside reshift()
+    void shiftArgs(int minColumnShift);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

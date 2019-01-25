@@ -16,6 +16,7 @@
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
@@ -48,7 +49,13 @@ ColumnExpression::ColumnExpression(const std::string& name, const std::string& t
 {}
 
 
-std::shared_ptr<SQLExpression> ColumnExpression::clone() const { return std::make_shared<ColumnExpression>(*this); }
+std::shared_ptr<SQLExpression> ColumnExpression::clone() const {
+    return std::make_shared<ColumnExpression>(*this);
+}
+
+std::shared_ptr<SQLExpression> ColumnExpression::reshift(int minColumnShift) const {
+    return std::make_shared<ShiftedColumnExpression<ColumnExpression>>(*this, -minColumnShift, 0);
+}
 
 ColumnExpression::~ColumnExpression() {}
 

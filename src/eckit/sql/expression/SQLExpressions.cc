@@ -24,7 +24,21 @@ std::shared_ptr<SQLExpression> Expressions::clone() const
 	for (size_t i = 0; i < this->size(); ++i)
 		(*r)[i] = (*this)[i]->clone();
 
-	return r;
+    return r;
+}
+
+std::shared_ptr<SQLExpression> Expressions::reshift(int minColumnShift_) const {
+    // This is almost certainly not what you are trying to do here.
+    // See reshift_expressions
+    NOTIMP;
+}
+
+Expressions Expressions::reshift_expressions(int minColumnShift) const {
+    Expressions shifted;
+    for (auto& e : *this) {
+        shifted.emplace_back(e->reshift(minColumnShift));
+    }
+    return shifted;
 }
 
 void Expressions::print(std::ostream& o) const

@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/sql/expression/BitColumnExpression.h"
+
 #include <memory>
 
-#include "eckit/eckit.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/sql/expression//BitColumnExpression.h"
-#include "eckit/sql/type/SQLBit.h"
+#include "eckit/os/BackTrace.h"
+#include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
-#include "eckit/os/BackTrace.h"
+#include "eckit/sql/type/SQLBit.h"
 
 namespace eckit {
 namespace sql {
@@ -119,6 +120,15 @@ void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<c
             e.push_back(std::make_shared<BitColumnExpression>(name_, names[i], tableReference_ /*table*/));
 		}
 	}
+
+}
+
+std::shared_ptr<SQLExpression> BitColumnExpression::clone() const {
+    return std::make_shared<BitColumnExpression>(*this);
+}
+
+std::shared_ptr<SQLExpression> BitColumnExpression::reshift(int minColumnShift) const {
+    return std::make_shared<ShiftedColumnExpression<BitColumnExpression>>(*this, -minColumnShift, 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

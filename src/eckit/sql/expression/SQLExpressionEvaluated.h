@@ -40,6 +40,7 @@ public:
     virtual bool isNumber() const override;
     virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
     virtual std::shared_ptr<SQLExpression> clone() const override;
+    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
     virtual bool isAggregate() const  override;
 
     virtual const type::SQLType* type() const ;

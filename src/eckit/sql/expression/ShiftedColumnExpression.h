@@ -49,10 +49,11 @@ public:
 
 	double* current();
 
-    virtual std::shared_ptr<SQLExpression> clone() const override;
+    std::shared_ptr<SQLExpression> clone() const override;
+    std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
 
-	int shift() { return shift_; }
-	int nominalShift() { return nominalShift_; }
+    int shift() const { return shift_; }
+    int nominalShift() const { return nominalShift_; }
 
 protected:
 	int	                   shift_; // For the HASH operator

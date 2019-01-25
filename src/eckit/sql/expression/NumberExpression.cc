@@ -30,6 +30,10 @@ std::shared_ptr<SQLExpression> NumberExpression::clone() const {
     return std::make_shared<NumberExpression>(*this);
 }
 
+std::shared_ptr<SQLExpression> NumberExpression::reshift(int minColumnShift) const {
+    return clone();
+}
+
 NumberExpression::~NumberExpression() {}
 
 const type::SQLType* NumberExpression::type() const { return &type::SQLType::lookup("real"); }

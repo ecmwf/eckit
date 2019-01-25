@@ -29,7 +29,8 @@ public:
 	ParameterExpression(const ParameterExpression&);
 	~ParameterExpression(); 
 
-    std::shared_ptr<SQLExpression> clone() const;
+    std::shared_ptr<SQLExpression> clone() const override;
+    std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override { return clone(); }
 
 private:
 // No copy allowed

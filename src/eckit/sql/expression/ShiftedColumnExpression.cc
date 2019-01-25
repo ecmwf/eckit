@@ -82,8 +82,21 @@ ShiftedColumnExpression<T>::ShiftedColumnExpression(const ShiftedColumnExpressio
 
 template <typename T>
 std::shared_ptr<SQLExpression> ShiftedColumnExpression<T>::clone() const {
-    NOTIMP; return 0;
-} // return new ShiftedColumnExpression(*this); }
+    return std::make_shared<ShiftedColumnExpression<T>>(*this);
+}
+
+template<typename T>
+std::shared_ptr<SQLExpression> ShiftedColumnExpression<T>::reshift(int minColumnShift) const {
+    int newshift = shift() - minColumnShift;
+    ASSERT(newshift >= 0);
+    if (newshift == 0) {
+        auto r = std::make_shared<T>(*this);
+        r->nominalShift(nominalShift());
+        return r;
+    } else {
+        return std::make_shared<ShiftedColumnExpression<T>>(*this, newshift, nominalShift());
+    }
+}
 
 template <typename T>
 ShiftedColumnExpression<T>::~ShiftedColumnExpression() {}

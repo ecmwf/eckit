@@ -114,7 +114,14 @@ class TestOutput : public eckit::sql::SQLOutput {
     virtual void outputDouble(double d, bool) { floatOutput_.push_back(d); }
     virtual void outputInt(double d, bool) { intOutput_.push_back(d); }
     virtual void outputUnsignedInt(double d, bool) { intOutput_.push_back(d); }
-    virtual void outputString(const char* s, size_t l, bool) { strOutput_.push_back(std::string(s, l)); }
+    virtual void outputString(const char* s, size_t l, bool missing) {
+        if (missing) {
+            strOutput_.push_back(std::string());
+        } else {
+            ASSERT(s);
+            strOutput_.push_back(std::string(s, l));
+        }
+    }
     virtual void outputBitfield(double d, bool) { intOutput_.push_back(d); }
 
     virtual unsigned long long count() {

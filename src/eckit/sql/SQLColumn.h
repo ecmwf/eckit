@@ -46,7 +46,7 @@ public:
 	bool isBitfield() const { return isBitfield_; }
     bool isMissingValue(const double* val) const {
         //return hasMissingValue_ && (*val == missingValue_);
-        return (*val == missingValue_);
+        return (*reinterpret_cast<const uint64_t*>(val) == *(reinterpret_cast<const uint64_t*>(&missingValue_)));
     }
 	const BitfieldDef& bitfieldDef() const { return bitfieldDef_; }
     size_t dataSizeDoubles() const { return sizeDoubles_; }

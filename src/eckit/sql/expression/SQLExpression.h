@@ -59,10 +59,6 @@ public:
 
 	virtual bool isConstant() const = 0;
 	virtual bool isNumber() const { return false; }
-	virtual bool isVector() const;
-	virtual Expressions& vector(); 
-	virtual bool isDictionary() const { return false; }
-	virtual Dictionary& dictionary();
 
     virtual std::shared_ptr<SQLExpression> simplify(bool&);
 

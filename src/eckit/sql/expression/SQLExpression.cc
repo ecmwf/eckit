@@ -37,20 +37,6 @@ void SQLExpression::eval(double* out, bool& missing) const {
     *out = eval(missing);
 }
 
-bool SQLExpression::isVector() const { return false; }
-
-Expressions& SQLExpression::vector()
-{
-	NOTIMP;
-	return *((Expressions*) 0);
-}
-
-Dictionary& SQLExpression::dictionary()
-{
-	NOTIMP;
-	return *((Dictionary*) 0);
-}
-
 std::shared_ptr<SQLExpression> SQLExpression::number(double value) { return std::make_shared<NumberExpression>(value); }
 
 std::shared_ptr<SQLExpression> SQLExpression::simplify(bool& changed)

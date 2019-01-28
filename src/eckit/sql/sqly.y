@@ -645,27 +645,7 @@ condition   : term relational_operator term relational_operator term { $$ = Func
             //    $$ = FunctionFactory::instance().build("match", matchList, subquery);
             }
             | condition  IN '(' expression_list ')'                  { $4.push_back($1); $$ = FunctionFactory::instance().build("in",$4);   }
-            | condition  IN VAR
-            {
-                std::shared_ptr<SQLExpression> v = session->currentDatabase().getVariable($3);
-                ASSERT(v && v->isVector());
-                Expressions e(v->vector());
-                e.push_back($1);
-                $$ = FunctionFactory::instance().build("in", e);
-            }
             | condition  NOT IN '(' expression_list ')'  { $5.push_back($1); $$ = FunctionFactory::instance().build("not_in",$5);   }
-            | condition  NOT IN VAR
-            {
-                // This has not been implemented yet.
-                throw UserError("Syntax: 'condition NOT IN VAR' not yet supported");
-
-                std::shared_ptr<SQLExpression> v = session->currentDatabase().getVariable($4);
-                ASSERT(v && v->isVector());
-                Expressions e(v->vector());
-                e.push_back($1);
-                $$ = FunctionFactory::instance().build("not_in", e);
-            }
-
             | NOT condition             { $$ = FunctionFactory::instance().build("not",$2);   }
             | condition IS NIL          { $$ = FunctionFactory::instance().build("null",$1);   }
             | condition IS NOT NIL      { $$ = FunctionFactory::instance().build("not_null",$1);   }

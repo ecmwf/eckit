@@ -678,5 +678,6 @@ empty :
       ;
 
 %%
+#undef YY_NULL
 #include "sqll.c"
 

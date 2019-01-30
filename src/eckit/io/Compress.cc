@@ -40,6 +40,7 @@ enum
 
 };
 
+/* UNUSED
 static void print_code(std::ostream& out, size_t s) {
     switch (s) {
         case RESET_TABLE:
@@ -65,6 +66,7 @@ static void print_code(std::ostream& out, size_t s) {
             break;
     }
 }
+*/
 
 class Entry {
     void print(std::ostream& out) const;

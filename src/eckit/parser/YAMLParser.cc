@@ -192,7 +192,7 @@ struct YAMLItemReference : public YAMLItem {
 struct YAMLItemKey : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
-        for (size_t i = 0; i < indent_; i++) { s << ' '; }
+        for (long i = 0; i < indent_; i++) { s << ' '; }
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 

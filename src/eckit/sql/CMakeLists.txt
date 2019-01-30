@@ -164,6 +164,12 @@ ecbuild_generate_yy( YYPREFIX           eckit_sql_
                      FLEX_FLAGS         "-d"
                      DEPENDANT          SQLParser.cc )
 
+list( APPEND suppress_warnings
+  $<$<CXX_COMPILER_ID:GNU>:-Wno-unused-function>
+  $<$<CXX_COMPILER_ID:GNU>:-Wno-sign-compare>
+)
+set_source_files_properties( SQLParser.cc PROPERTIES COMPILE_OPTIONS "${suppress_warnings}" )
+
 
 ecbuild_add_library( TARGET              eckit_sql TYPE SHARED
                      INSTALL_HEADERS     ALL

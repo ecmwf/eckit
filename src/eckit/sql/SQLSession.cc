@@ -129,7 +129,7 @@ void SQLSession::loadDefaultSchema()
     FileHandle dh(schemaPathName);
     size_t sz = dh.openForRead();
     std::string schema(sz, ' ');
-    ASSERT(dh.read(&schema[0], sz) == sz);
+    ASSERT( size_t( dh.read(&schema[0], sz) ) == sz);
     SQLParser parser;
     // TODO: update include path
     parser.parseString(*this, schema);
@@ -166,7 +166,7 @@ std::string SQLSession::readIncludeFile(const std::string& fileName)
         FileHandle dh(pathName);
         size_t sz = dh.openForRead();
         std::string readBuf(sz, ' ');
-        ASSERT(dh.read(&readBuf[0], sz) == sz);
+        ASSERT( size_t( dh.read(&readBuf[0], sz) ) == sz);
         return readBuf;
     }
     throw eckit::UserError(std::string("Include file '") + fileName + "' not found");

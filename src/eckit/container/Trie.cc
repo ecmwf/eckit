@@ -71,7 +71,7 @@ bool Trie<T>::remove(const unsigned char* key)
 
     int pos = int(*key) - int(from_);
 
-    if( pos >= 0 && pos  < int(kids_.size()) && kids_[pos])
+    if( pos >= 0 && pos  < int(kids_.size()) && kids_[pos]) {
         if(kids_[pos]->remove(key+1))
         {
             delete kids_[pos];
@@ -87,6 +87,7 @@ bool Trie<T>::remove(const unsigned char* key)
             kids_.clear();
             return !set_;
 		}
+    }
 
 	return false;
 }
@@ -94,13 +95,15 @@ bool Trie<T>::remove(const unsigned char* key)
 template<class T>
 Trie<T>* Trie<T>::find(const unsigned char* key, bool make)
 {
-	if(*key == 0)
+    if(*key == 0) {
 		return this;
+    }
 
     int pos = int(*key) - int(from_);
 
-    if( pos >= 0 && pos  < int(kids_.size()) && kids_[pos])
+    if( pos >= 0 && pos  < int(kids_.size()) && kids_[pos]) {
         return kids_[pos]->find(key+1, make);
+    }
 
 	if(make) {
 

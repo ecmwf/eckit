@@ -92,7 +92,9 @@ ecbuild_add_option( FEATURE SSL
                     DESCRIPTION "OpenSSL support"
                     REQUIRED_PACKAGES OpenSSL )
 
-ecbuild_info("OpenSSL ${OPENSSL_FOUND} ${OPENSSL_VERSION} : libs ${OPENSSL_LIBRARIES} incs ${OPENSSL_INCLUDE_DIR}")
+if( OPENSSL_FOUND )
+  ecbuild_info("OpenSSL version ${OPENSSL_VERSION} -- libs [${OPENSSL_LIBRARIES}] incs [${OPENSSL_INCLUDE_DIR}]")
+endif()
 
 ### xxHash
 
@@ -100,7 +102,9 @@ ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "Use xxHash for non-crypto hashing in data integrity checks"
                     REQUIRED_PACKAGES "xxHash QUIET" )
 
-ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_INCLUDE_DIRS}")
+if( XXHASH_FOUND )
+  ecbuild_info("xxHash -- libs [${XXHASH_LIBRARIES}] incs [${XXHASH_INCLUDE_DIRS}]")
+endif()
 
 #### Curl
 

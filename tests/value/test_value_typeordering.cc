@@ -62,10 +62,10 @@ CASE( "Every type compares correctly against every other type" ) {
     values.push_back( Value(false) );
     values.push_back( Value(true) );
 
-    int sanity_check = 0;
+    size_t sanity_check = 0;
 
-    for ( int i = 0; i < values.size(); i++ ) {
-        for (int j = 0; j < values.size(); j++) {
+    for ( size_t i = 0; i < values.size(); i++ ) {
+        for (size_t j = 0; j < values.size(); j++) {
 
             Log::info() << "Compare "
                 << values[i] << " (" << values[i].typeName() << ")"

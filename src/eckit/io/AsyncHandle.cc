@@ -56,7 +56,7 @@ void AsyncHandleWriter::run() {
             delme = p.second;
 
             long written = owner_.handle().write(p.second->data(), p.first);
-            if (written != p.first) {
+            if (written != static_cast<long>( p.first ) ) {
                 std::ostringstream oss;
                 oss << "AsyncHandleWriter: written " << written << " out of " << p.first
                     << Log::syserr;

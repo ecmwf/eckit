@@ -6,6 +6,7 @@
 
 #define YY_USER_ACTION do { \
         struct yyguts_t * yyg ((struct yyguts_t*) yyscanner); \
+        do { (void)(yyg); } while( 0 ); \
         /* fprintf(stderr, "location <%d,%d>,<%d,%d>\n", yyg->yylloc_r.first_line, yyg->yylloc_r.first_column, yyg->yylloc_r.last_line, yyg->yylloc_r.last_column); */ \
     } while (0);
 

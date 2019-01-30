@@ -43,7 +43,7 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
     oss << CRLF;
 
     std::string request(oss.str());
-    ASSERT(socket.write(&request[0], request.size()) == request.size());
+    ASSERT( size_t( socket.write(&request[0], request.size()) ) == request.size());
 
 
     // Strip http-header

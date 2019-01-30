@@ -83,7 +83,7 @@ void URLHandle::openForAppend(const Length&)
 
 long URLHandle::read(void* buffer, long length)
 {
-    while (activeTransfers()  > 0 && buffer_.length() < length) {
+    while (activeTransfers()  > 0 && buffer_.length() < size_t(length)) {
         waitForData();
     }
     return buffer_.read(buffer, length);

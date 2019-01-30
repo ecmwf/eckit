@@ -135,9 +135,9 @@ long MemoryHandle::write(const void* buffer, long length) {
     size_t left = size_ - position_;
 
 
-    if (grow_ && (left < length)) {
-        if ((capacity_ - position_) < length) {
-            size_t newcapacity = round(capacity_ + length, 1024 * 1024);
+    if (grow_ && (left < size_t(length))) {
+        if ((capacity_ - position_) < size_t(length)) {
+            size_t newcapacity = round(capacity_ + size_t(length), 1024 * 1024);
             char* newdata      = new char[newcapacity];
             ASSERT(newdata);
 

@@ -244,7 +244,7 @@ CASE( "test_scatter_scalar" )
 
     size_t rank = mpi::comm().rank();
 
-    EXPECT( recv == rank*rank - 1 );
+    EXPECT( recv == long(rank*rank) - 1 );
 }
 
 CASE( "test_scatter_nscalars" )
@@ -511,7 +511,7 @@ CASE( "test_blocking_send_nonblocking_receive" )
   }
 
   // Wait for receiving to finish
-  for( int i=0; i<recvreqs.size(); ++i ) {
+  for( size_t i=0; i<recvreqs.size(); ++i ) {
     mpi::Status recvstatus = comm.wait(recvreqs[i]);
     EXPECT( is_approximately_equal( recv[i], recv_check[i], 1.e-9 ) );
   }
@@ -560,7 +560,7 @@ CASE( "test_blocking_send_receive" )
 CASE( "test_broadcastFile" )
 {
   mpi::Comm& comm = mpi::comm("world");
-  int root = 0;
+  size_t root = 0;
 
   std::string str = "Hello World!\n";
   LocalPathName path("test_mpi_broadcastFile.txt");

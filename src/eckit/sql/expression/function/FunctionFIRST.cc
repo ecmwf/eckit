@@ -70,10 +70,11 @@ void FunctionFIRST::output(SQLOutput& s) const
 
 void FunctionFIRST::partialResult() 
 {
-    if (notFirst_)
+    if (notFirst_) {
         return;
+    }
 
-	bool missing (false);
+    bool missing (false);
     value_ = (args_[0]->eval(missing));
     notFirst_ = true;
 }

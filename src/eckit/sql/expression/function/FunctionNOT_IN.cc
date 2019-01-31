@@ -40,9 +40,9 @@ const type::SQLType* FunctionNOT_IN::type() const { return &type::SQLType::looku
 double FunctionNOT_IN::eval(bool& missing) const
 {
 	const SQLExpression& x = *args_[size_];
-	for(size_t i = 0; i < size_; ++i)
+	for(int i = 0; i < size_; ++i)
 	{
-		double y = args_[i]->eval(missing);
+		args_[i]->eval(missing);
 		if (FunctionEQ::equal(x, *args_[i], missing))
 			return false;
 	}

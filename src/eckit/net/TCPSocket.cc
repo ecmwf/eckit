@@ -336,7 +336,7 @@ void TCPSocket::close()
 
 static jmp_buf env;
 
-static void catch_alarm(int /*sig*/)
+static void catch_alarm(int)
 {
     longjmp(env, 1);
 }

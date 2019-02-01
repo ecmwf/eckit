@@ -40,7 +40,7 @@ class Queue {
 
 public: // public
 
-    Queue(size_t max) : max_(max), interruptException_(nullptr), closed_(false) {
+    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) {
         ASSERT(max > 0);
     }
 
@@ -76,17 +76,22 @@ public: // public
 
     bool closed() {
         std::unique_lock<std::mutex> locker(mutex_);
-        return closed_ || interruptException_;
+        return closed_ || interrupt_;
+    }
+
+    bool empty() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        return queue_.empty();
     }
 
     bool checkInterrupt() {
-        if (interruptException_) std::rethrow_exception(interruptException_);
+        if (interrupt_) std::rethrow_exception(interrupt_);
         return true;
     }
 
     void interrupt(std::exception_ptr expn) {
         std::unique_lock<std::mutex> locker(mutex_);
-        interruptException_ = expn;
+        interrupt_ = expn;
         locker.unlock();
         cv_.notify_all();
     }
@@ -151,7 +156,7 @@ private: // members
     std::mutex mutex_;
     std::condition_variable cv_;
     size_t max_;
-    std::exception_ptr interruptException_;
+    std::exception_ptr interrupt_;
     bool closed_;
 };
 

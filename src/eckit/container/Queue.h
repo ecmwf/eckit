@@ -137,13 +137,14 @@ public: // public
         return size;
     }
 
-    size_t emplace(ELEM&& e) {
+    template<typename... Args>
+    size_t emplace(Args&&... args) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.size() >= max_) {
             cv_.wait(locker);
         }
         ASSERT(!closed_);
-        queue_.emplace(std::move(e));
+        queue_.emplace(std::forward<Args>(args)...);
         size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();

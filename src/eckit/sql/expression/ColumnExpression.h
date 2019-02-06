@@ -58,7 +58,6 @@ protected:
 	virtual void prepare(SQLSelect& sql) override;
 	virtual void cleanup(SQLSelect& sql) override;
 	virtual double eval(bool& missing) const override;
-    using SQLExpression::eval;
     virtual void eval(double* out, bool& missing) const override;
     virtual std::string evalAsString(bool& missing) const override;
     virtual bool isConstant() const override { return false; }

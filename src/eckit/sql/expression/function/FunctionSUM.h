@@ -43,7 +43,6 @@ private:
 	virtual void prepare(SQLSelect&);
 	virtual void cleanup(SQLSelect&);
 	virtual void partialResult();
-	using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
 	bool isAggregate() const { return true; }
 	bool resultNULL_;

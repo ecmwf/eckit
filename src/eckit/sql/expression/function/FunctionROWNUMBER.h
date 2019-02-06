@@ -29,7 +29,6 @@ public:
 
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;
-	using FunctionExpression::output;
 	virtual void output(std::ostream& s) const;
 
 	std::shared_ptr<SQLExpression> clone() const;
@@ -43,7 +42,6 @@ protected:
 	virtual void cleanup(SQLSelect&);
 	virtual bool isConstant() const;
 	virtual void partialResult();
-	using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
     virtual std::shared_ptr<SQLExpression> simplify(bool&);
 	bool isAggregate() const { return false; }

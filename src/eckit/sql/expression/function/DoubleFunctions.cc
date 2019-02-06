@@ -35,7 +35,6 @@ public:
 template <double (*FN)(double)>
 class UnaryFunction : public ArityFunction<UnaryFunction<FN>, 1> {
 
-    using ArityFunction<UnaryFunction<FN>, 1>::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -51,7 +50,6 @@ public:
 template <double (*FN)(double,double)>
 class BinaryFunction : public ArityFunction<BinaryFunction<FN>, 2> {
 
-    using ArityFunction<BinaryFunction<FN>, 2>::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -69,7 +67,6 @@ public:
 template <double (*FN)(double,double,double)>
 class TertiaryFunction : public ArityFunction<TertiaryFunction<FN>, 3> {
 
-    using ArityFunction<TertiaryFunction<FN>, 3>::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -89,7 +86,6 @@ public:
 template <double (*FN)(double,double,double,double)>
 class QuaternaryFunction : public ArityFunction<QuaternaryFunction<FN>, 4> {
 
-    using ArityFunction<QuaternaryFunction<FN>, 4>::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -111,7 +107,6 @@ public:
 template <double (*FN)(double,double,double,double,double)>
 class QuinaryFunction : public ArityFunction<QuinaryFunction<FN>, 5> {
 
-    using ArityFunction<QuinaryFunction<FN>, 5>::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -256,7 +251,6 @@ double ldexp_double(double l, double r) { return ldexp(l, r); }
 
 class MultiplyFunction : public ArityFunction<MultiplyFunction, 2> {
 
-    using ArityFunction<MultiplyFunction, 2>::eval;
     double eval(bool& m) const {
 
         bool m0 = false;

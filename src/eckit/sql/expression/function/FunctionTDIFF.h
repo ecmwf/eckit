@@ -31,7 +31,6 @@ public:
 	~FunctionTDIFF(); 
 
 // -- Overridden methods
-	using FunctionExpression::output;
 	virtual void output(std::ostream& s) const;
 
 	std::shared_ptr<SQLExpression> clone() const;
@@ -44,7 +43,6 @@ private:
 
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;
-	using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
 
 // -- Friends

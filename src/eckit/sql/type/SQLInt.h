@@ -34,7 +34,6 @@ private:
 	SQLInt& operator=(const SQLInt&);
 
     virtual size_t size() const override;
-    using SQLType::output;
     virtual void output(SQLOutput& s, double, bool) const override;
     virtual int getKind() const override { return integerType; }
     virtual std::string asString(const double* val) const override;

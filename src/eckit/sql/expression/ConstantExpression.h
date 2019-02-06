@@ -44,7 +44,6 @@ public:
 	virtual void cleanup(SQLSelect&) override { NOTIMP; }
 
 	// -- For WHERE
-	using SQLExpression::eval;
 	virtual double eval(bool& missing) const override { missing = missing_; return value_; }
 
 	virtual bool andSplit(expression::Expressions&) override { return false; }

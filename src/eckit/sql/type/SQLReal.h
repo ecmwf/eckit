@@ -47,7 +47,6 @@ public:
 	// None
 
 // -- Overridden methods
-	using SQLType::output;
     virtual void output(SQLOutput&, double, bool) const override;
 
 // -- Class members

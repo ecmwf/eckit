@@ -46,7 +46,6 @@ private:
 	virtual void cleanup(SQLSelect& sql) override;
 
     virtual const type::SQLType* type() const override;
-    using SQLExpression::eval;
 	virtual double eval(bool& missing) const override;
 	virtual bool isConstant() const override { return true; }
 	virtual bool isNumber() const override { return true; }

@@ -45,7 +45,6 @@ private:
 	virtual void prepare(SQLSelect& sql) override;
 	virtual void cleanup(SQLSelect& sql) override;
 
-	using SQLExpression::eval;
 	virtual double eval(bool& missing) const override;
 	virtual const type::SQLType* type() const override;
 	virtual bool isConstant() const override;

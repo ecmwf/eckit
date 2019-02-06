@@ -39,7 +39,6 @@ private:
 
 // -- Overridden methods
 	virtual const eckit::sql::type::SQLType* type() const;
-	using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
 
 // -- Friends

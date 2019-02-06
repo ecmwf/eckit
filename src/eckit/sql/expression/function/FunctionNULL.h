@@ -37,7 +37,6 @@ private:
 	FunctionNULL& operator=(const FunctionNULL&);
 
 // -- Overridden methods
-	using FunctionExpression::eval;
 	virtual double eval(bool& missing) const;
 // -- Friends
 	//friend std::ostream& operator<<(std::ostream& s,const FunctionNULL& p)

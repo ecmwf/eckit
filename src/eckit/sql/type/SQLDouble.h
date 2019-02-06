@@ -29,7 +29,6 @@ public:
 	~SQLDouble(); 
 
 // -- Overridden methods
-    using SQLType::output;
     virtual void output(SQLOutput&, double, bool) const override;
 
 private:

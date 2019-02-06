@@ -46,7 +46,6 @@ protected:
 
 // -- Overridden methods
 	virtual void prepare(SQLSelect& sql) override;
-    using ColumnExpression::eval;
 	virtual double eval(bool& missing) const override;
     virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&) override;
     virtual const eckit::sql::type::SQLType* type() const override;

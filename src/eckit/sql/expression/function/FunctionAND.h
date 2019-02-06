@@ -41,7 +41,6 @@ private:
 	FunctionAND& operator=(const FunctionAND&);
 
     virtual const eckit::sql::type::SQLType* type() const;
-    using FunctionExpression::eval;
     virtual double eval(bool& missing) const;
     virtual std::shared_ptr<SQLExpression> simplify(bool&);
     virtual bool andSplit(expression::Expressions&);

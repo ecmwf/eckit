@@ -33,7 +33,6 @@ private:
 // No copy allowed
 	FunctionSTDEV& operator=(const FunctionSTDEV&);
 
-    using FunctionVAR::eval;
 	virtual double eval(bool& missing) const;
 	virtual const eckit::sql::type::SQLType* type() const;
 

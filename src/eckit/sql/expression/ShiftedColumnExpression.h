@@ -62,7 +62,6 @@ protected:
 // -- Overridden methods
 	virtual void print(std::ostream& s) const override;
 	virtual void cleanup(SQLSelect& sql) override;
-	using T::eval;
 	virtual double eval(bool& missing) const override;
 	virtual void output(SQLOutput& s) const override;
 

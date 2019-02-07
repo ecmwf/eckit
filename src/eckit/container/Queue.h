@@ -96,20 +96,6 @@ public: // public
         cv_.notify_all();
     }
 
-    // n.b. no done mechanism implemented here.
-    ELEM pop() {
-        std::unique_lock<std::mutex> locker(mutex_);
-        while (checkInterrupt() && queue_.empty()) {
-            ASSERT(!closed_);
-            cv_.wait(locker);
-        }
-        auto e = queue_.front();
-        queue_.pop();
-        locker.unlock();
-        cv_.notify_one();
-        return e;
-    }
-
     long pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.empty()) {
@@ -121,7 +107,7 @@ public: // public
         size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
-        return size;
+        return long(size);
     }
 
     size_t push(const ELEM& e) {

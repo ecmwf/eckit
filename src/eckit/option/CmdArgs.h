@@ -17,11 +17,12 @@
 #ifndef eckit_option_CmdArgs_H
 #define eckit_option_CmdArgs_H
 
-#include "eckit/config/LocalConfiguration.h"
-#include "eckit/memory/NonCopyable.h"
-
 #include <set>
 #include <vector>
+#include <functional>
+
+#include "eckit/config/LocalConfiguration.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 namespace option {
@@ -45,6 +46,8 @@ public: // methods
     /// @note Will take ownership of the contents of the vector, and delete them in destructor
     /// @todo This should probably have some form of smart pointer.
     CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
+
+    CmdArgs(std::function<void(const std::string&)> usage, std::vector<Option*>& options, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
 
     ~CmdArgs();
 
@@ -72,7 +75,7 @@ public: // methods
 
 private: // methods
 
-    void init(usage_proc usage, int args_count, int minumum_args, bool throw_on_errror);
+    void init(std::function<void(const std::string&)> usage, int args_count, int minumum_args, bool throw_on_errror);
 
     virtual void print(std::ostream&) const;
 

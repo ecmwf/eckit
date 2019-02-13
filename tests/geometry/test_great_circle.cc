@@ -47,6 +47,14 @@ CASE( "test great circles intersections" )
                 is_approximately_equal(lon1, lon2 - 360, epsilon);
     };
 
+    auto is_approximately_pole = [](double lat, double epsilon = std::numeric_limits<double>::epsilon()) -> bool {
+        return is_approximately_equal(std::abs(lat), 90., epsilon);
+    };
+
+    auto is_approximately_equator = [](double lat, double epsilon = std::numeric_limits<double>::epsilon()) -> bool {
+        return is_approximately_equal(lat, 0., epsilon);
+    };
+
     const std::vector<double> latitudes {
          90, 60, 45, 30, 0, -30, -45, -60, -90,
     };
@@ -97,7 +105,7 @@ CASE( "test great circles intersections" )
 
             EXPECT_THROWS_AS(GreatCircle(A, B), BadValue);
 
-            if (is_approximately_equal(std::abs(A.lat()), 90.)) {
+            if (is_approximately_pole(A.lat())) {
                 for (double lon1_gc : longitudes) {
                     for (double lon2_gc : longitudes) {
                         EXPECT_THROWS_AS(GreatCircle({ lon1_gc, A.lat() }, { lon2_gc, A.lat() }), BadValue);
@@ -111,8 +119,8 @@ CASE( "test great circles intersections" )
     SECTION( "intersection at quadrants" )
     {
         for (double lat_gc : latitudes) {
-            if (!is_approximately_equal(std::abs(lat_gc), 90.) &&
-                !is_approximately_equal(lat_gc, 0.)) {
+            if (!is_approximately_pole(lat_gc) &&
+                !is_approximately_equator(lat_gc)) {
                 for (double lon_gc : longitudes) {
 
                     GreatCircle gc({lon_gc, lat_gc}, {lon_gc + 90, 0});
@@ -138,24 +146,38 @@ CASE( "test great circles intersections" )
 
     SECTION( "intersection with parallels when crossing the poles" )
     {
-        for (double lon_gc : longitudes) {
+        for (double lon : longitudes) {
             for (double lat : latitudes) {
 
-                GreatCircle gc({lon_gc, -10}, {lon_gc, 10});
-                EXPECT(gc.crossesPoles());
+                {
+                    GreatCircle gc({lon, -10}, {lon, 10});
+                    EXPECT(gc.crossesPoles());
 
-                auto lons = gc.longitude(lat);
-                size_t N = is_approximately_equal(std::abs(lat), 90.) ? 1 : 2;
-                EXPECT( lons.size() == N );
+                    auto lons = gc.longitude(lat);
+                    size_t N = is_approximately_pole(lat) ? 1 : 2;
+                    EXPECT( lons.size() == N );
 
-                if (N == 1) {
-                    EXPECT( is_approximately_equal_longitude(lons[0], lon_gc) );
-                } else {
-                    EXPECT( (is_approximately_equal_longitude(lons[0], lon_gc) &&
-                             is_approximately_equal_longitude(lons[1], lon_gc + 180)) ||
-                            (is_approximately_equal_longitude(lons[1], lon_gc) &&
-                             is_approximately_equal_longitude(lons[0], lon_gc + 180)) );
+                    if (N == 1) {
+                        EXPECT(is_approximately_equal_longitude(lons[0], lon));
+                    } else {
+                        EXPECT( is_approximately_equal_longitude(lons[0] + 180, lons[1]) );
+                        EXPECT( is_approximately_equal_longitude(lons[0], lon) ||
+                                is_approximately_equal_longitude(lons[1], lon) );
+                    }
                 }
+
+                if (!is_approximately_pole(lat) && !is_approximately_equator(lat)) {
+                    GreatCircle gc({lon, lat}, {lon + 180, lat});
+                    EXPECT(gc.crossesPoles());
+
+                    auto lons = gc.longitude(lat);
+                    EXPECT( lons.size() == 2 );
+
+                    EXPECT( is_approximately_equal_longitude(lons[0] + 180, lons[1]) );
+                    EXPECT( is_approximately_equal_longitude(lons[0], lon) ||
+                            is_approximately_equal_longitude(lons[1], lon) );
+                }
+
             }
         }
     }
@@ -163,14 +185,14 @@ CASE( "test great circles intersections" )
     SECTION( "intersection with parallels" )
     {
         for (double lat_gc : latitudes) {
-            if (/* avoid mal-forming */ !is_approximately_equal(std::abs(lat_gc), 90.)) {
+            if (/* avoid mal-forming */ !is_approximately_pole(lat_gc)) {
                 for (double lat : latitudes) {
 
                     GreatCircle gc({-1, lat_gc}, {1, lat_gc});
                     EXPECT(!gc.crossesPoles());
 
                     auto lons = gc.longitude(lat);
-                    size_t N = is_approximately_equal(lat_gc, 0.) ? 0.
+                    size_t N = is_approximately_equator(lat_gc) ? 0.
                              : is_approximately_greater_or_equal(std::abs(lat_gc), std::abs(lat)) ? 2
                              : 0;
                     EXPECT(lons.size() == N);
@@ -199,7 +221,7 @@ CASE( "test great circles intersections" )
 
             // intersect one latitude only, for specific longitudes
             auto lats = eq.latitude(lon);
-            EXPECT( lats.size() == 1 && is_approximately_equal(lats[0], 0.));
+            EXPECT( lats.size() == 1 && is_approximately_equator(lats[0]) );
         }
     }
 }

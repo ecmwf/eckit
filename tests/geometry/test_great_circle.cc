@@ -149,11 +149,8 @@ CASE( "test great circles intersections" )
         for (double lon : longitudes) {
             for (double lat : latitudes) {
 
-
-                for (auto& gc : {
-                     GreatCircle({lon, -10}, {lon, 10}),
-                     GreatCircle({lon, lat}, {lon + 180, lat})
-                }) {
+                {
+                    GreatCircle gc({lon, -10}, {lon, 10});
                     EXPECT(gc.crossesPoles());
 
                     auto lons = gc.longitude(lat);
@@ -168,6 +165,19 @@ CASE( "test great circles intersections" )
                                 is_approximately_equal_longitude(lons[1], lon) );
                     }
                 }
+
+                if (!is_approximately_pole(lat) && !is_approximately_equator(lat)) {
+                    GreatCircle gc({lon, lat}, {lon + 180, lat});
+                    EXPECT(gc.crossesPoles());
+
+                    auto lons = gc.longitude(lat);
+                    EXPECT( lons.size() == 2 );
+
+                    EXPECT( is_approximately_equal_longitude(lons[0] + 180, lons[1]) );
+                    EXPECT( is_approximately_equal_longitude(lons[0], lon) ||
+                            is_approximately_equal_longitude(lons[1], lon) );
+                }
+
             }
         }
     }

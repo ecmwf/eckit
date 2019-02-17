@@ -99,12 +99,23 @@ public:
             return true;
         };
 
+        auto compnext = [&]() {
+            if(not next_ && not rhs.next_) {
+                return true;
+            }
+            if(next_ && rhs.next_) {
+                return *next_ == *rhs.next_;
+            }
+            return false;
+        };
+
         return s_ == rhs.s_ &&
                i_ == rhs.i_ &&
                d_ == rhs.d_ &&
                b_ == rhs.b_ &&
                data_.size() == rhs.data_.size() &&
-               compvec();
+               compvec() &&
+               compnext();
     }
 
     void print(std::ostream& os) const
@@ -117,7 +128,7 @@ public:
            << data_;
 
         if(next_)
-            os << *next_;
+            os << "," << *next_;
 
         os << ")";
     }
@@ -239,7 +250,15 @@ private:
             so.add(new Obj("foo", int(me), 374., true));
 
             send(so, to);
+
             Obj ro = receive(from);
+
+            Obj test {"foo", int(from), 374., true};
+            test.add(new Obj("foo", int(from), 374., true));
+            test.add(new Obj("foo", int(from), 374., true));
+            test.add(new Obj("foo", int(from), 374., true));
+
+            ASSERT(ro == test);
         }
     }
 };

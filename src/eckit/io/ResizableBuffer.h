@@ -20,8 +20,6 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
 /// A simple resizable buffer
 /// Takes memory from mmap(/dev/zero),
 /// thus easily recoverable from OS when released hopefully minimising memory fragmentation
@@ -42,7 +40,12 @@ public: // methods
 	operator void*()                 { return buffer_; }
 	operator const void*() const     { return buffer_; }
 
+    char* data() { return buffer_; }
+    const char* data() const { return buffer_; }
+
 	size_t size() const		 { return size_; }
+
+    void zero();
 
     /// @post Invalidates contents of buffer
     void resize(size_t, bool preserveData=false);
@@ -59,9 +62,6 @@ private: // members
 	size_t size_;
 
 };
-
-
-//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

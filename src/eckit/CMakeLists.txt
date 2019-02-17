@@ -590,6 +590,8 @@ serialisation/FstreamStream.h
 serialisation/IfstreamStream.h
 serialisation/PipeStream.h
 serialisation/PipeStream.cc
+serialisation/ResizableMemoryStream.h
+serialisation/ResizableMemoryStream.cc
 serialisation/Reanimator.h
 serialisation/Reanimator.cc
 serialisation/ReanimatorBase.cc )

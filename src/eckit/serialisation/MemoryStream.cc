@@ -17,14 +17,6 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-#if 0
-ClassSpec MemoryStream::classSpec_ = {&DataHandle::classSpec(),"MemoryStream",};
-Reanimator<MemoryStream> MemoryStream::reanimator_;
-#endif
-
-
 MemoryStream::MemoryStream(const Buffer& buffer):
 	address_(const_cast<Buffer&>(buffer)),
     size_(buffer.size()),
@@ -70,7 +62,7 @@ long MemoryStream::read(void* buffer,long length)
     ::memcpy(buffer, address_ + position_, size);
     position_ += size;
 
-	return size;
+    return long(size);
 }
 
 long MemoryStream::write(const void* buffer,long length)
@@ -80,7 +72,7 @@ long MemoryStream::write(const void* buffer,long length)
     ::memcpy(address_ + position_, buffer, size);
     position_ += size;
 
-    return size;
+    return long(size);
 }
 
 void MemoryStream::rewind()
@@ -95,7 +87,6 @@ std::string MemoryStream::name() const {
 size_t MemoryStream::position() const {
     return position_;
 }
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

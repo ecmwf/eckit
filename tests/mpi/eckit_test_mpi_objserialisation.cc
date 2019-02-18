@@ -1,3 +1,13 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
 #include <string>
 #include <vector>
 
@@ -10,6 +20,15 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/types/Types.h"
+
+#include "eckit/testing/Test.h"
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit {
+namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -160,39 +179,39 @@ size_t circler(size_t i, size_t total) {
     return (i - 1) % total;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
-static size_t me = 0;
-
-class ObjSend : public eckit::Tool {
+struct Fixture {
 public:
 
-    ObjSend(int argc, char** argv) :
-        Tool(argc, argv, "HOME"),
+    Fixture() :
         sendBuffer_(32)
     {
+        me_ = eckit::mpi::comm().rank();
+        total_ = eckit::mpi::comm().size();
+
+        ASSERT_MSG(total_ > 1, "Must be ran with more than 1 rank");
+
         sendBuffer_.zero();
     }
 
-    ~ObjSend() {}
-
-private:
+    size_t me_ = 0;
+    size_t total_ = 0;
 
     eckit::ResizableBuffer sendBuffer_;
 
-    ObjSend(const ObjSend&) = delete;
-    ObjSend& operator=(const ObjSend&) = delete;
+    Fixture(const Fixture&) = delete;
+    Fixture& operator=(const Fixture&) = delete;
 
     void send(const Obj& o, size_t to) {
 
-        eckit::Log::info() << "[" << me << "] " << "sending to " << to << " --- " << o << std::endl;
+        eckit::Log::info() << "[" << me_ << "] " << "sending to " << to << " --- " << o << std::endl;
 
         eckit::ResizableMemoryStream s(sendBuffer_);
 
         o.encode(s);
 
-        eckit::Log::info() << "[" << me << "] " << "stream position: " << s.position() << " / " << sendBuffer_.size() << std::endl;
+        eckit::Log::info() << "[" << me_ << "] " << "stream position: " << s.position() << " / " << sendBuffer_.size() << std::endl;
 
         // use position in stream to avoid sending the whole buffer
         // assumes the receive probes for size first
@@ -206,7 +225,7 @@ private:
 
         size_t size = eckit::round(eckit::mpi::comm().getCount<char>(st), 8); //< round to nearest 8 bytes
 
-        eckit::Log::info() << "[" << me << "] " << "receiving from " << from << " --- size " << size << std::endl;
+        eckit::Log::info() << "[" << me_ << "] " << "receiving from " << from << " --- size " << size << std::endl;
 
         eckit::ResizableBuffer b(size); // must be enough
         b.zero();
@@ -217,63 +236,65 @@ private:
 
         Obj o(s);
 
-        eckit::Log::info() << "[" << me << "] " << "receiving from " << from << " --- " << o << std::endl;
+        eckit::Log::info() << "[" << me_ << "] " << "receiving from " << from << " --- " << o << std::endl;
 
         return o;
-    }
-
-    virtual void run() {
-
-        me = eckit::mpi::comm().rank();
-
-        size_t total = eckit::mpi::comm().size();
-
-        ASSERT_MSG(total > 1, "Must be ran with more than 1 rank");
-
-        size_t to = circlel(me, total);
-        size_t from = circler(me, total);
-
-        eckit::Log::info() << "[" << me << "] " << from << " -> [" << me << "] -> " << to << std::endl;
-
-        //-----------------------------------------------
-        // TEST Simple objects
-        //-----------------------------------------------
-        {
-            Obj so {"foo", int(me), 374., true};
-            send(so, to);
-
-            Obj ro = receive(from);
-            ASSERT(ro == Obj("foo", int(from), 374., true));
-        }
-
-        //-----------------------------------------------
-        // TEST Complex object hierarchy
-        //-----------------------------------------------
-        {
-            Obj so {"foo", int(me), 374., true};
-            so.add(new Obj("foo", int(me), 374., true));
-            so.add(new Obj("foo", int(me), 374., true));
-            so.add(new Obj("foo", int(me), 374., true));
-
-            send(so, to);
-
-            Obj ro = receive(from);
-
-            Obj test {"foo", int(from), 374., true};
-            test.add(new Obj("foo", int(from), 374., true));
-            test.add(new Obj("foo", int(from), 374., true));
-            test.add(new Obj("foo", int(from), 374., true));
-
-            ASSERT(ro == test);
-        }
     }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int main(int argc, char** argv) {
-    ObjSend app(argc, argv);
-    int ret = app.start();
-    eckit::mpi::finaliseAllComms();
-    return ret;
+CASE( "Serialise an object via eckit::mpi" )
+{
+    Fixture F;
+
+    size_t me = F.me_;
+    size_t to = circlel(F.me_, F.total_);
+    size_t from = circler(F.me_, F.total_);
+
+    eckit::Log::info() << "[" << me << "] " << from << " -> [" << me << "] -> " << to << std::endl;
+
+    Obj so {"foo", int(me), 374., true};
+    F.send(so, to);
+
+    Obj ro = F.receive(from);
+
+    EXPECT(ro == Obj("foo", int(from), 374., true));
+}
+
+CASE( "Serialise a series of complex objects via eckit::mpi" )
+{
+    Fixture F;
+
+    size_t me = F.me_;
+    size_t to = circlel(F.me_, F.total_);
+    size_t from = circler(F.me_, F.total_);
+
+    eckit::Log::info() << "[" << me << "] " << from << " -> [" << me << "] -> " << to << std::endl;
+
+    Obj so {"foo", int(me), 374., true};
+    so.add(new Obj("foo", int(me), 374., true));
+    so.add(new Obj("foo", int(me), 374., true));
+    so.add(new Obj("foo", int(me), 374., true));
+
+    F.send(so, to);
+
+    Obj ro = F.receive(from);
+
+    Obj test {"foo", int(from), 374., true};
+    test.add(new Obj("foo", int(from), 374., true));
+    test.add(new Obj("foo", int(from), 374., true));
+    test.add(new Obj("foo", int(from), 374., true));
+
+    EXPECT(ro == test);
+}
+
+} // namespace test
+} // namespace eckit
+
+//----------------------------------------------------------------------------------------------------------------------
+
+int main(int argc, char **argv)
+{
+    return run_tests ( argc, argv );
 }

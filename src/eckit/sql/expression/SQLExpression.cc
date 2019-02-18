@@ -22,7 +22,7 @@ namespace sql {
 namespace expression {
 
 double const MISSING_VALUE_REAL = -2147483647.0;
-long const MISSING_VALUE_INT =  2147483647;
+// long const MISSING_VALUE_INT =  2147483647;
 
 SQLExpression::SQLExpression()
 : isBitfield_(false), hasMissingValue_(false), missingValue_(MISSING_VALUE_REAL)
@@ -48,7 +48,7 @@ std::shared_ptr<SQLExpression> SQLExpression::simplify(bool& changed)
 		Log::info() << "SIMPLIFY " << *this << " to " << eval(missing) << std::endl;
         return std::make_shared<NumberExpression>(eval(missing));
 	}
-	return 0;
+	return nullptr;
 }
 
 std::string SQLExpression::evalAsString(bool& missing) const {

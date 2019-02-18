@@ -83,13 +83,15 @@ void URLHandle::openForAppend(const Length&)
 
 long URLHandle::read(void* buffer, long length)
 {
-    while (activeTransfers()  > 0 && buffer_.length() < length) {
+    ASSERT(length >= 0);
+    auto len = size_t(length);
+    while (activeTransfers()  > 0 && buffer_.length() < len) {
         waitForData();
     }
-    return buffer_.read(buffer, length);
+    return buffer_.read(buffer, len);
 }
 
-long URLHandle::write(const void* buffer, long length)
+long URLHandle::write(const void*, long)
 {
     NOTIMP;
 }

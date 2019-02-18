@@ -59,7 +59,7 @@ void Number::printBinary(std::ostream& ss, W n)
         }
     }
     else
-    for (int i = 0; i < sizeof(W); ++i)
+    for (size_t i = 0; i < sizeof(W); ++i)
     {
         unsigned char c = s[i];
         for(unsigned char mask = 1 << 7; mask; mask >>= 1)

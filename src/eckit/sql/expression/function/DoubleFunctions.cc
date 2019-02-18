@@ -132,7 +132,6 @@ public:
 
 const double R_Earth_km   = 180*60 / M_PI * 1.852;
 const double R_Earth      = 180*60 / M_PI * 1.852 * 1000.0;
-const double EPS          = 1e-7;
 const double D2R          = M_PI/180.0;
 const double R2D          = 180.0/M_PI;
 

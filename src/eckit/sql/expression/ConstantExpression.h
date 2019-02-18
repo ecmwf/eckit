@@ -40,42 +40,42 @@ public:
 
     virtual ~ConstantExpression();
 
-	virtual void prepare(SQLSelect&) { NOTIMP; }
-	virtual void cleanup(SQLSelect&) { NOTIMP; }
+	virtual void prepare(SQLSelect&) override { NOTIMP; }
+	virtual void cleanup(SQLSelect&) override { NOTIMP; }
 
 	// -- For WHERE
-	virtual double eval(bool& missing) const { missing = missing_; return value_; }
+	virtual double eval(bool& missing) const override { missing = missing_; return value_; }
 
-	virtual bool andSplit(expression::Expressions&) { return false; }
+	virtual bool andSplit(expression::Expressions&) override { return false; }
 	virtual void tables(std::set<SQLTable*>&) {}
 
-	virtual bool isConstant() const { return true; }
-	virtual bool isNumber() const { NOTIMP; return false; }
+	virtual bool isConstant() const override { return true; }
+	virtual bool isNumber() const override { NOTIMP; }
 
 	//virtual SQLExpression* simplify(bool&);
 	//virtual void title(const std::string&);
 	//virtual std::string title() const;
 
-    virtual const type::SQLType* type() const;
+    virtual const type::SQLType* type() const override ;
 	// ----
 
-    virtual std::shared_ptr<SQLExpression> clone() const { return std::make_shared<ConstantExpression>(*this, PrivateKey()); }
+    virtual std::shared_ptr<SQLExpression> clone() const override { return std::make_shared<ConstantExpression>(*this, PrivateKey()); }
     virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override { return clone(); }
 	
-	virtual bool isAggregate() const { return false; }
+	virtual bool isAggregate() const override { return false; }
 	// For select expression
 
-	virtual void output(SQLOutput& s) const;
-	virtual void partialResult() { NOTIMP; }
-    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&) { NOTIMP; }
+	virtual void output(SQLOutput& s) const override;
+	virtual void partialResult() override { NOTIMP; }
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&) override { NOTIMP; }
 
-	virtual bool isBitfield() const { return isBitfield_; }
+	virtual bool isBitfield() const override { return isBitfield_; }
 	BitfieldDef bitfieldDef() const { return bitfieldDef_; }
-	virtual bool hasMissingValue() const { return hasMissingValue_; }
+	virtual bool hasMissingValue() const override { return hasMissingValue_; }
 	double missingValue() const { return missingValue_; }
 
 protected:
-    virtual void print(std::ostream&) const { NOTIMP; }
+    virtual void print(std::ostream&) const override { NOTIMP; }
 
 	bool isBitfield_;
 	BitfieldDef bitfieldDef_;

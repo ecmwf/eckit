@@ -41,13 +41,13 @@ private:
 	double value_;
 	int    which_;
 
-	virtual void print(std::ostream& s) const;
-	virtual void prepare(SQLSelect& sql);
-	virtual void cleanup(SQLSelect& sql);
+	virtual void print(std::ostream& s) const override;
+	virtual void prepare(SQLSelect& sql) override;
+	virtual void cleanup(SQLSelect& sql) override;
 
-	virtual double eval(bool& missing) const;
-	const type::SQLType* type() const;
-	virtual bool isConstant() const;
+	virtual double eval(bool& missing) const override;
+	virtual const type::SQLType* type() const override;
+	virtual bool isConstant() const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

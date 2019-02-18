@@ -245,4 +245,5 @@ empty :
       ;
 
 %%
+#undef YY_NULL
 #include "cmdsl.c"

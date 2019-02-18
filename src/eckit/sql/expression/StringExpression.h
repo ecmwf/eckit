@@ -40,10 +40,10 @@ private:
     const type::SQLType*   type_; // non-owning
 
 // -- Overridden methods
-	virtual void print(std::ostream& s) const;
-    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, expression::Expressions&);
-	virtual void prepare(SQLSelect& sql);
-	virtual void cleanup(SQLSelect& sql);
+	virtual void print(std::ostream& s) const override;
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, expression::Expressions&) override;
+	virtual void prepare(SQLSelect& sql) override;
+	virtual void cleanup(SQLSelect& sql) override;
 
     virtual const type::SQLType* type() const override;
     virtual double eval(bool& missing) const override;

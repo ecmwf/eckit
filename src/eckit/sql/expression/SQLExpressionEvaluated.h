@@ -43,12 +43,12 @@ public:
     virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
     virtual bool isAggregate() const  override;
 
-    virtual const type::SQLType* type() const ;
+    virtual const type::SQLType* type() const override;
 
-    virtual void output(SQLOutput& o) const ;
+    virtual void output(SQLOutput& o) const override;
 
 protected:
-	virtual void print(std::ostream&) const;
+	virtual void print(std::ostream&) const override;
 
 	friend std::ostream& operator<<(std::ostream& s, const SQLExpressionEvaluated& p) { p.print(s); return s; }
 

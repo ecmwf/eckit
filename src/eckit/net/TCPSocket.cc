@@ -67,17 +67,15 @@ TCPSocket::TCPSocket():
 {
 }
 
-// This contructor performs a cahnge of ownership of the socket
+// This contructor performs a change of ownership of the socket
 TCPSocket::TCPSocket(TCPSocket& other):
     socket_(other.socket_),
-
-    localAddr_(other.localAddr_),
-    localHost_(other.localHost_),
     localPort_(other.localPort_),
-    remoteAddr_(other.remoteAddr_),
-    remoteHost_(other.remoteHost_),
     remotePort_(other.remotePort_),
-
+    remoteHost_(other.remoteHost_),
+    remoteAddr_(other.remoteAddr_),
+    localHost_(other.localHost_),
+    localAddr_(other.localAddr_),
     bufSize_(0),
     debug_(false),
     newline_(true),
@@ -135,7 +133,7 @@ long TCPSocket::write(const void* buf, long length) {
     if (length == 0)
         return ::write(socket_, buf, length);
 
-    size_t requested = length;
+    long requested = length;
 
     if (debug_) {
 
@@ -146,7 +144,7 @@ long TCPSocket::write(const void* buf, long length) {
         }
 
         const char* p = reinterpret_cast<const char *>(buf);
-        for (size_t i = 0; i < std::min(length, 512L); i++) {
+        for (long i = 0; i < std::min(length, 512L); i++) {
             if (newline_) {
                 std::cout << ">>> ";
                 newline_ = false;
@@ -170,7 +168,7 @@ long TCPSocket::write(const void* buf, long length) {
     }
 
     long sent     = 0;
-    const char *p = (const char*)buf;
+    const char *p = static_cast<const char*>(buf);
 
     while (length > 0)
     {
@@ -254,7 +252,7 @@ long TCPSocket::read(void *buf, long length)
                     // nonews = true;
 
                     // Time out, write 0 bytes to check that peer is alive
-                    if (::write(socket_, 0, 0) != 0)
+                    if (::write(socket_, nullptr, 0) != 0)
                     {
                         Log::error() << "TCPSocket::read write" << Log::syserr << std::endl;
                         return -1;
@@ -295,7 +293,7 @@ long TCPSocket::read(void *buf, long length)
                 mode_ = 'r';
             }
 
-            for (size_t i = 0; i < std::min(len, 512L); i++) {
+            for (long i = 0; i < std::min(len, 512L); i++) {
                 if (newline_) {
                     std::cout << "<<< ";
                     newline_ = false;
@@ -338,7 +336,7 @@ void TCPSocket::close()
 
 static jmp_buf env;
 
-static void catch_alarm(int sig)
+static void catch_alarm(int)
 {
     longjmp(env, 1);
 }
@@ -388,7 +386,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 #else
             him =::gethostbyname(remote.c_str());
 #endif
-            if (him == 0)
+            if (him == nullptr)
             {
 //              Log::error() << "Unknown host [" << remote << "]" << std::endl;
                 throw UnknownHost(remote);

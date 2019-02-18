@@ -46,14 +46,14 @@ private:
     std::map<std::string, unsigned long> mask_;
     std::map<std::string, unsigned long> shift_;
 
-    virtual size_t size() const;
-    virtual void output(SQLOutput& s, double, bool) const;
+    virtual size_t size() const override;
+    virtual void output(SQLOutput& s, double, bool) const override;
     virtual std::string asString(const double* val) const override;
-    virtual const SQLType* subType(const std::string&) const;
-	virtual int getKind() const { return bitmapType; }
+    virtual const SQLType* subType(const std::string&) const override;
+	virtual int getKind() const override { return bitmapType; }
 
 	size_t width_;
-	virtual size_t width() const;
+	virtual size_t width() const override;
 	//friend std::ostream& operator<<(std::ostream& s,const SQLBitfield& p)
 	//	{ p.print(s); return s; }
 };

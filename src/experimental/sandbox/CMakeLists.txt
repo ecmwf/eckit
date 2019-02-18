@@ -53,3 +53,7 @@ ecbuild_add_executable( TARGET  sandbox_shint NOINSTALL
                         SOURCES shint.cc
                         LIBS eckit )
 
+ecbuild_add_executable( TARGET sandbox_mpiobjsend NOINSTALL
+                        CONDITION ENABLE_SANDBOX
+                        SOURCES mpiobjsend.cc
+                        LIBS eckit_mpi eckit )

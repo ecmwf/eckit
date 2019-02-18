@@ -42,10 +42,16 @@ CmdArgs::CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count
     init(usage, args_count, minimum_args, throw_on_error);
 }
 
-void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool throw_on_error) {
+CmdArgs::CmdArgs(std::function<void (const std::string&)> usage, std::vector<Option*>& options, int args_count, int minimum_args,
+                 bool throw_on_error) {
+    std::swap(options_, options);  // Take ownership so it can be destroyed
+    init(usage, args_count, minimum_args, throw_on_error);
+}
+
+void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count, int minimum_args, bool throw_on_error) {
     Main& ctx   = Main::instance();
     tool_       = ctx.name();
-    size_t argc = ctx.argc();
+    int    argc = ctx.argc();
     bool error  = false;
 
     std::map<std::string, const option::Option*> opts;
@@ -60,7 +66,7 @@ void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool thro
     }
 
     Tokenizer parse("=");
-    for (size_t i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; ++i) {
         std::string a = ctx.argv(i);
         if (a.size() > 2 && a[0] == '-' && a[1] == '-') {
             std::vector<std::string> v;
@@ -79,7 +85,7 @@ void CmdArgs::init(usage_proc usage, int args_count, int minimum_args, bool thro
                         (*j).second->set(StringTools::join("=", b, e), *this);
                     }
                 }
-                catch (UserError& e) {
+                catch (UserError&) {
                     Log::info() << "Invalid value for option --" << v[0] << std::endl;
                     error = true;
                 }

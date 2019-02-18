@@ -48,10 +48,6 @@ public:  // methods
 
     void zero();
 
-    // void resize(size_t size);
-
-    // void swap(Buffer& rhs);
-
 protected:  // methods
     void create();
     void destroy();

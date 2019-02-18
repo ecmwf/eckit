@@ -40,7 +40,7 @@ class Queue {
 
 public: // public
 
-    Queue(size_t max) : max_(max), interruptException_(nullptr), closed_(false) {
+    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) {
         ASSERT(max > 0);
     }
 
@@ -76,33 +76,24 @@ public: // public
 
     bool closed() {
         std::unique_lock<std::mutex> locker(mutex_);
-        return closed_ || interruptException_;
+        return closed_ || interrupt_;
+    }
+
+    bool empty() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        return queue_.empty();
     }
 
     bool checkInterrupt() {
-        if (interruptException_) std::rethrow_exception(interruptException_);
+        if (interrupt_) std::rethrow_exception(interrupt_);
         return true;
     }
 
     void interrupt(std::exception_ptr expn) {
         std::unique_lock<std::mutex> locker(mutex_);
-        interruptException_ = expn;
+        interrupt_ = expn;
         locker.unlock();
         cv_.notify_all();
-    }
-
-    // n.b. no done mechanism implemented here.
-    ELEM pop() {
-        std::unique_lock<std::mutex> locker(mutex_);
-        while (checkInterrupt() && queue_.empty()) {
-            ASSERT(!closed_);
-            cv_.wait(locker);
-        }
-        auto e = queue_.front();
-        queue_.pop();
-        locker.unlock();
-        cv_.notify_one();
-        return e;
     }
 
     long pop(ELEM& e) {
@@ -116,7 +107,7 @@ public: // public
         size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
-        return size;
+        return long(size);
     }
 
     size_t push(const ELEM& e) {
@@ -132,13 +123,14 @@ public: // public
         return size;
     }
 
-    size_t emplace(ELEM&& e) {
+    template<typename... Args>
+    size_t emplace(Args&&... args) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.size() >= max_) {
             cv_.wait(locker);
         }
         ASSERT(!closed_);
-        queue_.emplace(std::move(e));
+        queue_.emplace(std::forward<Args>(args)...);
         size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
@@ -151,7 +143,7 @@ private: // members
     std::mutex mutex_;
     std::condition_variable cv_;
     size_t max_;
-    std::exception_ptr interruptException_;
+    std::exception_ptr interrupt_;
     bool closed_;
 };
 

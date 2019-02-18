@@ -39,7 +39,8 @@ int main() {
   for (int id = 0; id < ncons; ++id) {
     consumers.emplace_back(std::thread([&q, id, nprod] {
       for (int j = 0; j < nprod; ++j) {
-        auto e = q.pop();
+        int e;
+        ASSERT(q.pop(e) >= 0);
         clog(e);
         std::this_thread::sleep_for(std::chrono::milliseconds(3));
       }

@@ -277,7 +277,7 @@ public:  // methods
     void send(const T& sendbuf, int dest, int tag) const;
 
     ///
-    /// Blocking send, until message recieved
+    /// Blocking send, until message received
     ///
 
     template <typename T>

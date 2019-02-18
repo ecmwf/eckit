@@ -70,18 +70,6 @@ void Buffer::copy(const char* p, size_t size) {
     ::memcpy(buffer_, p, size);
 }
 
-// void Buffer::swap(Buffer& rhs) {
-//     std::swap(buffer_, rhs.buffer_);
-//     std::swap(size_, rhs.size_);
-// }
-
-// void eckit::Buffer::resize(size_t size)
-// {
-//     destroy();
-//     size_ = size;
-//     create();
-// }
-
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

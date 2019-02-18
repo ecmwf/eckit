@@ -36,6 +36,10 @@ ResizableBuffer::~ResizableBuffer()
     deallocate(buffer_);
 }
 
+void ResizableBuffer::zero() {
+    ::memset(buffer_, 0, size_);
+}
+
 char* ResizableBuffer::allocate(size_t size)
 {
     return new char[size];

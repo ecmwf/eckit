@@ -8,43 +8,38 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Manuel Fuentes
 /// @author Tiago Quintino
-/// @date   Apr 16
+/// @date   Feb 2019
 
-#ifndef eckit_serialisation_MemoryStream_H
-#define eckit_serialisation_MemoryStream_H
+#ifndef eckit_serialisation_ResizableMemoryStream_H
+#define eckit_serialisation_ResizableMemoryStream_H
 
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 
-class Buffer;
+class ResizableBuffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class MemoryStream : public Stream {
+class ResizableMemoryStream : public Stream {
 public:
 
-	MemoryStream(const Buffer&);
-    MemoryStream(Buffer&);
+    ResizableMemoryStream(ResizableBuffer&);
 
-	MemoryStream(const void* address,size_t size);
-    MemoryStream(void* address,size_t size);
-
-	~MemoryStream();
+	~ResizableMemoryStream();
 
 	virtual long read(void*,long);
 	virtual long write(const void*,long);
 	virtual void rewind();
+
 	virtual std::string name() const;
 
     size_t position() const;
 
 private: // members
 
-	char*          address_;
-    const size_t   size_;
+    ResizableBuffer& buffer_;
 
     bool           read_;
     size_t         position_;

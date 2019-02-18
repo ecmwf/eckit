@@ -67,7 +67,7 @@ TCPSocket::TCPSocket():
 {
 }
 
-// This contructor performs a cahnge of ownership of the socket
+// This contructor performs a change of ownership of the socket
 TCPSocket::TCPSocket(TCPSocket& other):
     socket_(other.socket_),
     localPort_(other.localPort_),

@@ -100,7 +100,7 @@ Length MemoryHandle::openForRead() {
     return size_;
 }
 
-void MemoryHandle::openForWrite(const Length& length) {
+void MemoryHandle::openForWrite(const Length&) {
     ASSERT(!readOnly_);
     read_     = false;
     position_ = 0;
@@ -119,6 +119,7 @@ void MemoryHandle::skip(const Length& len) {
 long MemoryHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(read_);
+    ASSERT(length >= 0);
 
     size_t left = size_ - position_;
     size_t size = std::min(left, size_t(length));
@@ -131,6 +132,7 @@ long MemoryHandle::read(void* buffer, long length) {
 long MemoryHandle::write(const void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(!read_);
+    ASSERT(length >= 0);
 
     size_t left = size_ - position_;
 

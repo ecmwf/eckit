@@ -202,12 +202,12 @@ bool MarsFSPath::available() const
     return ClusterNodes::available("marsfs", node_);
 }
 
-void MarsFSPath::unlink() const
+void MarsFSPath::unlink(bool) const
 {
     MarsFSClient(*this).unlink(path_);
 }
 
-void MarsFSPath::rmdir() const
+void MarsFSPath::rmdir(bool) const
 {
     MarsFSClient(*this).rmdir(path_);
 }

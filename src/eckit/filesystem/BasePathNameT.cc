@@ -133,9 +133,9 @@ void BasePathNameT<T>::mkdir(short mode) const
 }
 
 template<class T>
-void BasePathNameT<T>::unlink() const
+void BasePathNameT<T>::unlink(bool verbose) const
 {
-    path_.unlink();
+    path_.unlink(verbose);
 }
 
 template<class T>
@@ -145,9 +145,9 @@ void BasePathNameT<T>::syncParentDirectory() const
 }
 
 template<class T>
-void BasePathNameT<T>::rmdir() const
+void BasePathNameT<T>::rmdir(bool verbose) const
 {
-    path_.rmdir();
+    path_.rmdir(verbose);
 }
 
 template<class T>

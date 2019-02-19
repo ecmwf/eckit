@@ -53,8 +53,8 @@ public:
     virtual bool exists() const = 0;
     virtual bool available() const = 0;
     virtual void mkdir(short) const = 0;
-    virtual void unlink() const = 0;
-    virtual void rmdir() const = 0;
+    virtual void unlink(bool verbose) const = 0;
+    virtual void rmdir(bool verbose) const = 0;
     virtual void touch() const = 0;
     virtual void children(std::vector<BasePathName*>& files, std::vector<BasePathName*>& dirs) const = 0;
     virtual void match(std::vector<BasePathName*>&,bool) const = 0;

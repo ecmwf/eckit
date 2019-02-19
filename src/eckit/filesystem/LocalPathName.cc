@@ -22,9 +22,8 @@
 #include <fstream>
 #include <cstring> // for strlen
 
-#include "eckit/eckit.h"
-
 #include "eckit/config/Resource.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/FileHandle.h"
@@ -305,9 +304,9 @@ void LocalPathName::rename(const LocalPathName& from, const LocalPathName& to)
         throw FailedSystemCall(std::string("::rename(") + from.path_ + ',' + to.path_ + ')');
 }
 
-void LocalPathName::unlink() const
+void LocalPathName::unlink(bool verbose) const
 {
-    Log::info() << "Unlink " << path_ << std::endl;
+    (verbose ? Log::info() : Log::debug<LibEcKit>()) << "Unlink " << path_ << std::endl;
     if (::unlink(path_.c_str()) != 0)
     {
         if (errno != ENOENT)
@@ -317,9 +316,9 @@ void LocalPathName::unlink() const
     }
 }
 
-void LocalPathName::rmdir() const
+void LocalPathName::rmdir(bool verbose) const
 {
-    Log::info() << "Rmdir " << path_ << std::endl;
+    (verbose ? Log::info() : Log::debug<LibEcKit>()) << "Rmdir " << path_ << std::endl;
     if (::rmdir(path_.c_str()) != 0)
     {
         if (errno != ENOENT)

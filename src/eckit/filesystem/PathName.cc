@@ -119,16 +119,16 @@ bool PathName::available() const {
     return path_->available();
 }
 
-void PathName::unlink() const {
-    path_->unlink();
+void PathName::unlink(bool verbose) const {
+    path_->unlink(verbose);
 }
 
 void PathName::syncParentDirectory() const {
     path_->syncParentDirectory();
 }
 
-void PathName::rmdir() const {
-    path_->rmdir();
+void PathName::rmdir(bool verbose) const {
+    path_->rmdir(verbose);
 }
 
 void PathName::touch() const {

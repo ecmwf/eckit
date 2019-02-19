@@ -208,10 +208,10 @@ public:
     void chmod(short mode) const;
 
     /// Unlink the path
-    void unlink() const;
+    void unlink(bool verbose=true) const;
 
     /// Remove the directory
-    void rmdir() const;
+    void rmdir(bool verbose=true) const;
 
     /// Create a copy with a unique path name
     void backup() const;

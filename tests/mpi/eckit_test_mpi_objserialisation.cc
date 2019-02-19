@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/ResizableBuffer.h"

@@ -73,6 +73,7 @@ protected:
     virtual Value   keys() const;
     virtual Value&  element(const Value&);
     virtual bool    contains(const Value& key) const;
+    virtual Value   remove(const Value&);
 
 	virtual void   print(std::ostream&) const;
     virtual void   json(JSON&)     const;

@@ -77,8 +77,13 @@ void Content::badOperator(const std::string& op, const std::string& to) const
     throw BadOperator(s.str(), Here());
 }
 
-Value& Content::element(const Value&)
-{
+Value Content::remove(const Value&) {
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'remove' not implemented";
+    throw BadOperator(s.str(), Here());
+}
+
+Value& Content::element(const Value&) {
     std::ostringstream s;
     s << *this << " (" << typeName() << ") method 'element' not implemented";
     throw BadOperator(s.str(), Here());

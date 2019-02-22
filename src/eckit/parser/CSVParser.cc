@@ -53,6 +53,12 @@ Value CSVParser::parse()
                 break;
             }
             ValueMap m;
+            if(header.size() != line.size()) {
+                std::cout << header << std::endl;
+                 std::cout << line << std::endl;
+                 std::cout <<header.size()<< std::endl;
+                 std::cout <<line.size()<< std::endl;
+           }
             ASSERT(header.size() == line.size());
             for (size_t i = 0; i < header.size(); ++i) {
                 m[header[i]] = line[i];

@@ -266,6 +266,7 @@ public:
 
     Value& element(const Value&);
     Value element(const Value&) const;
+    Value remove(const Value&);
 
     // -- Methods
 

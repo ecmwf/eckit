@@ -479,6 +479,8 @@ parser/ObjectParser.h
 parser/ObjectParser.cc
 parser/JSONParser.h
 parser/JSONParser.cc
+parser/CSVParser.h
+parser/CSVParser.cc
 parser/YAMLParser.h
 parser/YAMLParser.cc
 parser/JSONDataBlob.h

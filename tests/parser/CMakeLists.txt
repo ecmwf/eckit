@@ -23,3 +23,7 @@ ecbuild_add_test( TARGET   eckit_test_parser_json_metadata
 ecbuild_add_test( TARGET   eckit_test_parser_stream_parser
                   SOURCES  test_stream_parser.cc
                   LIBS     eckit )
+
+ecbuild_add_test( TARGET   eckit_test_parser_csv
+                  SOURCES  test_csv.cc
+                  LIBS     eckit )

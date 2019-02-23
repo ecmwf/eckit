@@ -19,7 +19,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT OFF
-                    DESCRIPTION "Experimental features Armadillo, CUDA, MKL, ViennaCL (not used in production)" )
+                    DESCRIPTION "Experimental features that havent graduated to production ready code" )
+
+ecbuild_add_option( FEATURE SANDBOX
+                    DEFAULT OFF
+                    DESCRIPTION "Experimental features that havent graduated to production ready code" )
 
 ### eckit::mpi
 

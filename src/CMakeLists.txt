@@ -10,8 +10,12 @@
 
 add_subdirectory( eckit  )
 
+add_subdirectory( tools )
+
 if( HAVE_EXPERIMENTAL )
   add_subdirectory( experimental )
 endif()
 
-add_subdirectory( apps )
+if( HAVE_SANDBOX )
+  add_subdirectory( sandbox )
+endif()

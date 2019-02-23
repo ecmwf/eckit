@@ -8,14 +8,13 @@
 
 ### sources
 
-add_subdirectory( eckit  )
-
-add_subdirectory( tools )
-
 if( HAVE_EXPERIMENTAL )
   add_subdirectory( experimental )
 endif()
 
-if( HAVE_SANDBOX )
-  add_subdirectory( sandbox )
-endif()
+add_subdirectory( eckit  )
+
+add_subdirectory( tools )
+
+add_subdirectory( sandbox )
+

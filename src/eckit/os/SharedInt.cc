@@ -18,7 +18,6 @@
 
 namespace eckit {
 
-//--------------------------------------------------------------------------------------------------
 
 SharedInt::SharedInt(const PathName& path, int count) : Semaphore(path, 2 * count) {}
 
@@ -68,8 +67,5 @@ int SharedInt::limit(int n) const {
 int SharedInt::free(int n) const {
     return Semaphore::get(2 * n);
 }
-
-
-//-----------------------------------------------------------------------------
 
 }  // namespace eckit

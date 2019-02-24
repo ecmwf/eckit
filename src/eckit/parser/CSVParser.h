@@ -25,15 +25,19 @@ class CSVParser : public StreamParser {
 
 public: // methods
 
-    CSVParser(std::istream& in, bool header);
+    CSVParser(std::istream& in, bool hasHeader);
     Value parse();
 
-    static Value decodeFile(const PathName& path, bool header);
-    static Value decodeString(const std::string& str, bool header);
+    const Value& header() const;
+
+    static Value decodeFile(const PathName& path, bool hasHeader);
+    static Value decodeString(const std::string& str, bool hasHeader);
 
 private:
 
-    bool header_;
+    bool hasHeader_;
+    Value header_;
+
     Value nextItem(bool&);
     ValueList nextLine();
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <limits>
 
 #include "eckit/os/SharedInt.h"
 #include "eckit/runtime/Tool.h"
@@ -14,16 +15,13 @@ using namespace eckit;
 
 #define SLOT 0
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class SemForker : public ProcessControler {
 
-
     void run()
     {
-        sem_t *sem;
-
-        ::srandom(::getpid() + ::time(0));
+        ::srandom(unsigned(::getpid()) + unsigned(::time(nullptr)));
 
         pid_t pid = ::getpid();
 
@@ -33,11 +31,12 @@ class SemForker : public ProcessControler {
 
         for(;;) {
 
-            if(shint.free(SLOT) < bs_) {
-                std::cout << pid << " -- not enough resources (" << bs_ << ")" << std::endl;
+            int available = shint.free(SLOT);
+            if(available < want_) {
+                std::cout << pid << " -- not enough resources want: " << want_ << " available: " << available << std::endl;
             }
-            shint.use(SLOT, bs_);
-            std::cout << pid << " >>> (" << bs_ << ")" << std::endl;
+            shint.use(SLOT, want_);
+            std::cout << pid << " >>> (" << want_ << ")" << std::endl;
 
             double ms = 1000*(double(::random()) / double(RAND_MAX));
 
@@ -45,8 +44,8 @@ class SemForker : public ProcessControler {
 
             std::this_thread::sleep_for(std::chrono::milliseconds(int(ms)));
 
-            shint.release(SLOT, bs_);
-            std::cout << pid << " <<< (" << bs_ << ")" << std::endl;
+            shint.release(SLOT, want_);
+            std::cout << pid << " <<< (" << want_ << ")" << std::endl;
 
             std::this_thread::sleep_for(std::chrono::milliseconds(int(ms/3)));
         }
@@ -54,14 +53,16 @@ class SemForker : public ProcessControler {
 
 public:
 
-    SemForker(short bs) : ProcessControler(true), bs_(bs) {
+    SemForker(short want) : ProcessControler(true), want_(want*500) {
     }
 
-    short bs_;
+    short want_;
 };
 
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+const short nprocs = 16;
 
 class SemApp : public Tool {
 public:
@@ -74,27 +75,28 @@ public:
 
 private:
 
-    short limits(short p) {
-        short lim = 0;
-        for(short i = 1; i <=p; ++i) {
-            lim += i;
-        }
-        return lim;
-    }
+    short limits() {
+//        short lim = 0;
+//        for(short i = 1; i <= nprocs; ++i) {
+//            lim += i;
+//        }
+//        return lim + 8;
 
+        return std::numeric_limits<short>::max();
+    }
 
     SemApp(const SemApp&) = delete;
     SemApp& operator=(const SemApp&) = delete;
 
     virtual void run() {
 
-        const short nprocs = 4;
-        const short limit = limits(nprocs) + 8;
-
+        const short limit = limits();
+        const int sharedints = 1;
+        const PathName path = "~/locks/maxbuff";
 
         std::cout << "init main process" << std::endl;
         {
-            eckit::SharedInt shint(PathName("~/locks/maxbuff"), 1);
+            eckit::SharedInt shint(path, sharedints);
             int curr = shint.limit(SLOT);
             if(curr != limit) {
                 std::cout << "setting limit to " << limit  << std::endl;
@@ -120,16 +122,16 @@ private:
         }
 
         {
-            eckit::SharedInt shint(PathName("~/locks/maxbuff"), 1);
+            eckit::SharedInt shint(path, sharedints);
             for(;;) {
                 ::sleep(1);
-                std::cout << shint.free(SLOT) << std::endl;
+                std::cout << "FREE " << shint.free(SLOT) << std::endl;
             }
         }
     }
 };
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------1
 
 int main(int argc, char** argv) {
     SemApp app(argc, argv);

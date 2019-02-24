@@ -24,7 +24,7 @@ namespace eckit {
 
 CSVParser::CSVParser(std::istream &in, bool header):
     StreamParser(in, false),
-    header_(header)
+    hasHeader_(header)
 {
 }
 
@@ -44,8 +44,8 @@ Value CSVParser::decodeString(const std::string& str, bool header) {
 
 Value CSVParser::parse()
 {
-    if (header_) {
-        ValueList header = nextLine();
+    if (hasHeader_) {
+        ValueList header = CSVParser::header();
         ValueList result;
         while (peek(true)) {
             ValueList line = nextLine();
@@ -112,6 +112,15 @@ ValueList CSVParser::nextLine() {
     }
     return result;
 }
+
+const Value& CSVParser::header() const {
+    if(header_.isNil()) {
+        CSVParser& self = const_cast<CSVParser&>(*this);
+        self.header_ = self.nextLine();
+    }
+    return header_;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

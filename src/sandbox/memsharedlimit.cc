@@ -1,5 +1,7 @@
 #include <unistd.h>
 #include <semaphore.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
 #include <sys/sem.h>
 
 #include <cmath>          // for ::lround()
@@ -21,8 +23,15 @@ using namespace eckit;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-constexpr unsigned short nlimit() {
-    return (SEM_VALUE_MAX / 8 ) * 8; // max multiple of 8 less than SEM_VALUE_MAX
+unsigned short nlimit() {
+
+    /// @note We dont use SEM_VALUE_MAX as this can be changed by the operating system configuration
+
+    static long system_semmax = SYSCALL(::sysconf(_SC_SEM_VALUE_MAX)); // guaranteed to be positive
+
+    long semmax = std::min<long>(std::numeric_limits<short>::max(), system_semmax); // guaranteed to cast to unsigned short without precision loss
+
+    return ( static_cast<unsigned short>(semmax) / 8 ) * 8; // max multiple of 8 less than semmax
 }
 
 pid_t pid = 0;
@@ -59,10 +68,9 @@ public: // methods
         shint_(path, 1),
         managed_(managed)
     {
-        static_assert(short(nlimit()) == nlimit(), "SEM_MAX_VALUE does NOT fit short in this architecture"); // ensure no loss of precision
+        ASSERT(short(nlimit()) == nlimit()); // "SEM_MAX_VALUE must fit short in this architecture
 
         std::cout << "nlimit() " << nlimit() << std::endl;
-        std::cout << "SEM_VALUE_MAX " << SEM_VALUE_MAX << std::endl;
 
         int curr = shint_.limit(SLOT); // limit may have been set by another process
         if(curr != nlimit()) {
@@ -99,11 +107,13 @@ public: // methods
     /// @pre mem is larger than zero
     std::unique_ptr<MemorySharedLimit::Token> use(size_t mem) {
         ASSERT(mem > 0);
-        unsigned short parts = nparts(mem);
+
+        parts_t parts = nparts(mem);
         if(shint_.free(SLOT) < parts)
             std::cout << pid << " WAIT " << parts << std::endl;
 
-        shint_.use(SLOT, short(parts));
+        shint_.use(SLOT, short(parts)); // processes wait here for available parts
+
         std::cout << pid << " <<< " << parts << " : (" << mem << ")" << std::endl;
         return std::unique_ptr<MemorySharedLimit::Token>(new Token(*this, parts));
     }
@@ -115,14 +125,14 @@ public: // methods
 
 private: // methods
 
-    unsigned short nparts(size_t mem) {
+    parts_t partitions(size_t mem) {
         size_t parts = mem / partsize_;
-        return static_cast<unsigned short>(parts);
+        return static_cast<parts_t>(parts);
     }
 
-    unsigned short parts(size_t mem) {
+    parts_t nparts(size_t mem) {
         if(mem <= managed_) {
-            parts_t parts = nparts(mem);
+            parts_t parts = partitions(mem);
             ASSERT(parts <= nlimit());
             return parts;
         }

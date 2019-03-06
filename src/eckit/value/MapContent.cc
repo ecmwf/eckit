@@ -78,6 +78,14 @@ Value MapContent::keys() const {
 }
 
 
+Value MapContent::remove(const Value& key)
+{
+    Value result = value_[key];
+    value_.erase(key);
+    return result;
+}
+
+
 Value& MapContent::element(const Value& key)
 {
     return value_[key];

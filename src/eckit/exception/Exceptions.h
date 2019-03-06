@@ -257,7 +257,7 @@ inline void ThrCall(int code,const char *msg, const char* file, int line, const 
         handle_panic(msg, CodeLocation(file, line, func));
 }
 
-inline void Assert(int code,const char *msg, const char* file, int line, const char* func)
+inline void Assert(int code,const std::string& msg, const char* file, int line, const char* func)
 {
     if(code != 0) {
         throw AssertionFailed(msg, CodeLocation(file, line, func));

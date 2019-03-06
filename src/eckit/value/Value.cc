@@ -416,6 +416,11 @@ Value Value::element(const Value& key) const {
     return content_->element(key);
 }
 
+Value Value::remove(const Value& key) {
+    update();
+    return content_->remove(key);
+}
+
 void Value::update() {
     if (content_->count() > 1) {
         Content* c = content_->clone();

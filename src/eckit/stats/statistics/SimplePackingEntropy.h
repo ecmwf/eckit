@@ -8,26 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
 
+#ifndef mir_stats_statistics_SimplePackingEntropy_h
+#define mir_stats_statistics_SimplePackingEntropy_h
 
-#ifndef mir_stats_CountOutsideRange_h
-#define mir_stats_CountOutsideRange_h
-
-#include "eckit/exception/Exceptions.h"
-#include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
-#include "mir/stats/detail/CountOutsideRangeFn.h"
+
+#include "mir/stats/detail/Counter.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
 /**
- * @brief Calculate statistics on a MIRField
+ * @brief Calculate entropy statistics on a MIRField
  */
-class CountOutsideRange : public Statistics {
+class SimplePackingEntropy : public Statistics, detail::Counter {
 public:
 
     // -- Exceptions
@@ -35,11 +33,11 @@ public:
 
     // -- Constructors
 
-    CountOutsideRange(const param::MIRParametrisation&);
+    SimplePackingEntropy(const param::MIRParametrisation&);
 
     // -- Destructor
 
-    virtual ~CountOutsideRange() {}
+    ~SimplePackingEntropy();
 
     // -- Convertors
     // None
@@ -49,30 +47,13 @@ public:
 
     // -- Methods
 
-    /// Online statistics update
-    void operator+=(const CountOutsideRange&);
+    void reset();
+    double entropy() const;
+    double scale() const;
+    size_t bucketCount() const;
 
     // -- Overridden methods
     // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
 
     // -- Class members
     // None
@@ -84,13 +65,17 @@ private:
 
     // -- Members
 
-    mutable detail::CountOutsideRangeFn<double> stats_;
+    double entropy_;
+    double scale_;
+    size_t bucketCount_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void execute(const data::MIRField&);
+    void print(std::ostream&) const;
 
     // -- Class members
     // None
@@ -104,6 +89,7 @@ private:
 };
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 

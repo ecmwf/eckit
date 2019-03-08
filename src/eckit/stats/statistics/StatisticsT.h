@@ -8,26 +8,28 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
 
+#ifndef mir_stats_statistics_StatisticsT_h
+#define mir_stats_statistics_StatisticsT_h
 
-#ifndef mir_stats_Scalar_h
-#define mir_stats_Scalar_h
+#include <cmath>
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+
 #include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
-#include "mir/stats/detail/Scalar.h"
+#include "mir/stats/detail/Counter.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
-/**
- * @brief Calculate statistics on a MIRField
- */
-class Scalar : public Statistics {
+/// Generic statistics on a MIRField
+template<typename STATS>
+class StatisticsT : public Statistics, detail::Counter, STATS {
 public:
 
     // -- Exceptions
@@ -35,11 +37,13 @@ public:
 
     // -- Constructors
 
-    Scalar(const param::MIRParametrisation&);
+    StatisticsT(const param::MIRParametrisation& parametrisation) :
+        Statistics(parametrisation),
+        Counter(parametrisation) {
+    }
 
     // -- Destructor
-
-    virtual ~Scalar() {}
+    // None
 
     // -- Convertors
     // None
@@ -48,31 +52,21 @@ public:
     // None
 
     // -- Methods
-
-    /// Online statistics update
-    void operator+=(const Scalar&);
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-
-    // -- Members
-    // None
-
-    // -- Methods
     // None
 
     // -- Overridden methods
 
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
+    void execute(const data::MIRField& field) {
+        Counter::reset(field);
+        STATS::reset();
+
+        ASSERT(field.dimensions() == 1);
+        for (auto& value : field.values(0)) {
+            if (count(value)) {
+                STATS::operator()(value);
+            }
+        }
+    }
 
     // -- Class members
     // None
@@ -83,14 +77,20 @@ protected:
 private:
 
     // -- Members
-
-    mutable detail::Scalar<double> stats_;
+    // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void print(std::ostream& out) const {
+        out << "Statistics[";
+        Counter::print(out);
+        out << ",";
+        STATS::print(out);
+        out << "]";
+    }
 
     // -- Class members
     // None
@@ -104,9 +104,9 @@ private:
 };
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 
 
 #endif
-

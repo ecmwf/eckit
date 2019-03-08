@@ -8,25 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Oct 2016
+/// @author Tiago Quintino
+/// @author Pedro Maciel
+/// @date Jul 2015
 
 
-#ifndef mir_stats_Spectral_h
-#define mir_stats_Spectral_h
+#ifndef mir_stats_statistics_Integral_h
+#define mir_stats_statistics_Integral_h
 
-#include "eckit/exception/Exceptions.h"
-#include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
+
+#include "mir/stats/detail/Counter.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
-/**
- * @brief Calculate spectral statistics on a MIRField
- */
-class Spectral : public Statistics {
+class Integral : public Statistics, detail::Counter {
 public:
 
     // -- Exceptions
@@ -34,11 +34,10 @@ public:
 
     // -- Constructors
 
-    Spectral(const param::MIRParametrisation&);
+    Integral(const param::MIRParametrisation&);
 
     // -- Destructor
-
-    virtual ~Spectral() {}
+    // None
 
     // -- Convertors
     // None
@@ -47,29 +46,15 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    void reset();
+
+    double integral() const {
+        return integral_;
+    }
 
     // -- Overridden methods
     // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
 
     // -- Class members
     // None
@@ -80,13 +65,16 @@ protected:
 private:
 
     // -- Members
-    // None
+
+    double integral_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void execute(const data::MIRField&);
+    void print(std::ostream&) const;
 
     // -- Class members
     // None
@@ -100,9 +88,9 @@ private:
 };
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 
 
 #endif
-

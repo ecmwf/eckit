@@ -8,25 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Oct 2016
 
+#ifndef mir_stats_comparator_Spectral_h
+#define mir_stats_comparator_Spectral_h
 
-#ifndef mir_stats_SimplePackingEntropy_h
-#define mir_stats_SimplePackingEntropy_h
-
-#include "eckit/exception/Exceptions.h"
-#include "mir/data/MIRField.h"
-#include "mir/stats/Statistics.h"
+#include "mir/stats/Comparator.h"
 
 
 namespace mir {
 namespace stats {
+namespace comparator {
 
 
 /**
- * @brief Calculate entropy statistics on a MIRField
+ * @brief Calculate spectral statistics on a MIRField
  */
-class SimplePackingEntropy : public Statistics {
+class Spectral : public Comparator {
 public:
 
     // -- Exceptions
@@ -34,11 +31,11 @@ public:
 
     // -- Constructors
 
-    SimplePackingEntropy(const param::MIRParametrisation&);
+    Spectral(const param::MIRParametrisation&, const param::MIRParametrisation&);
 
     // -- Destructor
 
-    ~SimplePackingEntropy() {}
+    virtual ~Spectral();
 
     // -- Convertors
     // None
@@ -47,7 +44,10 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    void reset();
+    double meanDiff() const;
+    double enormDiff() const;
 
     // -- Overridden methods
     // None
@@ -62,18 +62,20 @@ private:
 
     // -- Members
 
-    size_t bucketCount_;
+    double meanDiffMax_;
+    double enormDiffMax_;
+
+    double meanDiff_;
+    double enormDiff_;
+    std::string stats_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
-
+    std::string execute(const data::MIRField&, const data::MIRField&);
     void print(std::ostream&) const;
-
 
     // -- Class members
     // None
@@ -87,6 +89,7 @@ private:
 };
 
 
+}  // namespace comparator
 }  // namespace stats
 }  // namespace mir
 

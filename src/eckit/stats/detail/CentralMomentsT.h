@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
 
-
-#ifndef mir_stats_detail_ScalarCentralMomentsFn_h
-#define mir_stats_detail_ScalarCentralMomentsFn_h
+#ifndef mir_stats_detail_CentralMomentsT_h
+#define mir_stats_detail_CentralMomentsT_h
 
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <limits>
+#include <ostream>
+
 
 namespace mir {
 namespace stats {
@@ -32,7 +33,7 @@ namespace detail {
  * @note: kurtosis (γ_2 = μ_4/μ_2^2 - 3) is computed as kurtosis "excess", @see http://mathworld.wolfram.com/Kurtosis.html
  */
 template< typename T >
-struct ScalarCentralMomentsFn {
+struct CentralMomentsT {
 private:
     T M1_;
     T M2_;
@@ -42,7 +43,7 @@ private:
 
 public:
 
-    ScalarCentralMomentsFn() {
+    CentralMomentsT() {
         reset();
     }
 
@@ -59,14 +60,17 @@ public:
     T centralMoment3() const { return count_<1? 0 : M3_/T(count_); }
     T centralMoment4() const { return count_<1? 0 : M4_/T(count_); }
 
-    T mean()       const { return count_<1? std::numeric_limits<T>::quiet_NaN() : M1_; }
-    T variance()   const { return count_<2? 0 : (M2_ / T(count_ - 1)); }
-    T skewness()   const { return count_<2? 0 : (M3_ * std::sqrt(T(count_))) / std::pow(M2_, 1.5); }
-    T kurtosis()   const { return count_<2? 0 : (M4_ * T(count_)) / (M2_*M2_) - 3.; }
+    T mean()              const { return count_<1? std::numeric_limits<T>::quiet_NaN() : M1_; }
+    T variance()          const { return count_<2? 0 : (M2_ / T(count_ - 1)); }
+    T skewness()          const { return count_<2? 0 : (M3_ * std::sqrt(T(count_))) / std::pow(M2_, 1.5); }
+    T kurtosis()          const { return count_<2? 0 : (M4_ * T(count_)) / (M2_*M2_) - 3.; }
     T standardDeviation() const { return std::sqrt(variance()); }
-    size_t count() const { return count_; }
 
-    bool operator()(const T& v) {
+    double difference(const double& a, const double& b) const {
+        return std::abs(a - b);
+    }
+
+    void operator()(const T& v) {
         const T n1   = T(count_);
         const T n    = T(count_ + 1);
         const T dx   = v - M1_;
@@ -77,10 +81,9 @@ public:
         M1_ += dx_n;
 
         count_++;
-        return true;
     }
 
-    bool operator+=(const ScalarCentralMomentsFn& other) {
+    void operator+=(const CentralMomentsT& other) {
         if (other.count_) {
             const T n1   = T(count_);
             const T n2   = T(other.count_);
@@ -100,7 +103,19 @@ public:
         }
 
         count_ += other.count_;
-        return true;
+    }
+
+    void print(std::ostream& out) const {
+        out << "CentralMoments["
+                "mean="     << mean()
+            << ",stddev="   << standardDeviation()
+            << ",skewness=" << skewness()
+            << ",kurtosis=" << kurtosis()
+            << ",centralMoment1=" << centralMoment1()
+            << ",centralMoment2=" << centralMoment2()
+            << ",centralMoment3=" << centralMoment3()
+            << ",centralMoment4=" << centralMoment4()
+            << "]";
     }
 };
 
@@ -111,3 +126,4 @@ public:
 
 
 #endif
+

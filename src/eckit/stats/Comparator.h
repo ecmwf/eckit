@@ -8,14 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
+/// @author Baudouin Raoult
+/// @author Pedro Maciel
+/// @date Apr 2015
 
-#ifndef mir_stats_Statistics_h
-#define mir_stats_Statistics_h
 
-#include <cstddef>
+#ifndef mir_stats_Comparator_h
+#define mir_stats_Comparator_h
+
 #include <iosfwd>
 #include <string>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"
 
 
@@ -33,7 +37,7 @@ namespace mir {
 namespace stats {
 
 
-class Statistics : public eckit::NonCopyable {
+class Comparator : public eckit::NonCopyable {
 public:
 
     // -- Exceptions
@@ -41,11 +45,11 @@ public:
 
     // -- Constructors
 
-    Statistics(const param::MIRParametrisation&);
+    Comparator(const param::MIRParametrisation&, const param::MIRParametrisation&);
 
     // -- Destructor
 
-    virtual ~Statistics();
+    virtual ~Comparator();
 
     // -- Convertors
     // None
@@ -55,7 +59,7 @@ public:
 
     // -- Methods
 
-    virtual void execute(const data::MIRField&) = 0;
+    virtual std::string execute(const data::MIRField&, const data::MIRField&) = 0;
 
     // -- Overridden methods
     // None
@@ -70,12 +74,12 @@ protected:
 
     // -- Members
 
-    const param::MIRParametrisation& parametrisation_;
+    const param::MIRParametrisation& parametrisation1_;
+    const param::MIRParametrisation& parametrisation2_;
 
     // -- Methods
 
-    /// Output
-    virtual void print(std::ostream&) const = 0;
+    virtual void print(std::ostream &) const = 0;   
 
     // -- Overridden methods
     // None
@@ -105,7 +109,7 @@ private:
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& out, const Statistics& r) {
+    friend std::ostream& operator<<(std::ostream& out, const Comparator& r) {
         r.print(out);
         return out;
     }
@@ -113,27 +117,26 @@ private:
 };
 
 
-class StatisticsFactory {
+class ComparatorFactory {
 private:
     std::string name_;
-    virtual Statistics* make(const param::MIRParametrisation&) = 0;
+    virtual Comparator* make(const param::MIRParametrisation&, const param::MIRParametrisation&) = 0;
 protected:
-    StatisticsFactory(const std::string&);
-    virtual ~StatisticsFactory();
+    ComparatorFactory(const std::string&);
+    virtual ~ComparatorFactory();
 public:
     static void list(std::ostream&);
-    static Statistics* build(const std::string&, const param::MIRParametrisation&);
+    static Comparator* build(const std::string&, const param::MIRParametrisation&, const param::MIRParametrisation&);
 };
 
 
 template<class T>
-class StatisticsBuilder : public StatisticsFactory {
-private:
-    Statistics* make(const param::MIRParametrisation& param) {
-        return new T(param);
+class ComparatorBuilder : public ComparatorFactory {
+    virtual Comparator* make(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) {
+        return new T(param1, param2);
     }
 public:
-    StatisticsBuilder(const std::string& name) : StatisticsFactory(name) {
+    ComparatorBuilder(const std::string& name) : ComparatorFactory(name) {
     }
 };
 
@@ -143,4 +146,3 @@ public:
 
 
 #endif
-

@@ -8,8 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+/// @author Baudouin Raoult
+/// @author Pedro Maciel
+/// @date Apr 2015
 
-#include "mir/stats/Statistics.h"
+
+#include "mir/stats/Comparator.h"
 
 #include <map>
 #include <ostream>
@@ -31,35 +35,36 @@ namespace {
 
 
 static eckit::Mutex* local_mutex = nullptr;
-static std::map< std::string, StatisticsFactory* > *m = nullptr;
+static std::map< std::string, ComparatorFactory* > *m = nullptr;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map< std::string, StatisticsFactory* >();
+    m = new std::map< std::string, ComparatorFactory* >();
 }
 
 
 }  // (anonymous namespace)
 
 
-Statistics::Statistics(const param::MIRParametrisation& parametrisation) :
-    parametrisation_(parametrisation) {
+Comparator::Comparator(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
+    parametrisation1_(param1),
+    parametrisation2_(param2) {
 }
 
 
-Statistics::~Statistics() = default;
+Comparator::~Comparator() = default;
 
 
-StatisticsFactory::StatisticsFactory(const std::string& name) :
+ComparatorFactory::ComparatorFactory(const std::string& name) :
     name_(name) {
     pthread_once(&once, init);
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw eckit::SeriousBug("StatisticsFactory: duplicate '" + name + "'");
+        throw eckit::SeriousBug("ComparatorFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -67,13 +72,13 @@ StatisticsFactory::StatisticsFactory(const std::string& name) :
 }
 
 
-StatisticsFactory::~StatisticsFactory() {
+ComparatorFactory::~ComparatorFactory() {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
     m->erase(name_);
 }
 
 
-void StatisticsFactory::list(std::ostream& out) {
+void ComparatorFactory::list(std::ostream& out) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -86,19 +91,19 @@ void StatisticsFactory::list(std::ostream& out) {
 }
 
 
-Statistics* StatisticsFactory::build(const std::string& name, const param::MIRParametrisation& params) {
+Comparator* ComparatorFactory::build(const std::string& name, const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    eckit::Log::debug<LibMir>() << "StatisticsFactory: looking for '" << name << "'" << std::endl;
+    eckit::Log::debug<LibMir>() << "ComparatorFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(eckit::Log::error() << "No StatisticsFactory '" << name << "', choices are:\n");
-        throw eckit::SeriousBug("No StatisticsFactory '" + name + "'");
+        list(eckit::Log::error() << "No ComparatorFactory '" << name << "', choices are:");
+        throw eckit::SeriousBug("No ComparatorFactory '" + name + "'");
     }
 
-    return (*j).second->make(params);
+    return (*j).second->make(param1, param2);
 }
 
 

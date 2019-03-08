@@ -8,30 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
 
-
-#ifndef mir_stats_ScalarCentralMoments_h
-#define mir_stats_ScalarCentralMoments_h
+#ifndef mir_stats_statistics_Spectral_h
+#define mir_stats_statistics_Spectral_h
 
 #include "mir/stats/Statistics.h"
-#include "mir/stats/detail/ScalarCentralMomentsFn.h"
 
-
-namespace mir {
-namespace action {
-class MIRField;
-}
-}
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
 /**
- * @brief Calculate statistics on a MIRField
+ * @brief Calculate spectral statistics on a MIRField
  */
-class ScalarCentralMoments : public Statistics {
+class Spectral : public Statistics {
 public:
 
     // -- Exceptions
@@ -39,11 +31,11 @@ public:
 
     // -- Constructors
 
-    ScalarCentralMoments(const param::MIRParametrisation&);
+    Spectral(const param::MIRParametrisation&);
 
     // -- Destructor
 
-    virtual ~ScalarCentralMoments() {}
+    virtual ~Spectral();
 
     // -- Convertors
     // None
@@ -53,30 +45,15 @@ public:
 
     // -- Methods
 
-    /// Online statistics update
-    void operator+=(const ScalarCentralMoments&);
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
+    void reset();
+    double mean() const;
+    double variance() const;
+    double standardDeviation() const;
+    double enorm() const;
 
     // -- Overridden methods
 
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
+    void execute(const data::MIRField&);
 
     // -- Class members
     // None
@@ -88,13 +65,17 @@ private:
 
     // -- Members
 
-    mutable detail::ScalarCentralMomentsFn<double> stats_;
+    double mean_;
+    double variance_;
+    double stddev_;
+    double enorm_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void print(std::ostream&) const;
 
     // -- Class members
     // None
@@ -108,6 +89,7 @@ private:
 };
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 

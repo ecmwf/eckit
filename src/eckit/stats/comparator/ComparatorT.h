@@ -8,26 +8,28 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
 
+#ifndef mir_stats_comparator_ComparatorT_h
+#define mir_stats_comparator_ComparatorT_h
 
-#ifndef mir_stats_pNorms_h
-#define mir_stats_pNorms_h
+#include <cmath>
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+
 #include "mir/data/MIRField.h"
-#include "mir/stats/Statistics.h"
-#include "mir/stats/detail/ScalarpNormsFn.h"
+#include "mir/stats/Comparator.h"
+#include "mir/stats/detail/CounterBinary.h"
 
 
 namespace mir {
 namespace stats {
+namespace comparator {
 
 
-/**
- * @brief Calculate statistics on a MIRField
- */
-class PNorms : public Statistics {
+/// Generic comparison on two MIRFields
+template<typename STATS>
+class ComparatorT : public Comparator, detail::CounterBinary, STATS {
 public:
 
     // -- Exceptions
@@ -35,11 +37,13 @@ public:
 
     // -- Constructors
 
-    PNorms(const param::MIRParametrisation&);
+    ComparatorT(const param::MIRParametrisation& parametrisation1, const param::MIRParametrisation& parametrisation2) :
+        Comparator(parametrisation1, parametrisation2),
+        CounterBinary(parametrisation1, parametrisation2) {
+    }
 
     // -- Destructor
-
-    virtual ~PNorms() {}
+    // None
 
     // -- Convertors
     // None
@@ -48,31 +52,11 @@ public:
     // None
 
     // -- Methods
-
-    /// Online statistics update
-    void operator+=(const PNorms&);
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-
-    // -- Members
-    // None
-
-    // -- Methods
     // None
 
     // -- Overridden methods
 
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
+    std::string execute(const data::MIRField& field1, const data::MIRField& field2);
 
     // -- Class members
     // None
@@ -83,14 +67,14 @@ protected:
 private:
 
     // -- Members
-
-    mutable detail::ScalarpNormsFn<double> stats_;
+    //None
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void print(std::ostream& out) const;
 
     // -- Class members
     // None
@@ -104,9 +88,9 @@ private:
 };
 
 
+}  // namespace comparator
 }  // namespace stats
 }  // namespace mir
 
 
 #endif
-

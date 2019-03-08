@@ -8,14 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Oct 2016
-
 
 #ifndef mir_stats_SimplePackingEntropy_h
 #define mir_stats_SimplePackingEntropy_h
 
-#include "eckit/exception/Exceptions.h"
-#include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
 
 
@@ -38,7 +34,7 @@ public:
 
     // -- Destructor
 
-    ~SimplePackingEntropy() {}
+    ~SimplePackingEntropy();
 
     // -- Convertors
     // None
@@ -47,7 +43,19 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    void reset();
+    double entropy() const;
+    double scale() const;
+    size_t bucketCount() const;
+
+    size_t count() const {
+        return count_;
+    }
+
+    size_t missing() const{
+        return missing_;
+    }
 
     // -- Overridden methods
     // None
@@ -62,18 +70,19 @@ private:
 
     // -- Members
 
+    double entropy_;
+    double scale_;
     size_t bucketCount_;
+    size_t count_;
+    size_t missing_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
-
+    void execute(const data::MIRField&);
     void print(std::ostream&) const;
-
 
     // -- Class members
     // None

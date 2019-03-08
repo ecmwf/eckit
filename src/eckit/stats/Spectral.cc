@@ -8,13 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Oct 2016
-
 
 #include "mir/stats/Spectral.h"
 
 #include <cmath>
-#include <sstream>
+#include <limits>
+#include <ostream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/parser/JSON.h"
+
+#include "mir/data/MIRField.h"
 #include "mir/repres/sh/SphericalHarmonics.h"
 
 
@@ -24,50 +28,86 @@ namespace stats {
 
 Spectral::Spectral(const param::MIRParametrisation& parametrisation) :
     Statistics(parametrisation) {
+    reset();
 }
 
 
-Results Spectral::calculate(const data::MIRField& field) const {
-    Results results(field.dimensions());
+void Spectral::reset() {
+    mean_     = std::numeric_limits<double>::quiet_NaN();
+    variance_ = std::numeric_limits<double>::quiet_NaN();
+    stddev_   = std::numeric_limits<double>::quiet_NaN();
+    enorm_    = std::numeric_limits<double>::quiet_NaN();
+}
 
+
+double Spectral::mean() const {
+    return mean_;
+}
+
+
+double Spectral::variance() const {
+    return variance_;
+}
+
+
+double Spectral::standardDeviation() const {
+    return stddev_;
+}
+
+
+double Spectral::enorm() const {
+    return enorm_;
+}
+
+
+Spectral::~Spectral() = default;
+
+
+void Spectral::execute(const data::MIRField& field) {
+
+    ASSERT(field.dimensions() == 1);
     ASSERT(!field.hasMissing());
 
-    for (size_t w = 0; w < field.dimensions(); ++w) {
-        const MIRValuesVector& values = field.values(w);
-        ASSERT(values.size());
+    const MIRValuesVector& values = field.values(0);
+    ASSERT(values.size());
 
-        // set truncation
-        // Note: assumes triangular truncation (from GribInput.cc)
-        const size_t J = field.representation()->truncation();
-        const size_t N = repres::sh::SphericalHarmonics::number_of_complex_coefficients(J);
-        ASSERT(2*N == values.size());
-
-
-        // calculate mean, variance and energy norm
-        // Note: GRIB-283 suggests alternate method for variance
-        // Note: ECC-551 has been resolved, method implemented below
-        const double mean = values[0];
-
-        double var = 0;
-        for (size_t i = 2; i < 2*J; i += 2) {
-            var += values[i] * values[i];
-        }
-        for (size_t i = 2*J; i < values.size(); i += 2) {
-            var += 2. * values[i] * values[i] + 2. * values[i + 1] * values[i + 1];
-        }
-
-        const double enorm = std::sqrt(mean * mean + var);
+    // set truncation
+    // Note: assumes triangular truncation (from GribInput.cc)
+    const size_t J = field.representation()->truncation();
+    const size_t N = repres::sh::SphericalHarmonics::number_of_complex_coefficients(J);
+    ASSERT(2*N == values.size());
 
 
-        // set statistics results
-        results.absoluteQuantity  ("mean",     w) = mean;
-        results.absoluteQuantity2 ("variance", w) = var;
-        results.absoluteQuantity  ("stddev",   w) = std::sqrt(var);
-        results.absoluteQuantity  ("enorm",    w) = enorm;
+    // calculate mean, variance and energy norm
+    // Note: GRIB-283 suggests alternate method for variance
+    // Note: ECC-551 has been resolved, method implemented below
+    mean_ = values[0];
 
+    double var = 0;
+    for (size_t i = 2; i < 2*J; i += 2) {
+        var += values[i] * values[i];
+    }
+    for (size_t i = 2*J; i < values.size(); i += 2) {
+        var += 2. * values[i] * values[i] + 2. * values[i + 1] * values[i + 1];
     }
 
-    return results;
+    variance_ = var;
+    stddev_ = std::sqrt(var);
+
+    enorm_ = std::sqrt(mean_ * mean_ + var);
+}
+
+
+void Spectral::print(std::ostream& out) const {
+    out << "Spectral[";
+    eckit::JSON j(out);
+    j.startObject()
+            << "mean"     << mean()
+            << "variance" << variance()
+            << "stddev"   << standardDeviation()
+            << "enorm"    << enorm();
+    j.endObject();
+    out << "]";
 }
 
 

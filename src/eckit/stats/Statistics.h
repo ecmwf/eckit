@@ -8,21 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
-
 
 #ifndef mir_stats_Statistics_h
 #define mir_stats_Statistics_h
 
+#include <cstddef>
 #include <iosfwd>
-#include "eckit/exception/Exceptions.h"
-#include "mir/param/MIRParametrisation.h"
-#include "mir/stats/Results.h"
+#include <limits>
+#include <string>
 
 
 namespace mir {
 namespace data {
 class MIRField;
+}
+namespace param {
+class MIRParametrisation;
 }
 }
 
@@ -31,9 +32,6 @@ namespace mir {
 namespace stats {
 
 
-/**
- * @brief Calculate statistics on a MIRField
- */
 class Statistics {
 public:
 
@@ -49,7 +47,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Statistics() {}
+    virtual ~Statistics();
 
     // -- Convertors
     // None
@@ -59,8 +57,7 @@ public:
 
     // -- Methods
 
-    /// Calculate statistics
-    virtual Results calculate(const data::MIRField&) const = 0;
+    virtual void execute(const data::MIRField&) = 0;
 
     // -- Overridden methods
     // None
@@ -73,13 +70,75 @@ public:
 
 protected:
 
+    // -- Types
+
+    /// Counter accounting for missing values, for a single MIRFIeld
+    class CounterUnary {
+    private:
+
+        size_t count_;
+        size_t missing_;
+        double missingValue_;
+        bool hasMissing_;
+
+    public:
+
+        CounterUnary(const data::MIRField&);
+        bool missingValue(const double&);
+
+        size_t count() const { return count_; }
+        size_t missing() const { return missing_; }
+    };
+
+
+    /// Counter accounting for missing values, for a MIRFIeld pair
+    struct CounterBinary {
+    private:
+
+        CounterUnary counter1_;
+        CounterUnary counter2_;
+        size_t missing1_;
+        size_t missing2_;
+
+    public:
+
+        CounterBinary(const data::MIRField&, const data::MIRField&);
+        bool missingValues(const double&, const double&);
+
+        size_t missing1() const { return missing1_; }
+        size_t missing2() const { return missing2_; }
+
+        size_t count() const;
+
+    };
+
+    struct CountOutside {
+    private:
+
+        const double lowerLimit_;
+        const double upperLimit_;
+        bool hasLowerLimit_;
+        bool hasUpperLimit_;
+        size_t count_{0};
+
+    public:
+
+        CountOutside(const double& upperLimit=std::numeric_limits<double>::quiet_NaN(),
+                     const double& lowerLimit=std::numeric_limits<double>::quiet_NaN());
+
+        size_t count() const;
+
+        void count(const double& v);
+    };
+
     // -- Members
 
     const param::MIRParametrisation& parametrisation_;
 
     // -- Methods
 
-    virtual void print(std::ostream&) const;
+    /// Output
+    virtual void print(std::ostream&) const = 0;
 
     // -- Overridden methods
     // None
@@ -108,7 +167,11 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend std::ostream& operator<<(std::ostream& out, const Statistics& r) {
+        r.print(out);
+        return out;
+    }
 
 };
 

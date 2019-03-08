@@ -8,16 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
-
 
 #ifndef mir_stats_detail_Scalar_h
 #define mir_stats_detail_Scalar_h
 
-#include "mir/stats/detail/CountMissingValuesFn.h"
-#include "mir/stats/detail/ScalarCentralMomentsFn.h"
-#include "mir/stats/detail/ScalarMinMaxFn.h"
-#include "mir/stats/detail/ScalarpNormsFn.h"
+#include <ostream>
+
+#include "mir/stats/detail/CentralMomentsT.h"
+#include "mir/stats/detail/MinMax.h"
+#include "mir/stats/detail/PNorms.h"
 
 
 namespace mir {
@@ -25,70 +24,56 @@ namespace stats {
 namespace detail {
 
 
-/**
- * Statistics unary operator functor: composition of above functionality (suitable for scalars)
- */
-template< typename T >
-struct Scalar : CountMissingValuesFn<T> {
+/// Scalar statistics (composition)
+struct Scalar {
 private:
-    ScalarMinMaxFn<T>         calculateMinMax_;
-    ScalarCentralMomentsFn<T> calculateCentralMoments_;
-    ScalarpNormsFn<T>         calculateNorms_;
-    typedef CountMissingValuesFn<T> missing_t;
-    //NOTE: not using difference mode for the moment (2nd argument to missing_t)
+    MinMax minMax_;
+    PNorms pNorms_;
+    CentralMomentsT<double> centralMoments_;
 
 public:
 
-    Scalar(const double& missingValue=std::numeric_limits<double>::quiet_NaN()) {
-        reset(missingValue);
+    void reset() {
+        minMax_.reset();
+        centralMoments_.reset();
+        pNorms_.reset();
     }
 
-    void reset(double missingValue=std::numeric_limits<double>::quiet_NaN()) {
-        missing_t::reset(missingValue);
-        calculateMinMax_.reset();
-        calculateCentralMoments_.reset();
-        calculateNorms_.reset();
+    double min()      const { return minMax_.min(); }
+    double max()      const { return minMax_.max(); }
+    size_t minIndex() const { return minMax_.minIndex(); }
+    size_t maxIndex() const { return minMax_.maxIndex(); }
+
+    double mean()              const { return centralMoments_.mean(); }
+    double variance()          const { return centralMoments_.variance(); }
+    double standardDeviation() const { return centralMoments_.standardDeviation(); }
+    double skewness()          const { return centralMoments_.skewness(); }
+    double kurtosis()          const { return centralMoments_.kurtosis(); }
+
+    double normL1()        const { return pNorms_.normL1(); }
+    double normL2()        const { return pNorms_.normL2(); }
+    double normLinfinity() const { return pNorms_.normLinfinity(); }
+
+    void operator()(const double& v) {
+        minMax_        (v);
+        centralMoments_(v);
+        pNorms_         (v);
     }
 
-    T min()               const { return calculateMinMax_.min(); }
-    T max()               const { return calculateMinMax_.max(); }
-    size_t minIndex()     const { return calculateMinMax_.minIndex(); }
-    size_t maxIndex()     const { return calculateMinMax_.maxIndex(); }
-
-    T mean()              const { return calculateCentralMoments_.mean(); }
-    T variance()          const { return calculateCentralMoments_.variance(); }
-    T standardDeviation() const { return calculateCentralMoments_.standardDeviation(); }
-    T skewness()          const { return calculateCentralMoments_.skewness(); }
-    T kurtosis()          const { return calculateCentralMoments_.kurtosis(); }
-
-    T normL1()            const { return calculateNorms_.normL1(); }
-    T normL2()            const { return calculateNorms_.normL2(); }
-    T normLinfinity()     const { return calculateNorms_.normLinfinity(); }
-
-    bool operator()(const T& v) {
-        return missing_t::operator()(v)
-                && calculateMinMax_        (v)
-                && calculateCentralMoments_(v)
-                && calculateNorms_         (v);
+    void operator+=(const Scalar& other) {
+        minMax_         += other.minMax_;
+        centralMoments_ += other.centralMoments_;
+        pNorms_         += other.pNorms_;
     }
 
-    bool operator()(const T& v1, const T& v2) {
-        if (missing_t::operator()(v1, v2)) {
-            // if value is good for comparison
-            const T v = std::abs(v1 - v2);
-            return calculateMinMax_        (v)
-                && calculateCentralMoments_(v)
-                && calculateNorms_         (v);
-        }
-        return false;
-    }
-
-    bool operator+=(const Scalar& other) {
-        missing_t::operator+=(other);
-        calculateMinMax_         += other.calculateMinMax_;
-        calculateCentralMoments_ += other.calculateCentralMoments_;
-        calculateNorms_          += other.calculateNorms_;
-        return true;
+    void print(std::ostream& out) const {
+        out << "Scalar[";
+        minMax_.print(out);
+        out << ",";
+        centralMoments_.print(out);
+        out << ",";
+        pNorms_.print(out);
+        out << "]";
     }
 };
 

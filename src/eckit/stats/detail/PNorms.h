@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
 
+#ifndef mir_stats_detail_PNorms_h
+#define mir_stats_detail_PNorms_h
 
-#ifndef mir_stats_detail_ScalarpNormsFn_h
-#define mir_stats_detail_ScalarpNormsFn_h
-
+#include <algorithm>
 #include <cmath>
+#include <ostream>
+
+#include "eckit/parser/JSON.h"
+
 
 namespace mir {
 namespace stats {
@@ -26,16 +29,15 @@ namespace detail {
  * @see https://en.wikipedia.org/wiki/Lp_space
  * @see https://en.wikipedia.org/wiki/Minkowski_distance
  */
-template< typename T >
-struct ScalarpNormsFn {
+struct PNorms {
 private:
-    T normL1_;
-    T sumSquares_;
-    T normLinfinity_;
+    double normL1_;
+    double sumSquares_;
+    double normLinfinity_;
 
 public:
 
-    ScalarpNormsFn() {
+    PNorms() {
         reset();
     }
 
@@ -45,22 +47,31 @@ public:
         normLinfinity_ = 0;
     }
 
-    T normL1()        const { return normL1_; }
-    T normL2()        const { return std::sqrt(sumSquares_); }
-    T normLinfinity() const { return normLinfinity_; }
+    double normL1()        const { return normL1_; }
+    double normL2()        const { return std::sqrt(sumSquares_); }
+    double normLinfinity() const { return normLinfinity_; }
 
-    bool operator()(const T& v) {
+    void operator()(const double& v) {
         normL1_       += std::abs(v);
         sumSquares_   += v*v;
         normLinfinity_ = std::max(normLinfinity_, std::abs(v));
-        return true;
     }
 
-    bool operator+=(const ScalarpNormsFn& other) {
+    void operator+=(const PNorms& other) {
         normL1_       += other.normL1_;
         sumSquares_   += other.sumSquares_;
         normLinfinity_ = std::max(normLinfinity_, other.normLinfinity_);
-        return true;
+    }
+
+    void print(std::ostream& out) const {
+        out << "PNorms[";
+        eckit::JSON j(out);
+        j.startObject()
+                << "L1" << normL1()
+                << "L2" << normL2()
+                << "Li" << normLinfinity();
+        j.endObject();
+        out << "]";
     }
 };
 

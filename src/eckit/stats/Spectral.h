@@ -8,14 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Oct 2016
-
 
 #ifndef mir_stats_Spectral_h
 #define mir_stats_Spectral_h
 
-#include "eckit/exception/Exceptions.h"
-#include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
 
 
@@ -38,7 +34,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Spectral() {}
+    virtual ~Spectral();
 
     // -- Convertors
     // None
@@ -47,29 +43,15 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    void reset();
+    double mean() const;
+    double variance() const;
+    double standardDeviation() const;
+    double enorm() const;
 
     // -- Overridden methods
     // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
 
     // -- Class members
     // None
@@ -80,13 +62,19 @@ protected:
 private:
 
     // -- Members
-    // None
+
+    double mean_;
+    double variance_;
+    double stddev_;
+    double enorm_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void execute(const data::MIRField&);
+    void print(std::ostream&) const;
 
     // -- Class members
     // None

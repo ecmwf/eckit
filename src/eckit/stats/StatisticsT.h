@@ -8,16 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Aug 2016
 
 
-#ifndef mir_stats_pNorms_h
-#define mir_stats_pNorms_h
+#ifndef mir_stats_StatisticsT_h
+#define mir_stats_StatisticsT_h
+
+#include <cmath>
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+
 #include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
-#include "mir/stats/detail/ScalarpNormsFn.h"
 
 
 namespace mir {
@@ -25,9 +27,10 @@ namespace stats {
 
 
 /**
- * @brief Calculate statistics on a MIRField
+ * @brief Calculate angle statistics on a MIRField
  */
-class PNorms : public Statistics {
+template<typename STATS>
+class StatisticsT : public Statistics, public STATS {
 public:
 
     // -- Exceptions
@@ -35,11 +38,10 @@ public:
 
     // -- Constructors
 
-    PNorms(const param::MIRParametrisation&);
+    StatisticsT(const param::MIRParametrisation& parametrisation);
 
     // -- Destructor
-
-    virtual ~PNorms() {}
+    // None
 
     // -- Convertors
     // None
@@ -49,30 +51,16 @@ public:
 
     // -- Methods
 
-    /// Online statistics update
-    void operator+=(const PNorms&);
+    size_t count() const {
+        return count_;
+    }
+
+    size_t missing() const{
+        return missing_;
+    }
 
     // -- Overridden methods
     // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    /// Calculate statistics
-    Results calculate(const data::MIRField&) const;
 
     // -- Class members
     // None
@@ -84,13 +72,16 @@ private:
 
     // -- Members
 
-    mutable detail::ScalarpNormsFn<double> stats_;
+    size_t count_;
+    size_t missing_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void execute(const data::MIRField&);
+    void print(std::ostream& out) const;
 
     // -- Class members
     // None
@@ -109,4 +100,3 @@ private:
 
 
 #endif
-

@@ -8,14 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-/// @date Oct 2016
-
 
 #include "mir/stats/SimplePackingEntropy.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
-#include "mir/stats/detail/MinMaxStatistics.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/memory/ScopedPtr.h"
+#include "eckit/parser/JSON.h"
+
+#include "mir/data/MIRField.h"
+#include "mir/param/MIRParametrisation.h"
 
 
 namespace mir {
@@ -24,8 +29,12 @@ namespace stats {
 
 SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& parametrisation) :
     Statistics(parametrisation),
-    bucketCount_(65536) {
+    entropy_(std::numeric_limits<double>::quiet_NaN()),
+    scale_(std::numeric_limits<double>::quiet_NaN()),
+    bucketCount_(0) {
+    reset();
 
+    bucketCount_ = 65536;
     parametrisation.get("entropy-buckets", bucketCount_);
 
     long bits = 0;
@@ -37,73 +46,86 @@ SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& para
 }
 
 
-Results SimplePackingEntropy::calculate(const data::MIRField& field) const {
-    Results results(field.dimensions());
+SimplePackingEntropy::~SimplePackingEntropy() = default;
 
-    // set buckets
-    ASSERT(bucketCount_ > 0);
+
+void SimplePackingEntropy::reset() {
+    entropy_ = std::numeric_limits<double>::quiet_NaN();
+    scale_   = std::numeric_limits<double>::quiet_NaN();
+    count_       = 0;
+    bucketCount_ = 0;
+}
+
+
+double SimplePackingEntropy::entropy() const {
+    return entropy_;
+}
+
+
+double SimplePackingEntropy::scale() const {
+    return scale_;
+}
+
+
+size_t SimplePackingEntropy::bucketCount() const {
+    return bucketCount_;
+}
+
+
+void SimplePackingEntropy::execute(const data::MIRField& field) {
+    reset();
+
+    ASSERT(field.dimensions() == 1);
+    auto& values = field.values(0);
+
+    auto mm = std::minmax_element(values.begin(), values.end());
+    auto minimum = *mm.first;
+    auto maximum = *mm.second;
+
+
+    ASSERT(count_ > 0);
+    ASSERT(count_ != missing_);
+
+    // set/fill buckets and compute entropy
     std::vector<size_t> buckets(bucketCount_);
+    scale_ = (bucketCount_ - 1)  / (maximum - minimum);
+    buckets.assign(bucketCount_, 0);
 
-    // set min/max calculation
-    const double missingValue = field.hasMissing()? field.missingValue() : std::numeric_limits<double>::quiet_NaN();
-    util::compare::IsMissingFn isMissing(missingValue);
-    detail::MinMaxStatistics<double> stats(missingValue);
+    const auto count = double(count_);
+    const double one_over_log2 = 1. / M_LN2;
 
-    for (size_t w = 0; w < field.dimensions(); ++w) {
-        ASSERT(field.values(w).size());
+    CounterUnary counter(field);
 
-        for (auto& value : field.values(w)) {
-            stats(value);
+    ASSERT(field.dimensions() == 1);
+    for (auto& value : values) {
+        if (!counter.missingValue(value)) {
+            auto b = size_t((value - minimum) * scale_);
+            ASSERT(b < bucketCount_);
+            buckets[b]++;
         }
-        ASSERT(stats.count() != stats.countMissing());
-
-
-        // fill buckets and compute entropy
-        buckets.assign(bucketCount_, 0);
-        double entropy = 0;
-
-        const double minvalue = stats.min();
-        const double maxvalue = stats.max();
-        const double scale = (bucketCount_ - 1)  / (maxvalue - minvalue);
-
-        const double count = double(stats.count());
-        const double one_over_log2 = 1 / M_LN2;
-
-        for (auto& value : field.values(w)) {
-            if (!isMissing(value)) {
-                size_t b = size_t((value - minvalue) * scale);
-                ASSERT(b < bucketCount_);
-                buckets[b]++;
-            }
-        }
-
-        for (auto& bucket : buckets) {
-            double p = double(bucket) / count;
-            if (p > 0) {
-                entropy += -p * std::log(p) * one_over_log2;
-            }
-        }
-
-
-        // set statistics results
-        results.uncomparableQuantity("entropy", w) = entropy;
-        results.uncomparableQuantity("scale",   w) = scale;
-        results.absoluteQuantity("min", w) = stats.min();
-        results.absoluteQuantity("max", w) = stats.max();
-        results.counter("count-non-missing", w) = stats.count();
-        results.counter("count-missing",     w) = stats.countMissing();
-
     }
 
-    return results;
+    entropy_ = 0.;
+    for (auto& bucket : buckets) {
+        double p = double(bucket) / count;
+        if (p > 0) {
+            entropy_ += -p * std::log(p) * one_over_log2;
+        }
+    }
 }
 
 
 void SimplePackingEntropy::print(std::ostream& out) const {
     out << "SimplePackingEntropy[";
-    Statistics::print(out);
-    out << ",bucketCount=" << bucketCount_
-        << "]";
+    eckit::JSON j(out);
+    j.startObject()
+            << "count"   << count_
+            << "missing" << missing_
+            << "entropy" << entropy()
+            << "scale"   << scale()
+            << "bucketCount"  << bucketCount();
+    j.endObject();
+    out << "]";
 }
 
 

@@ -131,12 +131,14 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
 void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
 
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
+    ASSERT(x.size() == A.rows() && y.size() == A.cols());
 
     B = A;
     dsp(y, B);
+
     B.transpose();
     dsp(x, B);
+    B.transpose();
 }
 
 

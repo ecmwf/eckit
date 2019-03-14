@@ -88,25 +88,17 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static PathName pathName(const std::string& name)
+template<class T>
+PathName TxnLog<T>::buildPath(const std::string& name)
 {
     PathName path = std::string("~/txn/") + name;
     path.mkdir();
     return path;
 }
 
-#if 0 // unused
-static PathName lockName(const std::string& name)
-{
-    PathName path = std::string("~/txn/") + name + "/lock";
-    path.touch();
-    return path;
-}
-#endif
-
 template<class T>
 TxnLog<T>::TxnLog(const std::string& name):
-    path_(pathName(name)),
+    path_(buildPath(name)),
     next_(path_ +  "/next")
 {
     std::string txnArrayType = Resource<std::string>("txnArrayType", "MemoryMapped");

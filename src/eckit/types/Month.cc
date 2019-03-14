@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 

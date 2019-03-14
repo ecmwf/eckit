@@ -9,12 +9,12 @@
  */
 
 #include <cstring>
-
+#include <cctype>
 #include <algorithm>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/StringTools.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/StringTools.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {

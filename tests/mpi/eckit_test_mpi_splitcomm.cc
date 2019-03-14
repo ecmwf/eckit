@@ -84,8 +84,17 @@ CASE( "Test MPI Communicator Split" )
         setCommDefault("SecondHalf");
     }
 
-    Comm & new_default = eckit::mpi::comm();
+    Comm& new_default = eckit::mpi::comm();
     EXPECT(new_default.size() == 2);
+
+
+    // test freeing up the default communicator
+    if (all.rank() < 2) {
+        deleteComm("FirstHalf");
+    } else {
+        deleteComm("SecondHalf");
+    }
+
 
 }
 

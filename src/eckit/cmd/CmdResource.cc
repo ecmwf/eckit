@@ -25,7 +25,7 @@
 #include "eckit/os/SignalHandler.h"
 #include "eckit/io/StdPipe.h"
 #include "eckit/io/StdioBuf.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/os/SignalHandler.h"
 
 // TODO: remember to add a mutex

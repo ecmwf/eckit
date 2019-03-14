@@ -13,7 +13,7 @@
 #include "eckit/eckit.h"
 
 #include "eckit/types/DateTime.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {

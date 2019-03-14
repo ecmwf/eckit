@@ -15,7 +15,7 @@
 #include "eckit/web/Html.h"
 #include "eckit/web/Url.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 //-----------------------------------------------------------------------------

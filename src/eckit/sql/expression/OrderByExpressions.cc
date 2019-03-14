@@ -9,7 +9,7 @@
  */
 
 #include "eckit/sql/expression/OrderByExpressions.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 
 namespace eckit {
 namespace sql {

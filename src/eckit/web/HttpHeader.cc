@@ -10,7 +10,7 @@
 
 
 #include "eckit/log/Log.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/web/HttpHeader.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/utils/Translator.h"

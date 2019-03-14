@@ -98,6 +98,8 @@ protected:  // methods
 
     virtual Comm & split( int color, const std::string & name  ) const;
 
+    virtual void free();
+
     virtual void print(std::ostream&) const;
 
     virtual Status status() const    { return createStatus(); }

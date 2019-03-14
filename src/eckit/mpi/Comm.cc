@@ -73,7 +73,7 @@ public:
         eckit::Log::error() << "Current communicators are:" << std::endl;
         for (itr = communicators.begin(); itr != communicators.end(); ++itr)
             eckit::Log::error() << "   " << (*itr).first << std::endl;
-        throw eckit::SeriousBug(std::string("No communicator called ") + name);
+        throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
     bool hasComm(const char* name) {
@@ -117,13 +117,13 @@ public:
         eckit::Log::error() << "Current communicators are:" << std::endl;
         for (itr = communicators.begin(); itr != communicators.end(); ++itr)
             eckit::Log::error() << "   " << (*itr).first << std::endl;
-        throw eckit::SeriousBug(std::string("No communicator called ") + name);
+        throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
     void addComm(const char* name, int comm) {
         AutoLock<Mutex> lock(mutex_);
         if (hasComm(name)) {
-            throw SeriousBug("Communicator with name " + std::string(name) + " already exists");
+            throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
         }
 
         Comm* pComm         = CommFactory::build(getDefaultComm(), comm);
@@ -133,10 +133,34 @@ public:
     void addComm(const char* name, Comm* comm) {
         AutoLock<Mutex> lock(mutex_);
         if (hasComm(name)) {
-            throw SeriousBug("Communicator with name " + std::string(name) + " already exists");
+            throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
         }
         communicators[name] = comm;
     }
+
+    void deleteComm(const char* name) {
+
+        AutoLock<Mutex> lock(mutex_);
+        auto itr = communicators.find(name);
+
+        if(itr != communicators.end()) {
+
+            Comm* comm = itr->second;
+
+            // refuse to delete the default communicator
+            if(default_ == comm)
+                throw SeriousBug("Trying to delete the default Communicator with name " + std::string(name), Here());
+
+            comm->free();
+            delete comm;
+
+            communicators.erase(itr);
+        }
+        else {
+            throw SeriousBug("Communicator with name " + std::string(name) + " does not exist", Here());
+        }
+    }
+
 
     Environment() : default_(nullptr) {}
 
@@ -183,7 +207,7 @@ public:
         for (j = factories.begin(); j != factories.end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
 
-        throw eckit::SeriousBug(std::string("No CommFactory called ") + name);
+        throw eckit::SeriousBug(std::string("No CommFactory called ") + name, Here());
     }
 
     static CommFactories& instance() {
@@ -237,6 +261,11 @@ void addComm(const char* name, Comm* comm) {
     Environment::instance().addComm(name, comm);
 }
 
+void deleteComm(const char* name)
+{
+    Environment::instance().deleteComm(name);
+}
+
 bool hasComm(const char* name) {
     return Environment::instance().hasComm(name);
 }
@@ -251,7 +280,9 @@ namespace detail {
 void Assert(int code, const char* msg, const char* file, int line, const char* func) {
     ::eckit::Assert(code, msg, file, line, func);
 }
-}  // namespace detail
+}
+
+// namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 

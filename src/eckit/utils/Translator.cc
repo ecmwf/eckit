@@ -11,15 +11,13 @@
 #include <cstdlib>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
+#include "eckit/utils/StringTools.h"
 #include "eckit/utils/Translator.h"
-
-
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 static unsigned long long multiplier(const char* p) {
 
@@ -53,8 +51,10 @@ std::string Translator<bool,std::string>::operator()(bool value)
     return s.str();
 }
 
-bool Translator<std::string,bool>::operator()(const std::string& s)
+bool Translator<std::string,bool>::operator()(const std::string& str)
 {
+    std::string s = StringTools::lower(str);
+
     if(s == "no" || s == "off" || s == "false") return false;
     if(s == "yes"|| s == "on"  || s == "true")  return true;
 

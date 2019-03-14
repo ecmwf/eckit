@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   StringTools.h
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
@@ -51,8 +50,10 @@ public:
     static std::string back_trim(const std::string &, const std::string &);
 
     static std::vector<std::string> split(const std::string& delim, const std::string& text);
+
     template<typename T>
     static std::string join(const std::string &, const T&);
+
     template<typename Iterator>
     static std::string join(const std::string &, Iterator begin, Iterator end);
 

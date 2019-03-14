@@ -10,7 +10,7 @@
 
 #include <stack>
 
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 #include "eckit/sql/expression/BitColumnExpression.h"
 #include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"

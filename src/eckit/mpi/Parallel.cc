@@ -471,6 +471,11 @@ Comm & Parallel::split( int color, const std::string & name ) const {
     return *newcomm;
 }
 
+void Parallel::free()
+{
+    MPI_CALL( MPI_Comm_free(&comm_) );
+}
+
 void Parallel::print(std::ostream& os) const {
     os << "Parallel()";
     /// @note maybe add information about the MPI backend: opem-mpi? mpich? etc...

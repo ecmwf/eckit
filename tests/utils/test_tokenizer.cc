@@ -10,7 +10,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/types/Types.h"
 
 #include "eckit/testing/Test.h"

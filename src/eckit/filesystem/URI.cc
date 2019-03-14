@@ -13,7 +13,7 @@
 
 #include "eckit/filesystem/URI.h"
 #include "eckit/filesystem/URIManager.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {

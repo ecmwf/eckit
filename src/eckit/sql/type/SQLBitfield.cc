@@ -13,7 +13,7 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLBit.h"

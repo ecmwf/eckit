@@ -15,7 +15,7 @@
 #include "SystemInfo.h"
 
 #include "eckit/eckit.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/exception/Exceptions.h"

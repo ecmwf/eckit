@@ -3,6 +3,8 @@ ecbuild_add_executable( TARGET      eckit_version
                         SOURCES     eckit-version.cc
                         LIBS        eckit )
 
+### NOT TO INSTALL
+
 ecbuild_add_executable( TARGET      dhcopy
                         OUTPUT_NAME eckit-dhcopy
                         NOINSTALL

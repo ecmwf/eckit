@@ -10,7 +10,7 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 #include "eckit/types/Types.h"
 
 #include "eckit/testing/Test.h"
@@ -24,6 +24,24 @@ namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+CASE( "Convert to lower" ) {
+
+    std::string istr = "Foo Bar";
+
+    std::string ostr = StringTools::lower(istr);
+
+    EXPECT( ostr == "foo bar" );
+}
+
+CASE( "Convert to upper" ) {
+
+    std::string istr = "Foo Bar";
+
+    std::string ostr = StringTools::upper(istr);
+
+    EXPECT( ostr == "FOO BAR" );
+}
 
 CASE ( "substitute" ) {
     StringDict m;

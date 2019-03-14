@@ -46,6 +46,10 @@ void addComm(const char* name, int comm);
 /// Register an existing communicator
 void addComm(const char* name, Comm* comm);
 
+/// Unregister and delete specific comm
+/// @pre Comm is registered in the environment
+void deleteComm(const char* name);
+
 /// Check if a communicator is registered
 bool hasComm(const char* name);
 
@@ -375,6 +379,10 @@ protected:  // methods
     virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest,
                           int tag) const = 0;
 
+    /// @brief Call free on this communicator
+    /// After calling this method, the communicator should not be used again
+    /// This is protected so only Environment can call it, typically via the deleteComm() method
+    virtual void free() = 0;
 
 private:  // methods
     virtual void print(std::ostream&) const = 0;

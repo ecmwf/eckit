@@ -15,7 +15,7 @@
 #include "eckit/types/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {

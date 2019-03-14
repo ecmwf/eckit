@@ -90,6 +90,8 @@ protected:  // methods
 
     virtual Comm & split( int color, const std::string & name ) const;
 
+    virtual void free();
+
     virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const;
 
     virtual void print(std::ostream&) const;

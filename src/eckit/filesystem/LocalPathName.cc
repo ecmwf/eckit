@@ -35,7 +35,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/os/Stat.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/system/Library.h"

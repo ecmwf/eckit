@@ -11,7 +11,7 @@
 #include "eckit/cmd/StartCmd.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/config/Resource.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 //-----------------------------------------------------------------------------
 

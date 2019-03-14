@@ -16,7 +16,7 @@
 #include "eckit/io/DataBlob.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/memory/ScopedPtr.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/types/Metadata.h"
 
 #include "eckit/testing/Test.h"

@@ -11,7 +11,7 @@
 #include "eckit/sql/SchemaAnalyzer.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 
 using namespace eckit;
 

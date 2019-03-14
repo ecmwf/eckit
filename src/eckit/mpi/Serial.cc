@@ -161,6 +161,10 @@ Comm & Serial::split( int color, const std::string & name ) const {
     return *newcomm;
 }
 
+void Serial::free() {
+    // nothing todo
+}
+
 void Serial::abort(int) const {
     // Don't use std::abort as it would raise SIGABRT.
     // MPI_Abort also does not raise SIGABRT

@@ -469,10 +469,6 @@ types/VerifyingDate.cc
 list( APPEND eckit_parser_srcs
 parser/StreamParser.h
 parser/StreamParser.cc
-parser/StringTools.h
-parser/StringTools.cc
-parser/Tokenizer.h
-parser/Tokenizer.cc
 parser/JSON.h
 parser/JSON.cc
 parser/ObjectParser.h
@@ -621,7 +617,12 @@ utils/RendezvousHash.cc
 utils/HyperCube.h
 utils/HyperCube.cc
 utils/RLE.h
-utils/RLE.cc )
+utils/RLE.cc
+utils/StringTools.h
+utils/StringTools.cc
+utils/Tokenizer.h
+utils/Tokenizer.cc
+)
 
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs

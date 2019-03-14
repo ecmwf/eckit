@@ -15,7 +15,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Timer.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutputConfig.h"

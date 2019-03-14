@@ -15,7 +15,7 @@
 #include "eckit/system/ResourceUsage.h"
 
 #include "eckit/eckit_ecbuild_config.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"

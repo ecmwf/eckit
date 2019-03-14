@@ -14,7 +14,7 @@
 
 #include "eckit/thread/AutoLock.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {

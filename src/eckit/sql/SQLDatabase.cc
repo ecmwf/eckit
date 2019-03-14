@@ -15,7 +15,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/type/SQLType.h"
 

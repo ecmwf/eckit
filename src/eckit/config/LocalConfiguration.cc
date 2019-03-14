@@ -13,7 +13,7 @@
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/parser/JSONParser.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/types/Types.h"
 #include "eckit/value/Value.h"
 

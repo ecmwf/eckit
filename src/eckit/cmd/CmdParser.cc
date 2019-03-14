@@ -16,7 +16,7 @@
 #include "eckit/cmd/CmdResource.h"
 #include "eckit/log/Log.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/runtime/Main.h"
 
 #define YY_INPUT(buf, result, max_size)                  \

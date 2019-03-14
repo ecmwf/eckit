@@ -13,7 +13,7 @@
 #include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 #include "eckit/utils/Translator.h"
 
 #include "eckit/testing/Test.h"

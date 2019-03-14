@@ -24,8 +24,8 @@ protected:  // methods
 
     template< class T> friend class CommBuilder;
 
-    Serial();
-    Serial(int);
+    Serial(const std::string& name);
+    Serial(const std::string& name, int);
 
     virtual ~Serial();
 

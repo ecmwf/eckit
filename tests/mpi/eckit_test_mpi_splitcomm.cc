@@ -31,7 +31,9 @@ char ** argv;
 CASE( "Test MPI Communicator Split" )
 {
     // Get default communicator
-    Comm & all = eckit::mpi::comm();
+    Comm& all = eckit::mpi::comm();
+
+    std::string start = all.name();
 
     // Check sizes and ranks
     EXPECT( all.size() == 4 );
@@ -90,12 +92,21 @@ CASE( "Test MPI Communicator Split" )
 
     // test freeing up the default communicator
     if (all.rank() < 2) {
-        deleteComm("FirstHalf");
+        EXPECT_THROWS_AS(deleteComm("FirstHalf"), eckit::SeriousBug );
     } else {
-        deleteComm("SecondHalf");
+        EXPECT_THROWS_AS(deleteComm("SecondHalf"), eckit::SeriousBug );
     }
 
+    setCommDefault(start.c_str());
 
+    // test freeing up the default communicator
+    if (all.rank() < 2) {
+        EXPECT_NO_THROW(deleteComm("FirstHalf"));
+        EXPECT(not eckit::mpi::hasComm("FirstHalf"));
+    } else {
+        EXPECT_NO_THROW(deleteComm("SecondHalf"));
+        EXPECT(not eckit::mpi::hasComm("SecondHalf"));
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -37,6 +37,8 @@ class Environment;
 /// passed
 Comm& comm(const char* name = nullptr);
 
+Comm& self();
+
 /// Set a communicator as default
 void setCommDefault(const char* name);
 
@@ -62,6 +64,12 @@ bool hasComm(const char* name);
 ///       the only current reason to use this function.
 void finaliseAllComms();
 
+namespace detail {
+    /// Assertions for eckit::mpi code
+    /// Don't use directly in client code
+    void Assert(int code, const char* msg, const char* file, int line, const char* func);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class Comm : private eckit::NonCopyable {
@@ -71,8 +79,8 @@ public:  // class methods
     static Comm& comm(const char* name = nullptr);
 
 public:  // methods
-    /// @brief Creates a communicator to self
-    virtual eckit::mpi::Comm* self() const = 0;
+
+    std::string name() const { return name_; }
 
     /// @brief Returns name of processor according to MPI
     virtual std::string processorName() const = 0;
@@ -323,6 +331,7 @@ public:  // methods
     virtual int communicator() const = 0;
 
 private:  // class methods
+
     static void initDefaultComm();
 
 protected:  // methods
@@ -384,6 +393,9 @@ protected:  // methods
     /// This is protected so only Environment can call it, typically via the deleteComm() method
     virtual void free() = 0;
 
+    /// @brief Creates a communicator to self
+    virtual eckit::mpi::Comm* self() const = 0;
+
 private:  // methods
     virtual void print(std::ostream&) const = 0;
 
@@ -393,9 +405,12 @@ private:  // methods
     }
 
 protected:  // methods
-    Comm();
+
+    Comm(const std::string& name);
 
     virtual ~Comm();
+
+    std::string name_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -403,25 +418,25 @@ protected:  // methods
 class CommFactory {
     friend class eckit::mpi::Environment;
 
-    std::string name_;
-    virtual Comm* make()    = 0;
-    virtual Comm* make(int) = 0;
+    std::string builder_;
+    virtual Comm* make(const std::string& name)    = 0;
+    virtual Comm* make(const std::string& name, int) = 0;
 
 protected:
-    CommFactory(const std::string&);
+    CommFactory(const std::string& builder);
     virtual ~CommFactory();
 
-    static Comm* build(const std::string&);
-    static Comm* build(const std::string&, int);
+    static Comm* build(const std::string& name, const std::string& builder);
+    static Comm* build(const std::string& name, const std::string& builder, int);
 };
 
 template <class T>
 class CommBuilder : public CommFactory {
-    virtual Comm* make() { return new T(); }
-    virtual Comm* make(int comm) { return new T(comm); }
+    virtual Comm* make(const std::string& name) { return new T(name); }
+    virtual Comm* make(const std::string& name, int comm) { return new T(name, comm); }
 
 public:
-    CommBuilder(const std::string& name) : CommFactory(name) {}
+    CommBuilder(const std::string& builder) : CommFactory(builder) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -431,15 +446,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace mpi {
-namespace detail {
-void Assert(int code, const char* msg, const char* file, int line, const char* func);
 #define ECKIT_MPI_ASSERT(a) eckit::mpi::detail::Assert(!(a), #a, __FILE__, __LINE__, __func__)
-}  // namespace detail
-}  // namespace mpi
-}  // namespace eckit
-
 
 template <typename T>
 size_t eckit::mpi::Comm::getCount(Status& status) const {

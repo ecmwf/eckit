@@ -129,7 +129,7 @@ static MPI_Op toOp(Operation::Code code) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Parallel::Parallel() /* don't use member initialisation list */ {
+Parallel::Parallel(const std::string& name) : Comm(name) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
@@ -140,7 +140,7 @@ Parallel::Parallel() /* don't use member initialisation list */ {
     comm_ = MPI_COMM_WORLD;
 }
 
-Parallel::Parallel(MPI_Comm comm, bool) /* don't use member initialisation list */ {
+Parallel::Parallel(const std::string& name, MPI_Comm comm, bool) : Comm(name) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
@@ -151,7 +151,7 @@ Parallel::Parallel(MPI_Comm comm, bool) /* don't use member initialisation list 
     comm_ = comm;
 }
 
-Parallel::Parallel(int comm) {
+Parallel::Parallel(const std::string& name, int comm) : Comm(name) {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
@@ -174,7 +174,7 @@ Parallel::~Parallel() {
 
 Comm* Parallel::self() const
 {
-    return new Parallel(MPI_COMM_SELF, true);
+    return new Parallel("self", MPI_COMM_SELF, true);
 }
 
 void Parallel::initialize() {
@@ -466,7 +466,7 @@ Comm & Parallel::split( int color, const std::string & name ) const {
 
     MPI_Comm new_mpi_comm;
     MPI_CALL( MPI_Comm_split( comm_, color, rank(), &new_mpi_comm ));
-    Comm * newcomm = new Parallel(new_mpi_comm,true);
+    Comm * newcomm = new Parallel(name, new_mpi_comm,true);
     addComm(name.c_str(), newcomm);
     return *newcomm;
 }

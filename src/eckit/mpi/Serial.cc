@@ -118,17 +118,17 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Serial::Serial() {
+Serial::Serial(const std::string& name) : Comm(name) {
 }
 
-Serial::Serial(int) {
+Serial::Serial(const std::string& name, int) : Comm(name) {
 }
 
 Serial::~Serial() {
 }
 
 Comm* Serial::self() const {
-    return new Serial();
+    return new Serial("self");
 }
 
 std::string Serial::processorName() const {
@@ -156,7 +156,7 @@ Comm & Serial::split( int color, const std::string & name ) const {
     if (hasComm(name.c_str())) {
         throw SeriousBug("Communicator with name "+ name + " already exists");
     }
-    Comm * newcomm = new Serial();
+    Comm * newcomm = new Serial(name);
     addComm(name.c_str(), newcomm);
     return *newcomm;
 }

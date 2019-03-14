@@ -114,7 +114,7 @@ public:
     bool operator==(const Obj& rhs) {
 
         auto compvec = [&]() {
-            for(int i = 0; i < data_.size(); ++i) {
+            for(size_t i = 0; i < data_.size(); ++i) {
                 if(data_[i] != rhs.data_[i]) return false;
             }
             return true;

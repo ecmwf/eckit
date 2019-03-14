@@ -51,10 +51,12 @@ public:
 
         ASSERT(!default_);
 
-        Comm* world = CommFactory::build(getDefaultComm());
+        Comm* world = CommFactory::build("world", getDefaultComm());
 
-        communicators["world"] = world;
-        communicators["self"]  = world->self();
+        communicators[world->name()] = world;
+
+        Comm* self = world->self();
+        communicators[self->name()] = self;
 
         default_ = world;
     }
@@ -126,7 +128,7 @@ public:
             throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
         }
 
-        Comm* pComm         = CommFactory::build(getDefaultComm(), comm);
+        Comm* pComm         = CommFactory::build(name, getDefaultComm(), comm);
         communicators[name] = pComm;
     }
 
@@ -182,32 +184,32 @@ public:
 
 class CommFactories {
 public:
-    void registFactory(const std::string& name, CommFactory* f) {
+    void registFactory(const std::string& builder, CommFactory* f) {
         AutoLock<Mutex> lock(mutex_);
-        ASSERT(factories.find(name) == factories.end());
-        factories[name] = f;
+        ASSERT(factories.find(builder) == factories.end());
+        factories[builder] = f;
     }
 
-    void unregistFactory(const std::string& name) {
+    void unregistFactory(const std::string& builder) {
         AutoLock<Mutex> lock(mutex_);
-        factories.erase(name);
+        factories.erase(builder);
     }
 
-    CommFactory& getFactory(const std::string& name) {
+    CommFactory& getFactory(const std::string& builder) {
         AutoLock<Mutex> lock(mutex_);
 
-        std::map<std::string, CommFactory*>::const_iterator j = factories.find(name);
+        std::map<std::string, CommFactory*>::const_iterator j = factories.find(builder);
 
         if (j != factories.end()) {
             return *(j->second);
         }
 
-        eckit::Log::error() << "No CommFactory for [" << name << "]" << std::endl;
+        eckit::Log::error() << "No CommFactory for [" << builder << "]" << std::endl;
         eckit::Log::error() << "CommFactories are:" << std::endl;
         for (j = factories.begin(); j != factories.end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
 
-        throw eckit::SeriousBug(std::string("No CommFactory called ") + name, Here());
+        throw eckit::SeriousBug(std::string("No CommFactory called ") + builder, Here());
     }
 
     static CommFactories& instance() {
@@ -222,25 +224,25 @@ private:
     eckit::Mutex mutex_;
 };
 
-CommFactory::CommFactory(const std::string& name) : name_(name) {
-    CommFactories::instance().registFactory(name, this);
+CommFactory::CommFactory(const std::string& builder) : builder_(builder) {
+    CommFactories::instance().registFactory(builder, this);
 }
 
 CommFactory::~CommFactory() {
-    CommFactories::instance().unregistFactory(name_);
+    CommFactories::instance().unregistFactory(builder_);
 }
 
-Comm* CommFactory::build(const std::string& name) {
-    return CommFactories::instance().getFactory(name).make();
+Comm* CommFactory::build(const std::string& name, const std::string& builder) {
+    return CommFactories::instance().getFactory(builder).make(name);
 }
 
-Comm* CommFactory::build(const std::string& name, int comm) {
-    return CommFactories::instance().getFactory(name).make(comm);
+Comm* CommFactory::build(const std::string& name, const std::string& builder, int comm) {
+    return CommFactories::instance().getFactory(builder).make(name, comm);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm::Comm() {}
+Comm::Comm(const std::string& name) : name_(name) {}
 
 Comm::~Comm() {}
 
@@ -274,15 +276,18 @@ void finaliseAllComms() {
     return Environment::instance().finaliseAllComms();
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+Comm& self()
+{
+    return comm("self");
+}
 
 namespace detail {
+
 void Assert(int code, const char* msg, const char* file, int line, const char* func) {
     ::eckit::Assert(code, msg, file, line, func);
 }
-}
 
-// namespace detail
+} // detail
 
 //----------------------------------------------------------------------------------------------------------------------
 

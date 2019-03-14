@@ -17,7 +17,7 @@
 
 #include "mir/search/tree/TreeMappedFile.h"
 
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/filesystem/PathExpander.h"
 
 #include "mir/repres/Representation.h"

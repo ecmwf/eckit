@@ -20,6 +20,7 @@
 #include "eckit/mpi/ParallelRequest.h"
 #include "eckit/mpi/ParallelStatus.h"
 #include "eckit/runtime/Main.h"
+#include "eckit/config/Resource.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
@@ -189,7 +190,58 @@ void Parallel::initialize() {
             argv = eckit::Main::instance().argv();
         }
 
-        MPI_CALL( MPI_Init(&argc, &argv) );
+        std::string MPIInitThread = eckit::Resource<std::string>("MPIInitThread;$ECKIT_MPI_INIT_THREAD", "NONE");
+
+        if(MPIInitThread == "NONE") {
+            MPI_CALL( MPI_Init(&argc, &argv) );
+        }
+        else {
+            int required;
+
+            if(MPIInitThread == "MPI_THREAD_SINGLE")
+                required = MPI_THREAD_SINGLE; //< only one thread executes
+            else
+                if(MPIInitThread == "MPI_THREAD_FUNNELED")
+                    required = MPI_THREAD_FUNNELED; //< process may be multi-threaded, but only the main thread will make MPI calls
+                else
+                    if(MPIInitThread == "MPI_THREAD_SERIALIZED")
+                        required = MPI_THREAD_SERIALIZED; //< the process may be multi-threaded, and multiple threads may make MPI calls, but only one at a time
+                    else
+                        if(MPIInitThread == "MPI_THREAD_MULTIPLE")
+                            required = MPI_THREAD_MULTIPLE; //< multiple threads may call MPI, with no restrictions
+                        else {
+                            std::ostringstream msg;
+                            msg << "Value of mpiInitThread is unrecognised: "
+                                << MPIInitThread
+                                << " -- Valid values are: NONE, MPI_THREAD_SINGLE, MPI_THREAD_FUNNELED, MPI_THREAD_SERIALIZED and MPI_THREAD_MULTIPLE";
+                            throw eckit::UserError(msg.str(), Here());
+                        }
+
+            int provided;
+
+            MPI_CALL( MPI_Init_thread(&argc, &argv, required, &provided) );
+
+            if(provided != required) {
+                std::ostringstream msg;
+                msg << "MPI_Init_thread provides different thread support than requested -"
+                    << " requested: " << MPIInitThread;
+                if(provided == MPI_THREAD_SINGLE)
+                    msg << " provided: " << "MPI_THREAD_SINGLE";
+                else
+                    if(provided == MPI_THREAD_FUNNELED)
+                        msg << " provided: " << "MPI_THREAD_FUNNELED";
+                    else
+                        if(provided == MPI_THREAD_SERIALIZED)
+                            msg << " provided: " << "MPI_THREAD_SERIALIZED";
+                        else
+                            if(provided == MPI_THREAD_MULTIPLE)
+                                msg << " provided: " << "MPI_THREAD_MULTIPLE";
+                            else
+                                msg << " provided: " << " UNKNOWN (" << provided << ")";
+
+                throw eckit::UserError(msg.str(), Here());
+            }
+        }
     }
 }
 

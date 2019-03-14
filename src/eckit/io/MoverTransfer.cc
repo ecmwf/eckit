@@ -16,7 +16,6 @@
 #include "eckit/io/MoverTransfer.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Progress.h"
-#include "eckit/config/Resource.h"
 #include "eckit/net/TCPServer.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/Thread.h"

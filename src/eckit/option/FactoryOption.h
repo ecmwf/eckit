@@ -33,82 +33,20 @@ template<class T>
 class FactoryOption : public Option {
   public:
 
-// -- Exceptions
-    // None
-
-// -- Contructors
-
     FactoryOption(const std::string& name, const std::string& description);
-
-// -- Destructor
 
     virtual ~FactoryOption(); // Change to virtual if base class
 
-// -- Convertors
-    // None
-
-// -- Operators
-    // None
-
-// -- Methods
-    // None
-
-
-
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
   protected:
-
-// -- Members
-
-// -- Methods
 
     virtual void print(std::ostream&) const; // Change to virtual if base class
 
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
   private:
 
-// No copy allowed
-
-    FactoryOption(const FactoryOption&);
-    FactoryOption& operator=(const FactoryOption&);
-
-// -- Members
-    // None
-
-// -- Methods
-    // None
-
-// -- Overridden methods
-
     using Option::set;
+
     virtual void set(const std::string& value, Configured&) const;
     virtual void copy(const Configuration& from, Configured& to) const;
-
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-// -- Friends
 
 };
 

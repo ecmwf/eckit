@@ -55,7 +55,6 @@ std::string Translator<bool,std::string>::operator()(bool value)
 
 bool Translator<std::string,bool>::operator()(const std::string& s)
 {
-
     if(s == "no" || s == "off" || s == "false") return false;
     if(s == "yes"|| s == "on"  || s == "true")  return true;
 

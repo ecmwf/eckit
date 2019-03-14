@@ -97,6 +97,8 @@ CASE( "Test MPI Communicator Split" )
         EXPECT_THROWS_AS(deleteComm("SecondHalf"), eckit::SeriousBug );
     }
 
+    EXPECT_THROWS_AS(deleteComm("Foo"), eckit::SeriousBug );
+
     setCommDefault(start.c_str());
 
     // test freeing up the default communicator

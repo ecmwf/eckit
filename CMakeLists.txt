@@ -56,12 +56,6 @@ set_package_properties( Eigen3 PROPERTIES
                         DESCRIPTION "C++ template library for linear algebra"
                       )
 
-if( ENABLE_EIGEN )
-    # TODO: we should add here a test that we can compile Eigen without problems
-    # TODO: don't use contrib just yet -- sort out the legal stuff first
-    # set( ECKIT_CONTRIB_EIGEN 1 )
-endif()
-
 ### Armadillo
 
 ecbuild_add_option( FEATURE ARMADILLO

@@ -20,6 +20,8 @@
 #include "eckit/parser/JSON.h"
 
 #include "mir/data/MIRField.h"
+#include "mir/stats/StatisticsT.h"
+#include "mir/stats/detail/MinMax.h"
 #include "mir/param/MIRParametrisation.h"
 
 
@@ -78,17 +80,15 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     ASSERT(field.dimensions() == 1);
     auto& values = field.values(0);
 
-    auto mm = std::minmax_element(values.begin(), values.end());
-    auto minimum = *mm.first;
-    auto maximum = *mm.second;
-
+    StatisticsT<detail::MinMax> mm(parametrisation_);
+    mm.execute(field);
 
     ASSERT(count_ > 0);
     ASSERT(count_ != missing_);
 
     // set/fill buckets and compute entropy
     std::vector<size_t> buckets(bucketCount_);
-    scale_ = (bucketCount_ - 1)  / (maximum - minimum);
+    scale_ = (bucketCount_ - 1)  / (mm.max() - mm.min());
     buckets.assign(bucketCount_, 0);
 
     const auto count = double(count_);
@@ -96,10 +96,9 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
 
     CounterUnary counter(field);
 
-    ASSERT(field.dimensions() == 1);
     for (auto& value : values) {
         if (!counter.missingValue(value)) {
-            auto b = size_t((value - minimum) * scale_);
+            auto b = size_t((value - mm.min()) * scale_);
             ASSERT(b < bucketCount_);
             buckets[b]++;
         }

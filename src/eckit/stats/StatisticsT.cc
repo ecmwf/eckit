@@ -22,31 +22,6 @@ namespace mir {
 namespace stats {
 
 
-template<typename STATS>
-StatisticsT<STATS>::StatisticsT(const param::MIRParametrisation& parametrisation) :
-    Statistics(parametrisation),
-    count_(0),
-    missing_(0) {
-}
-
-
-template<typename STATS>
-void StatisticsT<STATS>::execute(const data::MIRField& field) {
-    CounterUnary counter(field);
-    STATS::reset();
-
-    ASSERT(field.dimensions() == 1);
-    for (auto& value : field.values(0)) {
-        if (!counter.missingValue(value)) {
-            STATS::operator()(value);
-        }
-    }
-
-    count_   = counter.count();
-    missing_ = counter.missing();
-}
-
-
 #if 0
 template<typename STATS>
 void StatisticsT<STATS>::calculate(const data::MIRField& field1, const data::MIRField& field2) {
@@ -74,14 +49,6 @@ void StatisticsT<STATS>::calculate(const data::MIRField& field1, const data::MIR
     missing_ = counter.missing2();
 }
 #endif
-
-
-template<typename STATS>
-void StatisticsT<STATS>::print(std::ostream& out) const {
-    out << "Statistics[count" << count_ << ",missing"  << missing_ << ",";
-    STATS::print(out);
-    out << "]";
-}
 
 
 static StatisticsBuilder<StatisticsT<detail::AngleT<detail::AngleScale::DEGREE>>> __stats1("angle-degree");

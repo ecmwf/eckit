@@ -1,0 +1,92 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/// @author Tiago Quintino
+/// @author Pedro Maciel
+/// @date Jul 2015
+
+
+#ifndef mir_stats_Integral_h
+#define mir_stats_Integral_h
+
+#include "mir/stats/Statistics.h"
+
+
+namespace mir {
+namespace stats {
+
+
+class Integral : public Statistics {
+public:
+
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+
+    Integral(const param::MIRParametrisation&);
+
+    // -- Destructor
+    // None
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+    // None
+
+    // -- Methods
+
+    void reset();
+
+    double integral() const {
+        return integral_;
+    }
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+
+    // -- Members
+
+    double integral_;
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+
+    void execute(const data::MIRField&);
+    void print(std::ostream&) const;
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
+
+};
+
+
+}  // namespace stats
+}  // namespace mir
+
+
+#endif

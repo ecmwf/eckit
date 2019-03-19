@@ -9,7 +9,6 @@
  */
 
 
-
 #ifndef mir_stats_StatisticsT_h
 #define mir_stats_StatisticsT_h
 
@@ -26,9 +25,7 @@ namespace mir {
 namespace stats {
 
 
-/**
- * @brief Calculate angle statistics on a MIRField
- */
+/// Generic statistics on a MIRField
 template<typename STATS>
 class StatisticsT : public Statistics, public STATS {
 public:
@@ -38,7 +35,11 @@ public:
 
     // -- Constructors
 
-    StatisticsT(const param::MIRParametrisation& parametrisation);
+    StatisticsT(const param::MIRParametrisation& parametrisation) :
+        Statistics(parametrisation),
+        count_(0),
+        missing_(0) {
+    }
 
     // -- Destructor
     // None
@@ -60,7 +61,21 @@ public:
     }
 
     // -- Overridden methods
-    // None
+
+    void execute(const data::MIRField& field) {
+        CounterUnary counter(field);
+        STATS::reset();
+
+        ASSERT(field.dimensions() == 1);
+        for (auto& value : field.values(0)) {
+            if (!counter.missingValue(value)) {
+                STATS::operator()(value);
+            }
+        }
+
+        count_   = counter.count();
+        missing_ = counter.missing();
+    }
 
     // -- Class members
     // None
@@ -80,8 +95,11 @@ private:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&);
-    void print(std::ostream& out) const;
+    void print(std::ostream& out) const {
+        out << "Statistics[count" << count_ << ",missing"  << missing_ << ",";
+        STATS::print(out);
+        out << "]";
+    }
 
     // -- Class members
     // None

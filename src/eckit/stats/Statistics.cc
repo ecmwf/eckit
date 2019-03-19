@@ -65,10 +65,9 @@ bool Statistics::CounterUnary::missingValue(const double& v) {
     count_++;
     if (hasMissing_ && missingValue_ == v) {
         missing_++;
-        return false;
+        return true;
     }
-    return true;
-
+    return false;
 }
 
 

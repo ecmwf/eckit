@@ -18,8 +18,6 @@
 #include <limits>
 #include <ostream>
 
-#include "eckit/parser/JSON.h"
-
 
 namespace mir {
 namespace stats {
@@ -104,19 +102,16 @@ public:
     }
 
     void print(std::ostream& out) const {
-        out << "CentralMoments[";
-        eckit::JSON j(out);
-        j.startObject()
-                << "mean"     << mean()
-                << "stddev"   << standardDeviation()
-                << "skewness" << skewness()
-                << "kurtosis" << kurtosis()
-                << "centralMoment1" << centralMoment1()
-                << "centralMoment2" << centralMoment2()
-                << "centralMoment3" << centralMoment3()
-                << "centralMoment4" << centralMoment4();
-        j.endObject();
-        out << "]";
+        out << "CentralMoments["
+                "mean="     << mean()
+            << ",stddev="   << standardDeviation()
+            << ",skewness=" << skewness()
+            << ",kurtosis=" << kurtosis()
+            << ",centralMoment1=" << centralMoment1()
+            << ",centralMoment2=" << centralMoment2()
+            << ",centralMoment3=" << centralMoment3()
+            << ",centralMoment4=" << centralMoment4()
+            << "]";
     }
 };
 

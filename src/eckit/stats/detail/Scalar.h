@@ -15,7 +15,6 @@
 #include <ostream>
 
 #include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/stats/detail/MinMax.h"
 #include "mir/stats/detail/PNorms.h"
 
 
@@ -27,22 +26,15 @@ namespace detail {
 /// Scalar statistics (composition)
 struct Scalar {
 private:
-    MinMax minMax_;
     PNorms pNorms_;
     CentralMomentsT<double> centralMoments_;
 
 public:
 
     void reset() {
-        minMax_.reset();
         centralMoments_.reset();
         pNorms_.reset();
     }
-
-    double min()      const { return minMax_.min(); }
-    double max()      const { return minMax_.max(); }
-    size_t minIndex() const { return minMax_.minIndex(); }
-    size_t maxIndex() const { return minMax_.maxIndex(); }
 
     double mean()              const { return centralMoments_.mean(); }
     double variance()          const { return centralMoments_.variance(); }
@@ -55,21 +47,17 @@ public:
     double normLinfinity() const { return pNorms_.normLinfinity(); }
 
     void operator()(const double& v) {
-        minMax_        (v);
         centralMoments_(v);
-        pNorms_         (v);
+        pNorms_        (v);
     }
 
     void operator+=(const Scalar& other) {
-        minMax_         += other.minMax_;
         centralMoments_ += other.centralMoments_;
         pNorms_         += other.pNorms_;
     }
 
     void print(std::ostream& out) const {
         out << "Scalar[";
-        minMax_.print(out);
-        out << ",";
         centralMoments_.print(out);
         out << ",";
         pNorms_.print(out);

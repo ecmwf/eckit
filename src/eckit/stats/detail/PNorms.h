@@ -16,8 +16,6 @@
 #include <cmath>
 #include <ostream>
 
-#include "eckit/parser/JSON.h"
-
 
 namespace mir {
 namespace stats {
@@ -64,14 +62,11 @@ public:
     }
 
     void print(std::ostream& out) const {
-        out << "PNorms[";
-        eckit::JSON j(out);
-        j.startObject()
-                << "L1" << normL1()
-                << "L2" << normL2()
-                << "Li" << normLinfinity();
-        j.endObject();
-        out << "]";
+        out << "PNorms["
+                "L1=" << normL1()
+            << ",L2=" << normL2()
+            << ",Li=" << normLinfinity()
+            << "]";
     }
 };
 

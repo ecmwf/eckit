@@ -18,13 +18,15 @@
 
 #include "mir/stats/Statistics.h"
 
+#include "mir/stats/detail/Counter.h"
+
 
 namespace mir {
 namespace stats {
 namespace statistics {
 
 
-class Integral : public Statistics {
+class Integral : public Statistics, detail::Counter {
 public:
 
     // -- Exceptions

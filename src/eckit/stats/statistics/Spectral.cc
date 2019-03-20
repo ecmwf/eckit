@@ -16,7 +16,6 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/JSON.h"
 
 #include "mir/data/MIRField.h"
 #include "mir/repres/sh/SphericalHarmonics.h"
@@ -100,15 +99,12 @@ void Spectral::execute(const data::MIRField& field) {
 
 
 void Spectral::print(std::ostream& out) const {
-    out << "Spectral[";
-    eckit::JSON j(out);
-    j.startObject()
-            << "mean"     << mean()
-            << "variance" << variance()
-            << "stddev"   << standardDeviation()
-            << "enorm"    << enorm();
-    j.endObject();
-    out << "]";
+    out << "Spectral["
+            "mean=" << mean()
+        << ",variance=" << variance()
+        << ",stddev=" << standardDeviation()
+        << ",enorm=" << enorm()
+        << "]";
 }
 
 

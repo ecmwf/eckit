@@ -73,6 +73,7 @@ private:
 
     void execute(const data::MIRField&, const data::MIRField&);
     void print(std::ostream&) const;
+    void check() const;
 
     // -- Class members
     // None

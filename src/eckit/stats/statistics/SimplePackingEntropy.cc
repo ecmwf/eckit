@@ -17,13 +17,10 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/ScopedPtr.h"
-#include "eckit/parser/JSON.h"
 
 #include "mir/data/MIRField.h"
-#include "mir/stats/StatisticsT.h"
-#include "mir/stats/detail/CounterUnary.h"
-#include "mir/stats/detail/MinMax.h"
 #include "mir/param/MIRParametrisation.h"
+#include "mir/stats/statistics/StatisticsT.h"
 
 
 namespace mir {
@@ -33,6 +30,7 @@ namespace statistics {
 
 SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& parametrisation) :
     Statistics(parametrisation),
+    Counter(parametrisation),
     entropy_(std::numeric_limits<double>::quiet_NaN()),
     scale_(std::numeric_limits<double>::quiet_NaN()),
     bucketCount_(0) {
@@ -56,7 +54,6 @@ SimplePackingEntropy::~SimplePackingEntropy() = default;
 void SimplePackingEntropy::reset() {
     entropy_ = std::numeric_limits<double>::quiet_NaN();
     scale_   = std::numeric_limits<double>::quiet_NaN();
-    count_       = 0;
     bucketCount_ = 0;
 }
 
@@ -82,25 +79,28 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     ASSERT(field.dimensions() == 1);
     auto& values = field.values(0);
 
-    StatisticsT<detail::MinMax> mm(parametrisation_);
-    mm.execute(field);
+    Counter::reset(field);
+    for (auto& value : values) {
+        count(value);
+    }
+    const double _max = max();
+    const double _min = min();
 
-    ASSERT(count_ > 0);
-    ASSERT(count_ != missing_);
+    ASSERT(count() > 0);
+    ASSERT(count() != missing());
 
     // set/fill buckets and compute entropy
     std::vector<size_t> buckets(bucketCount_);
-    scale_ = (bucketCount_ - 1)  / (mm.max() - mm.min());
+    scale_ = (bucketCount_ - 1)  / (_max - _min);
     buckets.assign(bucketCount_, 0);
 
-    const auto count = double(count_);
+    const auto N = double(count());
     const double one_over_log2 = 1. / M_LN2;
 
-    detail::CounterUnary counter(field);
-
+    Counter::reset(field);
     for (auto& value : values) {
-        if (counter(value)) {
-            auto b = size_t((value - mm.min()) * scale_);
+        if (count(value)) {
+            auto b = size_t((value - _min) * scale_);
             ASSERT(b < bucketCount_);
             buckets[b]++;
         }
@@ -108,7 +108,7 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
 
     entropy_ = 0.;
     for (auto& bucket : buckets) {
-        double p = double(bucket) / count;
+        double p = double(bucket) / N;
         if (p > 0) {
             entropy_ += -p * std::log(p) * one_over_log2;
         }
@@ -118,15 +118,11 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
 
 void SimplePackingEntropy::print(std::ostream& out) const {
     out << "SimplePackingEntropy[";
-    eckit::JSON j(out);
-    j.startObject()
-            << "count"   << count_
-            << "missing" << missing_
-            << "entropy" << entropy()
-            << "scale"   << scale()
-            << "bucketCount"  << bucketCount();
-    j.endObject();
-    out << "]";
+    Counter::print(out);
+    out << ",entropy=" << entropy()
+        << ",scale=" << scale()
+        << ",bucketCount="  << bucketCount()
+        << "]";
 }
 
 

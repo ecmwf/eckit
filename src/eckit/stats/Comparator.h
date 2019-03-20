@@ -81,20 +81,7 @@ protected:
 
     // -- Methods
 
-    /// Output
-    virtual void print(std::ostream &) const = 0;
-
-    template< typename T >
-    T getSameParameter(const std::string& parameter) {
-        T value1 = T();
-        T value2 = T();
-
-        if (parametrisation1_.get(parameter, value1) || parametrisation2_.get(parameter, value2)) {
-            ASSERT(value1 == value2);
-        }
-
-        return value1;
-    }
+    virtual void print(std::ostream &) const = 0;   
 
     // -- Overridden methods
     // None

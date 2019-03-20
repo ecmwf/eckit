@@ -9,13 +9,14 @@
  */
 
 
-#ifndef mir_stats_ComparatorT_h
-#define mir_stats_ComparatorT_h
+#ifndef mir_stats_comparator_ComparatorT_h
+#define mir_stats_comparator_ComparatorT_h
 
 #include <cmath>
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
 
 #include "mir/data/MIRField.h"
 #include "mir/stats/Comparator.h"
@@ -24,11 +25,12 @@
 
 namespace mir {
 namespace stats {
+namespace comparator {
 
 
 /// Generic comparison on two MIRFields
 template<typename STATS>
-class ComparatorT : public Comparator, public STATS {
+class ComparatorT : public Comparator, detail::CounterBinary, STATS {
 public:
 
     // -- Exceptions
@@ -38,8 +40,7 @@ public:
 
     ComparatorT(const param::MIRParametrisation& parametrisation1, const param::MIRParametrisation& parametrisation2) :
         Comparator(parametrisation1, parametrisation2),
-        count_(0),
-        missing_(0) {
+        CounterBinary(parametrisation1, parametrisation2) {
     }
 
     // -- Destructor
@@ -52,19 +53,12 @@ public:
     // None
 
     // -- Methods
-
-    size_t count() const {
-        return count_;
-    }
-
-    size_t missing() const{
-        return missing_;
-    }
+    // None
 
     // -- Overridden methods
 
     void execute(const data::MIRField& field1, const data::MIRField& field2) {
-        detail::CounterBinary counter(field1, field2);
+        CounterBinary::reset(field1, field2);
         STATS::reset();
 
         ASSERT(field1.dimensions() == 1);
@@ -75,17 +69,17 @@ public:
         ASSERT(values1.size() == values2.size());
 
         for (size_t i = 0; i < values1.size(); ++i) {
-            if (counter(values1[i], values2[i])) {
+            if (count(values1[i], values2[i])) {
                 STATS::operator()(std::abs(values1[i] - values2[i]));
             }
         }
 
-        if (counter.missing1()) {
-            throw eckit::BadValue("Different missing values");
+        if (!CounterBinary::check()) {
+            eckit::Log::error() << *this << std::endl;
+            throw eckit::BadValue("Comparison failed");
         }
 
-        count_   = counter.count();
-        missing_ = counter.missing2();
+        eckit::Log::info() << *this << std::endl;
     }
 
     // -- Class members
@@ -97,9 +91,7 @@ public:
 private:
 
     // -- Members
-
-    size_t count_;
-    size_t missing_;
+    //None
 
     // -- Methods
     // None
@@ -107,7 +99,9 @@ private:
     // -- Overridden methods
 
     void print(std::ostream& out) const {
-        out << "Comparator[count" << count_ << ",missing"  << missing_ << ",";
+        out << "Comparator[";
+        CounterBinary::print(out);
+        out << ",";
         STATS::print(out);
         out << "]";
     }
@@ -124,6 +118,7 @@ private:
 };
 
 
+}  // namespace comparator
 }  // namespace stats
 }  // namespace mir
 

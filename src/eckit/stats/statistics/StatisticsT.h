@@ -9,8 +9,8 @@
  */
 
 
-#ifndef mir_stats_StatisticsT_h
-#define mir_stats_StatisticsT_h
+#ifndef mir_stats_statistics_StatisticsT_h
+#define mir_stats_statistics_StatisticsT_h
 
 #include <cmath>
 #include <ostream>
@@ -19,16 +19,17 @@
 
 #include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
-#include "mir/stats/detail/CounterUnary.h"
+#include "mir/stats/detail/Counter.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
 /// Generic statistics on a MIRField
 template<typename STATS>
-class StatisticsT : public Statistics, public STATS {
+class StatisticsT : public Statistics, detail::Counter, STATS {
 public:
 
     // -- Exceptions
@@ -38,8 +39,7 @@ public:
 
     StatisticsT(const param::MIRParametrisation& parametrisation) :
         Statistics(parametrisation),
-        count_(0),
-        missing_(0) {
+        Counter(parametrisation) {
     }
 
     // -- Destructor
@@ -52,30 +52,20 @@ public:
     // None
 
     // -- Methods
-
-    size_t count() const {
-        return count_;
-    }
-
-    size_t missing() const{
-        return missing_;
-    }
+    // None
 
     // -- Overridden methods
 
     void execute(const data::MIRField& field) {
-        detail::CounterUnary counter(field);
+        Counter::reset(field);
         STATS::reset();
 
         ASSERT(field.dimensions() == 1);
         for (auto& value : field.values(0)) {
-            if (counter(value)) {
+            if (count(value)) {
                 STATS::operator()(value);
             }
         }
-
-        count_   = counter.count();
-        missing_ = counter.missing();
     }
 
     // -- Class members
@@ -87,9 +77,7 @@ public:
 private:
 
     // -- Members
-
-    size_t count_;
-    size_t missing_;
+    // None
 
     // -- Methods
     // None
@@ -97,7 +85,9 @@ private:
     // -- Overridden methods
 
     void print(std::ostream& out) const {
-        out << "Statistics[count" << count_ << ",missing"  << missing_ << ",";
+        out << "Statistics[";
+        Counter::print(out);
+        out << ",";
         STATS::print(out);
         out << "]";
     }
@@ -114,6 +104,7 @@ private:
 };
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 

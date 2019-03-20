@@ -9,28 +9,51 @@
  */
 
 
-#include "mir/stats/StatisticsT.h"
+#include "mir/stats/statistics/StatisticsT.h"
 
 #include "mir/stats/detail/AngleT.h"
 #include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/stats/detail/MinMax.h"
 #include "mir/stats/detail/PNorms.h"
 #include "mir/stats/detail/Scalar.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
+
+
+struct MinMax {
+};
+
+
+template<>
+void StatisticsT<MinMax>::execute(const data::MIRField& field) {
+    Counter::reset(field);
+
+    ASSERT(field.dimensions() == 1);
+    for (auto& value : field.values(0)) {
+        count(value);
+    }
+}
+
+
+template<>
+void StatisticsT<MinMax>::print(std::ostream& out) const {
+    out << "Statistics[";
+    Counter::print(out);
+    out << "]";
+}
 
 
 static StatisticsBuilder<StatisticsT<detail::AngleT<detail::AngleScale::DEGREE>>> __stats1("angle-degree");
 static StatisticsBuilder<StatisticsT<detail::AngleT<detail::AngleScale::RADIAN>>> __stats2("angle-radian");
-static StatisticsBuilder<StatisticsT<detail::CentralMomentsT<double>>>            __stats3("central-moments");
-static StatisticsBuilder<StatisticsT<detail::MinMax>> __stats4("min-max");
-static StatisticsBuilder<StatisticsT<detail::PNorms>> __stats5("p-norms");
-static StatisticsBuilder<StatisticsT<detail::Scalar>> __stats6("scalar");
+static StatisticsBuilder<StatisticsT<detail::CentralMomentsT<double>>> __stats3("central-moments");
+static StatisticsBuilder<StatisticsT<detail::PNorms>> __stats4("p-norms");
+static StatisticsBuilder<StatisticsT<detail::Scalar>> __stats5("scalar");
+static StatisticsBuilder<StatisticsT<MinMax>> __stats6("min-max");
 
 
-
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 

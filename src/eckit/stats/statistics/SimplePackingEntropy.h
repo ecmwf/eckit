@@ -14,6 +14,8 @@
 
 #include "mir/stats/Statistics.h"
 
+#include "mir/stats/detail/Counter.h"
+
 
 namespace mir {
 namespace stats {
@@ -23,7 +25,7 @@ namespace statistics {
 /**
  * @brief Calculate entropy statistics on a MIRField
  */
-class SimplePackingEntropy : public Statistics {
+class SimplePackingEntropy : public Statistics, detail::Counter {
 public:
 
     // -- Exceptions
@@ -50,14 +52,6 @@ public:
     double scale() const;
     size_t bucketCount() const;
 
-    size_t count() const {
-        return count_;
-    }
-
-    size_t missing() const{
-        return missing_;
-    }
-
     // -- Overridden methods
     // None
 
@@ -74,8 +68,6 @@ private:
     double entropy_;
     double scale_;
     size_t bucketCount_;
-    size_t count_;
-    size_t missing_;
 
     // -- Methods
     // None

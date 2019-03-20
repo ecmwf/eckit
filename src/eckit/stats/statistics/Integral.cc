@@ -24,7 +24,6 @@
 #include "mir/data/MIRField.h"
 #include "mir/repres/Representation.h"
 #include "mir/util/Angles.h"
-#include "mir/stats/detail/CounterUnary.h"
 
 
 namespace mir {
@@ -33,7 +32,9 @@ namespace statistics {
 
 
 Integral::Integral(const param::MIRParametrisation& parametrisation) :
-    Statistics(parametrisation) {
+    Statistics(parametrisation),
+    Counter(parametrisation),
+    integral_(std::numeric_limits<double>::quiet_NaN()) {
     reset();
 }
 
@@ -56,9 +57,9 @@ void Integral::execute(const data::MIRField& field) {
 
     integral_ = 0.;
     double weights = 0.;
-    detail::CounterUnary counter(field);
-
     auto& values = field.values(0);
+
+    Counter::reset(field);
     size_t i = 0;
     for (atlas::idx_t jlat = 0; jlat < structured.ny(); ++jlat) {
 
@@ -72,13 +73,13 @@ void Integral::execute(const data::MIRField& field) {
 
         for (atlas::idx_t jlon = 0; jlon < pts_on_latitude; ++jlon) {
             auto value = values[i++];
-            if (counter(value)) {
+            if (count(value)) {
                 integral_ += w * value;
                 weights += w;
             }
         }
     }
-    ASSERT(counter.count() == values.size());
+    ASSERT(count() == values.size());
 
     integral_ /= weights;
 }

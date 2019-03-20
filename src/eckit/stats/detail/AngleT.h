@@ -17,7 +17,6 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/JSON.h"
 
 #include "mir/stats/detail/CentralMomentsT.h"
 
@@ -98,13 +97,10 @@ public:
     }
 
     void print(std::ostream& out) const {
-        out << "Angle[";
-        eckit::JSON j(out);
-        j.startObject()
-                << "mean"   << mean()
-                << "stddev" << standardDeviation();
-        j.endObject();
-        out << "]";
+        out << "Angle["
+                "mean="   << mean()
+            << ",stddev=" << standardDeviation()
+            << "]";
     }
 };
 

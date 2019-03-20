@@ -17,7 +17,6 @@
 #include <sstream>
 
 #include "eckit/memory/ScopedPtr.h"
-#include "eckit/parser/JSON.h"
 
 #include "mir/stats/statistics/Spectral.h"
 
@@ -72,13 +71,16 @@ void Spectral::execute(const data::MIRField& field1, const data::MIRField& field
 
 
 void Spectral::print(std::ostream& out) const {
-    out << "Spectral[";
-    eckit::JSON j(out);
-    j.startObject()
-            << "meandiff"  << meandiff()
-            << "enormdiff" << enormdiff();
-    j.endObject();
-    out << stats_ << "]";
+    out << "Spectral["
+            "meandiff="  << meandiff()
+        << ",enormdiff=" << enormdiff()
+        << stats_
+        << "]";
+}
+
+
+void Spectral::check() const {
+    NOTIMP;
 }
 
 

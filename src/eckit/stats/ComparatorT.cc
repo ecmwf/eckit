@@ -9,7 +9,7 @@
  */
 
 
-#include "mir/stats/StatisticsT.h"
+#include "mir/stats/ComparatorT.h"
 
 #include "mir/stats/detail/AngleT.h"
 #include "mir/stats/detail/CentralMomentsT.h"
@@ -22,12 +22,12 @@ namespace mir {
 namespace stats {
 
 
-static StatisticsBuilder<StatisticsT<detail::AngleT<detail::AngleScale::DEGREE>>> __stats1("angle-degree");
-static StatisticsBuilder<StatisticsT<detail::AngleT<detail::AngleScale::RADIAN>>> __stats2("angle-radian");
-static StatisticsBuilder<StatisticsT<detail::CentralMomentsT<double>>>            __stats3("central-moments");
-static StatisticsBuilder<StatisticsT<detail::MinMax>> __stats4("min-max");
-static StatisticsBuilder<StatisticsT<detail::PNorms>> __stats5("p-norms");
-static StatisticsBuilder<StatisticsT<detail::Scalar>> __stats6("scalar");
+static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::DEGREE>>> __stats1("angle-degree");
+static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::RADIAN>>> __stats2("angle-radian");
+static ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>>            __stats3("central-moments");
+static ComparatorBuilder<ComparatorT<detail::MinMax>> __stats4("min-max");
+static ComparatorBuilder<ComparatorT<detail::PNorms>> __stats5("p-norms");
+static ComparatorBuilder<ComparatorT<detail::Scalar>> __stats6("scalar");
 
 
 

@@ -9,20 +9,21 @@
  */
 
 
-#ifndef mir_stats_Spectral_h
-#define mir_stats_Spectral_h
+#ifndef mir_stats_statistics_SimplePackingEntropy_h
+#define mir_stats_statistics_SimplePackingEntropy_h
 
 #include "mir/stats/Statistics.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
 /**
- * @brief Calculate spectral statistics on a MIRField
+ * @brief Calculate entropy statistics on a MIRField
  */
-class Spectral : public Statistics {
+class SimplePackingEntropy : public Statistics {
 public:
 
     // -- Exceptions
@@ -30,11 +31,11 @@ public:
 
     // -- Constructors
 
-    Spectral(const param::MIRParametrisation&);
+    SimplePackingEntropy(const param::MIRParametrisation&);
 
     // -- Destructor
 
-    virtual ~Spectral();
+    ~SimplePackingEntropy();
 
     // -- Convertors
     // None
@@ -45,10 +46,17 @@ public:
     // -- Methods
 
     void reset();
-    double mean() const;
-    double variance() const;
-    double standardDeviation() const;
-    double enorm() const;
+    double entropy() const;
+    double scale() const;
+    size_t bucketCount() const;
+
+    size_t count() const {
+        return count_;
+    }
+
+    size_t missing() const{
+        return missing_;
+    }
 
     // -- Overridden methods
     // None
@@ -63,10 +71,11 @@ private:
 
     // -- Members
 
-    double mean_;
-    double variance_;
-    double stddev_;
-    double enorm_;
+    double entropy_;
+    double scale_;
+    size_t bucketCount_;
+    size_t count_;
+    size_t missing_;
 
     // -- Methods
     // None
@@ -88,6 +97,7 @@ private:
 };
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 

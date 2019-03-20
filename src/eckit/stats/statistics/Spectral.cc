@@ -9,7 +9,7 @@
  */
 
 
-#include "mir/stats/Spectral.h"
+#include "mir/stats/statistics/Spectral.h"
 
 #include <cmath>
 #include <limits>
@@ -24,6 +24,7 @@
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
 Spectral::Spectral(const param::MIRParametrisation& parametrisation) :
@@ -116,6 +117,7 @@ static StatisticsBuilder<Spectral> __stats("spectral");
 }
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 

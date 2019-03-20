@@ -13,7 +13,7 @@
 /// @date Jul 2015
 
 
-#include "mir/stats/Integral.h"
+#include "mir/stats/statistics/Integral.h"
 
 #include <cmath>
 #include <limits>
@@ -24,10 +24,12 @@
 #include "mir/data/MIRField.h"
 #include "mir/repres/Representation.h"
 #include "mir/util/Angles.h"
+#include "mir/stats/detail/CounterUnary.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
 Integral::Integral(const param::MIRParametrisation& parametrisation) :
@@ -54,7 +56,7 @@ void Integral::execute(const data::MIRField& field) {
 
     integral_ = 0.;
     double weights = 0.;
-    CounterUnary counter(field);
+    detail::CounterUnary counter(field);
 
     auto& values = field.values(0);
     size_t i = 0;
@@ -70,7 +72,7 @@ void Integral::execute(const data::MIRField& field) {
 
         for (atlas::idx_t jlon = 0; jlon < pts_on_latitude; ++jlon) {
             auto value = values[i++];
-            if (!counter.missingValue(value)) {
+            if (counter(value)) {
                 integral_ += w * value;
                 weights += w;
             }
@@ -92,5 +94,7 @@ static StatisticsBuilder<Integral> __stats("integral");
 }
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
+

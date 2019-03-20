@@ -9,8 +9,8 @@
  */
 
 
-#ifndef mir_stats_StatisticsT_h
-#define mir_stats_StatisticsT_h
+#ifndef mir_stats_ComparatorT_h
+#define mir_stats_ComparatorT_h
 
 #include <cmath>
 #include <ostream>
@@ -18,17 +18,17 @@
 #include "eckit/exception/Exceptions.h"
 
 #include "mir/data/MIRField.h"
-#include "mir/stats/Statistics.h"
-#include "mir/stats/detail/CounterUnary.h"
+#include "mir/stats/Comparator.h"
+#include "mir/stats/detail/CounterBinary.h"
 
 
 namespace mir {
 namespace stats {
 
 
-/// Generic statistics on a MIRField
+/// Generic comparison on two MIRFields
 template<typename STATS>
-class StatisticsT : public Statistics, public STATS {
+class ComparatorT : public Comparator, public STATS {
 public:
 
     // -- Exceptions
@@ -36,8 +36,8 @@ public:
 
     // -- Constructors
 
-    StatisticsT(const param::MIRParametrisation& parametrisation) :
-        Statistics(parametrisation),
+    ComparatorT(const param::MIRParametrisation& parametrisation1, const param::MIRParametrisation& parametrisation2) :
+        Comparator(parametrisation1, parametrisation2),
         count_(0),
         missing_(0) {
     }
@@ -63,19 +63,29 @@ public:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField& field) {
-        detail::CounterUnary counter(field);
+    void execute(const data::MIRField& field1, const data::MIRField& field2) {
+        detail::CounterBinary counter(field1, field2);
         STATS::reset();
 
-        ASSERT(field.dimensions() == 1);
-        for (auto& value : field.values(0)) {
-            if (counter(value)) {
-                STATS::operator()(value);
+        ASSERT(field1.dimensions() == 1);
+        ASSERT(field2.dimensions() == 1);
+
+        auto& values1 = field1.values(0);
+        auto& values2 = field2.values(0);
+        ASSERT(values1.size() == values2.size());
+
+        for (size_t i = 0; i < values1.size(); ++i) {
+            if (counter(values1[i], values2[i])) {
+                STATS::operator()(std::abs(values1[i] - values2[i]));
             }
         }
 
+        if (counter.missing1()) {
+            throw eckit::BadValue("Different missing values");
+        }
+
         count_   = counter.count();
-        missing_ = counter.missing();
+        missing_ = counter.missing2();
     }
 
     // -- Class members
@@ -97,7 +107,7 @@ private:
     // -- Overridden methods
 
     void print(std::ostream& out) const {
-        out << "Statistics[count" << count_ << ",missing"  << missing_ << ",";
+        out << "Comparator[count" << count_ << ",missing"  << missing_ << ",";
         STATS::print(out);
         out << "]";
     }

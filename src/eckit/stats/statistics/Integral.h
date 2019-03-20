@@ -8,21 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
+/// @author Tiago Quintino
+/// @author Pedro Maciel
+/// @date Jul 2015
 
-#ifndef mir_stats_SimplePackingEntropy_h
-#define mir_stats_SimplePackingEntropy_h
+
+#ifndef mir_stats_statistics_Integral_h
+#define mir_stats_statistics_Integral_h
 
 #include "mir/stats/Statistics.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
-/**
- * @brief Calculate entropy statistics on a MIRField
- */
-class SimplePackingEntropy : public Statistics {
+class Integral : public Statistics {
 public:
 
     // -- Exceptions
@@ -30,11 +32,10 @@ public:
 
     // -- Constructors
 
-    SimplePackingEntropy(const param::MIRParametrisation&);
+    Integral(const param::MIRParametrisation&);
 
     // -- Destructor
-
-    ~SimplePackingEntropy();
+    // None
 
     // -- Convertors
     // None
@@ -45,16 +46,9 @@ public:
     // -- Methods
 
     void reset();
-    double entropy() const;
-    double scale() const;
-    size_t bucketCount() const;
 
-    size_t count() const {
-        return count_;
-    }
-
-    size_t missing() const{
-        return missing_;
+    double integral() const {
+        return integral_;
     }
 
     // -- Overridden methods
@@ -70,11 +64,7 @@ private:
 
     // -- Members
 
-    double entropy_;
-    double scale_;
-    size_t bucketCount_;
-    size_t count_;
-    size_t missing_;
+    double integral_;
 
     // -- Methods
     // None
@@ -96,9 +86,9 @@ private:
 };
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 
 
 #endif
-

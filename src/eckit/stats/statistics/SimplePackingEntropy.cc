@@ -9,7 +9,7 @@
  */
 
 
-#include "mir/stats/SimplePackingEntropy.h"
+#include "mir/stats/statistics/SimplePackingEntropy.h"
 
 #include <algorithm>
 #include <cmath>
@@ -21,12 +21,14 @@
 
 #include "mir/data/MIRField.h"
 #include "mir/stats/StatisticsT.h"
+#include "mir/stats/detail/CounterUnary.h"
 #include "mir/stats/detail/MinMax.h"
 #include "mir/param/MIRParametrisation.h"
 
 
 namespace mir {
 namespace stats {
+namespace statistics {
 
 
 SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& parametrisation) :
@@ -94,10 +96,10 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     const auto count = double(count_);
     const double one_over_log2 = 1. / M_LN2;
 
-    CounterUnary counter(field);
+    detail::CounterUnary counter(field);
 
     for (auto& value : values) {
-        if (!counter.missingValue(value)) {
+        if (counter(value)) {
             auto b = size_t((value - mm.min()) * scale_);
             ASSERT(b < bucketCount_);
             buckets[b]++;
@@ -133,6 +135,7 @@ static StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy")
 }
 
 
+}  // namespace statistics
 }  // namespace stats
 }  // namespace mir
 

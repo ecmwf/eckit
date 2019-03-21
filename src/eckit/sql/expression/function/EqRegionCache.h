@@ -25,6 +25,9 @@ namespace sql {
 namespace expression {
 namespace function {
 
+/// @todo Move these functions to eckit::maths or eckit::geometry, or remove them at all
+///
+
 class EqRegionCache : public RegionCache {
 public:
 

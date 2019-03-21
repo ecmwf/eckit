@@ -185,7 +185,8 @@ void RggRegionCache::bsslzr(double pbes[], const int & knum)
 int RggRegionCache::gauaw(double pa[], double pw[], const int &k)
 {
     double zeps = 1e-14;
-    double zpi, zc, zxz, zkm2, zkm1, zfn, zpk, zkmrk, zsp, zvsp;
+    double zpi, zc, zxz, zkm2, zkm1, zfn, zkmrk, zsp, zvsp;
+    double zpk = 0;
     int ifk, ikk, /*js,*/ iter, jn, il;
     int iret;
 

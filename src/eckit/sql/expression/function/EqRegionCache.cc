@@ -9,6 +9,7 @@
  */
 
 #include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/sql/expression/function/EqRegionCache.h"
 
@@ -151,9 +152,7 @@ void EqRegionCache::round_to_naturals(int &n, int &n_collars,
   }
 }
 
-//==============================================================================
 double EqRegionCache::area_of_cap(int &dim, double &s_cap)
-//==============================================================================
 {
     //AREA_OF_CAP Area of spherical cap
     //
@@ -167,18 +166,19 @@ double EqRegionCache::area_of_cap(int &dim, double &s_cap)
     // The argument dim must be a positive integer.
     // The argument S_CAP must be a real number or an array of real numbers.
     // The result AREA will be an array of the same size as S_CAP.
-    //
-  double area;
-  if ( dim == 1 ) {
-    area = 2 * s_cap;
-  }
-  else if ( dim == 2 ) {
-    area = piconst::four_pi * pow(sin(s_cap/2),2);
-  }
-  else {
-    Log::info() << "area_of_cap: dim > 2 not supported";
-  }
-  return area;
+
+    ASSERT(dim > 0);
+    double area = 0;
+    if ( dim == 1 ) {
+        area = 2 * s_cap;
+    }
+    else if ( dim == 2 ) {
+        area = piconst::four_pi * pow(sin(s_cap/2),2);
+    }
+    else {
+        Log::info() << "area_of_cap: dim > 2 not supported";
+    }
+    return area;
 }
 
 //==============================================================================
@@ -382,14 +382,15 @@ double EqRegionCache::polar_colat(int & dim, int & n)
    //
    // Given dim and N, determine the colatitude of the North polar spherical cap.
    //
-  double colat;
-  if ( n == 1 ) colat=piconst::pi;
-  else if ( n == 2 ) colat=piconst::half_pi;
-  else if ( n > 2 ) {
-    double area = area_of_ideal_region(dim,n);
-    colat=sradius_of_cap(dim,area);
-  }
-  return colat;
+   ASSERT(n > 0);
+   double colat = 0;
+   if ( n == 1 ) colat=piconst::pi;
+   else if ( n == 2 ) colat=piconst::half_pi;
+   else if ( n > 2 ) {
+       double area = area_of_ideal_region(dim,n);
+       colat=sradius_of_cap(dim,area);
+   }
+   return colat;
 }
 
 //==============================================================================

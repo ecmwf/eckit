@@ -14,6 +14,8 @@
 #include <cstddef>
 #include <utility>
 
+#include "eckit/deprecated.h"
+
 /// @file SharedPtr.h
 /// @author Tiago Quintino
 /// @date Mar 2014
@@ -66,7 +68,7 @@ struct NewArrayDealloc {
 /// @see Owned
 
 template <class T, class ALLOC = NewDealloc<T> >
-class SharedPtr {
+class DEPRECATED("Use C++11 std::shared_ptr instead") SharedPtr {
 public:  // types
     typedef T element_type;
     typedef T* pointer_type;

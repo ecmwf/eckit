@@ -11,6 +11,8 @@
 #ifndef eckit_ScopedPtr_h
 #define eckit_ScopedPtr_h
 
+#include "eckit/deprecated.h"
+
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
@@ -20,11 +22,11 @@ namespace eckit {
 
 /// A smart pointer that deletes the pointee object when going out of scope.
 /// This should have a very similar interface to boost scoped_ptr or std unique_ptr
-/// so that once C++11 is suported overall compilers we can swithc easily.
+/// so that once C++11 is suported overall compilers we can switch easily.
 /// However due to lack of C++11 support, it does not support move semantics.
 
 template < typename T >
-class ScopedPtr : private NonCopyable {
+class DEPRECATED("Use C++11 std::unique_ptr instead") ScopedPtr : private NonCopyable {
 
 public: // types
 

@@ -74,7 +74,7 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 
 ### eckit sources
 
-list( APPEND eckit_srcs eckit.h eckit_version.cc )
+list( APPEND eckit_srcs eckit.h deprecated.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
 

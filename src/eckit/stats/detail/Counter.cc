@@ -66,14 +66,18 @@ void Counter::reset(const data::MIRField& field) {
 
 void Counter::print(std::ostream& out) const {
     out << "Counter["
-            "count="                << count()
-        << ",countAboveUpperLimit=" << countAboveUpperLimit()
-        << ",countBelowLowerLimit=" << countBelowLowerLimit()
-        << ",max="                  << max()
-        << ",maxIndex="             << maxIndex()
-        << ",min="                  << min()
-        << ",minIndex="             << minIndex()
-        << ",missing="              << missing()
+            "count=" << count()
+        << ",missing=" << missing();
+    if (hasUpperLimit_) {
+        out << ",countAboveUpperLimit=" << countAboveUpperLimit();
+    }
+    if (hasLowerLimit_) {
+        out << ",countBelowLowerLimit=" << countBelowLowerLimit();
+    }
+    out << ",max="      << max()
+        << ",maxIndex=" << maxIndex()
+        << ",min="      << min()
+        << ",minIndex=" << minIndex()
         << "]";
 }
 

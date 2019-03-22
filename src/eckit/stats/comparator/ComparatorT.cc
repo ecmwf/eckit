@@ -11,6 +11,8 @@
 
 #include "mir/stats/comparator/ComparatorT.h"
 
+#include <cmath>
+
 #include "mir/stats/detail/AngleT.h"
 #include "mir/stats/detail/CentralMomentsT.h"
 #include "mir/stats/detail/PNorms.h"
@@ -22,12 +24,44 @@ namespace stats {
 namespace comparator {
 
 
-struct MinMax {
-};
+template<typename STATS>
+std::string ComparatorT<STATS>::execute(const mir::data::MIRField& field1, const mir::data::MIRField& field2) {
+    CounterBinary::reset(field1, field2);
+    STATS::reset();
+
+    ASSERT(field1.dimensions() == 1);
+    ASSERT(field2.dimensions() == 1);
+
+    auto& values1 = field1.values(0);
+    auto& values2 = field2.values(0);
+    ASSERT(values1.size() == values2.size());
+
+    for (size_t i = 0; i < values1.size(); ++i) {
+        auto diff = STATS::difference(values1[i], values2[i]);
+        if (CounterBinary::count(values1[i], values2[i], diff)) {
+            STATS::operator()(diff);
+        }
+    }
+
+    return CounterBinary::check();
+}
+
+
+template<typename STATS>
+void ComparatorT<STATS>::print(std::ostream& out) const {
+    out << "Comparator[";
+    CounterBinary::print(out);
+    out << ",";
+    STATS::print(out);
+    out << "]";
+}
+
+
+struct MinMax {};
 
 
 template<>
-void ComparatorT<MinMax>::execute(const data::MIRField& field1, const data::MIRField& field2) {
+std::string ComparatorT<MinMax>::execute(const data::MIRField& field1, const data::MIRField& field2) {
     CounterBinary::reset(field1, field2);
 
     ASSERT(field1.dimensions() == 1);
@@ -38,12 +72,10 @@ void ComparatorT<MinMax>::execute(const data::MIRField& field1, const data::MIRF
     ASSERT(values1.size() == values2.size());
 
     for (size_t i = 0; i < values1.size(); ++i) {
-        count(values1[i], values2[i]);
+        count(values1[i], values2[i], std::abs(values2[i] - values1[i]));
     }
 
-    if (missingDifferent()) {
-        throw eckit::BadValue("Different missing values");
-    }
+    return CounterBinary::check();
 }
 
 
@@ -55,12 +87,12 @@ void ComparatorT<MinMax>::print(std::ostream& out) const {
 }
 
 
-static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::DEGREE>>> __stats1("angle-degree");
-static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::RADIAN>>> __stats2("angle-radian");
-static ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>> __stats3("central-moments");
-static ComparatorBuilder<ComparatorT<detail::PNorms>> __stats4("p-norms");
-static ComparatorBuilder<ComparatorT<detail::Scalar>> __stats5("scalar");
-static ComparatorBuilder<ComparatorT<MinMax>> __stats6("min-max");
+static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>> __comp1("angle.degree.symmetric");
+static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>> __comp2("angle.radian.symmetric");
+static ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>> __comp3("central-moments");
+static ComparatorBuilder<ComparatorT<detail::PNorms>> __comp4("p-norms");
+static ComparatorBuilder<ComparatorT<detail::Scalar>> __comp5("scalar");
+static ComparatorBuilder<ComparatorT<MinMax>> __comp6("min-max");
 
 
 }  // namespace comparator

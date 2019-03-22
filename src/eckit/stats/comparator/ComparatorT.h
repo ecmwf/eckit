@@ -16,7 +16,6 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 
 #include "mir/data/MIRField.h"
 #include "mir/stats/Comparator.h"
@@ -57,30 +56,7 @@ public:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField& field1, const data::MIRField& field2) {
-        CounterBinary::reset(field1, field2);
-        STATS::reset();
-
-        ASSERT(field1.dimensions() == 1);
-        ASSERT(field2.dimensions() == 1);
-
-        auto& values1 = field1.values(0);
-        auto& values2 = field2.values(0);
-        ASSERT(values1.size() == values2.size());
-
-        for (size_t i = 0; i < values1.size(); ++i) {
-            if (count(values1[i], values2[i])) {
-                STATS::operator()(std::abs(values1[i] - values2[i]));
-            }
-        }
-
-        if (!CounterBinary::check()) {
-            eckit::Log::error() << *this << std::endl;
-            throw eckit::BadValue("Comparison failed");
-        }
-
-        eckit::Log::info() << *this << std::endl;
-    }
+    std::string execute(const data::MIRField& field1, const data::MIRField& field2);
 
     // -- Class members
     // None
@@ -98,13 +74,7 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream& out) const {
-        out << "Comparator[";
-        CounterBinary::print(out);
-        out << ",";
-        STATS::print(out);
-        out << "]";
-    }
+    void print(std::ostream& out) const;
 
     // -- Class members
     // None

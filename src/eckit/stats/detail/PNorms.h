@@ -49,6 +49,10 @@ public:
     double normL2()        const { return std::sqrt(sumSquares_); }
     double normLinfinity() const { return normLinfinity_; }
 
+    double difference(const double& a, const double& b) const {
+        return std::abs(a - b);
+    }
+
     void operator()(const double& v) {
         normL1_       += std::abs(v);
         sumSquares_   += v*v;

@@ -37,14 +37,16 @@ private:
     double lowerLimit_;
     double upperLimit_;
 
-    double tolerance_;
-    double ref;
-    size_t ignoreDifferentMissingValues_;
-    size_t ignoreCountAboveUpperLimit_;
-    size_t ignoreDifferentMissingValuesFactor_;
-    double ignoreCountAboveUpperLimitFactor_;
+    double absoluteError_;
+    double relativeErrorMin_;
+    double relativeErrorMax_;
 
-    enum tolerance_t {NONE, ABSOLUTE, RELATIVETOREFERENCE, RELATIVETOMAXIMUM, PACKINGERROR } toleranceType_;
+    size_t ignoreDifferentMissingValues_;
+    size_t ignoreAboveUpperLimit_;
+    double ignoreDifferentMissingValuesFactor_;
+    double ignoreAboveUpperLimitFactor_;
+
+    enum absTolerance_t {NONE, ABSOLUTE, RELATIVE, PACKINGERROR } toleranceType_;
 
     bool hasLowerLimit_;
     bool hasUpperLimit_;
@@ -56,11 +58,10 @@ public:
 
     void reset(const data::MIRField&, const data::MIRField&);
     void print(std::ostream&) const;
-    bool count(const double&, const double&);
-    bool check() const;
+    bool count(const double& a, const double& b, const double& diff);
+    std::string check() const;
 
-    double tolerance() const;
-    size_t ignoreCountAboveUpperLimit() const;
+    size_t ignoreAboveUpperLimit() const;
     size_t ignoreDifferentMissingValues() const;
 
     size_t count() const;

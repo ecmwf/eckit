@@ -22,8 +22,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/NonCopyable.h"
 
-#include "mir/param/MIRParametrisation.h"
-
 
 namespace mir {
 namespace data {
@@ -61,7 +59,7 @@ public:
 
     // -- Methods
 
-    virtual void execute(const data::MIRField&, const data::MIRField&) = 0;
+    virtual std::string execute(const data::MIRField&, const data::MIRField&) = 0;
 
     // -- Overridden methods
     // None

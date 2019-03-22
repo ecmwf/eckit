@@ -12,6 +12,7 @@
 #ifndef mir_stats_detail_AngleT_h
 #define mir_stats_detail_AngleT_h
 
+#include <cmath>
 #include <complex>
 #include <limits>
 #include <ostream>
@@ -27,10 +28,11 @@ namespace detail {
 
 
 enum AngleScale { DEGREE, RADIAN };
+enum AngleSpace { ASYMMETRIC, SYMMETRIC };
 
 
 /// Angle statistics in degrees [-180,180] or radians [-π,π]
-template< int SCALE >
+template< int SCALE, int SYMMETRY >
 struct AngleT {
 private:
     CentralMomentsT<std::complex<double>> centralMoments_;
@@ -40,18 +42,18 @@ private:
     const double globe_;
     const double min_;
 
-    double normalise(double a, double minimum) const {
-        while (a >= minimum + globe_) {
-            a -= globe_;
+    double normalise(double a, double minimum, double globe) const {
+        while (a >= minimum + globe) {
+            a -= globe;
         }
         while (a < minimum) {
-            a += globe_;
+            a += globe;
         }
         return a;
     }
 
     double normalise(double a) const {
-        return normalise(a, min_);
+        return normalise(a, min_, globe_);
     }
 
     std::complex<double> decompose(const double& a) const {
@@ -59,21 +61,26 @@ private:
     }
 
     double recompose(const std::complex<double>& c) const {
-        return std::arg(c) * rescale_;
+        return normalise(std::arg(c) * rescale_);
     }
 
 public:
 
-    AngleT(bool symmetry = true) :
-        rescale_(std::numeric_limits<double>::quiet_NaN()),
-        descale_(std::numeric_limits<double>::quiet_NaN()),
-        globe_(std::numeric_limits<double>::quiet_NaN()),
-        min_(std::numeric_limits<double>::quiet_NaN()) {
+    AngleT() :
+        rescale_(std::numeric_limits<double>::signaling_NaN()),
+        descale_(std::numeric_limits<double>::signaling_NaN()),
+        globe_(std::numeric_limits<double>::signaling_NaN()),
+        min_(std::numeric_limits<double>::signaling_NaN()) {
         NOTIMP;  // ensure specialisation
     }
 
     void reset() {
         centralMoments_.reset();
+    }
+
+    double difference(const double& a, const double& b) const {
+        auto d = std::abs(normalise(b) - normalise(a));
+        return std::min(globe_ - d, d);
     }
 
     void operator()(const double& v) {

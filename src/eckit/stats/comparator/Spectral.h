@@ -46,8 +46,8 @@ public:
     // -- Methods
 
     void reset();
-    double meandiff() const;
-    double enormdiff() const;
+    double meanDiff() const;
+    double enormDiff() const;
 
     // -- Overridden methods
     // None
@@ -62,6 +62,9 @@ private:
 
     // -- Members
 
+    double meanDiffMax_;
+    double enormDiffMax_;
+
     double meanDiff_;
     double enormDiff_;
     std::string stats_;
@@ -71,9 +74,8 @@ private:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&, const data::MIRField&);
+    std::string execute(const data::MIRField&, const data::MIRField&);
     void print(std::ostream&) const;
-    void check() const;
 
     // -- Class members
     // None

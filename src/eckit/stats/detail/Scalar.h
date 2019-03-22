@@ -12,6 +12,7 @@
 #ifndef mir_stats_detail_Scalar_h
 #define mir_stats_detail_Scalar_h
 
+#include <cmath>
 #include <ostream>
 
 #include "mir/stats/detail/CentralMomentsT.h"
@@ -45,6 +46,10 @@ public:
     double normL1()        const { return pNorms_.normL1(); }
     double normL2()        const { return pNorms_.normL2(); }
     double normLinfinity() const { return pNorms_.normLinfinity(); }
+
+    double difference(const double& a, const double& b) const {
+        return std::abs(a - b);
+    }
 
     void operator()(const double& v) {
         centralMoments_(v);

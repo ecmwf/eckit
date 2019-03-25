@@ -24,8 +24,6 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
 #include "eckit/log/Timer.h"
-#include "eckit/memory/ScopedPtr.h"
-
 
 namespace eckit {
 
@@ -192,7 +190,7 @@ Length DataHandle::saveInto(DataHandle& other,TransferWatcher& watcher, bool dbl
 
 Length DataHandle::saveInto(const PathName& path,TransferWatcher& w, bool dblBufferOK)
 {
-    eckit::ScopedPtr<DataHandle> file(path.fileHandle());
+    std::unique_ptr<DataHandle> file{path.fileHandle()};
     return saveInto(*file,w,dblBufferOK);
 }
 

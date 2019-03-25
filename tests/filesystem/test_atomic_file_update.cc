@@ -15,7 +15,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/parser/JSONParser.h"
 

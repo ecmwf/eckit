@@ -19,12 +19,12 @@
 #include <iosfwd>
 #include <cassert>
 #include <iosfwd>
+#include <memory>
 #include <vector>
 
 #include "eckit/linalg/types.h"
 #include "eckit/linalg/Triplet.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/memory/MemoryBuffer.h"
 #include "eckit/io/MemoryHandle.h"
 
@@ -298,7 +298,7 @@ private: // members
 
     Shape     shape_;
 
-    eckit::ScopedPtr<SparseMatrix::Allocator> owner_;   ///< memory manager / allocator
+    std::unique_ptr<SparseMatrix::Allocator> owner_;   ///< memory manager / allocator
 
     friend Stream& operator<<(Stream&, const SparseMatrix&);
 };

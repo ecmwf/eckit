@@ -14,12 +14,13 @@
 
 #include "SystemInfo.h"
 
+#include <memory>
+
 #include "eckit/eckit.h"
 #include "eckit/utils/StringTools.h"
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
 #include "eckit/memory/MMap.h"
@@ -67,7 +68,7 @@ SystemInfo* makeSystemInfo(const std::string& system)
 }
 
 static pthread_once_t once  = PTHREAD_ONCE_INIT;
-static eckit::ScopedPtr<SystemInfo> systemInfoPtr;
+static std::unique_ptr<SystemInfo> systemInfoPtr;
 
 static void createInstance() {
     ASSERT(!systemInfoPtr);

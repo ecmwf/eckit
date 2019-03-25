@@ -9,12 +9,11 @@
  */
 
 #include <cmath>
+#include <memory>
 
 #include "eckit/eckit.h"
 
-#include "eckit/memory/Counted.h"
 #include "eckit/memory/Owned.h"
-#include "eckit/memory/SharedPtr.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
@@ -31,7 +30,7 @@ namespace test {
 
 struct FooLock : public OwnedLock
 {
-    typedef SharedPtr<FooLock> ptype;
+    using ptype = std::shared_ptr<FooLock>;
 
     FooLock( int in ) : i(in) {}
     int i;
@@ -39,7 +38,7 @@ struct FooLock : public OwnedLock
 
 struct FooNoLock : public OwnedNoLock
 {
-    typedef SharedPtr<FooNoLock> ptype;
+    using ptype = std::shared_ptr<FooNoLock>;
 
     FooNoLock( int in ) : i(in) {}
     int i;
@@ -52,15 +51,15 @@ void TestDefault () {
     EXPECT( !p );
     EXPECT( p.get() == 0 );
 
-    p.reset( new F(10) );
+    p = std::make_shared<F>(10);
 
     EXPECT( p );
     EXPECT( p.unique() );
 
-    p.release();
+    p.reset();
 
     EXPECT( !p );
-    EXPECT( p.owners() == 0 );
+    EXPECT( p.use_count() == 0 );
 
 }
 
@@ -72,9 +71,9 @@ void TestCopy () {
     typename F::ptype p3;
 
     EXPECT( !p1 );
-    EXPECT( p1.owners() == 0 );
+    EXPECT( p1.use_count() == 0 );
 
-    p1.reset( new F(10) );
+    p1 = std::make_shared<F>(10);
 
     EXPECT( p1->i == 10 );
 
@@ -88,11 +87,11 @@ void TestCopy () {
     EXPECT( !p2 );
     EXPECT( !p3 );
 
-    EXPECT( p1.owners() == 1 );
-    EXPECT( p2.owners() == 0 );
-    EXPECT( p3.owners() == 0 );
+    EXPECT( p1.use_count() == 1 );
+    EXPECT( p2.use_count() == 0 );
+    EXPECT( p3.use_count() == 0 );
 
-    p2.reset(p1);
+    p2 = p1;
 
     EXPECT( p1->i == 20 );
     EXPECT( p2->i == 20 );
@@ -110,9 +109,9 @@ void TestCopy () {
     EXPECT(  p2 );
     EXPECT( !p3 );
 
-    EXPECT( p1.owners() == 2 );
-    EXPECT( p2.owners() == 2 );
-    EXPECT( p3.owners() == 0 );
+    EXPECT( p1.use_count() == 2 );
+    EXPECT( p2.use_count() == 2 );
+    EXPECT( p3.use_count() == 0 );
 
     p3 = p1;
 
@@ -130,58 +129,58 @@ void TestCopy () {
     EXPECT( p2 );
     EXPECT( p3 );
 
-    EXPECT( p1.owners() == 3 );
-    EXPECT( p2.owners() == 3 );
-    EXPECT( p3.owners() == 3 );
+    EXPECT( p1.use_count() == 3 );
+    EXPECT( p2.use_count() == 3 );
+    EXPECT( p3.use_count() == 3 );
 
-    p1.release();
+    p1.reset();
 
     EXPECT( !p1 );
     EXPECT(  p2 );
     EXPECT(  p3 );
 
-    EXPECT( p1.owners() == 0 );
-    EXPECT( p2.owners() == 2 );
-    EXPECT( p3.owners() == 2 );
+    EXPECT( p1.use_count() == 0 );
+    EXPECT( p2.use_count() == 2 );
+    EXPECT( p3.use_count() == 2 );
 
-    p2.release();
+    p2.reset();
 
     EXPECT( !p1 );
     EXPECT( !p2 );
     EXPECT(  p3 );
 
-    EXPECT( p1.owners() == 0 );
-    EXPECT( p2.owners() == 0 );
-    EXPECT( p3.owners() == 1 );
+    EXPECT( p1.use_count() == 0 );
+    EXPECT( p2.use_count() == 0 );
+    EXPECT( p3.use_count() == 1 );
 
-    p3.release();
+    p3.reset();
 
     EXPECT( !p1 );
     EXPECT( !p2 );
     EXPECT( !p3 );
 
-    EXPECT( p1.owners() == 0 );
-    EXPECT( p2.owners() == 0 );
-    EXPECT( p3.owners() == 0 );
+    EXPECT( p1.use_count() == 0 );
+    EXPECT( p2.use_count() == 0 );
+    EXPECT( p3.use_count() == 0 );
 
 }
 
 template <typename F>
-void TestRelease( )
+void TestReset( )
 {
     typename F::ptype p;
 
     EXPECT( !p );
 
-    p.release();
+    p.reset();
 
     EXPECT( !p );
 
-    p.reset( new F(10) );
+    p = std::make_shared<F>(10);
 
     EXPECT( p );
 
-    p.release();
+    p.reset();
 
     EXPECT( !p );
 }
@@ -234,12 +233,12 @@ CASE ( "test_copy" ) {
     }
 }
 
-CASE ( "test_release" ) {
+CASE ( "test_reset" ) {
     SECTION( "Type FooLock") {
-        TestRelease< FooLock > ();
+        TestReset< FooLock > ();
     }
     SECTION( "Type FooNoLock") {
-        TestRelease< FooNoLock > ();
+        TestReset< FooNoLock > ();
     }
 }
 

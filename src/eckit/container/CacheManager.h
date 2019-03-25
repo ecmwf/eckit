@@ -28,7 +28,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileLock.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/os/AutoUmask.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/utils/StringTools.h"
@@ -82,7 +81,7 @@ private: // members
 
     typedef BTree<cache_key_t, cache_entry_t, 64 * 1024, BTreeLock> cache_btree_t;
 
-    mutable eckit::ScopedPtr<cache_btree_t> btree_;
+    mutable std::unique_ptr<cache_btree_t> btree_;
 };
 
 

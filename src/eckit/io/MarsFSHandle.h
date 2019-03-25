@@ -14,6 +14,8 @@
 #ifndef eckit_filesystem_MarsFSHandle_h
 #define eckit_filesystem_MarsFSHandle_h
 
+#include <memory>
+
 #include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
@@ -87,7 +89,7 @@ private:
     Offset        position_;
     bool          overwrite_;
 
-    eckit::ScopedPtr<MarsFSFile>  file_;
+    std::unique_ptr<MarsFSFile>  file_;
 
 // -- Methods
 

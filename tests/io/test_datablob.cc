@@ -79,7 +79,7 @@ namespace {
 
 CASE ( "test_eckit_io_datablob_factory_generate" )
 {
-    ScopedPtr<DataBlob> blob(DataBlobFactory::build("test", NULL, 0));
+    DataBlobPtr blob(DataBlobFactory::build("test", NULL, 0));
 
     // Check that we generate a blob of the correct type (and implicitly that the factory
     // is correctly registered).

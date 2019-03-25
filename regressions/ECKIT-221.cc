@@ -10,8 +10,8 @@ FEATURE ECKIT-221
 #include <map>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/mpi/Comm.h"
 #include "eckit/utils/Translator.h"
@@ -36,7 +36,7 @@ public:
 
         PathName out = filename + "." + Translator<size_t, std::string>()(mpi::comm().rank());
 
-        ScopedPtr<DataHandle> dh ( out.fileHandle() ); AutoClose closer(*dh);
+        std::unique_ptr<DataHandle> dh ( out.fileHandle() ); AutoClose closer(*dh);
         dh->openForWrite(buffer.size());
         dh->write(buffer.data(), buffer.size());
     }

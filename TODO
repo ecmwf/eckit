@@ -1,9 +1,5 @@
 TODO
 
-[ ] convert std::auto_ptr to std::unique_pt
-[ ] convert SharePtr to std::shared_ptr and remove it
-[ ] convert ScopedPtr to std::unique_pt and remove it
-
 [ ] add control of behavior on Exception
   - output on constructor
   - backtrace on contructor

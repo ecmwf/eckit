@@ -9,9 +9,9 @@
  */
 
 #include <cmath>
+#include <memory>
 
 #include "eckit/memory/Owned.h"
-#include "eckit/memory/SharedPtr.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
@@ -34,12 +34,12 @@ namespace test {
 
 //-----------------------------------------------------------------------------
 
-class Base0 : public Owned {
+class Base0 {
 public:
 
 	typedef BuilderT0<Base0> builder_t;
 
-	typedef SharedPtr<Base0> Ptr;
+    typedef std::shared_ptr<Base0> Ptr;
 
 	static std::string className() { return "eckit_test.Base0"; }
 
@@ -87,7 +87,7 @@ public:
 	typedef BuilderT1<Base1> builder_t;
 	typedef const Params& ARG1;
 
-	typedef SharedPtr<Base1> Ptr;
+    typedef std::shared_ptr<Base1> Ptr;
 
 	static std::string className() { return "eckit_test.Base1"; }
 
@@ -136,7 +136,7 @@ public:
 	typedef std::string   ARG1;
 	typedef int           ARG2;
 
-	typedef SharedPtr<Base2> Ptr;
+    typedef std::shared_ptr<Base2> Ptr;
 
 	static std::string className() { return "eckit_test.Base2"; }
 

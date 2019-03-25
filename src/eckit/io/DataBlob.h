@@ -16,11 +16,9 @@
 #ifndef eckit_DataBlob_h
 #define eckit_DataBlob_h
 
-#include "eckit/eckit.h"
+#include <memory>
 
 #include "eckit/io/Buffer.h"
-#include "eckit/memory/Owned.h"
-#include "eckit/memory/SharedPtr.h"
 
 namespace eckit {
 
@@ -31,7 +29,7 @@ namespace eckit {
 
 /// Blob of data, thread-safe, reference counted, that can have metadata attached
 
-class DataBlob : public eckit::OwnedLock {
+class DataBlob {
 
 public: // methods
 
@@ -64,7 +62,7 @@ protected: // members
 
 };
 
-typedef eckit::SharedPtr<eckit::DataBlob> DataBlobPtr;
+typedef std::shared_ptr<eckit::DataBlob> DataBlobPtr;
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -19,7 +19,6 @@
 #include <vector>
 #include <iomanip>
 
-#include "eckit/memory/SharedPtr.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/AutoLock.h"

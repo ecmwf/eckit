@@ -62,8 +62,7 @@ protected: // members
 
 };
 
-typedef std::shared_ptr<eckit::DataBlob> DataBlobPtr;
-
+using DataBlobPtr = std::shared_ptr<eckit::DataBlob>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

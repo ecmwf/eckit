@@ -42,18 +42,16 @@ enum LLCOORDS
 template <int SIZE = 2>
 class KPoint {
 protected:
-    double x_[SIZE];
 
-    class NoInit {};
-
-    KPoint(NoInit) {}
+    double x_[SIZE] = {0};
 
 public:
+
     static const size_t DIMS = SIZE;
 
     double x(size_t axis) const { return x_[axis]; }
 
-    KPoint() { std::fill(x_, x_ + dimensions(), 0); }
+    KPoint() {}
 
     KPoint(const double* x) { std::copy(x, x + dimensions(), x_); }
 

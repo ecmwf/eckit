@@ -28,7 +28,7 @@ public:
 
     Point2(const double* p) : BasePoint(p) {}
 
-    Point2(double x, double y) : BasePoint(NoInit()) {
+    Point2(double x, double y) : BasePoint() {
         x_[XX] = x;
         x_[YY] = y;
     }

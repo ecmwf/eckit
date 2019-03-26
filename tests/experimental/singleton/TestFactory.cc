@@ -14,7 +14,10 @@
 #include <algorithm>
 #include <exception>
 
+#include "eckit/exception/Exceptions.h"
+
 #include "TestFactory.h"
+
 
 struct TestFactory::PImpl {
 

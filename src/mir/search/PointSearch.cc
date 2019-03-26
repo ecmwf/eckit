@@ -55,7 +55,7 @@ void PointSearch::build(const repres::Representation& r) {
         std::vector<PointValueType> points;
         points.reserve(npts);
 
-        const eckit::ScopedPtr<repres::Iterator> it(r.iterator());
+        const std::unique_ptr<repres::Iterator> it(r.iterator());
         size_t i = 0;
         while (it->next()) {
             ASSERT(i < npts);
@@ -66,7 +66,7 @@ void PointSearch::build(const repres::Representation& r) {
         ASSERT(npts == i);
         tree_->build(points);
     } else {
-        const eckit::ScopedPtr<repres::Iterator> it(r.iterator());
+        const std::unique_ptr<repres::Iterator> it(r.iterator());
         size_t i = 0;
         while (it->next()) {
             ASSERT(i < npts);

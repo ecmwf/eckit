@@ -12,8 +12,9 @@
 #ifndef mir_search_Search_h
 #define mir_search_Search_h
 
+#include <memory>
+
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/memory/ScopedPtr.h"
 
 #include "mir/search/Tree.h"
 
@@ -51,7 +52,7 @@ public:
 
 private:
 
-    eckit::ScopedPtr<Tree> tree_;
+    std::unique_ptr<Tree> tree_;
 
     void build(const repres::Representation&);
 };

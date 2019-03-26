@@ -94,6 +94,10 @@ public:
         return std::sqrt(d);
     }
 
+    double distance(const KPoint& p) {
+        return distance(*this, p);
+    }
+
     static double distance2(const KPoint& p1, const KPoint& p2) {
         double d = 0;
         for (size_t i = 0; i < dimensions(); i++) {
@@ -101,6 +105,10 @@ public:
             d += dx * dx;
         }
         return d;
+    }
+
+    double distance2(const KPoint& p) {
+        return distance2(*this, p);
     }
 
     static bool equal(const KPoint& p1, const KPoint& p2) {
@@ -111,6 +119,10 @@ public:
         return true;
     }
 
+    bool operator==(const KPoint& other) const { return equal(*this, other); }
+
+    bool operator!=(const KPoint& other) const { return !equal(*this, other); }
+
     static double norm(const KPoint& p1) {
         double n = 0.0;
         for (size_t i = 0; i < dimensions(); i++) {
@@ -120,12 +132,8 @@ public:
         return std::sqrt(n);
     }
 
-    bool operator==(const KPoint& other) const { return equal(*this, other); }
-
-    bool operator!=(const KPoint& other) const { return !equal(*this, other); }
-
     // Distance along one axis
-    static double distance(const KPoint& p1, const KPoint& p2, int axis) {
+    static double distance(const KPoint& p1, const KPoint& p2, unsigned int axis) {
         return std::abs(p1.x_[axis] - p2.x_[axis]);
     }
 

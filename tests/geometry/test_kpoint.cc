@@ -84,6 +84,39 @@ CASE("KPoint scaling")
     EXPECT(r[ZZ] == 126.0);
 }
 
+CASE("KPoint equality")
+{
+    Point3 p1 = { 1.0, 2.0, 3.0 };
+    Point3 p2 = { 1.0, 2.0, 3.0 };
+
+    EXPECT(p1 == p2);
+}
+
+CASE("KPoint inequality")
+{
+    Point3 p1 = { 1.0, 2.0, 3.0 };
+    Point3 p2 = { 1.0, 2.0, 4.0 };
+
+    EXPECT(p1 != p2);
+}
+
+CASE("KPoint comparison")
+{
+    Point3 p1 = { 2.0, 1.0, 0.0 };
+    Point3 p2 = { 1.0, 2.0, 4.0 };
+
+    EXPECT(p2 < p1);
+}
+
+CASE("KPoint distance2 comparison")
+{
+    Point3 zz;
+    Point3 p1 = { 2.0, 1.0, 0.0 };
+    Point3 p2 = { 1.0, 2.0, 4.0 };
+
+    EXPECT( p1.distance2(zz) < p2.distance2(zz));
+}
+
 }  // namespace test
 }  // namespace eckit
 

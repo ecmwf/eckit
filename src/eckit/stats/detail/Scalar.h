@@ -12,11 +12,9 @@
 #ifndef mir_stats_detail_Scalar_h
 #define mir_stats_detail_Scalar_h
 
-#include <cmath>
 #include <ostream>
 
 #include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/stats/detail/PNorms.h"
 
 
 namespace mir {

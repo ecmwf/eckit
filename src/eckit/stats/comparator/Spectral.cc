@@ -17,8 +17,6 @@
 #include <memory>
 #include <sstream>
 
-#include "eckit/memory/ScopedPtr.h"
-
 #include "mir/param/SameParametrisation.h"
 #include "mir/stats/statistics/Spectral.h"
 

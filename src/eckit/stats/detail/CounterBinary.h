@@ -28,7 +28,8 @@ private:
     Counter counter2_;
 
     size_t missing_;
-    size_t missingDifferent_;
+    size_t missingIn1NotIn2_;
+    size_t missingIn2NotIn1_;
     size_t maxIndex_;
     size_t countBelowLowerLimit_;
     size_t countAboveUpperLimit_;
@@ -72,7 +73,8 @@ public:
     size_t maxIndex() const;
 
     size_t missing() const;
-    size_t missingDifferent() const;
+    size_t missingIn1NotIn2() const;
+    size_t missingIn2NotIn1() const;
 
 };
 

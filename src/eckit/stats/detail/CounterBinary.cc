@@ -34,7 +34,8 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1,
     counter1_(param1),
     counter2_(param2),
     missing_(0),
-    missingDifferent_(0),
+    missingIn1NotIn2_(0),
+    missingIn2NotIn1_(0),
     maxIndex_(0),
     countBelowLowerLimit_(0),
     countAboveUpperLimit_(0),
@@ -103,7 +104,8 @@ void CounterBinary::reset(const data::MIRField& field1, const data::MIRField& fi
     counter2_.reset(field2);
 
     missing_ = 0;
-    missingDifferent_ = 0;
+    missingIn1NotIn2_ = 0;
+    missingIn2NotIn1_ = 0;
     maxIndex_ = 0;
     countBelowLowerLimit_ = 0;
     countAboveUpperLimit_ = 0;
@@ -119,7 +121,8 @@ void CounterBinary::print(std::ostream& out) const {
         << ",max=" << max()
         << ",maxIndex=" << maxIndex()
         << ",missing=" << missing()
-        << ",missingDifferent=" << missingDifferent();
+        << ",missingIn1NotIn2=" << missingIn1NotIn2()
+        << ",missingIn2NotIn1=" << missingIn2NotIn1();
     if (hasUpperLimit_) {
         out << ",countAboveUpperLimit=" << countAboveUpperLimit();
     }
@@ -168,7 +171,7 @@ bool CounterBinary::count(const double& a, const double& b, const double& diff) 
         return true;
     }
 
-    (miss1 && miss2 ? missing_ : missingDifferent_)++;
+    (miss1 && miss2 ? missing_ : (miss1 ? missingIn1NotIn2_ : missingIn2NotIn1_) )++;
     return false;
 }
 
@@ -177,8 +180,9 @@ std::string CounterBinary::check() const {
     ASSERT(count());
     std::ostringstream reasons;
 
-    if (missingDifferent_ > ignoreDifferentMissingValues()) {
-        reasons << "\n" "* different missing values (" << missingDifferent() << ") greater than " << ignoreDifferentMissingValues();
+    auto missingDifferent = missingIn1NotIn2_ + missingIn2NotIn1_;
+    if (missingIn1NotIn2_ > ignoreDifferentMissingValues()) {
+        reasons << "\n" "* different missing values (" << missingDifferent << ") greater than " << ignoreDifferentMissingValues();
     }
 
     if (countAboveUpperLimit_ > ignoreAboveUpperLimit()) {
@@ -260,8 +264,13 @@ size_t CounterBinary::missing() const {
 }
 
 
-size_t CounterBinary::missingDifferent() const {
-    return missingDifferent_;
+size_t CounterBinary::missingIn1NotIn2() const {
+    return missingIn1NotIn2_;
+}
+
+
+size_t CounterBinary::missingIn2NotIn1() const {
+    return missingIn1NotIn2_;
 }
 
 

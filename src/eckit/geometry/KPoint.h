@@ -229,6 +229,17 @@ public:
     const double* begin() const { return x_; }
     const double* end() const { return x_ + dimensions(); }
 
+    KPoint operator+(const KPoint& other) {
+        return add(*this, other);
+    }
+
+    KPoint operator-(const KPoint& other) {
+        return sub(*this, other);
+    }
+
+    KPoint operator*(const double s) {
+        return mul(*this, s);
+    }
 
     void normalize(const KPoint& offset, const KPoint& scale) {
         for (size_t i = 0; i < DIMS; ++i) {

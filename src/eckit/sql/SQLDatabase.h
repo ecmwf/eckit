@@ -17,6 +17,7 @@
 #define eckit_sql_SQLDatabase_H
 
 #include <map>
+#include <memory>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/sql/SchemaAnalyzer.h"

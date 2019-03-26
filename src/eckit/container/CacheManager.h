@@ -17,8 +17,9 @@
 
 #include <sys/stat.h>
 
-#include <string>
+#include <memory>
 #include <functional>
+#include <string>
 #include <string>
 
 #include "eckit/config/LibEcKit.h"

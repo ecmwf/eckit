@@ -14,6 +14,8 @@
 #ifndef Expression_H
 #define Expression_H
 
+#include <memory>
+
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
 

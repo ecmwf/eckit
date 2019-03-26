@@ -15,6 +15,8 @@
 #ifndef eckit_sql_SQLSelect_H
 #define eckit_sql_SQLSelect_H
 
+#include <memory>
+
 #include "eckit/filesystem/PathName.h"
 
 #include "eckit/sql/expression/OrderByExpressions.h"

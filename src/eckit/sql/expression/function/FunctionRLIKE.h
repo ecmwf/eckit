@@ -14,6 +14,8 @@
 #ifndef FunctionRLIKE_H
 #define FunctionRLIKE_H
 
+#include <memory>
+
 #include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/utils/Regex.h"
 

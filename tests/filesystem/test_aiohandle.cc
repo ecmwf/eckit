@@ -14,7 +14,6 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
 #include "eckit/testing/Test.h"
@@ -39,7 +38,7 @@ public:
 
 
 void TestAIOHandle::test_write() {
-    ScopedPtr<DataHandle> aioh(new AIOHandle(path_));
+    std::unique_ptr<DataHandle> aioh(new AIOHandle(path_));
 
     aioh->openForWrite(0);
 
@@ -49,7 +48,7 @@ void TestAIOHandle::test_write() {
 
     aioh->close();
 
-    ScopedPtr<DataHandle> fh(path_.fileHandle());
+    std::unique_ptr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 
@@ -63,7 +62,7 @@ void TestAIOHandle::test_write() {
 
 
 void TestAIOHandle::test_append() {
-    ScopedPtr<DataHandle> aioh(new AIOHandle(path_));
+    std::unique_ptr<DataHandle> aioh(new AIOHandle(path_));
 
     aioh->openForAppend(0);
 
@@ -73,7 +72,7 @@ void TestAIOHandle::test_append() {
 
     aioh->close();
 
-    ScopedPtr<DataHandle> fh(path_.fileHandle());
+    std::unique_ptr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 

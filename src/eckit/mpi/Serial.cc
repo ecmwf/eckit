@@ -16,6 +16,7 @@
 #include <limits>
 #include <deque>
 #include <cstring>
+#include <memory>
 
 #include "eckit/runtime/Main.h"
 #include "eckit/exception/Exceptions.h"
@@ -26,7 +27,6 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/io/DataHandle.h"
 
 namespace eckit {
@@ -333,7 +333,7 @@ int Serial::communicator() const {
 
 eckit::SharedBuffer Serial::broadcastFile( const PathName& filepath, size_t ) const {
 
-    eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
+    std::unique_ptr<DataHandle> dh( filepath.fileHandle() );
 
     Length len = dh->openForRead(); AutoClose closer(*dh);
 

@@ -14,6 +14,8 @@
 #ifndef Expression_H
 #define Expression_H
 
+#include <memory>
+
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
 
@@ -55,7 +57,7 @@ public:
 template<class T, class U>
 class CondUnary : public Expression<U> {
 
-	ScopedPtr<Expression<U> > cond_;
+	std::unique_ptr<Expression<U> > cond_;
 
 	virtual void print(std::ostream& s) const
 		{ s << opname(T()) << '(' << *cond_ << ')'; }
@@ -69,8 +71,8 @@ public:
 template<class T, class U>
 class CondBinary : public Expression<U> {
 
-	ScopedPtr<Expression<U> > left_;
-	ScopedPtr<Expression<U> > right_;
+	std::unique_ptr<Expression<U> > left_;
+	std::unique_ptr<Expression<U> > right_;
 
 	virtual void print(std::ostream& s) const
 		{ s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }

@@ -25,7 +25,6 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/memory/ScopedPtr.h"
 
 namespace eckit {
 namespace mpi {
@@ -570,7 +569,7 @@ eckit::SharedBuffer Parallel::broadcastFile( const PathName& filepath, size_t ro
 
     if(isRoot) {
         try {
-            eckit::ScopedPtr<DataHandle> dh( filepath.fileHandle() );
+            std::unique_ptr<DataHandle> dh( filepath.fileHandle() );
 
             op.len_ = dh->openForRead(); AutoClose closer(*dh);
             buffer = new eckit::CountedBuffer(op.len_);

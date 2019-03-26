@@ -18,7 +18,6 @@
 #define eckit_containers_Trie_H
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/memory/ScopedPtr.h"
 
 #include <vector>
 #include <ostream>

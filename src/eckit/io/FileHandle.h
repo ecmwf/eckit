@@ -19,7 +19,6 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/memory/ScopedPtr.h"
 
 namespace eckit {
 

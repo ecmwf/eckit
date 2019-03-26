@@ -11,6 +11,8 @@
 #ifndef eckit_sql_Environment_H
 #define eckit_sql_Environment_H
 
+#include <memory>
+
 #include "eckit/sql/SelectOneTable.h"
 #include "eckit/sql/SQLTable.h"
 

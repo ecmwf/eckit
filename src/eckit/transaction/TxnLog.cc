@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <iomanip>
+#include <memory>
 
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
@@ -25,8 +26,6 @@
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/transaction/TxnLog.h"
 #include "eckit/utils/Translator.h"
-#include "eckit/memory/ScopedPtr.h"
-
 
 namespace eckit {
 
@@ -302,8 +301,8 @@ void TxnLog<T>::find(TxnFinder<T>& r)
     {
         try {
             FileStream log(active[j], "r"); auto c = closer(log);
-            eckit::ScopedPtr<T> task(Reanimator<T>::reanimate(log));
-            if (task.get())
+            std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
+            if (task)
                 if (!r.found(*task))
                     return;
         }
@@ -342,7 +341,7 @@ void TxnLog<T>::find(TxnFinder<T>& r)
             Log::info() << "Searching " << dates[k] << std::endl;
             try {
                 FileStream log(dates[k], "r"); auto c = closer(log);
-                eckit::ScopedPtr<T> task(Reanimator<T>::reanimate(log));
+                std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 while (task)
                 {
                     if (!r.found(*task))

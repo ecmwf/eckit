@@ -14,7 +14,6 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"
 #include "eckit/testing/Test.h"
@@ -39,7 +38,7 @@ public:
 
 
 void TestAsyncHandle::test_write() {
-    ScopedPtr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
+    std::unique_ptr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
 
     asynch->openForWrite(0);
 
@@ -49,7 +48,7 @@ void TestAsyncHandle::test_write() {
 
     asynch->close();
 
-    ScopedPtr<DataHandle> fh(path_.fileHandle());
+    std::unique_ptr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 
@@ -63,7 +62,7 @@ void TestAsyncHandle::test_write() {
 
 
 void TestAsyncHandle::test_append() {
-    ScopedPtr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
+    std::unique_ptr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
 
     asynch->openForAppend(0);
 
@@ -73,7 +72,7 @@ void TestAsyncHandle::test_append() {
 
     asynch->close();
 
-    ScopedPtr<DataHandle> fh(path_.fileHandle());
+    std::unique_ptr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 

@@ -14,7 +14,6 @@
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
@@ -329,7 +328,7 @@ CASE("test_local_configuration") {
 }
 
 CASE("Hash a configuration") {
-    eckit::ScopedPtr<Hash> h(eckit::HashFactory::build("MD5"));
+    std::unique_ptr<Hash> h(eckit::HashFactory::build("MD5"));
 
     LocalConfiguration cfg;
     cfg.set("name", "Sidonia");

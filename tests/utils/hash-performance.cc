@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <memory>
 
 #include "eckit/log/Timer.h"
 #include "eckit/io/Buffer.h"
@@ -17,7 +18,6 @@
 #include "eckit/log/Seconds.h"
 
 #include "eckit/utils/Hash.h"
-#include "eckit/memory/ScopedPtr.h"
 
 #include "eckit/testing/Test.h"
 
@@ -87,7 +87,7 @@ CASE( "Test hash performance" ) {
 
             std::cout << name << std::endl;
 
-            eckit::ScopedPtr<eckit::Hash> hash( eckit::HashFactory::build(name) );
+            std::unique_ptr<eckit::Hash> hash( eckit::HashFactory::build(name) );
 
             timeAdd<20,1>  (*hash, buffer, timer);
             timeCompute<5> (*hash, buffer2, timer);

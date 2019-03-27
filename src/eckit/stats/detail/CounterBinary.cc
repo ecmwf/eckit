@@ -181,7 +181,7 @@ std::string CounterBinary::check() const {
     std::ostringstream reasons;
 
     auto missingDifferent = missingIn1NotIn2_ + missingIn2NotIn1_;
-    if (missingIn1NotIn2_ > ignoreDifferentMissingValues()) {
+    if (missingDifferent > ignoreDifferentMissingValues()) {
         reasons << "\n" "* different missing values (" << missingDifferent << ") greater than " << ignoreDifferentMissingValues();
     }
 

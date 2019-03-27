@@ -174,7 +174,7 @@ void MemoryHandle::rewind() {
 
 Offset MemoryHandle::seek(const Offset& off) {
     ASSERT(opened_);
-    ASSERT(size_t(off) < size_);
+    ASSERT(size_t(off) <= size_);
     position_ = off;
     return position_;
 }

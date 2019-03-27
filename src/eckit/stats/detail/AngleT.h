@@ -57,7 +57,7 @@ private:
     }
 
     std::complex<double> decompose(const double& a) const {
-        return std::polar(1., normalise(a * descale_));
+        return std::polar(1., a * descale_);
     }
 
     double recompose(const std::complex<double>& c) const {

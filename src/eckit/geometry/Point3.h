@@ -22,7 +22,7 @@ public:
 
     Point3( const double* p ) : BasePoint(p) {}
 
-    Point3( double x, double y, double z ) : BasePoint( NoInit() )
+    Point3( double x, double y, double z ) : BasePoint()
     {
         x_[XX] = x;
         x_[YY] = y;

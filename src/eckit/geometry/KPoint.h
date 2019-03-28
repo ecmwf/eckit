@@ -42,18 +42,16 @@ enum LLCOORDS
 template <int SIZE = 2>
 class KPoint {
 protected:
-    double x_[SIZE];
 
-    class NoInit {};
-
-    KPoint(NoInit) {}
+    double x_[SIZE] = {0};
 
 public:
+
     static const size_t DIMS = SIZE;
 
     double x(size_t axis) const { return x_[axis]; }
 
-    KPoint() { std::fill(x_, x_ + dimensions(), 0); }
+    KPoint() {}
 
     KPoint(const double* x) { std::copy(x, x + dimensions(), x_); }
 
@@ -96,6 +94,10 @@ public:
         return std::sqrt(d);
     }
 
+    double distance(const KPoint& p) {
+        return distance(*this, p);
+    }
+
     static double distance2(const KPoint& p1, const KPoint& p2) {
         double d = 0;
         for (size_t i = 0; i < dimensions(); i++) {
@@ -103,6 +105,10 @@ public:
             d += dx * dx;
         }
         return d;
+    }
+
+    double distance2(const KPoint& p) {
+        return distance2(*this, p);
     }
 
     static bool equal(const KPoint& p1, const KPoint& p2) {
@@ -113,6 +119,10 @@ public:
         return true;
     }
 
+    bool operator==(const KPoint& other) const { return equal(*this, other); }
+
+    bool operator!=(const KPoint& other) const { return !equal(*this, other); }
+
     static double norm(const KPoint& p1) {
         double n = 0.0;
         for (size_t i = 0; i < dimensions(); i++) {
@@ -122,12 +132,8 @@ public:
         return std::sqrt(n);
     }
 
-    bool operator==(const KPoint& other) const { return equal(*this, other); }
-
-    bool operator!=(const KPoint& other) const { return !equal(*this, other); }
-
     // Distance along one axis
-    static double distance(const KPoint& p1, const KPoint& p2, int axis) {
+    static double distance(const KPoint& p1, const KPoint& p2, unsigned int axis) {
         return std::abs(p1.x_[axis] - p2.x_[axis]);
     }
 
@@ -231,6 +237,17 @@ public:
     const double* begin() const { return x_; }
     const double* end() const { return x_ + dimensions(); }
 
+    KPoint operator+(const KPoint& other) {
+        return add(*this, other);
+    }
+
+    KPoint operator-(const KPoint& other) {
+        return sub(*this, other);
+    }
+
+    KPoint operator*(const double s) {
+        return mul(*this, s);
+    }
 
     void normalize(const KPoint& offset, const KPoint& scale) {
         for (size_t i = 0; i < DIMS; ++i) {

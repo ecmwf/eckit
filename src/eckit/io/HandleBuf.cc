@@ -32,16 +32,18 @@ HandleBuf::~HandleBuf() {
 
 int HandleBuf::sync() {
     int len     = pptr() - pbase();
-    int written = handle_.write(pbase(), len);
+    if (len != 0) {
+        int written = handle_.write(pbase(), len);
 
-    if (len != written) {
-        if (throwOnError_) {
-            std::ostringstream oss;
-            oss << "HandleBuf: failed to write to " << handle_;
-            throw WriteError(oss.str());
+        if (len != written) {
+            if (throwOnError_) {
+                std::ostringstream oss;
+                oss << "HandleBuf: failed to write to " << handle_;
+                throw WriteError(oss.str());
+            }
+
+            return EOF;
         }
-
-        return EOF;
     }
 
     setp(pbase(), epptr());

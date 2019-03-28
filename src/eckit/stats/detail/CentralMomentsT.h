@@ -105,7 +105,7 @@ public:
         count_ += other.count_;
     }
 
-    void print(std::ostream& out) const {
+    virtual void print(std::ostream& out) const {
         out << "CentralMoments["
                 "mean="     << mean()
             << ",stddev="   << standardDeviation()

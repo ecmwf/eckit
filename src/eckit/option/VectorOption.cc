@@ -40,6 +40,12 @@ VectorOption<T>::~VectorOption() {
 }
 
 template<class T>
+void VectorOption<T>::set(Configured &parametrisation) const {
+    set(std::string{}, parametrisation);
+}
+
+
+template<class T>
 void VectorOption<T>::set(const std::string &value, Configured &parametrisation) const {
     eckit::Translator<std::string, T> t;
 

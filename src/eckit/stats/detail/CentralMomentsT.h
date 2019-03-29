@@ -43,7 +43,7 @@ private:
 
 public:
 
-    CentralMomentsT() {
+    CentralMomentsT() : count_(0) {
         reset();
     }
 

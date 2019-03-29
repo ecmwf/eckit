@@ -44,6 +44,8 @@ void MethodT<STATS>::execute(const data::MIRField& field) {
             s(value);
         }
     }
+
+    ASSERT(v == field.values(0).end());
 }
 
 
@@ -58,8 +60,9 @@ void MethodT<STATS>::mean(data::MIRField& field) const {
     auto v = statistics.begin();
 
     for (auto& s : *this) {
+        auto& value = *(v++);
         auto stat = s.mean();
-        *v = stat == stat ? stat : missingValue;
+        value = stat == stat ? stat : missingValue;
     }
 
     field.update(statistics, 0, true);

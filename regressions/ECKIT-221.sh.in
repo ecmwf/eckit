@@ -30,7 +30,7 @@ if [ "@ECKIT_HAVE_MPI@" == "1" ] && [ "@MPIEXEC@" != "MPIEXEC-NOTFOUND" ]; then
 
   create_file
 
-  @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 4 $exe "$fname"
+  @MPIEXEC@ @MPI_ARGS@ @MPIEXEC_NUMPROC_FLAG@ 4 $exe "$fname"
 
   set +e
   filed_found=0

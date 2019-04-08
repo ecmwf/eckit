@@ -92,6 +92,7 @@ CASE("Types are reported correctly for OrderedMap") {
     om[Value(123.45)] = 123.456;
     om[Value(true)]   = false;
 
+    EXPECT(om.isMap());
     EXPECT(om.isOrderedMap());
 
     EXPECT(!om.isNil());
@@ -103,7 +104,6 @@ CASE("Types are reported correctly for OrderedMap") {
     EXPECT(!om.isDate());
     EXPECT(!om.isTime());
     EXPECT(!om.isDateTime());
-    EXPECT(!om.isMap());
 }
 
 CASE("Test comparisons using OrderedMap") {

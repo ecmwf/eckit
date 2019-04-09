@@ -50,7 +50,7 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1,
     toleranceType_(absTolerance_t::NONE),
     first_(true) {
 
-    std::unique_ptr<param::MIRParametrisation> same(new param::SameParametrisation(param1, param2));
+    std::unique_ptr<param::MIRParametrisation> same(new param::SameParametrisation(param1, param2, false));
 
     same->get("ignore-different-missing-values", ignoreDifferentMissingValues_);
     same->get("ignore-different-missing-values-factor", ignoreDifferentMissingValuesFactor_);

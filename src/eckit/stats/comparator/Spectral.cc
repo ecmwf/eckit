@@ -32,7 +32,7 @@ Spectral::Spectral(const param::MIRParametrisation& param1, const param::MIRPara
     enormDiffMax_(std::numeric_limits<double>::quiet_NaN()) {
     reset();
 
-    std::unique_ptr<param::MIRParametrisation> param(new param::SameParametrisation(param1, param2));
+    std::unique_ptr<param::MIRParametrisation> param(new param::SameParametrisation(param1, param2, false));
     param->get("spectral-mean-difference-max", meanDiffMax_);
     param->get("spectral-energy-norm-difference-max", enormDiffMax_);
 }

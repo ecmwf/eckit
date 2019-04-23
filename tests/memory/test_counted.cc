@@ -50,7 +50,7 @@ void TestDefault () {
 
     typename F::ptype p;
     EXPECT( !p );
-    EXPECT( p.get() == 0 );
+    EXPECT( p.get() == nullptr );
 
     p.reset( new F(10) );
 

@@ -206,10 +206,10 @@ void Parallel::initialize() {
                 required = MPI_THREAD_SINGLE;  //< only one thread executes
             else if (MPIInitThread == "MPI_THREAD_FUNNELED")
                 required = MPI_THREAD_FUNNELED;  //< process may be multi-threaded, but only the main thread will make
-                                                 //MPI calls
+                                                 // MPI calls
             else if (MPIInitThread == "MPI_THREAD_SERIALIZED")
                 required = MPI_THREAD_SERIALIZED;  //< the process may be multi-threaded, and multiple threads may make
-                                                   //MPI calls, but only one at a time
+                                                   // MPI calls, but only one at a time
             else if (MPIInitThread == "MPI_THREAD_MULTIPLE")
                 required = MPI_THREAD_MULTIPLE;  //< multiple threads may call MPI, with no restrictions
             else {

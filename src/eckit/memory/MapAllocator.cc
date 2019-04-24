@@ -64,7 +64,8 @@ void* MapAllocator::allocate(size_t size) {
 
     if (size > left_) {
         if (!more_) {
-            //			Log::warning() << "MapAllocator too small: length=" << length_ << " left=" << left_ << " request="
+            //			Log::warning() << "MapAllocator too small: length=" << length_ << " left=" << left_ << "
+            //request="
             //<< size << std::endl;
             more_ = new MapAllocator(std::max(length_, size));
             ASSERT(more_);

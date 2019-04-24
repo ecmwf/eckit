@@ -173,10 +173,6 @@ if( HAVE_ECKIT_MPI )
   list( APPEND ECKIT_LIBRARIES eckit_mpi )
 endif()
 
-if( HAVE_EIGEN AND ECKIT_CONTRIB_EIGEN )
-  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
-endif()
-
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
@@ -196,7 +192,6 @@ if( HAVE_EIGEN )
 endif()
 
 add_subdirectory( bamboo )
-add_subdirectory( contrib )
 add_subdirectory( doc )
 add_subdirectory( src )
 add_subdirectory( tests )

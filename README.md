@@ -31,7 +31,6 @@ It features facilities to easily handle, in a cross-platform way:
 * asynchronous IO
 * asynchronous processing
 * exception handling and stack dumping
-* smart pointers (with intrusive reference counting)
 * MPI object-oriented wrapper
 * linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
 * advanced container classes

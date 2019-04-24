@@ -15,16 +15,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileTarget::FileTarget(const PathName &path):
-    out_( path.asString().c_str() ), path_(path)
-{
-    if(!out_)
+FileTarget::FileTarget(const PathName& path) : out_(path.asString().c_str()), path_(path) {
+    if (!out_)
         throw eckit::CantOpenFile(path.asString());
-//    std::cerr << "FileTarget created : " << path_ << std::endl;
+    //    std::cerr << "FileTarget created : " << path_ << std::endl;
 }
 
 FileTarget::~FileTarget() {
-//    std::cerr << "FileTarget::~FileTarget() -- " << path_ << std::endl;
+    //    std::cerr << "FileTarget::~FileTarget() -- " << path_ << std::endl;
 }
 
 void FileTarget::write(const char* start, const char* end) {
@@ -35,11 +33,10 @@ void FileTarget::flush() {
     out_.flush();
 }
 
-void FileTarget::print(std::ostream& s) const
-{
+void FileTarget::print(std::ostream& s) const {
     s << "FileTarget(path=" << path_ << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

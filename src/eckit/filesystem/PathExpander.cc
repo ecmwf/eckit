@@ -17,9 +17,9 @@
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/Zero.h"
-#include "eckit/utils/StringTools.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/utils/StringTools.h"
 
 namespace eckit {
 
@@ -49,8 +49,7 @@ struct PathExpanderRegistry {
 
         if (j == m.end()) {
             std::ostringstream msg;
-            msg << "No PathExpander found with name '" << name
-                << "'. Registered path expand handlers are:";
+            msg << "No PathExpander found with name '" << name << "'. Registered path expand handlers are:";
             for (j = m.begin(); j != m.end(); ++j)
                 msg << " '" << (*j).first << "'";
             throw eckit::UserError(msg.str());
@@ -117,16 +116,14 @@ class ENVVAR : public PathExpander {
 public:
     ENVVAR(const std::string& name) : PathExpander(name) {}
 
-    virtual void expand(const std::string& var, const std::string& path,
-                        eckit::StringDict& vars) const {
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         size_t pos      = var.find_first_of("?");
         std::string key = var.substr(0, pos);
 
         ASSERT(key == "ENVVAR");
 
         if (pos == std::string::npos || pos + 1 == std::string::npos) {
-            throw eckit::BadValue(
-                std::string("PathExpander ENVVAR passed but no variable defined: ") + var, Here());
+            throw eckit::BadValue(std::string("PathExpander ENVVAR passed but no variable defined: ") + var, Here());
         }
 
         std::string param = var.substr(pos + 1, std::string::npos);
@@ -134,9 +131,8 @@ public:
         char* e = ::getenv(param.c_str());
 
         if (!e) {
-            throw eckit::BadValue(
-                std::string("PathExpander ENVVAR passed undefined environment variable: ") + param,
-                Here());
+            throw eckit::BadValue(std::string("PathExpander ENVVAR passed undefined environment variable: ") + param,
+                                  Here());
         }
 
         std::string envvar(e);
@@ -153,24 +149,21 @@ class FILE : public PathExpander {
 public:
     FILE(const std::string& name) : PathExpander(name) {}
 
-    virtual void expand(const std::string& var, const std::string& path,
-                        eckit::StringDict& vars) const {
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         size_t pos      = var.find_first_of("?");
         std::string key = var.substr(0, pos);
 
         ASSERT(key == "FILE");
 
         if (pos == std::string::npos || pos + 1 == std::string::npos) {
-            throw eckit::BadValue(
-                std::string("PathExpander FILE passed but no file defined: ") + var, Here());
+            throw eckit::BadValue(std::string("PathExpander FILE passed but no file defined: ") + var, Here());
         }
 
         PathName p = var.substr(pos + 1, std::string::npos);
 
         std::ifstream in(p.localPath());
         if (!in) {
-            eckit::Log::error() << "PathExpander read error in " << p << " -- "
-                                << eckit::Log::syserr << std::endl;
+            eckit::Log::error() << "PathExpander read error in " << p << " -- " << eckit::Log::syserr << std::endl;
             return;
         }
 
@@ -192,8 +185,7 @@ class CWDFS : public PathExpander {
 public:
     CWDFS(const std::string& name) : PathExpander(name) {}
 
-    virtual void expand(const std::string& var, const std::string& path,
-                        eckit::StringDict& vars) const {
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         LocalPathName mnt = LocalPathName::cwd().mountPoint();
 
         vars["CWDFS"] = std::string(mnt);
@@ -208,8 +200,7 @@ class CWD : public PathExpander {
 public:
     CWD(const std::string& name) : PathExpander(name) {}
 
-    virtual void expand(const std::string& var, const std::string& path,
-                        eckit::StringDict& vars) const {
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         LocalPathName mnt = LocalPathName::cwd();
 
         vars["CWD"] = std::string(mnt);

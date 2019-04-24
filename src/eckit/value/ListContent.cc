@@ -19,33 +19,29 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec ListContent::classSpec_ = {&Content::classSpec(), "ListContent",};
-Reanimator<ListContent>  ListContent::reanimator_;
+ClassSpec ListContent::classSpec_ = {
+    &Content::classSpec(),
+    "ListContent",
+};
+Reanimator<ListContent> ListContent::reanimator_;
 
 
-ListContent::ListContent()
-{
-}
+ListContent::ListContent() {}
 
-ListContent::ListContent(const ValueList & v)
-{
+ListContent::ListContent(const ValueList& v) {
     std::copy(v.begin(), v.end(), std::back_inserter(value_));
 }
 
-ListContent::ListContent(const Value& v)
-{
+ListContent::ListContent(const Value& v) {
     value_.push_back(v);
 }
 
-ListContent::ListContent(Stream& s):
-    Content(s)
-{
+ListContent::ListContent(Stream& s) : Content(s) {
     long count;
     s >> count;
     for (int i = 0; i < count; i++) {
         value_.push_back(Value(s));
     }
-
 }
 
 Content* ListContent::clone() const {
@@ -57,37 +53,30 @@ Content* ListContent::clone() const {
     return new ListContent(v);
 }
 
-void ListContent::encode(Stream& s) const
-{
+void ListContent::encode(Stream& s) const {
     Content::encode(s);
     long count = value_.size();
     s << count;
     for (int i = 0; i < count; ++i) {
         s << value_[i];
     }
-
 }
 
-ListContent::~ListContent()
-{
-}
+ListContent::~ListContent() {}
 
 size_t ListContent::size() const {
     return value_.size();
 }
 
-void ListContent::value(ValueList& v) const
-{
+void ListContent::value(ValueList& v) const {
     v = value_;
 }
 
-int ListContent::compare(const Content& other)const
-{
+int ListContent::compare(const Content& other) const {
     return -other.compareList(*this);
 }
 
-int ListContent::compareList(const ListContent& other) const
-{
+int ListContent::compareList(const ListContent& other) const {
     if (value_ == other.value_) {
         return 0;
     }
@@ -95,11 +84,9 @@ int ListContent::compareList(const ListContent& other) const
         return -1;
     }
     return 1;
-
 }
 
-void ListContent::json(JSON& s) const
-{
+void ListContent::json(JSON& s) const {
     s.startList();
 
     for (size_t i = 0; i < value_.size(); i++) {
@@ -110,13 +97,13 @@ void ListContent::json(JSON& s) const
 }
 
 
-void ListContent::print(std::ostream& s) const
-{
+void ListContent::print(std::ostream& s) const {
     s << '(';
 
-    for (size_t i = 0; i < value_.size(); i++)
-    {
-        if (i > 0) {s << ',';}
+    for (size_t i = 0; i < value_.size(); i++) {
+        if (i > 0) {
+            s << ',';
+        }
         s << value_[i];
     }
 
@@ -124,92 +111,106 @@ void ListContent::print(std::ostream& s) const
 }
 
 
-Content* ListContent::add(const Content& other) const
-{
+Content* ListContent::add(const Content& other) const {
     return other.addList(*this);
 }
 
-Content* ListContent::addList(const ListContent& other) const
-{
+Content* ListContent::addList(const ListContent& other) const {
     ValueList tmp;
     std::copy(other.value_.begin(), other.value_.end(), std::back_inserter(tmp));
     std::copy(value_.begin(), value_.end(), std::back_inserter(tmp));
     return new ListContent(tmp);
 }
 
-Content* ListContent::sub(const Content& other) const
-{
+Content* ListContent::sub(const Content& other) const {
     return other.subList(*this);
 }
 
-Content* ListContent::mul(const Content& other) const
-{
+Content* ListContent::mul(const Content& other) const {
     return other.mulList(*this);
 }
 
-Content* ListContent::div(const Content& other) const
-{
+Content* ListContent::div(const Content& other) const {
     return other.divList(*this);
 }
 
-Content* ListContent::mod(const Content& other) const
-{
+Content* ListContent::mod(const Content& other) const {
     return other.modList(*this);
 }
 
 
-void ListContent::value(long long& n) const
-{
-    if (value_.size() == 1) {n = value_[0];}
-    else {Content::value(n);}
+void ListContent::value(long long& n) const {
+    if (value_.size() == 1) {
+        n = value_[0];
+    }
+    else {
+        Content::value(n);
+    }
 }
 
-void ListContent::value(bool& n) const
-{
-    if (value_.size() == 1) {n = value_[0];}
-    else {Content::value(n);}
+void ListContent::value(bool& n) const {
+    if (value_.size() == 1) {
+        n = value_[0];
+    }
+    else {
+        Content::value(n);
+    }
 }
 
-void ListContent::value(double& n) const
-{
-    if (value_.size() == 1) {n = value_[0];}
-    else {Content::value(n);}
+void ListContent::value(double& n) const {
+    if (value_.size() == 1) {
+        n = value_[0];
+    }
+    else {
+        Content::value(n);
+    }
 }
 
-void ListContent::value(std::string& n) const
-{
-    if (value_.size() == 1) {n = std::string(value_[0]);}
-    else {Content::value(n);}
+void ListContent::value(std::string& n) const {
+    if (value_.size() == 1) {
+        n = std::string(value_[0]);
+    }
+    else {
+        Content::value(n);
+    }
 }
 
-void ListContent::value(Date& n) const
-{
-    if (value_.size() == 1) {n = value_[0];}
-    else {Content::value(n);}
+void ListContent::value(Date& n) const {
+    if (value_.size() == 1) {
+        n = value_[0];
+    }
+    else {
+        Content::value(n);
+    }
 }
 
-void ListContent::value(Time& n) const
-{
-    if (value_.size() == 1) {n = value_[0];}
-    else {Content::value(n);}
+void ListContent::value(Time& n) const {
+    if (value_.size() == 1) {
+        n = value_[0];
+    }
+    else {
+        Content::value(n);
+    }
 }
 
-void ListContent::value(DateTime& n) const
-{
-    if (value_.size() == 1) {n = value_[0];}
-    else {Content::value(n);}
+void ListContent::value(DateTime& n) const {
+    if (value_.size() == 1) {
+        n = value_[0];
+    }
+    else {
+        Content::value(n);
+    }
 }
 
-Value& ListContent::element(const Value& v)
-{
+Value& ListContent::element(const Value& v) {
     long long n = v;
-    ASSERT( n >= 0 && (size_t) n < value_.size() );
+    ASSERT(n >= 0 && (size_t)n < value_.size());
     return value_.at(n);
 }
 
 bool ListContent::contains(const Value& v) const {
     long long n = v;
-    return ( n >= 0 && (size_t) n < value_.size() );
+    return (n >= 0 && (size_t)n < value_.size());
 }
 
 void ListContent::dump(std::ostream& out, size_t depth, bool indent) const {
@@ -223,8 +224,7 @@ void ListContent::dump(std::ostream& out, size_t depth, bool indent) const {
 
     out << '[' << std::endl;
 
-    for (size_t i = 0; i < value_.size(); i++)
-    {
+    for (size_t i = 0; i < value_.size(); i++) {
         if (i > 0) {
             out << ',' << std::endl;
         }
@@ -235,12 +235,11 @@ void ListContent::dump(std::ostream& out, size_t depth, bool indent) const {
 }
 
 void ListContent::hash(Hash& h) const {
-    for(auto v: value_) {
+    for (auto v : value_) {
         v.hash(h);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

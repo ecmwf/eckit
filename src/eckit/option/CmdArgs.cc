@@ -20,9 +20,9 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/Option.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/runtime/Main.h"
 
 
 namespace eckit {
@@ -42,22 +42,22 @@ CmdArgs::CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count
     init(usage, args_count, minimum_args, throw_on_error);
 }
 
-CmdArgs::CmdArgs(std::function<void (const std::string&)> usage, std::vector<Option*>& options, int args_count, int minimum_args,
-                 bool throw_on_error) {
+CmdArgs::CmdArgs(std::function<void(const std::string&)> usage, std::vector<Option*>& options, int args_count,
+                 int minimum_args, bool throw_on_error) {
     std::swap(options_, options);  // Take ownership so it can be destroyed
     init(usage, args_count, minimum_args, throw_on_error);
 }
 
-void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count, int minimum_args, bool throw_on_error) {
-    Main& ctx   = Main::instance();
-    tool_       = ctx.name();
-    int    argc = ctx.argc();
-    bool error  = false;
+void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count, int minimum_args,
+                   bool throw_on_error) {
+    Main& ctx  = Main::instance();
+    tool_      = ctx.name();
+    int argc   = ctx.argc();
+    bool error = false;
 
     std::map<std::string, const option::Option*> opts;
 
-    for (std::vector<option::Option*>::const_iterator j = options_.begin(); j != options_.end();
-         ++j) {
+    for (std::vector<option::Option*>::const_iterator j = options_.begin(); j != options_.end(); ++j) {
         if ((*j)->active()) {
             ASSERT(opts.find((*j)->name()) == opts.end());
             opts[(*j)->name()] = *j;
@@ -103,8 +103,8 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
 
     if (args_count >= 0) {
         if (args_.size() != size_t(args_count)) {
-            Log::info() << tool_ << ": invalid argument count: expected " << args_count
-                        << ", got: " << args_.size() << "." << std::endl;
+            Log::info() << tool_ << ": invalid argument count: expected " << args_count << ", got: " << args_.size()
+                        << "." << std::endl;
             error = true;
         }
     }
@@ -123,16 +123,14 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
             Log::info() << std::endl;
             Log::info() << "Options are:" << std::endl;
             Log::info() << "===========:" << std::endl << std::endl;
-            for (std::vector<option::Option*>::const_iterator j = options_.begin();
-                 j != options_.end(); ++j) {
+            for (std::vector<option::Option*>::const_iterator j = options_.begin(); j != options_.end(); ++j) {
                 Log::info() << *(*j) << std::endl << std::endl;
             }
             Log::info() << std::endl;
         }
 
         if (throw_on_error) {
-            for (std::vector<option::Option*>::iterator j = options_.begin(); j != options_.end();
-                 ++j) {
+            for (std::vector<option::Option*>::iterator j = options_.begin(); j != options_.end(); ++j) {
                 delete (*j);
             }
             throw UserError("An error occurred in argument parsing", Here());
@@ -152,8 +150,7 @@ CmdArgs::~CmdArgs() {
 
 
 void CmdArgs::configure(Configured& c) const {
-    for (std::vector<option::Option*>::const_iterator j = options_.begin(); j != options_.end();
-         ++j) {
+    for (std::vector<option::Option*>::const_iterator j = options_.begin(); j != options_.end(); ++j) {
         (*j)->copy(*this, c);
     }
 }

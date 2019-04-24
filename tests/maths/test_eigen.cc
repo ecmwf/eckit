@@ -19,10 +19,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_default" )
-{
+CASE("test_default") {
     Eigen::Vector3d v1;
     Eigen::Vector3d v2;
     Eigen::Vector3d r;
@@ -30,13 +29,11 @@ CASE ( "test_default" )
     r = v2 - v1;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

@@ -14,7 +14,7 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/persist/Exporter.h"
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void* operator new(size_t, void* addr, eckit::Evolve&) {
     return addr;
@@ -22,7 +22,7 @@ void* operator new(size_t, void* addr, eckit::Evolve&) {
 
 namespace eckit {
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void _export(eckit::Exporter& out, unsigned char what) {
     out.writeUnsigned(what);
@@ -67,7 +67,7 @@ void _export(eckit::Exporter& out, double what) {
     out.writeDouble(what);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 const int MAX_STRING_LEN = 10240;
 
@@ -296,8 +296,7 @@ void _endMember(eckit::Exporter& out, const char* name) {
     // out.writeString(name);
 }
 
-void Exporter::startObject(unsigned long long type, unsigned long long location,
-                           unsigned long long id, size_t count) {
+void Exporter::startObject(unsigned long long type, unsigned long long location, unsigned long long id, size_t count) {
     writeTag(TAG_START_OBJECT);
     writeUnsigned(type);
     writeUnsigned(location);
@@ -309,13 +308,12 @@ void Exporter::startObject(unsigned long long type, unsigned long long location,
     subCount_ = 0;
 }
 
-void _startObject(eckit::Exporter& e, unsigned long long type, unsigned long long location,
-                  unsigned long long id, size_t count) {
+void _startObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id,
+                  size_t count) {
     e.startObject(type, location, id, count);
 }
 
-void Exporter::endObject(unsigned long long type, unsigned long long location,
-                         unsigned long long id, size_t count) {
+void Exporter::endObject(unsigned long long type, unsigned long long location, unsigned long long id, size_t count) {
     writeTag(TAG_END_OBJECT);
     ASSERT(inObject_);
     inObject_ = false;
@@ -348,8 +346,8 @@ void _endSubObject(eckit::Exporter& e) {
     e.endSubObject();
 }
 
-void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long location,
-                unsigned long long id, size_t count) {
+void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long location, unsigned long long id,
+                size_t count) {
     e.endObject(type, location, id, count);
 }
 
@@ -531,10 +529,7 @@ unsigned long long Exporter::getUnsignedMember(const std::string& name) {
 
 Evolve::Evolve(eckit::Exporter& e) : e_(e), parent_(nullptr) {}
 
-Evolve::Evolve(Evolve* e, char const* klass, char const* name) :
-    e_(e->e_),
-    path_(e->path()),
-    parent_(e) {
+Evolve::Evolve(Evolve* e, char const* klass, char const* name) : e_(e->e_), path_(e->path()), parent_(e) {
     if (path_.length())
         path_ += ".";
     path_ += klass;
@@ -592,19 +587,9 @@ Evolve::operator long() {
 
 Exporter::Datatype::Datatype() : type_(0), used_(false), double_(0), signed_(0), unsigned_(0) {}
 
-Exporter::Datatype::Datatype(double d) :
-    type_(TAG_DOUBLE),
-    used_(false),
-    double_(d),
-    signed_(0),
-    unsigned_(0) {}
+Exporter::Datatype::Datatype(double d) : type_(TAG_DOUBLE), used_(false), double_(d), signed_(0), unsigned_(0) {}
 
-Exporter::Datatype::Datatype(long long d) :
-    type_(TAG_SIGNED),
-    used_(false),
-    double_(0),
-    signed_(d),
-    unsigned_(0) {}
+Exporter::Datatype::Datatype(long long d) : type_(TAG_SIGNED), used_(false), double_(0), signed_(d), unsigned_(0) {}
 
 Exporter::Datatype::Datatype(unsigned long long d) :
     type_(TAG_UNSIGNED),
@@ -707,6 +692,6 @@ void Exporter::endDatabase(const std::string&, unsigned long) {
     objectCount_ = 0;
 }
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

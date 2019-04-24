@@ -21,18 +21,17 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-static eckit::Mutex *local_mutex = 0;
-static std::map<std::string, HashFactory *> *m = 0;
+static pthread_once_t once                    = PTHREAD_ONCE_INIT;
+static eckit::Mutex* local_mutex              = 0;
+static std::map<std::string, HashFactory*>* m = 0;
 
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map<std::string, HashFactory *>();
+    m           = new std::map<std::string, HashFactory*>();
 }
 
 
-HashFactory::HashFactory(const std::string& name):
-    name_(name) {
+HashFactory::HashFactory(const std::string& name) : name_(name) {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
@@ -48,8 +47,7 @@ HashFactory::~HashFactory() {
     m->erase(name_);
 }
 
-bool HashFactory::has(const std::string& name)
-{
+bool HashFactory::has(const std::string& name) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -62,26 +60,26 @@ void HashFactory::list(std::ostream& out) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     const char* sep = "";
-    for (std::map<std::string, HashFactory *>::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    for (std::map<std::string, HashFactory*>::const_iterator j = m->begin(); j != m->end(); ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
 }
 
 
-Hash *HashFactory::build(const std::string &name) {
+Hash* HashFactory::build(const std::string& name) {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    std::map<std::string, HashFactory *>::const_iterator j = m->find(name);
+    std::map<std::string, HashFactory*>::const_iterator j = m->find(name);
 
     eckit::Log::debug() << "Looking for HashFactory [" << name << "]" << std::endl;
 
     if (j == m->end()) {
         eckit::Log::error() << "No HashFactory for [" << name << "]" << std::endl;
         eckit::Log::error() << "HashFactories are:" << std::endl;
-        for (j = m->begin() ; j != m->end() ; ++j)
+        for (j = m->begin(); j != m->end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
         throw eckit::SeriousBug(std::string("No HashFactory called ") + name);
     }
@@ -91,38 +89,32 @@ Hash *HashFactory::build(const std::string &name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Hash::Hash() {
-}
+Hash::Hash() {}
 
-Hash::~Hash() {
-}
+Hash::~Hash() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-NoHash::NoHash() {
-}
+NoHash::NoHash() {}
 
-NoHash::~NoHash() {
-}
+NoHash::~NoHash() {}
 
-void NoHash::reset() const {
-}
+void NoHash::reset() const {}
 
 Hash::digest_t NoHash::compute(const void*, long) {
     return std::string();
 }
 
-void NoHash::update(const void*, long) {
-}
+void NoHash::update(const void*, long) {}
 
 Hash::digest_t NoHash::digest() const {
-    return digest_; // should be empty
+    return digest_;  // should be empty
 }
 
-namespace  {
-    HashBuilder<NoHash> builder1("None");
-    HashBuilder<NoHash> builder2("NoHash");
-}
+namespace {
+HashBuilder<NoHash> builder1("None");
+HashBuilder<NoHash> builder2("NoHash");
+}  // namespace
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

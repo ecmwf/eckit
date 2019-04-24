@@ -8,7 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #include "eckit/eckit.h"
 
@@ -22,98 +22,96 @@
 #include "eckit/linalg/Vector.h"
 #include "eckit/maths/Eigen.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace linalg {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 LinearAlgebraEigen::LinearAlgebraEigen() : LinearAlgebra("eigen") {}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraEigen::print(std::ostream& out) const {
     out << "LinearAlgebraEigen[]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Scalar LinearAlgebraEigen::dot(const Vector& x, const Vector& y) const {
-    ASSERT( x.size() == y.size() );
+    ASSERT(x.size() == y.size());
     // Eigen requires non-const pointers to the data
-    Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map( const_cast<Scalar*>(x.data()), x.size() );
-    Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map( const_cast<Scalar*>(y.data()), y.size() );
+    Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map(const_cast<Scalar*>(x.data()), x.size());
+    Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map(const_cast<Scalar*>(y.data()), y.size());
     return xi.dot(yi);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraEigen::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    ASSERT(x.size() == A.cols() && y.size() == A.rows());
     // Eigen requires non-const pointers to the data
-    Eigen::MatrixXd::MapType Ai = Eigen::MatrixXd::Map( const_cast<Scalar*>(A.data()), A.rows(), A.cols() );
-    Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map( const_cast<Scalar*>(x.data()), x.size() );
-    Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map( y.data(), y.size() );
-    yi = Ai*xi;
+    Eigen::MatrixXd::MapType Ai = Eigen::MatrixXd::Map(const_cast<Scalar*>(A.data()), A.rows(), A.cols());
+    Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map(const_cast<Scalar*>(x.data()), x.size());
+    Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map(y.data(), y.size());
+    yi                          = Ai * xi;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
     // Eigen requires non-const pointers to the data
-    Eigen::MatrixXd::MapType Ai = Eigen::MatrixXd::Map( const_cast<Scalar*>(A.data()), A.rows(), A.cols() );
-    Eigen::MatrixXd::MapType Bi = Eigen::MatrixXd::Map( const_cast<Scalar*>(B.data()), B.rows(), B.cols() );
-    Eigen::MatrixXd::MapType Ci = Eigen::MatrixXd::Map( C.data(), C.rows(), C.cols() );
-    Ci = Ai*Bi;
+    Eigen::MatrixXd::MapType Ai = Eigen::MatrixXd::Map(const_cast<Scalar*>(A.data()), A.rows(), A.cols());
+    Eigen::MatrixXd::MapType Bi = Eigen::MatrixXd::Map(const_cast<Scalar*>(B.data()), B.rows(), B.cols());
+    Eigen::MatrixXd::MapType Ci = Eigen::MatrixXd::Map(C.data(), C.rows(), C.cols());
+    Ci                          = Ai * Bi;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraEigen::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    ASSERT(x.size() == A.cols() && y.size() == A.rows());
     // We expect indices to be 0-based
-    ASSERT( A.outer()[0] == 0 );
+    ASSERT(A.outer()[0] == 0);
     // Eigen requires non-const pointers to the data
-    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nonZeros(),
-                                                                 const_cast<Index*>(A.outer()),
-                                                                 const_cast<Index*>(A.inner()),
-                                                                 const_cast<Scalar*>(A.data()));
-    Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map( const_cast<Scalar*>(x.data()), x.size() );
-    Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map( y.data(), y.size() );
-    yi = Ai*xi;
+    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(
+        A.rows(), A.cols(), A.nonZeros(), const_cast<Index*>(A.outer()), const_cast<Index*>(A.inner()),
+        const_cast<Scalar*>(A.data()));
+    Eigen::VectorXd::MapType xi = Eigen::VectorXd::Map(const_cast<Scalar*>(x.data()), x.size());
+    Eigen::VectorXd::MapType yi = Eigen::VectorXd::Map(y.data(), y.size());
+    yi                          = Ai * xi;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraEigen::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
     // We expect indices to be 0-based
-    ASSERT( A.outer()[0] == 0 );
+    ASSERT(A.outer()[0] == 0);
     // Eigen requires non-const pointers to the data
-    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(A.rows(), A.cols(), A.nonZeros(),
-                                                                 const_cast<Index*>(A.outer()),
-                                                                 const_cast<Index*>(A.inner()),
-                                                                 const_cast<Scalar*>(A.data()));
-    Eigen::MatrixXd::MapType Bi = Eigen::MatrixXd::Map( const_cast<Scalar*>(B.data()), B.rows(), B.cols() );
-    Eigen::MatrixXd::MapType Ci = Eigen::MatrixXd::Map( C.data(), C.rows(), C.cols() );
-    Ci = Ai*Bi;
+    Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index> Ai(
+        A.rows(), A.cols(), A.nonZeros(), const_cast<Index*>(A.outer()), const_cast<Index*>(A.inner()),
+        const_cast<Scalar*>(A.data()));
+    Eigen::MatrixXd::MapType Bi = Eigen::MatrixXd::Map(const_cast<Scalar*>(B.data()), B.rows(), B.cols());
+    Eigen::MatrixXd::MapType Ci = Eigen::MatrixXd::Map(C.data(), C.rows(), C.cols());
+    Ci                          = Ai * Bi;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraEigen::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
     LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static LinearAlgebraEigen linearAlgebraEigen;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace linalg
-} // namespace eckit
+}  // namespace linalg
+}  // namespace eckit
 
 #endif  // ECKIT_HAVE_EIGEN

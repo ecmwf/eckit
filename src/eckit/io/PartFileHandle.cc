@@ -11,49 +11,41 @@
 
 #include <numeric>
 
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/config/Resource.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Log.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartFileHandle.h"
 
 
-
 namespace eckit {
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec PartFileHandle::classSpec_ = {&DataHandle::classSpec(), "PartFileHandle",};
+ClassSpec PartFileHandle::classSpec_ = {
+    &DataHandle::classSpec(),
+    "PartFileHandle",
+};
 Reanimator<PartFileHandle> PartFileHandle::reanimator_;
 
-void PartFileHandle::print(std::ostream& s) const
-{
+void PartFileHandle::print(std::ostream& s) const {
     if (format(s) == Log::compactFormat)
         s << "PartFileHandle";
     else
-        s << "PartFileHandle[path=" << name_
-          << ",offset=" << offset_
-          << ",length=" << length_ << ']';
+        s << "PartFileHandle[path=" << name_ << ",offset=" << offset_ << ",length=" << length_ << ']';
 }
 
-void PartFileHandle::encode(Stream& s) const
-{
+void PartFileHandle::encode(Stream& s) const {
     DataHandle::encode(s);
     s << name_;
     s << offset_;
     s << length_;
-
 }
 
-PartFileHandle::PartFileHandle(Stream& s):
-    DataHandle(s),
-    file_(0),
-    pos_(0),
-    index_(0)
-{
+PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), file_(0), pos_(0), index_(0) {
     s >> name_;
     s >> offset_;
     s >> length_;
@@ -62,12 +54,10 @@ PartFileHandle::PartFileHandle(Stream& s):
 }
 
 #ifdef USE_LINKS
-static std::string linkName(const std::string& name)
-{
-    static int n = 1;
+static std::string linkName(const std::string& name) {
+    static int n     = 1;
     std::string path = name + ".part.0";
-    while (::link(name.c_str(), path.c_str()) < 0)
-    {
+    while (::link(name.c_str(), path.c_str()) < 0) {
         if (errno != EEXIST)
             throw FailedSystemCall(std::string("link ") + name + " " + path);
         std::ostringstream os;
@@ -78,8 +68,7 @@ static std::string linkName(const std::string& name)
 }
 #endif
 
-PartFileHandle::PartFileHandle(const PathName& name,
-                               const OffsetList& offset, const LengthList& length):
+PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, const LengthList& length) :
     name_(name),
     file_(0),
     pos_(0),
@@ -88,15 +77,13 @@ PartFileHandle::PartFileHandle(const PathName& name,
     link_(linkName(name)),
 #endif
     offset_(offset),
-    length_(length)
-{
-//    Log::info() << "PartFileHandle::PartFileHandle " << name << std::endl;
+    length_(length) {
+    //    Log::info() << "PartFileHandle::PartFileHandle " << name << std::endl;
     ASSERT(offset_.size() == length_.size());
     compress(false);
 }
 
-PartFileHandle::PartFileHandle(const PathName& name,
-                               const Offset& offset, const Length& length):
+PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const Length& length) :
     name_(name),
     file_(0),
     pos_(0),
@@ -105,8 +92,7 @@ PartFileHandle::PartFileHandle(const PathName& name,
     link_(linkName(name)),
 #endif
     offset_(1, offset),
-    length_(1, length)
-{
+    length_(1, length) {
 }
 
 
@@ -115,17 +101,14 @@ DataHandle* PartFileHandle::clone() const {
 }
 
 
-bool PartFileHandle::compress(bool sorted)
-{
+bool PartFileHandle::compress(bool sorted) {
     if (sorted)
         eckit::sort(offset_, length_);
     return eckit::compress(offset_, length_);
 }
 
-PartFileHandle::~PartFileHandle()
-{
-    if (file_)
-    {
+PartFileHandle::~PartFileHandle() {
+    if (file_) {
         Log::warning() << "Closing PartFileHandle " << name_ << std::endl;
         ::fclose(file_);
         file_ = 0;
@@ -135,12 +118,11 @@ PartFileHandle::~PartFileHandle()
 #endif
 }
 
-Length PartFileHandle::openForRead()
-{
-    static long bufSize  = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
-    static bool best     = Resource<bool>("bestPartFileHandleBufferSize", false);
+Length PartFileHandle::openForRead() {
+    static long bufSize = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+    static bool best    = Resource<bool>("bestPartFileHandleBufferSize", false);
 
-//    Log::info() << "PartFileHandle::openForRead " << name_ << std::endl;
+    //    Log::info() << "PartFileHandle::openForRead " << name_ << std::endl;
 
 #ifdef USE_LINKS
     file_ = ::fopen(link_.localPath(), "r");
@@ -160,20 +142,19 @@ Length PartFileHandle::openForRead()
         // TODO: find a best algorithm
 
         // Now, use the size of the smallest block
-        for (Ordinal i = 0; i < length_.size(); i++)
-        {
+        for (Ordinal i = 0; i < length_.size(); i++) {
             if (length_[i] < Length(size)) {
                 size = length_[i];
             }
         }
 
         size = ((size + fourK - 1) / fourK) * fourK;
-        if (size < fourK)    { size = fourK;    }
-
+        if (size < fourK) {
+            size = fourK;
+        }
     }
 
-    if (size)
-    {
+    if (size) {
         Log::debug() << "PartFileHandle using " << Bytes(size) << std::endl;
         buffer_.reset(new Buffer(size));
         Buffer& b = *(buffer_.get());
@@ -184,18 +165,15 @@ Length PartFileHandle::openForRead()
     return estimate();
 }
 
-void PartFileHandle::openForWrite(const Length&)
-{
+void PartFileHandle::openForWrite(const Length&) {
     NOTIMP;
 }
 
-void PartFileHandle::openForAppend(const Length&)
-{
+void PartFileHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
-long PartFileHandle::read1(char *buffer, long length)
-{
+long PartFileHandle::read1(char* buffer, long length) {
 
     ASSERT(file_);
 
@@ -203,18 +181,18 @@ long PartFileHandle::read1(char *buffer, long length)
     while (index_ < offset_.size() && length_[index_] == Length(0))
         index_++;
 
-    if (index_ == offset_.size()) return 0;
+    if (index_ == offset_.size())
+        return 0;
 
 
-    Length ll  = (long long)offset_[index_] + Length(pos_);
+    Length ll = (long long)offset_[index_] + Length(pos_);
     off_t pos = ll;
 
-    //ASSERT( Length(pos) == ll);
+    // ASSERT( Length(pos) == ll);
 
     // try llseek()
 
-    if (fseeko(file_, pos , SEEK_SET) != 0)
-    {
+    if (fseeko(file_, pos, SEEK_SET) != 0) {
         std::ostringstream s;
         s << name_ << ": cannot seek to " << pos << " (file=" << fileno(file_) << ")";
         throw ReadError(s.str());
@@ -222,24 +200,22 @@ long PartFileHandle::read1(char *buffer, long length)
 
     ASSERT(::ftello(file_) == pos);
 
-    ll        = length_[index_] - Length(pos_);
+    ll           = length_[index_] - Length(pos_);
     Length lsize = std::min(Length(length), ll);
-    long size  = lsize;
+    long size    = lsize;
 
     ASSERT(Length(size) == lsize);
 
     long n = ::fread(buffer, 1, size, file_);
 
-    if (n != size)
-    {
+    if (n != size) {
         std::ostringstream s;
         s << name_ << ": cannot read " << size << ", got only " << n;
         throw ReadError(s.str());
     }
 
     pos_ += n;
-    if (pos_ >= length_[index_])
-    {
+    if (pos_ >= length_[index_]) {
         index_++;
         pos_ = 0;
     }
@@ -248,81 +224,68 @@ long PartFileHandle::read1(char *buffer, long length)
 }
 
 
-long PartFileHandle::read(void* buffer, long length)
-{
-    char *p = (char*)buffer;
+long PartFileHandle::read(void* buffer, long length) {
+    char* p = (char*)buffer;
 
-    long n = 0;
+    long n     = 0;
     long total = 0;
 
-    while ( length > 0 && (n = read1(p, length)) > 0)
-    {
+    while (length > 0 && (n = read1(p, length)) > 0) {
         length -= n;
-        total  += n;
-        p      += n;
+        total += n;
+        p += n;
     }
 
     return total > 0 ? total : n;
-
 }
 
-long PartFileHandle::write(const void* buffer, long length)
-{
+long PartFileHandle::write(const void* buffer, long length) {
     return -1;
 }
 
-void PartFileHandle::close()
-{
-    if (file_)
-    {
+void PartFileHandle::close() {
+    if (file_) {
         ::fclose(file_);
         file_ = 0;
     }
-    else
-    {
+    else {
         Log::warning() << "Closing PartFileHandle " << name_ << ", file is not opened" << std::endl;
     }
     buffer_.reset(0);
 }
 
-void PartFileHandle::rewind()
-{
+void PartFileHandle::rewind() {
     pos_   = 0;
     index_ = 0;
 }
 
-void PartFileHandle::restartReadFrom(const Offset& from)
-{
+void PartFileHandle::restartReadFrom(const Offset& from) {
     Log::warning() << *this << " restart read from " << from << std::endl;
     rewind();
     long long len = from;
     long long pos = 0;
 
-    for (index_ = 0; index_ < length_.size(); index_++)
-    {
+    for (index_ = 0; index_ < length_.size(); index_++) {
         long long e = length_[index_];
-        if (len >= pos && len < pos + e)
-        {
-            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_ << std::endl;
+        if (len >= pos && len < pos + e) {
+            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_
+                           << std::endl;
             pos_ = len - pos;
             return;
         }
         pos += e;
     }
-    ASSERT(from  == Offset(0) && estimate() == Length(0));
+    ASSERT(from == Offset(0) && estimate() == Length(0));
 }
 
-Offset PartFileHandle::seek(const Offset& from)
-{
+Offset PartFileHandle::seek(const Offset& from) {
     rewind();
     long long len = from;
     long long pos = 0;
 
-    for (index_ = 0; index_ < length_.size(); index_++)
-    {
+    for (index_ = 0; index_ < length_.size(); index_++) {
         long long e = length_[index_];
-        if (len >= pos && len < pos + e)
-        {
+        if (len >= pos && len < pos + e) {
             pos_ = len - pos;
             return from;
         }
@@ -332,15 +295,14 @@ Offset PartFileHandle::seek(const Offset& from)
 }
 
 
-bool PartFileHandle::merge(DataHandle* other)
-{
+bool PartFileHandle::merge(DataHandle* other) {
     if (other->isEmpty())
         return true;
 
     // Poor man's RTTI,
     // Does not support inheritance
 
-    if ( !sameClass(*other) )
+    if (!sameClass(*other))
         return false;
 
     // We should be safe to cast now....
@@ -355,8 +317,7 @@ bool PartFileHandle::merge(DataHandle* other)
     offset_.reserve(offset_.size() + handle->offset_.size());
     length_.reserve(length_.size() + handle->length_.size());
 
-    for (Ordinal i = 0; i < handle->offset_.size() ; ++i)
-    {
+    for (Ordinal i = 0; i < handle->offset_.size(); ++i) {
         offset_.push_back(handle->offset_[i]);
         length_.push_back(handle->length_[i]);
     }
@@ -365,34 +326,29 @@ bool PartFileHandle::merge(DataHandle* other)
     return true;
 }
 
-Length PartFileHandle::estimate()
-{
+Length PartFileHandle::estimate() {
     return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
-void PartFileHandle::toRemote(Stream& s) const
-{
+void PartFileHandle::toRemote(Stream& s) const {
     MarsFSPath p(PathName(name_).clusterName());
-    MarsFSPartHandle remote(p,  offset_, length_);
+    MarsFSPartHandle remote(p, offset_, length_);
     s << remote;
 }
 
-void PartFileHandle::cost(std::map<std::string, Length>& c, bool read) const
-{
+void PartFileHandle::cost(std::map<std::string, Length>& c, bool read) const {
     if (read) {
         c[NodeInfo::thisNode().node()] += const_cast<PartFileHandle*>(this)->estimate();
     }
 }
 
 
-std::string PartFileHandle::title() const
-{
+std::string PartFileHandle::title() const {
     std::ostringstream os;
     os << PathName::shorten(name_) << " (" << length_.size() << ")";
     return os.str();
 }
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

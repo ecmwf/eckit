@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
 #include <fstream>
+#include <string>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/parser/JSONParser.h"
 
@@ -35,7 +35,8 @@ CASE("Atomically update the contents of a file") {
     json.startObject();
     json << "restart" << true;
     json << "step" << int(42);
-    json << "description" << "forecast run";
+    json << "description"
+         << "forecast run";
     json.endObject();
 
     Log::info() << s.str() << std::endl;
@@ -48,7 +49,7 @@ CASE("Atomically update the contents of a file") {
     Log::info() << tmppath << " : exists " << tmppath.exists() << std::endl;
 
     std::ofstream of(tmppath.localPath());
-    if(!of)
+    if (!of)
         throw CantOpenFile(tmppath.localPath(), Here());
     of << s.str();
     of.close();
@@ -59,16 +60,16 @@ CASE("Atomically update the contents of a file") {
 
     Value j = JSONParser::decodeFile(path);
 
-    EXPECT( j.isOrderedMap() );
+    EXPECT(j.isOrderedMap());
 
-    EXPECT( j["restart"].isBool() );
-    EXPECT( j["restart"].as<bool>() == true );
+    EXPECT(j["restart"].isBool());
+    EXPECT(j["restart"].as<bool>() == true);
 
-    EXPECT( j["step"].isNumber() );
-    EXPECT( int(j["step"]) == 42 );
+    EXPECT(j["step"].isNumber());
+    EXPECT(int(j["step"]) == 42);
 
-    EXPECT( j["description"].isString() );
-    EXPECT( j["description"].as<string>() == std::string("forecast run") );
+    EXPECT(j["description"].isString());
+    EXPECT(j["description"].as<string>() == std::string("forecast run"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

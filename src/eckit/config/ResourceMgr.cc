@@ -38,8 +38,7 @@ ResourceMgr& ResourceMgr::instance() {
     return *mgr;
 }
 
-bool ResourceMgr::lookUp(const std::string& s1, const std::string& s2, const std::string& s3,
-                         std::string& v) {
+bool ResourceMgr::lookUp(const std::string& s1, const std::string& s2, const std::string& s3, std::string& v) {
     return ResourceMgr::instance().lookUp_(s1, s2, s3, v);
 }
 
@@ -131,8 +130,7 @@ void ResourceMgr::readConfigFile(const LocalPathName& file) {
     while (in.getline(line, sizeof(line))) {
         cnt++;
         if (!parse(line)) {
-            Log::warning() << "Invalid line, file " << file << " line " << cnt << " = " << line
-                           << std::endl;
+            Log::warning() << "Invalid line, file " << file << " line " << cnt << " = " << line << std::endl;
         }
     }
 }
@@ -145,8 +143,8 @@ void ResourceMgr::set(const std::string& name, const std::string& value) {
         Log::warning() << "Failed to parse " << s << std::endl;
 }
 
-bool ResourceMgr::lookUp_(const std::string& kind, const std::string& owner,
-                          const std::string& name, std::string& result) {
+bool ResourceMgr::lookUp_(const std::string& kind, const std::string& owner, const std::string& name,
+                          std::string& result) {
     AutoLock<StaticMutex> lock(smutex);
 
     if (!inited_) {
@@ -191,8 +189,7 @@ ResourceMgr::ResourceMgr() : resmap_(), resoptions_(), inited_(false) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ResourceQualifier::ResourceQualifier(const std::string& kind, const std::string& owner,
-                                     const std::string& name) :
+ResourceQualifier::ResourceQualifier(const std::string& kind, const std::string& owner, const std::string& name) :
     kind_(kind),
     owner_(owner),
     name_(name) {}

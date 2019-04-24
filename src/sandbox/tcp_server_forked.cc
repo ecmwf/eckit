@@ -14,34 +14,33 @@
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/TCPSocketHandle.h"
 #include "eckit/log/Log.h"
+#include "eckit/maths/Functions.h"
 #include "eckit/net/Port.h"
 #include "eckit/net/TCPServer.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
-#include "eckit/maths/Functions.h"
 
 
 using namespace eckit;
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class FDBForker : public ProcessControler {
 
     TCPSocket socket_;
 
-    void run()
-    {
+    void run() {
         Log::info() << " *********** pid is " << getpid() << std::endl;
 
-        Monitor::instance().reset(); // needed to het monitor to work -- needs eckit change
+        Monitor::instance().reset();  // needed to het monitor to work -- needs eckit change
 
-        Log::info() << " *********** monitor task id " <<  Monitor::instance().self() << std::endl;
+        Log::info() << " *********** monitor task id " << Monitor::instance().self() << std::endl;
 
-        Log::info()   << "Waiting for client " <<  socket_.remoteHost() << ":" << socket_.remotePort() << std::endl;
+        Log::info() << "Waiting for client " << socket_.remoteHost() << ":" << socket_.remotePort() << std::endl;
 
-        Log::status() << "Waiting for client " <<  socket_.remoteHost() << ":" << socket_.remotePort() << std::endl;
+        Log::status() << "Waiting for client " << socket_.remoteHost() << ":" << socket_.remotePort() << std::endl;
 
         TCPServer data;
 
@@ -68,11 +67,10 @@ class FDBForker : public ProcessControler {
                     // 3.3 accept data connection
                     InstantTCPSocketHandle tcp(data.accept("Waiting for data connection", 60));
 
-                    Log::info() << "Accepted connection from "
-                                << data.remoteHost() << ":"
-                                << data.remotePort() << std::endl;
+                    Log::info() << "Accepted connection from " << data.remoteHost() << ":" << data.remotePort()
+                                << std::endl;
 
-                    MemoryHandle mh_(eckit::round(fsize, 4*1024));
+                    MemoryHandle mh_(eckit::round(fsize, 4 * 1024));
                     Length total = tcp.saveInto(mh_);
 
                     ASSERT(fsize == total);
@@ -98,26 +96,18 @@ class FDBForker : public ProcessControler {
     }
 
 public:
-
-    FDBForker(TCPSocket& socket) :
-            ProcessControler(true),
-            socket_(socket)
-    {
-    }
+    FDBForker(TCPSocket& socket) : ProcessControler(true), socket_(socket) {}
 };
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class FDBSvrApp : public Application {
 public:
-    FDBSvrApp(int argc, char** argv) :
-        Application(argc, argv, "HOME")
-    {}
+    FDBSvrApp(int argc, char** argv) : Application(argc, argv, "HOME") {}
 
     ~FDBSvrApp() {}
 
 private:
-
     int port_;
 
     FDBSvrApp(const FDBSvrApp&) = delete;
@@ -144,7 +134,7 @@ private:
     }
 };
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
     FDBSvrApp app(argc, argv);

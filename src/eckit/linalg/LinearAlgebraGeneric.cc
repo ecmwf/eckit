@@ -9,14 +9,12 @@
  */
 
 
-
 #include "eckit/linalg/LinearAlgebraGeneric.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
-
 
 
 namespace eckit {
@@ -32,7 +30,7 @@ static void dsp(const Vector& d, SparseMatrix& A) {
     // FIXME: better use InnerIterator
     Scalar* data = const_cast<Scalar*>(A.data());
     for (Size r = 0; r < A.rows(); ++r) {
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
+        for (Index oi = outer[r]; oi < outer[r + 1]; ++oi) {
             data[oi] *= d[r];
         }
     }
@@ -42,15 +40,12 @@ static void dsp(const Vector& d, SparseMatrix& A) {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-
 LinearAlgebraGeneric::LinearAlgebraGeneric() : LinearAlgebra("generic") {}
-
 
 
 void LinearAlgebraGeneric::print(std::ostream& out) const {
     out << "LinearAlgebraGeneric[]";
 }
-
 
 
 Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
@@ -64,10 +59,9 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
 }
 
 
-
 void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) const {
 
-    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    ASSERT(x.size() == A.cols() && y.size() == A.rows());
 
     for (Size r = 0; r < A.rows(); ++r) {
         double sum = 0.;
@@ -79,10 +73,9 @@ void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) con
 }
 
 
-
 void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
 
-    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
 
     C.setZero();
     for (Size c = 0; c < B.cols(); ++c) {
@@ -95,20 +88,19 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
 }
 
 
-
 void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
 
-    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    ASSERT(x.size() == A.cols() && y.size() == A.rows());
 
-    ASSERT( A.outer()[0] == 0 );  // expect indices to be 0-based
+    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
 
     const Index* outer = A.outer();
     const Index* inner = A.inner();
-    const Scalar* val = A.data();
+    const Scalar* val  = A.data();
 
     for (Size r = 0; r < A.rows(); ++r) {
         double sum = 0.;
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
+        for (Index oi = outer[r]; oi < outer[r + 1]; ++oi) {
             sum += val[oi] * x[static_cast<Size>(inner[oi])];
         }
         y[r] = sum;
@@ -116,20 +108,19 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 }
 
 
-
 void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
 
-    ASSERT( A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols() );
+    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
 
-    ASSERT( A.outer()[0] == 0 ); // expect indices to be 0-based
+    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
 
     const Index* outer = A.outer();
     const Index* inner = A.inner();
-    const Scalar* val = A.data();
+    const Scalar* val  = A.data();
 
     C.setZero();
     for (Size r = 0; r < A.rows(); ++r) {
-        for (Index oi = outer[r]; oi < outer[r+1]; ++oi) {
+        for (Index oi = outer[r]; oi < outer[r + 1]; ++oi) {
             for (Size c = 0; c < B.cols(); ++c) {
                 C(r, c) += val[oi] * B(static_cast<Size>(inner[oi]), c);
             }
@@ -138,10 +129,9 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 }
 
 
-
 void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
 
-    ASSERT( x.size() == A.cols() && y.size() == A.rows() );
+    ASSERT(x.size() == A.cols() && y.size() == A.rows());
 
     B = A;
     dsp(y, B);
@@ -155,5 +145,5 @@ static LinearAlgebraGeneric linearAlgebraGeneric;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-} // namespace linalg
-} // namespace eckit
+}  // namespace linalg
+}  // namespace eckit

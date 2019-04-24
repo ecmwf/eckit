@@ -12,28 +12,21 @@
 #include "eckit/web/JavaService.h"
 #include "eckit/web/JavaUser.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-JavaService::JavaService(int port):
-	NetService(port)
-{
+JavaService::JavaService(int port) : NetService(port) {}
+
+JavaService::~JavaService() {}
+
+NetUser* JavaService::newUser(TCPSocket& socket) {
+    return new JavaUser(socket);
 }
 
-JavaService::~JavaService()
-{
-}
+//----------------------------------------------------------------------------------------------------------------------
 
-NetUser* JavaService::newUser(TCPSocket& socket)
-{
-	return new JavaUser(socket);
-}
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
-
+}  // namespace eckit

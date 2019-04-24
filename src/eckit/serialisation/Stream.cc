@@ -14,17 +14,17 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include <cstring>
 #include <cassert>
+#include <cstring>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/BadTag.h"
 
 namespace eckit {
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #if 0
 #define T(a, x)                                                    \
@@ -837,6 +837,6 @@ void Stream::dump(std::ostream& out, const char* p, size_t len) {
     }
 }
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

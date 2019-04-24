@@ -9,20 +9,20 @@
  */
 
 
+#include "eckit/value/Value.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/value/BoolContent.h"
 #include "eckit/value/DateContent.h"
-#include "eckit/value/TimeContent.h"
 #include "eckit/value/DateTimeContent.h"
+#include "eckit/value/DoubleContent.h"
 #include "eckit/value/ListContent.h"
+#include "eckit/value/MapContent.h"
 #include "eckit/value/NilContent.h"
 #include "eckit/value/NumberContent.h"
-#include "eckit/value/StringContent.h"
-#include "eckit/value/BoolContent.h"
-#include "eckit/value/DoubleContent.h"
-#include "eckit/value/MapContent.h"
 #include "eckit/value/OrderedMapContent.h"
-#include "eckit/value/Value.h"
-#include "eckit/io/Length.h"
-#include "eckit/filesystem/PathName.h"
+#include "eckit/value/StringContent.h"
+#include "eckit/value/TimeContent.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -32,133 +32,97 @@ namespace {
 
 class Nil : public NilContent {
 public:
-    Nil() { attach(); } // the only instance of Nil (below) *will* be leaked at_exit()
+    Nil() { attach(); }  // the only instance of Nil (below) *will* be leaked at_exit()
 };
 
-static Nil* nil = 0; // must be a pointer, so we control when is created to respect order of destruction at_exit()
+static Nil* nil = 0;  // must be a pointer, so we control when is created to respect order of destruction at_exit()
 
 static Nil* nill() {
-    if(!nil) nil = new Nil();
+    if (!nil)
+        nil = new Nil();
     return nil;
 }
 
-}
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Value::Value():
-    content_(nill())
-{
+Value::Value() : content_(nill()) {
     content_->attach();
 }
 
-Value::Value(int l):
-    content_(new NumberContent(l))
-{
+Value::Value(int l) : content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(long long l):
-    content_(new NumberContent(l))
-{
+Value::Value(long long l) : content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(unsigned long long l):
-    content_(new NumberContent(l))
-{
+Value::Value(unsigned long long l) : content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(unsigned long l):
-    content_(new NumberContent(l))
-{
+Value::Value(unsigned long l) : content_(new NumberContent(l)) {
     content_->attach();
 }
 
 
-Value::Value(unsigned int l):
-    content_(new NumberContent(l))
-{
+Value::Value(unsigned int l) : content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(long l):
-    content_(new NumberContent(l))
-{
+Value::Value(long l) : content_(new NumberContent(l)) {
     content_->attach();
 }
 
 
-Value::Value(bool l):
-    content_(new BoolContent(l))
-{
+Value::Value(bool l) : content_(new BoolContent(l)) {
     content_->attach();
 }
 
-Value::Value(double l):
-    content_(new DoubleContent(l))
-{
+Value::Value(double l) : content_(new DoubleContent(l)) {
     content_->attach();
 }
 
-Value::Value(const std::string& s):
-    content_(new StringContent(s))
-{
+Value::Value(const std::string& s) : content_(new StringContent(s)) {
     content_->attach();
 }
 
-Value::Value(const char* s):
-    content_(new StringContent(s))
-{
+Value::Value(const char* s) : content_(new StringContent(s)) {
     content_->attach();
 }
 
-Value::Value(const Length& l):
-    content_(new NumberContent(l))
-{
+Value::Value(const Length& l) : content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(const PathName& p):
-    content_(new StringContent(p.asString()))
-{
+Value::Value(const PathName& p) : content_(new StringContent(p.asString())) {
     content_->attach();
 }
 
-Value::Value(const Date& d):
-    content_(new DateContent(d))
-{
+Value::Value(const Date& d) : content_(new DateContent(d)) {
     content_->attach();
 }
 
-Value::Value(const Time& d):
-    content_(new TimeContent(d))
-{
+Value::Value(const Time& d) : content_(new TimeContent(d)) {
     content_->attach();
 }
 
-Value::Value(const DateTime& d):
-    content_(new DateTimeContent(d))
-{
+Value::Value(const DateTime& d) : content_(new DateTimeContent(d)) {
     content_->attach();
 }
 
-Value::Value(Stream& s):
-    content_(Reanimator<Content>::reanimate(s))
-{
+Value::Value(Stream& s) : content_(Reanimator<Content>::reanimate(s)) {
     ASSERT(content_);
     content_->attach();
 }
 
-Value::~Value()
-{
+Value::~Value() {
     content_->detach();
 }
 
-Value::Value(const Value& other):
-    content_(other.content_)
-{
+Value::Value(const Value& other) : content_(other.content_) {
     content_->attach();
 }
 
@@ -170,8 +134,7 @@ bool Value::shared() const {
     return content_->count() > 1;
 }
 
-Value& Value::operator=(const Value& other)
-{
+Value& Value::operator=(const Value& other) {
     Content* current = content_;
 
     content_ = other.content_;
@@ -182,124 +145,99 @@ Value& Value::operator=(const Value& other)
 }
 
 
-Value Value::operator+(const Value& v) const
-{
+Value Value::operator+(const Value& v) const {
     return Value(content_->add(*(v.content_)));
 }
 
-Value& Value::operator+=(const Value& v)
-{
+Value& Value::operator+=(const Value& v) {
     *this = *this + v;
     return *this;
 }
 
-Value Value::operator-(const Value& v) const
-{
+Value Value::operator-(const Value& v) const {
     return Value(content_->sub(*(v.content_)));
 }
 
-Value& Value::operator-=(const Value& v)
-{
+Value& Value::operator-=(const Value& v) {
     *this = *this - v;
     return *this;
 }
 
-Value Value::operator*(const Value& v) const
-{
+Value Value::operator*(const Value& v) const {
     return Value(content_->mul(*(v.content_)));
 }
 
-Value& Value::operator*=(const Value& v)
-{
+Value& Value::operator*=(const Value& v) {
     *this = *this * v;
     return *this;
 }
 
-Value Value::operator/(const Value& v) const
-{
+Value Value::operator/(const Value& v) const {
     return Value(content_->div(*(v.content_)));
 }
 
-Value& Value::operator/=(const Value& v)
-{
+Value& Value::operator/=(const Value& v) {
     *this = *this / v;
     return *this;
 }
 
-Value Value::operator%(const Value& v) const
-{
+Value Value::operator%(const Value& v) const {
     return Value(content_->mod(*(v.content_)));
 }
 
-Value& Value::operator%=(const Value& v)
-{
+Value& Value::operator%=(const Value& v) {
     *this = *this % v;
     return *this;
 }
 
-Value Value::makeList()
-{
+Value Value::makeList() {
     return Value(new ListContent());
 }
 
-Value Value::makeMap()
-{
+Value Value::makeMap() {
     return Value(new MapContent());
 }
 
-Value Value::makeOrderedMap()
-{
+Value Value::makeOrderedMap() {
     return Value(new OrderedMapContent());
 }
 
-Value Value::makeMap(const ValueMap& m)
-{
+Value Value::makeMap(const ValueMap& m) {
     return Value(new MapContent(m));
 }
 
-Value Value::makeOrderedMap(const ValueMap& m, const ValueList& l)
-{
+Value Value::makeOrderedMap(const ValueMap& m, const ValueList& l) {
     return Value(new OrderedMapContent(m, l));
 }
 
-Value Value::makeList(const Value& v)
-{
+Value Value::makeList(const Value& v) {
     return Value(new ListContent(v));
 }
 
-Value Value::makeList(const ValueList& v)
-{
+Value Value::makeList(const ValueList& v) {
     return Value(new ListContent(v));
 }
 
-Value::Value(const ValueList& v):
-    content_(new ListContent(v))
-{
+Value::Value(const ValueList& v) : content_(new ListContent(v)) {
     content_->attach();
 }
 
-Value::Value(const ValueMap& m):
-    content_(new MapContent(m))
-{
+Value::Value(const ValueMap& m) : content_(new MapContent(m)) {
     content_->attach();
 }
 
-Value::Value(Content* c):
-    content_(c)
-{
+Value::Value(Content* c) : content_(c) {
     content_->attach();
 }
 
-Value Value::head() const
-{
+Value Value::head() const {
     ValueList v;
     content_->value(v);
 
     return v.size() > 0 ? v[0] : Value();
 }
 
-Value Value::tail() const
-{
+Value Value::tail() const {
     ValueList v;
     content_->value(v);
 
@@ -312,53 +250,44 @@ Value Value::tail() const
     }
 }
 
-Value::operator ValueList() const
-{
+Value::operator ValueList() const {
     ValueList v;
     content_->value(v);
     return v;
 }
 
-Value::operator ValueMap() const
-{
+Value::operator ValueMap() const {
     ValueMap v;
     content_->value(v);
     return v;
 }
 
 
-bool Value::contains(const Value& key) const
-{
+bool Value::contains(const Value& key) const {
     return content_->contains(key);
 }
 
-bool Value::contains(const char* key) const
-{
+bool Value::contains(const char* key) const {
     return content_->contains(key);
 }
 
-bool Value::contains(const std::string& key) const
-{
+bool Value::contains(const std::string& key) const {
     return content_->contains(key);
 }
 
-bool Value::contains(int key) const
-{
+bool Value::contains(int key) const {
     return content_->contains(key);
 }
 
-Value Value::operator-() const
-{
+Value Value::operator-() const {
     return content_->negate();
 }
 
-Value Value::keys() const
-{
+Value Value::keys() const {
     return content_->keys();
 }
 
-size_t Value::size() const
-{
+size_t Value::size() const {
     return content_->size();
 }
 
@@ -432,5 +361,4 @@ void Value::update() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

@@ -18,33 +18,24 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileLocker::FileLocker(int fd):
-	fd_(fd)
-{
+FileLocker::FileLocker(int fd) : fd_(fd) {}
+
+FileLocker::~FileLocker() {}
+
+void FileLocker::lockExclusive(off_t off, off_t len) {
+    lockRange(off, len, F_SETLKW, F_WRLCK);
 }
 
-FileLocker::~FileLocker()
-{
+void FileLocker::lockShared(off_t off, off_t len) {
+    lockRange(off, len, F_SETLKW, F_RDLCK);
 }
 
-void FileLocker::lockExclusive(off_t off,off_t len)
-{
-	lockRange(off,len,F_SETLKW,F_WRLCK);
+void FileLocker::unlock(off_t off, off_t len) {
+    lockRange(off, len, F_SETLK, F_UNLCK);
 }
 
-void FileLocker::lockShared(off_t off,off_t len)
-{
-	lockRange(off,len,F_SETLKW,F_RDLCK);
-}
-
-void FileLocker::unlock(off_t off,off_t len)
-{
-	lockRange(off,len,F_SETLK,F_UNLCK);
-}
-
-void FileLocker::lockRange(off_t start,off_t len,int cmd,int type)
-{
-	struct flock lock;
+void FileLocker::lockRange(off_t start, off_t len, int cmd, int type) {
+    struct flock lock;
 
     lock.l_type   = type;
     lock.l_whence = SEEK_SET;
@@ -54,6 +45,6 @@ void FileLocker::lockRange(off_t start,off_t len,int cmd,int type)
     SYSCALL(::fcntl(fd_, cmd, &lock));
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

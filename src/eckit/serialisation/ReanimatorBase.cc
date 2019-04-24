@@ -12,7 +12,7 @@
 #include "eckit/serialisation/Streamable.h"
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -28,7 +28,7 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // Should protected with a mutex...
 
@@ -55,8 +55,8 @@ ReanimatorBase::~ReanimatorBase() {
 UnknowClass::UnknowClass(const std::string& w) : Exception(std::string("Unknow class: ") + w) {}
 
 NotSubClass::NotSubClass(const std::string& found, const std::string& clss) :
-    Exception(std::string("Not a sub class: object ") + found +
-              std::string(" found, but it is not subclass of ") + clss) {}
+    Exception(std::string("Not a sub class: object ") + found + std::string(" found, but it is not subclass of ") +
+              clss) {}
 
 
 Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {
@@ -89,6 +89,6 @@ Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {
     return x;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

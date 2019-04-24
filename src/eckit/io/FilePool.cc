@@ -25,43 +25,41 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 static void closeDataHandle(PathName&, DataHandle*& handle) {
-    if(handle) {
+    if (handle) {
         handle->close();
         delete handle;
         handle = 0;
     }
 }
 
-static bool inUse(const std::map<PathName,DataHandle*>& store, const PathName& path) {
+static bool inUse(const std::map<PathName, DataHandle*>& store, const PathName& path) {
     return store.find(path) != store.end();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FilePool::FilePool(size_t size) :
-    cache_(size, &closeDataHandle) {
-}
+FilePool::FilePool(size_t size) : cache_(size, &closeDataHandle) {}
 
-FilePool::~FilePool() {
-}
+FilePool::~FilePool() {}
 
 DataHandle* FilePool::checkout(const PathName& path) {
     AutoLock<MutexCond> lock(cond_);
 
-    while(inUse(inUse_, path)) {
+    while (inUse(inUse_, path)) {
         cond_.wait();
     }
 
     DataHandle* dh;
 
     const bool inCache = cache_.exists(path);
-    if( inCache && path.exists() ) {
+    if (inCache && path.exists()) {
         dh = cache_.extract(path);
-    } else {
+    }
+    else {
         // FileHandle is cached, but file has been removed on disk
-        if( inCache )
+        if (inCache)
             cache_.remove(path);
-        dh = path.fileHandle(false); // append mode (no overwrite)
+        dh = path.fileHandle(false);  // append mode (no overwrite)
         dh->openForAppend(0);
     }
 
@@ -75,9 +73,9 @@ DataHandle* FilePool::checkout(const PathName& path) {
 void FilePool::checkin(DataHandle* handle) {
     AutoLock<MutexCond> lock(cond_);
 
-    typedef std::map<PathName,DataHandle*>::iterator iterator_type;
-    for(iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
-        if( itr->second == handle ) {
+    typedef std::map<PathName, DataHandle*>::iterator iterator_type;
+    for (iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
+        if (itr->second == handle) {
             cache_.insert(itr->first, itr->second);
             inUse_.erase(itr);
             cond_.signal();
@@ -85,13 +83,12 @@ void FilePool::checkin(DataHandle* handle) {
         }
     }
     throw eckit::SeriousBug("Should have found a DataHandle in pool use", Here());
-
 }
 
 bool FilePool::remove(const PathName& path) {
     AutoLock<MutexCond> lock(cond_);
 
-    while(inUse(inUse_, path)) {
+    while (inUse(inUse_, path)) {
         cond_.wait();
     }
 
@@ -110,7 +107,7 @@ size_t FilePool::size() const {
     return cache_.size();
 }
 
-void FilePool::capacity( size_t size ) {
+void FilePool::capacity(size_t size) {
     AutoLock<MutexCond> lock(cond_);
     cache_.capacity(size);
 }
@@ -127,5 +124,4 @@ size_t FilePool::usage() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

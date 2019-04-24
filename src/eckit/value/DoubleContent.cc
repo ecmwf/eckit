@@ -10,10 +10,10 @@
 
 
 #include "eckit/value/DoubleContent.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/value/NumberContent.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/utils/Translator.h"
+#include "eckit/value/NumberContent.h"
 
 #include "eckit/utils/Hash.h"
 
@@ -22,18 +22,15 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec DoubleContent::classSpec_ = {&Content::classSpec(), "DoubleContent",};
+ClassSpec DoubleContent::classSpec_ = {
+    &Content::classSpec(),
+    "DoubleContent",
+};
 Reanimator<DoubleContent> DoubleContent::reanimator_;
 
-DoubleContent::DoubleContent(double l):
-    value_(l)
-{
-}
+DoubleContent::DoubleContent(double l) : value_(l) {}
 
-DoubleContent::DoubleContent(Stream& s):
-    Content(s),
-    value_(0)
-{
+DoubleContent::DoubleContent(Stream& s) : Content(s), value_(0) {
     s >> value_;
 }
 
@@ -41,104 +38,84 @@ Content* DoubleContent::clone() const {
     return new DoubleContent(value_);
 }
 
-void DoubleContent::encode(Stream& s) const
-{
+void DoubleContent::encode(Stream& s) const {
     Content::encode(s);
     s << value_;
 }
 
-DoubleContent::~DoubleContent()
-{
-}
+DoubleContent::~DoubleContent() {}
 
-void DoubleContent::print(std::ostream& s) const
-{
+void DoubleContent::print(std::ostream& s) const {
     s << value_;
 }
 
-void DoubleContent::json(JSON& s) const
-{
+void DoubleContent::json(JSON& s) const {
     s << value_;
 }
 
 
-int DoubleContent::compare(const Content& other) const
-{
+int DoubleContent::compare(const Content& other) const {
     return -other.compareDouble(*this);
 }
 
-int DoubleContent::compareDouble(const DoubleContent& other) const
-{
+int DoubleContent::compareDouble(const DoubleContent& other) const {
     double diff = (value_ - other.value_);
 
     return eckit::sign(diff);
 }
 
-int DoubleContent::compareNumber(const NumberContent& other) const
-{
+int DoubleContent::compareNumber(const NumberContent& other) const {
     double diff = (value_ - other.value_);
 
     return eckit::sign(diff);
 }
 
-void DoubleContent::value(double& l) const
-{
+void DoubleContent::value(double& l) const {
     l = value_;
 }
 
-void DoubleContent::value(std::string& s) const
-{
+void DoubleContent::value(std::string& s) const {
     s = Translator<double, std::string>()(value_);
 }
 
-Content* DoubleContent::add(const Content& other) const
-{
+Content* DoubleContent::add(const Content& other) const {
     return other.addDouble(*this);
 }
 
-Content* DoubleContent::addDouble(const DoubleContent& other) const
-{
+Content* DoubleContent::addDouble(const DoubleContent& other) const {
     return new DoubleContent(other.value_ + value_);
 }
 
-Content* DoubleContent::sub(const Content& other) const
-{
+Content* DoubleContent::sub(const Content& other) const {
     return other.subDouble(*this);
 }
 
-Content* DoubleContent::subDouble(const DoubleContent& other) const
-{
+Content* DoubleContent::subDouble(const DoubleContent& other) const {
     return new DoubleContent(other.value_ - value_);
 }
 
-Content* DoubleContent::mul(const Content& other) const
-{
+Content* DoubleContent::mul(const Content& other) const {
     return other.mulDouble(*this);
 }
 
-Content* DoubleContent::mulDouble(const DoubleContent& other) const
-{
+Content* DoubleContent::mulDouble(const DoubleContent& other) const {
     return new DoubleContent(other.value_ * value_);
 }
 
-Content* DoubleContent::div(const Content& other) const
-{
+Content* DoubleContent::div(const Content& other) const {
     return other.divDouble(*this);
 }
 
-Content* DoubleContent::mod(const Content& other) const
-{
+Content* DoubleContent::mod(const Content& other) const {
     return other.modDouble(*this);
 }
 
 
-Content* DoubleContent::divDouble(const DoubleContent& other) const
-{
+Content* DoubleContent::divDouble(const DoubleContent& other) const {
     return new DoubleContent(other.value_ / value_);
 }
 
-Value DoubleContent::negate() const
-{
+Value DoubleContent::negate() const {
     return Value(-value_);
 }
 
@@ -157,5 +134,4 @@ void DoubleContent::hash(Hash& h) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

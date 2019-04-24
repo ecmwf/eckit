@@ -13,9 +13,9 @@
 #include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Tokenizer.h"
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Date.h"
+#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
@@ -26,8 +26,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static const char* months[] = {"jan", "feb", "mar", "apr", "may", "jun",
-                               "jul", "aug", "sep", "oct", "nov", "dec"};
+static const char* months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 
 static void check(const Date& date, long value) {
     if (value <= 999999)
@@ -46,8 +45,7 @@ Date::Date(long date) : julian_(dateToJulian(date)) {
         check(*this, date);
 }
 
-Date::Date(long year, long month, long day) :
-    julian_(dateToJulian(year * 10000 + month * 100 + day)) {
+Date::Date(long year, long month, long day) : julian_(dateToJulian(year * 10000 + month * 100 + day)) {
     check(*this, year * 10000 + month * 100 + day);
 }
 
@@ -137,8 +135,7 @@ long Date::parse(const std::string& s) {
             if (result[2].length() != 2)
                 err = true;
 
-            value = atol(result[0].c_str()) * 10000 + atol(result[1].c_str()) * 100 +
-                    atol(result[2].c_str());
+            value = atol(result[0].c_str()) * 10000 + atol(result[1].c_str()) * 100 + atol(result[2].c_str());
 
             break;
 
@@ -272,8 +269,8 @@ void Date::print(std::ostream& s) const {
     day = ddate;
 
     char oldfill = s.fill();
-    s << year << '-' << std::setw(2) << std::setfill('0') << month << '-' << std::setw(2)
-      << std::setfill('0') << day << std::setfill(oldfill);
+    s << year << '-' << std::setw(2) << std::setfill('0') << month << '-' << std::setw(2) << std::setfill('0') << day
+      << std::setfill(oldfill);
 }
 
 long Date::year() const {

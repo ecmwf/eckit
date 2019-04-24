@@ -16,7 +16,7 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static long date2Value(const Date& date) {
     Date jan01(date.year(), 1, 1);
@@ -47,8 +47,8 @@ void DayOfYear::print(std::ostream& s) const {
     Date d(2004, value_ + 1);  // Take a leap year so it can accept 29th feb
 
     char oldfill = s.fill();
-    s << std::setw(2) << std::setfill('0') << d.month() << '-' << std::setw(2) << std::setfill('0')
-      << d.day() << std::setfill(oldfill);
+    s << std::setw(2) << std::setfill('0') << d.month() << '-' << std::setw(2) << std::setfill('0') << d.day()
+      << std::setfill(oldfill);
 }
 
 void DayOfYear::dump(DumpLoad&) const {
@@ -59,6 +59,6 @@ void DayOfYear::load(DumpLoad&) {
     NOTIMP;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

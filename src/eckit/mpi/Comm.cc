@@ -55,7 +55,7 @@ public:
 
         communicators[world->name()] = world;
 
-        Comm* self = world->self();
+        Comm* self                  = world->self();
         communicators[self->name()] = self;
 
         default_ = world;
@@ -145,12 +145,12 @@ public:
         AutoLock<Mutex> lock(mutex_);
         auto itr = communicators.find(name);
 
-        if(itr != communicators.end()) {
+        if (itr != communicators.end()) {
 
             Comm* comm = itr->second;
 
             // refuse to delete the default communicator
-            if(default_ == comm)
+            if (default_ == comm)
                 throw SeriousBug("Trying to delete the default Communicator with name " + std::string(name), Here());
 
             comm->free();
@@ -263,8 +263,7 @@ void addComm(const char* name, Comm* comm) {
     Environment::instance().addComm(name, comm);
 }
 
-void deleteComm(const char* name)
-{
+void deleteComm(const char* name) {
     Environment::instance().deleteComm(name);
 }
 
@@ -276,8 +275,7 @@ void finaliseAllComms() {
     return Environment::instance().finaliseAllComms();
 }
 
-Comm& self()
-{
+Comm& self() {
     return comm("self");
 }
 
@@ -287,7 +285,7 @@ void Assert(int code, const char* msg, const char* file, int line, const char* f
     ::eckit::Assert(code, msg, file, line, func);
 }
 
-} // detail
+}  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 

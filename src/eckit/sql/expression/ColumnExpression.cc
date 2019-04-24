@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -26,27 +26,25 @@ namespace expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* table, int begin, int end)
-: type_(0),
-  value_(0),
-  columnName_(name),
-  table_(table),
-  tableReference_(),
-  beginIndex_(begin),
-  endIndex_(end),
-  nominalShift_(0)
-{}
+ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* table, int begin, int end) :
+    type_(0),
+    value_(0),
+    columnName_(name),
+    table_(table),
+    tableReference_(),
+    beginIndex_(begin),
+    endIndex_(end),
+    nominalShift_(0) {}
 
-ColumnExpression::ColumnExpression(const std::string& name, const std::string& tableReference, int begin, int end)
-: type_(0),
-  value_(0),
-  columnName_(name),
-  table_(0),
-  tableReference_(tableReference),
-  beginIndex_(begin),
-  endIndex_(end),
-  nominalShift_(0)
-{}
+ColumnExpression::ColumnExpression(const std::string& name, const std::string& tableReference, int begin, int end) :
+    type_(0),
+    value_(0),
+    columnName_(name),
+    table_(0),
+    tableReference_(tableReference),
+    beginIndex_(begin),
+    endIndex_(end),
+    nominalShift_(0) {}
 
 
 std::shared_ptr<SQLExpression> ColumnExpression::clone() const {
@@ -59,20 +57,22 @@ std::shared_ptr<SQLExpression> ColumnExpression::reshift(int minColumnShift) con
 
 ColumnExpression::~ColumnExpression() {}
 
-double ColumnExpression::eval(bool& missing) const
-{
+double ColumnExpression::eval(bool& missing) const {
     // n.b. we should only ever get here for numerical columns. Probably should ASSERT()
-    if (value_->second) missing = true;
+    if (value_->second)
+        missing = true;
     return *(value_->first);
 }
 
 void ColumnExpression::eval(double* out, bool& missing) const {
-    if (value_->second) missing = true;
+    if (value_->second)
+        missing = true;
     ::memcpy(out, value_->first, type_->size());
 }
 
 std::string ColumnExpression::evalAsString(bool& missing) const {
-    if (value_->second) missing = true;
+    if (value_->second)
+        missing = true;
     return type_->asString(value_->first);
 }
 
@@ -86,29 +86,27 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
     /// There is no straightforward way to do these both in one prepare() statement, without
     /// shifting the functionality outside.
 
-    if (!table_) table_ = &sql.findTable(columnName_);
+    if (!table_)
+        table_ = &sql.findTable(columnName_);
     sql.ensureFetch(*table_, columnName_);
 
     // Get the details into the ColumnExpression
     const SQLColumn& column(table_->column(columnName_));
-    fullName_ = column.fullName();
+    fullName_        = column.fullName();
     hasMissingValue_ = column.hasMissingValue();
-    missingValue_ = column.missingValue();
-    isBitfield_ = column.isBitfield();
-    bitfieldDef_ = column.bitfieldDef();
+    missingValue_    = column.missingValue();
+    isBitfield_      = column.isBitfield();
+    bitfieldDef_     = column.bitfieldDef();
 
-    if (columnName_ == title() && columnName_ != fullName_)
-    {
+    if (columnName_ == title() && columnName_ != fullName_) {
         title(fullName_);
 
-        Log::debug() << "ColumnExpression::preprepare: columnName_=" << columnName_
-        << ", title[PATCHED]=" << title()
-        << std::endl;
+        Log::debug() << "ColumnExpression::preprepare: columnName_=" << columnName_ << ", title[PATCHED]=" << title()
+                     << std::endl;
     }
 }
 
-void ColumnExpression::prepare(SQLSelect& sql)
-{
+void ColumnExpression::prepare(SQLSelect& sql) {
     // Get the memory address associated with reading from the column. (this is _not_
     // the SQLColumn object used in preprepare (which describe the columns requested
     // in the Select statement), but instead describes the mapping to the
@@ -116,93 +114,82 @@ void ColumnExpression::prepare(SQLSelect& sql)
     // data.
 
     value_ = &sql.column(columnName_, table_);
-	type_  = sql.typeOf(columnName_, table_);
+    type_  = sql.typeOf(columnName_, table_);
 
-	Log::debug() << "ColumnExpression::prepare: columnName_=" << columnName_ 
-	<< ", title=" << title()
-	<< ", table=" << table_->name()
-    << ", fullName =" << fullName_
-	<< " type=" << *type_ 
-	<< " bitfieldDef.first.size =" << bitfieldDef_.first.size()
-	<< std::endl;
+    Log::debug() << "ColumnExpression::prepare: columnName_=" << columnName_ << ", title=" << title()
+                 << ", table=" << table_->name() << ", fullName =" << fullName_ << " type=" << *type_
+                 << " bitfieldDef.first.size =" << bitfieldDef_.first.size() << std::endl;
 }
 
-void ColumnExpression::cleanup(SQLSelect& sql)
-{
+void ColumnExpression::cleanup(SQLSelect& sql) {
     value_ = 0;
-	type_  = 0;
+    type_  = 0;
 }
 
 
-void ColumnExpression::print(std::ostream& s) const 
-{
-	s << columnName_;
-	if (nominalShift_ != 0)
-		s << "#" << nominalShift_;
-	//if(table_) s << "@" << table_->fullName();
+void ColumnExpression::print(std::ostream& s) const {
+    s << columnName_;
+    if (nominalShift_ != 0)
+        s << "#" << nominalShift_;
+    // if(table_) s << "@" << table_->fullName();
 }
 
-void ColumnExpression::output(SQLOutput& o) const  {
+void ColumnExpression::output(SQLOutput& o) const {
     type_->output(o, value_->first, value_->second);
 }
 
-void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables, expression::Expressions& e)
-{
+void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables,
+                                   expression::Expressions& e) {
     std::ostream& L(Log::debug());
-	L << "ColumnExpression::expandStars: expanding '" << columnName_ << "' (" << tableReference_ << ")" << std::endl;
+    L << "ColumnExpression::expandStars: expanding '" << columnName_ << "' (" << tableReference_ << ")" << std::endl;
 
-	if(beginIndex_ != -1 && endIndex_ != -1)
-	{
-		ASSERT(beginIndex_ <= endIndex_);
-		for(int i = beginIndex_; i <= endIndex_; i++)
-            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_" + Translator<int,std::string>()(i), this->table()));
-		return;
-	}
+    if (beginIndex_ != -1 && endIndex_ != -1) {
+        ASSERT(beginIndex_ <= endIndex_);
+        for (int i = beginIndex_; i <= endIndex_; i++)
+            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_" + Translator<int, std::string>()(i),
+                                                           this->table()));
+        return;
+    }
 
-	if(columnName_ != "*")
-	{
-        // replace ColumnExpressions referring to aliases created with AS with references to appropriate expressions 
+    if (columnName_ != "*") {
+        // replace ColumnExpressions referring to aliases created with AS with references to appropriate expressions
         // If it's not an alias then:
         e.push_back(shared_from_this());
-		return;
-	}
+        return;
+    }
 
     std::stringstream ss;
-	
-	unsigned int matched = 0;
+
+    unsigned int matched = 0;
     for (const SQLTable& table : tables) {
         std::vector<std::string> names = table.columnNames();
 
-		for(size_t i = 0; i < names.size(); i++)
-		{
-			if ((tableReference_.size())
-				&& ((names[i].rfind(tableReference_) == std::string::npos)
-					|| (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size())))
-			{
-				L << "ColumnExpression::expandStars: skip '" << names[i] << "'" << std::endl;
-				continue;
-			}
-			
-			ss << names[i] << ", ";
-			++matched;
-            e.push_back(std::make_shared<ColumnExpression>(names[i], &table));
-		}
-	}
-	if (! matched)
-		throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_ + " found.");
+        for (size_t i = 0; i < names.size(); i++) {
+            if ((tableReference_.size()) &&
+                ((names[i].rfind(tableReference_) == std::string::npos) ||
+                 (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size()))) {
+                L << "ColumnExpression::expandStars: skip '" << names[i] << "'" << std::endl;
+                continue;
+            }
 
-	L << "ColumnExpression::expandStars: added " << ss.str() << std::endl;
+            ss << names[i] << ", ";
+            ++matched;
+            e.push_back(std::make_shared<ColumnExpression>(names[i], &table));
+        }
+    }
+    if (!matched)
+        throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_ + " found.");
+
+    L << "ColumnExpression::expandStars: added " << ss.str() << std::endl;
 }
 
-void ColumnExpression::tables(std::set<const SQLTable*>& t)
-{ 
-	ASSERT(table_);
-	t.insert(table_); 
+void ColumnExpression::tables(std::set<const SQLTable*>& t) {
+    ASSERT(table_);
+    t.insert(table_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace expression
-} // namespace sql
-} // namespace odb
-
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit

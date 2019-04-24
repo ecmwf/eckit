@@ -25,8 +25,8 @@ namespace eckit {
 
 static StaticMutex local_mutex;
 
-static std::ofstream* last      = nullptr;
-static time_t         lastTime  = 0;
+static std::ofstream* last = nullptr;
+static time_t lastTime     = 0;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -34,16 +34,16 @@ static std::ostream& rotout() {
 
     time_t now = ::time(0) / 86400;
 
-    if(now != lastTime || last == nullptr) {
+    if (now != lastTime || last == nullptr) {
 
-        static std::string logfileFormat = Resource<std::string>("logfileFormat","~/log/%Y-%m-%d/out");
+        static std::string logfileFormat = Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out");
 
         TimeStamp ts(logfileFormat);
         PathName path(ts);
         path.mkdir(0777);
 
         std::ostringstream os;
-        os << path  << "/" << Main::instance().name();
+        os << path << "/" << Main::instance().name();
 
         delete last;
 
@@ -58,11 +58,9 @@ static std::ostream& rotout() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RotationTarget::RotationTarget() {
-}
+RotationTarget::RotationTarget() {}
 
-RotationTarget::~RotationTarget() {
-}
+RotationTarget::~RotationTarget() {}
 
 void RotationTarget::write(const char* start, const char* end) {
     AutoLock<StaticMutex> lock(local_mutex);
@@ -73,12 +71,11 @@ void RotationTarget::flush() {
     rotout().flush();
 }
 
-void RotationTarget::print(std::ostream& s) const
-{
-    static std::string logfileFormat = Resource<std::string>("logfileFormat","~/log/%Y-%m-%d/out");
+void RotationTarget::print(std::ostream& s) const {
+    static std::string logfileFormat = Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out");
     s << "RotationTarget(format=" << logfileFormat << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

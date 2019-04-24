@@ -14,8 +14,8 @@
 
 #include <iostream>
 
-#include "eckit/config/Configured.h"
 #include "eckit/config/Configuration.h"
+#include "eckit/config/Configured.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/option/FactoryOption.h"
@@ -25,35 +25,32 @@ namespace eckit {
 namespace option {
 
 
-template<class T>
-FactoryOption<T>::FactoryOption(const std::string &name, const std::string &description):
-    Option(name, description) {
-}
+template <class T>
+FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description) : Option(name, description) {}
 
-template<class T>
-FactoryOption<T>::~FactoryOption() {
-}
+template <class T>
+FactoryOption<T>::~FactoryOption() {}
 
-template<class T>
-void FactoryOption<T>::set(const std::string &value, Configured &parametrisation) const {
+template <class T>
+void FactoryOption<T>::set(const std::string& value, Configured& parametrisation) const {
     parametrisation.set(name_, value);
 }
 
-template<class T>
-void FactoryOption<T>::copy(const Configuration &from, Configured &to) const {
+template <class T>
+void FactoryOption<T>::copy(const Configuration& from, Configured& to) const {
     std::string v;
-    if(from.get(name_, v)) {
+    if (from.get(name_, v)) {
         to.set(name_, v);
     }
 }
 
-template<class T>
-void FactoryOption<T>::print(std::ostream &out) const {
-    out << "   --" << name_ << "=name" << " (" << description_ << ")";
+template <class T>
+void FactoryOption<T>::print(std::ostream& out) const {
+    out << "   --" << name_ << "=name"
+        << " (" << description_ << ")";
     out << std::endl << "     Values are: ";
     T::list(out);
 }
 
-} // namespace option
-} // namespace eckit
-
+}  // namespace option
+}  // namespace eckit

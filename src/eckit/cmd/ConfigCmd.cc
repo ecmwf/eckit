@@ -12,17 +12,15 @@
 #include "eckit/config/Configurable.h"
 #include "eckit/config/ResourceMgr.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ConfigCmd::ConfigCmd() : CmdResource("config") {
-}
+ConfigCmd::ConfigCmd() : CmdResource("config") {}
 
-ConfigCmd::~ConfigCmd() {
-}
+ConfigCmd::~ConfigCmd() {}
 
 void ConfigCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     if (arg.exists(1) && arg.exists(2)) {
@@ -33,8 +31,7 @@ void ConfigCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     Configurable::dumpAllResources(out);
 }
 
-void ConfigCmd::help(std::ostream& out) const {
-}
+void ConfigCmd::help(std::ostream& out) const {}
 
 Arg ConfigCmd::usage(const std::string& cmd) const {
     return ~(Arg("<resource>", Arg::text) + Arg("<value>", Arg::text));
@@ -42,6 +39,6 @@ Arg ConfigCmd::usage(const std::string& cmd) const {
 
 static ConfigCmd configCmd;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

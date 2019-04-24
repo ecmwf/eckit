@@ -19,29 +19,26 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "TestMutex" )
-{
+CASE("TestMutex") {
     Mutex* m = 0;
 
-    EXPECT_NO_THROW( m = new Mutex() );
+    EXPECT_NO_THROW(m = new Mutex());
 
-    EXPECT_NO_THROW( m->lock() );
+    EXPECT_NO_THROW(m->lock());
 
-    EXPECT_NO_THROW( m->unlock() );
+    EXPECT_NO_THROW(m->unlock());
 
     delete m;
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

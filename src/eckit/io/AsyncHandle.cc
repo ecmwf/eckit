@@ -56,18 +56,16 @@ void AsyncHandleWriter::run() {
             delme = p.second;
 
             long written = owner_.handle().write(p.second->data(), p.first);
-            if (written != static_cast<long>( p.first ) ) {
+            if (written != static_cast<long>(p.first)) {
                 std::ostringstream oss;
-                oss << "AsyncHandleWriter: written " << written << " out of " << p.first
-                    << Log::syserr;
+                oss << "AsyncHandleWriter: written " << written << " out of " << p.first << Log::syserr;
                 throw WriteError(oss.str());
             }
 
             owner_.cond_.signal();
         }
         catch (std::exception& e) {
-            eckit::Log::error() << "AsyncHandleWriter got an exception: " << e.what() << " "
-                                << owner_ << std::endl;
+            eckit::Log::error() << "AsyncHandleWriter got an exception: " << e.what() << " " << owner_ << std::endl;
             AutoLock<MutexCond> lock(owner_.cond_);
             owner_.error_ = e.what();
             owner_.cond_.signal();

@@ -10,60 +10,56 @@
 
 #include <signal.h>
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/runtime/Main.h"
 #include "eckit/log/Log.h"
 #include "eckit/memory/MemoryPool.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-ThreadControler::ThreadControler(Thread* proc,bool detached,size_t stack):
+ThreadControler::ThreadControler(Thread* proc, bool detached, size_t stack) :
     detached_(detached),
     thread_(0),
     proc_(proc),
     stack_(stack),
-    running_(false)
-{
-    //cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() << std::endl;
+    running_(false) {
+    // cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() << std::endl;
 }
 
-ThreadControler::~ThreadControler()
-{
-    //cout << "ThreadControler::~ThreadControler(" << this << ")" << " " <<hex <<  pthread_self() << std::endl;
+ThreadControler::~ThreadControler() {
+    // cout << "ThreadControler::~ThreadControler(" << this << ")" << " " <<hex <<  pthread_self() << std::endl;
     AutoLock<MutexCond> lock(cond_);
 
-    if(running_)
-    {
+    if (running_) {
         // The Thread will delete itself
         // so there is no need for:
         // delete proc_;
     }
-    else
-    {
-        //Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << " " << hex << pthread_self() << std::endl;
+    else {
+        // Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << " " << hex << pthread_self() <<
+        // std::endl;
         delete proc_;
         proc_ = 0;
     }
 }
 
-//------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-void ThreadControler::execute()
-{
+void ThreadControler::execute() {
     // Make a copy, because "this" will desappear
     Thread* proc = proc_;
     if (detached_)
         proc_ = 0;
 
-    //cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
+    // cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================
     // Make sure the logs are created...
 
@@ -73,21 +69,20 @@ void ThreadControler::execute()
     //============
 
 
-    { // Signal that we are running
+    {  // Signal that we are running
 
         AutoLock<MutexCond> lock(cond_);
         running_ = true;
         cond_.signal();
 
         // NOTE: "this" is not valid any more after this point
-
     }
 
     //=============
 
     // We don't want to receive reconfigure events
 
-    sigset_t set,old_set;
+    sigset_t set, old_set;
 
     sigemptyset(&set);
 
@@ -104,59 +99,53 @@ void ThreadControler::execute()
     try {
         proc->run();
     }
-    catch(std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in "   << Here() << std::endl;
+    catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception terminates thread " << pthread_self() << std::endl;
     }
 
-    if(proc->autodel_)
-    {
+    if (proc->autodel_) {
         delete proc;
     }
 }
 
-void* ThreadControler::startThread (void* data)
-{
-    //cout << "ThreadControler::startThread(" << data << ")" << " " << hex << pthread_self() << std::endl;
-    reinterpret_cast<ThreadControler*>(data)->execute(); // static_cast or dynamic_cast ??
+void* ThreadControler::startThread(void* data) {
+    // cout << "ThreadControler::startThread(" << data << ")" << " " << hex << pthread_self() << std::endl;
+    reinterpret_cast<ThreadControler*>(data)->execute();  // static_cast or dynamic_cast ??
     return 0;
 }
 
-void ThreadControler::start()
-{
-    //cout << "ThreadControler::start(" << this << ")" << " " << hex << pthread_self() << std::endl;
+void ThreadControler::start() {
+    // cout << "ThreadControler::start(" << this << ")" << " " << hex << pthread_self() << std::endl;
     ASSERT(thread_ == 0);
 
     pthread_attr_t attr;
     pthread_attr_init(&attr);
 
-    if(stack_)
-    {
+    if (stack_) {
         THRCALL(::pthread_attr_setstacksize(&attr, stack_));
     }
-    if(detached_)
+    if (detached_)
         THRCALL(::pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED));
     else
         THRCALL(::pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE));
 
     AutoLock<MutexCond> lock(cond_);
 
-    THRCALL(::pthread_create(&thread_,&attr,startThread,this));
+    THRCALL(::pthread_create(&thread_, &attr, startThread, this));
 
     pthread_attr_destroy(&attr);
 
-    while(!running_)
+    while (!running_)
         cond_.wait();
 }
 
-void ThreadControler::kill()
-{
+void ThreadControler::kill() {
     pthread_cancel(thread_);
-    //pthread_kill(thread_,sig);
+    // pthread_kill(thread_,sig);
 }
 
-void ThreadControler::stop()
-{
+void ThreadControler::stop() {
     // Due to legacy code, this stop routine may be called on detached threads. Don't
     // stress about it!
     if (!detached_ && proc_ != NULL) {
@@ -164,17 +153,14 @@ void ThreadControler::stop()
     }
 }
 
-void ThreadControler::wait()
-{
+void ThreadControler::wait() {
     ASSERT(!detached_);
     // if(running_)
-    THRCALL(::pthread_join(thread_,0));
+    THRCALL(::pthread_join(thread_, 0));
 }
 
-bool ThreadControler::active()
-{
-    if(thread_ != 0)
-    {
+bool ThreadControler::active() {
+    if (thread_ != 0) {
         // Try see if it exists
 
         int policy;
@@ -183,14 +169,12 @@ bool ThreadControler::active()
         int n = pthread_getschedparam(thread_, &policy, &param);
 
         // The thread does not exist
-        if(n != 0)
+        if (n != 0)
             thread_ = 0;
-
     }
     return thread_ != 0;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

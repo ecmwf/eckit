@@ -32,21 +32,16 @@ ResourceUsage::ResourceUsage() {
     ::getrusage(RUSAGE_SELF, &usage_);
 
     if (StringTools::startsWith(ECKIT_OS_NAME, "Darwin")) {
-        factor_ = 1; // ru_masrss is in bytes
-    } else {
-        factor_ = 1024; // assume ru_masrss is in Kilobytes
+        factor_ = 1;  // ru_masrss is in bytes
+    }
+    else {
+        factor_ = 1024;  // assume ru_masrss is in Kilobytes
     }
 }
 
-void ResourceUsage::print(std::ostream &out) const {
-    out << "CPU: " << cpuTime() << " ("
-        << eckit::Seconds(cpuTime())
-        << "), memory: "
-        << maxResidentSetSize()
-        << " ("
-        << eckit::Bytes(maxResidentSetSize())
-        << "), swaps: "
-        << eckit::BigNum(numberOfSwaps());
+void ResourceUsage::print(std::ostream& out) const {
+    out << "CPU: " << cpuTime() << " (" << eckit::Seconds(cpuTime()) << "), memory: " << maxResidentSetSize() << " ("
+        << eckit::Bytes(maxResidentSetSize()) << "), swaps: " << eckit::BigNum(numberOfSwaps());
 }
 
 size_t ResourceUsage::maxResidentSetSize() const {
@@ -63,6 +58,5 @@ size_t ResourceUsage::numberOfSwaps() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
-
+}  // namespace system
+}  // namespace eckit

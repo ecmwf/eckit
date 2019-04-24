@@ -10,31 +10,30 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
-#include <algorithm>
 
 #include "eckit/cmd/CmdArg.h"
+#include "eckit/cmd/CmdParser.h"
 #include "eckit/cmd/CmdResource.h"
 #include "eckit/cmd/TermBuf.h"
-#include "eckit/cmd/CmdParser.h"
 
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/config/Resource.h"
-#include "eckit/os/SignalHandler.h"
 #include "eckit/io/StdPipe.h"
 #include "eckit/io/StdioBuf.h"
-#include "eckit/utils/Tokenizer.h"
+#include "eckit/log/Log.h"
 #include "eckit/os/SignalHandler.h"
+#include "eckit/runtime/Monitor.h"
+#include "eckit/utils/Tokenizer.h"
 
 // TODO: remember to add a mutex
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 CmdResource::Map* CmdResource::resources_ = 0;
 
@@ -45,8 +44,10 @@ CmdResource::CmdResource(const std::string& s) {
     std::vector<std::string> tokens;
     tokenize(s, tokens);
 
-    if (!resources_) resources_ = new Map();
-    for (size_t i = 0; i < tokens.size(); i++) (*resources_)[tokens[i]] = this;
+    if (!resources_)
+        resources_ = new Map();
+    for (size_t i = 0; i < tokens.size(); i++)
+        (*resources_)[tokens[i]] = this;
 }
 
 CmdResource::~CmdResource() {
@@ -90,7 +91,8 @@ void CmdResource::print(std::ostream& out) const {
     Map* m = resources_;
 
     out << "Contents: " << std::endl;
-    for (Map::iterator i = m->begin(); i != m->end(); ++i) out << (*i).first << " = " << (*i).second << std::endl;
+    for (Map::iterator i = m->begin(); i != m->end(); ++i)
+        out << (*i).first << " = " << (*i).second << std::endl;
 }
 
 std::vector<std::string> CmdResource::completion(const std::string& c) {
@@ -115,7 +117,7 @@ std::vector<std::string> CmdResource::completion(const std::vector<std::string>&
     std::vector<std::string> result;
     std::vector<std::string> copy(r);
 
-    Map* m = resources_;
+    Map* m          = resources_;
     Map::iterator j = m->find(r[0]);
 
     if (j != m->end()) {
@@ -130,15 +132,15 @@ std::vector<std::string> CmdResource::completion(const std::vector<std::string>&
 bool CmdResource::completion(const char* line, int pos, char* insert, int insertmax) {
 
     std::vector<std::string> c;
-    const char *p = line;
-    int n = 0;
+    const char* p = line;
+    int n         = 0;
 
     c.push_back("");
-    while(true) {
+    while (true) {
 
-        if(n == pos) {
+        if (n == pos) {
             std::vector<std::string> v;
-            if(c.size() == 1) {
+            if (c.size() == 1) {
                 v = completion(c[0]);
             }
             else {
@@ -146,8 +148,8 @@ bool CmdResource::completion(const char* line, int pos, char* insert, int insert
             }
 
 
-            if(v.size() == 1) {
-                for(size_t i = c.back().length(); i < v[0].length() && i < size_t(insertmax); i++) {
+            if (v.size() == 1) {
+                for (size_t i = c.back().length(); i < v[0].length() && i < size_t(insertmax); i++) {
                     *insert++ = v[0][i];
                 }
                 *insert = 0;
@@ -157,14 +159,14 @@ bool CmdResource::completion(const char* line, int pos, char* insert, int insert
             // Copy matches
 
             int k = 0;
-            for(size_t i = 0; i < v.size() ; i++) {
+            for (size_t i = 0; i < v.size(); i++) {
 
-                if(i && k < insertmax) {
+                if (i && k < insertmax) {
                     *insert++ = ' ';
                     k++;
                 }
 
-                for(size_t j = 0; j < v[i].length() && k < insertmax; j++, k++) {
+                for (size_t j = 0; j < v[i].length() && k < insertmax; j++, k++) {
                     *insert++ = v[i][j];
                 }
                 *insert = 0;
@@ -172,11 +174,11 @@ bool CmdResource::completion(const char* line, int pos, char* insert, int insert
             return false;
         }
 
-        if(*p == 0) {
+        if (*p == 0) {
             break;
         }
 
-        if(*p == ' ') {
+        if (*p == ' ') {
             c.push_back("");
         }
         else {
@@ -186,7 +188,7 @@ bool CmdResource::completion(const char* line, int pos, char* insert, int insert
         n++;
     }
 
-    return false; // silence compiler warning
+    return false;  // silence compiler warning
 }
 
 void CmdResource::help(std::ostream& out, const std::string& cmdname) {
@@ -200,7 +202,8 @@ void CmdResource::help(std::ostream& out, const std::string& cmdname) {
             out << " " << (*i).second->usage(cmd);
             out << std::endl;
         }
-    } else {
+    }
+    else {
         Map::iterator j = m->find(cmdname);
 
         if (j != m->end()) {
@@ -211,7 +214,8 @@ void CmdResource::help(std::ostream& out, const std::string& cmdname) {
             out << std::endl;
             cmd->help(out);
             out << std::endl;
-        } else
+        }
+        else
             out << " '" << cmdname << "' not found" << std::endl;
     }
 }
@@ -222,7 +226,7 @@ bool CmdResource::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::os
 
     const std::string strcmd = arg[0];
 
-    Map* m = resources_;
+    Map* m          = resources_;
     Map::iterator j = m->find(strcmd);
 
     if (j != m->end()) {
@@ -232,16 +236,22 @@ bool CmdResource::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::os
             SignalHandler interrupt;
             proc(cmd, arg, in, out);
             return true;
-        } catch (Abort& e) {
-            if (fail) throw;
-        } catch (std::exception& e) {
-            if (fail) throw;
+        }
+        catch (Abort& e) {
+            if (fail)
+                throw;
+        }
+        catch (std::exception& e) {
+            if (fail)
+                throw;
 
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;
         }
-    } else {
-        if (fail) throw eckit::SeriousBug(strcmd + ": command not found");
+    }
+    else {
+        if (fail)
+            throw eckit::SeriousBug(strcmd + ": command not found");
         out << "'" << strcmd << "': command not found" << std::endl;
     }
 
@@ -256,7 +266,8 @@ void CmdResource::redirect(CmdResource* cmd, CmdArg& args, std::istream& in, std
     std::string file = tokens[0];
     std::ofstream out(file.c_str());
 
-    if (!out) throw CantOpenFile(file);
+    if (!out)
+        throw CantOpenFile(file);
 
     CmdArg newargs = args;
     newargs.erase(">");
@@ -264,7 +275,8 @@ void CmdResource::redirect(CmdResource* cmd, CmdArg& args, std::istream& in, std
     cmd->execute(in, out, newargs);
 
     out.close();
-    if (out.bad()) throw WriteError(file);
+    if (out.bad())
+        throw WriteError(file);
 }
 
 void CmdResource::append(CmdResource* cmd, CmdArg& args, std::istream& in, std::ostream&) {
@@ -274,7 +286,8 @@ void CmdResource::append(CmdResource* cmd, CmdArg& args, std::istream& in, std::
 
     std::string file = tokens[0];
     std::ofstream out(file.c_str(), std::ios::app);
-    if (!out) throw CantOpenFile(file);
+    if (!out)
+        throw CantOpenFile(file);
 
     CmdArg newargs = args;
     newargs.erase(">>");
@@ -282,14 +295,16 @@ void CmdResource::append(CmdResource* cmd, CmdArg& args, std::istream& in, std::
     cmd->execute(in, out, newargs);
 
     out.close();
-    if (out.bad()) throw WriteError(file);
+    if (out.bad())
+        throw WriteError(file);
 }
 
 void CmdResource::pipe(CmdResource* cmd, CmdArg& args, std::istream& in, std::ostream&) {
 
-    const std::string to = args["|"]; // everything after the pipe
+    const std::string to = args["|"];  // everything after the pipe
 
-    StdPipe pipe(to, "w"); AutoCloser<StdPipe> closer(pipe);
+    StdPipe pipe(to, "w");
+    AutoCloser<StdPipe> closer(pipe);
     StdioBuf buf(pipe);
     std::ostream out(&buf);
 
@@ -299,6 +314,6 @@ void CmdResource::pipe(CmdResource* cmd, CmdArg& args, std::istream& in, std::os
     cmd->execute(in, out, newargs);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

@@ -8,20 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
 #include <unistd.h>
+#include <sstream>
 
-#include "eckit/runtime/Application.h"
-#include "eckit/runtime/Tool.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/MemoryHandle.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/io/ResizableBuffer.h"
-#include "eckit/net/TCPClient.h"
 #include "eckit/io/TCPHandle.h"
+#include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
-
+#include "eckit/runtime/Application.h"
+#include "eckit/runtime/Tool.h"
 
 
 using namespace eckit;
@@ -31,23 +30,22 @@ class Client : public Application {
     virtual void run();
 
 public:
-    Client(int argc, char** argv): Application(argc,argv,"HOME")  {}
+    Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
 
-void Client::run()
-{
+void Client::run() {
     std::string remoteHost = "localhost";
 
 
     TCPClient client;
-    TCPStream s ( client.connect(remoteHost, 9013) );
+    TCPStream s(client.connect(remoteHost, 9013));
 
     Log::info() << "Connecting to " << s.socket().remoteHost() << ":" << s.socket().remotePort() << std::endl;
 
     for (int loop = 0; loop < 100; loop++) {
 
-        for(const char* data: { "AAAAAAA", "BBBBBBBB", "CCCCCCCCCCCCC"} ) {
+        for (const char* data : {"AAAAAAA", "BBBBBBBB", "CCCCCCCCCCCCC"}) {
 
             MemoryHandle mh(data, strlen(data));
 
@@ -67,7 +65,7 @@ void Client::run()
             // 3.2 connect to data server
 
             Log::info() << "Connecting to " << remoteHost << ":" << dataPort << std::endl;
-            TCPHandle tcpdata ( remoteHost, dataPort );
+            TCPHandle tcpdata(remoteHost, dataPort);
 
             mh.saveInto(tcpdata);
         }
@@ -81,8 +79,7 @@ void Client::run()
 }
 
 
-int main(int argc,char **argv)
-{
-    Client app(argc,argv);
+int main(int argc, char** argv) {
+    Client app(argc, argv);
     app.start();
 }

@@ -35,8 +35,7 @@ SQLExpressionEvaluated::SQLExpressionEvaluated(SQLExpression& e) :
 
 SQLExpressionEvaluated::~SQLExpressionEvaluated() {}
 
-void SQLExpressionEvaluated::print(std::ostream& o) const
-{
+void SQLExpressionEvaluated::print(std::ostream& o) const {
     if (missing_)
         o << "NULL";
     else
@@ -45,19 +44,22 @@ void SQLExpressionEvaluated::print(std::ostream& o) const
 }
 
 double SQLExpressionEvaluated::eval(bool& missing) const {
-    if (missing_) missing = true;
+    if (missing_)
+        missing = true;
     return value_[0];
 }
 
 void SQLExpressionEvaluated::eval(double* out, bool& missing) const {
-    if (missing_) missing = true;
+    if (missing_)
+        missing = true;
     ::memcpy(out, &value_[0], value_.size() * sizeof(value_[0]));
 }
 
 std::string SQLExpressionEvaluated::evalAsString(bool& missing) const {
     if (missing_) {
         missing = true;
-    } else {
+    }
+    else {
         return type_->asString(&value_[0]);
     }
     return std::string();
@@ -67,9 +69,15 @@ void SQLExpressionEvaluated::output(SQLOutput& o) const {
     type_->output(o, &value_[0], missing_);
 }
 
-void SQLExpressionEvaluated::prepare(SQLSelect&) { NOTIMP; }
-void SQLExpressionEvaluated::cleanup(SQLSelect&) { NOTIMP; }
-bool SQLExpressionEvaluated::isAggregate() const { NOTIMP; }
+void SQLExpressionEvaluated::prepare(SQLSelect&) {
+    NOTIMP;
+}
+void SQLExpressionEvaluated::cleanup(SQLSelect&) {
+    NOTIMP;
+}
+bool SQLExpressionEvaluated::isAggregate() const {
+    NOTIMP;
+}
 
 bool SQLExpressionEvaluated::isConstant() const {
     return true;
@@ -97,7 +105,6 @@ const type::SQLType* SQLExpressionEvaluated::type() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace expression
-} // namespace sql
-} // namespace eckit
-
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit

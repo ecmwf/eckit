@@ -20,12 +20,9 @@
 namespace eckit {
 
 
-Configured::Configured() {
-}
+Configured::Configured() {}
 
 
-Configured::~Configured() {
-}
+Configured::~Configured() {}
 
-} // namespace eckit
-
+}  // namespace eckit

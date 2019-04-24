@@ -23,16 +23,12 @@ namespace eckit {
 namespace option {
 
 
-Option::Option(const std::string &name, const std::string &description):
-    name_(name),
-    description_(description) {
-}
+Option::Option(const std::string& name, const std::string& description) : name_(name), description_(description) {}
 
 
-Option::~Option() {
-}
+Option::~Option() {}
 
-const std::string &Option::name() const {
+const std::string& Option::name() const {
     return name_;
 }
 
@@ -41,45 +37,45 @@ bool Option::active() const {
     return true;
 }
 
-void Option::set(Configured &) const {
+void Option::set(Configured&) const {
     std::ostringstream os;
     os << "Option::set() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
 }
 
 
-template<>
-const char *Title<size_t>::operator()() const {
+template <>
+const char* Title<size_t>::operator()() const {
     return "ordinal";
 }
 
-template<>
-const char *Title<long>::operator()() const {
+template <>
+const char* Title<long>::operator()() const {
     return "integer";
 }
 
-template<>
-const char *Title<double>::operator()() const {
+template <>
+const char* Title<double>::operator()() const {
     return "real";
 }
 
-template<>
-const char *Title<bool>::operator()() const {
+template <>
+const char* Title<bool>::operator()() const {
     return "0/1";
 }
 
-template<>
-const char *Title<std::string>::operator()() const {
+template <>
+const char* Title<std::string>::operator()() const {
     return "string";
 }
 
-template<>
-const char *Title<eckit::PathName>::operator()() const {
+template <>
+const char* Title<eckit::PathName>::operator()() const {
     return "path";
 }
 
-template<>
-void SimpleOption<bool>::set(Configured &parametrisation) const {
+template <>
+void SimpleOption<bool>::set(Configured& parametrisation) const {
     parametrisation.set(name_, true);
 }
 
@@ -89,20 +85,19 @@ void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& pa
 }
 
 template <>
-void SimpleOption<eckit::PathName>::copy(const Configuration &from, Configured &to) const {
+void SimpleOption<eckit::PathName>::copy(const Configuration& from, Configured& to) const {
     std::string v;
-    if(from.get(name_, v)) {
-       to.set(name_, v);
+    if (from.get(name_, v)) {
+        to.set(name_, v);
     }
 }
 
-template<>
-void SimpleOption<bool>::print(std::ostream &out) const {
+template <>
+void SimpleOption<bool>::print(std::ostream& out) const {
     out << "   --" << name_ << " (" << description_ << ")";
 }
 
 
-} // namespace option
+}  // namespace option
 
-} // namespace eckit
-
+}  // namespace eckit

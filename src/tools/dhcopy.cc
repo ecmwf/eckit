@@ -8,16 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/io/cluster/ClusterNodes.h"
 
 using eckit::DataHandle;
 using eckit::Log;
@@ -25,9 +25,7 @@ using eckit::URI;
 
 class DHCopy : public eckit::Tool {
 public:
-
-    DHCopy(int argc, char** argv) : Tool(argc, argv, "DHSHOME")
-    {
+    DHCopy(int argc, char** argv) : Tool(argc, argv, "DHSHOME") {
         options_.push_back(new eckit::option::SimpleOption<std::string>("from", "copy from this URI"));
         options_.push_back(new eckit::option::SimpleOption<std::string>("to", "copy to this URI"));
         options_.push_back(new eckit::option::SimpleOption<bool>("compare", "compare output"));
@@ -35,14 +33,12 @@ public:
 
     virtual void run();
 
-    std::vector<eckit::option::Option *> options_;
+    std::vector<eckit::option::Option*> options_;
 };
 
 static void usage(const std::string& tool) {
 
-    Log::info() << "Usage: " << tool << " -from [URI1] -to [URI2]"
-                << std::endl
-                << std::endl;
+    Log::info() << "Usage: " << tool << " -from [URI1] -to [URI2]" << std::endl << std::endl;
 }
 
 
@@ -67,7 +63,7 @@ void DHCopy::run() {
 }
 
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
     DHCopy tool(argc, argv);

@@ -13,39 +13,34 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
-#include "eckit/value/Value.h"
 #include "eckit/parser/ObjectParser.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
 
-ObjectParser::~ObjectParser() {
-}
+ObjectParser::~ObjectParser() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Value ObjectParser::parseTrue()
-{
+Value ObjectParser::parseTrue() {
     consume("true");
     return Value(true);
 }
 
-Value ObjectParser::parseFalse()
-{
+Value ObjectParser::parseFalse() {
     consume("false");
     return Value(false);
 }
 
-Value ObjectParser::parseNull()
-{
+Value ObjectParser::parseNull() {
     consume("null");
     return Value();
 }
 
-Value ObjectParser::parseNumber()
-{
-    bool real = false;
+Value ObjectParser::parseNumber() {
+    bool real   = false;
     bool string = false;
 
     std::string s;
@@ -56,23 +51,25 @@ Value ObjectParser::parseNumber()
     }
 
     switch (c) {
-    case '0': s += c; break;
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-        s += c;
-        while (isdigit(peek())) {
-            s += next();
-        }
-        break;
-    default:
-        throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
+        case '0':
+            s += c;
+            break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            s += c;
+            while (isdigit(peek())) {
+                s += next();
+            }
+            break;
+        default:
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
     }
 
     if (peek() == '.') {
@@ -94,8 +91,7 @@ Value ObjectParser::parseNumber()
         s += next();
 
         c = next();
-        if (c == '-' || c == '+')
-        {
+        if (c == '-' || c == '+') {
             s += c;
             c = next();
         }
@@ -106,7 +102,6 @@ Value ObjectParser::parseNumber()
         while (isdigit(peek())) {
             s += next();
         }
-
     }
 
     if (string) {
@@ -117,77 +112,70 @@ Value ObjectParser::parseNumber()
         double d = Translator<std::string, double>()(s);
         return Value(d);
     }
-    else
-    {
+    else {
         long long d = Translator<std::string, long long>()(s);
         return Value(d);
     }
 }
 
-Value ObjectParser::parseString(char quote)
-{
+Value ObjectParser::parseString(char quote) {
     consume(quote);
     std::string s;
-    for (;;)
-    {
+    for (;;) {
         char c = next(true);
-        if (c == '\\')
-        {
+        if (c == '\\') {
             c = next(true);
             switch (c) {
 
-            case '\\':
-                s += '\\';
-                break;
+                case '\\':
+                    s += '\\';
+                    break;
 
-            case '/':
-                s += '/';
-                break;
+                case '/':
+                    s += '/';
+                    break;
 
-            case 'b':
-                s += '\b';
-                break;
+                case 'b':
+                    s += '\b';
+                    break;
 
-            case 'f':
-                s += '\f';
-                break;
+                case 'f':
+                    s += '\f';
+                    break;
 
-            case 'n':
-                s += '\n';
-                break;
+                case 'n':
+                    s += '\n';
+                    break;
 
-            case 'r':
-                s += '\r';
-                break;
+                case 'r':
+                    s += '\r';
+                    break;
 
-            case 't':
-                s += '\t';
-                break;
+                case 't':
+                    s += '\t';
+                    break;
 
-            case 'u':
-                throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
+                case 'u':
+                    throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
 
-            default:
-                if (c == quote) {
-                    s += c;
-                }
-                else {
-                    throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c + "'");
-                }
-                break;
+                default:
+                    if (c == quote) {
+                        s += c;
+                    }
+                    else {
+                        throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c +
+                                                  "'");
+                    }
+                    break;
             }
         }
-        else
-        {
-            if (c == quote)
-            {
+        else {
+            if (c == quote) {
                 return Value(s);
             }
             s += c;
         }
-
     }
-
 }
 
 static void set_(ValueMap& m, ValueList& l, const Value& k, const Value& v) {
@@ -199,8 +187,7 @@ static void set_(ValueMap& m, ValueList& l, const Value& k, const Value& v) {
     m[k] = v;
 }
 
-void ObjectParser::parseKeyValue(ValueMap& m, ValueList& l)
-{
+void ObjectParser::parseKeyValue(ValueMap& m, ValueList& l) {
     Value k = parseString();
     consume(':');
     Value v = parseValue();
@@ -208,12 +195,10 @@ void ObjectParser::parseKeyValue(ValueMap& m, ValueList& l)
     set_(m, l, k, v);
 }
 
-Value ObjectParser::parseObject()
-{
+Value ObjectParser::parseObject() {
     consume("{");
     char c = peek();
-    if (c == '}')
-    {
+    if (c == '}') {
         consume(c);
         return Value::makeOrderedMap();
     }
@@ -226,25 +211,21 @@ Value ObjectParser::parseObject()
         parseKeyValue(m, l);
 
         char c = peek();
-        if (c == '}')
-        {
+        if (c == '}') {
             consume(c);
             return Value::makeOrderedMap(m, l);
         }
 
         consume(',');
-
     }
 }
 
-Value ObjectParser::parseArray()
-{
+Value ObjectParser::parseArray() {
     consume("[");
     char c = peek();
-    if (c == ']')
-    {
+    if (c == ']') {
         consume(c);
-        //cout << "ObjectParser::parseArray <== " << std::endl;;
+        // cout << "ObjectParser::parseArray <== " << std::endl;;
         return Value::makeList();
     }
 
@@ -254,65 +235,73 @@ Value ObjectParser::parseArray()
         l.push_back(parseValue());
 
         char c = peek();
-        if (c == ']')
-        {
+        if (c == ']') {
             consume(c);
-            //cout << "ObjectParser::parseArray <== " << std::endl;;
+            // cout << "ObjectParser::parseArray <== " << std::endl;;
             return Value::makeList(l);
         }
 
         consume(',');
-
     }
 }
 
 
-Value ObjectParser::parseJSON()
-{
+Value ObjectParser::parseJSON() {
     char c = peek();
-    switch (c)
-    {
+    switch (c) {
 
-    case 't': return parseTrue();
-    case 'f': return parseFalse();
-    case 'n': return parseNull();
-    case '{': return parseObject();
-    case '[': return parseArray();
-    case '\"': return parseString();
+        case 't':
+            return parseTrue();
+        case 'f':
+            return parseFalse();
+        case 'n':
+            return parseNull();
+        case '{':
+            return parseObject();
+        case '[':
+            return parseArray();
+        case '\"':
+            return parseString();
 
-    case '-': return parseNumber();
-    case '0': return parseNumber();
-    case '1': return parseNumber();
-    case '2': return parseNumber();
-    case '3': return parseNumber();
-    case '4': return parseNumber();
-    case '5': return parseNumber();
-    case '6': return parseNumber();
-    case '7': return parseNumber();
-    case '8': return parseNumber();
-    case '9': return parseNumber();
+        case '-':
+            return parseNumber();
+        case '0':
+            return parseNumber();
+        case '1':
+            return parseNumber();
+        case '2':
+            return parseNumber();
+        case '3':
+            return parseNumber();
+        case '4':
+            return parseNumber();
+        case '5':
+            return parseNumber();
+        case '6':
+            return parseNumber();
+        case '7':
+            return parseNumber();
+        case '8':
+            return parseNumber();
+        case '9':
+            return parseNumber();
 
-    default:
-        throw StreamParser::Error(std::string("YAMLParser::parseValue unexpected char '") + c + "'");
+        default:
+            throw StreamParser::Error(std::string("YAMLParser::parseValue unexpected char '") + c + "'");
     }
 }
 
 
-ObjectParser::ObjectParser(std::istream &in, bool comments):
-    StreamParser(in, comments)
-{
-}
+ObjectParser::ObjectParser(std::istream& in, bool comments) : StreamParser(in, comments) {}
 
-Value ObjectParser::parse()
-{
+Value ObjectParser::parse() {
     Value v = parseValue();
-    char c = peek();
+    char c  = peek();
     if (c != 0)
         throw StreamParser::Error(std::string("ObjectParser::parse extra char '") + c + "'");
     return v;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

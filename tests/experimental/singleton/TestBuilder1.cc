@@ -14,12 +14,9 @@
 
 class TestBuilder1 : public TestBuilder {
 public:
-    void build()
-    {
-        std::cout << "building a b1" << std::endl;
-    }
+    void build() { std::cout << "building a b1" << std::endl; }
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-AutoRegistBuilder< TestBuilder1> builder1( "b1" );
+AutoRegistBuilder<TestBuilder1> builder1("b1");

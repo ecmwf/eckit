@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
 #include <unistd.h>
+#include <sstream>
 
-#include "eckit/runtime/Application.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/runtime/Application.h"
 
 
 using namespace eckit;
@@ -23,7 +23,7 @@ class Client : public Application {
     virtual void run();
 
 public:
-    Client(int argc, char** argv): Application(argc,argv,"HOME")  {}
+    Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
 
@@ -34,8 +34,7 @@ class XX {
 
     long step_;
 
-public: // methods
-
+public:  // methods
     XX(const std::string& app) : app_(app), step_(0) {}
 
     void step(long step) { step_ = step; }
@@ -45,19 +44,18 @@ public: // methods
         s.startObject();
         s << "event" << event_;
         s << "step" << step_;
-        s << "app"  << app_;
+        s << "app" << app_;
         s.endObject();
     }
 };
 
-void Client::run()
-{
+void Client::run() {
     std::string remoteHost = "localhost";
 
     XX x("IFS");
     x.event("iteration");
 
-    for(auto s: {0, 3, 6, 9, 12}) {
+    for (auto s : {0, 3, 6, 9, 12}) {
 
         ::sleep(3);
 
@@ -78,8 +76,7 @@ void Client::run()
 }
 
 
-int main(int argc,char **argv)
-{
-    Client app(argc,argv);
+int main(int argc, char** argv) {
+    Client app(argc, argv);
     app.start();
 }

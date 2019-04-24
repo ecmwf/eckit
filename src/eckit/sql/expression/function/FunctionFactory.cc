@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -62,13 +62,13 @@ std::vector<FunctionFactory::FuncInfo> FunctionFactory::functionsInfo() {
 
     for (const auto& b : builders_) {
         ASSERT(b.first.second == b.second->arity());
-        info.emplace_back(FuncInfo {b.first.first, b.second->arity(), b.second->help()});
+        info.emplace_back(FuncInfo{b.first.first, b.second->arity(), b.second->help()});
     }
 
     return info;
 }
 
-std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string &name, const Expressions &args) const {
+std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& name, const Expressions& args) const {
 
     std::lock_guard<std::mutex> lock(m_);
 
@@ -87,20 +87,24 @@ std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string &na
     return it->second->make(name, args);
 }
 
-std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& name, std::shared_ptr<SQLExpression> arg1) {
+std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& name,
+                                                           std::shared_ptr<SQLExpression> arg1) {
     expression::Expressions args;
     args.push_back(arg1);
     return build(name, args);
 }
 
-std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& name, std::shared_ptr<SQLExpression> arg1, std::shared_ptr<SQLExpression> arg2) {
+std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& name, std::shared_ptr<SQLExpression> arg1,
+                                                           std::shared_ptr<SQLExpression> arg2) {
     expression::Expressions args;
     args.push_back(arg1);
     args.push_back(arg2);
     return build(name, args);
 }
 
-std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& name, std::shared_ptr<SQLExpression> arg1, std::shared_ptr<SQLExpression> arg2, std::shared_ptr<SQLExpression> arg3) {
+std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& name, std::shared_ptr<SQLExpression> arg1,
+                                                           std::shared_ptr<SQLExpression> arg2,
+                                                           std::shared_ptr<SQLExpression> arg3) {
     expression::Expressions args;
     args.push_back(arg1);
     args.push_back(arg2);
@@ -129,8 +133,7 @@ std::string FunctionBuilderBase::help() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace function
-} // namespace expression
-} // namespace sql
-} // namespace eckit
-
+}  // namespace function
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit

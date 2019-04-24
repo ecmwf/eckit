@@ -27,11 +27,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CmdApplication::CmdApplication() {
-}
+CmdApplication::CmdApplication() {}
 
-CmdApplication::~CmdApplication() {
-}
+CmdApplication::~CmdApplication() {}
 
 std::string CmdApplication::prompt() const {
     return name() + "% ";
@@ -66,14 +64,16 @@ void CmdApplication::userMode() {
     startup(std::cout);
 
     PathName file = Resource<PathName>("-f", "");
-    bool fail = Resource<bool>("-fail", false);
+    bool fail     = Resource<bool>("-fail", false);
 
     if (command != "") {
         Log::info() << "command: " << command << std::endl;
         try {
             CmdParser::parse(command, std::cout);
-        } catch (std::exception& e) {
-            if (fail) throw;
+        }
+        catch (std::exception& e) {
+            if (fail)
+                throw;
 
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;
@@ -88,7 +88,8 @@ void CmdApplication::userMode() {
     if (file.exists()) {
         std::ifstream in(file.localPath());
         CmdParser::parse(in, std::cout, *this);
-    } else {
+    }
+    else {
         PathName home("~");
         Log::info() << name() << " home is " << home << std::endl;
 
@@ -98,8 +99,10 @@ void CmdApplication::userMode() {
             try {
                 CmdParser::parse(std::cin, std::cout, *this);
                 break;
-            } catch (std::exception& e) {
-                if (fail) throw;
+            }
+            catch (std::exception& e) {
+                if (fail)
+                    throw;
 
                 Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
                 Log::error() << "** Exception is ignored" << std::endl;
@@ -137,4 +140,4 @@ void CmdApplication::execute() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

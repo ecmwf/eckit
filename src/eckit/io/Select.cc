@@ -9,142 +9,122 @@
  */
 
 
-#include <unistd.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 #include "eckit/io/Select.h"
 #include "eckit/net/TCPSocket.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-Select::Select():
-	last_(-1)
-{
-	FD_ZERO(&files_);
+Select::Select() : last_(-1) {
+    FD_ZERO(&files_);
 }
 
-Select::Select(TCPSocket& p):
-	last_(-1)
-{
-	FD_ZERO(&files_);
-	add(p);
+Select::Select(TCPSocket& p) : last_(-1) {
+    FD_ZERO(&files_);
+    add(p);
 }
 
-Select::Select(int fd):
-	last_(-1)
-{
-	FD_ZERO(&files_);
-	add(fd);
+Select::Select(int fd) : last_(-1) {
+    FD_ZERO(&files_);
+    add(fd);
 }
 
-Select::~Select()
-{
+Select::~Select() {}
+
+void Select::add(int fd) {
+    ASSERT(fd >= 0 && fd < getdtablesize());
+    FD_SET(fd, &files_);
+    if (fd > last_)
+        last_ = fd;
 }
 
-void Select::add(int fd)
-{
-	ASSERT(fd >=0 && fd < getdtablesize());
-	FD_SET(fd,&files_);
-	if(fd > last_) last_ = fd;
+void Select::add(TCPSocket& p) {
+    add(p.socket());
 }
 
-void Select::add(TCPSocket& p)
-{
-	add(p.socket());
+void Select::remove(int fd) {
+    ASSERT(fd >= 0 && fd < getdtablesize());
+    FD_CLR(fd, &files_);
 }
 
-void Select::remove(int fd)
-{
-	ASSERT(fd >=0 && fd < getdtablesize());
-	FD_CLR(fd,&files_);
+void Select::remove(TCPSocket& p) {
+    remove(p.socket());
 }
 
-void Select::remove(TCPSocket& p)
-{
-	remove(p.socket());
+bool Select::set(int fd) {
+    ASSERT(fd >= 0 && fd < getdtablesize());
+    return FD_ISSET(fd, &set_);
 }
 
-bool Select::set(int fd)
-{
-	ASSERT(fd >=0 && fd < getdtablesize());
-	return FD_ISSET(fd,&set_);
+bool Select::set(TCPSocket& p) {
+    return set(p.socket());
 }
 
-bool Select::set(TCPSocket& p)
-{
-	return set(p.socket());
-}
+bool Select::ready(long sec) {
 
-bool Select::ready(long sec)
-{
+    int size = last_ + 1;
 
-	int size = last_ + 1;
+    ::timeval timeout;
+    timeout.tv_sec  = sec;
+    timeout.tv_usec = 0;
 
-	::timeval timeout;
-	timeout.tv_sec  = sec;
-	timeout.tv_usec = 0;
+    for (;;) {
 
-	for(;;)
-	{
+        // First check with ioctl, as select is not always trustworthy
 
-		// First check with ioctl, as select is not always trustworthy
+        bool some = false;
+        FD_ZERO(&set_);
 
-		bool some = false;
-		FD_ZERO(&set_);
+        for (int i = 0; i < size; i++)
+            if (FD_ISSET(i, &files_)) {
+                int nbytes = 0;
 
-		for(int i  = 0 ; i < size ; i++)
-			if(FD_ISSET(i,&files_))
-			{
-				int nbytes = 0;
-
-                //cout << "ioctl(i,FIONREAD,&nbytes) " << i << " .... " << ioctl(i,FIONREAD,&nbytes) << " " << nbytes << std::endl;
+                // cout << "ioctl(i,FIONREAD,&nbytes) " << i << " .... " << ioctl(i,FIONREAD,&nbytes) << " " << nbytes
+                // << std::endl;
                 nbytes = 0;
 
 
-				//SYSCALL(ioctl(i,FIONREAD,&nbytes));
+                // SYSCALL(ioctl(i,FIONREAD,&nbytes));
                 //
 
                 // On Linux, a socket in acceoct() mode will return "Invalid argument"
                 // so we simply ignor ethe error here....
-				if((ioctl(i,FIONREAD,&nbytes) == 0) && (nbytes > 0))
-				{
-					FD_SET(i,&set_);
-					some = true;
-				}
-			}
+                if ((ioctl(i, FIONREAD, &nbytes) == 0) && (nbytes > 0)) {
+                    FD_SET(i, &set_);
+                    some = true;
+                }
+            }
 
-		if(some)
-			return true;
+        if (some)
+            return true;
 
-		for(;;)
-		{
+        for (;;) {
 
-			set_         = files_;
-			fd_set excep = files_;
+            set_         = files_;
+            fd_set excep = files_;
 
-			switch(::select(size,&set_,0,&excep,&timeout) )
-			{
-				case -1:
-					if(errno != EINTR)
-						throw FailedSystemCall("select");
-					break;
+            switch (::select(size, &set_, 0, &excep, &timeout)) {
+                case -1:
+                    if (errno != EINTR)
+                        throw FailedSystemCall("select");
+                    break;
 
-				case 0:
-					return false;
+                case 0:
+                    return false;
 
-				default:
-					return true;
-			}
-		}
-	}
-
+                default:
+                    return true;
+            }
+        }
+    }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

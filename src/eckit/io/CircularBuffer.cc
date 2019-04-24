@@ -12,28 +12,26 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/CircularBuffer.h"
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/memory/MemoryPool.h"
 #include "eckit/thread/AutoLock.h"
 
 namespace eckit {
 
 
-CircularBuffer::CircularBuffer(size_t size, size_t capacity):
+CircularBuffer::CircularBuffer(size_t size, size_t capacity) :
     buffer_(new char[size]),
     increment_(size),
     size_(size),
     capacity_(capacity),
     pos_(0),
-    used_(0)
-{
+    used_(0) {
     ASSERT(buffer_);
     ASSERT(size_ <= capacity_);
 }
 
 
-CircularBuffer::~CircularBuffer()
-{
+CircularBuffer::~CircularBuffer() {
     delete[] buffer_;
 }
 
@@ -67,7 +65,7 @@ size_t CircularBuffer::write(const void* buffer, size_t length) {
 
         ASSERT(read(buffer, save) == save);
 
-        pos_ = 0;
+        pos_  = 0;
         used_ = save;
 
         size_ = newsize;
@@ -87,7 +85,6 @@ size_t CircularBuffer::write(const void* buffer, size_t length) {
     used_ += length;
 
     return length;
-
 }
 
 size_t CircularBuffer::read(void* buffer, size_t length) {
@@ -123,7 +120,7 @@ size_t CircularBuffer::length() const {
 void CircularBuffer::clear() {
     AutoLock<Mutex> lock(mutex_);
 
-    pos_ = 0;
+    pos_  = 0;
     used_ = 0;
 }
 
@@ -133,5 +130,4 @@ size_t CircularBuffer::capacity() const {
 }
 
 
-} // namespace eckit
-
+}  // namespace eckit

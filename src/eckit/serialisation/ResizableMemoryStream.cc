@@ -11,25 +11,18 @@
 
 #include <cstring>
 
-#include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/io/ResizableBuffer.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/serialisation/ResizableMemoryStream.h"
 
 
 namespace eckit {
 
-ResizableMemoryStream::ResizableMemoryStream(ResizableBuffer& buffer):
-    buffer_(buffer),
-    read_(false),
-    position_(0)
-{
-}
+ResizableMemoryStream::ResizableMemoryStream(ResizableBuffer& buffer) : buffer_(buffer), read_(false), position_(0) {}
 
-ResizableMemoryStream::~ResizableMemoryStream() {
-}
+ResizableMemoryStream::~ResizableMemoryStream() {}
 
-long ResizableMemoryStream::read(void* buffer, long length)
-{
+long ResizableMemoryStream::read(void* buffer, long length) {
     size_t left = buffer_.size() - position_;
     size_t size = std::min(left, size_t(length));
     ::memcpy(buffer, buffer_.data() + position_, size);
@@ -37,16 +30,15 @@ long ResizableMemoryStream::read(void* buffer, long length)
     return long(size);
 }
 
-long ResizableMemoryStream::write(const void* buffer, long length)
-{
-    size_t len = size_t(length);
+long ResizableMemoryStream::write(const void* buffer, long length) {
+    size_t len  = size_t(length);
     size_t left = buffer_.size() - position_;
 
-    if(left < len) {
+    if (left < len) {
         size_t reqsize = buffer_.size() + (len - left);
-        size_t newsize = eckit::round(2*reqsize, 64); // grow in multiples of 2, rounded to 64
+        size_t newsize = eckit::round(2 * reqsize, 64);  // grow in multiples of 2, rounded to 64
         //  eckit::Log::info() << "Resizing buffer from " << buffer_.size() << " to " << newsize << std::endl;
-        buffer_.resize(newsize, true); // preserves contents
+        buffer_.resize(newsize, true);  // preserves contents
         left = buffer_.size() - position_;
     }
 
@@ -58,16 +50,15 @@ long ResizableMemoryStream::write(const void* buffer, long length)
 }
 
 void ResizableMemoryStream::rewind() {
-	position_ = 0;
+    position_ = 0;
 }
 
 std::string ResizableMemoryStream::name() const {
-	return "ResizableMemoryStream";
+    return "ResizableMemoryStream";
 }
 
 size_t ResizableMemoryStream::position() const {
     return position_;
 }
 
-} // namespace eckit
-
+}  // namespace eckit

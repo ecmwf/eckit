@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 
+#include "eckit/log/TimeStamp.h"
 #include "eckit/log/TimeStampTarget.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/log/TimeStamp.h"
 
 
 namespace eckit {
@@ -22,26 +22,17 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-TimeStampTarget::TimeStampTarget(const char* tag, LogTarget* target):
-    WrapperTarget(target),
-    tag_(tag)
-{
-}
+TimeStampTarget::TimeStampTarget(const char* tag, LogTarget* target) : WrapperTarget(target), tag_(tag) {}
 
-TimeStampTarget::~TimeStampTarget()
-{
-}
+TimeStampTarget::~TimeStampTarget() {}
 
 void TimeStampTarget::writePrefix() {
 
     std::ostringstream oss;
-    oss << std::setw(3)
-        << std::setfill('0')
-        << Monitor::instance().self()
-        << std::setfill(' ') << ' '
-        << TimeStamp() << ' ';
+    oss << std::setw(3) << std::setfill('0') << Monitor::instance().self() << std::setfill(' ') << ' ' << TimeStamp()
+        << ' ';
 
-    if(tag_ && *tag_) {
+    if (tag_ && *tag_) {
         oss << tag_ << ' ';
     }
 
@@ -51,16 +42,16 @@ void TimeStampTarget::writePrefix() {
 }
 
 
-void TimeStampTarget::writeSuffix() {
-}
+void TimeStampTarget::writeSuffix() {}
 
-void TimeStampTarget::print(std::ostream& s) const
-{
+void TimeStampTarget::print(std::ostream& s) const {
     s << "TimeStampTarget(";
-    if(target_) { s<< "target=" << *target_ << ")"; }
+    if (target_) {
+        s << "target=" << *target_ << ")";
+    }
     s << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

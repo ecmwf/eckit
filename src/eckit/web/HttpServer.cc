@@ -11,26 +11,21 @@
 #include "eckit/web/HttpServer.h"
 #include "eckit/web/HttpService.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-HttpServer::HttpServer(int port, bool visible):
-    HtmlResource("/"),
-    http_(new HttpService(port, visible))
-{
-	http_.start();
+HttpServer::HttpServer(int port, bool visible) : HtmlResource("/"), http_(new HttpService(port, visible)) {
+    http_.start();
 }
 
-HttpServer::~HttpServer()
-{
-	http_.stop();
+HttpServer::~HttpServer() {
+    http_.stop();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

@@ -53,8 +53,7 @@ void DataBlobFactory::list(std::ostream& out) {
     AutoLock<Mutex> lock(local_mutex);
 
     const char* sep = "";
-    for (std::map<std::string, DataBlobFactory*>::const_iterator j = m->begin(); j != m->end();
-         ++j) {
+    for (std::map<std::string, DataBlobFactory*>::const_iterator j = m->begin(); j != m->end(); ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
@@ -96,9 +95,7 @@ DataBlob* DataBlobFactory::build(const std::string& name, DataHandle& dh, size_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-DataBlob::DataBlob(const void* data, size_t length) :
-    buffer_((const char*)data, length),
-    actualLength_(length) {}
+DataBlob::DataBlob(const void* data, size_t length) : buffer_((const char*)data, length), actualLength_(length) {}
 
 DataBlob::DataBlob(DataHandle& dh, size_t length) : buffer_(length), actualLength_(length) {
     dh.read(buffer_, length);

@@ -19,8 +19,7 @@ namespace eckit {
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::Page::print(std::ostream& s) const {
-    s << ((this->node_) ? "NODE" : "LEAF") << "_PAGE[id=" << this->id_ << ",count=" << this->count_
-      << "]";
+    s << ((this->node_) ? "NODE" : "LEAF") << "_PAGE[id=" << this->id_ << ",count=" << this->count_ << "]";
 
     // For some strange reason "this" is required...
     if (this->node_) {
@@ -140,8 +139,7 @@ void BTree<K, V, S, L>::dump(std::ostream& s, unsigned long page, int depth) con
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::dump(std::ostream& s) const {
     AutoSharedLock<BTree<K, V, S, L> > lock(const_cast<BTree*>(this));
-    s << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_
-      << std::endl;
+    s << "::BTree : maxLeafEntries_=" << maxLeafEntries_ << ", maxNodeEntries_=" << maxNodeEntries_ << std::endl;
     dump(s, 1, 0);
 }
 
@@ -182,8 +180,7 @@ unsigned long BTree<K, V, S, L>::next(const K& key, const Page& p) const {
 
 
 template <class K, class V, int S, class L>
-bool BTree<K, V, S, L>::insert(unsigned long page, const K& key, const V& value,
-                               std::vector<unsigned long>& path) {
+bool BTree<K, V, S, L>::insert(unsigned long page, const K& key, const V& value, std::vector<unsigned long>& path) {
     Page p;
     loadPage(page, p);
 
@@ -220,8 +217,7 @@ bool BTree<K, V, S, L>::insert(unsigned long page, const K& key, const V& value,
     p.count_++;
     savePage(p);
 
-    while ((p.node_ && (p.count_ == maxNodeEntries_)) ||
-           (!p.node_ && (p.count_ == maxLeafEntries_))) {
+    while ((p.node_ && (p.count_ == maxNodeEntries_)) || (!p.node_ && (p.count_ == maxLeafEntries_))) {
         // std::cout << p << " needs spliting" << std::endl;
 
         if (p.id_ == 1) {

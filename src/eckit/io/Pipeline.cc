@@ -40,10 +40,7 @@ public:
 };
 
 
-PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out) :
-    owner_(owner),
-    in_(in),
-    out_(out) {}
+PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out) : owner_(owner), in_(in), out_(out) {}
 
 void PipelineReader::run() {
     try {

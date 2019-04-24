@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
 #include <cstring>
+#include <sstream>
 
 #include "eckit/log/CodeLocation.h"
 
@@ -24,16 +24,18 @@ std::string CodeLocation::asString() const {
     return oss.str();
 }
 
-eckit::CodeLocation::operator std::string() const { return asString(); }
+eckit::CodeLocation::operator std::string() const {
+    return asString();
+}
 
 CodeLocation::operator bool() const {
     return file_ && ::strlen(file_);
 }
 
 void CodeLocation::print(std::ostream& os) const {
-    if ( file_ ) {
+    if (file_) {
         os << " (" << file_ << " +" << line_;
-        if ( func_ && ::strlen(func_) )
+        if (func_ && ::strlen(func_))
             os << " " << func_;
         os << ")";
     }
@@ -41,5 +43,4 @@ void CodeLocation::print(std::ostream& os) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

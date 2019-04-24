@@ -37,14 +37,12 @@ void Version::run() {
         if (Resource<bool>("-build", false)) {
             Log::info() << "    build type  : " << ECKIT_BUILD_TYPE << std::endl
                         << "    timestamp   : " << ECKIT_BUILD_TIMESTAMP << std::endl
-                        << "    op. system  : " << ECKIT_OS_NAME << " (" << ECKIT_OS_STR << ")"
-                        << std::endl
+                        << "    op. system  : " << ECKIT_OS_NAME << " (" << ECKIT_OS_STR << ")" << std::endl
                         << "    processor   : " << ECKIT_SYS_PROCESSOR << std::endl
-                        << "    c compiler  : " << ECKIT_C_COMPILER_ID << " "
-                        << ECKIT_C_COMPILER_VERSION << std::endl
+                        << "    c compiler  : " << ECKIT_C_COMPILER_ID << " " << ECKIT_C_COMPILER_VERSION << std::endl
                         << "      flags     : " << ECKIT_C_FLAGS << std::endl
-                        << "    c++ compiler: " << ECKIT_CXX_COMPILER_ID << " "
-                        << ECKIT_CXX_COMPILER_VERSION << std::endl
+                        << "    c++ compiler: " << ECKIT_CXX_COMPILER_ID << " " << ECKIT_CXX_COMPILER_VERSION
+                        << std::endl
                         << "      flags     : " << ECKIT_CXX_FLAGS << std::endl;
         }
     }

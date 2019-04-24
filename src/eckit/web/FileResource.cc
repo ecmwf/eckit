@@ -8,45 +8,36 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/web/FileResource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdFile.h"
-#include "eckit/web/FileResource.h"
 #include "eckit/web/HttpBuf.h"
 #include "eckit/web/Url.h"
-
 
 
 namespace eckit {
 
 
+FileResource::FileResource() : HtmlResource("/html") {}
 
-FileResource::FileResource():
-	HtmlResource("/html")
-{
-}
+FileResource::~FileResource() {}
 
-FileResource::~FileResource()
-{
-}
+void FileResource::GET(std::ostream& s, Url& url) {
+    eckit::PathName path("~/http/" + url.name());
 
-void FileResource::GET(std::ostream& s,Url& url)
-{
-	eckit::PathName path("~/http/" + url.name());
+    eckit::AutoStdFile f(path, "r");
+    char line[1024];
 
-    eckit::AutoStdFile f(path,"r");
-	char line[1024];
+    s << HttpBuf::dontEncode;
 
-	s << HttpBuf::dontEncode;
-
-    while(fgets(line,sizeof(line), f)) {
-		s << line;
+    while (fgets(line, sizeof(line), f)) {
+        s << line;
     }
 
-	s << HttpBuf::doEncode;
+    s << HttpBuf::doEncode;
 }
 
 static FileResource fileResourceInstance;
 
 
-} // namespace eckit
-
+}  // namespace eckit

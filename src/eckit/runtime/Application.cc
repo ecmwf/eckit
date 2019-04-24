@@ -8,16 +8,16 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <iostream>
-#include <fstream>
 #include <unistd.h>
+#include <fstream>
+#include <iostream>
 
 #include "eckit/bases/Loader.h"
-#include "eckit/os/Semaphore.h"
 #include "eckit/config/Resource.h"
+#include "eckit/log/TimeStampTarget.h"
+#include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/log/TimeStampTarget.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,7 +40,8 @@ static void end(const char* msg) {
 
     try {
         throw;
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
         std::cout << "!!!!!!!!!!!!!!!!!! ";
         std::cout << msg << " with the exception:" << std::endl;
         std::cout << e.what() << std::endl;
@@ -64,16 +65,12 @@ static void catch_new_handler() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Application& Application::instance()
-{
+Application& Application::instance() {
     return static_cast<Application&>(Main::instance());
 }
 
-Application::Application(int argc, char** argv, const char* homeenv):
-    Main(argc, argv, homeenv),
-    running_(false)
-{
-    reserve_ = new char[20 * 1024]; // In case we runout of memory
+Application::Application(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv), running_(false) {
+    reserve_ = new char[20 * 1024];  // In case we runout of memory
 
     std::set_new_handler(&catch_new_handler);
     std::set_terminate(&catch_terminate);
@@ -118,7 +115,8 @@ void Application::start() {
         running_ = true;
         run();
         running_ = false;
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
         status = 1;
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception terminates " << displayName() << std::endl;
@@ -130,11 +128,9 @@ void Application::start() {
 }
 
 
-
 void Application::stop() {
     ::exit(0);  // or: throw Stop();
 }
-
 
 
 void Application::kill() {
@@ -142,18 +138,17 @@ void Application::kill() {
 }
 
 
-
 void Application::terminate() {
     stop();
 }
-
 
 
 void Application::unique() {
 
     PathName lockFile("~/locks/" + name_);
 
-    if (!lockFile.exists()) lockFile.touch();
+    if (!lockFile.exists())
+        lockFile.touch();
 
     Semaphore* sem = new Semaphore(lockFile);
 
@@ -174,8 +169,8 @@ void Application::unique() {
 time_t Application::uptime() {
 
     TaskInfo& info = Monitor::instance().task(taskID_);
-    time_t uptime = info.start();
-    time_t now = ::time(0);
+    time_t uptime  = info.start();
+    time_t now     = ::time(0);
 
     return now - uptime;
 }
@@ -183,4 +178,4 @@ time_t Application::uptime() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

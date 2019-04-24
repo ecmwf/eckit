@@ -8,41 +8,35 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
-#include "eckit/log/Log.h"
 #include "eckit/io/Select.h"
+#include "eckit/log/Log.h"
 #include "eckit/web/ProxiedTCPServer.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ProxiedTCPServer::ProxiedTCPServer(int port, const std::string& addr):
-    TCPServer(port, addr)
-{
-}
+ProxiedTCPServer::ProxiedTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {}
 
-ProxiedTCPServer::~ProxiedTCPServer()
-{
-}
+ProxiedTCPServer::~ProxiedTCPServer() {}
 
 // Accept a client
 
-TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout, bool* connected)
-{
+TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout, bool* connected) {
     TCPSocket& socket = TCPServer::accept(message, timeout, connected);
 
     // Strip http-header
 
     char c;
-    unsigned long x = 0;
-    unsigned long end = ('\r' << 24L) | ('\n' << 16L ) | ('\r' << 8L) | '\n';
+    unsigned long x   = 0;
+    unsigned long end = ('\r' << 24L) | ('\n' << 16L) | ('\r' << 8L) | '\n';
 
     while (socket.read(&c, 1) == 1) {
 
@@ -63,7 +57,6 @@ void ProxiedTCPServer::print(std::ostream& s) const {
     TCPServer::print(s);
     s << "]";
 }
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

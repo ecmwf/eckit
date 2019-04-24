@@ -18,7 +18,7 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #if 0
 ClassSpec MemoryHandle::classSpec_ = {&DataHandle::classSpec(), "MemoryHandle",};
@@ -197,16 +197,17 @@ std::string MemoryHandle::title() const {
     return "<mem>";
 }
 
-DataHandle* MemoryHandle::clone() const
-{
+DataHandle* MemoryHandle::clone() const {
     if (owned_) {
         MemoryHandle* h = new MemoryHandle(size_, grow_);
         ::memcpy(h->address_, address_, size_);
         return h;
-    } else {
+    }
+    else {
         if (readOnly_) {
             return new MemoryHandle((const void*)address_, size_);
-        } else {
+        }
+        else {
             return new MemoryHandle(address_, size_);
         }
     }
@@ -225,6 +226,6 @@ std::string MemoryHandle::str() const {
     return std::string(address_, address_ + position_);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

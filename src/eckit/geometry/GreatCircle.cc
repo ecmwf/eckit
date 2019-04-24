@@ -17,15 +17,14 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace geometry {
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-static double normalise_longitude(double a, const double& minimum)
-{
+static double normalise_longitude(double a, const double& minimum) {
     while (a < minimum) {
         a += 360;
     }
@@ -45,16 +44,14 @@ static bool pole(const double lat) {
     return types::is_approximately_equal(std::abs(lat), 90.);
 }
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-GreatCircle::GreatCircle(const Point2& Alonlat, const Point2& Blonlat) :
-    A_(Alonlat),
-    B_(Blonlat) {
+GreatCircle::GreatCircle(const Point2& Alonlat, const Point2& Blonlat) : A_(Alonlat), B_(Blonlat) {
     using namespace std;
     using types::is_approximately_equal;
 
-    const bool Apole = pole(A_[1]);
-    const bool Bpole = pole(B_[1]);
+    const bool Apole       = pole(A_[1]);
+    const bool Bpole       = pole(B_[1]);
     const double lon12_deg = normalise_longitude(A_[0] - B_[0], -180);
 
     const bool lon_same     = Apole || Bpole || is_approximately_equal(lon12_deg, 0.);
@@ -72,8 +69,7 @@ GreatCircle::GreatCircle(const Point2& Alonlat, const Point2& Blonlat) :
     crossesPoles_ = lon_same || lon_opposite;
 }
 
-std::vector<double> GreatCircle::latitude(double lon) const
-{
+std::vector<double> GreatCircle::latitude(double lon) const {
     using namespace std;
 
     if (crossesPoles()) {
@@ -86,27 +82,24 @@ std::vector<double> GreatCircle::latitude(double lon) const
     const double lambda2p = degrees_to_radians * (lon - B_[0]);
     const double lambda   = degrees_to_radians * normalise_longitude(B_[0] - A_[0], -180);
 
-    double lat = atan( (tan(lat2) * sin(lambda1p) - tan(lat1) * sin(lambda2p)) /
-                       (sin(lambda)) );
-    return { radians_to_degrees * lat };
+    double lat = atan((tan(lat2) * sin(lambda1p) - tan(lat1) * sin(lambda2p)) / (sin(lambda)));
+    return {radians_to_degrees * lat};
 }
 
-std::vector<double> GreatCircle::longitude(double lat) const
-{
+std::vector<double> GreatCircle::longitude(double lat) const {
     using namespace std;
     using types::is_approximately_equal;
 
     if (crossesPoles()) {
         const double lon = pole(A_[1]) ? B_[0] : A_[0];
-        return pole(lat) ? vector<double>{ lon }
-                         : vector<double>{ lon, lon + 180 };
+        return pole(lat) ? vector<double>{lon} : vector<double>{lon, lon + 180};
     }
 
     const double lon12 = degrees_to_radians * normalise_longitude(A_[0] - B_[0], -180);
-    const double lon1 = degrees_to_radians * A_[0];
-    const double lat1 = degrees_to_radians * A_[1];
-    const double lat2 = degrees_to_radians * B_[1];
-    const double lat3 = degrees_to_radians * lat;
+    const double lon1  = degrees_to_radians * A_[0];
+    const double lat1  = degrees_to_radians * A_[1];
+    const double lat2  = degrees_to_radians * B_[1];
+    const double lat3  = degrees_to_radians * lat;
 
     const double X = sin(lat1) * cos(lat2) * sin(lon12);
     const double Y = sin(lat1) * cos(lat2) * cos(lon12) - cos(lat1) * sin(lat2);
@@ -116,32 +109,29 @@ std::vector<double> GreatCircle::longitude(double lat) const
     }
 
     const double lon0 = lon1 + atan2(Y, X);
-    const double C = cos(lat1) * cos(lat2) * tan(lat3) * sin(lon12) / sqrt(X * X + Y * Y);
+    const double C    = cos(lat1) * cos(lat2) * tan(lat3) * sin(lon12) / sqrt(X * X + Y * Y);
 
     if (is_approximately_equal(C, -1.)) {
-        return { radians_to_degrees * (lon0 + M_PI) };
+        return {radians_to_degrees * (lon0 + M_PI)};
     }
 
     if (is_approximately_equal(C, 1.)) {
-        return { radians_to_degrees * lon0 };
+        return {radians_to_degrees * lon0};
     }
 
     if (-1 < C && C < 1) {
         const double dlon = acos(C);
-        return { radians_to_degrees * (lon0 - dlon + 2 * M_PI),
-                 radians_to_degrees * (lon0 + dlon) };
+        return {radians_to_degrees * (lon0 - dlon + 2 * M_PI), radians_to_degrees * (lon0 + dlon)};
     }
 
     return {};
 }
 
-bool GreatCircle::crossesPoles() const
-{
+bool GreatCircle::crossesPoles() const {
     return crossesPoles_;
 }
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace geometry
-} // namespace eckit
-
+}  // namespace geometry
+}  // namespace eckit

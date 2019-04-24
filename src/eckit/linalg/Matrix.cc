@@ -20,52 +20,31 @@ namespace linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Matrix::Matrix() :
-    array_(0),
-    rows_(0),
-    cols_(0),
-    own_(false) {
-}
+Matrix::Matrix() : array_(0), rows_(0), cols_(0), own_(false) {}
 
 
-
-Matrix::Matrix(Size rows, Size cols) :
-    array_(new Scalar[rows*cols]),
-    rows_(rows),
-    cols_(cols),
-    own_(true) {
-    ASSERT(size()>0);
+Matrix::Matrix(Size rows, Size cols) : array_(new Scalar[rows * cols]), rows_(rows), cols_(cols), own_(true) {
+    ASSERT(size() > 0);
     ASSERT(array_);
 }
 
 
-
-Matrix::Matrix(Scalar* array, Size rows, Size cols) :
-    array_(array),
-    rows_(rows),
-    cols_(cols),
-    own_(false) {
-    ASSERT(size()>0);
+Matrix::Matrix(Scalar* array, Size rows, Size cols) : array_(array), rows_(rows), cols_(cols), own_(false) {
+    ASSERT(size() > 0);
     ASSERT(array_);
 }
 
 
-
-Matrix::Matrix(Stream& stream) :
-    array_(0),
-    rows_(0),
-    cols_(0),
-    own_(false) {
+Matrix::Matrix(Stream& stream) : array_(0), rows_(0), cols_(0), own_(false) {
     Size rows, cols;
     stream >> rows;
     stream >> cols;
     resize(rows, cols);
 
-    ASSERT(size()>0);
+    ASSERT(size() > 0);
     ASSERT(array_);
-    stream.readBlob(array_, (rows*cols)*sizeof(Scalar));
+    stream.readBlob(array_, (rows * cols) * sizeof(Scalar));
 }
-
 
 
 Matrix::Matrix(const Matrix& other) :
@@ -73,19 +52,17 @@ Matrix::Matrix(const Matrix& other) :
     rows_(other.rows_),
     cols_(other.cols_),
     own_(true) {
-    ASSERT(size()>0);
+    ASSERT(size() > 0);
     ASSERT(array_);
     ::memcpy(array_, other.array_, size() * sizeof(Scalar));
 }
 
 
-
 Matrix::~Matrix() {
     if (own_) {
-        delete [] array_;
+        delete[] array_;
     }
 }
-
 
 
 Matrix& Matrix::operator=(const Matrix& other) {
@@ -97,19 +74,17 @@ Matrix& Matrix::operator=(const Matrix& other) {
 }
 
 
-
 void Matrix::swap(Matrix& other) {
     std::swap(array_, other.array_);
-    std::swap(rows_,  other.rows_);
-    std::swap(cols_,  other.cols_);
-    std::swap(own_,   other.own_);
+    std::swap(rows_, other.rows_);
+    std::swap(cols_, other.cols_);
+    std::swap(own_, other.own_);
 }
-
 
 
 void Matrix::resize(Size rows, Size cols) {
     // avoid reallocation if memory is the same
-    if (size() != rows*cols) {
+    if (size() != rows * cols) {
         Matrix m(rows, cols);
         swap(m);
     }
@@ -118,13 +93,11 @@ void Matrix::resize(Size rows, Size cols) {
 }
 
 
-
 void Matrix::setZero() {
-    ASSERT(size()>0);
+    ASSERT(size() > 0);
     ASSERT(array_);
-    ::memset(array_, 0, size()*sizeof(Scalar));
+    ::memset(array_, 0, size() * sizeof(Scalar));
 }
-
 
 
 void Matrix::fill(Scalar value) {
@@ -134,13 +107,11 @@ void Matrix::fill(Scalar value) {
 }
 
 
-
 void Matrix::encode(Stream& stream) const {
-  stream << rows_;
-  stream << cols_;
-  stream.writeBlob(const_cast<Scalar*>(array_), rows_*cols_*sizeof(Scalar));
+    stream << rows_;
+    stream << cols_;
+    stream.writeBlob(const_cast<Scalar*>(array_), rows_ * cols_ * sizeof(Scalar));
 }
-
 
 
 Stream& operator<<(Stream& stream, const Matrix& matrix) {

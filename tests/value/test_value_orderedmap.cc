@@ -194,10 +194,8 @@ CASE("Test comparisons using OrderedMap") {
 
         EXPECT(om2.compare(om1) == 0);  // Keys are equal and inserted in same order
         EXPECT(om1.compare(om2) == 0);  // Keys are equal and inserted in same order
-        EXPECT(om1.compare(om3) ==
-               1);  // Keys are equal but inserted in wrong order, values also in wrong order
-        EXPECT(om1.compare(om4) ==
-               1);  // Keys are equal but inserted in wrong order, values in correct order
+        EXPECT(om1.compare(om3) == 1);  // Keys are equal but inserted in wrong order, values also in wrong order
+        EXPECT(om1.compare(om4) == 1);  // Keys are equal but inserted in wrong order, values in correct order
     }
 }
 
@@ -246,8 +244,7 @@ CASE("Test indexing for OrderedMap") {
     EXPECT(om[123].as<long long>() == 1234);
     EXPECT(om["abc"].as<std::string>() == "abcd");
     EXPECT(om[std::string("abc")].as<std::string>() == "abcd");
-    EXPECT(om[Value(true)].as<bool>() ==
-           false);  // indexing without wrapping "true" as "Value(true)" does not work
+    EXPECT(om[Value(true)].as<bool>() == false);  // indexing without wrapping "true" as "Value(true)" does not work
 
     EXPECT(om[Value(123)].as<long long>() == 1234);
     EXPECT(om[Value("abc")].as<std::string>() == "abcd");

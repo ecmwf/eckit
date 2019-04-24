@@ -25,7 +25,7 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 std::vector<T> make_vector(const T& t1, const T& t2) {
@@ -43,7 +43,7 @@ std::vector<T> make_vector(const T& t1, const T& t2, const T& t3) {
     return result;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_configuration_interface") {
     bool value_bool                            = bool(true);
@@ -60,10 +60,9 @@ CASE("test_configuration_interface") {
     std::vector<size_t> value_arr_size_t       = make_vector(std::size_t{6}, std::size_t{7});
     std::vector<float> value_arr_float         = make_vector(1.234567f, 2.345678f);
     std::vector<double> value_arr_double       = make_vector(1.234567, 2.345678);
-    std::vector<std::string> value_arr_string =
-        make_vector(std::string("hello"), std::string("world"));
-    std::int32_t value_int32 = value_int;
-    std::int64_t value_int64 = value_long_long;
+    std::vector<std::string> value_arr_string  = make_vector(std::string("hello"), std::string("world"));
+    std::int32_t value_int32                   = value_int;
+    std::int64_t value_int64                   = value_long_long;
     std::vector<std::int32_t> value_arr_int32{4, 5};
     std::vector<std::int64_t> value_arr_int64{4ll, 5ll};
 
@@ -227,7 +226,7 @@ CASE("test_configuration_interface") {
     EXPECT(conf.getInt64Vector("missing", value_arr_int64) == value_arr_int64);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 CASE("test_json_configuration") {
@@ -282,7 +281,7 @@ CASE("test_json_configuration") {
     EXPECT(office == 3);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_local_configuration") {
     LocalConfiguration local;
@@ -342,7 +341,7 @@ CASE("Hash a configuration") {
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit

@@ -14,8 +14,8 @@
 #include "eckit/runtime/Main.h"
 
 #include "eckit/log/Log.h"
-#include "eckit/types/Types.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/testing/Test.h"
 
@@ -28,7 +28,7 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 /// Test the options parser
@@ -38,26 +38,26 @@ namespace test {
 
 namespace {
 
-    /// A local function to satisfy the CmdArg details
-    void usage(const std::string&) {
-        // Empty
-    }
-
-    void init(int nargs, const char* global_args[]) {
-        Main::initialise(nargs, const_cast<char**>(global_args));
-        CmdArgs(&usage, 1, 0, true);
-    }
-
-    void init(int nargs, const char* global_args[], std::vector<Option*>& options, int args_count = 0) {
-        Main::initialise(nargs, const_cast<char**>(global_args));
-        CmdArgs(&usage, options, args_count, 0, true);
-    }
+/// A local function to satisfy the CmdArg details
+void usage(const std::string&) {
+    // Empty
 }
+
+void init(int nargs, const char* global_args[]) {
+    Main::initialise(nargs, const_cast<char**>(global_args));
+    CmdArgs(&usage, 1, 0, true);
+}
+
+void init(int nargs, const char* global_args[], std::vector<Option*>& options, int args_count = 0) {
+    Main::initialise(nargs, const_cast<char**>(global_args));
+    CmdArgs(&usage, options, args_count, 0, true);
+}
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE >= 1 and TESTCASE <= 3
-CASE( "test_eckit_option_cmdargs_numbered_args_required" ) {
+CASE("test_eckit_option_cmdargs_numbered_args_required") {
     // Argument parser will succeed when passed exactly one unnamed argument.
     // Note that argument 0 is always the executable name.
 
@@ -81,7 +81,7 @@ CASE( "test_eckit_option_cmdargs_numbered_args_required" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE >= 4 and TESTCASE <= 6
-CASE( "test_eckit_option_cmdargs_numbered_args_required_with_options" ) {
+CASE("test_eckit_option_cmdargs_numbered_args_required_with_options") {
     std::vector<Option*> options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
 
@@ -108,7 +108,7 @@ CASE( "test_eckit_option_cmdargs_numbered_args_required_with_options" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 7
-CASE( "test_eckit_option_cmdargs_simple_argument_string" ) {
+CASE("test_eckit_option_cmdargs_simple_argument_string") {
     // Set up he parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -132,7 +132,7 @@ CASE( "test_eckit_option_cmdargs_simple_argument_string" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 8
-CASE( "test_eckit_option_cmdargs_simple_argument_integer" ) {
+CASE("test_eckit_option_cmdargs_simple_argument_integer") {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -156,7 +156,7 @@ CASE( "test_eckit_option_cmdargs_simple_argument_integer" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 9
-CASE( "test_eckit_option_cmdargs_simple_argument_missing" ) {
+CASE("test_eckit_option_cmdargs_simple_argument_missing") {
     std::vector<Option*> options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<long>("arg2", ""));
@@ -169,7 +169,7 @@ CASE( "test_eckit_option_cmdargs_simple_argument_missing" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 10
-CASE( "test_eckit_option_cmdargs_integer_vector" ) {
+CASE("test_eckit_option_cmdargs_integer_vector") {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -195,7 +195,7 @@ CASE( "test_eckit_option_cmdargs_integer_vector" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 11
-CASE( "test_eckit_option_cmdargs_double_vector" ) {
+CASE("test_eckit_option_cmdargs_double_vector") {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
     std::vector<Option*> options;
@@ -210,10 +210,10 @@ CASE( "test_eckit_option_cmdargs_double_vector" ) {
     std::vector<double> tmpv;
     args.get("arg", tmpv);
     EXPECT(tmpv.size() == 4);
-    EXPECT(is_approximately_equal( tmpv[0], -123.45, 1.0e-8 ) );
-    EXPECT(is_approximately_equal( tmpv[1], 67.8, 1.0e-8 ) );
-    EXPECT(is_approximately_equal( tmpv[2], static_cast<double>(90), 1.0e-8 ) );
-    EXPECT(is_approximately_equal( tmpv[3], static_cast<double>(-123), 1.0e-8 ) );
+    EXPECT(is_approximately_equal(tmpv[0], -123.45, 1.0e-8));
+    EXPECT(is_approximately_equal(tmpv[1], 67.8, 1.0e-8));
+    EXPECT(is_approximately_equal(tmpv[2], static_cast<double>(90), 1.0e-8));
+    EXPECT(is_approximately_equal(tmpv[3], static_cast<double>(-123), 1.0e-8));
 
     EXPECT(tmpv == args.getDoubleVector("arg"));
 }
@@ -222,7 +222,7 @@ CASE( "test_eckit_option_cmdargs_double_vector" ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 #if TESTCASE == 12
-CASE( "test_eckit_option_cmdargs_vector_size_check" ) {
+CASE("test_eckit_option_cmdargs_vector_size_check") {
     std::vector<Option*> options;
     options.push_back(new VectorOption<long>("arg", "", 4));
 
@@ -231,13 +231,11 @@ CASE( "test_eckit_option_cmdargs_vector_size_check" ) {
 }
 #endif
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv, false );  // will not call main::initialize
+int main(int argc, char** argv) {
+    return run_tests(argc, argv, false);  // will not call main::initialize
 }
-

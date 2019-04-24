@@ -16,8 +16,7 @@
 
 namespace eckit {
 
-int fdatasync(int fd)
-{
+int fdatasync(int fd) {
 #if defined(ECKIT_HAVE_FDATASYNC)
     // usually available on Linux, but not Darwin (macosx) and xBSD
     // syncs all the data but avoids some of the metadata e.g. mtime
@@ -30,7 +29,7 @@ int fdatasync(int fd)
     // last resort, but note this is slower than ::fdatasync and less strong as F_FULLSYNC
     int ret = ::fsync(fd);
 #else
-# error "Operating system does not support fdatasync, F_FULLSYNC or fsync"
+#error "Operating system does not support fdatasync, F_FULLSYNC or fsync"
 #endif
     return ret;
 }

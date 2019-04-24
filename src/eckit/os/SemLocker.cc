@@ -49,8 +49,8 @@ SemLocker::SemLocker(int sem, const PathName& path, int maxWaitLock) :
             if (save == EINTR && retry < maxWaitLock_) {
                 continue;
             }
-            eckit::Log::warning() << "SharedMemoryLoader: Failed to acquire exclusive lock on "
-                                  << path_ << " " << eckit::Log::syserr << std::endl;
+            eckit::Log::warning() << "SharedMemoryLoader: Failed to acquire exclusive lock on " << path_ << " "
+                                  << eckit::Log::syserr << std::endl;
 
             // sprintf(message,"ERR: sharedmem:semop:lock(%s)",path);
             if (retry >= maxWaitLock_) {
@@ -80,8 +80,8 @@ SemLocker::~SemLocker() {
                 continue;
             }
 
-            eckit::Log::warning() << "SharedMemoryLoader: Failed to realease exclusive lock on "
-                                  << path_ << " " << eckit::Log::syserr << std::endl;
+            eckit::Log::warning() << "SharedMemoryLoader: Failed to realease exclusive lock on " << path_ << " "
+                                  << eckit::Log::syserr << std::endl;
 
             if (retry >= maxWaitLock_) {
                 std::ostringstream os;

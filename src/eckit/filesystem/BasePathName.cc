@@ -15,4 +15,4 @@ namespace eckit {
 BasePathName::~BasePathName() {}
 
 
-} // namespace eckit
+}  // namespace eckit

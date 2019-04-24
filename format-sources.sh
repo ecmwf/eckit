@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Usage: find . -iname "*.h" -or -iname "*.cc" -exec ./format-sources.sh {} \;
+
 for f in $@
 do
     # apply clang-format file .clang-format in top dir

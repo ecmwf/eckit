@@ -14,7 +14,9 @@
 #ifndef eckit_io_EasyCURL_h
 #define eckit_io_EasyCURL_h
 
-#include "eckit/eckit_config.h"
+#include <map>
+
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 
 

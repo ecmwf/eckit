@@ -9,31 +9,24 @@
  */
 
 
-#include "eckit/web/JavaAgent.h"
 #include "eckit/web/JavaUser.h"
+#include "eckit/web/JavaAgent.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-JavaUser::JavaUser(TCPSocket& socket):
-	NetUser(socket)
-{
+JavaUser::JavaUser(TCPSocket& socket) : NetUser(socket) {}
+
+JavaUser::~JavaUser() {}
+
+void JavaUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
+    JavaAgent::serve(s, in, out);
 }
 
-JavaUser::~JavaUser()
-{
-}
+//----------------------------------------------------------------------------------------------------------------------
 
-void JavaUser::serve(eckit::Stream& s, std::istream& in, std::ostream& out)
-{
-	JavaAgent::serve(s,in,out);
-}
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
-
+}  // namespace eckit

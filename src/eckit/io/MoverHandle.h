@@ -14,85 +14,32 @@
 #ifndef eckit_filesystem_MoverHandle_h
 #define eckit_filesystem_MoverHandle_h
 
+#include <memory>
+
 #include "eckit/io/DataHandle.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/net/TCPSocket.h"
-#include "eckit/memory/ScopedPtr.h"
-
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class MoverHandle : public DataHandle {
 public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
-
 	MoverHandle(DataHandle*);
 
-// -- Destructor
-
-	virtual ~MoverHandle();
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
+    virtual ~MoverHandle();
 
 	DataHandle& handle() { return *handle_; }
 	void fail(const std::string&);
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
 
-
-// -- Members
-
-    eckit::ScopedPtr<DataHandle> handle_;
+    std::unique_ptr<DataHandle> handle_;
     TCPSocket data_;
     bool fail_;
     std::string error_;
     Mutex mutex_;
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
 
     virtual Length openForRead() ;
     virtual void openForWrite(const Length&);
@@ -103,17 +50,6 @@ private:
     virtual std::string title() const;
 
 	void print(std::ostream&) const;
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const MoverHandle& p)
-	//	{ p.print(s); return s; }
 
 };
 

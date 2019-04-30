@@ -8,44 +8,40 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/ETA.h"
+#include "ETA.h"
 
-//-----------------------------------------------------------------------------
+#include <iomanip>
+#include <sstream>
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ETA::ETA(double ETA):
-	ETA_(ETA)
-{
+ETA::ETA(double ETA) : ETA_(ETA) {}
+
+ETA::ETA(const ::timeval& time) : ETA_(time.tv_sec + time.tv_usec / 1000000.0) {}
+
+std::ostream& operator<<(std::ostream& s, const ETA& sec) {
+    double t = sec.ETA_;
+    long n   = t;
+
+    long hour = n / (60 * 60);
+    n %= (60 * 60);
+    long minutes = n / 60;
+    n %= 60;
+
+    s << hour << ':' << std::setfill('0') << std::setw(2) << minutes << ':' << std::setfill('0') << std::setw(2) << n
+      << std::setfill(' ');
+
+    return s;
 }
 
-ETA::ETA(const ::timeval& time):
-	ETA_(time.tv_sec + time.tv_usec / 1000000.0)
-{
-}
-
-std::ostream& operator<<(std::ostream& s,const ETA&  sec)
-{
-	double t = sec.ETA_;
-    long n  = t;
-
-    long hour = n / (60 * 60); n %= (60 * 60);
-    long minutes = n / 60 ; n %= 60 ;
-
-    s << hour << ':' << std::setfill('0') << std::setw(2) << minutes << ':'  << std::setfill('0') << std::setw(2) << n << std::setfill(' ');
-
-	return s;
-}
-
-ETA::operator std::string() const
-{
+ETA::operator std::string() const {
     std::ostringstream s;
     s << *this;
     return s.str();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

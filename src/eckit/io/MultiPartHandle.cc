@@ -9,40 +9,38 @@
  */
 
 #include "eckit/io/MultiPartHandle.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/types/Types.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-MultiPartHandle::MultiPartHandle(DataHandle* handle, const Length& size, MultiPartHandle* prev):
+MultiPartHandle::MultiPartHandle(DataHandle* handle, const Length& size, MultiPartHandle* prev) :
     handle_(handle),
     size_(size),
     prev_(prev),
-    next_(0),
+    next_(nullptr),
     position_(0),
     start_(0),
     opened_(false),
-    opens_(0)
-{
+    opens_(0) {
     if (prev_) {
-        ASSERT(prev_->next_ == 0);
+        ASSERT(prev_->next_ == nullptr);
         prev_->next_ = this;
-        start_ = prev_->start_ + prev_->size_;
+        start_       = prev_->start_ + prev_->size_;
     }
 }
 
-MultiPartHandle::~MultiPartHandle()
-{
-    if (next_ == 0) {
+MultiPartHandle::~MultiPartHandle() {
+    if (next_ == nullptr) {
         delete handle_;
     }
 }
 
-Length MultiPartHandle::openForRead()
-{
+Length MultiPartHandle::openForRead() {
     ASSERT(!opened_);
     opened_ = true;
 
@@ -52,19 +50,16 @@ Length MultiPartHandle::openForRead()
     return estimate();
 }
 
-void MultiPartHandle::openForWrite(const Length& length)
-{
+void MultiPartHandle::openForWrite(const Length&) {
     NOTIMP;
 }
 
-void MultiPartHandle::openForAppend(const Length& )
-{
+void MultiPartHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
 
-long MultiPartHandle::read(void* buffer, long length)
-{
+long MultiPartHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     size_t left = size_ - position_;
     size_t size = std::min(left, size_t(length));
@@ -75,35 +70,28 @@ long MultiPartHandle::read(void* buffer, long length)
     return size;
 }
 
-long MultiPartHandle::write(const void* buffer, long length)
-{
+long MultiPartHandle::write(const void*, long) {
     NOTIMP;
 }
 
-void MultiPartHandle::close()
-{
+void MultiPartHandle::close() {
     ASSERT(opened_);
     opened_ = false;
     first().closeHandle();
 }
 
-void MultiPartHandle::flush()
-{
+void MultiPartHandle::flush() {
     NOTIMP;
 }
 
-void MultiPartHandle::rewind()
-{
+void MultiPartHandle::rewind() {
     seek(0);
 }
 
-void MultiPartHandle::print(std::ostream& s) const
-{
-
+void MultiPartHandle::print(std::ostream& s) const {
     if (format(s) == Log::compactFormat)
         s << "MultiPartHandle";
-    else
-    {
+    else {
         s << "MultiPartHandle[";
         // for (size_t i = 0; i < datahandles_.size(); i++)
         // {
@@ -117,45 +105,37 @@ void MultiPartHandle::print(std::ostream& s) const
     }
 }
 
-bool MultiPartHandle::merge(DataHandle* other)
-{
+bool MultiPartHandle::merge(DataHandle*) {
     return false;
 }
 
-Length MultiPartHandle::estimate()
-{
+Length MultiPartHandle::estimate() {
     return size_;
 }
 
-void MultiPartHandle::restartReadFrom(const Offset& from)
-{
+void MultiPartHandle::restartReadFrom(const Offset& from) {
     Log::warning() << *this << " restart read from " << from << std::endl;
     ASSERT(opened_);
     seek(from);
 }
 
-void MultiPartHandle::toRemote(Stream &s) const
-{
+void MultiPartHandle::toRemote(Stream&) const {
     NOTIMP;
 }
 
-void MultiPartHandle::toLocal(Stream &s) const
-{
+void MultiPartHandle::toLocal(Stream&) const {
     NOTIMP;
 }
 
-DataHandle* MultiPartHandle::toLocal()
-{
+DataHandle* MultiPartHandle::toLocal() {
     NOTIMP;
 }
 
-void MultiPartHandle::cost(std::map<std::string, Length>& c, bool read) const
-{
+void MultiPartHandle::cost(std::map<std::string, Length>&, bool) const {
     NOTIMP;
 }
 
-bool MultiPartHandle::moveable() const
-{
+bool MultiPartHandle::moveable() const {
     return false;
 }
 
@@ -165,22 +145,20 @@ Offset MultiPartHandle::position() {
 
 Offset MultiPartHandle::seek(const Offset& offset) {
     position_ = offset;
-    if(position_ > size_) {
+    if (position_ > size_) {
         position_ = (unsigned long long)size_;
     }
 
     ASSERT(handle_->seek(start_ + position_) == Offset(start_ + position_));
     return position_;
-
 }
 
-void MultiPartHandle::skip(const Length &length) {
+void MultiPartHandle::skip(const Length& length) {
     seek(position_ + length);
 }
 
 
-std::string MultiPartHandle::title() const
-{
+std::string MultiPartHandle::title() const {
     std::ostringstream os;
     os << "[";
     os << handle_->title();
@@ -194,40 +172,39 @@ std::string MultiPartHandle::title() const
     return os.str();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-bool MultiPartHandle::compress(bool sorted) {
+bool MultiPartHandle::compress(bool) {
     return false;
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 MultiPartHandle& MultiPartHandle::first() {
     MultiPartHandle* h = this;
-    while(h->prev_) {
+    while (h->prev_) {
         h = h->prev_;
     }
     return *h;
 }
 
 void MultiPartHandle::openHandle() {
-    ASSERT(prev_ == 0);
-    if(opens_ == 0) {
+    ASSERT(prev_ == nullptr);
+    if (opens_ == 0) {
         handle_->openForRead();
     }
     opens_++;
 }
 
 void MultiPartHandle::closeHandle() {
-    ASSERT(prev_ == 0);
+    ASSERT(prev_ == nullptr);
     ASSERT(opens_ > 0);
     opens_--;
-    if(opens_ == 0) {
+    if (opens_ == 0) {
         handle_->close();
     }
 }
 
 
-
-} // namespace eckit
+}  // namespace eckit

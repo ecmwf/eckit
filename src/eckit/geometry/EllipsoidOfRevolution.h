@@ -11,8 +11,6 @@
 #ifndef EllipsoidOfRevolution_H
 #define EllipsoidOfRevolution_H
 
-#include "eckit/exception/Exceptions.h"
-
 //------------------------------------------------------------------------------------------------------
 
 namespace eckit {
@@ -26,16 +24,14 @@ class Point3;
 //------------------------------------------------------------------------------------------------------
 
 struct EllipsoidOfRevolution {
-
     // Convert elliptic coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radiusA, const double& radiusB, const Point2& Alonlat, Point3& B, double height = 0.);
-
+    static void convertSphericalToCartesian(const double& radiusA, const double& radiusB,
+                                            const Point2& Alonlat, Point3& B, double height = 0.);
 };
 
 //------------------------------------------------------------------------------------------------------
 
-} // namespace geometry
-} // namespace eckit
+}  // namespace geometry
+}  // namespace eckit
 
 #endif
-

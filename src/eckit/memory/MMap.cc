@@ -8,16 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #include "eckit/eckit.h"
-#include "eckit/memory/MMap.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/BigNum.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/memory/MMap.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/BigNum.h"
 
 namespace eckit {
 
@@ -32,8 +32,7 @@ static eckit::StaticMutex mutex_;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void* MMap::mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset)
-{
+void* MMap::mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
     void* r = ::mmap(addr, length, prot, flags, fd, offset);
     if (r != MAP_FAILED) {
         AutoLock<StaticMutex> lock(mutex_);
@@ -47,8 +46,7 @@ void* MMap::mmap(void* addr, size_t length, int prot, int flags, int fd, off_t o
     return r;
 }
 
-int MMap::munmap(void* addr, size_t length)
-{
+int MMap::munmap(void* addr, size_t length) {
     int r = ::munmap(addr, length);
     if (r == 0) {
         AutoLock<StaticMutex> lock(mutex_);
@@ -63,11 +61,10 @@ int MMap::munmap(void* addr, size_t length)
 void MMap::info(size_t& count, size_t& size) {
     AutoLock<StaticMutex> lock(mutex_);
     count = count_;
-    size = length_;
+    size  = length_;
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

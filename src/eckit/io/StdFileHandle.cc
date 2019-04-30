@@ -10,6 +10,7 @@
 
 
 #include "eckit/io/StdFileHandle.h"
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
@@ -17,56 +18,41 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-void StdFileHandle::print(std::ostream& s) const
-{
-	s << "StdFileHandle[" << "TODO" << ']';
-	//s << "StdFileHandle[fd=" << fd_ << ']';
+void StdFileHandle::print(std::ostream& s) const {
+    s << "StdFileHandle["
+      << "TODO" << ']';
+    // s << "StdFileHandle[fd=" << fd_ << ']';
 }
 
-void StdFileHandle::encode(Stream& s) const
-{
-	NOTIMP;
+void StdFileHandle::encode(Stream& s) const {
+    NOTIMP;
 }
 
-StdFileHandle::StdFileHandle(FILE* f):
-	f_(f)
-{
+StdFileHandle::StdFileHandle(FILE* f) : f_(f) {}
+
+StdFileHandle::~StdFileHandle() {}
+
+Length StdFileHandle::openForRead() {
+    return 0;
 }
 
-StdFileHandle::~StdFileHandle()
-{
+void StdFileHandle::openForWrite(const Length&) {}
+
+void StdFileHandle::openForAppend(const Length&) {}
+
+long StdFileHandle::read(void* buffer, long length) {
+    size_t n = ::fread(buffer, 1, length, f_);
+    return n;
 }
 
-Length StdFileHandle::openForRead()
-{
-	return 0;
+long StdFileHandle::write(const void* buffer, long length) {
+    return ::fwrite(buffer, 1, length, f_);
 }
 
-void StdFileHandle::openForWrite(const Length&)
-{
-}
-
-void StdFileHandle::openForAppend(const Length&)
-{
-}
-
-long StdFileHandle::read(void* buffer, long length)
-{
-	size_t n = ::fread(buffer, 1, length, f_);
-	return n;
-}
-
-long StdFileHandle::write(const void* buffer, long length)
-{
-	return ::fwrite(buffer, 1, length, f_);
-}
-
-void StdFileHandle::close()
-{
-	// May be we should close fd_ here ?
+void StdFileHandle::close() {
+    // May be we should close fd_ here ?
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

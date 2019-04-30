@@ -9,27 +9,23 @@
  */
 
 #include <unistd.h>
+#include <cstring>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/log/Log.h"
-
-#include "eckit/thread/AutoLock.h"
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Channel.h"
-#include "eckit/log/UserChannel.h"
-#include "eckit/log/StatusTarget.h"
+#include "eckit/log/FileTarget.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/MessageTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/log/FileTarget.h"
-
+#include "eckit/log/StatusTarget.h"
+#include "eckit/log/UserChannel.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
-
-#include "eckit/exception/Exceptions.h"
-
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
@@ -39,8 +35,7 @@ namespace eckit {
 
 /* To use with GNU libc strerror_r */
 
-static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
-{
+static void handle_strerror_r(std::ostream& s, int e, char[], char* p) {
     if (p) {
         s << " (" << p << ")";
     }
@@ -58,10 +53,9 @@ static void handle_strerror_r(std::ostream& s, int e, char[], char* p )
  * glibc defines _GNU_SOURCE and implements a non-XSI compliant strerror_r
  */
 
-static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
-{
-    if ( hs == 0 ) {
-        s << " (" << es << ") " ;
+static void handle_strerror_r(std::ostream& s, int e, char es[], int hs) {
+    if (hs == 0) {
+        s << " (" << es << ") ";
     }
     else {
         s << " (errno = " << e << ") ";
@@ -74,9 +68,9 @@ static void handle_strerror_r(std::ostream& s, int e, char es[], int hs )
 
 /* This uses the deprecated sys_errlist[] error arrays */
 
-static void handle_strerror_r(std::ostream& s, int e, ... ) {
+static void handle_strerror_r(std::ostream& s, int e, ...) {
     if (e < sys_nerr)
-        s << " (" << sys_errlist[e] << ") " ;
+        s << " (" << sys_errlist[e] << ") ";
     else
         s << " (errno = " << e << ") ";
 }
@@ -86,29 +80,22 @@ static void handle_strerror_r(std::ostream& s, int e, ... ) {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct CreateStatusChannel {
-    Channel* operator()() {
-        return new Channel(new StatusTarget());
-    }
+    Channel* operator()() { return new Channel(new StatusTarget()); }
 };
 
-std::ostream& Log::status()
-{
+std::ostream& Log::status() {
     static ThreadSingleton<Channel, CreateStatusChannel> x;
     return x.instance();
 }
 
 struct CreateMessageChannel {
-    Channel* operator()() {
-        return new Channel(new MessageTarget());
-    }
+    Channel* operator()() { return new Channel(new MessageTarget()); }
 };
 
-std::ostream& Log::message()
-{
+std::ostream& Log::message() {
     static ThreadSingleton<Channel, CreateMessageChannel> x;
     return x.instance();
 }
-
 
 
 struct CreateLogChannel {
@@ -130,8 +117,7 @@ struct CreateInfoChannel : public CreateLogChannel {
     virtual Channel* createChannel() { return new Channel(Main::instance().createInfoLogTarget()); }
 };
 
-Channel& Log::info()
-{
+Channel& Log::info() {
     if (!Main::ready()) {
         static Channel empty(new PrefixTarget("PRE-MAIN-INFO", new OStreamTarget(std::cout)));
         return empty;
@@ -144,8 +130,7 @@ struct CreateErrorChannel : public CreateLogChannel {
     virtual Channel* createChannel() { return new Channel(Main::instance().createErrorLogTarget()); }
 };
 
-Channel& Log::error()
-{
+Channel& Log::error() {
     if (!Main::ready()) {
         static Channel empty(new PrefixTarget("PRE-MAIN-ERROR", new OStreamTarget(std::cout)));
         return empty;
@@ -158,8 +143,7 @@ struct CreateWarningChannel : public CreateLogChannel {
     virtual Channel* createChannel() { return new Channel(Main::instance().createWarningLogTarget()); }
 };
 
-Channel& Log::warning()
-{
+Channel& Log::warning() {
     if (!Main::ready()) {
         static Channel empty(new PrefixTarget("PRE-MAIN-WARNING", new OStreamTarget(std::cout)));
         return empty;
@@ -169,13 +153,10 @@ Channel& Log::warning()
 }
 
 struct CreateDebugChannel : public CreateLogChannel {
-    virtual Channel* createChannel() {
-        return new Channel(Main::instance().createDebugLogTarget());
-    }
+    virtual Channel* createChannel() { return new Channel(Main::instance().createDebugLogTarget()); }
 };
 
-Channel& Log::debug()
-{
+Channel& Log::debug() {
     if (!Main::ready()) {
 
 
@@ -202,8 +183,7 @@ Channel& Log::debug()
 }
 
 
-std::ostream& Log::panic()
-{
+std::ostream& Log::panic() {
     try {
         return Log::error();
     }
@@ -213,38 +193,34 @@ std::ostream& Log::panic()
 }
 
 
-UserChannel& Log::user()
-{
+UserChannel& Log::user() {
     static ThreadSingleton<UserChannel> x;
     return x.instance();
 }
 
-std::ostream& Log::userInfo()
-{
+std::ostream& Log::userInfo() {
     UserChannel& u = user();
     u.msgType(UserChannel::INFO);
     return u;
 }
 
-std::ostream& Log::userError()
-{
+std::ostream& Log::userError() {
     UserChannel& u = user();
     u.msgType(UserChannel::ERROR);
     return u;
 }
 
-std::ostream& Log::userWarning()
-{
+std::ostream& Log::userWarning() {
     UserChannel& u = user();
     u.msgType(UserChannel::WARN);
     return u;
 }
 
-void Log::notifyClient(const std::string& msg)
-{
+void Log::notifyClient(const std::string& msg) {
     UserChannel& u = user();
-    UserMsg* um = u.userMsg();
-    if (um) um->notifyClient(msg);
+    UserMsg* um    = u.userMsg();
+    if (um)
+        um->notifyClient(msg);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -257,7 +233,7 @@ void Log::setStream(std::ostream& out) {
         debug().setStream(out);
     }
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().setStream(out);
     }
 }
@@ -269,7 +245,7 @@ void Log::addStream(std::ostream& out) {
         debug().addStream(out);
     }
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().addStream(out);
     }
 }
@@ -285,7 +261,7 @@ void Log::setFile(const std::string& path) {
         debug().setTarget(file);
     }
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().setTarget(file);
     }
 }
@@ -300,7 +276,7 @@ void Log::addFile(const std::string& path) {
         debug().addTarget(file);
     }
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().addTarget(file);
     }
 }
@@ -314,7 +290,7 @@ void Log::setCallback(channel_callback_t cb, void* data) {
     }
 
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         if (system::Library::lookup(*libname).debugChannel()) {
             system::Library::lookup(*libname).debugChannel().setCallback(cb, data);
         }
@@ -329,19 +305,18 @@ void Log::addCallback(channel_callback_t cb, void* data) {
         debug().addCallback(cb, data);
     }
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().addCallback(cb, data);
     }
 }
 
-void Log::flush()
-{
+void Log::flush() {
     info().flush();
     warning().flush();
     error().flush();
     debug().flush();
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().flush();
     }
 }
@@ -352,41 +327,38 @@ void Log::reset() {
     error().reset();
     debug().reset();
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         system::Library::lookup(*libname).debugChannel().reset();
     }
 }
 
 void Log::print(std::ostream& os) {
-    os << "Log::info() "    << info()    << std::endl;
+    os << "Log::info() " << info() << std::endl;
     os << "Log::warning() " << warning() << std::endl;
-    os << "Log::error() "   << error()   << std::endl;
-    os << "Log::debug() "   << debug()   << std::endl;
+    os << "Log::error() " << error() << std::endl;
+    os << "Log::debug() " << debug() << std::endl;
     std::vector<std::string> libs = eckit::system::Library::list();
-    for(std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
+    for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
         os << *libname << ".debug() " << system::Library::lookup(*libname).debugChannel() << std::endl;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::ostream& Log::syserr(std::ostream& s)
-{
+std::ostream& Log::syserr(std::ostream& s) {
     int e = errno;
-    char estr [256];
-    handle_strerror_r(s, e, estr, strerror_r( e, estr, sizeof(estr) ) );
+    char estr[256];
+    handle_strerror_r(s, e, estr, strerror_r(e, estr, sizeof(estr)));
     return s;
 }
 
 static int xindex = std::ios::xalloc();
 
-int format(std::ostream& s)
-{
+int format(std::ostream& s) {
     return s.iword(xindex);
 }
 
-std::ostream& setformat(std::ostream& s, int n)
-{
+std::ostream& setformat(std::ostream& s, int n) {
     s.iword(xindex) = n;
     return s;
 }
@@ -395,4 +367,4 @@ template class ThreadSingleton<UserChannel>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

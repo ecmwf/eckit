@@ -9,8 +9,8 @@
  */
 
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -25,12 +25,12 @@ static std::string toString(XXH64_hash_t hash) {
 
     char buffer[2 * 8];
 
-    for(int i = 2*8; i--; ) {
+    for (int i = 2 * 8; i--;) {
         buffer[i] = hex[hash & 15];
         hash >>= 4;
     }
 
-    return std::string(buffer, buffer+2*8);
+    return std::string(buffer, buffer + 2 * 8);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -43,30 +43,28 @@ xxHash::xxHash() {
 xxHash::xxHash(const char* s) {
     ctx_ = XXH64_createState();
     XXH64_reset(ctx_, 0);
-    add( s, strlen(s) );
+    add(s, strlen(s));
 }
 
 xxHash::xxHash(const std::string& s) {
     ctx_ = XXH64_createState();
     XXH64_reset(ctx_, 0);
-    add( s.c_str(), s.size() );
+    add(s.c_str(), s.size());
 }
 
 xxHash::xxHash(const void* data, size_t len) {
     ctx_ = XXH64_createState();
     XXH64_reset(ctx_, 0);
-    add( data, len );
+    add(data, len);
 }
 
 xxHash::~xxHash() {}
 
-void xxHash::reset() const
-{
+void xxHash::reset() const {
     XXH64_reset(ctx_, 0);
 }
 
-Hash::digest_t xxHash::compute(const void* buffer, long size)
-{
+Hash::digest_t xxHash::compute(const void* buffer, long size) {
     XXH64_hash_t hash = XXH64(buffer, size, 0);
     return toString(hash);
 }
@@ -75,15 +73,15 @@ void xxHash::update(const void* buffer, long length) {
     if (length > 0) {
         XXH64_update(ctx_, static_cast<const unsigned char*>(buffer), length);
         if (!digest_.empty())
-            digest_ = digest_t(); // reset the digest
+            digest_ = digest_t();  // reset the digest
     }
 }
 
 xxHash::digest_t xxHash::digest() const {
 
-    if (digest_.empty()) { // recompute the digest
+    if (digest_.empty()) {  // recompute the digest
 
-        XXH64_hash_t hash =  XXH64_digest(ctx_);
+        XXH64_hash_t hash = XXH64_digest(ctx_);
 
         digest_ = toString(hash);
     }
@@ -91,8 +89,8 @@ xxHash::digest_t xxHash::digest() const {
     return digest_;
 }
 
-namespace  {
-    HashBuilder<xxHash> builder("xxHash");
+namespace {
+HashBuilder<xxHash> builder("xxHash");
 }
 
-} // namespace eckit
+}  // namespace eckit

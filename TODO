@@ -1,7 +1,7 @@
 TODO
 
- - add control of behavior on Exception
-     - output on constructor
-     - backtrace on contructor
-     - abort on constructor
-     - abort on double exception
+[ ] add control of behavior on Exception
+  - output on constructor
+  - backtrace on contructor
+  - abort on constructor
+  - abort on double exception

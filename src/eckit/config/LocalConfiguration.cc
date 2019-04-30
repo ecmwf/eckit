@@ -13,38 +13,33 @@
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/parser/JSONParser.h"
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/types/Types.h"
+#include "eckit/utils/Tokenizer.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LocalConfiguration::LocalConfiguration(char separator):
-    Configuration(Value::makeMap(), separator) {
-}
+LocalConfiguration::LocalConfiguration(char separator) : Configuration(Value::makeMap(), separator) {}
 
-LocalConfiguration::LocalConfiguration(const Value& root, char separator):
-    Configuration(root, separator) {
-}
+LocalConfiguration::LocalConfiguration(const Value& root, char separator) : Configuration(root, separator) {}
 
-LocalConfiguration::LocalConfiguration(const Configuration &other):
-    Configuration(other) {
-}
+LocalConfiguration::LocalConfiguration(const Configuration& other) : Configuration(other) {}
 
-LocalConfiguration::LocalConfiguration(const Configuration &other, const std::string &path):
-    Configuration(other, path) {
-}
+LocalConfiguration::LocalConfiguration(const Configuration& other, const std::string& path) :
+    Configuration(other, path) {}
 
-LocalConfiguration::~LocalConfiguration() {
-}
+LocalConfiguration::~LocalConfiguration() {}
 
-void LocalConfiguration::print(std::ostream &out) const {
+void LocalConfiguration::print(std::ostream& out) const {
     out << "LocalConfiguration[root=";
-    out << root_;
+    out << *root_;
     out << "]";
 }
 
-void LocalConfiguration::setValue(const std::vector<std::string> &path, size_t i, eckit::Value &root, const eckit::Value &value)  {
+void LocalConfiguration::setValue(const std::vector<std::string>& path, size_t i, eckit::Value& root,
+                                  const eckit::Value& value) {
     if (root.shared()) {
         // std::cout << "Clone " << root << std::endl;
         root = root.clone();
@@ -61,63 +56,62 @@ void LocalConfiguration::setValue(const std::vector<std::string> &path, size_t i
         root[path[i]] = eckit::Value::makeMap();
     }
 
-    eckit::Value &r = root.element(path[i]);
+    eckit::Value& r = root.element(path[i]);
     setValue(path, i + 1, r, value);
 }
 
-void LocalConfiguration::setValue(const std::string &s, const eckit::Value &value) {
-
+void LocalConfiguration::setValue(const std::string& s, const eckit::Value& value) {
     // std::cout << "---- " << s << " => " << value << std::endl;
 
     eckit::Tokenizer parse(separator_);
     std::vector<std::string> path;
     parse(s, path);
 
-    setValue(path, 0, root_, value);
+    setValue(path, 0, *root_, value);
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, int value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, int value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, long value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, long value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, long long value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, long long value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, const char *value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const char* value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, const std::string &value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::string& value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, float value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, float value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, double value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, double value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, bool value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, bool value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, size_t value)  {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, size_t value) {
     setValue(s, eckit::Value(value));
     return *this;
 }
@@ -186,22 +180,25 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
 }
 
 
-LocalConfiguration& LocalConfiguration::set(const std::string &s, const LocalConfiguration& value)  {
-    setValue(s, value.root_);
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const LocalConfiguration& value) {
+    setValue(s, *value.root_);
     return *this;
 }
 
 LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<LocalConfiguration>& value) {
     ValueList values;
     for (std::vector<LocalConfiguration>::const_iterator v = value.begin(); v != value.end(); ++v) {
-        values.push_back(v->root_);
+        values.push_back(*v->root_);
     }
     setValue(s, values);
     return *this;
 }
 
+template <>
+struct VectorPrintSelector<LocalConfiguration> {
+    typedef VectorPrintSimple selector;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

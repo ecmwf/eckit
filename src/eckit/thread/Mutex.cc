@@ -8,55 +8,45 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/thread/Mutex.h"
-
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Mutex::Mutex(char tag) :
-	exists_(false),
-	tag_(tag)
-{
-	pthread_mutexattr_t attr;
-	THRCALL(::pthread_mutexattr_init(&attr));
-	THRCALL(::pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE));
+Mutex::Mutex(char tag) : exists_(false), tag_(tag) {
+    pthread_mutexattr_t attr;
+    THRCALL(::pthread_mutexattr_init(&attr));
+    THRCALL(::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE));
 
-	THRCALL(::pthread_mutex_init(&mutex_,&attr));
+    THRCALL(::pthread_mutex_init(&mutex_, &attr));
 
-	exists_ = true;
-	THRCALL(::pthread_mutexattr_destroy(&attr));
+    exists_ = true;
+    THRCALL(::pthread_mutexattr_destroy(&attr));
 }
 
-Mutex::~Mutex()
-{
-	THRCALL(::pthread_mutex_destroy(&mutex_));
+Mutex::~Mutex() {
+    THRCALL(::pthread_mutex_destroy(&mutex_));
 }
 
-void Mutex::lock(void)
-{
-	if(!exists_)
-	{
+void Mutex::lock(void) {
+    if (!exists_) {
         std::cerr << "Mutex used before being constructed" << std::endl;
         ::abort();
-	}
-	THRCALL(::pthread_mutex_lock(&mutex_));
+    }
+    THRCALL(::pthread_mutex_lock(&mutex_));
 }
 
-void Mutex::unlock(void)
-{
-	if(!exists_)
-	{
+void Mutex::unlock(void) {
+    if (!exists_) {
         std::cerr << "Mutex used before being constructed" << std::endl;
         ::abort();
-	}
-	THRCALL(::pthread_mutex_unlock(&mutex_));
+    }
+    THRCALL(::pthread_mutex_unlock(&mutex_));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

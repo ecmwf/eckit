@@ -11,41 +11,40 @@
 // File ThreadPool.cc
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/ThreadPool.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/thread/ThreadPool.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class ThreadPoolThread : public Thread {
     ThreadPool& owner_;
     void run();
+
 public:
-    ThreadPoolThread(ThreadPool& owner):
-        owner_(owner) {}
+    ThreadPoolThread(ThreadPool& owner) : owner_(owner) {}
 };
 
-void ThreadPoolThread::run()
-{
+void ThreadPoolThread::run() {
     owner_.notifyStart();
 
     Monitor::instance().name(owner_.name());
 
-    //Log::info() << "Start of ThreadPoolThread " << std::endl;
+    // Log::info() << "Start of ThreadPoolThread " << std::endl;
 
 
-    for (;;)
-    {
+    for (;;) {
         Monitor::instance().show(false);
         Log::status() << "-" << std::endl;
         ThreadPoolTask* r = owner_.next();
-        if (!r) break;
+        if (!r)
+            break;
         Monitor::instance().show(true);
 
         r->pool_ = &owner_;
@@ -54,8 +53,7 @@ void ThreadPoolThread::run()
         try {
             r->execute();
         }
-        catch (std::exception& e)
-        {
+        catch (std::exception& e) {
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is reported" << std::endl;
             owner_.error(e.what());
@@ -64,15 +62,13 @@ void ThreadPoolThread::run()
         try {
             delete r;
         }
-        catch (std::exception& e)
-        {
+        catch (std::exception& e) {
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is reported" << std::endl;
             owner_.error(e.what());
         }
 
         owner_.endTask();
-
     }
 
 
@@ -81,66 +77,57 @@ void ThreadPoolThread::run()
     owner_.notifyEnd();
 }
 
-ThreadPool::ThreadPool(const std::string& name, size_t count, size_t stack):
+ThreadPool::ThreadPool(const std::string& name, size_t count, size_t stack) :
     count_(0),
     stack_(stack),
     running_(0),
     tasks_(0),
     name_(name),
-    error_(false)
-{
-    //Log::info() << "ThreadPool::ThreadPool " << nme_ << " " << count << std::endl;
+    error_(false) {
+    // Log::info() << "ThreadPool::ThreadPool " << nme_ << " " << count << std::endl;
     resize(count);
-
 }
 
-ThreadPool::~ThreadPool()
-{
-    //Log::info() << "ThreadPool::~ThreadPool " << name_ << std::endl;
+ThreadPool::~ThreadPool() {
+    // Log::info() << "ThreadPool::~ThreadPool " << name_ << std::endl;
 
     try {
         waitForThreads();
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
     }
 }
 
-void ThreadPool::waitForThreads()
-{
+void ThreadPool::waitForThreads() {
 
-    for (size_t i = 0; i < count_ ; i++) {
+    for (size_t i = 0; i < count_; i++) {
         push(0);
     }
 
 
     AutoLock<MutexCond> lock(done_);
-    //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
-    while (running_)
-    {
-        //Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
+    // Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
+    while (running_) {
+        // Log::info() << "ThreadPool::waitForThreads " << name_ << " running: " << running_ << std::endl;
         done_.wait();
     }
 
-    if (error_)
-    {
+    if (error_) {
         error_ = false;
         throw SeriousBug(std::string("ThreadPool::waitForThreads: ") + errorMessage_);
     }
 }
 
-void ThreadPool::notifyStart()
-{
+void ThreadPool::notifyStart() {
     AutoLock<MutexCond> lock(done_);
     running_++;
     done_.signal();
     // Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
 }
 
-void ThreadPool::notifyEnd()
-{
+void ThreadPool::notifyEnd() {
     AutoLock<MutexCond> lock(done_);
     running_--;
     done_.signal();
@@ -148,33 +135,29 @@ void ThreadPool::notifyEnd()
 }
 
 
-void ThreadPool::startTask()
-{
+void ThreadPool::startTask() {
     AutoLock<MutexCond> lock(active_);
     tasks_++;
     active_.signal();
     // Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
 }
 
-void ThreadPool::endTask()
-{
+void ThreadPool::endTask() {
     AutoLock<MutexCond> lock(active_);
     tasks_--;
     active_.signal();
     // Log::info() << "ThreadPool::notifyStart " << name_ << " running: " << running_ << std::endl;
 }
 
-void ThreadPool::error(const std::string& msg)
-{
+void ThreadPool::error(const std::string& msg) {
     AutoLock<MutexCond> lock(done_);
-    if (error_) errorMessage_ += " | ";
+    if (error_)
+        errorMessage_ += " | ";
     error_ = true;
     errorMessage_ += msg;
-
 }
 
-void ThreadPool::push(ThreadPoolTask* r)
-{
+void ThreadPool::push(ThreadPoolTask* r) {
     if (r) {
         startTask();
     }
@@ -184,8 +167,7 @@ void ThreadPool::push(ThreadPoolTask* r)
     ready_.signal();
 }
 
-void ThreadPool::push(std::list<ThreadPoolTask*>& l)
-{
+void ThreadPool::push(std::list<ThreadPoolTask*>& l) {
     AutoLock<MutexCond> lock(ready_);
 
     for (std::list<ThreadPoolTask*>::iterator j = l.begin(); j != l.end(); ++j)
@@ -195,8 +177,7 @@ void ThreadPool::push(std::list<ThreadPoolTask*>& l)
     ready_.signal();
 }
 
-ThreadPoolTask* ThreadPool::next()
-{
+ThreadPoolTask* ThreadPool::next() {
     AutoLock<MutexCond> lock(ready_);
     while (queue_.empty())
         ready_.wait();
@@ -231,7 +212,9 @@ void ThreadPool::resize(size_t size) {
         count_++;
     }
 }
-//-----------------------------------------------------------------------------
 
-} // namespace eckit
+ThreadPoolTask::~ThreadPoolTask() {}
 
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

@@ -8,100 +8,88 @@
  * does it submit to any jurisdiction.
  */
 
+#include <fstream>
+
+
 #include "eckit/io/Buffer.h"
 #include "eckit/io/ResizableBuffer.h"
 #include "eckit/web/AgentResource.h"
 #include "eckit/web/JavaAgent.h"
 #include "eckit/web/Url.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class MemStream : public eckit::Stream {
 
-	Buffer in_;
-	ResizableBuffer out_;
-	long   pos_;
-	long   length_;
+    Buffer in_;
+    ResizableBuffer out_;
+    long pos_;
+    long length_;
 
-	virtual long write(const void* buf,long len);
-	virtual long read(void* buf,long len);
-	virtual std::string name() const { return "MemStream"; }
+    virtual long write(const void* buf, long len);
+    virtual long read(void* buf, long len);
+    virtual std::string name() const { return "MemStream"; }
 
 public:
-	MemStream(const char* p,long len);
+    MemStream(const char* p, long len);
 
-	long length()      const { return length_; }
-	const char* data() const { return out_; }
+    long length() const { return length_; }
+    const char* data() const { return out_; }
 };
 
 
-MemStream::MemStream(const char* p,long len):
-	in_(p,len),
-	out_(10240),
-        pos_(0),
-        length_(0)
-{
+MemStream::MemStream(const char* p, long len) : in_(p, len), out_(10240), pos_(0), length_(0) {}
+
+long MemStream::write(const void* buf, long len) {
+    if (out_.size() - length_ < static_cast<size_t>(len))
+        out_.resize(out_.size() * 2);
+
+    ::memcpy((char*)out_ + length_, buf, len);
+
+    length_ += len;
+    return len;
 }
 
-long MemStream::write(const void* buf,long len)
-{
-    if(out_.size() - length_ < static_cast<size_t>(len))
-		out_.resize(out_.size()*2);
+long MemStream::read(void* buf, long len) {
+    long size = std::min(long(len), long(in_.size() - pos_));
 
-	::memcpy((char*)out_ + length_, buf , len);
+    if (size <= 0)
+        return -1;
 
-	length_ += len;
-	return len;
+    ::memcpy(buf, (char*)in_ + pos_, size);
+    pos_ += size;
+
+    return size;
 }
 
-long MemStream::read(void* buf,long len)
-{
-    long size = std::min(long(len),long(in_.size() - pos_));
+AgentResource::AgentResource() : HtmlResource("/agent") {}
 
-	if(size <= 0)
-		return -1;
+AgentResource::~AgentResource() {}
 
-	::memcpy(buf,(char*)in_ + pos_,size);
-	pos_ += size;
-
-	return size;
-}
-
-AgentResource::AgentResource():
-	HtmlResource("/agent")
-{
-}
-
-AgentResource::~AgentResource()
-{
-}
-
-void AgentResource::GET(std::ostream&,Url& url)
-{
-	static std::ifstream in("/dev/null");
+void AgentResource::GET(std::ostream&, Url& url) {
+    static std::ifstream in("/dev/null");
     static std::ofstream out("/dev/null");
 
     std::string content = url.headerIn().content();
-	MemStream s(content.data(), content.length());
+    MemStream s(content.data(), content.length());
 
-	std::string token = url.headerIn().getHeader("mars-token");
+    std::string token = url.headerIn().getHeader("mars-token");
 
     std::cout << "Token is " << token << std::endl;
 
-	JavaAgent::serve(s,in,out);
-	url.headerOut().content(s.data(),s.length());
+    JavaAgent::serve(s, in, out);
+    url.headerOut().content(s.data(), s.length());
 
-	token = "token";
-	url.headerOut().setHeader("mars-token",token);
+    token = "token";
+    url.headerOut().setHeader("mars-token", token);
 }
 
 static AgentResource agentResourceInstance;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

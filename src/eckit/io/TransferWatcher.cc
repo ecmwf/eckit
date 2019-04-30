@@ -11,24 +11,22 @@
 
 #include "eckit/io/TransferWatcher.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 struct DummyTransferWatcher : public TransferWatcher {
-	void watch(const void*,long) {}
+    void watch(const void*, long) {}
 };
 
-TransferWatcher& TransferWatcher::dummy()
-{
-	static DummyTransferWatcher x;
-	return x;
+TransferWatcher& TransferWatcher::dummy() {
+    static DummyTransferWatcher x;
+    return x;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

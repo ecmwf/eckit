@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/ResizableBuffer.h"
@@ -18,48 +18,41 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ResizableBuffer::ResizableBuffer(size_t size):
-    buffer_(allocate(size)),
-    size_(size)
-{
-}
+ResizableBuffer::ResizableBuffer(size_t size) : buffer_(allocate(size)), size_(size) {}
 
-ResizableBuffer::ResizableBuffer(const char* p, size_t size):
-    buffer_(allocate(size)),
-    size_(size)
-{
+ResizableBuffer::ResizableBuffer(const char* p, size_t size) : buffer_(allocate(size)), size_(size) {
     ::memcpy(buffer_, p, size);
 }
 
-ResizableBuffer::~ResizableBuffer()
-{
+ResizableBuffer::~ResizableBuffer() {
     deallocate(buffer_);
 }
 
-char* ResizableBuffer::allocate(size_t size)
-{
+void ResizableBuffer::zero() {
+    ::memset(buffer_, 0, size_);
+}
+
+char* ResizableBuffer::allocate(size_t size) {
     return new char[size];
 }
 
-void ResizableBuffer::deallocate(char* buffer)
-{
+void ResizableBuffer::deallocate(char* buffer) {
     delete[] buffer;
 }
 
-void ResizableBuffer::resize(size_t size, bool preserveData)
-{
+void ResizableBuffer::resize(size_t size, bool preserveData) {
     if (size != size_) {
 
         if (preserveData) {
-            char *newbuffer = allocate(size);
+            char* newbuffer = allocate(size);
             ::memcpy(newbuffer, buffer_, std::min(size_, size));
             deallocate(buffer_);
-            size_ = size;
+            size_   = size;
             buffer_ = newbuffer;
         }
         else {
             deallocate(buffer_);
-            size_ = size;
+            size_   = size;
             buffer_ = allocate(size);
         }
     }
@@ -67,5 +60,4 @@ void ResizableBuffer::resize(size_t size, bool preserveData)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

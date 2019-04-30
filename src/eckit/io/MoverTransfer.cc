@@ -9,55 +9,51 @@
  */
 
 
-#include "eckit/thread/AutoLock.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/net/Connector.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/io/MoverTransfer.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
-#include "eckit/config/Resource.h"
+#include "eckit/net/Connector.h"
 #include "eckit/net/TCPServer.h"
 #include "eckit/net/TCPStream.h"
+#include "eckit/runtime/Monitor.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/io/cluster/ClusterNodes.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-MoverTransfer::MoverTransfer(TransferWatcher& watcher):
-        watcher_(watcher)
-{
-}
+MoverTransfer::MoverTransfer(TransferWatcher& watcher) : watcher_(watcher) {}
 
-MoverTransfer::~MoverTransfer()
-{
-}
+MoverTransfer::~MoverTransfer() {}
 
-Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
-{
+Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
-    if (!from.moveable()) throw SeriousBug(from.title() + " is not moveable");
-    if (!to.moveable()) throw SeriousBug(to.title() + " is not moveable");
+    if (!from.moveable())
+        throw SeriousBug(from.title() + " is not moveable");
+    if (!to.moveable())
+        throw SeriousBug(to.title() + " is not moveable");
 
-    std::map<std::string,Length> cost;
+    std::map<std::string, Length> cost;
     from.cost(cost, true);
     to.cost(cost, false);
 
     if (cost.empty()) {
-        NodeInfo info = ClusterNodes::any("mover");
+        NodeInfo info     = ClusterNodes::any("mover");
         cost[info.node()] = 0;
-//        throw SeriousBug(std::string("No cost for ") + from.title() + " => " + to.title());
+        //        throw SeriousBug(std::string("No cost for ") + from.title() + " => " + to.title());
     }
 
-    Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;;
+    Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;
+    ;
 
     Log::info() << "MoverTransfer::transfer cost:" << std::endl;
-    for (std::map<std::string,Length> ::iterator j = cost.begin() ; j != cost.end() ; ++j)
+    for (std::map<std::string, Length>::iterator j = cost.begin(); j != cost.end(); ++j)
         Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
 
     Connector& c(Connector::service("mover", cost));
@@ -65,10 +61,10 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     Log::message() << c.host() << std::endl;
     Stream& s = c;
 
-	s << bool(false); // New batch
+    s << bool(false);  // New batch
 
-    //NodeInfo::sendLogin(s);
-    //NodeInfo remote = NodeInfo::acceptLogin(s);
+    // NodeInfo::sendLogin(s);
+    // NodeInfo remote = NodeInfo::acceptLogin(s);
 
     Log::status() << "Sending input handle " << from.title() << std::endl;
     from.toRemote(s);
@@ -79,16 +75,15 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     Length estimate = from.estimate();
 
     AutoState state('M');
-    if(estimate)
-        Log::status() << Bytes(estimate) << " " ;
+    if (estimate)
+        Log::status() << Bytes(estimate) << " ";
     Log::status() << from.title() << " => " << to.title() << std::endl;
 
     Progress progress("mover", 0, estimate);
     unsigned long long total = 0;
     bool more;
     s >> more;
-    while(more)
-    {
+    while (more) {
         long pos;
         std::string msg;
         s >> pos;
@@ -101,16 +96,14 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to)
     unsigned long long len;
     s >> len;
 
-//    ASSERT(len == total);
+    //    ASSERT(len == total);
 
     Log::message() << " " << std::endl;
 
 
     return len;
-
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

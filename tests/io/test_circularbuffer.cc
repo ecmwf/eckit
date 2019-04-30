@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 #include "eckit/io/CircularBuffer.h"
 
 #include "eckit/testing/Test.h"
@@ -24,10 +24,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_eckit_circularbuffer" )
-{
+CASE("test_eckit_circularbuffer") {
     CircularBuffer buffer(20);
 
 
@@ -52,18 +51,13 @@ CASE ( "test_eckit_circularbuffer" )
         EXPECT(buffer.read(q, 26) == 26);
         EXPECT(upper == std::string(q, q + 26));
     }
-
-
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-
-

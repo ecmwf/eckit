@@ -24,8 +24,8 @@ protected:  // methods
 
     template< class T> friend class CommBuilder;
 
-    Serial();
-    Serial(int);
+    Serial(const std::string& name);
+    Serial(const std::string& name, int);
 
     virtual ~Serial();
 
@@ -89,6 +89,8 @@ protected:  // methods
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
 
     virtual Comm & split( int color, const std::string & name ) const;
+
+    virtual void free();
 
     virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const;
 

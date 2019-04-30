@@ -55,9 +55,9 @@ class Streamable;
 //
 
 struct ClassSpec {
-	const ClassSpec	*superClass_; // Pointer to superclass ClassSpec  (Note that
-	                              // multiple inheritance is not supported.)
-	const char      *name_;		  // class name
+    const ClassSpec* superClass_;  // Pointer to superclass ClassSpec  (Note that
+                                   // multiple inheritance is not supported.)
+    const char* name_;             // class name
 };
 
 // in the file Foo.cc, if Foo is a direct subclass of Bar, its ClassSpec can be
@@ -74,40 +74,34 @@ struct ClassSpec {
 //
 
 class ReanimatorBase {
+    const ClassSpec& spec_;
 
-	const ClassSpec&  spec_;
-
-	virtual Streamable*  ressucitate(Stream&) const = 0;
-
-	class NotSubClass: public Exception
-    { public: NotSubClass(const std::string&, const std::string&); };
-
-	class UnknowClass: public Exception
-    { public: UnknowClass(const std::string&); };
+    virtual Streamable* ressucitate(Stream&) const = 0;
 
 public:
+    ReanimatorBase(const ClassSpec&);
+    virtual ~ReanimatorBase();
+    const ClassSpec& spec() const { return spec_; }
 
-	ReanimatorBase(const ClassSpec&);
-	virtual ~ReanimatorBase();
-	const ClassSpec& spec() const  { return spec_; }
-
-static Streamable*  reanimate(Stream&,const ClassSpec* = 0);
+    static Streamable* reanimate(Stream&, const ClassSpec* = 0);
 };
 
 
 // -----------------------------------------------------------------------------
 
-template<class T> class Reanimator : public ReanimatorBase {
-	Streamable*  ressucitate(Stream& s) const;
+template <class T>
+class Reanimator : public ReanimatorBase {
+    Streamable* ressucitate(Stream& s) const;
+
 public:
-	Reanimator();
-static T*  reanimate(Stream& s);
+    Reanimator();
+    static T* reanimate(Stream& s);
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "eckit/serialisation/Reanimator.cc"
 

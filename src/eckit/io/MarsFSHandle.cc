@@ -8,162 +8,142 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/io/MarsFSHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/io/MarsFSHandle.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec MarsFSHandle::classSpec_ = {&DataHandle::classSpec(),"MarsFSHandle",};
+ClassSpec MarsFSHandle::classSpec_ = {
+    &DataHandle::classSpec(),
+    "MarsFSHandle",
+};
 Reanimator<MarsFSHandle> MarsFSHandle::reanimator_;
 
-void MarsFSHandle::print(std::ostream& s) const
-{
-	s << "MarsFSHandle[file=" << path_ << ']';
+void MarsFSHandle::print(std::ostream& s) const {
+    s << "MarsFSHandle[file=" << path_ << ']';
 }
 
-void MarsFSHandle::encode(Stream& s) const
-{
-	DataHandle::encode(s);
-	s << path_;
-	s << overwrite_;
+void MarsFSHandle::encode(Stream& s) const {
+    DataHandle::encode(s);
+    s << path_;
+    s << overwrite_;
 }
 
-MarsFSHandle::MarsFSHandle(Stream& s):
-	DataHandle(s),
-    path_(s),
+MarsFSHandle::MarsFSHandle(Stream& s) : DataHandle(s), path_(s), read_(false), position_(0), overwrite_(false) {
+    s >> overwrite_;
+}
+
+MarsFSHandle::MarsFSHandle(const MarsFSPath& path, bool overwrite) :
+    path_(path),
     read_(false),
     position_(0),
-    overwrite_(false)
-{
-	s >> overwrite_;
+    overwrite_(overwrite) {
+    // Log::info() << "CREATE " << *this << std::endl;
 }
 
-MarsFSHandle::MarsFSHandle(const MarsFSPath& path, bool overwrite):
-	path_(path),
-	read_(false),
-   position_(0),
-   overwrite_(overwrite)
-{
-	//Log::info() << "CREATE " << *this << std::endl;
-}
-
-MarsFSHandle::~MarsFSHandle()
-{
-	//Log::info() << "DESTROY " << *this << std::endl;
+MarsFSHandle::~MarsFSHandle() {
+    // Log::info() << "DESTROY " << *this << std::endl;
 }
 
 
-Length MarsFSHandle::openForRead()
-{
-	read_   = true;
+Length MarsFSHandle::openForRead() {
+    read_     = true;
     position_ = 0;
-    if(!file_.get())
+    if (!file_.get())
         file_.reset(new MarsFSFile(path_));
     length_ = file_->open("r");
     return length_;
 }
 
-void MarsFSHandle::openForWrite(const Length& length)
-{
-	read_   = false;
-    length_ = length;
+void MarsFSHandle::openForWrite(const Length& length) {
+    read_     = false;
+    length_   = length;
     position_ = 0;
-    if(!file_.get())
+    if (!file_.get())
         file_.reset(new MarsFSFile(path_));
     file_->open("w", overwrite_);
 }
 
-void MarsFSHandle::openForAppend(const Length& length)
-{
+void MarsFSHandle::openForAppend(const Length& length) {
     NOTIMP;
 }
 
-long MarsFSHandle::read(void* buffer,long length)
-{
-	ASSERT(file_.get());
+long MarsFSHandle::read(void* buffer, long length) {
+    ASSERT(file_.get());
     long len = file_->read(buffer, length);
-    if(len > 0) position_ += len;
+    if (len > 0)
+        position_ += len;
     return len;
 }
 
-long MarsFSHandle::write(const void* buffer,long length)
-{
-	ASSERT(file_.get());
+long MarsFSHandle::write(const void* buffer, long length) {
+    ASSERT(file_.get());
     long len = file_->write(buffer, length);
-    if(len > 0) position_ += len;
+    if (len > 0)
+        position_ += len;
     return len;
 }
 
-Offset MarsFSHandle::position()
-{
+Offset MarsFSHandle::position() {
     return position_;
 }
 
-void MarsFSHandle::close()
-{
-	if(file_.get()) {
-		file_->close();
+void MarsFSHandle::close() {
+    if (file_.get()) {
+        file_->close();
         file_.reset(0);
-	}
+    }
 }
 
-void MarsFSHandle::rewind()
-{
-	ASSERT(file_.get());
-	file_->seek(0);
+void MarsFSHandle::rewind() {
+    ASSERT(file_.get());
+    file_->seek(0);
 }
 
-void MarsFSHandle::skip(const Length &n)
-{
-	ASSERT(file_.get());
-	file_->skip(n);
+void MarsFSHandle::skip(const Length& n) {
+    ASSERT(file_.get());
+    file_->skip(n);
     position_ += n;
 }
 
-Offset MarsFSHandle::seek(const Offset& offset)
-{
+Offset MarsFSHandle::seek(const Offset& offset) {
     ASSERT(file_.get());
     position_ = file_->seek(offset);
     return position_;
 }
 
-Length MarsFSHandle::estimate()
-{
-	return MarsFSClient(path_).size(path_.path());
+Length MarsFSHandle::estimate() {
+    return MarsFSClient(path_).size(path_.path());
 }
 
-bool MarsFSHandle::isEmpty() const
-{
-	if(!MarsFSClient(path_).exists(path_.path()))
-		return false;
-    return  MarsFSClient(path_).size(path_.path()) == Length(0);
+bool MarsFSHandle::isEmpty() const {
+    if (!MarsFSClient(path_).exists(path_.path()))
+        return false;
+    return MarsFSClient(path_).size(path_.path()) == Length(0);
 }
 
-void MarsFSHandle::restartReadFrom(const Offset& from)
-{
+void MarsFSHandle::restartReadFrom(const Offset& from) {
     ASSERT(read_);
     ASSERT(file_.get());
     Log::warning() << *this << " restart read from " << from << std::endl;
     ASSERT(file_->seek(from) == from);
 }
 
-void MarsFSHandle::restartWriteFrom(const Offset& from)
-{
+void MarsFSHandle::restartWriteFrom(const Offset& from) {
     ASSERT(!read_);
     ASSERT(file_.get());
     Log::warning() << *this << " restart write from " << from << std::endl;
     ASSERT(file_->seek(from) == from);
 }
 
-void MarsFSHandle::toLocal(Stream& s) const
-{
+void MarsFSHandle::toLocal(Stream& s) const {
     // TODO: Return FileHandle if local
-    if(path_.isLocal()) {
+    if (path_.isLocal()) {
         FileHandle fh(path_.path());
         s << fh;
         return;
@@ -171,35 +151,30 @@ void MarsFSHandle::toLocal(Stream& s) const
     s << *this;
 }
 
-DataHandle* MarsFSHandle::toLocal()
-{
+DataHandle* MarsFSHandle::toLocal() {
     // TODO: Return FileHandle if local
-    if(path_.isLocal()) {
+    if (path_.isLocal()) {
         return new FileHandle(path_.path());
     }
     return this;
 }
 
-void MarsFSHandle::cost(std::map<std::string,Length>& c, bool read) const
-{
-    if(read) {
+void MarsFSHandle::cost(std::map<std::string, Length>& c, bool read) const {
+    if (read) {
         c[path_.node()] += const_cast<MarsFSHandle*>(this)->estimate();
     }
-    else
-    {
+    else {
         // Just mark the node as being a candidate
         c[path_.node()] += 0;
     }
 }
 
-std::string MarsFSHandle::title() const
-{
+std::string MarsFSHandle::title() const {
     std::ostringstream os;
     os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path());
     return os.str();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

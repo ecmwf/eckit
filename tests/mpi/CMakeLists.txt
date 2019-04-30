@@ -22,4 +22,10 @@ ecbuild_add_test(
     MPI 4
 )
 
-    
+ecbuild_add_test(
+    TARGET      eckit_test_mpi_objserialisation
+    SOURCES     eckit_test_mpi_objserialisation.cc
+    CONDITION   HAVE_MPI
+    LIBS eckit_mpi
+    MPI 4
+)

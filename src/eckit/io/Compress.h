@@ -11,11 +11,7 @@
 #ifndef eckit_Compress_h
 #define eckit_Compress_h
 
-
-#include "eckit/eckit.h"
-
-
-//-----------------------------------------------------------------------------
+#include <cstddef>
 
 namespace eckit {
 

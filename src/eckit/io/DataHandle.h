@@ -9,12 +9,14 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
+///
 /// @date May 96
 
 #ifndef eckit_DataHandle_h
 #define eckit_DataHandle_h
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
@@ -22,10 +24,9 @@
 #include "eckit/serialisation/Streamable.h"
 #include "eckit/io/TransferWatcher.h"
 
-
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 class RestartTransfer  {
 	Offset from_;
@@ -34,7 +35,7 @@ public:
 	const Offset& from() const { return from_; }
 };
 
-//----------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 class DataHandle : public Streamable {
 public:

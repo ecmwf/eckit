@@ -25,9 +25,9 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_eckit_parser_csv_1" ) {
+CASE("test_eckit_parser_csv_1") {
     istringstream in(
-R"CSV(1,2,3
+        R"CSV(1,2,3
 4,5,6)CSV");
     CSVParser p(in, false);
     Value v = p.parse();
@@ -36,9 +36,9 @@ R"CSV(1,2,3
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_eckit_parser_csv_2" ) {
- istringstream in(
-R"CSV(a,b,c
+CASE("test_eckit_parser_csv_2") {
+    istringstream in(
+        R"CSV(a,b,c
 1,2,3
 4,5,6)CSV");
     CSVParser p(in, true);
@@ -55,12 +55,11 @@ R"CSV(a,b,c
 //     EXPECT_THROWS_AS(p.next(), StreamParser::Error);
 // }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

@@ -8,29 +8,30 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "eckit/cmd/PsCmd.h"
-#include "eckit/runtime/Monitor.h"
-#include "eckit/log/Colour.h"
+#include <algorithm>
+#include <iomanip>
 
-//-----------------------------------------------------------------------------
+#include "eckit/cmd/PsCmd.h"
+#include "eckit/log/Colour.h"
+#include "eckit/runtime/Monitor.h"
+
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static PsCmd ps;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-PsCmd::PsCmd() : CmdResource("ps") {
-}
+PsCmd::PsCmd() : CmdResource("ps") {}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-PsCmd::~PsCmd() {
-}
+PsCmd::~PsCmd() {}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::string& grep) const {
     char st = info.state();
@@ -57,14 +58,16 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
         }
     }
 
-    for (int i = 0; i < info.depth(); i++) out << "   ";
+    for (int i = 0; i < info.depth(); i++)
+        out << "   ";
 
     // name column
     std::string app = info.name();
     out << app;
 
     int n = info.depth() * 3 + app.length();
-    for (int i = 0; i < 16 - n; i++) out << ' ';
+    for (int i = 0; i < 16 - n; i++)
+        out << ' ';
 
     // Idle column
     long age = ::time(0) - info.last();
@@ -108,7 +111,7 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
     out << Colour::reset;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static void get(int n, std::vector<int>& v) {
     Monitor::TaskArray& info = Monitor::instance().tasks();
@@ -118,25 +121,27 @@ static void get(int n, std::vector<int>& v) {
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static std::string get(int n) {
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
 
-    if (info[n].parent() != -1) return get(info[n].parent());
+    if (info[n].parent() != -1)
+        return get(info[n].parent());
 
     return info[n].name();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static bool sortTasks(int n1, int n2) {
 
     std::string s1 = get(n1);
     std::string s2 = get(n2);
 
-    if (s1 != s2) return s1 < s2;
+    if (s1 != s2)
+        return s1 < s2;
 
     std::vector<int> v1;
     std::vector<int> v2;
@@ -147,29 +152,32 @@ static bool sortTasks(int n1, int n2) {
     return v1 < v2;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static bool isChild(Monitor::TaskArray& info, const std::string& name, int task) {
     int parent = info[task].parent();
-    if ((parent == -1) && (name == info[task].application())) return true;
+    if ((parent == -1) && (name == info[task].application()))
+        return true;
 
-    if (parent != -1) return isChild(info, name, parent);
+    if (parent != -1)
+        return isChild(info, name, parent);
 
     return false;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static bool isParent(Monitor::TaskArray& info, int taskid, int task) {
     int parenttask = info[task].parent();
-    int parentid = info[taskid].parent();
-    if (task == taskid) return true;
+    int parentid   = info[taskid].parent();
+    if (task == taskid)
+        return true;
 
     return ((parenttask != -1) && isParent(info, taskid, parenttask)) ||
            ((parentid != -1) && isParent(info, parentid, task));
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
     std::string grep;
@@ -195,12 +203,14 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                     taskids.push_back(id);
                 else
                     pids.push_back(id);
-            } else
+            }
+            else
                 tasks.push_back(args[i]);
         }
 
     for (size_t j = 0; j < info.size(); j++)
-        if (info[j].busy(true) && info[j].show()) t.push_back(j);
+        if (info[j].busy(true) && info[j].show())
+            t.push_back(j);
 
     std::sort(t.begin(), t.end(), sortTasks);
 
@@ -210,7 +220,8 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
     out << Colour::reset;
 
     if (all)
-        for (size_t j = 0; j < t.size(); j++) display(out, info[t[j]], t[j], grep);
+        for (size_t j = 0; j < t.size(); j++)
+            display(out, info[t[j]], t[j], grep);
     else
         for (size_t j = 0; j < t.size(); j++) {
             for (Ordinal i = 0; i < tasks.size(); ++i)
@@ -231,18 +242,18 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
         }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void PsCmd::help(std::ostream& out) const {
     out << "as the UNIX counterpart";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Arg PsCmd::usage(const std::string& cmd) const {
     return ~Arg("-grep", Arg::text) + Arg("<name> ...", Arg::text);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

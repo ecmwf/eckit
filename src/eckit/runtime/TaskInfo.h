@@ -14,11 +14,12 @@
 #ifndef eckit_TaskInfo_h
 #define eckit_TaskInfo_h
 
+#include <cstring>
+#include <sys/time.h>
+
 #include "eckit/memory/Padded.h"
 #include "eckit/types/Types.h"
 #include "eckit/runtime/TaskID.h"
-
-#include <sys/time.h>
 
 namespace eckit {
 

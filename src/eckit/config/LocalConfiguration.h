@@ -19,7 +19,6 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
-#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -28,27 +27,25 @@ class PathName;
 //----------------------------------------------------------------------------------------------------------------------
 
 class LocalConfiguration : public Configuration, public Configured {
-
     /// @note Do NOT expose eckit::Value in the interface of configuration
     ///       eckit::Value should remain an internal detail of configuration objects
 
-public: // methods
-
+public:  // methods
     LocalConfiguration(char separator = '.');
-    LocalConfiguration(const Configuration &other);
-    LocalConfiguration(const Configuration &other, const std::string &path);
+    LocalConfiguration(const Configuration& other);
+    LocalConfiguration(const Configuration& other, const std::string& path);
 
     virtual ~LocalConfiguration();
 
-    LocalConfiguration& set(const std::string &name, const std::string &value);
-    LocalConfiguration& set(const std::string &name, const char *value);
-    LocalConfiguration& set(const std::string &name, bool value);
-    LocalConfiguration& set(const std::string &name, int value);
-    LocalConfiguration& set(const std::string &name, long value);
-    LocalConfiguration& set(const std::string &name, long long value);
+    LocalConfiguration& set(const std::string& name, const std::string& value);
+    LocalConfiguration& set(const std::string& name, const char* value);
+    LocalConfiguration& set(const std::string& name, bool value);
+    LocalConfiguration& set(const std::string& name, int value);
+    LocalConfiguration& set(const std::string& name, long value);
+    LocalConfiguration& set(const std::string& name, long long value);
     LocalConfiguration& set(const std::string& name, size_t value);
-    LocalConfiguration& set(const std::string &name, float value);
-    LocalConfiguration& set(const std::string &name, double value);
+    LocalConfiguration& set(const std::string& name, float value);
+    LocalConfiguration& set(const std::string& name, double value);
 
     LocalConfiguration& set(const std::string& name, const std::vector<int>& value);
     LocalConfiguration& set(const std::string& name, const std::vector<long>& value);
@@ -62,26 +59,20 @@ public: // methods
     LocalConfiguration& set(const std::string& name, const std::vector<LocalConfiguration>& value);
 
 protected:
-
     friend class Configuration;
 
     /// to be used only by class Configuration
     LocalConfiguration(const eckit::Value&, char separator = '.');
 
-    virtual void print(std::ostream &) const;
+    virtual void print(std::ostream&) const;
 
 private:
-
-    void setValue(const std::vector<std::string> &path, size_t i, Value &root, const Value &value);
-    void setValue(const std::string &s, const Value &value);
-
+    void setValue(const std::vector<std::string>& path, size_t i, Value& root, const Value& value);
+    void setValue(const std::string& s, const Value& value);
 };
-
-template <> struct VectorPrintSelector<LocalConfiguration> { typedef VectorPrintSimple selector; };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif
-

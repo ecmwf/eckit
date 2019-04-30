@@ -15,7 +15,7 @@
 #ifndef eckit_StreamParser_h
 #define eckit_StreamParser_h
 
-#include "eckit/eckit.h"
+#include <set>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"

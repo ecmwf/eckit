@@ -11,12 +11,12 @@
 #ifndef eckit_utils_xxHash_H
 #define eckit_utils_xxHash_H
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_XXHASH
 #include "xxhash/xxhash.h"
 #else
-#error "eckit was not configured with xxHash, xxHash is disabled. Use conditional ECKIT_HAVE_XXHASH from eckit/eckit_config.h"
+#error "eckit was not configured with xxHash, xxHash is disabled. Use conditional ECKIT_HAVE_XXHASH from eckit/eckit.h"
 #endif
 
 #include "eckit/utils/Hash.h"

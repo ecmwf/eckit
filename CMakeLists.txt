@@ -19,7 +19,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT OFF
-                    DESCRIPTION "Experimental features Armadillo, CUDA, MKL, ViennaCL (not used in production)" )
+                    DESCRIPTION "Experimental features that havent graduated to production ready code" )
+
+ecbuild_add_option( FEATURE SANDBOX
+                    DEFAULT OFF
+                    DESCRIPTION "Experimental features that havent graduated to production ready code" )
 
 ### eckit::mpi
 
@@ -35,6 +39,13 @@ ecbuild_add_option( FEATURE ECKIT_CMD
                     DESCRIPTION "Utilities for administration tools"
                     REQUIRED_PACKAGES "LEXYACC" "Curses" )
 
+### eckit::sql
+
+ecbuild_add_option( FEATURE ECKIT_SQL
+                    DEFAULT ON
+                    DESCRIPTION "An SQL engine"
+                    REQUIRED_PACKAGES "LEXYACC" )
+
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN
@@ -44,12 +55,6 @@ ecbuild_add_option( FEATURE EIGEN
 set_package_properties( Eigen3 PROPERTIES
                         DESCRIPTION "C++ template library for linear algebra"
                       )
-
-if( ENABLE_EIGEN )
-    # TODO: we should add here a test that we can compile Eigen without problems
-    # TODO: don't use contrib just yet -- sort out the legal stuff first
-    # set( ECKIT_CONTRIB_EIGEN 1 )
-endif()
 
 ### Armadillo
 
@@ -85,7 +90,9 @@ ecbuild_add_option( FEATURE SSL
                     DESCRIPTION "OpenSSL support"
                     REQUIRED_PACKAGES OpenSSL )
 
-ecbuild_info("OpenSSL ${OPENSSL_FOUND} ${OPENSSL_VERSION} : libs ${OPENSSL_LIBRARIES} incs ${OPENSSL_INCLUDE_DIR}")
+if( OPENSSL_FOUND )
+  ecbuild_info("OpenSSL version ${OPENSSL_VERSION} -- libs [${OPENSSL_LIBRARIES}] incs [${OPENSSL_INCLUDE_DIR}]")
+endif()
 
 ### xxHash
 
@@ -93,7 +100,9 @@ ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "Use xxHash for non-crypto hashing in data integrity checks"
                     REQUIRED_PACKAGES "xxHash QUIET" )
 
-ecbuild_info("xxHash ${XXHASH_FOUND}  : libs ${XXHASH_LIBRARIES} incs ${XXHASH_INCLUDE_DIRS}")
+if( XXHASH_FOUND )
+  ecbuild_info("xxHash -- libs [${XXHASH_LIBRARIES}] incs [${XXHASH_INCLUDE_DIRS}]")
+endif()
 
 #### Curl
 
@@ -164,10 +173,6 @@ if( HAVE_ECKIT_MPI )
   list( APPEND ECKIT_LIBRARIES eckit_mpi )
 endif()
 
-if( HAVE_EIGEN AND ECKIT_CONTRIB_EIGEN )
-  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/contrib )
-endif()
-
 if( HAVE_EXPERIMENTAL )
 
   list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
@@ -187,7 +192,6 @@ if( HAVE_EIGEN )
 endif()
 
 add_subdirectory( bamboo )
-add_subdirectory( contrib )
 add_subdirectory( doc )
 add_subdirectory( src )
 add_subdirectory( tests )

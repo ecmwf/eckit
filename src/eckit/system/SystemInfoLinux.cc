@@ -12,19 +12,21 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#include <unistd.h>
 #include <malloc.h>
-#include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/time.h>
+#include <unistd.h>
 
+#include <algorithm>
 #include <climits>
 #include <cstdlib>
+#include <fstream>
 
 #include "eckit/system/SystemInfoLinux.h"
 
-#include "eckit/memory/MemoryBuffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/memory/MemoryBuffer.h"
 #include "eckit/system/MemoryInfo.h"
 
 namespace eckit {
@@ -32,41 +34,40 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SystemInfoLinux::~SystemInfoLinux() {
-}
+SystemInfoLinux::~SystemInfoLinux() {}
 
-LocalPathName SystemInfoLinux::executablePath() const
-{
+LocalPathName SystemInfoLinux::executablePath() const {
     MemoryBuffer buffer(PATH_MAX);
     ssize_t size = SYSCALL(::readlink("/proc/self/exe", buffer, buffer.size()));
     std::string path(buffer, size);
     return LocalPathName(path).realName();
 }
 
-void SystemInfoLinux::dumpProcMemInfo(std::ostream& os, const char* prepend) const
-{
+void SystemInfoLinux::dumpProcMemInfo(std::ostream& os, const char* prepend) const {
     std::ostringstream oss;
     oss << "/proc/" << ::getpid() << "/smaps";
     std::ifstream in(oss.str().c_str());
-    char line[10240] = {0,};
+    char line[10240] = {
+        0,
+    };
     while (in.getline(line, sizeof(line) - 1)) {
         os << prepend << ' ' << line << std::endl;
     }
 }
 
-void SystemInfoLinux::dumpSysMemInfo(std::ostream& os, const char* prepend) const
-{
+void SystemInfoLinux::dumpSysMemInfo(std::ostream& os, const char* prepend) const {
     std::ostringstream oss;
     oss << "/proc/meminfo";
     std::ifstream in(oss.str().c_str());
-    char line[10240] = {0,};
+    char line[10240] = {
+        0,
+    };
     while (in.getline(line, sizeof(line) - 1)) {
         os << prepend << ' ' << line << std::endl;
     }
 }
 
 MemoryInfo SystemInfoLinux::memoryUsage() const {
-
 
 
     struct rusage usage;
@@ -82,13 +83,15 @@ MemoryInfo SystemInfoLinux::memoryUsage() const {
     oss << "/proc/" << ::getpid() << "/maps";
 
     std::ifstream in(oss.str().c_str());
-    char line[10240] = {0,};
+    char line[10240] = {
+        0,
+    };
 
-    size_t shared = 0;
-    size_t read = 0;
-    size_t write = 0;
+    size_t shared  = 0;
+    size_t read    = 0;
+    size_t write   = 0;
     size_t execute = 0;
-    size_t privy = 0;
+    size_t privy   = 0;
 
     std::map<std::string, size_t> s;
 
@@ -98,7 +101,7 @@ MemoryInfo SystemInfoLinux::memoryUsage() const {
         std::string range, perms;
         in1 >> range >> perms;
 
-        std::replace( range.begin(), range.end(), '-', ' ');
+        std::replace(range.begin(), range.end(), '-', ' ');
         std::istringstream in2(range);
 
         size_t begin, end;
@@ -112,33 +115,42 @@ MemoryInfo SystemInfoLinux::memoryUsage() const {
 
             switch (perms[perms.size() - 1]) {
 
-            case 'r': read += end - begin; break;
-            case 'w': write += end - begin; break;
-            case 'x': execute += end - begin; break;
-            case 's': shared += end - begin; break;
-            case 'p': privy += end - begin; break;
-
+                case 'r':
+                    read += end - begin;
+                    break;
+                case 'w':
+                    write += end - begin;
+                    break;
+                case 'x':
+                    execute += end - begin;
+                    break;
+                case 's':
+                    shared += end - begin;
+                    break;
+                case 'p':
+                    privy += end - begin;
+                    break;
             }
         }
     }
 
     MemoryInfo mem;
 
-    mem.resident_size_ = usage.ru_maxrss * 1024;
-    mem.mapped_shared_ = shared;
-    mem.mapped_read_ = read;
-    mem.mapped_write_ = write;
+    mem.resident_size_  = usage.ru_maxrss * 1024;
+    mem.mapped_shared_  = shared;
+    mem.mapped_read_    = read;
+    mem.mapped_write_   = write;
     mem.mapped_execute_ = execute;
     mem.mapped_private_ = privy;
 
     struct mallinfo m = mallinfo();
-    mem.arena_ = m.arena;
-    //mem.ordblks_ = m.ordblks;
-    //mem.smblks_ = m.smblks;
-    //mem.hblks_ = m.hblks;
-    mem.hblkhd_ = m.hblkhd;
-    mem.usmblks_ = m.usmblks;
-    mem.fsmblks_ = m.fsmblks;
+    mem.arena_        = m.arena;
+    // mem.ordblks_ = m.ordblks;
+    // mem.smblks_ = m.smblks;
+    // mem.hblks_ = m.hblks;
+    mem.hblkhd_   = m.hblkhd;
+    mem.usmblks_  = m.usmblks;
+    mem.fsmblks_  = m.fsmblks;
     mem.uordblks_ = m.uordblks;
     mem.fordblks_ = m.fordblks;
     mem.keepcost_ = m.keepcost;
@@ -149,6 +161,5 @@ MemoryInfo SystemInfoLinux::memoryUsage() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
-
+}  // namespace system
+}  // namespace eckit

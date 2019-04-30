@@ -25,7 +25,8 @@ void Triplet::print(std::ostream& os) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const eckit::linalg::Triplet& p) {
-    p.print(os); return os;
+    p.print(os);
+    return os;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

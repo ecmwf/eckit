@@ -14,11 +14,12 @@
 #ifndef eckit_filesystem_PartFileHandle_h
 #define eckit_filesystem_PartFileHandle_h
 
+#include <memory>
+
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
-#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -92,7 +93,7 @@ private:
 	Ordinal            index_;
 	OffsetList         offset_;
 	LengthList         length_;
-	ScopedPtr<Buffer>  buffer_;
+    std::unique_ptr<Buffer>  buffer_;
 
 // -- Methods
 

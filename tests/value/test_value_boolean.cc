@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,8 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Booleans cast correctly in/out of Value" ) {
-
+CASE("Booleans cast correctly in/out of Value") {
     Value val_true(true);
     Value val_false(false);
 
@@ -81,7 +79,7 @@ CASE( "Booleans cast correctly in/out of Value" ) {
     EXPECT_THROWS_AS(val_false.as<ValueMap>(), BadConversion);
 }
 
-CASE( "Type knowledge is correct for booleans" ) {
+CASE("Type knowledge is correct for booleans") {
     Value val_true(true);
     Value val_false(false);
 
@@ -109,7 +107,7 @@ CASE( "Type knowledge is correct for booleans" ) {
     EXPECT(!val_false.isDateTime());
 }
 
-CASE( "Booleans compare with other booleans, and are well ordered to other Value" ) {
+CASE("Booleans compare with other booleans, and are well ordered to other Value") {
     Value val_true1(true);
     Value val_true2(true);
     Value val_false1(false);
@@ -127,31 +125,30 @@ CASE( "Booleans compare with other booleans, and are well ordered to other Value
 
     // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(val_true1.compare(Value(true))               == 0);
-    EXPECT(val_true1.compare(Value(1))                   > 0);
-    EXPECT(val_true1.compare(Value(1234.5))              > 0);
-    EXPECT(val_true1.compare(Value("test str"))          > 0);
-    EXPECT(val_true1.compare(Value())                    > 0);
-    EXPECT(val_true1.compare(Value::makeList())          > 0);
-    EXPECT(val_true1.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val_true1.compare(Value(Time(1000)))          > 0);
-    EXPECT(val_true1.compare(Value(DateTime()))          > 0);
-    EXPECT(val_true1.compare(Value::makeOrderedMap())    > 0);
+    EXPECT(val_true1.compare(Value(true)) == 0);
+    EXPECT(val_true1.compare(Value(1)) > 0);
+    EXPECT(val_true1.compare(Value(1234.5)) > 0);
+    EXPECT(val_true1.compare(Value("test str")) > 0);
+    EXPECT(val_true1.compare(Value()) > 0);
+    EXPECT(val_true1.compare(Value::makeList()) > 0);
+    EXPECT(val_true1.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val_true1.compare(Value(Time(1000))) > 0);
+    EXPECT(val_true1.compare(Value(DateTime())) > 0);
+    EXPECT(val_true1.compare(Value::makeOrderedMap()) > 0);
 
-    EXPECT(val_false1.compare(Value(false))              == 0);
-    EXPECT(val_false1.compare(Value(1))                   > 0);
-    EXPECT(val_false1.compare(Value(1234.5))              > 0);
-    EXPECT(val_false1.compare(Value("test str"))          > 0);
-    EXPECT(val_false1.compare(Value())                    > 0);
-    EXPECT(val_false1.compare(Value::makeList())          > 0);
-    EXPECT(val_false1.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val_false1.compare(Value(Time(1000)))          > 0);
-    EXPECT(val_false1.compare(Value(DateTime()))          > 0);
-    EXPECT(val_false1.compare(Value::makeOrderedMap())    > 0);
-
+    EXPECT(val_false1.compare(Value(false)) == 0);
+    EXPECT(val_false1.compare(Value(1)) > 0);
+    EXPECT(val_false1.compare(Value(1234.5)) > 0);
+    EXPECT(val_false1.compare(Value("test str")) > 0);
+    EXPECT(val_false1.compare(Value()) > 0);
+    EXPECT(val_false1.compare(Value::makeList()) > 0);
+    EXPECT(val_false1.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val_false1.compare(Value(Time(1000))) > 0);
+    EXPECT(val_false1.compare(Value(DateTime())) > 0);
+    EXPECT(val_false1.compare(Value::makeOrderedMap()) > 0);
 }
 
-CASE( "Indexing is not a valid operation for booleans" ) {
+CASE("Indexing is not a valid operation for booleans") {
     // No indexing operations should work on a bool...
 
     Value val_true(true);
@@ -180,7 +177,7 @@ CASE( "Indexing is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(val_false.contains(Value(123)), BadOperator);
 }
 
-CASE( "Addition is not a valid operation for booleans" ) {
+CASE("Addition is not a valid operation for booleans") {
     // There are no valid boolean addition operations.
 
     Value val(true);
@@ -210,7 +207,7 @@ CASE( "Addition is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Subtraction is not a valid operation for booleans" ) {
+CASE("Subtraction is not a valid operation for booleans") {
     // There are no valid boolean subtraction operations.
 
     Value val(true);
@@ -240,7 +237,7 @@ CASE( "Subtraction is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Multiplication is not a valid operation for booleans" ) {
+CASE("Multiplication is not a valid operation for booleans") {
     // There are no valid boolean multiplication operations.
 
     Value val(true);
@@ -270,7 +267,7 @@ CASE( "Multiplication is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Division is not a valid operation for booleans" ) {
+CASE("Division is not a valid operation for booleans") {
     // There are no valid boolean division operations.
 
     Value val(true);
@@ -300,7 +297,7 @@ CASE( "Division is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "The modulo operator is not a valid operation for booleans" ) {
+CASE("The modulo operator is not a valid operation for booleans") {
     // There are no valid boolean modulo operations.
 
     Value val(true);
@@ -330,7 +327,7 @@ CASE( "The modulo operator is not a valid operation for booleans" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Head/tail tests are disabled for booleans" ) {
+CASE("Head/tail tests are disabled for booleans") {
     Value val(true);
 
     /// EXPECT_THROWS_AS(val.head(), AssertationError);
@@ -338,19 +335,18 @@ CASE( "Head/tail tests are disabled for booleans" ) {
     EXPECT(true);
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     Value(true).hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "55a54008ad1ba589aa210d2629c1df41");
 
     Value(false).hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "013b1a00c5739a37fa9a5a89337ec241");
 }

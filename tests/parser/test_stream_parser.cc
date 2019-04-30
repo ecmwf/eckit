@@ -20,9 +20,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_eckit_parser_stream_next" ) {
+CASE("test_eckit_parser_stream_next") {
     std::stringstream ss;
     ss << "1234567890abcdefgh";
 
@@ -35,7 +35,7 @@ CASE ( "test_eckit_parser_stream_next" ) {
     EXPECT(parser.next() == 'h');
 }
 
-CASE ( "test_eckit_parser_stream_next_spaces" ) {
+CASE("test_eckit_parser_stream_next_spaces") {
     std::stringstream ss;
     ss << "1 3  6    ab def h";
 
@@ -50,7 +50,7 @@ CASE ( "test_eckit_parser_stream_next_spaces" ) {
     EXPECT(parser.next(false) == 'a');
 }
 
-CASE ( "test_eckit_parser_stream_next_eof" ) {
+CASE("test_eckit_parser_stream_next_eof") {
     // cf. commit: 7224cc431
 
     std::stringstream ss;
@@ -63,13 +63,13 @@ CASE ( "test_eckit_parser_stream_next_eof" ) {
     EXPECT_THROWS_AS(parser.next(), StreamParser::Error);
 }
 
-CASE ( "test_eckit_parser_stream_peek" ) {
+CASE("test_eckit_parser_stream_peek") {
     std::stringstream ss;
     ss << " 2   5";
 
     eckit::StreamParser parser(ss);
 
-    EXPECT(parser.peek() == '2'); // n.b. by default spaces=false
+    EXPECT(parser.peek() == '2');  // n.b. by default spaces=false
     EXPECT(parser.peek() == '2');
     EXPECT(parser.next() == '2');
     EXPECT(parser.peek(true) == ' ');
@@ -81,7 +81,7 @@ CASE ( "test_eckit_parser_stream_peek" ) {
     EXPECT(parser.peek() == 0);
 }
 
-CASE ( "test_eckit_parser_stream_consume_char" ) {
+CASE("test_eckit_parser_stream_consume_char") {
     std::stringstream ss;
     ss << " 2  567 ";
 
@@ -92,14 +92,14 @@ CASE ( "test_eckit_parser_stream_consume_char" ) {
     parser.consume('5');
 
     // Check that it throws on mismatch
-    EXPECT_THROWS_AS(parser.consume('7'), StreamParser::Error); // 6 != 7
+    EXPECT_THROWS_AS(parser.consume('7'), StreamParser::Error);  // 6 != 7
     parser.consume('7');
 
     // Check that it throws on eof
     EXPECT_THROWS_AS(parser.consume('8'), StreamParser::Error);
 }
 
-CASE ( "test_eckit_parser_stream_consume_string" ) {
+CASE("test_eckit_parser_stream_consume_string") {
     std::stringstream ss;
     ss << " 234  789 0a";
 
@@ -115,13 +115,11 @@ CASE ( "test_eckit_parser_stream_consume_string" ) {
     EXPECT_THROWS_AS(parser.consume("0ab"), StreamParser::Error);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

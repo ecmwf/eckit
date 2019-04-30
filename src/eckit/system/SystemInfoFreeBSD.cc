@@ -15,18 +15,18 @@
 
 #include <stdlib.h>
 
-#include <unistd.h>
-#include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/sysctl.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #include <climits>
 
 #include "eckit/system/SystemInfoFreeBSD.h"
 
-#include "eckit/io/Buffer.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/system/MemoryInfo.h"
 
 namespace eckit {
@@ -34,11 +34,9 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SystemInfoFreeBSD::~SystemInfoFreeBSD() {
-}
+SystemInfoFreeBSD::~SystemInfoFreeBSD() {}
 
-LocalPathName SystemInfoFreeBSD::executablePath() const
-{
+LocalPathName SystemInfoFreeBSD::executablePath() const {
     Buffer buffer(PATH_MAX);
 
     int mib[4];
@@ -65,6 +63,5 @@ MemoryInfo SystemInfoFreeBSD::memoryUsage() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
-
+}  // namespace system
+}  // namespace eckit

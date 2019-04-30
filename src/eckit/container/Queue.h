@@ -40,96 +40,82 @@ class Queue {
 
 public: // public
 
-    Queue(size_t max) : max_(max), interruptException_(nullptr), done_(false), interrupt_(false) {
+    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) {
         ASSERT(max > 0);
     }
 
     Queue(const Queue&) = delete;
     Queue& operator=(const Queue&) = delete;
 
-    Queue(Queue&&) = default;
-    Queue& operator=(Queue&&) = default;
+    // n.b. cannot move object with std::condition_variable
+    Queue(Queue&& rhs) = delete;
+    Queue& operator=(Queue&& rhs) = delete;
+
+    size_t maxSize() const {
+        return max_;
+    }
 
     void resize(size_t size) {
         ASSERT(size > 0);
         std::unique_lock<std::mutex> locker(mutex_);
-        while (queue_.size() > size) {
+        while (checkInterrupt() && queue_.size() > size) {
             cv_.wait(locker);
-            if (interrupt_) std::rethrow_exception(interruptException_);
         }
+        ASSERT(!closed_);
         max_ = size;
         locker.unlock();
         cv_.notify_one();
     }
 
-    void reset() {
+    void close() {
         std::unique_lock<std::mutex> locker(mutex_);
-        while (queue_.size()) {
-            cv_.wait(locker);
-        }
-        interrupt_ = false;
-        interruptException_ = nullptr;
-        done_ = false;
-        queue_ = std::queue<ELEM>();
-    }
-
-    void set_done() {
-        std::unique_lock<std::mutex> locker(mutex_);
-        done_ = true;
+        closed_ = true;
         locker.unlock();
         cv_.notify_one();
     }
 
-    bool done() {
+    bool closed() {
         std::unique_lock<std::mutex> locker(mutex_);
-        return done_ || interrupt_;
+        return closed_ || interrupt_;
+    }
+
+    bool empty() {
+        std::unique_lock<std::mutex> locker(mutex_);
+        return queue_.empty();
+    }
+
+    bool checkInterrupt() {
+        if (interrupt_) std::rethrow_exception(interrupt_);
+        return true;
     }
 
     void interrupt(std::exception_ptr expn) {
         std::unique_lock<std::mutex> locker(mutex_);
-        interrupt_ = true;
-        interruptException_ = expn;
+        interrupt_ = expn;
         locker.unlock();
         cv_.notify_all();
     }
 
-    // n.b. no done mechanism implemented here.
-    ELEM pop() {
-        std::unique_lock<std::mutex> locker(mutex_);
-        while (queue_.empty()) {
-            ASSERT(!done_);
-            cv_.wait(locker);
-            if (interrupt_) std::rethrow_exception(interruptException_);
-        }
-        auto e = queue_.front();
-        queue_.pop();
-        locker.unlock();
-        cv_.notify_one();
-        return e;
-    }
-
     long pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
-        while (queue_.empty()) {
-            if (done_) return -1;
+        while (checkInterrupt() && queue_.empty()) {
+            if (closed_) return -1;
             cv_.wait(locker);
-            if (interrupt_) std::rethrow_exception(interruptException_);
         }
         std::swap(e, queue_.front());
         queue_.pop();
         size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
-        return size;
+        return long(size);
     }
 
     size_t push(const ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
-        while (queue_.size() >= max_) {
+        while (checkInterrupt() && queue_.size() >= max_) {
             cv_.wait(locker);
-            if (interrupt_) std::rethrow_exception(interruptException_);
         }
-        ASSERT(!done_);
+        ASSERT(!closed_);
         queue_.push(e);
         size_t size = queue_.size();
         locker.unlock();
@@ -137,14 +123,14 @@ public: // public
         return size;
     }
 
-    size_t emplace(ELEM&& e) {
+    template<typename... Args>
+    size_t emplace(Args&&... args) {
         std::unique_lock<std::mutex> locker(mutex_);
-        while (queue_.size() >= max_) {
+        while (checkInterrupt() && queue_.size() >= max_) {
             cv_.wait(locker);
-            if (interrupt_) std::rethrow_exception(interruptException_);
         }
-        ASSERT(!done_);
-        queue_.emplace(std::move(e));
+        ASSERT(!closed_);
+        queue_.emplace(std::forward<Args>(args)...);
         size_t size = queue_.size();
         locker.unlock();
         cv_.notify_one();
@@ -157,9 +143,8 @@ private: // members
     std::mutex mutex_;
     std::condition_variable cv_;
     size_t max_;
-    std::exception_ptr interruptException_;
-    bool done_;
-    bool interrupt_;
+    std::exception_ptr interrupt_;
+    bool closed_;
 };
 
 

@@ -14,6 +14,8 @@
 #ifndef eckit_log_FileTarget_h
 #define eckit_log_FileTarget_h
 
+#include <fstream>
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/LogTarget.h"
 

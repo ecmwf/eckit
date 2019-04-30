@@ -30,6 +30,7 @@ check_symbol_exists( MAP_ANON      "sys/mman.h"  ECKIT_HAVE_MAP_ANON )
 check_symbol_exists( funopen       "stdio.h"     ECKIT_HAVE_FUNOPEN )
 check_symbol_exists( fsync         "unistd.h"    ECKIT_HAVE_FSYNC)
 check_symbol_exists( fdatasync     "unistd.h"    ECKIT_HAVE_FDATASYNC)
+check_symbol_exists( F_FULLFSYNC   "fcntl.h"     ECKIT_HAVE_F_FULLFSYNC)
 check_symbol_exists( fmemopen      "stdio.h"     ECKIT_HAVE_FMEMOPEN )
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
@@ -40,9 +41,6 @@ check_c_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(
 
 check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
     ECKIT_HAVE_CXXABI_H )
-
-check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
-    ECKIT_HAVE_FUNCTION_DEF )
 
 check_c_source_compiles( "#include <time.h>\nint main(){ time_t now; time(&now); struct tm t; gmtime_r(&now,&t); }\n"
     ECKIT_HAVE_GMTIME_R )
@@ -76,7 +74,7 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 
 ### eckit sources
 
-list( APPEND eckit_srcs eckit.h eckit_version.cc )
+list( APPEND eckit_srcs eckit.h deprecated.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
 
@@ -135,6 +133,8 @@ io/Length.h
 io/Length.cc
 io/DataHandle.h
 io/DataHandle.cc
+io/FDataSync.h
+io/FDataSync.cc
 io/Select.h
 io/Select.cc
 io/CommandStream.h
@@ -267,6 +267,8 @@ filesystem/FileSystem.h
 filesystem/FileSystem.cc
 filesystem/TempFile.h
 filesystem/TempFile.cc
+filesystem/TmpDir.h
+filesystem/TmpDir.cc
 filesystem/TmpFile.h
 filesystem/TmpFile.cc
 filesystem/marsfs/MarsFSFile.h
@@ -380,6 +382,8 @@ log/MonitorTarget.h
 log/MonitorTarget.cc
 log/MessageTarget.h
 log/MessageTarget.cc
+log/Number.h
+log/Number.cc
 log/ChannelBuffer.h
 log/ChannelBuffer.cc
 log/CodeLocation.h
@@ -465,10 +469,6 @@ types/VerifyingDate.cc
 list( APPEND eckit_parser_srcs
 parser/StreamParser.h
 parser/StreamParser.cc
-parser/StringTools.h
-parser/StringTools.cc
-parser/Tokenizer.h
-parser/Tokenizer.cc
 parser/JSON.h
 parser/JSON.cc
 parser/ObjectParser.h
@@ -520,7 +520,8 @@ value/ScopeParams.h
 value/StringContent.h
 value/StringContent.cc
 value/Value.h
-value/Value.cc )
+value/Value.cc
+)
 
 list( APPEND eckit_os_srcs
 os/Stat.h
@@ -572,6 +573,8 @@ net/Port.h
 net/Port.cc )
 
 list( APPEND eckit_serialisation_srcs
+serialisation/BadTag.h
+serialisation/BadTag.cc
 serialisation/Stream.h
 serialisation/Stream.cc
 serialisation/Streamable.h
@@ -585,15 +588,19 @@ serialisation/FstreamStream.h
 serialisation/IfstreamStream.h
 serialisation/PipeStream.h
 serialisation/PipeStream.cc
+serialisation/ResizableMemoryStream.h
+serialisation/ResizableMemoryStream.cc
 serialisation/Reanimator.h
 serialisation/Reanimator.cc
 serialisation/ReanimatorBase.cc )
 
 list( APPEND eckit_persist_srcs
+persist/Bless.h
 persist/Exporter.h
 persist/Exporter.cc
 persist/DumpLoad.h
 persist/DumpLoad.cc
+persist/Isa.h
 persist/Isa.cc )
 
 list( APPEND eckit_utils_srcs
@@ -610,7 +617,12 @@ utils/RendezvousHash.cc
 utils/HyperCube.h
 utils/HyperCube.cc
 utils/RLE.h
-utils/RLE.cc )
+utils/RLE.cc
+utils/StringTools.h
+utils/StringTools.cc
+utils/Tokenizer.h
+utils/Tokenizer.cc
+)
 
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
@@ -644,12 +656,14 @@ memory/MMap.h
 memory/Shmget.cc
 memory/Shmget.h
 memory/SharedPtr.h
+memory/SharedPtr.cc
 memory/Padded.h
 memory/MapAllocator.h
 memory/MapAllocator.cc
 memory/NonCopyable.h
 memory/NonCopyable.cc
-memory/ScopedPtr.h )
+memory/ScopedPtr.h
+memory/Zero.h )
 
 list( APPEND eckit_compat_srcs
 compat/Inited.h
@@ -771,7 +785,7 @@ list( APPEND eckit_persistent
 
 ### eckit library
 
-ecbuild_add_library(TARGET eckit
+ecbuild_add_library(TARGET eckit TYPE SHARED
 					INSTALL_HEADERS LISTED
 					HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit
@@ -804,6 +818,10 @@ ecbuild_add_library(TARGET eckit
 
 if( HAVE_ECKIT_CMD )
   add_subdirectory( cmd )
+endif()
+
+if( HAVE_ECKIT_SQL )
+  add_subdirectory( sql )
 endif()
 
 add_subdirectory( geometry )

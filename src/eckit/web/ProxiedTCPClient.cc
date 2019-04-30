@@ -9,33 +9,29 @@
  */
 
 
-#include "eckit/config/Resource.h"
 #include "eckit/web/ProxiedTCPClient.h"
+#include "eckit/config/Resource.h"
 #include "eckit/web/HttpHeader.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ProxiedTCPClient::ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port):
+ProxiedTCPClient::ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port) :
     TCPClient(port),
     proxyHost_(proxyHost),
-    proxyPort_(proxyPort)
-{
-}
+    proxyPort_(proxyPort) {}
 
-ProxiedTCPClient::~ProxiedTCPClient()
-{
-}
+ProxiedTCPClient::~ProxiedTCPClient() {}
 
 TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout) {
     TCPSocket& socket = TCPClient::connect(proxyHost_, proxyPort_, retries, timeout);
 
     socket.debug(debug_);
 
-    const char * CRLF = "\r\n";
+    const char* CRLF = "\r\n";
 
     std::ostringstream oss;
     oss << "CONNECT " << host << ":" << port << " HTTP/1.0" << CRLF;
@@ -43,7 +39,8 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
     oss << CRLF;
 
     std::string request(oss.str());
-    ASSERT(socket.write(&request[0], request.size()) == request.size());
+    auto len = long(request.size());
+    ASSERT(socket.write(&request[0], len) == len);
 
 
     // Strip http-header
@@ -56,14 +53,11 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
 
 void ProxiedTCPClient::print(std::ostream& s) const {
     s << "ProxiedTCPClient["
-      << "proxyHost=" << proxyHost_
-      << "proxyPort=" << proxyPort_
-      << ",";
+      << "proxyHost=" << proxyHost_ << "proxyPort=" << proxyPort_ << ",";
     TCPClient::print(s);
     s << "]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

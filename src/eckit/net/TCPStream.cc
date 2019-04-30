@@ -10,51 +10,37 @@
 
 #include "eckit/net/TCPStream.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-TCPStream::TCPStream(TCPSocket& socket):
-	socket_(socket)
-{
-}
+TCPStream::TCPStream(TCPSocket& socket) : socket_(socket) {}
 
-TCPStream::~TCPStream()
-{
-}
+TCPStream::~TCPStream() {}
 
-void TCPStream::closeOutput()
-{
-  socket_.closeOutput();
+void TCPStream::closeOutput() {
+    socket_.closeOutput();
 }
 //======================
 // Tricky solution to be removed when 'mutable' is available
 //
-std::string TCPStreamBase::nonConstName()
-{
+std::string TCPStreamBase::nonConstName() {
     std::ostringstream r;
     r << "TCPStream[" << socket() << "]";
     return r.str();
 }
 
-std::string TCPStreamBase::name() const
-{
-	return ((TCPStreamBase*)this)->nonConstName();
+std::string TCPStreamBase::name() const {
+    return ((TCPStreamBase*)this)->nonConstName();
 }
 
-SharedTCPStream::SharedTCPStream(TCPSocket& s):
-	TCPStream(s)
-{
-}
+SharedTCPStream::SharedTCPStream(TCPSocket& s) : TCPStream(s) {}
 
-SharedTCPStream::~SharedTCPStream()
-{
-}
+SharedTCPStream::~SharedTCPStream() {}
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

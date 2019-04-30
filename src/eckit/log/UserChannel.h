@@ -18,7 +18,7 @@
 #include <ostream>
 
 #include "eckit/memory/NonCopyable.h"
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 

@@ -13,7 +13,7 @@
 /// @date   July 2015
 
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/LinearAlgebra.h"
 
@@ -26,7 +26,7 @@ using namespace eckit::linalg;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_list") {
     std::ostringstream oss;
@@ -70,12 +70,11 @@ CASE("test_backend") {
     EXPECT_THROWS_AS(LinearAlgebra::backend("foo"), BadParameter);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

@@ -9,39 +9,30 @@
  */
 
 
-#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
+#include "eckit/thread/AutoLock.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-Thread::Thread(bool autodel):
-	stop_(false),
-	autodel_(autodel)
-{
+Thread::Thread(bool autodel) : stop_(false), autodel_(autodel) {}
+
+Thread::~Thread() {}
+
+void Thread::stop() {
+    AutoLock<Mutex> lock(mutex_);
+    stop_ = true;
 }
 
-Thread::~Thread()
-{
+bool Thread::stopped() {
+    AutoLock<Mutex> lock(mutex_);
+    return stop_;
 }
 
-void Thread::stop()
-{
-	AutoLock<Mutex> lock(mutex_);
-	stop_ = true;
-}
+//----------------------------------------------------------------------------------------------------------------------
 
-bool Thread::stopped()
-{
-	AutoLock<Mutex> lock(mutex_);
-	return stop_;
-}
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
-
+}  // namespace eckit

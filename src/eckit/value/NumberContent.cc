@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/value/DoubleContent.h"
+#include "eckit/value/NumberContent.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/parser/JSON.h"
-#include "eckit/value/NumberContent.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/DoubleContent.h"
 
 #include "eckit/utils/Hash.h"
 
@@ -21,26 +21,22 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class BadBoolConversion:  public Exception {
+class BadBoolConversion : public Exception {
 public:
-    BadBoolConversion(const std::string& w):
-        Exception(std::string("Bad Bool Conversion: ") + w)   {  }
+    BadBoolConversion(const std::string& w) : Exception(std::string("Bad Bool Conversion: ") + w) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec NumberContent::classSpec_ = {&Content::classSpec(), "NumberContent",};
+ClassSpec NumberContent::classSpec_ = {
+    &Content::classSpec(),
+    "NumberContent",
+};
 Reanimator<NumberContent> NumberContent::reanimator_;
 
-NumberContent::NumberContent(long long l):
-    value_(l)
-{
-}
+NumberContent::NumberContent(long long l) : value_(l) {}
 
-NumberContent::NumberContent(Stream& s):
-    Content(s),
-    value_(0)
-{
+NumberContent::NumberContent(Stream& s) : Content(s), value_(0) {
     s >> value_;
 }
 
@@ -48,33 +44,26 @@ Content* NumberContent::clone() const {
     return new NumberContent(value_);
 }
 
-void NumberContent::encode(Stream& s) const
-{
+void NumberContent::encode(Stream& s) const {
     Content::encode(s);
     s << value_;
 }
 
-NumberContent::~NumberContent()
-{
-}
+NumberContent::~NumberContent() {}
 
-void NumberContent::print(std::ostream& s) const
-{
+void NumberContent::print(std::ostream& s) const {
     s << value_;
 }
 
-void NumberContent::json(JSON& s) const
-{
+void NumberContent::json(JSON& s) const {
     s << value_;
 }
 
-int NumberContent::compare(const Content& other) const
-{
+int NumberContent::compare(const Content& other) const {
     return -other.compareNumber(*this);
 }
 
-int NumberContent::compareNumber(const NumberContent& other) const
-{
+int NumberContent::compareNumber(const NumberContent& other) const {
     long long dif = (value_ - other.value_);
     if (dif == 0)
         return dif;
@@ -84,8 +73,7 @@ int NumberContent::compareNumber(const NumberContent& other) const
     return 1;
 }
 
-int NumberContent::compareDouble(const DoubleContent& other) const
-{
+int NumberContent::compareDouble(const DoubleContent& other) const {
     double dif = (value_ - other.value_);
     if (dif == 0)
         return dif;
@@ -94,76 +82,62 @@ int NumberContent::compareDouble(const DoubleContent& other) const
     return 1;
 }
 
-void NumberContent::value(bool& b) const
-{
-    if ( value_ == 0 )
+void NumberContent::value(bool& b) const {
+    if (value_ == 0)
         b = false;
     else
         b = true;
 }
 
-void NumberContent::value(long long& l) const
-{
+void NumberContent::value(long long& l) const {
     l = value_;
 }
 
-void NumberContent::value(double& l) const
-{
+void NumberContent::value(double& l) const {
     l = value_;
 }
 
-void NumberContent::value(std::string& s) const
-{
+void NumberContent::value(std::string& s) const {
     s = Translator<long long, std::string>()(value_);
 }
 
-Content* NumberContent::add(const Content& other) const
-{
+Content* NumberContent::add(const Content& other) const {
     return other.addNumber(*this);
 }
 
-Content* NumberContent::addNumber(const NumberContent& other) const
-{
+Content* NumberContent::addNumber(const NumberContent& other) const {
     return new NumberContent(other.value_ + value_);
 }
 
-Content* NumberContent::sub(const Content& other) const
-{
+Content* NumberContent::sub(const Content& other) const {
     return other.subNumber(*this);
 }
 
-Content* NumberContent::subNumber(const NumberContent& other) const
-{
+Content* NumberContent::subNumber(const NumberContent& other) const {
     return new NumberContent(other.value_ - value_);
 }
 
-Content* NumberContent::mul(const Content& other) const
-{
+Content* NumberContent::mul(const Content& other) const {
     return other.mulNumber(*this);
 }
 
-Content* NumberContent::mod(const Content& other) const
-{
+Content* NumberContent::mod(const Content& other) const {
     return other.modNumber(*this);
 }
 
-Content* NumberContent::mulNumber(const NumberContent& other) const
-{
+Content* NumberContent::mulNumber(const NumberContent& other) const {
     return new NumberContent(other.value_ * value_);
 }
 
-Content* NumberContent::div(const Content& other) const
-{
+Content* NumberContent::div(const Content& other) const {
     return other.divNumber(*this);
 }
 
-Content* NumberContent::divNumber(const NumberContent& other) const
-{
+Content* NumberContent::divNumber(const NumberContent& other) const {
     return new NumberContent(other.value_ / value_);
 }
 
-Value NumberContent::negate() const
-{
+Value NumberContent::negate() const {
     return Value(-value_);
 }
 
@@ -182,5 +156,4 @@ void NumberContent::hash(Hash& h) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

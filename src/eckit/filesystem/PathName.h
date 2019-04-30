@@ -162,10 +162,10 @@ public:
     void chmod(short mode) const;
 
     /// Unlink the path
-    void unlink() const;
+    void unlink(bool verbose=true) const;
 
     /// Remove the directory
-    void rmdir() const;
+    void rmdir(bool verbose=true) const;
 
     /// Synchronise the parent directory entries to persistent storage
     void syncParentDirectory() const;

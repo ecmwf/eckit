@@ -8,26 +8,38 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/persist/DumpLoad.h"
-#include "eckit/io/Length.h"
+#include <iostream>
 
-//-----------------------------------------------------------------------------
+#include "eckit/io/Length.h"
+#include "eckit/persist/DumpLoad.h"
+#include "eckit/serialisation/Stream.h"
+
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-void Length::dump(DumpLoad& a) const
-{
-	a.dump(value_);
+std::ostream& operator<<(std::ostream& s, const Length& x) {
+    return s << x.value_;
 }
 
-void Length::load(DumpLoad& a)
-{
-	a.load(value_);
+Stream& operator<<(Stream& s, const Length& x) {
+    return s << x.value_;
 }
 
-//-----------------------------------------------------------------------------
+Stream& operator>>(Stream& s, Length& x) {
+    return s >> x.value_;
+}
 
-} // namespace eckit
+void Length::dump(DumpLoad& a) const {
+    a.dump(value_);
+}
 
+void Length::load(DumpLoad& a) {
+    a.load(value_);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

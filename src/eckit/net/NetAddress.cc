@@ -13,63 +13,50 @@
 
 #include "NetAddress.h"
 
-#include "eckit/parser/Tokenizer.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-Stream& operator<<(Stream& s,const NetAddress& addr)
-{
+Stream& operator<<(Stream& s, const NetAddress& addr) {
     s << addr.host_ << addr.port_;
     return s;
 }
 
-Stream& operator>>(Stream& s,NetAddress& addr)
-{
+Stream& operator>>(Stream& s, NetAddress& addr) {
     s >> addr.host_ >> addr.port_;
     return s;
 }
 
 
-NetAddress::NetAddress(const std::string& host, const int port) :
-    host_(host),
-    port_(port)
-{
-}
+NetAddress::NetAddress(const std::string& host, const int port) : host_(host), port_(port) {}
 
-NetAddress::NetAddress(const std::string& s)
-{
+NetAddress::NetAddress(const std::string& s) {
     Tokenizer tokenize(":");
     std::vector<std::string> tokens;
-    tokenize(s,tokens);
+    tokenize(s, tokens);
     ASSERT(tokens.size() == 2);
     host_ = tokens[0];
-    port_ = Translator<std::string,int>()( tokens[1] );
+    port_ = Translator<std::string, int>()(tokens[1]);
 
     // check that port_ > 0
 }
 
-NetAddress::NetAddress(const NetAddress& other) :
-    host_(other.host_),
-    port_(other.port_)
-{
-}
+NetAddress::NetAddress(const NetAddress& other) : host_(other.host_), port_(other.port_) {}
 
-NetAddress::~NetAddress()
-{
-}
+NetAddress::~NetAddress() {}
 
-NetAddress& NetAddress::operator=(const NetAddress& other)
-{
-	if(this != &other) {
+NetAddress& NetAddress::operator=(const NetAddress& other) {
+    if (this != &other) {
         host_ = other.host_;
         port_ = other.port_;
     }
-	return *this;
+    return *this;
 }
 
 #if 0
@@ -81,12 +68,10 @@ std::string NetAddress::asString() const
 }
 #endif
 
-void NetAddress::print(std::ostream& s) const
-{
+void NetAddress::print(std::ostream& s) const {
     s << host_ << ":" << port_;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

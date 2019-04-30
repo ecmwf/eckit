@@ -8,34 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/parser/JSON.h"
 #include "eckit/web/JSONResource.h"
+#include "eckit/parser/JSON.h"
 #include "eckit/web/Url.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-JSONResource::JSONResource(const std::string& name):
-    HtmlResource(name)
-{
+JSONResource::JSONResource(const std::string& name) : HtmlResource(name) {
     // Should do something here...
 }
-JSONResource::~JSONResource()
-{
+JSONResource::~JSONResource() {
     // Should do something here...
 }
 
-void JSONResource::GET(std::ostream& out, Url& url)
-{
+void JSONResource::GET(std::ostream& out, Url& url) {
     url.headerOut().type("application/json");
     JSON j(out);
     json(j, url.json());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

@@ -9,6 +9,7 @@
  */
 
 #include <algorithm>
+#include <cstring>
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
@@ -17,11 +18,11 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
+#include "eckit/io/HandleHolder.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/types/Types.h"
-#include "eckit/io/HandleHolder.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
 
 using namespace std;
 using namespace eckit;
@@ -37,28 +38,17 @@ class Restart : public DataHandle, public HandleHolder {
     Length nextStop_;
 
 public:
+    static size_t increment() { return 77773; }  // a prime larger than 4 KiB
 
-    static size_t increment() { return 77773; } // a prime larger than 4 KiB
+    Restart(DataHandle* h) : HandleHolder(h), total_(0) { nextStop_ = increment(); }
 
-    Restart(DataHandle* h): HandleHolder(h), total_(0) {
-        nextStop_ = increment();
-    }
+    virtual Length openForRead() { NOTIMP; }
 
-    virtual Length openForRead() {
-        NOTIMP;
-    }
+    virtual void openForWrite(const Length& len) { return handle().openForWrite(len); }
 
-    virtual void openForWrite(const Length& len) {
-        return handle().openForWrite(len);
-    }
+    virtual void openForAppend(const Length& len) { NOTIMP; }
 
-    virtual void openForAppend(const Length& len) {
-        NOTIMP;
-    }
-
-    virtual long read(void* buffer, long len) {
-        NOTIMP;
-    }
+    virtual long read(void* buffer, long len) { NOTIMP; }
 
     virtual long write(const void* buffer, long len) {
         if (total_ > nextStop_) {
@@ -67,7 +57,7 @@ public:
 
             // 67108879 is first prime after 64*1024*1024 -- the default buffer size in saveInto()
             // this way we test that we roll back to data position before the whole buffer size
-            Offset backTo = std::max(total_ - Length(67108879), (long long int) 0);
+            Offset backTo = std::max(total_ - Length(67108879), (long long int)0);
 
             std::cout << "backTo " << backTo << " nextStop " << nextStop_ << std::endl;
 
@@ -77,50 +67,27 @@ public:
         return handle().write(buffer, len);
     }
 
-    virtual void close() {
-        handle().close();
-    }
+    virtual void close() { handle().close(); }
 
-    virtual void flush() {
-        NOTIMP;
-    }
+    virtual void flush() { NOTIMP; }
 
-    virtual void rewind() {
-        NOTIMP;
-    }
+    virtual void rewind() { NOTIMP; }
 
-    virtual void print(std::ostream& os) const {
-        os << "Restart";
-    }
+    virtual void print(std::ostream& os) const { os << "Restart"; }
 
-    virtual void skip(const Length&) {
-        NOTIMP;
-    }
+    virtual void skip(const Length&) { NOTIMP; }
 
-    virtual Offset seek(const Offset&) {
-        NOTIMP;
-    }
+    virtual Offset seek(const Offset&) { NOTIMP; }
 
-    virtual Length estimate() {
-        NOTIMP;
-    }
+    virtual Length estimate() { NOTIMP; }
 
-    virtual Offset position() {
-        NOTIMP;
-    }
+    virtual Offset position() { NOTIMP; }
 
-    virtual DataHandle* clone() const {
-        NOTIMP;
-    }
+    virtual DataHandle* clone() const { NOTIMP; }
 
-    virtual void restartReadFrom(const Offset& offset) {
-        handle().restartReadFrom(offset);
-    }
+    virtual void restartReadFrom(const Offset& offset) { handle().restartReadFrom(offset); }
 
-    virtual void restartWriteFrom(const Offset& offset) {
-        handle().restartWriteFrom(offset);
-    }
-
+    virtual void restartWriteFrom(const Offset& offset) { handle().restartWriteFrom(offset); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -137,8 +104,7 @@ public:
 };
 
 
-void TestMHHandle::test_write()
-{
+void TestMHHandle::test_write() {
     const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
     const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -148,7 +114,7 @@ void TestMHHandle::test_write()
     {
 
         Buffer b1(N * 26);
-        char *p = b1;
+        char* p = b1;
         for (size_t i = 0; i < N; i++) {
             memcpy(p, buf1, 26);
             p += 26;
@@ -166,7 +132,7 @@ void TestMHHandle::test_write()
     // create second file
     {
         Buffer b2(N * 26);
-        char *p = b2;
+        char* p = b2;
         for (size_t i = 0; i < N; i++) {
             memcpy(p, buf2, 26);
             p += 26;
@@ -180,7 +146,6 @@ void TestMHHandle::test_write()
         f2.close();
 
         std::cout << path2_ << std::endl;
-
     }
 
     std::cout << "-------------------------------------------------------" << std::endl;
@@ -192,7 +157,6 @@ void TestMHHandle::test_write()
 
             mh1 += new PartFileHandle(path1_, i * N, N);
             mh1 += new PartFileHandle(path2_, i * N, N);
-
         }
 
         std::cout << mh1 << " " << mh1.estimate() << std::endl;
@@ -203,7 +167,6 @@ void TestMHHandle::test_write()
 
         Restart f3(path3_.fileHandle());
         mh1.saveInto(f3);
-
     }
 
     DataHandle* fh = path3_.fileHandle();
@@ -223,49 +186,46 @@ void TestMHHandle::test_write()
 }
 
 
-
-void TestMHHandle::setup()
-{
+void TestMHHandle::setup() {
     std::string base = Resource<std::string>("$TMPDIR", "/tmp");
-    path1_ = PathName::unique( base + "/path1" );
+    path1_           = PathName::unique(base + "/path1");
     path1_ += ".dat";
 
-    path2_ = PathName::unique( base + "/path2" );
+    path2_ = PathName::unique(base + "/path2");
     path2_ += ".dat";
 
-    path3_ = PathName::unique( base + "/path3" );
+    path3_ = PathName::unique(base + "/path3");
     path3_ += ".dat";
 }
 
-void TestMHHandle::teardown()
-{
-    if (path1_.exists()) path1_.unlink();
-    if (path2_.exists()) path2_.unlink();
-    if (path3_.exists()) path3_.unlink();
+void TestMHHandle::teardown() {
+    if (path1_.exists())
+        path1_.unlink();
+    if (path2_.exists())
+        path2_.unlink();
+    if (path3_.exists())
+        path3_.unlink();
 }
 
 
-CASE ("test_restarthandle")
-{
+CASE("test_restarthandle") {
     TestMHHandle test;
     test.setup();
     try {
         test.test_write();
-    } catch (...) {
+    }
+    catch (...) {
         test.teardown();
         throw;
     }
     test.teardown();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-
-

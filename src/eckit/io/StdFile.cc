@@ -10,19 +10,17 @@
 
 #include <stdio.h>
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdFile.h"
 
 namespace eckit {
 
-StdFile::StdFile(const PathName& name, const std::string& mode) :
-    file_(0)
-{
+StdFile::StdFile(const PathName& name, const std::string& mode) : file_(0) {
     file_ = ::fopen(name.localPath(), mode.c_str());
 
-    if(file_ == 0)
-		throw CantOpenFile(name);
+    if (file_ == 0)
+        throw CantOpenFile(name);
 }
 
 StdFile::~StdFile() {
@@ -30,12 +28,11 @@ StdFile::~StdFile() {
 }
 
 void StdFile::close() noexcept(false) {
-    if(isOpen()) {
-        if(fclose(file_))
+    if (isOpen()) {
+        if (fclose(file_))
             throw FailedSystemCall("fclose");
     }
     file_ = 0;
 }
 
-} // namespace eckit
-
+}  // namespace eckit

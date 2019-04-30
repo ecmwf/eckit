@@ -9,32 +9,31 @@
  */
 
 #include "eckit/io/DataBlob.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/thread/AutoLock.h"
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-    Mutex* local_mutex = 0;
-    std::map<std::string, DataBlobFactory*> *m = 0;
-    pthread_once_t once = PTHREAD_ONCE_INIT;
-    void init() {
-        local_mutex = new Mutex();
-        m = new std::map<std::string, DataBlobFactory*>();
-    }
+Mutex* local_mutex                         = 0;
+std::map<std::string, DataBlobFactory*>* m = 0;
+pthread_once_t once                        = PTHREAD_ONCE_INIT;
+void init() {
+    local_mutex = new Mutex();
+    m           = new std::map<std::string, DataBlobFactory*>();
 }
+}  // namespace
 
 /// When a concrete instance of a DataBlobFactory is instantiated (in practice
 /// a DataBlobBuilder<>) add it to the list of available factories.
 
-DataBlobFactory::DataBlobFactory(const std::string& name) :
-    name_(name) {
-
+DataBlobFactory::DataBlobFactory(const std::string& name) : name_(name) {
     pthread_once(&once, init);
 
     AutoLock<Mutex> lock(local_mutex);
@@ -49,7 +48,6 @@ DataBlobFactory::~DataBlobFactory() {
 }
 
 void DataBlobFactory::list(std::ostream& out) {
-
     pthread_once(&once, init);
 
     AutoLock<Mutex> lock(local_mutex);
@@ -63,18 +61,17 @@ void DataBlobFactory::list(std::ostream& out) {
 
 
 const DataBlobFactory& DataBlobFactory::findFactory(const std::string& name) {
-
     pthread_once(&once, init);
 
     AutoLock<Mutex> lock(local_mutex);
 
     Log::info() << "Looking for DataBlobFactory [" << name << "]" << std::endl;
 
-    std::map<std::string, DataBlobFactory *>::const_iterator j = m->find(name);
+    std::map<std::string, DataBlobFactory*>::const_iterator j = m->find(name);
     if (j == m->end()) {
         Log::error() << "No DataBlobFactory for [" << name << "]" << std::endl;
         Log::error() << "DataBlobFactories are:" << std::endl;
-        for (j = m->begin() ; j != m->end() ; ++j)
+        for (j = m->begin(); j != m->end(); ++j)
             Log::error() << "   " << (*j).first << std::endl;
         throw SeriousBug(std::string("No DataBlobFactory called ") + name);
     }
@@ -83,16 +80,14 @@ const DataBlobFactory& DataBlobFactory::findFactory(const std::string& name) {
 }
 
 
-DataBlob* DataBlobFactory::build(const std::string &name, const void* data, size_t length) {
-
+DataBlob* DataBlobFactory::build(const std::string& name, const void* data, size_t length) {
     const DataBlobFactory& factory(findFactory(name));
 
     return factory.make(data, length);
 }
 
 
-DataBlob* DataBlobFactory::build(const std::string &name, DataHandle& dh, size_t length) {
-
+DataBlob* DataBlobFactory::build(const std::string& name, DataHandle& dh, size_t length) {
     const DataBlobFactory& factory(findFactory(name));
 
     return factory.make(dh, length);
@@ -100,29 +95,22 @@ DataBlob* DataBlobFactory::build(const std::string &name, DataHandle& dh, size_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-DataBlob::DataBlob(const void* data, size_t length) :
-    buffer_((const char*)data, length),
-    actualLength_(length)
-{
-}
+DataBlob::DataBlob(const void* data, size_t length) : buffer_((const char*)data, length), actualLength_(length) {}
 
-DataBlob::DataBlob(DataHandle& dh, size_t length) :
-    buffer_(length),
-    actualLength_(length)
-{
+DataBlob::DataBlob(DataHandle& dh, size_t length) : buffer_(length), actualLength_(length) {
     dh.read(buffer_, length);
 }
 
-DataBlob::~DataBlob() {
-}
+DataBlob::~DataBlob() {}
 
 const Buffer& DataBlob::buffer() const {
     return buffer_;
 }
 
-size_t DataBlob::length() const { return actualLength_; }
+size_t DataBlob::length() const {
+    return actualLength_;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

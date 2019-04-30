@@ -8,25 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-// File serialisation/MemoryStream.h
-// Manuel Fuentes - ECMWF Apr 16
+/// @author Manuel Fuentes
+/// @author Tiago Quintino
+/// @date   Apr 16
 
 #ifndef eckit_serialisation_MemoryStream_H
 #define eckit_serialisation_MemoryStream_H
 
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
+
 class Buffer;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class MemoryStream : public Stream {
 public:
-
-
 
 	MemoryStream(const Buffer&);
     MemoryStream(Buffer&);
@@ -34,11 +32,7 @@ public:
 	MemoryStream(const void* address,size_t size);
     MemoryStream(void* address,size_t size);
 
-    /// Destructor
-
 	~MemoryStream();
-
-// -- Operators
 
 	virtual long read(void*,long);
 	virtual long write(const void*,long);
@@ -47,10 +41,6 @@ public:
 
     size_t position() const;
 
-
-// -- Overridden methods
-
-
 private: // members
 
 	char*          address_;
@@ -58,11 +48,9 @@ private: // members
 
     bool           read_;
     size_t         position_;
-
-
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

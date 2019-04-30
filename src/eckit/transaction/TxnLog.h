@@ -78,6 +78,8 @@ private:
 
 	PathName name(const T& event);
 
+    static PathName buildPath(const std::string& name);
+
 // -- Members
 
 	PathName           path_;

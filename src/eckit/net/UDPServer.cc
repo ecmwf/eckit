@@ -17,12 +17,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <cstring>
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/net/UDPServer.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/net/UDPServer.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
@@ -36,9 +37,7 @@ static void* get_sockaddr(struct sockaddr* sa) {
 }
 
 
-UDPServer::UDPServer(int port) :
-    port_(port),
-    socketfd_(0) {
+UDPServer::UDPServer(int port) : port_(port), socketfd_(0) {
 
     struct addrinfo hints;
     struct addrinfo* servinfo;
@@ -47,7 +46,7 @@ UDPServer::UDPServer(int port) :
     ::memset(&hints, 0, sizeof(hints));
     hints.ai_family   = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
-    hints.ai_flags    = AI_PASSIVE; // use local IP
+    hints.ai_flags    = AI_PASSIVE;  // use local IP
 
     Translator<int, std::string> toStr;
 
@@ -55,8 +54,7 @@ UDPServer::UDPServer(int port) :
     if ((err = ::getaddrinfo(NULL, toStr(port_).c_str(), &hints, &servinfo)) != 0) {
         std::ostringstream msg;
         msg << "getaddrinfo failed in UDPServer with "
-            << " port=" << port
-            << " --  " << ::gai_strerror(err);
+            << " port=" << port << " --  " << ::gai_strerror(err);
         throw FailedSystemCall(msg.str(), Here());
     }
 
@@ -97,9 +95,7 @@ size_t UDPServer::receive(void* buffer, long length) {
     Log::info() << "UDPServer waiting on recvfrom()" << std::endl;
 
     ssize_t received = 0;
-    if ((received = ::recvfrom(socketfd_, buffer, length, 0,
-                               (struct sockaddr*)& remote_addr,
-                               &addr_len)) == -1) {
+    if ((received = ::recvfrom(socketfd_, buffer, length, 0, (struct sockaddr*)&remote_addr, &addr_len)) == -1) {
         std::ostringstream msg;
         msg << "UDPServer port " << port_ << " error on recvfrom socket " << socketfd_;
         throw FailedSystemCall(msg.str(), Here());
@@ -115,18 +111,15 @@ size_t UDPServer::receive(eckit::Buffer& buffer) {
 }
 
 void UDPServer::print(std::ostream& s) const {
-    s << "UDPServer[port=" << port_
-      << ",socketfd=" << socketfd_
-      << "]";
+    s << "UDPServer[port=" << port_ << ",socketfd=" << socketfd_ << "]";
 }
 
-std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const
-{
+std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const {
     char inet6[INET6_ADDRSTRLEN];
-    std::string r = ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
+    std::string r =
+        ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
     return r;
 }
 
 
-} // namespace eckit
-
+}  // namespace eckit

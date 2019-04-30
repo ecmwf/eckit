@@ -8,72 +8,66 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iostream>
+#include <vector>
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/parser/Tokenizer.h"
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-URI::URI(const std::string& path)
-{
+URI::URI(const std::string& path) {
     Tokenizer parse(":");
     std::vector<std::string> s;
 
-    parse(path,s);
+    parse(path, s);
 
     switch (s.size()) {
-    case 1:
-        scheme_ = "unix";
-        name_   = s[0];
-        break;
+        case 1:
+            scheme_ = "unix";
+            name_   = s[0];
+            break;
 
-    case 2:
-        name_   = s[1];
-        scheme_ = s[0];
-        break;
+        case 2:
+            name_   = s[1];
+            scheme_ = s[0];
+            break;
 
-    default:
-        scheme_ = s[0];
-        name_   = s[1];
-        for (size_t j = 2; j < s.size() ; j++)
-            name_ = name_ + ':' + s[j];
-        break;
+        default:
+            scheme_ = s[0];
+            name_   = s[1];
+            for (size_t j = 2; j < s.size(); j++)
+                name_ = name_ + ':' + s[j];
+            break;
     }
 }
 
-URI::~URI()
-{
-}
+URI::~URI() {}
 
-bool URI::exists() const
-{
+bool URI::exists() const {
     return URIManager::lookUp(scheme_).exists(*this);
 }
 
-DataHandle*  URI::newWriteHandle() const
-{
+DataHandle* URI::newWriteHandle() const {
     return URIManager::lookUp(scheme_).newWriteHandle(*this);
 }
 
-DataHandle*  URI::newReadHandle(const OffsetList& ol, const LengthList& ll) const
-{
+DataHandle* URI::newReadHandle(const OffsetList& ol, const LengthList& ll) const {
     return URIManager::lookUp(scheme_).newReadHandle(*this, ol, ll);
 }
 
-DataHandle*  URI::newReadHandle() const
-{
+DataHandle* URI::newReadHandle() const {
     return URIManager::lookUp(scheme_).newReadHandle(*this);
 }
 
-void URI::print(std::ostream& s) const
-{
+void URI::print(std::ostream& s) const {
     s << "URI[scheme=" << scheme_ << ",name=" << name_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

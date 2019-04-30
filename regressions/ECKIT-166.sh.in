@@ -8,7 +8,7 @@ exe="./ECKIT-166.x"
 
 if [ "@ECKIT_HAVE_MPI@" == "1" ] && [ "@MPIEXEC@" != "MPIEXEC-NOTFOUND" ]; then
 
-  @MPIEXEC@ @MPIEXEC_NUMPROC_FLAG@ 1 $exe
+  @MPIEXEC@ @MPI_ARGS@ @MPIEXEC_NUMPROC_FLAG@ 1 $exe
 
 fi
 

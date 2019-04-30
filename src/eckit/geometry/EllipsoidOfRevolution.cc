@@ -19,17 +19,16 @@
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace geometry {
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace {
 
-static double normalise_longitude(double a, const double& minimum)
-{
+static double normalise_longitude(double a, const double& minimum) {
     while (a < minimum) {
         a += 360;
     }
@@ -45,12 +44,12 @@ static std::streamsize max_digits10 = 15 + 3;
 
 // C++-11: std::numeric_limits<double>::max_digits10;
 
-}  // (anonymous namespace)
+}  // namespace
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const double& b, const Point2& Alonlat, Point3& B, double height)
-{
+void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const double& b, const Point2& Alonlat,
+                                                        Point3& B, double height) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
 
@@ -65,13 +64,13 @@ void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const d
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
 
     const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
-    const double lambda = degrees_to_radians * lambda_deg;
-    const double phi    = degrees_to_radians * Alonlat[1];
+    const double lambda     = degrees_to_radians * lambda_deg;
+    const double phi        = degrees_to_radians * Alonlat[1];
 
-    const double sin_phi = std::sin(phi);
-    const double cos_phi = std::sqrt(1. - sin_phi * sin_phi);
+    const double sin_phi    = std::sin(phi);
+    const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
-    const double cos_lambda = std::abs(lambda_deg) >  90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
+    const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
     const double N_phi = a * a / std::sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi);
 
@@ -80,7 +79,7 @@ void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const d
     B[2] = (N_phi * (b * b) / (a * a) + height) * sin_phi;
 }
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace geometry
-} // namespace eckit
+}  // namespace geometry
+}  // namespace eckit

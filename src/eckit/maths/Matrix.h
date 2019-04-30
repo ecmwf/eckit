@@ -29,7 +29,7 @@
 #ifndef eckit_maths_Matrix_h
 #define eckit_maths_Matrix_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 namespace eckit {
 

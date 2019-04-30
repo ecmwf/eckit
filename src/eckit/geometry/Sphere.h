@@ -11,8 +11,6 @@
 #ifndef Sphere_H
 #define Sphere_H
 
-#include "eckit/exception/Exceptions.h"
-
 //------------------------------------------------------------------------------------------------------
 
 namespace eckit {
@@ -26,7 +24,6 @@ class Point3;
 //------------------------------------------------------------------------------------------------------
 
 struct Sphere {
-
     /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
     static double centralAngle(const Point2& Alonlat, const Point2& Blonlat);
 
@@ -42,27 +39,31 @@ struct Sphere {
     /// Surface area in square metres
     static double area(const double& radius);
 
-    /// Surface area between parallels and meridians defined by two points (longitude/latitude coordinates) in square metres
+    /// Surface area between parallels and meridians defined by two points (longitude/latitude
+    /// coordinates) in square metres
     static double area(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
 
-    // Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
-    static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon);
+    // Great-circle intermediate latitude provided two circle points (A, B) and intermediate
+    // longitude (C) in degrees
+    static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat,
+                                                    const double& Clon);
 
-    // Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate latitude (C) in degrees
-    static void greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clat, double& Clon1, double& Clon2);
+    // Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate
+    // latitude (C) in degrees
+    static void greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat,
+                                                  const double& Clat, double& Clon1, double& Clon2);
 
     // Convert spherical coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.);
+    static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B,
+                                            double height = 0.);
 
     // Convert Cartesian coordinates to spherical
     static void convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat);
-
 };
 
 //------------------------------------------------------------------------------------------------------
 
-} // namespace geometry
-} // namespace eckit
+}  // namespace geometry
+}  // namespace eckit
 
 #endif
-

@@ -8,140 +8,120 @@
  * does it submit to any jurisdiction.
  */
 
+#include <numeric>
 
 #include "eckit/log/Log.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartFileHandle.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-ClassSpec MarsFSPartHandle::classSpec_ = {&DataHandle::classSpec(), "MarsFSPartHandle",};
+ClassSpec MarsFSPartHandle::classSpec_ = {
+    &DataHandle::classSpec(),
+    "MarsFSPartHandle",
+};
 Reanimator<MarsFSPartHandle> MarsFSPartHandle::reanimator_;
 
-void MarsFSPartHandle::print(std::ostream& s) const
-{
+void MarsFSPartHandle::print(std::ostream& s) const {
     if (format(s) == Log::compactFormat)
         s << "MarsFSPartHandle";
     else
-        s << "MarsFSPartHandle[path=" << path_
-          << ",offset=" << offset_
-          << ",length=" << length_ << ']';
+        s << "MarsFSPartHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_ << ']';
 }
 
-void MarsFSPartHandle::encode(Stream& s) const
-{
+void MarsFSPartHandle::encode(Stream& s) const {
     DataHandle::encode(s);
     s << path_;
     s << offset_;
     s << length_;
-
 }
 
-MarsFSPartHandle::MarsFSPartHandle(Stream& s):
-    DataHandle(s),
-    path_(s),
-    pos_(0),
-    index_(0)
-{
+MarsFSPartHandle::MarsFSPartHandle(Stream& s) : DataHandle(s), path_(s), pos_(0), index_(0) {
     s >> offset_;
     s >> length_;
 
     ASSERT(offset_.size() == length_.size());
 }
 
-MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path,
-                                   const OffsetList& offset, const LengthList& length):
+MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path, const OffsetList& offset, const LengthList& length) :
     path_(path),
     pos_(0),
     index_(0),
     offset_(offset),
-    length_(length)
-{
+    length_(length) {
     ASSERT(offset_.size() == length_.size());
     compress(false);
 }
 
-MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path,
-                                   const Offset& offset, const Length& length):
+MarsFSPartHandle::MarsFSPartHandle(const MarsFSPath& path, const Offset& offset, const Length& length) :
     path_(path),
     pos_(0),
     index_(0),
     offset_(1, offset),
-    length_(1, length)
-{
-}
+    length_(1, length) {}
 
 DataHandle* MarsFSPartHandle::clone() const {
     return new MarsFSPartHandle(path_, offset_, length_);
 }
 
-bool MarsFSPartHandle::compress(bool sorted)
-{
+bool MarsFSPartHandle::compress(bool sorted) {
     if (sorted)
         eckit::sort(offset_, length_);
     return eckit::compress(offset_, length_);
 }
 
-MarsFSPartHandle::~MarsFSPartHandle()
-{
-}
+MarsFSPartHandle::~MarsFSPartHandle() {}
 
-Length MarsFSPartHandle::openForRead()
-{
+Length MarsFSPartHandle::openForRead() {
     ASSERT(!file_.get());
-    file_.reset( new MarsFSFile(path_) );
+    file_.reset(new MarsFSFile(path_));
     file_->open("r");
     rewind();
     return estimate();
 }
 
-void MarsFSPartHandle::openForWrite(const Length&)
-{
+void MarsFSPartHandle::openForWrite(const Length&) {
     NOTIMP;
 }
 
-void MarsFSPartHandle::openForAppend(const Length&)
-{
+void MarsFSPartHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
-long MarsFSPartHandle::read1(char *buffer, long length)
-{
+long MarsFSPartHandle::read1(char* buffer, long length) {
     ASSERT(file_.get());
     // skip empty entries if any
     while (index_ < offset_.size() && length_[index_] == Length(0))
         index_++;
 
-    if (index_ == offset_.size()) return 0;
+    if (index_ == offset_.size())
+        return 0;
 
 
-    Offset pos  = (long long)offset_[index_] + Length(pos_);
+    Offset pos = (long long)offset_[index_] + Length(pos_);
     ASSERT(file_->seek(pos) == pos);
 
     Length ll    = length_[index_] - Length(pos_);
     Length lsize = std::min(Length(length), ll);
-    long size  = lsize;
+    long size    = lsize;
 
     ASSERT(Length(size) == lsize);
 
     long n = file_->read(buffer, size);
 
-    if (n != size)
-    {
+    if (n != size) {
         std::ostringstream s;
         s << path_ << ": cannot read " << size << ", got only " << n;
         throw ReadError(s.str());
     }
 
     pos_ += n;
-    if (pos_ >= length_[index_])
-    {
+    if (pos_ >= length_[index_]) {
         index_++;
         pos_ = 0;
     }
@@ -150,77 +130,66 @@ long MarsFSPartHandle::read1(char *buffer, long length)
 }
 
 
-long MarsFSPartHandle::read(void* buffer, long length)
-{
-    char *p = (char*)buffer;
+long MarsFSPartHandle::read(void* buffer, long length) {
+    char* p = (char*)buffer;
 
-    long n = 0;
+    long n     = 0;
     long total = 0;
 
-    //Log::info() << "MarsFSPartHandle::read " << length << std::endl;
+    // Log::info() << "MarsFSPartHandle::read " << length << std::endl;
 
-    while ( length > 0 && (n = read1(p, length)) > 0)
-    {
+    while (length > 0 && (n = read1(p, length)) > 0) {
         length -= n;
-        total  += n;
-        p      += n;
+        total += n;
+        p += n;
     }
 
     return total > 0 ? total : n;
-
 }
 
-long MarsFSPartHandle::write(const void* buffer, long length)
-{
+long MarsFSPartHandle::write(const void* buffer, long length) {
     return -1;
 }
 
-void MarsFSPartHandle::close()
-{
+void MarsFSPartHandle::close() {
     if (file_.get()) {
         file_->close();
-        file_.reset(0) ;
+        file_.reset(0);
     }
 }
 
-void MarsFSPartHandle::rewind()
-{
+void MarsFSPartHandle::rewind() {
     pos_   = 0;
     index_ = 0;
 }
 
-void MarsFSPartHandle::restartReadFrom(const Offset& from)
-{
+void MarsFSPartHandle::restartReadFrom(const Offset& from) {
     Log::warning() << *this << " restart read from " << from << std::endl;
     rewind();
     long long len = from;
     long long pos = 0;
 
-    for (index_ = 0; index_ < length_.size(); index_++)
-    {
+    for (index_ = 0; index_ < length_.size(); index_++) {
         long long e = length_[index_];
-        if (len >= pos && len < pos + e)
-        {
-            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_ << std::endl;
+        if (len >= pos && len < pos + e) {
+            Log::warning() << *this << " restart read from " << from << ", index=" << index_ << ", pos=" << pos_
+                           << std::endl;
             pos_ = len - pos;
             return;
         }
         pos += e;
     }
-    ASSERT(from  == Offset(0) && estimate() == Length(0));
+    ASSERT(from == Offset(0) && estimate() == Length(0));
 }
 
-Offset MarsFSPartHandle::seek(const Offset& from)
-{
+Offset MarsFSPartHandle::seek(const Offset& from) {
     rewind();
     long long len = from;
     long long pos = 0;
 
-    for (index_ = 0; index_ < length_.size(); index_++)
-    {
+    for (index_ = 0; index_ < length_.size(); index_++) {
         long long e = length_[index_];
-        if (len >= pos && len < pos + e)
-        {
+        if (len >= pos && len < pos + e) {
             pos_ = len - pos;
             return from;
         }
@@ -229,15 +198,14 @@ Offset MarsFSPartHandle::seek(const Offset& from)
     return pos;
 }
 
-bool MarsFSPartHandle::merge(DataHandle* other)
-{
+bool MarsFSPartHandle::merge(DataHandle* other) {
     if (other->isEmpty())
         return true;
 
     // Poor man's RTTI,
     // Does not support inheritance
 
-    if ( !sameClass(*other) )
+    if (!sameClass(*other))
         return false;
 
     // We should be safe to cast now....
@@ -252,8 +220,7 @@ bool MarsFSPartHandle::merge(DataHandle* other)
     offset_.reserve(offset_.size() + handle->offset_.size());
     length_.reserve(length_.size() + handle->length_.size());
 
-    for (Ordinal i = 0; i < handle->offset_.size() ; ++i)
-    {
+    for (Ordinal i = 0; i < handle->offset_.size(); ++i) {
         offset_.push_back(handle->offset_[i]);
         length_.push_back(handle->length_[i]);
     }
@@ -262,16 +229,13 @@ bool MarsFSPartHandle::merge(DataHandle* other)
     return true;
 }
 
-Length MarsFSPartHandle::estimate()
-{
-    return accumulate(length_.begin(), length_.end(), Length(0));
+Length MarsFSPartHandle::estimate() {
+    return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
-void MarsFSPartHandle::toLocal(Stream& s) const
-{
+void MarsFSPartHandle::toLocal(Stream& s) const {
     // TODO: Return PathFileHandle if local
-    if (path_.isLocal())
-    {
+    if (path_.isLocal()) {
         PartFileHandle ph(path_.path(), offset_, length_);
         s << ph;
         return;
@@ -279,32 +243,26 @@ void MarsFSPartHandle::toLocal(Stream& s) const
     s << *this;
 }
 
-DataHandle* MarsFSPartHandle::toLocal()
-{
+DataHandle* MarsFSPartHandle::toLocal() {
     // TODO: Return PathFileHandle if local
-    if (path_.isLocal())
-    {
+    if (path_.isLocal()) {
         return new PartFileHandle(path_.path(), offset_, length_);
     }
     return this;
 }
 
-void MarsFSPartHandle::cost(std::map<std::string, Length>& c, bool read) const
-{
+void MarsFSPartHandle::cost(std::map<std::string, Length>& c, bool read) const {
     if (read) {
         c[path_.node()] += const_cast<MarsFSPartHandle*>(this)->estimate();
     }
 }
 
-std::string MarsFSPartHandle::title() const
-{
+std::string MarsFSPartHandle::title() const {
     std::ostringstream os;
-    os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path())
-       << " (" << length_.size() << ")";
+    os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path()) << " (" << length_.size() << ")";
     return os.str();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

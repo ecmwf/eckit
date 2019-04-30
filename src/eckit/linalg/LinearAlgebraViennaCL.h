@@ -15,7 +15,7 @@
 #ifndef eckit_la_LinearAlgebraViennaCL_h
 #define eckit_la_LinearAlgebraViennaCL_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_VIENNACL
 

@@ -24,19 +24,19 @@ namespace mpi {
 
 class Environment {
 public:
-
     static const char* getDefaultComm() {
-
         // Force a given communicator (only required if e.g. running serial applications with MPI)
         if (const char* forcedComm = ::getenv("ECKIT_MPI_FORCE")) {
             return forcedComm;
-        // Use parallel communicator if in an MPI environment
-        } else if (::getenv("OMPI_COMM_WORLD_SIZE") || // OpenMPI
-                   ::getenv("ALPS_APP_PE")          || // Cray PE
-                   ::getenv("PMI_SIZE")) {             // Intel
+            // Use parallel communicator if in an MPI environment
+        }
+        else if (::getenv("OMPI_COMM_WORLD_SIZE") ||  // OpenMPI
+                 ::getenv("ALPS_APP_PE") ||           // Cray PE
+                 ::getenv("PMI_SIZE")) {              // Intel
             return "parallel";
-        // Use serial communicator otherwise
-        } else {
+            // Use serial communicator otherwise
+        }
+        else {
             return "serial";
         }
     }
@@ -47,40 +47,41 @@ public:
     }
 
     void initDefault() {
-
         AutoLock<Mutex> lock(mutex_);
 
         ASSERT(!default_);
 
-        Comm* world = CommFactory::build(getDefaultComm());
+        Comm* world = CommFactory::build("world", getDefaultComm());
 
-        communicators["world"] = world;
-        communicators["self"]  = world->self();
+        communicators[world->name()] = world;
+
+        Comm* self                  = world->self();
+        communicators[self->name()] = self;
 
         default_ = world;
     }
 
     void setDefaut(const char* name) {
-
         AutoLock<Mutex> lock(mutex_);
 
         std::map<std::string, Comm*>::iterator itr = communicators.find(name);
-        if(itr != communicators.end()) {
+        if (itr != communicators.end()) {
             default_ = itr->second;
             return;
         }
 
-        eckit::Log::error() << "Cannot set default communicator to '" << name << "', no communicator with that name was found" << std::endl;
+        eckit::Log::error() << "Cannot set default communicator to '" << name
+                            << "', no communicator with that name was found" << std::endl;
         eckit::Log::error() << "Current communicators are:" << std::endl;
-        for(itr = communicators.begin() ; itr != communicators.end() ; ++itr)
+        for (itr = communicators.begin(); itr != communicators.end(); ++itr)
             eckit::Log::error() << "   " << (*itr).first << std::endl;
-        throw eckit::SeriousBug(std::string("No communicator called ") + name);
+        throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
     bool hasComm(const char* name) {
         AutoLock<Mutex> lock(mutex_);
         std::map<std::string, Comm*>::iterator itr = communicators.find(name);
-        if(itr != communicators.end()) {
+        if (itr != communicators.end()) {
             return true;
         }
         return false;
@@ -88,64 +89,88 @@ public:
 
     void finaliseAllComms() {
         std::map<std::string, Comm*>::iterator itr = communicators.begin();
-        for(; itr != communicators.end(); ++itr) {
+        for (; itr != communicators.end(); ++itr) {
             delete itr->second;
         }
         communicators.clear();
     }
 
-    Comm& getComm(const char* name = 0) {
-
+    Comm& getComm(const char* name = nullptr) {
         AutoLock<Mutex> lock(mutex_);
 
-        if(!name && default_) return *default_; /* most common case first */
+        if (!name && default_)
+            return *default_; /* most common case first */
 
-        if(!default_) { initDefault(); }
+        if (!default_) {
+            initDefault();
+        }
 
-        if(!name) {
-            ASSERT(default_);  /* sanity check init was successful */
+        if (!name) {
+            ASSERT(default_); /* sanity check init was successful */
             return *default_;
         }
 
         std::map<std::string, Comm*>::iterator itr = communicators.find(name);
-        if(itr != communicators.end()) {
+        if (itr != communicators.end()) {
             return *itr->second;
         }
 
         eckit::Log::error() << "No Communicator '" << name << "'" << std::endl;
         eckit::Log::error() << "Current communicators are:" << std::endl;
-        for(itr = communicators.begin() ; itr != communicators.end() ; ++itr)
+        for (itr = communicators.begin(); itr != communicators.end(); ++itr)
             eckit::Log::error() << "   " << (*itr).first << std::endl;
-        throw eckit::SeriousBug(std::string("No communicator called ") + name);
+        throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
     void addComm(const char* name, int comm) {
-
         AutoLock<Mutex> lock(mutex_);
         if (hasComm(name)) {
-            throw SeriousBug("Communicator with name "+ std::string(name) + " already exists");
+            throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
         }
 
-        Comm* pComm = CommFactory::build(getDefaultComm(), comm);
+        Comm* pComm         = CommFactory::build(name, getDefaultComm(), comm);
         communicators[name] = pComm;
     }
 
-    void addComm(const char* name, Comm * comm) {
+    void addComm(const char* name, Comm* comm) {
         AutoLock<Mutex> lock(mutex_);
         if (hasComm(name)) {
-            throw SeriousBug("Communicator with name "+ std::string(name) + " already exists");
+            throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
         }
         communicators[name] = comm;
     }
 
-    Environment() : default_(0) {}
+    void deleteComm(const char* name) {
+
+        AutoLock<Mutex> lock(mutex_);
+        auto itr = communicators.find(name);
+
+        if (itr != communicators.end()) {
+
+            Comm* comm = itr->second;
+
+            // refuse to delete the default communicator
+            if (default_ == comm)
+                throw SeriousBug("Trying to delete the default Communicator with name " + std::string(name), Here());
+
+            comm->free();
+            delete comm;
+
+            communicators.erase(itr);
+        }
+        else {
+            throw SeriousBug("Communicator with name " + std::string(name) + " does not exist", Here());
+        }
+    }
+
+
+    Environment() : default_(nullptr) {}
 
     ~Environment() {
-
         AutoLock<Mutex> lock(mutex_);
 
         finaliseAllComms();
-        default_ = 0;
+        default_ = nullptr;
     }
 
     Comm* default_;
@@ -159,72 +184,67 @@ public:
 
 class CommFactories {
 public:
+    void registFactory(const std::string& builder, CommFactory* f) {
+        AutoLock<Mutex> lock(mutex_);
+        ASSERT(factories.find(builder) == factories.end());
+        factories[builder] = f;
+    }
 
-  void registFactory(const std::string& name, CommFactory* f) {
-      AutoLock<Mutex> lock(mutex_);
-      ASSERT(factories.find(name) == factories.end());
-      factories[name] = f;
-  }
+    void unregistFactory(const std::string& builder) {
+        AutoLock<Mutex> lock(mutex_);
+        factories.erase(builder);
+    }
 
-  void unregistFactory(const std::string& name) {
-      AutoLock<Mutex> lock(mutex_);
-      factories.erase(name);
-  }
+    CommFactory& getFactory(const std::string& builder) {
+        AutoLock<Mutex> lock(mutex_);
 
-  CommFactory& getFactory(const std::string& name) {
+        std::map<std::string, CommFactory*>::const_iterator j = factories.find(builder);
 
-      AutoLock<Mutex> lock(mutex_);
+        if (j != factories.end()) {
+            return *(j->second);
+        }
 
-      std::map<std::string, CommFactory *>::const_iterator j = factories.find(name);
+        eckit::Log::error() << "No CommFactory for [" << builder << "]" << std::endl;
+        eckit::Log::error() << "CommFactories are:" << std::endl;
+        for (j = factories.begin(); j != factories.end(); ++j)
+            eckit::Log::error() << "   " << (*j).first << std::endl;
 
-      if (j != factories.end()) { return *(j->second); }
+        throw eckit::SeriousBug(std::string("No CommFactory called ") + builder, Here());
+    }
 
-      eckit::Log::error() << "No CommFactory for [" << name << "]" << std::endl;
-      eckit::Log::error() << "CommFactories are:" << std::endl;
-      for (j = factories.begin() ; j != factories.end() ; ++j)
-          eckit::Log::error() << "   " << (*j).first << std::endl;
-
-      throw eckit::SeriousBug(std::string("No CommFactory called ") + name);
-  }
-
-  static CommFactories& instance() {
-    static CommFactories obj;
-    return obj;
-  }
+    static CommFactories& instance() {
+        static CommFactories obj;
+        return obj;
+    }
 
 private:
+    CommFactories() {}
 
-  CommFactories() {}
-
-  std::map<std::string, CommFactory*> factories;
-  eckit::Mutex mutex_;
+    std::map<std::string, CommFactory*> factories;
+    eckit::Mutex mutex_;
 };
 
-CommFactory::CommFactory(const std::string &name):
-    name_(name) {
-    CommFactories::instance().registFactory(name, this);
+CommFactory::CommFactory(const std::string& builder) : builder_(builder) {
+    CommFactories::instance().registFactory(builder, this);
 }
 
 CommFactory::~CommFactory() {
-    CommFactories::instance().unregistFactory(name_);
+    CommFactories::instance().unregistFactory(builder_);
 }
 
-Comm* CommFactory::build(const std::string& name) {
-    return CommFactories::instance().getFactory(name).make();
+Comm* CommFactory::build(const std::string& name, const std::string& builder) {
+    return CommFactories::instance().getFactory(builder).make(name);
 }
 
-Comm*CommFactory::build(const std::string& name, int comm)
-{
-    return CommFactories::instance().getFactory(name).make(comm);
+Comm* CommFactory::build(const std::string& name, const std::string& builder, int comm) {
+    return CommFactories::instance().getFactory(builder).make(name, comm);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm::Comm() {
-}
+Comm::Comm(const std::string& name) : name_(name) {}
 
-Comm::~Comm() {
-}
+Comm::~Comm() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -232,18 +252,19 @@ Comm& comm(const char* name) {
     return Environment::instance().getComm(name);
 }
 
-void setCommDefault(const char* name)
-{
+void setCommDefault(const char* name) {
     Environment::instance().setDefaut(name);
 }
 
-void addComm(const char* name, int comm)
-{
+void addComm(const char* name, int comm) {
     Environment::instance().addComm(name, comm);
 }
-void addComm(const char* name, Comm * comm)
-{
+void addComm(const char* name, Comm* comm) {
     Environment::instance().addComm(name, comm);
+}
+
+void deleteComm(const char* name) {
+    Environment::instance().deleteComm(name);
 }
 
 bool hasComm(const char* name) {
@@ -254,8 +275,19 @@ void finaliseAllComms() {
     return Environment::instance().finaliseAllComms();
 }
 
+Comm& self() {
+    return comm("self");
+}
+
+namespace detail {
+
+void Assert(int code, const char* msg, const char* file, int line, const char* func) {
+    ::eckit::Assert(code, msg, file, line, func);
+}
+
+}  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit

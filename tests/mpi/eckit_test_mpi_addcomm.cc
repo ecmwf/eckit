@@ -24,13 +24,12 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 int argc;
-char ** argv;
+char** argv;
 
-CASE( "Test MPI addComm" )
-{
+CASE("Test MPI addComm") {
     MPI_Init(&argc, &argv);
 
     MPI_Fint fortranComm = MPI_Comm_c2f(MPI_COMM_WORLD);
@@ -42,14 +41,13 @@ CASE( "Test MPI addComm" )
     MPI_Finalize();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
+int main(int argc, char** argv) {
     eckit::test::argc = argc;
     eckit::test::argv = argv;
-    return run_tests ( argc, argv );
+    return run_tests(argc, argv);
 }

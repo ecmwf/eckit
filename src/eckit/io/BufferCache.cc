@@ -15,69 +15,54 @@
 #include "eckit/io/BufferCache.h"
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-BufferCache::BufferCache(size_t size):
-    count_(0),
-    buffer_(size),
-	updated_(::time(0))
-{
-}
+BufferCache::BufferCache(size_t size) : count_(0), buffer_(size), updated_(::time(0)) {}
 
-BufferCache::BufferCache(const BufferCache& other):
+BufferCache::BufferCache(const BufferCache& other) :
     count_(other.count_),
-	buffer_(other.buffer_.size()),
-	updated_(::time(0))
-{
-	::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
+    buffer_(other.buffer_.size()),
+    updated_(::time(0)) {
+    ::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
 }
 
-BufferCache::~BufferCache()
-{
+BufferCache::~BufferCache() {}
+
+BufferCache& BufferCache::operator=(const BufferCache& other) {
+    if (this != &other) {
+        count_ = other.count_;
+        buffer_.resize(other.buffer_.size());
+        ::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
+        updated_ = ::time(0);
+    }
+    return *this;
 }
 
-BufferCache& BufferCache::operator=(const BufferCache& other)
-{
-	if(this != &other) {
-		count_ = other.count_;
-		buffer_.resize(other.buffer_.size());
-		::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
-		updated_ = ::time(0);
-	}
-	return *this;
+bool BufferCache::operator<(const BufferCache& other) const {
+    return (count_ < other.count_) || ((count_ == other.count_) && (::memcmp(buffer_, other.buffer_, count_) < 0));
 }
 
-bool BufferCache::operator<(const BufferCache& other) const
-{
-	return (count_ < other.count_) ||
-		((count_ == other.count_) && (::memcmp(buffer_,other.buffer_,count_) < 0));
+void BufferCache::reset() {
+    count_ = 0;
 }
 
-void BufferCache::reset()
-{
-	count_ = 0;
-}
-
-void BufferCache::add(const void *buffer, size_t len)
-{
-	if(buffer_.size() < count_ + len) {
-		buffer_.resize(count_ + len + 1024);
-	}
-	::memcpy(((char*)buffer_) + count_, buffer, len);
-	count_ += len;
+void BufferCache::add(const void* buffer, size_t len) {
+    if (buffer_.size() < count_ + len) {
+        buffer_.resize(count_ + len + 1024);
+    }
+    ::memcpy(((char*)buffer_) + count_, buffer, len);
+    count_ += len;
 }
 
 
-void BufferCache::print(std::ostream& s) const
-{
-	Stream::dump(s, buffer_, count_);
+void BufferCache::print(std::ostream& s) const {
+    Stream::dump(s, buffer_, count_);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

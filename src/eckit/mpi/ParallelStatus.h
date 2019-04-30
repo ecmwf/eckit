@@ -15,6 +15,7 @@
 #define MPICH_SKIP_MPICXX 1
 
 #include <mpi.h>
+#include <iosfwd>
 
 #include "eckit/mpi/Status.h"
 
@@ -26,21 +27,17 @@ namespace mpi {
 class Parallel;
 
 class ParallelStatus : public StatusContent {
-
-private: // methods
-
+private:  // methods
     virtual int source() const { return status_.MPI_SOURCE; }
-    virtual int tag() const    { return status_.MPI_TAG; }
-    virtual int error() const  { return status_.MPI_ERROR; }
+    virtual int tag() const { return status_.MPI_TAG; }
+    virtual int error() const { return status_.MPI_ERROR; }
 
     virtual void print(std::ostream&) const;
 
-private: // members
-
+private:  // members
     friend class Parallel;
 
     MPI_Status status_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

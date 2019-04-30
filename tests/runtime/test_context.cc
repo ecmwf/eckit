@@ -19,13 +19,12 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-CASE ( "test_default" )
-{
+CASE("test_default") {
     /* log before context build */
 
     Log::info() << "logging before calling Context" << std::endl;
@@ -33,20 +32,18 @@ CASE ( "test_default" )
     /* setting context another time */
 
 
-    Log::info()   << "logging after resetting behavior" << std::endl;
-    Log::debug()  << "logging after resetting behavior" << std::endl;
-    Log::warning()<< "logging after resetting behavior" << std::endl;
-    Log::error()  << "logging after resetting behavior" << std::endl;
+    Log::info() << "logging after resetting behavior" << std::endl;
+    Log::debug() << "logging after resetting behavior" << std::endl;
+    Log::warning() << "logging after resetting behavior" << std::endl;
+    Log::error() << "logging after resetting behavior" << std::endl;
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

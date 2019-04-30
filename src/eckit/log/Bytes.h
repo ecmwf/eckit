@@ -15,7 +15,8 @@
 #ifndef eckit_log_Bytes_h
 #define eckit_log_Bytes_h
 
-#include "eckit/eckit.h"
+#include <string>
+#include <iosfwd>
 
 
 namespace eckit {
@@ -62,7 +63,7 @@ private: // members
     std::pair<double, char> reduceTo1024() const;
     std::pair<double, char> reduceTo100() const;
 
-	double bytes_;
+    double bytes_;
     size_t scale_;
     bool   rate_;
 

@@ -14,9 +14,10 @@
 #ifndef Url_H
 #define Url_H
 
+#include <memory>
+
 #include "eckit/value/Value.h"
 #include "eckit/web/HttpHeader.h"
-#include "eckit/memory/ScopedPtr.h"
 
 //-----------------------------------------------------------------------------
 
@@ -158,7 +159,7 @@ private:
 
 	std::vector<std::string> remaining_;
 
-	eckit::ScopedPtr<DataHandle> handle_;
+	std::unique_ptr<DataHandle> handle_;
 
 
 // -- Methods

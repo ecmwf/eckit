@@ -25,541 +25,453 @@ namespace eckit {
 //
 
 class MarsFSClientSettings {
-	bool forever_;
+    bool forever_;
+
 public:
-	MarsFSClientSettings() :
-		forever_(true)
-	{
-	}
+    MarsFSClientSettings() : forever_(true) {}
 
-	bool retry() const
-	{
-		return forever_;
-	}
+    bool retry() const { return forever_; }
 
-	void retry(bool on)
-	{
-		forever_ = on;
-	}
+    void retry(bool on) { forever_ = on; }
 };
 
 static ThreadSingleton<MarsFSClientSettings> settings;
 
-inline static bool retry()
-{
-	return settings.instance().retry();
+inline static bool retry() {
+    return settings.instance().retry();
 }
 
-MarsFSClientRetry::MarsFSClientRetry(bool on) :
-	old_(settings.instance().retry())
-{
-	settings.instance().retry(on);
+MarsFSClientRetry::MarsFSClientRetry(bool on) : old_(settings.instance().retry()) {
+    settings.instance().retry(on);
 }
 
-MarsFSClientRetry::~MarsFSClientRetry()
-{
-	settings.instance().retry(old_);
+MarsFSClientRetry::~MarsFSClientRetry() {
+    settings.instance().retry(old_);
 }
 
-MarsFSClient::MarsFSClient(const MarsFSPath& path) :
-	connector_(Connector::service("marsfs", path.node()))
-{
+MarsFSClient::MarsFSClient(const MarsFSPath& path) : connector_(Connector::service("marsfs", path.node())) {}
+
+MarsFSClient::~MarsFSClient() {}
+
+Length MarsFSClient::size(const std::string& path) {
+    X(MarsFSClient::size);
+
+    for (;;) {
+
+        try {
+            AutoMemoize m(connector_, 1);
+
+            Stream& s = connector_;
+            unsigned long long len;
+            s << "size";
+            s << path;
+            s >> len;
+            return len;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-MarsFSClient::~MarsFSClient()
-{
+bool MarsFSClient::exists(const std::string& path) {
+    X(MarsFSClient::exit);
+
+    for (;;) {
+
+        try {
+            // AutoMemoize m(connector_, 10);
+
+            bool ok;
+            Stream& s = connector_;
+
+            s << "exists";
+            s << path;
+            s >> ok;
+            return ok;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-Length MarsFSClient::size(const std::string& path)
-{
-	X(MarsFSClient::size);
+std::string MarsFSClient::mountPoint(const std::string& path) {
+    X(MarsFSClient::mountPoint);
 
-	for(;;)
-	{
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 60);
 
-		try
-		{
-			AutoMemoize m(connector_, 1);
-
-			Stream& s = connector_;
-			unsigned long long len;
-			s << "size";
-			s << path;
-			s >> len;
-			return len;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            std::string p;
+            Stream& s = connector_;
+            s << "mountp";
+            s << path;
+            s >> p;
+            return p;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-bool MarsFSClient::exists(const std::string& path)
-{
-	X(MarsFSClient::exit);
+std::string MarsFSClient::baseName(const std::string& path, bool ext) {
+    X(MarsFSClient::baseName);
 
-	for(;;)
-	{
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 60);
 
-		try
-		{
-			//AutoMemoize m(connector_, 10);
-
-			bool ok;
-			Stream& s = connector_;
-
-			s << "exists";
-			s << path;
-			s >> ok;
-			return ok;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            std::string b;
+            Stream& s = connector_;
+            s << "baseName";
+            s << path;
+            s << ext;
+            s >> b;
+            return b;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-std::string MarsFSClient::mountPoint(const std::string& path)
-{
-	X(MarsFSClient::mountPoint);
+std::string MarsFSClient::dirName(const std::string& path) {
+    X(MarsFSClient::dirName);
 
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 60);
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 60);
 
-			std::string p;
-			Stream& s = connector_;
-			s << "mountp";
-			s << path;
-			s >> p;
-			return p;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            std::string d;
+            Stream& s = connector_;
+            s << "dirName";
+            s << path;
+            s >> d;
+            return d;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-std::string MarsFSClient::baseName(const std::string& path, bool ext)
-{
-	X(MarsFSClient::baseName);
+std::string MarsFSClient::fullName(const std::string& path) {
+    X(MarsFSClient::fullName);
 
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 60);
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 60);
 
-			std::string b;
-			Stream& s = connector_;
-			s << "baseName";
-			s << path;
-			s << ext;
-			s >> b;
-			return b;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            std::string f;
+            Stream& s = connector_;
+            s << "fullName";
+            s << path;
+            s >> f;
+            return f;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-std::string MarsFSClient::dirName(const std::string& path)
-{
-	X(MarsFSClient::dirName);
+std::string MarsFSClient::unique(const std::string& path) {
+    X(MarsFSClient::unique);
 
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 60);
-
-			std::string d;
-			Stream& s = connector_;
-			s << "dirName";
-			s << path;
-			s >> d;
-			return d;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+    for (;;) {
+        try {
+            std::string u;
+            Stream& s = connector_;
+            s << "unique";
+            s << path;
+            s >> u;
+            return u;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-std::string MarsFSClient::fullName(const std::string& path)
-{
-	X(MarsFSClient::fullName);
+bool MarsFSClient::sameAs(const std::string& path1, const std::string& path2) {
+    X(MarsFSClient::sameAs);
 
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 60);
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 10);
 
-			std::string f;
-			Stream& s = connector_;
-			s << "fullName";
-			s << path;
-			s >> f;
-			return f;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            bool ok;
+            Stream& s = connector_;
+            s << "sameas";
+            s << path1;
+            s << path2;
+            s >> ok;
+            return ok;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-std::string MarsFSClient::unique(const std::string& path)
-{
-	X(MarsFSClient::unique);
+void MarsFSClient::mkdir(const std::string& path, short mode) {
+    X(MarsFSClient::mkdir);
 
-	for(;;)
-	{
-		try
-		{
-			std::string u;
-			Stream& s = connector_;
-			s << "unique";
-			s << path;
-			s >> u;
-			return u;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+    for (;;) {
+        try {
+            bool ok;
+            Stream& s = connector_;
+            s << "mkdir";
+            s << path;
+            s << mode;
+            s >> ok;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-bool MarsFSClient::sameAs(const std::string& path1, const std::string& path2)
-{
-	X(MarsFSClient::sameAs);
+void MarsFSClient::match(const std::string& path, std::vector<std::string>& result, bool recurse) {
+    X(MarsFSClient::match);
 
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 10);
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 2);
 
-			bool ok;
-			Stream& s = connector_;
-			s << "sameas";
-			s << path1;
-			s << path2;
-			s >> ok;
-			return ok;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Stream& s = connector_;
+            s << "match";
+            s << path;
+            s << recurse;
+
+            result.clear();
+
+            long n;
+            s >> n;
+
+            std::string r;
+
+            for (long i = 0; i < n; i++) {
+                s >> r;
+                result.push_back(r);
+            }
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-void MarsFSClient::mkdir(const std::string& path, short mode)
-{
-	X(MarsFSClient::mkdir);
+void MarsFSClient::children(const std::string& path, std::vector<std::string>& files, std::vector<std::string>& dirs) {
+    X(MarsFSClient::children);
 
-	for(;;)
-	{
-		try
-		{
-			bool ok;
-			Stream& s = connector_;
-			s << "mkdir";
-			s << path;
-			s << mode;
-			s >> ok;
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
-}
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 2);
 
-void MarsFSClient::match(const std::string& path, std::vector<std::string>& result, bool recurse)
-{
-	X(MarsFSClient::match);
-
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 2);
-
-			Stream& s = connector_;
-			s << "match";
-			s << path;
-			s << recurse;
-
-			result.clear();
-
-			long n;
-			s >> n;
-
-			std::string r;
-
-			for(long i = 0; i < n; i++)
-			{
-				s >> r;
-				result.push_back(r);
-			}
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
-}
-
-void MarsFSClient::children(const std::string& path, std::vector<std::string>& files, std::vector<std::string>& dirs)
-{
-	X(MarsFSClient::children);
-
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 2);
-
-			Stream& s = connector_;
-			s << "children";
-			s << path;
+            Stream& s = connector_;
+            s << "children";
+            s << path;
 
             std::string r;
             long n;
 
             /// @note follow the children() signature order, send files first then dirs
 
-			files.clear();
+            files.clear();
             s >> n;
-            for(long i = 0; i < n; i++) {
-				s >> r;
-				files.push_back(r);
-			}
+            for (long i = 0; i < n; i++) {
+                s >> r;
+                files.push_back(r);
+            }
 
             dirs.clear();
             s >> n;
-            for(long i = 0; i < n; i++) {
+            for (long i = 0; i < n; i++) {
                 s >> r;
                 dirs.push_back(r);
             }
 
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
-}
-
-std::vector<std::string> MarsFSClient::getFileSpaces()
-{
-	X(MarsFSClient::getFileSpaces);
-	for(;;)
-	{
-		try
-		{
-
-			AutoMemoize m(connector_, 20);
-
-			Stream& s = connector_;
-			s << "getFileSpaces";
-
-			std::vector<std::string> result;
-
-			long n;
-			s >> n;
-
-			std::string r;
-
-			for(long i = 0; i < n; i++)
-			{
-				s >> r;
-				result.push_back(r);
-			}
-
-			return result;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
-}
-
-std::vector<std::string> MarsFSClient::getFileSystems(const std::string& name)
-{
-	X(MarsFSClient::getFileSystems);
-
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 20);
-
-			Stream& s = connector_;
-			s << "getFileSystems";
-			s << name;
-
-			std::vector<std::string> result;
-
-			long n;
-			s >> n;
-
-			std::string r;
-
-			for(long i = 0; i < n; i++)
-			{
-				s >> r;
-				result.push_back(r);
-			}
-
-			return result;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
-
-}
-
-void MarsFSClient::rename(const std::string& from, const std::string& to)
-{
-	X(MarsFSClient::rename);
-	for(;;)
-	{
-		try
-		{
-			bool ok;
-			Stream& s = connector_;
-			s << "rename";
-			s << from;
-			s << to;
-			s >> ok;
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
-}
-
-void MarsFSClient::link(const std::string& from, const std::string& to)
-{
-	X(MarsFSClient::link);
-	for(;;)
-	{
-		try
-		{
-
-			bool ok;
-			Stream& s = connector_;
-			s << "link";
-			s << from;
-			s << to;
-			s >> ok;
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
-}
-
-void MarsFSClient::unlink(const std::string& path)
-{
-	X(MarsFSClient::unlink);
-	for(;;)
-	{
-		try
-		{
-
-			bool ok;
-			Stream& s = connector_;
-			s << "unlink";
-			s << path;
-			s >> ok;
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-void MarsFSClient::syncParentDirectory(const std::string& path)
-{
+std::vector<std::string> MarsFSClient::getFileSpaces() {
+    X(MarsFSClient::getFileSpaces);
+    for (;;) {
+        try {
+
+            AutoMemoize m(connector_, 20);
+
+            Stream& s = connector_;
+            s << "getFileSpaces";
+
+            std::vector<std::string> result;
+
+            long n;
+            s >> n;
+
+            std::string r;
+
+            for (long i = 0; i < n; i++) {
+                s >> r;
+                result.push_back(r);
+            }
+
+            return result;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
+}
+
+std::vector<std::string> MarsFSClient::getFileSystems(const std::string& name) {
+    X(MarsFSClient::getFileSystems);
+
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 20);
+
+            Stream& s = connector_;
+            s << "getFileSystems";
+            s << name;
+
+            std::vector<std::string> result;
+
+            long n;
+            s >> n;
+
+            std::string r;
+
+            for (long i = 0; i < n; i++) {
+                s >> r;
+                result.push_back(r);
+            }
+
+            return result;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
+}
+
+void MarsFSClient::rename(const std::string& from, const std::string& to) {
+    X(MarsFSClient::rename);
+    for (;;) {
+        try {
+            bool ok;
+            Stream& s = connector_;
+            s << "rename";
+            s << from;
+            s << to;
+            s >> ok;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
+}
+
+void MarsFSClient::link(const std::string& from, const std::string& to) {
+    X(MarsFSClient::link);
+    for (;;) {
+        try {
+
+            bool ok;
+            Stream& s = connector_;
+            s << "link";
+            s << from;
+            s << to;
+            s >> ok;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
+}
+
+void MarsFSClient::unlink(const std::string& path) {
+    X(MarsFSClient::unlink);
+    for (;;) {
+        try {
+
+            bool ok;
+            Stream& s = connector_;
+            s << "unlink";
+            s << path;
+            s >> ok;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
+}
+
+void MarsFSClient::syncParentDirectory(const std::string& path) {
     X(MarsFSClient::syncParentDirectory);
-    for(;;)
-    {
-        try
-        {
+    for (;;) {
+        try {
 
             bool ok;
             Stream& s = connector_;
@@ -568,9 +480,8 @@ void MarsFSClient::syncParentDirectory(const std::string& path)
             s >> ok;
             return;
         }
-        catch(ConnectorException& e)
-        {
-            if(!retry())
+        catch (ConnectorException& e) {
+            if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;
@@ -578,170 +489,145 @@ void MarsFSClient::syncParentDirectory(const std::string& path)
     }
 }
 
-void MarsFSClient::rmdir(const std::string& path)
-{
-	X(MarsFSClient::rmdir);
-	for(;;)
-	{
+void MarsFSClient::rmdir(const std::string& path) {
+    X(MarsFSClient::rmdir);
+    for (;;) {
 
-		try
-		{
+        try {
 
-			bool ok;
-			Stream& s = connector_;
-			s << "rmdir";
-			s << path;
-			s >> ok;
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
+            bool ok;
+            Stream& s = connector_;
+            s << "rmdir";
+            s << path;
+            s >> ok;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-void MarsFSClient::touch(const std::string& path)
-{
-	X(MarsFSClient::touch);
-	for(;;)
-	{
+void MarsFSClient::touch(const std::string& path) {
+    X(MarsFSClient::touch);
+    for (;;) {
 
-		try
-		{
+        try {
 
-			bool ok;
-			Stream& s = connector_;
-			s << "touch";
-			s << path;
-			s >> ok;
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
+            bool ok;
+            Stream& s = connector_;
+            s << "touch";
+            s << path;
+            s >> ok;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-void MarsFSClient::fileSystemSize(const std::string& path, FileSystemSize& fs)
-{
-	X(MarsFSClient::fileSystemSize);
-	for(;;)
-	{
-		try
-		{
-			AutoMemoize m(connector_, 10);
+void MarsFSClient::fileSystemSize(const std::string& path, FileSystemSize& fs) {
+    X(MarsFSClient::fileSystemSize);
+    for (;;) {
+        try {
+            AutoMemoize m(connector_, 10);
 
-			Stream& s = connector_;
-			s << "statfs";
-			s << path;
+            Stream& s = connector_;
+            s << "statfs";
+            s << path;
 
-			s >> fs.available;
-			s >> fs.total;
-			return;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
+            s >> fs.available;
+            s >> fs.total;
+            return;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-time_t MarsFSClient::created(const std::string& path)
-{
-	X(MarsFSClient::created);
-	for(;;)
-	{
+time_t MarsFSClient::created(const std::string& path) {
+    X(MarsFSClient::created);
+    for (;;) {
 
-		try
-		{
+        try {
 
-			AutoMemoize m(connector_, 60);
+            AutoMemoize m(connector_, 60);
 
-			Stream& s = connector_;
-			unsigned long long len;
-			s << "created";
-			s << path;
-			s >> len;
-			return len;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
+            Stream& s = connector_;
+            unsigned long long len;
+            s << "created";
+            s << path;
+            s >> len;
+            return len;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-time_t MarsFSClient::lastAccess(const std::string& path)
-{
-	X(MarsFSClient::lastAccess);
-	for(;;)
-	{
+time_t MarsFSClient::lastAccess(const std::string& path) {
+    X(MarsFSClient::lastAccess);
+    for (;;) {
 
-		try
-		{
+        try {
 
-			AutoMemoize m(connector_, 1);
+            AutoMemoize m(connector_, 1);
 
-			Stream& s = connector_;
-			unsigned long long len;
-			s << "lastAccess";
-			s << path;
-			s >> len;
-			return len;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
+            Stream& s = connector_;
+            unsigned long long len;
+            s << "lastAccess";
+            s << path;
+            s >> len;
+            return len;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
-time_t MarsFSClient::lastModified(const std::string& path)
-{
-	X(MarsFSClient::lastModified);
-	for(;;)
-	{
+time_t MarsFSClient::lastModified(const std::string& path) {
+    X(MarsFSClient::lastModified);
+    for (;;) {
 
-		try
-		{
+        try {
 
-			AutoMemoize m(connector_, 1);
+            AutoMemoize m(connector_, 1);
 
-			Stream& s = connector_;
-			unsigned long long len;
-			s << "lastModified";
-			s << path;
-			s >> len;
-			return len;
-		}
-		catch(ConnectorException& e)
-		{
-			if(!retry())
-				throw;
+            Stream& s = connector_;
+            unsigned long long len;
+            s << "lastModified";
+            s << path;
+            s >> len;
+            return len;
+        }
+        catch (ConnectorException& e) {
+            if (!retry())
+                throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-			Log::error() << "** Exception is ignored" << std::endl;
-		}
-	}
+            Log::error() << "** Exception is ignored" << std::endl;
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

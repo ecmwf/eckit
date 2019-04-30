@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/types/Types.h"
 #include "eckit/log/Log.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/testing/Test.h"
 
@@ -20,10 +20,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_eckit_print_vector_string" )
-{
+CASE("test_eckit_print_vector_string") {
     vector<string> vstr;
     vstr.push_back("Hello");
     vstr.push_back("World");
@@ -36,8 +35,7 @@ CASE ( "test_eckit_print_vector_string" )
     EXPECT("[Hello,World,test,case]" == s.str());
 }
 
-CASE ( "test_eckit_print_vector_pair" )
-{
+CASE("test_eckit_print_vector_pair") {
     vector<pair<string, int> > vpair;
     vpair.push_back(make_pair("k1", 123));
     vpair.push_back(make_pair("k1", 124));
@@ -50,8 +48,7 @@ CASE ( "test_eckit_print_vector_pair" )
     EXPECT("[<k1,123>,<k1,124>,<k1,125>,<k2,125>]" == s.str());
 }
 
-CASE ( "test_eckit_print_vector_ints" )
-{
+CASE("test_eckit_print_vector_ints") {
     vector<int> vint;
     vint.push_back(123);
     vint.push_back(124);
@@ -73,8 +70,7 @@ CASE ( "test_eckit_print_vector_ints" )
     EXPECT("[123-127,129-135-2,3*135,1]" == s.str());
 }
 
-CASE ( "test_eckit_print_vector_doubs" )
-{
+CASE("test_eckit_print_vector_doubs") {
     // These should not contract into ranges.
     vector<double> vdoub;
     vdoub.push_back(123.0);
@@ -97,13 +93,11 @@ CASE ( "test_eckit_print_vector_doubs" )
     EXPECT("[123,124,125,126,127,129,131,133,135,135,135,135,1]" == s.str());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

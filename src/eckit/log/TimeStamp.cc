@@ -12,6 +12,8 @@
 
 #include <sstream>
 
+#include "eckit/eckit.h"
+
 #include "eckit/log/TimeStamp.h"
 
 
@@ -20,40 +22,29 @@ namespace eckit {
 
 const char* TimeStamp::defaultFormat_ = "%Y-%m-%d %H:%M:%S";
 
-TimeStamp::TimeStamp(const std::string& format):
-    time_(::time(0)),
-	format_(format)
-{
-}
+TimeStamp::TimeStamp(const std::string& format) : time_(::time(0)), format_(format) {}
 
-TimeStamp::TimeStamp(time_t t,const std::string& format):
-	time_(t),
-	format_(format)
-{
-}
+TimeStamp::TimeStamp(time_t t, const std::string& format) : time_(t), format_(format) {}
 
-std::ostream& operator<<(std::ostream& s,const TimeStamp&  x)
-{
-	char buf[80];
+std::ostream& operator<<(std::ostream& s, const TimeStamp& x) {
+    char buf[80];
 #ifdef ECKIT_HAVE_GMTIME_R
-	struct tm t;
-    ::strftime(buf,sizeof(buf),x.format_.c_str(),gmtime_r(&x.time_,&t));
+    struct tm t;
+    ::strftime(buf, sizeof(buf), x.format_.c_str(), gmtime_r(&x.time_, &t));
 #else
-    ::strftime(buf,sizeof(buf),x.format_.c_str(),gmtime(&x.time_));
+    ::strftime(buf, sizeof(buf), x.format_.c_str(), gmtime(&x.time_));
 #endif
 
-	s << buf;
+    s << buf;
 
-	return s;
+    return s;
 }
 
-TimeStamp::operator std::string() const
-{
+TimeStamp::operator std::string() const {
     std::ostringstream s;
     s << *this;
     return s.str();
 }
 
 
-} // namespace eckit
-
+}  // namespace eckit

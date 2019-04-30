@@ -9,6 +9,8 @@
  */
 
 #include <unistd.h>
+#include <cstring>
+#include <sstream>
 
 #include "eckit/eckit.h"
 
@@ -20,6 +22,7 @@
 #include <cxxabi.h>
 #endif
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/types/Types.h"
 
@@ -28,87 +31,84 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::string BackTrace::dump()
-{
+std::string BackTrace::dump() {
     /// @todo implement this using the cxxabi demangle, if CMake detects it
 
     std::ostringstream oss;
 
-#if (defined( ECKIT_HAVE_EXECINFO_BACKTRACE ) || defined(__FreeBSD__)) && !defined( _AIX )
+#if (defined(ECKIT_HAVE_EXECINFO_BACKTRACE) || defined(__FreeBSD__)) && !defined(_AIX)
 
     static Ordinal count = 0;
     ++count;
 
 #define BS_BUFF_SIZE 256
 
-    void*   buffer[BS_BUFF_SIZE];
-    char**  strings;
+    void* buffer[BS_BUFF_SIZE];
+    char** strings;
 
     int addsize = backtrace(buffer, BS_BUFF_SIZE);
 
     oss << "backtrace [" << count << "] stack has " << addsize << " addresses\n";
 
     strings = backtrace_symbols(buffer, addsize);
-    if (strings == NULL)
+    if (strings == nullptr)
         oss << " --- no backtrace_symbols found ---\n";
 
 #ifndef ECKIT_HAVE_CXXABI_H
     for (int s = 0; s < addsize; ++s)
-      oss << strings[s] << std::endl;
+        oss << strings[s] << std::endl;
 #else
     for (int s = 0; s < addsize; ++s) {
         int status;
         char buffer[10240];
         bool overflow = false;
 
-        char *p = strings[s];
+        char* p  = strings[s];
         size_t i = 0;
-        while(*p) {
-
-            switch(*p) {
-            case ' ':
-            case '(':
-            case ')':
-            case '+':
-            case '\t':
-                oss << *p;
-                if(i) {
-                    buffer[i++] = 0;
-                    char* d = abi::__cxa_demangle(buffer, 0, 0, &status);
-                    if(status == 0) {
-                        oss << d;
-                    }
-                    else {
-                        oss << buffer;
-                    }
-                    if(d) free(d);
-                }
-                i = 0;
-                break;
-
-            default:
-                if(overflow) {
+        while (*p) {
+            switch (*p) {
+                case ' ':
+                case '(':
+                case ')':
+                case '+':
+                case '\t':
                     oss << *p;
-                }
-                else {
-                    if(i < sizeof(buffer)) {
-                        buffer[i++] = *p;
+                    if (i) {
+                        buffer[i++] = 0;
+                        char* d     = abi::__cxa_demangle(buffer, nullptr, nullptr, &status);
+                        if (status == 0) {
+                            oss << d;
+                        }
+                        else {
+                            oss << buffer;
+                        }
+                        if (d)
+                            free(d);
+                    }
+                    i = 0;
+                    break;
+
+                default:
+                    if (overflow) {
+                        oss << *p;
                     }
                     else {
-                        overflow = true;
-                        for(size_t j = 0; j < i ; j++) {
-                            oss << buffer[j];
+                        if (i < sizeof(buffer)) {
+                            buffer[i++] = *p;
                         }
-                        i = 0;
+                        else {
+                            overflow = true;
+                            for (size_t j = 0; j < i; j++) {
+                                oss << buffer[j];
+                            }
+                            i = 0;
+                        }
                     }
-                }
             }
 
             p++;
         }
         oss << '\n';
-
-
     }
 #endif
 
@@ -125,5 +125,4 @@ std::string BackTrace::dump()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

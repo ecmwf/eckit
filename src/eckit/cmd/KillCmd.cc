@@ -8,24 +8,21 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include "eckit/cmd/KillCmd.h"
 #include "eckit/runtime/Monitor.h"
-
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-KillCmd::KillCmd() : CmdResource("kill") {
-}
+KillCmd::KillCmd() : CmdResource("kill") {}
 
 
-KillCmd::~KillCmd() {
-}
+KillCmd::~KillCmd() {}
 
 
 void KillCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
@@ -74,8 +71,7 @@ void KillCmd::kill(pid_t pid, std::ostream& out) const {
 }
 
 
-void KillCmd::help(std::ostream& out) const {
-}
+void KillCmd::help(std::ostream& out) const {}
 
 
 Arg KillCmd::usage(const std::string& cmd) const {
@@ -87,4 +83,4 @@ static KillCmd killCmd;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

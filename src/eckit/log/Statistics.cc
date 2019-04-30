@@ -8,15 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Statistics.h"
+#include "Statistics.h"
+
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <iomanip>
 
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/serialisation/Stream.h"
-
-#include <cmath>
-#include <algorithm>
 
 namespace eckit {
 
@@ -26,47 +28,30 @@ Timer Statistics::timer_;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Statistics::reportCount(std::ostream &out, const char *title, size_t value, const char *indent, bool always) {
-    if (value || always)
-    {
-        out << indent
-            << title
-            << std::setw(WIDTH - strlen(title))
-            << " : "
-            << eckit::BigNum(value)
-            << std::endl;
+void Statistics::reportCount(std::ostream& out, const char* title, size_t value, const char* indent, bool always) {
+    if (value || always) {
+        out << indent << title << std::setw(WIDTH - strlen(title)) << " : " << eckit::BigNum(value) << std::endl;
     }
 }
 
-void Statistics::reportUnit(std::ostream &out, const char *title, const char* unit, double value, const char *indent, bool always) {
-    if (value || always)
-    {
-        out << indent
-            << title
-            << std::setw(WIDTH - strlen(title))
-            << " : "
-            << value
-            << " "
-            << unit
-            << std::endl;
+void Statistics::reportUnit(std::ostream& out, const char* title, const char* unit, double value, const char* indent,
+                            bool always) {
+    if (value || always) {
+        out << indent << title << std::setw(WIDTH - strlen(title)) << " : " << value << " " << unit << std::endl;
     }
 }
 
 
-void Statistics::reportRate(std::ostream &out, const char *title, unsigned long long value, const char *indent, bool always) {
-    if (value || always)
-    {
-        out << indent
-            << title
-            << std::setw(WIDTH - strlen(title))
-            << " : "
-            << eckit::BigNum(value)
-            << " bytes/s (" << eckit::Bytes(value) << "/s)"
-            << std::endl;
+void Statistics::reportRate(std::ostream& out, const char* title, unsigned long long value, const char* indent,
+                            bool always) {
+    if (value || always) {
+        out << indent << title << std::setw(WIDTH - strlen(title)) << " : " << eckit::BigNum(value) << " bytes/s ("
+            << eckit::Bytes(value) << "/s)" << std::endl;
     }
 }
 
-void Statistics::reportRate(std::ostream& out, const std::string& title, size_t bytes, double elapsed, const char* indent, bool always) {
+void Statistics::reportRate(std::ostream& out, const std::string& title, size_t bytes, double elapsed,
+                            const char* indent, bool always) {
 
     if (bytes || always) {
 
@@ -75,109 +60,81 @@ void Statistics::reportRate(std::ostream& out, const std::string& title, size_t 
             rate = bytes / elapsed;
         }
 
-        out << indent
-            << title
-            << std::setw(WIDTH - title.length())
-            << " : "
-            << BigNum(size_t(rate)) << " bytes/s"
-            << " (" << Bytes(rate) << " per second)"
-            << std::endl;
+        out << indent << title << std::setw(WIDTH - title.length()) << " : " << BigNum(size_t(rate)) << " bytes/s"
+            << " (" << Bytes(rate) << " per second)" << std::endl;
     }
 }
 
-void Statistics::reportBytes(std::ostream &out, const char *title, unsigned long long value, const char *indent, bool always) {
-    if (value || always)
-    {
-        out << indent
-            << title
-            << std::setw(WIDTH - strlen(title))
-            << " : "
-            << eckit::BigNum(value)
-            << " (" << eckit::Bytes(value)
-            << ")" << std::endl;
+void Statistics::reportBytes(std::ostream& out, const char* title, unsigned long long value, const char* indent,
+                             bool always) {
+    if (value || always) {
+        out << indent << title << std::setw(WIDTH - strlen(title)) << " : " << eckit::BigNum(value) << " ("
+            << eckit::Bytes(value) << ")" << std::endl;
     }
 }
 
-void Statistics::reportBytesStats(std::ostream& out, const std::string& title, size_t count, size_t bytes, size_t sumsquared, const char* indent, bool always) {
+void Statistics::reportBytesStats(std::ostream& out, const std::string& title, size_t count, size_t bytes,
+                                  size_t sumsquared, const char* indent, bool always) {
 
     if (count || always) {
 
-        double average = 0;
+        double average      = 0;
         double stdDeviation = 0;
         if (count != 0) {
-            average = bytes / count;
+            average      = bytes / count;
             stdDeviation = std::sqrt(std::max((count * sumsquared) - (bytes * bytes), size_t(0))) / count;
         }
 
-        out << indent
-            << title
-            << std::setw(WIDTH - title.length())
-            << " (tot, avg, std dev) : "
-            << BigNum(bytes) << " (" << Bytes(bytes) << ")"
+        out << indent << title << std::setw(WIDTH - title.length()) << " (tot, avg, std dev) : " << BigNum(bytes)
+            << " (" << Bytes(bytes) << ")"
             << ", " << BigNum(size_t(average)) << " (" << Bytes(average) << ")"
-            << ", " << BigNum(size_t(stdDeviation)) << " (" << Bytes(stdDeviation) << ")"
-            << std::endl;
+            << ", " << BigNum(size_t(stdDeviation)) << " (" << Bytes(stdDeviation) << ")" << std::endl;
     }
 }
 
 
-void Statistics::reportTime(std::ostream &out, const char *title, const Timing &value, const char *indent, bool always) {
-    if (value.updates_ || always)
-    {
-        out << indent
-            << title
-            << std::setw(WIDTH - strlen(title))
-            << " : "
-            << eckit::Seconds(value.elapsed_) << " (" << eckit::Seconds(value.cpu_) << " CPU). Updates: "
-            << eckit::BigNum(value.updates_)
-            << std::endl;
+void Statistics::reportTime(std::ostream& out, const char* title, const Timing& value, const char* indent,
+                            bool always) {
+    if (value.updates_ || always) {
+        out << indent << title << std::setw(WIDTH - strlen(title)) << " : " << eckit::Seconds(value.elapsed_) << " ("
+            << eckit::Seconds(value.cpu_) << " CPU). Updates: " << eckit::BigNum(value.updates_) << std::endl;
     }
 }
 
-void Statistics::reportTime(std::ostream &out, const char *title, double value, const char *indent, bool always) {
-    if (value || always)
-    {
-        out << indent
-            << title
-            << std::setw(WIDTH - strlen(title))
-            << " : "
-            << eckit::Seconds(value)
-            << std::endl;
+void Statistics::reportTime(std::ostream& out, const char* title, double value, const char* indent, bool always) {
+    if (value || always) {
+        out << indent << title << std::setw(WIDTH - strlen(title)) << " : " << eckit::Seconds(value) << std::endl;
     }
 }
 
-void Statistics::reportTimeStats(std::ostream &out, const std::string& title, size_t count, double sum_times, double sum_times_squared, const char *indent, bool always) {
+void Statistics::reportTimeStats(std::ostream& out, const std::string& title, size_t count, double sum_times,
+                                 double sum_times_squared, const char* indent, bool always) {
 
     if (count || always) {
 
-        double average = 0;
+        double average      = 0;
         double stdDeviation = 0;
         if (count != 0) {
-            average = sum_times / count;
+            average      = sum_times / count;
             stdDeviation = std::sqrt(std::max((count * sum_times_squared) - (sum_times * sum_times), 0.0)) / count;
         }
 
-        out << indent
-            << title
-            << std::setw(WIDTH - title.length())
-            << " (tot, avg, std dev) : "
-            << sum_times << " s"
+        out << indent << title << std::setw(WIDTH - title.length()) << " (tot, avg, std dev) : " << sum_times << " s"
             << ", " << average << " s"
-            << ", " << stdDeviation << " s"
-            << std::endl;
+            << ", " << stdDeviation << " s" << std::endl;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Timing &Timing::operator+=(const Timing & other) {
+Timing& Timing::operator+=(const Timing& other) {
     elapsed_ += other.elapsed_;
     cpu_ += other.cpu_;
     updates_ += other.updates_;
     return *this;
 }
 
-Timing &Timing::operator-=(const Timing & other) {
+Timing& Timing::operator-=(const Timing& other) {
     elapsed_ -= other.elapsed_;
     cpu_ -= other.cpu_;
     // We don't remove the number of update because
@@ -187,7 +144,7 @@ Timing &Timing::operator-=(const Timing & other) {
 }
 
 
-Timing &Timing::operator/=(size_t n) {
+Timing& Timing::operator/=(size_t n) {
     elapsed_ /= n;
     cpu_ /= n;
     if (updates_) {
@@ -199,19 +156,19 @@ Timing &Timing::operator/=(size_t n) {
     return *this;
 }
 
-Timing Timing::operator-(const Timing & other) const {
+Timing Timing::operator-(const Timing& other) const {
     return Timing(elapsed_ - other.elapsed_, cpu_ - other.cpu_, 1);
 }
 
 
-Stream &operator<<(Stream & s, const Timing & t) {
+Stream& operator<<(Stream& s, const Timing& t) {
     s << t.elapsed_;
     s << t.cpu_;
     s << t.updates_;
     return s;
 }
 
-Stream &operator>>(Stream & s, Timing & t) {
+Stream& operator>>(Stream& s, Timing& t) {
     s >> t.elapsed_;
     s >> t.cpu_;
     s >> t.updates_;
@@ -225,4 +182,4 @@ std::ostream& operator<<(std::ostream& s, const Timing& t) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

@@ -11,6 +11,8 @@
 #ifndef eckit_mpi_SerialStatus_h
 #define eckit_mpi_SerialStatus_h
 
+#include <iosfwd>
+
 #include "eckit/mpi/Status.h"
 
 namespace eckit {
@@ -21,26 +23,23 @@ namespace mpi {
 class Serial;
 
 class SerialStatus : public StatusContent {
-
     SerialStatus();
 
-private: // methods
-
+private:  // methods
     friend class Serial;
 
     virtual int source() const { return source_; }
-    virtual int tag() const    { return tag_; }
-    virtual int error() const  { return error_; }
+    virtual int tag() const { return tag_; }
+    virtual int error() const { return error_; }
 
     virtual void print(std::ostream&) const;
 
-private: // members
-
+private:  // members
     int source_;
     int tag_;
     int error_;
 
-    size_t count_; ///< counts number of elements transfered in comm
+    size_t count_;  ///< counts number of elements transfered in comm
 };
 
 //----------------------------------------------------------------------------------------------------------------------

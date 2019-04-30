@@ -18,7 +18,6 @@
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
@@ -30,20 +29,20 @@ namespace detail {
 
 class ThreadedLock {
 public:
-    void lock() const    { mutex_.lock(); }
-    void unlock()  const { mutex_.unlock(); }
+    void lock() const { mutex_.lock(); }
+    void unlock() const { mutex_.unlock(); }
 
     mutable Mutex mutex_;
 };
 
 class NoLock {
 public:
-    void lock() const   {}
+    void lock() const {}
     void unlock() const {}
 };
 
-} // detail
-} // memory
+}  // namespace detail
+}  // namespace memory
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -51,25 +50,17 @@ public:
 /// Subclass from this class if you want reference counting object.
 /// @note Remember to use 'virtual' inheritance in case of multiple inheritance
 
-class Counted :
-    private NonCopyable,
-    private memory::detail::ThreadedLock {
-
-public: // methods
-
-
-    void attach() const
-    {
+class Counted : private NonCopyable, private memory::detail::ThreadedLock {
+public:  // methods
+    void attach() const {
         lock();
         count_++;
         unlock();
     }
 
-    void detach() const
-    {
+    void detach() const {
         lock();
-        if ( --count_ == 0 )
-        {
+        if (--count_ == 0) {
             unlock();
             delete this;
         }
@@ -80,31 +71,22 @@ public: // methods
 
     size_t count() const { return count_; }
 
-    void lock() const {
-        memory::detail::ThreadedLock::lock();
-    }
+    void lock() const { memory::detail::ThreadedLock::lock(); }
 
-    void unlock() const {
-        memory::detail::ThreadedLock::unlock();
-    }
+    void unlock() const { memory::detail::ThreadedLock::unlock(); }
 
 public:
-
     Counted() : count_(0) {}
 
     virtual ~Counted();
 
-private: // members
-
+private:  // members
     mutable size_t count_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

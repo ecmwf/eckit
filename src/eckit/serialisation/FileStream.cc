@@ -8,32 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #include "eckit/eckit.h"
 
-#include "eckit/serialisation/FileStream.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
+#include "eckit/serialisation/FileStream.h"
 
 namespace eckit {
 
 
-FileStream::FileStream(const PathName& name, const char *mode) :
+FileStream::FileStream(const PathName& name, const char* mode) :
     file_(name.localPath(), mode),
     read_(std::string(mode) == "r"),
-    name_(name)
-{
-}
+    name_(name) {}
 
 FileStream::~FileStream() {
     ASSERT_MSG(!file_.isOpen(), "FileStream being destructed is still open");
 }
 
 void FileStream::close() {
-
-    if (!read_)
-    {
+    if (!read_) {
         if (::fflush(file_))
             throw WriteError(std::string("FileStream::~FileStream(fflush(") + name_ + "))");
 
@@ -48,20 +45,21 @@ void FileStream::close() {
         while (ret < 0 && errno == EINTR)
             ret = fsync(fileno(file_));
         if (ret < 0) {
-            Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) <<  Log::syserr << std::endl;
+            Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) << Log::syserr << std::endl;
         }
-        //if(ret<0)
-        //throw FailedSystemCall(std::string("fsync(") + name_ + ")");
+        // if(ret<0)
+        // throw FailedSystemCall(std::string("fsync(") + name_ + ")");
 
         // On Linux, you must also flush the directory
 
 #ifdef ECKIT_HAVE_DIRFD
         PathName directory = PathName(name_).dirName();
-        DIR *d = ::opendir(directory.localPath());
-        if (!d) SYSCALL(-1);
+        DIR* d             = ::opendir(directory.localPath());
+        if (!d)
+            SYSCALL(-1);
 
         int dir;
-        SYSCALL( dir = dirfd(d)  );
+        SYSCALL(dir = dirfd(d));
         ret = ::fsync(dir);
 
         while (ret < 0 && errno == EINTR)
@@ -72,32 +70,27 @@ void FileStream::close() {
         }
         ::closedir(d);
 #endif
-
     }
 
     file_.close();
 }
 
-long FileStream::read(void* buf, long length)
-{
+long FileStream::read(void* buf, long length) {
     long n = fread(buf, 1, length, file_);
     ASSERT(n >= 0);
 
     return n;
 }
 
-long FileStream::write(const void* buf, long length)
-{
+long FileStream::write(const void* buf, long length) {
     return fwrite(buf, 1, length, file_);
 }
 
-std::string FileStream::name() const
-{
+std::string FileStream::name() const {
     return "FileStream";
 }
 
-void FileStream::rewind()
-{
+void FileStream::rewind() {
     ::fflush(file_);
     fseeko(file_, 0, SEEK_SET);
     resetBytesWritten();
@@ -107,6 +100,6 @@ void FileStream::print(std::ostream& s) const {
     s << "FileStream[path=" << name_ << "]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

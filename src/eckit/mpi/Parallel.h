@@ -29,9 +29,9 @@ protected:  // methods
 
     template< class T> friend class CommBuilder;
 
-    Parallel();
-    Parallel(MPI_Comm comm, bool);
-    Parallel(int comm);
+    Parallel(const std::string& name);
+    Parallel(const std::string& name, MPI_Comm comm, bool);
+    Parallel(const std::string& name, int comm);
 
     virtual ~Parallel();
 
@@ -97,6 +97,8 @@ protected:  // methods
     virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const;
 
     virtual Comm & split( int color, const std::string & name  ) const;
+
+    virtual void free();
 
     virtual void print(std::ostream&) const;
 

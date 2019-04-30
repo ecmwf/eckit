@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iostream>
 
 #include "eckit/log/IndentTarget.h"
 
@@ -17,19 +18,17 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-IndentTarget::IndentTarget(const std::string& prefix, LogTarget* target, const char* space):
-    PrefixTarget("   " + prefix, target, space)
-{
+IndentTarget::IndentTarget(const std::string& prefix, LogTarget* target, const char* space) :
+    PrefixTarget("   " + prefix, target, space) {}
 
-}
-
-void IndentTarget::print(std::ostream& s) const
-{
+void IndentTarget::print(std::ostream& s) const {
     s << "IndentTarget(prefix=" << prefix_ << ", space=" << space_;
-    if(target_) { s << ", target=" << *target_; }
+    if (target_) {
+        s << ", target=" << *target_;
+    }
     s << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

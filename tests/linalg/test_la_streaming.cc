@@ -9,8 +9,8 @@
  */
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/serialisation/FileStream.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/serialisation/FileStream.h"
 
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
@@ -27,54 +27,57 @@ using namespace eckit::linalg;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 void test(const T& v, const T& r) {
-    EXPECT ( v.rows() == r.rows() );
-    EXPECT ( v.cols() == r.cols() );
-    EXPECT ( v.size() == r.size() );
-    EXPECT ( make_view( v.begin(), v.end() ) == make_view( r.begin(), r.end() ) );
+    EXPECT(v.rows() == r.rows());
+    EXPECT(v.cols() == r.cols());
+    EXPECT(v.size() == r.size());
+    EXPECT(make_view(v.begin(), v.end()) == make_view(r.begin(), r.end()));
 }
 
 void test(const SparseMatrix& v, const SparseMatrix& r) {
-    EXPECT( v.rows() == r.rows() );
-    EXPECT( v.cols() == r.cols() );
-    EXPECT( v.nonZeros() == r.nonZeros() );
+    EXPECT(v.rows() == r.rows());
+    EXPECT(v.cols() == r.cols());
+    EXPECT(v.nonZeros() == r.nonZeros());
     const Size nnz = v.nonZeros();
-    EXPECT ( make_view ( v.outer(), v.outer()+v.rows()+1 ) == make_view ( r.outer(), r.outer()+r.rows()+1 ) );
-    EXPECT ( make_view ( v.inner(), v.inner()+nnz )        == make_view ( r.inner(), r.inner()+nnz ) );
-    EXPECT ( make_view ( v.data() , v.data()+nnz )         == make_view ( r.data() , r.data()+nnz ) );
+    EXPECT(make_view(v.outer(), v.outer() + v.rows() + 1) == make_view(r.outer(), r.outer() + r.rows() + 1));
+    EXPECT(make_view(v.inner(), v.inner() + nnz) == make_view(r.inner(), r.inner() + nnz));
+    EXPECT(make_view(v.data(), v.data() + nnz) == make_view(r.data(), r.data() + nnz));
 }
 
-template<typename T>
+template <typename T>
 void stream_test(const T& t) {
-    PathName filename = PathName::unique( "data" );
+    PathName filename = PathName::unique("data");
     {
-        FileStream sout( filename, "w" ); auto c = closer(sout);
+        FileStream sout(filename, "w");
+        auto c = closer(sout);
         sout << t;
     }
     {
-        FileStream sin( filename, "r" ); auto c = closer(sin);
+        FileStream sin(filename, "r");
+        auto c = closer(sin);
         T out(sin);
         test(t, out);
     }
-    if (filename.exists()) filename.unlink();
+    if (filename.exists())
+        filename.unlink();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
-CASE ( "test_stream_vector" ) {
+CASE("test_stream_vector") {
     stream_test(V(5, 1., 2., 3., 4., 5.));
 }
 
-CASE ( "test_stream_matrix" ) {
+CASE("test_stream_matrix") {
     stream_test(M(3, 3, 1., 2., 3., 4., 5., 6., 7., 8., 9.));
 }
 
-CASE ( "test_stream_sparsematrix" ) {
+CASE("test_stream_sparsematrix") {
 
     std::vector<Triplet> triplets;
 
@@ -88,12 +91,11 @@ CASE ( "test_stream_sparsematrix" ) {
     stream_test(smat);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

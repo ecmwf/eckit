@@ -8,52 +8,42 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/parser/StringTools.h"
+#include "eckit/utils/StringTools.h"
 
 #include "eckit/value/ScopeParams.h"
 
-//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params & p ) :
-    scope_( scope_key + "." ),
-    p_(p)
-{
-}
+ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params& p) : scope_(scope_key + "."), p_(p) {}
 
-ScopeParams::ScopeParams( Stream & s ) : p_( Params::decode(s) )
-{
+ScopeParams::ScopeParams(Stream& s) : p_(Params::decode(s)) {
     s >> scope_;
 }
 
-Params::value_t getValue( const ScopeParams& p, const Params::key_t& key )
-{
-    if( StringTools::startsWith(key, p.scope_) )
-    {
-        return getValue( p.p_, key.substr(p.scope_.length()) );
+Params::value_t getValue(const ScopeParams& p, const Params::key_t& key) {
+    if (StringTools::startsWith(key, p.scope_)) {
+        return getValue(p.p_, key.substr(p.scope_.length()));
     }
-    else
-    {
+    else {
         return Params::value_t();
     }
 }
 
-void print( const ScopeParams& p, std::ostream &s )
-{
+void print(const ScopeParams& p, std::ostream& s) {
     print(p.p_, s);
 }
 
-void encode( const ScopeParams& p, Stream &s )
-{
+void encode(const ScopeParams& p, Stream& s) {
     s << p.p_;
     s << p.scope_;
 }
 
 Params::Factory<ScopeParams> scopeParamsFactory;
 
-//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

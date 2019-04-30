@@ -1,7 +1,7 @@
 #ifndef eckit_maths_lapack_h
 #define eckit_maths_lapack_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 namespace eckit {
 namespace maths {

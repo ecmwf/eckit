@@ -10,16 +10,14 @@
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/log/TeeTarget.h"
 #include "eckit/log/OStreamTarget.h"
+#include "eckit/log/TeeTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TeeTarget::TeeTarget(LogTarget* left, LogTarget* right):
-    left_(left),
-    right_(right) {
+TeeTarget::TeeTarget(LogTarget* left, LogTarget* right) : left_(left), right_(right) {
 
     if (left_) {
         left_->attach();
@@ -60,14 +58,17 @@ void TeeTarget::flush() {
     }
 }
 
-void TeeTarget::print(std::ostream& s) const
-{
+void TeeTarget::print(std::ostream& s) const {
     s << "TeeTarget(";
-    if(left_)  {s << *left_;}
-    if(right_) {s << *right_;}
+    if (left_) {
+        s << *left_;
+    }
+    if (right_) {
+        s << *right_;
+    }
     s << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

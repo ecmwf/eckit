@@ -12,25 +12,22 @@
 #include "eckit/parser/JSON.h"
 #include "eckit/runtime/Monitorable.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-JSONCmd::JSONCmd() : CmdResource("json") {
-}
+JSONCmd::JSONCmd() : CmdResource("json") {}
 
-JSONCmd::~JSONCmd() {
-}
+JSONCmd::~JSONCmd() {}
 
 void JSONCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     JSON j(out);
     Monitorable::allJSON(j);
 }
 
-void JSONCmd::help(std::ostream&) const {
-}
+void JSONCmd::help(std::ostream&) const {}
 
 Arg JSONCmd::usage(const std::string& cmd) const {
     return Arg();
@@ -38,6 +35,6 @@ Arg JSONCmd::usage(const std::string& cmd) const {
 
 static JSONCmd jsonCmd;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

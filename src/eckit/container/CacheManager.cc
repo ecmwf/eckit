@@ -10,11 +10,15 @@
 
 #include <unistd.h>
 
-#include "eckit/container/CacheManager.h"
-#include "eckit/runtime/Main.h"
+#include <algorithm>
+#include <deque>
+#include <fstream>
+
 #include "eckit/container/BTree.h"
-#include "eckit/os/AutoUmask.h"
+#include "eckit/container/CacheManager.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/os/AutoUmask.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit {
 
@@ -23,9 +27,7 @@ namespace eckit {
 CacheManagerBase::CacheManagerBase(const std::string& loaderName, size_t maxCacheSize, const std::string& extension) :
     loaderName_(loaderName),
     maxCacheSize_(maxCacheSize),
-    extension_(extension)
-{
-}
+    extension_(extension) {}
 
 CacheManagerBase::~CacheManagerBase() {}
 
@@ -34,7 +36,7 @@ std::string CacheManagerBase::loader() const {
     return loaderName_;
 }
 
-template<class T>
+template <class T>
 static bool compare(const T& a, const T& b) {
 
     if (a.second.last_ == 0) {
@@ -49,8 +51,8 @@ static bool sub_path_of(const eckit::PathName& base, const eckit::PathName& path
     std::string subp = base.asString();
     std::string p    = path.asString();
 
-//    eckit::Log::debug() << "subp " << subp << std::endl;
-//    eckit::Log::debug() << "p    " << p << std::endl;
+    //    eckit::Log::debug() << "subp " << subp << std::endl;
+    //    eckit::Log::debug() << "p    " << p << std::endl;
 
     std::size_t f = p.find(subp);
 
@@ -62,14 +64,11 @@ void CacheManagerBase::rescanCache(const eckit::PathName& base) const {
     ASSERT(btree_);
 
     eckit::PathName db(base / "cache-manager.btree");
-    eckit::PathName mapping(base / "cache-manager.mapping"); // already under lock from callee
+    eckit::PathName mapping(base / "cache-manager.mapping");  // already under lock from callee
 
     cache_btree_t& btree = *btree_;
 
-    eckit::Log::info() << "CACHE-MANAGER cleanup "
-                       << db
-                       << ", rebuilding index"
-                       << std::endl;
+    eckit::Log::info() << "CACHE-MANAGER cleanup " << db << ", rebuilding index" << std::endl;
 
 
     std::vector<PathName> files;
@@ -79,15 +78,12 @@ void CacheManagerBase::rescanCache(const eckit::PathName& base) const {
 
     std::ofstream out(mapping.asString().c_str(), std::ios::app);
 
-    for (std::vector<PathName>::const_iterator j = files.begin(); j  != files.end(); ++j) {
+    for (std::vector<PathName>::const_iterator j = files.begin(); j != files.end(); ++j) {
 
-        if(j->extension() != extension_) continue;
+        if (j->extension() != extension_)
+            continue;
 
-        eckit::Log::info() << "CACHE-MANAGER cleanup "
-                           << db
-                           << ", indexing "
-                           << (*j)
-                           << std::endl;
+        eckit::Log::info() << "CACHE-MANAGER cleanup " << db << ", indexing " << (*j) << std::endl;
 
         MD5 md5(*j);
 
@@ -100,9 +96,9 @@ void CacheManagerBase::rescanCache(const eckit::PathName& base) const {
         cache_entry_t total_entry = {0, 0, 0};
 
         if (!btree.get(key, entry)) {
-            entry.size_ = size_t((*j).size());
+            entry.size_  = size_t((*j).size());
             entry.count_ = 1;
-            entry.last_ = ::time(0);
+            entry.last_  = ::time(0);
             btree.set(key, entry);
 
             if (btree.get(total_key, total_entry)) {
@@ -111,20 +107,21 @@ void CacheManagerBase::rescanCache(const eckit::PathName& base) const {
             }
             btree.set(total_key, total_entry);
         }
-
     }
 }
 
-void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName& path) const  {
+void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName& path) const {
 
     // 1- Do we do it (bool)
     // 2- where do we store the data (path)
     // 3- What is the threshold (size_t)
 
-    if(!maxCacheSize_) return;
+    if (!maxCacheSize_)
+        return;
 
-    if(not writable(base)) {
-        Log::warning() << "CACHE-MANAGER base " << base << " isn't writable, cannot update cache management" << std::endl;
+    if (not writable(base)) {
+        Log::warning() << "CACHE-MANAGER base " << base << " isn't writable, cannot update cache management"
+                       << std::endl;
     }
 
 
@@ -154,7 +151,7 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
 
             if (mapping.size() == Length(0)) {
                 rescanCache(base);
-                return; // entry that was missing got also inserted  with full rescan
+                return;  // entry that was missing got also inserted  with full rescan
             }
 
             cache_key_t total_key(".total");
@@ -177,15 +174,9 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
                 size_t remove = total_entry.size_ - maxCacheSize_;
 
                 // Cleanup
-                eckit::Log::info() << "CACHE-MANAGER cleanup "
-                                   << db
-                                   << ", size is "
-                                   << eckit::Bytes(total_entry.size_)
-                                   << ", max size is "
-                                   << eckit::Bytes(maxCacheSize_)
-                                   << ", removing "
-                                   << eckit::Bytes(remove)
-                                   << std::endl;
+                eckit::Log::info() << "CACHE-MANAGER cleanup " << db << ", size is " << eckit::Bytes(total_entry.size_)
+                                   << ", max size is " << eckit::Bytes(maxCacheSize_) << ", removing "
+                                   << eckit::Bytes(remove) << std::endl;
 
 
                 std::map<std::string, eckit::PathName> md5_to_path;
@@ -198,15 +189,10 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
 
                     eckit::PathName p(t);
 
-                    if (s.length() != MD5_DIGEST_LENGTH * 2 || not sub_path_of(base, p) ) {
-                        eckit::Log::warning() << "CACHE-MANAGER cleanup "
-                                              << mapping
-                                              << ", invalid entry ["
-                                              << s
-                                              << "] and ["
-                                              << t
-                                              << "], ignoring but will rebuild index later"
-                                              << std::endl;
+                    if (s.length() != MD5_DIGEST_LENGTH * 2 || not sub_path_of(base, p)) {
+                        eckit::Log::warning()
+                            << "CACHE-MANAGER cleanup " << mapping << ", invalid entry [" << s << "] and [" << t
+                            << "], ignoring but will rebuild index later" << std::endl;
                         rescan = true;
                         continue;
                     }
@@ -217,8 +203,10 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
 
                 std::deque<cache_btree_t::result_type> result;
 
-                cache_key_t first; memset(first.data(), '0', cache_key_t::static_size());
-                cache_key_t last;  memset(last.data(), 'f', cache_key_t::static_size());
+                cache_key_t first;
+                memset(first.data(), '0', cache_key_t::static_size());
+                cache_key_t last;
+                memset(last.data(), 'f', cache_key_t::static_size());
 
                 btree.range(first, last, result);
 
@@ -230,12 +218,12 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
                     cache_btree_t::result_type p = result.front();
                     result.pop_front();
 
-                    if (p.second.last_ == 0) { // entry was cleared, its important to skip else below we retrigger scan
+                    if (p.second.last_ == 0) {  // entry was cleared, its important to skip else below we retrigger scan
                         continue;
                     }
 
                     std::map<std::string, eckit::PathName>::iterator j = md5_to_path.find(p.first);
-                    if (j == md5_to_path.end()) { // in the btree, but not file mapping. Path may exist on disk
+                    if (j == md5_to_path.end()) {  // in the btree, but not file mapping. Path may exist on disk
                         rescan = true;
                         continue;
                     }
@@ -261,35 +249,24 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
 
                     deleted += unlinked;
 
-                    eckit::Log::warning() << "CACHE-MANAGER cleanup "
-                                          << file
-                                          << ", deleted: "
-                                          << eckit::Bytes(unlinked)
-                                          << std::endl;
-
+                    eckit::Log::warning()
+                        << "CACHE-MANAGER cleanup " << file << ", deleted: " << eckit::Bytes(unlinked) << std::endl;
                 }
 
                 if (deleted < remove) {
-                    eckit::Log::warning() << "CACHE-MANAGER cleanup "
-                                          << mapping
-                                          << ", could not delete enough space"
-                                          << " total is "
-                                          << eckit::Bytes(total_entry.size_)
-                                          << std::endl;
+                    eckit::Log::warning() << "CACHE-MANAGER cleanup " << mapping << ", could not delete enough space"
+                                          << " total is " << eckit::Bytes(total_entry.size_) << std::endl;
                 }
 
                 if (rescan) {
-                    eckit::Log::warning() << "CACHE-MANAGER cleanup "
-                                          << mapping
-                                          << ", inconsitent cache index, needs rebuilding"
-                                          << std::endl;
+                    eckit::Log::warning() << "CACHE-MANAGER cleanup " << mapping
+                                          << ", inconsitent cache index, needs rebuilding" << std::endl;
 
                     // TODO: rebuild index + mapping from directory scan
                     mapping.unlink();
                     mapping.touch();
                     rescanCache(base);
                 }
-
             }
         }
 
@@ -299,7 +276,6 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
         btree.set(key, entry);
 
         Log::debug<LibEcKit>() << "CACHE-MANAGER touched path " << path << std::endl;
-
     }
     catch (std::exception& e) {
         eckit::Log::error() << "Error updating " << db << ", turning off" << eckit::Log::syserr << std::endl;
@@ -307,14 +283,13 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
     }
 }
 
-bool CacheManagerBase::writable(const PathName& path) const
-{
+bool CacheManagerBase::writable(const PathName& path) const {
     return (::access(path.asString().c_str(), W_OK) == 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static eckit::PathName lockFile(const std::string & path) {
+static eckit::PathName lockFile(const std::string& path) {
     eckit::AutoUmask umask(0);
 
     eckit::PathName lock(path + ".lock");
@@ -322,10 +297,9 @@ static eckit::PathName lockFile(const std::string & path) {
     return lock;
 }
 
-CacheManagerFileSemaphoreLock::CacheManagerFileSemaphoreLock(const std::string & path):
+CacheManagerFileSemaphoreLock::CacheManagerFileSemaphoreLock(const std::string& path) :
     path_(lockFile(path)),
-    lock_(path_) {
-}
+    lock_(path_) {}
 
 void CacheManagerFileSemaphoreLock::lock() {
     eckit::AutoUmask umask(0);
@@ -339,7 +313,6 @@ void CacheManagerFileSemaphoreLock::lock() {
 
     std::ofstream os(path_.asString().c_str());
     os << hostname << " " << ::getpid() << std::endl;
-
 }
 
 void CacheManagerFileSemaphoreLock::unlock() {
@@ -353,9 +326,7 @@ void CacheManagerFileSemaphoreLock::unlock() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CacheManagerFileFlock::CacheManagerFileFlock(const std::string & path):
-    lock_(lockFile(path)) {
-}
+CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path) : lock_(lockFile(path)) {}
 
 void CacheManagerFileFlock::lock() {
     lock_.lock();
@@ -367,4 +338,4 @@ void CacheManagerFileFlock::unlock() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

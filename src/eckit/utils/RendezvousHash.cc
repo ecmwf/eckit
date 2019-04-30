@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+#include <numeric>
+
 #include "eckit/utils/RendezvousHash.h"
 
 #include "eckit/config/LibEcKit.h"
@@ -25,18 +28,16 @@ std::string RendezvousHash::md5(const std::string& str) {
     return md5.digest();
 }
 
-RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) :
-    hash_(hash) {}
+RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) : hash_(hash) {}
 
-RendezvousHash::RendezvousHash(const std::vector<RendezvousHash::Node>& nodes, const RendezvousHash::hash_func_ptr hash) :
+RendezvousHash::RendezvousHash(const std::vector<RendezvousHash::Node>& nodes,
+                               const RendezvousHash::hash_func_ptr hash) :
     hash_(hash),
     nodes_(nodes) {}
 
-RendezvousHash::~RendezvousHash()
-{
-}
+RendezvousHash::~RendezvousHash() {}
 
-void RendezvousHash::hashOrder(const RendezvousHash::Key &key, std::vector<RendezvousHash::Node>& nodes) {
+void RendezvousHash::hashOrder(const RendezvousHash::Key& key, std::vector<RendezvousHash::Node>& nodes) {
 
     std::vector<size_t> indexes;
 
@@ -88,8 +89,7 @@ void RendezvousHash::hashOrderInternal(const RendezvousHash::Key& key, std::vect
     std::sort(indices.begin(), indices.end(), [&hashes](size_t lhs, size_t rhs) { return hashes[lhs] < hashes[rhs]; });
 }
 
-bool RendezvousHash::addNode(const RendezvousHash::Node& node)
-{
+bool RendezvousHash::addNode(const RendezvousHash::Node& node) {
     AutoLock<Mutex> lock(mutex_);
 
     auto it = std::find(nodes_.begin(), nodes_.end(), node);
@@ -101,8 +101,7 @@ bool RendezvousHash::addNode(const RendezvousHash::Node& node)
     return false;
 }
 
-bool RendezvousHash::removeNode(const RendezvousHash::Node& node)
-{
+bool RendezvousHash::removeNode(const RendezvousHash::Node& node) {
     AutoLock<Mutex> lock(mutex_);
 
     auto it = std::find(nodes_.begin(), nodes_.end(), node);
@@ -115,11 +114,10 @@ bool RendezvousHash::removeNode(const RendezvousHash::Node& node)
 }
 
 
-std::string RendezvousHash::flatten(const RendezvousHash::Key& key) const
-{
+std::string RendezvousHash::flatten(const RendezvousHash::Key& key) const {
     std::ostringstream flat;
 
-    for(Key::const_iterator itr = key.begin(); itr != key.end(); ++itr) {
+    for (Key::const_iterator itr = key.begin(); itr != key.end(); ++itr) {
         flat << "/" << itr->first << ":" << itr->second;
     }
 
@@ -128,4 +126,4 @@ std::string RendezvousHash::flatten(const RendezvousHash::Key& key) const
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

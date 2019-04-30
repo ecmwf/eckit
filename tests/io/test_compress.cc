@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/io/Compress.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/testing/Test.h"
@@ -19,11 +21,15 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static std::string test(const char* text) {
-    char compressed[10240] = {0, };
-    char uncompressed[10240] = {0, };
+    char compressed[10240] = {
+        0,
+    };
+    char uncompressed[10240] = {
+        0,
+    };
 
     Compress compress(16);
 
@@ -62,9 +68,9 @@ static std::string test(const char* text) {
     return u;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_eckit_compress_1" ) {
+CASE("test_eckit_compress_1") {
     const char* pattern = "TOBEORNOTTOBEORTOBEORNOT#";
 
     std::string s = test(pattern);
@@ -72,14 +78,14 @@ CASE( "test_eckit_compress_1" ) {
 }
 
 
-CASE( "test_eckit_compress_2" ) {
+CASE("test_eckit_compress_2") {
     const char* pattern = "ABCABCABCABCABCABC";
 
     std::string s = test(pattern);
     EXPECT(s == std::string(pattern));
 }
 
-CASE( "test_eckit_compress_3" ) {
+CASE("test_eckit_compress_3") {
     const char* pattern = "";
 
     std::string s = test(pattern);
@@ -87,8 +93,7 @@ CASE( "test_eckit_compress_3" ) {
 }
 
 
-
-CASE( "test_eckit_compress_4" ) {
+CASE("test_eckit_compress_4") {
 
     char original[102400];
     char compressed[102400 * 2];
@@ -111,11 +116,8 @@ CASE( "test_eckit_compress_4" ) {
 
             s = compress.encode(in, out);
 
-            std::cout << "Compress from "
-                      << sizeof(original)
-                      << " to " << s
-                      << " " << int(double(s) / double(sizeof(original)) * 100.0 + 0.5)
-                      << "%" << std::endl;
+            std::cout << "Compress from " << sizeof(original) << " to " << s << " "
+                      << int(double(s) / double(sizeof(original)) * 100.0 + 0.5) << "%" << std::endl;
         }
 
         std::cout << "-----------------------" << std::endl;
@@ -125,7 +127,6 @@ CASE( "test_eckit_compress_4" ) {
 
             t = compress.decode(in, out);
             std::cout << "Uncompress from " << s << " to " << t << std::endl;
-
         }
 
         EXPECT(sizeof(original) == t);
@@ -136,13 +137,11 @@ CASE( "test_eckit_compress_4" ) {
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

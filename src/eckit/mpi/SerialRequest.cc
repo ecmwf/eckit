@@ -8,28 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/mpi/SerialData.h"
 #include "eckit/mpi/SerialRequest.h"
-#include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/mpi/SerialData.h"
 
 namespace eckit {
 namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SerialRequest::SerialRequest() :
-    request_(-1) {
-}
+SerialRequest::SerialRequest() : request_(-1) {}
 
-SerialRequest::~SerialRequest() {
-}
+SerialRequest::~SerialRequest() {}
 
 
 void SerialRequest::print(std::ostream& os) const {
     os << "SerialRequest("
-       <<  "tag->" << tag()
-       << ")";
+       << "tag->" << tag() << ")";
 }
 
 int SerialRequest::request() const {
@@ -42,11 +38,9 @@ SendRequest::SendRequest(const void* buffer, size_t count, Data::Code type, int 
     buffer_(static_cast<const char*>(buffer), count * dataSize[type]),
     count_(count),
     tag_(tag),
-    type_(type) {
-}
+    type_(type) {}
 
-SendRequest::~SendRequest() {
-}
+SendRequest::~SendRequest() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -55,10 +49,9 @@ ReceiveRequest::ReceiveRequest(void* buffer, size_t count, Data::Code type, int 
     size_(count * dataSize[type]),
     count_(count),
     tag_(tag),
-    type_(type) {
-}
+    type_(type) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit

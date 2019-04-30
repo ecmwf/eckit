@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/parser/JSONMetadata.h"
+#include <algorithm>
+
 #include "eckit/io/Buffer.h"
+#include "eckit/parser/JSONMetadata.h"
 #include "eckit/types/FloatCompare.h"
 
 #include "eckit/testing/Test.h"
@@ -22,9 +24,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_eckit_json_metadata_params" ) {
+CASE("test_eckit_json_metadata_params") {
     std::string json_str = "{\"key1\": 1, \"key2\": 99.5, \"key3\": []}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -38,7 +40,7 @@ CASE ( "test_eckit_json_metadata_params" ) {
     EXPECT(std::find(params.begin(), params.end(), "key3") != params.end());
 }
 
-CASE ( "test_eckit_json_metadata_params_nondict" ) {
+CASE("test_eckit_json_metadata_params_nondict") {
     // If a valid json is supplied that is not an object/dict, there should be no
     // internal parameters to find
 
@@ -52,7 +54,7 @@ CASE ( "test_eckit_json_metadata_params_nondict" ) {
     EXPECT(params.size() == 0);
 }
 
-CASE ( "test_eckit_json_metadata_has" ) {
+CASE("test_eckit_json_metadata_has") {
     std::string json_str = "{\"key1\": 1, \"key2\": 99.5, \"key3\": []}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -64,7 +66,7 @@ CASE ( "test_eckit_json_metadata_has" ) {
     EXPECT(!md.has("keyunused"));
 }
 
-CASE ( "test_eckit_json_metadata_has_nondict" ) {
+CASE("test_eckit_json_metadata_has_nondict") {
     // If a valid json is supplied that is not an object/dict, there should be no
     // internal parameters to find
 
@@ -76,7 +78,7 @@ CASE ( "test_eckit_json_metadata_has_nondict" ) {
     EXPECT(!md.has("key1"));
 }
 
-CASE ( "test_eckit_json_metadata_get_string" ) {
+CASE("test_eckit_json_metadata_get_string") {
     std::string json_str = "{\"key1\": 1, \"key2\": \"testing string\", \"key3\": []}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -89,20 +91,20 @@ CASE ( "test_eckit_json_metadata_get_string" ) {
     EXPECT(str_tmp == "testing string");
 
     // Throws on incorrect type
-    EXPECT_THROWS_AS( md.get("key3", str_tmp), BadCast );
+    EXPECT_THROWS_AS(md.get("key3", str_tmp), BadCast);
 
     // Throws on missing key
-    EXPECT_THROWS_AS( md.get("keyunused", str_tmp), OutOfRange );
+    EXPECT_THROWS_AS(md.get("keyunused", str_tmp), OutOfRange);
 
     // Throws on non-dictionary root-value
     std::string json_str2 = "[1234]";
     Buffer buf2(json_str2.c_str(), json_str2.length());
     JSONMetadata md2(buf2);
 
-    EXPECT_THROWS_AS( md2.get("key1", str_tmp), AssertionFailed );
+    EXPECT_THROWS_AS(md2.get("key1", str_tmp), AssertionFailed);
 }
 
-CASE ( "test_eckit_json_metadata_get_double" ) {
+CASE("test_eckit_json_metadata_get_double") {
     std::string json_str = "{\"key1\": 123.45, \"key2\": \"testing string\", \"key3\": [], \"key4\": 123}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -110,26 +112,26 @@ CASE ( "test_eckit_json_metadata_get_double" ) {
 
     double dbl_tmp;
     md.get("key1", dbl_tmp);
-    EXPECT( is_approximately_equal( dbl_tmp, 123.45, 1.0e-6));
+    EXPECT(is_approximately_equal(dbl_tmp, 123.45, 1.0e-6));
 
     md.get("key4", dbl_tmp);
-    EXPECT( is_approximately_equal( dbl_tmp, static_cast<double>(123), 1.0e-6 ) );
+    EXPECT(is_approximately_equal(dbl_tmp, static_cast<double>(123), 1.0e-6));
 
     // Throws on incorrect type
-    EXPECT_THROWS_AS( md.get("key3", dbl_tmp), BadCast );
+    EXPECT_THROWS_AS(md.get("key3", dbl_tmp), BadCast);
 
     // Throws on missing key
-    EXPECT_THROWS_AS( md.get("keyunused", dbl_tmp), OutOfRange );
+    EXPECT_THROWS_AS(md.get("keyunused", dbl_tmp), OutOfRange);
 
     // Throws on non-dictionary root-value
     std::string json_str2 = "[1234]";
     Buffer buf2(json_str2.c_str(), json_str2.length());
     JSONMetadata md2(buf2);
 
-    EXPECT_THROWS_AS( md2.get("key1", dbl_tmp), AssertionFailed );
+    EXPECT_THROWS_AS(md2.get("key1", dbl_tmp), AssertionFailed);
 }
 
-CASE ( "test_eckit_json_metadata_get_long" ) {
+CASE("test_eckit_json_metadata_get_long") {
     std::string json_str = "{\"key1\": 123.45, \"key2\": \"testing string\", \"key3\": [], \"key4\": 123}";
     Buffer buf(json_str.c_str(), json_str.length());
 
@@ -140,25 +142,24 @@ CASE ( "test_eckit_json_metadata_get_long" ) {
     EXPECT(long_tmp == 123);
 
     // Throws on incorrect type
-    EXPECT_THROWS_AS( md.get("key3", long_tmp), BadCast );
+    EXPECT_THROWS_AS(md.get("key3", long_tmp), BadCast);
 
     // Throws on missing key
-    EXPECT_THROWS_AS( md.get("keyunused", long_tmp), OutOfRange );
+    EXPECT_THROWS_AS(md.get("keyunused", long_tmp), OutOfRange);
 
     // Throws on non-dictionary root-value
     std::string json_str2 = "[1234]";
     Buffer buf2(json_str2.c_str(), json_str2.length());
     JSONMetadata md2(buf2);
 
-    EXPECT_THROWS_AS( md2.get("key1", long_tmp), AssertionFailed );
+    EXPECT_THROWS_AS(md2.get("key1", long_tmp), AssertionFailed);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

@@ -15,19 +15,31 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Operation::Code sum()   { return Operation::SUM; }
+Operation::Code sum() {
+    return Operation::SUM;
+}
 
-Operation::Code prod()  { return Operation::PROD; }
+Operation::Code prod() {
+    return Operation::PROD;
+}
 
-Operation::Code max()   { return Operation::MAX; }
+Operation::Code max() {
+    return Operation::MAX;
+}
 
-Operation::Code min()   { return Operation::MIN; }
+Operation::Code min() {
+    return Operation::MIN;
+}
 
-Operation::Code maxloc(){ return Operation::MAXLOC; }
+Operation::Code maxloc() {
+    return Operation::MAXLOC;
+}
 
-Operation::Code minloc(){ return Operation::MINLOC; }
+Operation::Code minloc() {
+    return Operation::MINLOC;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit

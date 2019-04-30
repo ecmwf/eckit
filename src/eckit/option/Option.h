@@ -19,38 +19,22 @@
 #include <iosfwd>
 #include <string>
 
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 class Configuration;
 class Configured;
 
-
 namespace option {
 
 
-class Option {
-  public:
-
-// -- Exceptions
-    // None
-
-// -- Contructors
+class Option : private eckit::NonCopyable {
+  public: // methods
 
     Option(const std::string& name, const std::string& description);
 
-// -- Destructor
-
     virtual ~Option(); // Change to virtual if base class
-
-// -- Convertors
-    // None
-
-// -- Operators
-    // None
-
-// -- Methods
-    // None
 
     const std::string& name() const;
 
@@ -60,58 +44,14 @@ class Option {
     virtual void set(const std::string& value, Configured&) const = 0;
     virtual void copy(const Configuration& from, Configured& to) const = 0;
 
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-  protected:
-
-// -- Members
+  protected: // members
 
     std::string name_;
     std::string description_;
 
-// -- Methods
-
     virtual void print(std::ostream&) const = 0; // Change to virtual if base class
 
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
   private:
-
-// No copy allowed
-
-    Option(const Option&);
-    Option& operator=(const Option&);
-
-// -- Members
-    // None
-
-// -- Methods
-    // None
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-// -- Friends
 
     friend std::ostream& operator<<(std::ostream& s, const Option& p) {
         p.print(s);
@@ -121,7 +61,7 @@ class Option {
 };
 
 } // namespace option
-
 } // namespace eckit
+
 #endif
 

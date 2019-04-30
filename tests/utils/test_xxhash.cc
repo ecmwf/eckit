@@ -10,11 +10,11 @@
 
 #include <iostream>
 
-#include "eckit/utils/xxHash.h"
-#include "eckit/log/Timer.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
+#include "eckit/log/Timer.h"
+#include "eckit/utils/xxHash.h"
 
 #include "eckit/test/Test.h"
 
@@ -28,66 +28,61 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_eckit_utils_xxHash_constructor" )
-{
+CASE("test_eckit_utils_xxHash_constructor") {
     xxHash hash;
 
-        const char* msg = "The quick brown fox jumps over the lazy dog";
+    const char* msg = "The quick brown fox jumps over the lazy dog";
 
-        hash.add(msg,strlen(msg));
+    hash.add(msg, strlen(msg));
 
-        std::string res ("0b242d361fda71bc");
+    std::string res("0b242d361fda71bc");
 
-        EXPECT( res == hash.digest() );
+    EXPECT(res == hash.digest());
 }
 
-CASE ( "test_eckit_utils_xxHash_constructor_string" )
-{
-    xxHash hash( "Nobody inspects the spammish repetition" );
+CASE("test_eckit_utils_xxHash_constructor_string") {
+    xxHash hash("Nobody inspects the spammish repetition");
 
-    std::string res ("fbcea83c8a378bf1");
+    std::string res("fbcea83c8a378bf1");
 
-    EXPECT( res == hash.digest() );
+    EXPECT(res == hash.digest());
 }
 
-CASE ( "test_eckit_utils_xxHash_test_suite" )
-{
-    EXPECT( xxHash("").digest() == std::string("ef46db3751d8e999"));
-    EXPECT( xxHash("a").digest() == std::string("d24ec4f1a98c6e5b"));
-    EXPECT( xxHash("abc").digest() == std::string("44bc2cf5ad770999"));
+CASE("test_eckit_utils_xxHash_test_suite") {
+    EXPECT(xxHash("").digest() == std::string("ef46db3751d8e999"));
+    EXPECT(xxHash("a").digest() == std::string("d24ec4f1a98c6e5b"));
+    EXPECT(xxHash("abc").digest() == std::string("44bc2cf5ad770999"));
 }
 
-CASE ( "test_eckit_utils_xxhash_compute" )
-{
-    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+CASE("test_eckit_utils_xxhash_compute") {
+    std::string msg("The quick brown fox jumps over the lazy dog");
 
-    std::string res ("0b242d361fda71bc");
+    std::string res("0b242d361fda71bc");
 
     xxHash hash;
-    EXPECT( res == hash.compute(msg.c_str(), msg.size()));
+    EXPECT(res == hash.compute(msg.c_str(), msg.size()));
 }
 
-CASE ( "test_eckit_utils_xxhash_reset" )
-{
-    xxHash hash( "FOOBAR" );
+CASE("test_eckit_utils_xxhash_reset") {
+    xxHash hash("FOOBAR");
 
-    hash.reset(); // reset initial state
+    hash.reset();  // reset initial state
 
-    std::string msg ( "The quick brown fox jumps over the lazy dog" );
+    std::string msg("The quick brown fox jumps over the lazy dog");
 
     hash.add(msg.c_str(), msg.size());
 
-    std::string res ("0b242d361fda71bc");
+    std::string res("0b242d361fda71bc");
 
-    EXPECT( res == hash.digest());
+    EXPECT(res == hash.digest());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-} // end namespace test
-} // end namespace eckit
+}  // end namespace test
+}  // end namespace eckit
 
-int main (int argc, char * argv[] ) {
-    return run_tests ( argc, argv );
+int main(int argc, char* argv[]) {
+    return run_tests(argc, argv);
 }

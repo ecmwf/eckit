@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,7 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Doubles cast into and out of Value correctly" ) {
+CASE("Doubles cast into and out of Value correctly") {
     Value val_zero(0.0);
     Value val_double(99999999999999999999999999999.9);
 
@@ -61,7 +60,7 @@ CASE( "Doubles cast into and out of Value correctly" ) {
     EXPECT_THROWS_AS(val_double.as<ValueMap>(), BadConversion);
 }
 
-CASE( "Types are correctly reported for doubles" ) {
+CASE("Types are correctly reported for doubles") {
     Value val_double(-99999999999999999999999999999.9);
 
     EXPECT(val_double.isDouble());
@@ -77,13 +76,13 @@ CASE( "Types are correctly reported for doubles" ) {
     EXPECT(!val_double.isDateTime());
 }
 
-CASE( "Doubles compare with other doubles, and form a well defined order with other Values" ) {
+CASE("Doubles compare with other doubles, and form a well defined order with other Values") {
     Value val1(1234.0);
     Value val2(1234.0);
     Value val3(4321.0);
 
-    // n.b. These comparisons are designed to define a well defined order between different data types
-    // bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
+    // n.b. These comparisons are designed to define a well defined order between different data
+    // types bool [false < true] > number > string > nil > list > map > Date > Time > DateTime
 
     // Check comparisons with same type of data
 
@@ -109,20 +108,19 @@ CASE( "Doubles compare with other doubles, and form a well defined order with ot
     // Check comparisons with other types of data (see test_value_typeordering).
 
     Value val(1234.5);
-    EXPECT(val.compare(Value(true))                < 0);
-    EXPECT(val.compare(Value(1))                   > 0); // Special case
-    EXPECT(val.compare(Value(1234.5))             == 0);
-    EXPECT(val.compare(Value("test str"))          > 0);
-    EXPECT(val.compare(Value())                    > 0);
-    EXPECT(val.compare(Value::makeList())          > 0);
-    EXPECT(val.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val.compare(Value(Time(1000)))          > 0);
-    EXPECT(val.compare(Value(DateTime()))          > 0);
-    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
-
+    EXPECT(val.compare(Value(true)) < 0);
+    EXPECT(val.compare(Value(1)) > 0);  // Special case
+    EXPECT(val.compare(Value(1234.5)) == 0);
+    EXPECT(val.compare(Value("test str")) > 0);
+    EXPECT(val.compare(Value()) > 0);
+    EXPECT(val.compare(Value::makeList()) > 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val.compare(Value(Time(1000))) > 0);
+    EXPECT(val.compare(Value(DateTime())) > 0);
+    EXPECT(val.compare(Value::makeOrderedMap()) > 0);
 }
 
-CASE( "Indexing doesn't make any sense on doubles" ) {
+CASE("Indexing doesn't make any sense on doubles") {
     // No indexing operations should work on a double...
 
     Value val(1234.45);
@@ -140,7 +138,7 @@ CASE( "Indexing doesn't make any sense on doubles" ) {
     EXPECT_THROWS_AS(val.contains(Value(123)), BadOperator);
 }
 
-CASE( "Addition works for doubles only with other doubles" ) {
+CASE("Addition works for doubles only with other doubles") {
     Value val(123.45);
 
     EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
@@ -169,7 +167,7 @@ CASE( "Addition works for doubles only with other doubles" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Subtraction works for doubles only with other doubles" ) {
+CASE("Subtraction works for doubles only with other doubles") {
     Value val(123.45);
 
     EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
@@ -198,7 +196,7 @@ CASE( "Subtraction works for doubles only with other doubles" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Multiplication works for doubles only with other doubles" ) {
+CASE("Multiplication works for doubles only with other doubles") {
     Value val(123.45);
 
     EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
@@ -227,7 +225,7 @@ CASE( "Multiplication works for doubles only with other doubles" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Division works for doubles only with other doubles" ) {
+CASE("Division works for doubles only with other doubles") {
     Value val(123.45);
 
     EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
@@ -256,7 +254,7 @@ CASE( "Division works for doubles only with other doubles" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "The modulo operator is invalid for doubles" ) {
+CASE("The modulo operator is invalid for doubles") {
     Value val(123.45);
 
     EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
@@ -284,21 +282,19 @@ CASE( "The modulo operator is invalid for doubles" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Double has semantics of single list with a double for head and tail" ) {
-
+CASE("Double has semantics of single list with a double for head and tail") {
     Value val(123.45);
 
     EXPECT(val.head() == Value(123.45));
     EXPECT(val.tail() == Value());
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     Value(123.45).hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "3da9d66f9e40fbcfe7d37679462a1542");
 }

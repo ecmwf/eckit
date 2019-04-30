@@ -16,6 +16,7 @@
 #ifndef eckit_log_ColouringTarget_h
 #define eckit_log_ColouringTarget_h
 
+#include <iosfwd>
 #include <string>
 
 #include "eckit/log/Colour.h"
@@ -27,7 +28,6 @@ namespace eckit {
 
 class ColouringTarget : public WrapperTarget {
 public:
-
     typedef std::ostream& (*colourproc)(std::ostream&);
 
     ColouringTarget(LogTarget* target, colourproc begin, colourproc end = &Colour::reset);
@@ -36,18 +36,17 @@ public:
 
 protected:
     void print(std::ostream& s) const;
-private:
 
+private:
     virtual void writePrefix();
     virtual void writeSuffix();
 
     std::string begin_;
     std::string end_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

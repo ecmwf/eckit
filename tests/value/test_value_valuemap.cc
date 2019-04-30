@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,20 +26,22 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Data is correctly moved into/out of ValueMap" ) {
-    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Data is correctly moved into/out of ValueMap") {
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl.
+    // Just test what it does when wrapped.
     ValueMap vm;
-    vm[123] = 123;
-    vm["abc"] = "abc";
+    vm[123]           = 123;
+    vm["abc"]         = "abc";
     vm[Value(123.45)] = 123.45;
-    vm[Value(true)] = false;
+    vm[Value(true)]   = false;
 
     Value val(vm);
 
     // Extract the ValueMap
-    // n.b. We cannot compare eqality of ValueMaps, as the internal Values have been copied, and as a result the
-    //      operator== will return false, as it depends only on the memory address of the internal Content.
+    // n.b. We cannot compare eqality of ValueMaps, as the internal Values have been copied, and as
+    // a result the
+    //      operator== will return false, as it depends only on the memory address of the internal
+    //      Content.
 
     EXPECT(((ValueMap)val)[123].as<long long>() == 123);
     EXPECT(val.as<ValueMap>()[123].as<long long>() == 123);
@@ -62,14 +63,14 @@ CASE( "Data is correctly moved into/out of ValueMap" ) {
     EXPECT_THROWS_AS(val.as<DateTime>(), BadConversion);
 }
 
-CASE( "Types are reported correctly for ValueMap" ) {
-    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Types are reported correctly for ValueMap") {
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl.
+    // Just test what it does when wrapped.
     ValueMap vm;
-    vm[123] = 123;
-    vm["abc"] = "abc";
+    vm[123]           = 123;
+    vm["abc"]         = "abc";
     vm[Value(123.45)] = 123.45;
-    vm[Value(true)] = false;
+    vm[Value(true)]   = false;
 
     Value val(vm);
 
@@ -86,9 +87,9 @@ CASE( "Types are reported correctly for ValueMap" ) {
     EXPECT(!val.isDateTime());
 }
 
-CASE( "Test comparisons using ValueMap" ) {
-    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Test comparisons using ValueMap") {
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl.
+    // Just test what it does when wrapped.
     ValueMap vm;
     vm[123] = 123;
 
@@ -110,26 +111,26 @@ CASE( "Test comparisons using ValueMap" ) {
 
     // Check comparisons with other types of data (see test_value_typeordering).
 
-    EXPECT(val1.compare(Value(true))                < 0);
-    EXPECT(val1.compare(Value(1))                   < 0);
-    EXPECT(val1.compare(Value(1234.5))              < 0);
-    EXPECT(val1.compare(Value("test str"))          < 0);
-    EXPECT(val1.compare(Value())                    < 0);
-    EXPECT(val1.compare(val1)                      == 0);
-    EXPECT(val1.compare(Value(Date(2016, 5, 1)))    > 0);
-    EXPECT(val1.compare(Value(Time(1000)))          > 0);
-    EXPECT(val1.compare(Value(DateTime()))          > 0);
-    EXPECT(val1.compare(Value::makeOrderedMap())    > 0);
+    EXPECT(val1.compare(Value(true)) < 0);
+    EXPECT(val1.compare(Value(1)) < 0);
+    EXPECT(val1.compare(Value(1234.5)) < 0);
+    EXPECT(val1.compare(Value("test str")) < 0);
+    EXPECT(val1.compare(Value()) < 0);
+    EXPECT(val1.compare(val1) == 0);
+    EXPECT(val1.compare(Value(Date(2016, 5, 1))) > 0);
+    EXPECT(val1.compare(Value(Time(1000))) > 0);
+    EXPECT(val1.compare(Value(DateTime())) > 0);
+    EXPECT(val1.compare(Value::makeOrderedMap()) > 0);
 }
 
-CASE( "Tets indexing for ValueMap" ) {
-    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl. Just test what
-    // it does when wrapped.
+CASE("Tets indexing for ValueMap") {
+    // A ValueMap is just a std::map<Value, Value>. No point in testing the functionality of stl.
+    // Just test what it does when wrapped.
     ValueMap vm;
-    vm[123] = 456;
-    vm["abc"] = "def";
+    vm[123]           = 456;
+    vm["abc"]         = "def";
     vm[Value(123.45)] = 543.21;
-    vm[Value(true)] = false;
+    vm[Value(true)]   = false;
 
     Value val(vm);
 
@@ -169,7 +170,7 @@ CASE( "Tets indexing for ValueMap" ) {
     /// EXPECT(val.contains(Value(true)));
 }
 
-CASE( "Test that addition is invalid for ValueMap" ) {
+CASE("Test that addition is invalid for ValueMap") {
     // There are no valid ValueMap addition operations.
 
     ValueMap vm;
@@ -200,7 +201,7 @@ CASE( "Test that addition is invalid for ValueMap" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that subtraction is invalid for ValueMap" ) {
+CASE("Test that subtraction is invalid for ValueMap") {
     // There are no valid ValueMap subtraction operations.
 
     ValueMap vm;
@@ -231,7 +232,7 @@ CASE( "Test that subtraction is invalid for ValueMap" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Tets that multiplication is invalid for ValueMap" ) {
+CASE("Tets that multiplication is invalid for ValueMap") {
     // There are no valid ValueMap multiplication operations.
 
     ValueMap vm;
@@ -262,7 +263,7 @@ CASE( "Tets that multiplication is invalid for ValueMap" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that division is invalid for ValueMap" ) {
+CASE("Test that division is invalid for ValueMap") {
     // There are no valid ValueMap division operations.
 
     ValueMap vm;
@@ -293,7 +294,7 @@ CASE( "Test that division is invalid for ValueMap" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that the module operator is invalid for ValueMap" ) {
+CASE("Test that the module operator is invalid for ValueMap") {
     // There are no valid ValueMap modulo operations.
 
     ValueMap vm;
@@ -324,7 +325,7 @@ CASE( "Test that the module operator is invalid for ValueMap" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test head/tail functionality for ValueMap" ) {
+CASE("Test head/tail functionality for ValueMap") {
     ValueMap vm;
     vm[123] = 456;
 
@@ -338,7 +339,7 @@ CASE( "Test head/tail functionality for ValueMap" ) {
 //----------------------------------------------------------------------------------------------------------------------
 // Test map helper functions
 
-CASE( "Test behaviour of maps in value" ) {
+CASE("Test behaviour of maps in value") {
     // Test the trivial version
 
     Value val1 = Value::makeMap();
@@ -349,10 +350,10 @@ CASE( "Test behaviour of maps in value" ) {
     // Can we wrap an arbitrary ValueMap?
 
     ValueMap vm;
-    vm[123] = 456;
-    vm["abc"] = "def";
+    vm[123]     = 456;
+    vm["abc"]   = "def";
     vm[1234.56] = 666.66;
-    vm[true] = false;
+    vm[true]    = false;
 
     Value val2 = Value::makeMap(vm);
 
@@ -366,21 +367,20 @@ CASE( "Test behaviour of maps in value" ) {
     /// EXPECT(val2[3].as<bool>(), false);
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     ValueMap vm;
-    vm[123] = 456;
-    vm["abc"] = "def";
+    vm[123]     = 456;
+    vm["abc"]   = "def";
     vm[1234.56] = 666.66;
-    vm[true] = false;
+    vm[true]    = false;
 
     Value v = Value::makeMap(vm);
 
     v.hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "7a4dffa7732f430a910dc767a06aff49");
 }

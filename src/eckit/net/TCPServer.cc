@@ -8,60 +8,55 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
-#include "eckit/log/Log.h"
 #include "eckit/io/Select.h"
+#include "eckit/log/Log.h"
 #include "eckit/net/TCPServer.h"
-
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TCPServer::TCPServer(int port, const std::string& addr, bool reusePort):
+TCPServer::TCPServer(int port, const std::string& addr, bool reusePort) :
     TCPSocket(),
     port_(port),
     listen_(-1),
     addr_(addr),
     closeExec_(true),
-    reusePort_(reusePort)
-{
-}
+    reusePort_(reusePort) {}
 
-TCPServer::~TCPServer()
-{
+TCPServer::~TCPServer() {
     if (listen_ >= 0)
         ::close(listen_);
 }
 
 // Accept a client
 
-TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected)
-{
+TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected) {
     bind();
 
 
     sockaddr_in from;
 #ifdef SGI
-    int    fromlen = sizeof(from);
+    int fromlen = sizeof(from);
 #else
     socklen_t fromlen = sizeof(from);
 #endif
 
-    for (;;)
-    {
+    for (;;) {
         int delay = timeout ? timeout : 10;
 
         Select select(listen_);
         Log::status() << message << " (port " << port_ << ")" << std::endl;
 
         while (!select.ready(delay)) {
-            if (timeout && !connected) throw TimeOut(message, timeout);
+            if (timeout && !connected)
+                throw TimeOut(message, timeout);
             if (connected) {
                 *connected = false;
                 return *this;
@@ -99,48 +94,40 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
     return *this;
 }
 
-void TCPServer::close()
-{
+void TCPServer::close() {
     TCPSocket::close();
     if (listen_ >= 0)
         ::close(listen_);
     listen_ = -1;
 }
 
-void TCPServer::bind()
-{
-    if (listen_ == -1)
-    {
+void TCPServer::bind() {
+    if (listen_ == -1) {
         listen_ = newSocket(port_, reusePort_);
         ::listen(listen_, 5);
 
-        //if(!willFork_)
+        // if(!willFork_)
         //  SYSCALL(fcntl(socket_,F_SETFD,FD_CLOEXEC));
     }
 }
 
 
-int TCPServer::socket()
-{
+int TCPServer::socket() {
     ((TCPServer*)this)->bind();
     return listen_;
 }
 
-std::string TCPServer::bindingAddress() const
-{
+std::string TCPServer::bindingAddress() const {
     return addr_;
 }
 
 void TCPServer::print(std::ostream& s) const {
     s << "TCPServer["
-      << "port=" << port_
-      << ",addr=" << addr_
-      << ",";
+      << "port=" << port_ << ",addr=" << addr_ << ",";
     TCPSocket::print(s);
     s << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

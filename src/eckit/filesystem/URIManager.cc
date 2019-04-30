@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/filesystem/URI.h"
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
-#include "eckit/filesystem/PathName.h"
 
 
 namespace eckit {
@@ -21,9 +22,9 @@ namespace eckit {
 
 typedef std::map<std::string, URIManager*> URIManagerMap;
 
-// Builds the map on demand, needed for correct static initialization because factories can be initialized first
+// Builds the map on demand, needed for correct static initialization because factories can be
+// initialized first
 struct URIManagerRegistry {
-
     static URIManagerRegistry& instance() {
         static URIManagerRegistry reg;
         return reg;
@@ -39,10 +40,7 @@ static StaticMutex local_mutex;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-URIManager::URIManager(const std::string& name):
-        name_(name)
-{
-
+URIManager::URIManager(const std::string& name) : name_(name) {
     AutoLock<StaticMutex> lock(local_mutex);
     URIManagerMap& m = URIManagerRegistry::instance().map();
 
@@ -50,17 +48,14 @@ URIManager::URIManager(const std::string& name):
     m[name] = this;
 }
 
-URIManager::~URIManager()
-{
+URIManager::~URIManager() {
     AutoLock<StaticMutex> lock(local_mutex);
     URIManagerMap& m = URIManagerRegistry::instance().map();
 
     m.erase(name_);
 }
 
-URIManager& URIManager::lookUp(const std::string& name)
-{
-
+URIManager& URIManager::lookUp(const std::string& name) {
     AutoLock<StaticMutex> lock(local_mutex);
     URIManagerMap& m = URIManagerRegistry::instance().map();
 
@@ -68,12 +63,11 @@ URIManager& URIManager::lookUp(const std::string& name)
 
     Log::info() << "Looking for URIManager [" << name << "]" << std::endl;
 
-    if (j == m.end())
-    {
-	Log::error() << "No URIManager for [" << name << "]" << std::endl;
-	Log::error() << "Managers are:" << std::endl;
-	for(j = m.begin() ; j != m.end() ; ++j)
-	  Log::error() << "   " << *((*j).second) << std::endl;
+    if (j == m.end()) {
+        Log::error() << "No URIManager for [" << name << "]" << std::endl;
+        Log::error() << "Managers are:" << std::endl;
+        for (j = m.begin(); j != m.end(); ++j)
+            Log::error() << "   " << *((*j).second) << std::endl;
         throw SeriousBug(std::string("No URIManager called ") + name);
     }
 
@@ -81,8 +75,7 @@ URIManager& URIManager::lookUp(const std::string& name)
 }
 
 
-void URIManager::print(std::ostream& s) const
-{
+void URIManager::print(std::ostream& s) const {
     s << "URIManager[" << name_ << "]";
 }
 
@@ -90,21 +83,14 @@ void URIManager::print(std::ostream& s) const
 
 
 class LocalFileManager : public URIManager {
+    virtual bool exists(const URI& f) { return PathName(f.name()).exists(); }
 
-    virtual bool exists(const URI& f) {
-        return PathName(f.name()).exists();
-    }
+    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle*  newWriteHandle(const URI& f) {
-        return PathName(f.name()).fileHandle();
-    }
+    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle*  newReadHandle(const URI& f) {
-        return PathName(f.name()).fileHandle();
-    }
-
-    virtual DataHandle*  newReadHandle(const URI& f,const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.name()).partHandle(ol,ll);
+    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
+        return PathName(f.name()).partHandle(ol, ll);
     }
 
 public:
@@ -112,23 +98,15 @@ public:
 };
 
 
-
 class MarsFSManager : public URIManager {
+    virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
 
-    virtual bool exists(const URI& f) {
-        return PathName(f.scheme() + ":" + f.name()).exists();
-    }
+    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle*  newWriteHandle(const URI& f) {
-        return PathName(f.scheme() + ":" + f.name()).fileHandle();
-    }
+    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle*  newReadHandle(const URI& f) {
-        return PathName(f.scheme() + ":" + f.name()).fileHandle();
-    }
-
-    virtual DataHandle*  newReadHandle(const URI& f,const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.scheme() + ":" + f.name()).partHandle(ol,ll);
+    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
+        return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);
     }
 
 public:
@@ -136,10 +114,10 @@ public:
 };
 
 
-static LocalFileManager  manager_unix("unix");
-static LocalFileManager  manager_file("file");
-static MarsFSManager     manager_marsfs("marsfs");
+static LocalFileManager manager_unix("unix");
+static LocalFileManager manager_file("file");
+static MarsFSManager manager_marsfs("marsfs");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

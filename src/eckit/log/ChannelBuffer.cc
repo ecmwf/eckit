@@ -11,30 +11,25 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CallbackTarget.h"
 #include "eckit/log/ChannelBuffer.h"
+#include "eckit/log/FileTarget.h"
 #include "eckit/log/IndentTarget.h"
 #include "eckit/log/LogTarget.h"
-#include "eckit/log/TeeTarget.h"
-#include "eckit/log/CallbackTarget.h"
-#include "eckit/log/FileTarget.h"
 #include "eckit/log/OStreamTarget.h"
+#include "eckit/log/TeeTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer( std::size_t size ) :
-    std::streambuf(),
-    target_(0),
-    buffer_( size  )
-{
-    ASSERT( size );
-    char *base = &buffer_.front();
-    setp(base, base + buffer_.size() );
+ChannelBuffer::ChannelBuffer(std::size_t size) : std::streambuf(), target_(0), buffer_(size) {
+    ASSERT(size);
+    char* base = &buffer_.front();
+    setp(base, base + buffer_.size());
 }
 
-ChannelBuffer::~ChannelBuffer()
-{
+ChannelBuffer::~ChannelBuffer() {
     reset();
 }
 
@@ -55,7 +50,6 @@ void ChannelBuffer::setTarget(LogTarget* target) {
     }
 
     target_ = target;
-
 }
 
 
@@ -72,8 +66,7 @@ void ChannelBuffer::reset() {
     }
 }
 
-bool ChannelBuffer::dumpBuffer()
-{
+bool ChannelBuffer::dumpBuffer() {
     if (target_) {
         target_->write(pbase(), pptr());
     }
@@ -88,12 +81,11 @@ void ChannelBuffer::indent(const char* space) {
 }
 
 void ChannelBuffer::unindent() {
-    IndentTarget*  indent = dynamic_cast<IndentTarget*>(target_);
+    IndentTarget* indent = dynamic_cast<IndentTarget*>(target_);
     if (indent == 0) {
         throw SeriousBug("Attempt to unindent a Channel that is not indented");
     }
     setTarget(indent->target_);
-
 }
 
 void ChannelBuffer::addCallback(channel_callback_t cb, void* data) {
@@ -120,33 +112,34 @@ void ChannelBuffer::setFile(const std::string& path) {
     setTarget(new FileTarget(path));
 }
 
-std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch)
-{
-    if (ch == traits_type::eof() ) { return sync(); }
+std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch) {
+    if (ch == traits_type::eof()) {
+        return sync();
+    }
     dumpBuffer();
     sputc(ch);
     return traits_type::to_int_type(ch);
 }
 
-std::streambuf::int_type ChannelBuffer::sync()
-{
-    if ( dumpBuffer() )
-    {
+std::streambuf::int_type ChannelBuffer::sync() {
+    if (dumpBuffer()) {
         if (target_) {
             target_->flush();
         }
         return 0;
     }
-    else return -1;
+    else
+        return -1;
 }
 
-void ChannelBuffer::print(std::ostream& s) const
-{
+void ChannelBuffer::print(std::ostream& s) const {
     s << "ChannelBuffer(size=" << buffer_.size();
-    if(target_) { s << ", target=" << *target_; }
+    if (target_) {
+        s << ", target=" << *target_;
+    }
     s << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

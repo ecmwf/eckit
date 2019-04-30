@@ -9,48 +9,38 @@
  */
 
 
-#include "eckit/parser/JSON.h"
 #include "eckit/runtime/Monitorable.h"
+#include "eckit/parser/JSON.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-Monitorable::Monitorable():
-	ClassExtent<Monitorable>(this)
-{
+Monitorable::Monitorable() : ClassExtent<Monitorable>(this) {}
+
+Monitorable::~Monitorable() {}
+
+void Monitorable::status(std::ostream& s) const {
+    print(s);
+    s << std::endl;
 }
 
-Monitorable::~Monitorable()
-{
+void Monitorable::print(std::ostream& s) const {
+    s << "No print method" << std::endl;
 }
 
-void Monitorable::status(std::ostream& s) const
-{
-	print(s);
-	s << std::endl;
+void Monitorable::allStatuses(std::ostream& s) {
+    callAll(&Monitorable::status, s);
 }
 
-void Monitorable::print(std::ostream& s) const
-{
-	s << "No print method" << std::endl;
-}
-
-void Monitorable::allStatuses(std::ostream& s)
-{
-	callAll(&Monitorable::status,s);
-}
-
-void Monitorable::allJSON(JSON& s)
-{
+void Monitorable::allJSON(JSON& s) {
     s.startList();
-	callAll(&Monitorable::json,s);
+    callAll(&Monitorable::json, s);
     s.endList();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

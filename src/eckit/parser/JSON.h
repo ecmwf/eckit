@@ -15,6 +15,10 @@
 #ifndef eckit_JSON_h
 #define eckit_JSON_h
 
+#include <set>
+#include <map>
+#include <vector>
+
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"

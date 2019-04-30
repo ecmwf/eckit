@@ -8,39 +8,41 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/types/Coord.h"
-#include "eckit/persist/DumpLoad.h"
+#include <iostream>
 
-//-----------------------------------------------------------------------------
+#include "eckit/exception/Exceptions.h"
+#include "eckit/persist/DumpLoad.h"
+#include "eckit/types/Coord.h"
+
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-Longitude::Longitude(double l):
-	Coord(l)
-{
-	while (value_ <    0.0) value_ += 360.0;
-	while (value_ >= 360.0) value_ -= 360.0;
+Longitude::Longitude(double l) : Coord(l) {
+    while (value_ < 0.0)
+        value_ += 360.0;
+    while (value_ >= 360.0)
+        value_ -= 360.0;
 }
 
-Latitude::Latitude(double l):
-	Coord(l)
-{
-	ASSERT(l <= 90.0 && l >= -90.0);
+Latitude::Latitude(double l) : Coord(l) {
+    ASSERT(l <= 90.0 && l >= -90.0);
 }
 
-void Coord::dump(DumpLoad& a) const
-{
-	a.dump(value_);
+void Coord::print(std::ostream& s) const {
+    s << value_;
 }
 
-void Coord::load(DumpLoad& a)
-{
-	a.load(value_);
+void Coord::dump(DumpLoad& a) const {
+    a.dump(value_);
 }
 
-//-----------------------------------------------------------------------------
+void Coord::load(DumpLoad& a) {
+    a.load(value_);
+}
 
-} // namespace eckit
+//----------------------------------------------------------------------------------------------------------------------
 
+}  // namespace eckit

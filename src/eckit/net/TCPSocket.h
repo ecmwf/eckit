@@ -17,28 +17,24 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Hash.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
 // NOTE: I am not realy happy about those classes, so they may change...
-//       Note that this class calls:
-//          signal(SIGPIPE,SIG_IGN);
+//       Note that this class calls: signal(SIGPIPE,SIG_IGN);
 
 class TCPSocket  {
-public:
+public: // types
 
-// -- Execptions
+// -- Exceptions
 
     class UnknownHost : public Exception { public: UnknownHost(const std::string&); };
 
-// -- Contructors
+public: // methodss
 
 	TCPSocket();
 
-	// From an existing TCPSocket (see TCPServer::accept)
+    // From an existing TCPSocket (see TCPServer::accept)
 
     /// @warning
     /// **** NOTE: copying gives ownership of the socket to new object
@@ -105,18 +101,16 @@ public:
     static in_addr hostToAddr(const std::string&);
     static std::string hostName(const std::string& h, bool full = false);
 
-protected:
+protected: // members
 
-// -- Members
-
-	int      socket_;      // i/o socket
-	int      localPort_;   // effective port
-	int      remotePort_;  // remote port
+    int      socket_;      // i/o socket
+    int      localPort_;   // effective port
+    int      remotePort_;  // remote port
     std::string   remoteHost_;  // remote host
-	in_addr  remoteAddr_;  // remote ip adress
+    in_addr  remoteAddr_;  // remote ip adress
     std::string   localHost_;   // local host
-	in_addr  localAddr_;   // local ip adress
-	int      bufSize_;
+    in_addr  localAddr_;   // local ip adress
+    int      bufSize_;
 
     // Debug
     bool     debug_;
@@ -130,14 +124,10 @@ protected:
     virtual void print(std::ostream& s) const;
 
 
-private:
+private: // methods
 
-// -- Methods
-
-	virtual void bind();  // The socket must be made
+    virtual void bind();  // The socket must be made
     virtual std::string bindingAddress() const;
-
-// -- Friends
 
     friend std::ostream& operator<<(std::ostream& s,const TCPSocket& socket)
         { socket.print(s); return s;}
@@ -145,9 +135,6 @@ private:
 };
 
 std::ostream& operator<<(std::ostream&,in_addr);
-
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

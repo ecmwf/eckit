@@ -14,11 +14,12 @@
 #ifndef eckit_MarsFSFile_h
 #define eckit_MarsFSFile_h
 
+#include <memory>
+
 #include "eckit/thread/AutoLock.h"
 #include "eckit/filesystem/marsfs/MarsFSClient.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/net/TCPClient.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/utils/Hash.h"
 
 
@@ -97,7 +98,7 @@ private:
     MarsFSPath path_;
 	AutoLock<Connector> lock_;
 
-    eckit::ScopedPtr<Hash> hash_;
+    std::unique_ptr<Hash> hash_;
 
 // -- Methods
 	// None

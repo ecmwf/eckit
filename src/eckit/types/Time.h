@@ -17,8 +17,7 @@
 #define eckit_Time_h
 
 #include "eckit/exception/Exceptions.h"
-
-
+#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
@@ -63,11 +62,9 @@ public:
 
 // -- Operators
 
-	bool operator==(const Time& other) const
-		{ return seconds_ == other.seconds_; }
+        bool operator==(const Time& other) const;
 
-	bool operator!=(const Time& other) const
-		{ return (seconds_ != other.seconds_); }
+        bool operator!=(const Time& other) const;
 
 	bool operator>(const Time& other) const
 		{ return (seconds_ > other.seconds_); }

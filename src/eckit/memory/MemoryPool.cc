@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <cstring>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
@@ -23,26 +24,22 @@ namespace eckit {
 
 static pthread_mutex_t the_lock;
 
-static void get_lock()
-{
+static void get_lock() {
     // std::cout << pthread_self() << " get_lock" << std::endl;
     pthread_mutex_lock(&the_lock);
 }
 
-static void release_lock()
-{
+static void release_lock() {
     // std::cout << pthread_self() << " release_lock" << std::endl;
     pthread_mutex_unlock(&the_lock);
 }
 
-static void release_lock_parent()
-{
+static void release_lock_parent() {
     // std::cout << pthread_self() << " release_lock" << std::endl;
     pthread_mutex_unlock(&the_lock);
 }
 
-static void release_lock_child()
-{
+static void release_lock_child() {
     // see ECKIT-140
 
     pthread_mutexattr_t attr;
@@ -58,8 +55,7 @@ static void release_lock_child()
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
-static void _init(void)
-{
+static void _init(void) {
     // std::cout << pthread_self() << " init" << std::endl;
 
     pthread_mutexattr_t attr;
@@ -69,13 +65,10 @@ static void _init(void)
     pthread_mutex_init(&the_lock, &attr);
 
     // see ECKIT-140
-    pthread_atfork(get_lock,
-                   release_lock_parent,
-                   release_lock_child);
+    pthread_atfork(get_lock, release_lock_parent, release_lock_child);
 }
 
-static void init()
-{
+static void init() {
     pthread_once(&once, _init);
 }
 
@@ -88,21 +81,19 @@ public:
         get_lock();
     }
 
-    ~Lock() {
-        release_lock();
-    }
+    ~Lock() { release_lock(); }
 };
 
-}
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
 union Align {
-    char      char_;
-    double    double_;
+    char char_;
+    double double_;
     long long longlong_;
-    void*     voidstar_;
-    float     float_;
+    void* voidstar_;
+    float float_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -117,24 +108,24 @@ struct MemBlk {
     static unsigned long long newCount_;
 
 
-    MemBlk        *left_;
-    MemBlk        *right_;
+    MemBlk* left_;
+    MemBlk* right_;
     unsigned long size_;
     unsigned long reuse_;
 
     // Must be last member
     unsigned long check_;
 
-    MemBlk(size_t s): left_(0), right_(0), size_(s), reuse_(0), check_(0) {}
+    MemBlk(size_t s) : left_(0), right_(0), size_(s), reuse_(0), check_(0) {}
 
     void* addr() { return ((char*)&check_ + sizeof(check_)); }
 
     static MemBlk* find(size_t s);
 
-    bool check()        { return check_ == size_;  }
-    bool inUse()        { return check_;           }
-    void inUse(bool on) { check_ = on ? size_ : 0;     }
-    void reuse()        { reuse_++;                }
+    bool check() { return check_ == size_; }
+    bool inUse() { return check_; }
+    void inUse(bool on) { check_ = on ? size_ : 0; }
+    void reuse() { reuse_++; }
 
     void dump(std::ostream&, int depth = 0);
     void size(unsigned long long&, unsigned long long&);
@@ -143,47 +134,42 @@ struct MemBlk {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-MemBlk* MemBlk::memList_ = 0;
+MemBlk* MemBlk::memList_                  = 0;
 unsigned long long MemBlk::allocateCount_ = 0;
 unsigned long long MemBlk::releaseCount_  = 0;
 unsigned long long MemBlk::reuseCount_    = 0;
 unsigned long long MemBlk::newCount_      = 0;
 
-MemBlk* MemBlk::find(size_t size)
-{
-    MemBlk *m = memList_;
-    MemBlk *p = 0;
+MemBlk* MemBlk::find(size_t size) {
+    MemBlk* m = memList_;
+    MemBlk* p = 0;
     bool left = false;
 
-    while (m)
-    {
-        if (size == m->size_ && !m->inUse())
-        {
+    while (m) {
+        if (size == m->size_ && !m->inUse()) {
             reuseCount_++;
             m->inUse(true);
             m->reuse();
-//          std::cout << "Reusing a " << size << " block" << std::endl;
+            //          std::cout << "Reusing a " << size << " block" << std::endl;
             return m;
         }
         p = m;
-        if (size <= m->size_)
-        {
+        if (size <= m->size_) {
             left = true;
-            m = m->left_;
+            m    = m->left_;
         }
-        else
-        {
+        else {
             left = false;
-            m = m->right_;
+            m    = m->right_;
         }
     }
 
-//  std::cout << "Allocating a " << size << " block" << std::endl;
+    //  std::cout << "Allocating a " << size << " block" << std::endl;
 
     newCount_++;
 
-    void *blk = new char[size + sizeof(MemBlk)];
-    m         = new(blk) MemBlk(size);
+    void* blk = new char[size + sizeof(MemBlk)];
+    m         = new (blk) MemBlk(size);
 
     if (p == 0)
         memList_ = m;
@@ -198,20 +184,23 @@ MemBlk* MemBlk::find(size_t size)
 }
 
 
-void MemBlk::dump(std::ostream& s, int depth)
-{
-    if (left_)  left_->dump(s, depth + 1);
-    s << "size= " << size_ << " active= " << (check_ ? 1 : 0) <<
-      " reuse= " << reuse_ << " " << Bytes(size_) << std::endl;
-    if (right_) right_->dump(s, depth + 1);
+void MemBlk::dump(std::ostream& s, int depth) {
+    if (left_)
+        left_->dump(s, depth + 1);
+    s << "size= " << size_ << " active= " << (check_ ? 1 : 0) << " reuse= " << reuse_ << " " << Bytes(size_)
+      << std::endl;
+    if (right_)
+        right_->dump(s, depth + 1);
 }
 
-void MemBlk::size(unsigned long long& total, unsigned long long& inuse)
-{
-    if (left_)  left_->size(total, inuse);
-    if (right_) right_->size(total, inuse);
+void MemBlk::size(unsigned long long& total, unsigned long long& inuse) {
+    if (left_)
+        left_->size(total, inuse);
+    if (right_)
+        right_->size(total, inuse);
     total += size_;
-    if (check_) inuse += size_;
+    if (check_)
+        inuse += size_;
 }
 
 void MemoryPool::large(size_t& used, size_t& free) {
@@ -227,75 +216,67 @@ void MemoryPool::large(size_t& used, size_t& free) {
 
     used = inuse;
     free = total - inuse;
-
 }
 
 
-void* MemoryPool::largeAllocate(size_t size)
-{
+void* MemoryPool::largeAllocate(size_t size) {
     Lock lock;
 
-    MemBlk *m  = 0;
-    void *addr = 0;
+    MemBlk* m  = 0;
+    void* addr = 0;
 
     MemBlk::allocateCount_++;
-    m = MemBlk::find(size > 0 ? size : 1);
+    m    = MemBlk::find(size > 0 ? size : 1);
     addr = m->addr();
 
     return addr;
 }
 
-void MemoryPool::largeDeallocate(void* addr)
-{
+void MemoryPool::largeDeallocate(void* addr) {
     Lock lock;
 
     MemBlk::releaseCount_++;
 
-    MemBlk *m = (MemBlk*)((char*)addr - sizeof(MemBlk));
+    MemBlk* m = (MemBlk*)((char*)addr - sizeof(MemBlk));
 
     if (!(m->check() && m->inUse())) {
         std::cerr << "deallocating a bad block" << std::endl;
         LibEcKit::instance().abort();
     }
 
-//  std::cout << "Releasing " << m->size_ << std::endl;
+    //  std::cout << "Releasing " << m->size_ << std::endl;
     m->inUse(false);
-
 }
-
 
 
 const size_t WORD = sizeof(Align);
 
 struct memblk {
-    memblk *next_;
+    memblk* next_;
     size_t count_;
     size_t left_;
     size_t size_;
-    char   buffer_[WORD];
+    char buffer_[WORD];
 };
 
 const long HEADER_SIZE = (sizeof(memblk) - WORD);
 
 
-
 eckit::MemPool eckit::MemPool::transientPool = {
-    1, // 1 page
-    0, // don't zero
+    1,  // 1 page
+    0,  // don't zero
 };
 
 eckit::MemPool eckit::MemPool::permanentPool = {
-    1, // 1 page
-    0, // don't zero
+    1,  // 1 page
+    0,  // don't zero
 };
 
 
-
-void *MemoryPool::fastAllocate(size_t s, MemPool& pool)
-{
+void* MemoryPool::fastAllocate(size_t s, MemPool& pool) {
     Lock lock;
 
-    memblk *m = pool.first_;
+    memblk* m = pool.first_;
 
     /* align */
 
@@ -304,30 +285,29 @@ void *MemoryPool::fastAllocate(size_t s, MemPool& pool)
     while (m && (m->left_ < s))
         m = m->next_;
 
-    if (m == 0)
-    {
+    if (m == 0) {
         static int page_size = getpagesize();
 
         size_t size = page_size * pool.pages_;
 
-        if (s > size - HEADER_SIZE)
-        {
-//          std::cerr << "Object of " << s << " bytes is too big for " << __func__ << std::endl;
-//          std::cerr << "Block size is " << size - HEADER_SIZE << std::endl;
+        if (s > size - HEADER_SIZE) {
+            //          std::cerr << "Object of " << s << " bytes is too big for " << __func__ << std::endl;
+            //          std::cerr << "Block size is " << size - HEADER_SIZE << std::endl;
             size = ((s + HEADER_SIZE + (page_size - 1)) / page_size) * page_size;
         }
 
         memblk* p = static_cast<memblk*>(largeAllocate(size));
-        if (pool.clear_) ::memset(p, 0, size);
+        if (pool.clear_)
+            ::memset(p, 0, size);
 
-        p->next_    = pool.first_;
-        p->count_   = 0;
-        p->size_    = p->left_ = size - HEADER_SIZE;
-        m           = p;
-        pool.first_ = p;
+        p->next_  = pool.first_;
+        p->count_ = 0;
+        p->size_ = p->left_ = size - HEADER_SIZE;
+        m                   = p;
+        pool.first_         = p;
     }
 
-    void *p   = &m->buffer_[m->size_ - m->left_];
+    void* p = &m->buffer_[m->size_ - m->left_];
     m->left_ -= s;
     m->count_++;
 
@@ -335,24 +315,21 @@ void *MemoryPool::fastAllocate(size_t s, MemPool& pool)
     return p;
 }
 
-void MemoryPool::fastDeallocate(void *p, MemPool& pool)
-{
+void MemoryPool::fastDeallocate(void* p, MemPool& pool) {
 
     Lock lock;
 
-    memblk *m = pool.first_;
-    memblk *n = 0;
+    memblk* m = pool.first_;
+    memblk* n = 0;
 
-    while (m)
-    {
-        if ( ((char*)p >= (char*)&m->buffer_[0]) &&
-                ((char*)p < (char*)&m->buffer_[m->size_]))
-        {
+    while (m) {
+        if (((char*)p >= (char*)&m->buffer_[0]) && ((char*)p < (char*)&m->buffer_[m->size_])) {
             m->count_--;
-            if (m->count_ == 0)
-            {
-                if (n) n->next_   = m->next_;
-                else pool.first_ = m->next_;
+            if (m->count_ == 0) {
+                if (n)
+                    n->next_ = m->next_;
+                else
+                    pool.first_ = m->next_;
                 largeDeallocate(m);
             }
             return;
@@ -372,7 +349,7 @@ void MemoryPool::info(size_t& used, size_t& free, MemPool& pool) {
 
     Lock lock;
 
-    memblk *m = pool.first_;
+    memblk* m = pool.first_;
 
     used = 0;
     free = 0;
@@ -382,13 +359,11 @@ void MemoryPool::info(size_t& used, size_t& free, MemPool& pool) {
         free += m->left_;
         m = m->next_;
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void MemoryPool::info(std::ostream& out)
-{
+void MemoryPool::info(std::ostream& out) {
     {
 
         Lock lock;
@@ -427,33 +402,29 @@ void MemoryPool::info(std::ostream& out)
 
     out << "---" << std::endl;
     out << "allocate " << MemBlk::allocateCount_ << std::endl;
-    out << "release  " << MemBlk::releaseCount_  << std::endl;
+    out << "release  " << MemBlk::releaseCount_ << std::endl;
     out << "reuse    " << MemBlk::reuseCount_ << std::endl;
     out << "new      " << MemBlk::newCount_ << std::endl;
 
     unsigned long long total = 0;
-    unsigned long long left = 0;
+    unsigned long long left  = 0;
 
     MemBlk::memList_->size(total, left);
 
     out << "total    " << total << std::endl;
-    out << "left     " << left  << std::endl;
+    out << "left     " << left << std::endl;
 
     MemBlk::memList_->dump(out, 0);
 
     out << "Transient pool: " << std::endl;
-    memblk *m = MemPool::transientPool.first_;
+    memblk* m = MemPool::transientPool.first_;
 
-    while (m)
-    {
-        out << "Size = " << m->size_ << " left = " << m->left_
-            << " count = " << m->count_ << std::endl;
+    while (m) {
+        out << "Size = " << m->size_ << " left = " << m->left_ << " count = " << m->count_ << std::endl;
         m = m->next_;
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

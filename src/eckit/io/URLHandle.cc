@@ -17,34 +17,29 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec URLHandle::classSpec_ = {&DataHandle::classSpec(), "URLHandle",};
+ClassSpec URLHandle::classSpec_ = {
+    &DataHandle::classSpec(),
+    "URLHandle",
+};
 Reanimator<URLHandle> URLHandle::reanimator_;
 
 
-void URLHandle::print(std::ostream&s) const
-{
+void URLHandle::print(std::ostream& s) const {
     s << "URLHandle[uri=" << uri_ << ']';
 }
 
-void URLHandle::encode(Stream&s) const
-{
+void URLHandle::encode(Stream& s) const {
     DataHandle::encode(s);
     s << uri_;
-
 }
 
-URLHandle::URLHandle(Stream&s):
-    DataHandle(s)
-{
+URLHandle::URLHandle(Stream& s) : DataHandle(s) {
     s >> uri_;
     EasyCURL::url(uri_);
-
 }
 
 
-URLHandle::URLHandle(const std::string&uri):
-    EasyCURL(uri),
-    uri_(uri) {
+URLHandle::URLHandle(const std::string& uri) : EasyCURL(uri), uri_(uri) {
     init();
 }
 
@@ -53,12 +48,11 @@ void URLHandle::init() {
     followLocation(true);
 }
 
-URLHandle::~URLHandle() {
-}
+URLHandle::~URLHandle() {}
 
-Length URLHandle::estimate()   {
+Length URLHandle::estimate() {
     Length len = contentLength();
-    if(responseCode() != 200) {
+    if (responseCode() != 200) {
         std::ostringstream oss;
         oss << "URLHandle::(" << uri_ << ") returns code " << responseCode();
         throw eckit::SeriousBug(oss.str());
@@ -66,36 +60,32 @@ Length URLHandle::estimate()   {
     return len;
 }
 
-Length URLHandle::openForRead()
-{
+Length URLHandle::openForRead() {
     return estimate();
 }
 
-void URLHandle::openForWrite(const Length&)
-{
+void URLHandle::openForWrite(const Length&) {
     NOTIMP;
 }
 
-void URLHandle::openForAppend(const Length&)
-{
+void URLHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
-long URLHandle::read(void* buffer, long length)
-{
-    while (activeTransfers()  > 0 && buffer_.length() < length) {
+long URLHandle::read(void* buffer, long length) {
+    ASSERT(length >= 0);
+    auto len = size_t(length);
+    while (activeTransfers() > 0 && buffer_.length() < len) {
         waitForData();
     }
-    return buffer_.read(buffer, length);
+    return buffer_.read(buffer, len);
 }
 
-long URLHandle::write(const void* buffer, long length)
-{
+long URLHandle::write(const void*, long) {
     NOTIMP;
 }
 
-void URLHandle::close()
-{
+void URLHandle::close() {
     int code = responseCode();
 
     if (code != 200) {
@@ -103,12 +93,10 @@ void URLHandle::close()
         oss << "URLHandle::close(" << uri_ << ") returns code " << code;
         throw eckit::SeriousBug(oss.str());
     }
-
 }
 
 
-size_t URLHandle::writeCallback(void *ptr, size_t size)
-{
+size_t URLHandle::writeCallback(void* ptr, size_t size) {
     return buffer_.write(ptr, size);
 }
 
@@ -116,5 +104,4 @@ size_t URLHandle::writeCallback(void *ptr, size_t size)
 //----------------------------------------------------------------------------------------------------------------------
 
 
-} // namespace eckit
-
+}  // namespace eckit

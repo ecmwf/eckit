@@ -10,19 +10,19 @@
 
 #include "eckit/cmd/Arg.h"
 
-//-----------------------------------------------------------------------------
+#include <iostream>
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class ArgContent {
 public:
-    virtual ~ArgContent(){};
-    virtual void print(std::ostream&, bool) const = 0;
-    virtual ArgContent* clone() const = 0;
+    virtual ~ArgContent() {}
+    virtual void print(std::ostream&, bool) const                                       = 0;
+    virtual ArgContent* clone() const                                                   = 0;
     virtual void completion(const std::vector<std::string>&, std::vector<std::string>&) = 0;
-    virtual void consume(std::vector<std::string>&) = 0;
+    virtual void consume(std::vector<std::string>&)                                     = 0;
 };
 
 class ArgContentEmpty : public ArgContent {
@@ -54,7 +54,8 @@ class ArgContentOption : public ArgContent {
                 if ((*j) == name_) {
                     more = true;
                     v.push_back("** marker **");
-                    if ((*(j + 1))[0] != '-') v.erase(j + 1);
+                    if ((*(j + 1))[0] != '-')
+                        v.erase(j + 1);
                     v.erase(j);
                     break;
                 }
@@ -72,7 +73,7 @@ class ArgContentParam : public ArgContent {
     virtual void print(std::ostream& s, bool) const { s << name_; }
     virtual ArgContent* clone() const { return new ArgContentParam(name_, type_); }
 
-    virtual void completion(const std::vector<std::string>& s, std::vector<std::string>& r) {}
+    virtual void completion(const std::vector<std::string>&, std::vector<std::string>&) {}
 
     virtual void consume(std::vector<std::string>&) {}
 
@@ -81,7 +82,8 @@ public:
 };
 
 class ArgContentOptional : public ArgContent {
-    eckit::ScopedPtr<ArgContent> content_;
+
+    std::unique_ptr<ArgContent> content_;
 
     virtual void print(std::ostream& s, bool) const {
         s << "[";
@@ -100,7 +102,7 @@ public:
     ArgContentOptional(ArgContent* c) : content_(c->clone()) {}
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
 class ArgContentList : public ArgContent {
@@ -122,8 +124,10 @@ template <class T>
 void ArgContentList<T>::push(ArgContent* a) {
     ArgContentList* e = dynamic_cast<T*>(a);
     if (e) {
-        for (size_t i = 0; i < e->list_.size(); i++) list_.push_back(e->list_[i]->clone());
-    } else {
+        for (size_t i = 0; i < e->list_.size(); i++)
+            list_.push_back(e->list_[i]->clone());
+    }
+    else {
         list_.push_back(a->clone());
     }
 }
@@ -138,14 +142,14 @@ template <class T>
 ArgContentList<T>::~ArgContentList() {
     for (size_t i = 0; i < list_.size(); i++) {
         delete list_[i];
-        list_[i] = 0;
+        list_[i] = nullptr;
     }
 }
 
 template <class T>
-ArgContentList<T>::ArgContentList(const std::vector<ArgContent*>& list)
-    : list_(list) {
-    for (size_t i = 0; i < list_.size(); i++) list_[i] = list_[i]->clone();
+ArgContentList<T>::ArgContentList(const std::vector<ArgContent*>& list) : list_(list) {
+    for (size_t i = 0; i < list_.size(); i++)
+        list_[i] = list_[i]->clone();
 }
 
 template <class T>
@@ -155,12 +159,14 @@ ArgContent* ArgContentList<T>::clone() const {
 
 template <class T>
 void ArgContentList<T>::completion(const std::vector<std::string>& s, std::vector<std::string>& r) {
-    for (size_t i = 0; i < list_.size(); i++) list_[i]->completion(s, r);
+    for (size_t i = 0; i < list_.size(); i++)
+        list_[i]->completion(s, r);
 }
 
 template <class T>
 void ArgContentList<T>::consume(std::vector<std::string>& s) {
-    for (size_t i = 0; i < list_.size(); i++) list_[i]->consume(s);
+    for (size_t i = 0; i < list_.size(); i++)
+        list_[i]->consume(s);
 }
 
 //=================================
@@ -169,13 +175,15 @@ class ArgContentExclusive : public ArgContentList<ArgContentExclusive> {
 
     void print(std::ostream& s, bool bra) const {
         std::string p = "";
-        if (bra) s << "(";
+        if (bra)
+            s << "(";
         for (size_t i = 0; i < list_.size(); i++) {
             s << p;
             list_[i]->print(s, true);
             p = " | ";
         }
-        if (bra) s << ")";
+        if (bra)
+            s << ")";
     }
 
 public:
@@ -203,22 +211,17 @@ public:
 
 //=============================================================================
 
-Arg::Arg() : content_(new ArgContentEmpty()) {
-}
+Arg::Arg() : content_(new ArgContentEmpty()) {}
 
-Arg::Arg(ArgContent* c) : content_(c) {
-}
+Arg::Arg(ArgContent* c) : content_(c) {}
 
-Arg::Arg(const std::string& name, Type type)
-    : content_(name[0] == '-' ? (ArgContent*)new ArgContentOption(name, type)
-                              : (ArgContent*)new ArgContentParam(name, type)) {
-}
+Arg::Arg(const std::string& name, Type type) :
+    content_(name[0] == '-' ? (ArgContent*)new ArgContentOption(name, type)
+                            : (ArgContent*)new ArgContentParam(name, type)) {}
 
-Arg::Arg(const Arg& other) : content_(other.content_->clone()) {
-}
+Arg::Arg(const Arg& other) : content_(other.content_->clone()) {}
 
-Arg::~Arg() {
-}
+Arg::~Arg() {}
 
 void Arg::print(std::ostream& s) const {
     content_->print(s, false);
@@ -249,6 +252,6 @@ std::vector<std::string> Arg::completion(std::vector<std::string>& s) {
     return result;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

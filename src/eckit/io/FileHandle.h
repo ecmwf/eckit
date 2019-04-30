@@ -15,9 +15,10 @@
 #ifndef eckit_filesystem_FileHandle_h
 #define eckit_filesystem_FileHandle_h
 
+#include <memory>
+
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/memory/ScopedPtr.h"
 
 namespace eckit {
 
@@ -77,7 +78,8 @@ private:  // members
   bool overwrite_;
   FILE* file_;
   bool read_;
-  eckit::ScopedPtr<Buffer> buffer_;
+
+  std::unique_ptr<Buffer> buffer_;
 
 private:  // methods
   void open(const char*);

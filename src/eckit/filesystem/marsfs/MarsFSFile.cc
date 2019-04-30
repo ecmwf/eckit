@@ -11,37 +11,29 @@
 // File MarsFSFile.cc
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
-#include "eckit/filesystem/marsfs/MarsFSFile.h"
 #include "eckit/config/Resource.h"
+#include "eckit/filesystem/marsfs/MarsFSFile.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MarsFSFile::MarsFSFile(const MarsFSPath& path):
-    MarsFSClient(path),
-    path_(path),
-	lock_(connector_)
-{
+MarsFSFile::MarsFSFile(const MarsFSPath& path) : MarsFSClient(path), path_(path), lock_(connector_) {
     static std::string marsFsHashing = eckit::Resource<std::string>("marsFsHashing", "None");
-    hash_.reset( eckit::HashFactory::build(marsFsHashing) );
+    hash_.reset(eckit::HashFactory::build(marsFsHashing));
 }
 
-MarsFSFile::~MarsFSFile()
-{
+MarsFSFile::~MarsFSFile() {}
+
+
+void MarsFSFile::print(std::ostream& s) const {
+    s << path_;
 }
 
-
-void MarsFSFile::print(std::ostream& s) const
-{
-	s << path_;
-}
-
-Length MarsFSFile::open(const char* mode, bool overwrite)
-{
-//    Log::info() << "MarsFSFile::open " << path_ << " " << mode << std::endl;
+Length MarsFSFile::open(const char* mode, bool overwrite) {
+    //    Log::info() << "MarsFSFile::open " << path_ << " " << mode << std::endl;
     Stream& s = connector_;
     int port;
     unsigned long long length;
@@ -52,8 +44,9 @@ Length MarsFSFile::open(const char* mode, bool overwrite)
     s << overwrite;
     s >> port;
 
-    Log::info() << "MarsFSFile::open " << path_ << " " << mode << ", host=" << connector_.host() << ", port=" << port << std::endl;
-    data_.connect(connector_.host() , port);
+    Log::info() << "MarsFSFile::open " << path_ << " " << mode << ", host=" << connector_.host() << ", port=" << port
+                << std::endl;
+    data_.connect(connector_.host(), port);
 
     s >> length;
     return length;
@@ -64,7 +57,7 @@ long MarsFSFile::read(void* buffer, long len) {
     Stream& s = connector_;
     long size;
 
-    //Log::info() << "MarsFSFile::read " << len << std::endl;
+    // Log::info() << "MarsFSFile::read " << len << std::endl;
     s << "read";
     s << len;
 
@@ -81,11 +74,10 @@ long MarsFSFile::read(void* buffer, long len) {
 
         const std::string localHash = hash_->compute(buffer, size);
 
-        if(localHash != remoteHash) {
+        if (localHash != remoteHash) {
             std::ostringstream msg;
             msg << "Mismatch of hash while reading from MarsFS:"
-                << " expected remote hash " << remoteHash
-                << " local computed hash " << localHash;
+                << " expected remote hash " << remoteHash << " local computed hash " << localHash;
             throw eckit::BadValue(msg.str(), Here());
         }
     }
@@ -117,7 +109,7 @@ long MarsFSFile::write(const void* buffer, long len) {
 
 Offset MarsFSFile::seek(const Offset& pos) {
     Stream& s = connector_;
-    //Log::info() << "MarsFSFile::seek " << pos << std::endl;
+    // Log::info() << "MarsFSFile::seek " << pos << std::endl;
 
     unsigned long long llpos = pos;
 
@@ -129,10 +121,9 @@ Offset MarsFSFile::seek(const Offset& pos) {
     return llpos;
 }
 
-void MarsFSFile::skip(const Length& n)
-{
+void MarsFSFile::skip(const Length& n) {
     Stream& s = connector_;
-    //Log::info() << "MarsFSFile::skip " << n << std::endl;
+    // Log::info() << "MarsFSFile::skip " << n << std::endl;
 
     unsigned long long p = n;
     bool ok;
@@ -140,23 +131,19 @@ void MarsFSFile::skip(const Length& n)
     s << "skip";
     s << p;
     s >> ok;
-
 }
 
-void MarsFSFile::close()
-{
+void MarsFSFile::close() {
     Stream& s = connector_;
     bool ok;
     s << "close";
     s >> ok;
 }
 
-Length MarsFSFile::length()
-{
+Length MarsFSFile::length() {
     return size(path_.path());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

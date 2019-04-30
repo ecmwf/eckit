@@ -3,6 +3,7 @@ EllipsoidOfRevolution.cc
 EllipsoidOfRevolution.h
 GreatCircle.cc
 GreatCircle.h
+KPoint.cc
 KPoint.h
 Point2.cc
 Point2.h
@@ -14,7 +15,7 @@ SphereT.h
 UnitSphere.h
 )
 
-ecbuild_add_library(TARGET eckit_geometry
+ecbuild_add_library(TARGET eckit_geometry TYPE SHARED
 					INSTALL_HEADERS ALL
 					HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit/geometry

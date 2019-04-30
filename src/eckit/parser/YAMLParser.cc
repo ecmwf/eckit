@@ -13,12 +13,14 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
-#include "eckit/value/Value.h"
-#include "eckit/parser/YAMLParser.h"
-#include "eckit/utils/Translator.h"
+#include <fstream>
+
 #include "eckit/memory/Counted.h"
-#include "eckit/utils/Regex.h"
+#include "eckit/parser/YAMLParser.h"
 #include "eckit/types/Time.h"
+#include "eckit/utils/Regex.h"
+#include "eckit/utils/Translator.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
@@ -35,70 +37,63 @@ struct YAMLItem : public Counted {
     virtual Value value(YAMLParser& parser) const = 0;
 
     virtual Value parse(YAMLParser& parser) const {
-        attach(); // Don't get deleted
+        attach();  // Don't get deleted
         Value v = value(parser);
         detach();
         return v;
     }
 
-    YAMLItem(long indent = 0, const Value& value = Value()):
-        indent_(indent),
-        value_(value) {}
+    YAMLItem(long indent = 0, const Value& value = Value()) : indent_(indent), value_(value) {}
 
     virtual ~YAMLItem() {
         // std::cout << "~YAMLItem " << value_ << std::endl;
-    };
+    }
 
-    friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item)
-    { item.print(s); return s;}
+    friend std::ostream& operator<<(std::ostream& s, const YAMLItem& item) {
+        item.print(s);
+        return s;
+    }
 
 
     virtual bool isStartDocument() const { return false; }
     virtual bool isEndDocument() const { return false; }
     virtual bool isEOF() const { return false; }
-
 };
 
 
 class YAMLItemLock {
     const YAMLItem* item_;
+
 public:
-    YAMLItemLock(const YAMLItem* item): item_(0) { set(item); }
+    YAMLItemLock(const YAMLItem* item) : item_(0) { set(item); }
     ~YAMLItemLock() { set(0); }
 
     void set(const YAMLItem* item) {
         if (item != item_) {
-            if (item_) item_->detach();
+            if (item_)
+                item_->detach();
             item_ = item;
-            if (item_) item_->attach();
+            if (item_)
+                item_->attach();
         }
     }
-
 };
 
 
 struct YAMLItemEOF : public YAMLItem {
 
-    virtual void print(std::ostream& s) const {
-        s << "YAMLItemEOF";
-    }
+    virtual void print(std::ostream& s) const { s << "YAMLItemEOF"; }
 
-    virtual Value value(YAMLParser& parser) const  {
-        return Value();
-    }
+    virtual Value value(YAMLParser& parser) const { return Value(); }
 
-    YAMLItemEOF(): YAMLItem(-1) {}
+    YAMLItemEOF() : YAMLItem(-1) {}
     virtual bool isEOF() const { return true; }
-
-
 };
 
 
 struct YAMLItemStartDocument : public YAMLItem {
 
-    virtual void print(std::ostream& s) const {
-        s << "YAMLItemStartDocument";
-    }
+    virtual void print(std::ostream& s) const { s << "YAMLItemStartDocument"; }
 
 
     Value value(YAMLParser& parser) const {
@@ -122,7 +117,6 @@ struct YAMLItemStartDocument : public YAMLItem {
 
                 parser.nextItem();
             }
-
         }
 
         if (l.size() == 1) {
@@ -130,17 +124,14 @@ struct YAMLItemStartDocument : public YAMLItem {
         }
 
         return Value::makeList(l);
-
     }
 
 
-    YAMLItemStartDocument(): YAMLItem(-1) {}
+    YAMLItemStartDocument() : YAMLItem(-1) {}
 
 
     virtual bool isStartDocument() const { return true; }
-
 };
-
 
 
 struct YAMLItemValue : public YAMLItem {
@@ -149,12 +140,9 @@ struct YAMLItemValue : public YAMLItem {
         s << "YAMLItemValue[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    virtual Value value(YAMLParser& parser) const  {
-        return value_;
-    }
+    virtual Value value(YAMLParser& parser) const { return value_; }
 
-    YAMLItemValue(size_t indent, const Value& value): YAMLItem(indent, value) {}
-
+    YAMLItemValue(size_t indent, const Value& value) : YAMLItem(indent, value) {}
 };
 
 struct YAMLItemAnchor : public YAMLItem {
@@ -163,14 +151,13 @@ struct YAMLItemAnchor : public YAMLItem {
         s << "YAMLItemAnchor[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    virtual Value value(YAMLParser& parser) const  {
+    virtual Value value(YAMLParser& parser) const {
         Value v = parser.nextItem().value(parser);
         parser.anchor(value_, v);
         return v;
     }
 
-    YAMLItemAnchor(size_t indent, const Value& value): YAMLItem(indent, value) {}
-
+    YAMLItemAnchor(size_t indent, const Value& value) : YAMLItem(indent, value) {}
 };
 
 struct YAMLItemReference : public YAMLItem {
@@ -179,29 +166,27 @@ struct YAMLItemReference : public YAMLItem {
         s << "YAMLItemReference[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    virtual Value value(YAMLParser& parser) const  {
-        return parser.anchor(value_);
-    }
+    virtual Value value(YAMLParser& parser) const { return parser.anchor(value_); }
 
-    YAMLItemReference(size_t indent, const Value& value): YAMLItem(indent, value) {}
-
+    YAMLItemReference(size_t indent, const Value& value) : YAMLItem(indent, value) {}
 };
 
 struct YAMLItemKey : public YAMLItem {
 
     virtual void print(std::ostream& s) const {
-        for (size_t i = 0; i < indent_; i++) { s << ' '; }
+        for (long i = 0; i < indent_; i++) {
+            s << ' ';
+        }
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    YAMLItemKey(YAMLItem* item): YAMLItem(item->indent_, item->value_) {
+    YAMLItemKey(YAMLItem* item) : YAMLItem(item->indent_, item->value_) {
 
-        YAMLItemLock lock(item); // Trigger deletion
+        YAMLItemLock lock(item);  // Trigger deletion
 
         std::string v(value_);
         ASSERT(v.size());
         value_ = toValue(v.substr(0, v.size() - 1));
-
     }
 
 
@@ -235,7 +220,7 @@ struct YAMLItemKey : public YAMLItem {
 
             if (next.indent_ == key->indent_) {
                 // Special case
-                set(_m, _l, key->value_, Value()); // null
+                set(_m, _l, key->value_, Value());  // null
 
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
@@ -245,7 +230,7 @@ struct YAMLItemKey : public YAMLItem {
 
             if (next.indent_ < key->indent_) {
                 // Special case
-                set(_m, _l, key->value_, Value()); // null
+                set(_m, _l, key->value_, Value());  // null
 
                 more = false;
                 continue;
@@ -286,24 +271,18 @@ struct YAMLItemKey : public YAMLItem {
             std::ostringstream oss;
             oss << "Invalid sequence " << *key << " then " << next << " then " << peek << std::endl;
             throw eckit::SeriousBug(oss.str());
-
         }
 
         return Value::makeOrderedMap(_m, _l);
-
     }
-
 };
-
 
 
 struct YAMLItemEntry : public YAMLItem {
 
-    virtual void print(std::ostream& s) const {
-        s << "YAMLItemEntry[indent=" << indent_ << "]";
-    }
+    virtual void print(std::ostream& s) const { s << "YAMLItemEntry[indent=" << indent_ << "]"; }
 
-    YAMLItemEntry(size_t indent): YAMLItem(indent) {}
+    YAMLItemEntry(size_t indent) : YAMLItem(indent) {}
 
     Value value(YAMLParser& parser) const {
         std::vector<Value> l;
@@ -317,7 +296,7 @@ struct YAMLItemEntry : public YAMLItem {
 
             if (next.indent_ == indent_) {
                 // Special case
-                l.push_back(Value()); // null
+                l.push_back(Value());  // null
                 const YAMLItem* advance = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemEntry*>(advance));
                 continue;
@@ -325,7 +304,7 @@ struct YAMLItemEntry : public YAMLItem {
 
             if (next.indent_ < indent_) {
                 // Special case
-                l.push_back(Value()); // null
+                l.push_back(Value());  // null
                 more = false;
                 continue;
             }
@@ -351,45 +330,30 @@ struct YAMLItemEntry : public YAMLItem {
             std::ostringstream oss;
             oss << "Invalid sequence " << *this << " then " << next << " then " << peek << std::endl;
             throw eckit::SeriousBug(oss.str());
-
-
         }
 
         return Value::makeList(l);
-
     }
-
 };
-
 
 
 struct YAMLItemEndDocument : public YAMLItem {
 
-    virtual void print(std::ostream& s) const {
-        s << "YAMLItemEndDocument";
-    }
+    virtual void print(std::ostream& s) const { s << "YAMLItemEndDocument"; }
 
-    virtual Value value(YAMLParser& parser) const  {
-        return Value();
-    }
+    virtual Value value(YAMLParser& parser) const { return Value(); }
 
-    YAMLItemEndDocument(): YAMLItem(-1) {}
+    YAMLItemEndDocument() : YAMLItem(-1) {}
 
 
     virtual bool isEndDocument() const { return true; }
-
 };
 
 
-
-
-YAMLParser::YAMLParser(std::istream &in):
-    ObjectParser(in, true),
-    last_(0) {
+YAMLParser::YAMLParser(std::istream& in) : ObjectParser(in, true), last_(0) {
     stop_.push_back(0);
     comma_.push_back(0);
     colon_.push_back(0);
-
 }
 
 YAMLParser::~YAMLParser() {
@@ -426,9 +390,7 @@ Value YAMLParser::parseNumber() {
 }
 
 
-
-static Value toValue(const std::string& s)
-{
+static Value toValue(const std::string& s) {
 
     static Regex real("^[-+]?[0-9]+\\.?[0-9]+([eE][-+]?[0-9]+)?$", false, true);
     static Regex integer("^[-+]?[0-9]+$", false, true);
@@ -457,8 +419,7 @@ static Value toValue(const std::string& s)
         return Value(d);
     }
 
-    if (real.match(s))
-    {
+    if (real.match(s)) {
         double d = Translator<std::string, double>()(s);
         return Value(d);
     }
@@ -510,7 +471,7 @@ Value YAMLParser::consumeJSON(char ket) {
 
 
 size_t YAMLParser::consumeChars(char which) {
-    char c = peek(true);
+    char c     = peek(true);
     size_t cnt = 0;
 
     while (c == which) {
@@ -535,10 +496,10 @@ bool YAMLParser::endOfToken(char c) {
 
 Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
-    bool multi = false;
+    bool multi  = false;
     bool folded = false;
     bool string = false;
-    char c = peek();
+    char c      = peek();
 
     if (c == '"' || c == '\'') {
         return ObjectParser::parseString(c);
@@ -546,7 +507,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
     if (c == '|') {
         consume('|');
-        multi = true;
+        multi  = true;
         string = true;
     }
 
@@ -557,9 +518,9 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     }
 
 
-    c = peek();
+    c             = peek();
     size_t indent = pos_;
-    size_t line = line_;
+    size_t line   = line_;
 
     std::string result;
 
@@ -567,12 +528,12 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
     while (pos_ >= indent) {
 
-        size_t start = pos_;
-        bool add_cr = (folded && (pos_ != indent)) || multi || was_indented;
+        size_t start    = pos_;
+        bool add_cr     = (folded && (pos_ != indent)) || multi || was_indented;
         bool add_indent = (folded && (pos_ != indent)) || multi;
         std::string s;
         size_t last = 0;
-        size_t i = 0;
+        size_t i    = 0;
 
         bool colon = (c == ':');
 
@@ -590,10 +551,10 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
             // std::cout << "++++ " << s << " " << colon << " " << (endOfToken(c) || c == ' ') << std::endl;
 
             if (colon && (endOfToken(c) || c == ' ')) {
-                while(s.length() >= 2 && isspace(s[s.length()-2])) {
-                    s = s.substr(0, s.length()-1);
+                while (s.length() >= 2 && isspace(s[s.length() - 2])) {
+                    s = s.substr(0, s.length() - 1);
                     last--;
-                    s[s.length()-1] = ':';
+                    s[s.length() - 1] = ':';
                 }
 
                 // std::cout << s << std::endl;
@@ -607,7 +568,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
         if (result.size()) {
             if (add_cr) {
-                for (size_t i = line ; i < line_ ; i++) {
+                for (size_t i = line; i < line_; i++) {
                     result += '\n';
                 }
             }
@@ -617,7 +578,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
         }
 
         if (add_indent) {
-            for (size_t i = indent ; i < start; i++) {
+            for (size_t i = indent; i < start; i++) {
                 result += ' ';
             }
         }
@@ -641,7 +602,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     }
 
     if (string) {
-        for (size_t i = line ; i < line_ ; i++) {
+        for (size_t i = line; i < line_; i++) {
             result += '\n';
         }
         return Value(result);
@@ -650,8 +611,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     return toValue(result);
 }
 
-void YAMLParser::loadItem()
-{
+void YAMLParser::loadItem() {
 
     if (!items_.empty()) {
         return;
@@ -667,82 +627,84 @@ void YAMLParser::loadItem()
     bool isKey = false;
 
 
-    switch (c)
-    {
+    switch (c) {
 
-    case 0:
-        item = new YAMLItemEOF();
-        break;
-
-    case '{':
-        item = new YAMLItemValue(indent, consumeJSON('}'));
-        break;
-
-    case '[':
-        item = new YAMLItemValue(indent, consumeJSON(']'));
-        break;
-
-    case '"':
-        item = new YAMLItemValue(indent, parseString('"'));
-        break;
-
-    case '\'':
-        item = new YAMLItemValue(indent, parseString('\''));
-        break;
-
-    case '-':
-
-        cnt = consumeChars('-');
-
-        switch (cnt) {
-        case 1:
-            item = new YAMLItemEntry(indent + 1);
+        case 0:
+            item = new YAMLItemEOF();
             break;
 
-        case 3:
-            item = new YAMLItemStartDocument();
+        case '{':
+            item = new YAMLItemValue(indent, consumeJSON('}'));
+            break;
+
+        case '[':
+            item = new YAMLItemValue(indent, consumeJSON(']'));
+            break;
+
+        case '"':
+            item = new YAMLItemValue(indent, parseString('"'));
+            break;
+
+        case '\'':
+            item = new YAMLItemValue(indent, parseString('\''));
+            break;
+
+        case '-':
+
+            cnt = consumeChars('-');
+
+            switch (cnt) {
+                case 1:
+                    item = new YAMLItemEntry(indent + 1);
+                    break;
+
+                case 3:
+                    item = new YAMLItemStartDocument();
+                    break;
+
+                default:
+                    while (cnt--) {
+                        putback('-');
+                    }
+                    item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
+                    break;
+            }
+
+            break;
+
+        case '.':
+
+            cnt = consumeChars('.');
+
+            switch (cnt) {
+
+                case 3:
+                    item = new YAMLItemEndDocument();
+                    break;
+
+                default:
+                    while (cnt--) {
+                        putback('.');
+                    }
+                    item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
+                    break;
+            }
+
+            break;
+
+        case '&':
+            consume('&');
+            item = new YAMLItemAnchor(indent, nextWord());
+            break;
+
+        case '*':
+            consume('*');
+            item = new YAMLItemReference(indent, nextWord());
             break;
 
         default:
-            while (cnt--) { putback('-');}
             item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
             break;
-        }
-
-        break;
-
-    case '.':
-
-        cnt = consumeChars('.');
-
-        switch (cnt) {
-
-        case 3:
-            item = new YAMLItemEndDocument();
-            break;
-
-        default:
-            while (cnt--) { putback('.');}
-            item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
-            break;
-        }
-
-        break;
-
-    case '&':
-        consume('&');
-        item = new YAMLItemAnchor(indent, nextWord());
-        break;
-
-    case '*':
-        consume('*');
-        item = new YAMLItemReference(indent, nextWord());
-        break;
-
-    default:
-        item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
-        break;
-
     }
 
     ASSERT(item);
@@ -759,7 +721,6 @@ void YAMLParser::loadItem()
 
     item->attach();
     items_.push_back(item);
-
 }
 
 void YAMLParser::anchor(const Value& key, const Value& value) {
@@ -807,4 +768,4 @@ Value YAMLParser::parseValue() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

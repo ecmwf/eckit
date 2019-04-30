@@ -17,13 +17,11 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Status::Status() :
-    content_( new NullStatus() ) {
+Status::Status() : content_(new NullStatus()) {
     content_->attach();
 }
 
-Status::Status(StatusContent* p) :
-    content_(p) {
+Status::Status(StatusContent* p) : content_(p) {
     ASSERT(p);
     content_->attach();
 }
@@ -43,18 +41,14 @@ Status& Status::operator=(const Status& s) {
     return *this;
 }
 
-StatusContent::~StatusContent() {
-}
+StatusContent::~StatusContent() {}
 
 void NullStatus::print(std::ostream& os) const {
     os << "NullStatus("
-       << "source=" << source()
-       << ",tag=" << tag()
-       << ",error=" << error()
-       << ")";
+       << "source=" << source() << ",tag=" << tag() << ",error=" << error() << ")";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit

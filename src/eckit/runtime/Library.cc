@@ -19,21 +19,15 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Library::Library(int argc, char **argv, const char* homeenv) :
-    Main(argc, argv, homeenv)
-{
-}
+Library::Library(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv) {}
 
-Library::~Library()
-{
-}
+Library::~Library() {}
 
-Channel* Library::createChannel() const  {
+Channel* Library::createChannel() const {
     return new Channel(new OStreamTarget(std::cout));
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

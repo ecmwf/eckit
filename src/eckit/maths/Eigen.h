@@ -15,7 +15,7 @@
 #ifndef eckit_maths_Eigen_h
 #define eckit_maths_Eigen_h
 
-#include "eckit/eckit_config.h"
+#include "eckit/eckit.h"
 
 //--------------------------------------------------------------------------------------------
 

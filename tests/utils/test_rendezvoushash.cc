@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
+
 #include "eckit/types/Types.h"
 #include "eckit/utils/RendezvousHash.h"
 #include "eckit/utils/Translator.h"
@@ -23,16 +25,10 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_eckit_utils_rendezvous_hash_constructor" )
-{
+CASE("test_eckit_utils_rendezvous_hash_constructor") {
     Log::info() << Here() << std::endl;
 
-    std::vector<std::string> nodes = {
-        "node01",
-        "node02",
-        "node03",
-        "node04"
-    };
+    std::vector<std::string> nodes = {"node01", "node02", "node03", "node04"};
 
     eckit::RendezvousHash rendezvous(nodes, &RendezvousHash::md5);
 
@@ -60,61 +56,39 @@ CASE ( "test_eckit_utils_rendezvous_hash_constructor" )
     }
 }
 
-CASE ( "test_eckit_utils_rendezvous_hash_distribution" )
-{
+CASE("test_eckit_utils_rendezvous_hash_distribution") {
     Log::info() << Here() << std::endl;
 
-    eckit::Translator<size_t,std::string> toStr;
+    eckit::Translator<size_t, std::string> toStr;
 
-    std::vector<std::string> params {
-        "2t",
-        "2d",
-        "z",
-        "u",
-        "v",
-        "130.128",
-        "138.128"
-    };
+    std::vector<std::string> params{"2t", "2d", "z", "u", "v", "130.128", "138.128"};
 
-    std::vector<std::string> nodes = {
-        "node01",
-        "node02",
-        "node03",
-        "node04",
-        "node05",
-        "node06",
-        "node07"
-    };
+    std::vector<std::string> nodes = {"node01", "node02", "node03", "node04", "node05", "node06", "node07"};
 
     eckit::RendezvousHash rendezvous(nodes);
 
-    std::map<std::string, std::string> dict {
-        {"class", "od"},
-        {"stream", "oper"},
-        {"type", "fc"}
-    };
+    std::map<std::string, std::string> dict{{"class", "od"}, {"stream", "oper"}, {"type", "fc"}};
 
     std::map<std::string, size_t> counts;
     std::vector<std::string> ordered_nodes;
 
-    for(std::vector<std::string>::iterator param = params.begin(); param != params.end(); ++param ) {
+    for (std::vector<std::string>::iterator param = params.begin(); param != params.end(); ++param) {
 
         dict["param"] = *param;
 
-        for(size_t step = 0; step < 240; ++step) {
+        for (size_t step = 0; step < 240; ++step) {
 
-            dict["step"]  = toStr(step);
+            dict["step"] = toStr(step);
 
-            for( size_t level = 0; level < 10; ++level ) {
+            for (size_t level = 0; level < 10; ++level) {
 
-                dict["level"]  = toStr(level);
+                dict["level"] = toStr(level);
 
                 rendezvous.hashOrder(dict, ordered_nodes);
                 EXPECT(ordered_nodes.size() == 7);
                 counts[ordered_nodes[0]]++;
             }
         }
-
     }
 
     // Test that we have << roughly >> similar counts on all the nodes. (Very stochastic).
@@ -123,8 +97,7 @@ CASE ( "test_eckit_utils_rendezvous_hash_distribution" )
     }
 }
 
-CASE ( "test_eckit_utils_rendezvous_hash_empty_dict" )
-{
+CASE("test_eckit_utils_rendezvous_hash_empty_dict") {
     Log::info() << Here() << std::endl;
 
     std::map<std::string, std::string> dict;
@@ -137,8 +110,7 @@ CASE ( "test_eckit_utils_rendezvous_hash_empty_dict" )
     EXPECT_NO_THROW(rendezvous.hashOrder(dict, indices)); /* don't throw on empty dictionary */
 }
 
-CASE ( "test_eckit_utils_rendezvous_hash_throws_empty_node_list" )
-{
+CASE("test_eckit_utils_rendezvous_hash_throws_empty_node_list") {
     Log::info() << Here() << std::endl;
 
     std::map<std::string, std::string> dict;
@@ -149,37 +121,24 @@ CASE ( "test_eckit_utils_rendezvous_hash_throws_empty_node_list" )
     dict["type"]   = "fc";
 
     std::vector<size_t> indices;
-    EXPECT_THROWS_AS( rendezvous.hashOrder(dict, indices), eckit::BadParameter ); /* throw on empty node list */
+    EXPECT_THROWS_AS(rendezvous.hashOrder(dict, indices), eckit::BadParameter); /* throw on empty node list */
 
     rendezvous.addNode("node01");
     rendezvous.addNode("node02");
 
-    EXPECT_NO_THROW( rendezvous.hashOrder(dict, indices));
+    EXPECT_NO_THROW(rendezvous.hashOrder(dict, indices));
 }
 
-CASE ( "test_eckit_utils_rendezvous_hash_add_node" )
-{
+CASE("test_eckit_utils_rendezvous_hash_add_node") {
     Log::info() << Here() << std::endl;
 
-    eckit::Translator<size_t,std::string> toStr;
+    eckit::Translator<size_t, std::string> toStr;
 
-    std::vector<std::string> params {
-        "2t",
-        "2d",
-        "z",
-        "w"
-    };
+    std::vector<std::string> params{"2t", "2d", "z", "w"};
 
-    std::map<std::string, std::string> dict {
-        {"class", "od"},
-        {"stream", "oper"},
-        {"type", "fc"}
-    };
+    std::map<std::string, std::string> dict{{"class", "od"}, {"stream", "oper"}, {"type", "fc"}};
 
-    eckit::RendezvousHash rendezvous{std::vector<std::string>({
-        "node01",
-        "node02"
-    })};
+    eckit::RendezvousHash rendezvous{std::vector<std::string>({"node01", "node02"})};
 
 
     const size_t nsteps  = 25;
@@ -189,17 +148,17 @@ CASE ( "test_eckit_utils_rendezvous_hash_add_node" )
     std::map<std::string, size_t> counts;
     std::vector<std::string> ordered_nodes;
 
-    for(std::vector<std::string>::iterator param = params.begin(); param != params.end(); ++param ) {
+    for (std::vector<std::string>::iterator param = params.begin(); param != params.end(); ++param) {
 
         dict["param"] = *param;
 
-        for(size_t step = 0; step < nsteps; ++step) {
+        for (size_t step = 0; step < nsteps; ++step) {
 
-            dict["step"]  = toStr(step);
+            dict["step"] = toStr(step);
 
-            for( size_t level = 0; level < nlevels; ++level ) {
+            for (size_t level = 0; level < nlevels; ++level) {
 
-                dict["level"]  = toStr(level);
+                dict["level"] = toStr(level);
 
                 rendezvous.hashOrder(dict, ordered_nodes);
                 EXPECT(ordered_nodes.size() == 2);
@@ -218,17 +177,17 @@ CASE ( "test_eckit_utils_rendezvous_hash_add_node" )
     rendezvous.addNode("node03");
     rendezvous.addNode("node04");
 
-    for(std::vector<std::string>::iterator param = params.begin(); param != params.end(); ++param ) {
+    for (std::vector<std::string>::iterator param = params.begin(); param != params.end(); ++param) {
 
         dict["param"] = *param;
 
-        for(size_t step = 0; step < nsteps; ++step) {
+        for (size_t step = 0; step < nsteps; ++step) {
 
-            dict["step"]  = toStr(step);
+            dict["step"] = toStr(step);
 
-            for( size_t level = 0; level < nlevels; ++level ) {
+            for (size_t level = 0; level < nlevels; ++level) {
 
-                dict["level"]  = toStr(level);
+                dict["level"] = toStr(level);
 
                 rendezvous.hashOrder(dict, ordered_nodes);
                 EXPECT(ordered_nodes.size() == 4);
@@ -241,14 +200,13 @@ CASE ( "test_eckit_utils_rendezvous_hash_add_node" )
     for (auto kv : counts2) {
         EXPECT(2430 < kv.second && 2551 > kv.second);
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main (int argc, char * argv[]) {
-    return run_tests( argc, argv );
+int main(int argc, char* argv[]) {
+    return run_tests(argc, argv);
 }

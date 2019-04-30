@@ -15,21 +15,19 @@
 #define eckit_ClimateDate_h
 
 #include "eckit/types/Date.h"
-
-//-----------------------------------------------------------------------------
+#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
+//--------------------------------------------------------------------------------------------------
 
 class ClimateDate {
 public:
 
 // -- Contructors
 
-	ClimateDate()                               {}
-	ClimateDate(const Date& date) : date_(date) {}
+        ClimateDate();
+        ClimateDate(const Date& date);
 	ClimateDate(const std::string& s);
 	ClimateDate(long,long,long);
 
@@ -37,7 +35,7 @@ public:
 
 // -- Destructor
 
-	~ClimateDate() {}
+        ~ClimateDate();
 
 // -- Convertors
 
@@ -77,23 +75,6 @@ public:
 	friend std::ostream& operator<< (std::ostream& s, const ClimateDate& date)
 		{ date.print(s); return s; }
 
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
 
 // -- Members
@@ -108,7 +89,7 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

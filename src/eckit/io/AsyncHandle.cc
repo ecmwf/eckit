@@ -9,15 +9,17 @@
  */
 
 
-#include "eckit/io/AsyncHandle.h"
-#include "eckit/thread/Thread.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/maths/Functions.h"
+#include <cstring>
 
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/AsyncHandle.h"
+#include "eckit/maths/Functions.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Thread.h"
 
 
 namespace eckit {
-
 
 
 #if 0
@@ -28,13 +30,14 @@ Reanimator<AsyncHandle> AsyncHandle::reanimator_;
 class AsyncHandleWriter : public Thread {
     AsyncHandle& owner_;
     virtual void run();
+
 public:
     AsyncHandleWriter(AsyncHandle& owner) : owner_(owner) {}
 };
 
 void AsyncHandleWriter::run() {
     while (!stopped()) {
-        Buffer* delme = 0;
+        Buffer* delme = nullptr;
         try {
             AutoLock<MutexCond> lock(owner_.cond_);
             while (owner_.buffers_.empty() && !stopped()) {
@@ -53,7 +56,7 @@ void AsyncHandleWriter::run() {
             delme = p.second;
 
             long written = owner_.handle().write(p.second->data(), p.first);
-            if (written != p.first) {
+            if (written != static_cast<long>(p.first)) {
                 std::ostringstream oss;
                 oss << "AsyncHandleWriter: written " << written << " out of " << p.first << Log::syserr;
                 throw WriteError(oss.str());
@@ -68,35 +71,31 @@ void AsyncHandleWriter::run() {
             owner_.cond_.signal();
         }
         delete delme;
-        delme = 0;
+        delme = nullptr;
     }
-
 }
 
-AsyncHandle::AsyncHandle(DataHandle* h, size_t maxSize, size_t rounding):
+AsyncHandle::AsyncHandle(DataHandle* h, size_t maxSize, size_t rounding) :
     HandleHolder(h),
     maxSize_(maxSize),
     used_(0),
     rounding_(rounding),
     error_(false),
-    thread_(new AsyncHandleWriter(*this), false)
-{
+    thread_(new AsyncHandleWriter(*this), false) {
     thread_.start();
 }
 
-AsyncHandle::AsyncHandle(DataHandle& h, size_t maxSize, size_t rounding):
+AsyncHandle::AsyncHandle(DataHandle& h, size_t maxSize, size_t rounding) :
     HandleHolder(h),
     maxSize_(maxSize),
     used_(0),
     rounding_(rounding),
     error_(false),
-    thread_(new AsyncHandleWriter(*this), false)
-{
+    thread_(new AsyncHandleWriter(*this), false) {
     thread_.start();
 }
 
-AsyncHandle::~AsyncHandle()
-{
+AsyncHandle::~AsyncHandle() {
     {
         AutoLock<MutexCond> lock(cond_);
         while (!buffers_.empty()) {
@@ -111,37 +110,31 @@ AsyncHandle::~AsyncHandle()
     thread_.wait();
 }
 
-Length AsyncHandle::openForRead()
-{
+Length AsyncHandle::openForRead() {
     NOTIMP;
 }
 
-void AsyncHandle::openForWrite(const Length& length)
-{
+void AsyncHandle::openForWrite(const Length& length) {
     ASSERT(used_ == 0);
     ASSERT(buffers_.size() == 0);
     handle().openForWrite(length);
 }
 
-void AsyncHandle::openForAppend(const Length& length)
-{
+void AsyncHandle::openForAppend(const Length& length) {
     ASSERT(used_ == 0);
     ASSERT(buffers_.size() == 0);
     handle().openForAppend(length);
 }
 
-void AsyncHandle::skip(const Length& len)
-{
+void AsyncHandle::skip(const Length&) {
     NOTIMP;
 }
 
-long AsyncHandle::read(void* buffer, long length)
-{
+long AsyncHandle::read(void*, long) {
     NOTIMP;
 }
 
-long AsyncHandle::write(const void* buffer, long length)
-{
+long AsyncHandle::write(const void* buffer, long length) {
     AutoLock<MutexCond> lock(cond_);
 
     size_t size = eckit::round(length, rounding_);
@@ -168,8 +161,7 @@ long AsyncHandle::write(const void* buffer, long length)
     return length;
 }
 
-void AsyncHandle::close()
-{
+void AsyncHandle::close() {
     flush();
     handle().close();
 
@@ -180,8 +172,7 @@ void AsyncHandle::close()
     }
 }
 
-void AsyncHandle::flush()
-{
+void AsyncHandle::flush() {
     AutoLock<MutexCond> lock(cond_);
     while (!buffers_.empty() && !error_) {
         cond_.wait();
@@ -194,31 +185,26 @@ void AsyncHandle::flush()
     handle().flush();
 }
 
-void AsyncHandle::rewind()
-{
+void AsyncHandle::rewind() {
     NOTIMP;
 }
 
-Offset AsyncHandle::seek(const Offset& off)
-{
+Offset AsyncHandle::seek(const Offset&) {
     NOTIMP;
 }
 
 
-void AsyncHandle::print(std::ostream& s) const
-{
+void AsyncHandle::print(std::ostream& s) const {
     s << "AsyncHandle[";
     handle().print(s);
     s << ']';
 }
 
-Length AsyncHandle::estimate()
-{
+Length AsyncHandle::estimate() {
     return handle().estimate();
 }
 
-Offset AsyncHandle::position()
-{
+Offset AsyncHandle::position() {
     NOTIMP;
 }
 
@@ -226,11 +212,9 @@ std::string AsyncHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
-DataHandle* AsyncHandle::clone() const
-{
+DataHandle* AsyncHandle::clone() const {
     return new AsyncHandle(handle().clone(), maxSize_, rounding_);
 }
 
 
-} // namespace eckit
-
+}  // namespace eckit

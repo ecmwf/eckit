@@ -11,9 +11,9 @@
 /// @author Tiago Quintino
 /// @date Dec 2015
 
+#include "eckit/parser/JSONMetadata.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/parser/JSONMetadata.h"
 #include "eckit/parser/JSONParser.h"
 
 #include <iostream>
@@ -93,10 +93,12 @@ void JSONMetadata::get(const std::string& key, double& value) const {
     const Value& val(root_[key]);
     if (val.isDouble()) {
         value = double(val);
-    } else if (val.isNumber()) {
-        long long tmp_long  = (long long)(val);
-        value = tmp_long;
-    } else {
+    }
+    else if (val.isNumber()) {
+        long long tmp_long = (long long)(val);
+        value              = tmp_long;
+    }
+    else {
         throw BadCast(std::string("Element \"") + key + "\" is not a double", Here());
     }
 }
@@ -108,4 +110,3 @@ void JSONMetadata::print(std::ostream& os) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-

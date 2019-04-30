@@ -88,8 +88,8 @@ public:
     bool isLink() const;
 
     void mkdir(short mode = 0777) const;
-    void unlink() const;
-    void rmdir() const;
+    void unlink(bool verbose=true) const;
+    void rmdir(bool verbose=true) const;
 
     void syncParentDirectory() const;
 

@@ -14,10 +14,9 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/ScopedPtr.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/types/Types.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
 
 using namespace std;
 using namespace eckit;
@@ -26,7 +25,7 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class TestAsyncHandle {
 public:
@@ -39,7 +38,7 @@ public:
 
 
 void TestAsyncHandle::test_write() {
-    ScopedPtr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
+    std::unique_ptr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
 
     asynch->openForWrite(0);
 
@@ -49,7 +48,7 @@ void TestAsyncHandle::test_write() {
 
     asynch->close();
 
-    ScopedPtr<DataHandle> fh(path_.fileHandle());
+    std::unique_ptr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 
@@ -58,12 +57,12 @@ void TestAsyncHandle::test_write() {
     fh->read(buf2, buf2.size());
     fh->close();
 
-    EXPECT( buf == std::string(buf2) );
+    EXPECT(buf == std::string(buf2));
 }
 
 
 void TestAsyncHandle::test_append() {
-    ScopedPtr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
+    std::unique_ptr<DataHandle> asynch(new AsyncHandle(path_.fileHandle()));
 
     asynch->openForAppend(0);
 
@@ -73,24 +72,24 @@ void TestAsyncHandle::test_append() {
 
     asynch->close();
 
-    ScopedPtr<DataHandle> fh(path_.fileHandle());
+    std::unique_ptr<DataHandle> fh(path_.fileHandle());
 
     fh->openForRead();
 
-    fh->seek( sizeof(buf) );
+    fh->seek(sizeof(buf));
 
     Buffer buf2(1024);
 
     fh->read(buf2, buf2.size());
     fh->close();
 
-    EXPECT( buf == std::string(buf2) );
+    EXPECT(buf == std::string(buf2));
 }
 
 
 void TestAsyncHandle::setup() {
     std::string base = Resource<std::string>("$TMPDIR", "/tmp");
-    path_ = PathName::unique( base + "/lolo" );
+    path_            = PathName::unique(base + "/lolo");
     path_ += ".dat";
 }
 
@@ -112,7 +111,6 @@ CASE("test_asynchandle") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

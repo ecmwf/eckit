@@ -16,101 +16,83 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-template<class Request>
-PipeHandler<Request>::PipeHandler():
-    ClassExtent<PipeHandler<Request> >(this),
-    pipe_(0),
-    busy_(false),
-    last_(0)
-{
+template <class Request>
+PipeHandler<Request>::PipeHandler() : ClassExtent<PipeHandler<Request> >(this), pipe_(0), busy_(false), last_(0) {
     Monitor::instance().show(false);
 }
 
 //=========================================================================
 
-template<class Request>
-PipeHandler<Request>::~PipeHandler()
-{
+template <class Request>
+PipeHandler<Request>::~PipeHandler() {
     stop();
     delete pipe_;
 }
 
 //=========================================================================
 
-template<class Request>
-void PipeHandler<Request>::send(Request* r)
-{
+template <class Request>
+void PipeHandler<Request>::send(Request* r) {
 
     int retry = 0;
     int max   = 10;
 
     Monitor::instance().show(true);
 
-    for(;;)
-    {
+    for (;;) {
 
-        if(!active())
+        if (!active())
             start();
 
         try {
             Log::status() << "Sending request" << std::endl;
-            (*pipe_) << bool(false); // endBatch marker
+            (*pipe_) << bool(false);  // endBatch marker
             r->send(*pipe_);
             return;
         }
-        catch(std::exception& e)
-        {
-            Log::error() << "** " << e.what()
-                         << " Caught in " << Here() << std::endl;
-            if(++retry >= max)
-            {
+        catch (std::exception& e) {
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+            if (++retry >= max) {
                 Log::error() << "** Exception is re-thrown" << std::endl;
                 throw;
             }
-            else
-            {
+            else {
                 Log::error() << "** Exception is handled" << std::endl;
                 stop();
                 ::sleep(5);
             }
         }
-
     }
-
 }
 
 //=========================================================================
 
-template<class Request>
-void PipeHandler<Request>::receive(Request* r)
-{
+template <class Request>
+void PipeHandler<Request>::receive(Request* r) {
     Log::status() << "Waiting for " << Request::commandName() << std::endl;
     r->reply(*pipe_);
 }
 
 //=========================================================================
 
-template<class Request>
-void PipeHandler<Request>::handle(const std::vector<Request*>& v)
-{
+template <class Request>
+void PipeHandler<Request>::handle(const std::vector<Request*>& v) {
 
     busy_ = true;
 
-    for(typename std::vector<Request*>::const_iterator i = v.begin();
-        i != v.end() ; ++i)
-    {
+    for (typename std::vector<Request*>::const_iterator i = v.begin(); i != v.end(); ++i) {
         try {
 
-            Request *r = *i;
+            Request* r = *i;
 
             bool retry = false;
-            int  cnt   = 0;
+            int cnt    = 0;
 
             do {
 
@@ -120,26 +102,22 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v)
                     send(r);
                     receive(r);
                 }
-                catch(std::exception& e)
-                {
-                    Log::error() << "** " << e.what() << " Caught in "
-                        << Here() << std::endl;
+                catch (std::exception& e) {
+                    Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
                     Log::error() << "** Exception is handled" << std::endl;
-                    retry = r->error(e,++cnt);
+                    retry = r->error(e, ++cnt);
                 }
 
-                if(retry)
+                if (retry)
                     Log::debug() << "PipeHandler -> retry " << cnt << std::endl;
 
-            } while(retry);
+            } while (retry);
 
             Log::debug() << "PipeHandler done" << std::endl;
             r->done();
-
         }
-        catch(std::exception& e)
-        {
-			Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        catch (std::exception& e) {
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
         }
     }
@@ -148,22 +126,18 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v)
         // Send the end batch flag
         *pipe_ << bool(true);
     }
-    catch(std::exception& e)
-    {
-		Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+    catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
         Log::error() << "** Exception is ignored" << std::endl;
     }
 
     last_ = ::time(0);
     busy_ = false;
     Log::status() << "-" << std::endl;
-
-
 }
 
-template<class Request>
-void PipeHandler<Request>::idle()
-{
+template <class Request>
+void PipeHandler<Request>::idle() {
     Monitor::instance().show(active());
 }
 
@@ -171,9 +145,8 @@ void PipeHandler<Request>::idle()
 
 static StaticMutex PipeHandler_static_mutex;
 
-template<class Request>
-void PipeHandler<Request>::start()
-{
+template <class Request>
+void PipeHandler<Request>::start() {
 
     // Here we need a mutex, because we don't want
     // to fork (ProcessControler::start) while an other
@@ -196,33 +169,31 @@ void PipeHandler<Request>::start()
 
 //=========================================================================
 
-template<class Request>
-void PipeHandler<Request>::stop()
-{
+template <class Request>
+void PipeHandler<Request>::stop() {
     ProcessControler::stop();
 }
 
 //=========================================================================
 
 
-template<class Request>
-void PipeHandler<Request>::run()
-{
+template <class Request>
+void PipeHandler<Request>::run() {
     // Here, we should be in the child
     pipe_->childProcess();
 
 
-    char in[20];  snprintf(in,20,"%d", pipe_->in());
-    char out[20]; snprintf(out,20,"%d",pipe_->out());
-    char par[20]; snprintf(par,20,"%ld",Monitor::instance().self());
+    char in[20];
+    snprintf(in, 20, "%d", pipe_->in());
+    char out[20];
+    snprintf(out, 20, "%d", pipe_->out());
+    char par[20];
+    snprintf(par, 20, "%ld", Monitor::instance().self());
 
     PathName cmd = std::string("~/bin/") + Request::commandName();
 
-    Log::debug() << "execlp(" << cmd.localPath() << ','
-                 << cmd.baseName().localPath() << ','
-                 << "-in," << in << ','
-                 << "-out," << out << ','
-                 << "-parent," << par << ")" << std::endl;
+    Log::debug() << "execlp(" << cmd.localPath() << ',' << cmd.baseName().localPath() << ',' << "-in," << in << ','
+                 << "-out," << out << ',' << "-parent," << par << ")" << std::endl;
 
 #if 0
     if(getenv("PIPE_DEBUG"))
@@ -239,35 +210,29 @@ void PipeHandler<Request>::run()
     char command[1024];
     char basename[1024];
 
-    ASSERT(sizeof(command)-1 > std::string(cmd).length());
+    ASSERT(sizeof(command) - 1 > std::string(cmd).length());
 
-    snprintf(command,1024,"%s", cmd.localPath());
-    snprintf(basename,1024,"%s", cmd.baseName().localPath());
+    snprintf(command, 1024, "%s", cmd.localPath());
+    snprintf(basename, 1024, "%s", cmd.baseName().localPath());
 
-    ::execlp(command, basename,
-        "-in",in,
-        "-out",out,
-        "-parent",par,
-        (void*)0);
+    ::execlp(command, basename, "-in", in, "-out", out, "-parent", par, (void*)0);
 
     std::cerr << "Exec failed " << cmd << Log::syserr << std::endl;
 
     // exit is not enough: some destructor of ostore objects
     // are waiting for some locks
-    ::kill(getpid(),SIGTERM);
+    ::kill(getpid(), SIGTERM);
 }
 
-template<class Request>
-void PipeHandler<Request>::ready(bool& r)
-{
+template <class Request>
+void PipeHandler<Request>::ready(bool& r) {
     r = r || (active() && !busy());
 }
 
-template<class Request>
-void PipeHandler<Request>::age(time_t& a)
-{
-    if(active() && !busy())
-        if(last_ > a )
+template <class Request>
+void PipeHandler<Request>::age(time_t& a) {
+    if (active() && !busy())
+        if (last_ > a)
             a = last_;
 }
 
@@ -275,18 +240,15 @@ void PipeHandler<Request>::age(time_t& a)
 // Check if an other thread is avialable and as already forked.
 // In this case don't pick the request otherwise, choose it
 
-template<class Request>
-bool PipeHandler<Request>::canPick()
-{
+template <class Request>
+bool PipeHandler<Request>::canPick() {
     time_t a = 0;
-    ClassExtent<PipeHandler<Request> >::callAll(&PipeHandler<Request>::age,a);
+    ClassExtent<PipeHandler<Request> >::callAll(&PipeHandler<Request>::age, a);
 
     // If someone is more ready me
-    if( a > last_)
-    {
-        Log::debug() << "canPick " << a << " > "
-        << last_ << " size="
-        << ClassExtent<PipeHandler<Request> >::size() << std::endl;
+    if (a > last_) {
+        Log::debug() << "canPick " << a << " > " << last_ << " size=" << ClassExtent<PipeHandler<Request> >::size()
+                     << std::endl;
         return false;
     }
 
@@ -295,37 +257,30 @@ bool PipeHandler<Request>::canPick()
 
     // If ready, do it
 
-    if(ok) return true;
+    if (ok)
+        return true;
 
-    ClassExtent<PipeHandler<Request> >::callAll(&PipeHandler<Request>::ready,ok);
+    ClassExtent<PipeHandler<Request> >::callAll(&PipeHandler<Request>::ready, ok);
 
     // If no one else ready, do it
 
-    if(ok)
-    {
-        Log::debug() << "canPick size=" <<
-        ClassExtent<PipeHandler<Request> >::size() << std::endl;
+    if (ok) {
+        Log::debug() << "canPick size=" << ClassExtent<PipeHandler<Request> >::size() << std::endl;
     }
 
     return !ok;
-
 }
 
-template<class Request>
-void PipeHandler<Request>::pick(std::list<Request*>& queue,
-    std::vector<Request*>& result)
-{
+template <class Request>
+void PipeHandler<Request>::pick(std::list<Request*>& queue, std::vector<Request*>& result) {
 
-    if(canPick())
-        DefaultHandler<Request>::pick(queue,result);
+    if (canPick())
+        DefaultHandler<Request>::pick(queue, result);
 }
 
-template<class Request>
-void PipeHandler<Request>::endBatch(Stream&)
-{
-}
+template <class Request>
+void PipeHandler<Request>::endBatch(Stream&) {}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

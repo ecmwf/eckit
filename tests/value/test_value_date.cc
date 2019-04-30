@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/value/Value.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/value/Value.h"
 #include "test_value_helper.h"
 
 using namespace std;
@@ -27,7 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Test that dates cast correctly" ) {
+CASE("Test that dates cast correctly") {
     Value val(Date(2016, 3, 31));
 
     //
@@ -55,7 +54,7 @@ CASE( "Test that dates cast correctly" ) {
     EXPECT_THROWS_AS(val.as<ValueMap>(), BadConversion);
 }
 
-CASE( "Test that type knowledge is correct for dates" ) {
+CASE("Test that type knowledge is correct for dates") {
     Value val(Date(2016, 3, 31));
 
     EXPECT(val.isDate());
@@ -71,7 +70,7 @@ CASE( "Test that type knowledge is correct for dates" ) {
     EXPECT(!val.isTime());
 }
 
-CASE( "Test that comparisons work correctly for dates" ) {
+CASE("Test that comparisons work correctly for dates") {
     Value val1(Date(2016, 3, 31));
     Value val2(Date(2016, 3, 31));
     Value val3(Date(2016, 4, 30));
@@ -88,20 +87,19 @@ CASE( "Test that comparisons work correctly for dates" ) {
     // Check comparisons with other types of data (see test_value_typeordering).
 
     Value val(Date(2016, 5, 1));
-    EXPECT(val.compare(Value(true))                < 0);
-    EXPECT(val.compare(Value(1))                   < 0);
-    EXPECT(val.compare(Value(1234.5))              < 0);
-    EXPECT(val.compare(Value("test str"))          < 0);
-    EXPECT(val.compare(Value())                    < 0);
-    EXPECT(val.compare(Value::makeList())          < 0);
-    EXPECT(val.compare(Value(Date(2016, 5, 1)))   == 0);
-    EXPECT(val.compare(Value(Time(1000)))          > 0);
-    EXPECT(val.compare(Value(DateTime()))          > 0);
-    EXPECT(val.compare(Value::makeOrderedMap())    > 0);
-
+    EXPECT(val.compare(Value(true)) < 0);
+    EXPECT(val.compare(Value(1)) < 0);
+    EXPECT(val.compare(Value(1234.5)) < 0);
+    EXPECT(val.compare(Value("test str")) < 0);
+    EXPECT(val.compare(Value()) < 0);
+    EXPECT(val.compare(Value::makeList()) < 0);
+    EXPECT(val.compare(Value(Date(2016, 5, 1))) == 0);
+    EXPECT(val.compare(Value(Time(1000))) > 0);
+    EXPECT(val.compare(Value(DateTime())) > 0);
+    EXPECT(val.compare(Value::makeOrderedMap()) > 0);
 }
 
-CASE( "Test that indexing is invalid for dates" ) {
+CASE("Test that indexing is invalid for dates") {
     Value val(Date(2016, 3, 31));
 
     EXPECT_THROWS_AS(val["idx"], BadOperator);
@@ -117,7 +115,7 @@ CASE( "Test that indexing is invalid for dates" ) {
     EXPECT_THROWS_AS(val.contains(Value(123)), BadOperator);
 }
 
-CASE( "Test that addition is invalid for dates" ) {
+CASE("Test that addition is invalid for dates") {
     Value val(Date(2016, 3, 31));
 
     EXPECT_THROWS_AS(ValueAdd(val, true), BadOperator);
@@ -146,7 +144,7 @@ CASE( "Test that addition is invalid for dates" ) {
     EXPECT_THROWS_AS(ValueAddSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that subtraction is invalid for dates" ) {
+CASE("Test that subtraction is invalid for dates") {
     Value val(Date(2016, 3, 31));
 
     EXPECT_THROWS_AS(ValueSub(val, true), BadOperator);
@@ -178,7 +176,7 @@ CASE( "Test that subtraction is invalid for dates" ) {
     EXPECT_THROWS_AS(ValueSubSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that division is invalid for dates" ) {
+CASE("Test that division is invalid for dates") {
     Value val(Date(2016, 3, 31));
 
     EXPECT_THROWS_AS(ValueMul(val, true), BadOperator);
@@ -206,7 +204,7 @@ CASE( "Test that division is invalid for dates" ) {
     EXPECT_THROWS_AS(ValueMulSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that division is invalid for dates" ) {
+CASE("Test that division is invalid for dates") {
     Value val(Date(2016, 3, 31));
 
     EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
@@ -234,7 +232,7 @@ CASE( "Test that division is invalid for dates" ) {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test that modulo is invalid on dates" ) {
+CASE("Test that modulo is invalid on dates") {
     Value val(Date(2016, 3, 31));
 
     EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
@@ -262,7 +260,7 @@ CASE( "Test that modulo is invalid on dates" ) {
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
 
-CASE( "Test head/tail functionality on dates" ) {
+CASE("Test head/tail functionality on dates") {
     Value val(Date(2016, 3, 31));
 
     /// EXPECT_THROWS_AS(val.head(), AssertationError);
@@ -270,13 +268,12 @@ CASE( "Test head/tail functionality on dates" ) {
     EXPECT(true);
 }
 
-CASE( "Hash of a value" ) {
-
-    eckit::ScopedPtr<Hash> h(make_hash());
+CASE("Hash of a value") {
+    std::unique_ptr<Hash> h(make_hash());
 
     Value(Date(2016, 3, 31)).hash(*h);
 
-//    std::cout << "MD5 " << h->digest() << std::endl;
+    //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "d41d8cd98f00b204e9800998ecf8427e");
 }

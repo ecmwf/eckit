@@ -14,12 +14,11 @@
 #ifndef eckit_EtcTable_h
 #define eckit_EtcTable_h
 
-#include "eckit/eckit.h"
+#include <vector>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -65,8 +64,7 @@ private: // methods
 class EtcKeyTable : public EtcTable {
     bool match(const std::string& query, const std::vector<std::string>& line) const { return query == line[0]; }
 public:
-    EtcKeyTable(const std::string& name, int size = 0, const std::string& dir= "etc"):
-        EtcTable(name, size, dir) {}
+    EtcKeyTable(const std::string& name, int size = 0, const std::string& dir= "etc");
 };
 
 //-----------------------------------------------------------------------------
@@ -74,8 +72,7 @@ public:
 class EtcStartWithTable : public EtcTable {
     bool match(const std::string& query, const std::vector<std::string>& line) const { return query.find(line[0]) == 0; }
 public:
-    EtcStartWithTable(const std::string& name, int size = 0, const std::string& dir= "etc"):
-        EtcTable(name, size, dir) {}
+    EtcStartWithTable(const std::string& name, int size = 0, const std::string& dir= "etc");
 };
 
 //-----------------------------------------------------------------------------

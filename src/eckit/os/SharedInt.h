@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File SharedInt.h
-// Baudouin Raoult - ECMWF Jul 97
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jul 97
 
 #ifndef eckit_SharedInt_h
 #define eckit_SharedInt_h
@@ -17,33 +18,14 @@
 #include "eckit/os/Semaphore.h"
 
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
-
-//-----------------------------------------------------------------------------
 
 class SharedInt : public Semaphore {
 public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
-
-	SharedInt(const PathName&,int n = 1);
-
-// -- Destructor
+    SharedInt(const PathName&, int n = 1);
 
 	~SharedInt();
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
 
     void use(int n = 0);
     void use(int n, short v);
@@ -56,65 +38,12 @@ public:
 
     void newLimit(short val,unsigned short n = 0);
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-
-	// void print(std::ostream&) const;
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
 private:
 
-// No copy allowed
-
-	SharedInt(const SharedInt&);
-	SharedInt& operator=(const SharedInt&);
-
-// -- Members
-	// None
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const SharedInt& p)
-	//	{ p.print(s); return s; }
+    SharedInt(const SharedInt&) = delete;
+    SharedInt& operator=(const SharedInt&) = delete;
 
 };
-
-
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

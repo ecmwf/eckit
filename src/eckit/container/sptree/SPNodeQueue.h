@@ -12,8 +12,9 @@
 #define SPNodeQueue_H
 
 #include <limits>
+#include <queue>
+#include <algorithm>
 
-#include <eckit/eckit.h>
 
 namespace eckit {
 

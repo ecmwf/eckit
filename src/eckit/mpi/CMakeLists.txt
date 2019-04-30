@@ -35,15 +35,15 @@ if( HAVE_MPI )
     set(eckit_mpi_libs ${MPI_C_LIBRARIES} )
 endif()
 
-ecbuild_add_library(TARGET eckit_mpi
-                    INSTALL_HEADERS ALL
-                    HEADER_DESTINATION
-                        ${INSTALL_INCLUDE_DIR}/eckit/mpi
-                    SOURCES
-                        ${eckit_mpi_srcs}
-                    DEFINITIONS
-                        "${eckit_mpi_defs}"
-                    INCLUDES
-                        "${eckit_mpi_incs}"
-                    LIBS
-                        eckit ${eckit_mpi_libs} )
+ecbuild_add_library( TARGET eckit_mpi TYPE SHARED
+                     INSTALL_HEADERS ALL
+                     HEADER_DESTINATION
+                         ${INSTALL_INCLUDE_DIR}/eckit/mpi
+                     SOURCES
+                         ${eckit_mpi_srcs}
+                     DEFINITIONS
+                         "${eckit_mpi_defs}"
+                     INCLUDES
+                         "${eckit_mpi_incs}"
+                     LIBS
+                         eckit ${eckit_mpi_libs} )

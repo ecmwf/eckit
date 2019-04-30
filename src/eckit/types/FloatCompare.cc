@@ -11,8 +11,8 @@
 #define signbit(x) std::signbit((x))
 #endif
 
-#include <limits>
 #include <sys/types.h>
+#include <limits>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
@@ -34,11 +34,15 @@ namespace detail {
 template <class T>
 inline T abs(T);
 
-template<>
-double abs(double x) { return fabs(x); }
+template <>
+double abs(double x) {
+    return fabs(x);
+}
 
-template<>
-float abs(float x) { return fabsf(x); }
+template <>
+float abs(float x) {
+    return fabsf(x);
+}
 
 // Used for accessing the integer representation of floating-point numbers
 // (aliasing through unions works on most platforms).
@@ -109,22 +113,27 @@ Float::int_t float_distance(float x, float y) {
 ///   * -std::numeric_limits<T>::min() has ULP distance 2 from std::numeric_limits<T>::min()
 ///   * ULP distance from 0 is 1 + ULP distance from std::numeric_limits<T>::min() (for positive numbers)
 ///
-template< typename T >
+template <typename T>
 bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
 
     // Bit identical is equal for any epsilon
-    if (a == b) return true;
+    if (a == b)
+        return true;
 
     // NaNs and infinity are always different
-    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) return false;
+    if (isnan(a) || isnan(b) || isinf(a) || isinf(b))
+        return false;
 
     // Subnormal numbers are treated as 0
-    if (fpclassify(a) == FP_SUBNORMAL) a = 0;
-    if (fpclassify(b) == FP_SUBNORMAL) b = 0;
+    if (fpclassify(a) == FP_SUBNORMAL)
+        a = 0;
+    if (fpclassify(b) == FP_SUBNORMAL)
+        b = 0;
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
-    if (detail::abs(a - b) <= epsilon) return true;
+    if (detail::abs(a - b) <= epsilon)
+        return true;
 
     // If either is zero, compare the absolute value of the other to the minimum normal number
     if (a == 0) {
@@ -134,7 +143,8 @@ bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
         return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
 
-    if (signbit(a) == signbit(b)) return detail::float_distance(a, b) <= maxUlpsDiff;
+    if (signbit(a) == signbit(b))
+        return detail::float_distance(a, b) <= maxUlpsDiff;
 
     // If signs are different, add ULP distances from minimum normal number on both sides of 0
     const int64_t dp = detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min());
@@ -149,5 +159,5 @@ template bool is_approximately_equal(double a, double b, double epsilon, int max
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace types
-} // namespace eckit
+}  // namespace types
+}  // namespace eckit

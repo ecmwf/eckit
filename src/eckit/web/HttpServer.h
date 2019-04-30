@@ -17,7 +17,7 @@
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/web/HtmlResource.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 

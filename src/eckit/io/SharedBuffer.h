@@ -15,10 +15,10 @@
 #ifndef eckit_io_SharedBuffer_h
 #define eckit_io_SharedBuffer_h
 
+#include <iosfwd>
 #include <string>
 
 #include "eckit/io/Buffer.h"
-
 #include "eckit/memory/Counted.h"
 
 namespace eckit {
@@ -30,37 +30,21 @@ namespace eckit {
 /// because access is not controlled by locking, only allocation and deallocation
 
 class CountedBuffer : public eckit::Buffer, public eckit::Counted {
-
-public: // methods
-
+public:  // methods
     CountedBuffer(size_t size) : Buffer(size) {}
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SharedBuffer {
+public:  // methods
+    SharedBuffer(size_t size);
 
-public: // methods
+    SharedBuffer(CountedBuffer* b);
 
-    SharedBuffer(size_t size) : buffer_(new CountedBuffer(size)) {
-        ASSERT(buffer_);
-        buffer_->attach();
-    }
+    ~SharedBuffer() { buffer_->detach(); }
 
-    SharedBuffer(CountedBuffer* b) {
-        ASSERT(b);
-        buffer_ = b;
-        buffer_->attach();
-    }
-
-    ~SharedBuffer() {
-        buffer_->detach();
-    }
-
-    SharedBuffer(const SharedBuffer& s) : buffer_(s.buffer_) {
-        buffer_->attach();
-    }
+    SharedBuffer(const SharedBuffer& s) : buffer_(s.buffer_) { buffer_->attach(); }
 
     SharedBuffer& operator=(const SharedBuffer& s) {
         buffer_->detach();
@@ -69,9 +53,7 @@ public: // methods
         return *this;
     }
 
-    CountedBuffer* operator->() const {
-        return buffer_;
-    }
+    CountedBuffer* operator->() const { return buffer_; }
 
     void* data() { return buffer_->data(); }
 
@@ -88,19 +70,20 @@ public: // methods
     operator const Buffer&() const { return *buffer_; }
     operator Buffer&() { return *buffer_; }
 
-private: // methods
-
+private:  // methods
     void print(std::ostream& os) const;
 
-    friend std::ostream& operator<<(std::ostream& s, const SharedBuffer& o) { o.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const SharedBuffer& o) {
+        o.print(s);
+        return s;
+    }
 
-private: // members
-
-    CountedBuffer* buffer_; ///< @invariant always a valid pointer
+private:                     // members
+    CountedBuffer* buffer_;  ///< @invariant always a valid pointer
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

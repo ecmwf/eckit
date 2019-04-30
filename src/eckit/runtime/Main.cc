@@ -48,8 +48,8 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     }
 
 
-    if (::getenv("DEBUG")) {
-        debug_ = eckit::Translator<std::string, bool>()(::getenv("DEBUG"));
+    if (::getenv("MAIN_DEBUG")) {
+        debug_ = eckit::Translator<std::string, bool>()(::getenv("MAIN_DEBUG"));
     }
 
     name_ = displayName_ = PathName(argv[0]).baseName(false);

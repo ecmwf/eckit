@@ -12,6 +12,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/FDataSync.h"
+#include "eckit/memory/Zero.h"
 
 namespace eckit {
 

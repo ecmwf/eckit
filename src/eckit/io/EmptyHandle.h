@@ -45,6 +45,7 @@ public:
     virtual long   write(const void*,long n){ return n; }
     virtual void   close()					{ }
     virtual void   flush()					{ }
+    virtual Offset position()				{ return 0; }
     virtual void   rewind()					{ }
     virtual void   print(std::ostream& s) const	{ s << "Empty Handle"; }
 	virtual bool   isEmpty() const          { return true; }

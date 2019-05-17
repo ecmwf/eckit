@@ -13,6 +13,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Timer.h"
 #include "eckit/utils/StringTools.h"
@@ -172,13 +173,8 @@ std::string SQLSession::readIncludeFile(const std::string& fileName) {
 
 std::vector<std::string> SQLSession::includePaths() {
     std::vector<std::string> r;
-    std::string s(schemaFile());
-    char a[s.size() + 1];
-    strncpy(a, s.c_str(), s.size() + 1);
-    const std::string dir(dirname(const_cast<char*>(a)));
-
     r.push_back("");
-    r.push_back(dir + "/");
+    r.push_back( PathName(schemaFile()).dirName().asString() + "/");
     r.push_back("./");
     return r;
 }

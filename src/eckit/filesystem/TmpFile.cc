@@ -25,7 +25,8 @@ static PathName tmp() {
     }
 
     long max = pathconf(tmpdir, _PC_PATH_MAX);
-    char path[max];
+    char* path = new char[max];
+
     sprintf(path, "%s/eckitXXXXXXXXXXX", tmpdir);
     int fd;
     SYSCALL(fd = ::mkstemp(path));
@@ -34,6 +35,8 @@ static PathName tmp() {
     result.touch();
 
     SYSCALL(::close(fd));
+
+    delete[] path;
 
     return result;
 }

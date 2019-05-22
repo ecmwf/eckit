@@ -341,6 +341,8 @@ runtime/Monitor.h
 runtime/Monitor.cc
 runtime/Monitorable.h
 runtime/Monitorable.cc
+runtime/SessionID.cc
+runtime/SessionID.h
 runtime/TaskInfo.h
 runtime/TaskInfo.cc
 runtime/PipeApplication.h
@@ -544,6 +546,8 @@ os/SharedInt.h
 os/SharedInt.cc )
 
 list( APPEND eckit_net_srcs
+net/Endpoint.h
+net/Endpoint.cc
 net/TCPClient.h
 net/TCPClient.cc
 net/TCPSocket.h

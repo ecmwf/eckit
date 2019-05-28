@@ -112,6 +112,13 @@ public:
 };
 
 
+// Available angle statistics
+template<> AngleT<AngleScale::DEGREE, AngleSpace::ASYMMETRIC>::AngleT::AngleT();
+template<> AngleT<AngleScale::DEGREE, AngleSpace::SYMMETRIC>::AngleT::AngleT();
+template<> AngleT<AngleScale::RADIAN, AngleSpace::ASYMMETRIC>::AngleT::AngleT();
+template<> AngleT<AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT::AngleT();
+
+
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir

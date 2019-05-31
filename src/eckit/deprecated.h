@@ -27,7 +27,8 @@
 #define DEPRECATED(x) /* deprecated */
 #endif
 #endif
+#else
+#define DEPRECATED(x) /* deprecated */
 #endif
 
 #endif /* eckit_deprecated_h */
-

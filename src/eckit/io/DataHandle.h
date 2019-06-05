@@ -85,6 +85,9 @@ public:
     /// Quiet version of saveInto. Does not support progess, restart and double buffering
     Length copyTo(DataHandle&);
 
+    /// Quiet version of saveInto. Does not support progess, restart and double buffering
+    Length copyTo(DataHandle&, long bufsize);
+
     /// Save into an other datahandle
 	Length appendTo(DataHandle&);
 

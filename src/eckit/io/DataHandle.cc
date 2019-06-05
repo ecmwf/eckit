@@ -181,9 +181,7 @@ Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, bool dblBu
     return saveInto(*file, w, dblBufferOK);
 }
 
-Length DataHandle::copyTo(DataHandle& other) {
-
-    static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
+Length DataHandle::copyTo(DataHandle& other, long bufsize) {
 
     Buffer buffer(bufsize);
 
@@ -213,6 +211,12 @@ Length DataHandle::copyTo(DataHandle& other) {
     }
 
     return total;
+}
+
+Length DataHandle::copyTo(DataHandle& other) {
+
+    static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
+    return copyTo(other, bufsize);
 }
 
 

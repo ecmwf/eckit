@@ -53,29 +53,11 @@ PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), file_(0), pos_(0), in
     ASSERT(offset_.size() == length_.size());
 }
 
-#ifdef USE_LINKS
-static std::string linkName(const std::string& name) {
-    static int n     = 1;
-    std::string path = name + ".part.0";
-    while (::link(name.c_str(), path.c_str()) < 0) {
-        if (errno != EEXIST)
-            throw FailedSystemCall(std::string("link ") + name + " " + path);
-        std::ostringstream os;
-        os << name + ".part." << n++;
-        path = std::string(os);
-    }
-    return path;
-}
-#endif
-
 PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, const LengthList& length) :
     name_(name),
     file_(0),
     pos_(0),
     index_(0),
-#ifdef USE_LINKS
-    link_(linkName(name)),
-#endif
     offset_(offset),
     length_(length) {
     //    Log::info() << "PartFileHandle::PartFileHandle " << name << std::endl;
@@ -88,9 +70,6 @@ PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const
     file_(0),
     pos_(0),
     index_(0),
-#ifdef USE_LINKS
-    link_(linkName(name)),
-#endif
     offset_(1, offset),
     length_(1, length) {
 }
@@ -113,9 +92,6 @@ PartFileHandle::~PartFileHandle() {
         ::fclose(file_);
         file_ = 0;
     }
-#ifdef USE_LINKS
-    link_.unlink();
-#endif
 }
 
 Length PartFileHandle::openForRead() {
@@ -124,11 +100,7 @@ Length PartFileHandle::openForRead() {
 
     //    Log::info() << "PartFileHandle::openForRead " << name_ << std::endl;
 
-#ifdef USE_LINKS
-    file_ = ::fopen(link_.localPath(), "r");
-#else
     file_ = ::fopen(name_.localPath(), "r");
-#endif
 
     if (file_ == 0)
         throw CantOpenFile(name_, errno == ENOENT);

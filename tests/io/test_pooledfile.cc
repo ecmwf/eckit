@@ -20,7 +20,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
-#include "eckit/types/Types.h"
+#include "eckit/io/PooledFile.h"
 
 using namespace std;
 using namespace eckit;
@@ -40,79 +40,72 @@ public:
         path1_           = PathName::unique(base + "/path1");
         path1_ += ".dat";
 
+        const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
+        FileHandle f1(path1_);
+        f1.openForWrite(0);
+        f1.write(buf1, sizeof(buf1));
+        f1.close();
+
         path2_ = PathName::unique(base + "/path2");
         path2_ += ".dat";
-
-        path3_ = PathName::unique(base + "/path3");
-        path3_ += ".dat";
+        const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        FileHandle f2(path2_);
+        f2.openForWrite(0);
+        f2.write(buf2, sizeof(buf2));
+        f2.close();
     }
 
     ~Tester() {
         path1_.unlink();
         path2_.unlink();
-        path3_.unlink();
     }
 
     PathName path1_;
     PathName path2_;
-    PathName path3_;
 };
 
-CASE("Multihandle") {
+CASE("PooledFile") {
 
-    setformat(std::cout, Log::fullFormat);
+    SECTION("Read from begin") {
 
-    Tester test;
+        Tester test;
 
-    const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
-    const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    char expect[26 * 2];
+        Buffer buffer(1024);
 
-    {
-        FileHandle f1(test.path1_);
-        f1.openForWrite(0);
-        f1.write(buf1, sizeof(buf1));
+        PooledFile f1 (test.path1_);
+        PooledFile f2 (test.path1_);
+
+        f1.open();
+        f2.open();
+
+        f1.read(buffer, 1);
+
+        EXPECT(buffer[0] == 'a');
+
+        f2.read(buffer, 1);
+
+        EXPECT(buffer[0] == 'a');
+
         f1.close();
-
-        std::cout << test.path1_ << std::endl;
-    }
-
-    {
-        FileHandle f2(test.path2_);
-        f2.openForWrite(0);
-        f2.write(buf2, sizeof(buf2));
         f2.close();
 
-        std::cout << test.path2_ << std::endl;
+        EXPECT(f1.nbOpens() == 1);
+        EXPECT(f1.nbReads() == 2);
     }
 
-    MultiHandle mh1;
-    {
+    SECTION("Read from begin") {
 
-        char* e = expect;
-        for (int i = 0; i < 26; i++) {
-            mh1 += new PartFileHandle(test.path1_, i, 1);
-            mh1 += new PartFileHandle(test.path2_, i, 1);
+        Tester test;
 
-            *e++ = buf1[i];
-            *e++ = buf2[i];
-        }
 
-        std::cout << mh1 << std::endl;
-        EXPECT(mh1.estimate() == Length(52));
-
-        mh1.compress();
-
-        std::cout << mh1 << std::endl;
-        EXPECT(mh1.estimate() == Length(52));
     }
 
-    MemoryHandle result(128);
-
-    mh1.saveInto(result);
-
-    EXPECT(::memcmp(expect, result.data(), sizeof(expect)) == 0);
 }
+
+
+// TEST INTERLACED
+
+// TEST THROW ERROR
 
 //----------------------------------------------------------------------------------------------------------------------
 

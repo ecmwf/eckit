@@ -10,7 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   June 96
+/// @date   June 2019
 
 #ifndef eckit_io_PooledFile_h
 #define eckit_io_PooledFile_h
@@ -19,14 +19,12 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
 
-class PathName;
-
-/// Wrapper around a stdio FILE*
-/// Use this for class members
+class PoolFileEntry;
 
 class PooledFile : private NonCopyable {
 public:
@@ -36,29 +34,42 @@ public:
     /// @pre must have been closed
     ~PooledFile();
 
-
     void open();
 
     /// @throws on fclose failure
     void close() noexcept(false);
 
-private: // members
+    long read(void*, long);
 
-	FILE *file_;
+    off_t seek(off_t offset);
 
+    off_t rewind();
+
+    long nbOpens() const;
+    long nbReads() const;
+
+private:
+
+    PathName name_;
+    PoolFileEntry* entry_;
 };
 
+
+class PooledFileError : public FileError {
+public:
+    PooledFileError(const std::string& file, const CodeLocation& loc);
+};
 
 /// Wrapper around a stdio FILE*
 /// Use this for stack objects that automatically close
 
-class AutoPooledFile : public PooledFile {
-public:
-    AutoPooledFile(const PathName& name, const std::string& mode = "r") : PooledFile(name, mode)
-    {}
-    ~AutoPooledFile() noexcept(false)
-    { close(); }
-};
+//class AutoPooledFile : public PooledFile {
+//public:
+//    AutoPooledFile(const PathName& name, const std::string& mode = "r") : PooledFile(name, mode)
+//    {}
+//    ~AutoPooledFile() noexcept(false)
+//    { close(); }
+//};
 
 
 } // namespace eckit

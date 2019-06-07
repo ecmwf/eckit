@@ -157,6 +157,8 @@ io/FileLock.h
 io/FileLock.cc
 io/FilePool.h
 io/FilePool.cc
+io/PooledFile.h
+io/PooledFile.cc
 io/ResizableBuffer.h
 io/ResizableBuffer.cc
 io/DblBuffer.h

@@ -10,8 +10,11 @@
 
 #include <cstdio>
 #include <string>
+#include <thread>
 
 #include "eckit/io/PooledFile.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/exception/Exceptions.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -19,41 +22,45 @@ namespace eckit {
 
 class PoolFileEntry;
 
-// Use thread SingleTol
-std::map<std::string, PoolFileEntry> pool_;
+thread_local std::map<PathName, PoolFileEntry*> pool_;
 
 struct PoolFileEntryStatus {
+
     off_t position_;
     bool opened_;
 
-    PoolFileEntryStatus():
+    PoolFileEntryStatus() :
         position_(0),
         opened_(false) {
-
-        }
+    }
 };
 
 class PoolFileEntry {
+public:
     std::string name_;
-
     FILE* file_;
-
+    size_t count_;
     std::map<const PooledFile*, PoolFileEntryStatus > statuses_;
+
+    long nbOpens_ = 0;
+    long nbReads_ = 0;
 
 public:
 
-    PoolFileEntry(const std: string& name):
+    PoolFileEntry(const std::string& name):
         name_(name),
-        count_(0),
-        file_(0) {
+        file_(nullptr),
+        count_(0)
+    {
     }
 
     void doClose() {
         if(file_) {
-            if(fclose(file_) != 0) {
-                throw error;
+            Log::info() << "Closing from file " << name_ << std::endl;
+            if(::fclose(file_) != 0) {
+                throw PooledFileError(name_, Here());
             }
-            file_ = 0;
+            file_ = nullptr;
         }
     }
 
@@ -65,82 +72,82 @@ public:
     void remove(const PooledFile* file) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
-        ASSERT(!s->opened_); // To check if we want that semantic
+        ASSERT(!s->second.opened_); // To check if we want that semantic
 
-        statuses_.erase(j);
+        statuses_.erase(s);
 
         if(statuses_.size() == 0) {
             doClose();
-            pool_.remove(name_);
+            pool_.erase(name_);
             // No code after !!!
         }
-
     }
 
     void open(const PooledFile* file) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
-
-        ASSERT(!s->opened_);
+        ASSERT(!s->second.opened_);
 
         if(!file_) {
-            file_ = fopen(name_);
+            Log::info() << "Opening file " << name_ << std::endl;
+            nbOpens_++;
+            file_ = ::fopen(name_.c_str(), "r");
         }
 
-        s->opened_ = true;
-        s->position_ = 0;
-
+        s->second.opened_ = true;
+        s->second.position_ = 0;
     }
 
-    void close() {
-
+    void close(const PooledFile* file)  {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
 
-        ASSERT(s->opened_);
-        s->opened_ = false;
-
+        ASSERT(s->second.opened_);
+        s->second.opened_ = false;
     }
 
-    long read(void *buffer, long len) {
+    long read(const PooledFile* file, void *buffer, long len) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
-        ASSERT(s->opened_);
+        ASSERT(s->second.opened_);
 
-        if(::fseeko(file_, s->position_, SEEK_SET)<0) {
-            throw Errro;
+        if(::fseeko(file_, s->second.position_, SEEK_SET)<0) {
+            throw PooledFileError(name_, Here());
         }
-        long n = ::fread(buffer, 1, size, file_);
-        s->position_ = ::ftello(file_);
+
+        Log::info() << "Reading from file " << name_ << std::endl;
+
+        long n = ::fread(buffer, 1, len, file_);
+        s->second.position_ = ::ftello(file_);
+
+        nbReads_++;
 
         return n;
     }
 
-    long seek(off_t position, long len) {
+    long seek(const PooledFile* file, off_t position) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
-        ASSERT(s->opened_);
+        ASSERT(s->second.opened_);
 
-        if(::fseeko(file_, s->position_, SEEK_SET)<0) {
+        if(::fseeko(file_, position, SEEK_SET)<0) {
             return -1;
         }
 
-        s->position_ = ::ftello(file_);
+        s->second.position_ = ::ftello(file_);
 
-        return s->position_;
+        return s->second.position_;
     }
+};
 
-}
 
-
-PooledFile::PooledFile(const std::string& name):
+PooledFile::PooledFile(const PathName& name):
     name_(name),
-    entry_(0)
-
+    entry_(nullptr)
 {
     auto j = pool_.find(name);
     if(j == pool_.end()) {
-        pool_[name] = PoolFileEntry(name);
+        pool_[name] = new PoolFileEntry(name);
         j = pool_.find(name);
     }
 
@@ -163,19 +170,32 @@ void PooledFile::close() {
     entry_->close(this);
 }
 
-off_t PooledFile::seek(off_t offset, int whence) {
+off_t PooledFile::seek(off_t offset) {
     ASSERT(entry_);
-    return entry_->seek(this, offset, whence);
+    return entry_->seek(this, offset);
 }
 
 off_t PooledFile::rewind() {
-    return seek(0, SEEK_SET);
+    return seek(0);
+}
+
+long PooledFile::nbOpens() const {
+    ASSERT(entry_);
+    return entry_->nbOpens_;
+}
+
+long PooledFile::nbReads() const {
+    ASSERT(entry_);
+    return entry_->nbReads_;
 }
 
 long PooledFile::read(void *buffer, long len) {
     ASSERT(entry_);
     return entry_->read(this, buffer, len);
 }
+
+PooledFileError::PooledFileError(const std::string& file, const CodeLocation& loc) :
+    FileError("Error on pooled file " + file, loc) {}
 
 } // namespace eckit
 

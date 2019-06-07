@@ -31,15 +31,13 @@ class PathName;
 class PooledFile : private NonCopyable {
 public:
 
-    PooledFile(const PathName& name, const std::string& mode = "r");
+    PooledFile(const PathName& name);
 
     /// @pre must have been closed
     ~PooledFile();
 
-    /// Get the FILE* but don't call fclose on it
-    operator FILE*() { return file_; }
 
-    bool isOpen() { return file_; }
+    void open();
 
     /// @throws on fclose failure
     void close() noexcept(false);

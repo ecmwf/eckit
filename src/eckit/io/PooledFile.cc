@@ -16,77 +16,164 @@
 
 namespace eckit {
 
+class PoolFileEntry;
 
+// Use thread SingleTol
+std::map<std::string, PoolFileEntry> pool_;
 
-class PoolEntry {
+struct PoolFileEntryStatus {
+    off_t position_;
+    bool opened_;
+
+    PoolFileEntryStatus():
+        position_(0),
+        opened_(false) {
+
+        }
+};
+
+class PoolFileEntry {
     std::string name_;
 
-    size_t count_;
-
     FILE* file_;
+
+    std::map<const PooledFile*, PoolFileEntryStatus > statuses_;
+
 public:
-    PoolEntry(const std: string& name):
+
+    PoolFileEntry(const std: string& name):
         name_(name),
         count_(0),
         file_(0) {
     }
 
-    void add(PooledFile*) {
-        count_++;
-    }
-
-    void remove(PooledFile*) {
-        count_--;
-    }
-
-    void open() {
-        if(!file_) {
-            file_ = fopen(name_, "r");
-            if (file_ == 0){
-                            throw CantOpenFile(name_, errno == ENOENT);
+    void doClose() {
+        if(file_) {
+            if(fclose(file_) != 0) {
+                throw error;
             }
+            file_ = 0;
         }
+    }
+
+    void add(const PooledFile* file) {
+        ASSERT(statuses_.find(file) == statuses_.end());
+        statuses_[file] = PoolFileEntryStatus();
+    }
+
+    void remove(const PooledFile* file) {
+        auto s = statuses_.find(file);
+        ASSERT(s != statuses_.end());
+        ASSERT(!s->opened_); // To check if we want that semantic
+
+        statuses_.erase(j);
+
+        if(statuses_.size() == 0) {
+            doClose();
+            pool_.remove(name_);
+            // No code after !!!
+        }
+
+    }
+
+    void open(const PooledFile* file) {
+        auto s = statuses_.find(file);
+        ASSERT(s != statuses_.end());
+
+        ASSERT(!s->opened_);
+
+        if(!file_) {
+            file_ = fopen(name_);
+        }
+
+        s->opened_ = true;
+        s->position_ = 0;
+
     }
 
     void close() {
-        if(count_ == 0) {
-            fclose(file_);
+
+        auto s = statuses_.find(file);
+        ASSERT(s != statuses_.end());
+
+        ASSERT(s->opened_);
+        s->opened_ = false;
+
+    }
+
+    long read(void *buffer, long len) {
+        auto s = statuses_.find(file);
+        ASSERT(s != statuses_.end());
+        ASSERT(s->opened_);
+
+        if(::fseeko(file_, s->position_, SEEK_SET)<0) {
+            throw Errro;
         }
+        long n = ::fread(buffer, 1, size, file_);
+        s->position_ = ::ftello(file_);
+
+        return n;
+    }
+
+    long seek(off_t position, long len) {
+        auto s = statuses_.find(file);
+        ASSERT(s != statuses_.end());
+        ASSERT(s->opened_);
+
+        if(::fseeko(file_, s->position_, SEEK_SET)<0) {
+            return -1;
+        }
+
+        s->position_ = ::ftello(file_);
+
+        return s->position_;
     }
 
 }
-
-// Use thread singletin
-std::map<std::string, PoolEntry> pool_;
 
 
 PooledFile::PooledFile(const std::string& name):
-    name_(name)
+    name_(name),
+    entry_(0)
+
 {
-    if (pool_.find(name) == pool_.end()) {
-        pool_[name] = PoolEntry(name);
+    auto j = pool_.find(name);
+    if(j == pool_.end()) {
+        pool_[name] = PoolFileEntry(name);
+        j = pool_.find(name);
     }
-    pool_[name].add(this);
+
+    entry_ = (*j).second;
+    entry_->add(this);
 }
 
 PooledFile::~PooledFile() {
-    ASSERT(pool_.find(name) != pool_.end());
-    pool_[name].remove(this);
+    ASSERT(entry_);
+    entry_->remove(this);
 }
 
 void PooledFile::open() {
-    ASSERT(pool_.find(name) != pool_.end());
-    return pool_[name_].open(this);
+    ASSERT(entry_);
+    entry_->open(this);
 }
 
-void PooledFile::close() noexcept(false) {
-    ASSERT(pool_.find(name) != pool_.end());
-    return pool_[name_].close(this);
+void PooledFile::close() {
+    ASSERT(entry_);
+    entry_->close(this);
 }
 
-PooledFile::operator FILE*() {
-    ASSERT(pool_.find(name) != pool_.end());
-    return pool_[name_].file();
+off_t PooledFile::seek(off_t offset, int whence) {
+    ASSERT(entry_);
+    return entry_->seek(this, offset, whence);
+}
+
+off_t PooledFile::rewind() {
+    return seek(0, SEEK_SET);
+}
+
+long PooledFile::read(void *buffer, long len) {
+    ASSERT(entry_);
+    return entry_->read(this, buffer, len);
 }
 
 } // namespace eckit

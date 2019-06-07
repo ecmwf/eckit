@@ -58,7 +58,7 @@ public:
         if(file_) {
             Log::info() << "Closing from file " << name_ << std::endl;
             if(::fclose(file_) != 0) {
-                throw PooledFileError(name_, Here());
+                throw PooledFileError(name_, "Failed to close", Here());
             }
             file_ = nullptr;
         }
@@ -72,7 +72,9 @@ public:
     void remove(const PooledFile* file) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
-        ASSERT(!s->second.opened_); // To check if we want that semantic
+        if(s->second.opened_) { // To check if we want that semantic
+            throw PooledFileError(name_, "Pooled file not closed", Here());
+        }
 
         statuses_.erase(s);
 
@@ -112,10 +114,10 @@ public:
         ASSERT(s->second.opened_);
 
         if(::fseeko(file_, s->second.position_, SEEK_SET)<0) {
-            throw PooledFileError(name_, Here());
+            throw PooledFileError(name_, "Failed to seek", Here());
         }
 
-        Log::info() << "Reading from file " << name_ << std::endl;
+        Log::info() << "Reading @ position " << s->second.position_ << " file : " << name_ << std::endl;
 
         long n = ::fread(buffer, 1, len, file_);
         s->second.position_ = ::ftello(file_);
@@ -194,8 +196,8 @@ long PooledFile::read(void *buffer, long len) {
     return entry_->read(this, buffer, len);
 }
 
-PooledFileError::PooledFileError(const std::string& file, const CodeLocation& loc) :
-    FileError("Error on pooled file " + file, loc) {}
+PooledFileError::PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc) :
+    FileError(msg + " : error on pooled file " + file, loc) {}
 
 } // namespace eckit
 

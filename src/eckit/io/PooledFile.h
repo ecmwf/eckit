@@ -57,7 +57,7 @@ private:
 
 class PooledFileError : public FileError {
 public:
-    PooledFileError(const std::string& file, const CodeLocation& loc);
+    PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc);
 };
 
 /// Wrapper around a stdio FILE*

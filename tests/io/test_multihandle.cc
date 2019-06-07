@@ -8,17 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
 #include <cstring>
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/MultiHandle.h"
-#include "eckit/io/PartFileHandle.h"
-
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
-#include "eckit/io/HandleHolder.h"
+#include "eckit/io/MultiHandle.h"
+#include "eckit/io/MemoryHandle.h"
+#include "eckit/io/PartFileHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
@@ -33,192 +31,87 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Restart : public DataHandle, public HandleHolder {
-    Length total_;
-    Length nextStop_;
-
+class Tester {
 public:
-    static size_t increment() { return 77773; }  // a prime larger than 4 KiB
 
-    Restart(DataHandle* h) : HandleHolder(h), total_(0) { nextStop_ = increment(); }
+    Tester() {
 
-    virtual Length openForRead() { NOTIMP; }
+        std::string base = Resource<std::string>("$TMPDIR", "/tmp");
+        path1_           = PathName::unique(base + "/path1");
+        path1_ += ".dat";
 
-    virtual void openForWrite(const Length& len) { return handle().openForWrite(len); }
+        path2_ = PathName::unique(base + "/path2");
+        path2_ += ".dat";
 
-    virtual void openForAppend(const Length& len) { NOTIMP; }
-
-    virtual long read(void* buffer, long len) { NOTIMP; }
-
-    virtual long write(const void* buffer, long len) {
-        if (total_ > nextStop_) {
-
-            nextStop_ += len + increment();
-
-            // 67108879 is first prime after 64*1024*1024 -- the default buffer size in saveInto()
-            // this way we test that we roll back to data position before the whole buffer size
-            Offset backTo = std::max(total_ - Length(67108879), (long long int)0);
-
-            std::cout << "backTo " << backTo << " nextStop " << nextStop_ << std::endl;
-
-            throw RestartTransfer(backTo);
-        }
-        total_ += len;
-        return handle().write(buffer, len);
+        path3_ = PathName::unique(base + "/path3");
+        path3_ += ".dat";
     }
 
-    virtual void close() { handle().close(); }
-
-    virtual void flush() { NOTIMP; }
-
-    virtual void rewind() { NOTIMP; }
-
-    virtual void print(std::ostream& os) const { os << "Restart"; }
-
-    virtual void skip(const Length&) { NOTIMP; }
-
-    virtual Offset seek(const Offset&) { NOTIMP; }
-
-    virtual Length estimate() { NOTIMP; }
-
-    virtual Offset position() { NOTIMP; }
-
-    virtual DataHandle* clone() const { NOTIMP; }
-
-    virtual void restartReadFrom(const Offset& offset) { handle().restartReadFrom(offset); }
-
-    virtual void restartWriteFrom(const Offset& offset) { handle().restartWriteFrom(offset); }
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class TestMHHandle {
-public:
-    void setup();
-    void teardown();
-    void test_write();
+    ~Tester() {
+        path1_.unlink();
+        path2_.unlink();
+        path3_.unlink();
+    }
 
     PathName path1_;
     PathName path2_;
     PathName path3_;
 };
 
+CASE("Multihandle") {
 
-void TestMHHandle::test_write() {
+    setformat(std::cout, Log::fullFormat);
+
+    Tester test;
+
     const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
     const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    char expect[26 * 2];
 
-    const size_t N = 1024 * 1024 * 10;
-
-    // create first file
     {
-
-        Buffer b1(N * 26);
-        char* p = b1;
-        for (size_t i = 0; i < N; i++) {
-            memcpy(p, buf1, 26);
-            p += 26;
-        }
-
-        FileHandle f1(path1_);
+        FileHandle f1(test.path1_);
         f1.openForWrite(0);
-        f1.write(b1, b1.size());
-
+        f1.write(buf1, sizeof(buf1));
         f1.close();
 
-        std::cout << path1_ << std::endl;
+        std::cout << test.path1_ << std::endl;
     }
 
-    // create second file
     {
-        Buffer b2(N * 26);
-        char* p = b2;
-        for (size_t i = 0; i < N; i++) {
-            memcpy(p, buf2, 26);
-            p += 26;
-        }
-
-
-        FileHandle f2(path2_);
+        FileHandle f2(test.path2_);
         f2.openForWrite(0);
-        f2.write(b2, b2.size());
-
+        f2.write(buf2, sizeof(buf2));
         f2.close();
 
-        std::cout << path2_ << std::endl;
+        std::cout << test.path2_ << std::endl;
     }
-
-    std::cout << "-------------------------------------------------------" << std::endl;
 
     MultiHandle mh1;
     {
 
+        char* e = expect;
         for (int i = 0; i < 26; i++) {
+            mh1 += new PartFileHandle(test.path1_, i, 1);
+            mh1 += new PartFileHandle(test.path2_, i, 1);
 
-            mh1 += new PartFileHandle(path1_, i * N, N);
-            mh1 += new PartFileHandle(path2_, i * N, N);
+            *e++ = buf1[i];
+            *e++ = buf2[i];
         }
 
-        std::cout << mh1 << " " << mh1.estimate() << std::endl;
+        std::cout << mh1 << std::endl;
+        EXPECT(mh1.estimate() == Length(52));
 
-        // mh1.compress();
+        mh1.compress();
 
-        // std::cout << mh1 << " " << mh1.estimate() << std::endl;
-
-        Restart f3(path3_.fileHandle());
-        mh1.saveInto(f3);
+        std::cout << mh1 << std::endl;
+        EXPECT(mh1.estimate() == Length(52));
     }
 
-    DataHandle* fh = path3_.fileHandle();
-    EXPECT(fh->compare(mh1));
-    delete fh;
+    MemoryHandle result(128);
 
-    // fh->openForRead();
+    mh1.saveInto(result);
 
-    // Buffer result((26 * 2) * N);
-
-    // ASSERT(fh->read(result, result.size()) == (26 * 2) * N);
-    // fh->close();
-
-    // delete fh;
-
-    // ASSERT( ::memcmp(expect, result, (26 * 2) * N) == 0 );
-}
-
-
-void TestMHHandle::setup() {
-    std::string base = Resource<std::string>("$TMPDIR", "/tmp");
-    path1_           = PathName::unique(base + "/path1");
-    path1_ += ".dat";
-
-    path2_ = PathName::unique(base + "/path2");
-    path2_ += ".dat";
-
-    path3_ = PathName::unique(base + "/path3");
-    path3_ += ".dat";
-}
-
-void TestMHHandle::teardown() {
-    if (path1_.exists())
-        path1_.unlink();
-    if (path2_.exists())
-        path2_.unlink();
-    if (path3_.exists())
-        path3_.unlink();
-}
-
-
-CASE("test_restarthandle") {
-    TestMHHandle test;
-    test.setup();
-    try {
-        test.test_write();
-    }
-    catch (...) {
-        test.teardown();
-        throw;
-    }
-    test.teardown();
+    EXPECT(::memcmp(expect, result.data(), sizeof(expect)) == 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

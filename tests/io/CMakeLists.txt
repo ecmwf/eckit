@@ -30,3 +30,7 @@ ecbuild_add_test( TARGET      eckit_test_base64
 ecbuild_add_test( TARGET      eckit_test_multihandle
                   SOURCES     test_multihandle.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_pooledfile
+                  SOURCES     test_pooledfile.cc
+                  LIBS        eckit )

@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 
@@ -45,8 +46,8 @@ public:
 
     off_t rewind();
 
-    long nbOpens() const;
-    long nbReads() const;
+    size_t nbOpens() const;
+    size_t nbReads() const;
 
 private:
 
@@ -59,18 +60,6 @@ class PooledFileError : public FileError {
 public:
     PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc);
 };
-
-/// Wrapper around a stdio FILE*
-/// Use this for stack objects that automatically close
-
-//class AutoPooledFile : public PooledFile {
-//public:
-//    AutoPooledFile(const PathName& name, const std::string& mode = "r") : PooledFile(name, mode)
-//    {}
-//    ~AutoPooledFile() noexcept(false)
-//    { close(); }
-//};
-
 
 } // namespace eckit
 

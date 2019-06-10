@@ -42,8 +42,8 @@ public:
     size_t count_;
     std::map<const PooledFile*, PoolFileEntryStatus > statuses_;
 
-    long nbOpens_ = 0;
-    long nbReads_ = 0;
+    size_t nbOpens_ = 0;
+    size_t nbReads_ = 0;
 
 public:
 
@@ -119,7 +119,13 @@ public:
 
         Log::info() << "Reading @ position " << s->second.position_ << " file : " << name_ << std::endl;
 
-        long n = ::fread(buffer, 1, len, file_);
+        size_t length = size_t(len);
+        size_t n = ::fread(buffer, 1, length, file_);
+
+        if(n != length && ::ferror(file_)) {
+            throw PooledFileError(name_, "Read error", Here());
+        }
+
         s->second.position_ = ::ftello(file_);
 
         nbReads_++;
@@ -181,12 +187,12 @@ off_t PooledFile::rewind() {
     return seek(0);
 }
 
-long PooledFile::nbOpens() const {
+size_t PooledFile::nbOpens() const {
     ASSERT(entry_);
     return entry_->nbOpens_;
 }
 
-long PooledFile::nbReads() const {
+size_t PooledFile::nbReads() const {
     ASSERT(entry_);
     return entry_->nbReads_;
 }

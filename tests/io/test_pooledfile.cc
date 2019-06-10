@@ -107,7 +107,7 @@ CASE("From one PooledFile") {
         std::vector<char> buffer(bsize, '\0');
 
         std::vector<unique_ptr<PooledFile>> files;
-        for(int i = 0; i < N ; ++i) {
+        for(size_t i = 0; i < N ; ++i) {
             files.emplace_back(new PooledFile(test.path1_));
         }
 
@@ -117,7 +117,7 @@ CASE("From one PooledFile") {
         // read interlaced from N pooled files
         size_t p = 0;
         for(size_t i = 0; i < M; ++i) {
-            for(int j = 0; j < N ; ++j)  {
+            for(size_t j = 0; j < N ; ++j)  {
                 char b[2];
                 long len = files[j]->read(b, 1);
                 ASSERT(len = 1);

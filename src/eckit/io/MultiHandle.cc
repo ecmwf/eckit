@@ -12,7 +12,6 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/MultiHandle.h"
-#include "eckit/io/MultiPartHandle.h"
 #include "eckit/log/Timer.h"
 #include "eckit/types/Types.h"
 
@@ -375,75 +374,7 @@ std::string MultiHandle::title() const {
 
 
 bool MultiHandle::compress(bool sorted) {
-
-    Timer timer("Compress handle");
-
-    if (datahandles_.empty()) {
-
-        return false;
-    }
-
-    // BR: TODO: This is a hack: if moverTransfer is true, the MultiHandle will be sent to a
-    // mover. So we do not compress() here, as the MultiPartHandle is not movable()
-    // The compress() will happen in the mover. We need a better solution
-    static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
-    if (moverTransfer) {
-        return false;
-    }
-
-    if (sorted) {
-        NOTIMP;
-    }
-
-    bool changed = false;
-    std::vector<bool> skip(datahandles_.size(), false);
-    std::vector<Length> sizes(datahandles_.size());
-
-    for (size_t i = 0; i < datahandles_.size(); i++) {
-        sizes[i] = datahandles_[i]->estimate();
-    }
-
-    for (size_t i = 0; i < datahandles_.size() - 1; i++) {
-
-        if (skip[i]) {
-            continue;
-        }
-
-        DataHandle* h1 = datahandles_[i];
-
-        MultiPartHandle* prev = 0;
-        Length len1           = sizes[i];
-
-        for (size_t j = i + 1; j < datahandles_.size(); j++) {
-
-            if (skip[j]) {
-                continue;
-            }
-
-            DataHandle* h2 = datahandles_[j];
-            Length len2    = sizes[j];
-
-            if (h1->merge(h2)) {
-
-                if (prev == 0) {
-                    prev            = new MultiPartHandle(h1, len1, 0);
-                    datahandles_[i] = prev;
-                    skip[i]         = true;
-                }
-
-                prev            = new MultiPartHandle(h1, len2, prev);
-                datahandles_[j] = prev;
-                skip[j]         = true;
-                delete h2;
-            }
-        }
-
-        if (h1->compress(sorted)) {
-            changed = true;
-        }
-    }
-
-    return changed;
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

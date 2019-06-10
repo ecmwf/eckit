@@ -214,8 +214,6 @@ io/MarsFSPartHandle.h
 io/MarsFSPartHandle.cc
 io/PartHandle.h
 io/PartHandle.cc
-io/MultiPartHandle.h
-io/MultiPartHandle.cc
 io/StatsHandle.h
 io/StatsHandle.cc
 io/MoverHandle.h

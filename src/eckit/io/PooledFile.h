@@ -15,8 +15,6 @@
 #ifndef eckit_io_PooledFile_h
 #define eckit_io_PooledFile_h
 
-#include <stdio.h>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
@@ -45,6 +43,8 @@ public:
     off_t seek(off_t offset);
 
     off_t rewind();
+
+    // for testing
 
     size_t nbOpens() const;
     size_t nbReads() const;

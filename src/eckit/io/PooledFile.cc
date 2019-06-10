@@ -94,6 +94,9 @@ public:
             Log::info() << "Opening file " << name_ << std::endl;
             nbOpens_++;
             file_ = ::fopen(name_.c_str(), "r");
+            if(!file_) {
+                throw PooledFileError(name_, "Failed to open", Here());
+            }
         }
 
         s->second.opened_ = true;

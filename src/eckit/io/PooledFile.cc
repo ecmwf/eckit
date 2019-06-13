@@ -12,6 +12,7 @@
 #include <string>
 #include <thread>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/io/PooledFile.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/exception/Exceptions.h"
@@ -44,6 +45,7 @@ public:
 
     size_t nbOpens_ = 0;
     size_t nbReads_ = 0;
+    size_t nbSeeks_ = 0;
 
 public:
 
@@ -56,7 +58,7 @@ public:
 
     void doClose() {
         if(file_) {
-            Log::info() << "Closing from file " << name_ << std::endl;
+            Log::debug<LibEcKit>() << "Closing from file " << name_ << std::endl;
             if(::fclose(file_) != 0) {
                 throw PooledFileError(name_, "Failed to close", Here());
             }
@@ -72,9 +74,6 @@ public:
     void remove(const PooledFile* file) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
-        if(s->second.opened_) { // To check if we want that semantic
-            throw PooledFileError(name_, "Pooled file not closed", Here());
-        }
 
         statuses_.erase(s);
 
@@ -91,7 +90,7 @@ public:
         ASSERT(!s->second.opened_);
 
         if(!file_) {
-            Log::info() << "Opening file " << name_ << std::endl;
+            Log::debug<LibEcKit>() << "Opening file " << name_ << std::endl;
             nbOpens_++;
             file_ = ::fopen(name_.c_str(), "r");
             if(!file_) {
@@ -120,7 +119,7 @@ public:
             throw PooledFileError(name_, "Failed to seek", Here());
         }
 
-        Log::info() << "Reading @ position " << s->second.position_ << " file : " << name_ << std::endl;
+//      Log::debug<LibEcKit>() < "Reading @ position " << s->second.position_ << " file : " << name_ << std::endl;
 
         size_t length = size_t(len);
         size_t n = ::fread(buffer, 1, length, file_);
@@ -142,10 +141,12 @@ public:
         ASSERT(s->second.opened_);
 
         if(::fseeko(file_, position, SEEK_SET)<0) {
-            return -1;
+            return -1; // this is rather rare, recall that seeking past EOF is not an error
         }
 
         s->second.position_ = ::ftello(file_);
+
+        nbSeeks_++;
 
         return s->second.position_;
     }
@@ -198,6 +199,11 @@ size_t PooledFile::nbOpens() const {
 size_t PooledFile::nbReads() const {
     ASSERT(entry_);
     return entry_->nbReads_;
+}
+
+size_t PooledFile::nbSeeks() const {
+    ASSERT(entry_);
+    return entry_->nbSeeks_;
 }
 
 long PooledFile::read(void *buffer, long len) {

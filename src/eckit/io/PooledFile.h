@@ -48,6 +48,7 @@ public:
 
     size_t nbOpens() const;
     size_t nbReads() const;
+    size_t nbSeeks() const;
 
 private:
 

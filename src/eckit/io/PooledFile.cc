@@ -12,12 +12,14 @@
 #include <string>
 #include <thread>
 
+#include "eckit/config/Resource.h"
 #include "eckit/config/LibEcKit.h"
 #include "eckit/io/PooledFile.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Bytes.h"
 
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -41,6 +43,9 @@ public:
     std::string name_;
     FILE* file_;
     size_t count_;
+
+    std::unique_ptr<Buffer>  buffer_;
+
     std::map<const PooledFile*, PoolFileEntryStatus > statuses_;
 
     size_t nbOpens_ = 0;
@@ -63,6 +68,7 @@ public:
                 throw PooledFileError(name_, "Failed to close", Here());
             }
             file_ = nullptr;
+            buffer_.reset();
         }
     }
 
@@ -90,11 +96,21 @@ public:
         ASSERT(!s->second.opened_);
 
         if(!file_) {
-            Log::debug<LibEcKit>() << "Opening file " << name_ << std::endl;
             nbOpens_++;
             file_ = ::fopen(name_.c_str(), "r");
             if(!file_) {
                 throw PooledFileError(name_, "Failed to open", Here());
+            }
+
+            Log::debug<LibEcKit>() << "PooledFile::openForRead " << name_ << std::endl;
+
+            static size_t bufferSize = Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+
+            if (bufferSize) {
+                Log::debug<LibEcKit>() << "PooledFile using " << Bytes(bufferSize) << std::endl;
+                buffer_.reset(new Buffer(bufferSize));
+                Buffer& b = *(buffer_.get());
+                ::setvbuf(file_, b, _IOFBF, bufferSize);
             }
         }
 
@@ -140,11 +156,15 @@ public:
         ASSERT(s != statuses_.end());
         ASSERT(s->second.opened_);
 
-        if(::fseeko(file_, position, SEEK_SET)<0) {
-            return -1; // this is rather rare, recall that seeking past EOF is not an error
+        if (::fseeko(file_, position, SEEK_SET) != 0) {
+            std::ostringstream s;
+            s << name_ << ": cannot seek to " << position << " (file=" << fileno(file_) << ")";
+            throw ReadError(s.str());
         }
 
         s->second.position_ = ::ftello(file_);
+
+        ASSERT(s->second.position_ == position);
 
         nbSeeks_++;
 

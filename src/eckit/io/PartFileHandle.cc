@@ -11,10 +11,8 @@
 
 #include <numeric>
 
-#include "eckit/config/Resource.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
@@ -45,17 +43,19 @@ void PartFileHandle::encode(Stream& s) const {
     s << length_;
 }
 
-PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), file_(0), pos_(0), index_(0) {
+PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
     s >> name_;
     s >> offset_;
     s >> length_;
+
+    file_.reset(new PooledFile(name_));
 
     ASSERT(offset_.size() == length_.size());
 }
 
 PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, const LengthList& length) :
     name_(name),
-    file_(0),
+    file_(new PooledFile(name_)),
     pos_(0),
     index_(0),
     offset_(offset),
@@ -67,7 +67,7 @@ PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, c
 
 PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const Length& length) :
     name_(name),
-    file_(0),
+    file_(new PooledFile(name_)),
     pos_(0),
     index_(0),
     offset_(1, offset),
@@ -89,50 +89,14 @@ bool PartFileHandle::compress(bool sorted) {
 PartFileHandle::~PartFileHandle() {
     if (file_) {
         Log::warning() << "Closing PartFileHandle " << name_ << std::endl;
-        ::fclose(file_);
-        file_ = 0;
+        file_->close();
     }
 }
 
 Length PartFileHandle::openForRead() {
 
-    static long bufSize = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
-    static bool best    = Resource<bool>("bestPartFileHandleBufferSize", false);
+    file_->open();
 
-    Log::info() << "PartFileHandle::openForRead " << name_ << std::endl;
-
-    file_ = ::fopen(name_.localPath(), "r");
-
-    if (file_ == 0)
-        throw CantOpenFile(name_, errno == ENOENT);
-
-    long size = bufSize;
-
-    if (best && size) {
-
-        long fourK = 4096;
-
-        // TODO: find a best algorithm
-
-        // Now, use the size of the smallest block
-        for (Ordinal i = 0; i < length_.size(); i++) {
-            if (length_[i] < Length(size)) {
-                size = length_[i];
-            }
-        }
-
-        size = ((size + fourK - 1) / fourK) * fourK;
-        if (size < fourK) {
-            size = fourK;
-        }
-    }
-
-    if (size) {
-        Log::debug() << "PartFileHandle using " << Bytes(size) << std::endl;
-        buffer_.reset(new Buffer(size));
-        Buffer& b = *(buffer_.get());
-        ::setvbuf(file_, b, _IOFBF, size);
-    }
     rewind();
 
     return estimate();
@@ -161,17 +125,7 @@ long PartFileHandle::read1(char* buffer, long length) {
     Length ll = (long long)offset_[index_] + Length(pos_);
     off_t pos = ll;
 
-    // ASSERT( Length(pos) == ll);
-
-    // try llseek()
-
-    if (fseeko(file_, pos, SEEK_SET) != 0) {
-        std::ostringstream s;
-        s << name_ << ": cannot seek to " << pos << " (file=" << fileno(file_) << ")";
-        throw ReadError(s.str());
-    }
-
-    ASSERT(::ftello(file_) == pos);
+    file_->seek(pos);
 
     ll           = length_[index_] - Length(pos_);
     Length lsize = std::min(Length(length), ll);
@@ -179,7 +133,7 @@ long PartFileHandle::read1(char* buffer, long length) {
 
     ASSERT(Length(size) == lsize);
 
-    long n = ::fread(buffer, 1, size, file_);
+    long n = file_->read(buffer, size);
 
     if (n != size) {
         std::ostringstream s;
@@ -212,19 +166,18 @@ long PartFileHandle::read(void* buffer, long length) {
     return total > 0 ? total : n;
 }
 
-long PartFileHandle::write(const void* buffer, long length) {
-    return -1;
-}
+long PartFileHandle::write(const void*, long) {
+    NOTIMP;
+    }
 
 void PartFileHandle::close() {
     if (file_) {
-        ::fclose(file_);
-        file_ = 0;
+        file_->close();
     }
     else {
         Log::warning() << "Closing PartFileHandle " << name_ << ", file is not opened" << std::endl;
     }
-    buffer_.reset(0);
+    file_.reset();
 }
 
 void PartFileHandle::rewind() {

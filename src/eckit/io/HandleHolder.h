@@ -8,11 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File Partio/FileHandle.h
 // Baudouin Raoult - ECMWF Dec 2013
 
-#ifndef eckit_filesystem_WrapperHandle_h
-#define eckit_filesystem_WrapperHandle_h
+#ifndef eckit_filesystem_HandleHolder_h
+#define eckit_filesystem_HandleHolder_h
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
@@ -20,7 +19,7 @@
 #include "eckit/types/Types.h"
 #include "eckit/log/Timer.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 

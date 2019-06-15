@@ -64,6 +64,7 @@ public:
             throw RestartTransfer(backTo);
         }
         total_ += len;
+        std::cout << "write @ " << total_ << std::endl;
         return handle().write(buffer, len);
     }
 
@@ -163,10 +164,15 @@ void Tester::test_write() {
 
         // mh1.compress();
 
-        // std::cout << mh1 << " " << mh1.estimate() << std::endl;
+//         std::cout << mh1 << " " << mh1.estimate() << std::endl;
+
+        std::cout << Here() << std::endl;
 
         Restart f3(path3_.fileHandle());
+        std::cout << f3 << std::endl;
+        std::cout << Here() << std::endl;
         mh1.saveInto(f3);
+        std::cout << Here() << std::endl;
     }
 
     DataHandle* fh = path3_.fileHandle();

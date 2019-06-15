@@ -304,7 +304,8 @@ void MultiHandle::restartReadFrom(const Offset& from) {
     for (current_ = datahandles_.begin(); current_ != datahandles_.end(); ++current_) {
         long long e = (*current_)->estimate();
         if (len >= pos && len < pos + e) {
-            Log::warning() << *this << " restart read from " << from
+            Log::warning() << *this
+                           << " restart read from " << from
                            << ", current=" << (current_ - datahandles_.begin()) << std::endl;
 
             openCurrent();

@@ -48,14 +48,12 @@ PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
     s >> offset_;
     s >> length_;
 
-    file_.reset(new PooledFile(name_));
-
     ASSERT(offset_.size() == length_.size());
 }
 
 PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, const LengthList& length) :
     name_(name),
-    file_(new PooledFile(name_)),
+    file_(),
     pos_(0),
     index_(0),
     offset_(offset),
@@ -67,12 +65,11 @@ PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, c
 
 PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const Length& length) :
     name_(name),
-    file_(new PooledFile(name_)),
+    file_(),
     pos_(0),
     index_(0),
     offset_(1, offset),
-    length_(1, length) {
-}
+    length_(1, length) {}
 
 
 DataHandle* PartFileHandle::clone() const {
@@ -87,18 +84,14 @@ bool PartFileHandle::compress(bool sorted) {
 }
 
 PartFileHandle::~PartFileHandle() {
-    if (file_) {
-        Log::warning() << "Closing PartFileHandle " << name_ << std::endl;
-        file_->close();
-    }
+    close();
 }
 
 Length PartFileHandle::openForRead() {
-
+    ASSERT(!file_);
+    file_.reset(new PooledFile(name_));
     file_->open();
-
     rewind();
-
     return estimate();
 }
 
@@ -111,7 +104,6 @@ void PartFileHandle::openForAppend(const Length&) {
 }
 
 long PartFileHandle::read1(char* buffer, long length) {
-
     ASSERT(file_);
 
     // skip empty entries if any
@@ -168,16 +160,13 @@ long PartFileHandle::read(void* buffer, long length) {
 
 long PartFileHandle::write(const void*, long) {
     NOTIMP;
-    }
+}
 
 void PartFileHandle::close() {
     if (file_) {
         file_->close();
+        file_.reset();
     }
-    else {
-        Log::warning() << "Closing PartFileHandle " << name_ << ", file is not opened" << std::endl;
-    }
-    file_.reset();
 }
 
 void PartFileHandle::rewind() {

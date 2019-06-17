@@ -21,6 +21,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/Stat.h"
+#include "eckit/io/FDataSync.h"
 
 
 namespace eckit {
@@ -42,7 +43,7 @@ void FileHandle::encode(Stream& s) const {
     s << overwrite_;
 }
 
-FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_(0), read_(false) {
+FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_(nullptr), read_(false) {
     s >> name_;
     s >> overwrite_;
 }
@@ -50,14 +51,14 @@ FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_(0), 
 FileHandle::FileHandle(const std::string& name, bool overwrite) :
     name_(name),
     overwrite_(overwrite),
-    file_(0),
+    file_(nullptr),
     read_(false) {}
 
 FileHandle::~FileHandle() {}
 
 void FileHandle::open(const char* mode) {
     file_ = ::fopen(name_.c_str(), mode);
-    if (file_ == 0)
+    if (file_ == nullptr)
         throw CantOpenFile(name_);
 
     // Don't buffer writes, so we know when the filesystems
@@ -137,7 +138,7 @@ long FileHandle::write(const void* buffer, long length) {
 }
 
 void FileHandle::flush() {
-    if (file_ == 0)
+    if (file_ == nullptr)
         return;
 
     if (file_) {
@@ -145,10 +146,8 @@ void FileHandle::flush() {
             if (::fflush(file_))
                 throw WriteError(std::string("fflush(") + name_ + ")", Here());
 
-            int ret = fsync(fileno(file_));
+            int ret = eckit::fsync(fileno(file_));
 
-            while (ret < 0 && errno == EINTR)
-                ret = fsync(fileno(file_));
             if (ret < 0) {
                 Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) << Log::syserr << std::endl;
             }
@@ -163,15 +162,13 @@ void FileHandle::flush() {
 
 
 void FileHandle::close() {
-    if (file_ == 0)
+    if (file_ == nullptr)
         return;
 
     if (file_) {
-        // Because AIX has large system buffers,
-        // the close may be successful without the
-        // data being physicaly on disk. If there is
-        // a power failure, we lose some data. So we
-        // need to fsync
+        // The OS may have large system buffers, therefore the close may be successful without the
+        // data being physicaly on disk. If there is a power failure, we lose some data.
+        // So we need to fsync
 
         flush();
 
@@ -182,8 +179,8 @@ void FileHandle::close() {
     else {
         Log::warning() << "Closing FileHandle " << name_ << ", file is not opened" << std::endl;
     }
-    buffer_.reset(0);
-    file_ = 0;
+    buffer_.reset();
+    file_ = nullptr;
 }
 
 void FileHandle::rewind() {

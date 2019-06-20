@@ -20,6 +20,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/filesystem/FileSystemSize.h"
+#include "eckit/filesystem/FileMode.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
@@ -159,7 +160,7 @@ public:
 
     /// Change the file mode
     /// @param mode file mode bits
-    void chmod(short mode) const;
+    void chmod(const FileMode& mode) const;
 
     /// Unlink the path
     void unlink(bool verbose=true) const;

@@ -277,6 +277,10 @@ void LocalPathName::mkdir(short mode) const {
     }
 }
 
+void LocalPathName::chmod(short mode) const {
+    SYSCALL(::chmod(path_.c_str(), mode));
+}
+
 void LocalPathName::link(const LocalPathName& from, const LocalPathName& to) {
     if (::link(from.c_str(), to.c_str()) != 0)
         throw FailedSystemCall(std::string("::link(") + from.path_ + ',' + to.path_ + ')');

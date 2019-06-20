@@ -8,8 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// File MarsFSPath.h
-// Baudouin Raoult - (c) ECMWF Jun 11
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   June 2011
+
 
 #ifndef eckit_MarsFSPath_h
 #define eckit_MarsFSPath_h
@@ -18,11 +20,11 @@
 
 #include "eckit/filesystem/PathName.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class BasePathName;
 
@@ -88,6 +90,7 @@ public:
     bool isLink() const;
 
     void mkdir(short mode = 0777) const;
+    void chmod(const FileMode& mode) const;
     void unlink(bool verbose=true) const;
     void rmdir(bool verbose=true) const;
 
@@ -135,7 +138,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

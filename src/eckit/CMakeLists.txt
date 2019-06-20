@@ -243,6 +243,8 @@ filesystem/BasePathName.cc
 filesystem/BasePathName.h
 filesystem/BasePathNameT.cc
 filesystem/BasePathNameT.h
+filesystem/FileMode.cc
+filesystem/FileMode.h
 filesystem/FileSpace.cc
 filesystem/FileSpace.h
 filesystem/FileSpaceStrategies.cc

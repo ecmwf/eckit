@@ -8,19 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/BasePathNameT.h
-// Baudouin Raoult - (c) ECMWF Jun 11
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   June 2011
 
 #ifndef eckit_filesystem_BasePathNameT_h
 #define eckit_filesystem_BasePathNameT_h
 
 #include "eckit/filesystem/BasePathName.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template<class T>
 class BasePathNameT : public BasePathName {
@@ -69,6 +68,7 @@ private:
     virtual bool exists() const;
     virtual bool available() const;
     virtual void mkdir(short) const;
+    virtual void chmod(const FileMode& mode) const;
     virtual void unlink(bool verbose) const;
     virtual void rmdir(bool verbose) const;
     virtual void touch() const;
@@ -103,7 +103,7 @@ private:
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

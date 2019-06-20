@@ -32,6 +32,10 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_pathexpander
                   ENVIRONMENT "CURRENT_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}"
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_filesystem_filemode
+                  SOURCES     test_filemode.cc
+                  LIBS        eckit )
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tmp/foo)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/1)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2)

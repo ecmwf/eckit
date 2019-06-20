@@ -22,11 +22,15 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static std::string test(const char* text, const char* expect) {
-    char base64ed[10240] = {0, };
-    char unbase64ed[10240] = {0, };
+    char base64ed[10240] = {
+        0,
+    };
+    char unbase64ed[10240] = {
+        0,
+    };
 
     Base64 base64;
 
@@ -59,7 +63,7 @@ static std::string test(const char* text, const char* expect) {
     }
 
     std::string u(unbase64ed, unbase64ed + t);
-        std::cout << "decoded is [" << u << "]" << std::endl;
+    std::cout << "decoded is [" << u << "]" << std::endl;
 
 
     std::cout << text << std::endl;
@@ -73,33 +77,31 @@ static std::string test(const char* text, const char* expect) {
     return u;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_eckit_base64_1" ) {
+CASE("test_eckit_base64_1") {
     {
         const char* pattern = "Man";
-        std::string s = test(pattern, "TWFu");
+        std::string s       = test(pattern, "TWFu");
         EXPECT(s == std::string(pattern));
     }
     {
         const char* pattern = "M";
-        std::string s = test(pattern, "TQ==");
+        std::string s       = test(pattern, "TQ==");
         EXPECT(s == std::string(pattern));
     }
     {
         const char* pattern = "Ma";
-        std::string s = test(pattern, "TWE=");
+        std::string s       = test(pattern, "TWE=");
         EXPECT(s == std::string(pattern));
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

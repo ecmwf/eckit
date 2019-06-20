@@ -19,11 +19,11 @@
 #include "eckit/eckit.h"
 #include "eckit/utils/StringTools.h"
 
-#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/memory/MMap.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
-#include "eckit/memory/MMap.h"
 
 #if defined(__APPLE__) && defined(__MACH__)
 #include "eckit/system/SystemInfoMacOSX.h"
@@ -42,12 +42,11 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SystemInfo* makeSystemInfo(const std::string& system)
-{
+SystemInfo* makeSystemInfo(const std::string& system) {
     ///< @todo add a factory?
 
 #if defined(__APPLE__) && defined(__MACH__)
-    if (StringTools::startsWith(ECKIT_OS_NAME, "Darwin")) { // double check with ecbuild name
+    if (StringTools::startsWith(ECKIT_OS_NAME, "Darwin")) {  // double check with ecbuild name
         return new SystemInfoMacOSX();
     }
 #endif
@@ -67,15 +66,15 @@ SystemInfo* makeSystemInfo(const std::string& system)
     NOTIMP;
 }
 
-static pthread_once_t once  = PTHREAD_ONCE_INIT;
+static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::unique_ptr<SystemInfo> systemInfoPtr;
 
 static void createInstance() {
     ASSERT(!systemInfoPtr);
-    systemInfoPtr.reset( makeSystemInfo(ECKIT_OS_NAME) );
+    systemInfoPtr.reset(makeSystemInfo(ECKIT_OS_NAME));
 }
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 const SystemInfo& SystemInfo::instance() {
     pthread_once(&once, createInstance);
@@ -83,33 +82,29 @@ const SystemInfo& SystemInfo::instance() {
     return *systemInfoPtr;
 }
 
-void SystemInfo::dumpProcMemInfo(std::ostream& os, const char* prepend) const
-{
+void SystemInfo::dumpProcMemInfo(std::ostream& os, const char* prepend) const {
     if (prepend)
         os << prepend;
 
     os << " SystemInfo::dumpProcMemInfo() NOT IMPLEMENTED FOR SYSTEM " << ECKIT_OS_NAME << std::endl;
 }
 
-void SystemInfo::dumpSysMemInfo(std::ostream& os, const char* prepend) const
-{
+void SystemInfo::dumpSysMemInfo(std::ostream& os, const char* prepend) const {
     if (prepend)
         os << prepend;
 
     os << " SystemInfo::dumpSysMemInfo() NOT IMPLEMENTED FOR SYSTEM " << ECKIT_OS_NAME << std::endl;
 }
 
-SystemInfo::~SystemInfo() {
-}
+SystemInfo::~SystemInfo() {}
 
-void SystemInfo::print(std::ostream &out) const {
+void SystemInfo::print(std::ostream& out) const {
     out << "SystemInfo("
-        << "executablePath=" << executablePath()
-        << ")";
+        << "executablePath=" << executablePath() << ")";
 }
 
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 bool SystemInfo::isBigEndian() {
 #if ECKIT_BIG_ENDIAN
@@ -131,8 +126,7 @@ bool SystemInfo::isLittleEndian() {
 #endif
 }
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
-
+}  // namespace system
+}  // namespace eckit

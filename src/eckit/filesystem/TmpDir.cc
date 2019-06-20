@@ -10,8 +10,8 @@
 
 #include <unistd.h>
 
-#include "eckit/filesystem/TmpDir.h"
 #include "eckit/config/Resource.h"
+#include "eckit/filesystem/TmpDir.h"
 
 
 namespace eckit {
@@ -36,15 +36,16 @@ static void deldir(eckit::PathName& p) {
     std::vector<eckit::PathName> dirs;
     p.children(files, dirs);
 
-    for (auto& f : files) f.unlink();
-    for (auto& d : dirs) deldir(d);
+    for (auto& f : files)
+        f.unlink();
+    for (auto& d : dirs)
+        deldir(d);
 
     p.rmdir();
 }
 
 
-TmpDir::TmpDir() :
-    PathName(tmp()) {}
+TmpDir::TmpDir() : PathName(tmp()) {}
 
 TmpDir::~TmpDir() noexcept(false) {
     deldir(*this);

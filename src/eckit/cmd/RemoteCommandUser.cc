@@ -8,26 +8,24 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "eckit/cmd/CmdResource.h"
 #include "eckit/cmd/RemoteCommandUser.h"
+#include "eckit/cmd/CmdResource.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/serialisation/Stream.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-RemoteCommandUser::RemoteCommandUser(TCPSocket& protocol) : NetUser(protocol), from_(protocol_.remoteHost()) {
-}
+RemoteCommandUser::RemoteCommandUser(TCPSocket& protocol) : NetUser(protocol), from_(protocol_.remoteHost()) {}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-RemoteCommandUser::~RemoteCommandUser() {
-}
+RemoteCommandUser::~RemoteCommandUser() {}
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 void RemoteCommandUser::serve(Stream& s, std::istream& in, std::ostream& out) {
 
@@ -45,6 +43,6 @@ void RemoteCommandUser::serve(Stream& s, std::istream& in, std::ostream& out) {
     Log::debug() << "Exiting remote command ..." << std::endl;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

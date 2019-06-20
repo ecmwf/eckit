@@ -13,15 +13,13 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/HandleBuf.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-HandleBuf::HandleBuf(DataHandle& handle, bool throwOnError) :
-    handle_(handle),
-    throwOnError_(throwOnError) {
+HandleBuf::HandleBuf(DataHandle& handle, bool throwOnError) : handle_(handle), throwOnError_(throwOnError) {
     setg(in_, in_, in_);
     setp(out_, out_ + sizeof(out_));
 }
@@ -31,7 +29,7 @@ HandleBuf::~HandleBuf() {
 }
 
 int HandleBuf::sync() {
-    int len     = pptr() - pbase();
+    int len = pptr() - pbase();
     if (len != 0) {
         int written = handle_.write(pbase(), len);
 
@@ -83,6 +81,6 @@ int HandleBuf::underflow() {
     return *(unsigned char*)gptr();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

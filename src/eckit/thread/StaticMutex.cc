@@ -10,8 +10,8 @@
 
 #include <set>
 
-#include "eckit/thread/StaticMutex.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 
@@ -21,10 +21,10 @@ static void init_mutex_attr(pthread_mutex_t* mutex) {
 
     pthread_mutexattr_t attr;
 
-    CHECK_CALL_NOLOG( ::pthread_mutexattr_init(&attr) );
-    CHECK_CALL_NOLOG( ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE) );
+    CHECK_CALL_NOLOG(::pthread_mutexattr_init(&attr));
+    CHECK_CALL_NOLOG(::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE));
 
-    CHECK_CALL_NOLOG( ::pthread_mutex_init(mutex, &attr) );
+    CHECK_CALL_NOLOG(::pthread_mutex_init(mutex, &attr));
 
     CHECK_CALL_NOLOG(::pthread_mutexattr_destroy(&attr));
 }
@@ -53,32 +53,28 @@ struct StaticMutexRegister {
     std::set<pthread_mutex_t*> set_;
 };
 
-static void get_locks()
-{
+static void get_locks() {
     std::set<pthread_mutex_t*>& reg = StaticMutexRegister::instance().set_;
-    for(std::set<pthread_mutex_t*>::iterator i = reg.begin(); i != reg.end(); ++i) {
+    for (std::set<pthread_mutex_t*>::iterator i = reg.begin(); i != reg.end(); ++i) {
         CHECK_CALL_NOLOG(::pthread_mutex_lock(*i));
     }
 }
 
-static void release_locks_parent()
-{
+static void release_locks_parent() {
     std::set<pthread_mutex_t*>& reg = StaticMutexRegister::instance().set_;
-    for(std::set<pthread_mutex_t*>::reverse_iterator i = reg.rbegin(); i != reg.rend(); ++i) {
+    for (std::set<pthread_mutex_t*>::reverse_iterator i = reg.rbegin(); i != reg.rend(); ++i) {
         CHECK_CALL_NOLOG(::pthread_mutex_unlock(*i));
     }
 }
 
-static void release_locks_child()
-{
+static void release_locks_child() {
     std::set<pthread_mutex_t*>& reg = StaticMutexRegister::instance().set_;
-    for(std::set<pthread_mutex_t*>::reverse_iterator i = reg.rbegin(); i != reg.rend(); ++i) {
+    for (std::set<pthread_mutex_t*>::reverse_iterator i = reg.rbegin(); i != reg.rend(); ++i) {
         init_mutex_attr(*i);
     }
 }
 
-StaticMutexRegister& StaticMutexRegister::instance()
-{
+StaticMutexRegister& StaticMutexRegister::instance() {
     static StaticMutexRegister reg;
     return reg;
 }
@@ -101,25 +97,21 @@ StaticMutex::StaticMutex()
     init();
 }
 
-StaticMutex::~StaticMutex()
-{
-    if(exists_) {
+StaticMutex::~StaticMutex() {
+    if (exists_) {
         StaticMutexRegister::instance().remove(&mutex_);
         CHECK_CALL_NOLOG(::pthread_mutex_destroy(&mutex_));
     }
 }
 
 // if lock() is called before the constructor, we run init() which ensures the construction
-void StaticMutex::lock()
-{
+void StaticMutex::lock() {
     init();
     CHECK_CALL_NOLOG(::pthread_mutex_lock(&mutex_));
 }
 
-void StaticMutex::unlock()
-{
-    if(!exists_)
-    {
+void StaticMutex::unlock() {
+    if (!exists_) {
         std::cerr << "StaticMutex::unlock() called before being constructed or locked" << std::endl;
         ::abort();
     }
@@ -127,10 +119,8 @@ void StaticMutex::unlock()
     CHECK_CALL_NOLOG(::pthread_mutex_unlock(&mutex_));
 }
 
-void StaticMutex::init()
-{
-    if(!exists_)
-    {
+void StaticMutex::init() {
+    if (!exists_) {
         init_mutex_attr(&mutex_);
         exists_ = true;
 
@@ -140,5 +130,4 @@ void StaticMutex::init()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

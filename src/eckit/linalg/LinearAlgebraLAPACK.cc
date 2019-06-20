@@ -17,37 +17,33 @@
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
 
 double ddot_(const int* n, const double* x, const int* incx, const double* y, const int* incy);
 
-void dgemv_(const char* transa, const int* m, const int* n,
-            const double* alpha, const double* a, const int* lda, const double* x, const int* incx,
-            const double* beta, double* y, const int* incy);
+void dgemv_(const char* transa, const int* m, const int* n, const double* alpha, const double* a, const int* lda,
+            const double* x, const int* incx, const double* beta, double* y, const int* incy);
 
-void dgemm_(const char* transa, const char* transb,
-            const int* m, const int* n, const int* k,
-            const double* alpha, const double* a, const int* lda, const double* b, const int* ldb,
-            const double* beta, double* c, const int* ldc);
-
+void dgemm_(const char* transa, const char* transb, const int* m, const int* n, const int* k, const double* alpha,
+            const double* a, const int* lda, const double* b, const int* ldb, const double* beta, double* c,
+            const int* ldc);
 }
 
-static const char* trans = "N";
-static const int inc = 1;
+static const char* trans  = "N";
+static const int inc      = 1;
 static const double alpha = 1.;
 static const double beta  = 0.;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace linalg {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraLAPACK::LinearAlgebraLAPACK() : LinearAlgebra("lapack") {
-}
+LinearAlgebraLAPACK::LinearAlgebraLAPACK() : LinearAlgebra("lapack") {}
 
 Scalar LinearAlgebraLAPACK::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
@@ -63,9 +59,7 @@ void LinearAlgebraLAPACK::gemv(const Matrix& A, const Vector& x, Vector& y) cons
     const int m = int(A.rows());
     const int n = int(A.cols());
 
-    dgemv_(trans, &m, &n,
-           &alpha, A.data(), &m, x.data(), &inc,
-           &beta, y.data(), &inc);
+    dgemv_(trans, &m, &n, &alpha, A.data(), &m, x.data(), &inc, &beta, y.data(), &inc);
 }
 
 void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
@@ -75,10 +69,7 @@ void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
     const int n = int(B.cols());
     const int k = int(A.cols());
 
-    dgemm_(trans, trans,
-           &m, &n, &k,
-           &alpha, A.data(), &m, B.data(), &k,
-           &beta, C.data(), &m);
+    dgemm_(trans, trans, &m, &n, &k, &alpha, A.data(), &m, B.data(), &k, &beta, C.data(), &m);
 }
 
 void LinearAlgebraLAPACK::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
@@ -97,11 +88,11 @@ void LinearAlgebraLAPACK::print(std::ostream& out) const {
     out << "LinearAlgebraLAPACK[]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 static LinearAlgebraLAPACK __la;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace linalg
 }  // namespace eckit

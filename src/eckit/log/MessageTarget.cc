@@ -15,18 +15,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MessageTarget::MessageTarget() {
-}
+MessageTarget::MessageTarget() {}
 
 void MessageTarget::line(const char* line) {
     Monitor::instance().message(line);
 }
 
-void MessageTarget::print(std::ostream& s) const
-{
+void MessageTarget::print(std::ostream& s) const {
     s << "MessageTarget()";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

@@ -11,52 +11,37 @@
 
 #include <cstring>
 
-#include "eckit/serialisation/MemoryStream.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/serialisation/MemoryStream.h"
 
 
 namespace eckit {
 
-MemoryStream::MemoryStream(const Buffer& buffer):
-	address_(const_cast<Buffer&>(buffer)),
+MemoryStream::MemoryStream(const Buffer& buffer) :
+    address_(const_cast<Buffer&>(buffer)),
     size_(buffer.size()),
     read_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
 
-MemoryStream::MemoryStream(Buffer& buffer):
-    address_(buffer),
-    size_(buffer.size()),
-    read_(false),
-    position_(0)
-{
-}
+MemoryStream::MemoryStream(Buffer& buffer) : address_(buffer), size_(buffer.size()), read_(false), position_(0) {}
 
-MemoryStream::MemoryStream(const void* address,size_t size):
-	address_(const_cast<char*>(reinterpret_cast<const char*>(address))),
+MemoryStream::MemoryStream(const void* address, size_t size) :
+    address_(const_cast<char*>(reinterpret_cast<const char*>(address))),
     size_(size),
     read_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
 
-MemoryStream::MemoryStream(void* address,size_t size):
+MemoryStream::MemoryStream(void* address, size_t size) :
     address_(reinterpret_cast<char*>(address)),
     size_(size),
     read_(false),
-    position_(0)
-{
-}
+    position_(0) {}
 
-MemoryStream::~MemoryStream()
-{
-}
+MemoryStream::~MemoryStream() {}
 
-long MemoryStream::read(void* buffer,long length)
-{
+long MemoryStream::read(void* buffer, long length) {
     size_t left = size_ - position_;
     size_t size = std::min(left, size_t(length));
     ::memcpy(buffer, address_ + position_, size);
@@ -65,8 +50,7 @@ long MemoryStream::read(void* buffer,long length)
     return long(size);
 }
 
-long MemoryStream::write(const void* buffer,long length)
-{
+long MemoryStream::write(const void* buffer, long length) {
     size_t left = size_ - position_;
     size_t size = std::min(left, size_t(length));
     ::memcpy(address_ + position_, buffer, size);
@@ -75,18 +59,16 @@ long MemoryStream::write(const void* buffer,long length)
     return long(size);
 }
 
-void MemoryStream::rewind()
-{
-	position_ = 0;
+void MemoryStream::rewind() {
+    position_ = 0;
 }
 
 std::string MemoryStream::name() const {
-	return "MemoryStream";
+    return "MemoryStream";
 }
 
 size_t MemoryStream::position() const {
     return position_;
 }
 
-} // namespace eckit
-
+}  // namespace eckit

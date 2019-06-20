@@ -43,172 +43,161 @@ const float dMax = std::numeric_limits<float>::max();
 const float qNaN = std::numeric_limits<float>::quiet_NaN();
 const float sNaN = std::numeric_limits<float>::signaling_NaN();
 
-};
+};  // namespace
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_large_numbers" )
-{
-   Log::info() << "test_large_numbers" << std::endl;
+CASE("test_large_numbers") {
+    Log::info() << "test_large_numbers" << std::endl;
 
-   EXPECT(  is_equal(1000000,       1000000      ));
-   EXPECT(  is_equal(1000000,       1000000.00001));
-   EXPECT(  is_equal(1000000.00001, 1000000      ));
+    EXPECT(is_equal(1000000, 1000000));
+    EXPECT(is_equal(1000000, 1000000.00001));
+    EXPECT(is_equal(1000000.00001, 1000000));
 
-   EXPECT(! is_equal(1000000.0,     1000001.0    ));
-   EXPECT(! is_equal(1000001.0,     1000000.0    ));
+    EXPECT(!is_equal(1000000.0, 1000001.0));
+    EXPECT(!is_equal(1000001.0, 1000000.0));
 
-   // -----------------------------------------------
-   EXPECT(is_equal(dMax, dMax));
-   EXPECT(is_equal(dMax, dMax, dEps));
+    // -----------------------------------------------
+    EXPECT(is_equal(dMax, dMax));
+    EXPECT(is_equal(dMax, dMax, dEps));
 
-   EXPECT(is_equal(dMin, dMin));
-   EXPECT(is_equal(dMin, dMin, dEps));
+    EXPECT(is_equal(dMin, dMin));
+    EXPECT(is_equal(dMin, dMin, dEps));
 }
 
-CASE( "test_negative_large_numbers" )
-{
-   Log::info() << "test_negative_large_numbers " << dMin << std::endl;
+CASE("test_negative_large_numbers") {
+    Log::info() << "test_negative_large_numbers " << dMin << std::endl;
 
-   EXPECT(  is_equal(-1000000,       -1000000      ));
-   EXPECT(  is_equal(-1000000,       -1000000.00001));
-   EXPECT(  is_equal(-1000000.00001, -1000000      ));
+    EXPECT(is_equal(-1000000, -1000000));
+    EXPECT(is_equal(-1000000, -1000000.00001));
+    EXPECT(is_equal(-1000000.00001, -1000000));
 
-   EXPECT(! is_equal(-1000000.0,     -1000001.0    ));
-   EXPECT(! is_equal(-1000001.0,     -1000000.0    ));
+    EXPECT(!is_equal(-1000000.0, -1000001.0));
+    EXPECT(!is_equal(-1000001.0, -1000000.0));
 
-   // -----------------------------------------------
-   EXPECT(is_equal(-dMax, -dMax      ));
-   EXPECT(is_equal(-dMax, -dMax, dEps));
+    // -----------------------------------------------
+    EXPECT(is_equal(-dMax, -dMax));
+    EXPECT(is_equal(-dMax, -dMax, dEps));
 
-   EXPECT(is_equal(-dMin, -dMin      ));
-   EXPECT(is_equal(-dMin, -dMin, dEps));
+    EXPECT(is_equal(-dMin, -dMin));
+    EXPECT(is_equal(-dMin, -dMin, dEps));
 }
 
-CASE( "test_large_numbers_of_opposite_sign" )
-{
-    EXPECT(! is_equal(-1000000,       1000000      ));
-    EXPECT(! is_equal(-1000000,       1000000.00001));
-    EXPECT(! is_equal(-1000000.00001, 1000000      ));
+CASE("test_large_numbers_of_opposite_sign") {
+    EXPECT(!is_equal(-1000000, 1000000));
+    EXPECT(!is_equal(-1000000, 1000000.00001));
+    EXPECT(!is_equal(-1000000.00001, 1000000));
 
-    EXPECT(! is_equal(-1000000.0,     1000001.0    ));
-    EXPECT(! is_equal(-1000001.0,     1000000.0    ));
+    EXPECT(!is_equal(-1000000.0, 1000001.0));
+    EXPECT(!is_equal(-1000001.0, 1000000.0));
 
     // Overflow occurs here in eckit::types::is_approximately_equal
-    EXPECT(! is_equal(-dMax, dMax      ));
-    EXPECT(! is_equal(-dMax, dMax, dEps));
+    EXPECT(!is_equal(-dMax, dMax));
+    EXPECT(!is_equal(-dMax, dMax, dEps));
 }
 
-CASE( "test_ulp_around_one" )
-{
-   Log::info() << "test_ulp_around_one" << std::endl;
+CASE("test_ulp_around_one") {
+    Log::info() << "test_ulp_around_one" << std::endl;
 
-   // ULP distances up to 10 are equal
-   // Going right from 1 by eps increases distance by 1
-   // Going left from 1 by eps increases distance by 2
-   for (int i = 0; i <= 10; ++i) {
-       EXPECT(is_equal(1.0 + i * dEps,   1.0,              dEps));
-       EXPECT(is_equal(1.0,              1.0 + i * dEps,   dEps));
-       EXPECT(is_equal(1.0 - i * dEps/2, 1.0,              dEps));
-       EXPECT(is_equal(1.0,              1.0 - i * dEps/2, dEps));
-   }
-   // ULP distances greater 10 are not equal
-   EXPECT(! is_equal(1.0 + 11 * dEps,   1.0,               dEps));
-   EXPECT(! is_equal(1.0,               1.0 + 11 * dEps,   dEps));
-   EXPECT(! is_equal(1.0 - 11 * dEps/2, 1.0,               dEps));
-   EXPECT(! is_equal(1.0,               1.0 - 11 * dEps/2, dEps));
+    // ULP distances up to 10 are equal
+    // Going right from 1 by eps increases distance by 1
+    // Going left from 1 by eps increases distance by 2
+    for (int i = 0; i <= 10; ++i) {
+        EXPECT(is_equal(1.0 + i * dEps, 1.0, dEps));
+        EXPECT(is_equal(1.0, 1.0 + i * dEps, dEps));
+        EXPECT(is_equal(1.0 - i * dEps / 2, 1.0, dEps));
+        EXPECT(is_equal(1.0, 1.0 - i * dEps / 2, dEps));
+    }
+    // ULP distances greater 10 are not equal
+    EXPECT(!is_equal(1.0 + 11 * dEps, 1.0, dEps));
+    EXPECT(!is_equal(1.0, 1.0 + 11 * dEps, dEps));
+    EXPECT(!is_equal(1.0 - 11 * dEps / 2, 1.0, dEps));
+    EXPECT(!is_equal(1.0, 1.0 - 11 * dEps / 2, dEps));
 }
 
-CASE( "test_numbers_around_one" )
-{
-   Log::info() << "test_numbers_around_one" << std::endl;
+CASE("test_numbers_around_one") {
+    Log::info() << "test_numbers_around_one" << std::endl;
 
-   EXPECT(  is_equal(1.0000001, 1.0000002));
-   EXPECT(  is_equal(1.0000002, 1.0000001));
+    EXPECT(is_equal(1.0000001, 1.0000002));
+    EXPECT(is_equal(1.0000002, 1.0000001));
 
-   EXPECT(  is_equal(1.123456,  1.123457 ));
-   EXPECT(  is_equal(1.12345,   1.12344, 0.001));
+    EXPECT(is_equal(1.123456, 1.123457));
+    EXPECT(is_equal(1.12345, 1.12344, 0.001));
 
-   EXPECT(! is_equal(1.0001,    1.0002   ));
-   EXPECT(! is_equal(1.0002,    1.0001   ));
+    EXPECT(!is_equal(1.0001, 1.0002));
+    EXPECT(!is_equal(1.0002, 1.0001));
 }
 
-CASE( "test_numbers_around_negative_one" )
-{
-   Log::info() << "test_numbers_around_negative_one" << std::endl;
+CASE("test_numbers_around_negative_one") {
+    Log::info() << "test_numbers_around_negative_one" << std::endl;
 
-   EXPECT(  is_equal(-1.0000001, -1.0000002));
-   EXPECT(  is_equal(-1.0000002, -1.0000001));
+    EXPECT(is_equal(-1.0000001, -1.0000002));
+    EXPECT(is_equal(-1.0000002, -1.0000001));
 
-   EXPECT(! is_equal(-1.0001,    -1.0002   ));
-   EXPECT(! is_equal(-1.0002,    -1.0001   ));
+    EXPECT(!is_equal(-1.0001, -1.0002));
+    EXPECT(!is_equal(-1.0002, -1.0001));
 }
 
-CASE( "test_numbers_between_one_and_zero" )
-{
-   Log::info() << "test_numbers_between_one_and_zero" << std::endl;
+CASE("test_numbers_between_one_and_zero") {
+    Log::info() << "test_numbers_between_one_and_zero" << std::endl;
 
-   EXPECT(  is_equal(0.000000001000001, 0.000000001000002));
-   EXPECT(  is_equal(0.000000001000002, 0.000000001000001));
+    EXPECT(is_equal(0.000000001000001, 0.000000001000002));
+    EXPECT(is_equal(0.000000001000002, 0.000000001000001));
 
-   EXPECT(! is_equal(0.0012,            0.0011           ));
-   EXPECT(! is_equal(0.0011,            0.0012           ));
-
+    EXPECT(!is_equal(0.0012, 0.0011));
+    EXPECT(!is_equal(0.0011, 0.0012));
 }
 
-CASE( "test_numbers_between_minusone_and_zero" )
-{
-   Log::info() << "test_numbers_between_minusone_and_zero" << std::endl;
+CASE("test_numbers_between_minusone_and_zero") {
+    Log::info() << "test_numbers_between_minusone_and_zero" << std::endl;
 
-   EXPECT(  is_equal(-0.000000001000001, -0.000000001000002));
-   EXPECT(  is_equal(-0.000000001000002, -0.000000001000001));
+    EXPECT(is_equal(-0.000000001000001, -0.000000001000002));
+    EXPECT(is_equal(-0.000000001000002, -0.000000001000001));
 
-   EXPECT(! is_equal(-0.0012,            -0.0011           ));
-   EXPECT(! is_equal(-0.0011,            -0.0012           ));
+    EXPECT(!is_equal(-0.0012, -0.0011));
+    EXPECT(!is_equal(-0.0011, -0.0012));
 }
 
-CASE( "test_comparisons_involving_zero" )
-{
-   Log::info() << "test_comparisons_involving_zero" << std::endl;
+CASE("test_comparisons_involving_zero") {
+    Log::info() << "test_comparisons_involving_zero" << std::endl;
 
-   EXPECT(  is_equal(0.0,     0.0   ));
-   EXPECT(  is_equal(0.0,    -0.0   ));
-   EXPECT(  is_equal(-0.0,   -0.0   ));
+    EXPECT(is_equal(0.0, 0.0));
+    EXPECT(is_equal(0.0, -0.0));
+    EXPECT(is_equal(-0.0, -0.0));
 
-   EXPECT(! is_equal(0.0001,  0.0   ));
-   EXPECT(! is_equal(0.0,     0.0001));
-   EXPECT(! is_equal(-0.0001, 0.0   ));
-   EXPECT(! is_equal(0.0,    -0.0001));
+    EXPECT(!is_equal(0.0001, 0.0));
+    EXPECT(!is_equal(0.0, 0.0001));
+    EXPECT(!is_equal(-0.0001, 0.0));
+    EXPECT(!is_equal(0.0, -0.0001));
 
-   EXPECT(  is_equal(0.0,     1e-30, 0.01 ));
-   EXPECT(  is_equal(1e-30,   0.0,   0.01 ));
-   EXPECT(! is_equal(1e-30,   0.0,   1e-31));
-   EXPECT(! is_equal(0.0,     1e-30, 1e-31));
+    EXPECT(is_equal(0.0, 1e-30, 0.01));
+    EXPECT(is_equal(1e-30, 0.0, 0.01));
+    EXPECT(!is_equal(1e-30, 0.0, 1e-31));
+    EXPECT(!is_equal(0.0, 1e-30, 1e-31));
 
-   EXPECT(  is_equal(0.0,    -1e-30, 0.1  ));
-   EXPECT(  is_equal(-1e-30,  0.0,   0.1  ));
-   EXPECT(! is_equal(-1e-30,  0.0,   1e-31));
-   EXPECT(! is_equal(0.0,    -1e-30, 1e-31));
+    EXPECT(is_equal(0.0, -1e-30, 0.1));
+    EXPECT(is_equal(-1e-30, 0.0, 0.1));
+    EXPECT(!is_equal(-1e-30, 0.0, 1e-31));
+    EXPECT(!is_equal(0.0, -1e-30, 1e-31));
 }
 
-CASE( "test_comparisons_involving_infinity" )
-{
-   Log::info() << "test_comparisons_involving_infinity" << std::endl;
+CASE("test_comparisons_involving_infinity") {
+    Log::info() << "test_comparisons_involving_infinity" << std::endl;
 
-   if (std::numeric_limits<float>::has_infinity) {
-      EXPECT(  is_equal( dInf,  dInf));
-      EXPECT(  is_equal(-dInf, -dInf));
-      EXPECT(! is_equal( dInf,  dMax));
-      EXPECT(! is_equal( dMax,  dInf));
-      EXPECT(! is_equal(-dInf, -dMax));
-      EXPECT(! is_equal(-dMax, -dInf));
-   } else {
-      Log::info() << "test_comparisons_involving_infinity NOT VALID on this platform" << std::endl;
-   }
+    if (std::numeric_limits<float>::has_infinity) {
+        EXPECT(is_equal(dInf, dInf));
+        EXPECT(is_equal(-dInf, -dInf));
+        EXPECT(!is_equal(dInf, dMax));
+        EXPECT(!is_equal(dMax, dInf));
+        EXPECT(!is_equal(-dInf, -dMax));
+        EXPECT(!is_equal(-dMax, -dInf));
+    }
+    else {
+        Log::info() << "test_comparisons_involving_infinity NOT VALID on this platform" << std::endl;
+    }
 }
 
-CASE( "test_comparisons_involving_nan" )
-{
+CASE("test_comparisons_involving_nan") {
     Log::info() << "test_comparisons_involving_nan" << std::endl;
 
     // The value NaN (Not a Number) is used to represent a value that does not represent a real number.
@@ -225,132 +214,128 @@ CASE( "test_comparisons_involving_nan" )
 
     // Semantically, QNaN's denote indeterminate operations, while SNaN's denote invalid operations.
 
-    EXPECT(! is_equal( qNaN,  qNaN));
-    EXPECT(! is_equal( qNaN,  0.0 ));
-    EXPECT(! is_equal(-0.0 ,  qNaN));
-    EXPECT(! is_equal( qNaN, -0.0 ));
-    EXPECT(! is_equal( 0.0 ,  qNaN));
-    EXPECT(! is_equal( qNaN,  dInf));
-    EXPECT(! is_equal( dInf,  qNaN));
-    EXPECT(! is_equal( qNaN,  dMax));
-    EXPECT(! is_equal( dMax,  qNaN));
-    EXPECT(! is_equal( qNaN, -dMax));
-    EXPECT(! is_equal(-dMax,  qNaN));
-    EXPECT(! is_equal( qNaN,  dMin));
-    EXPECT(! is_equal( dMin,  qNaN));
-    EXPECT(! is_equal( qNaN, -dMin));
-    EXPECT(! is_equal(-dMin,  qNaN));
+    EXPECT(!is_equal(qNaN, qNaN));
+    EXPECT(!is_equal(qNaN, 0.0));
+    EXPECT(!is_equal(-0.0, qNaN));
+    EXPECT(!is_equal(qNaN, -0.0));
+    EXPECT(!is_equal(0.0, qNaN));
+    EXPECT(!is_equal(qNaN, dInf));
+    EXPECT(!is_equal(dInf, qNaN));
+    EXPECT(!is_equal(qNaN, dMax));
+    EXPECT(!is_equal(dMax, qNaN));
+    EXPECT(!is_equal(qNaN, -dMax));
+    EXPECT(!is_equal(-dMax, qNaN));
+    EXPECT(!is_equal(qNaN, dMin));
+    EXPECT(!is_equal(dMin, qNaN));
+    EXPECT(!is_equal(qNaN, -dMin));
+    EXPECT(!is_equal(-dMin, qNaN));
 
-    EXPECT(! is_equal( sNaN,  sNaN));
-    EXPECT(! is_equal( sNaN,  0.0 ));
-    EXPECT(! is_equal(-0.0 ,  sNaN));
-    EXPECT(! is_equal( sNaN, -0.0 ));
-    EXPECT(! is_equal( 0.0 ,  sNaN));
-    EXPECT(! is_equal( sNaN,  dInf));
-    EXPECT(! is_equal( dInf,  sNaN));
-    EXPECT(! is_equal( sNaN,  dMax));
-    EXPECT(! is_equal( dMax,  sNaN));
-    EXPECT(! is_equal( sNaN, -dMax));
-    EXPECT(! is_equal(-dMax,  sNaN));
-    EXPECT(! is_equal( sNaN,  dMin));
-    EXPECT(! is_equal( dMin,  sNaN));
-    EXPECT(! is_equal( sNaN, -dMin));
-    EXPECT(! is_equal(-dMin,  sNaN));
+    EXPECT(!is_equal(sNaN, sNaN));
+    EXPECT(!is_equal(sNaN, 0.0));
+    EXPECT(!is_equal(-0.0, sNaN));
+    EXPECT(!is_equal(sNaN, -0.0));
+    EXPECT(!is_equal(0.0, sNaN));
+    EXPECT(!is_equal(sNaN, dInf));
+    EXPECT(!is_equal(dInf, sNaN));
+    EXPECT(!is_equal(sNaN, dMax));
+    EXPECT(!is_equal(dMax, sNaN));
+    EXPECT(!is_equal(sNaN, -dMax));
+    EXPECT(!is_equal(-dMax, sNaN));
+    EXPECT(!is_equal(sNaN, dMin));
+    EXPECT(!is_equal(dMin, sNaN));
+    EXPECT(!is_equal(sNaN, -dMin));
+    EXPECT(!is_equal(-dMin, sNaN));
 }
 
-CASE( "test_comparisons_opposite_side_of_zero" )
-{
-   Log::info() << "test_comparisons_opposite_side_of_zero" << std::endl;
+CASE("test_comparisons_opposite_side_of_zero") {
+    Log::info() << "test_comparisons_opposite_side_of_zero" << std::endl;
 
-   EXPECT(! is_equal( 1.0000001, -1.0      ));
-   EXPECT(! is_equal(-1.0,        1.0000001));
-   EXPECT(! is_equal(-1.0000001,  1.0      ));
-   EXPECT(! is_equal( 1.0,       -1.0000001));
+    EXPECT(!is_equal(1.0000001, -1.0));
+    EXPECT(!is_equal(-1.0, 1.0000001));
+    EXPECT(!is_equal(-1.0000001, 1.0));
+    EXPECT(!is_equal(1.0, -1.0000001));
 
-   EXPECT(  is_equal(   10.0 * dMin,    10.0 * -dMin));
-   EXPECT(  is_equal(10000   * dMin, 10000   * -dMin));
+    EXPECT(is_equal(10.0 * dMin, 10.0 * -dMin));
+    EXPECT(is_equal(10000 * dMin, 10000 * -dMin));
 }
 
-CASE( "test_comparisons_very_close_to_zero" )
-{
-   Log::info() << "test_comparisons_very_close_to_zero" << std::endl;
+CASE("test_comparisons_very_close_to_zero") {
+    Log::info() << "test_comparisons_very_close_to_zero" << std::endl;
 
-   EXPECT(  is_equal( dMin, -dMin, dEps));
-   EXPECT(  is_equal(-dMin,  dMin, dEps));
-   EXPECT(  is_equal( dMin,  0   , dEps));
-   EXPECT(  is_equal( 0,     dMin, dEps));
-   EXPECT(  is_equal(-dMin,  0   , dEps));
-   EXPECT(  is_equal( 0,    -dMin, dEps));
-
-
-   EXPECT(  is_equal( 0.000000001, -dMin       ));
-   EXPECT(  is_equal( 0.000000001,  dMin       ));
-   EXPECT(  is_equal( dMin,         0.000000001));
-   EXPECT(  is_equal(-dMin,         0.000000001));
+    EXPECT(is_equal(dMin, -dMin, dEps));
+    EXPECT(is_equal(-dMin, dMin, dEps));
+    EXPECT(is_equal(dMin, 0, dEps));
+    EXPECT(is_equal(0, dMin, dEps));
+    EXPECT(is_equal(-dMin, 0, dEps));
+    EXPECT(is_equal(0, -dMin, dEps));
 
 
-   EXPECT(! is_equal( 0.000000001, -dMin,        1e-10));
-   EXPECT(! is_equal( 0.000000001,  dMin,        1e-10));
-   EXPECT(! is_equal( dMin,         0.000000001, 1e-10));
-   EXPECT(! is_equal(-dMin,         0.000000001, 1e-10));
+    EXPECT(is_equal(0.000000001, -dMin));
+    EXPECT(is_equal(0.000000001, dMin));
+    EXPECT(is_equal(dMin, 0.000000001));
+    EXPECT(is_equal(-dMin, 0.000000001));
+
+
+    EXPECT(!is_equal(0.000000001, -dMin, 1e-10));
+    EXPECT(!is_equal(0.000000001, dMin, 1e-10));
+    EXPECT(!is_equal(dMin, 0.000000001, 1e-10));
+    EXPECT(!is_equal(-dMin, 0.000000001, 1e-10));
 }
 
-CASE( "test_comparisons_with_denormal_numbers" )
-{
-   Log::info() << "test_comparisons_with_denormal_numbers" << std::endl;
+CASE("test_comparisons_with_denormal_numbers") {
+    Log::info() << "test_comparisons_with_denormal_numbers" << std::endl;
 
-   EXPECT(  is_equal( sMin, -sMin, dEps));
-   EXPECT(  is_equal(-sMin,  sMin, dEps));
-   EXPECT(  is_equal( sMin,  0   , dEps));
-   EXPECT(  is_equal( 0,     sMin, dEps));
-   EXPECT(  is_equal(-sMin,  0   , dEps));
-   EXPECT(  is_equal( 0,    -sMin, dEps));
+    EXPECT(is_equal(sMin, -sMin, dEps));
+    EXPECT(is_equal(-sMin, sMin, dEps));
+    EXPECT(is_equal(sMin, 0, dEps));
+    EXPECT(is_equal(0, sMin, dEps));
+    EXPECT(is_equal(-sMin, 0, dEps));
+    EXPECT(is_equal(0, -sMin, dEps));
 
-   const float lMin = dMin - sMin;  // largest denormal number
-   EXPECT(  is_equal( lMin, -lMin, dEps));
-   EXPECT(  is_equal(-lMin,  lMin, dEps));
-   EXPECT(  is_equal( lMin,  0   , dEps));
-   EXPECT(  is_equal( 0,     lMin, dEps));
-   EXPECT(  is_equal(-lMin,  0   , dEps));
-   EXPECT(  is_equal( 0,    -lMin, dEps));
+    const float lMin = dMin - sMin;  // largest denormal number
+    EXPECT(is_equal(lMin, -lMin, dEps));
+    EXPECT(is_equal(-lMin, lMin, dEps));
+    EXPECT(is_equal(lMin, 0, dEps));
+    EXPECT(is_equal(0, lMin, dEps));
+    EXPECT(is_equal(-lMin, 0, dEps));
+    EXPECT(is_equal(0, -lMin, dEps));
 }
 
-CASE( "test_comparisons_ulps" )
-{
-   Log::info() << "test_comparisons_ulps" << std::endl;
+CASE("test_comparisons_ulps") {
+    Log::info() << "test_comparisons_ulps" << std::endl;
 
-   EXPECT(  is_equal( dMin, -dMin, 0, 2));
-   EXPECT(  is_equal(-dMin,  dMin, 0, 2));
-   EXPECT(  is_equal( dMin,  0   , 0, 1));
-   EXPECT(  is_equal( 0,     dMin, 0, 1));
-   EXPECT(  is_equal(-dMin,  0   , 0, 1));
-   EXPECT(  is_equal( 0,    -dMin, 0, 1));
+    EXPECT(is_equal(dMin, -dMin, 0, 2));
+    EXPECT(is_equal(-dMin, dMin, 0, 2));
+    EXPECT(is_equal(dMin, 0, 0, 1));
+    EXPECT(is_equal(0, dMin, 0, 1));
+    EXPECT(is_equal(-dMin, 0, 0, 1));
+    EXPECT(is_equal(0, -dMin, 0, 1));
 
-   EXPECT(! is_equal( dMin, -dMin, 0, 1));
-   EXPECT(! is_equal(-dMin,  dMin, 0, 1));
-   EXPECT(! is_equal( dMin,  0   , 0, 0));
-   EXPECT(! is_equal( 0,     dMin, 0, 0));
-   EXPECT(! is_equal(-dMin,  0   , 0, 0));
-   EXPECT(! is_equal( 0,    -dMin, 0, 0));
+    EXPECT(!is_equal(dMin, -dMin, 0, 1));
+    EXPECT(!is_equal(-dMin, dMin, 0, 1));
+    EXPECT(!is_equal(dMin, 0, 0, 0));
+    EXPECT(!is_equal(0, dMin, 0, 0));
+    EXPECT(!is_equal(-dMin, 0, 0, 0));
+    EXPECT(!is_equal(0, -dMin, 0, 0));
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-#if defined( _CRAYC )
+#if defined(_CRAYC)
 #include <fenv.h>
 #else
-static int fedisableexcept(int excepts) { return 0; }
+static int fedisableexcept(int excepts) {
+    return 0;
+}
 static int FE_ALL_EXCEPT = 0;
 #endif
 
-int main(int argc,char **argv)
-{
+int main(int argc, char** argv) {
     fedisableexcept(FE_ALL_EXCEPT);
-    return run_tests ( argc, argv );
+    return run_tests(argc, argv);
 }
-

@@ -68,8 +68,7 @@ void ClimateDate::print(std::ostream& s) const {
 #else
 
     char oldfill = s.fill();
-    s << year << '-' << std::setw(3) << std::setfill('0') << (dayOfYear + 1)
-      << std::setfill(oldfill);
+    s << year << '-' << std::setw(3) << std::setfill('0') << (dayOfYear + 1) << std::setfill(oldfill);
 #endif
 }
 

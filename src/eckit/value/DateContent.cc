@@ -10,100 +10,85 @@
 
 
 #include "eckit/value/DateContent.h"
-#include "eckit/value/NumberContent.h"
 #include "eckit/parser/JSON.h"
 #include "eckit/utils/Hash.h"
+#include "eckit/value/NumberContent.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ClassSpec DateContent::classSpec_ = {&Content::classSpec(),"DateContent",};
+ClassSpec DateContent::classSpec_ = {
+    &Content::classSpec(),
+    "DateContent",
+};
 Reanimator<DateContent> DateContent::reanimator_;
 
-DateContent::DateContent(const Date& d):
-    value_(d)
-{
-}
+DateContent::DateContent(const Date& d) : value_(d) {}
 
-DateContent::DateContent(Stream& s):
-	Content(s)
-{
-	std::string dd;
-	s >> dd;
+DateContent::DateContent(Stream& s) : Content(s) {
+    std::string dd;
+    s >> dd;
     value_ = Date(dd);
 }
 
-void DateContent::encode(Stream& s) const
-{
-	Content::encode(s);
+void DateContent::encode(Stream& s) const {
+    Content::encode(s);
     std::string dd = value_;
-	s << dd;
+    s << dd;
 }
 
-DateContent::~DateContent()
-{
-}
+DateContent::~DateContent() {}
 
 Content* DateContent::clone() const {
     return new DateContent(value_);
 }
 
-void DateContent::print(std::ostream& s) const
-{
+void DateContent::print(std::ostream& s) const {
     s << value_;
 }
 
-void DateContent::json(JSON& s) const
-{
+void DateContent::json(JSON& s) const {
     s << std::string(value_);
 }
 
-int DateContent::compare(const Content& other) const
-{
-	return -other.compareDate(*this);
+int DateContent::compare(const Content& other) const {
+    return -other.compareDate(*this);
 }
 
-int DateContent::compareDate(const DateContent& other) const
-{
-    if(value_ == other.value_) return 0;
+int DateContent::compareDate(const DateContent& other) const {
+    if (value_ == other.value_)
+        return 0;
 
     return (value_ < other.value_) ? -1 : 1;
 }
 
-void DateContent::value(Date& d) const
-{
+void DateContent::value(Date& d) const {
     d = value_;
 }
 
-Content* DateContent::add(const Content& other) const
-{
-	return other.addDate(*this);
+Content* DateContent::add(const Content& other) const {
+    return other.addDate(*this);
 }
 
-Content* DateContent::sub(const Content& other) const
-{
-	return other.subDate(*this);
+Content* DateContent::sub(const Content& other) const {
+    return other.subDate(*this);
 }
 
-Content* DateContent::subDate(const DateContent& other) const
-{
+Content* DateContent::subDate(const DateContent& other) const {
     return new NumberContent(value_ - other.value_);
 }
 
-Content* DateContent::mul(const Content& other) const
-{
+Content* DateContent::mul(const Content& other) const {
     return other.mulDate(*this);
 }
 
-Content* DateContent::div(const Content& other) const
-{
+Content* DateContent::div(const Content& other) const {
     return other.divDate(*this);
 }
 
-Content* DateContent::mod(const Content& other) const
-{
+Content* DateContent::mod(const Content& other) const {
     return other.modDate(*this);
 }
 
@@ -124,4 +109,4 @@ void DateContent::hash(Hash& h) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

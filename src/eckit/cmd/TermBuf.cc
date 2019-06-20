@@ -8,8 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 #include "eckit/cmd/TermBuf.h"
 
@@ -29,11 +29,11 @@ int TermPutChar(int c) {
     return c;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 TermBuf::TermBuf(std::ostream& o) : out_(o) {
     setp(buffer_, buffer_ + sizeof(buffer_));
@@ -45,7 +45,8 @@ TermBuf::~TermBuf() {
 
 int TermBuf::sync() {
     for (char* c = pbase(); c != pptr(); ++c) {
-        if (*c == '\n') clearEOL();
+        if (*c == '\n')
+            clearEOL();
         out_ << *c;
     }
     setp(pbase(), epptr());
@@ -55,7 +56,8 @@ int TermBuf::sync() {
 
 int TermBuf::overflow(int c) {
     sync();
-    if (c == EOF) return 0;
+    if (c == EOF)
+        return 0;
 
     sputc(c);
     return 0;
@@ -86,6 +88,6 @@ void TermBuf::clearEOS() {
     TermClearEOS();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

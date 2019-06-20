@@ -9,54 +9,50 @@
  */
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/resource.h>
+#include <unistd.h>
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/Select.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Seconds.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/log/Seconds.h"
-
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PipeApplication::PipeApplication(int argc, char** argv, const char* homeenv):
+PipeApplication::PipeApplication(int argc, char** argv, const char* homeenv) :
     Application(argc, argv, homeenv),
     in_("-in", -1),
     out_("-out", -1),
-    terminate_(false)
-    {
+    terminate_(false) {
     // Establish relationship with 'parent' thread for the monitoring
 
     long parent = Resource<long>("-parent", 0);
     Monitor::instance().parent(parent);
 
     // If we fork, avoid childs having the pipe open
-    SYSCALL(fcntl(in_,  F_SETFD, FD_CLOEXEC));
+    SYSCALL(fcntl(in_, F_SETFD, FD_CLOEXEC));
     SYSCALL(fcntl(out_, F_SETFD, FD_CLOEXEC));
 }
 
-PipeApplication::~PipeApplication() {
-}
+PipeApplication::~PipeApplication() {}
 
-void PipeApplication::run()
-{
-    long timeout = Resource<long>("selectTimeout", 10 * 60); // 10 Minutes
+void PipeApplication::run() {
+    long timeout = Resource<long>("selectTimeout", 10 * 60);  // 10 Minutes
 
     bool debug = false;
 
     if (getenv("PIPE_DEBUG")) {
         debug = true;
         std::cout << "PIPE_DEBUG[" << name_ << "]" << std::endl;
-        if ( Application::name() == getenv("PIPE_DEBUG") ) {
+        if (Application::name() == getenv("PIPE_DEBUG")) {
             std::cout << "debug me " << getpid() << std::endl;
             ::sleep(10);
 
@@ -67,7 +63,7 @@ void PipeApplication::run()
     long maxRequests = Resource<long>("maxRequests", 0);
     long maxCpu      = Resource<long>("maxCpu", 0);
     long maxUptime   = Resource<long>("maxUptime", 0);
-    long maxMemory   = Resource<long>("maxMemory", 0); // Given in MB
+    long maxMemory   = Resource<long>("maxMemory", 0);  // Given in MB
     long maxSwaps    = Resource<long>("maxSwaps", 0);
 
     PipeStream pipe(in_, out_);
@@ -93,14 +89,14 @@ void PipeApplication::run()
 
         try {
             bool end_;
-            pipe >> end_; // End of batch marker
+            pipe >> end_;  // End of batch marker
             if (end_)
                 endBatch();
             else
                 process(pipe);
-        } catch (std::exception& e) {
-            Log::error() << "** " << e.what() << " Caught in " <<
-                         Here() << std::endl;
+        }
+        catch (std::exception& e) {
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is re-thrown" << std::endl;
             pipe << e;
             throw;
@@ -114,53 +110,39 @@ void PipeApplication::run()
 
         time_t uptime = Application::uptime();
 
-        Log::info() << "End of request " << BigNum(count)
-                    << ", PID: "         << ::getpid()
-                    << ", Uptime: "      << Seconds(uptime)
-                    << ", CPU: "         << Seconds(usage.ru_utime.tv_sec + usage.ru_utime.tv_sec)
-                    << ", Memory: "      << Bytes(usage.ru_maxrss * 1024)
-                    << ", Swaps: "       << BigNum(usage.ru_nswap)
+        Log::info() << "End of request " << BigNum(count) << ", PID: " << ::getpid() << ", Uptime: " << Seconds(uptime)
+                    << ", CPU: " << Seconds(usage.ru_utime.tv_sec + usage.ru_utime.tv_sec)
+                    << ", Memory: " << Bytes(usage.ru_maxrss * 1024) << ", Swaps: " << BigNum(usage.ru_nswap)
                     << std::endl;
 
-        if(terminate_) {
+        if (terminate_) {
             Log::info() << "Process termination requested, exiting" << std::endl;
             return;
         }
 
         if (maxRequests && (count >= maxRequests)) {
-            Log::info() << "Maximum number of requests reached ("
-                        << BigNum(maxRequests)
-                        << "), exiting" << std::endl;
+            Log::info() << "Maximum number of requests reached (" << BigNum(maxRequests) << "), exiting" << std::endl;
             return;
         }
 
         if (maxUptime && (uptime >= maxUptime)) {
-            Log::info() << "Maximum uptime reached ("
-                        << Seconds(maxUptime)
-                        << "), exiting" << std::endl;
+            Log::info() << "Maximum uptime reached (" << Seconds(maxUptime) << "), exiting" << std::endl;
             return;
         }
 
         if (maxCpu && (usage.ru_utime.tv_sec + usage.ru_utime.tv_sec >= maxCpu)) {
-            Log::info() << "Maximum CPU usage reached ("
-                        << Seconds(maxCpu)
-                        << "), exiting" << std::endl;
+            Log::info() << "Maximum CPU usage reached (" << Seconds(maxCpu) << "), exiting" << std::endl;
             return;
         }
 
         if (maxMemory && (usage.ru_maxrss >= (maxMemory * 1024))) {
-            Log::info() << "Maximum memory usage reached ("
-                        << Bytes(usage.ru_maxrss * 1024)
-                        << " > "
-                        << Bytes(maxMemory * 1024 * 1024)
-                        << "), exiting" << std::endl;
+            Log::info() << "Maximum memory usage reached (" << Bytes(usage.ru_maxrss * 1024) << " > "
+                        << Bytes(maxMemory * 1024 * 1024) << "), exiting" << std::endl;
             return;
         }
 
         if (maxSwaps && (usage.ru_nswap >= maxSwaps)) {
-            Log::info() << "Maximum memory usage reached ("
-                        << BigNum(maxSwaps)
-                        << "), exiting" << std::endl;
+            Log::info() << "Maximum memory usage reached (" << BigNum(maxSwaps) << "), exiting" << std::endl;
             return;
         }
 
@@ -186,25 +168,23 @@ void PipeApplication::run()
 }
 
 
-void PipeApplication::endBatch() {
-}
+void PipeApplication::endBatch() {}
 
 
-void PipeApplication::init(Stream&) {
-}
+void PipeApplication::init(Stream&) {}
 
 void PipeApplication::launch(const std::string& name, int input, int output) {
-    char in [20]; snprintf(in, 20, "%d", input);
-    char out[20]; snprintf(out, 20, "%d", output);
-    char par[20]; snprintf(par, 20, "%ld", Monitor::instance().self());
+    char in[20];
+    snprintf(in, 20, "%d", input);
+    char out[20];
+    snprintf(out, 20, "%d", output);
+    char par[20];
+    snprintf(par, 20, "%ld", Monitor::instance().self());
 
     PathName cmd = std::string("~/bin/") + name;
 
-    Log::debug() << "execlp(" << cmd.localPath() << ','
-                 << cmd.baseName().localPath() << ','
-                 << "-in," << in << ','
-                 << "-out," << out << ','
-                 << "-parent," << par << ")" << std::endl;
+    Log::debug() << "execlp(" << cmd.localPath() << ',' << cmd.baseName().localPath() << ',' << "-in," << in << ','
+                 << "-out," << out << ',' << "-parent," << par << ")" << std::endl;
 
 #if 0
     if (getenv("PIPE_DEBUG")) {
@@ -217,7 +197,7 @@ void PipeApplication::launch(const std::string& name, int input, int output) {
     else
 #endif
 
-        char command[1024];
+    char command[1024];
     char basename[1024];
 
     ASSERT(sizeof(command) - 1 > std::string(cmd).length());
@@ -225,11 +205,7 @@ void PipeApplication::launch(const std::string& name, int input, int output) {
     snprintf(command, 1024, "%s", cmd.localPath());
     snprintf(basename, 1024, "%s", cmd.baseName().localPath());
 
-    ::execlp(command, basename,
-             "-in", in,
-             "-out", out,
-             "-parent", par,
-             (void*)0);
+    ::execlp(command, basename, "-in", in, "-out", out, "-parent", par, (void*)0);
 
     std::cerr << "Exec failed " << cmd << Log::syserr << std::endl;
 
@@ -244,4 +220,4 @@ void PipeApplication::waiting() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

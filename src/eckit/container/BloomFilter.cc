@@ -21,10 +21,7 @@ namespace eckit {
 
 
 template <typename T>
-BloomFilter<T>::BloomFilter(size_t size) :
-    size_(size),
-    entries_(0),
-    data_(elementCount(size), 0) {}
+BloomFilter<T>::BloomFilter(size_t size) : size_(size), entries_(0), data_(elementCount(size), 0) {}
 
 
 template <typename T>
@@ -41,8 +38,8 @@ template <typename T>
 void BloomFilter<T>::insert(const T& value) {
 
     size_t bit_index = index(value);
-    size_t elem = bit_index / sizeof(data_type);
-    size_t offset = bit_index % sizeof(data_type);
+    size_t elem      = bit_index / sizeof(data_type);
+    size_t offset    = bit_index % sizeof(data_type);
 
     data_[elem] |= (data_type(1) << offset);
     entries_++;
@@ -53,8 +50,8 @@ template <typename T>
 bool BloomFilter<T>::contains(const T& value) const {
 
     size_t bit_index = index(value);
-    size_t elem = bit_index / sizeof(data_type);
-    size_t offset = bit_index % sizeof(data_type);
+    size_t elem      = bit_index / sizeof(data_type);
+    size_t offset    = bit_index % sizeof(data_type);
 
     return !((data_[elem] & (data_type(1) << offset)) == 0);
 }
@@ -66,13 +63,13 @@ void BloomFilter<T>::print(std::ostream& s) const {
 }
 
 
-template<typename T>
+template <typename T>
 size_t BloomFilter<T>::elementCount(size_t nbits) {
     return (nbits == 0) ? 0 : ((nbits - 1) / sizeof(data_type)) + 1;
 }
 
 
-template<typename T>
+template <typename T>
 size_t BloomFilter<T>::index(const T& value) const {
 
     // n.b. We could use any other hash, but MD5 is already in here.
@@ -93,4 +90,4 @@ size_t BloomFilter<T>::index(const T& value) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

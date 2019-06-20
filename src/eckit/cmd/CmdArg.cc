@@ -12,14 +12,15 @@
 #include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec CmdArg::classSpec_ = {
-    &Streamable::classSpec(), "CmdArg",
+    &Streamable::classSpec(),
+    "CmdArg",
 };
 Reanimator<CmdArg> CmdArg::reanimator_;
 
@@ -31,7 +32,7 @@ void CmdArg::encode(Stream& s) const {
 
     for (CmdMap::const_iterator i = args_.begin(); i != args_.end(); ++i) {
         std::string lhs = (*i).first;
-        Value rhs = (*i).second;
+        Value rhs       = (*i).second;
         s << lhs;
         s << rhs;
     }
@@ -50,14 +51,11 @@ CmdArg::CmdArg(Stream& s) : Streamable(s) {
     }
 }
 
-CmdArg::CmdArg() {
-}
+CmdArg::CmdArg() {}
 
-CmdArg::~CmdArg() {
-}
+CmdArg::~CmdArg() {}
 
-CmdArg::CmdArg(const CmdArg& other) : args_(other.args_) {
-}
+CmdArg::CmdArg(const CmdArg& other) : args_(other.args_) {}
 
 CmdArg& CmdArg::operator=(const CmdArg& other) {
     args_ = other.args_;
@@ -73,7 +71,8 @@ const Value& CmdArg::get(const std::string& key, const Value& def) const {
     CmdMap::const_iterator j = args_.find(key);
     if (j == args_.end()) {
         return def;
-    } else {
+    }
+    else {
         return (*j).second;
     }
 }
@@ -105,7 +104,8 @@ void CmdArg::print(std::ostream& out) const {
 
 std::vector<std::string> CmdArg::args() const {
     std::vector<std::string> result;
-    for (CmdMap::const_iterator i = args_.begin(); i != args_.end(); ++i) result.push_back((*i).first);
+    for (CmdMap::const_iterator i = args_.begin(); i != args_.end(); ++i)
+        result.push_back((*i).first);
     return result;
 }
 
@@ -129,7 +129,8 @@ void CmdArg::erase(long from, long to) {
 
 void CmdArg::erase(const std::string& s) {
     CmdMap::iterator j = args_.find(s);
-    if (j != args_.end()) args_.erase(j);
+    if (j != args_.end())
+        args_.erase(j);
 }
 
 void CmdArg::operator+=(const CmdArg& other) {
@@ -140,7 +141,8 @@ void CmdArg::operator+=(const CmdArg& other) {
     // Find where we start adding
     long i = 0;
     CmdMap::iterator j;
-    while ((j = args_.find(Translator<long, std::string>()(i))) != args_.end()) ++i;
+    while ((j = args_.find(Translator<long, std::string>()(i))) != args_.end())
+        ++i;
 
     // Dont copy arg[0]
     tmp.args_.erase(tmp.args_.find("0"));
@@ -154,7 +156,8 @@ void CmdArg::operator+=(const CmdArg& other) {
     }
 
     // Add the rest
-    for (CmdMap::iterator m = tmp.args_.begin(); m != tmp.args_.end(); ++m) args_[(*m).first] = (*m).second;
+    for (CmdMap::iterator m = tmp.args_.begin(); m != tmp.args_.end(); ++m)
+        args_[(*m).first] = (*m).second;
 }
 
 bool CmdArg::exists(const std::string& key) const {
@@ -175,7 +178,8 @@ const Value& CmdArg::operator()(const std::string& key, Value defaultval) {
     if (j == args_.end()) {
         set(key, defaultval);
         return args_[key];
-    } else
+    }
+    else
         return (*j).second;
 }
 
@@ -184,6 +188,6 @@ const Value& CmdArg::operator()(const long lkey, Value defaultval) {
     return operator()(key, defaultval);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

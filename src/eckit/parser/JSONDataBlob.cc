@@ -20,22 +20,18 @@ namespace eckit {
 // Construct JSONDataBlob builder object, to self-register this type with the
 // DataBlobFactory
 namespace {
-    DataBlobBuilder<JSONDataBlob> jsonBlobBuilder("json");
+DataBlobBuilder<JSONDataBlob> jsonBlobBuilder("json");
 }
 
 // -------------------------------------------------------------------------------------------------
 
-JSONDataBlob::JSONDataBlob(const void * data, size_t length) :
-    DataBlob(data, length),
-    metadata_(buffer_) {
+JSONDataBlob::JSONDataBlob(const void* data, size_t length) : DataBlob(data, length), metadata_(buffer_) {
 
     Log::info() << "[" << *this << "] constructor" << std::endl;
 }
 
 
-JSONDataBlob::JSONDataBlob(DataHandle& dh, size_t length) :
-    DataBlob(dh, length),
-    metadata_(buffer_) {
+JSONDataBlob::JSONDataBlob(DataHandle& dh, size_t length) : DataBlob(dh, length), metadata_(buffer_) {
 
     Log::info() << "[" << *this << "] constructor" << std::endl;
 }
@@ -53,4 +49,4 @@ void JSONDataBlob::print(std::ostream& os) const {
 
 // -------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

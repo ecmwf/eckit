@@ -75,6 +75,7 @@ protected:
     virtual Value   keys() const;
     virtual Value&  element(const Value&);
     virtual bool    contains(const Value& key) const;
+    virtual Value   remove(const Value&);
 
 
     virtual void   print(std::ostream&) const;
@@ -82,6 +83,7 @@ protected:
 
     virtual std::string typeName() const       { return "OrderedMap"; }
 
+    virtual bool   isMap() const         { return true; }
     virtual bool   isOrderedMap() const         { return true; }
     virtual Content* clone() const;
     virtual void    dump(std::ostream& out, size_t depth, bool indent = true) const;

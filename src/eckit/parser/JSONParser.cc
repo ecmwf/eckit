@@ -15,17 +15,14 @@
 
 #include <fstream>
 
-#include "eckit/value/Value.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
 
-JSONParser::JSONParser(std::istream &in):
-    ObjectParser(in, false)
-{
-}
+JSONParser::JSONParser(std::istream& in) : ObjectParser(in, false) {}
 
 Value JSONParser::decodeFile(const PathName& path) {
     std::ifstream in(std::string(path).c_str());
@@ -41,11 +38,10 @@ Value JSONParser::decodeString(const std::string& str) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Value JSONParser::parseValue()
-{
-   return parseJSON();
+Value JSONParser::parseValue() {
+    return parseJSON();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

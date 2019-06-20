@@ -1,6 +1,6 @@
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/ResizableBuffer.h"
@@ -17,25 +17,24 @@
 class SerializeObject {
 
 protected:
-
     /// De-serialize vectors
     /// Do not use for large vectors / arrays
-    template<typename T>
+    template <typename T>
     void readVector(std::vector<T>& v, eckit::Stream& s) const {
         size_t sz;
-        s  >> sz;
+        s >> sz;
         v.resize(sz);
-        for(auto& value: v) {
+        for (auto& value : v) {
             s >> value;
         }
     }
 
     /// Serialize vectors
     /// Do not use for large vectors / arrays
-    template<typename T>
+    template <typename T>
     void writeVector(const std::vector<T>& v, eckit::Stream& s) const {
-        s  << v.size();
-        for(auto& value: v) {
+        s << v.size();
+        for (auto& value : v) {
             s << value;
         }
     }
@@ -44,14 +43,8 @@ protected:
 
 class Obj : protected SerializeObject {
 public:
-
-    Obj(const std::string& s, int i, double d, bool b, size_t sz = 2) :
-        s_(s),
-        i_(i),
-        d_(d),
-        b_(b),
-        data_(i * sz) {
-        for(auto& value: data_) {
+    Obj(const std::string& s, int i, double d, bool b, size_t sz = 2) : s_(s), i_(i), d_(d), b_(b), data_(i * sz) {
+        for (auto& value : data_) {
             value = 2 * i;
         }
     }
@@ -65,27 +58,26 @@ public:
         readVector(data_, s);
         bool next;
         s >> next;
-        if(next) {
+        if (next) {
             next_.reset(new Obj(s));
         }
     }
 
     /// Encodes an object into a stream
     void encode(eckit::Stream& s) const {
-        s << s_
-          << i_
-          << d_
-          << b_;
-        writeVector(data_, s); // do not use for large vectors / arrays
-        if(next_) {
+        s << s_ << i_ << d_ << b_;
+        writeVector(data_, s);  // do not use for large vectors / arrays
+        if (next_) {
             s << true;
             next_->encode(s);
         }
-        else { s << false; }
+        else {
+            s << false;
+        }
     }
 
     void add(Obj* o) {
-        if(!next_) {
+        if (!next_) {
             next_.reset(o);
             return;
         }
@@ -95,50 +87,42 @@ public:
     bool operator==(const Obj& rhs) {
 
         auto compvec = [&]() {
-            for(size_t i = 0; i < data_.size(); ++i) {
-                if(data_[i] != rhs.data_[i]) return false;
+            for (size_t i = 0; i < data_.size(); ++i) {
+                if (data_[i] != rhs.data_[i])
+                    return false;
             }
             return true;
         };
 
         auto compnext = [&]() {
-            if(not next_ && not rhs.next_) {
+            if (not next_ && not rhs.next_) {
                 return true;
             }
-            if(next_ && rhs.next_) {
+            if (next_ && rhs.next_) {
                 return *next_ == *rhs.next_;
             }
             return false;
         };
 
-        return s_ == rhs.s_ &&
-               i_ == rhs.i_ &&
-               d_ == rhs.d_ &&
-               b_ == rhs.b_ &&
-               data_.size() == rhs.data_.size() &&
-               compvec() &&
-               compnext();
+        return s_ == rhs.s_ && i_ == rhs.i_ && d_ == rhs.d_ && b_ == rhs.b_ && data_.size() == rhs.data_.size() &&
+               compvec() && compnext();
     }
 
-    void print(std::ostream& os) const
-    {
-        os << "Obj("
-           << s_ << ","
-           << i_ << ","
-           << d_ << ","
-           << b_ << ","
-           << data_;
+    void print(std::ostream& os) const {
+        os << "Obj(" << s_ << "," << i_ << "," << d_ << "," << b_ << "," << data_;
 
-        if(next_)
+        if (next_)
             os << "," << *next_;
 
         os << ")";
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Obj& p) { p.print(os); return os; }
+    friend std::ostream& operator<<(std::ostream& os, const Obj& p) {
+        p.print(os);
+        return os;
+    }
 
-private: // members
-
+private:  // members
     std::string s_;
     int i_;
     double d_;
@@ -168,18 +152,11 @@ static size_t me = 0;
 
 class ObjSend : public eckit::Tool {
 public:
-
-    ObjSend(int argc, char** argv) :
-        Tool(argc, argv, "HOME"),
-        sendBuffer_(32)
-    {
-        sendBuffer_.zero();
-    }
+    ObjSend(int argc, char** argv) : Tool(argc, argv, "HOME"), sendBuffer_(32) { sendBuffer_.zero(); }
 
     ~ObjSend() {}
 
 private:
-
     eckit::ResizableBuffer sendBuffer_;
 
     ObjSend(const ObjSend&) = delete;
@@ -187,13 +164,15 @@ private:
 
     void send(const Obj& o, size_t to) {
 
-        eckit::Log::info() << "[" << me << "] " << "sending to " << to << " --- " << o << std::endl;
+        eckit::Log::info() << "[" << me << "] "
+                           << "sending to " << to << " --- " << o << std::endl;
 
         eckit::ResizableMemoryStream s(sendBuffer_);
 
         o.encode(s);
 
-        eckit::Log::info() << "[" << me << "] " << "stream position: " << s.position() << " / " << sendBuffer_.size() << std::endl;
+        eckit::Log::info() << "[" << me << "] "
+                           << "stream position: " << s.position() << " / " << sendBuffer_.size() << std::endl;
 
         // use position in stream to avoid sending the whole buffer
         // assumes the receive probes for size first
@@ -205,11 +184,12 @@ private:
 
         eckit::mpi::Status st = eckit::mpi::comm().probe(int(from), 0);
 
-        size_t size = eckit::round(eckit::mpi::comm().getCount<char>(st), 8); //< round to nearest 8 bytes
+        size_t size = eckit::round(eckit::mpi::comm().getCount<char>(st), 8);  //< round to nearest 8 bytes
 
-        eckit::Log::info() << "[" << me << "] " << "receiving from " << from << " --- size " << size << std::endl;
+        eckit::Log::info() << "[" << me << "] "
+                           << "receiving from " << from << " --- size " << size << std::endl;
 
-        eckit::ResizableBuffer b(size); // must be enough
+        eckit::ResizableBuffer b(size);  // must be enough
         b.zero();
 
         eckit::mpi::comm().receive(static_cast<char*>(b.data()), b.size(), int(from), 0);
@@ -218,7 +198,8 @@ private:
 
         Obj o(s);
 
-        eckit::Log::info() << "[" << me << "] " << "receiving from " << from << " --- " << o << std::endl;
+        eckit::Log::info() << "[" << me << "] "
+                           << "receiving from " << from << " --- " << o << std::endl;
 
         return o;
     }
@@ -231,7 +212,7 @@ private:
 
         ASSERT_MSG(total > 1, "Must be ran with more than 1 rank");
 
-        size_t to = circlel(me, total);
+        size_t to   = circlel(me, total);
         size_t from = circler(me, total);
 
         eckit::Log::info() << "[" << me << "] " << from << " -> [" << me << "] -> " << to << std::endl;
@@ -240,7 +221,7 @@ private:
         // TEST Simple objects
         //-----------------------------------------------
         {
-            Obj so {"foo", int(me), 374., true};
+            Obj so{"foo", int(me), 374., true};
             send(so, to);
 
             Obj ro = receive(from);
@@ -251,7 +232,7 @@ private:
         // TEST Complex object hierarchy
         //-----------------------------------------------
         {
-            Obj so {"foo", int(me), 374., true};
+            Obj so{"foo", int(me), 374., true};
             so.add(new Obj("foo", int(me), 374., true));
             so.add(new Obj("foo", int(me), 374., true));
             so.add(new Obj("foo", int(me), 374., true));
@@ -260,7 +241,7 @@ private:
 
             Obj ro = receive(from);
 
-            Obj test {"foo", int(from), 374., true};
+            Obj test{"foo", int(from), 374., true};
             test.add(new Obj("foo", int(from), 374., true));
             test.add(new Obj("foo", int(from), 374., true));
             test.add(new Obj("foo", int(from), 374., true));

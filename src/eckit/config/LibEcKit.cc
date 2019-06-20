@@ -28,43 +28,41 @@ namespace eckit {
 
 REGISTER_LIBRARY(LibEcKit);
 
-LibEcKit::LibEcKit() :
-    Library("eckit"),
-    abort_handler_(&(::abort))
-{
-}
+LibEcKit::LibEcKit() : Library("eckit"), abort_handler_(&(::abort)) {}
 
-LibEcKit& LibEcKit::instance()
-{
+LibEcKit& LibEcKit::instance() {
     static LibEcKit libeckit;
     return libeckit;
 }
 
-void LibEcKit::setAbortHandler(abort_handler_t h)
-{
+void LibEcKit::setAbortHandler(abort_handler_t h) {
     AutoLock<LibEcKit> lock(*this);
-    if(h) { abort_handler_ = h; }
+    if (h) {
+        abort_handler_ = h;
+    }
 }
 
-void LibEcKit::abort()
-{
+void LibEcKit::abort() {
     abort_handler_();
 }
 
-const void* LibEcKit::addr() const { return this; }
+const void* LibEcKit::addr() const {
+    return this;
+}
 
-std::string LibEcKit::version() const { return eckit_version_str(); }
+std::string LibEcKit::version() const {
+    return eckit_version_str();
+}
 
 std::string LibEcKit::gitsha1(unsigned int count) const {
     std::string sha1(eckit_git_sha1());
-    if(sha1.empty()) {
+    if (sha1.empty()) {
         return "not available";
     }
 
-    return sha1.substr(0,std::min(count,40u));
+    return sha1.substr(0, std::min(count, 40u));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

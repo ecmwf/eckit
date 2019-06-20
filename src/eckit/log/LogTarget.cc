@@ -16,17 +16,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LogTarget::LogTarget() {
-}
+LogTarget::LogTarget() {}
 
-LogTarget::~LogTarget() {
-}
+LogTarget::~LogTarget() {}
 
-void LogTarget::print(std::ostream& s) const
-{
+void LogTarget::print(std::ostream& s) const {
     NOTIMP;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

@@ -7,26 +7,23 @@ FEATURE ECKIT-221
 
 */
 
-#include <map>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/mpi/Comm.h"
-#include "eckit/utils/Translator.h"
 #include "eckit/runtime/Tool.h"
+#include "eckit/utils/Translator.h"
 
 using namespace eckit;
 
 class MyTool : public Tool {
 public:
+    MyTool(int argc, char** argv) : Tool(argc, argv) {}
 
-    MyTool(int argc, char **argv) : Tool(argc,argv) {}
-
-    virtual ~MyTool() {
-        mpi::finaliseAllComms();
-    }
+    virtual ~MyTool() { mpi::finaliseAllComms(); }
 
     virtual void run() {
 
@@ -36,20 +33,20 @@ public:
 
         PathName out = filename + "." + Translator<size_t, std::string>()(mpi::comm().rank());
 
-        std::unique_ptr<DataHandle> dh ( out.fileHandle() ); AutoClose closer(*dh);
+        std::unique_ptr<DataHandle> dh(out.fileHandle());
+        AutoClose closer(*dh);
         dh->openForWrite(buffer.size());
         dh->write(buffer.data(), buffer.size());
     }
-
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
-    if( argc != 2 ) {
+    if (argc != 2) {
         std::cout << "Usage: " << argv[0] << " <file>" << std::endl;
         return -1;
     }
 
-    MyTool tool(argc,argv);
+    MyTool tool(argc, argv);
     return tool.start();
 }

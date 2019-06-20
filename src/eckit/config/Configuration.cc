@@ -488,15 +488,13 @@ size_t Configuration::getUnsigned(const std::string& name, const size_t& default
     return result;
 }
 
-std::int32_t Configuration::getInt32(const std::string& name,
-                                     const std::int32_t& defaultVal) const {
+std::int32_t Configuration::getInt32(const std::string& name, const std::int32_t& defaultVal) const {
     std::int32_t result;
     _getWithDefault(name, result, defaultVal);
     return result;
 }
 
-std::int64_t Configuration::getInt64(const std::string& name,
-                                     const std::int64_t& defaultVal) const {
+std::int64_t Configuration::getInt64(const std::string& name, const std::int64_t& defaultVal) const {
     std::int64_t result;
     _getWithDefault(name, result, defaultVal);
     return result;
@@ -520,36 +518,34 @@ std::string Configuration::getString(const std::string& name, const std::string&
     return result;
 }
 
-std::vector<int> Configuration::getIntVector(const std::string& name,
-                                             const std::vector<int>& defaultValue) const {
+std::vector<int> Configuration::getIntVector(const std::string& name, const std::vector<int>& defaultValue) const {
     std::vector<int> result;
     _getWithDefault(name, result, defaultValue);
     return result;
 }
 
-std::vector<long> Configuration::getLongVector(const std::string& name,
-                                               const std::vector<long>& defaultValue) const {
+std::vector<long> Configuration::getLongVector(const std::string& name, const std::vector<long>& defaultValue) const {
     std::vector<long> result;
     _getWithDefault(name, result, defaultValue);
     return result;
 }
 
-std::vector<size_t> Configuration::getUnsignedVector(
-    const std::string& name, const std::vector<size_t>& defaultValue) const {
+std::vector<size_t> Configuration::getUnsignedVector(const std::string& name,
+                                                     const std::vector<size_t>& defaultValue) const {
     std::vector<size_t> result;
     _getWithDefault(name, result, defaultValue);
     return result;
 }
 
-std::vector<std::int32_t> Configuration::getInt32Vector(
-    const std::string& name, const std::vector<std::int32_t>& defaultValue) const {
+std::vector<std::int32_t> Configuration::getInt32Vector(const std::string& name,
+                                                        const std::vector<std::int32_t>& defaultValue) const {
     std::vector<std::int32_t> result;
     _getWithDefault(name, result, defaultValue);
     return result;
 }
 
-std::vector<std::int64_t> Configuration::getInt64Vector(
-    const std::string& name, const std::vector<std::int64_t>& defaultValue) const {
+std::vector<std::int64_t> Configuration::getInt64Vector(const std::string& name,
+                                                        const std::vector<std::int64_t>& defaultValue) const {
     std::vector<std::int64_t> result;
     _getWithDefault(name, result, defaultValue);
     return result;
@@ -569,8 +565,8 @@ std::vector<double> Configuration::getDoubleVector(const std::string& name,
     return result;
 }
 
-std::vector<std::string> Configuration::getStringVector(
-    const std::string& name, const std::vector<std::string>& defaultValue) const {
+std::vector<std::string> Configuration::getStringVector(const std::string& name,
+                                                        const std::vector<std::string>& defaultValue) const {
     std::vector<std::string> result;
     _getWithDefault(name, result, defaultValue);
     return result;

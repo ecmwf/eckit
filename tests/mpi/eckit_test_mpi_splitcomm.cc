@@ -23,50 +23,50 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 int argc;
-char ** argv;
+char** argv;
 
-CASE( "Test MPI Communicator Split" )
-{
+CASE("Test MPI Communicator Split") {
     // Get default communicator
     Comm& all = eckit::mpi::comm();
 
     std::string start = all.name();
 
     // Check sizes and ranks
-    EXPECT( all.size() == 4 );
-    EXPECT( all.rank() < 4 );
+    EXPECT(all.size() == 4);
+    EXPECT(all.rank() < 4);
 
     // Split communicator in half
     if (all.rank() < 2) {
         all.split(1, "FirstHalf");
-    } else {
+    }
+    else {
         all.split(2, "SecondHalf");
     }
 
     // Fetch the new communicator
-    const Comm & newcomm = eckit::mpi::comm( ( all.rank() < 2 ? "FirstHalf" : "SecondHalf" ) );
+    const Comm& newcomm = eckit::mpi::comm((all.rank() < 2 ? "FirstHalf" : "SecondHalf"));
 
     // Check sizes and ranks
-    EXPECT ( newcomm.size() == 2 );
-    EXPECT ( newcomm.rank() < 2 );
-    EXPECT ( all.size() == 4 );
+    EXPECT(newcomm.size() == 2);
+    EXPECT(newcomm.rank() < 2);
+    EXPECT(all.size() == 4);
 
     // Check rank order is preserved
-    switch( all.rank() ) {
+    switch (all.rank()) {
         case 0:
-            EXPECT( newcomm.rank() == 0 );
+            EXPECT(newcomm.rank() == 0);
             break;
         case 1:
-            EXPECT ( newcomm.rank() == 1 );
+            EXPECT(newcomm.rank() == 1);
             break;
         case 2:
-            EXPECT (newcomm.rank() == 0 );
+            EXPECT(newcomm.rank() == 0);
             break;
         case 3:
-            EXPECT (newcomm.rank() == 1 );
+            EXPECT(newcomm.rank() == 1);
             break;
     }
 
@@ -74,7 +74,8 @@ CASE( "Test MPI Communicator Split" )
     if (all.rank() < 2) {
         EXPECT(hasComm("FirstHalf"));
         EXPECT(!hasComm("SecondHalf"));
-    } else {
+    }
+    else {
         EXPECT(hasComm("SecondHalf"));
         EXPECT(!hasComm("FirstHalf"));
     }
@@ -82,7 +83,8 @@ CASE( "Test MPI Communicator Split" )
     // Also check setting of default communicator (typical use-case)
     if (all.rank() < 2) {
         setCommDefault("FirstHalf");
-    } else {
+    }
+    else {
         setCommDefault("SecondHalf");
     }
 
@@ -92,12 +94,13 @@ CASE( "Test MPI Communicator Split" )
 
     // test freeing up the default communicator
     if (all.rank() < 2) {
-        EXPECT_THROWS_AS(deleteComm("FirstHalf"), eckit::SeriousBug );
-    } else {
-        EXPECT_THROWS_AS(deleteComm("SecondHalf"), eckit::SeriousBug );
+        EXPECT_THROWS_AS(deleteComm("FirstHalf"), eckit::SeriousBug);
+    }
+    else {
+        EXPECT_THROWS_AS(deleteComm("SecondHalf"), eckit::SeriousBug);
     }
 
-    EXPECT_THROWS_AS(deleteComm("Foo"), eckit::SeriousBug );
+    EXPECT_THROWS_AS(deleteComm("Foo"), eckit::SeriousBug);
 
     setCommDefault(start.c_str());
 
@@ -105,20 +108,20 @@ CASE( "Test MPI Communicator Split" )
     if (all.rank() < 2) {
         EXPECT_NO_THROW(deleteComm("FirstHalf"));
         EXPECT(not eckit::mpi::hasComm("FirstHalf"));
-    } else {
+    }
+    else {
         EXPECT_NO_THROW(deleteComm("SecondHalf"));
         EXPECT(not eckit::mpi::hasComm("SecondHalf"));
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
+int main(int argc, char** argv) {
     eckit::test::argc = argc;
     eckit::test::argv = argv;
-    return run_tests ( argc, argv );
+    return run_tests(argc, argv);
 }

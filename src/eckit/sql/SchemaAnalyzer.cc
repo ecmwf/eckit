@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -29,15 +29,15 @@ void SchemaAnalyzer::addTable(TableDef& table) {
     tableDefs_.push_back(table);
 
     for (const auto& col : table.columns()) {
-        std::string fullname = col.name() + "@" + table.name();
+        std::string fullname   = col.name() + "@" + table.name();
         columnTypes_[fullname] = col.type();
         // Log::debug<LibOdc>() << "SchemaAnalyzer::addTable(): columnTypes_[" << fullname << "] = "
         //                      << columnTypes_[fullname] << std::endl;
     }
-
 }
 
-void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes, const std::string& typeSignature) {
+void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes,
+                                     const std::string& typeSignature) {
     bitfieldTypes_[name] = make_pair(fields, sizes);
 }
 
@@ -58,7 +58,8 @@ std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipT
             continue;
         }
 
-        if (!from.empty()) from += ", ";
+        if (!from.empty())
+            from += ", ";
         from += table.name();
 
         for (const auto& col : table.columns()) {
@@ -67,8 +68,10 @@ std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipT
 
             if (col.type() == "@LINK") {
                 Log::info() << "SchemaAnalyzer::generateSelectAll(): Skipping " << fullname << std::endl;
-            } else {
-                if (!selectlist.empty()) selectlist += ", ";
+            }
+            else {
+                if (!selectlist.empty())
+                    selectlist += ", ";
                 selectlist += fullname;
             }
         }
@@ -83,8 +86,8 @@ TableDefs SchemaAnalyzer::definitions() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 
 #if 0

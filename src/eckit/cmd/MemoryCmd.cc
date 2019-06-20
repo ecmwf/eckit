@@ -11,24 +11,21 @@
 #include "eckit/cmd/MemoryCmd.h"
 #include "eckit/memory/MemoryPool.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-MemoryCmd::MemoryCmd() : CmdResource("memory") {
-}
+MemoryCmd::MemoryCmd() : CmdResource("memory") {}
 
-MemoryCmd::~MemoryCmd() {
-}
+MemoryCmd::~MemoryCmd() {}
 
 void MemoryCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     MemoryPool::info(out);
 }
 
-void MemoryCmd::help(std::ostream&) const {
-}
+void MemoryCmd::help(std::ostream&) const {}
 
 Arg MemoryCmd::usage(const std::string& cmd) const {
     return Arg();
@@ -36,6 +33,6 @@ Arg MemoryCmd::usage(const std::string& cmd) const {
 
 static MemoryCmd MemoryCmd;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

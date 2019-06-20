@@ -31,7 +31,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-std::string System::addrToPath(const void *addr) {
+std::string System::addrToPath(const void* addr) {
 
     std::string result = "/UNKNOWN";
 
@@ -51,5 +51,4 @@ std::string System::addrToPath(const void *addr) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

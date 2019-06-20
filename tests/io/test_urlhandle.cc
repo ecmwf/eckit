@@ -24,42 +24,34 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 #ifdef ECKIT_HAVE_CURL
 
-CASE( "test_urlhandle_get" )
-{
+CASE("test_urlhandle_get") {
     URLHandle h("https://www.ecmwf.int/");
     h.saveInto("/tmp/test_urlhandle_get.html");
 }
 
-CASE( "test_urlhandle_redirect" )
-{
+CASE("test_urlhandle_redirect") {
     URLHandle h("http://www.ecmwf.int");
     h.saveInto("/tmp/test_urlhandle_get.html");
 }
 
-CASE( "test_urlhandle_404" )
-{
+CASE("test_urlhandle_404") {
     // TODO: catch URLHandle::URLException and check code
     // URLHandle h("http://download.ecmwf.org/foobar");
     // h.saveInto("/tmp/test_urlhandle_get.html");
 }
 #else
-CASE( "test_urlhandle" )
-{
-}
+CASE("test_urlhandle") {}
 #endif
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-
-

@@ -23,17 +23,16 @@ using namespace eckit::geometry;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct TestTreeTrait {
-    typedef Point2   Point;
-    typedef double   Payload;
+    typedef Point2 Point;
+    typedef double Payload;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE("test_eckit_container_kdtree_constructor")
-{
+CASE("test_eckit_container_kdtree_constructor") {
     typedef KDTreeMemory<TestTreeTrait> Tree;
 
     Tree kd;
@@ -79,7 +78,7 @@ CASE("test_eckit_container_kdtree_constructor")
     delta = Point(1000.0, 0.0);
     // add it to the last point
     testPoint = Point::add(points.back().point(), delta);
-    nr = kd.nearestNeighbour(testPoint).point();
+    nr        = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
         EXPECT(nr.x(i) == points.back().point().x(i));
@@ -89,7 +88,7 @@ CASE("test_eckit_container_kdtree_constructor")
     delta = Point(-1000.0, 0.0);
     // add it to the point() point
     testPoint = Point::add(points.front().point(), delta);
-    nr = kd.nearestNeighbour(testPoint).point();
+    nr        = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
         EXPECT(nr.x(i) == points.front().point().x(i));
@@ -98,26 +97,21 @@ CASE("test_eckit_container_kdtree_constructor")
     // test N nearest
     refPoint = points[points.size() / 2].point();
     // move this point so it lies between four equally
-    delta = Point(0.5, 0.5);
+    delta     = Point(0.5, 0.5);
     testPoint = Point::add(refPoint, delta);
 
     Tree::NodeList nn = kd.kNearestNeighbours(testPoint, 4);
-    for (Tree::NodeList::iterator it = nn.begin(); it != nn.end(); ++it)
-    {
+    for (Tree::NodeList::iterator it = nn.begin(); it != nn.end(); ++it) {
         Point diff = Point::sub(it->point(), testPoint);
         // make sure we differ by 0.5 along each axis
-        for (unsigned int i = 0; i < Point::dimensions(); ++i)
-        {
+        for (unsigned int i = 0; i < Point::dimensions(); ++i) {
             Log::info() << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) << std::endl;
-            EXPECT( Point::distance(Point(0.0, 0.0), diff, i) == 0.5 );
+            EXPECT(Point::distance(Point(0.0, 0.0), diff, i) == 0.5);
         }
-
     }
-
 }
 
-CASE("test_eckit_container_kdtree_insert")
-{
+CASE("test_eckit_container_kdtree_insert") {
     typedef KDTreeMemory<TestTreeTrait> Tree;
 
     Tree kd;
@@ -149,63 +143,58 @@ CASE("test_eckit_container_kdtree_insert")
 
     // we should find the same point
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        EXPECT( nr.x(i) == refPoint.x(i) );
+        EXPECT(nr.x(i) == refPoint.x(i));
 
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        EXPECT( nr.x(i) == refPoint.x(i) );
+        EXPECT(nr.x(i) == refPoint.x(i));
 
 
     // test "off the scale" - i.e. not within a group of points
     delta = Point(1000.0, 0.0);
     // add it to the last point
     testPoint = Point::add(points.back().point(), delta);
-    nr = kd.nearestNeighbour(testPoint).point();
+    nr        = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        EXPECT( nr.x(i) == points.back().point().x(i) );
+        EXPECT(nr.x(i) == points.back().point().x(i));
 
     // and negatively
     //
     delta = Point(-1000.0, 0.0);
     // add it to the point() point
     testPoint = Point::add(points.front().point(), delta);
-    nr = kd.nearestNeighbour(testPoint).point();
+    nr        = kd.nearestNeighbour(testPoint).point();
 
     for (unsigned int i = 0; i < Point::dimensions(); i++)
-        EXPECT( nr.x(i) == points.front().point().x(i) );
+        EXPECT(nr.x(i) == points.front().point().x(i));
 
 
     // test N nearest
     refPoint = points[points.size() / 2].point();
     // move this point so it lies between four equally
-    delta = Point(0.5, 0.5);
+    delta     = Point(0.5, 0.5);
     testPoint = Point::add(refPoint, delta);
 
     Tree::NodeList nn = kd.kNearestNeighbours(testPoint, 4);
-    for (Tree::NodeList::iterator it = nn.begin(); it != nn.end(); ++it)
-    {
+    for (Tree::NodeList::iterator it = nn.begin(); it != nn.end(); ++it) {
         Point diff = Point::sub(it->point(), testPoint);
         // make sure we differ by 0.5 along each axis
-        for (unsigned int i = 0; i < Point::dimensions(); ++i)
-        {
+        for (unsigned int i = 0; i < Point::dimensions(); ++i) {
             Log::info() << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) << std::endl;
-            EXPECT( Point::distance(Point(0.0, 0.0), diff, i) == 0.5 );
+            EXPECT(Point::distance(Point(0.0, 0.0), diff, i) == 0.5);
         }
-
     }
-
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

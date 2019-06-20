@@ -13,14 +13,13 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CommandStream::CommandStream(const std::string& name, const char* mode) :
-    file_(popen(name.c_str(), mode)) {
+CommandStream::CommandStream(const std::string& name, const char* mode) : file_(popen(name.c_str(), mode)) {
     Log::info() << "CommandStream (" << name << ")" << std::endl;
     if (file_ == nullptr)
         throw CantOpenFile(name);
@@ -44,6 +43,6 @@ std::string CommandStream::name() const {
     return "CommandStream";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

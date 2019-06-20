@@ -23,9 +23,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_eckit_bitio_1" ) {
+CASE("test_eckit_bitio_1") {
 
     size_t N = sizeof(size_t) * 8;
 
@@ -56,7 +56,7 @@ CASE( "test_eckit_bitio_1" ) {
             for (size_t i = 1; i <= N; i++) {
                 for (size_t j = 0; j < 31; ++j) {
                     size_t r = io.read(i);
-                    if ( r != s) {
+                    if (r != s) {
                         std::cout << "k=" << k << std::endl;
                         std::cout << "i=" << i << std::endl;
                         std::cout << "j=" << j << std::endl;
@@ -70,8 +70,7 @@ CASE( "test_eckit_bitio_1" ) {
 }
 
 
-
-CASE( "test_eckit_bitio_2" ) {
+CASE("test_eckit_bitio_2") {
 
     for (size_t nbits = 7; nbits <= 32; ++nbits) {
 
@@ -85,7 +84,7 @@ CASE( "test_eckit_bitio_2" ) {
             MemoryHandle h(b);
 
             BitIO io(h);
-            const char*p = pattern;
+            const char* p = pattern;
             while (*p) {
                 io.write(*p, nbits);
                 p++;
@@ -96,7 +95,7 @@ CASE( "test_eckit_bitio_2" ) {
             MemoryHandle h(b);
 
             BitIO io(h);
-            const char*p = pattern;
+            const char* p = pattern;
             while (*p) {
                 char c = io.read(nbits);
                 EXPECT(*p == c);
@@ -107,14 +106,14 @@ CASE( "test_eckit_bitio_2" ) {
 }
 
 
-CASE( "test_eckit_bitio_3" ) {
+CASE("test_eckit_bitio_3") {
 
     const char* pattern = "TOBEORNOTTOBEORTOBEORNOT#";
 
     MemoryHandle h(pattern, strlen(pattern));
 
     BitIO io(h);
-    const char*p = pattern;
+    const char* p = pattern;
     while (*p) {
         char c = io.read(8);
         EXPECT(*p == c);
@@ -122,10 +121,9 @@ CASE( "test_eckit_bitio_3" ) {
     }
 
     EXPECT(io.read(8, 257) == 257);
-
 }
 
-CASE( "test_eckit_bitio_4" ) {
+CASE("test_eckit_bitio_4") {
 
     const char* pattern = "A";
 
@@ -137,12 +135,10 @@ CASE( "test_eckit_bitio_4" ) {
     EXPECT_THROWS_AS(io.read(6), std::exception);
 
 
-
     EXPECT(io.read(8, 257) == 257);
-
 }
 
-CASE( "test_eckit_bitio_5" ) {
+CASE("test_eckit_bitio_5") {
 
     const unsigned char pattern[] = {0xff};
 
@@ -158,16 +154,13 @@ CASE( "test_eckit_bitio_5" ) {
 
 
     EXPECT(io.read(8, 257) == 257);
-
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

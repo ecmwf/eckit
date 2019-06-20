@@ -14,26 +14,25 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/runtime/Main.h"
 
+#include "./util.h"
 #include "eckit/linalg/LinearAlgebra.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
-#include "./util.h"
 
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
 bool equals(const T& a, const T& b) {
-    return testing::make_view(a.data(), a.data() + a.size()) ==
-           testing::make_view(b.data(), b.data() + b.size());
+    return testing::make_view(a.data(), a.data() + a.size()) == testing::make_view(b.data(), b.data() + b.size());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Test linear algebra interface
 
@@ -74,7 +73,7 @@ CASE("test backend") {
     SECTION("spmv") {
         Vector b = V(4, 5., 5., 5., 5.);
         Vector y = V(2, -42., -42.);
-        Vector z = V(2,  10.,  15.);
+        Vector z = V(2, 10., 15.);
 
         linalg.spmv(S, b, y);
         EXPECT(equals(y, z));
@@ -84,7 +83,7 @@ CASE("test backend") {
     SECTION("spmm") {
         Matrix B = M(4, 2, 5., 7., 5., 7., 5., 7., 5., 7.);
         Matrix Y = M(2, 2, -42., -42., -42., -42.);
-        Matrix Z = M(2, 2,  10.,  14.,  15.,  21.);
+        Matrix Z = M(2, 2, 10., 14., 15., 21.);
 
         linalg.spmm(S, B, Y);
         EXPECT(equals(Y, Z));
@@ -92,12 +91,12 @@ CASE("test backend") {
     }
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     using namespace eckit;
 
     Main::initialise(argc, argv);

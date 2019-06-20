@@ -17,14 +17,14 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/log/Log.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Log.h"
 #include "eckit/net/Port.h"
+#include "eckit/net/UDPServer.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/utils/Translator.h"
-#include "eckit/net/UDPServer.h"
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -39,16 +39,11 @@ private:
 
     virtual void run();
 
-private: // members
-
+private:  // members
     eckit::Port port_;
 };
 
-SysLogServer::SysLogServer(int argc, char** argv) : Application(argc, argv),
-    port_("syslog", 6512)
-{
-
-}
+SysLogServer::SysLogServer(int argc, char** argv) : Application(argc, argv), port_("syslog", 6512) {}
 
 SysLogServer::~SysLogServer() {}
 
@@ -63,12 +58,12 @@ void SysLogServer::run() {
     size_t syslogMaxMessageSize = eckit::Resource<size_t>("syslogMaxMessageSize", 16 * 1024);
     eckit::Buffer buffer(syslogMaxMessageSize);
 
-    for(;;) {
+    for (;;) {
 
-        size_t recv = server.receive(buffer);
+        size_t recv  = server.receive(buffer);
         buffer[recv] = '\0';
 
-        Log::info() << "Received message " << Bytes(recv) << " : " << (const char*) buffer << std::endl;
+        Log::info() << "Received message " << Bytes(recv) << " : " << (const char*)buffer << std::endl;
 
         buffer.zero();
     }
@@ -77,7 +72,7 @@ void SysLogServer::run() {
 }  // namespace eckit
 
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 int main(int argc, char** argv) {

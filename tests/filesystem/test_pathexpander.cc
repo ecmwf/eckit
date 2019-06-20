@@ -9,14 +9,14 @@
  */
 
 
-#include <string>
 #include <fstream>
+#include <string>
 
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathExpander.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;
@@ -26,10 +26,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE("Expand a CWD")
-{
+CASE("Expand a CWD") {
     std::string s = "{CWD}/tmp/foo";
 
     char* e = ::getenv("CURRENT_TEST_DIR");
@@ -40,18 +39,16 @@ CASE("Expand a CWD")
 
     LocalPathName px = PathExpander::expand(s);
 
-    EXPECT( px.realName() == LocalPathName(r).realName());
+    EXPECT(px.realName() == LocalPathName(r).realName());
 }
 
-CASE("Expand using missing handler")
-{
+CASE("Expand using missing handler") {
     std::string s = "{FOO}/tmp/foo";
 
-    EXPECT_THROWS_AS( PathExpander::expand(s), eckit::UserError );
+    EXPECT_THROWS_AS(PathExpander::expand(s), eckit::UserError);
 }
 
-CASE("Expand an environment variable")
-{
+CASE("Expand an environment variable") {
     std::string s = "{ENVVAR?FOO}/tmp/bar";
 
     SYSCALL(::setenv("FOO", "/foobar", 1));
@@ -59,14 +56,15 @@ CASE("Expand an environment variable")
     std::string ps = PathExpander::expand(s);
     std::string pr = "/foobar/tmp/bar";
 
-    EXPECT( ps == pr ); // paths dont exist, compare strings
+    EXPECT(ps == pr);  // paths dont exist, compare strings
 }
 
 static std::string write_file() {  // write file contents
     char* e = ::getenv("CURRENT_TEST_DIR");
     ASSERT(e != NULL);
 
-    PathName foo(e); foo /= "foo";
+    PathName foo(e);
+    foo /= "foo";
 
     std::ofstream of(foo.asString().c_str(), std::ofstream::trunc);
     of << "/hoofa/lomp" << std::endl;
@@ -76,8 +74,7 @@ static std::string write_file() {  // write file contents
 }
 
 
-CASE("Expand with contents of a file")
-{
+CASE("Expand with contents of a file") {
     std::string foo = write_file();
 
     std::string s = "/baz/{FILE?" + foo + "}/tmp/bar";
@@ -86,11 +83,10 @@ CASE("Expand with contents of a file")
 
     std::string r = std::string("/baz/hoofa/lomp/tmp/bar");
 
-    EXPECT( px == LocalPathName(r) ); // paths dont exist, compare strings
+    EXPECT(px == LocalPathName(r));  // paths dont exist, compare strings
 }
 
-CASE("Expand multiple times, multiple paths")
-{
+CASE("Expand multiple times, multiple paths") {
     std::string foo = write_file();
 
     SYSCALL(::setenv("TDIR", "testdir", 1));
@@ -101,17 +97,14 @@ CASE("Expand multiple times, multiple paths")
 
     std::string r = std::string("/baz/testdir/tmp/bar:/hoofa/lomp/xxx");
 
-    EXPECT( px == LocalPathName(r) ); // paths dont exist, compare strings
+    EXPECT(px == LocalPathName(r));  // paths dont exist, compare strings
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-
-

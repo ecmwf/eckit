@@ -19,10 +19,13 @@ namespace eckit {
 
 Parametrisation::~Parametrisation() {}
 
-bool Parametrisation::get(const std::string& name, long long& value) const { NOTIMP; }
+bool Parametrisation::get(const std::string& name, long long& value) const {
+    NOTIMP;
+}
 
-bool Parametrisation::get(const std::string& name, std::vector<long long>& value) const { NOTIMP; }
+bool Parametrisation::get(const std::string& name, std::vector<long long>& value) const {
+    NOTIMP;
+}
 
 
-} // namespace eckit
-
+}  // namespace eckit

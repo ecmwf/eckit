@@ -22,49 +22,49 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-struct CTxt { std::string name_; };
+struct CTxt {
+    std::string name_;
+};
 
-static void output_callback_noctxt( void* ctxt, const char* msg )
-{
-//    std::cout << "[DEBUG] -- " << Here() << "\n" << BackTrace::dump() << "\n" << std::endl;
-    std::cout << "[FORWARD OUT] -- " << msg ;
+static void output_callback_noctxt(void* ctxt, const char* msg) {
+    //    std::cout << "[DEBUG] -- " << Here() << "\n" << BackTrace::dump() << "\n" << std::endl;
+    std::cout << "[FORWARD OUT] -- " << msg;
 }
 
 
-static void output_callback_withctxt( void* ctxt, const char* msg )
-{
-//    std::cout << "[DEBUG] -- " << Here() << "\n" << BackTrace::dump() << "\n" << std::endl;
-    std::cout << "[FORWARD OUT] -- CTXT [" << static_cast<CTxt*>(ctxt)->name_ << "] -- " << msg ;
+static void output_callback_withctxt(void* ctxt, const char* msg) {
+    //    std::cout << "[DEBUG] -- " << Here() << "\n" << BackTrace::dump() << "\n" << std::endl;
+    std::cout << "[FORWARD OUT] -- CTXT [" << static_cast<CTxt*>(ctxt)->name_ << "] -- " << msg;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// tests without callback
-CASE ( "test_callback_none" ) {
+CASE("test_callback_none") {
 
     Log::info().clear();
 
-    Log::info()          << "info message 1" << std::endl;
+    Log::info() << "info message 1" << std::endl;
 
-    Log::warning()       << "warning message 1" << std::endl;
+    Log::warning() << "warning message 1" << std::endl;
 
-    Log::error()         << "error message 1" << std::endl;
+    Log::error() << "error message 1" << std::endl;
 
     Log::info().reset();
 }
 
 /// tests with null context
-CASE ( "test_callback_noctxt" ) {
+CASE("test_callback_noctxt") {
 
     Log::info().setCallback(&output_callback_noctxt);
 
-    Log::info()          << "info message 1" << std::endl;
+    Log::info() << "info message 1" << std::endl;
 
-    Log::warning()       << "warning message 1" << std::endl;
+    Log::warning() << "warning message 1" << std::endl;
 
-    Log::error()         << "error message 1" << std::endl;
+    Log::error() << "error message 1" << std::endl;
 
     Log::info().clear();
 
@@ -72,30 +72,29 @@ CASE ( "test_callback_noctxt" ) {
 }
 
 /// tests with context
-CASE ( "test_callback_withctxt" ) {
+CASE("test_callback_withctxt") {
 
     CTxt ctxt;
     ctxt.name_ = "MyTest";
 
     Log::info().setCallback(&output_callback_withctxt, &ctxt);
 
-    Log::info()          << "info message 1" << std::endl;
+    Log::info() << "info message 1" << std::endl;
 
-    Log::warning()       << "warning message 1" << std::endl;
+    Log::warning() << "warning message 1" << std::endl;
 
-    Log::error()         << "error message 1" << std::endl;
+    Log::error() << "error message 1" << std::endl;
 
     Log::info().clear();
 
     Log::info().reset();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

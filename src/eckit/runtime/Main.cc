@@ -1,12 +1,12 @@
 /*
-* (C) Copyright 1996- ECMWF.
-*
-* This software is licensed under the terms of the Apache Licence Version 2.0
-* which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-* In applying this licence, ECMWF does not waive the privileges and immunities
-* granted to it by virtue of its status as an intergovernmental organisation nor
-* does it submit to any jurisdiction.
-*/
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
 
 #include <unistd.h>
 #include <cstdlib>
@@ -48,8 +48,8 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     }
 
 
-    if (::getenv("DEBUG")) {
-        debug_ = eckit::Translator<std::string, bool>()(::getenv("DEBUG"));
+    if (::getenv("MAIN_DEBUG")) {
+        debug_ = eckit::Translator<std::string, bool>()(::getenv("MAIN_DEBUG"));
     }
 
     name_ = displayName_ = PathName(argv[0]).baseName(false);
@@ -89,7 +89,6 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         if (::strncmp(argv[i], application_name, ::strlen(application_name)) == 0) {
             name_ = argv[i] + ::strlen(application_name);
         }
-
     }
 
     ::srand(::getpid() + ::time(0));
@@ -99,15 +98,15 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
     if (home) {
         home_ = home;
-    } else {
+    }
+    else {
         std::string execHome = eckit::system::SystemInfo::instance().executablePath().dirName().dirName();
-        home_ = execHome;
+        home_                = execHome;
     }
 
     instance_ = this;
 
     Loader::callAll(&Loader::execute);
-
 }
 
 Main::~Main() {
@@ -157,10 +156,11 @@ void Main::taskID(long id) {
     taskID_ = id;
 }
 
-std::string Main::hostname()
-{
+std::string Main::hostname() {
     // RFC 1035 max length is 255 chars, whilst each label '.' separated is 63 chars
-    char hostname[256] = {0,};
+    char hostname[256] = {
+        0,
+    };
     SYSCALL(::gethostname(hostname, sizeof(hostname) - 1));
     return hostname;
 }
@@ -208,10 +208,10 @@ LogTarget* Main::createDebugLogTarget() const {
     return createDefaultLogTarget();
 }
 
-LogTarget* Main::createDefaultLogTarget() const  {
+LogTarget* Main::createDefaultLogTarget() const {
     return new OStreamTarget(std::cout);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

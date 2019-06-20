@@ -21,6 +21,8 @@
 
 namespace eckit {
 
+class Endpoint;
+
 //-----------------------------------------------------------------------------
 
 class TCPClient : public TCPSocket {
@@ -37,6 +39,7 @@ public:
 // -- Methods
 
 	virtual TCPSocket& connect(const std::string& host,int port, int retries = 5, int timeout = 0);
+    virtual TCPSocket& connect(const Endpoint& endpoint, int retries = 5, int timeout = 0);
 
 protected:
 

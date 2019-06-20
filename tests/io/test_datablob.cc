@@ -15,8 +15,8 @@
 
 #include "eckit/io/DataBlob.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/utils/Tokenizer.h"
 #include "eckit/types/Metadata.h"
+#include "eckit/utils/Tokenizer.h"
 
 #include "eckit/testing/Test.h"
 
@@ -27,67 +27,63 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace {
 
-    // A trivial do-nothing metadata object
-    class TestMetadata : public Metadata {
-    public: // methods
-        TestMetadata() {}
-        virtual ~TestMetadata() {}
-        virtual std::vector<std::string> keywords() const { NOTIMP; };
-        virtual bool has(const std::string& name) const { NOTIMP; }
-        virtual void get(const std::string& name, std::string& value) const { NOTIMP; }
-        virtual void get(const std::string& name, long& value) const { NOTIMP; }
-        virtual void get(const std::string& name, double& value) const { NOTIMP; }
-        friend std::ostream& operator<<(std::ostream& s, const TestMetadata& p) {
-            p.print(s);
-            return s;
-        }
-    protected: // methods
-        virtual void print(std::ostream& os) const { os << "TestMetadata()"; }
-    };
+// A trivial do-nothing metadata object
+class TestMetadata : public Metadata {
+public:  // methods
+    TestMetadata() {}
+    virtual ~TestMetadata() {}
+    virtual std::vector<std::string> keywords() const { NOTIMP; };
+    virtual bool has(const std::string& name) const { NOTIMP; }
+    virtual void get(const std::string& name, std::string& value) const { NOTIMP; }
+    virtual void get(const std::string& name, long& value) const { NOTIMP; }
+    virtual void get(const std::string& name, double& value) const { NOTIMP; }
+    friend std::ostream& operator<<(std::ostream& s, const TestMetadata& p) {
+        p.print(s);
+        return s;
+    }
 
-    //
-    // A null datablob for testing the factories
-    class TestDataBlob : public DataBlob {
+protected:  // methods
+    virtual void print(std::ostream& os) const { os << "TestMetadata()"; }
+};
 
-    public: // methods
+//
+// A null datablob for testing the factories
+class TestDataBlob : public DataBlob {
 
-        TestDataBlob(const void* data, size_t length) : DataBlob(data, length) {}
-        TestDataBlob(DataHandle& dh, size_t length) : DataBlob(dh, length) {}
+public:  // methods
+    TestDataBlob(const void* data, size_t length) : DataBlob(data, length) {}
+    TestDataBlob(DataHandle& dh, size_t length) : DataBlob(dh, length) {}
 
-        virtual ~TestDataBlob() {}
+    virtual ~TestDataBlob() {}
 
-        virtual const Metadata& metadata() const { return metadata_; }
+    virtual const Metadata& metadata() const { return metadata_; }
 
-    private: // methods
+private:  // methods
+    virtual void print(std::ostream& os) const { os << "TestDataBlob()"; }
 
-        virtual void print(std::ostream& os) const { os << "TestDataBlob()"; }
+private:  // members
+    TestMetadata metadata_;
+};
 
-    private: // members
-
-        TestMetadata metadata_;
-    };
-
-    DataBlobBuilder<TestDataBlob> dbBuilder("test");
-}
+DataBlobBuilder<TestDataBlob> dbBuilder("test");
+}  // namespace
 
 // ----------------------------------------------------------------------------------------
 
-CASE ( "test_eckit_io_datablob_factory_generate" )
-{
+CASE("test_eckit_io_datablob_factory_generate") {
     DataBlobPtr blob(DataBlobFactory::build("test", NULL, 0));
 
     // Check that we generate a blob of the correct type (and implicitly that the factory
     // is correctly registered).
-    TestDataBlob * testBlob = dynamic_cast<TestDataBlob*>(blob.get());
-    EXPECT( testBlob );
+    TestDataBlob* testBlob = dynamic_cast<TestDataBlob*>(blob.get());
+    EXPECT(testBlob);
 }
 
-CASE ( "test_eckit_io_datablob_factory_list" )
-{
+CASE("test_eckit_io_datablob_factory_list") {
     // DataBlobFactory::list appends the results to a ostream&, so we need to extract them.
     std::stringstream ss;
     DataBlobFactory::list(ss);
@@ -97,17 +93,15 @@ CASE ( "test_eckit_io_datablob_factory_list" )
     Tokenizer(" ,")(ss.str(), bits);
 
     // We expect the file and MultIO factories to be in there too...
-    EXPECT ( std::find( bits.begin(), bits.end(), "json" ) != bits.end() );
-    EXPECT ( std::find( bits.begin(), bits.end(), "test" ) != bits.end() );
+    EXPECT(std::find(bits.begin(), bits.end(), "json") != bits.end());
+    EXPECT(std::find(bits.begin(), bits.end(), "test") != bits.end());
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

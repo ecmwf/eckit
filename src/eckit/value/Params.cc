@@ -10,15 +10,14 @@
 
 #include "eckit/value/Params.h"
 
-//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-bool Params::has(const std::string& key) const
-{
-  return !getValue(*this, key).isNil();
+bool Params::has(const std::string& key) const {
+    return !getValue(*this, key).isNil();
 }
 /*
 bool Params::get(const std::string& name, std::string& value) const
@@ -73,49 +72,42 @@ bool Params::get(const std::string& name, std::vector<double>& value) const
   return true;
 }
 */
-Params::value_t Params::operator[]( const Params::key_t& key ) const
-{
+Params::value_t Params::operator[](const Params::key_t& key) const {
     value_t v = getValue(*this, key);
-    if( v.isNil() )
+    if (v.isNil())
         throw BadParameter("Params does not contain key: " + key, Here());
     return v;
 }
 
-Params::factory_map &Params::factories()
-{
+Params::factory_map& Params::factories() {
     // Prevent static initialisation order fiasco by constructing the static
     // map on first use
     static factory_map factories_;
     return factories_;
 }
 
-Stream& operator<<(Stream & s, const Params & p)
-{
+Stream& operator<<(Stream& s, const Params& p) {
     encode(p, s);
     return s;
 }
 
-std::ostream& operator<<(std::ostream & s, const Params & p)
-{
+std::ostream& operator<<(std::ostream& s, const Params& p) {
     print(p, s);
     return s;
 }
 
-Params::value_t getValue( const Params& p, const Params::key_t& key )
-{
+Params::value_t getValue(const Params& p, const Params::key_t& key) {
     return p.self_->get_(key);
 }
 
-void print( const Params& p, std::ostream& s )
-{
+void print(const Params& p, std::ostream& s) {
     p.self_->print_(s);
 }
 
-void encode( const Params& p, Stream& s )
-{
+void encode(const Params& p, Stream& s) {
     p.self_->encode_(s);
 }
 
-//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

@@ -15,18 +15,14 @@
 
 #include <fstream>
 
-#include "eckit/value/Value.h"
 #include "eckit/parser/CSVParser.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
 
-CSVParser::CSVParser(std::istream &in, bool header):
-    StreamParser(in, false),
-    hasHeader_(header)
-{
-}
+CSVParser::CSVParser(std::istream& in, bool header) : StreamParser(in, false), hasHeader_(header) {}
 
 Value CSVParser::decodeFile(const PathName& path, bool header) {
     std::ifstream in(std::string(path).c_str());
@@ -42,8 +38,7 @@ Value CSVParser::decodeString(const std::string& str, bool header) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Value CSVParser::parse()
-{
+Value CSVParser::parse() {
     if (hasHeader_) {
         ValueList header = CSVParser::header();
         ValueList result;
@@ -93,7 +88,6 @@ Value CSVParser::nextItem(bool& comma) {
         }
 
         next(true);
-
     }
 
     std::string result;
@@ -125,7 +119,7 @@ ValueList CSVParser::nextLine() {
 const Value& CSVParser::header() const {
     if (header_.isNil()) {
         CSVParser& self = const_cast<CSVParser&>(*this);
-        self.header_ = self.nextLine();
+        self.header_    = self.nextLine();
     }
     return header_;
 }
@@ -133,4 +127,4 @@ const Value& CSVParser::header() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

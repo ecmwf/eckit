@@ -12,22 +12,22 @@
 #include "eckit/linalg/SparseMatrix.h"
 
 #include <algorithm>
+#include <cstring>
 #include <iterator>
 #include <numeric>
-#include <cstring>
 
-#include "eckit/eckit.h" // for endianness
+#include "eckit/eckit.h"  // for endianness
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/BufferedHandle.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/io/BufferedHandle.h"
+#include "eckit/io/MemoryHandle.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/memory/MemoryBuffer.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/memory/MemoryBuffer.h"
-#include "eckit/log/Bytes.h"
 
 
 namespace eckit {
@@ -45,7 +45,6 @@ namespace detail {
 
 class StandardAllocator : public SparseMatrix::Allocator {
 public:
-
     StandardAllocator() : membuff_(0) {}
 
     virtual SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) {
@@ -65,23 +64,17 @@ public:
         return p;
     }
 
-    virtual void deallocate(SparseMatrix::Layout p, SparseMatrix::Shape) {
-    }
+    virtual void deallocate(SparseMatrix::Layout p, SparseMatrix::Shape) {}
 
-    virtual bool inSharedMemory() const {
-        return false;
-    }
+    virtual bool inSharedMemory() const { return false; }
 
-    virtual void print(std::ostream& out) const {
-        out << "StandardAllocator[" << Bytes(membuff_.size()) << "]";
-    }
+    virtual void print(std::ostream& out) const { out << "StandardAllocator[" << Bytes(membuff_.size()) << "]"; }
 
     eckit::MemoryBuffer membuff_;
 };
 
 class BufferAllocator : public SparseMatrix::Allocator {
 public:
-
     BufferAllocator(const MemoryBuffer& buffer) : buffer_(buffer, buffer.size()) {}
 
     virtual eckit::linalg::SparseMatrix::Layout allocate(eckit::linalg::SparseMatrix::Shape& shape) {
@@ -95,31 +88,26 @@ public:
         return layout;
     }
 
-    virtual void deallocate(eckit::linalg::SparseMatrix::Layout, eckit::linalg::SparseMatrix::Shape) {
-    }
+    virtual void deallocate(eckit::linalg::SparseMatrix::Layout, eckit::linalg::SparseMatrix::Shape) {}
 
-    virtual bool inSharedMemory() const {
-        return false;
-    }
+    virtual bool inSharedMemory() const { return false; }
 
-    virtual void print(std::ostream& out) const {
-        out << "BufferAllocator[" << Bytes(buffer_.size()) << "]";
-    }
+    virtual void print(std::ostream& out) const { out << "BufferAllocator[" << Bytes(buffer_.size()) << "]"; }
 
     MemoryBuffer buffer_;
 };
 
-} // namespace detail
+}  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
 SparseMatrix::SparseMatrix(Allocator* alloc) {
-    owner_.reset( alloc ? alloc : new detail::StandardAllocator() );
+    owner_.reset(alloc ? alloc : new detail::StandardAllocator());
     spm_ = owner_->allocate(shape_);
 }
 
 SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) {
-    owner_.reset( alloc ? alloc : new detail::StandardAllocator() );
+    owner_.reset(alloc ? alloc : new detail::StandardAllocator());
     reserve(rows, cols, 1);
 }
 
@@ -129,12 +117,12 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     // Count number of non-zeros
     Size nnz{0};
     for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
-        if( it->nonZero() ) {
+        if (it->nonZero()) {
             ++nnz;
         }
     }
 
-    reserve(rows, cols, nnz); // allocate memory 1 triplet per non-zero
+    reserve(rows, cols, nnz);  // allocate memory 1 triplet per non-zero
 
     Size pos = 0;
     Size row = 0;
@@ -144,13 +132,13 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     // Build vectors of inner indices and values, update outer index per row
     for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
 
-        if( it->nonZero() ) {
+        if (it->nonZero()) {
 
             // triplets are ordered by rows
-            ASSERT( it->row() >= row );
-            ASSERT( it->row() < shape_.rows_ );
+            ASSERT(it->row() >= row);
+            ASSERT(it->row() < shape_.rows_);
             // ASSERT( it->col() >= 0 ); // useless comparison with unsigned int
-            ASSERT( it->col() < shape_.cols_ );
+            ASSERT(it->col() < shape_.cols_);
 
             // start a new row
             while (it->row() > row) {
@@ -158,7 +146,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
             }
 
             spm_.inner_[pos] = Index(it->col());
-            spm_.data_[pos] = it->value();
+            spm_.data_[pos]  = it->value();
             ++pos;
         }
     }
@@ -167,30 +155,29 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
         spm_.outer_[++row] = Index(pos);
     }
 
-    ASSERT(Size(spm_.outer_[ shape_.outerSize() - 1 ]) == nonZeros()); /* last entry is always the nnz */
+    ASSERT(Size(spm_.outer_[shape_.outerSize() - 1]) == nonZeros()); /* last entry is always the nnz */
 }
 
 
 SparseMatrix::SparseMatrix(Stream& s) {
-    owner_.reset( new detail::StandardAllocator() );
+    owner_.reset(new detail::StandardAllocator());
     decode(s);
 }
 
-SparseMatrix::SparseMatrix(const MemoryBuffer& buffer)
-{
+SparseMatrix::SparseMatrix(const MemoryBuffer& buffer) {
     owner_.reset(new detail::BufferAllocator(buffer));
     spm_ = owner_->allocate(shape_);
 }
 
 SparseMatrix::SparseMatrix(const SparseMatrix& other) {
 
-    owner_.reset( new detail::StandardAllocator() );
+    owner_.reset(new detail::StandardAllocator());
 
-    if (!other.empty()) { // in case we copy an other that was constructed empty
+    if (!other.empty()) {  // in case we copy an other that was constructed empty
 
         reserve(other.rows(), other.cols(), other.nonZeros());
 
-        ::memcpy(spm_.data_,  other.spm_.data_,  shape_.sizeofData());
+        ::memcpy(spm_.data_, other.spm_.data_, shape_.sizeofData());
         ::memcpy(spm_.outer_, other.spm_.outer_, shape_.sizeofOuter());
         ::memcpy(spm_.inner_, other.spm_.inner_, shape_.sizeofInner());
     }
@@ -218,9 +205,9 @@ void SparseMatrix::reset() {
 // variables into this method must be by value
 void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
 
-    ASSERT( nnz > 0);
-    ASSERT( nnz <= rows * cols );
-    ASSERT( rows > 0 && cols > 0 ); /* rows and columns must have some size */
+    ASSERT(nnz > 0);
+    ASSERT(nnz <= rows * cols);
+    ASSERT(rows > 0 && cols > 0); /* rows and columns must have some size */
 
     reset();
 
@@ -232,28 +219,29 @@ void SparseMatrix::reserve(Size rows, Size cols, Size nnz) {
 }
 
 
-void SparseMatrix::save(const eckit::PathName &path) const {
-    FileStream s(path, "w"); auto c = closer(s);
+void SparseMatrix::save(const eckit::PathName& path) const {
+    FileStream s(path, "w");
+    auto c = closer(s);
     encode(s);
 }
 
 
-void SparseMatrix::load(const eckit::PathName &path)  {
-    FileStream s(path, "r"); auto c = closer(s);
+void SparseMatrix::load(const eckit::PathName& path) {
+    FileStream s(path, "r");
+    auto c = closer(s);
     decode(s);
 }
 
 struct SPMInfo {
-    size_t       size_;   ///< non-zeros
-    size_t       rows_;   ///< rows
-    size_t       cols_;   ///< columns
-    ptrdiff_t    data_;
-    ptrdiff_t    outer_;
-    ptrdiff_t    inner_;
+    size_t size_;  ///< non-zeros
+    size_t rows_;  ///< rows
+    size_t cols_;  ///< columns
+    ptrdiff_t data_;
+    ptrdiff_t outer_;
+    ptrdiff_t inner_;
 };
 
-void SparseMatrix::load(const void* buffer, size_t bufferSize, Layout& layout, Shape& shape)
-{
+void SparseMatrix::load(const void* buffer, size_t bufferSize, Layout& layout, Shape& shape) {
     const char* b = static_cast<const char*>(buffer);
 
     eckit::MemoryHandle mh(buffer, bufferSize);
@@ -272,23 +260,20 @@ void SparseMatrix::load(const void* buffer, size_t bufferSize, Layout& layout, S
     shape.cols_ = info.cols_;
 
     Log::debug<LibEcKit>() << "Loading matrix from buffer: "
-                           << " rows " << shape.rows_
-                           << " cols " << shape.cols_
-                           << " nnzs " << shape.size_
-                           << " allocSize " << shape.allocSize()
-                           << std::endl;
+                           << " rows " << shape.rows_ << " cols " << shape.cols_ << " nnzs " << shape.size_
+                           << " allocSize " << shape.allocSize() << std::endl;
 
-    ASSERT(bufferSize >= sizeof(SPMInfo) + shape.sizeofData() + shape.sizeofOuter() + shape.sizeofInner() );
+    ASSERT(bufferSize >= sizeof(SPMInfo) + shape.sizeofData() + shape.sizeofOuter() + shape.sizeofInner());
 
     char* addr = const_cast<char*>(b);
 
-    layout.data_  = reinterpret_cast<Scalar*>(addr + info.data_ );
-    layout.outer_ = reinterpret_cast<Index*> (addr + info.outer_);
-    layout.inner_ = reinterpret_cast<Index*> (addr + info.inner_);
+    layout.data_  = reinterpret_cast<Scalar*>(addr + info.data_);
+    layout.outer_ = reinterpret_cast<Index*>(addr + info.outer_);
+    layout.inner_ = reinterpret_cast<Index*>(addr + info.inner_);
 
     // check offsets don't segfault
 
-    ASSERT(info.data_  + shape.sizeofData()  <= bufferSize);
+    ASSERT(info.data_ + shape.sizeofData() <= bufferSize);
     ASSERT(info.outer_ + shape.sizeofOuter() <= bufferSize);
     ASSERT(info.inner_ + shape.sizeofInner() <= bufferSize);
 }
@@ -307,33 +292,30 @@ void SparseMatrix::dump(void* buffer, size_t size) const {
 
     SPMInfo info;
 
-    info.size_  = nonZeros();
-    info.rows_  = rows();
-    info.cols_  = cols();
+    info.size_ = nonZeros();
+    info.rows_ = rows();
+    info.cols_ = cols();
 
     info.data_  = sizeof(SPMInfo);
-    info.outer_ = info.data_  + shape_.sizeofData();
+    info.outer_ = info.data_ + shape_.sizeofData();
     info.inner_ = info.outer_ + shape_.sizeofOuter();
 
     Log::debug<LibEcKit>() << "Dumping matrix : "
-                           << " rows " << info.rows_
-                           << " cols " << info.cols_
-                           << " nnzs " << info.size_
-                           << " allocSize " << shape_.allocSize()
-                           << std::endl;
+                           << " rows " << info.rows_ << " cols " << info.cols_ << " nnzs " << info.size_
+                           << " allocSize " << shape_.allocSize() << std::endl;
 
     /// @todo we should try to get these memory aligned (to say 64 bytes)
 
     mh.write(&info, sizeof(SPMInfo));
 
-    ASSERT(mh.write(spm_.data_,  shape_.sizeofData())  == long(shape_.sizeofData()));
+    ASSERT(mh.write(spm_.data_, shape_.sizeofData()) == long(shape_.sizeofData()));
     ASSERT(mh.write(spm_.outer_, shape_.sizeofOuter()) == long(shape_.sizeofOuter()));
     ASSERT(mh.write(spm_.inner_, shape_.sizeofInner()) == long(shape_.sizeofInner()));
 }
 
-void SparseMatrix::swap(SparseMatrix &other) {
+void SparseMatrix::swap(SparseMatrix& other) {
 
-    std::swap(spm_,   other.spm_);
+    std::swap(spm_, other.spm_);
     std::swap(shape_, other.shape_);
 
     owner_.swap(other.owner_);
@@ -348,14 +330,14 @@ bool SparseMatrix::inSharedMemory() const {
     return owner_->inSharedMemory();
 }
 
-void SparseMatrix::dump(std::ostream& os) const
-{
+void SparseMatrix::dump(std::ostream& os) const {
     for (Size i = 0; i < rows(); ++i) {
 
-        const_iterator itr = begin(i);
+        const_iterator itr  = begin(i);
         const_iterator iend = end(i);
 
-        if (itr == iend) continue;
+        if (itr == iend)
+            continue;
         os << itr.row();
 
         for (; itr != iend; ++itr) {
@@ -365,16 +347,13 @@ void SparseMatrix::dump(std::ostream& os) const
     }
 }
 
-void SparseMatrix::print(std::ostream& os) const
-{
-    os << "SparseMatrix["
-       << shape_ << ","
-       << *owner_ << "]";
+void SparseMatrix::print(std::ostream& os) const {
+    os << "SparseMatrix[" << shape_ << "," << *owner_ << "]";
 }
 
 SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
 
-    ASSERT( rows > 0 && cols > 0 );
+    ASSERT(rows > 0 && cols > 0);
 
     Size nnz = std::min(rows, cols);
 
@@ -411,7 +390,7 @@ SparseMatrix& SparseMatrix::transpose() {
         }
     }
 
-    std::sort(triplets.begin(), triplets.end()); // triplets must be sorted by row
+    std::sort(triplets.begin(), triplets.end());  // triplets must be sorted by row
 
     SparseMatrix tmp(shape_.cols_, shape_.rows_, triplets);
 
@@ -420,20 +399,20 @@ SparseMatrix& SparseMatrix::transpose() {
     return *this;
 }
 
-SparseMatrix SparseMatrix::rowReduction(const std::vector<size_t>& p) const
-{
+SparseMatrix SparseMatrix::rowReduction(const std::vector<size_t>& p) const {
     ASSERT(p.size() <= rows());
 
     std::vector<Triplet> triplets;
 
-    for(size_t newrow = 0; newrow < p.size(); ++newrow) {
+    for (size_t newrow = 0; newrow < p.size(); ++newrow) {
 
         size_t row = p[newrow];
 
         const_iterator itr  = begin(row);
         const_iterator iend = end(row);
 
-        if (itr == iend) continue;
+        if (itr == iend)
+            continue;
 
         for (; itr != iend; ++itr) {
             triplets.push_back(Triplet(newrow, itr.col(), *itr));
@@ -452,7 +431,7 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     Size nnz = 0;
     for (Size r = 0; r < shape_.rows_; ++r) {
         const Index start = spm_.outer_[r];
-        spm_.outer_[r] = Index(nnz);
+        spm_.outer_[r]    = Index(nnz);
         for (Index c = start; c < spm_.outer_[r + 1]; ++c)
             if (spm_.data_[c] != val) {
                 v.push_back(spm_.data_[c]);
@@ -465,7 +444,7 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     SparseMatrix tmp;
     tmp.reserve(shape_.rows_, shape_.cols_, nnz);
 
-    ::memcpy(tmp.spm_.data_,  v.data(),  nnz * sizeof(Scalar));
+    ::memcpy(tmp.spm_.data_, v.data(), nnz * sizeof(Scalar));
     ::memcpy(tmp.spm_.outer_, spm_.outer_, shape_.outerSize() * sizeof(Index));
     ::memcpy(tmp.spm_.inner_, inner.data(), nnz * sizeof(Index));
 
@@ -492,15 +471,12 @@ void SparseMatrix::encode(Stream& s) const {
     s << sizeof(Size);
 
     Log::debug<LibEcKit>() << "Encoding matrix : "
-                           << " rows " << rows()
-                           << " cols " << cols()
-                           << " nnz " << nonZeros()
-                           << " footprint " << footprint()
-                           << std::endl;
+                           << " rows " << rows() << " cols " << cols() << " nnz " << nonZeros() << " footprint "
+                           << footprint() << std::endl;
 
     s.writeLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(Index));
     s.writeLargeBlob(spm_.inner_, shape_.innerSize() * sizeof(Index));
-    s.writeLargeBlob(spm_.data_,  shape_.dataSize()  * sizeof(Scalar));
+    s.writeLargeBlob(spm_.data_, shape_.dataSize() * sizeof(Scalar));
 }
 
 
@@ -515,33 +491,34 @@ void SparseMatrix::decode(Stream& s) {
     s >> nnz;
 
     bool little_endian;
-    s >> little_endian; ASSERT(littleEndian == little_endian);
+    s >> little_endian;
+    ASSERT(littleEndian == little_endian);
 
     size_t index_size;
-    s >> index_size; ASSERT(index_size == sizeof(Index));
+    s >> index_size;
+    ASSERT(index_size == sizeof(Index));
 
     size_t scalar_size;
-    s >> scalar_size; ASSERT(scalar_size == sizeof(Scalar));
+    s >> scalar_size;
+    ASSERT(scalar_size == sizeof(Scalar));
 
     size_t size_size;
-    s >> size_size; ASSERT(size_size == sizeof(Size));
+    s >> size_size;
+    ASSERT(size_size == sizeof(Size));
 
     reset();
 
-    owner_.reset( new detail::StandardAllocator() );
+    owner_.reset(new detail::StandardAllocator());
 
     reserve(rows, cols, nnz);
 
     Log::debug<LibEcKit>() << "Decoding matrix : "
-                           << " rows " << rows
-                           << " cols " << cols
-                           << " nnz " << nnz
-                           << " footprint " << footprint()
+                           << " rows " << rows << " cols " << cols << " nnz " << nnz << " footprint " << footprint()
                            << std::endl;
 
     s.readLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(Index));
     s.readLargeBlob(spm_.inner_, shape_.innerSize() * sizeof(Index));
-    s.readLargeBlob(spm_.data_,  shape_.dataSize()  * sizeof(Scalar));
+    s.readLargeBlob(spm_.data_, shape_.dataSize() * sizeof(Scalar));
 }
 
 
@@ -574,8 +551,7 @@ bool SparseMatrix::const_iterator::operator==(const SparseMatrix::const_iterator
 SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
     matrix_(const_cast<SparseMatrix*>(&matrix)),
     index_(0),
-    row_(0)
-{
+    row_(0) {
     const Index* outer = matrix_->outer();
     while (outer[row_ + 1] == 0) {
         ++row_;
@@ -586,7 +562,9 @@ SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix, Size ro
     matrix_(const_cast<SparseMatrix*>(&matrix)),
     row_(row) {
     const Size rows = matrix_->rows();
-    if (row_ > rows) { row_ = rows; }
+    if (row_ > rows) {
+        row_ = rows;
+    }
     index_ = Size(matrix_->outer()[row_]);
 }
 
@@ -626,10 +604,9 @@ Scalar& SparseMatrix::iterator::operator*() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SparseMatrix::Allocator::~Allocator() {
-}
+SparseMatrix::Allocator::~Allocator() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace linalg
-} // namespace eckit
+}  // namespace linalg
+}  // namespace eckit

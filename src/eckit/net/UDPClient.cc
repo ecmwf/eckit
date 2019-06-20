@@ -21,8 +21,8 @@
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/net/UDPClient.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/net/UDPClient.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
@@ -46,9 +46,7 @@ UDPClient::UDPClient(const std::string& hostname, int port) :
     if ((err = ::getaddrinfo(hostname_.c_str(), toStr(port_).c_str(), &hints, &servinfo_)) != 0) {
         std::ostringstream msg;
         msg << "getaddrinfo failed in UDPClient with "
-            << " hostname=" << hostname
-            << " port=" << port
-            << " --  " << ::gai_strerror(err);
+            << " hostname=" << hostname << " port=" << port << " --  " << ::gai_strerror(err);
         throw FailedSystemCall(msg.str());
     }
 
@@ -74,7 +72,7 @@ UDPClient::~UDPClient() {
 
 void UDPClient::send(void* buffer, long length) {
     ssize_t sent = ::sendto(socketfd_, buffer, length, 0, addr_->ai_addr, addr_->ai_addrlen);
-    if ( sent == -1 ) {
+    if (sent == -1) {
         std::ostringstream msg;
         msg << "UDPClient failed to send " << Bytes(length) << " to host " << hostname_;
         throw FailedSystemCall(msg.str());
@@ -82,12 +80,8 @@ void UDPClient::send(void* buffer, long length) {
 }
 
 void UDPClient::print(std::ostream& s) const {
-    s << "UDPClient[hostname=" << hostname_
-      << ",port=" << port_
-      << ",socketfd=" << socketfd_
-      << "]";
+    s << "UDPClient[hostname=" << hostname_ << ",port=" << port_ << ",socketfd=" << socketfd_ << "]";
 }
 
 
-} // namespace eckit
-
+}  // namespace eckit

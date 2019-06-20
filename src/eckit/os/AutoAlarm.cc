@@ -8,54 +8,50 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
 #include <signal.h>
+#include <unistd.h>
 
-#include "eckit/os/AutoAlarm.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
+#include "eckit/os/AutoAlarm.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 bool AutoAlarm::caught_ = false;
 bool AutoAlarm::throw_  = false;
-int  AutoAlarm::sec_    = 0;
+int AutoAlarm::sec_     = 0;
 
-void AutoAlarm::sigAlarm(int)
-{
-	Log::error() << "Alarm signal received" << std::endl;
-	caught_ = true;
-	if(throw_)
-		throw TimeOut("AutoAlarm",sec_);
+void AutoAlarm::sigAlarm(int) {
+    Log::error() << "Alarm signal received" << std::endl;
+    caught_ = true;
+    if (throw_)
+        throw TimeOut("AutoAlarm", sec_);
 }
 
-AutoAlarm::AutoAlarm(int sec,bool t)
-{
+AutoAlarm::AutoAlarm(int sec, bool t) {
     /// @todo change this to sigaction
 
-	old_        = ::signal(SIGALRM,sigAlarm);
-	saveThrow_  = throw_;
-	saveSec_    = sec_;
-	throw_      = t;
-	sec_        = sec;
-	caught_     = false;
+    old_       = ::signal(SIGALRM, sigAlarm);
+    saveThrow_ = throw_;
+    saveSec_   = sec_;
+    throw_     = t;
+    sec_       = sec;
+    caught_    = false;
 
-	::alarm(sec);
+    ::alarm(sec);
 }
 
-AutoAlarm::~AutoAlarm()
-{
-	throw_ = saveThrow_;
-	sec_   = saveSec_;
-	::signal(SIGALRM,old_);
-	::alarm(0);
+AutoAlarm::~AutoAlarm() {
+    throw_ = saveThrow_;
+    sec_   = saveSec_;
+    ::signal(SIGALRM, old_);
+    ::alarm(0);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

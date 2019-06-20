@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 
 #include "eckit/value/OrderedMapContent.h"
 #include "eckit/parser/JSON.h"
@@ -18,28 +19,25 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-ClassSpec OrderedMapContent::classSpec_ = {&Content::classSpec(), "OrderedMapContent",};
-Reanimator<OrderedMapContent>  OrderedMapContent::reanimator_;
+ClassSpec OrderedMapContent::classSpec_ = {
+    &Content::classSpec(),
+    "OrderedMapContent",
+};
+Reanimator<OrderedMapContent> OrderedMapContent::reanimator_;
 
 
-OrderedMapContent::OrderedMapContent() {
-}
+OrderedMapContent::OrderedMapContent() {}
 
-OrderedMapContent::OrderedMapContent(const ValueMap& v, const ValueList& keys) :
-    value_(v)
-{
+OrderedMapContent::OrderedMapContent(const ValueMap& v, const ValueList& keys) : value_(v) {
     ASSERT(keys.size() == value_.size());
     keys_ = keys;
 }
 
 
-OrderedMapContent::OrderedMapContent(Stream& s):
-    Content(s)
-{
+OrderedMapContent::OrderedMapContent(Stream& s) : Content(s) {
     bool more;
     s >> more;
-    while (more)
-    {
+    while (more) {
         Value k(s);
         Value v(s);
         value_[k] = v;
@@ -52,11 +50,9 @@ OrderedMapContent::OrderedMapContent(Stream& s):
     }
 }
 
-void OrderedMapContent::encode(Stream& s) const
-{
+void OrderedMapContent::encode(Stream& s) const {
     Content::encode(s);
-    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j)
-    {
+    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
         s << true;
         s << (*j).first;
         s << (*j).second;
@@ -68,12 +64,9 @@ void OrderedMapContent::encode(Stream& s) const
     }
 }
 
-OrderedMapContent::~OrderedMapContent()
-{
-}
+OrderedMapContent::~OrderedMapContent() {}
 
-void OrderedMapContent::value(ValueMap& v) const
-{
+void OrderedMapContent::value(ValueMap& v) const {
     v.clear();
     for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j) {
         v[(*j)] = value(*j);
@@ -90,31 +83,35 @@ Value OrderedMapContent::keys() const {
     return keys_;
 }
 
-Value& OrderedMapContent::element(const Value& key)
-{
-    if(value_.find(key) == value_.end()) { // key is new so add too order list
+Value OrderedMapContent::remove(const Value& key) {
+    Value result = value_[key];
+    value_.erase(key);
+    auto it = std::find(keys_.begin(), keys_.end(), key);
+    if (it != keys_.end()) keys_.erase(it);
+    return result;
+}
+
+Value& OrderedMapContent::element(const Value& key) {
+    if (value_.find(key) == value_.end()) {  // key is new so add too order list
         keys_.push_back(key);
     }
     return value_[key];
 }
 
-bool OrderedMapContent::contains(const Value& key) const
-{
+bool OrderedMapContent::contains(const Value& key) const {
     return value_.find(key) != value_.end();
 }
 
-int OrderedMapContent::compare(const Content& other)const
-{
+int OrderedMapContent::compare(const Content& other) const {
     return -other.compareOrderedMap(*this);
 }
 
-int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
-{
-    int b = 1;
-    const ValueList * shorter = &keys_;
-    const ValueList * longer = &other.keys_;
-    bool swap = keys_.size() > other.keys_.size();
-    if(swap) {
+int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const {
+    int b                    = 1;
+    const ValueList* shorter = &keys_;
+    const ValueList* longer  = &other.keys_;
+    bool swap                = keys_.size() > other.keys_.size();
+    if (swap) {
         std::swap(shorter, longer);
         b = -1;
     }
@@ -123,35 +120,40 @@ int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const
     ValueList::const_iterator jc = (*longer).begin();
     for (ValueList::const_iterator j = shorter->begin(); j != shorter->end(); ++j, ++jc) {
 
-        if(*j == *jc) { continue; }
+        if (*j == *jc) {
+            continue;
+        }
 
         return (*j < *jc) ? -b : b;
     }
 
-    if(keys_.size() != other.keys_.size()) { return -b; } // the map with more elements is larger
+    if (keys_.size() != other.keys_.size()) {
+        return -b;
+    }  // the map with more elements is larger
 
     // all keys are equal and in same order, compare now the values
     jc = (*longer).begin();
     for (ValueList::const_iterator j = shorter->begin(); j != shorter->end(); ++j, ++jc) {
 
-        const Value& k = *j;
+        const Value& k     = *j;
         const Value& left  = value_.at(k);
         const Value& right = other.value_.at(k);
 
-        if(left == right) { continue; }
+        if (left == right) {
+            continue;
+        }
 
         return (left < right) ? -b : b;
     }
 
-    return 0; // all keys and values are the same and in same order
+    return 0;  // all keys and values are the same and in same order
 }
 
-void OrderedMapContent::print(std::ostream& s) const
-{
+void OrderedMapContent::print(std::ostream& s) const {
     s << '{';
-    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j)
-    {
-        if (j != keys_.begin()) s << " , ";
+    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j) {
+        if (j != keys_.begin())
+            s << " , ";
         s << *j;
         s << " => ";
         s << value(*j);
@@ -159,11 +161,9 @@ void OrderedMapContent::print(std::ostream& s) const
     s << '}';
 }
 
-void OrderedMapContent::json(JSON& s) const
-{
+void OrderedMapContent::json(JSON& s) const {
     s.startObject();
-    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j)
-    {
+    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j) {
         s << *j;
         s << value(*j);
     }
@@ -182,28 +182,23 @@ Content* OrderedMapContent::clone() const {
     return m;
 }
 
-Content* OrderedMapContent::add(const Content& other) const
-{
+Content* OrderedMapContent::add(const Content& other) const {
     return other.addOrderedMap(*this);
 }
 
-Content* OrderedMapContent::sub(const Content& other) const
-{
+Content* OrderedMapContent::sub(const Content& other) const {
     return other.subOrderedMap(*this);
 }
 
-Content* OrderedMapContent::mul(const Content& other) const
-{
+Content* OrderedMapContent::mul(const Content& other) const {
     return other.mulOrderedMap(*this);
 }
 
-Content* OrderedMapContent::div(const Content& other) const
-{
+Content* OrderedMapContent::div(const Content& other) const {
     return other.divOrderedMap(*this);
 }
 
-Content* OrderedMapContent::mod(const Content& other) const
-{
+Content* OrderedMapContent::mod(const Content& other) const {
     return other.modOrderedMap(*this);
 }
 
@@ -220,8 +215,7 @@ void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const
     out << "{";
     const char* sep = "\n";
 
-    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j)
-    {
+    for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j) {
         out << sep;
         (*j).dump(out, depth + 3);
         out << ": ";
@@ -243,17 +237,16 @@ void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const
 
 void OrderedMapContent::hash(Hash& h) const {
 
-    for(auto v: value_) {
+    for (auto v : value_) {
         v.first.hash(h);
         v.second.hash(h);
     }
 
-    for(auto k: keys_) {
+    for (auto k : keys_) {
         k.hash(h);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

@@ -17,9 +17,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-CallbackTarget::CallbackTarget(callback_t callback, void* context) :
-    callback_(callback),
-    context_(context) {}
+CallbackTarget::CallbackTarget(callback_t callback, void* context) : callback_(callback), context_(context) {}
 
 CallbackTarget::~CallbackTarget() {
     //    std::cerr << "CallbackTarget::~CallbackTarget()" << std::endl;

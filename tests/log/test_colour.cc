@@ -10,9 +10,9 @@
 
 #include <iostream>
 
-#include "eckit/runtime/Tool.h"
 #include "eckit/log/Colour.h"
 #include "eckit/log/Log.h"
+#include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
 
@@ -23,9 +23,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_colour" ) {
+CASE("test_colour") {
 
     Log::info() << "Hello, worlds" << std::endl;
 
@@ -36,16 +36,13 @@ CASE( "test_colour" ) {
     std::cout << Colour::blue << "Red" << Colour::reset << std::endl;
     std::cout << Colour::red << Colour::bold << "Red" << Colour::reset << std::endl;
     std::cout << Colour::yellow << Colour::underline << "Red" << Colour::reset << std::endl;
-
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

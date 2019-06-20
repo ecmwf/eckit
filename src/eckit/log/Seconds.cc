@@ -8,68 +8,79 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
 #include "eckit/log/Seconds.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-Seconds::Seconds(double seconds):
-	seconds_(seconds)
-{
-}
+Seconds::Seconds(double seconds) : seconds_(seconds) {}
 
-Seconds::Seconds(const ::timeval& time):
-	seconds_(time.tv_sec + time.tv_usec / 1000000.0)
-{
-}
+Seconds::Seconds(const ::timeval& time) : seconds_(time.tv_sec + time.tv_usec / 1000000.0) {}
 
-static struct  {
+static struct {
     int length_;
-    const char *name_;
+    const char* name_;
 } periods[] = {
-    {7 * 24 * 60 * 60, "week",},
-    {24 * 60 * 60, "day",},
-    {60 * 60, "hour",},
-    {60, "minute",},
-    {1, "second",},
-    {0,0,},
+    {
+        7 * 24 * 60 * 60,
+        "week",
+    },
+    {
+        24 * 60 * 60,
+        "day",
+    },
+    {
+        60 * 60,
+        "hour",
+    },
+    {
+        60,
+        "minute",
+    },
+    {
+        1,
+        "second",
+    },
+    {
+        0,
+        0,
+    },
 };
 
-std::ostream& operator<<(std::ostream& s,const Seconds&  sec)
-{
-	double t = sec.seconds_;
-    long n  = t;
-    int flg = 0;
+std::ostream& operator<<(std::ostream& s, const Seconds& sec) {
+    double t = sec.seconds_;
+    long n   = t;
+    int flg  = 0;
 
-    for(int i=0;periods[i].length_;i++)
-    {
+    for (int i = 0; periods[i].length_; i++) {
         long m = n / periods[i].length_;
-        if(m) {
-            if(flg) s << ' ';
+        if (m) {
+            if (flg)
+                s << ' ';
             s << m << ' ' << periods[i].name_;
-            if(m>1) s << 's';
+            if (m > 1)
+                s << 's';
             n %= periods[i].length_;
             flg++;
         }
     }
 
-    if(!flg) s << t << " second";
+    if (!flg)
+        s << t << " second";
 
-	return s;
+    return s;
 }
 
-Seconds::operator std::string() const
-{
+Seconds::operator std::string() const {
     std::ostringstream s;
     s << *this;
     return s.str();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

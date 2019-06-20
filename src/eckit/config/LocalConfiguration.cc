@@ -13,19 +13,17 @@
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/parser/JSONParser.h"
-#include "eckit/utils/Tokenizer.h"
 #include "eckit/types/Types.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/value/Value.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LocalConfiguration::LocalConfiguration(char separator) :
-    Configuration(Value::makeMap(), separator) {}
+LocalConfiguration::LocalConfiguration(char separator) : Configuration(Value::makeMap(), separator) {}
 
-LocalConfiguration::LocalConfiguration(const Value& root, char separator) :
-    Configuration(root, separator) {}
+LocalConfiguration::LocalConfiguration(const Value& root, char separator) : Configuration(root, separator) {}
 
 LocalConfiguration::LocalConfiguration(const Configuration& other) : Configuration(other) {}
 
@@ -40,8 +38,8 @@ void LocalConfiguration::print(std::ostream& out) const {
     out << "]";
 }
 
-void LocalConfiguration::setValue(const std::vector<std::string>& path, size_t i,
-                                  eckit::Value& root, const eckit::Value& value) {
+void LocalConfiguration::setValue(const std::vector<std::string>& path, size_t i, eckit::Value& root,
+                                  const eckit::Value& value) {
     if (root.shared()) {
         // std::cout << "Clone " << root << std::endl;
         root = root.clone();
@@ -136,8 +134,7 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string& s,
-                                            const std::vector<long long>& value) {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<long long>& value) {
     ValueList values;
     for (std::vector<long long>::const_iterator v = value.begin(); v != value.end(); ++v) {
         values.push_back(eckit::Value(*v));
@@ -146,8 +143,7 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s,
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string& s,
-                                            const std::vector<size_t>& value) {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<size_t>& value) {
     ValueList values;
     for (std::vector<size_t>::const_iterator v = value.begin(); v != value.end(); ++v) {
         values.push_back(eckit::Value(*v));
@@ -165,8 +161,7 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string& s,
-                                            const std::vector<double>& value) {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<double>& value) {
     ValueList values;
     for (std::vector<double>::const_iterator v = value.begin(); v != value.end(); ++v) {
         values.push_back(eckit::Value(*v));
@@ -175,8 +170,7 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s,
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string& s,
-                                            const std::vector<std::string>& value) {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<std::string>& value) {
     ValueList values;
     for (std::vector<std::string>::const_iterator v = value.begin(); v != value.end(); ++v) {
         values.push_back(eckit::Value(*v));
@@ -191,8 +185,7 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const LocalCon
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string& s,
-                                            const std::vector<LocalConfiguration>& value) {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<LocalConfiguration>& value) {
     ValueList values;
     for (std::vector<LocalConfiguration>::const_iterator v = value.begin(); v != value.end(); ++v) {
         values.push_back(*v->root_);

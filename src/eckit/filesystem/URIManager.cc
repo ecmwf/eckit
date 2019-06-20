@@ -101,13 +101,9 @@ public:
 class MarsFSManager : public URIManager {
     virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) {
-        return PathName(f.scheme() + ":" + f.name()).fileHandle();
-    }
+    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) {
-        return PathName(f.scheme() + ":" + f.name()).fileHandle();
-    }
+    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
     virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
         return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);

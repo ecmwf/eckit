@@ -20,76 +20,51 @@ namespace linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Vector::Vector() :
-    array_(0),
-    length_(0),
-    own_(false) {
-}
+Vector::Vector() : array_(0), length_(0), own_(false) {}
 
 
-
-Vector::Vector(Size length) :
-    array_(new Scalar[length]),
-    length_(length),
-    own_(true) {
-}
+Vector::Vector(Size length) : array_(new Scalar[length]), length_(length), own_(true) {}
 
 
-
-Vector::Vector(Scalar* array, Size length) :
-    array_(&array[0]),
-    length_(length),
-    own_(false) {
+Vector::Vector(Scalar* array, Size length) : array_(&array[0]), length_(length), own_(false) {
     ASSERT(array_ && length_ > 0);
 }
 
 
-
-Vector::Vector(Stream& stream) :
-    array_(0),
-    length_(0),
-    own_(false) {
+Vector::Vector(Stream& stream) : array_(0), length_(0), own_(false) {
     Size length;
     stream >> length;
     resize(length);
 
     ASSERT(length_ > 0);
-    stream.readBlob(array_, length*sizeof(Scalar));
+    stream.readBlob(array_, length * sizeof(Scalar));
 }
 
 
-
-Vector::Vector(const Vector& other) :
-    array_(new Scalar[other.length_]),
-    length_(other.length_),
-    own_(true) {
+Vector::Vector(const Vector& other) : array_(new Scalar[other.length_]), length_(other.length_), own_(true) {
     ::memcpy(array_, other.array_, length_ * sizeof(Scalar));
 }
 
 
-
 Vector::~Vector() {
     if (own_) {
-        delete [] array_;
+        delete[] array_;
     }
 }
 
 
-
-Vector&Vector::operator=(const Vector& other) {
+Vector& Vector::operator=(const Vector& other) {
     Vector copy(other);
     swap(copy);
     return *this;
 }
 
 
-
 void Vector::swap(Vector& other) {
-    std::swap(array_,  other.array_);
+    std::swap(array_, other.array_);
     std::swap(length_, other.length_);
-    std::swap(own_,    other.own_);
+    std::swap(own_, other.own_);
 }
-
 
 
 void Vector::resize(Size length) {
@@ -98,11 +73,9 @@ void Vector::resize(Size length) {
 }
 
 
-
 void Vector::setZero() {
-    ::memset(array_, 0, length_*sizeof(Scalar));
+    ::memset(array_, 0, length_ * sizeof(Scalar));
 }
-
 
 
 void Vector::fill(Scalar value) {
@@ -112,12 +85,10 @@ void Vector::fill(Scalar value) {
 }
 
 
-
 void Vector::encode(Stream& stream) const {
-  stream << length_;
-  stream.writeBlob(array_, length_*sizeof(Scalar));
+    stream << length_;
+    stream.writeBlob(array_, length_ * sizeof(Scalar));
 }
-
 
 
 Stream& operator<<(Stream& stream, const Vector& vector) {

@@ -10,8 +10,8 @@
 
 #include <unistd.h>
 
-#include "eckit/runtime/Tool.h"
 #include "eckit/runtime/ProducerConsumer.h"
+#include "eckit/runtime/Tool.h"
 #include "eckit/utils/Translator.h"
 
 #include "eckit/testing/Test.h"
@@ -24,7 +24,7 @@ namespace eckit {
 namespace test {
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct C : public Consumer<string> {
 
@@ -32,29 +32,26 @@ struct C : public Consumer<string> {
         Log::info() << "Consume " << s << std::endl;
         ::usleep(10000);
     }
-
 };
 
 struct P : public Producer<string> {
 
     int count_;
 
-    virtual bool done() {
-        return count_ <= 0;
-    }
+    virtual bool done() { return count_ <= 0; }
 
     virtual void produce(string& s) {
         Log::info() << "Produce " << count_ << std::endl;
-        ::usleep(count_*10000);
+        ::usleep(count_ * 10000);
         EXPECT(count_);
-        s = string("Hello, world! ") + Translator<int,string>()(count_); count_--;
+        s = string("Hello, world! ") + Translator<int, string>()(count_);
+        count_--;
     }
 
     P() : count_(5) {}
 };
 
-CASE ( "test_producer" )
-{
+CASE("test_producer") {
     P p;
     C c;
     ProducerConsumer<string> pc;
@@ -62,13 +59,11 @@ CASE ( "test_producer" )
 }
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

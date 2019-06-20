@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/runtime/Tool.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
+#include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
 
@@ -21,39 +21,38 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE ( "test_debug" ) {
-    Log::debug()         << "debug message 1" << std::endl;
+CASE("test_debug") {
+    Log::debug() << "debug message 1" << std::endl;
 }
 
-CASE ( "test_info" ) {
-    Log::info()         << "info message 1" << std::endl;
+CASE("test_info") {
+    Log::info() << "info message 1" << std::endl;
 }
 
-CASE ( "test_warning" ) {
-    Log::warning()         << "warning message 1" << std::endl;
+CASE("test_warning") {
+    Log::warning() << "warning message 1" << std::endl;
 }
 
-CASE ( "test_error" ) {
-    Log::error()         << "error message 1" << std::endl;
+CASE("test_error") {
+    Log::error() << "error message 1" << std::endl;
 }
 
-CASE ( "test_panic" ) {
-    Log::panic()         << "panic message 1" << std::endl;
+CASE("test_panic") {
+    Log::panic() << "panic message 1" << std::endl;
 }
 
-CASE ( "test_strerr" ) {
+CASE("test_strerr") {
     LocalPathName p("/tmp/edfpmjq3480hfnsribnzasdfibv");
     p.unlink();
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

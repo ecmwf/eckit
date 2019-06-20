@@ -24,31 +24,28 @@ namespace eckit {
 namespace option {
 
 
-Separator::Separator(const std::string &description):
-    Option("", description) {
-}
+Separator::Separator(const std::string& description) : Option("", description) {}
 
 
-Separator::~Separator() {
-}
+Separator::~Separator() {}
 
 
-void Separator::set(const std::string &value, Configured& parametrisation) const {
+void Separator::set(const std::string& value, Configured& parametrisation) const {
     NOTIMP;
 }
 
-void Separator::copy(const Configuration &from, Configured& to) const {;
+void Separator::copy(const Configuration& from, Configured& to) const {
+    ;
 }
 
 bool Separator::active() const {
     return false;
 }
 
-void Separator::print(std::ostream &out) const {
+void Separator::print(std::ostream& out) const {
     out << std::endl << description_ << ":" << std::endl;
 }
 
-} // namespace option
+}  // namespace option
 
-} // namespace eckit
-
+}  // namespace eckit

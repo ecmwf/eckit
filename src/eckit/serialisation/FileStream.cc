@@ -45,13 +45,12 @@ void FileStream::close() {
         while (ret < 0 && errno == EINTR)
             ret = fsync(fileno(file_));
         if (ret < 0) {
-            Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) << Log::syserr
-                         << std::endl;
+            Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) << Log::syserr << std::endl;
         }
-            // if(ret<0)
-            // throw FailedSystemCall(std::string("fsync(") + name_ + ")");
+        // if(ret<0)
+        // throw FailedSystemCall(std::string("fsync(") + name_ + ")");
 
-            // On Linux, you must also flush the directory
+        // On Linux, you must also flush the directory
 
 #ifdef ECKIT_HAVE_DIRFD
         PathName directory = PathName(name_).dirName();
@@ -101,6 +100,6 @@ void FileStream::print(std::ostream& s) const {
     s << "FileStream[path=" << name_ << "]";
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

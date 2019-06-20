@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -30,68 +30,68 @@ namespace type {
 class TypeRegistry {
 public:
     TypeRegistry();
-    static std::map<std::string,SQLType*>& typeMap();
-    std::map<std::string,SQLType*>& map();
+    static std::map<std::string, SQLType*>& typeMap();
+    std::map<std::string, SQLType*>& map();
 
 private:
-    std::map<std::string,SQLType*> map_;
+    std::map<std::string, SQLType*> map_;
 
     SQLType* registerType(SQLType*);
 };
 
 static eckit::ThreadSingleton<TypeRegistry> typeRegistry_;
 
-TypeRegistry::TypeRegistry()
-: map_()
-{
+TypeRegistry::TypeRegistry() : map_() {
     registerType(new SQLInt("integer"));
     registerType(new SQLReal("real"));
     // n.b. don't need to register "string". See special cases in lookup()
-    //registerType(new SQLString("string"));
+    // registerType(new SQLString("string"));
     registerType(new SQLDouble("double"));
 }
 
-SQLType* TypeRegistry::registerType(SQLType* t)
-{
+SQLType* TypeRegistry::registerType(SQLType* t) {
     map_.insert(make_pair(t->name(), t));
     return t;
 }
 
-std::map<std::string,SQLType*>& TypeRegistry::typeMap() { return typeRegistry_.instance().map(); }
-std::map<std::string,SQLType*>& TypeRegistry::map() { return map_; }
+std::map<std::string, SQLType*>& TypeRegistry::typeMap() {
+    return typeRegistry_.instance().map();
+}
+std::map<std::string, SQLType*>& TypeRegistry::map() {
+    return map_;
+}
 
-SQLType* SQLType::registerType(SQLType* t)
-{
-    std::map<std::string,SQLType*>& map (TypeRegistry::typeMap());
-    //ASSERT(map.find(t->name()) == map.end());
+SQLType* SQLType::registerType(SQLType* t) {
+    std::map<std::string, SQLType*>& map(TypeRegistry::typeMap());
+    // ASSERT(map.find(t->name()) == map.end());
     map.insert(make_pair(t->name(), t));
     return t;
 }
 
-size_t SQLType::width() const { return 14; }
-SQLType::manipulator SQLType::format() const { return &std::right; }
+size_t SQLType::width() const {
+    return 14;
+}
+SQLType::manipulator SQLType::format() const {
+    return &std::right;
+}
 
-SQLType::SQLType(const std::string& name): name_(name) {}
+SQLType::SQLType(const std::string& name) : name_(name) {}
 
-SQLType::SQLType(const std::string& name, const std::string& shortName)
-: name_(name)
-{
-    std::map<std::string,SQLType*>& map (typeRegistry_.instance().typeMap());
+SQLType::SQLType(const std::string& name, const std::string& shortName) : name_(name) {
+    std::map<std::string, SQLType*>& map(typeRegistry_.instance().typeMap());
     ASSERT(map.find(name) == map.end());
     map[shortName] = map[name_] = this;
 }
 
 SQLType::~SQLType() {}
 
-bool SQLType::exists(const std::string& name)
-{
-    std::map<std::string,SQLType*>& map (TypeRegistry::typeMap());
+bool SQLType::exists(const std::string& name) {
+    std::map<std::string, SQLType*>& map(TypeRegistry::typeMap());
     return map.find(name) != map.end();
 }
 
-const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles)
-{
-    auto& map (TypeRegistry::typeMap());
+const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles) {
+    auto& map(TypeRegistry::typeMap());
 
     std::map<std::string, SQLType*>::iterator it;
     if (name == "string") {
@@ -99,29 +99,32 @@ const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles)
         if ((it = map.find(fullname)) == map.end()) {
             it = map.insert(std::make_pair(fullname, new SQLString(fullname, sizeof(double) * sizeDoubles))).first;
         }
-    } else {
+    }
+    else {
         ASSERT(sizeDoubles == 1);
         it = map.find(name);
     }
 
-    if(it == map.end())
+    if (it == map.end())
         throw eckit::SeriousBug(name + ": type not defined");
     return *it->second;
 }
 
-void SQLType::createAlias(const std::string& name, const std::string& alias)
-{
-    std::map<std::string,SQLType*>& map (TypeRegistry::typeMap());
+void SQLType::createAlias(const std::string& name, const std::string& alias) {
+    std::map<std::string, SQLType*>& map(TypeRegistry::typeMap());
     ASSERT(SQLType::exists(name));
     map[alias] = map[name];
 }
 
-void SQLType::print(std::ostream& s) const { s << name_; }
+void SQLType::print(std::ostream& s) const {
+    s << name_;
+}
 
-const SQLType* SQLType::subType(const std::string&) const { return this; }
+const SQLType* SQLType::subType(const std::string&) const {
+    return this;
+}
 
 
-} // namespace type
-} // namespace sql
-} // namespace eckit
-
+}  // namespace type
+}  // namespace sql
+}  // namespace eckit

@@ -10,31 +10,31 @@
 
 #include <cstring>
 
-#include "eckit/testing/Test.h"
+#include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLParser.h"
-#include "eckit/sql/SQLColumn.h"
+#include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/testing/Test.h"
 
 using namespace eckit::testing;
 
 namespace {
-    
+
 //----------------------------------------------------------------------------------------------------------------------
 
-static const std::vector<long> INTEGER_DATA {9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111};
-static const std::vector<double> REAL_DATA {99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1};
-static const std::vector<std::string> STRING_DATA {"a-longer-string", "cccc", "cccc", "cccc", "cccc", "hijklmno",
-                                                   "aaaabbbb", "a-longer-string", "another-string", "another-string2"};
+static const std::vector<long> INTEGER_DATA{9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111};
+static const std::vector<double> REAL_DATA{99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1};
+static const std::vector<std::string> STRING_DATA{
+    "a-longer-string", "cccc",           "cccc",           "cccc", "cccc", "hijklmno", "aaaabbbb",
+    "a-longer-string", "another-string", "another-string2"};
 
 
 class TestTable : public eckit::sql::SQLTable {
 
 public:
-
     TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name) :
         SQLTable(db, path, name) {
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
@@ -43,16 +43,19 @@ public:
     }
 
 private:
-
     class TestTableIterator : public eckit::sql::SQLTableIterator {
     public:
         TestTableIterator(const TestTable& owner,
-                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) : owner_(owner), idx_(0), data_(4) {
-            std::vector<size_t> offsets {0, 1, 3};
+                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) :
+            owner_(owner),
+            idx_(0),
+            data_(4) {
+            std::vector<size_t> offsets{0, 1, 3};
             for (const auto& col : columns) {
                 offsets_.push_back(offsets[col.get().index()]);
             }
         }
+
     private:
         virtual ~TestTableIterator() {}
         virtual void rewind() { idx_ = 0; }
@@ -78,8 +81,9 @@ private:
         std::vector<double> data_;
     };
 
-    virtual eckit::sql::SQLTableIterator* iterator(const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
-                                                   std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
+    virtual eckit::sql::SQLTableIterator* iterator(
+        const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
+        std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
         // TODO: Test callback
         return new TestTableIterator(*this, columns);
     }
@@ -106,7 +110,7 @@ class TestOutput : public eckit::sql::SQLOutput {
         for (const auto& r : results) {
             r->output(*this);
         }
-//        eckit::Log::info() << "..." << intOutput_ << floatOutput_ << strOutput_ << std::endl;
+        //        eckit::Log::info() << "..." << intOutput_ << floatOutput_ << strOutput_ << std::endl;
         return true;
     }
 
@@ -117,7 +121,8 @@ class TestOutput : public eckit::sql::SQLOutput {
     virtual void outputString(const char* s, size_t l, bool missing) {
         if (missing) {
             strOutput_.push_back(std::string());
-        } else {
+        }
+        else {
             ASSERT(s);
             strOutput_.push_back(std::string(s, l));
         }
@@ -128,8 +133,7 @@ class TestOutput : public eckit::sql::SQLOutput {
         return std::max(intOutput.size(), std::max(floatOutput_.size(), strOutput_.size()));
     }
 
-public: // visible members
-
+public:  // visible members
     std::vector<long> intOutput_;
     std::vector<double> floatOutput_;
     std::vector<std::string> strOutput_;
@@ -144,7 +148,7 @@ public: // visible members
 // TODO: Test explicit vs implicit table
 // TODO: Test if database has a table
 
-CASE( "Test SQL database setup" ) {
+CASE("Test SQL database setup") {
 
     eckit::sql::SQLDatabase db;
 
@@ -153,7 +157,7 @@ CASE( "Test SQL database setup" ) {
 }
 
 
-CASE( "Select from constructed table") {
+CASE("Select from constructed table") {
 
     eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
     eckit::sql::SQLDatabase& db(session.currentDatabase());
@@ -164,7 +168,7 @@ CASE( "Select from constructed table") {
 
     // All of the different types of select from this standard table.
 
-    SECTION( "Test SQL select columns" ) {
+    SECTION("Test SQL select columns") {
 
         std::string sql = "select scol,icol from table1";
         eckit::sql::SQLParser().parseString(session, sql);
@@ -177,7 +181,7 @@ CASE( "Select from constructed table") {
     }
 
 
-    SECTION( "Test SQL select all" ) {
+    SECTION("Test SQL select all") {
 
         std::string sql = "select * from table1";
         eckit::sql::SQLParser().parseString(session, sql);
@@ -190,7 +194,7 @@ CASE( "Select from constructed table") {
     }
 
 
-    SECTION( "Test SQL select where" ) {
+    SECTION("Test SQL select where") {
 
         std::string sql = "select rcol from table1 where icol > 4000";
         eckit::sql::SQLParser().parseString(session, sql);
@@ -198,13 +202,13 @@ CASE( "Select from constructed table") {
         session.statement().execute();
 
         EXPECT(o.intOutput.empty());
-        std::vector<double> expected {99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4};
+        std::vector<double> expected{99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4};
         EXPECT(o.floatOutput == expected);
         EXPECT(o.strOutput.empty());
     }
 
 
-    SECTION( "Test SQL select where long string" ) {
+    SECTION("Test SQL select where long string") {
 
         std::string sql = "select rcol from table1 where scol == \"another-string\"";
         eckit::sql::SQLParser().parseString(session, sql);
@@ -212,19 +216,16 @@ CASE( "Select from constructed table") {
         session.statement().execute();
 
         EXPECT(o.intOutput.empty());
-        std::vector<double> expected {22.2};
+        std::vector<double> expected{22.2};
         EXPECT(o.floatOutput == expected);
         EXPECT(o.strOutput.empty());
     }
 
-    SECTION( "Test SQL select distinct" ) {
+    SECTION("Test SQL select distinct") {
 
-        std::vector<std::string> queries = {
-            "select distinct icol from table1",
-            "select distinct rcol from table1",
-            "select distinct scol from table1",
-            "select distinct icol,rcol from table1"
-        };
+        std::vector<std::string> queries = {"select distinct icol from table1", "select distinct rcol from table1",
+                                            "select distinct scol from table1",
+                                            "select distinct icol,rcol from table1"};
 
         for (size_t i = 0; i < queries.size(); i++) {
 
@@ -234,39 +235,40 @@ CASE( "Select from constructed table") {
             if (i == 0) {
                 EXPECT(o.intOutput == std::vector<long>({9999, 8888, 7777, 6666, 4444, 3333, 2222, 1111}));
                 EXPECT(o.floatOutput.empty() && o.strOutput.empty());
-            } else if (i == 1) {
+            }
+            else if (i == 1) {
                 EXPECT(o.floatOutput == std::vector<double>({99.9, 88.8, 77.7, 66.6, 44.4, 33.3, 22.2, 11.1}));
                 EXPECT(o.intOutput.empty() && o.strOutput.empty());
-            } else if (i == 2) {
+            }
+            else if (i == 2) {
                 EXPECT(o.strOutput == std::vector<std::string>({"a-longer-string", "cccc", "hijklmno", "aaaabbbb",
                                                                 "another-string", "another-string2"}));
                 EXPECT(o.intOutput.empty() && o.floatOutput.empty());
-            } else {
+            }
+            else {
                 // Test that it is finding unique rows, not values (n.b. 6666/88.8)
                 EXPECT(o.intOutput == std::vector<long>({9999, 8888, 7777, 6666, 6666, 4444, 3333, 2222, 1111}));
                 EXPECT(o.floatOutput == std::vector<double>({99.9, 88.8, 77.7, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1}));
                 EXPECT(o.strOutput.empty());
-
             }
         }
     }
 
-    SECTION( "Test SQL select order_by" ) {
+    SECTION("Test SQL select order_by") {
 
         std::vector<std::string> queries = {
             "select icol from table1 order by icol ASC",
             "select icol from table1 order by icol",
             "select icol from table1 order by icol DESC",
             "select distinct icol from table1 order by icol",
-            "select distinct rcol,scol from table1 order by scol DESC, icol ASC", // n.b. different order and result contents
+            "select distinct rcol,scol from table1 order by scol DESC, icol ASC",  // n.b. different order and result
+                                                                                   // contents
         };
 
-        std::vector<std::vector<long>> vals = {
-            {1111, 2222, 3333, 4444, 6666, 6666, 6666, 7777, 8888, 9999},
-            {1111, 2222, 3333, 4444, 6666, 6666, 6666, 7777, 8888, 9999},
-            {9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111},
-            {1111, 2222, 3333, 4444, 6666, 7777, 8888, 9999}
-        };
+        std::vector<std::vector<long>> vals = {{1111, 2222, 3333, 4444, 6666, 6666, 6666, 7777, 8888, 9999},
+                                               {1111, 2222, 3333, 4444, 6666, 6666, 6666, 7777, 8888, 9999},
+                                               {9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111},
+                                               {1111, 2222, 3333, 4444, 6666, 7777, 8888, 9999}};
 
         for (size_t i = 0; i < queries.size(); i++) {
 
@@ -276,21 +278,21 @@ CASE( "Select from constructed table") {
             if (i < 4) {
                 EXPECT(o.intOutput == vals[i]);
                 EXPECT(o.floatOutput.empty() && o.strOutput.empty());
-            } else {
+            }
+            else {
                 EXPECT(o.intOutput.empty());
                 EXPECT(o.floatOutput == std::vector<double>({88.8, 66.6, 77.7, 88.8, 11.1, 22.2, 44.4, 33.3, 99.9}));
-                EXPECT(o.strOutput == std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2",
-                                                                "another-string",  "aaaabbbb", "a-longer-string",
-                                                                "a-longer-string"}));
+                EXPECT(o.strOutput ==
+                       std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2",
+                                                 "another-string", "aaaabbbb", "a-longer-string", "a-longer-string"}));
             }
         }
-
     }
 
-} // Testing SQL select from standard table
+}  // Testing SQL select from standard table
 
 
-CASE( "Test with implicit tables" ) {
+CASE("Test with implicit tables") {
 
     eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
     eckit::sql::SQLDatabase& db(session.currentDatabase());
@@ -301,7 +303,7 @@ CASE( "Test with implicit tables" ) {
 
     // All of the different types of select from this standard table.
 
-    SECTION( "Test SQL select columns" ) {
+    SECTION("Test SQL select columns") {
 
         std::string sql = "select scol,icol";
         eckit::sql::SQLParser().parseString(session, sql);
@@ -314,7 +316,7 @@ CASE( "Test with implicit tables" ) {
     }
 
 
-    SECTION( "Test SQL select all" ) {
+    SECTION("Test SQL select all") {
 
         std::string sql = "select *";
         eckit::sql::SQLParser().parseString(session, sql);
@@ -325,14 +327,12 @@ CASE( "Test with implicit tables" ) {
         EXPECT(o.floatOutput == REAL_DATA);
         EXPECT(o.strOutput == STRING_DATA);
     }
-
-
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}
+}  // namespace
 
 
 int main(int argc, char* argv[]) {

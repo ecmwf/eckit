@@ -33,8 +33,7 @@ CASE("Doubles cast into and out of Value correctly") {
     // Double conversions
 
     EXPECT(is_approximately_equal(val_zero.as<double>(), 0.0, 1.0e-10));
-    EXPECT(
-        is_approximately_equal(val_double.as<double>(), 99999999999999999999999999999.9, 1.0e-10));
+    EXPECT(is_approximately_equal(val_double.as<double>(), 99999999999999999999999999999.9, 1.0e-10));
 
     EXPECT(is_approximately_equal(double(val_zero), 0.0, 1.0e-10));
     EXPECT(is_approximately_equal(double(val_double), 99999999999999999999999999999.9, 1.0e-10));

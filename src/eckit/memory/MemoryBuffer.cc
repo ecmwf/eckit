@@ -17,55 +17,41 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MemoryBuffer::MemoryBuffer(size_t size):
-    buffer_(0),
-    size_(size)
-{
-	create();
-}
-
-MemoryBuffer::MemoryBuffer(const char* p, size_t size):
-    buffer_(0),
-    size_(size)
-{
+MemoryBuffer::MemoryBuffer(size_t size) : buffer_(0), size_(size) {
     create();
-    copy(p,size);
 }
 
-MemoryBuffer::MemoryBuffer(const std::string& s):
-    buffer_(0),
-    size_(s.length()+1)
-{
+MemoryBuffer::MemoryBuffer(const char* p, size_t size) : buffer_(0), size_(size) {
+    create();
+    copy(p, size);
+}
+
+MemoryBuffer::MemoryBuffer(const std::string& s) : buffer_(0), size_(s.length() + 1) {
     create();
     copy(s);
 }
 
 
-MemoryBuffer::~MemoryBuffer()
-{
+MemoryBuffer::~MemoryBuffer() {
     destroy();
 }
 
-void MemoryBuffer::create()
-{
+void MemoryBuffer::create() {
     buffer_ = new char[size_];
     ASSERT(buffer_);
 }
 
-void MemoryBuffer::destroy()
-{
-    char *p = static_cast<char*>(buffer_);
+void MemoryBuffer::destroy() {
+    char* p = static_cast<char*>(buffer_);
     delete[] p;
 }
 
-void MemoryBuffer::copy(const std::string &s)
-{
+void MemoryBuffer::copy(const std::string& s) {
     ::strcpy(static_cast<char*>(buffer_), s.c_str());
 }
 
-void MemoryBuffer::copy(const char *p, size_t size)
-{
-    ::memcpy(buffer_,p,size);
+void MemoryBuffer::copy(const char* p, size_t size) {
+    ::memcpy(buffer_, p, size);
 }
 
 void MemoryBuffer::swap(MemoryBuffer& rhs) {
@@ -73,8 +59,7 @@ void MemoryBuffer::swap(MemoryBuffer& rhs) {
     std::swap(size_, rhs.size_);
 }
 
-void eckit::MemoryBuffer::resize(size_t size)
-{
+void eckit::MemoryBuffer::resize(size_t size) {
     destroy();
     size_ = size;
     create();
@@ -82,5 +67,4 @@ void eckit::MemoryBuffer::resize(size_t size)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

@@ -11,26 +11,39 @@
 #include "FDataSync.h"
 
 #include <unistd.h>
+#include <sys/errno.h>
 
 #include "eckit/eckit.h"
 
 namespace eckit {
 
-int fdatasync(int fd)
-{
+
+int fsync(int fd) {
+    int ret = ::fsync(fd);
+    while (ret < 0 && errno == EINTR) {
+        ret = ::fsync(fd);
+    }
+    return ret;
+}
+
+int fdatasync(int fd) {
+    int ret = 0;
 #if defined(ECKIT_HAVE_FDATASYNC)
     // usually available on Linux, but not Darwin (macosx) and xBSD
     // syncs all the data but avoids some of the metadata e.g. mtime
-    int ret = ::fdatasync(fd);
+    ret = ::fdatasync(fd);
 #elif defined(ECKIT_HAVE_F_FULLSYNC)
     // usually available on Darwin (macosx) and xBSD
     // provides stronger guarantees than fsync that data fully committed to persistent storage
-    int ret = ::fcntl(fd, F_FULLFSYNC);
+    ret = ::fcntl(fd, F_FULLFSYNC);
+    while (ret == -1 && errno == EINTR) {
+        ret = ::fcntl(fd, F_FULLFSYNC);
+    }
 #elif defined(ECKIT_HAVE_FSYNC)
     // last resort, but note this is slower than ::fdatasync and less strong as F_FULLSYNC
-    int ret = ::fsync(fd);
+    ret = eckit::fsync(fd);
 #else
-# error "Operating system does not support fdatasync, F_FULLSYNC or fsync"
+#error "Operating system does not support fdatasync, F_FULLSYNC or fsync"
 #endif
     return ret;
 }

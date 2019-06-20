@@ -13,9 +13,9 @@
 #include <utility>
 
 #include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -26,26 +26,11 @@ namespace eckit {
 
 static const char magnitudes[] = {' ', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'};
 
-Bytes::Bytes(double bytes):
-	bytes_(bytes),
-    scale_(0),
-	rate_(false)
-{
-}
+Bytes::Bytes(double bytes) : bytes_(bytes), scale_(0), rate_(false) {}
 
-Bytes::Bytes(double bytes, Timer& timer) :
-    bytes_(rate(bytes, timer.elapsed())),
-    scale_(0),
-    rate_(true)
-{
-}
+Bytes::Bytes(double bytes, Timer& timer) : bytes_(rate(bytes, timer.elapsed())), scale_(0), rate_(true) {}
 
-Bytes::Bytes(double bytes, double elapsed):
-    bytes_(rate(bytes, elapsed)),
-    scale_(0),
-    rate_(true)
-{
-}
+Bytes::Bytes(double bytes, double elapsed) : bytes_(rate(bytes, elapsed)), scale_(0), rate_(true) {}
 
 
 int Bytes::sign() const {
@@ -54,9 +39,11 @@ int Bytes::sign() const {
 
 double Bytes::rate(double num, double den) {
 
-    if(num == 0.) return 0.;
+    if (num == 0.)
+        return 0.;
 
-    if(den == 0.) return num * std::numeric_limits<double>::infinity(); // must be after, num gives sign to inf
+    if (den == 0.)
+        return num * std::numeric_limits<double>::infinity();  // must be after, num gives sign to inf
 
     return num / den;
 }
@@ -70,8 +57,7 @@ std::pair<double, char> Bytes::reduceTo1024() const {
     double x = std::abs(bytes_);
 
     size_t n = 0;
-    while(x >= 1024. && n < NUMBER(magnitudes) )
-    {
+    while (x >= 1024. && n < NUMBER(magnitudes)) {
         x /= 1024.;
         n++;
     }
@@ -85,18 +71,17 @@ std::pair<double, char> Bytes::reduceTo100() const {
 
     double x = std::abs(bytes_);
 
-    if(x > yotta || std::isinf(x)) {
+    if (x > yotta || std::isinf(x)) {
         return std::make_pair(sign() * 99., 'Y');
     }
 
     size_t n = 0;
-    while(x > 100 && n < NUMBER(magnitudes))
-    {
+    while (x > 100 && n < NUMBER(magnitudes)) {
         x /= 1024.;
         n++;
     }
 
-    x = (x >= 10) ? long(x+0.5) : long(x*10+0.5)/10.0;
+    x = (x >= 10) ? long(x + 0.5) : long(x * 10 + 0.5) / 10.0;
 
     return std::make_pair(sign() * x, magnitudes[n]);
 }
@@ -110,27 +95,29 @@ std::string Bytes::shorten() const {
     return s.str();
 }
 
-std::ostream& operator<<(std::ostream& s, const Bytes& b)
-{
+std::ostream& operator<<(std::ostream& s, const Bytes& b) {
     std::pair<double, char> r = b.reduceTo1024();
 
-    if(b.sign()<0) s << '-';
+    if (b.sign() < 0)
+        s << '-';
 
     s << r.first << ' ';
 
-    if(r.second != ' ') s << r.second;
+    if (r.second != ' ')
+        s << r.second;
 
     s << "byte";
 
-    if(r.first != 1.) s << 's';
+    if (r.first != 1.)
+        s << 's';
 
-    if(b.rate_) s << " per second";
+    if (b.rate_)
+        s << " per second";
 
-	return s;
+    return s;
 }
 
-Bytes::operator std::string() const
-{
+Bytes::operator std::string() const {
     std::ostringstream s;
     s << *this;
     return s.str();
@@ -138,5 +125,4 @@ Bytes::operator std::string() const
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

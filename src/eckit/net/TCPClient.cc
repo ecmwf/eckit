@@ -9,47 +9,42 @@
  */
 
 
-#include "eckit/config/Resource.h"
 #include "eckit/net/TCPClient.h"
+#include "eckit/config/Resource.h"
+#include "eckit/net/Endpoint.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-TCPClient::TCPClient(int port):
-    TCPSocket(),
-    port_(port)
-{
-}
+TCPClient::TCPClient(int port) : TCPSocket(), port_(port) {}
 
-TCPClient::~TCPClient()
-{
-}
+TCPClient::~TCPClient() {}
 
-void TCPClient::bind()
-{
+void TCPClient::bind() {
     if (socket_ == -1)
         socket_ = newSocket(port_);
 }
 
-std::string TCPClient::bindingAddress() const
-{
-    //return  Resource<std::string>("localBindingAddr","127.0.0.1");
-    return  Resource<std::string>("localBindingAddr", "");
+std::string TCPClient::bindingAddress() const {
+    // return  Resource<std::string>("localBindingAddr","127.0.0.1");
+    return Resource<std::string>("localBindingAddr", "");
 }
 
 void TCPClient::print(std::ostream& s) const {
     s << "TCPClient["
-      << "port=" << port_
-      << ",addr=" << bindingAddress()
-      << ",";
+      << "port=" << port_ << ",addr=" << bindingAddress() << ",";
     TCPSocket::print(s);
     s << "]";
 }
 
-//-----------------------------------------------------------------------------
+/// @note TCPClient::connect(host, port, retries, timeout) is found in TCPSocket.cc
+TCPSocket& TCPClient::connect(const Endpoint& endpoint, int retries, int timeout) {
+    return connect(endpoint.hostname(), endpoint.port(), retries, timeout);
+}
 
-} // namespace eckit
+//----------------------------------------------------------------------------------------------------------------------
 
+}  // namespace eckit

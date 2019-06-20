@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -21,12 +21,8 @@ namespace sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SQLOutputConfig::SQLOutputConfig(bool noColumnNames,
-                                 bool noNULL,
-                                 const std::string& delimiter,
-                                 const std::string& format,
-                                 bool bitfieldsBinary,
-                                 bool noColumnAlignment,
+SQLOutputConfig::SQLOutputConfig(bool noColumnNames, bool noNULL, const std::string& delimiter,
+                                 const std::string& format, bool bitfieldsBinary, bool noColumnAlignment,
                                  bool fullPrecision) :
     outputFile_(""),
     doNotWriteColumnNames_(noColumnNames),
@@ -64,33 +60,32 @@ const std::string& SQLOutputConfig::outputFormat() const {
     return outputFormat_;
 }
 
-bool SQLOutputConfig::doNotWriteNULL () const {
-    return  doNotWriteNULL_;
+bool SQLOutputConfig::doNotWriteNULL() const {
+    return doNotWriteNULL_;
 }
 
 bool SQLOutputConfig::fullPrecision() const {
     return fullPrecision_;
 }
 
-bool SQLOutputConfig::displayBitfieldsBinary () const {
+bool SQLOutputConfig::displayBitfieldsBinary() const {
     return displayBitfieldsBinary_;
 }
 
-bool SQLOutputConfig::disableAlignmentOfColumns () const {
+bool SQLOutputConfig::disableAlignmentOfColumns() const {
     return disableAlignmentOfColumns_;
 }
 
-bool SQLOutputConfig::doNotWriteColumnNames () const {
+bool SQLOutputConfig::doNotWriteColumnNames() const {
     return doNotWriteColumnNames_;
 }
 
 
 const char* SQLOutputConfig::defaultDelimiter = "	";
-//const char* SQLOutputConfig::defaultOutputFile = "output.odb";
+// const char* SQLOutputConfig::defaultOutputFile = "output.odb";
 const char* SQLOutputConfig::defaultOutputFormat = "default";
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
-
+}  // namespace sql
+}  // namespace eckit

@@ -18,9 +18,9 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-CASE( "test_eckit_container_bloomfilter_insert" ) {
+CASE("test_eckit_container_bloomfilter_insert") {
 
     BloomFilter<std::string> f(1024);
 
@@ -34,13 +34,11 @@ CASE( "test_eckit_container_bloomfilter_insert" ) {
     EXPECT(!f.contains("hello there again"));
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
-int main(int argc, char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-

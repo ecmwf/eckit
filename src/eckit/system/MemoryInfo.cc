@@ -12,15 +12,15 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
-#include "eckit/system/MemoryInfo.h"
+#include "eckit/log/BigNum.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/memory/MMap.h"
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
-#include "eckit/memory/MMap.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/BigNum.h"
+#include "eckit/system/MemoryInfo.h"
 
 namespace eckit {
 namespace system {
@@ -36,7 +36,6 @@ MemoryInfo::MemoryInfo() {
 
     MMap::info(mmap_count_, mmap_size_);
     Shmget::info(shm_count_, shm_size_);
-
 }
 
 static void put(std::ostream& out, const char* title, size_t value, bool& printed, bool bytes = true) {
@@ -44,7 +43,7 @@ static void put(std::ostream& out, const char* title, size_t value, bool& printe
         if (printed) {
             out << ", ";
         }
-        out << title << ": " ;
+        out << title << ": ";
         if (bytes) {
             out << eckit::Bytes(value);
         }
@@ -86,7 +85,7 @@ void MemoryInfo::print(std::ostream& out) const {
     put(out, "permanent used", permanentUsed_, printed);
     put(out, "permanent Free", permanentFree_, printed);
 
-        // mallino
+    // mallino
     put(out, "malloc arena", arena_, printed);
     // put(out, "ordblks", ordblks_, printed);
     // put(out, "smblks", smblks_, printed);
@@ -102,11 +101,11 @@ void MemoryInfo::print(std::ostream& out) const {
     if (!printed) {
         out << "no information";
     }
-
 }
 
 
-static void diff(std::ostream& out, const char* title, size_t value, size_t previous, bool& printed, bool bytes = true) {
+static void diff(std::ostream& out, const char* title, size_t value, size_t previous, bool& printed,
+                 bool bytes = true) {
     if (value != previous) {
         if (printed) {
             out << ", ";
@@ -127,7 +126,7 @@ static void diff(std::ostream& out, const char* title, size_t value, size_t prev
             diff = value - previous;
         }
         else {
-            out << "-" ;
+            out << "-";
             diff = previous - value;
         }
 
@@ -194,6 +193,5 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
 }
 
 
-} // namespace system
-} // namespace eckit
-
+}  // namespace system
+}  // namespace eckit

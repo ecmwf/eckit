@@ -9,26 +9,20 @@
  */
 
 
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/net/NetService.h"
+#include "eckit/log/Log.h"
 #include "eckit/net/NetUser.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/thread/ThreadControler.h"
 
 namespace eckit {
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
-NetService::NetService(int port, bool visible):
-    server_(port),
-    visible_(visible)
-{
-}
+NetService::NetService(int port, bool visible) : server_(port), visible_(visible) {}
 
-NetService::~NetService()
-{
-}
+NetService::~NetService() {}
 
 std::string NetService::hostname() const {
     return server_.localHost();
@@ -38,23 +32,20 @@ int NetService::port() const {
     return server_.localPort();
 }
 
-void NetService::run()
-{
+void NetService::run() {
     Monitor::instance().show(visible_);
-	Monitor::instance().name(name());
-	Monitor::instance().kind(name());
+    Monitor::instance().name(name());
+    Monitor::instance().kind(name());
 
     Log::status() << "Waiting on port " << port() << std::endl;
 
-	while(!stopped())
-	{
-		ThreadControler t(newUser(server_.accept()));
-		t.start();
-	}
+    while (!stopped()) {
+        ThreadControler t(newUser(server_.accept()));
+        t.start();
+    }
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

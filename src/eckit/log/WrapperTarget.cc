@@ -10,16 +10,14 @@
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/log/WrapperTarget.h"
 #include "eckit/log/OStreamTarget.h"
+#include "eckit/log/WrapperTarget.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-WrapperTarget::WrapperTarget(LogTarget* target):
-    target_(target),
-    prefix_(true) {
+WrapperTarget::WrapperTarget(LogTarget* target) : target_(target), prefix_(true) {
 
     if (!target_) {
         target_ = new OStreamTarget(std::cout);
@@ -34,7 +32,7 @@ WrapperTarget::~WrapperTarget() {
 
 void WrapperTarget::write(const char* start, const char* end) {
 
-    const char *begin = start;
+    const char* begin = start;
 
     while (start != end) {
         if (*start == '\n') {
@@ -42,7 +40,7 @@ void WrapperTarget::write(const char* start, const char* end) {
             writeSuffix();
             target_->write(start, start + 1);
             prefix_ = true;
-            begin = start + 1;
+            begin   = start + 1;
         }
         else {
             if (prefix_) {
@@ -60,7 +58,6 @@ void WrapperTarget::write(const char* start, const char* end) {
         }
         target_->write(begin, end);
     }
-
 }
 
 void WrapperTarget::flush() {
@@ -69,4 +66,4 @@ void WrapperTarget::flush() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

@@ -73,19 +73,6 @@ public:
 
     virtual DataHandle* clone() const;
 
-    // From Streamable
-
-#if 0
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
-#endif
-
-// -- Class methods
-
-#if 0
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
-#endif
-
 private: // methods
 
 
@@ -104,14 +91,6 @@ private: // members
     Offset         position_;
 
     virtual std::string title() const;
-
-// -- Class members
-
-#if 0
-    static  ClassSpec                 classSpec_;
-    static  Reanimator<MemoryHandle>  reanimator_;
-#endif
-
 };
 
 //-----------------------------------------------------------------------------

@@ -12,10 +12,10 @@
 #include <iostream>
 #include <memory>
 
-#include "eckit/log/Timer.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
+#include "eckit/log/Timer.h"
 
 #include "eckit/utils/Hash.h"
 
@@ -35,9 +35,9 @@ void timeAdd(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.start();
 
-    for(int i = 0; i < N; ++i ) {
+    for (int i = 0; i < N; ++i) {
         hash.reset();
-        for(size_t j=0; j < M; ++j) {
+        for (size_t j = 0; j < M; ++j) {
             hash.add(buffer, buffer.size());
         }
         hash.digest();
@@ -45,7 +45,7 @@ void timeAdd(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.stop();
 
-    std::cout << " - add()     rate " << Bytes(N*M*buffer.size(), timer) << std::endl;
+    std::cout << " - add()     rate " << Bytes(N * M * buffer.size(), timer) << std::endl;
 }
 
 template <int N>
@@ -53,56 +53,47 @@ void timeCompute(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.start();
 
-    for(int i = 0; i < N; ++i ) {
-            std::string s = hash.compute(buffer, buffer.size());
-            assert(!s.empty());
+    for (int i = 0; i < N; ++i) {
+        std::string s = hash.compute(buffer, buffer.size());
+        assert(!s.empty());
     }
 
     timer.stop();
 
-    std::cout << " - compute() rate " << Bytes(N*buffer.size(), timer) << std::endl;
+    std::cout << " - compute() rate " << Bytes(N * buffer.size(), timer) << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE( "Test hash performance" ) {
+CASE("Test hash performance") {
 
-    eckit::Buffer buffer(4*1024*1024);
-    eckit::Buffer buffer2(64*1024*1024);
+    eckit::Buffer buffer(4 * 1024 * 1024);
+    eckit::Buffer buffer2(64 * 1024 * 1024);
     eckit::Timer timer;
 
-    const char *hashes[4] =
-    {
-        "xxHash",
-        "MD4",
-        "MD5",
-        "SHA1"
-    };
+    const char* hashes[4] = {"xxHash", "MD4", "MD5", "SHA1"};
 
-    for(int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i) {
 
         std::string name = hashes[i];
 
-        if(eckit::HashFactory::has(name)) {
+        if (eckit::HashFactory::has(name)) {
 
             std::cout << name << std::endl;
 
-            std::unique_ptr<eckit::Hash> hash( eckit::HashFactory::build(name) );
+            std::unique_ptr<eckit::Hash> hash(eckit::HashFactory::build(name));
 
-            timeAdd<20,1>  (*hash, buffer, timer);
-            timeCompute<5> (*hash, buffer2, timer);
-
+            timeAdd<20, 1>(*hash, buffer, timer);
+            timeCompute<5>(*hash, buffer2, timer);
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     return run_tests(argc, argv);
 }
-

@@ -13,7 +13,7 @@
 namespace eckit {
 
 BadTag::BadTag(const std::string& what) : Exception(what) {
-        dumpStackTrace(std::cerr);
-    }
+    dumpStackTrace(std::cerr);
+}
 
 }  // namespace eckit

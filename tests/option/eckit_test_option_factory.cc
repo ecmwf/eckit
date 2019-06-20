@@ -20,7 +20,7 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 /// Build some generic factories to demonstrate functionality.
 /// n.b. This does not worry about thread safety in the factory for the purpose of these unit tests.
 ///      Only one thread...
@@ -41,9 +41,11 @@ class ObjectFactory {
         static std::map<std::string, ObjectFactory*> m;
         return m;
     }
+
 protected:
     ObjectFactory(const std::string& nm) : name_(nm) { factory()[nm] = this; }
     virtual ~ObjectFactory() { factory().erase(name_); }
+
 public:
     static void list(std::ostream& out) {
         const char* sep = "";
@@ -52,33 +54,34 @@ public:
             sep = ", ";
         }
     }
-    static ObjectBase * build(const std::string& nm) { return factory()[nm]->make(); }
+    static ObjectBase* build(const std::string& nm) { return factory()[nm]->make(); }
 };
 
 
 /// Templated class to self-register, and build, objects
 template <class T>
 class ObjectBuilder : public ObjectFactory {
-    virtual ObjectBase * make() const { return new T; }
+    virtual ObjectBase* make() const { return new T; }
+
 public:
     ObjectBuilder(const std::string& name) : ObjectFactory(name) {}
 };
 
 
 /// Register the types
-class Object1 : public ObjectBase { };
-class Object2 : public ObjectBase { };
+class Object1 : public ObjectBase {};
+class Object2 : public ObjectBase {};
 
 ObjectBuilder<Object1> factory1("obj1");
 ObjectBuilder<Object2> factory2("obj2");
 
-} // anonymous namespace
+}  // anonymous namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
 using namespace eckit::option;
 
-CASE( "test_eckit_option_factory_list" ) {
+CASE("test_eckit_option_factory_list") {
 
     FactoryOption<ObjectFactory> opt("arg1", "description");
 
@@ -88,15 +91,14 @@ CASE( "test_eckit_option_factory_list" ) {
     std::string opt_str(ss.str());
 
     std::string cmp = "   --arg1=name (description)\n     Values are: obj1, obj2";
-    EXPECT( opt_str == cmp );
+    EXPECT(opt_str == cmp);
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace test
-} // namespace eckit
+}  // namespace test
+}  // namespace eckit
 
-int main(int argc,char **argv)
-{
-    return run_tests ( argc, argv );
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }

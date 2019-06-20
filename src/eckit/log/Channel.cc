@@ -20,22 +20,22 @@ namespace eckit {
 Channel::Channel(LogTarget* target) :
     std::ostream(new ChannelBuffer()),
     buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
-    ASSERT( buffer_ );
+    ASSERT(buffer_);
     if (target) {
         buffer_->setTarget(target);
     }
-//    std::cerr << "Channel::Channel()" << std::endl;
+    //    std::cerr << "Channel::Channel()" << std::endl;
 }
 
 
 Channel::~Channel() {
-//    std::cerr << "Channel::~Channel() " << *this << std::endl;
+    //    std::cerr << "Channel::~Channel() " << *this << std::endl;
     delete buffer_;
 }
 
-bool Channel::operator !() const {
+bool Channel::operator!() const {
     bool b = *this;
-    return  !b;
+    return !b;
 }
 
 Channel::operator bool() const {
@@ -97,4 +97,4 @@ void Channel::unindent() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

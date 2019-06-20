@@ -12,33 +12,32 @@
 
 using namespace eckit;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit_test {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 AnyKeyParams::AnyKeyParams(const std::string& payload) : payload_(payload) {}
 
 AnyKeyParams::AnyKeyParams(Stream& s) {
-  s >> payload_;
+    s >> payload_;
 }
 
-Params::value_t getValue(const AnyKeyParams &, const Params::key_t &)
-{
-  return Params::value_t("foo");
+Params::value_t getValue(const AnyKeyParams&, const Params::key_t&) {
+    return Params::value_t("foo");
 }
 
-void print(const AnyKeyParams &, std::ostream &) {}
+void print(const AnyKeyParams&, std::ostream&) {}
 
-void encode(const AnyKeyParams & p, Stream & s) {
-  s << p.payload_;
+void encode(const AnyKeyParams& p, Stream& s) {
+    s << p.payload_;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 Params::Factory<AnyKeyParams> anyKeyParamsFactory;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit_test
+}  // namespace eckit_test

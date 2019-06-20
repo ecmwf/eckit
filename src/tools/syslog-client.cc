@@ -17,7 +17,7 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Translator.h"
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -52,18 +52,15 @@ void SysLogClient::run() {
 
         client.send(buff, buff.size());
 
-        eckit::Log::info() << Tool::name()
-                           << " sent " << eckit::Bytes(buff.size())
-                           << " to " << hostname
-                           << " MSG: " << (const char*)buff
-                           << std::endl;
+        eckit::Log::info() << Tool::name() << " sent " << eckit::Bytes(buff.size()) << " to " << hostname
+                           << " MSG: " << (const char*)buff << std::endl;
     }
 }
 
 }  // namespace eckit
 
 
-//--------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 
 int main(int argc, char* argv[]) {

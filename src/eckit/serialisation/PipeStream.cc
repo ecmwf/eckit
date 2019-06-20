@@ -16,11 +16,11 @@
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/thread/Mutex.h"
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 PipeStream::PipeStream() : in_(-1), out_(-1) {
     toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
@@ -57,8 +57,8 @@ void PipeStream::parentProcess() {
     SYSCALL(fcntl(in_, F_SETFD, FD_CLOEXEC));
     SYSCALL(fcntl(out_, F_SETFD, FD_CLOEXEC));
 
-    Log::debug() << "parentProcess : " << in_ << '/' << out_ << " closing " << toChild_[0] << '/'
-                 << toParent_[1] << std::endl;
+    Log::debug() << "parentProcess : " << in_ << '/' << out_ << " closing " << toChild_[0] << '/' << toParent_[1]
+                 << std::endl;
 
     toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 }
@@ -74,8 +74,8 @@ void PipeStream::childProcess() {
     ::close(toChild_[1]);
     ::close(toParent_[0]);
 
-    Log::debug() << "childProcess : " << in_ << '/' << out_ << " closing " << toChild_[1] << '/'
-                 << toParent_[0] << std::endl;
+    Log::debug() << "childProcess : " << in_ << '/' << out_ << " closing " << toChild_[1] << '/' << toParent_[0]
+                 << std::endl;
 
     toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 }
@@ -126,6 +126,6 @@ long PipeStream::read(void* buf, long length) {
     return received;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

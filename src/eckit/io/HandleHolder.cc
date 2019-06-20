@@ -10,11 +10,11 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/config/Resource.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Log.h"
 
 #include "eckit/io/HandleHolder.h"
 #include "eckit/log/BigNum.h"
@@ -22,32 +22,21 @@
 #include "eckit/log/Seconds.h"
 
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-HandleHolder::HandleHolder(DataHandle &handle):
-    handle_(&handle),
-    owned_(false)
-{
-}
+HandleHolder::HandleHolder(DataHandle& handle) : handle_(&handle), owned_(false) {}
 
-HandleHolder::HandleHolder(DataHandle *handle):
-    handle_(handle),
-    owned_(true)
-{
-}
+HandleHolder::HandleHolder(DataHandle* handle) : handle_(handle), owned_(true) {}
 
-HandleHolder::~HandleHolder()
-{
-    if( owned_ )
+HandleHolder::~HandleHolder() {
+    if (owned_)
         delete handle_;
 }
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

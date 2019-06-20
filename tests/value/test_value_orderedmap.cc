@@ -92,6 +92,7 @@ CASE("Types are reported correctly for OrderedMap") {
     om[Value(123.45)] = 123.456;
     om[Value(true)]   = false;
 
+    EXPECT(om.isMap());
     EXPECT(om.isOrderedMap());
 
     EXPECT(!om.isNil());
@@ -103,7 +104,6 @@ CASE("Types are reported correctly for OrderedMap") {
     EXPECT(!om.isDate());
     EXPECT(!om.isTime());
     EXPECT(!om.isDateTime());
-    EXPECT(!om.isMap());
 }
 
 CASE("Test comparisons using OrderedMap") {
@@ -194,10 +194,8 @@ CASE("Test comparisons using OrderedMap") {
 
         EXPECT(om2.compare(om1) == 0);  // Keys are equal and inserted in same order
         EXPECT(om1.compare(om2) == 0);  // Keys are equal and inserted in same order
-        EXPECT(om1.compare(om3) ==
-               1);  // Keys are equal but inserted in wrong order, values also in wrong order
-        EXPECT(om1.compare(om4) ==
-               1);  // Keys are equal but inserted in wrong order, values in correct order
+        EXPECT(om1.compare(om3) == 1);  // Keys are equal but inserted in wrong order, values also in wrong order
+        EXPECT(om1.compare(om4) == 1);  // Keys are equal but inserted in wrong order, values in correct order
     }
 }
 
@@ -246,8 +244,7 @@ CASE("Test indexing for OrderedMap") {
     EXPECT(om[123].as<long long>() == 1234);
     EXPECT(om["abc"].as<std::string>() == "abcd");
     EXPECT(om[std::string("abc")].as<std::string>() == "abcd");
-    EXPECT(om[Value(true)].as<bool>() ==
-           false);  // indexing without wrapping "true" as "Value(true)" does not work
+    EXPECT(om[Value(true)].as<bool>() == false);  // indexing without wrapping "true" as "Value(true)" does not work
 
     EXPECT(om[Value(123)].as<long long>() == 1234);
     EXPECT(om[Value("abc")].as<std::string>() == "abcd");
@@ -434,6 +431,28 @@ CASE("Test that the module operator is invalid for OrderedMap") {
     EXPECT_THROWS_AS(ValueModSelf(om, Date(2016, 3, 31)), BadOperator);
     EXPECT_THROWS_AS(ValueModSelf(om, ValueList()), BadOperator);
     EXPECT_THROWS_AS(ValueModSelf(om, ValueMap()), BadOperator);
+}
+
+CASE("Can remove key from OrderedMap") {
+
+    Value om          = Value::makeOrderedMap();
+
+    om[123]           = 1234;
+    om["abc"]         = "abcd";
+    om[Value(true)]   = Value("on");
+
+    EXPECT(om.contains(123));
+    EXPECT(om.contains("abc"));
+
+    // remove existing values
+    EXPECT(om.remove(123) == Value(1234));
+    EXPECT(om.remove("abc") == Value("abcd"));
+
+    EXPECT(om.remove("xxxx") == Value()); // remove non-existing values
+
+    EXPECT(om.remove(true) == Value("on"));
+
+    EXPECT(om.remove("zzzz") == Value()); // remove non-existing values
 }
 
 CASE("Test head/tail functionality for OrderedMap") {

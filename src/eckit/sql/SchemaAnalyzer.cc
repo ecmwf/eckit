@@ -77,6 +77,10 @@ std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipT
     return "\nSELECT\n" + selectlist + "\n FROM\n" + from;
 }
 
+TableDefs SchemaAnalyzer::definitions() const {
+    return tableDefs_;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 } // namespace sql

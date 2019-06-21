@@ -10,6 +10,7 @@
 
 
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/FileMode.h"
 
 namespace eckit {
 
@@ -112,7 +113,7 @@ void BasePathNameT<T>::mkdir(short mode) const {
 
 template <class T>
 void BasePathNameT<T>::chmod(const FileMode& mode) const {
-    path_.chmod(mode);
+    path_.chmod(mode.mode());
 }
 
 template <class T>

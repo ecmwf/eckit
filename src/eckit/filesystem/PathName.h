@@ -20,7 +20,6 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/filesystem/FileSystemSize.h"
-#include "eckit/filesystem/FileMode.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
@@ -33,6 +32,7 @@ class BasePathName;
 class DataHandle;
 class LocalPathName;
 class MarsFSPath;
+class FileMode;
 
 // The class PathName represent a unix path name.
 

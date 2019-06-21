@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 
 #include <string>
+#include <iomanip>
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathExpander.h"
@@ -40,7 +41,7 @@ CASE("Create a file controling its mode") {
         FileMode m2;
         EXPECT_NO_THROW(m2 = ("---,---,---"));
         EXPECT(m == m2);
-        std::cout << m << " = " << m.mode() << std::endl;
+        std::cout << m << " = " << std::oct << std::setw(4) << std::setfill('0') << m.mode() << std::dec << std::endl;
         EXPECT(m.str() == std::string(("---,---,---")));
     }
     SECTION("rwx,rwx,rwx") {
@@ -48,7 +49,7 @@ CASE("Create a file controling its mode") {
         FileMode m2;
         EXPECT_NO_THROW(m2 = "rwx,rwx,rwx");
         EXPECT(m == m2);
-        std::cout << m << " = " << m.mode() << std::endl;
+        std::cout << m << " = " << std::oct << std::setw(4) << std::setfill('0') << m.mode() << std::dec << std::endl;
         EXPECT(m.str() == std::string("rwx,rwx,rwx"));
     }
     SECTION("rwx,---,---") {
@@ -56,7 +57,7 @@ CASE("Create a file controling its mode") {
         FileMode m2;
         EXPECT_NO_THROW(m2 = "rwx,---,---");
         EXPECT(m == m2);
-        std::cout << m << " = " << m.mode() << std::endl;
+        std::cout << m << " = " << std::oct << std::setw(4) << std::setfill('0') << m.mode() << std::dec << std::endl;
         EXPECT(m.str() == std::string("rwx,---,---"));
     }
     SECTION("---,rwx,---") {
@@ -64,7 +65,7 @@ CASE("Create a file controling its mode") {
         FileMode m2;
         EXPECT_NO_THROW(m2 = "---,rwx,---");
         EXPECT(m == m2);
-        std::cout << m << " = " << m.mode() << std::endl;
+        std::cout << m << " = " << std::oct << std::setw(4) << std::setfill('0') << m.mode() << std::dec << std::endl;
         EXPECT(m.str() == std::string("---,rwx,---"));
     }
     SECTION("---,---,rwx") {
@@ -72,7 +73,7 @@ CASE("Create a file controling its mode") {
         FileMode m2;
         EXPECT_NO_THROW(m2 = "---,---,rwx");
         EXPECT(m == m2);
-        std::cout << m << " = " << m.mode() << std::endl;
+        std::cout << m << " = " << std::oct << std::setw(4) << std::setfill('0') << m.mode() << std::dec << std::endl;
         EXPECT(m.str() == std::string("---,---,rwx"));
     }
     SECTION("rw-,r--,r--") {
@@ -80,7 +81,7 @@ CASE("Create a file controling its mode") {
         FileMode m2;
         EXPECT_NO_THROW(m2 = "rw-,r--,r--");
         EXPECT(m == m2);
-        std::cout << m << " = " << m.mode() << std::endl;
+        std::cout << m << " = " << std::oct << std::setw(4) << std::setfill('0') << m.mode() << std::dec << std::endl;
         EXPECT(m.str() == std::string("rw-,r--,r--"));
     }
     SECTION("rwx,r-x,r-x") {
@@ -88,7 +89,7 @@ CASE("Create a file controling its mode") {
         FileMode m2;
         EXPECT_NO_THROW(m2 = "rwx,r-x,r-x");
         EXPECT(m == m2);
-        std::cout << m << " = " << m.mode() << std::endl;
+        std::cout << m << " = " << std::oct << std::setw(4) << std::setfill('0') << m.mode() << std::dec << std::endl;
         EXPECT(m.str() == std::string("rwx,r-x,r-x"));
     }
 }
@@ -131,8 +132,17 @@ CASE("Handle bad strings") {
         EXPECT_THROWS_AS(m = "---,---,-x-", BadValue);
         EXPECT_THROWS_AS(m = "---,---,--r", BadValue);
         EXPECT_THROWS_AS(m = "---,---,--w", BadValue);
+
+        EXPECT_THROWS_AS(m = "01", BadValue);
+        EXPECT_THROWS_AS(m = "0228", BadValue);
+
     }
 }
+
+CASE("Handle bad constructor") {
+    EXPECT_THROWS_AS(FileMode m(10000), BadValue);
+}
+
 
 CASE("Create a file and set its permissions")
 {
@@ -145,6 +155,22 @@ CASE("Create a file and set its permissions")
     dh->close();
 
     FileMode n(FileMode::fromPath(p.asString()));
+}
+
+CASE("Octal mode")
+{
+    FileMode mode1("0666");
+    FileMode mode2(0666);
+    FileMode mode3("rw-,rw-,rw-");
+
+    std::cout << "mode1 = " << mode1 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode1.mode() << std::dec << std::endl;
+    std::cout << "mode2 = " << mode2 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode2.mode() << std::dec << std::endl;
+    std::cout << "mode3 = " << mode3 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode3.mode() << std::dec << std::endl;
+
+
+    EXPECT(mode1 == mode2);
+    EXPECT(mode1 == mode3);
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

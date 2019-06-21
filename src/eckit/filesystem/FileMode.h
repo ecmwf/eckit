@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 
 #include <string>
-#include <iostream>
+#include <iosfwd>
 
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/exception/Exceptions.h"
@@ -32,29 +32,19 @@ namespace eckit {
 class FileMode {
 public:
 
-    FileMode(mode_t m = 0) :
-        mode_(m) {
-    }
+    FileMode(mode_t m = 0);
 
-    FileMode(const std::string& s) {
-        mode_ = toMode(s);
-    }
+    FileMode(const std::string& s);
 
-    FileMode& operator=(const std::string& s) {
-        mode_ = toMode(s);
-        return *this;
-    }
+    FileMode& operator=(const std::string& s);
 
-    FileMode& operator=(mode_t m) {
-        mode_ = m;
-        return *this;
-    }
+    FileMode& operator=(mode_t m);
+
+    bool operator==(const FileMode& other) const;
+
 
     mode_t mode() const { return mode_; }
     std::string str() const { return toString(); }
-
-    operator std::string() const { return str(); }
-    operator mode_t() const { return mode_; }
 
     static int fromPath(const std::string& path);
 
@@ -62,9 +52,7 @@ private:  // methods
 
     friend std::ostream& operator<< (std::ostream& os, const FileMode& mode) { mode.print(os); return os; }
 
-    void print(std::ostream& os) const {
-        os << str();
-    }
+    void print(std::ostream& os) const;
 
     void testAssign(const std::string& s, char got, char test, mode_t& mode, mode_t mask) const;
 

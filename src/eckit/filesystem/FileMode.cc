@@ -10,8 +10,10 @@
 
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include "eckit/filesystem/FileMode.h"
+#include "eckit/filesystem/PathName.h"
 
 
 namespace eckit {
@@ -20,7 +22,7 @@ FileMode::FileMode(mode_t m) :
     mode_(m) {
     if (m < 0 || m > 0777) {
         std::ostringstream oss;
-        oss << "FileMode: invalid mode " << std::oct << m;
+        oss << "FileMode: invalid mode 0" << std::setw(3) << std::setfill('0') << std::oct << m;
         throw BadValue(oss.str(), Here());
     }
 }
@@ -44,6 +46,10 @@ bool FileMode::operator==(const FileMode& other) const {
 }
 
 
+mode_t FileMode::makeUmask(const FileMode& target) const {
+    return mode_ & ~target.mode_;
+}
+
 void FileMode::testAssign(const std::string& s, char got, char test, mode_t& mode, mode_t mask) const {
     if (got == test)
         mode |= mask;
@@ -62,11 +68,6 @@ mode_t FileMode::toMode(const std::string& s) const  {
     ASSERT(s.size() > 0);
 
     if (s[0] == '0') {
-        if (s.size() != 4) {
-            std::ostringstream oss;
-            oss << "Bad string describing mode permissions " << s;
-            throw BadValue(oss.str(), Here());
-        }
 
         mode_t m = 0;
         for (char c : s) {
@@ -82,8 +83,12 @@ mode_t FileMode::toMode(const std::string& s) const  {
             }
         }
 
-        std::cout << "m " << std::oct << m << std::dec << std::endl;
-        ASSERT(m >= 0 && m <= 0777);
+        if (m < 0 || m > 0777) {
+            std::ostringstream oss;
+            oss << "FileMode: invalid mode 0" << std::setw(3) << std::setfill('0') << std::oct << m;
+            throw BadValue(oss.str(), Here());
+        }
+
         return m;
     }
 
@@ -140,12 +145,12 @@ std::string FileMode::toString() const {
     return s;
 }
 
-int FileMode::fromPath(const std::string& path) {
+FileMode FileMode::fromPath(const PathName& path) {
     struct stat s;
-    SYSCALL(::stat(path.c_str(), &s));
-    return (s.st_mode & S_IRUSR) | (s.st_mode & S_IWUSR) | (s.st_mode & S_IXUSR) |
-           (s.st_mode & S_IRGRP) | (s.st_mode & S_IWGRP) | (s.st_mode & S_IXGRP) |
-           (s.st_mode & S_IROTH) | (s.st_mode & S_IWOTH) | (s.st_mode & S_IXOTH);
+    SYSCALL(::stat(path.asString().c_str(), &s));
+    return FileMode((s.st_mode & S_IRUSR) | (s.st_mode & S_IWUSR) | (s.st_mode & S_IXUSR) |
+                    (s.st_mode & S_IRGRP) | (s.st_mode & S_IWGRP) | (s.st_mode & S_IXGRP) |
+                    (s.st_mode & S_IROTH) | (s.st_mode & S_IWOTH) | (s.st_mode & S_IXOTH));
 }
 
 void FileMode::print(std::ostream& os) const {

@@ -133,7 +133,6 @@ CASE("Handle bad strings") {
         EXPECT_THROWS_AS(m = "---,---,--r", BadValue);
         EXPECT_THROWS_AS(m = "---,---,--w", BadValue);
 
-        EXPECT_THROWS_AS(m = "01", BadValue);
         EXPECT_THROWS_AS(m = "0228", BadValue);
 
     }
@@ -154,7 +153,7 @@ CASE("Create a file and set its permissions")
     p.chmod(m);
     dh->close();
 
-    FileMode n(FileMode::fromPath(p.asString()));
+    EXPECT(FileMode::fromPath(p) == m);
 }
 
 CASE("Octal mode")
@@ -170,6 +169,26 @@ CASE("Octal mode")
 
     EXPECT(mode1 == mode2);
     EXPECT(mode1 == mode3);
+
+}
+
+
+CASE("Check umask")
+{
+    FileMode default_mode(0666);
+    FileMode target_mode(0644);
+
+
+
+    EXPECT(default_mode.makeUmask(target_mode) == 022);
+
+    AutoUmask mask(default_mode.makeUmask(target_mode));
+    PathName p ("bar.txt");
+    std::unique_ptr<DataHandle> dh(p.fileHandle());
+    dh->openForAppend(0);
+    dh->close();
+
+    EXPECT(FileMode::fromPath(p) == target_mode);
 
 }
 

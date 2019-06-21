@@ -27,6 +27,7 @@
 
 namespace eckit {
 
+class PathName;
 //----------------------------------------------------------------------------------------------------------------------
 
 class FileMode {
@@ -46,7 +47,9 @@ public:
     mode_t mode() const { return mode_; }
     std::string str() const { return toString(); }
 
-    static int fromPath(const std::string& path);
+    mode_t makeUmask(const  FileMode& target) const;
+
+    static FileMode fromPath(const PathName& path);
 
 private:  // methods
 

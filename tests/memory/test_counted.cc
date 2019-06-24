@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#define ECKIT_NO_DEPRECATION_WARNINGS
+
 #include <cmath>
 
 #include "eckit/eckit.h"

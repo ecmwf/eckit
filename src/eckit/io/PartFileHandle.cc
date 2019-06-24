@@ -11,10 +11,8 @@
 
 #include <numeric>
 
-#include "eckit/config/Resource.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 
 #include "eckit/io/MarsFSPartHandle.h"
@@ -45,7 +43,7 @@ void PartFileHandle::encode(Stream& s) const {
     s << length_;
 }
 
-PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), file_(0), pos_(0), index_(0) {
+PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
     s >> name_;
     s >> offset_;
     s >> length_;
@@ -53,29 +51,11 @@ PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), file_(0), pos_(0), in
     ASSERT(offset_.size() == length_.size());
 }
 
-#ifdef USE_LINKS
-static std::string linkName(const std::string& name) {
-    static int n     = 1;
-    std::string path = name + ".part.0";
-    while (::link(name.c_str(), path.c_str()) < 0) {
-        if (errno != EEXIST)
-            throw FailedSystemCall(std::string("link ") + name + " " + path);
-        std::ostringstream os;
-        os << name + ".part." << n++;
-        path = std::string(os);
-    }
-    return path;
-}
-#endif
-
 PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, const LengthList& length) :
     name_(name),
-    file_(0),
+    file_(),
     pos_(0),
     index_(0),
-#ifdef USE_LINKS
-    link_(linkName(name)),
-#endif
     offset_(offset),
     length_(length) {
     //    Log::info() << "PartFileHandle::PartFileHandle " << name << std::endl;
@@ -85,15 +65,11 @@ PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, c
 
 PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const Length& length) :
     name_(name),
-    file_(0),
+    file_(),
     pos_(0),
     index_(0),
-#ifdef USE_LINKS
-    link_(linkName(name)),
-#endif
     offset_(1, offset),
-    length_(1, length) {
-}
+    length_(1, length) {}
 
 
 DataHandle* PartFileHandle::clone() const {
@@ -108,60 +84,14 @@ bool PartFileHandle::compress(bool sorted) {
 }
 
 PartFileHandle::~PartFileHandle() {
-    if (file_) {
-        Log::warning() << "Closing PartFileHandle " << name_ << std::endl;
-        ::fclose(file_);
-        file_ = 0;
-    }
-#ifdef USE_LINKS
-    link_.unlink();
-#endif
+    close();
 }
 
 Length PartFileHandle::openForRead() {
-    static long bufSize = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
-    static bool best    = Resource<bool>("bestPartFileHandleBufferSize", false);
-
-    //    Log::info() << "PartFileHandle::openForRead " << name_ << std::endl;
-
-#ifdef USE_LINKS
-    file_ = ::fopen(link_.localPath(), "r");
-#else
-    file_ = ::fopen(name_.localPath(), "r");
-#endif
-
-    if (file_ == 0)
-        throw CantOpenFile(name_, errno == ENOENT);
-
-    long size = bufSize;
-
-    if (best && size) {
-
-        long fourK = 4096;
-
-        // TODO: find a best algorithm
-
-        // Now, use the size of the smallest block
-        for (Ordinal i = 0; i < length_.size(); i++) {
-            if (length_[i] < Length(size)) {
-                size = length_[i];
-            }
-        }
-
-        size = ((size + fourK - 1) / fourK) * fourK;
-        if (size < fourK) {
-            size = fourK;
-        }
-    }
-
-    if (size) {
-        Log::debug() << "PartFileHandle using " << Bytes(size) << std::endl;
-        buffer_.reset(new Buffer(size));
-        Buffer& b = *(buffer_.get());
-        ::setvbuf(file_, b, _IOFBF, size);
-    }
+    ASSERT(!file_);
+    file_.reset(new PooledFile(name_));
+    file_->open();
     rewind();
-
     return estimate();
 }
 
@@ -174,7 +104,6 @@ void PartFileHandle::openForAppend(const Length&) {
 }
 
 long PartFileHandle::read1(char* buffer, long length) {
-
     ASSERT(file_);
 
     // skip empty entries if any
@@ -188,17 +117,7 @@ long PartFileHandle::read1(char* buffer, long length) {
     Length ll = (long long)offset_[index_] + Length(pos_);
     off_t pos = ll;
 
-    // ASSERT( Length(pos) == ll);
-
-    // try llseek()
-
-    if (fseeko(file_, pos, SEEK_SET) != 0) {
-        std::ostringstream s;
-        s << name_ << ": cannot seek to " << pos << " (file=" << fileno(file_) << ")";
-        throw ReadError(s.str());
-    }
-
-    ASSERT(::ftello(file_) == pos);
+    file_->seek(pos);
 
     ll           = length_[index_] - Length(pos_);
     Length lsize = std::min(Length(length), ll);
@@ -206,7 +125,7 @@ long PartFileHandle::read1(char* buffer, long length) {
 
     ASSERT(Length(size) == lsize);
 
-    long n = ::fread(buffer, 1, size, file_);
+    long n = file_->read(buffer, size);
 
     if (n != size) {
         std::ostringstream s;
@@ -239,19 +158,15 @@ long PartFileHandle::read(void* buffer, long length) {
     return total > 0 ? total : n;
 }
 
-long PartFileHandle::write(const void* buffer, long length) {
-    return -1;
+long PartFileHandle::write(const void*, long) {
+    NOTIMP;
 }
 
 void PartFileHandle::close() {
     if (file_) {
-        ::fclose(file_);
-        file_ = 0;
+        file_->close();
+        file_.reset();
     }
-    else {
-        Log::warning() << "Closing PartFileHandle " << name_ << ", file is not opened" << std::endl;
-    }
-    buffer_.reset(0);
 }
 
 void PartFileHandle::rewind() {

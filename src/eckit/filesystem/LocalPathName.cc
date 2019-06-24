@@ -277,6 +277,10 @@ void LocalPathName::mkdir(short mode) const {
     }
 }
 
+void LocalPathName::chmod(short mode) const {
+    SYSCALL(::chmod(path_.c_str(), mode));
+}
+
 void LocalPathName::link(const LocalPathName& from, const LocalPathName& to) {
     if (::link(from.c_str(), to.c_str()) != 0)
         throw FailedSystemCall(std::string("::link(") + from.path_ + ',' + to.path_ + ')');
@@ -617,22 +621,31 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 
         LocalPathName full = *this + "/" + e->d_name;
 
+        bool do_stat = true;
+
 #if defined(ECKIT_HAVE_DIRENT_D_TYPE)
-        if (e->d_type == DT_DIR)
-            dirs.push_back(full);
-        else
+        do_stat = false;
+        if (e->d_type == DT_DIR) {
+            dirs.push_back(full); 
+        } else if (e->d_type == DT_UNKNOWN) {
+            do_stat = true;
+        } else {
             files.push_back(full);
-#else
-        Stat::Struct info;
-        if (Stat::stat(full.c_str(), &info) == 0) {
-            if (S_ISDIR(info.st_mode))
-                dirs.push_back(full);
-            else
-                files.push_back(full);
         }
-        else
-            Log::error() << "Cannot stat " << full << Log::syserr << std::endl;
 #endif
+
+        if (do_stat) {
+            Stat::Struct info;
+            if (Stat::stat(full.c_str(), &info) == 0) {
+                if (S_ISDIR(info.st_mode))
+                    dirs.push_back(full);
+                else
+                    files.push_back(full);
+            }
+            else {
+                Log::error() << "Cannot stat " << full << Log::syserr << std::endl;
+            }
+        }
     }
 }
 

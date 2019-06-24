@@ -3,10 +3,6 @@
 
 option( ENABLE_ECKIT-352 "Control if ECKIT-352 tests should be enabled" ON )
 
-ecbuild_add_test( TARGET      eckit_test_filesystem_multihandle
-                  SOURCES     test_multihandle.cc
-                  LIBS        eckit )
-
 ecbuild_add_test( TARGET      eckit_test_filesystem_aiohandle
                   CONDITION   NOT DEFINED ENV{CRAYOS_VERSION}
                   SOURCES     test_aiohandle.cc
@@ -34,6 +30,10 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_restarthandle
 ecbuild_add_test( TARGET      eckit_test_filesystem_pathexpander
                   SOURCES     test_pathexpander.cc
                   ENVIRONMENT "CURRENT_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_filesystem_filemode
+                  SOURCES     test_filemode.cc
                   LIBS        eckit )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tmp/foo)

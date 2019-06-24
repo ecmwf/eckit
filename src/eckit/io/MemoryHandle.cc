@@ -20,12 +20,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
-ClassSpec MemoryHandle::classSpec_ = {&DataHandle::classSpec(), "MemoryHandle",};
-Reanimator<MemoryHandle> MemoryHandle::reanimator_;
-#endif
-
-
 MemoryHandle::MemoryHandle(const Buffer& buffer) :
     address_(const_cast<Buffer&>(buffer)),
     size_(buffer.size()),

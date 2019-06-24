@@ -132,10 +132,13 @@ void MarsFSPath::mkdir(short mode) const {
     MarsFSClient(*this).mkdir(path_, mode);
 }
 
+void MarsFSPath::chmod(const FileMode& mode) const  {
+    NOTIMP;
+}
+
 void MarsFSPath::fileSystemSize(FileSystemSize& fs) const {
     MarsFSClient(*this).fileSystemSize(path_, fs);
 }
-
 
 time_t MarsFSPath::created() const {
     return MarsFSClient(*this).created(path_);

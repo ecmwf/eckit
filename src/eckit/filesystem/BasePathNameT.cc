@@ -8,13 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File filesystem/BasePathNameT.cc
-// Baudouin Raoult - (c) ECMWF Jun 11
-
 
 #include "eckit/filesystem/BasePathNameT.h"
-
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/filesystem/FileMode.h"
 
 namespace eckit {
 
@@ -113,6 +109,11 @@ std::string BasePathNameT<T>::clusterName() const {
 template <class T>
 void BasePathNameT<T>::mkdir(short mode) const {
     path_.mkdir(mode);
+}
+
+template <class T>
+void BasePathNameT<T>::chmod(const FileMode& mode) const {
+    path_.chmod(mode.mode());
 }
 
 template <class T>

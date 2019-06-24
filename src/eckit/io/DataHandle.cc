@@ -95,7 +95,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool db
     }
     else {
 
-        static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
+        static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64*1024*1024);
 
         Buffer buffer(bufsize);
         // ResizableBuffer buffer(bufsize);
@@ -181,9 +181,7 @@ Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, bool dblBu
     return saveInto(*file, w, dblBufferOK);
 }
 
-Length DataHandle::copyTo(DataHandle& other) {
-
-    static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
+Length DataHandle::copyTo(DataHandle& other, long bufsize) {
 
     Buffer buffer(bufsize);
 
@@ -213,6 +211,12 @@ Length DataHandle::copyTo(DataHandle& other) {
     }
 
     return total;
+}
+
+Length DataHandle::copyTo(DataHandle& other) {
+
+    static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
+    return copyTo(other, bufsize);
 }
 
 

@@ -44,6 +44,8 @@ public: // methods
 
     std::string generateSelectAll(const std::set<std::string>& skipTables=std::set<std::string>()) const;
 
+    TableDefs definitions() const;
+
 //    bool isBitfield(const std::string& columnName) const;
 //    const BitfieldDef& getBitfieldTypeDefinition(const std::string& columnName);
 

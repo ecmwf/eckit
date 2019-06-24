@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 
 #include "eckit/value/OrderedMapContent.h"
 #include "eckit/parser/JSON.h"
@@ -80,6 +81,14 @@ const Value& OrderedMapContent::value(const Value& key) const {
 
 Value OrderedMapContent::keys() const {
     return keys_;
+}
+
+Value OrderedMapContent::remove(const Value& key) {
+    Value result = value_[key];
+    value_.erase(key);
+    auto it = std::find(keys_.begin(), keys_.end(), key);
+    if (it != keys_.end()) keys_.erase(it);
+    return result;
 }
 
 Value& OrderedMapContent::element(const Value& key) {

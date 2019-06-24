@@ -17,11 +17,12 @@ namespace sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ColumnDef::ColumnDef(const std::string& name, const std::string& type) :
+ColumnDef::ColumnDef(const std::string& name, const std::string& type, const BitfieldDef& bitfield) :
     //                     const Range &range,
     //                     const std::string& defaultValue) {}
     name_(name),
-    type_(type) {}
+    type_(type),
+    bitfield_(bitfield) {}
 
 ColumnDef::ColumnDef() {}
 

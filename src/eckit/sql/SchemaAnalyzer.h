@@ -37,7 +37,10 @@ public: // methods
 
     void addTable(TableDef& table);
 
-    void addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes, const std::string& typeSignature);
+    void addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes);
+    //, const std::string& typeSignature);
+
+    const BitfieldDef& getBitfieldType(const std::string& typeName);
 
     std::string generateSelectAll(const std::set<std::string>& skipTables=std::set<std::string>()) const;
 

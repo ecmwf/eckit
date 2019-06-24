@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+#include "eckit/sql/SQLTypedefs.h"
+
 
 namespace eckit {
 namespace sql {
@@ -28,7 +30,8 @@ class ColumnDef {
 public: // methods
 
     ColumnDef(const std::string& name,
-              const std::string& type);
+              const std::string& type,
+              const BitfieldDef& bitfield);
 //              const Range& range,
 //              const std::string& defaultValue);
     ColumnDef();
@@ -37,10 +40,14 @@ public: // methods
     const std::string& name() const { return name_; }
     const std::string& type() const { return type_; }
 
+    bool isBitfield() const { return !bitfield_.first.empty(); }
+    const BitfieldDef& bitfield() const { return bitfield_; }
+
 private: // members
 
     std::string name_;
     std::string type_;
+    BitfieldDef bitfield_;
 };
 
 using ColumnDefs = std::vector<ColumnDef>;

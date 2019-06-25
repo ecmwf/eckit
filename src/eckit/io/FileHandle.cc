@@ -15,13 +15,13 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/io/FDataSync.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/MarsFSHandle.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/Stat.h"
-#include "eckit/io/FDataSync.h"
 
 
 namespace eckit {
@@ -112,16 +112,16 @@ long FileHandle::read(void* buffer, long length) {
 long FileHandle::write(const void* buffer, long length) {
     ASSERT(buffer);
 
+    errno        = 0;
     long written = ::fwrite(buffer, 1, length, file_);
 
     if (written != length && errno == ENOSPC) {
         long len = written;
 
         do {
+            ::clearerr(file_);
 
-            clearerr(file_);
-
-            Log::status() << "Disk is full, waiting..." << std::endl;
+            Log::status() << "Disk is full, waiting 1 minute ..." << std::endl;
             ::sleep(60);
 
             errno  = 0;

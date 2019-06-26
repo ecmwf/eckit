@@ -30,7 +30,7 @@ CASE("RadosHandle") {
 
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    RadosHandle h("foobar");
+    RadosHandle h("fdb:foobar");
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));
@@ -40,7 +40,7 @@ CASE("RadosHandle") {
     std::cout << "write done" << std::endl;
 
     Buffer mem(1024);
-    RadosHandle g("foobar");
+    RadosHandle g("fdb:foobar");
     std::cout << "====> " << g << std::endl;
 
     std::cout << "Size is " << g.openForRead();
@@ -60,7 +60,7 @@ CASE("RadosWriteHandle") {
 
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    RadosWriteHandle h("foobar", 2);
+    RadosWriteHandle h("fdb:foobar", 2);
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));

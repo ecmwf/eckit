@@ -240,10 +240,8 @@ io/cluster/NodeInfo.h
 
 if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
-io/rados/RadosReadHandle.cc
-io/rados/RadosReadHandle.h
-io/rados/RadosWriteHandle.cc
-io/rados/RadosWriteHandle.h
+io/rados/RadosHandle.cc
+io/rados/RadosHandle.h
 io/rados/RadosCluster.h
 io/rados/RadosCluster.cc
 )

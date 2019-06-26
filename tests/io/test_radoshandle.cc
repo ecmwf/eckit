@@ -10,7 +10,7 @@
 
 #include <cstring>
 
-#include "eckit/io/rados/RadosWriteHandle.h"
+#include "eckit/io/rados/RadosHandle.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
@@ -38,10 +38,19 @@ CASE("Write") {
 
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    RadosWriteHandle h("foobar");
+    RadosHandle h("foobar");
     h.openForWrite(sizeof(buf));
     h.write(buf, sizeof(buf));
     h.close();
+
+
+    Buffer mem(1024);
+    RadosHandle g("foobar");
+    g.openForRead();
+    g.read(mem, mem.size());
+    g.close();
+
+    EXPECT(buf == std::string(mem));
 
 
 }

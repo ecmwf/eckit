@@ -17,3 +17,4 @@ tar xf ~/rados-include.tar
 cmake:
 ======
 cmake  -DENABLE_RADOS=ON  -DRADOS_PATH=/usr/local/Cellar/ceph-client/mimic-13.2.2 ~/git/eckit/
+cmake  -DENABLE_RADOS=ON  -DRADOS_PATH=/usr/local/apps/ceph/14.2.1-001 ~/git/eckit/

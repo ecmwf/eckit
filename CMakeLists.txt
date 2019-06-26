@@ -56,6 +56,13 @@ set_package_properties( Eigen3 PROPERTIES
                         DESCRIPTION "C++ template library for linear algebra"
                       )
 
+### RADOS
+
+ecbuild_add_option( FEATURE RADOS
+                    DEFAULT OFF
+                    DESCRIPTION "Ceph/Rados storage support" )
+                    REQUIRED_PACKAGES Rados )
+
 ### Armadillo
 
 ecbuild_add_option( FEATURE ARMADILLO

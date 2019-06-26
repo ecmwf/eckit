@@ -238,6 +238,13 @@ io/cluster/NodeInfo.cc
 io/cluster/NodeInfo.h
 )
 
+if(HAVE_RADOS)
+list( APPEND eckit_io_srcs
+io/rados/RadosHandle.cc
+io/rados/RadosHandle.h
+)
+endif()
+
 list( APPEND eckit_filesystem_srcs
 filesystem/BasePathName.cc
 filesystem/BasePathName.h

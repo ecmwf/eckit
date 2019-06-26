@@ -40,4 +40,4 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Armadillo  DEFAULT_MSG
                                   ARMADILLO_LIBRARY ARMADILLO_INCLUDE_DIR)
 
-mark_as_advanced(ARMADILLO_INCLUDE_DIR ARMADILLO_LIBRARY )
+mark_as_advanced(ARMADILLO_INCLUDE_DIR ARMADILLO_LIBRARY)

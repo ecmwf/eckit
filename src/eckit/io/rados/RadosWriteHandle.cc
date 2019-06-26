@@ -37,7 +37,8 @@ RadosWriteHandle::RadosWriteHandle(Stream& s):
 }
 
 RadosWriteHandle::RadosWriteHandle(const std::string& name, const Length& maxObjectSize):
-    object_(name)
+    object_(name),
+    maxObjectSize_(maxObjectSize)
 {
     if (!maxObjectSize_) {
         maxObjectSize_ = RadosCluster::instance().maxObjectSize();

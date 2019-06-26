@@ -77,11 +77,17 @@ Length RadosHandle::openForRead() {
     rados_xattrs_iter_t iter;
     RADOS_CALL(rados_getxattrs(io_ctx_, object_.oid().c_str(), &iter));
 
-    const char *name;
-    const char* val;
-    size_t len;
 
-    while(rados_getxattrs_next(iter, &name, &val, &len) == 0) {
+    for (;;) {
+        const char *name;
+
+        const char* val;
+        size_t len;
+
+        RADOS_CALL(rados_getxattrs_next(iter, &name, &val, &len));
+        if (!name) {
+            break;
+        }
         std::cout << "rados_getxattrs_next " << name << " = " << val << " (" << len << ")" << std::endl;
     }
 

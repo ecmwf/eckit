@@ -33,6 +33,7 @@ RadosObject::RadosObject(const RadosObject& other, size_t part) {
     if (part) {
         std::ostringstream oss;
         oss << oid_ << ";part-" << part;
+        oid_ = oss.str();
     }
 }
 

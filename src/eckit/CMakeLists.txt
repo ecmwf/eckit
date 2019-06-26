@@ -244,6 +244,12 @@ io/rados/RadosHandle.cc
 io/rados/RadosHandle.h
 io/rados/RadosCluster.h
 io/rados/RadosCluster.cc
+io/rados/RadosReadHandle.cc
+io/rados/RadosReadHandle.h
+io/rados/RadosWriteHandle.cc
+io/rados/RadosWriteHandle.h
+io/rados/RadosObject.h
+io/rados/RadosObject.cc
 )
 endif()
 

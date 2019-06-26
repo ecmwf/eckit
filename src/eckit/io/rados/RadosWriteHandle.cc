@@ -8,56 +8,48 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosWriteHandle.h"
 
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
 
-ClassSpec RadosHandle::classSpec_ = {
+ClassSpec RadosWriteHandle::classSpec_ = {
     &DataHandle::classSpec(),
-    "RadosHandle",
+    "RadosWriteHandle",
 };
-Reanimator<RadosHandle> RadosHandle::reanimator_;
+Reanimator<RadosWriteHandle> RadosWriteHandle::reanimator_;
 
-void RadosHandle::print(std::ostream& s) const {
-    s << "RadosHandle[" << object_ << ']';
+void RadosWriteHandle::print(std::ostream& s) const {
+    s << "RadosWriteHandle[file=" << name_ << ']';
 }
 
-void RadosHandle::encode(Stream& s) const {
+void RadosWriteHandle::encode(Stream& s) const {
     DataHandle::encode(s);
-    s << object_;
+    s << name_;
 }
 
-RadosHandle::RadosHandle(Stream& s):
+RadosWriteHandle::RadosWriteHandle(Stream& s):
     DataHandle(s),
-    object_(s),
     offset_(0),
     opened_(false),
     write_(false) {
+    s >> name_;
 }
 
-RadosHandle::RadosHandle(const RadosObject& object):
-    object_(object),
+RadosWriteHandle::RadosWriteHandle(const std::string& name):
+    name_(name),
     offset_(0),
     opened_(false),
     write_(false)
 {}
 
-
-RadosHandle::RadosHandle(const std::string& object):
-    object_(object),
-    offset_(0),
-    opened_(false),
-    write_(false)
-{}
-
-RadosHandle::~RadosHandle() {
+RadosWriteHandle::~RadosWriteHandle() {
 
 }
 
-Length RadosHandle::openForRead() {
+Length RadosWriteHandle::openForRead() {
     ASSERT(!opened_);
 
     ASSERT(!cluster_);
@@ -72,7 +64,7 @@ Length RadosHandle::openForRead() {
     return 0;
 }
 
-void RadosHandle::openForWrite(const Length& length) {
+void RadosWriteHandle::openForWrite(const Length& length) {
 
     ASSERT(!opened_);
 
@@ -82,22 +74,22 @@ void RadosHandle::openForWrite(const Length& length) {
     ASSERT(length > 0);
     offset_ = 0;
 
-    RADOS_CALL(rados_ioctx_create(cluster_->cluster(), object_.pool().c_str(), &io_ctx_));
+    RADOS_CALL(rados_ioctx_create(cluster_->cluster(), "fdb", &io_ctx_));
     opened_ = true;
     write_ = true;
 
 }
 
-void RadosHandle::openForAppend(const Length&) {
+void RadosWriteHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
-long RadosHandle::read(void* buffer, long length) {
+long RadosWriteHandle::read(void* buffer, long length) {
 
     ASSERT(opened_);
     ASSERT(!write_);
 
-    int len = RADOS_CALL(rados_read(io_ctx_, object_.oid().c_str(), reinterpret_cast<char*>(buffer), length, offset_));
+    int len = RADOS_CALL(rados_read(io_ctx_, name_.c_str(), reinterpret_cast<char*>(buffer), length, offset_));
     ASSERT(len  > 0);
 
     offset_ += len;
@@ -105,12 +97,12 @@ long RadosHandle::read(void* buffer, long length) {
     return len;
 }
 
-long RadosHandle::write(const void* buffer, long length) {
+long RadosWriteHandle::write(const void* buffer, long length) {
 
     ASSERT(opened_);
     ASSERT(write_);
 
-    RADOS_CALL(rados_write(io_ctx_, object_.oid().c_str(), reinterpret_cast<const char*>(buffer), length, offset_));
+    RADOS_CALL(rados_write(io_ctx_, name_.c_str(), reinterpret_cast<const char*>(buffer), length, offset_));
 
     offset_ += length;
 
@@ -119,28 +111,28 @@ long RadosHandle::write(const void* buffer, long length) {
 
 }
 
-void RadosHandle::flush() {
+void RadosWriteHandle::flush() {
     NOTIMP;
 }
 
 
-void RadosHandle::close() {
+void RadosWriteHandle::close() {
     ASSERT(opened_);
     rados_ioctx_destroy(io_ctx_);
     opened_ = false;
 }
 
-void RadosHandle::rewind() {
+void RadosWriteHandle::rewind() {
     NOTIMP;
 }
 
 
-Offset RadosHandle::position() {
+Offset RadosWriteHandle::position() {
     NOTIMP;
 }
 
-std::string RadosHandle::title() const {
-    return PathName::shorten(object_.str());
+std::string RadosWriteHandle::title() const {
+    return PathName::shorten(name_);
 }
 
 }  // namespace eckit

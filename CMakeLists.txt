@@ -60,7 +60,7 @@ set_package_properties( Eigen3 PROPERTIES
 
 ecbuild_add_option( FEATURE RADOS
                     DEFAULT OFF
-                    DESCRIPTION "Ceph/Rados storage support" )
+                    DESCRIPTION "Ceph/Rados storage support" 
                     REQUIRED_PACKAGES Rados )
 
 ### Armadillo

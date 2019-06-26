@@ -154,6 +154,7 @@ CASE("Create a file and set its permissions")
     dh->close();
 
     EXPECT(FileMode::fromPath(p) == m);
+    p.unlink();
 }
 
 CASE("Octal mode")
@@ -166,30 +167,44 @@ CASE("Octal mode")
     std::cout << "mode2 = " << mode2 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode2.mode() << std::dec << std::endl;
     std::cout << "mode3 = " << mode3 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode3.mode() << std::dec << std::endl;
 
-
     EXPECT(mode1 == mode2);
     EXPECT(mode1 == mode3);
-
 }
 
 
 CASE("Check umask")
 {
-    FileMode default_mode(0666);
-    FileMode target_mode(0644);
+    FileMode filemode(0644);
 
+    EXPECT(filemode.mask() == 022);
 
+    AutoUmask mask(filemode.mask());
 
-    EXPECT(default_mode.makeUmask(target_mode) == 022);
+    SECTION("File creation") {
+        PathName p ("bar.txt");
+        std::unique_ptr<DataHandle> dh(p.fileHandle());
+        dh->openForAppend(0);
+        dh->close();
 
-    AutoUmask mask(default_mode.makeUmask(target_mode));
-    PathName p ("bar.txt");
-    std::unique_ptr<DataHandle> dh(p.fileHandle());
-    dh->openForAppend(0);
-    dh->close();
+        FileMode result = FileMode::fromPath(p);
 
-    EXPECT(FileMode::fromPath(p) == target_mode);
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
 
+        EXPECT(result == filemode);
+        p.unlink();
+    }
+
+    SECTION("Directory creation") {
+        PathName p ("mydir");
+        p.mkdir();
+
+        FileMode result = FileMode::fromPath(p);
+
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
+
+        EXPECT(result == FileMode(0755));  // directories get added --x,--x,--x (0111) by default
+        p.rmdir();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -47,7 +47,7 @@ public:
     mode_t mode() const { return mode_; }
     std::string str() const { return toString(); }
 
-    mode_t makeUmask(const  FileMode& target) const;
+    mode_t mask(const FileMode& target = FileMode(0666)) const;
 
     static FileMode fromPath(const PathName& path);
 

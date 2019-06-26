@@ -45,9 +45,8 @@ bool FileMode::operator==(const FileMode& other) const {
     return mode_ == other.mode_;
 }
 
-
-mode_t FileMode::makeUmask(const FileMode& target) const {
-    return mode_ & ~target.mode_;
+mode_t FileMode::mask(const FileMode& target) const {
+    return target.mode_ & ~mode_;
 }
 
 void FileMode::testAssign(const std::string& s, char got, char test, mode_t& mode, mode_t mask) const {

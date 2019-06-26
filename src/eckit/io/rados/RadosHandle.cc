@@ -54,7 +54,9 @@ RadosHandle::RadosHandle(const std::string& object):
 {}
 
 RadosHandle::~RadosHandle() {
-
+    if(opened_) {
+        close();
+    }
 }
 
 void RadosHandle::open() {
@@ -74,26 +76,31 @@ Length RadosHandle::openForRead() {
     open();
     write_ = false;
 
-    rados_xattrs_iter_t iter;
-    RADOS_CALL(rados_getxattrs(io_ctx_, object_.oid().c_str(), &iter));
+    // rados_xattrs_iter_t iter;
+    // RADOS_CALL(rados_getxattrs(io_ctx_, object_.oid().c_str(), &iter));
 
 
-    for (;;) {
-        const char *name;
+    // for (;;) {
+    //     const char *name;
 
-        const char* val;
-        size_t len;
+    //     const char* val;
+    //     size_t len;
 
-        RADOS_CALL(rados_getxattrs_next(iter, &name, &val, &len));
-        if (!name) {
-            break;
-        }
-        std::cout << "rados_getxattrs_next " << name << " = " << val << " (" << len << ")" << std::endl;
-    }
+    //     RADOS_CALL(rados_getxattrs_next(iter, &name, &val, &len));
+    //     if (!name) {
+    //         break;
+    //     }
+    //     std::cout << "rados_getxattrs_next " << name << " = " << val << " (" << len << ")" << std::endl;
+    // }
 
-    rados_getxattrs_end(iter);
+    // rados_getxattrs_end(iter);
 
-    return 0;
+    uint64_t psize;
+    time_t pmtime;
+
+    RADOS_CALL(rados_stat(io_ctx_, object_.oid().c_str(), &psize, &pmtime));
+
+    return psize;
 }
 
 void RadosHandle::openForWrite(const Length& length) {

@@ -51,7 +51,7 @@ CASE("Write") {
     RadosHandle g("foobar");
     std::cout << "====> " << g << std::endl;
 
-    g.openForRead();
+    std::cout << "Size is " << g.openForRead();
     g.read(mem, mem.size());
     g.close();
 

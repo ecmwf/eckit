@@ -30,7 +30,7 @@ void RadosObject::encode(Stream& s) const {
 }
 
 RadosObject::RadosObject(const std::string& path) {
-    static const std::string defaultRadosPool = Resource<std::string>("rbd", "default");
+    static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "default");
 
     Tokenizer parse(":");
 

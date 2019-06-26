@@ -39,7 +39,7 @@ CASE("Write") {
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
     RadosHandle h("foobar");
-    std::cout << h << std::endl;
+    std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));
     h.write(buf, sizeof(buf));
@@ -49,7 +49,7 @@ CASE("Write") {
 
     Buffer mem(1024);
     RadosHandle g("foobar");
-    std::cout << h << std::endl;
+    std::cout << "====> " << g << std::endl;
 
     g.openForRead();
     g.read(mem, mem.size());

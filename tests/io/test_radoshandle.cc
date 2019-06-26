@@ -71,7 +71,7 @@ CASE("Multihandle") {
     char expect[26 * 2];
 
     {
-        FileHandle f1(test.path1_);
+        RadosHandle f1(test.path1_);
         f1.openForWrite(0);
         f1.write(buf1, sizeof(buf1));
         f1.close();
@@ -80,7 +80,7 @@ CASE("Multihandle") {
     }
 
     {
-        FileHandle f2(test.path2_);
+        RadosHandle f2(test.path2_);
         f2.openForWrite(0);
         f2.write(buf2, sizeof(buf2));
         f2.close();

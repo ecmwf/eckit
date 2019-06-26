@@ -17,7 +17,7 @@
 
 #include <memory>
 
-#include <rados/librados.hpp>
+#include <rados/librados.h>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
@@ -39,7 +39,7 @@ public:  // methods
 
   std::string title() const;
 
-private:  // methods
+public:  // methods
 
   virtual Length openForRead();
   virtual void openForWrite(const Length&);

@@ -817,11 +817,13 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
+                        "${RADOS_INCLUDE_DIRS}"
 					LIBS
                         ${OPENSSL_LIBRARIES}
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${AIO_LIBRARIES}
+                        ${RADOS_LIBRARIES}
                         ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}

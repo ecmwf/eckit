@@ -12,31 +12,34 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_filesystem_RadosHandle_h
-#define eckit_filesystem_RadosHandle_h
+#ifndef eckit_io_rados_RadosHandle_h
+#define eckit_io_rados_RadosHandle_h
 
 #include <memory>
+
+#include <rados/librados.hpp>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 
 namespace eckit {
 
-class RadosHandle : public DataHandle {
+class RadosHandle : public eckit::DataHandle {
 
-public:
-  RadosHandle(const std::string&, bool = false);
+public:  // methods
+
+  RadosHandle(const std::string&);
   RadosHandle(Stream&);
 
-  ~RadosHandle();
+  virtual ~RadosHandle();
 
-  void advance(const Length&);
+  // -- Class methods
 
-  const std::string& path() const { return name_; }
+  static const ClassSpec& classSpec() { return classSpec_; }
 
-  // -- Overridden methods
+  std::string title() const;
 
-  // From DataHandle
+private:  // methods
 
   virtual Length openForRead();
   virtual void openForWrite(const Length&);
@@ -47,45 +50,23 @@ public:
   virtual void close();
   virtual void flush();
   virtual void rewind();
-  virtual void print(std::ostream&) const;
-  virtual Length estimate();
-  virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true);
+
   virtual Offset position();
-  virtual bool isEmpty() const;
-  virtual void restartReadFrom(const Offset& from);
-  virtual void restartWriteFrom(const Offset& from);
-  virtual void toRemote(Stream&) const;
-  virtual void cost(std::map<std::string, Length>&, bool) const;
-  virtual std::string title() const;
-  virtual bool moveable() const { return true; }
 
-  virtual Offset seek(const Offset&);
-  virtual void skip(const Length&);
-
-  virtual DataHandle* clone() const;
+  virtual void print(std::ostream&) const;
 
   // From Streamable
 
   virtual void encode(Stream&) const;
   virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
-  // -- Class methods
-
-  static const ClassSpec& classSpec() { return classSpec_; }
-
 private:  // members
+
   std::string name_;
-  bool overwrite_;
-  FILE* file_;
-  bool read_;
-
-  std::unique_ptr<Buffer> buffer_;
-
-private:  // methods
-  void open(const char*);
 
   static ClassSpec classSpec_;
   static Reanimator<RadosHandle> reanimator_;
+
 };
 
 }  // namespace eckit

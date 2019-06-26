@@ -18,6 +18,7 @@
 #include "eckit/io/MultiHandle.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/PartFileHandle.h"
+#include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/types/Types.h"

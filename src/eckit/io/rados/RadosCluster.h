@@ -30,19 +30,23 @@ namespace eckit {
 class RadosCluster  {
 public:
 
+    rados_t cluster() const { return cluster_; }
+
+    static const RadosCluster& instance();
+
+private:
+
     RadosCluster();
 
     ~RadosCluster();
-
-    rados_t cluster() const { return cluster_; }
-
-
-    static void error(int code, const char *msg, const char* file, int line, const char* func);
 
 
 private:
 
     rados_t cluster_;
+
+public:
+    static void error(int code, const char *msg, const char* file, int line, const char* func);
 
 };
 

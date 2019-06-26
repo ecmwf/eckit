@@ -65,14 +65,13 @@ public:  // methods
 private:  // members
 
   RadosObject object_;
-  std::unique_ptr<RadosCluster> cluster_;
-
 
   rados_ioctx_t io_ctx_;
   uint64_t offset_;
   bool opened_;
   bool write_;
 
+  void open();
 
   static ClassSpec classSpec_;
   static Reanimator<RadosHandle> reanimator_;

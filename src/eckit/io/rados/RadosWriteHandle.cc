@@ -31,18 +31,12 @@ void RadosWriteHandle::encode(Stream& s) const {
 }
 
 RadosWriteHandle::RadosWriteHandle(Stream& s):
-    DataHandle(s),
-    offset_(0),
-    opened_(false),
-    write_(false) {
+    DataHandle(s) {
     s >> name_;
 }
 
 RadosWriteHandle::RadosWriteHandle(const std::string& name):
-    name_(name),
-    offset_(0),
-    opened_(false),
-    write_(false)
+    name_(name)
 {}
 
 RadosWriteHandle::~RadosWriteHandle() {
@@ -50,33 +44,12 @@ RadosWriteHandle::~RadosWriteHandle() {
 }
 
 Length RadosWriteHandle::openForRead() {
-    ASSERT(!opened_);
-
-    ASSERT(!cluster_);
-    cluster_.reset(new RadosCluster());
-
-    offset_ = 0;
-
-    RADOS_CALL(rados_ioctx_create(cluster_->cluster(), "fdb", &io_ctx_));
-    opened_ = true;
-    write_ = false;
-
-    return 0;
+    NOTIMP;
 }
 
 void RadosWriteHandle::openForWrite(const Length& length) {
 
-    ASSERT(!opened_);
-
-    ASSERT(!cluster_);
-    cluster_.reset(new RadosCluster());
-
-    ASSERT(length > 0);
-    offset_ = 0;
-
-    RADOS_CALL(rados_ioctx_create(cluster_->cluster(), "fdb", &io_ctx_));
-    opened_ = true;
-    write_ = true;
+    NOTIMP;
 
 }
 
@@ -86,27 +59,12 @@ void RadosWriteHandle::openForAppend(const Length&) {
 
 long RadosWriteHandle::read(void* buffer, long length) {
 
-    ASSERT(opened_);
-    ASSERT(!write_);
-
-    int len = RADOS_CALL(rados_read(io_ctx_, name_.c_str(), reinterpret_cast<char*>(buffer), length, offset_));
-    ASSERT(len  > 0);
-
-    offset_ += len;
-
-    return len;
+    NOTIMP;
 }
 
 long RadosWriteHandle::write(const void* buffer, long length) {
 
-    ASSERT(opened_);
-    ASSERT(write_);
-
-    RADOS_CALL(rados_write(io_ctx_, name_.c_str(), reinterpret_cast<const char*>(buffer), length, offset_));
-
-    offset_ += length;
-
-    return length;
+    NOTIMP;
 
 
 }
@@ -117,9 +75,7 @@ void RadosWriteHandle::flush() {
 
 
 void RadosWriteHandle::close() {
-    ASSERT(opened_);
-    rados_ioctx_destroy(io_ctx_);
-    opened_ = false;
+    NOTIMP;
 }
 
 void RadosWriteHandle::rewind() {

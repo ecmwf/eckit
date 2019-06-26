@@ -18,7 +18,6 @@
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/rados/RadosCluster.h"
 
 namespace eckit {
 
@@ -62,13 +61,6 @@ public:  // methods
 private:  // members
 
   std::string name_;
-  std::unique_ptr<RadosCluster> cluster_;
-
-
-  rados_ioctx_t io_ctx_;
-  uint64_t offset_;
-  bool opened_;
-  bool write_;
 
 
   static ClassSpec classSpec_;

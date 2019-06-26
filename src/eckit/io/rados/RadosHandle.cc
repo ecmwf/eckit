@@ -57,35 +57,28 @@ RadosHandle::~RadosHandle() {
 
 }
 
-Length RadosHandle::openForRead() {
+void RadosHandle::open() {
     ASSERT(!opened_);
 
-    ASSERT(!cluster_);
-    cluster_.reset(new RadosCluster());
 
     offset_ = 0;
 
-    RADOS_CALL(rados_ioctx_create(cluster_->cluster(), "fdb", &io_ctx_));
-    opened_ = true;
-    write_ = false;
+    RADOS_CALL(rados_ioctx_create(RadosCluster::instance().cluster(),
+                                  object_.pool().c_str(),
+                                  &io_ctx_));
 
+    opened_ = true;
+}
+
+Length RadosHandle::openForRead() {
+    open();
+    write_ = false;
     return 0;
 }
 
 void RadosHandle::openForWrite(const Length& length) {
-
-    ASSERT(!opened_);
-
-    ASSERT(!cluster_);
-    cluster_.reset(new RadosCluster());
-
-    ASSERT(length > 0);
-    offset_ = 0;
-
-    RADOS_CALL(rados_ioctx_create(cluster_->cluster(), object_.pool().c_str(), &io_ctx_));
-    opened_ = true;
+    open();
     write_ = true;
-
 }
 
 void RadosHandle::openForAppend(const Length&) {
@@ -97,7 +90,11 @@ long RadosHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(!write_);
 
-    int len = RADOS_CALL(rados_read(io_ctx_, object_.oid().c_str(), reinterpret_cast<char*>(buffer), length, offset_));
+    int len = RADOS_CALL(rados_read(io_ctx_,
+                                    object_.oid().c_str(),
+                                    reinterpret_cast<char*>(buffer),
+                                    length,
+                                    offset_));
     ASSERT(len  > 0);
 
     offset_ += len;
@@ -110,7 +107,11 @@ long RadosHandle::write(const void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(write_);
 
-    RADOS_CALL(rados_write(io_ctx_, object_.oid().c_str(), reinterpret_cast<const char*>(buffer), length, offset_));
+    RADOS_CALL(rados_write(io_ctx_,
+                           object_.oid().c_str(),
+                           reinterpret_cast<const char*>(buffer),
+                           length,
+                           offset_));
 
     offset_ += length;
 

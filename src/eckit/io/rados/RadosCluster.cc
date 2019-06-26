@@ -15,6 +15,11 @@
 
 namespace eckit {
 
+const RadosCluster& RadosCluster::instance() {
+    static RadosCluster instance;
+    return instance;
+}
+
 RadosCluster::RadosCluster():
     cluster_(0) {
 

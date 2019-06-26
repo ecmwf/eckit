@@ -60,6 +60,11 @@ RadosHandle::~RadosHandle() {
 }
 
 void RadosHandle::open() {
+
+
+    std::cout << "RadosHandle::open " << object_ << std::endl;
+
+
     ASSERT(!opened_);
 
 
@@ -73,6 +78,11 @@ void RadosHandle::open() {
 }
 
 Length RadosHandle::openForRead() {
+
+
+    std::cout << "RadosHandle::openForRead " << object_ << std::endl;
+
+
     open();
     write_ = false;
 

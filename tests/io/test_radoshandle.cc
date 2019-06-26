@@ -37,7 +37,7 @@ CASE("RadosHandle") {
     h.write(buf, sizeof(buf));
     h.close();
 
-
+    std::cout << "write done" << std::endl;
 
     Buffer mem(1024);
     RadosHandle g("foobar");
@@ -46,6 +46,9 @@ CASE("RadosHandle") {
     std::cout << "Size is " << g.openForRead();
     g.read(mem, mem.size());
     g.close();
+
+    std::cout << "read done" << std::endl;
+
 
     EXPECT(buf == std::string(mem));
 

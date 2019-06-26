@@ -46,7 +46,11 @@ RadosCluster::RadosCluster():
 }
 
 RadosCluster::~RadosCluster() {
+    std::cout << "RADOS_CALL => rados_shutdown(cluster_)" << std::endl;
+
     rados_shutdown(cluster_);
+    std::cout << "RADOS_CALL <= rados_shutdown(cluster_)" << std::endl;
+
 }
 
 void RadosCluster::error(int code, const char *msg, const char* file, int line, const char* func) {

@@ -64,7 +64,7 @@ static inline int rados_call(int code, const char *msg, const char* file, int li
         RadosCluster::error(code, msg, file,  line, func);
     }
 
-        std::cout << "RADOS_CALL <= " << msg << std::endl;
+    std::cout << "RADOS_CALL <= " << msg << std::endl;
 
     return code;
 }

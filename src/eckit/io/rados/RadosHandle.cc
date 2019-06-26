@@ -54,7 +54,7 @@ RadosHandle::RadosHandle(const std::string& object):
 {}
 
 RadosHandle::~RadosHandle() {
-    if(opened_) {
+    if (opened_) {
         close();
     }
 }
@@ -154,8 +154,11 @@ void RadosHandle::flush() {
 
 void RadosHandle::close() {
     ASSERT(opened_);
+    std::cout << "RADOS_CALL => rados_ioctx_destroy(io_ctx_)" << std::endl;
     rados_ioctx_destroy(io_ctx_);
     opened_ = false;
+    std::cout << "RADOS_CALL <= rados_ioctx_destroy(io_ctx_)" << std::endl;
+
 }
 
 void RadosHandle::rewind() {

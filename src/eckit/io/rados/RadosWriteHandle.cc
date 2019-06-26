@@ -9,8 +9,9 @@
  */
 
 #include "eckit/io/rados/RadosWriteHandle.h"
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
 
 namespace eckit {
 
@@ -22,22 +23,26 @@ ClassSpec RadosWriteHandle::classSpec_ = {
 Reanimator<RadosWriteHandle> RadosWriteHandle::reanimator_;
 
 void RadosWriteHandle::print(std::ostream& s) const {
-    s << "RadosWriteHandle[file=" << name_ << ']';
+    s << "RadosWriteHandle[" << object_ << ']';
 }
 
 void RadosWriteHandle::encode(Stream& s) const {
     DataHandle::encode(s);
-    s << name_;
+    s << object_;
 }
 
 RadosWriteHandle::RadosWriteHandle(Stream& s):
-    DataHandle(s) {
-    s >> name_;
+    DataHandle(s),
+    object_(s) {
 }
 
-RadosWriteHandle::RadosWriteHandle(const std::string& name):
-    name_(name)
-{}
+RadosWriteHandle::RadosWriteHandle(const std::string& name, const Length& maxObjectSize):
+    object_(name)
+{
+    if (!maxObjectSize_) {
+        maxObjectSize_ = RadosCluster::instance().maxObjectSize();
+    }
+}
 
 RadosWriteHandle::~RadosWriteHandle() {
 
@@ -48,9 +53,9 @@ Length RadosWriteHandle::openForRead() {
 }
 
 void RadosWriteHandle::openForWrite(const Length& length) {
-
-    NOTIMP;
-
+    written_ = 0;
+    position_ = 0;
+    part_ = 0;
 }
 
 void RadosWriteHandle::openForAppend(const Length&) {
@@ -64,18 +69,56 @@ long RadosWriteHandle::read(void* buffer, long length) {
 
 long RadosWriteHandle::write(const void* buffer, long length) {
 
-    NOTIMP;
+    long result = 0;
+    const char* buf = reinterpret_cast<const char*>(buffer);
 
+    while (length > 0) {
+
+        Length len = std::min(Length(maxObjectSize_ - Length(written_)), Length(length));
+
+        long l     = (long)len;
+
+        ASSERT(len == Length(l));
+
+        if (!handle_.get()) {
+
+            RadosObject object(object_, part_++);
+
+
+            std::cout << "RadosWriteHandle::write open " << object << std::endl;
+            handle_.reset(new RadosHandle(object));
+            handle_->openForWrite(0); // TODO: use proper size
+        }
+
+
+        handle_->write(buf + result, l);
+        written_ += len;
+        result += len;
+        length -= len;
+
+        ASSERT(Length(written_) <= maxObjectSize_);
+
+        if (Length(written_) == maxObjectSize_) {
+            handle_->close();
+            handle_.reset(0);
+        }
+
+    }
+
+    return result;
 
 }
 
 void RadosWriteHandle::flush() {
-    NOTIMP;
+    // NOTIMP;
 }
 
 
 void RadosWriteHandle::close() {
-    NOTIMP;
+    if (handle_.get()) {
+        handle_->close();
+        handle_.reset(0);
+    }
 }
 
 void RadosWriteHandle::rewind() {
@@ -84,11 +127,11 @@ void RadosWriteHandle::rewind() {
 
 
 Offset RadosWriteHandle::position() {
-    NOTIMP;
+    return position_;
 }
 
 std::string RadosWriteHandle::title() const {
-    return PathName::shorten(name_);
+    return PathName::shorten(object_.str());
 }
 
 }  // namespace eckit

@@ -11,17 +11,9 @@
 #include <cstring>
 
 #include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosWriteHandle.h"
 
-#include "eckit/config/Resource.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/MultiHandle.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/io/PartFileHandle.h"
-#include "eckit/io/FileHandle.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
-#include "eckit/types/Types.h"
 
 #include "eckit/testing/Test.h"
 
@@ -34,7 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("Write") {
+CASE("RadosHandle") {
 
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
@@ -56,6 +48,21 @@ CASE("Write") {
     g.close();
 
     EXPECT(buf == std::string(mem));
+
+
+}
+
+
+CASE("RadosWriteHandle") {
+
+    const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+    RadosWriteHandle h("foobar", 2);
+    std::cout << "====> " << h << std::endl;
+
+    h.openForWrite(sizeof(buf));
+    h.write(buf, sizeof(buf));
+    h.close();
 
 
 }

@@ -18,7 +18,6 @@
 namespace eckit {
 
 RadosObject::RadosObject(Stream& s) {
-
     s >> pool_;
     s >> oid_;
 }
@@ -28,6 +27,15 @@ void RadosObject::encode(Stream& s) const {
     s << pool_;
     s << oid_;
 }
+
+RadosObject::RadosObject(const RadosObject& other, size_t part) {
+    *this = other;
+    if (part) {
+        std::ostringstream oss;
+        oss << oid_ << ";part-" << part;
+    }
+}
+
 
 RadosObject::RadosObject(const std::string& path) {
     static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "default");
@@ -39,7 +47,7 @@ RadosObject::RadosObject(const std::string& path) {
 
     ASSERT(bits.size() == 1 || bits.size() == 2);
 
-    if(bits.size() == 1) {
+    if (bits.size() == 1) {
         oid_ = path;
         pool_ = defaultRadosPool;
     }

@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
@@ -26,7 +27,8 @@ class RadosWriteHandle : public eckit::DataHandle {
 
 public:  // methods
 
-  RadosWriteHandle(const std::string&);
+  RadosWriteHandle(const RadosObject&, const Length& maxObjectSize = 0);
+  RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
   RadosWriteHandle(Stream&);
 
   virtual ~RadosWriteHandle();
@@ -60,7 +62,14 @@ public:  // methods
 
 private:  // members
 
-  std::string name_;
+  RadosObject object_;
+
+  Length maxObjectSize_;
+  size_t written_;
+  Offset position_;
+  size_t part_;
+
+  std::unique_ptr<DataHandle> handle_;
 
 
   static ClassSpec classSpec_;

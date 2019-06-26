@@ -33,6 +33,7 @@ public:
     RadosObject(const std::string& path);
     RadosObject(const std::string& pool, const std::string& oid);
 
+    RadosObject(const RadosObject& other, size_t part);
 
     const std::string& pool() const { return pool_; }
     const std::string& oid() const { return oid_; }

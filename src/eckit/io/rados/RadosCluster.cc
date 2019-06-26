@@ -64,4 +64,12 @@ void RadosCluster::error(int code, const char *msg, const char* file, int line, 
 }
 
 
+Length RadosCluster::maxObjectSize() const {
+    // TODO: Get from server
+    static long long len = Resource<long long>("radosMaxObjectSize", 128 * 1024 * 1024);
+    return len;
+
+}
+
+
 }  // namespace eckit

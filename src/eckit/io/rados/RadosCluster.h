@@ -20,6 +20,8 @@
 
 #include <rados/librados.h>
 
+#include "eckit/io/Length.h"
+
 
 namespace eckit {
 
@@ -29,6 +31,8 @@ namespace eckit {
 
 class RadosCluster  {
 public:
+
+    Length maxObjectSize() const;
 
     rados_t cluster() const { return cluster_; }
 

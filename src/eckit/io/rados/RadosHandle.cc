@@ -104,6 +104,11 @@ Length RadosHandle::openForRead() {
 }
 
 void RadosHandle::openForWrite(const Length& length) {
+
+
+    std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
+
+
     open();
     write_ = true;
 }
@@ -113,6 +118,8 @@ void RadosHandle::openForAppend(const Length&) {
 }
 
 long RadosHandle::read(void* buffer, long length) {
+
+    std::cout << "RadosHandle::read " << object_ << " " << length << std::endl;
 
     ASSERT(opened_);
     ASSERT(!write_);
@@ -130,9 +137,12 @@ long RadosHandle::read(void* buffer, long length) {
 }
 
 long RadosHandle::write(const void* buffer, long length) {
+    std::cout << "RadosHandle::write " << object_ << " " << length << std::endl;
 
     ASSERT(opened_);
     ASSERT(write_);
+
+
 
     RADOS_CALL(rados_write(io_ctx_,
                            object_.oid().c_str(),
@@ -153,6 +163,11 @@ void RadosHandle::flush() {
 
 
 void RadosHandle::close() {
+
+
+    std::cout << "RadosHandle::close " << object_ << std::endl;
+
+
     ASSERT(opened_);
     std::cout << "RADOS_CALL => rados_ioctx_destroy(io_ctx_)" << std::endl;
     rados_ioctx_destroy(io_ctx_);

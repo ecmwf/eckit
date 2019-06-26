@@ -16,6 +16,7 @@
 
 #include <string>
 #include <iomanip>
+#include <memory>
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathExpander.h"

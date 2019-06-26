@@ -24,6 +24,7 @@
 #include "eckit/filesystem/FileMode.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/os/AutoUmask.h"
+#include "eckit/config/Resource.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;
@@ -163,19 +164,57 @@ CASE("Octal mode")
     FileMode mode1("0666");
     FileMode mode2(0666);
     FileMode mode3("rw-,rw-,rw-");
+    FileMode mode4 = std::string("rw-,rw-,rw-");
 
     std::cout << "mode1 = " << mode1 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode1.mode() << std::dec << std::endl;
     std::cout << "mode2 = " << mode2 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode2.mode() << std::dec << std::endl;
     std::cout << "mode3 = " << mode3 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode3.mode() << std::dec << std::endl;
+    std::cout << "mode4 = " << mode4 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode4.mode() << std::dec << std::endl;
 
     EXPECT(mode1 == mode2);
     EXPECT(mode1 == mode3);
+    EXPECT(mode1 == mode4);
 }
 
 
-CASE("Check umask")
+CASE("Use as umask")
 {
     FileMode filemode(0644);
+
+    EXPECT(filemode.mask() == 022);
+
+    AutoUmask mask(filemode.mask());
+
+    SECTION("File creation") {
+        PathName p ("bar.txt");
+        std::unique_ptr<DataHandle> dh(p.fileHandle());
+        dh->openForAppend(0);
+        dh->close();
+
+        FileMode result = FileMode::fromPath(p);
+
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
+
+        EXPECT(result == filemode);
+        p.unlink();
+    }
+
+    SECTION("Directory creation") {
+        PathName p ("mydir");
+        p.mkdir();
+
+        FileMode result = FileMode::fromPath(p);
+
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
+
+        EXPECT(result == FileMode(0755));  // directories get added --x,--x,--x (0111) by default
+        p.rmdir();
+    }
+}
+
+CASE("From resource use as mask")
+{
+    eckit::FileMode filemode(eckit::Resource<std::string>("testFileMode", std::string("0644")));
 
     EXPECT(filemode.mask() == 022);
 

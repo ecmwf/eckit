@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <iostream>
 
 #include <rados/librados.h>
 
@@ -56,9 +57,15 @@ public:
 
 
 static inline int rados_call(int code, const char *msg, const char* file, int line, const char* func) {
+
+    std::cout << "RADOS_CALL => " << msg << std::endl;
+
     if (code < 0) {
         RadosCluster::error(code, msg, file,  line, func);
     }
+
+        std::cout << "RADOS_CALL <= " << msg << std::endl;
+
     return code;
 }
 

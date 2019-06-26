@@ -68,6 +68,7 @@ private:  // members
   rados_ioctx_t io_ctx_;
   uint64_t offset_;
   bool opened_;
+  bool write_;
 
 
   static ClassSpec classSpec_;

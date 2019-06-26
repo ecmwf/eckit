@@ -32,14 +32,17 @@ void RadosHandle::encode(Stream& s) const {
 
 RadosHandle::RadosHandle(Stream& s):
     DataHandle(s),
-    offset_(0) {
+    offset_(0),
+    opened_(false),
+    write_(false) {
     s >> name_;
 }
 
 RadosHandle::RadosHandle(const std::string& name):
     name_(name),
     offset_(0),
-    opened_(false)
+    opened_(false),
+    write_(false)
 {}
 
 RadosHandle::~RadosHandle() {
@@ -56,6 +59,7 @@ Length RadosHandle::openForRead() {
 
     RADOS_CALL(rados_ioctx_create(cluster_->cluster(), "fdb", &io_ctx_));
     opened_ = true;
+    write_ = false;
 
     return 0;
 }
@@ -72,6 +76,7 @@ void RadosHandle::openForWrite(const Length& length) {
 
     RADOS_CALL(rados_ioctx_create(cluster_->cluster(), "fdb", &io_ctx_));
     opened_ = true;
+    write_ = true;
 
 }
 
@@ -82,24 +87,26 @@ void RadosHandle::openForAppend(const Length&) {
 long RadosHandle::read(void* buffer, long length) {
 
     ASSERT(opened_);
+    ASSERT(!write_);
 
-    RADOS_CALL(rados_read(io_ctx_, name_.c_str(), reinterpret_cast<char*>(buffer), length, offset_));
-
-    offset_ += length;
-
-    return length;
-}
-
-long RadosHandle::write(const void* buffer, long length) {
-
-    ASSERT(opened_);
-
-    int len = RADOS_CALL(rados_write(io_ctx_, name_.c_str(), reinterpret_cast<const char*>(buffer), length, offset_));
+    int len = RADOS_CALL(rados_read(io_ctx_, name_.c_str(), reinterpret_cast<char*>(buffer), length, offset_));
     ASSERT(len  > 0);
 
     offset_ += len;
 
     return len;
+}
+
+long RadosHandle::write(const void* buffer, long length) {
+
+    ASSERT(opened_);
+    ASSERT(write_);
+
+    RADOS_CALL(rados_write(io_ctx_, name_.c_str(), reinterpret_cast<const char*>(buffer), length, offset_));
+
+    offset_ += length;
+
+    return length;
 
 
 }

@@ -73,6 +73,20 @@ void RadosHandle::open() {
 Length RadosHandle::openForRead() {
     open();
     write_ = false;
+
+    rados_xattrs_iter_t iter;
+    RADOS_CALL(rados_getxattrs(io_ctx_, object_.oid().c_str(), &iter));
+
+    const char *name;
+    const char* val;
+    size_t len;
+
+    while(rados_getxattrs_next(iter, &name, &val, &len) == 0) {
+        std::cout << "rados_getxattrs_next " << name << " = " << val << " (" << len << ")" << std::endl;
+    }
+
+    rados_getxattrs_end(iter);
+
     return 0;
 }
 
@@ -121,7 +135,7 @@ long RadosHandle::write(const void* buffer, long length) {
 }
 
 void RadosHandle::flush() {
-    NOTIMP;
+    // NOTIMP;
 }
 
 
@@ -132,12 +146,12 @@ void RadosHandle::close() {
 }
 
 void RadosHandle::rewind() {
-    NOTIMP;
+    offset_ = 0;
 }
 
 
 Offset RadosHandle::position() {
-    NOTIMP;
+    return offset_;
 }
 
 std::string RadosHandle::title() const {

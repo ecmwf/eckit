@@ -92,9 +92,9 @@ long RadosWriteHandle::write(const void* buffer, long length) {
 
 
         handle_->write(buf + result, l);
-        written_ += len;
-        result += len;
-        length -= len;
+        written_ += l;
+        result += l;
+        length -= l;
 
         ASSERT(Length(written_) <= maxObjectSize_);
 

@@ -119,7 +119,7 @@ void RadosHandle::openForWrite(const Length& length) {
     std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
 
 
-    RadosCluster.instance().insurePool(object_.pool());
+    RadosCluster::instance().insurePool(object_.pool());
 
 
     open();

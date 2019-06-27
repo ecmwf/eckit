@@ -17,9 +17,21 @@
 
 namespace eckit {
 
+class RadosIOCtx {
+public:
+    rados_ioctx_t io_;
+
+    RadosIOCtx(rados_t cluster, const std::string& pool) {
+        RADOS_CALL(rados_ioctx_create(cluster, pool.c_str(), &io_));
+    }
+
+    ~RadosIOCtx() { rados_ioctx_destroy(io_); }
+};
+
+
 const RadosCluster& RadosCluster::instance() {
-    static RadosCluster instance;
-    return instance;
+    static RadosCluster instance_;
+    return instance_;
 }
 
 RadosCluster::RadosCluster():
@@ -48,6 +60,12 @@ RadosCluster::RadosCluster():
 }
 
 RadosCluster::~RadosCluster() {
+
+
+    for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
+        delete (*j).second;
+    }
+
     std::cout << "RADOS_CALL => rados_shutdown(cluster_)" << std::endl;
 
     rados_shutdown(cluster_);
@@ -71,6 +89,7 @@ void RadosCluster::error(int code, const char *msg, const char* file, int line, 
 }
 
 
+
 Length RadosCluster::maxObjectSize() const {
     // TODO: Get from server
     static long long len = Resource<long long>("radosMaxObjectSize", 128 * 1024 * 1024);
@@ -78,7 +97,22 @@ Length RadosCluster::maxObjectSize() const {
 
 }
 
-void RadosCluster::insurePool(const std::string& pool) const {
+
+rados_ioctx_t& RadosCluster::ioCtx(const std::string& pool) const {
+    auto j = ctx_.find(pool);
+    if (j == ctx_.end()) {
+        ctx_[pool] = new RadosIOCtx(cluster_, pool);
+    }
+
+    return (*j).second->io_;
+}
+
+rados_ioctx_t& RadosCluster::ioCtx(const RadosObject& object) const {
+    return ioCtx(object.pool());
+
+}
+
+void RadosCluster::ensurePool(const std::string& pool) const {
 
     int64_t id = rados_pool_lookup(cluster_, pool.c_str());
     if (id == -ENOENT) {
@@ -86,43 +120,36 @@ void RadosCluster::insurePool(const std::string& pool) const {
     }
 }
 
+void RadosCluster::ensurePool(const RadosObject& object) const {
+    ensurePool(object.pool());
+}
+
+
 void RadosCluster::attributes(const RadosObject& object, const RadosAttributes &attr) const {
 
-    rados_ioctx_t io_ctx;
-
-
-    RADOS_CALL(rados_ioctx_create(cluster_,
-                                  object.pool().c_str(),
-                                  &io_ctx));
 
     const char* oid = object.oid().c_str();
     auto a = attr.attrs();
     for (auto j = a.begin(); j != a.end(); ++j) {
-        RADOS_CALL(rados_setxattr(io_ctx,
+        RADOS_CALL(rados_setxattr(ioCtx(object),
                                   oid,
                                   (*j).first.c_str(),
                                   (*j).second.c_str(),
                                   (*j).second.size()));
     }
 
-    rados_ioctx_destroy(io_ctx);
-
 }
 
 RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 
-     RadosAttributes attr;
-    rados_ioctx_t io_ctx;
+    RadosAttributes attr;
 
 
-    RADOS_CALL(rados_ioctx_create(cluster_,
-                                  object.pool().c_str(),
-                                  &io_ctx));
 
 
 
     rados_xattrs_iter_t iter;
-    RADOS_CALL(rados_getxattrs(io_ctx, object.oid().c_str(), &iter));
+    RADOS_CALL(rados_getxattrs(ioCtx(object), object.oid().c_str(), &iter));
 
 
     for (;;) {
@@ -137,7 +164,7 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
         }
 
 
-        std::string v(val, val+len);
+        std::string v(val, val + len);
         attr.set(name, val);
 
     }
@@ -145,11 +172,77 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
     rados_getxattrs_end(iter);
 
 
-
-    rados_ioctx_destroy(io_ctx);
     return attr;
 
 }
+
+void RadosCluster::remove(const RadosObject& object) const {
+    RADOS_CALL(rados_remove(ioCtx(object), object.oid().c_str()));
+}
+
+void RadosCluster::truncate(const RadosObject& object, const Length& length) const {
+
+    RADOS_CALL(rados_trunc(ioCtx(object), object.oid().c_str(), length));
+}
+
+bool RadosCluster::exists(const RadosObject& object) const {
+    uint64_t psize;
+    time_t pmtime;
+    int err = rados_stat(ioCtx(object), object.oid().c_str(), &psize, &pmtime);
+
+    if (err == 0) {
+        return true;
+    }
+
+    if (err == -ENOENT) {
+        return false;
+    }
+
+    RADOS_CALL(rados_stat(ioCtx(object), object.oid().c_str(), &psize, &pmtime));
+
+    NOTIMP;
+}
+
+Length RadosCluster::size(const RadosObject& object) const {
+    uint64_t psize;
+    time_t pmtime;
+    RADOS_CALL(rados_stat(ioCtx(object), object.oid().c_str(), &psize, &pmtime));
+    return psize;
+}
+
+
+time_t RadosCluster::lastModified(const RadosObject& object) const {
+    uint64_t psize;
+    time_t pmtime;
+    RADOS_CALL(rados_stat(ioCtx(object), object.oid().c_str(), &psize, &pmtime));
+    return pmtime;
+}
+
+// uint64_t psize;
+// time_t pmtime;
+
+// RADOS_CALL(rados_stat(io_ctx_, object.oid().c_str(), &psize, &pmtime));
+
+
+
+// bool RadosCluster::attributes(const RadosObject& object) const {
+
+//     rados_ioctx_t io_ctx;
+
+
+//     RADOS_CALL(rados_ioctx_create(cluster_,
+//                                   object.pool().c_str(),
+//                                   &io_ctx));
+
+
+
+
+
+
+//     rados_ioctx_destroy(io_ctx);
+//     return attr;
+
+// }
 
 
 }  // namespace eckit

@@ -9,8 +9,11 @@
  */
 
 #include "eckit/io/rados/RadosReadHandle.h"
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosAttributes.h"
+#include "eckit/io/MultiHandle.h"
 
 namespace eckit {
 
@@ -22,35 +25,51 @@ ClassSpec RadosReadHandle::classSpec_ = {
 Reanimator<RadosReadHandle> RadosReadHandle::reanimator_;
 
 void RadosReadHandle::print(std::ostream& s) const {
-    s << "RadosReadHandle[file=" << name_ << ']';
+    s << "RadosReadHandle[" << object_ << ']';
 }
 
 void RadosReadHandle::encode(Stream& s) const {
     DataHandle::encode(s);
-    s << name_;
+    s << object_;
 }
 
 RadosReadHandle::RadosReadHandle(Stream& s):
-    DataHandle(s) {
-    s >> name_;
+    DataHandle(s),
+    object_(s) {
+
 }
 
 RadosReadHandle::RadosReadHandle(const std::string& name):
-    name_(name)
-{}
+    object_(name) {
+
+}
 
 RadosReadHandle::~RadosReadHandle() {
 
 }
 
 Length RadosReadHandle::openForRead() {
-    NOTIMP;
+    ASSERT(!handle_);
+
+    RadosAttributes attr = RadosCluster::instance().attributes(object_);
+    std::cout << "Attributes for " << object_ << " ===> " << attr << std::endl;
+
+    ASSERT(attr.get("length", length_));
+    ASSERT(attr.get("parts", parts_));
+
+    handle_.reset(new MultiHandle());
+    for(size_t i = 0; i < parts_; ++i) {
+        (*handle_) += new RadosHandle(RadosObject(object_, i));
+    }
+
+    Length len = handle_->openForRead();
+    ASSERT(len == length_);
+
+    return length_;
 }
 
 void RadosReadHandle::openForWrite(const Length& length) {
-
     NOTIMP;
-
 }
 
 void RadosReadHandle::openForAppend(const Length&) {
@@ -58,15 +77,12 @@ void RadosReadHandle::openForAppend(const Length&) {
 }
 
 long RadosReadHandle::read(void* buffer, long length) {
-
-    NOTIMP;
+    ASSERT(handle_);
+    return handle_->read(buffer, length);
 }
 
 long RadosReadHandle::write(const void* buffer, long length) {
-
     NOTIMP;
-
-
 }
 
 void RadosReadHandle::flush() {
@@ -75,7 +91,10 @@ void RadosReadHandle::flush() {
 
 
 void RadosReadHandle::close() {
-    NOTIMP;
+    if(handle_) {
+        handle_->close();
+        handle_.reset(0);
+    }
 }
 
 void RadosReadHandle::rewind() {
@@ -88,7 +107,7 @@ Offset RadosReadHandle::position() {
 }
 
 std::string RadosReadHandle::title() const {
-    return PathName::shorten(name_);
+    return PathName::shorten(object_.str());
 }
 
 }  // namespace eckit

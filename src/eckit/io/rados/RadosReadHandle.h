@@ -18,14 +18,17 @@
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
+class MultiHandle;
 
 class RadosReadHandle : public eckit::DataHandle {
 
 public:  // methods
 
+  RadosReadHandle(const RadosObject&);
   RadosReadHandle(const std::string&);
   RadosReadHandle(Stream&);
 
@@ -60,7 +63,12 @@ public:  // methods
 
 private:  // members
 
-  std::string name_;
+  RadosObject object_;
+
+  Length length_;
+  size_t parts_;
+
+  std::unique_ptr<MultiHandle> handle_;
 
 
   static ClassSpec classSpec_;

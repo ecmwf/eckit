@@ -61,39 +61,23 @@ RadosHandle::~RadosHandle() {
 
 void RadosHandle::open() {
 
-
     std::cout << "RadosHandle::open " << object_ << std::endl;
-
 
     ASSERT(!opened_);
 
-
     offset_ = 0;
-
-    RADOS_CALL(rados_ioctx_create(RadosCluster::instance().cluster(),
-                                  object_.pool().c_str(),
-                                  &io_ctx_));
 
     opened_ = true;
 }
 
 Length RadosHandle::openForRead() {
 
-
     std::cout << "RadosHandle::openForRead " << object_ << std::endl;
-
 
     open();
     write_ = false;
 
-
-
-    uint64_t psize;
-    time_t pmtime;
-
-    RADOS_CALL(rados_stat(io_ctx_, object_.oid().c_str(), &psize, &pmtime));
-
-    return psize;
+    return RadosCluster::instance().size(object_);
 }
 
 void RadosHandle::openForWrite(const Length& length) {
@@ -109,7 +93,7 @@ void RadosHandle::openForWrite(const Length& length) {
     std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
 
 
-    RadosCluster::instance().insurePool(object_.pool());
+    RadosCluster::instance().ensurePool(object_);
 
 
     open();
@@ -127,7 +111,7 @@ long RadosHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(!write_);
 
-    int len = RADOS_CALL(rados_read(io_ctx_,
+    int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_),
                                     object_.oid().c_str(),
                                     reinterpret_cast<char*>(buffer),
                                     length,
@@ -147,7 +131,7 @@ long RadosHandle::write(const void* buffer, long length) {
 
 
 
-    RADOS_CALL(rados_write(io_ctx_,
+    RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_),
                            object_.oid().c_str(),
                            reinterpret_cast<const char*>(buffer),
                            length,
@@ -172,8 +156,7 @@ void RadosHandle::close() {
 
 
     ASSERT(opened_);
-    std::cout << "RADOS_CALL => rados_ioctx_destroy(io_ctx_)" << std::endl;
-    rados_ioctx_destroy(io_ctx_);
+
     opened_ = false;
     std::cout << "RADOS_CALL <= rados_ioctx_destroy(io_ctx_)" << std::endl;
 

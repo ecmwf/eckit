@@ -66,7 +66,6 @@ private:  // members
 
   RadosObject object_;
 
-  rados_ioctx_t io_ctx_;
   uint64_t offset_;
   bool opened_;
   bool write_;

@@ -20,6 +20,8 @@
 #include <map>
 
 #include "eckit/utils/Translator.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 
 
 namespace eckit {
@@ -33,6 +35,43 @@ public:
     template<class T>
     void set(const std::string& name,  T value) {
         attrs_[name] = Translator<T, std::string>()(value);
+    }
+
+
+    void set(const std::string& name,  const Length& value) {
+        set(name, static_cast<long long>(value));
+    }
+
+    void set(const std::string& name,  const Offset& value) {
+        set(name, static_cast<long long>(value));
+    }
+
+    template<class T>
+    bool get(const std::string& name, T& value) const {
+        auto j = attrs_.find(name);
+        if (j != attrs_.end()) {
+            value = Translator<std::string, T>()((*j).second);
+            return true;
+        }
+        return false;
+    }
+
+    bool get(const std::string& name,  Length& value) {
+        long long v;
+        if (!get(name, v)) {
+            return false;
+        }
+        value = Length(v);
+        return true;
+    }
+
+    bool get(const std::string& name,  Offset& value) {
+        long long v;
+        if (!get(name, v)) {
+            return false;
+        }
+        value = Offset(v);
+        return true;
     }
 
     const std::map<std::string, std::string>& attrs() const { return attrs_; }

@@ -8,11 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+
+#include <map>
+
 #include "eckit/io/rados/RadosWriteHandle.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosAttributes.h"
+
 
 namespace eckit {
 
@@ -63,6 +67,9 @@ Length RadosWriteHandle::openForRead() {
 }
 
 void RadosWriteHandle::openForWrite(const Length& length) {
+
+    ASSERT(!opened_);
+
     written_ = 0;
     position_ = 0;
     part_ = 0;
@@ -135,12 +142,12 @@ void RadosWriteHandle::close() {
     if(opened_) {
 
         RadosAttributes attrs;
-        attrs.set("length", static_cast<long long>(position_));
+
+        attrs.set("length", position_);
         attrs.set("parts", part_);
         attrs.set("maxsize", maxObjectSize_);
 
         RadosCluster::instance().attributes(object_, attrs);
-
 
         opened_ = false;
     }

@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include <map>
 
 #include <rados/librados.h>
 
@@ -30,19 +31,22 @@ class RadosObject;
 
 class RadosAttributes;
 
-
+class RadosIOCtx;
 
 #define RADOS_CALL(a) eckit::rados_call(a, #a, __FILE__, __LINE__, __func__)
 
 class RadosCluster  {
 public:
 
+    rados_ioctx_t& ioCtx(const std::string& pool) const;
+    rados_ioctx_t& ioCtx(const RadosObject& object) const;
+
     Length maxObjectSize() const;
 
     rados_t cluster() const { return cluster_; }
 
-    void insurePool(const std::string& pool) const;
-
+    void ensurePool(const std::string& pool) const;
+    void ensurePool(const RadosObject& object) const;
 
 
     void attributes(const RadosObject&,
@@ -50,6 +54,12 @@ public:
 
     RadosAttributes attributes(const RadosObject&) const;
 
+
+    bool exists(const RadosObject&) const;
+    Length size(const RadosObject&) const;
+    void remove(const RadosObject&) const;
+    void truncate(const RadosObject&, const Length& = 0) const;
+    time_t lastModified(const RadosObject&) const;
 
     static const RadosCluster& instance();
 
@@ -63,6 +73,7 @@ private:
 private:
 
     rados_t cluster_;
+    mutable std::map<std::string, RadosIOCtx*> ctx_;
 
 public:
     static void error(int code, const char *msg, const char* file, int line, const char* func);
@@ -82,6 +93,7 @@ static inline int rados_call(int code, const char *msg, const char* file, int li
 
     return code;
 }
+
 
 
 }  // namespace eckit

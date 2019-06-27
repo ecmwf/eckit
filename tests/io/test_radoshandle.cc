@@ -60,7 +60,7 @@ CASE("RadosWriteHandle") {
 
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    RadosWriteHandle h("foobar", 2);
+    RadosWriteHandle h("foobar", 16);
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));

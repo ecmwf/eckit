@@ -64,9 +64,13 @@ RadosCluster::RadosCluster():
 RadosCluster::~RadosCluster() {
 
 
+    std::cout << "RadosCluster::~RadosCluster" << std::endl;
+
     for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
         delete (*j).second;
     }
+
+    ctx_.clear();
 
     std::cout << "RADOS_CALL => rados_shutdown(cluster_)" << std::endl;
 

@@ -75,6 +75,8 @@ private:
     rados_t cluster_;
     mutable std::map<std::string, RadosIOCtx*> ctx_;
 
+    void reset();
+
 public:
     static void error(int code, const char *msg, const char* file, int line, const char* func);
 

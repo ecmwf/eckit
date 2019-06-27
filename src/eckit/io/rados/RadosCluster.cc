@@ -29,8 +29,10 @@ public:
 };
 
 
+
+
 const RadosCluster& RadosCluster::instance() {
-    static RadosCluster instance_;
+    thread_local RadosCluster instance_;
     return instance_;
 }
 
@@ -74,6 +76,7 @@ RadosCluster::~RadosCluster() {
 }
 
 void RadosCluster::error(int code, const char *msg, const char* file, int line, const char* func) {
+
 
     std::ostringstream oss;
     oss << "RADOS error "

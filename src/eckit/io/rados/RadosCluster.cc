@@ -77,7 +77,7 @@ Length RadosCluster::maxObjectSize() const {
 }
 
 void RadosCluster::insurePool(const std::string& pool) const {
-    RADOS_CALL(rados_create_pool(cluster_, pool.c_str()));
+    RADOS_CALL(rados_create_pool(cluster_, pool.c_str());
 }
 
 

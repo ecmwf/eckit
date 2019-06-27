@@ -148,18 +148,10 @@ void RadosHandle::flush() {
     // NOTIMP;
 }
 
-
 void RadosHandle::close() {
-
-
     std::cout << "RadosHandle::close " << object_ << std::endl;
-
-
     ASSERT(opened_);
-
     opened_ = false;
-    std::cout << "RADOS_CALL <= rados_ioctx_destroy(io_ctx_)" << std::endl;
-
 }
 
 void RadosHandle::rewind() {

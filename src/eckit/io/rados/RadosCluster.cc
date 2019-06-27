@@ -19,15 +19,21 @@ namespace eckit {
 
 class RadosIOCtx {
 public:
+
     rados_ioctx_t io_;
 
     RadosIOCtx(rados_t cluster, const std::string& pool) {
+        std::cout << "RadosIOCtx => rados_ioctx_create(" << pool << ")" << std::endl;
         RADOS_CALL(rados_ioctx_create(cluster, pool.c_str(), &io_));
+        std::cout << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
     }
 
-    ~RadosIOCtx() { rados_ioctx_destroy(io_); }
+    ~RadosIOCtx() {
+        std::cout << "~RadosIOCtx => rados_ioctx_destroy(io_ctx_)" << std::endl;
+        rados_ioctx_destroy(io_);
+        std::cout << "~RadosIOCtx <= rados_ioctx_destroy(io_ctx_)" << std::endl;
+    }
 };
-
 
 
 
@@ -47,14 +53,14 @@ RadosCluster::RadosCluster():
 
     uint64_t flags = 0;
 
-    Log::info() << "RadosClusterName is " << radosClusterName << std::endl;
-    Log::info() << "RadosClusterUser is " << radosClusterUser << std::endl;
+    std::cout << "RadosClusterName is " << radosClusterName << std::endl;
+    std::cout << "RadosClusterUser is " << radosClusterUser << std::endl;
 
 
     /* Initialize the cluster handle with the "ceph" cluster name and the "client.admin" user */
     RADOS_CALL(rados_create2(&cluster_, radosClusterName.c_str(), radosClusterUser.c_str(), flags));
 
-    Log::info() << "RadosClusterConf is " << radosClusterConf << std::endl;
+    std::cout << "RadosClusterConf is " << radosClusterConf << std::endl;
     RADOS_CALL(rados_conf_read_file(cluster_, radosClusterConf.c_str()));
 
     RADOS_CALL(rados_connect(cluster_));
@@ -225,32 +231,5 @@ time_t RadosCluster::lastModified(const RadosObject& object) const {
     RADOS_CALL(rados_stat(ioCtx(object), object.oid().c_str(), &psize, &pmtime));
     return pmtime;
 }
-
-// uint64_t psize;
-// time_t pmtime;
-
-// RADOS_CALL(rados_stat(io_ctx_, object.oid().c_str(), &psize, &pmtime));
-
-
-
-// bool RadosCluster::attributes(const RadosObject& object) const {
-
-//     rados_ioctx_t io_ctx;
-
-
-//     RADOS_CALL(rados_ioctx_create(cluster_,
-//                                   object.pool().c_str(),
-//                                   &io_ctx));
-
-
-
-
-
-
-//     rados_ioctx_destroy(io_ctx);
-//     return attr;
-
-// }
-
 
 }  // namespace eckit

@@ -54,6 +54,8 @@ RadosHandle::RadosHandle(const std::string& object):
 {}
 
 RadosHandle::~RadosHandle() {
+    std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;
+
     if (opened_) {
         close();
     }

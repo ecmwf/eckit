@@ -68,6 +68,7 @@ private:  // members
   size_t written_;
   Offset position_;
   size_t part_;
+  bool opened_;
 
   std::unique_ptr<DataHandle> handle_;
 

@@ -9,6 +9,8 @@
  */
 
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/io/rados/RadosAttributes.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/config/Resource.h"
@@ -25,7 +27,7 @@ RadosCluster::RadosCluster():
 
 
     static const std::string radosClusterName = Resource<std::string>("radosClusterName", "ceph");
-    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.test-rados");
+    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.test");
     static const std::string radosClusterConf = Resource<std::string>("radosClusterConf", "/tmp/ceph-testbed.conf");
 
 
@@ -82,6 +84,71 @@ void RadosCluster::insurePool(const std::string& pool) const {
     if (id == -ENOENT) {
         RADOS_CALL(rados_pool_create(cluster_, pool.c_str()));
     }
+}
+
+void RadosCluster::attributes(const RadosObject& object, const RadosAttributes &attr) const {
+
+    rados_ioctx_t io_ctx;
+
+
+    RADOS_CALL(rados_ioctx_create(cluster_,
+                                  object.pool().c_str(),
+                                  &io_ctx));
+
+    const char* oid = object.oid().c_str();
+    auto a = attr.attrs();
+    for (auto j = a.begin(); j != a.end(); ++j) {
+        RADOS_CALL(rados_setxattr(io_ctx,
+                                  oid,
+                                  (*j).first.c_str(),
+                                  (*j).second.c_str(),
+                                  (*j).second.size()));
+    }
+
+    rados_ioctx_destroy(io_ctx);
+
+}
+
+RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
+
+     RadosAttributes attr;
+    rados_ioctx_t io_ctx;
+
+
+    RADOS_CALL(rados_ioctx_create(cluster_,
+                                  object.pool().c_str(),
+                                  &io_ctx));
+
+
+
+    rados_xattrs_iter_t iter;
+    RADOS_CALL(rados_getxattrs(io_ctx, object.oid().c_str(), &iter));
+
+
+    for (;;) {
+        const char *name;
+
+        const char* val;
+        size_t len;
+
+        RADOS_CALL(rados_getxattrs_next(iter, &name, &val, &len));
+        if (!name) {
+            break;
+        }
+
+
+        std::string v(val, val+len);
+        attr.set(name, val);
+
+    }
+
+    rados_getxattrs_end(iter);
+
+
+
+    rados_ioctx_destroy(io_ctx);
+    return attr;
+
 }
 
 

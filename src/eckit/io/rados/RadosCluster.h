@@ -26,6 +26,10 @@
 
 namespace eckit {
 
+class RadosObject;
+
+class RadosAttributes;
+
 
 
 #define RADOS_CALL(a) eckit::rados_call(a, #a, __FILE__, __LINE__, __func__)
@@ -38,6 +42,14 @@ public:
     rados_t cluster() const { return cluster_; }
 
     void insurePool(const std::string& pool) const;
+
+
+
+    void attributes(const RadosObject&,
+                    const RadosAttributes& ) const;
+
+    RadosAttributes attributes(const RadosObject&) const;
+
 
     static const RadosCluster& instance();
 

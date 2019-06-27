@@ -86,24 +86,7 @@ Length RadosHandle::openForRead() {
     open();
     write_ = false;
 
-    // rados_xattrs_iter_t iter;
-    // RADOS_CALL(rados_getxattrs(io_ctx_, object_.oid().c_str(), &iter));
 
-
-    // for (;;) {
-    //     const char *name;
-
-    //     const char* val;
-    //     size_t len;
-
-    //     RADOS_CALL(rados_getxattrs_next(iter, &name, &val, &len));
-    //     if (!name) {
-    //         break;
-    //     }
-    //     std::cout << "rados_getxattrs_next " << name << " = " << val << " (" << len << ")" << std::endl;
-    // }
-
-    // rados_getxattrs_end(iter);
 
     uint64_t psize;
     time_t pmtime;
@@ -114,6 +97,13 @@ Length RadosHandle::openForRead() {
 }
 
 void RadosHandle::openForWrite(const Length& length) {
+
+
+    // uint64_t psize;
+    // time_t pmtime;
+
+    // ASSERT(rados_stat(io_ctx_, object_.oid().c_str(), &psize, &pmtime) == -ENOENT);
+
 
 
     std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;

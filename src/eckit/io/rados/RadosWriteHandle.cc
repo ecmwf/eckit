@@ -12,6 +12,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosAttributes.h"
 
 namespace eckit {
 
@@ -29,16 +30,23 @@ void RadosWriteHandle::print(std::ostream& s) const {
 void RadosWriteHandle::encode(Stream& s) const {
     DataHandle::encode(s);
     s << object_;
+    s << Length(0); // For future extensio
 }
 
 RadosWriteHandle::RadosWriteHandle(Stream& s):
     DataHandle(s),
-    object_(s) {
+    object_(s),
+    opened_(false) {
+        s >> maxObjectSize_;
+         if (!maxObjectSize_) {
+        maxObjectSize_ = RadosCluster::instance().maxObjectSize();
+    }
 }
 
 RadosWriteHandle::RadosWriteHandle(const std::string& name, const Length& maxObjectSize):
     object_(name),
-    maxObjectSize_(maxObjectSize)
+    maxObjectSize_(maxObjectSize),
+    opened_(false)
 {
     if (!maxObjectSize_) {
         maxObjectSize_ = RadosCluster::instance().maxObjectSize();
@@ -46,7 +54,8 @@ RadosWriteHandle::RadosWriteHandle(const std::string& name, const Length& maxObj
 }
 
 RadosWriteHandle::~RadosWriteHandle() {
-
+    RadosAttributes attr = RadosCluster::instance().attributes(object_);
+    std::cout << "Attributes for " << object_ << " ===> " << attr << std::endl;
 }
 
 Length RadosWriteHandle::openForRead() {
@@ -57,6 +66,7 @@ void RadosWriteHandle::openForWrite(const Length& length) {
     written_ = 0;
     position_ = 0;
     part_ = 0;
+    opened_ = true;
 }
 
 void RadosWriteHandle::openForAppend(const Length&) {
@@ -69,6 +79,8 @@ long RadosWriteHandle::read(void* buffer, long length) {
 }
 
 long RadosWriteHandle::write(const void* buffer, long length) {
+
+    ASSERT(opened_);
 
     long result = 0;
     const char* buf = reinterpret_cast<const char*>(buffer);
@@ -119,6 +131,18 @@ void RadosWriteHandle::close() {
     if (handle_.get()) {
         handle_->close();
         handle_.reset(0);
+    }
+
+    if(opened_) {
+
+        RadosAttributes attrs;
+        attrs.set("size", static_cast<long long>(position_));
+        attrs.set("parts", part_);
+
+        RadosCluster::instance().attributes(object_, attrs);
+
+
+        opened_ = false;
     }
 }
 

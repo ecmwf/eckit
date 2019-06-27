@@ -250,6 +250,8 @@ io/rados/RadosWriteHandle.cc
 io/rados/RadosWriteHandle.h
 io/rados/RadosObject.h
 io/rados/RadosObject.cc
+io/rados/RadosAttributes.h
+io/rados/RadosAttributes.cc
 )
 endif()
 

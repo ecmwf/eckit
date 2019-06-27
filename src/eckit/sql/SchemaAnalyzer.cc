@@ -28,7 +28,7 @@ void SchemaAnalyzer::addTable(TableDef& table) {
 
     tableDefs_.push_back(table);
 
-    for (const auto& col : table.columns()) {
+    for (auto& col : table.columns()) {
         std::string fullname   = col.name() + "@" + table.name();
         columnTypes_[fullname] = col.type();
         // Log::debug<LibOdc>() << "SchemaAnalyzer::addTable(): columnTypes_[" << fullname << "] = "
@@ -36,9 +36,19 @@ void SchemaAnalyzer::addTable(TableDef& table) {
     }
 }
 
-void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes,
-                                     const std::string& typeSignature) {
+void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes) {
     bitfieldTypes_[name] = make_pair(fields, sizes);
+}
+
+const BitfieldDef& SchemaAnalyzer::getBitfieldType(const std::string& typeName) {
+
+    auto it = bitfieldTypes_.find(typeName);
+    if (it != bitfieldTypes_.end()) {
+        return it->second;
+    }
+
+    static const BitfieldDef nullBitfieldDef;
+    return nullBitfieldDef;
 }
 
 std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipTables) const {
@@ -78,6 +88,10 @@ std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipT
         selectlist += "\n";
     }
     return "\nSELECT\n" + selectlist + "\n FROM\n" + from;
+}
+
+TableDefs SchemaAnalyzer::definitions() const {
+    return tableDefs_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

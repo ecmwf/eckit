@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996-2012 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,31 +8,41 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/sql/SchemaComponents.h"
+#include "eckit/net/Endpoint.h"
 
-using namespace eckit;
+#include <ostream>
+
+#include "eckit/serialisation/Stream.h"
+
 
 namespace eckit {
-namespace sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ColumnDef::ColumnDef(const std::string& name, const std::string& type, const BitfieldDef& bitfield) :
-    //                     const Range &range,
-    //                     const std::string& defaultValue) {}
-    name_(name),
-    type_(type),
-    bitfield_(bitfield) {}
+Endpoint::Endpoint(const std::string& host, int port) :
+    hostname_(host),
+    port_(port) {}
 
-ColumnDef::ColumnDef() {}
+Endpoint::Endpoint(Stream& s) {
+    s >> hostname_;
+    s >> port_;
+}
 
-ColumnDef::~ColumnDef() {}
+Endpoint::Endpoint() : port_(0) {}
 
-TableDef::TableDef(const std::string& name, const ColumnDefs& columns) : name_(name), columns_(columns) {}
+bool Endpoint::operator==(const Endpoint& other) {
+    return (port_ == other.port_ && hostname_ == other.hostname_);
+}
 
-TableDef::~TableDef() {}
+void Endpoint::print(std::ostream& os) const {
+    os << hostname_ << ":" << port_;
+}
+
+void Endpoint::encode(Stream &s) const {
+    s << hostname_;
+    s << port_;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+} // namespace eckit

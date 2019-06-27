@@ -12,7 +12,6 @@
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -69,7 +68,7 @@ void MarsFSHandle::openForWrite(const Length& length) {
     file_->open("w", overwrite_);
 }
 
-void MarsFSHandle::openForAppend(const Length& length) {
+void MarsFSHandle::openForAppend(const Length&) {
     NOTIMP;
 }
 
@@ -96,7 +95,7 @@ Offset MarsFSHandle::position() {
 void MarsFSHandle::close() {
     if (file_.get()) {
         file_->close();
-        file_.reset(0);
+        file_.reset(nullptr);
     }
 }
 

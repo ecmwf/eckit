@@ -1,0 +1,19 @@
+On linux:
+=========
+
+cd /usr/local/apps/ceph/14.2.1-001
+tar cf ~/rados-include.tar include/
+
+On mac:
+=======
+
+brew tap zeichenanonym/ceph-client
+brew install ceph-client
+
+cd /usr/local/Cellar/ceph-client/mimic-13.2.2
+tar xf ~/rados-include.tar
+
+
+cmake:
+======
+cmake  -DENABLE_RADOS=ON  -DRADOS_PATH=/usr/local/Cellar/ceph-client/mimic-13.2.2 ~/git/eckit/

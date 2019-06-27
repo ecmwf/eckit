@@ -26,3 +26,16 @@ ecbuild_add_test( TARGET      eckit_test_bitio
 ecbuild_add_test( TARGET      eckit_test_base64
                   SOURCES     test_base64.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_multihandle
+                  SOURCES     test_multihandle.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_pooledfile
+                  SOURCES     test_pooledfile.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_radoshandle
+                  SOURCES     test_radoshandle.cc
+                  CONDITION   HAVE_RADOS
+                  LIBS        eckit )

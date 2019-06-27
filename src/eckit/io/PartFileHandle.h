@@ -8,24 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-// File Partio/FileHandle.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   May 1996
 
 #ifndef eckit_filesystem_PartFileHandle_h
 #define eckit_filesystem_PartFileHandle_h
 
 #include <memory>
 
-#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/PooledFile.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class PartFileHandle : public DataHandle {
 public:
@@ -85,15 +84,11 @@ private:
 // -- Members
 
 	PathName           name_;
-#ifdef USE_LINKS
-	PathName           link_;
-#endif
-	FILE*              file_;
+    std::unique_ptr<PooledFile> file_;
 	long long          pos_;
 	Ordinal            index_;
 	OffsetList         offset_;
 	LengthList         length_;
-    std::unique_ptr<Buffer>  buffer_;
 
 // -- Methods
 
@@ -106,8 +101,7 @@ private:
 
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

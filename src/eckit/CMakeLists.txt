@@ -78,209 +78,210 @@ list( APPEND eckit_srcs eckit.h deprecated.h eckit_version.cc )
 
 list( APPEND eckit_container_srcs
 
-container/BTree.h
+container/BSPTree.h
 container/BTree.cc
-container/Trie.h
-container/Trie.cc
-container/BloomFilter.h
+container/BTree.h
 container/BloomFilter.cc
-container/Queue.h
+container/BloomFilter.h
 container/Cache.h
-container/CacheLRU.h
 container/CacheLRU.cc
-
-container/CacheManager.h
+container/CacheLRU.h
 container/CacheManager.cc
-container/DenseMap.h
-container/StatCollector.h
-container/Recycler.h
+container/CacheManager.h
 container/ClassExtent.h
-container/KDMemory.h
+container/DenseMap.h
 container/KDMapped.cc
 container/KDMapped.h
-
+container/KDMemory.h
 container/KDTree.h
-container/BSPTree.h
-
-container/MappedArray.h
 container/MappedArray.cc
-
-container/SharedMemArray.h
+container/MappedArray.h
+container/Queue.h
+container/Recycler.h
 container/SharedMemArray.cc
-
+container/SharedMemArray.h
+container/StatCollector.h
+container/Trie.cc
+container/Trie.h
+container/bsptree/BSPHyperPlane.h
+container/bsptree/BSPNode.cc
+container/bsptree/BSPNode.h
+container/kdtree/KDNode.cc
+container/kdtree/KDNode.cc
+container/kdtree/KDNode.h
 container/sptree/SPIterator.h
+container/sptree/SPMetadata.h
 container/sptree/SPNode.h
-
+container/sptree/SPNodeInfo.h
 container/sptree/SPNodeQueue.h
 container/sptree/SPTree.h
 container/sptree/SPValue.h
-container/sptree/SPNodeInfo.h
-container/sptree/SPMetadata.h
-
-container/kdtree/KDNode.h
-container/kdtree/KDNode.cc
-container/kdtree/KDNode.cc
-
-container/bsptree/BSPNode.h
-container/bsptree/BSPNode.cc
-container/bsptree/BSPHyperPlane.h
-
-
 )
 
 list( APPEND eckit_io_srcs
-io/Length.h
-io/Length.cc
-io/DataHandle.h
-io/DataHandle.cc
-io/FDataSync.h
-io/FDataSync.cc
-io/Select.h
-io/Select.cc
-io/CommandStream.h
-io/CommandStream.cc
-io/Offset.h
-io/Offset.cc
-io/DataBlob.h
-io/DataBlob.cc
+io/AIOHandle.cc
+io/AIOHandle.h
+io/AsyncHandle.cc
+io/AsyncHandle.h
+io/AutoCloser.h
+io/Base64.cc
+io/Base64.h
+io/BitIO.cc
+io/BitIO.h
 io/Buffer.cc
 io/Buffer.h
-io/SharedBuffer.cc
-io/SharedBuffer.h
+io/BufferCache.cc
+io/BufferCache.h
+io/BufferedHandle.cc
+io/BufferedHandle.h
 io/CircularBuffer.cc
 io/CircularBuffer.h
-io/BufferCache.h
-io/BufferCache.cc
-io/FileLocker.h
-io/FileLocker.cc
-io/FileLock.h
-io/FileLock.cc
-io/FilePool.h
-io/FilePool.cc
-io/ResizableBuffer.h
-io/ResizableBuffer.cc
-io/DblBuffer.h
-io/DblBuffer.cc
-io/HandleBuf.h
-io/HandleBuf.cc
-io/StdFile.h
-io/StdFile.cc
-io/StdPipe.h
-io/StdPipe.cc
-io/StdioBuf.h
-io/StdioBuf.cc
-io/FileBase.h
-io/FileBase.cc
-io/TransferWatcher.h
-io/TransferWatcher.cc
-io/MoverTransfer.h
-io/MoverTransfer.cc
-io/SockBuf.h
-io/SockBuf.cc
-io/AutoCloser.h
-io/AIOHandle.h
-io/AIOHandle.cc
-io/AsyncHandle.h
-io/AsyncHandle.cc
-io/BitIO.h
-io/BitIO.cc
-io/Compress.h
+io/CommandStream.cc
+io/CommandStream.h
 io/Compress.cc
-io/Base64.h
-io/Base64.cc
-io/SharedHandle.h
-io/SharedHandle.cc
-io/BufferedHandle.h
-io/BufferedHandle.cc
-io/MemoryHandle.h
-io/MemoryHandle.cc
-io/EmptyHandle.h
-io/EmptyHandle.cc
-io/FTPHandle.h
-io/FTPHandle.cc
-io/URLHandle.h
-io/URLHandle.cc
-io/EasyCURL.h
+io/Compress.h
+io/DataBlob.cc
+io/DataBlob.h
+io/DataHandle.cc
+io/DataHandle.h
+io/DblBuffer.cc
+io/DblBuffer.h
 io/EasyCURL.cc
-io/FileDescHandle.h
+io/EasyCURL.h
+io/EmptyHandle.cc
+io/EmptyHandle.h
+io/FDataSync.cc
+io/FDataSync.h
+io/FTPHandle.cc
+io/FTPHandle.h
+io/FileBase.cc
+io/FileBase.h
 io/FileDescHandle.cc
-io/FileHandle.h
+io/FileDescHandle.h
 io/FileHandle.cc
-io/MarsFSHandle.h
+io/FileHandle.h
+io/FileLock.cc
+io/FileLock.h
+io/FileLocker.cc
+io/FileLocker.h
+io/FilePool.cc
+io/FilePool.h
+io/HandleBuf.cc
+io/HandleBuf.h
+io/HandleHolder.cc
+io/HandleHolder.h
+io/Length.cc
+io/Length.h
 io/MarsFSHandle.cc
-io/MarsFSPartHandle.h
+io/MarsFSHandle.h
 io/MarsFSPartHandle.cc
-io/PartHandle.h
-io/PartHandle.cc
-io/MultiPartHandle.h
-io/MultiPartHandle.cc
-io/StatsHandle.h
-io/StatsHandle.cc
-io/MoverHandle.h
+io/MarsFSPartHandle.h
+io/MemoryHandle.cc
+io/MemoryHandle.h
 io/MoverHandle.cc
-io/MultiHandle.h
+io/MoverHandle.h
+io/MoverTransfer.cc
+io/MoverTransfer.h
 io/MultiHandle.cc
-io/PartFileHandle.h
+io/MultiHandle.h
+io/Offset.cc
+io/Offset.h
 io/PartFileHandle.cc
-io/PipeHandle.h
+io/PartFileHandle.h
+io/PartHandle.cc
+io/PartHandle.h
 io/PipeHandle.cc
-io/StdFileHandle.h
-io/StdFileHandle.cc
+io/PipeHandle.h
+io/Pipeline.cc
+io/Pipeline.h
+io/PooledFile.cc
+io/PooledFile.h
 io/RawFileHandle.cc
 io/RawFileHandle.h
-io/TCPHandle.h
+io/ResizableBuffer.cc
+io/ResizableBuffer.h
+io/Select.cc
+io/Select.h
+io/SharedBuffer.cc
+io/SharedBuffer.h
+io/SharedHandle.cc
+io/SharedHandle.h
+io/SockBuf.cc
+io/SockBuf.h
+io/StatsHandle.cc
+io/StatsHandle.h
+io/StdFile.cc
+io/StdFile.h
+io/StdFileHandle.cc
+io/StdFileHandle.h
+io/StdPipe.cc
+io/StdPipe.h
+io/StdioBuf.cc
+io/StdioBuf.h
 io/TCPHandle.cc
-io/TCPSocketHandle.h
+io/TCPHandle.h
 io/TCPSocketHandle.cc
-io/TeeHandle.h
+io/TCPSocketHandle.h
 io/TeeHandle.cc
-io/Pipeline.h
-io/Pipeline.cc
-io/HandleHolder.h
-io/HandleHolder.cc
-io/cluster/ClusterDisks.h
+io/TeeHandle.h
+io/TransferWatcher.cc
+io/TransferWatcher.h
+io/URLHandle.cc
+io/URLHandle.h
 io/cluster/ClusterDisks.cc
-io/cluster/ClusterNode.h
+io/cluster/ClusterDisks.h
 io/cluster/ClusterNode.cc
-io/cluster/ClusterNodes.h
+io/cluster/ClusterNode.h
 io/cluster/ClusterNodes.cc
+io/cluster/ClusterNodes.h
+io/cluster/NodeInfo.cc
 io/cluster/NodeInfo.h
-io/cluster/NodeInfo.cc )
+)
+
+if(HAVE_RADOS)
+list( APPEND eckit_io_srcs
+io/rados/RadosHandle.cc
+io/rados/RadosHandle.h
+)
+endif()
 
 list( APPEND eckit_filesystem_srcs
-filesystem/FileSystemSize.h
-filesystem/PathExpander.h
-filesystem/PathExpander.cc
-filesystem/PathName.h
-filesystem/PathName.cc
-filesystem/BasePathNameT.h
-filesystem/BasePathNameT.cc
 filesystem/BasePathName.cc
 filesystem/BasePathName.h
-filesystem/LocalPathName.h
-filesystem/LocalPathName.cc
-filesystem/FileSpace.h
+filesystem/BasePathNameT.cc
+filesystem/BasePathNameT.h
+filesystem/FileMode.cc
+filesystem/FileMode.h
 filesystem/FileSpace.cc
-filesystem/FileSpaceStrategies.h
+filesystem/FileSpace.h
 filesystem/FileSpaceStrategies.cc
-filesystem/FileSystem.h
+filesystem/FileSpaceStrategies.h
 filesystem/FileSystem.cc
-filesystem/TempFile.h
+filesystem/FileSystem.h
+filesystem/FileSystemSize.h
+filesystem/LocalPathName.cc
+filesystem/LocalPathName.h
+filesystem/PathExpander.cc
+filesystem/PathExpander.h
+filesystem/PathName.cc
+filesystem/PathName.h
 filesystem/TempFile.cc
-filesystem/TmpDir.h
+filesystem/TempFile.h
 filesystem/TmpDir.cc
-filesystem/TmpFile.h
+filesystem/TmpDir.h
 filesystem/TmpFile.cc
-filesystem/marsfs/MarsFSFile.h
-filesystem/marsfs/MarsFSFile.cc
-filesystem/marsfs/MarsFSPath.h
-filesystem/marsfs/MarsFSPath.cc
-filesystem/marsfs/MarsFSClient.h
-filesystem/marsfs/MarsFSClient.cc
-filesystem/URIManager.h
-filesystem/URIManager.cc
+filesystem/TmpFile.h
+filesystem/URI.cc
 filesystem/URI.h
-filesystem/URI.cc )
+filesystem/URIManager.cc
+filesystem/URIManager.h
+filesystem/marsfs/MarsFSClient.cc
+filesystem/marsfs/MarsFSClient.h
+filesystem/marsfs/MarsFSFile.cc
+filesystem/marsfs/MarsFSFile.h
+filesystem/marsfs/MarsFSPath.cc
+filesystem/marsfs/MarsFSPath.h
+)
 
 list( APPEND eckit_thread_srcs
     thread/AutoLock.h
@@ -317,8 +318,8 @@ config/LocalConfiguration.h
 config/Parametrisation.cc
 config/Parametrisation.h
 config/Resource.h
-config/ResourceBase.h
 config/ResourceBase.cc
+config/ResourceBase.h
 config/ResourceMgr.cc
 config/ResourceMgr.h
 config/YAMLConfiguration.cc
@@ -326,344 +327,356 @@ config/YAMLConfiguration.h
 )
 
 list( APPEND eckit_runtime_srcs
-runtime/Task.h
-runtime/Task.cc
-runtime/TaskID.h
-runtime/Main.h
-runtime/Main.cc
-runtime/Application.h
 runtime/Application.cc
-runtime/Tool.h
-runtime/Tool.cc
-runtime/Library.h
-runtime/Library.cc
-runtime/Monitor.h
-runtime/Monitor.cc
-runtime/Monitorable.h
-runtime/Monitorable.cc
-runtime/TaskInfo.h
-runtime/TaskInfo.cc
-runtime/PipeApplication.h
-runtime/PipeApplication.cc
-runtime/PipeHandler.h
-runtime/PipeHandler.cc
-runtime/ProcessControler.h
-runtime/ProcessControler.cc
+runtime/Application.h
 runtime/Dispatcher.h
+runtime/Library.cc
+runtime/Library.h
+runtime/Main.cc
+runtime/Main.h
+runtime/Monitor.cc
+runtime/Monitor.h
+runtime/Monitorable.cc
+runtime/Monitorable.h
 runtime/Pipe.h
-runtime/ProducerConsumer.h )
+runtime/PipeApplication.cc
+runtime/PipeApplication.h
+runtime/PipeHandler.cc
+runtime/PipeHandler.h
+runtime/ProcessControler.cc
+runtime/ProcessControler.h
+runtime/ProducerConsumer.h
+runtime/SessionID.cc
+runtime/SessionID.h
+runtime/Task.cc
+runtime/Task.h
+runtime/TaskID.h
+runtime/TaskInfo.cc
+runtime/TaskInfo.h
+runtime/Tool.cc
+runtime/Tool.h
+)
 
 list( APPEND eckit_log_srcs
-log/BigNum.h
 log/BigNum.cc
-log/Bytes.h
+log/BigNum.h
 log/Bytes.cc
-log/CallbackTarget.h
+log/Bytes.h
 log/CallbackTarget.cc
-log/TimeStampTarget.h
-log/TimeStampTarget.cc
-log/PrefixTarget.h
-log/PrefixTarget.cc
-log/WrapperTarget.h
-log/WrapperTarget.cc
-log/IndentTarget.h
-log/IndentTarget.cc
-log/Channel.h
+log/CallbackTarget.h
 log/Channel.cc
-log/OStreamTarget.h
-log/OStreamTarget.cc
-log/LineBasedTarget.h
-log/LineBasedTarget.cc
-log/TeeTarget.h
-log/TeeTarget.cc
-log/StatusTarget.h
-log/StatusTarget.cc
-log/MonitorTarget.h
-log/MonitorTarget.cc
-log/MessageTarget.h
-log/MessageTarget.cc
-log/Number.h
-log/Number.cc
-log/ChannelBuffer.h
+log/Channel.h
 log/ChannelBuffer.cc
-log/CodeLocation.h
+log/ChannelBuffer.h
 log/CodeLocation.cc
-log/ColouringTarget.h
-log/ColouringTarget.cc
-log/Colour.h
+log/CodeLocation.h
 log/Colour.cc
-log/ETA.h
+log/Colour.h
+log/ColouringTarget.cc
+log/ColouringTarget.h
 log/ETA.cc
-log/FileTarget.h
+log/ETA.h
 log/FileTarget.cc
-log/Log.h
+log/FileTarget.h
+log/IndentTarget.cc
+log/IndentTarget.h
+log/LineBasedTarget.cc
+log/LineBasedTarget.h
 log/Log.cc
-log/Plural.h
-log/Progress.h
-log/Progress.cc
-log/RotationTarget.h
-log/RotationTarget.cc
-log/SavedStatus.h
-log/SavedStatus.cc
-log/Seconds.h
-log/Seconds.cc
-log/SysLog.h
-log/SysLog.cc
-log/Statistics.h
-log/Statistics.cc
-log/LogTarget.h
+log/Log.h
 log/LogTarget.cc
-log/ProgressTimer.h
+log/LogTarget.h
+log/MessageTarget.cc
+log/MessageTarget.h
+log/MonitorTarget.cc
+log/MonitorTarget.h
+log/Number.cc
+log/Number.h
+log/OStreamTarget.cc
+log/OStreamTarget.h
+log/Plural.h
+log/PrefixTarget.cc
+log/PrefixTarget.h
+log/Progress.cc
+log/Progress.h
 log/ProgressTimer.cc
-log/Timer.h
-log/Timer.cc
-log/TraceTimer.h
-log/ResourceUsage.h
+log/ProgressTimer.h
 log/ResourceUsage.cc
-log/TimeStamp.h
+log/ResourceUsage.h
+log/RotationTarget.cc
+log/RotationTarget.h
+log/SavedStatus.cc
+log/SavedStatus.h
+log/Seconds.cc
+log/Seconds.h
+log/Statistics.cc
+log/Statistics.h
+log/StatusTarget.cc
+log/StatusTarget.h
+log/SysLog.cc
+log/SysLog.h
+log/TeeTarget.cc
+log/TeeTarget.h
 log/TimeStamp.cc
-log/UserChannel.h
+log/TimeStamp.h
+log/TimeStampTarget.cc
+log/TimeStampTarget.h
+log/Timer.cc
+log/Timer.h
+log/TraceTimer.h
 log/UserChannel.cc
+log/UserChannel.h
+log/WrapperTarget.cc
+log/WrapperTarget.h
 )
 
 list( APPEND eckit_exception_srcs
+exception/Exceptions.cc
 exception/Exceptions.h
-exception/Exceptions.cc )
+)
 
 list( APPEND eckit_types_srcs
-types/Types.h
-types/Types.cc
-types/Double.h
-types/Double.cc
-types/Fraction.h
-types/Fraction.cc
-types/FixedString.h
-types/FloatCompare.h
-types/FloatCompare.cc
-types/ClimateDate.h
 types/ClimateDate.cc
-types/Coord.h
+types/ClimateDate.h
 types/Coord.cc
-types/DateTime.h
-types/DateTime.cc
-types/DayOfYear.h
-types/DayOfYear.cc
-types/Grid.h
-types/Grid.cc
-types/Metadata.h
-types/Metadata.cc
-types/Month.h
-types/Month.cc
-types/TimeInterval.h
-types/TimeInterval.cc
-types/Date.h
+types/Coord.h
 types/Date.cc
-types/UUID.h
-types/UUID.cc
-types/Time.h
+types/Date.h
+types/DateTime.cc
+types/DateTime.h
+types/DayOfYear.cc
+types/DayOfYear.h
+types/Double.cc
+types/Double.h
+types/FixedString.h
+types/FloatCompare.cc
+types/FloatCompare.h
+types/Fraction.cc
+types/Fraction.h
+types/Grid.cc
+types/Grid.h
+types/Metadata.cc
+types/Metadata.h
+types/Month.cc
+types/Month.h
 types/Time.cc
-types/VerifyingDate.h
+types/Time.h
+types/TimeInterval.cc
+types/TimeInterval.h
+types/Types.cc
+types/Types.h
+types/UUID.cc
+types/UUID.h
 types/VerifyingDate.cc
+types/VerifyingDate.h
 )
 
 list( APPEND eckit_parser_srcs
-parser/StreamParser.h
-parser/StreamParser.cc
-parser/JSON.h
-parser/JSON.cc
-parser/ObjectParser.h
-parser/ObjectParser.cc
-parser/JSONParser.h
-parser/JSONParser.cc
-parser/CSVParser.h
 parser/CSVParser.cc
-parser/YAMLParser.h
-parser/YAMLParser.cc
-parser/JSONDataBlob.h
+parser/CSVParser.h
+parser/JSON.cc
+parser/JSON.h
 parser/JSONDataBlob.cc
+parser/JSONDataBlob.h
+parser/JSONMetadata.cc
 parser/JSONMetadata.h
-parser/JSONMetadata.cc )
+parser/JSONParser.cc
+parser/JSONParser.h
+parser/ObjectParser.cc
+parser/ObjectParser.h
+parser/StreamParser.cc
+parser/StreamParser.h
+parser/YAMLParser.cc
+parser/YAMLParser.h
+)
 
 list( APPEND eckit_value_srcs
-value/BoolContent.h
 value/BoolContent.cc
+value/BoolContent.h
 value/CompositeParams.cc
 value/CompositeParams.h
-value/Content.h
 value/Content.cc
-value/DateContent.h
+value/Content.h
 value/DateContent.cc
-value/TimeContent.h
-value/TimeContent.cc
-value/DateTimeContent.h
+value/DateContent.h
 value/DateTimeContent.cc
+value/DateTimeContent.h
 value/DispatchParams.h
-value/DoubleContent.h
 value/DoubleContent.cc
+value/DoubleContent.h
 value/Expression.h
-value/ListContent.h
 value/ListContent.cc
-value/MapContent.h
+value/ListContent.h
 value/MapContent.cc
-value/OrderedMapContent.h
-value/OrderedMapContent.cc
-value/NilContent.h
+value/MapContent.h
 value/NilContent.cc
-value/NumberContent.h
+value/NilContent.h
 value/NumberContent.cc
+value/NumberContent.h
+value/OrderedMapContent.cc
+value/OrderedMapContent.h
 value/Params.cc
 value/Params.h
-value/Properties.h
 value/Properties.cc
+value/Properties.h
 value/ScopeParams.cc
 value/ScopeParams.h
-value/StringContent.h
 value/StringContent.cc
-value/Value.h
+value/StringContent.h
+value/TimeContent.cc
+value/TimeContent.h
 value/Value.cc
+value/Value.h
 )
 
 list( APPEND eckit_os_srcs
-os/Stat.h
-os/System.h
-os/System.cc
-os/AutoUmask.h
-os/SemLocker.h
-os/SemLocker.cc
-os/Semaphore.h
-os/Semaphore.cc
-os/SignalHandler.h
-os/SignalHandler.cc
-os/Password.h
-os/Password.cc
-os/BackTrace.h
-os/BackTrace.cc
-os/AutoAlarm.h
 os/AutoAlarm.cc
+os/AutoAlarm.h
+os/AutoUmask.h
+os/BackTrace.cc
+os/BackTrace.h
+os/Password.cc
+os/Password.h
+os/SemLocker.cc
+os/SemLocker.h
+os/Semaphore.cc
+os/Semaphore.h
+os/SharedInt.cc
 os/SharedInt.h
-os/SharedInt.cc )
+os/SignalHandler.cc
+os/SignalHandler.h
+os/Stat.h
+os/System.cc
+os/System.h
+)
 
 list( APPEND eckit_net_srcs
-net/TCPClient.h
-net/TCPClient.cc
-net/TCPSocket.h
-net/TCPSocket.cc
-net/TCPStream.h
-net/TCPStream.cc
-net/NetAddress.h
-net/NetAddress.cc
-net/NetService.h
-net/NetService.cc
-net/NetUser.h
-net/NetUser.cc
-net/Telnetable.h
-net/Telnetable.cc
-net/Telnet.h
-net/Telnet.cc
-net/TelnetUser.h
-net/Connector.h
 net/Connector.cc
-net/TCPServer.h
-net/TCPServer.cc
-net/UDPClient.h
-net/UDPClient.cc
-net/UDPServer.h
-net/UDPServer.cc
+net/Connector.h
+net/Endpoint.cc
+net/Endpoint.h
+net/NetAddress.cc
+net/NetAddress.h
+net/NetService.cc
+net/NetService.h
+net/NetUser.cc
+net/NetUser.h
+net/Port.cc
 net/Port.h
-net/Port.cc )
+net/TCPClient.cc
+net/TCPClient.h
+net/TCPServer.cc
+net/TCPServer.h
+net/TCPSocket.cc
+net/TCPSocket.h
+net/TCPStream.cc
+net/TCPStream.h
+net/Telnet.cc
+net/Telnet.h
+net/TelnetUser.h
+net/Telnetable.cc
+net/Telnetable.h
+net/UDPClient.cc
+net/UDPClient.h
+net/UDPServer.cc
+net/UDPServer.h
+)
 
 list( APPEND eckit_serialisation_srcs
-serialisation/BadTag.h
 serialisation/BadTag.cc
-serialisation/Stream.h
-serialisation/Stream.cc
-serialisation/Streamable.h
-serialisation/Streamable.cc
-serialisation/FileStream.h
+serialisation/BadTag.h
 serialisation/FileStream.cc
-serialisation/MemoryStream.h
-serialisation/MemoryStream.cc
-serialisation/HandleStream.h
+serialisation/FileStream.h
 serialisation/FstreamStream.h
+serialisation/HandleStream.h
 serialisation/IfstreamStream.h
-serialisation/PipeStream.h
+serialisation/MemoryStream.cc
+serialisation/MemoryStream.h
 serialisation/PipeStream.cc
-serialisation/ResizableMemoryStream.h
-serialisation/ResizableMemoryStream.cc
-serialisation/Reanimator.h
+serialisation/PipeStream.h
 serialisation/Reanimator.cc
-serialisation/ReanimatorBase.cc )
+serialisation/Reanimator.h
+serialisation/ReanimatorBase.cc
+serialisation/ResizableMemoryStream.cc
+serialisation/ResizableMemoryStream.h
+serialisation/Stream.cc
+serialisation/Stream.h
+serialisation/Streamable.cc
+serialisation/Streamable.h
+)
 
 list( APPEND eckit_persist_srcs
 persist/Bless.h
-persist/Exporter.h
-persist/Exporter.cc
-persist/DumpLoad.h
 persist/DumpLoad.cc
+persist/DumpLoad.h
+persist/Exporter.cc
+persist/Exporter.h
+persist/Isa.cc
 persist/Isa.h
-persist/Isa.cc )
+)
 
 list( APPEND eckit_utils_srcs
-utils/Translator.h
-utils/Translator.cc
-utils/Hash.h
 utils/Hash.cc
-utils/MD5.h
-utils/MD5.cc
-utils/Regex.h
-utils/Regex.cc
-utils/RendezvousHash.h
-utils/RendezvousHash.cc
-utils/HyperCube.h
+utils/Hash.h
 utils/HyperCube.cc
-utils/RLE.h
+utils/HyperCube.h
+utils/MD5.cc
+utils/MD5.h
 utils/RLE.cc
-utils/StringTools.h
+utils/RLE.h
+utils/Regex.cc
+utils/Regex.h
+utils/RendezvousHash.cc
+utils/RendezvousHash.h
 utils/StringTools.cc
-utils/Tokenizer.h
+utils/StringTools.h
 utils/Tokenizer.cc
+utils/Tokenizer.h
+utils/Translator.cc
+utils/Translator.h
 )
 
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
-      utils/MD4.h
       utils/MD4.cc
-      utils/SHA1.h
+      utils/MD4.h
       utils/SHA1.cc
+      utils/SHA1.h
     )
 endif()
 
 if(ECKIT_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
-      utils/xxHash.h
       utils/xxHash.cc
+      utils/xxHash.h
     )
 endif()
 
 list( APPEND eckit_memory_srcs
-memory/Builder.h
 memory/Builder.cc
+memory/Builder.h
 memory/Counted.cc
 memory/Counted.h
 memory/Factory.h
-memory/Owned.h
-memory/MemoryPool.h
-memory/MemoryPool.cc
-memory/MemoryBuffer.h
-memory/MemoryBuffer.cc
 memory/MMap.cc
 memory/MMap.h
+memory/MapAllocator.cc
+memory/MapAllocator.h
+memory/MemoryBuffer.cc
+memory/MemoryBuffer.h
+memory/MemoryPool.cc
+memory/MemoryPool.h
+memory/NonCopyable.cc
+memory/NonCopyable.h
+memory/Owned.h
+memory/Padded.h
+memory/ScopedPtr.h
+memory/SharedPtr.cc
+memory/SharedPtr.h
 memory/Shmget.cc
 memory/Shmget.h
-memory/SharedPtr.h
-memory/SharedPtr.cc
-memory/Padded.h
-memory/MapAllocator.h
-memory/MapAllocator.cc
-memory/NonCopyable.h
-memory/NonCopyable.cc
-memory/ScopedPtr.h
-memory/Zero.h )
+memory/Zero.h
+)
 
 list( APPEND eckit_compat_srcs
 compat/Inited.h
@@ -671,20 +684,20 @@ compat/StrStream.h
 )
 
 list( APPEND eckit_maths_srcs
-maths/Functions.h
 maths/Functions.cc
+maths/Functions.h
 )
 
 
 list( APPEND eckit_system_srcs
     system/Library.cc
     system/Library.h
+    system/MemoryInfo.cc
+    system/MemoryInfo.h
     system/ResourceUsage.cc
     system/ResourceUsage.h
     system/SystemInfo.cc
     system/SystemInfo.h
-    system/MemoryInfo.cc
-    system/MemoryInfo.h
 )
 
 set(ECKIT_SYSTEM_EXTRA_LIBS "")
@@ -704,16 +717,17 @@ if(HAVE_JEMALLOC)
 endif()
 
 list( APPEND eckit_bases_srcs
-bases/Watcher.h
-bases/Watcher.cc
+bases/Loader.cc
 bases/Loader.h
-bases/Loader.cc )
+bases/Watcher.cc
+bases/Watcher.h
+)
 
 list( APPEND eckit_transaction_srcs
-    transaction/TxnEvent.h
     transaction/TxnEvent.cc
-    transaction/TxnLog.h
+    transaction/TxnEvent.h
     transaction/TxnLog.cc
+    transaction/TxnLog.h
 )
 
 list( APPEND eckit_testing_srcs
@@ -721,29 +735,29 @@ list( APPEND eckit_testing_srcs
 )
 
 list( APPEND eckit_dirs
-	bases
-	compat
-	config
-	container
-	exception
-	filesystem
-	io
-	log
+    bases
+    compat
+    config
+    container
+    exception
+    filesystem
+    io
+    log
+    memory
+    net
+    os
+    parser
+    persist
+    runtime
+    serialisation
+    thread
+    transaction
+    value
     maths
-	memory
-	net
-	os
-	parser
-	persist
-	runtime
-	serialisation
-	thread
-	transaction
-    types
-    testing
-    utils
-	value
     system
+    testing
+    types
+    utils
 )
 
 foreach( dir ${eckit_dirs} )
@@ -751,36 +765,36 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates
-					container/CacheLRU.cc
+                    container/CacheLRU.cc
+                    container/kdtree/KDNode.cc
+                    container/sptree/SPNode.cc
+                    filesystem/BasePathNameT.cc
+                    io/FileBase.cc
+                    runtime/PipeHandler.cc
+                    serialisation/Reanimator.cc
+                    transaction/TxnLog.cc
+                    types/Types.cc
+                    utils/RLE.cc
                     container/BTree.cc
-                    container/Trie.cc
                     container/BloomFilter.cc
                     container/MappedArray.cc
                     container/SharedMemArray.cc
+                    container/Trie.cc
                     container/bsptree/BSPNode.cc
-					container/kdtree/KDNode.cc
-					container/sptree/SPNode.cc
-					filesystem/BasePathNameT.cc
-					io/FileBase.cc
-					runtime/PipeHandler.cc
-					serialisation/Reanimator.cc
-					transaction/TxnLog.cc
-					types/Types.cc
-					utils/RLE.cc
 )
 
 list( APPEND eckit_persistent
-					io/Length.h
-					io/Offset.h
-					types/ClimateDate.h
-					types/Date.h
-					types/DateTime.h
-					types/DayOfYear.h
-					types/Double.h
-					types/Grid.h
-					types/Month.h
-					types/Time.h
-					types/VerifyingDate.h
+                    io/Length.h
+                    io/Offset.h
+                    types/ClimateDate.h
+                    types/Date.h
+                    types/DateTime.h
+                    types/DayOfYear.h
+                    types/Double.h
+                    types/Grid.h
+                    types/Month.h
+                    types/Time.h
+                    types/VerifyingDate.h
 )
 
 ### eckit library
@@ -803,11 +817,13 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
+                        "${RADOS_INCLUDE_DIRS}"
 					LIBS
                         ${OPENSSL_LIBRARIES}
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${AIO_LIBRARIES}
+                        ${RADOS_LIBRARIES}
                         ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}

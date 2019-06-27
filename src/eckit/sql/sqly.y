@@ -39,6 +39,8 @@ struct YYSTYPE {
     std::vector<std::reference_wrapper<SQLTable>>  tablist;
     ColumnDef                                      coldef;
     std::vector<ColumnDef>                         coldefs;
+    std::pair<std::string, int>                    bfdef;
+    std::vector<std::pair<std::string, int>>       bfdefs;
     bool                                           bol;
 };
 
@@ -151,8 +153,10 @@ Expressions emptyExpressionList;
 %type <val> func relational_operator;
 
 %type <val> data_type column_name table_name;
-%type <coldef> column_def bitfield_def;
-%type <coldefs> bitfield_def_list bitfield_def_list_ column_def_list column_def_list_;
+%type <coldef> column_def;
+%type <coldefs> column_def_list column_def_list_;
+%type <bfdef> bitfield_def
+%type <bfdefs> bitfield_def_list bitfield_def_list_
 
 %type <bol> distinct;
 
@@ -241,22 +245,22 @@ statement: select_statement
 create_type_statement: create_type IDENT as_or_eq '(' bitfield_def_list ')'
     {
         std::string typeName ($2);
-        std::vector<ColumnDef> colDefs($5);
+        std::vector<std::pair<std::string, int>> bfDefs($5);
         FieldNames	fields;
         Sizes		sizes;
 
-        for (const auto& def : colDefs) {
+        for (const auto& def : bfDefs) {
 
-            fields.push_back(def.name());
-            int size (::atof(def.type().c_str() + 3)); // bit[0-9]+
-            ASSERT(size > 0);
-
+            const std::string& name(def.first);
+            const int& size(def.second);
+            fields.push_back(name);
             sizes.push_back(size);
+            ASSERT(sizes.back() > 0);
         }
-        std::string typeSignature (type::SQLBitfield::make("Bitfield", fields, sizes, typeName.c_str()));
+        // std::string typeSignature (type::SQLBitfield::make("Bitfield", fields, sizes, typeName.c_str()));
 
         session->currentDatabase()
-        .schemaAnalyzer().addBitfieldType(typeName, fields, sizes, typeSignature);
+        .schemaAnalyzer().addBitfieldType(typeName, fields, sizes); //, typeSignature);
 
         //cout << "CREATE TYPE " << typeName << " AS " << typeSignature << ";" << std::endl;
     }
@@ -280,14 +284,25 @@ bitfield_def_list: bitfield_def_list_ { $$ = $1; }
                  | bitfield_def_list_ ',' { $$ = $1; }
     ;
 
-bitfield_def_list_: bitfield_def { $$ = std::vector<ColumnDef>(); $$.push_back($1); }
+bitfield_def_list_: bitfield_def { $$ = {}; $$.push_back($1); }
                   | bitfield_def_list_ ',' bitfield_def { $$ = $1; $$.push_back($3); }
     ;
 
-bitfield_def: column_def
+bitfield_def: column_name data_type
     {
-        /* Type should look like bit[0-9]+ '*/
-        $$ = $1;
+        std::string name($1);
+        std::string sz($2);
+
+        if ((sz.size() != 4 && sz.size() != 5) || sz.substr(0, 3) != "bit") {
+            std::ostringstream ss;
+            ss << "Unexpected bitfield definition: " << name << " --> " << sz;
+            throw eckit::UserError(ss.str(), Here());
+        }
+
+        int size = ::strtod(sz.c_str()+3, nullptr);
+        ASSERT(size > 0);
+
+        $$ = std::make_pair(name, size);
     }
     ;
 
@@ -378,7 +393,10 @@ column_def_list_: column_def                      { $$ = ColumnDefs(); $$.push_b
 
 column_def: column_name data_type // vector_range_decl default_value
     {
-        $$ = ColumnDef($1, $2); // $3, $2, $4);
+        std::string column_name($1);
+        std::string data_type($2);
+        const BitfieldDef& bitfield(session->currentDatabase().schemaAnalyzer().getBitfieldType(data_type));
+        $$ = ColumnDef(column_name, data_type, bitfield); // $3, $2, $4);
     }
     ;
 //

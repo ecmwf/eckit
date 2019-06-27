@@ -11,6 +11,7 @@
 
 #include "eckit/net/TCPClient.h"
 #include "eckit/config/Resource.h"
+#include "eckit/net/Endpoint.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -37,6 +38,11 @@ void TCPClient::print(std::ostream& s) const {
       << "port=" << port_ << ",addr=" << bindingAddress() << ",";
     TCPSocket::print(s);
     s << "]";
+}
+
+/// @note TCPClient::connect(host, port, retries, timeout) is found in TCPSocket.cc
+TCPSocket& TCPClient::connect(const Endpoint& endpoint, int retries, int timeout) {
+    return connect(endpoint.hostname(), endpoint.port(), retries, timeout);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -119,6 +119,10 @@ bool PathName::available() const {
     return path_->available();
 }
 
+void PathName::chmod(const FileMode& mode) const {
+    path_->chmod(mode);
+}
+
 void PathName::unlink(bool verbose) const {
     path_->unlink(verbose);
 }

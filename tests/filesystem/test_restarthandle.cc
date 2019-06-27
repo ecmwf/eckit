@@ -64,6 +64,7 @@ public:
             throw RestartTransfer(backTo);
         }
         total_ += len;
+        std::cout << "write @ " << total_ << std::endl;
         return handle().write(buffer, len);
     }
 
@@ -92,7 +93,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TestMHHandle {
+class Tester {
 public:
     void setup();
     void teardown();
@@ -104,7 +105,7 @@ public:
 };
 
 
-void TestMHHandle::test_write() {
+void Tester::test_write() {
     const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
     const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -163,30 +164,24 @@ void TestMHHandle::test_write() {
 
         // mh1.compress();
 
-        // std::cout << mh1 << " " << mh1.estimate() << std::endl;
+//         std::cout << mh1 << " " << mh1.estimate() << std::endl;
+
+        std::cout << Here() << std::endl;
 
         Restart f3(path3_.fileHandle());
+        std::cout << f3 << std::endl;
+        std::cout << Here() << std::endl;
         mh1.saveInto(f3);
+        std::cout << Here() << std::endl;
     }
 
     DataHandle* fh = path3_.fileHandle();
     EXPECT(fh->compare(mh1));
     delete fh;
-
-    // fh->openForRead();
-
-    // Buffer result((26 * 2) * N);
-
-    // ASSERT(fh->read(result, result.size()) == (26 * 2) * N);
-    // fh->close();
-
-    // delete fh;
-
-    // ASSERT( ::memcmp(expect, result, (26 * 2) * N) == 0 );
 }
 
 
-void TestMHHandle::setup() {
+void Tester::setup() {
     std::string base = Resource<std::string>("$TMPDIR", "/tmp");
     path1_           = PathName::unique(base + "/path1");
     path1_ += ".dat";
@@ -198,7 +193,7 @@ void TestMHHandle::setup() {
     path3_ += ".dat";
 }
 
-void TestMHHandle::teardown() {
+void Tester::teardown() {
     if (path1_.exists())
         path1_.unlink();
     if (path2_.exists())
@@ -209,7 +204,7 @@ void TestMHHandle::teardown() {
 
 
 CASE("test_restarthandle") {
-    TestMHHandle test;
+    Tester test;
     test.setup();
     try {
         test.test_write();

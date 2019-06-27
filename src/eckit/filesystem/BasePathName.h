@@ -53,6 +53,7 @@ public:
     virtual bool exists() const = 0;
     virtual bool available() const = 0;
     virtual void mkdir(short) const = 0;
+    virtual void chmod(const FileMode& mode) const = 0;
     virtual void unlink(bool verbose) const = 0;
     virtual void rmdir(bool verbose) const = 0;
     virtual void touch() const = 0;

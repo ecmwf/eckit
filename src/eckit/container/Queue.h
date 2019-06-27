@@ -110,6 +110,23 @@ public: // public
         return long(size);
     }
 
+    long pop(std::vector<ELEM>& elems) {
+        std::unique_lock<std::mutex> locker(mutex_);
+        while (checkInterrupt() && queue_.empty()) {
+            if (closed_) return -1;
+            cv_.wait(locker);
+        }
+
+        long count = std::min(elems.size(), queue_.size());
+        for (long i = 0; i < count; i++) {
+            std::swap(elems[i], queue_.front());
+            queue_.pop();
+        }
+        locker.unlock();
+        cv_.notify_one();
+        return count;
+    }
+
     size_t push(const ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.size() >= max_) {

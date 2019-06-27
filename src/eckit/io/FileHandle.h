@@ -12,8 +12,8 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-#ifndef eckit_filesystem_FileHandle_h
-#define eckit_filesystem_FileHandle_h
+#ifndef eckit_io_FileHandle_h
+#define eckit_io_FileHandle_h
 
 #include <memory>
 
@@ -28,7 +28,7 @@ public:
   FileHandle(const std::string&, bool = false);
   FileHandle(Stream&);
 
-  ~FileHandle();
+  virtual ~FileHandle();
 
   void advance(const Length&);
 

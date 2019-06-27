@@ -32,6 +32,7 @@ class BasePathName;
 class DataHandle;
 class LocalPathName;
 class MarsFSPath;
+class FileMode;
 
 // The class PathName represent a unix path name.
 
@@ -159,7 +160,7 @@ public:
 
     /// Change the file mode
     /// @param mode file mode bits
-    void chmod(short mode) const;
+    void chmod(const FileMode& mode) const;
 
     /// Unlink the path
     void unlink(bool verbose=true) const;

@@ -109,6 +109,7 @@ rados_ioctx_t& RadosCluster::ioCtx(const std::string& pool) const {
     auto j = ctx_.find(pool);
     if (j == ctx_.end()) {
         ctx_[pool] = new RadosIOCtx(cluster_, pool);
+        j = ctx_.find(pool);
     }
 
     return (*j).second->io_;

@@ -97,7 +97,6 @@ long RadosWriteHandle::write(const void* buffer, long length) {
 
             RadosObject object(object_, part_++);
 
-
             std::cout << "RadosWriteHandle::write open " << object << std::endl;
             handle_.reset(new RadosHandle(object));
             handle_->openForWrite(0); // TODO: use proper size
@@ -136,8 +135,9 @@ void RadosWriteHandle::close() {
     if(opened_) {
 
         RadosAttributes attrs;
-        attrs.set("size", static_cast<long long>(position_));
+        attrs.set("length", static_cast<long long>(position_));
         attrs.set("parts", part_);
+        attrs.set("maxsize", maxObjectSize_);
 
         RadosCluster::instance().attributes(object_, attrs);
 

@@ -63,7 +63,8 @@ void RadosCluster::error(int code, const char *msg, const char* file, int line, 
         << line
         << ", function "
         << func
-        << " (" << strerror(-code) << ")";
+        << " [" << code
+        << "] (" << strerror(-code) << ")";
     throw SeriousBug(oss.str());
 }
 
@@ -73,6 +74,10 @@ Length RadosCluster::maxObjectSize() const {
     static long long len = Resource<long long>("radosMaxObjectSize", 128 * 1024 * 1024);
     return len;
 
+}
+
+void RadosCluster::insurePool(const std::string& pool) const {
+    RADOS_CALL(rados_create_pool(cluster_, pool.c_str()));
 }
 
 

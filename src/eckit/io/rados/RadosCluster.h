@@ -37,6 +37,8 @@ public:
 
     rados_t cluster() const { return cluster_; }
 
+    void insurePool(const std::string& pool) const;
+
     static const RadosCluster& instance();
 
 private:

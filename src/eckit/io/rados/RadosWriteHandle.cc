@@ -97,7 +97,7 @@ long RadosWriteHandle::write(const void* buffer, long length) {
 
     while (length > 0) {
 
-        Length len = std::min(Length(maxObjectSize_ - Length(written_)), Length(length));
+        Length len = std::min(maxObjectSize_, Length(length));
 
         std::cout << "RadosWriteHandle::write " << len << " - " << maxObjectSize_ << " - " << written_ << std::endl;
 

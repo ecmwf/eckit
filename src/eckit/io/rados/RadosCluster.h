@@ -88,6 +88,8 @@ static inline int rados_call(int code, const char *msg, const char* file, int li
     std::cout << "RADOS_CALL => " << msg << std::endl;
 
     if (code < 0) {
+        std::cout << "RADOS_FAIL !! " << msg << std::endl;
+
         RadosCluster::error(code, msg, file,  line, func);
     }
 

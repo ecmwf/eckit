@@ -58,8 +58,6 @@ RadosWriteHandle::RadosWriteHandle(const std::string& name, const Length& maxObj
 }
 
 RadosWriteHandle::~RadosWriteHandle() {
-    RadosAttributes attr = RadosCluster::instance().attributes(object_);
-    std::cout << "Attributes for " << object_ << " ===> " << attr << std::endl;
 }
 
 Length RadosWriteHandle::openForRead() {

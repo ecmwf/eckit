@@ -127,6 +127,7 @@ long RadosWriteHandle::write(const void* buffer, long length) {
         written_ += l;
         result += l;
         length -= l;
+        position_ += l;
 
     }
 

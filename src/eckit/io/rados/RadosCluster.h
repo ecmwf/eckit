@@ -61,6 +61,13 @@ public:
     void truncate(const RadosObject&, const Length& = 0) const;
     time_t lastModified(const RadosObject&) const;
 
+
+    // For multi-object items
+
+    void removeAll(const RadosObject&) const;
+
+
+
     static const RadosCluster& instance();
 
 private:

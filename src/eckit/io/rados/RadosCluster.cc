@@ -182,8 +182,8 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
         }
 
         std::cout << "RadosCluster::attributes <= [" << name << "] [";
-        for(size_t i = 0; i < len; i++) {
-            if(isprint(val[i])) {
+        for (size_t i = 0; i < len; i++) {
+            if (isprint(val[i])) {
                 std::cout << val[i];
             }
             else {
@@ -243,6 +243,16 @@ time_t RadosCluster::lastModified(const RadosObject& object) const {
     time_t pmtime;
     RADOS_CALL(rados_stat(ioCtx(object), object.oid().c_str(), &psize, &pmtime));
     return pmtime;
+}
+
+void RadosCluster::removeAll(const RadosObject& object) const {
+    RadosAttributes attr = attributes(object);
+
+    size_t parts;
+    ASSERT(attr.get("parts", parts));
+    for (size_t i = 0; i < parts; ++i) {
+        remove(RadosObject(object, i));
+    }
 }
 
 }  // namespace eckit

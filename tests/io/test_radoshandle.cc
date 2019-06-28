@@ -13,6 +13,7 @@
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosWriteHandle.h"
 #include "eckit/io/rados/RadosReadHandle.h"
+#include "eckit/io/rados/RadosCluster.h"
 
 #include "eckit/io/Buffer.h"
 
@@ -54,6 +55,7 @@ CASE("RadosHandle") {
     EXPECT(buf == std::string(mem));
 
 
+    RadosCluster::instance().remove(RadosObject("foobar"));
 }
 
 
@@ -89,7 +91,7 @@ CASE("RadosWriteHandle") {
 
     EXPECT(buf == std::string(mem));
 
-
+    RadosCluster::instance().removeAll(RadosObject("foobar"));
 
 }
 

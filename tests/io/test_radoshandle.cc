@@ -44,7 +44,7 @@ CASE("RadosHandle") {
     RadosHandle g("foobar");
     std::cout << "====> " << g << std::endl;
 
-    std::cout << "Size is " << g.openForRead();
+    std::cout << "Size is " << g.openForRead() << std::endl;
     g.read(mem, mem.size());
     g.close();
 
@@ -80,7 +80,7 @@ CASE("RadosWriteHandle") {
     RadosReadHandle g("foobar");
     std::cout << "====> " << g << std::endl;
 
-    std::cout << "Size is " << g.openForRead();
+    std::cout << "Size is " << g.openForRead() << std::endl;
     g.read(mem, mem.size());
     g.close();
 

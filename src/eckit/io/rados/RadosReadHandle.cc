@@ -63,6 +63,8 @@ Length RadosReadHandle::openForRead() {
     }
 
     Length len = handle_->openForRead();
+
+    std::cout << "RadosReadHandle::openForRead attr=" << length_ << ", open=" << len << std::endl;
     ASSERT(len == length_);
 
     return length_;

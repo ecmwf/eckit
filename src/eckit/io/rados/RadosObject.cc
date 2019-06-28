@@ -39,8 +39,8 @@ RadosObject::RadosObject(const RadosObject& other, size_t part) {
 
 
 RadosObject::RadosObject(const std::string& path) {
-    static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "default");
-    // static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "cephfs_data");
+    // static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "default");
+    static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "cephfs_data");
 
     Tokenizer parse(":");
 

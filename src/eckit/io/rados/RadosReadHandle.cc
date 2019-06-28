@@ -56,6 +56,7 @@ Length RadosReadHandle::estimate() {
     return length_;
 }
 
+
 Length RadosReadHandle::openForRead() {
     ASSERT(!handle_);
 

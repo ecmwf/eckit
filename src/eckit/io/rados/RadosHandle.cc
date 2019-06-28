@@ -116,7 +116,7 @@ long RadosHandle::read(void* buffer, long length) {
                                     reinterpret_cast<char*>(buffer),
                                     length,
                                     offset_));
-    ASSERT(len  > 0);
+    // ASSERT(len  > 0);
 
     offset_ += len;
 

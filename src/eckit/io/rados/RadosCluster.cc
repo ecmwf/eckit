@@ -192,9 +192,7 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
         }
         std::cout << ']' << std::endl;
 
-
-        std::string v(val, val + len);
-        attr.set(name, val);
+        attr.set(name, std::string(val, val + len));
 
     }
 

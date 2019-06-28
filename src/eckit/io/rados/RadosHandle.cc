@@ -75,6 +75,10 @@ void RadosHandle::open() {
     opened_ = true;
 }
 
+Length RadosHandle::estimate() {
+    return RadosCluster::instance().size(object_);
+}
+
 Length RadosHandle::openForRead() {
 
     std::cout << "RadosHandle::openForRead " << object_ << std::endl;
@@ -90,6 +94,7 @@ void RadosHandle::openForWrite(const Length& length) {
     std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
 
     RadosCluster::instance().ensurePool(object_);
+    RadosCluster::instance().truncate(object_);
 
     open();
     write_ = true;

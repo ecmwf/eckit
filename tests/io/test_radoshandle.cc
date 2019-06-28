@@ -30,7 +30,7 @@ CASE("RadosHandle") {
 
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    RadosHandle h("cephfs_data:foobar");
+    RadosHandle h("foobar");
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));
@@ -40,7 +40,7 @@ CASE("RadosHandle") {
     std::cout << "write done" << std::endl;
 
     Buffer mem(1024);
-    RadosHandle g("cephfs_data:foobar");
+    RadosHandle g("foobar");
     std::cout << "====> " << g << std::endl;
 
     std::cout << "Size is " << g.openForRead();
@@ -68,12 +68,26 @@ CASE("RadosWriteHandle") {
     "abcdefghijklmnopqrstuvwxyz"
     ;
 
-    RadosWriteHandle h("cephfs_data:foobar", 16);
+    RadosWriteHandle h("foobar", 16);
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));
     h.write(buf, sizeof(buf));
     h.close();
+
+    Buffer mem(1024);
+    RadosReadHandle g("foobar");
+    std::cout << "====> " << g << std::endl;
+
+    std::cout << "Size is " << g.openForRead();
+    g.read(mem, mem.size());
+    g.close();
+
+    std::cout << "read done" << std::endl;
+
+
+    EXPECT(buf == std::string(mem));
+
 
 
 }

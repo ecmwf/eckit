@@ -56,19 +56,27 @@ CASE("RadosHandle") {
 }
 
 
-// CASE("RadosWriteHandle") {
+CASE("RadosWriteHandle") {
 
-//     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+    const char buf[] =
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    ;
 
-//     RadosWriteHandle h("foobar", 16);
-//     std::cout << "====> " << h << std::endl;
+    RadosWriteHandle h("foobar", 16);
+    std::cout << "====> " << h << std::endl;
 
-//     h.openForWrite(sizeof(buf));
-//     h.write(buf, sizeof(buf));
-//     h.close();
+    h.openForWrite(sizeof(buf));
+    h.write(buf, sizeof(buf));
+    h.close();
 
 
-// }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

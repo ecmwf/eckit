@@ -146,7 +146,7 @@ void RadosCluster::attributes(const RadosObject& object, const RadosAttributes &
     auto a = attr.attrs();
     for (auto j = a.begin(); j != a.end(); ++j) {
 
-        std::cout << "RadosCluster::attributes [" << (*j).first << "] [" << (*j).second << "]";
+        std::cout << "RadosCluster::attributes => [" << (*j).first << "] [" << (*j).second << "]";
 
 
         RADOS_CALL(rados_setxattr(ioCtx(object),
@@ -181,7 +181,7 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
             break;
         }
 
-        std::cout << "RadosCluster::attributes [" << name << "] [";
+        std::cout << "RadosCluster::attributes <= [" << name << "] [";
         for(size_t i = 0; i < len; i++) {
             if(isprint(val[i])) {
                 std::cout << val[i];

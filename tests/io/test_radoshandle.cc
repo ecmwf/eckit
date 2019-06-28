@@ -68,7 +68,7 @@ CASE("RadosWriteHandle") {
     "abcdefghijklmnopqrstuvwxyz"
     ;
 
-    RadosWriteHandle h("foobar", 16);
+    RadosWriteHandle h("cephfs_data:foobar", 16);
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));

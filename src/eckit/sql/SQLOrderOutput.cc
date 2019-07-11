@@ -13,6 +13,7 @@
 
 using namespace eckit::sql::expression;
 
+/// @note This code triggers a CRAY CC 8.4 segmentation fault when compiled with optimisation
 #ifdef _CRAYCC
 #pragma _CRI noopt
 #endif

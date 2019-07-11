@@ -13,6 +13,12 @@
 #include "eckit/value/OrderedMapContent.h"
 #include "eckit/parser/JSON.h"
 
+/// @note This code triggers a segmentation fault on the CRAY CC compiler 8.4 when optimisation is turned on
+///       The compiler bug has been fixed in versions >= 8.5
+///       We have chosen to turn off optimisations for all CRAY compilers below, since this is not perfromance critical
+#ifdef _CRAYCC
+#pragma _CRI noopt
+#endif
 
 namespace eckit {
 

@@ -13,6 +13,11 @@
 
 using namespace eckit::sql::expression;
 
+#ifdef _CRAYCC
+#pragma _CRI noopt
+#endif
+
+
 namespace eckit {
 namespace sql {
 

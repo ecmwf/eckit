@@ -12,8 +12,9 @@
 
 #include <map>
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/eckit_config.h"
+
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -21,7 +22,7 @@
 namespace eckit {
 namespace mpi {
 
-constexpr bool have_mpi() {
+constexpr bool have_parallel() {
 #ifdef ECKIT_HAVE_MPI
     return true;
 #else
@@ -39,9 +40,9 @@ public:
             return forcedComm;
             // Use parallel communicator if in an MPI environment
         }
-        else if (have_mpi() && (::getenv("OMPI_COMM_WORLD_SIZE") ||  // OpenMPI
-                                ::getenv("ALPS_APP_PE") ||           // Cray PE
-                                ::getenv("PMI_SIZE"))) {             // Intel
+        else if (have_parallel() && (::getenv("OMPI_COMM_WORLD_SIZE") ||  // OpenMPI
+                                     ::getenv("ALPS_APP_PE") ||           // Cray PE
+                                     ::getenv("PMI_SIZE"))) {             // Intel
             return "parallel";
             // Use serial communicator otherwise
         }

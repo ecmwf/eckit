@@ -53,6 +53,7 @@ public:  // methods
   virtual void rewind();
 
   virtual Offset position();
+  virtual Length estimate();
 
   virtual void print(std::ostream&) const;
 

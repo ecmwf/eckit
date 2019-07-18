@@ -19,6 +19,7 @@ ClassSpec RadosHandle::classSpec_ = {
     &DataHandle::classSpec(),
     "RadosHandle",
 };
+
 Reanimator<RadosHandle> RadosHandle::reanimator_;
 
 void RadosHandle::print(std::ostream& s) const {
@@ -42,18 +43,22 @@ RadosHandle::RadosHandle(const RadosObject& object):
     object_(object),
     offset_(0),
     opened_(false),
-    write_(false)
-{}
+    write_(false) {
+
+}
 
 
 RadosHandle::RadosHandle(const std::string& object):
     object_(object),
     offset_(0),
     opened_(false),
-    write_(false)
-{}
+    write_(false) {
+
+}
 
 RadosHandle::~RadosHandle() {
+    std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;
+
     if (opened_) {
         close();
     }
@@ -70,6 +75,10 @@ void RadosHandle::open() {
     opened_ = true;
 }
 
+Length RadosHandle::estimate() {
+    return RadosCluster::instance().size(object_);
+}
+
 Length RadosHandle::openForRead() {
 
     std::cout << "RadosHandle::openForRead " << object_ << std::endl;
@@ -82,19 +91,10 @@ Length RadosHandle::openForRead() {
 
 void RadosHandle::openForWrite(const Length& length) {
 
-
-    // uint64_t psize;
-    // time_t pmtime;
-
-    // ASSERT(rados_stat(io_ctx_, object_.oid().c_str(), &psize, &pmtime) == -ENOENT);
-
-
-
     std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
 
-
     RadosCluster::instance().ensurePool(object_);
-
+    RadosCluster::instance().truncate(object_);
 
     open();
     write_ = true;
@@ -116,7 +116,7 @@ long RadosHandle::read(void* buffer, long length) {
                                     reinterpret_cast<char*>(buffer),
                                     length,
                                     offset_));
-    ASSERT(len  > 0);
+    // ASSERT(len  > 0);
 
     offset_ += len;
 
@@ -124,12 +124,13 @@ long RadosHandle::read(void* buffer, long length) {
 }
 
 long RadosHandle::write(const void* buffer, long length) {
+
+    ASSERT(length);
+
     std::cout << "RadosHandle::write " << object_ << " " << length << std::endl;
 
     ASSERT(opened_);
     ASSERT(write_);
-
-
 
     RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_),
                            object_.oid().c_str(),
@@ -148,18 +149,10 @@ void RadosHandle::flush() {
     // NOTIMP;
 }
 
-
 void RadosHandle::close() {
-
-
     std::cout << "RadosHandle::close " << object_ << std::endl;
-
-
     ASSERT(opened_);
-
     opened_ = false;
-    std::cout << "RADOS_CALL <= rados_ioctx_destroy(io_ctx_)" << std::endl;
-
 }
 
 void RadosHandle::rewind() {

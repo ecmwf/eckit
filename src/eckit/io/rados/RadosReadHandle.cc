@@ -48,6 +48,15 @@ RadosReadHandle::~RadosReadHandle() {
 
 }
 
+Length RadosReadHandle::estimate() {
+    if (length_ == Length(0)) {
+        RadosAttributes attr = RadosCluster::instance().attributes(object_);
+        ASSERT(attr.get("length", length_));
+    }
+    return length_;
+}
+
+
 Length RadosReadHandle::openForRead() {
     ASSERT(!handle_);
 
@@ -58,11 +67,13 @@ Length RadosReadHandle::openForRead() {
     ASSERT(attr.get("parts", parts_));
 
     handle_.reset(new MultiHandle());
-    for(size_t i = 0; i < parts_; ++i) {
+    for (size_t i = 0; i < parts_; ++i) {
         (*handle_) += new RadosHandle(RadosObject(object_, i));
     }
 
     Length len = handle_->openForRead();
+
+    std::cout << "RadosReadHandle::openForRead attr=" << length_ << ", open=" << len << std::endl;
     ASSERT(len == length_);
 
     return length_;
@@ -91,7 +102,7 @@ void RadosReadHandle::flush() {
 
 
 void RadosReadHandle::close() {
-    if(handle_) {
+    if (handle_) {
         handle_->close();
         handle_.reset(0);
     }

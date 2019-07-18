@@ -11,14 +11,18 @@
 #include <iostream>
 #include <vector>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+URI::URI() {}
 
 URI::URI(const std::string& path) {
     Tokenizer parse(":");
@@ -46,26 +50,50 @@ URI::URI(const std::string& path) {
     }
 }
 
+URI::URI(Stream &s) {
+    s >> name_;
+    s >> scheme_;
+}
+
 URI::~URI() {}
 
 bool URI::exists() const {
+    ASSERT(!name_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).exists(*this);
 }
 
 DataHandle* URI::newWriteHandle() const {
+    ASSERT(!name_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newWriteHandle(*this);
 }
 
 DataHandle* URI::newReadHandle(const OffsetList& ol, const LengthList& ll) const {
+    ASSERT(!name_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newReadHandle(*this, ol, ll);
 }
 
 DataHandle* URI::newReadHandle() const {
+    ASSERT(!name_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newReadHandle(*this);
+}
+
+std::string URI::asString() const {
+    ASSERT(!name_.empty());
+    ASSERT(!scheme_.empty());
+    return URIManager::lookUp(scheme_).asString(*this);
 }
 
 void URI::print(std::ostream& s) const {
     s << "URI[scheme=" << scheme_ << ",name=" << name_ << "]";
+}
+
+void URI::encode(Stream &s) const {
+    s << name_;
+    s << scheme_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

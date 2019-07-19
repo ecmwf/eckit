@@ -626,27 +626,34 @@ persist/Isa.h
 )
 
 list( APPEND eckit_utils_srcs
-utils/Compressor.cc
-utils/Compressor.h
-utils/Hash.cc
-utils/Hash.h
-utils/HyperCube.cc
-utils/HyperCube.h
-utils/MD5.cc
-utils/MD5.h
-utils/RLE.cc
-utils/RLE.h
-utils/Regex.cc
-utils/Regex.h
-utils/RendezvousHash.cc
-utils/RendezvousHash.h
-utils/StringTools.cc
-utils/StringTools.h
-utils/Tokenizer.cc
-utils/Tokenizer.h
-utils/Translator.cc
-utils/Translator.h
+  utils/Compressor.cc
+  utils/Compressor.h
+  utils/Hash.cc
+  utils/Hash.h
+  utils/HyperCube.cc
+  utils/HyperCube.h
+  utils/MD5.cc
+  utils/MD5.h
+  utils/RLE.cc
+  utils/RLE.h
+  utils/Regex.cc
+  utils/Regex.h
+  utils/RendezvousHash.cc
+  utils/RendezvousHash.h
+  utils/StringTools.cc
+  utils/StringTools.h
+  utils/Tokenizer.cc
+  utils/Tokenizer.h
+  utils/Translator.cc
+  utils/Translator.h
 )
+
+if(ECKIT_HAVE_BZIP2)
+  list( APPEND eckit_utils_srcs
+    utils/BZip2Compressor.cc
+    utils/BZip2Compressor.h
+  )
+endif()
 
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs

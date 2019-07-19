@@ -9,6 +9,7 @@
  */
 
 #include <iostream>
+#include <cstring>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/utils/Compressor.h"
@@ -23,9 +24,37 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
+static const char* msg = "THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG'S BACK 1234567890";
+
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("Compress with NoCompressor") {
+CASE("Compression") {
+
+    Buffer in(msg, 1024);
+    Buffer out(in.size());
+    out.zero();
+
+    std::unique_ptr<Compressor> c;
+
+    SECTION("CASE No Compression") {
+        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("None")));
+
+        c->compress(in, out);
+
+        std::cout << (const char*) out.data() << std::endl;
+
+        EXPECT((const char*) out.data() == std::string(msg));
+    }
+
+    SECTION("CASE No Compression") {
+        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
+
+//        c->compress(in, out);
+
+//        std::cout << (const char*) out.data() << std::endl;
+
+//        EXPECT((const char*) out.data() == std::string(msg));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

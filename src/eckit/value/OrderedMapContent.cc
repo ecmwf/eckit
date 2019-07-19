@@ -13,7 +13,6 @@
 #include "eckit/value/OrderedMapContent.h"
 #include "eckit/parser/JSON.h"
 
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -237,13 +236,17 @@ void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const
 
 void OrderedMapContent::hash(Hash& h) const {
 
-    for (auto v : value_) {
-        v.first.hash(h);
-        v.second.hash(h);
+    ValueMap::const_iterator v = value_.begin();
+    ValueMap::const_iterator end = value_.end();
+    for (; v != end; ++v) {
+        v->first.hash(h);
+        v->second.hash(h);
     }
 
-    for (auto k : keys_) {
-        k.hash(h);
+    ValueList::const_iterator k = keys_.begin();
+    ValueList::const_iterator kend = keys_.end();
+    for (; k != kend; ++k) {
+        k->hash(h);
     }
 }
 

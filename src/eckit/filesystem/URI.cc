@@ -12,14 +12,18 @@
 #include <regex>
 #include <vector>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+URI::URI() {}
 
 URI::URI(const std::string& uri) {
     //from  https://tools.ietf.org/html/rfc3986
@@ -47,7 +51,7 @@ URI::URI(const std::string& uri) {
         // storing a subset of URI (sub-)components
         scheme_ = uriMatchResult[2];
         if (scheme_.empty())
-            scheme_ = "posix";             //default schema
+            scheme_ = "posix";             //default scheme
         host_   = uriMatchResult[6];
         port_   = uriMatchResult[8];
         path_   = uriMatchResult[9];
@@ -79,26 +83,54 @@ URI::URI(const std::string& uri) {
     }
 }
 
+URI::URI(Stream &s) {
+    s >> scheme_;
+    s >> host_;
+    s >> port_;
+    s >> path_;
+}
+
 URI::~URI() {}
 
 bool URI::exists() const {
+    ASSERT(!path_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).exists(*this);
 }
 
 DataHandle* URI::newWriteHandle() const {
+    ASSERT(!path_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newWriteHandle(*this);
 }
 
 DataHandle* URI::newReadHandle(const OffsetList& ol, const LengthList& ll) const {
+    ASSERT(!path_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newReadHandle(*this, ol, ll);
 }
 
 DataHandle* URI::newReadHandle() const {
+    ASSERT(!path_.empty());
+    ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newReadHandle(*this);
+}
+
+std::string URI::asString() const {
+    ASSERT(!path_.empty());
+    ASSERT(!scheme_.empty());
+    return URIManager::lookUp(scheme_).asString(*this);
 }
 
 void URI::print(std::ostream& s) const {
     s << "URI[scheme=" << scheme_ << ",name=" << path_ << "]";
+}
+
+void URI::encode(Stream &s) const {
+    s << scheme_;
+    s << host_;
+    s << port_;
+    s << path_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

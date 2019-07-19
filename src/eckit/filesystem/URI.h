@@ -32,7 +32,9 @@ class URI {
 
 public: // methods
 
+    URI();
 	URI(const std::string&);
+    URI(Stream& s);
 
 	~URI();
 
@@ -48,9 +50,12 @@ public: // methods
     const std::string& name() const { return path_; }
     const std::string& path() const { return path_; }
 
+    std::string asString() const;
+
 protected: // methods
 
 	void print(std::ostream&) const;
+    void encode(Stream& s) const;
 
 private: // members
 
@@ -60,6 +65,7 @@ private: // members
     std::string path_;
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
+    friend Stream& operator<<(Stream& s,const URI& p) { p.encode(s); return s; }
 
 };
 

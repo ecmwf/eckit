@@ -19,6 +19,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/TaskInfo.h"
+#include "eckit/parser/JSON.h"
 
 
 namespace eckit {
@@ -190,6 +191,74 @@ void TaskInfo::parent(long p) {
     if (p != -1) {
         depth_ = Monitor::instance().task(p).depth() + 1;
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void TaskInfo::json(JSON& json) const {
+
+    Monitor& monitor = Monitor::instance();
+    size_t n = this - monitor.tasks().begin();
+
+    json.startObject();
+    json << "id" << n;
+    json << "busy" << busy_;
+    json << "thread" << thread_;
+    json << "pid" << pid_;
+    json << "start" << start_;
+    json << "last" << last_;
+    json << "check" << check_;
+    json << "show" << show_;
+    json << "late" << late_;
+
+
+    // Logging
+    // enum { size_ = 10240 };
+    // char           buffer_[size_];
+    // unsigned long  pos_;
+
+    char buffer[size_];
+    unsigned long pos = 0;
+    unsigned long len = text(buffer, sizeof(buffer), pos);
+
+
+    json << "name" << name_;
+    json << "kind" << kind_;
+    json << "application" << application_;
+
+    json << "progress";
+    json.startObject();
+
+    json << "min" << progress_.min_;
+    json << "max" << progress_.max_;
+    json << "val" << progress_.val_;
+    json << "name" << progress_.name_;
+    json << "rate" << progress_.rate_;
+    json << "speed" << progress_.speed_;
+
+    json.endObject();
+
+    json << "taskID" << taskID_;
+
+    json << "stop" << stop_;
+    json << "abort" << abort_;
+    json << "stoppable" << stoppable_;
+    json << "stopped" << stopped_;
+    json << "stopped" << stopped_;
+    json << "canceled" << canceled_;
+    json << "exception" << exception_;
+    json << "cancelMsg" << cancelMsg_;
+    json << "config" << config_;
+    json << "resource" << resource_;
+    json << "parent" << parent_;
+    json << "depth" << depth_;
+    json << "state" << state_;
+    json << "port" << port_;
+    json << "host" << host_;
+    json << "message" << message_;
+
+    json.endObject();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

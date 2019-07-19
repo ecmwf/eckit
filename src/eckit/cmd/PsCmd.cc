@@ -14,6 +14,7 @@
 #include "eckit/cmd/PsCmd.h"
 #include "eckit/log/Colour.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/parser/JSON.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -32,6 +33,9 @@ PsCmd::PsCmd() : CmdResource("ps") {}
 PsCmd::~PsCmd() {}
 
 //----------------------------------------------------------------------------------------------------------------------
+void PsCmd::display(JSON& json, TaskInfo& info, long tasknb, const std::string& grep) const {
+    json << info;
+}
 
 void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::string& grep) const {
     char st = info.state();
@@ -194,6 +198,11 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
         grep = std::string(args["grep"]);
     }
 
+    JSON json(out);
+    bool doJason = args.exists("json");
+
+
+
     for (size_t i = 1; i < args.size(); ++i)
         if (args.exists(i)) {
             all = false;
@@ -214,32 +223,62 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
 
     std::sort(t.begin(), t.end(), sortTasks);
 
-    out << Colour::bold;
-    out << "name              Idle        Pid   Task       ID   Info      Request" << std::endl;
-    out << "---------------------------------------------------------------------" << std::endl;
-    out << Colour::reset;
+    if (doJason) {
+        json.startList();
+    }
+    else {
+        out << Colour::bold;
+        out << "name              Idle        Pid   Task       ID   Info      Request" << std::endl;
+        out << "---------------------------------------------------------------------" << std::endl;
+        out << Colour::reset;
+    }
 
     if (all)
-        for (size_t j = 0; j < t.size(); j++)
-            display(out, info[t[j]], t[j], grep);
+        for (size_t j = 0; j < t.size(); j++) {
+            if (!doJason) {
+                display(out, info[t[j]], t[j], grep);
+            }
+            else {
+                display(json, info[t[j]], t[j], grep);
+            }
+        }
     else
         for (size_t j = 0; j < t.size(); j++) {
             for (Ordinal i = 0; i < tasks.size(); ++i)
                 if (isChild(info, tasks[i], t[j])) {
-                    display(out, info[t[j]], t[j], grep);
+                    if (!doJason) {
+                        display(out, info[t[j]], t[j], grep);
+                    }
+                    else {
+                        display(json, info[t[j]], t[j], grep);
+                    }
                     break;
                 }
             for (Ordinal k = 0; k < taskids.size(); ++k)
                 if (isParent(info, taskids[k], t[j])) {
-                    display(out, info[t[j]], t[j], grep);
+                    if (!doJason) {
+                        display(out, info[t[j]], t[j], grep);
+                    }
+                    else {
+                        display(json, info[t[j]], t[j], grep);
+                    }
                     break;
                 }
             for (Ordinal l = 0; l < pids.size(); ++l)
                 if (pids[l] == info[t[j]].pid()) {
-                    display(out, info[t[j]], t[j], grep);
+                    if (!doJason) {
+                        display(out, info[t[j]], t[j], grep);
+                    }
+                    else {
+                        display(json, info[t[j]], t[j], grep);
+                    }
                     break;
                 }
         }
+
+    if (doJason) {
+        json.endList();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -251,7 +290,7 @@ void PsCmd::help(std::ostream& out) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 Arg PsCmd::usage(const std::string& cmd) const {
-    return ~Arg("-grep", Arg::text) + Arg("<name> ...", Arg::text);
+    return ~Arg("-json") + ~Arg("-grep", Arg::text) + Arg("<name> ...", Arg::text);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

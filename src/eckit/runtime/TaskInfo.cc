@@ -203,7 +203,7 @@ void TaskInfo::json(JSON& json) const {
     json.startObject();
     json << "id" << n;
     json << "busy" << busy_;
-    json << "thread" << thread_;
+    // json << "thread" << thread_;
     json << "pid" << pid_;
     json << "start" << start_;
     json << "last" << last_;
@@ -217,10 +217,11 @@ void TaskInfo::json(JSON& json) const {
     // char           buffer_[size_];
     // unsigned long  pos_;
 
-    char buffer[size_];
+    char buffer[size_ + 1] = {0,};
     unsigned long pos = 0;
     unsigned long len = text(buffer, sizeof(buffer), pos);
 
+    json << "text" << buffer;
 
     json << "name" << name_;
     json << "kind" << kind_;
@@ -244,12 +245,11 @@ void TaskInfo::json(JSON& json) const {
     json << "abort" << abort_;
     json << "stoppable" << stoppable_;
     json << "stopped" << stopped_;
-    json << "stopped" << stopped_;
     json << "canceled" << canceled_;
     json << "exception" << exception_;
     json << "cancelMsg" << cancelMsg_;
     json << "config" << config_;
-    json << "resource" << resource_;
+    // json << "resource" << resource_;
     json << "parent" << parent_;
     json << "depth" << depth_;
     json << "state" << state_;

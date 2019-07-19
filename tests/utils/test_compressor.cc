@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <memory>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/utils/Compressor.h"

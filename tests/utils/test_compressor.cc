@@ -46,14 +46,28 @@ CASE("Compression") {
         EXPECT((const char*) out.data() == std::string(msg));
     }
 
-    SECTION("CASE No Compression") {
-        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
+    SECTION("CASE BZip2 Compression") {
 
-//        c->compress(in, out);
+        if (CompressorFactory::instance().has("bzip2")) {
 
-//        std::cout << (const char*) out.data() << std::endl;
+            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
+            /// @todo implement
+            //        c->compress(in, out);
+            //        std::cout << (const char*) out.data() << std::endl;
+            //        EXPECT((const char*) out.data() == std::string(msg));
+        }
+    }
 
-//        EXPECT((const char*) out.data() == std::string(msg));
+    SECTION("CASE Snappy Compression") {
+
+        if (CompressorFactory::instance().has("snappy")) {
+
+            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("snappy")));
+            /// @todo implement
+            //        c->compress(in, out);
+            //        std::cout << (const char*) out.data() << std::endl;
+            //        EXPECT((const char*) out.data() == std::string(msg));
+        }
     }
 }
 

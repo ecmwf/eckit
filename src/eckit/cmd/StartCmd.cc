@@ -8,6 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <fstream>
+
 #include "eckit/cmd/StartCmd.h"
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Monitor.h"
@@ -31,11 +33,23 @@ void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     std::string app = arg["1"];
 
     if (app == "all") {
-        std::string all = Resource<std::string>("allApplications", "mars,reader,flusher,cleaner,httpsvr,safety");
 
-        Tokenizer token(", \t");
+        PathName path("~/etc/applications");
         std::vector<std::string> names;
-        token(all, names);
+
+        if(path.exists()) {
+            std::ifstream in(path.localPath());
+            std::string line;
+            while(in >> line) {
+                names.push_back(line);
+            }
+        }
+        else {
+            std::string all = Resource<std::string>("allApplications", "mars,reader,flusher,cleaner,httpsvr,safety");
+
+            Tokenizer token(", \t");
+            token(all, names);
+        }
 
         for (std::vector<std::string>::iterator i = names.begin(); i != names.end(); ++i)
             start(out, *i);

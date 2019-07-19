@@ -221,7 +221,7 @@ void TaskInfo::json(JSON& json) const {
     unsigned long pos = 0;
     unsigned long len = text(buffer, sizeof(buffer), pos);
 
-    json << "text" << buffer;
+    json << "log" << buffer;
 
     json << "name" << name_;
     json << "kind" << kind_;

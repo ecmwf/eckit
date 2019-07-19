@@ -60,9 +60,17 @@ protected: // methods
 private: // members
 
 	std::string scheme_;
+    std::string user_;
     std::string host_;
     std::string port_;
     std::string path_;
+    std::string query_;
+    std::string fragment_;
+
+
+    bool parse(const std::string &aux);
+    bool parseRegex(const std::string &aux);
+
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
     friend Stream& operator<<(Stream& s,const URI& p) { p.encode(s); return s; }

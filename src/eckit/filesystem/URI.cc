@@ -26,37 +26,7 @@ namespace eckit {
 URI::URI() {}
 
 URI::URI(const std::string& uri) {
-    //from  https://tools.ietf.org/html/rfc3986
-    //      URI       = scheme:[//authority]path[?query][#fragment]
-    //where
-    //      authority = [userinfo@]host[:port]
-    //
-    //regex (([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?
-    //        scheme   :  [//[ userinfo @]  host      [:port]  ]  path         [ ? query ] [#fragment]
-    //
-    //from regex
-    //      scheme    = $2
-    //      authority = $3
-    //      userinfo  = $5
-    //      host      = $6
-    //      port      = $8
-    //      path      = $9
-    //      query     = $11
-    //      fragment  = $13
-
-    std::regex uriRegex(R"((([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?)");
-    std::smatch uriMatchResult;
-
-    if (std::regex_match(uri, uriMatchResult, uriRegex) && uriMatchResult.size() > 1) {
-        // storing a subset of URI (sub-)components
-        scheme_ = uriMatchResult[2];
-        if (scheme_.empty())
-            scheme_ = "posix";             //default scheme
-        host_   = uriMatchResult[6];
-        port_   = uriMatchResult[8];
-        path_   = uriMatchResult[9];
-
-    } else { // reverting to previous approach
+    if (!parse(uri)) { // reverting to previous approach
         Tokenizer parse(":");
         std::vector<std::string> s;
 
@@ -83,6 +53,46 @@ URI::URI(const std::string& uri) {
     }
 }
 
+bool URI::parseRegex(const std::string& uri) {
+    //from  https://tools.ietf.org/html/rfc3986
+    //      URI       = scheme:[//authority]path[?query][#fragment]
+    //where
+    //      authority = [userinfo@]host[:port]
+    //
+    //regex (([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?
+    //        scheme   :  [//[ userinfo @]  host      [:port]  ]  path         [ ? query ] [#fragment]
+    //
+    //from regex
+    //      scheme    = $2
+    //      authority = $3
+    //      userinfo  = $5
+    //      host      = $6
+    //      port      = $8
+    //      path      = $9
+    //      query     = $11
+    //      fragment  = $13
+
+    std::regex uriRegex(
+            R"((([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?)",
+            std::regex::extended);
+    std::smatch uriMatchResult;
+
+    if (std::regex_match(uri, uriMatchResult, uriRegex) && uriMatchResult.size() > 1) {
+        // storing a subset of URI (sub-)components
+        scheme_ = uriMatchResult[2];
+        if (scheme_.empty())
+            scheme_ = "posix";             //default scheme
+        user_ = uriMatchResult[5];
+        host_ = uriMatchResult[6];
+        port_ = uriMatchResult[8];
+        path_ = uriMatchResult[9];
+        query_ = uriMatchResult[11];
+        fragment_ = uriMatchResult[13];
+        return true;
+    }
+    return false;
+}
+
 URI::URI(Stream &s) {
     s >> scheme_;
     s >> host_;
@@ -91,6 +101,62 @@ URI::URI(Stream &s) {
 }
 
 URI::~URI() {}
+
+bool URI::parse(const std::string &uri) {
+    if (uri.empty())
+        return false;
+    
+    std::string aux(uri);
+
+    // get fragment start
+    std::size_t fragmentStart = aux.find_last_of("#");
+    if (fragmentStart != std::string::npos) {
+        fragment_ = aux.substr(fragmentStart + 1);
+        aux = aux.substr(0, fragmentStart);
+    }
+
+    // get query start
+    std::size_t queryStart = aux.find_last_of("?");
+    if (queryStart != std::string::npos) {
+        query_ = aux.substr(queryStart + 1);
+        aux = aux.substr(0, queryStart);
+    }
+
+    std::size_t protocolEnd = aux.find(":");
+    if (protocolEnd != std::string::npos) {
+        scheme_ = aux.substr(0, protocolEnd);
+        aux = aux.substr(protocolEnd + 1);
+    }
+    if (scheme_.empty())
+        scheme_ = "posix";
+
+    if (aux.rfind("//", 0) == 0) { // we have to parse authority
+        aux = aux.substr(2);
+        std::size_t userEnd = aux.find_last_of("@");
+        if (userEnd != std::string::npos) {
+            user_ = aux.substr(0, userEnd);
+            aux = aux.substr(userEnd + 1);
+        }
+        std::size_t hostEnd = aux.find_last_of(":");
+        if (hostEnd != std::string::npos) {
+            host_ = aux.substr(0, hostEnd);
+            aux = aux.substr(hostEnd + 1);
+            std::size_t portEnd = aux.find_last_of("/");
+            if (portEnd != std::string::npos) {
+                port_ = aux.substr(0, portEnd);
+                aux = aux.substr(portEnd);
+            }
+        }
+    }
+    std::size_t pathStart = aux.find("/");
+    if (pathStart != std::string::npos) {
+        path_ = aux.substr(pathStart);
+    } else {
+        path_ = aux;
+    }
+
+    return true;
+}
 
 bool URI::exists() const {
     ASSERT(!path_.empty());

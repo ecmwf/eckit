@@ -42,8 +42,11 @@ public: // methods
 	DataHandle*  newReadHandle(const OffsetList&, const LengthList&) const;
 	DataHandle*  newReadHandle() const;
 
-	const std::string& name() const { return name_; }
-	const std::string& scheme() const { return scheme_; }
+    const std::string& scheme() const { return scheme_; }
+    const std::string& host() const { return host_; }
+    const std::string& port() const { return port_; }
+    const std::string& name() const { return path_; }
+    const std::string& path() const { return path_; }
 
 protected: // methods
 
@@ -51,8 +54,10 @@ protected: // methods
 
 private: // members
 
-	std::string name_;
 	std::string scheme_;
+    std::string host_;
+    std::string port_;
+    std::string path_;
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
 

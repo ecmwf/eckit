@@ -9,6 +9,7 @@
  */
 
 #include <iostream>
+#include <regex>
 #include <vector>
 
 #include "eckit/filesystem/URI.h"
@@ -20,29 +21,61 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-URI::URI(const std::string& path) {
-    Tokenizer parse(":");
-    std::vector<std::string> s;
+URI::URI(const std::string& uri) {
+    //from  https://tools.ietf.org/html/rfc3986
+    //      URI       = scheme:[//authority]path[?query][#fragment]
+    //where
+    //      authority = [userinfo@]host[:port]
+    //
+    //regex (([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?
+    //        scheme   :  [//[ userinfo @]  host      [:port]  ]  path         [ ? query ] [#fragment]
+    //
+    //from regex
+    //      scheme    = $2
+    //      authority = $3
+    //      userinfo  = $5
+    //      host      = $6
+    //      port      = $8
+    //      path      = $9
+    //      query     = $11
+    //      fragment  = $13
 
-    parse(path, s);
+    std::regex uriRegex(R"((([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?)");
+    std::smatch uriMatchResult;
 
-    switch (s.size()) {
-        case 1:
-            scheme_ = "unix";
-            name_   = s[0];
-            break;
+    if (std::regex_match(uri, uriMatchResult, uriRegex) && uriMatchResult.size() > 1) {
+        // storing a subset of URI (sub-)components
+        scheme_ = uriMatchResult[2];
+        if (scheme_.empty())
+            scheme_ = "posix";             //default schema
+        host_   = uriMatchResult[6];
+        port_   = uriMatchResult[8];
+        path_   = uriMatchResult[9];
 
-        case 2:
-            name_   = s[1];
-            scheme_ = s[0];
-            break;
+    } else { // reverting to previous approach
+        Tokenizer parse(":");
+        std::vector<std::string> s;
 
-        default:
-            scheme_ = s[0];
-            name_   = s[1];
-            for (size_t j = 2; j < s.size(); j++)
-                name_ = name_ + ':' + s[j];
-            break;
+        parse(uri, s);
+
+        switch (s.size()) {
+            case 1:
+                scheme_ = "unix";
+                path_ = s[0];
+                break;
+
+            case 2:
+                scheme_ = s[0];
+                path_ = s[1];
+                break;
+
+            default:
+                scheme_ = s[0];
+                path_ = s[1];
+                for (size_t j = 2; j < s.size(); j++)
+                    path_ = path_ + ':' + s[j];
+                break;
+        }
     }
 }
 
@@ -65,7 +98,7 @@ DataHandle* URI::newReadHandle() const {
 }
 
 void URI::print(std::ostream& s) const {
-    s << "URI[scheme=" << scheme_ << ",name=" << name_ << "]";
+    s << "URI[scheme=" << scheme_ << ",name=" << path_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

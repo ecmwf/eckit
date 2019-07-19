@@ -626,6 +626,8 @@ persist/Isa.h
 )
 
 list( APPEND eckit_utils_srcs
+utils/Compressor.cc
+utils/Compressor.h
 utils/Hash.cc
 utils/Hash.h
 utils/HyperCube.cc

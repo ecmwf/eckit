@@ -80,6 +80,10 @@ ecbuild_add_option( FEATURE MKL
                     DESCRIPTION "MKL linear algebra library"
                     REQUIRED_PACKAGES MKL )
 
+ecbuild_add_option( FEATURE BZIP2
+                    DESCRIPTION "BZip2 support for compression"
+                    REQUIRED_PACKAGES BZip2 )
+
 ### LAPACK
 
 if( ECKIT_HAVE_MKL )

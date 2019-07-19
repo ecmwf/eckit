@@ -16,7 +16,7 @@
 #include "eckit/log/Timer.h"
 #include "eckit/utils/xxHash.h"
 
-#include "eckit/test/Test.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

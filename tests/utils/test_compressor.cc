@@ -57,12 +57,25 @@ CASE("Compression") {
 
     std::unique_ptr<Compressor> c;
 
-    SECTION("CASE No Compression") {
-        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("None")));
-
+    SECTION("CASE Default Compression") {
+        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build()));
         size_t ulen = compress_uncompress(*c, in, out);
-
         EXPECT(tostr(out,ulen) == msg);
+    }
+
+    SECTION("CASE No Compression") {
+        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("none")));
+        size_t ulen = compress_uncompress(*c, in, out);
+        EXPECT(tostr(out,ulen) == msg);
+    }
+
+    SECTION("CASE Snappy Compression") {
+
+        if (CompressorFactory::instance().has("snappy")) {
+            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("snappy")));
+            size_t ulen = compress_uncompress(*c, in, out);
+            EXPECT(tostr(out,ulen) == msg);
+        }
     }
 
     SECTION("CASE BZip2 Compression") {
@@ -76,17 +89,6 @@ CASE("Compression") {
         }
     }
 
-    SECTION("CASE Snappy Compression") {
-
-        if (CompressorFactory::instance().has("snappy")) {
-
-            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("snappy")));
-
-            size_t ulen = compress_uncompress(*c, in, out);
-
-            EXPECT(tostr(out,ulen) == msg);
-        }
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "eckit/io/Buffer.h"
+#include "eckit/io/ResizableBuffer.h"
 #include "eckit/utils/Compressor.h"
 
 #include "eckit/testing/Test.h"
@@ -25,14 +26,33 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-static const char* msg = "THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG'S BACK 1234567890";
+static std::string msg("THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG'S BACK 1234567890");
 
 //----------------------------------------------------------------------------------------------------------------------
 
+std::string tostr(const ResizableBuffer& b, size_t len) {
+    return std::string(b, len);
+}
+
+size_t compress_uncompress(Compressor& c, const Buffer& in, ResizableBuffer& out) {
+
+    size_t compressedLenght = c.compress(in, out);
+
+    Buffer compressed(out, compressedLenght);
+
+    out.zero();
+    size_t ulen = c.uncompress(compressed, out);
+
+    std::cout << tostr(out,ulen) << std::endl;
+
+    return ulen;
+}
+
+
 CASE("Compression") {
 
-    Buffer in(msg, 1024);
-    Buffer out(in.size());
+    Buffer in(msg.c_str(), msg.size());
+    ResizableBuffer out(msg.size());
     out.zero();
 
     std::unique_ptr<Compressor> c;
@@ -40,11 +60,9 @@ CASE("Compression") {
     SECTION("CASE No Compression") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("None")));
 
-        c->compress(in, out);
+        size_t ulen = compress_uncompress(*c, in, out);
 
-        std::cout << (const char*) out.data() << std::endl;
-
-        EXPECT((const char*) out.data() == std::string(msg));
+        EXPECT(tostr(out,ulen) == msg);
     }
 
     SECTION("CASE BZip2 Compression") {
@@ -52,10 +70,9 @@ CASE("Compression") {
         if (CompressorFactory::instance().has("bzip2")) {
 
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
-            /// @todo implement
-            //        c->compress(in, out);
-            //        std::cout << (const char*) out.data() << std::endl;
-            //        EXPECT((const char*) out.data() == std::string(msg));
+/// @todo implement
+//            size_t ulen = compress_uncompress(*c, in, out);
+//            EXPECT(tostr(out,ulen) == msg);
         }
     }
 
@@ -64,10 +81,10 @@ CASE("Compression") {
         if (CompressorFactory::instance().has("snappy")) {
 
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("snappy")));
-            /// @todo implement
-            //        c->compress(in, out);
-            //        std::cout << (const char*) out.data() << std::endl;
-            //        EXPECT((const char*) out.data() == std::string(msg));
+
+            size_t ulen = compress_uncompress(*c, in, out);
+
+            EXPECT(tostr(out,ulen) == msg);
         }
     }
 }

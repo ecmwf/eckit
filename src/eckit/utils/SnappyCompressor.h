@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_BZip2Compressor_H
-#define eckit_utils_BZip2Compressor_H
+#ifndef eckit_utils_SnappyCompressor_H
+#define eckit_utils_SnappyCompressor_H
 
 #include "eckit/utils/Compressor.h"
 
@@ -20,13 +20,13 @@ class ResizableBuffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class BZip2Compressor : public eckit::Compressor {
+class SnappyCompressor : public eckit::Compressor {
 
 public:  // methods
 
-  BZip2Compressor();
+  SnappyCompressor();
 
-  virtual ~BZip2Compressor();
+  virtual ~SnappyCompressor();
 
   virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
   virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;

@@ -23,10 +23,10 @@ BZip2Compressor::BZip2Compressor() {
 BZip2Compressor::~BZip2Compressor() {
 }
 
-void BZip2Compressor::compress(const eckit::Buffer& in, eckit::Buffer& out) const{
+size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const{
     NOTIMP;
 }
-void BZip2Compressor::uncompress(const eckit::Buffer& in, eckit::Buffer& out) const {
+size_t BZip2Compressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) const {
     NOTIMP;
 }
 

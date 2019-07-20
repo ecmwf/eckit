@@ -655,6 +655,13 @@ if(ECKIT_HAVE_BZIP2)
   )
 endif()
 
+if(ECKIT_HAVE_SNAPPY)
+  list( APPEND eckit_utils_srcs
+    utils/SnappyCompressor.cc
+    utils/SnappyCompressor.h
+  )
+endif()
+
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
       utils/MD4.cc
@@ -833,21 +840,25 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     PRIVATE_INCLUDES
                         "${CURL_INCLUDE_DIRS}"
                         "${XXHASH_INCLUDE_DIRS}"
+                        "${BZIP2_INCLUDE_DIRS}"
+                        "${SNAPPY_INCLUDE_DIRS}"
+                        "${RADOS_INCLUDE_DIRS}"
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
-                        "${RADOS_INCLUDE_DIRS}"
 					LIBS
                         ${OPENSSL_LIBRARIES}
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
+                        ${SNAPPY_LIBRARIES}
+                        ${BZIP2_LIBRARIES}
                         ${AIO_LIBRARIES}
                         ${RADOS_LIBRARIES}
                         ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
-                   LINKER_LANGUAGE CXX )
+          LINKER_LANGUAGE CXX )
 
 ### sub-directories
 

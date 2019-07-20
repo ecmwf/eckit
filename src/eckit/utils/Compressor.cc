@@ -15,6 +15,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/ResizableBuffer.h"
 #include "eckit/thread/AutoLock.h"
 
 namespace eckit {
@@ -95,16 +96,18 @@ Compressor::~Compressor() {}
 
 NoCompressor::NoCompressor() {}
 
-void NoCompressor::compress(const Buffer& in, Buffer& out) const
+size_t NoCompressor::compress(const Buffer& in, ResizableBuffer& out) const
 {
-    ASSERT(out.size() >= in.size());
+    out.resize(in.size());
     ::memcpy(out, in, in.size());
+    return out.size();
 }
 
-void NoCompressor::uncompress(const Buffer& in, Buffer& out) const
+size_t NoCompressor::uncompress(const Buffer& in, ResizableBuffer& out) const
 {
-    ASSERT(out.size() >= in.size());
+    out.resize(in.size());
     ::memcpy(out, in, in.size());
+    return in.size();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

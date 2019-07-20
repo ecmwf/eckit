@@ -101,6 +101,11 @@ public:
     TimeOut(const std::string&, const unsigned long);
 };
 
+class FailedLibraryCall : public Exception {
+public:
+    FailedLibraryCall(const std::string& lib, const std::string& func, const std::string& msg, const CodeLocation&);
+};
+
 class FailedSystemCall : public Exception {
 public:
     FailedSystemCall(const std::string&);

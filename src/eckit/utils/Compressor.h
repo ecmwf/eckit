@@ -20,6 +20,7 @@
 namespace eckit {
 
 class Buffer;
+class ResizableBuffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -31,8 +32,8 @@ public:  // methods
 
   virtual ~Compressor();
 
-  virtual void compress(const eckit::Buffer& in, eckit::Buffer& out) const = 0;
-  virtual void uncompress(const eckit::Buffer& in, eckit::Buffer& out) const = 0;
+  virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const = 0;
+  virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const = 0;
 
 protected: // methods
 
@@ -48,8 +49,8 @@ public:  // types
 
   virtual ~NoCompressor() = default;
 
-  virtual void compress(const eckit::Buffer& in, eckit::Buffer& out) const;
-  virtual void uncompress(const eckit::Buffer& in, eckit::Buffer& out) const;
+  virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+  virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
 
 };
 

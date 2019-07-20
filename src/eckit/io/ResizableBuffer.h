@@ -27,42 +27,38 @@ namespace eckit {
 
 class ResizableBuffer : private eckit::NonCopyable {
 
-public: // methods
+public:  // methods
+    ResizableBuffer(size_t size);
+    ResizableBuffer(const char*, size_t size);
 
-	ResizableBuffer(size_t size);
-	ResizableBuffer(const char*, size_t size);
+    ~ResizableBuffer();
 
-	~ResizableBuffer();
+    operator char*() { return buffer_; }
+    operator const char*() const { return buffer_; }
 
-	operator char*()                 { return buffer_; }
-	operator const char*() const     { return buffer_; }
-
-	operator void*()                 { return buffer_; }
-	operator const void*() const     { return buffer_; }
+    operator void*() { return buffer_; }
+    operator const void*() const { return buffer_; }
 
     char* data() { return buffer_; }
     const char* data() const { return buffer_; }
 
-	size_t size() const		 { return size_; }
+    size_t size() const { return size_; }
 
     void zero();
 
     /// @post Invalidates contents of buffer
-    void resize(size_t, bool preserveData=false);
+    void resize(size_t, bool preserveData = false);
 
-private: // methods
-
-	static char* allocate(size_t);
+private:  // methods
+    static char* allocate(size_t);
     static void deallocate(char*);
 
 
-private: // members
-
-    char*  buffer_;
-	size_t size_;
-
+private:  // members
+    char* buffer_;
+    size_t size_;
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

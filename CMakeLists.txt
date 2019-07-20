@@ -60,7 +60,7 @@ set_package_properties( Eigen3 PROPERTIES
 
 ecbuild_add_option( FEATURE RADOS
                     DEFAULT OFF
-                    DESCRIPTION "Ceph/Rados storage support" 
+                    DESCRIPTION "Ceph/Rados storage support"
                     REQUIRED_PACKAGES Rados )
 
 ### Armadillo
@@ -85,6 +85,10 @@ ecbuild_add_option( FEATURE MKL
 ecbuild_add_option( FEATURE BZIP2
                     DESCRIPTION "BZip2 support for compression"
                     REQUIRED_PACKAGES BZip2 )
+
+ecbuild_add_option( FEATURE SNAPPY
+                    DESCRIPTION "Snappy support for compression"
+                    REQUIRED_PACKAGES Snappy )
 
 ### LAPACK
 

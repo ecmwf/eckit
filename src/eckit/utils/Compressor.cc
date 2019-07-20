@@ -13,6 +13,7 @@
 
 #include "eckit/utils/Compressor.h"
 
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/ResizableBuffer.h"
@@ -54,6 +55,17 @@ void CompressorFactory::list(std::ostream& out) {
         out << sep << (*j).first;
         sep = ", ";
     }
+}
+
+Compressor* CompressorFactory::build() {
+
+    std::string compression = eckit::Resource<std::string>("defaultCompression;ECKIT_DEFAULT_COMPRESSION", "snappy");
+
+    if(has(compression)) {
+        return build(compression);
+    }
+
+    return build("none");
 }
 
 Compressor* CompressorFactory::build(const std::string& name) {
@@ -114,8 +126,7 @@ size_t NoCompressor::uncompress(const Buffer& in, ResizableBuffer& out) const
 
 namespace {
 
-CompressorBuilder<NoCompressor> builder1("None");
-CompressorBuilder<NoCompressor> builder2("NoCompressor");
+CompressorBuilder<NoCompressor> builder1("none");
 
 }  // namespace
 

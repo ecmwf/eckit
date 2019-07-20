@@ -85,6 +85,10 @@ public:
     bool has(const std::string& name);
     void list(std::ostream &);
 
+    /// @returns default compressor
+    Compressor* build();
+
+    /// @returns compressor built by specified builder
     Compressor* build(const std::string&);
 
 private:

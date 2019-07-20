@@ -90,6 +90,10 @@ ecbuild_add_option( FEATURE SNAPPY
                     DESCRIPTION "Snappy support for compression"
                     REQUIRED_PACKAGES Snappy )
 
+ecbuild_add_option( FEATURE LZ4
+                    DESCRIPTION "LZ4 support for compression"
+                    REQUIRED_PACKAGES LZ4 )
+
 ### LAPACK
 
 if( ECKIT_HAVE_MKL )

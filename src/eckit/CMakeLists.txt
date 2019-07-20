@@ -662,6 +662,13 @@ if(ECKIT_HAVE_SNAPPY)
   )
 endif()
 
+if(ECKIT_HAVE_LZ4)
+  list( APPEND eckit_utils_srcs
+    utils/LZ4Compressor.cc
+    utils/LZ4Compressor.h
+  )
+endif()
+
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
       utils/MD4.cc
@@ -840,8 +847,9 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     PRIVATE_INCLUDES
                         "${CURL_INCLUDE_DIRS}"
                         "${XXHASH_INCLUDE_DIRS}"
-                        "${BZIP2_INCLUDE_DIRS}"
                         "${SNAPPY_INCLUDE_DIRS}"
+                        "${LZ4_INCLUDE_DIRS}"
+                        "${BZIP2_INCLUDE_DIRS}"
                         "${RADOS_INCLUDE_DIRS}"
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
@@ -851,6 +859,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${SNAPPY_LIBRARIES}
+                        ${LZ4_LIBRARIES}
                         ${BZIP2_LIBRARIES}
                         ${AIO_LIBRARIES}
                         ${RADOS_LIBRARIES}

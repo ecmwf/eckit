@@ -9,6 +9,7 @@
  */
 
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
@@ -55,13 +56,17 @@ URIManager::~URIManager() {
     m.erase(name_);
 }
 
+std::string URIManager::asString(const URI& f) const {
+    return PathName(f.scheme() + ":" + f.name()).asString();
+}
+
 URIManager& URIManager::lookUp(const std::string& name) {
     AutoLock<StaticMutex> lock(local_mutex);
     URIManagerMap& m = URIManagerRegistry::instance().map();
 
     std::map<std::string, URIManager*>::const_iterator j = m.find(name);
 
-    Log::info() << "Looking for URIManager [" << name << "]" << std::endl;
+    Log::debug<LibEcKit>() << "Looking for URIManager [" << name << "]" << std::endl;
 
     if (j == m.end()) {
         Log::error() << "No URIManager for [" << name << "]" << std::endl;
@@ -91,6 +96,10 @@ class LocalFileManager : public URIManager {
 
     virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
         return PathName(f.name()).partHandle(ol, ll);
+    }
+
+    virtual std::string asString(const URI& f) const {
+        return f.name();
     }
 
 public:

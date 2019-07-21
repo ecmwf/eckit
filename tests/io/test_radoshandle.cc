@@ -11,17 +11,11 @@
 #include <cstring>
 
 #include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosWriteHandle.h"
+#include "eckit/io/rados/RadosReadHandle.h"
+#include "eckit/io/rados/RadosCluster.h"
 
-#include "eckit/config/Resource.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/MultiHandle.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/io/PartFileHandle.h"
-#include "eckit/io/FileHandle.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
-#include "eckit/types/Types.h"
 
 #include "eckit/testing/Test.h"
 
@@ -34,87 +28,71 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Tester {
-public:
+CASE("RadosHandle") {
 
-    Tester() {
+    const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-        std::string base = Resource<std::string>("$TMPDIR", "/tmp");
-        path1_           = PathName::unique(base + "/path1");
-        path1_ += ".dat";
+    RadosHandle h("foobar");
+    std::cout << "====> " << h << std::endl;
 
-        path2_ = PathName::unique(base + "/path2");
-        path2_ += ".dat";
+    h.openForWrite(sizeof(buf));
+    h.write(buf, sizeof(buf));
+    h.close();
 
-        path3_ = PathName::unique(base + "/path3");
-        path3_ += ".dat";
-    }
+    std::cout << "write done" << std::endl;
 
-    ~Tester() {
-        path1_.unlink();
-        path2_.unlink();
-        path3_.unlink();
-    }
+    Buffer mem(1024);
+    RadosHandle g("foobar");
+    std::cout << "====> " << g << std::endl;
 
-    PathName path1_;
-    PathName path2_;
-    PathName path3_;
-};
+    std::cout << "Size is " << g.openForRead() << std::endl;
+    g.read(mem, mem.size());
+    g.close();
 
-CASE("Multihandle") {
+    std::cout << "read done" << std::endl;
 
-    setformat(std::cout, Log::fullFormat);
 
-    Tester test;
+    EXPECT(buf == std::string(mem));
 
-    const char buf1[] = "abcdefghijklmnopqrstuvwxyz";
-    const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    char expect[26 * 2];
 
-    {
-        RadosHandle f1(test.path1_);
-        f1.openForWrite(0);
-        f1.write(buf1, sizeof(buf1));
-        f1.close();
+    RadosCluster::instance().remove(RadosObject("foobar"));
+}
 
-        std::cout << test.path1_ << std::endl;
-    }
 
-    {
-        RadosHandle f2(test.path2_);
-        f2.openForWrite(0);
-        f2.write(buf2, sizeof(buf2));
-        f2.close();
+CASE("RadosWriteHandle") {
 
-        std::cout << test.path2_ << std::endl;
-    }
+    const char buf[] =
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz"
+    ;
 
-    MultiHandle mh1;
-    {
+    RadosWriteHandle h("foobar", 16);
+    std::cout << "====> " << h << std::endl;
 
-        char* e = expect;
-        for (int i = 0; i < 26; i++) {
-            mh1 += new PartFileHandle(test.path1_, i, 1);
-            mh1 += new PartFileHandle(test.path2_, i, 1);
+    h.openForWrite(sizeof(buf));
+    h.write(buf, sizeof(buf));
+    h.close();
 
-            *e++ = buf1[i];
-            *e++ = buf2[i];
-        }
+    Buffer mem(1024);
+    RadosReadHandle g("foobar");
+    std::cout << "====> " << g << std::endl;
 
-//        std::cout << mh1 << std::endl;
-        EXPECT(mh1.estimate() == Length(52));
+    std::cout << "Size is " << g.openForRead() << std::endl;
+    g.read(mem, mem.size());
+    g.close();
 
-        mh1.compress();
+    std::cout << "read done" << std::endl;
 
-//        std::cout << mh1 << std::endl;
-        EXPECT(mh1.estimate() == Length(52));
-    }
 
-    MemoryHandle result(128);
+    EXPECT(buf == std::string(mem));
 
-    EXPECT_NO_THROW( mh1.saveInto(result ));
+    RadosCluster::instance().removeAll(RadosObject("foobar"));
 
-    EXPECT(::memcmp(expect, result.data(), sizeof(expect)) == 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

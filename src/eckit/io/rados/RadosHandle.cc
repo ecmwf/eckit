@@ -19,33 +19,85 @@ ClassSpec RadosHandle::classSpec_ = {
     &DataHandle::classSpec(),
     "RadosHandle",
 };
+
 Reanimator<RadosHandle> RadosHandle::reanimator_;
 
 void RadosHandle::print(std::ostream& s) const {
-    s << "RadosHandle[file=" << name_ << ']';
+    s << "RadosHandle[" << object_ << ']';
 }
 
 void RadosHandle::encode(Stream& s) const {
     DataHandle::encode(s);
-    s << name_;
+    s << object_;
 }
 
-RadosHandle::RadosHandle(Stream& s) : DataHandle(s) {
-    s >> name_;
+RadosHandle::RadosHandle(Stream& s):
+    DataHandle(s),
+    object_(s),
+    offset_(0),
+    opened_(false),
+    write_(false) {
 }
 
-RadosHandle::RadosHandle(const std::string& name) :
-    name_(name)
-{}
+RadosHandle::RadosHandle(const RadosObject& object):
+    object_(object),
+    offset_(0),
+    opened_(false),
+    write_(false) {
 
-RadosHandle::~RadosHandle() {}
+}
+
+
+RadosHandle::RadosHandle(const std::string& object):
+    object_(object),
+    offset_(0),
+    opened_(false),
+    write_(false) {
+
+}
+
+RadosHandle::~RadosHandle() {
+    std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;
+
+    if (opened_) {
+        close();
+    }
+}
+
+void RadosHandle::open() {
+
+    std::cout << "RadosHandle::open " << object_ << std::endl;
+
+    ASSERT(!opened_);
+
+    offset_ = 0;
+
+    opened_ = true;
+}
+
+Length RadosHandle::estimate() {
+    return RadosCluster::instance().size(object_);
+}
 
 Length RadosHandle::openForRead() {
-    NOTIMP;
+
+    std::cout << "RadosHandle::openForRead " << object_ << std::endl;
+
+    open();
+    write_ = false;
+
+    return RadosCluster::instance().size(object_);
 }
 
 void RadosHandle::openForWrite(const Length& length) {
-    NOTIMP;
+
+    std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
+
+    RadosCluster::instance().ensurePool(object_);
+    RadosCluster::instance().truncate(object_);
+
+    open();
+    write_ = true;
 }
 
 void RadosHandle::openForAppend(const Length&) {
@@ -53,33 +105,67 @@ void RadosHandle::openForAppend(const Length&) {
 }
 
 long RadosHandle::read(void* buffer, long length) {
-    NOTIMP;
+
+    std::cout << "RadosHandle::read " << object_ << " " << length << std::endl;
+
+    ASSERT(opened_);
+    ASSERT(!write_);
+
+    int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_),
+                                    object_.oid().c_str(),
+                                    reinterpret_cast<char*>(buffer),
+                                    length,
+                                    offset_));
+    // ASSERT(len  > 0);
+
+    offset_ += len;
+
+    return len;
 }
 
 long RadosHandle::write(const void* buffer, long length) {
-    NOTIMP;
+
+    ASSERT(length);
+
+    std::cout << "RadosHandle::write " << object_ << " " << length << std::endl;
+
+    ASSERT(opened_);
+    ASSERT(write_);
+
+    RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_),
+                           object_.oid().c_str(),
+                           reinterpret_cast<const char*>(buffer),
+                           length,
+                           offset_));
+
+    offset_ += length;
+
+    return length;
+
+
 }
 
 void RadosHandle::flush() {
-    NOTIMP;
+    // NOTIMP;
 }
 
-
 void RadosHandle::close() {
-    NOTIMP;
+    std::cout << "RadosHandle::close " << object_ << std::endl;
+    ASSERT(opened_);
+    opened_ = false;
 }
 
 void RadosHandle::rewind() {
-    NOTIMP;
+    offset_ = 0;
 }
 
 
 Offset RadosHandle::position() {
-    NOTIMP;
+    return offset_;
 }
 
 std::string RadosHandle::title() const {
-    return PathName::shorten(name_);
+    return PathName::shorten(object_.str());
 }
 
 }  // namespace eckit

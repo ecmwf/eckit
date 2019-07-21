@@ -242,6 +242,16 @@ if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
 io/rados/RadosHandle.cc
 io/rados/RadosHandle.h
+io/rados/RadosCluster.h
+io/rados/RadosCluster.cc
+io/rados/RadosReadHandle.cc
+io/rados/RadosReadHandle.h
+io/rados/RadosWriteHandle.cc
+io/rados/RadosWriteHandle.h
+io/rados/RadosObject.h
+io/rados/RadosObject.cc
+io/rados/RadosAttributes.h
+io/rados/RadosAttributes.cc
 )
 endif()
 
@@ -616,25 +626,48 @@ persist/Isa.h
 )
 
 list( APPEND eckit_utils_srcs
-utils/Hash.cc
-utils/Hash.h
-utils/HyperCube.cc
-utils/HyperCube.h
-utils/MD5.cc
-utils/MD5.h
-utils/RLE.cc
-utils/RLE.h
-utils/Regex.cc
-utils/Regex.h
-utils/RendezvousHash.cc
-utils/RendezvousHash.h
-utils/StringTools.cc
-utils/StringTools.h
-utils/Tokenizer.cc
-utils/Tokenizer.h
-utils/Translator.cc
-utils/Translator.h
+  utils/Compressor.cc
+  utils/Compressor.h
+  utils/Hash.cc
+  utils/Hash.h
+  utils/HyperCube.cc
+  utils/HyperCube.h
+  utils/MD5.cc
+  utils/MD5.h
+  utils/RLE.cc
+  utils/RLE.h
+  utils/Regex.cc
+  utils/Regex.h
+  utils/RendezvousHash.cc
+  utils/RendezvousHash.h
+  utils/StringTools.cc
+  utils/StringTools.h
+  utils/Tokenizer.cc
+  utils/Tokenizer.h
+  utils/Translator.cc
+  utils/Translator.h
 )
+
+if(ECKIT_HAVE_BZIP2)
+  list( APPEND eckit_utils_srcs
+    utils/BZip2Compressor.cc
+    utils/BZip2Compressor.h
+  )
+endif()
+
+if(ECKIT_HAVE_SNAPPY)
+  list( APPEND eckit_utils_srcs
+    utils/SnappyCompressor.cc
+    utils/SnappyCompressor.h
+  )
+endif()
+
+if(ECKIT_HAVE_LZ4)
+  list( APPEND eckit_utils_srcs
+    utils/LZ4Compressor.cc
+    utils/LZ4Compressor.h
+  )
+endif()
 
 if(ECKIT_HAVE_SSL)
     list( APPEND eckit_utils_srcs
@@ -814,21 +847,27 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     PRIVATE_INCLUDES
                         "${CURL_INCLUDE_DIRS}"
                         "${XXHASH_INCLUDE_DIRS}"
+                        "${SNAPPY_INCLUDE_DIRS}"
+                        "${LZ4_INCLUDE_DIRS}"
+                        "${BZIP2_INCLUDE_DIRS}"
+                        "${RADOS_INCLUDE_DIRS}"
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
-                        "${RADOS_INCLUDE_DIRS}"
 					LIBS
                         ${OPENSSL_LIBRARIES}
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
+                        ${SNAPPY_LIBRARIES}
+                        ${LZ4_LIBRARIES}
+                        ${BZIP2_LIBRARIES}
                         ${AIO_LIBRARIES}
                         ${RADOS_LIBRARIES}
                         ${CMATH_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
-                   LINKER_LANGUAGE CXX )
+          LINKER_LANGUAGE CXX )
 
 ### sub-directories
 

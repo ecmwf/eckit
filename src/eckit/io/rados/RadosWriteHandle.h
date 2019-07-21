@@ -12,28 +12,26 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosHandle_h
-#define eckit_io_rados_RadosHandle_h
+#ifndef eckit_io_rados_RadosWriteHandle_h
+#define eckit_io_rados_RadosWriteHandle_h
 
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
 
-class RadosHandle : public eckit::DataHandle {
+class RadosWriteHandle : public eckit::DataHandle {
 
 public:  // methods
 
-  RadosHandle(const RadosObject&);
-  RadosHandle(const std::string&);
+  RadosWriteHandle(const RadosObject&, const Length& maxObjectSize = 0);
+  RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
+  RadosWriteHandle(Stream&);
 
-  RadosHandle(Stream&);
-
-  virtual ~RadosHandle();
+  virtual ~RadosWriteHandle();
 
   // -- Class methods
 
@@ -54,7 +52,6 @@ public:  // methods
   virtual void rewind();
 
   virtual Offset position();
-  virtual Length estimate();
 
   virtual void print(std::ostream&) const;
 
@@ -67,14 +64,17 @@ private:  // members
 
   RadosObject object_;
 
-  uint64_t offset_;
+  Length maxObjectSize_;
+  size_t written_;
+  Offset position_;
+  size_t part_;
   bool opened_;
-  bool write_;
 
-  void open();
+  std::unique_ptr<DataHandle> handle_;
+
 
   static ClassSpec classSpec_;
-  static Reanimator<RadosHandle> reanimator_;
+  static Reanimator<RadosWriteHandle> reanimator_;
 
 };
 

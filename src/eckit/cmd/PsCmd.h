@@ -33,6 +33,8 @@ public:
 private: // methods
 
     void display(std::ostream&, eckit::TaskInfo&, long, const std::string&) const;
+    void display(JSON&, eckit::TaskInfo&, long, const std::string&) const;
+
 
     // -- Overridden methods
 

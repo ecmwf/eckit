@@ -36,6 +36,8 @@ public:
     virtual DataHandle*  newReadHandle(const URI&) = 0;
     virtual DataHandle*  newReadHandle(const URI&,const OffsetList&, const LengthList&) = 0;
 
+    virtual std::string asString(const URI&) const;
+
 	static URIManager& lookUp(const std::string&);
 
 protected:

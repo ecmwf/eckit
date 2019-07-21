@@ -12,28 +12,27 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosHandle_h
-#define eckit_io_rados_RadosHandle_h
+#ifndef eckit_io_rados_RadosReadHandle_h
+#define eckit_io_rados_RadosReadHandle_h
 
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
+class MultiHandle;
 
-class RadosHandle : public eckit::DataHandle {
+class RadosReadHandle : public eckit::DataHandle {
 
 public:  // methods
 
-  RadosHandle(const RadosObject&);
-  RadosHandle(const std::string&);
+  RadosReadHandle(const RadosObject&);
+  RadosReadHandle(const std::string&);
+  RadosReadHandle(Stream&);
 
-  RadosHandle(Stream&);
-
-  virtual ~RadosHandle();
+  virtual ~RadosReadHandle();
 
   // -- Class methods
 
@@ -67,14 +66,14 @@ private:  // members
 
   RadosObject object_;
 
-  uint64_t offset_;
-  bool opened_;
-  bool write_;
+  Length length_;
+  size_t parts_;
 
-  void open();
+  std::unique_ptr<MultiHandle> handle_;
+
 
   static ClassSpec classSpec_;
-  static Reanimator<RadosHandle> reanimator_;
+  static Reanimator<RadosReadHandle> reanimator_;
 
 };
 

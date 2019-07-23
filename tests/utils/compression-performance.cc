@@ -10,7 +10,9 @@
 
 #include <cassert>
 #include <iostream>
+#include <fstream>
 #include <memory>
+#include <cstdio>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/ResizableBuffer.h"
@@ -72,6 +74,27 @@ CASE("Test compression performance") {
     eckit::ResizableBuffer outBuffer2(64 * 1024 * 1024);
     eckit::Timer timer;
 
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=2019-07-23,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+    std::ifstream is( "sample.grib", std::ios::binary );
+    is.seekg (0, ios::end);
+    size_t length = is.tellg();
+    is.seekg (0, ios::beg);
+
+    eckit::Buffer inGrib(length);
+    eckit::ResizableBuffer outGrib(length);
+    is.read(inGrib, length);
+
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=2019-07-23,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+    std::ifstream is6( "sample.grib", std::ios::binary );
+    is6.seekg (0, ios::end);
+    length = is6.tellg();
+    is6.seekg (0, ios::beg);
+
+    eckit::Buffer inGrib6(length);
+    eckit::ResizableBuffer outGrib6(length);
+    is6.read(inGrib6, length);
+    remove( "sample.grib" );
+
     const char* compressors[4] = {"none", "lz4", "snappy", "bzip2"};
 
     for (int i = 0; i < 4; ++i) {
@@ -93,6 +116,16 @@ CASE("Test compression performance") {
             Buffer compressed2(outBuffer2, compressedLenght);
             outBuffer2.zero();
             timeDecompress<5>(*compressor, compressed2, outBuffer2, timer);
+
+            compressedLenght = timeCompress<5>(*compressor, inGrib, outGrib, timer);
+            Buffer compressedGrib(outGrib, compressedLenght);
+            outGrib.zero();
+            timeDecompress<5>(*compressor, compressedGrib, outGrib, timer);
+
+            compressedLenght = timeCompress<5>(*compressor, inGrib6, outGrib6, timer);
+            Buffer compressedGrib6(outGrib6, compressedLenght);
+            outGrib6.zero();
+            timeDecompress<5>(*compressor, compressedGrib6, outGrib6, timer);
         }
     }
 }

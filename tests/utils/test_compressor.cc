@@ -88,13 +88,10 @@ CASE("Compression") {
     }
 
     SECTION("CASE BZip2 Compression") {
-
         if (CompressorFactory::instance().has("bzip2")) {
-
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
-/// @todo implement
-//            size_t ulen = compress_uncompress(*c, in, out);
-//            EXPECT(tostr(out,ulen) == msg);
+            size_t ulen = compress_uncompress(*c, in, out);
+            EXPECT(tostr(out,ulen) == msg);
         }
     }
 

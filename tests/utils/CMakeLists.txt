@@ -43,3 +43,7 @@ ecbuild_add_test( TARGET      eckit_test_utils_md4
 ecbuild_add_test( TARGET      eckit_test_utils_hash_performance
                   SOURCES     hash-performance.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_utils_compression_performance
+                  SOURCES     compression-performance.cc
+                  LIBS        eckit )

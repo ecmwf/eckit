@@ -138,9 +138,9 @@ CASE("Test compression performance") {
     remove( "sample.grib" );
 #endif
 
-    const char* compressors[5] = {"none", "lz4", "snappy", "bzip2"};
+    const char* compressors[5] = {"none", "lz4", "snappy", "bzip2", "aec"};
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 5; ++i) {
 
         std::string name = compressors[i];
 

@@ -25,25 +25,35 @@ AECCompressor::AECCompressor() {
 AECCompressor::~AECCompressor() {
 }
 
-size_t AECCompressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const{
+size_t AECCompressor::minInputSize(const size_t inputSize, const aec_stream &strm) {
+    int blockSizeBytes = strm.bits_per_sample * strm.block_size / 8;
+    int minSize = (inputSize/blockSizeBytes);
+    if (inputSize % blockSizeBytes > 0)
+        minSize++;
+
+    return minSize * blockSizeBytes;
+}
+
+size_t AECCompressor::compress(const eckit::Buffer& inTmp, ResizableBuffer& out) const{
     std::ostringstream msg;
+
+    struct aec_stream strm;
+
+    /* input data is 16 bits wide */
+    strm.bits_per_sample = 16;
+    /* define a block size of 64 */
+    strm.block_size = 64;
+    /* the reference sample interval is set to 128 blocks */
+    strm.rsi = 128;
+    /* input data is signed and needs to be preprocessed */
+    strm.flags = AEC_DATA_PREPROCESS | AEC_DATA_MSB;
+
+    Buffer in(inTmp, minInputSize(inTmp.size(), strm));
 
     unsigned int maxcompressed = (size_t) (1.2*in.size());
     if(out.size() < maxcompressed)
         out.resize(maxcompressed);
     unsigned int bufferSize = out.size();
-
-
-    struct aec_stream strm;
-
-    /* input data is 32 bits wide */
-    strm.bits_per_sample = 32;
-    /* define a block size of 16 */
-    strm.block_size = 16;
-    /* the reference sample interval is set to 128 blocks */
-    strm.rsi = 128;
-    /* input data is signed and needs to be preprocessed */
-    strm.flags = AEC_DATA_SIGNED | AEC_DATA_PREPROCESS;
 
     /* pointer to input */
     strm.next_in = (unsigned char *)in.data();
@@ -52,7 +62,6 @@ size_t AECCompressor::compress(const eckit::Buffer& in, ResizableBuffer& out) co
 
     /* pointer to output buffer */
     strm.next_out = (unsigned char *)out.data();
-
     /* length of output buffer in bytes */
     strm.avail_out = bufferSize;
 
@@ -71,53 +80,12 @@ size_t AECCompressor::compress(const eckit::Buffer& in, ResizableBuffer& out) co
         msg << "returned " << ret;
         throw FailedLibraryCall("AEC", "aec_encode", msg.str(), Here());
     }
-    size_t outSize = bufferSize - strm.avail_out;
+    size_t outSize = strm.total_out;
 
     /* free all resources used by encoder */
     ret = aec_encode_end(&strm);
     if (ret == AEC_OK)
         return outSize;
-
-
-
-
-
-/*
-
-
-    bz_stream strm;
-    strm.avail_in = 0UL;
-    strm.next_in = NULL;
-    strm.next_out = NULL;
-    strm.bzalloc = NULL;
-    strm.bzfree = NULL;
-    strm.opaque = NULL;
-
-    int ret = BZ2_bzCompressInit(&strm, 9, 0, 30);
-    if (ret != BZ_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("BZlib2", "BZ2_bzCompressInit", msg.str(), Here());
-    }
-
-    strm.next_in = (char *)in.data();
-    strm.avail_in = in.size();
-    strm.next_out = out.data();
-    strm.avail_out = bufferSize;
-
-    ret = BZ2_bzCompress(&strm, BZ_FINISH);
-    if (ret != BZ_STREAM_END && ret != BZ_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("BZlib2", "BZ2_bzCompress", msg.str(), Here());
-    }
-
-    size_t outSize = bufferSize - strm.avail_out;
-
-    strm.avail_in = 0;
-    strm.next_in = NULL;
-
-    ret = BZ2_bzCompressEnd(&strm);
-    if (ret == BZ_OK)
-        return outSize;*/
 
     msg << "returned " << ret;
     throw FailedLibraryCall("AEC", "aec_encode_end", msg.str(), Here());
@@ -128,42 +96,52 @@ size_t AECCompressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) 
 
     // AEC assumes you have transmitted the original size separately
     // We assume here that out is correctly sized
-/*
-    bz_stream strm;
-    strm.avail_in = 0UL;
-    strm.next_in = NULL;
-    strm.next_out = NULL;
-    strm.bzalloc = NULL;
-    strm.bzfree = NULL;
-    strm.opaque = NULL;
 
-    int ret = BZ2_bzDecompressInit(&strm, 0, 0);
-    if (ret != BZ_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("AEX", "aec_encode_end", msg.str(), Here());
-    }
+    struct aec_stream strm;
 
-    strm.next_in = (char *)in.data();
+    /* input data is 16 bits wide */
+    strm.bits_per_sample = 16;
+    /* define a block size of 64 */
+    strm.block_size = 64;
+    /* the reference sample interval is set to 128 blocks */
+    strm.rsi = 128;
+    /* input data is signed and needs to be preprocessed */
+    strm.flags = AEC_DATA_PREPROCESS | AEC_DATA_MSB;
+
+    /* pointer to input */
+    strm.next_in = (unsigned char *)in.data();
+    /* length of input in bytes */
     strm.avail_in = in.size();
-    strm.next_out = out.data();
-    strm.avail_out = out.size();
-    unsigned int bufferSize = out.size();
 
-    ret = BZ2_bzDecompress(&strm);
-    if (ret != BZ_STREAM_END && ret != BZ_OK) {
+    Buffer outTmp(minInputSize(out.size(), strm));
+
+    /* pointer to output buffer */
+    strm.next_out = (unsigned char *)outTmp.data();
+    /* length of output buffer in bytes */
+    strm.avail_out = outTmp.size();
+
+    /* initialize encoding */
+    int ret = aec_decode_init(&strm);
+    if (ret != AEC_OK) {
         msg << "returned " << ret;
-        throw FailedLibraryCall("BZlib2", "BZ2_bzDecompress", msg.str(), Here());
+        throw FailedLibraryCall("AEC", "aec_decode_init", msg.str(), Here());
     }
 
-    size_t outSize = bufferSize - strm.avail_out;
+    ret = aec_decode(&strm, AEC_FLUSH);
+    if (ret!= AEC_OK) {
+        msg << "returned " << ret;
+        throw FailedLibraryCall("AEC", "aec_decode", msg.str(), Here());
+    }
+    size_t outSize = strm.total_out;
 
-    strm.next_out = NULL;
-    ret = BZ2_bzDecompressEnd(&strm);
-    if (ret == BZ_OK)
-        return outSize;
-
+    /* free all resources used by encoder */
+    ret = aec_decode_end(&strm);
+    if (ret == AEC_OK) {
+        ::memcpy(out, outTmp, out.size());
+        return out.size();
+    }
     msg << "returned " << ret;
-    throw FailedLibraryCall("BZlib2", "BZ2_bzDecompressEnd", msg.str(), Here());*/
+    throw FailedLibraryCall("AEC", "aec_decode_end", msg.str(), Here());
 }
 
 CompressorBuilder<AECCompressor> aec("aec");

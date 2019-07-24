@@ -655,13 +655,6 @@ if(ECKIT_HAVE_BZIP2)
     )
 endif()
 
-if(ECKIT_HAVE_AEC)
-    list( APPEND eckit_utils_srcs
-      utils/AECCompressor.cc
-      utils/AECCompressor.h
-    )
-endif()
-
 if(ECKIT_HAVE_SNAPPY)
   list( APPEND eckit_utils_srcs
     utils/SnappyCompressor.cc
@@ -673,6 +666,13 @@ if(ECKIT_HAVE_LZ4)
   list( APPEND eckit_utils_srcs
     utils/LZ4Compressor.cc
     utils/LZ4Compressor.h
+  )
+endif()
+
+if(ECKIT_HAVE_AEC)
+  list( APPEND eckit_utils_srcs
+    utils/AECCompressor.cc
+    utils/AECCompressor.h
   )
 endif()
 

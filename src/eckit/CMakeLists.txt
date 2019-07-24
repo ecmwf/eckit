@@ -649,10 +649,17 @@ list( APPEND eckit_utils_srcs
 )
 
 if(ECKIT_HAVE_BZIP2)
-  list( APPEND eckit_utils_srcs
-    utils/BZip2Compressor.cc
-    utils/BZip2Compressor.h
-  )
+    list( APPEND eckit_utils_srcs
+      utils/BZip2Compressor.cc
+      utils/BZip2Compressor.h
+    )
+endif()
+
+if(ECKIT_HAVE_AEC)
+    list( APPEND eckit_utils_srcs
+      utils/AECCompressor.cc
+      utils/AECCompressor.h
+    )
 endif()
 
 if(ECKIT_HAVE_SNAPPY)
@@ -850,6 +857,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         "${SNAPPY_INCLUDE_DIRS}"
                         "${LZ4_INCLUDE_DIRS}"
                         "${BZIP2_INCLUDE_DIRS}"
+                        "${AEC_INCLUDE_DIRS}"
                         "${RADOS_INCLUDE_DIRS}"
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
@@ -861,6 +869,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         ${SNAPPY_LIBRARIES}
                         ${LZ4_LIBRARIES}
                         ${BZIP2_LIBRARIES}
+                        ${AEC_LIBRARIES}
                         ${AIO_LIBRARIES}
                         ${RADOS_LIBRARIES}
                         ${CMATH_LIBRARIES}

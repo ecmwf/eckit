@@ -94,6 +94,10 @@ ecbuild_add_option( FEATURE LZ4
                     DESCRIPTION "LZ4 support for compression"
                     REQUIRED_PACKAGES LZ4 )
 
+ecbuild_add_option( FEATURE AEC
+                    DESCRIPTION "AEC support for compression"
+                    REQUIRED_PACKAGES AEC )
+
 ### LAPACK
 
 if( ECKIT_HAVE_MKL )

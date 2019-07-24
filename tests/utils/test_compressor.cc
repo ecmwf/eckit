@@ -79,7 +79,6 @@ CASE("Compression") {
     }
 
     SECTION("CASE LZ4 Compression") {
-
         if (CompressorFactory::instance().has("lz4")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("lz4")));
             size_t ulen = compress_uncompress(*c, in, out);
@@ -95,10 +94,16 @@ CASE("Compression") {
         }
     }
 
+    SECTION("CASE AEC Compression") {
+        if (CompressorFactory::instance().has("aec")) {
+            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("aec")));
+            size_t ulen = compress_uncompress(*c, in, out);
+            EXPECT(tostr(out,ulen) == msg);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 }  // end namespace test
 }  // end namespace eckit

@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# - Try to find Rados
+# - Try to find libLZ4
 # Once done this will define
 #
 #  LZ4_FOUND         - found LZ4

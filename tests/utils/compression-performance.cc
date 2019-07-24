@@ -13,6 +13,8 @@
 #include <fstream>
 #include <memory>
 #include <cstdio>
+#include <locale>
+#include <iomanip>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/ResizableBuffer.h"
@@ -24,6 +26,11 @@
 
 #include "eckit/testing/Test.h"
 
+
+//#define DUMMY_BUFFER
+#define GRIB_RAW
+#define GRIB_POINT
+
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
@@ -32,6 +39,10 @@ namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+struct space_out : std::numpunct<char> {
+    char do_thousands_sep()   const { return ' '; }  // separate with spaces
+};
 
 template <int N>
 size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::ResizableBuffer& outBuffer, eckit::Timer& timer) {
@@ -45,7 +56,9 @@ size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Resi
 
     timer.stop();
 
-    std::cout << " - compress()   rate " << Bytes(N * inBuffer.size(), timer) << " factor " << ((1.0*out)/inBuffer.size()) /*<< "|" << out << "|" << inBuffer.size()*/ << std::endl;
+    std::cout << " - compress()   rate " << Bytes(N * inBuffer.size(), timer) << " factor " << std::fixed << std::setprecision(2) << ((100.0*out)/inBuffer.size()) << "% - ";
+    std::cout.imbue(std::locale(std::cout.getloc(), new space_out));
+    std::cout << std::fixed << std::setprecision(1) << (out/1024.0) << "/" << (inBuffer.size()/1024.0) << " KB" << std::endl;
     return out;
 }
 
@@ -68,23 +81,29 @@ void timeDecompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Resi
 
 CASE("Test compression performance") {
 
+    eckit::Timer timer;
+    size_t length;
+    size_t compressedLenght;
+
+#ifdef DUMMY_BUFFER
     eckit::Buffer inBuffer(4 * 1024 * 1024);
     eckit::Buffer inBuffer2(64 * 1024 * 1024);
     eckit::ResizableBuffer outBuffer(4 * 1024 * 1024);
     eckit::ResizableBuffer outBuffer2(64 * 1024 * 1024);
-    eckit::Timer timer;
+#endif
 
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=2019-07-23,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+#ifdef GRIB_RAW
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
     std::ifstream is( "sample.grib", std::ios::binary );
     is.seekg (0, ios::end);
-    size_t length = is.tellg();
+    length = is.tellg();
     is.seekg (0, ios::beg);
 
     eckit::Buffer inGrib(length);
     eckit::ResizableBuffer outGrib(length);
     is.read(inGrib, length);
 
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=2019-07-23,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
     std::ifstream is6( "sample.grib", std::ios::binary );
     is6.seekg (0, ios::end);
     length = is6.tellg();
@@ -94,8 +113,32 @@ CASE("Test compression performance") {
     eckit::ResizableBuffer outGrib6(length);
     is6.read(inGrib6, length);
     remove( "sample.grib" );
+#endif
 
-    const char* compressors[4] = {"none", "lz4", "snappy", "bzip2"};
+#ifdef GRIB_POINT
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\ngrid=0.1/0.1,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+    std::ifstream isP( "sample.grib", std::ios::binary );
+    isP.seekg (0, ios::end);
+    length = isP.tellg();
+    isP.seekg (0, ios::beg);
+
+    eckit::Buffer inGribP(length);
+    eckit::ResizableBuffer outGribP(length);
+    isP.read(inGribP, length);
+
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\ngrid=0.1/0.1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+    std::ifstream isP6( "sample.grib", std::ios::binary );
+    isP6.seekg (0, ios::end);
+    length = isP6.tellg();
+    isP6.seekg (0, ios::beg);
+
+    eckit::Buffer inGribP6(length);
+    eckit::ResizableBuffer outGribP6(length);
+    isP6.read(inGribP6, length);
+    remove( "sample.grib" );
+#endif
+
+    const char* compressors[5] = {"none", "lz4", "snappy", "bzip2"};
 
     for (int i = 0; i < 4; ++i) {
 
@@ -107,6 +150,7 @@ CASE("Test compression performance") {
 
             std::unique_ptr<eckit::Compressor> compressor(eckit::CompressorFactory::instance().build(name));
 
+#ifdef DUMMY_BUFFER
             size_t compressedLenght = timeCompress<5>(*compressor, inBuffer, outBuffer, timer);
             Buffer compressed(outBuffer, compressedLenght);
             outBuffer.zero();
@@ -116,16 +160,33 @@ CASE("Test compression performance") {
             Buffer compressed2(outBuffer2, compressedLenght);
             outBuffer2.zero();
             timeDecompress<5>(*compressor, compressed2, outBuffer2, timer);
-
+#endif
+#ifdef GRIB_RAW
+            std::cout << "   GRIB t2 surface layer" << std::endl;
             compressedLenght = timeCompress<5>(*compressor, inGrib, outGrib, timer);
             Buffer compressedGrib(outGrib, compressedLenght);
             outGrib.zero();
             timeDecompress<5>(*compressor, compressedGrib, outGrib, timer);
 
+            std::cout << "   GRIB rh 6 layers (10-15)" << std::endl;
             compressedLenght = timeCompress<5>(*compressor, inGrib6, outGrib6, timer);
             Buffer compressedGrib6(outGrib6, compressedLenght);
             outGrib6.zero();
             timeDecompress<5>(*compressor, compressedGrib6, outGrib6, timer);
+#endif
+#ifdef GRIB_POINT
+            std::cout << "   GRIB t2 surface layer - grid points" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, inGribP, outGribP, timer);
+            Buffer compressedGribP(outGribP, compressedLenght);
+            outGribP.zero();
+            timeDecompress<5>(*compressor, compressedGribP, outGribP, timer);
+
+            std::cout << "   GRIB rh 6 layers (10-15) - grid points" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, inGribP6, outGribP6, timer);
+            Buffer compressedGribP6(outGribP6, compressedLenght);
+            outGribP6.zero();
+            timeDecompress<5>(*compressor, compressedGribP6, outGribP6, timer);
+#endif
         }
     }
 }

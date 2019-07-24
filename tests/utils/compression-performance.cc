@@ -45,7 +45,7 @@ size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Resi
 
     timer.stop();
 
-    std::cout << " - compress()   rate " << Bytes(N * inBuffer.size(), timer) << " factor " << ((1.0*out)/inBuffer.size()) /*<< "|" << out << "|" << inBuffer.size()*/ << std::endl;
+    std::cout << " - compress()   rate " << Bytes(N * inBuffer.size(), timer) << " factor " << ((1.000*out)/inBuffer.size()) << "% - " << (out>>20) << "/" << (inBuffer.size()>>20) << std::endl;
     return out;
 }
 
@@ -74,7 +74,8 @@ CASE("Test compression performance") {
     eckit::ResizableBuffer outBuffer2(64 * 1024 * 1024);
     eckit::Timer timer;
 
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=2019-07-23,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+    //"\ngrid=0.1/0.1,"
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
     std::ifstream is( "sample.grib", std::ios::binary );
     is.seekg (0, ios::end);
     size_t length = is.tellg();
@@ -84,7 +85,8 @@ CASE("Test compression performance") {
     eckit::ResizableBuffer outGrib(length);
     is.read(inGrib, length);
 
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=2019-07-23,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
+    //"\ngrid=0.1/0.1,"
+    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
     std::ifstream is6( "sample.grib", std::ios::binary );
     is6.seekg (0, ios::end);
     length = is6.tellg();
@@ -95,7 +97,7 @@ CASE("Test compression performance") {
     is6.read(inGrib6, length);
     remove( "sample.grib" );
 
-    const char* compressors[4] = {"none", "lz4", "snappy", "bzip2"};
+    const char* compressors[5] = {"none", "lz4", "snappy", "bzip2"};
 
     for (int i = 0; i < 4; ++i) {
 
@@ -107,7 +109,7 @@ CASE("Test compression performance") {
 
             std::unique_ptr<eckit::Compressor> compressor(eckit::CompressorFactory::instance().build(name));
 
-            size_t compressedLenght = timeCompress<5>(*compressor, inBuffer, outBuffer, timer);
+/*            size_t compressedLenght = timeCompress<5>(*compressor, inBuffer, outBuffer, timer);
             Buffer compressed(outBuffer, compressedLenght);
             outBuffer.zero();
             timeDecompress<5>(*compressor, compressed, outBuffer, timer);
@@ -116,12 +118,14 @@ CASE("Test compression performance") {
             Buffer compressed2(outBuffer2, compressedLenght);
             outBuffer2.zero();
             timeDecompress<5>(*compressor, compressed2, outBuffer2, timer);
-
-            compressedLenght = timeCompress<5>(*compressor, inGrib, outGrib, timer);
+*/
+            std::cout << "   GRIB t2 surface layer" << std::endl;
+            size_t compressedLenght = timeCompress<5>(*compressor, inGrib, outGrib, timer);
             Buffer compressedGrib(outGrib, compressedLenght);
             outGrib.zero();
             timeDecompress<5>(*compressor, compressedGrib, outGrib, timer);
 
+            std::cout << "   GRIB rh 6 layers (10-15)" << std::endl;
             compressedLenght = timeCompress<5>(*compressor, inGrib6, outGrib6, timer);
             Buffer compressedGrib6(outGrib6, compressedLenght);
             outGrib6.zero();

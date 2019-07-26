@@ -16,7 +16,9 @@
 #include <locale>
 #include <iomanip>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/ResizableBuffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
@@ -25,11 +27,6 @@
 #include "eckit/utils/Compressor.h"
 
 #include "eckit/testing/Test.h"
-
-
-//#define DUMMY_BUFFER
-#define GRIB_RAW
-#define GRIB_POINT
 
 using namespace std;
 using namespace eckit;
@@ -84,72 +81,52 @@ CASE("Test compression performance") {
     eckit::Timer timer;
     size_t length;
     size_t compressedLenght;
+    DataHandle *dh;
 
-#ifdef DUMMY_BUFFER
-    eckit::Buffer inBuffer(4 * 1024 * 1024);
-    eckit::Buffer inBuffer2(64 * 1024 * 1024);
-    eckit::ResizableBuffer outBuffer(4 * 1024 * 1024);
-    eckit::ResizableBuffer outBuffer2(64 * 1024 * 1024);
-#endif
-
-#ifdef GRIB_RAW
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=vo/d,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream isVO_D( "sample.grib", std::ios::binary );
-    isVO_D.seekg (0, ios::end);
-    length = isVO_D.tellg();
-    isVO_D.seekg (0, ios::beg);
-
-    eckit::Buffer inVO_DGrib(length);
-    eckit::ResizableBuffer outVO_DGrib(length);
-    isVO_D.read(inVO_DGrib, length);
-    remove( "sample.grib" );
-#endif
-
-#ifdef GRIB_POINT
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevelist=10/to/15,\ngrid=O1280,\nlevtype=ml,\nparam=u/v,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream isU_V( "sample.grib", std::ios::binary );
-    isU_V.seekg (0, ios::end);
-    length = isU_V.tellg();
-    isU_V.seekg (0, ios::beg);
-
-    eckit::Buffer inU_VGrib(length);
-    eckit::ResizableBuffer outU_VGrib(length);
-    isU_V.read(inU_VGrib, length);
-
-
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevtype=sfc,\nparam=2t,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream is2T( "sample.grib", std::ios::binary );
-    is2T.seekg (0, ios::end);
-    length = is2T.tellg();
-    is2T.seekg (0, ios::beg);
-
+    eckit::PathName path2T("2t_sfc.grib");
+    length = path2T.size();
     eckit::Buffer in2TGrib(length);
     eckit::ResizableBuffer out2TGrib(length);
-    is2T.read(in2TGrib, length);
+    dh = path2T.fileHandle();
+    dh->openForRead();
+    dh->read(in2TGrib, length);
+    dh->close();
 
-
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\ngrid=0.1/0.1,\nexpver=1,\nlevtype=sfc,\nparam=2t,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream is2Tg( "sample.grib", std::ios::binary );
-    is2Tg.seekg (0, ios::end);
-    length = is2Tg.tellg();
-    is2Tg.seekg (0, ios::beg);
-
+    eckit::PathName path2Tregrid("2t_sfc_regrid.grib");
+    length = path2Tregrid.size();
     eckit::Buffer in2TgGrib(length);
     eckit::ResizableBuffer out2TgGrib(length);
-    is2Tg.read(in2TgGrib, length);
+    dh = path2Tregrid.fileHandle();
+    dh->openForRead();
+    dh->read(in2TgGrib, length);
+    dh->close();
 
-    //system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\ngrid=0.1/0.1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream isQg( "sample.grib", std::ios::binary );
-    isQg.seekg (0, ios::end);
-    length = isQg.tellg();
-    isQg.seekg (0, ios::beg);
+    eckit::PathName pathVO_D("vo-d_6ml.grib");
+    length = pathVO_D.size();
+    dh = pathVO_D.fileHandle();
+    eckit::Buffer inVO_DGrib(length);
+    eckit::ResizableBuffer outVO_DGrib(length);
+    dh->openForRead();
+    dh->read(inVO_DGrib, length);
+    dh->close();
 
+    eckit::PathName pathU_V("u-v_6ml.grib");
+    length = pathU_V.size();
+    eckit::Buffer inU_VGrib(length);
+    eckit::ResizableBuffer outU_VGrib(length);
+    dh = pathU_V.fileHandle();
+    dh->openForRead();
+    dh->read(inU_VGrib, length);
+    dh->close();
+
+    eckit::PathName pathQ("q_6ml_regrid.grib");
+    length = pathQ.size();
     eckit::Buffer inQgGrib(length);
     eckit::ResizableBuffer outQgGrib(length);
-    isQg.read(inQgGrib, length);
-    remove( "sample.grib" );
-#endif
+    dh = pathQ.fileHandle();
+    dh->openForRead();
+    dh->read(inQgGrib, length);
+    dh->close();
 
     const char* compressors[5] = {"none", "lz4", "snappy", "aec", "bzip2"};
 
@@ -163,31 +140,6 @@ CASE("Test compression performance") {
 
             std::unique_ptr<eckit::Compressor> compressor(eckit::CompressorFactory::instance().build(name));
 
-#ifdef DUMMY_BUFFER
-            size_t compressedLenght = timeCompress<5>(*compressor, inBuffer, outBuffer, timer);
-            Buffer compressed(outBuffer, compressedLenght);
-            outBuffer.zero();
-            timeDecompress<5>(*compressor, compressed, outBuffer, timer);
-
-            compressedLenght = timeCompress<5>(*compressor, inBuffer2, outBuffer2, timer);
-            Buffer compressed2(outBuffer2, compressedLenght);
-            outBuffer2.zero();
-            timeDecompress<5>(*compressor, compressed2, outBuffer2, timer);
-#endif
-#ifdef GRIB_RAW
-            std::cout << "   GRIB vo/d layers (10-15 spherical harmonics)" << std::endl;
-            compressedLenght = timeCompress<5>(*compressor, inVO_DGrib, outVO_DGrib, timer);
-            Buffer compressedVO_DGrib(outVO_DGrib, compressedLenght);
-            outVO_DGrib.zero();
-            timeDecompress<5>(*compressor, compressedVO_DGrib, outVO_DGrib, timer);
-#endif
-#ifdef GRIB_POINT
-            std::cout << "   GRIB u/v layers (10-15)" << std::endl;
-            compressedLenght = timeCompress<5>(*compressor, inU_VGrib, outU_VGrib, timer);
-            Buffer compressedU_VGrib(outU_VGrib, compressedLenght);
-            outU_VGrib.zero();
-            timeDecompress<5>(*compressor, compressedU_VGrib, outU_VGrib, timer);
-
             std::cout << "   GRIB t2 surface layer" << std::endl;
             compressedLenght = timeCompress<5>(*compressor, in2TGrib, out2TGrib, timer);
             Buffer compressed2TGrib(out2TGrib, compressedLenght);
@@ -200,12 +152,23 @@ CASE("Test compression performance") {
             out2TgGrib.zero();
             timeDecompress<5>(*compressor, compressed2TgGrib, out2TgGrib, timer);
 
+            std::cout << "   GRIB vo/d layers (10-15 spherical harmonics)" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, inVO_DGrib, outVO_DGrib, timer);
+            Buffer compressedVO_DGrib(outVO_DGrib, compressedLenght);
+            outVO_DGrib.zero();
+            timeDecompress<5>(*compressor, compressedVO_DGrib, outVO_DGrib, timer);
+
+            std::cout << "   GRIB u/v layers (10-15)" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, inU_VGrib, outU_VGrib, timer);
+            Buffer compressedU_VGrib(outU_VGrib, compressedLenght);
+            outU_VGrib.zero();
+            timeDecompress<5>(*compressor, compressedU_VGrib, outU_VGrib, timer);
+
             std::cout << "   GRIB q 6 layers (10-15) re-gridded" << std::endl;
             compressedLenght = timeCompress<5>(*compressor, inQgGrib, outQgGrib, timer);
             Buffer compressedQgGrib(outQgGrib, compressedLenght);
             outQgGrib.zero();
             timeDecompress<5>(*compressor, compressedQgGrib, outQgGrib, timer);
-#endif
         }
     }
 }

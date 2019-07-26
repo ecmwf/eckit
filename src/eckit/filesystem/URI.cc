@@ -53,6 +53,8 @@ URI::URI(const std::string& uri) {
     }
 }
 
+// currently not used since not supported by intel compiler + libstdc++ shipped with gcc 4.8.x
+// a little more accurate and compact than the string-based version
 bool URI::parseRegex(const std::string& uri) {
     //from  https://tools.ietf.org/html/rfc3986
     //      URI       = scheme:[//authority]path[?query][#fragment]

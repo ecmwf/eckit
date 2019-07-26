@@ -23,6 +23,7 @@
 
 namespace eckit {
 
+class JSON;
 //----------------------------------------------------------------------------------------------------------------------
 
 struct Info {
@@ -189,11 +190,15 @@ private:
 // -- Methods
 
 	void print(std::ostream&) const;
+	void json(JSON&) const;
 
 // -- Friends
 
 	friend std::ostream& operator<<(std::ostream& s,const TaskInfo& p)
 		{ p.print(s); return s; }
+
+	friend JSON& operator<<(JSON& s,const TaskInfo& p)
+		{ p.json(s); return s; }
 
 };
 

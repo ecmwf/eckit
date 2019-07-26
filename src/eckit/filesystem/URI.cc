@@ -95,9 +95,12 @@ bool URI::parseRegex(const std::string& uri) {
 
 URI::URI(Stream &s) {
     s >> scheme_;
+    s >> user_;
     s >> host_;
     s >> port_;
     s >> path_;
+    s >> query_;
+    s >> fragment_;
 }
 
 URI::~URI() {}
@@ -182,21 +185,52 @@ DataHandle* URI::newReadHandle() const {
     return URIManager::lookUp(scheme_).newReadHandle(*this);
 }
 
-std::string URI::asString() const {
+const std::string URI::authority(const bool separator) const {
+    std::string authority;
+    if (!user_.empty())
+        authority = user_ + "@";
+    if (!host_.empty())
+        authority += host_;
+    if (!port_.empty())
+        authority += ":"+port_;
+
+    if (separator && !authority.empty())
+        authority = "//"+authority;
+
+    return authority;
+}
+
+    const std::string URI::query(const bool separator) const {
+        std::string prefix(separator && !query_.empty() ? "?" : "");
+        return prefix + query_;
+    }
+    const std::string URI::fragment(const bool separator) const {
+        std::string prefix(separator && !fragment_.empty() ? "#" : "");
+        return prefix + fragment_;
+    }
+
+    std::string URI::asString() const {
     ASSERT(!path_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).asString(*this);
 }
 
+std::string URI::asRawString() const {
+    return scheme_ + ":" + authority(true) + path_ + query(true) + fragment(true);
+}
+
 void URI::print(std::ostream& s) const {
-    s << "URI[scheme=" << scheme_ << ",name=" << path_ << "]";
+    s << "URI[scheme=" << scheme_ << ",user=" << user_ << ",host=" << host_ << ",port=" << port_ << ",path=" << path_ << ",query=" << query_ << ",fragment=" << fragment_ << "]";
 }
 
 void URI::encode(Stream &s) const {
     s << scheme_;
+    s << user_;
     s << host_;
     s << port_;
     s << path_;
+    s << query_;
+    s << fragment_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

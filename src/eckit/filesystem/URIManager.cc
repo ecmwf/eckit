@@ -57,7 +57,7 @@ URIManager::~URIManager() {
 }
 
 std::string URIManager::asString(const URI& f) const {
-    return PathName(f.scheme() + ":" + f.name()).asString();
+    return PathName(f.scheme() + ":" + f.authority(true) + f.path() + f.query(true) + f.fragment(true)).asString();
 }
 
 URIManager& URIManager::lookUp(const std::string& name) {
@@ -88,18 +88,18 @@ void URIManager::print(std::ostream& s) const {
 
 
 class LocalFileManager : public URIManager {
-    virtual bool exists(const URI& f) { return PathName(f.name()).exists(); }
+    virtual bool exists(const URI& f) { return PathName(f.path()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.path()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.path()).fileHandle(); }
 
     virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.name()).partHandle(ol, ll);
+        return PathName(f.path()).partHandle(ol, ll);
     }
 
     virtual std::string asString(const URI& f) const {
-        return f.name();
+        return f.path();
     }
 
 public:
@@ -108,14 +108,14 @@ public:
 
 
 class MarsFSManager : public URIManager {
-    virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
+    virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.path()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.path()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.path()).fileHandle(); }
 
     virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);
+        return PathName(f.scheme() + ":" + f.path()).partHandle(ol, ll);
     }
 
 public:
@@ -123,6 +123,7 @@ public:
 };
 
 
+static LocalFileManager manager_posix("posix");
 static LocalFileManager manager_unix("unix");
 static LocalFileManager manager_file("file");
 static MarsFSManager manager_marsfs("marsfs");

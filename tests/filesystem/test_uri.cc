@@ -29,33 +29,85 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Parsing uri") {
-    URI uri1("path");
-    EXPECT(uri1.scheme() == "posix");
-    EXPECT(uri1.name() == "path");
-
-    URI uri2(":path");
-    EXPECT(uri2.scheme() == "posix");
-    EXPECT(uri2.name() == "path");
-
-    URI uri3(":path1:path2");
-    EXPECT(uri3.scheme() == "posix");
-    EXPECT(uri3.name() == "path1:path2");
-
-    URI uri4(":/folder1/folder2/file");
-    EXPECT(uri4.scheme() == "posix");
-    EXPECT(uri4.name() == "/folder1/folder2/file");
-
-    URI uri5("scheme://username:password@host:123/path");
-    EXPECT(uri5.scheme() == "scheme");
-    EXPECT(uri5.host() == "host");
-    EXPECT(uri5.port() == "123");
-    EXPECT(uri5.path() == "/path");
-
-    URI uri6("scheme://host:123/path?query#fragment");
-    EXPECT(uri6.scheme() == "scheme");
-    EXPECT(uri6.host() == "host");
-    EXPECT(uri6.port() == "123");
-    EXPECT(uri6.path() == "/path");
+    {
+        URI uri("path");
+        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port().empty());
+        EXPECT(uri.name() == "path");
+        EXPECT(uri.path() == "path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "posix:path");
+        EXPECT(uri.asString() == "path");
+    }
+    {
+        URI uri(":path");
+        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port().empty());
+        EXPECT(uri.name() == "path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "posix:path");
+        EXPECT(uri.asString() == "path");
+    }
+    {
+        URI uri(":path1:path2");
+        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port().empty());
+        EXPECT(uri.name() == "path1:path2");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "posix:path1:path2");
+        EXPECT(uri.asString() == "path1:path2");
+    }
+    {
+        URI uri(":/folder1/folder2/file");
+        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.authority(true).empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port().empty());
+        EXPECT(uri.name() == "/folder1/folder2/file");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "posix:/folder1/folder2/file");
+        EXPECT(uri.asString() == "/folder1/folder2/file");
+    }
+    {
+        URI uri("file://username:password@host:123/path");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.authority() == "username:password@host:123");
+        EXPECT(uri.authority(true) == "//username:password@host:123");
+        EXPECT(uri.user() == "username:password");
+        EXPECT(uri.host() == "host");
+        EXPECT(uri.port() == "123");
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "file://username:password@host:123/path");
+        EXPECT(uri.asString() == "/path");
+    }
+    {
+        URI uri("unix://host:123/path?query#fragment");
+        EXPECT(uri.scheme() == "unix");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "host");
+        EXPECT(uri.port() == "123");
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query() == "query");
+        EXPECT(uri.fragment() == "fragment");
+        EXPECT(uri.query(true) == "?query");
+        EXPECT(uri.fragment(true) == "#fragment");
+        EXPECT(uri.asRawString() == "unix://host:123/path?query#fragment");
+        EXPECT(uri.asString() == "/path");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

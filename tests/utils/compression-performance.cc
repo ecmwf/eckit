@@ -16,7 +16,9 @@
 #include <locale>
 #include <iomanip>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/ResizableBuffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
@@ -25,11 +27,6 @@
 #include "eckit/utils/Compressor.h"
 
 #include "eckit/testing/Test.h"
-
-
-//#define DUMMY_BUFFER
-#define GRIB_RAW
-#define GRIB_POINT
 
 using namespace std;
 using namespace eckit;
@@ -84,61 +81,54 @@ CASE("Test compression performance") {
     eckit::Timer timer;
     size_t length;
     size_t compressedLenght;
+    DataHandle *dh;
 
-#ifdef DUMMY_BUFFER
-    eckit::Buffer inBuffer(4 * 1024 * 1024);
-    eckit::Buffer inBuffer2(64 * 1024 * 1024);
-    eckit::ResizableBuffer outBuffer(4 * 1024 * 1024);
-    eckit::ResizableBuffer outBuffer2(64 * 1024 * 1024);
-#endif
+    eckit::PathName path2T("2t_sfc.grib");
+    length = path2T.size();
+    eckit::Buffer in2TGrib(length);
+    eckit::ResizableBuffer out2TGrib(length);
+    dh = path2T.fileHandle();
+    dh->openForRead();
+    dh->read(in2TGrib, length);
+    dh->close();
 
-#ifdef GRIB_RAW
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream is( "sample.grib", std::ios::binary );
-    is.seekg (0, ios::end);
-    length = is.tellg();
-    is.seekg (0, ios::beg);
+    eckit::PathName path2Tregrid("2t_sfc_regrid.grib");
+    length = path2Tregrid.size();
+    eckit::Buffer in2TgGrib(length);
+    eckit::ResizableBuffer out2TgGrib(length);
+    dh = path2Tregrid.fileHandle();
+    dh->openForRead();
+    dh->read(in2TgGrib, length);
+    dh->close();
 
-    eckit::Buffer inGrib(length);
-    eckit::ResizableBuffer outGrib(length);
-    is.read(inGrib, length);
+    eckit::PathName pathVO_D("vo-d_6ml.grib");
+    length = pathVO_D.size();
+    dh = pathVO_D.fileHandle();
+    eckit::Buffer inVO_DGrib(length);
+    eckit::ResizableBuffer outVO_DGrib(length);
+    dh->openForRead();
+    dh->read(inVO_DGrib, length);
+    dh->close();
 
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream is6( "sample.grib", std::ios::binary );
-    is6.seekg (0, ios::end);
-    length = is6.tellg();
-    is6.seekg (0, ios::beg);
+    eckit::PathName pathU_V("u-v_6ml.grib");
+    length = pathU_V.size();
+    eckit::Buffer inU_VGrib(length);
+    eckit::ResizableBuffer outU_VGrib(length);
+    dh = pathU_V.fileHandle();
+    dh->openForRead();
+    dh->read(inU_VGrib, length);
+    dh->close();
 
-    eckit::Buffer inGrib6(length);
-    eckit::ResizableBuffer outGrib6(length);
-    is6.read(inGrib6, length);
-    remove( "sample.grib" );
-#endif
+    eckit::PathName pathQ("q_6ml_regrid.grib");
+    length = pathQ.size();
+    eckit::Buffer inQgGrib(length);
+    eckit::ResizableBuffer outQgGrib(length);
+    dh = pathQ.fileHandle();
+    dh->openForRead();
+    dh->read(inQgGrib, length);
+    dh->close();
 
-#ifdef GRIB_POINT
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\ngrid=0.1/0.1,\nexpver=1,\nlevtype=sfc,\nparam=167.128,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream isP( "sample.grib", std::ios::binary );
-    isP.seekg (0, ios::end);
-    length = isP.tellg();
-    isP.seekg (0, ios::beg);
-
-    eckit::Buffer inGribP(length);
-    eckit::ResizableBuffer outGribP(length);
-    isP.read(inGribP, length);
-
-    system("mars <<EOF\nretrieve,\nclass=od,\ndate=-1,\ngrid=0.1/0.1,\nexpver=1,\nlevelist=10/to/15,\nlevtype=ml,\nparam=133,\nstep=48,\nstream=oper,\ntime=00:00:00,\ntype=fc,\ntarget=\"sample.grib\"\nEOF");
-    std::ifstream isP6( "sample.grib", std::ios::binary );
-    isP6.seekg (0, ios::end);
-    length = isP6.tellg();
-    isP6.seekg (0, ios::beg);
-
-    eckit::Buffer inGribP6(length);
-    eckit::ResizableBuffer outGribP6(length);
-    isP6.read(inGribP6, length);
-    remove( "sample.grib" );
-#endif
-
-    const char* compressors[5] = {"none", "lz4", "snappy", "bzip2"};
+    const char* compressors[4] = {"none", "lz4", "snappy", "bzip2"};
 
     for (int i = 0; i < 4; ++i) {
 
@@ -150,43 +140,35 @@ CASE("Test compression performance") {
 
             std::unique_ptr<eckit::Compressor> compressor(eckit::CompressorFactory::instance().build(name));
 
-#ifdef DUMMY_BUFFER
-            size_t compressedLenght = timeCompress<5>(*compressor, inBuffer, outBuffer, timer);
-            Buffer compressed(outBuffer, compressedLenght);
-            outBuffer.zero();
-            timeDecompress<5>(*compressor, compressed, outBuffer, timer);
-
-            compressedLenght = timeCompress<5>(*compressor, inBuffer2, outBuffer2, timer);
-            Buffer compressed2(outBuffer2, compressedLenght);
-            outBuffer2.zero();
-            timeDecompress<5>(*compressor, compressed2, outBuffer2, timer);
-#endif
-#ifdef GRIB_RAW
             std::cout << "   GRIB t2 surface layer" << std::endl;
-            compressedLenght = timeCompress<5>(*compressor, inGrib, outGrib, timer);
-            Buffer compressedGrib(outGrib, compressedLenght);
-            outGrib.zero();
-            timeDecompress<5>(*compressor, compressedGrib, outGrib, timer);
+            compressedLenght = timeCompress<5>(*compressor, in2TGrib, out2TGrib, timer);
+            Buffer compressed2TGrib(out2TGrib, compressedLenght);
+            out2TGrib.zero();
+            timeDecompress<5>(*compressor, compressed2TGrib, out2TGrib, timer);
 
-            std::cout << "   GRIB rh 6 layers (10-15)" << std::endl;
-            compressedLenght = timeCompress<5>(*compressor, inGrib6, outGrib6, timer);
-            Buffer compressedGrib6(outGrib6, compressedLenght);
-            outGrib6.zero();
-            timeDecompress<5>(*compressor, compressedGrib6, outGrib6, timer);
-#endif
-#ifdef GRIB_POINT
-            std::cout << "   GRIB t2 surface layer - grid points" << std::endl;
-            compressedLenght = timeCompress<5>(*compressor, inGribP, outGribP, timer);
-            Buffer compressedGribP(outGribP, compressedLenght);
-            outGribP.zero();
-            timeDecompress<5>(*compressor, compressedGribP, outGribP, timer);
+            std::cout << "   GRIB t2 surface layer re-gridded" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, in2TgGrib, out2TgGrib, timer);
+            Buffer compressed2TgGrib(out2TgGrib, compressedLenght);
+            out2TgGrib.zero();
+            timeDecompress<5>(*compressor, compressed2TgGrib, out2TgGrib, timer);
 
-            std::cout << "   GRIB rh 6 layers (10-15) - grid points" << std::endl;
-            compressedLenght = timeCompress<5>(*compressor, inGribP6, outGribP6, timer);
-            Buffer compressedGribP6(outGribP6, compressedLenght);
-            outGribP6.zero();
-            timeDecompress<5>(*compressor, compressedGribP6, outGribP6, timer);
-#endif
+            std::cout << "   GRIB vo/d layers (10-15 spherical harmonics)" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, inVO_DGrib, outVO_DGrib, timer);
+            Buffer compressedVO_DGrib(outVO_DGrib, compressedLenght);
+            outVO_DGrib.zero();
+            timeDecompress<5>(*compressor, compressedVO_DGrib, outVO_DGrib, timer);
+
+            std::cout << "   GRIB u/v layers (10-15)" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, inU_VGrib, outU_VGrib, timer);
+            Buffer compressedU_VGrib(outU_VGrib, compressedLenght);
+            outU_VGrib.zero();
+            timeDecompress<5>(*compressor, compressedU_VGrib, outU_VGrib, timer);
+
+            std::cout << "   GRIB q 6 layers (10-15) re-gridded" << std::endl;
+            compressedLenght = timeCompress<5>(*compressor, inQgGrib, outQgGrib, timer);
+            Buffer compressedQgGrib(outQgGrib, compressedLenght);
+            outQgGrib.zero();
+            timeDecompress<5>(*compressor, compressedQgGrib, outQgGrib, timer);
         }
     }
 }

@@ -28,6 +28,8 @@ BZip2Compressor::~BZip2Compressor() {
 size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const{
     std::ostringstream msg;
 
+    // https://sourceware.org/bzip2/manual/manual.html#bzbufftobuffcompress
+    // To guarantee that the compressed data will fit in its buffer, allocate an output buffer of size 1% larger than the uncompressed data, plus six hundred extra bytes.
     unsigned int maxcompressed = (size_t) (1.01*in.size() + 600);
     if(out.size() < maxcompressed)
         out.resize(maxcompressed);
@@ -41,6 +43,13 @@ size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) 
     strm.bzfree = NULL;
     strm.opaque = NULL;
 
+    // https://sourceware.org/bzip2/manual/manual.html#bzcompress-init
+    // int BZ2_bzCompressInit ( bz_stream *strm,
+    //                         int blockSize100k,   - block size used for compression   range [1..9]    block size used is 100000 x this figure. 9 gives the best compression but takes most memory.
+    //                         int verbosity,       - verbosity                         range [0..4]    0 is silent, greater numbers give increasingly verbose monitoring/debugging output.
+    //                         int workFactor );    - threshold, fallback sorting algo  range [0..250]  controls how the compression phase behaves when presented with worst case, highly repetitive, input data
+    //                                                                                                  in case of repetitive data, the library switches to a fallback algorithm. 3X slower. more stable.
+    //                                                                                                  Lower values reduce the effort the standard algorithm will expend before resorting to the fallback. default value of 30
     int ret = BZ2_bzCompressInit(&strm, 9, 0, 30);
     if (ret != BZ_OK) {
         msg << "returned " << ret;

@@ -9,7 +9,6 @@
  */
 
 #include <iostream>
-#include <regex>
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"

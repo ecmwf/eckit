@@ -65,7 +65,6 @@ protected: // methods
 private: // methods
 
     bool parse(const std::string &aux);
-    bool parseRegex(const std::string &aux);
 
 private: // members
 

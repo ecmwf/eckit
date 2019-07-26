@@ -53,48 +53,6 @@ URI::URI(const std::string& uri) {
     }
 }
 
-// currently not used since not supported by intel compiler + libstdc++ shipped with gcc 4.8.x
-// a little more accurate and compact than the string-based version
-bool URI::parseRegex(const std::string& uri) {
-    //from  https://tools.ietf.org/html/rfc3986
-    //      URI       = scheme:[//authority]path[?query][#fragment]
-    //where
-    //      authority = [userinfo@]host[:port]
-    //
-    //regex (([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?
-    //        scheme   :  [//[ userinfo @]  host      [:port]  ]  path         [ ? query ] [#fragment]
-    //
-    //from regex
-    //      scheme    = $2
-    //      authority = $3
-    //      userinfo  = $5
-    //      host      = $6
-    //      port      = $8
-    //      path      = $9
-    //      query     = $11
-    //      fragment  = $13
-
-    std::regex uriRegex(
-            R"((([^:/?#]*):)?(//(([^/?#]*)\@)?([^:/?#@]*)(:(\d+))?)?([^:?#][^?#]*)(\?([^#]*))?(#(.*))?)",
-            std::regex::extended);
-    std::smatch uriMatchResult;
-
-    if (std::regex_match(uri, uriMatchResult, uriRegex) && uriMatchResult.size() > 1) {
-        // storing a subset of URI (sub-)components
-        scheme_ = uriMatchResult[2];
-        if (scheme_.empty())
-            scheme_ = "posix";             //default scheme
-        user_ = uriMatchResult[5];
-        host_ = uriMatchResult[6];
-        port_ = uriMatchResult[8];
-        path_ = uriMatchResult[9];
-        query_ = uriMatchResult[11];
-        fragment_ = uriMatchResult[13];
-        return true;
-    }
-    return false;
-}
-
 URI::URI(Stream &s) {
     s >> scheme_;
     s >> user_;

@@ -31,6 +31,13 @@ URI::URI(const std::string& uri) {
         scheme_ = "unix";
 }
 
+URI::URI(const URI &uri, const std::string &host, const int port) {
+    scheme_ = uri.scheme_;
+    user_ = uri.user_;
+    host_ = host;
+    port_ = port;
+}
+
 URI::URI(Stream &s) {
     s >> scheme_;
     s >> user_;
@@ -79,8 +86,10 @@ void URI::parse(const std::string &uri) {
 
 void URI::parseAuthority(std::string &aux) {
 
-    if (aux.rfind("//", 0) != 0)
+    if (aux.rfind("//", 0) != 0) {
+        port_ = -1;
         return;
+    }
 
     aux = aux.substr(2);
     std::size_t userEnd = aux.find_last_of("@");
@@ -88,17 +97,22 @@ void URI::parseAuthority(std::string &aux) {
         user_ = aux.substr(0, userEnd);
         aux = aux.substr(userEnd + 1);
     }
-    std::size_t hostEndPortStart = aux.find_last_of(":");
-    std::size_t hostEndPathStart = aux.find("/");
-    if (hostEndPathStart != std::string::npos || hostEndPortStart != std::string::npos) {
-        std::size_t hostEnd = std::min(hostEndPortStart, hostEndPathStart);
-        host_ = aux.substr(0, hostEnd);
-        if (hostEndPortStart < hostEndPathStart) {
-            if (hostEndPathStart != std::string::npos) {
-                port_ = aux.substr(hostEndPortStart+1, hostEndPathStart-hostEndPortStart-1);
-            }
+    std::size_t portStart = aux.find(":");
+    if (portStart != std::string::npos) {
+        ASSERT(portStart > 0);
+        host_ = aux.substr(0, portStart);
+        port_ = 0;
+        int i=portStart+1;
+        for (;i<aux.size() && std::isdigit(aux[i]);i++) {
+            port_ = port_*10 + (aux[i] - '0');
         }
-        aux = aux.substr(hostEndPathStart);
+        aux = aux.substr(i);
+    } else {
+        port_ = -1;
+        std::size_t hostEnd = aux.find("/");
+        ASSERT(hostEnd != std::string::npos);
+        host_ = aux.substr(0, hostEnd);
+        aux = aux.substr(hostEnd);
     }
 }
 
@@ -132,8 +146,8 @@ const std::string URI::authority(const bool separator) const {
         authority = user_ + "@";
     if (!host_.empty())
         authority += host_;
-    if (!port_.empty())
-        authority += ":"+port_;
+    if (port_ != -1)
+        authority += ":" + std::to_string(port_);
 
     if (separator && !authority.empty())
         authority = "//"+authority;

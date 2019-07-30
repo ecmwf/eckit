@@ -63,15 +63,11 @@ CASE("Compression") {
         EXPECT(tostr(out,ulen) == msg);
     }
 
-    out.zero();
-
     SECTION("CASE No Compression") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("none")));
         size_t ulen = compress_uncompress(*c, in, out);
         EXPECT(tostr(out,ulen) == msg);
     }
-
-    out.zero();
 
     SECTION("CASE Snappy Compression") {
 
@@ -82,8 +78,6 @@ CASE("Compression") {
         }
     }
 
-    out.zero();
-
     SECTION("CASE LZ4 Compression") {
         if (CompressorFactory::instance().has("lz4")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("lz4")));
@@ -92,8 +86,6 @@ CASE("Compression") {
         }
     }
 
-    out.zero();
-
     SECTION("CASE BZip2 Compression") {
         if (CompressorFactory::instance().has("bzip2")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
@@ -101,8 +93,6 @@ CASE("Compression") {
             EXPECT(tostr(out,ulen) == msg);
         }
     }
-
-    out.zero();
 
     SECTION("CASE AEC Compression") {
         if (CompressorFactory::instance().has("aec")) {

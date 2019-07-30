@@ -161,6 +161,12 @@ set_package_properties( ViennaCL PROPERTIES
                         TYPE RECOMMENDED
                         PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
 
+### Performance tests
+
+ecbuild_add_option( FEATURE EXTRA_TESTS
+                    DEFAULT OFF
+                    DESCRIPTION "Add additional unit/performance tests" )
+
 ### async io support
 
 find_package( AIO )

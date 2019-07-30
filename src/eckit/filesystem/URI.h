@@ -64,7 +64,8 @@ protected: // methods
 
 private: // methods
 
-    bool parse(const std::string &aux);
+    void parse(const std::string &uri);
+    void parseAuthority(std::string &aux);
 
 private: // members
 

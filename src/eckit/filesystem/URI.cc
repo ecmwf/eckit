@@ -15,7 +15,6 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/filesystem/URIManager.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {
@@ -25,31 +24,11 @@ namespace eckit {
 URI::URI() {}
 
 URI::URI(const std::string& uri) {
-    if (!parse(uri)) { // reverting to previous approach
-        Tokenizer parse(":");
-        std::vector<std::string> s;
+    if (!uri.empty())
+        parse(uri);
 
-        parse(uri, s);
-
-        switch (s.size()) {
-            case 1:
-                scheme_ = "unix";
-                path_ = s[0];
-                break;
-
-            case 2:
-                scheme_ = s[0];
-                path_ = s[1];
-                break;
-
-            default:
-                scheme_ = s[0];
-                path_ = s[1];
-                for (size_t j = 2; j < s.size(); j++)
-                    path_ = path_ + ':' + s[j];
-                break;
-        }
-    }
+    if (scheme_.empty())
+        scheme_ = "posix";
 }
 
 URI::URI(Stream &s) {
@@ -64,10 +43,8 @@ URI::URI(Stream &s) {
 
 URI::~URI() {}
 
-bool URI::parse(const std::string &uri) {
-    if (uri.empty())
-        return false;
-    
+void URI::parse(const std::string &uri) {
+
     std::string aux(uri);
 
     // get fragment start
@@ -89,35 +66,38 @@ bool URI::parse(const std::string &uri) {
         scheme_ = aux.substr(0, protocolEnd);
         aux = aux.substr(protocolEnd + 1);
     }
-    if (scheme_.empty())
-        scheme_ = "posix";
 
-    if (aux.rfind("//", 0) == 0) { // we have to parse authority
-        aux = aux.substr(2);
-        std::size_t userEnd = aux.find_last_of("@");
-        if (userEnd != std::string::npos) {
-            user_ = aux.substr(0, userEnd);
-            aux = aux.substr(userEnd + 1);
-        }
-        std::size_t hostEnd = aux.find_last_of(":");
-        if (hostEnd != std::string::npos) {
-            host_ = aux.substr(0, hostEnd);
-            aux = aux.substr(hostEnd + 1);
-            std::size_t portEnd = aux.find_last_of("/");
-            if (portEnd != std::string::npos) {
-                port_ = aux.substr(0, portEnd);
-                aux = aux.substr(portEnd);
-            }
-        }
-    }
+    parseAuthority(aux);
+
     std::size_t pathStart = aux.find("/");
     if (pathStart != std::string::npos) {
         path_ = aux.substr(pathStart);
     } else {
         path_ = aux;
     }
+}
 
-    return true;
+void URI::parseAuthority(std::string &aux) {
+
+    if (aux.rfind("//", 0) != 0)
+        return;
+
+    aux = aux.substr(2);
+    std::size_t userEnd = aux.find_last_of("@");
+    if (userEnd != std::string::npos) {
+        user_ = aux.substr(0, userEnd);
+        aux = aux.substr(userEnd + 1);
+    }
+    std::size_t hostEnd = aux.find_last_of(":");
+    if (hostEnd != std::string::npos) {
+        host_ = aux.substr(0, hostEnd);
+        aux = aux.substr(hostEnd + 1);
+        std::size_t portEnd = aux.find_last_of("/");
+        if (portEnd != std::string::npos) {
+            port_ = aux.substr(0, portEnd);
+            aux = aux.substr(portEnd);
+        }
+    }
 }
 
 bool URI::exists() const {

@@ -54,11 +54,23 @@ ecbuild_add_test( TARGET      eckit_test_utils_md4
 #                  SOURCES     test_xxhash.cc
 #                  LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils_hash_performance
+ecbuild_add_executable( TARGET      eckit_test_utils_hash_performance
+                  CONDITION   (NOT ${PERFORMANCE})
                   SOURCES     hash-performance.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_utils_hash_performance
+                  CONDITION   (${PERFORMANCE})
+                  SOURCES     hash-performance.cc
+                  LIBS        eckit )
+
+ecbuild_add_executable( TARGET      eckit_test_utils_compression_performance
+                  CONDITION   (NOT ${PERFORMANCE})
+                  SOURCES     compression-performance.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_utils_compression_performance
+                  CONDITION   (${PERFORMANCE})
                   TEST_DEPENDS get_eckit_test_data
                   SOURCES     compression-performance.cc
                   LIBS        eckit )

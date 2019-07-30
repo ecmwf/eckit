@@ -40,7 +40,7 @@ size_t compress_uncompress(Compressor& c, const Buffer& in, ResizableBuffer& out
 
     Buffer compressed(out, compressedLenght);
 
-    out.zero();
+    out.resize(in.size());
     size_t ulen = c.uncompress(compressed, out);
 
     std::cout << tostr(out,ulen) << std::endl;
@@ -79,7 +79,6 @@ CASE("Compression") {
     }
 
     SECTION("CASE LZ4 Compression") {
-
         if (CompressorFactory::instance().has("lz4")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("lz4")));
             size_t ulen = compress_uncompress(*c, in, out);
@@ -88,20 +87,23 @@ CASE("Compression") {
     }
 
     SECTION("CASE BZip2 Compression") {
-
         if (CompressorFactory::instance().has("bzip2")) {
-
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
-/// @todo implement
-//            size_t ulen = compress_uncompress(*c, in, out);
-//            EXPECT(tostr(out,ulen) == msg);
+            size_t ulen = compress_uncompress(*c, in, out);
+            EXPECT(tostr(out,ulen) == msg);
         }
     }
 
+    SECTION("CASE AEC Compression") {
+        if (CompressorFactory::instance().has("aec")) {
+            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("aec")));
+            size_t ulen = compress_uncompress(*c, in, out);
+            EXPECT(tostr(out,ulen) == msg);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 }  // end namespace test
 }  // end namespace eckit

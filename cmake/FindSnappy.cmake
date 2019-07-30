@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# - Try to find Rados
+# - Try to find Snappy
 # Once done this will define
 #
 #  SNAPPY_FOUND         - found Snappy

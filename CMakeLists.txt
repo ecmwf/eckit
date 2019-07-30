@@ -94,6 +94,10 @@ ecbuild_add_option( FEATURE LZ4
                     DESCRIPTION "LZ4 support for compression"
                     REQUIRED_PACKAGES LZ4 )
 
+ecbuild_add_option( FEATURE AEC
+                    DESCRIPTION "AEC support for compression"
+                    REQUIRED_PACKAGES AEC )
+
 ### LAPACK
 
 if( ECKIT_HAVE_MKL )
@@ -156,6 +160,12 @@ set_package_properties( ViennaCL PROPERTIES
                         DESCRIPTION "linear algebra library for computations on many-core architectures"
                         TYPE RECOMMENDED
                         PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
+
+### Performance tests
+
+ecbuild_add_option( FEATURE EXTRA_TESTS
+                    DEFAULT OFF
+                    DESCRIPTION "Add additional unit/performance tests" )
 
 ### async io support
 

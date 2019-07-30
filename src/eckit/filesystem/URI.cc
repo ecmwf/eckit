@@ -28,7 +28,7 @@ URI::URI(const std::string& uri) {
         parse(uri);
 
     if (scheme_.empty())
-        scheme_ = "posix";
+        scheme_ = "unix";
 }
 
 URI::URI(Stream &s) {
@@ -88,15 +88,17 @@ void URI::parseAuthority(std::string &aux) {
         user_ = aux.substr(0, userEnd);
         aux = aux.substr(userEnd + 1);
     }
-    std::size_t hostEnd = aux.find_last_of(":");
-    if (hostEnd != std::string::npos) {
+    std::size_t hostEndPortStart = aux.find_last_of(":");
+    std::size_t hostEndPathStart = aux.find("/");
+    if (hostEndPathStart != std::string::npos || hostEndPortStart != std::string::npos) {
+        std::size_t hostEnd = std::min(hostEndPortStart, hostEndPathStart);
         host_ = aux.substr(0, hostEnd);
-        aux = aux.substr(hostEnd + 1);
-        std::size_t portEnd = aux.find_last_of("/");
-        if (portEnd != std::string::npos) {
-            port_ = aux.substr(0, portEnd);
-            aux = aux.substr(portEnd);
+        if (hostEndPortStart < hostEndPathStart) {
+            if (hostEndPathStart != std::string::npos) {
+                port_ = aux.substr(hostEndPortStart+1, hostEndPathStart-hostEndPortStart-1);
+            }
         }
+        aux = aux.substr(hostEndPathStart);
     }
 }
 

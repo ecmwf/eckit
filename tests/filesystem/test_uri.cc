@@ -12,9 +12,6 @@
 
 #include "eckit/types/Types.h"
 
-//#include "eckit/filesystem/FileSystemSize.h"
-//#include "eckit/filesystem/LocalPathName.h"
-//#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 
 #include "eckit/testing/Test.h"
@@ -31,7 +28,7 @@ namespace test {
 CASE("Parsing uri") {
     {
         URI uri("path");
-        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port().empty());
@@ -39,36 +36,36 @@ CASE("Parsing uri") {
         EXPECT(uri.path() == "path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "posix:path");
+        EXPECT(uri.asRawString() == "unix:path");
         EXPECT(uri.asString() == "path");
     }
     {
         URI uri(":path");
-        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port().empty());
         EXPECT(uri.name() == "path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "posix:path");
+        EXPECT(uri.asRawString() == "unix:path");
         EXPECT(uri.asString() == "path");
     }
     {
         URI uri(":path1:path2");
-        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port().empty());
         EXPECT(uri.name() == "path1:path2");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "posix:path1:path2");
+        EXPECT(uri.asRawString() == "unix:path1:path2");
         EXPECT(uri.asString() == "path1:path2");
     }
     {
         URI uri(":/folder1/folder2/file");
-        EXPECT(uri.scheme() == "posix");
+        EXPECT(uri.scheme() == "unix");
         EXPECT(uri.authority().empty());
         EXPECT(uri.authority(true).empty());
         EXPECT(uri.user().empty());
@@ -77,7 +74,7 @@ CASE("Parsing uri") {
         EXPECT(uri.name() == "/folder1/folder2/file");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "posix:/folder1/folder2/file");
+        EXPECT(uri.asRawString() == "unix:/folder1/folder2/file");
         EXPECT(uri.asString() == "/folder1/folder2/file");
     }
     {
@@ -95,8 +92,36 @@ CASE("Parsing uri") {
         EXPECT(uri.asString() == "/path");
     }
     {
-        URI uri("unix://host:123/path?query#fragment");
-        EXPECT(uri.scheme() == "unix");
+    URI uri("marsfs://nodename/path");
+        EXPECT(uri.scheme() == "marsfs");
+        EXPECT(uri.authority() == "nodename");
+        EXPECT(uri.authority(true) == "//nodename");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "nodename");
+        EXPECT(uri.port().empty());
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "marsfs://nodename/path");
+        EXPECT(uri.asString() == "marsfs://nodename/path");
+    }
+    {
+    URI uri("marsfs://localhost:123/path");
+        EXPECT(uri.scheme() == "marsfs");
+        EXPECT(uri.authority() == "localhost:123");
+        EXPECT(uri.authority(true) == "//localhost:123");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "localhost");
+        EXPECT(uri.port() == "123");
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "marsfs://localhost:123/path");
+        EXPECT(uri.asString() == "marsfs://localhost:123/path");
+    }
+    {
+        URI uri("posix://host:123/path?query#fragment");
+        EXPECT(uri.scheme() == "posix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == "123");
@@ -105,7 +130,7 @@ CASE("Parsing uri") {
         EXPECT(uri.fragment() == "fragment");
         EXPECT(uri.query(true) == "?query");
         EXPECT(uri.fragment(true) == "#fragment");
-        EXPECT(uri.asRawString() == "unix://host:123/path?query#fragment");
+        EXPECT(uri.asRawString() == "posix://host:123/path?query#fragment");
         EXPECT(uri.asString() == "/path");
     }
 }

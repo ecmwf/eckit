@@ -67,25 +67,45 @@ void HashFactory::list(std::ostream& out) {
 }
 
 
-Hash* HashFactory::build(const std::string& name) {
+    Hash* HashFactory::build(const std::string& name) {
 
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+        pthread_once(&once, init);
+        eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    std::map<std::string, HashFactory*>::const_iterator j = m->find(name);
+        std::map<std::string, HashFactory*>::const_iterator j = m->find(name);
 
-    eckit::Log::debug() << "Looking for HashFactory [" << name << "]" << std::endl;
+        eckit::Log::debug() << "Looking for HashFactory [" << name << "]" << std::endl;
 
-    if (j == m->end()) {
-        eckit::Log::error() << "No HashFactory for [" << name << "]" << std::endl;
-        eckit::Log::error() << "HashFactories are:" << std::endl;
-        for (j = m->begin(); j != m->end(); ++j)
-            eckit::Log::error() << "   " << (*j).first << std::endl;
-        throw eckit::SeriousBug(std::string("No HashFactory called ") + name);
+        if (j == m->end()) {
+            eckit::Log::error() << "No HashFactory for [" << name << "]" << std::endl;
+            eckit::Log::error() << "HashFactories are:" << std::endl;
+            for (j = m->begin(); j != m->end(); ++j)
+                eckit::Log::error() << "   " << (*j).first << std::endl;
+            throw eckit::SeriousBug(std::string("No HashFactory called ") + name);
+        }
+
+        return (*j).second->make();
     }
 
-    return (*j).second->make();
-}
+    Hash* HashFactory::build(const std::string& name,const std::string& input) {
+
+        pthread_once(&once, init);
+        eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+
+        std::map<std::string, HashFactory*>::const_iterator j = m->find(name);
+
+        eckit::Log::debug() << "Looking for HashFactory [" << name << "]" << std::endl;
+
+        if (j == m->end()) {
+            eckit::Log::error() << "No HashFactory for [" << name << "]" << std::endl;
+            eckit::Log::error() << "HashFactories are:" << std::endl;
+            for (j = m->begin(); j != m->end(); ++j)
+                eckit::Log::error() << "   " << (*j).first << std::endl;
+            throw eckit::SeriousBug(std::string("No HashFactory called ") + name);
+        }
+
+        return (*j).second->make(input);
+    }
 
 //----------------------------------------------------------------------------------------------------------------------
 

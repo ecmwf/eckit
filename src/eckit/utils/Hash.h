@@ -101,6 +101,8 @@ public:  // types
 
   NoHash();
 
+  NoHash(const std::string&) : NoHash() {}
+
   virtual ~NoHash();
 
   virtual void reset() const;
@@ -119,6 +121,7 @@ class HashFactory {
 
     std::string name_;
     virtual Hash* make() = 0;
+    virtual Hash* make(const std::string&) = 0;
 
   protected:
 
@@ -130,6 +133,7 @@ class HashFactory {
     static bool has(const std::string& name);
     static void list(std::ostream &);
     static Hash* build(const std::string&);
+    static Hash* build(const std::string&, const std::string&);
 
 };
 
@@ -137,6 +141,9 @@ template< class T>
 class HashBuilder : public HashFactory {
     virtual Hash* make() {
         return new T();
+    }
+    virtual Hash* make(const std::string& input) {
+        return new T(input);
     }
   public:
     HashBuilder(const std::string &name) : HashFactory(name) {}

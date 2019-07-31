@@ -67,7 +67,6 @@ CASE("Parsing uri") {
         URI uri(":/folder1/folder2/file");
         EXPECT(uri.scheme() == "unix");
         EXPECT(uri.authority().empty());
-        EXPECT(uri.authority(true).empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
@@ -78,10 +77,22 @@ CASE("Parsing uri") {
         EXPECT(uri.asString() == "/folder1/folder2/file");
     }
     {
+        URI uri("file:///path");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "file:/path");
+        EXPECT(uri.asString() == "/path");
+    }
+    {
         URI uri("file://username:password@host:123/path");
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.authority() == "username:password@host:123");
-        EXPECT(uri.authority(true) == "//username:password@host:123");
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == 123);
@@ -95,7 +106,6 @@ CASE("Parsing uri") {
         URI uri("file://username:password@host:123path");
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.authority() == "username:password@host:123");
-        EXPECT(uri.authority(true) == "//username:password@host:123");
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == 123);
@@ -109,7 +119,6 @@ CASE("Parsing uri") {
     URI uri("marsfs://nodename/path");
         EXPECT(uri.scheme() == "marsfs");
         EXPECT(uri.authority() == "nodename");
-        EXPECT(uri.authority(true) == "//nodename");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "nodename");
         EXPECT(uri.port() == -1);
@@ -123,7 +132,6 @@ CASE("Parsing uri") {
     URI uri("marsfs://localhost:123/path");
         EXPECT(uri.scheme() == "marsfs");
         EXPECT(uri.authority() == "localhost:123");
-        EXPECT(uri.authority(true) == "//localhost:123");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "localhost");
         EXPECT(uri.port() == 123);
@@ -142,8 +150,8 @@ CASE("Parsing uri") {
         EXPECT(uri.path() == "/path");
         EXPECT(uri.query() == "query");
         EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.query(true) == "?query");
-        EXPECT(uri.fragment(true) == "#fragment");
+        EXPECT(uri.query() == "query");
+        EXPECT(uri.fragment() == "fragment");
         EXPECT(uri.asRawString() == "posix://host:123/path?query#fragment");
         EXPECT(uri.asString() == "/path");
     }

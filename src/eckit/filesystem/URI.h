@@ -46,14 +46,14 @@ public: // methods
 	DataHandle*  newReadHandle() const;
 
     const std::string& scheme() const { return scheme_; }
-    const std::string authority(const bool separator = false) const;
+    const std::string authority() const;
     const std::string& user() const { return user_; }
     const std::string& host() const { return host_; }
     const int port() const { return port_; }
     const std::string& name() const { return path_; }
     const std::string& path() const { return path_; }
-    const std::string query(const bool separator = false) const;
-    const std::string fragment(const bool separator = false) const;
+    const std::string query() const { return query_; }
+    const std::string fragment() const { return fragment_; }
 
     std::string asString() const;
     std::string asRawString() const;

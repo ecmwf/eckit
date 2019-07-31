@@ -140,7 +140,7 @@ DataHandle* URI::newReadHandle() const {
     return URIManager::lookUp(scheme_).newReadHandle(*this);
 }
 
-const std::string URI::authority(const bool separator) const {
+const std::string URI::authority() const {
     std::string authority;
     if (!user_.empty())
         authority = user_ + "@";
@@ -149,29 +149,21 @@ const std::string URI::authority(const bool separator) const {
     if (port_ != -1)
         authority += ":" + std::to_string(port_);
 
-    if (separator && !authority.empty())
-        authority = "//"+authority;
-
     return authority;
 }
 
-    const std::string URI::query(const bool separator) const {
-        std::string prefix(separator && !query_.empty() ? "?" : "");
-        return prefix + query_;
-    }
-    const std::string URI::fragment(const bool separator) const {
-        std::string prefix(separator && !fragment_.empty() ? "#" : "");
-        return prefix + fragment_;
-    }
-
-    std::string URI::asString() const {
+std::string URI::asString() const {
     ASSERT(!path_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).asString(*this);
 }
 
 std::string URI::asRawString() const {
-    return scheme_ + ":" + authority(true) + path_ + query(true) + fragment(true);
+    std::string auth = authority();
+    if (!auth.empty())
+        auth = "//"+auth;
+
+    return scheme_ + ":" + auth + path_ + (query_.empty() ? "" : "?" + query_) + (fragment_.empty() ? "" : "#"+fragment_);
 }
 
 void URI::print(std::ostream& s) const {

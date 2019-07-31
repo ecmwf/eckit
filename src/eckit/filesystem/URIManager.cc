@@ -57,7 +57,7 @@ URIManager::~URIManager() {
 }
 
 std::string URIManager::asString(const URI& f) const {
-    return PathName(f.scheme() + ":" + f.authority(true) + f.path() + f.query(true) + f.fragment(true)).asString();
+    return PathName(f.asRawString()).asString();
 }
 
 URIManager& URIManager::lookUp(const std::string& name) {

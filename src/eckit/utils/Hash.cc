@@ -13,6 +13,7 @@
 
 #include "eckit/utils/Hash.h"
 
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -21,90 +22,99 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static pthread_once_t once                    = PTHREAD_ONCE_INIT;
-static eckit::Mutex* local_mutex              = 0;
-static std::map<std::string, HashFactory*>* m = 0;
+//----------------------------------------------------------------------------------------------------------------------
 
-static void init() {
-    local_mutex = new eckit::Mutex();
-    m           = new std::map<std::string, HashFactory*>();
-}
-
-
-HashFactory::HashFactory(const std::string& name) : name_(name) {
-
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    ASSERT(m->find(name) == m->end());
-
-    (*m)[name] = this;
-}
-
-
-HashFactory::~HashFactory() {
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-    m->erase(name_);
-}
-
-bool HashFactory::has(const std::string& name) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    return m->find(name) != m->end();
-}
-
-void HashFactory::list(std::ostream& out) {
-
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    const char* sep = "";
-    for (std::map<std::string, HashFactory*>::const_iterator j = m->begin(); j != m->end(); ++j) {
-        out << sep << (*j).first;
-        sep = ", ";
+    HashFactory::HashFactory() {
     }
-}
 
+    HashFactory& HashFactory::instance() {
+        static HashFactory theOne;
+        return theOne;
+    }
+
+    void HashFactory::add(const std::string& name, HashBuilderBase* builder) {
+        AutoLock<Mutex> lock(mutex_);
+        if(has(name)) {
+            throw SeriousBug("Duplicate entry in HashFactory: " + name, Here());
+        }
+        builders_[name] = builder;
+    }
+
+    void HashFactory::remove(const std::string& name) {
+        builders_.erase(name);
+    }
+
+    bool HashFactory::has(const std::string& name) {
+        AutoLock<Mutex> lock(mutex_);
+        return builders_.find(name) != builders_.end();
+    }
+
+    void HashFactory::list(std::ostream& out) {
+        AutoLock<Mutex> lock(mutex_);
+        const char* sep = "";
+        for (std::map<std::string, HashBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end(); ++j) {
+            out << sep << (*j).first;
+            sep = ", ";
+        }
+    }
+
+    Hash* HashFactory::build() {
+
+        std::string compression = eckit::Resource<std::string>("defaultHash;ECKIT_DEFAULT_HASH", "MD5");
+
+        if(has(compression)) {
+            return build(compression);
+        }
+
+        return build("none");
+    }
 
     Hash* HashFactory::build(const std::string& name) {
 
-        pthread_once(&once, init);
-        eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+        AutoLock<Mutex> lock(mutex_);
 
-        std::map<std::string, HashFactory*>::const_iterator j = m->find(name);
+        auto j = builders_.find(name);
 
-        eckit::Log::debug() << "Looking for HashFactory [" << name << "]" << std::endl;
+        eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
 
-        if (j == m->end()) {
-            eckit::Log::error() << "No HashFactory for [" << name << "]" << std::endl;
-            eckit::Log::error() << "HashFactories are:" << std::endl;
-            for (j = m->begin(); j != m->end(); ++j)
+        if (j == builders_.end()) {
+            eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
+            eckit::Log::error() << "HashBuilders are:" << std::endl;
+            for (j = builders_.begin(); j != builders_.end(); ++j)
                 eckit::Log::error() << "   " << (*j).first << std::endl;
-            throw eckit::SeriousBug(std::string("No HashFactory called ") + name);
+            throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
         }
 
         return (*j).second->make();
     }
 
-    Hash* HashFactory::build(const std::string& name,const std::string& input) {
+    Hash* HashFactory::build(const std::string& name, const std::string& param) {
 
-        pthread_once(&once, init);
-        eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+        AutoLock<Mutex> lock(mutex_);
 
-        std::map<std::string, HashFactory*>::const_iterator j = m->find(name);
+        auto j = builders_.find(name);
 
-        eckit::Log::debug() << "Looking for HashFactory [" << name << "]" << std::endl;
+        eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
 
-        if (j == m->end()) {
-            eckit::Log::error() << "No HashFactory for [" << name << "]" << std::endl;
-            eckit::Log::error() << "HashFactories are:" << std::endl;
-            for (j = m->begin(); j != m->end(); ++j)
+        if (j == builders_.end()) {
+            eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
+            eckit::Log::error() << "HashBuilders are:" << std::endl;
+            for (j = builders_.begin(); j != builders_.end(); ++j)
                 eckit::Log::error() << "   " << (*j).first << std::endl;
-            throw eckit::SeriousBug(std::string("No HashFactory called ") + name);
+            throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
         }
 
-        return (*j).second->make(input);
+        return (*j).second->make(param);
+    }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+    HashBuilderBase::HashBuilderBase(const std::string& name) : name_(name) {
+        HashFactory::instance().add(name_, this);
+    }
+
+    HashBuilderBase::~HashBuilderBase() {
+        HashFactory::instance().remove(name_);
     }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,6 +126,8 @@ Hash::~Hash() {}
 //----------------------------------------------------------------------------------------------------------------------
 
 NoHash::NoHash() {}
+
+NoHash::NoHash(const std::string&) {}
 
 NoHash::~NoHash() {}
 

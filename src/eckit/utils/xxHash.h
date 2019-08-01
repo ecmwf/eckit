@@ -14,7 +14,7 @@
 #include "eckit/eckit.h"
 
 #ifdef ECKIT_HAVE_XXHASH
-#include "xxhash/xxhash.h"
+#include <xxhash.h>
 #else
 #error "eckit was not configured with xxHash, xxHash is disabled. Use conditional ECKIT_HAVE_XXHASH from eckit/eckit.h"
 #endif

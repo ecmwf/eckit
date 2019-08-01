@@ -15,10 +15,12 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <map>
 #include <string>
-#include <cstring>
+//#include <cstring>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -101,7 +103,7 @@ public:  // types
 
   NoHash();
 
-  NoHash(const std::string&) : NoHash() {}
+  NoHash(const std::string&);
 
   virtual ~NoHash();
 
@@ -116,12 +118,11 @@ public:  // types
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-
+/*
 class HashFactory {
 
     std::string name_;
     virtual Hash* make() = 0;
-    virtual Hash* make(const std::string&) = 0;
 
   protected:
 
@@ -133,7 +134,6 @@ class HashFactory {
     static bool has(const std::string& name);
     static void list(std::ostream &);
     static Hash* build(const std::string&);
-    static Hash* build(const std::string&, const std::string&);
 
 };
 
@@ -142,12 +142,61 @@ class HashBuilder : public HashFactory {
     virtual Hash* make() {
         return new T();
     }
-    virtual Hash* make(const std::string& input) {
-        return new T(input);
-    }
   public:
     HashBuilder(const std::string &name) : HashFactory(name) {}
-};
+};*/
+
+//----------------------------------------------------------------------------------------------------------------------
+
+    class HashBuilderBase {
+        std::string name_;
+    public:
+        HashBuilderBase(const std::string &);
+        virtual ~HashBuilderBase();
+        virtual Hash* make() = 0;
+        virtual Hash* make(const std::string& param) = 0;
+    };
+
+    template< class T>
+    class HashBuilder : public HashBuilderBase {
+        virtual Hash* make() {
+            return new T();
+        }
+        virtual Hash* make(const std::string& param) {
+            return new T(param);
+        }
+    public:
+        HashBuilder(const std::string &name) : HashBuilderBase(name) {}
+        virtual ~HashBuilder() = default;
+    };
+
+    class HashFactory {
+    public:
+
+        static HashFactory& instance();
+
+        void add(const std::string& name, HashBuilderBase* builder);
+        void remove(const std::string& name);
+
+        bool has(const std::string& name);
+        void list(std::ostream &);
+
+        /// @returns default compressor
+        Hash* build();
+
+        /// @returns compressor built by specified builder
+        Hash* build(const std::string&);
+
+        /// @returns compressor built by specified builder and initialized with given string
+        Hash* build(const std::string&, const std::string&);
+
+    private:
+
+        HashFactory();
+
+        std::map<std::string, HashBuilderBase*> builders_;
+        eckit::Mutex mutex_;
+    };
 
 //----------------------------------------------------------------------------------------------------------------------
 

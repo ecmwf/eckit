@@ -38,12 +38,6 @@ ecbuild_add_test( TARGET      eckit_test_utils_hashing
                   SOURCES     test_hashing.cc
                   LIBS        eckit )
 
-#ecbuild_add_test( TARGET      eckit_test_utils_xxhash
-#                  CONDITION   ECKIT_HAVE_XXHASH
-#                  INCLUDES    "${XXHASH_INCLUDE_DIRS}"
-#                  SOURCES     test_xxhash.cc
-#                  LIBS        eckit )
-
 ecbuild_add_test( TARGET      eckit_test_utils_hash_performance
                   CONDITION   HAVE_EXTRA_TESTS
                   SOURCES     hash-performance.cc

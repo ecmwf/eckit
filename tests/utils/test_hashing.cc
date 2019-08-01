@@ -19,7 +19,6 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-
 namespace eckit {
 namespace test {
 
@@ -70,12 +69,12 @@ std::map<string, std::vector<string>> results = {
                          "ef46db3751d8e999",     //""
                          "d24ec4f1a98c6e5b",     //"a"
                          "44bc2cf5ad770999",     //"abc"
-                         "",     //"message digest"
-                         "",     //"abcdefghijklmnopqrstuvwxyz"
-                         "",     //"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-                         "",     //"12345678901234567890123456789012345678901234567890123456789012345678901234567890"
-                         "0b242d361fda71bc",     //"The quick brown fox jumps over the lazy cog"
-                         "",     //"The quick brown fox jumps over the lazy cog" x 2
+                         "066ed728fceeb3be",     //"message digest"
+                         "cfe1f278fa89835c",     //"abcdefghijklmnopqrstuvwxyz"
+                         "aaa46907d3047814",     //"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                         "e04a477f19ee145d",     //"12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+                         "2dcf47703493b6ca",     //"The quick brown fox jumps over the lazy cog"
+                         "e32a7da747f1bd6e",     //"The quick brown fox jumps over the lazy cog" x 2
                 }},
          };
 
@@ -94,11 +93,11 @@ void testHash(Hash &hash, std::string hashName) {
         EXPECT(testResults == hash.digest());
 
         // constructor-based initialization
-        Hash *hashInitialized = HashFactory::build(hashName, tests[i]);
+        Hash *hashInitialized = HashFactory::instance().build(hashName, tests[i]);
         EXPECT(testResults == hashInitialized->digest());
 
         // initialize with dummy data and test reset
-        hashInitialized = HashFactory::build(hashName, "dummy data");
+        hashInitialized = HashFactory::instance().build(hashName, "dummy data");
         hashInitialized->reset();
         hashInitialized->add(tests[i].c_str(), tests[i].size());
         EXPECT(testResults == hashInitialized->digest());
@@ -118,10 +117,15 @@ void testHash(Hash &hash, std::string hashName) {
 CASE("Hashing") {
     std::unique_ptr<Hash> hash;
 
+    SECTION("Default Hashing") {
+        EXPECT_NO_THROW(hash.reset(HashFactory::instance().build()));
+        testHash(*hash, "MD5");
+    }
+
     for (auto const& element: results) {
-        if (HashFactory::has(element.first)) {
-            SECTION(element.first) {
-                EXPECT_NO_THROW(hash.reset(HashFactory::build(element.first)));
+        if (HashFactory::instance().has(element.first)) {
+            SECTION(element.first+" Hashing") {
+                EXPECT_NO_THROW(hash.reset(HashFactory::instance().build(element.first)));
                 testHash(*hash, element.first);
             }
         }

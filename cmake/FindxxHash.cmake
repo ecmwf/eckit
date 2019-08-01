@@ -1,61 +1,48 @@
-#.rst:
-# FindxxHash
-# -----------
+# (C) Copyright 2011- ECMWF.
 #
-# Find the xxHash library header and define variables.
-#
-# Imported Targets
-# ^^^^^^^^^^^^^^^^
-#
-# This module defines :prop_tgt:`IMPORTED` target ``xxHash::xxHash``,
-# if xxHash has been found
-#
-# Result Variables
-# ^^^^^^^^^^^^^^^^
-#
-# This module defines the following variables:
-#
-# ::
-#
-#   XXHASH_FOUND          - True if xxHash is found.
-#   XXHASH_INCLUDE_DIRS   - Where to find xxhash.h
-#   XXHASH_LIBRARIES      - Where to find xxhash library
-#
-# ::
-#
-#   XXHASH_VERSION        - The version of xxHash found (x.y.z)
-#   XXHASH_VERSION_MAJOR  - The major version of xxHash
-#   XXHASH_VERSION_MINOR  - The minor version of xxHash
-#   XXHASH_VERSION_PATCH  - The patch version of xxHash
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
 
-find_path(XXHASH_INCLUDE_DIR NAME xxhash.h PATH_SUFFIXES include)
-find_library(XXHASH_LIBRARY NAMES xxhash xxHash PATH_SUFFIXES lib)
+# - Try to find xxHash
+# Once done this will define
+#
+#  XXHASH_FOUND         - found xxHash
+#  XXHASH_INCLUDE_DIRS  - the xxHash include directories
+#  XXHASH_LIBRARIES     - the xxHash libraries
+#
+# The following paths will be searched with priority if set in CMake or env
+#
+#  XXHASH_PATH          - prefix path of the Armadillo installation
+#  XXHASH_ROOT              - Set this variable to the root installation
 
-mark_as_advanced(XXHASH_INCLUDE_DIR)
+# Search with priority for XXHASH_PATH if given as CMake or env var
 
-if(XXHASH_INCLUDE_DIR AND EXISTS "${XXHASH_INCLUDE_DIR}/xxhash.h")
-  file(STRINGS "${XXHASH_INCLUDE_DIR}/xxhash.h" XXHASH_H REGEX "^#define XXH_VERSION_[A-Z]+[ ]+[0-9]+$")
-  string(REGEX REPLACE ".+XXH_VERSION_MAJOR[ ]+([0-9]+).*$"   "\\1" XXHASH_VERSION_MAJOR "${XXHASH_H}")
-  string(REGEX REPLACE ".+XXH_VERSION_MINOR[ ]+([0-9]+).*$"   "\\1" XXHASH_VERSION_MINOR "${XXHASH_H}")
-  string(REGEX REPLACE ".+XXH_VERSION_RELEASE[ ]+([0-9]+).*$" "\\1" XXHASH_VERSION_PATCH "${XXHASH_H}")
-  set(XXHASH_VERSION "${XXHASH_VERSION_MAJOR}.${XXHASH_VERSION_MINOR}.${XXHASH_VERSION_PATCH}")
-endif()
+find_path(XXHASH_INCLUDE_DIR xxhash.h
+        HINTS $ENV{XXHASH_ROOT} ${XXHASH_ROOT}
+        PATHS ${XXHASH_PATH} ENV XXHASH_PATH
+        PATH_SUFFIXES include NO_DEFAULT_PATH)
+
+find_path(XXHASH_INCLUDE_DIR xxhash.h PATH_SUFFIXES include )
+
+# Search with priority for XXHASH_PATH if given as CMake or env var
+find_library(XXHASH_LIBRARY xxhash
+        HINTS $ENV{XXHASH_ROOT} ${XXHASH_ROOT}
+        PATHS ${XXHASH_PATH} ENV XXHASH_PATH
+        PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH)
+
+find_library( XXHASH_LIBRARY xxhash PATH_SUFFIXES lib64 lib )
+
+set( XXHASH_LIBRARIES    ${XXHASH_LIBRARY} )
+set( XXHASH_INCLUDE_DIRS ${XXHASH_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(xxHash
-  REQUIRED_VARS XXHASH_LIBRARY XXHASH_INCLUDE_DIR VERSION_VAR XXHASH_VERSION)
 
-if(XXHASH_FOUND)
-  set(XXHASH_INCLUDE_DIRS "${XXHASH_INCLUDE_DIR}")
+# handle the QUIET and REQUIRED arguments and set XXHASH_FOUND to TRUE
+# if all listed variables are TRUE
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args(xxHash DEFAULT_MSG XXHASH_LIBRARY XXHASH_INCLUDE_DIR)
 
-  if(NOT XXHASH_LIBRARIES)
-    set(XXHASH_LIBRARIES ${XXHASH_LIBRARY})
-  endif()
-
-  if(NOT TARGET xxHash::xxHash)
-    add_library(xxHash::xxHash UNKNOWN IMPORTED)
-    set_target_properties(xxHash::xxHash PROPERTIES
-      IMPORTED_LOCATION "${XXHASH_LIBRARY}"
-      INTERFACE_INCLUDE_DIRECTORIES "${XXHASH_INCLUDE_DIRS}")
-  endif()
-endif()
+mark_as_advanced(XXHASH_INCLUDE_DIR XXHASH_LIBRARY)

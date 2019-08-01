@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <map>
 #include <string>
-//#include <cstring>
+#include <cstring>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"

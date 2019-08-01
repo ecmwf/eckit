@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <memory>
 
 #include "eckit/utils/Hash.h"
 

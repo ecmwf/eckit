@@ -118,35 +118,6 @@ public:  // types
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-/*
-class HashFactory {
-
-    std::string name_;
-    virtual Hash* make() = 0;
-
-  protected:
-
-    HashFactory(const std::string &);
-    virtual ~HashFactory();
-
-  public:
-
-    static bool has(const std::string& name);
-    static void list(std::ostream &);
-    static Hash* build(const std::string&);
-
-};
-
-template< class T>
-class HashBuilder : public HashFactory {
-    virtual Hash* make() {
-        return new T();
-    }
-  public:
-    HashBuilder(const std::string &name) : HashFactory(name) {}
-};*/
-
-//----------------------------------------------------------------------------------------------------------------------
 
     class HashBuilderBase {
         std::string name_;

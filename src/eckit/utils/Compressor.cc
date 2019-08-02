@@ -99,7 +99,7 @@ Compressor* CompressorFactory::build(const std::string& name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompressorBuilderBase::CompressorBuilderBase(const std::string& name) {
+CompressorBuilderBase::CompressorBuilderBase(const std::string& name) : name_(name) {
     CompressorFactory::instance().add(name_, this);
 }
 

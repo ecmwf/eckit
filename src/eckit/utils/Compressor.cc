@@ -40,6 +40,7 @@ void CompressorFactory::add(const std::string& name, CompressorBuilderBase* buil
 }
 
 void CompressorFactory::remove(const std::string& name) {
+    AutoLock<Mutex> lock(mutex_);
     builders_.erase(name);
 }
 

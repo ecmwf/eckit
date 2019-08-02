@@ -327,7 +327,7 @@ CASE("test_local_configuration") {
 }
 
 CASE("Hash a configuration") {
-    std::unique_ptr<Hash> h(eckit::HashFactory::build("MD5"));
+    std::unique_ptr<Hash> h(eckit::HashFactory::instance().build("MD5"));
 
     LocalConfiguration cfg;
     cfg.set("name", "Sidonia");

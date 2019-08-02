@@ -24,10 +24,6 @@ ecbuild_add_test( TARGET      eckit_test_utils_tokenizer
                   SOURCES     test_tokenizer.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils_md5
-                  SOURCES     test_md5.cc
-                  LIBS        eckit )
-
 ecbuild_add_test( TARGET      eckit_test_utils_rendezvoushash
                   SOURCES     test_rendezvoushash.cc
                   LIBS        eckit )
@@ -36,23 +32,11 @@ ecbuild_add_test( TARGET      eckit_test_utils_compressor
                   SOURCES     test_compressor.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils_sha1
+ecbuild_add_test( TARGET      eckit_test_utils_hashing
                   CONDITION   ECKIT_HAVE_SSL
                   INCLUDES    "${OPENSSL_INCLUDE_DIR}"
-                  SOURCES     test_sha1.cc
+                  SOURCES     test_hashing.cc
                   LIBS        eckit )
-
-ecbuild_add_test( TARGET      eckit_test_utils_md4
-                  CONDITION   ECKIT_HAVE_SSL
-                  INCLUDES    "${OPENSSL_INCLUDE_DIR}"
-                  SOURCES     test_md4.cc
-                  LIBS        eckit )
-
-#ecbuild_add_test( TARGET      eckit_test_utils_xxhash
-#                  CONDITION   ECKIT_HAVE_XXHASH
-#                  INCLUDES    "${XXHASH_INCLUDE_DIRS}"
-#                  SOURCES     test_xxhash.cc
-#                  LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_utils_hash_performance
                   CONDITION   HAVE_EXTRA_TESTS

@@ -18,13 +18,13 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/ResizableBuffer.h"
 #include "eckit/thread/AutoLock.h"
+#include "eckit/utils/StringTools.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompressorFactory::CompressorFactory() {
-}
+CompressorFactory::CompressorFactory() {}
 
 CompressorFactory& CompressorFactory::instance() {
     static CompressorFactory theOne;
@@ -32,26 +32,34 @@ CompressorFactory& CompressorFactory::instance() {
 }
 
 void CompressorFactory::add(const std::string& name, CompressorBuilderBase* builder) {
+    std::string nameLowercase = StringTools::lower(name);
+
     AutoLock<Mutex> lock(mutex_);
-    if(has(name)) {
-        throw SeriousBug("Duplicate entry in CompressorFactory: " + name, Here());
+    if (has(nameLowercase)) {
+        throw SeriousBug("Duplicate entry in CompressorFactory: " + nameLowercase, Here());
     }
-    builders_[name] = builder;
+    builders_[nameLowercase] = builder;
 }
 
 void CompressorFactory::remove(const std::string& name) {
-    builders_.erase(name);
+    std::string nameLowercase = StringTools::lower(name);
+
+    AutoLock<Mutex> lock(mutex_);
+    builders_.erase(nameLowercase);
 }
 
 bool CompressorFactory::has(const std::string& name) {
+    std::string nameLowercase = StringTools::lower(name);
+
     AutoLock<Mutex> lock(mutex_);
-    return builders_.find(name) != builders_.end();
+    return builders_.find(nameLowercase) != builders_.end();
 }
 
 void CompressorFactory::list(std::ostream& out) {
     AutoLock<Mutex> lock(mutex_);
     const char* sep = "";
-    for (std::map<std::string, CompressorBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end(); ++j) {
+    for (std::map<std::string, CompressorBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end();
+         ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
@@ -61,7 +69,7 @@ Compressor* CompressorFactory::build() {
 
     std::string compression = eckit::Resource<std::string>("defaultCompression;ECKIT_DEFAULT_COMPRESSION", "snappy");
 
-    if(has(compression)) {
+    if (has(compression)) {
         return build(compression);
     }
 
@@ -69,19 +77,20 @@ Compressor* CompressorFactory::build() {
 }
 
 Compressor* CompressorFactory::build(const std::string& name) {
+    std::string nameLowercase = StringTools::lower(name);
 
     AutoLock<Mutex> lock(mutex_);
 
-    auto j = builders_.find(name);
+    auto j = builders_.find(nameLowercase);
 
-    eckit::Log::debug() << "Looking for CompressorBuilder [" << name << "]" << std::endl;
+    eckit::Log::debug() << "Looking for CompressorBuilder [" << nameLowercase << "]" << std::endl;
 
     if (j == builders_.end()) {
-        eckit::Log::error() << "No CompressorBuilder for [" << name << "]" << std::endl;
+        eckit::Log::error() << "No CompressorBuilder for [" << nameLowercase << "]" << std::endl;
         eckit::Log::error() << "CompressorBuilders are:" << std::endl;
         for (j = builders_.begin(); j != builders_.end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
-        throw eckit::SeriousBug(std::string("No CompressorBuilder called ") + name);
+        throw eckit::SeriousBug(std::string("No CompressorBuilder called ") + nameLowercase);
     }
 
     return (*j).second->make();
@@ -108,15 +117,13 @@ Compressor::~Compressor() {}
 
 NoCompressor::NoCompressor() {}
 
-size_t NoCompressor::compress(const Buffer& in, ResizableBuffer& out) const
-{
+size_t NoCompressor::compress(const Buffer& in, ResizableBuffer& out) const {
     out.resize(in.size());
     ::memcpy(out, in, in.size());
     return out.size();
 }
 
-size_t NoCompressor::uncompress(const Buffer& in, ResizableBuffer& out) const
-{
+size_t NoCompressor::uncompress(const Buffer& in, ResizableBuffer& out) const {
     out.resize(in.size());
     ::memcpy(out, in, in.size());
     return in.size();

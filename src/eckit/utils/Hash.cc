@@ -17,6 +17,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/utils/StringTools.h"
 
 namespace eckit {
 
@@ -31,21 +32,27 @@ HashFactory& HashFactory::instance() {
 }
 
 void HashFactory::add(const std::string& name, HashBuilderBase* builder) {
+    std::string nameLowercase = StringTools::lower(name);
+
     AutoLock<Mutex> lock(mutex_);
-    if(has(name)) {
-        throw SeriousBug("Duplicate entry in HashFactory: " + name, Here());
+    if(has(nameLowercase)) {
+        throw SeriousBug("Duplicate entry in HashFactory: " + nameLowercase, Here());
     }
-    builders_[name] = builder;
+    builders_[nameLowercase] = builder;
 }
 
 void HashFactory::remove(const std::string& name) {
+    std::string nameLowercase = StringTools::lower(name);
+
     AutoLock<Mutex> lock(mutex_);
-    builders_.erase(name);
+    builders_.erase(nameLowercase);
 }
 
 bool HashFactory::has(const std::string& name) {
+    std::string nameLowercase = StringTools::lower(name);
+
     AutoLock<Mutex> lock(mutex_);
-    return builders_.find(name) != builders_.end();
+    return builders_.find(nameLowercase) != builders_.end();
 }
 
 void HashFactory::list(std::ostream& out) {
@@ -59,48 +66,48 @@ void HashFactory::list(std::ostream& out) {
 
 Hash* HashFactory::build() {
 
-    std::string compression = eckit::Resource<std::string>("defaultHash;ECKIT_DEFAULT_HASH", "MD5");
+    std::string name = eckit::Resource<std::string>("defaultHash;ECKIT_DEFAULT_HASH", "md5");
 
-    if(has(compression)) {
-        return build(compression);
+    if(has(name)) {
+        return build(name);
     }
 
     return build("none");
 }
 
 Hash* HashFactory::build(const std::string& name) {
+    std::string nameLowercase = StringTools::lower(name);
 
     AutoLock<Mutex> lock(mutex_);
+    auto j = builders_.find(nameLowercase);
 
-    auto j = builders_.find(name);
-
-    eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
+    eckit::Log::debug() << "Looking for HashBuilder [" << nameLowercase << "]" << std::endl;
 
     if (j == builders_.end()) {
-        eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
+        eckit::Log::error() << "No HashBuilder for [" << nameLowercase << "]" << std::endl;
         eckit::Log::error() << "HashBuilders are:" << std::endl;
         for (j = builders_.begin(); j != builders_.end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
-        throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
+        throw eckit::SeriousBug(std::string("No HashBuilder called ") + nameLowercase);
     }
 
     return (*j).second->make();
 }
 
 Hash* HashFactory::build(const std::string& name, const std::string& param) {
+    std::string nameLowercase = StringTools::lower(name);
 
     AutoLock<Mutex> lock(mutex_);
+    auto j = builders_.find(nameLowercase);
 
-    auto j = builders_.find(name);
-
-    eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
+    eckit::Log::debug() << "Looking for HashBuilder [" << nameLowercase << "]" << std::endl;
 
     if (j == builders_.end()) {
-        eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
+        eckit::Log::error() << "No HashBuilder for [" << nameLowercase << "]" << std::endl;
         eckit::Log::error() << "HashBuilders are:" << std::endl;
         for (j = builders_.begin(); j != builders_.end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
-        throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
+        throw eckit::SeriousBug(std::string("No HashBuilder called ") + nameLowercase);
     }
 
     return (*j).second->make(param);
@@ -108,7 +115,9 @@ Hash* HashFactory::build(const std::string& name, const std::string& param) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HashBuilderBase::HashBuilderBase(const std::string& name) : name_(name) {
+HashBuilderBase::HashBuilderBase(const std::string& name) {
+    name_ = StringTools::lower(name);
+
     HashFactory::instance().add(name_, this);
 }
 
@@ -124,23 +133,29 @@ Hash::~Hash() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-NoHash::NoHash() {}
+class NoHash : public Hash {
 
-NoHash::NoHash(const std::string&) {}
+public:  // types
 
-NoHash::~NoHash() {}
+    NoHash() {}
 
-void NoHash::reset() const {}
+    NoHash(const std::string&) {}
 
-Hash::digest_t NoHash::compute(const void*, long) {
-    return std::string();
-}
+    virtual ~NoHash() {}
 
-void NoHash::update(const void*, long) {}
+    virtual void reset() const {}
 
-Hash::digest_t NoHash::digest() const {
-    return digest_;  // should be empty
-}
+    virtual digest_t compute(const void*, long) {
+        return std::string();
+    }
+
+    virtual void update(const void*, long) {}
+
+    virtual digest_t digest() const {
+        return digest_;  // should be empty
+    }
+
+};
 
 namespace {
 HashBuilder<NoHash> builder1("None");

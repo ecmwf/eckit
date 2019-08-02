@@ -97,28 +97,6 @@ protected: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class NoHash : public Hash {
-
-public:  // types
-
-  NoHash();
-
-  NoHash(const std::string&);
-
-  virtual ~NoHash();
-
-  virtual void reset() const;
-
-  virtual digest_t compute(const void*, long);
-
-  virtual void update(const void*, long);
-
-  virtual digest_t digest() const;
-
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
     class HashBuilderBase {
         std::string name_;
     public:
@@ -152,14 +130,21 @@ public:  // types
         bool has(const std::string& name);
         void list(std::ostream &);
 
-        /// @returns default compressor
+        /// @returns default hash function
         Hash* build();
 
-        /// @returns compressor built by specified builder
-        Hash* build(const std::string&);
+        /**
+         * @param name  hash function name
+         * @returns     hash function built by specified builder
+         */
+        Hash* build(const std::string &name);
 
-        /// @returns compressor built by specified builder and initialized with given string
-        Hash* build(const std::string&, const std::string&);
+        /**
+         * @param name  hash function name
+         * @param param the initialization string, passed directly to the hash function constructor
+         * @returns     hash function built by specified builder
+         */
+        Hash* build(const std::string &name, const std::string &param);
 
     private:
 

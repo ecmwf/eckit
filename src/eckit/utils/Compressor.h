@@ -88,7 +88,10 @@ public:
     /// @returns default compressor
     Compressor* build();
 
-    /// @returns compressor built by specified builder
+    /**
+     * @param name  compressor name
+     * @returns     compressor built by specified builder
+     */
     Compressor* build(const std::string&);
 
 private:

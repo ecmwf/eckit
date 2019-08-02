@@ -32,7 +32,31 @@ std::vector<string> tests = {"", "a", "abc", "message digest", "abcdefghijklmnop
                              "The quick brown fox jumps over the lazy cog"};
 
 std::map<string, std::vector<string>> results = {
-                {"MD4", {
+        {"nOnE", {
+                        "",     //""
+                        "",     //"a"
+                        "",     //"abc"
+                        "",     //"message digest"
+                        "",     //"abcdefghijklmnopqrstuvwxyz"
+                        "",     //"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                        "",     //"12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+                        "",     //"The quick brown fox jumps over the lazy cog"
+                        "",     //"The quick brown fox jumps over the lazy cog" x 2
+
+                }},
+        {"md4", {
+                        "31d6cfe0d16ae931b73c59d7e0c089c0",     //""
+                        "bde52cb31de33e46245e05fbdbd6fb24",     //"a"
+                        "a448017aaf21d8525fc10ae87aa6729d",     //"abc"
+                        "d9130a8164549fe818874806e1c7014b",     //"message digest"
+                        "d79e1c308aa5bbcdeea8ed63df412da9",     //"abcdefghijklmnopqrstuvwxyz"
+                        "043f8582f241db351ce627e153e7f0e4",     //"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                        "e33b4ddc9c38f2199c3e7b164fcc0536",     //"12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+                        "b86e130ce7028da59e672d56ad0113df",     //"The quick brown fox jumps over the lazy cog"
+                        "16b52abf32d2796d53c6202a877a69a0",     //"The quick brown fox jumps over the lazy cog" x 2
+
+                }},
+        {"MD4", {
                         "31d6cfe0d16ae931b73c59d7e0c089c0",     //""
                         "bde52cb31de33e46245e05fbdbd6fb24",     //"a"
                         "a448017aaf21d8525fc10ae87aa6729d",     //"abc"
@@ -86,8 +110,8 @@ void testHash(Hash &hash, std::string hashName) {
 
     for(int i=0; i<tests.size(); i++) {
         std::string testResults = hashResults->second[i];
-        if (testResults.empty())
-            break;
+//        if (testResults.empty())
+//            break;
 
         hash.reset();
         hash.add(tests[i].c_str(), tests[i].size());
@@ -106,12 +130,12 @@ void testHash(Hash &hash, std::string hashName) {
 
     // test add
     std::string testResults = hashResults->second[tests.size()];
-    if (!testResults.empty()) {
+//    if (!testResults.empty()) {
         hash.reset();
         hash.add(tests[tests.size()-1].c_str(), tests[tests.size()-1].size());
         hash.add(tests[tests.size()-1].c_str(), tests[tests.size()-1].size());
         EXPECT(testResults == hash.digest());
-    }
+//    }
 }
 
 
@@ -121,6 +145,10 @@ CASE("Hashing") {
     SECTION("Default Hashing") {
         EXPECT_NO_THROW(hash.reset(HashFactory::instance().build()));
         testHash(*hash, "MD5");
+    }
+
+    SECTION("Not Existing Hashing") {
+        EXPECT_THROWS(HashFactory::instance().build("dummy name"));
     }
 
     for (auto const& element: results) {

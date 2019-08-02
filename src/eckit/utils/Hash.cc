@@ -22,101 +22,99 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+HashFactory::HashFactory() {
+}
+
+HashFactory& HashFactory::instance() {
+    static HashFactory theOne;
+    return theOne;
+}
+
+void HashFactory::add(const std::string& name, HashBuilderBase* builder) {
+    AutoLock<Mutex> lock(mutex_);
+    if(has(name)) {
+        throw SeriousBug("Duplicate entry in HashFactory: " + name, Here());
+    }
+    builders_[name] = builder;
+}
+
+void HashFactory::remove(const std::string& name) {
+    AutoLock<Mutex> lock(mutex_);
+    builders_.erase(name);
+}
+
+bool HashFactory::has(const std::string& name) {
+    AutoLock<Mutex> lock(mutex_);
+    return builders_.find(name) != builders_.end();
+}
+
+void HashFactory::list(std::ostream& out) {
+    AutoLock<Mutex> lock(mutex_);
+    const char* sep = "";
+    for (std::map<std::string, HashBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end(); ++j) {
+        out << sep << (*j).first;
+        sep = ", ";
+    }
+}
+
+Hash* HashFactory::build() {
+
+    std::string compression = eckit::Resource<std::string>("defaultHash;ECKIT_DEFAULT_HASH", "MD5");
+
+    if(has(compression)) {
+        return build(compression);
+    }
+
+    return build("none");
+}
+
+Hash* HashFactory::build(const std::string& name) {
+
+    AutoLock<Mutex> lock(mutex_);
+
+    auto j = builders_.find(name);
+
+    eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
+
+    if (j == builders_.end()) {
+        eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
+        eckit::Log::error() << "HashBuilders are:" << std::endl;
+        for (j = builders_.begin(); j != builders_.end(); ++j)
+            eckit::Log::error() << "   " << (*j).first << std::endl;
+        throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
+    }
+
+    return (*j).second->make();
+}
+
+Hash* HashFactory::build(const std::string& name, const std::string& param) {
+
+    AutoLock<Mutex> lock(mutex_);
+
+    auto j = builders_.find(name);
+
+    eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
+
+    if (j == builders_.end()) {
+        eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
+        eckit::Log::error() << "HashBuilders are:" << std::endl;
+        for (j = builders_.begin(); j != builders_.end(); ++j)
+            eckit::Log::error() << "   " << (*j).first << std::endl;
+        throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
+    }
+
+    return (*j).second->make(param);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
-    HashFactory::HashFactory() {
-    }
+HashBuilderBase::HashBuilderBase(const std::string& name) : name_(name) {
+    HashFactory::instance().add(name_, this);
+}
 
-    HashFactory& HashFactory::instance() {
-        static HashFactory theOne;
-        return theOne;
-    }
-
-    void HashFactory::add(const std::string& name, HashBuilderBase* builder) {
-        AutoLock<Mutex> lock(mutex_);
-        if(has(name)) {
-            throw SeriousBug("Duplicate entry in HashFactory: " + name, Here());
-        }
-        builders_[name] = builder;
-    }
-
-    void HashFactory::remove(const std::string& name) {
-        AutoLock<Mutex> lock(mutex_);
-        builders_.erase(name);
-    }
-
-    bool HashFactory::has(const std::string& name) {
-        AutoLock<Mutex> lock(mutex_);
-        return builders_.find(name) != builders_.end();
-    }
-
-    void HashFactory::list(std::ostream& out) {
-        AutoLock<Mutex> lock(mutex_);
-        const char* sep = "";
-        for (std::map<std::string, HashBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end(); ++j) {
-            out << sep << (*j).first;
-            sep = ", ";
-        }
-    }
-
-    Hash* HashFactory::build() {
-
-        std::string compression = eckit::Resource<std::string>("defaultHash;ECKIT_DEFAULT_HASH", "MD5");
-
-        if(has(compression)) {
-            return build(compression);
-        }
-
-        return build("none");
-    }
-
-    Hash* HashFactory::build(const std::string& name) {
-
-        AutoLock<Mutex> lock(mutex_);
-
-        auto j = builders_.find(name);
-
-        eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
-
-        if (j == builders_.end()) {
-            eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
-            eckit::Log::error() << "HashBuilders are:" << std::endl;
-            for (j = builders_.begin(); j != builders_.end(); ++j)
-                eckit::Log::error() << "   " << (*j).first << std::endl;
-            throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
-        }
-
-        return (*j).second->make();
-    }
-
-    Hash* HashFactory::build(const std::string& name, const std::string& param) {
-
-        AutoLock<Mutex> lock(mutex_);
-
-        auto j = builders_.find(name);
-
-        eckit::Log::debug() << "Looking for HashBuilder [" << name << "]" << std::endl;
-
-        if (j == builders_.end()) {
-            eckit::Log::error() << "No HashBuilder for [" << name << "]" << std::endl;
-            eckit::Log::error() << "HashBuilders are:" << std::endl;
-            for (j = builders_.begin(); j != builders_.end(); ++j)
-                eckit::Log::error() << "   " << (*j).first << std::endl;
-            throw eckit::SeriousBug(std::string("No HashBuilder called ") + name);
-        }
-
-        return (*j).second->make(param);
-    }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-    HashBuilderBase::HashBuilderBase(const std::string& name) : name_(name) {
-        HashFactory::instance().add(name_, this);
-    }
-
-    HashBuilderBase::~HashBuilderBase() {
-        HashFactory::instance().remove(name_);
-    }
+HashBuilderBase::~HashBuilderBase() {
+    HashFactory::instance().remove(name_);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

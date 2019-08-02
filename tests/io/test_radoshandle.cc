@@ -10,10 +10,10 @@
 
 #include <cstring>
 
-#include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
-#include "eckit/io/rados/RadosReadHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosReadHandle.h"
+#include "eckit/io/rados/RadosWriteHandle.h"
 
 #include "eckit/io/Buffer.h"
 
@@ -62,14 +62,13 @@ CASE("RadosHandle") {
 CASE("RadosWriteHandle") {
 
     const char buf[] =
-    "abcdefghijklmnopqrstuvwxyz"
-    "abcdefghijklmnopqrstuvwxyz"
-    "abcdefghijklmnopqrstuvwxyz"
-    "abcdefghijklmnopqrstuvwxyz"
-    "abcdefghijklmnopqrstuvwxyz"
-    "abcdefghijklmnopqrstuvwxyz"
-    "abcdefghijklmnopqrstuvwxyz"
-    ;
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvwxyz";
 
     RadosWriteHandle h("foobar", 16);
     std::cout << "====> " << h << std::endl;
@@ -92,7 +91,6 @@ CASE("RadosWriteHandle") {
     EXPECT(buf == std::string(mem));
 
     RadosCluster::instance().removeAll(RadosObject("foobar"));
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

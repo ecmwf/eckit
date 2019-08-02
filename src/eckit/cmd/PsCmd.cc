@@ -13,8 +13,8 @@
 
 #include "eckit/cmd/PsCmd.h"
 #include "eckit/log/Colour.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/runtime/Monitor.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -200,7 +200,6 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
 
     JSON json(out);
     bool doJason = args.exists("json");
-
 
 
     for (size_t i = 1; i < args.size(); ++i)

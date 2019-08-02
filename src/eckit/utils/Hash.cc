@@ -23,8 +23,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HashFactory::HashFactory() {
-}
+HashFactory::HashFactory() {}
 
 HashFactory& HashFactory::instance() {
     static HashFactory theOne;
@@ -35,7 +34,7 @@ void HashFactory::add(const std::string& name, HashBuilderBase* builder) {
     std::string nameLowercase = StringTools::lower(name);
 
     AutoLock<Mutex> lock(mutex_);
-    if(has(nameLowercase)) {
+    if (has(nameLowercase)) {
         throw SeriousBug("Duplicate entry in HashFactory: " + nameLowercase, Here());
     }
     builders_[nameLowercase] = builder;
@@ -68,7 +67,7 @@ Hash* HashFactory::build() {
 
     std::string name = eckit::Resource<std::string>("defaultHash;ECKIT_DEFAULT_HASH", "md5");
 
-    if(has(name)) {
+    if (has(name)) {
         return build(name);
     }
 
@@ -115,9 +114,7 @@ Hash* HashFactory::build(const std::string& name, const std::string& param) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HashBuilderBase::HashBuilderBase(const std::string& name) {
-    name_ = StringTools::lower(name);
-
+HashBuilderBase::HashBuilderBase(const std::string& name) : name_(name) {
     HashFactory::instance().add(name_, this);
 }
 
@@ -136,7 +133,6 @@ Hash::~Hash() {}
 class NoHash : public Hash {
 
 public:  // types
-
     NoHash() {}
 
     NoHash(const std::string&) {}
@@ -145,16 +141,13 @@ public:  // types
 
     virtual void reset() const {}
 
-    virtual digest_t compute(const void*, long) {
-        return std::string();
-    }
+    virtual digest_t compute(const void*, long) { return std::string(); }
 
     virtual void update(const void*, long) {}
 
     virtual digest_t digest() const {
         return digest_;  // should be empty
     }
-
 };
 
 namespace {

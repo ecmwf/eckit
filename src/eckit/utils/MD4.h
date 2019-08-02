@@ -30,31 +30,31 @@ namespace eckit {
 class MD4 : public Hash {
 
 public:  // types
+    MD4();
 
-  MD4();
+    explicit MD4(const char*);
+    explicit MD4(const std::string&);
 
-  explicit MD4(const char*);
-  explicit MD4(const std::string&);
+    MD4(const void* data, size_t len);
 
-  MD4(const void* data, size_t len);
+    virtual ~MD4();
 
-  virtual ~MD4();
+    virtual void reset() const;
 
-  virtual void reset() const;
+    virtual digest_t compute(const void*, long);
 
-  virtual digest_t compute(const void*, long);
+    virtual void update(const void*, long);
 
-  virtual void update(const void*, long);
+    virtual digest_t digest() const;
 
-  virtual digest_t digest() const;
+    template <class T>
+    MD4& operator<<(const T& x) {
+        add(x);
+        return *this;
+    }
 
-  template<class T>
-  MD4& operator<<(const T& x) { add(x); return *this; }
-
-private: // members
-
-  mutable MD4_CTX ctx_;
-
+private:  // members
+    mutable MD4_CTX ctx_;
 };
 
 }  // end namespace eckit

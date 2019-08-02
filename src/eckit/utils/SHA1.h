@@ -30,31 +30,31 @@ namespace eckit {
 class SHA1 : public Hash {
 
 public:  // types
+    SHA1();
 
-  SHA1();
+    explicit SHA1(const char*);
+    explicit SHA1(const std::string&);
 
-  explicit SHA1(const char*);
-  explicit SHA1(const std::string&);
+    SHA1(const void* data, size_t len);
 
-  SHA1(const void* data, size_t len);
+    virtual ~SHA1();
 
-  virtual ~SHA1();
+    virtual void reset() const;
 
-  virtual void reset() const;
+    virtual digest_t compute(const void*, long);
 
-  virtual digest_t compute(const void*, long);
+    virtual void update(const void*, long);
 
-  virtual void update(const void*, long);
+    virtual digest_t digest() const;
 
-  virtual digest_t digest() const;
+    template <class T>
+    SHA1& operator<<(const T& x) {
+        add(x);
+        return *this;
+    }
 
-  template<class T>
-  SHA1& operator<<(const T& x) { add(x); return *this; }
-
-private: // members
-
-  mutable SHA_CTX ctx_;
-
+private:  // members
+    mutable SHA_CTX ctx_;
 };
 
 }  // end namespace eckit

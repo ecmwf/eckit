@@ -19,9 +19,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Endpoint::Endpoint(const std::string& host, int port) :
-    hostname_(host),
-    port_(port) {}
+Endpoint::Endpoint(const std::string& host, int port) : hostname_(host), port_(port) {}
 
 Endpoint::Endpoint(Stream& s) {
     s >> hostname_;
@@ -38,11 +36,11 @@ void Endpoint::print(std::ostream& os) const {
     os << hostname_ << ":" << port_;
 }
 
-void Endpoint::encode(Stream &s) const {
+void Endpoint::encode(Stream& s) const {
     s << hostname_;
     s << port_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

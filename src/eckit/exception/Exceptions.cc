@@ -426,9 +426,11 @@ void handle_panic_no_log(const char* msg, const CodeLocation& location) {
 OutOfMemory::OutOfMemory() : Exception("out of memory") {}
 
 FailedLibraryCall::FailedLibraryCall(const std::string& lib, const std::string& func, const std::string& msg,
-                                     const CodeLocation& loc) : Exception (msg, loc) {
+                                     const CodeLocation& loc) :
+    Exception(msg, loc) {
     std::ostringstream s;
-    s << "Failed function call " << func << " to library " << lib << " : " << msg << " " << " @ " << loc;
+    s << "Failed function call " << func << " to library " << lib << " : " << msg << " "
+      << " @ " << loc;
     reason(s.str());
 }
 

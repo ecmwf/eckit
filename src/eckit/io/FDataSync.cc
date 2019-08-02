@@ -10,8 +10,8 @@
 
 #include "FDataSync.h"
 
-#include <unistd.h>
 #include <sys/errno.h>
+#include <unistd.h>
 
 #include "eckit/eckit.h"
 

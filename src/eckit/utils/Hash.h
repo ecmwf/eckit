@@ -13,11 +13,11 @@
 
 #include "eckit/eckit.h"
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <cstring>
 #include <map>
 #include <string>
-#include <cstring>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
@@ -29,130 +29,124 @@ namespace eckit {
 class Hash : private eckit::NonCopyable {
 
 public:  // types
-
-  typedef std::string digest_t;
+    typedef std::string digest_t;
 
 public:  // methods
+    Hash();
 
-  Hash();
+    virtual ~Hash();
 
-  virtual ~Hash();
+    virtual void reset() const = 0;
 
-  virtual void reset() const = 0;
+    virtual digest_t digest() const = 0;
 
-  virtual digest_t digest() const = 0;
+    // for one shot, stateless computation of the hash of the buffer
+    virtual digest_t compute(const void*, long) = 0;
 
-  // for one shot, stateless computation of the hash of the buffer
-  virtual digest_t compute(const void*, long) = 0;
+    void add(char x) { update(&x, sizeof(x)); }
+    void add(unsigned char x) { update(&x, sizeof(x)); }
 
-  void add(char x){ update(&x, sizeof(x)); }
-  void add(unsigned char x){ update(&x, sizeof(x)); }
+    void add(bool x) { update(&x, sizeof(x)); }
 
-  void add(bool x){ update(&x, sizeof(x)); }
+    void add(int x) { update(&x, sizeof(x)); }
+    void add(unsigned int x) { update(&x, sizeof(x)); }
 
-  void add(int x){ update(&x, sizeof(x)); }
-  void add(unsigned int x){ update(&x, sizeof(x)); }
+    void add(short x) { update(&x, sizeof(x)); }
+    void add(unsigned short x) { update(&x, sizeof(x)); }
 
-  void add(short x){ update(&x, sizeof(x)); }
-  void add(unsigned short x){ update(&x, sizeof(x)); }
+    void add(long x) { update(&x, sizeof(x)); }
+    void add(unsigned long x) { update(&x, sizeof(x)); }
 
-  void add(long x){ update(&x, sizeof(x)); }
-  void add(unsigned long x){ update(&x, sizeof(x)); }
+    void add(long long x) { update(&x, sizeof(x)); }
+    void add(unsigned long long x) { update(&x, sizeof(x)); }
 
-  void add(long long x){ update(&x, sizeof(x)); }
-  void add(unsigned long long x){ update(&x, sizeof(x)); }
+    void add(float x) { update(&x, sizeof(x)); }
+    void add(double x) { update(&x, sizeof(x)); }
 
-  void add(float x){ update(&x, sizeof(x)); }
-  void add(double x){ update(&x, sizeof(x)); }
+    void add(const void* x, long size) { update(x, size); }
 
-  void add(const void* x, long size) { update(x, size); }
+    void add(const std::string& x) { update(x.c_str(), x.size()); }
+    void add(const char* x) { update(x, std::strlen(x)); }
 
-  void add(const std::string& x) { update(x.c_str(), x.size()); }
-  void add(const char* x) { update(x, std::strlen(x)); }
+    template <class T>
+    Hash& operator<<(const T& x) {
+        add(x);
+        return *this;
+    }
 
-  template<class T>
-  Hash& operator<<(const T& x) { add(x); return *this; }
+    operator std::string() { return digest(); }
 
-  operator std::string() { return digest(); }
-
-protected: // methods
-
-  // for incremental hashing
-  virtual void update(const void*, long) = 0;
+protected:  // methods
+    // for incremental hashing
+    virtual void update(const void*, long) = 0;
 
 private:  // types
+    // Make sure this is not called with a pointer
+    template <class T>
+    void add(const T* x);
+    void add(const void*);
 
-  // Make sure this is not called with a pointer
-  template<class T> void add(const T* x);
-  void add(const void*);
+    /// Double hashing
+    void add(const Hash& hash) { add(hash.digest()); }
 
-  /// Double hashing
-  void add(const Hash& hash) { add(hash.digest()); }
-
-protected: // members
-
-  mutable digest_t digest_;  ///< cached digest
-
+protected:                     // members
+    mutable digest_t digest_;  ///< cached digest
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-    class HashBuilderBase {
-        std::string name_;
-    public:
-        HashBuilderBase(const std::string &);
-        virtual ~HashBuilderBase();
-        virtual Hash* make() = 0;
-        virtual Hash* make(const std::string& param) = 0;
-    };
+class HashBuilderBase {
+    std::string name_;
 
-    template< class T>
-    class HashBuilder : public HashBuilderBase {
-        virtual Hash* make() {
-            return new T();
-        }
-        virtual Hash* make(const std::string& param) {
-            return new T(param);
-        }
-    public:
-        HashBuilder(const std::string &name) : HashBuilderBase(name) {}
-        virtual ~HashBuilder() = default;
-    };
+public:
+    HashBuilderBase(const std::string&);
+    virtual ~HashBuilderBase();
+    virtual Hash* make()                         = 0;
+    virtual Hash* make(const std::string& param) = 0;
+};
 
-    class HashFactory {
-    public:
+template <class T>
+class HashBuilder : public HashBuilderBase {
+    virtual Hash* make() { return new T(); }
+    virtual Hash* make(const std::string& param) { return new T(param); }
 
-        static HashFactory& instance();
+public:
+    HashBuilder(const std::string& name) : HashBuilderBase(name) {}
+    virtual ~HashBuilder() = default;
+};
 
-        void add(const std::string& name, HashBuilderBase* builder);
-        void remove(const std::string& name);
+class HashFactory {
+public:
+    static HashFactory& instance();
 
-        bool has(const std::string& name);
-        void list(std::ostream &);
+    void add(const std::string& name, HashBuilderBase* builder);
+    void remove(const std::string& name);
 
-        /// @returns default hash function
-        Hash* build();
+    bool has(const std::string& name);
+    void list(std::ostream&);
 
-        /**
-         * @param name  hash function name
-         * @returns     hash function built by specified builder
-         */
-        Hash* build(const std::string &name);
+    /// @returns default hash function
+    Hash* build();
 
-        /**
-         * @param name  hash function name
-         * @param param the initialization string, passed directly to the hash function constructor
-         * @returns     hash function built by specified builder
-         */
-        Hash* build(const std::string &name, const std::string &param);
+    /**
+     * @param name  hash function name
+     * @returns     hash function built by specified builder
+     */
+    Hash* build(const std::string& name);
 
-    private:
+    /**
+     * @param name  hash function name
+     * @param param the initialization string, passed directly to the hash function constructor
+     * @returns     hash function built by specified builder
+     */
+    Hash* build(const std::string& name, const std::string& param);
 
-        HashFactory();
+private:
+    HashFactory();
 
-        std::map<std::string, HashBuilderBase*> builders_;
-        eckit::Mutex mutex_;
-    };
+    std::map<std::string, HashBuilderBase*> builders_;
+    eckit::Mutex mutex_;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -23,16 +23,14 @@ class ResizableBuffer;
 class SnappyCompressor : public eckit::Compressor {
 
 public:  // methods
+    SnappyCompressor();
 
-  SnappyCompressor();
+    virtual ~SnappyCompressor();
 
-  virtual ~SnappyCompressor();
+    virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+    virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
 
-  virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
-  virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
-
-protected: // methods
-
+protected:  // methods
 };
 
 //----------------------------------------------------------------------------------------------------------------------

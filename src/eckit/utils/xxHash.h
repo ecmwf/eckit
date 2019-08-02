@@ -26,31 +26,31 @@ namespace eckit {
 class xxHash : public Hash {
 
 public:  // types
+    xxHash();
 
-  xxHash();
+    explicit xxHash(const char*);
+    explicit xxHash(const std::string&);
 
-  explicit xxHash(const char*);
-  explicit xxHash(const std::string&);
+    xxHash(const void* data, size_t len);
 
-  xxHash(const void* data, size_t len);
+    virtual ~xxHash();
 
-  virtual ~xxHash();
+    virtual void reset() const;
 
-  virtual void reset() const;
+    virtual digest_t compute(const void*, long);
 
-  virtual digest_t compute(const void*, long);
+    virtual void update(const void*, long);
 
-  virtual void update(const void*, long);
+    virtual digest_t digest() const;
 
-  virtual digest_t digest() const;
+    template <class T>
+    xxHash& operator<<(const T& x) {
+        add(x);
+        return *this;
+    }
 
-  template<class T>
-  xxHash& operator<<(const T& x) { add(x); return *this; }
-
-private: // members
-
-  XXH64_state_t* ctx_;
-
+private:  // members
+    XXH64_state_t* ctx_;
 };
 
 }  // end namespace eckit

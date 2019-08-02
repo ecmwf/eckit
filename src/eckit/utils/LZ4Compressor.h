@@ -23,16 +23,14 @@ class ResizableBuffer;
 class LZ4Compressor : public eckit::Compressor {
 
 public:  // methods
+    LZ4Compressor();
 
-  LZ4Compressor();
+    virtual ~LZ4Compressor();
 
-  virtual ~LZ4Compressor();
+    virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+    virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
 
-  virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
-  virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
-
-protected: // methods
-
+protected:  // methods
 };
 
 //----------------------------------------------------------------------------------------------------------------------

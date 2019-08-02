@@ -174,7 +174,7 @@ std::string SQLSession::readIncludeFile(const std::string& fileName) {
 std::vector<std::string> SQLSession::includePaths() {
     std::vector<std::string> r;
     r.push_back("");
-    r.push_back( PathName(schemaFile()).dirName().asString() + "/");
+    r.push_back(PathName(schemaFile()).dirName().asString() + "/");
     r.push_back("./");
     return r;
 }

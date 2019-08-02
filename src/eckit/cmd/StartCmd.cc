@@ -37,10 +37,10 @@ void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
         PathName path("~/etc/applications");
         std::vector<std::string> names;
 
-        if(path.exists()) {
+        if (path.exists()) {
             std::ifstream in(path.localPath());
             std::string line;
-            while(in >> line) {
+            while (in >> line) {
                 names.push_back(line);
             }
         }

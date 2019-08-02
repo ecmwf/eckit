@@ -10,8 +10,8 @@
 
 #include "eckit/runtime/SessionID.h"
 
-#include <ostream>
 #include <unistd.h>
+#include <ostream>
 
 #include "eckit/runtime/Main.h"
 #include "eckit/serialisation/Stream.h"
@@ -50,14 +50,11 @@ void SessionID::encode(Stream& s) const {
 }
 
 bool SessionID::operator==(const SessionID& rhs) {
-    return (pid_ == rhs.pid_ &&
-            thread_ == rhs.thread_ &&
-            time_ == rhs.time_ &&
-            hostname_ == rhs.hostname_);
+    return (pid_ == rhs.pid_ && thread_ == rhs.thread_ && time_ == rhs.time_ && hostname_ == rhs.hostname_);
 }
 
 bool SessionID::operator!=(const SessionID& rhs) {
-   return !(*this == rhs);
+    return !(*this == rhs);
 }
 
 void SessionID::hash(Hash& h) const {
@@ -73,4 +70,4 @@ void SessionID::print(std::ostream& os) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit

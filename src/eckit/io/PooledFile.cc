@@ -12,12 +12,12 @@
 #include <string>
 #include <thread>
 
-#include "eckit/config/Resource.h"
 #include "eckit/config/LibEcKit.h"
-#include "eckit/io/PooledFile.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/PooledFile.h"
 #include "eckit/log/Bytes.h"
 
 
@@ -32,10 +32,7 @@ struct PoolFileEntryStatus {
     off_t position_;
     bool opened_;
 
-    PoolFileEntryStatus() :
-        position_(0),
-        opened_(false) {
-    }
+    PoolFileEntryStatus() : position_(0), opened_(false) {}
 };
 
 class PoolFileEntry {
@@ -44,27 +41,21 @@ public:
     FILE* file_;
     size_t count_;
 
-    std::unique_ptr<Buffer>  buffer_;
+    std::unique_ptr<Buffer> buffer_;
 
-    std::map<const PooledFile*, PoolFileEntryStatus > statuses_;
+    std::map<const PooledFile*, PoolFileEntryStatus> statuses_;
 
     size_t nbOpens_ = 0;
     size_t nbReads_ = 0;
     size_t nbSeeks_ = 0;
 
 public:
-
-    PoolFileEntry(const std::string& name):
-        name_(name),
-        file_(nullptr),
-        count_(0)
-    {
-    }
+    PoolFileEntry(const std::string& name) : name_(name), file_(nullptr), count_(0) {}
 
     void doClose() {
-        if(file_) {
+        if (file_) {
             Log::debug<LibEcKit>() << "Closing from file " << name_ << std::endl;
-            if(::fclose(file_) != 0) {
+            if (::fclose(file_) != 0) {
                 throw PooledFileError(name_, "Failed to close", Here());
             }
             file_ = nullptr;
@@ -83,7 +74,7 @@ public:
 
         statuses_.erase(s);
 
-        if(statuses_.size() == 0) {
+        if (statuses_.size() == 0) {
             doClose();
             pool_.erase(name_);
             // No code after !!!
@@ -95,16 +86,17 @@ public:
         ASSERT(s != statuses_.end());
         ASSERT(!s->second.opened_);
 
-        if(!file_) {
+        if (!file_) {
             nbOpens_++;
             file_ = ::fopen(name_.c_str(), "r");
-            if(!file_) {
+            if (!file_) {
                 throw PooledFileError(name_, "Failed to open", Here());
             }
 
             Log::debug<LibEcKit>() << "PooledFile::openForRead " << name_ << std::endl;
 
-            static size_t bufferSize = Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+            static size_t bufferSize =
+                Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
 
             if (bufferSize) {
                 Log::debug<LibEcKit>() << "PooledFile using " << Bytes(bufferSize) << std::endl;
@@ -114,11 +106,11 @@ public:
             }
         }
 
-        s->second.opened_ = true;
+        s->second.opened_   = true;
         s->second.position_ = 0;
     }
 
-    void close(const PooledFile* file)  {
+    void close(const PooledFile* file) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
 
@@ -126,21 +118,22 @@ public:
         s->second.opened_ = false;
     }
 
-    long read(const PooledFile* file, void *buffer, long len) {
+    long read(const PooledFile* file, void* buffer, long len) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
         ASSERT(s->second.opened_);
 
-        if(::fseeko(file_, s->second.position_, SEEK_SET)<0) {
+        if (::fseeko(file_, s->second.position_, SEEK_SET) < 0) {
             throw PooledFileError(name_, "Failed to seek", Here());
         }
 
-//      Log::debug<LibEcKit>() < "Reading @ position " << s->second.position_ << " file : " << name_ << std::endl;
+        //      Log::debug<LibEcKit>() < "Reading @ position " << s->second.position_ << " file : " << name_ <<
+        //      std::endl;
 
         size_t length = size_t(len);
-        size_t n = ::fread(buffer, 1, length, file_);
+        size_t n      = ::fread(buffer, 1, length, file_);
 
-        if(n != length && ::ferror(file_)) {
+        if (n != length && ::ferror(file_)) {
             throw PooledFileError(name_, "Read error", Here());
         }
 
@@ -173,14 +166,11 @@ public:
 };
 
 
-PooledFile::PooledFile(const PathName& name):
-    name_(name),
-    entry_(nullptr)
-{
+PooledFile::PooledFile(const PathName& name) : name_(name), entry_(nullptr) {
     auto j = pool_.find(name);
-    if(j == pool_.end()) {
+    if (j == pool_.end()) {
         pool_[name] = new PoolFileEntry(name);
-        j = pool_.find(name);
+        j           = pool_.find(name);
     }
 
     entry_ = (*j).second;
@@ -226,7 +216,7 @@ size_t PooledFile::nbSeeks() const {
     return entry_->nbSeeks_;
 }
 
-long PooledFile::read(void *buffer, long len) {
+long PooledFile::read(void* buffer, long len) {
     ASSERT(entry_);
     return entry_->read(this, buffer, len);
 }
@@ -234,5 +224,4 @@ long PooledFile::read(void *buffer, long len) {
 PooledFileError::PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc) :
     FileError(msg + " : error on pooled file " + file, loc) {}
 
-} // namespace eckit
-
+}  // namespace eckit

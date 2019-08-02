@@ -41,6 +41,7 @@ namespace eckit {
     }
 
     void HashFactory::remove(const std::string& name) {
+        AutoLock<Mutex> lock(mutex_);
         builders_.erase(name);
     }
 

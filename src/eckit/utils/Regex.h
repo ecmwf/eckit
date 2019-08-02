@@ -25,44 +25,46 @@ namespace eckit {
 
 class Regex {
 public:
-    // -- Contructors
 
-    Regex(const std::string& = ".*", bool shell = false, bool extended = true);
-    Regex(const Regex&);
+// -- Contructors
 
-    ~Regex();
+	Regex(const std::string& = ".*",bool shell = false, bool extended=true);
+	Regex(const Regex&);
 
-    // -- Methods
+	~Regex();
 
-    Regex& operator=(const Regex&);
+// -- Methods
 
-    bool match(const std::string& s) const;
+	Regex& operator=(const Regex&);
 
-    operator const std::string&() const { return str_; }
+	bool match(const std::string& s) const;
 
-    bool operator==(const Regex& other) const { return str_ == other.str_; }
+	operator const std::string&() const  { return str_; }
 
-protected:  // methods
-    void print(std::ostream&) const;
+	bool operator==(const Regex& other) const { return str_ == other.str_; }
 
-private:  // members
-    std::string str_;
-    regex_t re_;
-    bool extended_;
+protected: // methods
 
-private:  // methods
-    void compile(const char*);
+	void print(std::ostream&) const;
 
-    friend std::ostream& operator<<(std::ostream& s, const Regex& p) {
-        p.print(s);
-        return s;
-    }
+private: // members
+
+	std::string str_;
+	regex_t re_;
+	bool extended_;
+
+private: // methods
+
+	void compile(const char*);
+
+	friend std::ostream& operator<<(std::ostream& s,const Regex& p) { p.print(s); return s; }
+
 };
 
 
 //--------------------------------------------------------------------------------------------------
 
 
-}  // namespace eckit
+} // namespace eckit
 
 #endif

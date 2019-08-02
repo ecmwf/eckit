@@ -10,8 +10,9 @@
 
 #include "eckit/io/rados/RadosObject.h"
 
-#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/config/Resource.h"
+#include "eckit/config/Resource.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
@@ -49,16 +50,22 @@ RadosObject::RadosObject(const std::string& path) {
     ASSERT(bits.size() == 1 || bits.size() == 2);
 
     if (bits.size() == 1) {
-        oid_  = path;
+        oid_ = path;
         pool_ = defaultRadosPool;
     }
     else {
         pool_ = bits[0];
-        oid_  = bits[1];
+        oid_ = bits[1];
     }
+
 }
 
-RadosObject::RadosObject(const std::string& pool, const std::string& oid) : pool_(pool), oid_(oid) {}
+RadosObject::RadosObject(const std::string& pool, const std::string& oid):
+    pool_(pool),
+    oid_(oid)
+{
+
+}
 
 std::string RadosObject::str() const {
     return pool_ + ':' + oid_;

@@ -22,90 +22,88 @@ namespace eckit {
 class MD5 : public Hash {
 
 public:  // types
-    MD5();
 
-    explicit MD5(const char*);
-    explicit MD5(const std::string&);
+  MD5();
 
-    MD5(const void* data, size_t len);
+  explicit MD5(const char*);
+  explicit MD5(const std::string&);
 
-    virtual ~MD5();
+  MD5(const void* data, size_t len);
 
-    virtual void reset() const;
+  virtual ~MD5();
 
-    virtual digest_t compute(const void*, long);
+  virtual void reset() const;
 
-    virtual void update(const void*, long);
+  virtual digest_t compute(const void*, long);
 
-    virtual digest_t digest() const;
+  virtual void update(const void*, long);
 
-    // Due to C++ name lookup rules, the base class interface needs to be
-    // replicated here to be able to add the template overload, which would
-    // otherwise shadow those methods.
+  virtual digest_t digest() const;
 
-    void add(char x) { update(&x, sizeof(x)); }
-    void add(unsigned char x) { update(&x, sizeof(x)); }
+  // Due to C++ name lookup rules, the base class interface needs to be
+  // replicated here to be able to add the template overload, which would
+  // otherwise shadow those methods.
 
-    void add(bool x) { update(&x, sizeof(x)); }
+  void add(char x){ update(&x, sizeof(x)); }
+  void add(unsigned char x){ update(&x, sizeof(x)); }
 
-    void add(int x) { update(&x, sizeof(x)); }
-    void add(unsigned int x) { update(&x, sizeof(x)); }
+  void add(bool x){ update(&x, sizeof(x)); }
 
-    void add(short x) { update(&x, sizeof(x)); }
-    void add(unsigned short x) { update(&x, sizeof(x)); }
+  void add(int x){ update(&x, sizeof(x)); }
+  void add(unsigned int x){ update(&x, sizeof(x)); }
 
-    void add(long x) { update(&x, sizeof(x)); }
-    void add(unsigned long x) { update(&x, sizeof(x)); }
+  void add(short x){ update(&x, sizeof(x)); }
+  void add(unsigned short x){ update(&x, sizeof(x)); }
 
-    void add(long long x) { update(&x, sizeof(x)); }
-    void add(unsigned long long x) { update(&x, sizeof(x)); }
+  void add(long x){ update(&x, sizeof(x)); }
+  void add(unsigned long x){ update(&x, sizeof(x)); }
 
-    void add(float x) { update(&x, sizeof(x)); }
-    void add(double x) { update(&x, sizeof(x)); }
+  void add(long long x){ update(&x, sizeof(x)); }
+  void add(unsigned long long x){ update(&x, sizeof(x)); }
 
-    void add(const void* x, long size) { update(x, size); }
+  void add(float x){ update(&x, sizeof(x)); }
+  void add(double x){ update(&x, sizeof(x)); }
 
-    void add(const std::string& x) { update(x.c_str(), x.size()); }
-    void add(const char* x) { update(x, std::strlen(x)); }
+  void add(const void* x, long size) { update(x, size); }
 
-    // for generic objects
-    template <class T>
-    void add(const T& x) {
-        x.hash(*this);
-    }
+  void add(const std::string& x) { update(x.c_str(), x.size()); }
+  void add(const char* x) { update(x, std::strlen(x)); }
 
-    template <class T>
-    MD5& operator<<(const T& x) {
-        add(x);
-        return *this;
-    }
+  // for generic objects
+  template<class T>
+  void add(const T& x) { x.hash(*this); }
 
-    void numericalDigest(unsigned char out[MD5_DIGEST_LENGTH]) const;
+  template<class T>
+  MD5& operator<<(const T& x) { add(x); return *this; }
 
-private:                       // members
-    mutable digest_t digest_;  ///< cached digest
+  void numericalDigest(unsigned char out[MD5_DIGEST_LENGTH]) const;
 
-    /* POINTER defines a generic pointer type */
-    typedef unsigned char* POINTER;
+private: // members
 
-    /* UINT4 defines a four byte word */
-    typedef uint32_t UINT4;
+  mutable digest_t digest_;  ///< cached digest
 
-    /* MD5 context. */
-    typedef struct {
-        UINT4 state[4];           /* state (ABCD) */
-        UINT4 count[2];           /* number of bits, modulo 2^64 (lsb first) */
-        unsigned char buffer[64]; /* input buffer */
-    } MD5_CTX;
+  /* POINTER defines a generic pointer type */
+  typedef unsigned char *POINTER;
 
-    mutable MD5_CTX s_;
+  /* UINT4 defines a four byte word */
+  typedef uint32_t UINT4;
 
-    static void Init(MD5_CTX*);
-    static void Update(MD5_CTX*, const unsigned char*, unsigned int);
-    static void Final(unsigned char[16], MD5_CTX*);
-    static void Transform(UINT4[4], const unsigned char[64]);
-    static void Encode(unsigned char*, UINT4*, unsigned int);
-    static void Decode(UINT4*, const unsigned char*, unsigned int);
+  /* MD5 context. */
+  typedef struct {
+    UINT4 state[4];                                   /* state (ABCD) */
+    UINT4 count[2];        /* number of bits, modulo 2^64 (lsb first) */
+    unsigned char buffer[64];                         /* input buffer */
+  } MD5_CTX;
+
+  mutable MD5_CTX s_;
+
+  static void Init    (MD5_CTX *);
+  static void Update  (MD5_CTX *, const unsigned char *, unsigned int);
+  static void Final   (unsigned char [16], MD5_CTX *);
+  static void Transform (UINT4 [4], const unsigned char [64]);
+  static void Encode (unsigned char *, UINT4 *, unsigned int);
+  static void Decode (UINT4 *, const unsigned char *, unsigned int);
+
 };
 
 }  // end namespace eckit

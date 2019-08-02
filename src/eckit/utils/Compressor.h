@@ -27,14 +27,16 @@ class ResizableBuffer;
 class Compressor : private eckit::NonCopyable {
 
 public:  // methods
-    Compressor();
 
-    virtual ~Compressor();
+  Compressor();
 
-    virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const   = 0;
-    virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const = 0;
+  virtual ~Compressor();
 
-protected:  // methods
+  virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const = 0;
+  virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const = 0;
+
+protected: // methods
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -42,43 +44,46 @@ protected:  // methods
 class NoCompressor : public Compressor {
 
 public:  // types
-    NoCompressor();
 
-    virtual ~NoCompressor() = default;
+  NoCompressor();
 
-    virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
-    virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+  virtual ~NoCompressor() = default;
+
+  virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+  virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class CompressorBuilderBase {
     std::string name_;
-
 public:
-    CompressorBuilderBase(const std::string&);
+    CompressorBuilderBase(const std::string &);
     virtual ~CompressorBuilderBase();
     virtual Compressor* make() = 0;
 };
 
-template <class T>
+template< class T>
 class CompressorBuilder : public CompressorBuilderBase {
-    virtual Compressor* make() { return new T(); }
-
-public:
-    CompressorBuilder(const std::string& name) : CompressorBuilderBase(name) {}
+    virtual Compressor* make() {
+        return new T();
+    }
+  public:
+    CompressorBuilder(const std::string &name) : CompressorBuilderBase(name) {}
     virtual ~CompressorBuilder() = default;
 };
 
 class CompressorFactory {
 public:
+
     static CompressorFactory& instance();
 
     void add(const std::string& name, CompressorBuilderBase* builder);
     void remove(const std::string& name);
 
     bool has(const std::string& name);
-    void list(std::ostream&);
+    void list(std::ostream &);
 
     /// @returns default compressor
     Compressor* build();
@@ -90,6 +95,7 @@ public:
     Compressor* build(const std::string&);
 
 private:
+
     CompressorFactory();
 
     std::map<std::string, CompressorBuilderBase*> builders_;

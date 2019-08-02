@@ -626,12 +626,10 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 #if defined(ECKIT_HAVE_DIRENT_D_TYPE)
         do_stat = false;
         if (e->d_type == DT_DIR) {
-            dirs.push_back(full);
-        }
-        else if (e->d_type == DT_UNKNOWN) {
+            dirs.push_back(full); 
+        } else if (e->d_type == DT_UNKNOWN) {
             do_stat = true;
-        }
-        else {
+        } else {
             files.push_back(full);
         }
 #endif

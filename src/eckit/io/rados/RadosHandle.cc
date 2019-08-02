@@ -31,12 +31,30 @@ void RadosHandle::encode(Stream& s) const {
     s << object_;
 }
 
-RadosHandle::RadosHandle(Stream& s) : DataHandle(s), object_(s), offset_(0), opened_(false), write_(false) {}
+RadosHandle::RadosHandle(Stream& s):
+    DataHandle(s),
+    object_(s),
+    offset_(0),
+    opened_(false),
+    write_(false) {
+}
 
-RadosHandle::RadosHandle(const RadosObject& object) : object_(object), offset_(0), opened_(false), write_(false) {}
+RadosHandle::RadosHandle(const RadosObject& object):
+    object_(object),
+    offset_(0),
+    opened_(false),
+    write_(false) {
+
+}
 
 
-RadosHandle::RadosHandle(const std::string& object) : object_(object), offset_(0), opened_(false), write_(false) {}
+RadosHandle::RadosHandle(const std::string& object):
+    object_(object),
+    offset_(0),
+    opened_(false),
+    write_(false) {
+
+}
 
 RadosHandle::~RadosHandle() {
     std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;
@@ -93,8 +111,11 @@ long RadosHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(!write_);
 
-    int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.oid().c_str(),
-                                    reinterpret_cast<char*>(buffer), length, offset_));
+    int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_),
+                                    object_.oid().c_str(),
+                                    reinterpret_cast<char*>(buffer),
+                                    length,
+                                    offset_));
     // ASSERT(len  > 0);
 
     offset_ += len;
@@ -111,12 +132,17 @@ long RadosHandle::write(const void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(write_);
 
-    RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_), object_.oid().c_str(),
-                           reinterpret_cast<const char*>(buffer), length, offset_));
+    RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_),
+                           object_.oid().c_str(),
+                           reinterpret_cast<const char*>(buffer),
+                           length,
+                           offset_));
 
     offset_ += length;
 
     return length;
+
+
 }
 
 void RadosHandle::flush() {

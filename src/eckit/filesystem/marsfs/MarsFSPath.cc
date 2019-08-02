@@ -132,7 +132,7 @@ void MarsFSPath::mkdir(short mode) const {
     MarsFSClient(*this).mkdir(path_, mode);
 }
 
-void MarsFSPath::chmod(const FileMode& mode) const {
+void MarsFSPath::chmod(const FileMode& mode) const  {
     NOTIMP;
 }
 

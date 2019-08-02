@@ -98,7 +98,9 @@ class LocalFileManager : public URIManager {
         return PathName(f.name()).partHandle(ol, ll);
     }
 
-    virtual std::string asString(const URI& f) const { return f.name(); }
+    virtual std::string asString(const URI& f) const {
+        return f.name();
+    }
 
 public:
     LocalFileManager(const std::string& name) : URIManager(name) {}

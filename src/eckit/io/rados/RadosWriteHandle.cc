@@ -11,11 +11,11 @@
 
 #include <map>
 
+#include "eckit/io/rados/RadosWriteHandle.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
+#include "eckit/io/rados/RadosAttributes.h"
 
 
 namespace eckit {
@@ -34,26 +34,31 @@ void RadosWriteHandle::print(std::ostream& s) const {
 void RadosWriteHandle::encode(Stream& s) const {
     DataHandle::encode(s);
     s << object_;
-    s << Length(0);  // For future extensio
+    s << Length(0); // For future extensio
 }
 
-RadosWriteHandle::RadosWriteHandle(Stream& s) : DataHandle(s), object_(s), opened_(false) {
-    s >> maxObjectSize_;
-    if (!maxObjectSize_) {
+RadosWriteHandle::RadosWriteHandle(Stream& s):
+    DataHandle(s),
+    object_(s),
+    opened_(false) {
+        s >> maxObjectSize_;
+         if (!maxObjectSize_) {
         maxObjectSize_ = RadosCluster::instance().maxObjectSize();
     }
 }
 
-RadosWriteHandle::RadosWriteHandle(const std::string& name, const Length& maxObjectSize) :
+RadosWriteHandle::RadosWriteHandle(const std::string& name, const Length& maxObjectSize):
     object_(name),
     maxObjectSize_(maxObjectSize),
-    opened_(false) {
+    opened_(false)
+{
     if (!maxObjectSize_) {
         maxObjectSize_ = RadosCluster::instance().maxObjectSize();
     }
 }
 
-RadosWriteHandle::~RadosWriteHandle() {}
+RadosWriteHandle::~RadosWriteHandle() {
+}
 
 Length RadosWriteHandle::openForRead() {
     NOTIMP;
@@ -63,10 +68,10 @@ void RadosWriteHandle::openForWrite(const Length& length) {
 
     ASSERT(!opened_);
 
-    written_  = 0;
+    written_ = 0;
     position_ = 0;
-    part_     = 0;
-    opened_   = true;
+    part_ = 0;
+    opened_ = true;
 }
 
 void RadosWriteHandle::openForAppend(const Length&) {
@@ -83,12 +88,12 @@ long RadosWriteHandle::write(const void* buffer, long length) {
     std::cout << "RadosWriteHandle::write " << length << std::endl;
     ASSERT(opened_);
 
-    if (length == 0) {
+    if(length == 0) {
         return 0;
     }
 
 
-    long result     = 0;
+    long result = 0;
     const char* buf = reinterpret_cast<const char*>(buffer);
 
     while (length > 0) {
@@ -97,7 +102,7 @@ long RadosWriteHandle::write(const void* buffer, long length) {
         long l     = (long)len;
         ASSERT(len == Length(l));
 
-        if (l == 0) {
+        if(l == 0) {
             ASSERT(handle_);
             handle_->close();
             handle_.reset(0);
@@ -112,7 +117,7 @@ long RadosWriteHandle::write(const void* buffer, long length) {
             RadosObject object(object_, part_++);
             std::cout << "RadosWriteHandle::write open " << object << std::endl;
             handle_.reset(new RadosHandle(object));
-            handle_->openForWrite(0);  // TODO: use proper size
+            handle_->openForWrite(0); // TODO: use proper size
         }
 
 
@@ -121,9 +126,11 @@ long RadosWriteHandle::write(const void* buffer, long length) {
         result += l;
         length -= l;
         position_ += l;
+
     }
 
     return result;
+
 }
 
 void RadosWriteHandle::flush() {
@@ -137,7 +144,7 @@ void RadosWriteHandle::close() {
         handle_.reset(0);
     }
 
-    if (opened_) {
+    if(opened_) {
 
         RadosAttributes attrs;
 

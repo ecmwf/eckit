@@ -24,7 +24,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompressorFactory::CompressorFactory() {}
+CompressorFactory::CompressorFactory() {
+}
 
 CompressorFactory& CompressorFactory::instance() {
     static CompressorFactory theOne;
@@ -35,7 +36,7 @@ void CompressorFactory::add(const std::string& name, CompressorBuilderBase* buil
     std::string nameLowercase = StringTools::lower(name);
 
     AutoLock<Mutex> lock(mutex_);
-    if (has(nameLowercase)) {
+    if(has(nameLowercase)) {
         throw SeriousBug("Duplicate entry in CompressorFactory: " + nameLowercase, Here());
     }
     builders_[nameLowercase] = builder;
@@ -58,8 +59,7 @@ bool CompressorFactory::has(const std::string& name) {
 void CompressorFactory::list(std::ostream& out) {
     AutoLock<Mutex> lock(mutex_);
     const char* sep = "";
-    for (std::map<std::string, CompressorBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end();
-         ++j) {
+    for (std::map<std::string, CompressorBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end(); ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
@@ -69,7 +69,7 @@ Compressor* CompressorFactory::build() {
 
     std::string compression = eckit::Resource<std::string>("defaultCompression;ECKIT_DEFAULT_COMPRESSION", "snappy");
 
-    if (has(compression)) {
+    if(has(compression)) {
         return build(compression);
     }
 
@@ -99,7 +99,9 @@ Compressor* CompressorFactory::build(const std::string& name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompressorBuilderBase::CompressorBuilderBase(const std::string& name) : name_(name) {
+CompressorBuilderBase::CompressorBuilderBase(const std::string& name) {
+    name_ = StringTools::lower(name);
+
     CompressorFactory::instance().add(name_, this);
 }
 
@@ -117,13 +119,15 @@ Compressor::~Compressor() {}
 
 NoCompressor::NoCompressor() {}
 
-size_t NoCompressor::compress(const Buffer& in, ResizableBuffer& out) const {
+size_t NoCompressor::compress(const Buffer& in, ResizableBuffer& out) const
+{
     out.resize(in.size());
     ::memcpy(out, in, in.size());
     return out.size();
 }
 
-size_t NoCompressor::uncompress(const Buffer& in, ResizableBuffer& out) const {
+size_t NoCompressor::uncompress(const Buffer& in, ResizableBuffer& out) const
+{
     out.resize(in.size());
     ::memcpy(out, in, in.size());
     return in.size();

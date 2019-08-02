@@ -20,14 +20,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LZ4Compressor::LZ4Compressor() {}
+LZ4Compressor::LZ4Compressor() {
+}
 
-LZ4Compressor::~LZ4Compressor() {}
+LZ4Compressor::~LZ4Compressor() {
+}
 
-size_t LZ4Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const {
+size_t LZ4Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const{
 
     size_t maxcompressed = LZ4_compressBound(in.size());
-    if (out.size() < maxcompressed)
+    if(out.size() < maxcompressed)
         out.resize(maxcompressed);
 
     const int compressed = LZ4_compress_default(in, out, in.size(), maxcompressed);

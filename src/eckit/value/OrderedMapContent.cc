@@ -10,8 +10,8 @@
 
 #include <algorithm>
 
-#include "eckit/parser/JSON.h"
 #include "eckit/value/OrderedMapContent.h"
+#include "eckit/parser/JSON.h"
 
 namespace eckit {
 
@@ -86,8 +86,7 @@ Value OrderedMapContent::remove(const Value& key) {
     Value result = value_[key];
     value_.erase(key);
     auto it = std::find(keys_.begin(), keys_.end(), key);
-    if (it != keys_.end())
-        keys_.erase(it);
+    if (it != keys_.end()) keys_.erase(it);
     return result;
 }
 
@@ -237,14 +236,14 @@ void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const
 
 void OrderedMapContent::hash(Hash& h) const {
 
-    ValueMap::const_iterator v   = value_.begin();
+    ValueMap::const_iterator v = value_.begin();
     ValueMap::const_iterator end = value_.end();
     for (; v != end; ++v) {
         v->first.hash(h);
         v->second.hash(h);
     }
 
-    ValueList::const_iterator k    = keys_.begin();
+    ValueList::const_iterator k = keys_.begin();
     ValueList::const_iterator kend = keys_.end();
     for (; k != kend; ++k) {
         k->hash(h);

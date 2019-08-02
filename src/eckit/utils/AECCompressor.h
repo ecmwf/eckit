@@ -23,15 +23,17 @@ class ResizableBuffer;
 class AECCompressor : public eckit::Compressor {
 
 public:  // methods
-    AECCompressor();
 
-    virtual ~AECCompressor();
+  AECCompressor();
 
-    virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
-    virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+  virtual ~AECCompressor();
 
-protected:  // methods
-    static size_t minInputSize(const size_t inputSize, const aec_stream& strm);
+  virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+  virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const;
+
+protected: // methods
+  static size_t minInputSize(const size_t inputSize, const aec_stream &strm);
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

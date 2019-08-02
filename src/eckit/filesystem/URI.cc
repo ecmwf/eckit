@@ -50,7 +50,7 @@ URI::URI(const std::string& path) {
     }
 }
 
-URI::URI(Stream& s) {
+URI::URI(Stream &s) {
     s >> name_;
     s >> scheme_;
 }
@@ -91,7 +91,7 @@ void URI::print(std::ostream& s) const {
     s << "URI[scheme=" << scheme_ << ",name=" << name_ << "]";
 }
 
-void URI::encode(Stream& s) const {
+void URI::encode(Stream &s) const {
     s << name_;
     s << scheme_;
 }

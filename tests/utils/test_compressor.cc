@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
 #include <iostream>
+#include <cstring>
 #include <memory>
 
 #include "eckit/io/Buffer.h"
@@ -43,7 +43,7 @@ size_t compress_uncompress(Compressor& c, const Buffer& in, ResizableBuffer& out
     out.resize(in.size());
     size_t ulen = c.uncompress(compressed, out);
 
-    std::cout << tostr(out, ulen) << std::endl;
+    std::cout << tostr(out,ulen) << std::endl;
 
     return ulen;
 }
@@ -60,19 +60,21 @@ CASE("Compression") {
     SECTION("CASE Default Compression") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build()));
         size_t ulen = compress_uncompress(*c, in, out);
-        EXPECT(tostr(out, ulen) == msg);
+        EXPECT(tostr(out,ulen) == msg);
     }
 
     SECTION("CASE No Compression - case insensitive") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("nOnE")));
     }
 
-    SECTION("Not Existing Compression") { EXPECT_THROWS(c.reset(CompressorFactory::instance().build("dummy name"))); }
+    SECTION("Not Existing Compression") {
+        EXPECT_THROWS(c.reset(CompressorFactory::instance().build("dummy name")));
+    }
 
     SECTION("CASE No Compression") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("none")));
         size_t ulen = compress_uncompress(*c, in, out);
-        EXPECT(tostr(out, ulen) == msg);
+        EXPECT(tostr(out,ulen) == msg);
     }
 
     SECTION("CASE Snappy Compression") {
@@ -80,7 +82,7 @@ CASE("Compression") {
         if (CompressorFactory::instance().has("snappy")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("snappy")));
             size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
+            EXPECT(tostr(out,ulen) == msg);
         }
     }
 
@@ -88,7 +90,7 @@ CASE("Compression") {
         if (CompressorFactory::instance().has("lz4")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("lz4")));
             size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
+            EXPECT(tostr(out,ulen) == msg);
         }
     }
 
@@ -96,7 +98,7 @@ CASE("Compression") {
         if (CompressorFactory::instance().has("bzip2")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
             size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
+            EXPECT(tostr(out,ulen) == msg);
         }
     }
 
@@ -104,7 +106,7 @@ CASE("Compression") {
         if (CompressorFactory::instance().has("aec")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("aec")));
             size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
+            EXPECT(tostr(out,ulen) == msg);
         }
     }
 }

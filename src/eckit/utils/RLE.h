@@ -26,40 +26,44 @@ namespace eckit {
 class Stream;
 
 template <class InputIterator, class OutputIterator>
-long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop);
+long long RLEencode2(InputIterator first, InputIterator last,
+	OutputIterator result,long long maxloop);
 
 template <class InputIterator, class OutputIterator>
-void RLEdecode2(InputIterator first, InputIterator last, OutputIterator result);
+void RLEdecode2(InputIterator first, InputIterator last,
+	OutputIterator result);
 
 template <class InputIterator>
-void RLEprint(std::ostream&, InputIterator first, InputIterator last);
+void RLEprint(std::ostream&,InputIterator first, InputIterator last);
 
 
-template <class InputIterator, class OutputIterator>
-bool DIFFencode(InputIterator first, InputIterator last, OutputIterator result);
+template<class InputIterator,class OutputIterator>
+bool DIFFencode(InputIterator first,InputIterator last,OutputIterator result);
 
-template <class InputIterator, class OutputIterator>
-void DIFFdecode(InputIterator first, InputIterator last, OutputIterator result);
+template<class InputIterator,class OutputIterator>
+void DIFFdecode(InputIterator first,InputIterator last,OutputIterator result);
+
+
 
 
 //==========================================================================
 
-template <class InputIterator>
-Stream& RLEwrite(Stream&, InputIterator, InputIterator, long long);
+template<class InputIterator>
+Stream& RLEwrite(Stream&,InputIterator,InputIterator,long long);
 
-template <class OutputIterator, class T>
-Stream& RLEread(Stream&, OutputIterator, T*);
+template<class OutputIterator,class T>
+Stream& RLEread(Stream&,OutputIterator,T*);
 
-template <class InputIterator>
-Stream& RLEDIFFwrite(Stream&, InputIterator, InputIterator, long long);
+template<class InputIterator>
+Stream& RLEDIFFwrite(Stream&,InputIterator,InputIterator,long long);
 
-template <class OutputIterator, class T>
-Stream& RLEDIFFread(Stream&, OutputIterator, T*);
+template<class OutputIterator,class T>
+Stream& RLEDIFFread(Stream&,OutputIterator,T*);
 
 
 //-----------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
 
 #include "eckit/utils/RLE.cc"
 

@@ -14,8 +14,8 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
-#include "eckit/io/MemoryHandle.h"
 #include "eckit/io/MultiHandle.h"
+#include "eckit/io/MemoryHandle.h"
 #include "eckit/io/PartFileHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
@@ -33,6 +33,7 @@ namespace test {
 
 class Tester {
 public:
+
     Tester() {
 
         std::string base = Resource<std::string>("$TMPDIR", "/tmp");
@@ -97,18 +98,18 @@ CASE("Multihandle") {
             *e++ = buf2[i];
         }
 
-        //        std::cout << mh1 << std::endl;
+//        std::cout << mh1 << std::endl;
         EXPECT(mh1.estimate() == Length(52));
 
         mh1.compress();
 
-        //        std::cout << mh1 << std::endl;
+//        std::cout << mh1 << std::endl;
         EXPECT(mh1.estimate() == Length(52));
     }
 
     MemoryHandle result(128);
 
-    EXPECT_NO_THROW(mh1.saveInto(result));
+    EXPECT_NO_THROW( mh1.saveInto(result ));
 
     EXPECT(::memcmp(expect, result.data(), sizeof(expect)) == 0);
 }

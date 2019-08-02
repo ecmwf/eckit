@@ -15,11 +15,11 @@
 #include "eckit/log/Timer.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/os/SignalHandler.h"
-#include "eckit/parser/JSON.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/TaskInfo.h"
+#include "eckit/parser/JSON.h"
 
 
 namespace eckit {
@@ -198,7 +198,7 @@ void TaskInfo::parent(long p) {
 void TaskInfo::json(JSON& json) const {
 
     Monitor& monitor = Monitor::instance();
-    size_t n         = this - monitor.tasks().begin();
+    size_t n = this - monitor.tasks().begin();
 
     json.startObject();
     json << "id" << n;
@@ -217,9 +217,7 @@ void TaskInfo::json(JSON& json) const {
     // char           buffer_[size_];
     // unsigned long  pos_;
 
-    char buffer[size_ + 1] = {
-        0,
-    };
+    char buffer[size_ + 1] = {0,};
     unsigned long pos = 0;
     unsigned long len = text(buffer, sizeof(buffer), pos);
 
@@ -260,6 +258,7 @@ void TaskInfo::json(JSON& json) const {
     json << "message" << message_;
 
     json.endObject();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

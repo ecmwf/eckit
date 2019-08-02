@@ -24,7 +24,7 @@ static PathName tmp() {
         tmpdir = "/tmp";
     }
 
-    long max   = pathconf(tmpdir, _PC_PATH_MAX);
+    long max = pathconf(tmpdir, _PC_PATH_MAX);
     char* path = new char[max];
 
     sprintf(path, "%s/eckitXXXXXXXXXXX", tmpdir);

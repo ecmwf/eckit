@@ -31,12 +31,8 @@ URI::URI(const std::string& uri) {
         scheme_ = "unix";
 }
 
-URI::URI(const URI &uri, const std::string &host, const int port) {
-    scheme_ = uri.scheme_;
-    user_ = uri.user_;
-    host_ = host;
-    port_ = port;
-}
+URI::URI(const URI uri, const std::string &host, const int port):
+    scheme_(uri.scheme_), user_(uri.user_), host_(host), port_(port), path_(uri.path_), query_(uri.query_), fragment_(uri.fragment_) {}
 
 URI::URI(Stream &s) {
     s >> scheme_;

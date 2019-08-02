@@ -34,7 +34,7 @@ public: // methods
 
     URI();
     URI(const std::string&);
-    URI(const URI &uri, const std::string &host, const int port);
+    URI(const URI uri, const std::string &host, const int port);
     URI(Stream& s);
 
 	~URI();

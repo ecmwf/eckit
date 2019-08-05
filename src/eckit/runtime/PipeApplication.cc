@@ -184,7 +184,7 @@ void PipeApplication::launch(const std::string& name, int input, int output) {
 
 
     PathName app = Main::instance().argv(0);
-    PathName cmd = app.baseName() / name;
+    PathName cmd = app.dirName() / name;
 
     Log::debug() << "execlp(" << cmd.localPath() << ',' << cmd.baseName().localPath() << ',' << "-in," << in << ','
                  << "-out," << out << ',' << "-parent," << par << ")" << std::endl;

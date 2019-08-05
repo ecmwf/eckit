@@ -687,8 +687,8 @@ endif()
 
 if(ECKIT_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
-      utils/xxHash.cc
-      utils/xxHash.h
+      utils/xxHashing.cc
+      utils/xxHashing.h
     )
 endif()
 

@@ -181,7 +181,7 @@ void PipeApplication::launch(const std::string& name, int input, int output) {
     char par[20];
     snprintf(par, 20, "%ld", Monitor::instance().self());
 
-    PathName cmd = std::string("~/bin/") + name;
+    PathName cmd = name;
 
     Log::debug() << "execlp(" << cmd.localPath() << ',' << cmd.baseName().localPath() << ',' << "-in," << in << ','
                  << "-out," << out << ',' << "-parent," << par << ")" << std::endl;

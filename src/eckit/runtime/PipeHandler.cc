@@ -193,7 +193,7 @@ void PipeHandler<Request>::run() {
 
 
     PathName app = Main::instance().argv(0);
-    PathName cmd = app.baseName() / Request::commandName();
+    PathName cmd = app.dirName() / Request::commandName();
 
     Log::debug() << "execlp(" << cmd.localPath() << ',' << cmd.baseName().localPath() << ',' << "-in," << in << ','
                  << "-out," << out << ',' << "-parent," << par << ")" << std::endl;

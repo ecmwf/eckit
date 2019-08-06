@@ -63,6 +63,14 @@ CASE("Compression") {
         EXPECT(tostr(out,ulen) == msg);
     }
 
+    SECTION("CASE No Compression - case insensitive") {
+        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("nOnE")));
+    }
+
+    SECTION("Not Existing Compression") {
+        EXPECT_THROWS(c.reset(CompressorFactory::instance().build("dummy name")));
+    }
+
     SECTION("CASE No Compression") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("none")));
         size_t ulen = compress_uncompress(*c, in, out);

@@ -82,7 +82,7 @@ Value ValueModSelf(Value& lhs, const Value& rhs) {
 }
 
 Hash* make_hash() {
-    return eckit::HashFactory::build("MD5");
+    return eckit::HashFactory::instance().build("MD5");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

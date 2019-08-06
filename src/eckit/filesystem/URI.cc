@@ -15,6 +15,7 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/filesystem/URIManager.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {
@@ -31,20 +32,33 @@ URI::URI(const std::string& uri) {
         scheme_ = "unix";
 }
 
-URI::URI(const URI uri, const std::string &host, const int port):
-    scheme_(uri.scheme_), user_(uri.user_), host_(host), port_(port), path_(uri.path_), query_(uri.query_), fragment_(uri.fragment_) {}
+URI::URI(const URI uri, const std::string &scheme, const std::string &host, const int port):
+    scheme_(scheme), user_(uri.user_), host_(host), port_(port), path_(uri.path_), queryValues_(uri.queryValues_), fragment_(uri.fragment_) {}
 
 URI::URI(Stream &s) {
+    std::string query;
+
     s >> scheme_;
     s >> user_;
     s >> host_;
     s >> port_;
     s >> path_;
-    s >> query_;
+    s >> query;
     s >> fragment_;
+
+    parseQueryValues(query);
 }
 
 URI::~URI() {}
+
+const std::string URI::query(std::string attribute) const {
+
+    auto it = queryValues_.find(attribute);
+    if (it != queryValues_.end())
+        return it->second;
+    return "";
+}
+
 
 void URI::parse(const std::string &uri) {
 
@@ -60,8 +74,10 @@ void URI::parse(const std::string &uri) {
     // get query start
     std::size_t queryStart = aux.find_last_of("?");
     if (queryStart != std::string::npos) {
-        query_ = aux.substr(queryStart + 1);
+        std::string query = aux.substr(queryStart + 1);
         aux = aux.substr(0, queryStart);
+
+        parseQueryValues(query);
     }
 
     std::size_t protocolEnd = aux.find(":");
@@ -112,6 +128,25 @@ void URI::parseAuthority(std::string &aux) {
     }
 }
 
+void URI::parseQueryValues(const std::string &query) {
+    Tokenizer parse("&");
+    Tokenizer splitValues("=");
+    std::vector<std::string> attributeValuePairs;
+
+    parse(query, attributeValuePairs);
+    for (std::string &attributeValue : attributeValuePairs) {
+        std::vector<std::string> s;
+        splitValues(attributeValue, s);
+        if (s.size() == 2) {
+            queryValues_[s[0]] = s[1];
+        }
+    }
+}
+
+const void URI::query(std::string attribute, std::string value) {
+
+}
+
 bool URI::exists() const {
     ASSERT(!path_.empty());
     ASSERT(!scheme_.empty());
@@ -148,6 +183,17 @@ const std::string URI::authority() const {
     return authority;
 }
 
+const std::string URI::query() const {
+    std::string query;
+    for (auto &attributeValue : queryValues_) {
+        if (!query.empty())
+            query += "&";
+
+        query += attributeValue.first + "=" + attributeValue.second;
+    }
+    return query;
+}
+
 std::string URI::asString() const {
     ASSERT(!path_.empty());
     ASSERT(!scheme_.empty());
@@ -159,11 +205,15 @@ std::string URI::asRawString() const {
     if (!auth.empty())
         auth = "//"+auth;
 
-    return scheme_ + ":" + auth + path_ + (query_.empty() ? "" : "?" + query_) + (fragment_.empty() ? "" : "#"+fragment_);
+    std::string qry = query();
+    if (!qry.empty())
+        qry = "?"+qry;
+
+    return scheme_ + ":" + auth + path_ + qry + (fragment_.empty() ? "" : "#"+fragment_);
 }
 
 void URI::print(std::ostream& s) const {
-    s << "URI[scheme=" << scheme_ << ",user=" << user_ << ",host=" << host_ << ",port=" << port_ << ",path=" << path_ << ",query=" << query_ << ",fragment=" << fragment_ << "]";
+    s << "URI[scheme=" << scheme_ << ",user=" << user_ << ",host=" << host_ << ",port=" << port_ << ",path=" << path_ << ",query=" << query() << ",fragment=" << fragment_ << "]";
 }
 
 void URI::encode(Stream &s) const {
@@ -172,7 +222,7 @@ void URI::encode(Stream &s) const {
     s << host_;
     s << port_;
     s << path_;
-    s << query_;
+    s << query();
     s << fragment_;
 }
 

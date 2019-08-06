@@ -16,6 +16,8 @@
 #ifndef eckit_filesystem_URI_h
 #define eckit_filesystem_URI_h
 
+#include <map>
+
 #include "eckit/eckit.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
@@ -34,16 +36,16 @@ public: // methods
 
     URI();
     URI(const std::string&);
-    URI(const URI uri, const std::string &host, const int port);
+    URI(const URI uri, const std::string &scheme, const std::string &host, const int port);
     URI(Stream& s);
 
 	~URI();
 
     bool exists() const;
 
-	DataHandle*  newWriteHandle() const;
-	DataHandle*  newReadHandle(const OffsetList&, const LengthList&) const;
-	DataHandle*  newReadHandle() const;
+	DataHandle* newWriteHandle() const;
+	DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
+	DataHandle* newReadHandle() const;
 
     const std::string& scheme() const { return scheme_; }
     const std::string authority() const;
@@ -52,8 +54,12 @@ public: // methods
     const int port() const { return port_; }
     const std::string& name() const { return path_; }
     const std::string& path() const { return path_; }
-    const std::string query() const { return query_; }
+    const std::string query() const;
+    const std::string query(std::string attribute) const;
     const std::string fragment() const { return fragment_; }
+
+    const void query(std::string attribute, std::string value);
+    const void fragment(const std::string fragment)  { fragment_ = fragment; }
 
     std::string asString() const;
     std::string asRawString() const;
@@ -67,6 +73,7 @@ private: // methods
 
     void parse(const std::string &uri);
     void parseAuthority(std::string &aux);
+    void parseQueryValues(const std::string &query);
 
 private: // members
 
@@ -75,8 +82,8 @@ private: // members
     std::string host_;
     int port_;
     std::string path_;
-    std::string query_;
     std::string fragment_;
+    std::map<std::string, std::string> queryValues_;
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
     friend Stream& operator<<(Stream& s,const URI& p) { p.encode(s); return s; }

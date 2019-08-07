@@ -71,9 +71,9 @@ protected: // methods
 
 private: // methods
 
-    void parse(const std::string &uri);
-    void parseAuthority(std::string &aux);
-    void parseQueryValues(const std::string &query);
+    void parse(const std::string &);
+    std::size_t parseAuthority(const std::string &uri, std::size_t first, std::size_t last);
+    void parseQueryValues(const std::string &);
 
 private: // members
 

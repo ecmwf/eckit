@@ -46,7 +46,8 @@ URI::URI(Stream &s) {
     s >> query;
     s >> fragment_;
 
-    parseQueryValues(query);
+    if (!query.empty())
+        parseQueryValues(query);
 }
 
 URI::~URI() {}
@@ -62,73 +63,73 @@ const std::string URI::query(std::string attribute) const {
 
 void URI::parse(const std::string &uri) {
 
-    std::string aux(uri);
+    size_t first = 0;
+    size_t last = uri.length();
 
     // get fragment start
-    std::size_t fragmentStart = aux.find_last_of("#");
+    std::size_t fragmentStart = uri.find_last_of("#");
     if (fragmentStart != std::string::npos) {
-        fragment_ = aux.substr(fragmentStart + 1);
-        aux = aux.substr(0, fragmentStart);
+        fragment_ = uri.substr(fragmentStart + 1);
+        last = fragmentStart;
     }
 
     // get query start
-    std::size_t queryStart = aux.find_last_of("?");
+    std::size_t queryStart = uri.find_last_of("?", last);
     if (queryStart != std::string::npos) {
-        std::string query = aux.substr(queryStart + 1);
-        aux = aux.substr(0, queryStart);
+        std::string query = uri.substr(queryStart + 1, last - queryStart - 1);
+        last = queryStart;
 
-        parseQueryValues(query);
+        if (!query.empty())
+            parseQueryValues(query);
     }
 
-    std::size_t protocolEnd = aux.find(":");
-    if (protocolEnd != std::string::npos) {
-        scheme_ = aux.substr(0, protocolEnd);
-        aux = aux.substr(protocolEnd + 1);
+    std::size_t acceptableProtocolEnd = uri.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
+    std::size_t protocolEnd = uri.find(":");
+    if (protocolEnd != std::string::npos && protocolEnd<last && protocolEnd<=acceptableProtocolEnd) {
+        scheme_ = uri.substr(0, protocolEnd);
+        first = protocolEnd + 1;
     }
 
-    parseAuthority(aux);
+    first = parseAuthority(uri, first, last);
 
-    std::size_t pathStart = aux.find("/");
-    if (pathStart != std::string::npos) {
-        path_ = aux.substr(pathStart);
-    } else {
-        path_ = aux;
-    }
+    path_ = uri.substr(first, last - first);
 }
 
-void URI::parseAuthority(std::string &aux) {
+size_t URI::parseAuthority(const std::string &uri, size_t first, size_t last) {
 
-    if (aux.rfind("//", 0) != 0) {
+    if (last-first <  2 || uri[first] != '/'|| uri[first+1] != '/') {
         port_ = -1;
-        return;
+        return first;
     }
+    first += 2;
 
-    aux = aux.substr(2);
-    std::size_t userEnd = aux.find_last_of("@");
-    if (userEnd != std::string::npos) {
-        user_ = aux.substr(0, userEnd);
-        aux = aux.substr(userEnd + 1);
+    std::size_t userEnd = uri.find_last_of("@", last);
+    if (userEnd != std::string::npos && userEnd>first) {
+        user_ = uri.substr(first, userEnd-first);
+        first = userEnd + 1;
     }
-    std::size_t portStart = aux.find(":");
-    if (portStart != std::string::npos) {
+    std::size_t portStart = uri.find(":", first);
+    if (portStart != std::string::npos && portStart < last) {
         ASSERT(portStart > 0);
-        host_ = aux.substr(0, portStart);
+        host_ = uri.substr(first, portStart-first);
         port_ = 0;
         int i=portStart+1;
-        for (;i<aux.size() && std::isdigit(aux[i]);i++) {
-            port_ = port_*10 + (aux[i] - '0');
+        for (;i<last && std::isdigit(uri[i]); i++) {
+            port_ = port_*10 + (uri[i] - '0');
         }
-        aux = aux.substr(i);
+        first = i;
     } else {
         port_ = -1;
-        std::size_t hostEnd = aux.find("/");
+        std::size_t hostEnd = uri.find("/", first);
         ASSERT(hostEnd != std::string::npos);
-        host_ = aux.substr(0, hostEnd);
-        aux = aux.substr(hostEnd);
+        host_ = uri.substr(first, hostEnd-first);
+        first = hostEnd;
     }
+    return first;
 }
 
 void URI::parseQueryValues(const std::string &query) {
+
     Tokenizer parse("&");
     Tokenizer splitValues("=");
     std::vector<std::string> attributeValuePairs;
@@ -144,7 +145,7 @@ void URI::parseQueryValues(const std::string &query) {
 }
 
 const void URI::query(std::string attribute, std::string value) {
-
+    queryValues_[attribute] = value;
 }
 
 bool URI::exists() const {

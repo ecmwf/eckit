@@ -32,7 +32,7 @@ URI::URI(const std::string& uri) {
         scheme_ = "unix";
 }
 
-URI::URI(const URI uri, const std::string &scheme, const std::string &host, const int port):
+URI::URI(const URI &uri, const std::string &scheme, const std::string &host, const int port):
     scheme_(scheme), user_(uri.user_), host_(host), port_(port), path_(uri.path_), queryValues_(uri.queryValues_), fragment_(uri.fragment_) {}
 
 URI::URI(Stream &s) {
@@ -52,7 +52,7 @@ URI::URI(Stream &s) {
 
 URI::~URI() {}
 
-const std::string URI::query(std::string attribute) const {
+std::string URI::query(const std::string& attribute) const {
 
     auto it = queryValues_.find(attribute);
     if (it != queryValues_.end())
@@ -83,11 +83,13 @@ void URI::parse(const std::string &uri) {
             parseQueryValues(query);
     }
 
-    std::size_t acceptableProtocolEnd = uri.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
-    std::size_t protocolEnd = uri.find(":");
-    if (protocolEnd != std::string::npos && protocolEnd<last && protocolEnd<=acceptableProtocolEnd) {
-        scheme_ = uri.substr(0, protocolEnd);
-        first = protocolEnd + 1;
+    std::size_t protocolEnd = uri.find(":", 0);
+    if (protocolEnd != std::string::npos && protocolEnd<last) {
+        std::size_t acceptableProtocolEnd = uri.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
+        if (protocolEnd<=acceptableProtocolEnd) {
+            scheme_ = uri.substr(0, protocolEnd);
+            first   = protocolEnd + 1;
+        }
     }
 
     first = parseAuthority(uri, first, last);
@@ -144,7 +146,7 @@ void URI::parseQueryValues(const std::string &query) {
     }
 }
 
-const void URI::query(std::string attribute, std::string value) {
+void URI::query(const std::string& attribute, const std::string& value) {
     queryValues_[attribute] = value;
 }
 
@@ -172,7 +174,7 @@ DataHandle* URI::newReadHandle() const {
     return URIManager::lookUp(scheme_).newReadHandle(*this);
 }
 
-const std::string URI::authority() const {
+std::string URI::authority() const {
     std::string authority;
     if (!user_.empty())
         authority = user_ + "@";
@@ -184,7 +186,7 @@ const std::string URI::authority() const {
     return authority;
 }
 
-const std::string URI::query() const {
+std::string URI::query() const {
     std::string query;
     for (auto &attributeValue : queryValues_) {
         if (!query.empty())

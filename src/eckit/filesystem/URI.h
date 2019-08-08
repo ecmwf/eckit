@@ -35,8 +35,8 @@ class URI {
 public: // methods
 
     URI();
-    URI(const std::string&);
-    URI(const URI uri, const std::string &scheme, const std::string &host, const int port);
+    URI(const std::string& uri);
+    URI(const URI& uri, const std::string& scheme, const std::string& host, int port);
     URI(Stream& s);
 
 	~URI();
@@ -48,18 +48,18 @@ public: // methods
 	DataHandle* newReadHandle() const;
 
     const std::string& scheme() const { return scheme_; }
-    const std::string authority() const;
+    std::string authority() const;
     const std::string& user() const { return user_; }
     const std::string& host() const { return host_; }
-    const int port() const { return port_; }
+    int port() const { return port_; }
     const std::string& name() const { return path_; }
     const std::string& path() const { return path_; }
-    const std::string query() const;
-    const std::string query(std::string attribute) const;
-    const std::string fragment() const { return fragment_; }
+    std::string query() const;
+    std::string query(const std::string& attribute) const;
+    const std::string& fragment() const { return fragment_; }
 
-    const void query(std::string attribute, std::string value);
-    const void fragment(const std::string fragment)  { fragment_ = fragment; }
+    void query(const std::string& attribute, const std::string& value);
+    void fragment(const std::string& fragment)  { fragment_ = fragment; }
 
     std::string asString() const;
     std::string asRawString() const;

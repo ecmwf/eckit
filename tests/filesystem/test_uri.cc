@@ -89,8 +89,8 @@ CASE("Parsing uri (scheme)") {
         EXPECT(uri.path() == "/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "file:/path");
-        EXPECT(uri.asString() == "/path");
+        EXPECT(uri.asRawString() == "file:///path");
+        EXPECT(uri.asString() == "///path");
     }
     {
         URI uri("/this/is/a/path:with:colons");
@@ -118,7 +118,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "file://username:password@host:123/path");
-        EXPECT(uri.asString() == "/path");
+        EXPECT(uri.asString() == "//username:password@host:123/path");
     }
     {
         URI uri("file://username:password@host:123path");
@@ -131,7 +131,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "file://username:password@host:123path");
-        EXPECT(uri.asString() == "path");
+        EXPECT(uri.asString() == "//username:password@host:123path");
     }
     {
         URI uri("marsfs://nodename/path");
@@ -170,8 +170,8 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.path() == "/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.asRawString() == "posix://host:123/path#fragment");
-        EXPECT(uri.asString() == "/path");
+        EXPECT(uri.asRawString() == "posix://host:123/path?query#fragment");
+        EXPECT(uri.asString() == "//host:123/path?query#fragment");
     }
     {
         URI uri("posix:///path?length=123&foo=bar#fragment");
@@ -185,8 +185,8 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.query("length") == "123");
         EXPECT(uri.query("non existing").empty());
         EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.asRawString() == "posix:/path?foo=bar&length=123#fragment");
-        EXPECT(uri.asString() == "/path");
+        EXPECT(uri.asRawString() == "posix:///path?length=123&foo=bar#fragment");
+        EXPECT(uri.asString() == "///path?length=123&foo=bar#fragment");
     }
     {
         URI uri("posix:///path?length=123&foo=bar");
@@ -200,8 +200,8 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.query("length") == "123");
         EXPECT(uri.query("non existing").empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "posix:/path?foo=bar&length=123");
-        EXPECT(uri.asString() == "/path");
+        EXPECT(uri.asRawString() == "posix:///path?length=123&foo=bar");
+        EXPECT(uri.asString() == "///path?length=123&foo=bar");
     }
 }
 

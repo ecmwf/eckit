@@ -88,18 +88,18 @@ void URIManager::print(std::ostream& s) const {
 
 
 class LocalFileManager : public URIManager {
-    virtual bool exists(const URI& f) { return PathName(f.path()).exists(); }
+    virtual bool exists(URI& f) { return PathName(f.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.path()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(URI& f) { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.path()).fileHandle(); }
+    virtual DataHandle* newReadHandle(URI& f) { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.path()).partHandle(ol, ll);
+    virtual DataHandle* newReadHandle(URI& f, const OffsetList& ol, const LengthList& ll) {
+        return PathName(f.name()).partHandle(ol, ll);
     }
 
     virtual std::string asString(const URI& f) const {
-        return f.path();
+        return f.name();
     }
 
 public:
@@ -108,14 +108,14 @@ public:
 
 
 class MarsFSManager : public URIManager {
-    virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.path()).exists(); }
+    virtual bool exists(URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.path()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.path()).fileHandle(); }
+    virtual DataHandle* newReadHandle(URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.scheme() + ":" + f.path()).partHandle(ol, ll);
+    virtual DataHandle* newReadHandle(URI& f, const OffsetList& ol, const LengthList& ll) {
+        return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);
     }
 
 public:

@@ -132,7 +132,7 @@ static std::string get(int n) {
     Monitor::TaskArray& info = Monitor::instance().tasks();
 
     if (info[n].parent() != -1)
-        return get(info[n].parent());
+        return get(info[n].parent()) + "/" + info[n].name();
 
     return info[n].name();
 }

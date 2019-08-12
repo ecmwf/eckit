@@ -30,11 +30,11 @@ class DataHandle;
 class URIManager {
 public:
 
-    virtual bool exists(URI&) = 0;
+    virtual bool exists(const URI&) = 0;
 
-    virtual DataHandle*  newWriteHandle(URI&) = 0;
-    virtual DataHandle*  newReadHandle(URI&) = 0;
-    virtual DataHandle*  newReadHandle(URI&,const OffsetList&, const LengthList&) = 0;
+    virtual DataHandle*  newWriteHandle(const URI&) = 0;
+    virtual DataHandle*  newReadHandle(const URI&) = 0;
+    virtual DataHandle*  newReadHandle(const URI&, const OffsetList&, const LengthList&) = 0;
 
     virtual std::string asString(const URI&) const;
 

@@ -57,7 +57,7 @@ URIManager::~URIManager() {
 }
 
 std::string URIManager::asString(const URI& f) const {
-    return PathName(f.asRawString()).asString();
+    return PathName(f.scheme() + ":" + f.name()).asString();
 }
 
 URIManager& URIManager::lookUp(const std::string& name) {
@@ -88,13 +88,13 @@ void URIManager::print(std::ostream& s) const {
 
 
 class LocalFileManager : public URIManager {
-    virtual bool exists(URI& f) { return PathName(f.name()).exists(); }
+    virtual bool exists(const URI& f) { return PathName(f.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(URI& f, const OffsetList& ol, const LengthList& ll) {
+    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
         return PathName(f.name()).partHandle(ol, ll);
     }
 
@@ -108,13 +108,13 @@ public:
 
 
 class MarsFSManager : public URIManager {
-    virtual bool exists(URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
+    virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(URI& f, const OffsetList& ol, const LengthList& ll) {
+    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
         return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);
     }
 

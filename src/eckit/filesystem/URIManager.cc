@@ -122,7 +122,6 @@ public:
     MarsFSManager(const std::string& name) : URIManager(name) {}
 };
 
-
 static LocalFileManager manager_posix("posix");
 static LocalFileManager manager_unix("unix");
 static LocalFileManager manager_file("file");

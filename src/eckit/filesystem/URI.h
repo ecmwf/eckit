@@ -84,18 +84,11 @@ public: // methods
     const std::string& scheme() const { return scheme_; }
     const std::string& name() const { return name_; }
 
-    std::string authority() { return parts()->authority(); }
-    const std::string& user() { return parts()->user(); }
-    const std::string& host() { return parts()->host(); }
-    int port() { return parts()->port(); }
-    const std::string& path() { return parts()->path(); }
-
-    void query(const std::string& attribute, const std::string& value) { parts()->query(attribute, value); }
-    std::string query() { return parts()->query(); }
-    const std::string query(const std::string& attribute) { return parts()->query(attribute); }
-
-    void fragment(const std::string& fragment) { parts()->fragment(fragment); }
-    const std::string& fragment() { return parts()->fragment(); }
+    URIParts* parts() {
+        if (uriParts == nullptr)
+            uriParts = new URIParts(name_);
+        return uriParts;
+    }
 
     std::string asString() const;
     std::string asRawString() const;
@@ -107,11 +100,6 @@ protected: // methods
 
 private: // methods
 
-    URIParts* parts() {
-        if (uriParts == nullptr)
-            uriParts = new URIParts(name_);
-        return uriParts;
-    }
     void parseScheme(const std::string &uri);
 
 private: // members

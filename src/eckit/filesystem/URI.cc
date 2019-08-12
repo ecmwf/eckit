@@ -132,6 +132,7 @@ URI::URI() {}
 URI::URI(const std::string& uri) {
     if (!uri.empty())
         parseScheme(uri);
+    URIManager::lookUp(scheme_);
 }
 
 URI::URI(const URI &uri, const std::string &scheme):

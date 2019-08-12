@@ -146,19 +146,8 @@ URI::URI(const URI &uri, const std::string &scheme, const std::string &host, con
 
 
 URI::URI(Stream &s) {
-    std::string query;
-
     s >> scheme_;
     s >> name_;
-
-/*    s >> host_;
-    s >> port_;
-    s >> path_;
-    s >> query;
-    s >> fragment_;
-
-    if (!query.empty())
-        parseQueryValues(query);*/
 }
 
 URI::~URI() {}
@@ -181,25 +170,25 @@ void URI::parseScheme(const std::string& uri) {
         scheme_ = "unix";
 }
 
-bool URI::exists() {
+bool URI::exists() const {
     ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).exists(*this);
 }
 
-DataHandle* URI::newWriteHandle() {
+DataHandle* URI::newWriteHandle() const {
     ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newWriteHandle(*this);
 }
 
-DataHandle* URI::newReadHandle(const OffsetList& ol, const LengthList& ll) {
+DataHandle* URI::newReadHandle(const OffsetList& ol, const LengthList& ll) const {
     ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newReadHandle(*this, ol, ll);
 }
 
-DataHandle* URI::newReadHandle() {
+DataHandle* URI::newReadHandle() const {
     ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).newReadHandle(*this);

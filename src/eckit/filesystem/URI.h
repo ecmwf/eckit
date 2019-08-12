@@ -75,14 +75,14 @@ public: // methods
 
 	~URI();
 
-    bool exists();
+    bool exists() const;
 
-	DataHandle* newWriteHandle();
-	DataHandle* newReadHandle(const OffsetList&, const LengthList&);
-	DataHandle* newReadHandle();
+	DataHandle* newWriteHandle() const;
+	DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
+	DataHandle* newReadHandle() const;
 
-    const std::string& scheme() const { return scheme_; }
     const std::string& name() const { return name_; }
+    const std::string& scheme() const { return scheme_; }
 
     URIParts* parts() {
         if (uriParts == nullptr)
@@ -104,8 +104,8 @@ private: // methods
 
 private: // members
 
-    std::string scheme_;
     std::string name_;
+    std::string scheme_;
     URIParts* uriParts = nullptr;
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }

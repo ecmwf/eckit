@@ -30,39 +30,6 @@ namespace eckit {
 class Stream;
 class DataHandle;
 
-class URIParts {
-public:
-    URIParts(const std::string& str);
-
-    std::string authority() const;
-
-    const std::string& user() const { return user_; }
-    void host(const std::string& host) { host_ = host; }
-    const std::string& host() const { return host_; }
-    void port(int port) { port_ = port; }
-    int port() const { return port_; }
-    const std::string& path() const { return path_; }
-
-    void query(const std::string& attribute, const std::string& value);
-    std::string query() const;
-    const std::string query(const std::string& attribute) const;
-
-    void fragment(const std::string& fragment);
-    const std::string& fragment() const { return fragment_; }
-
-private: // method
-    void parse(const std::string& str);
-    void parseQueryValues(const std::string& query);
-
-private: // attribute
-    std::string user_;
-    std::string host_;
-    int port_ = -1;
-    std::string path_;
-    std::map<std::string, std::string> queryValues_;
-    std::string fragment_;
-};
-
 class URI {
 
 public: // methods
@@ -81,14 +48,22 @@ public: // methods
 	DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
 	DataHandle* newReadHandle() const;
 
+    void host(const std::string& host) { host_ = host; }
+    void port(int port) { port_ = port; }
+    void query(const std::string& attribute, const std::string& value);
+    void fragment(const std::string& fragment);
+
     const std::string& name() const { return name_; }
     const std::string& scheme() const { return scheme_; }
+    const std::string& user() const { return user_; }
+    const std::string& host() const { return host_; }
+    int port() const { return port_; }
+    const std::string& path() const { return name_; }
+    const std::string& fragment() const { return fragment_; }
 
-    URIParts* parts() {
-        if (uriParts == nullptr)
-            uriParts = new URIParts(name_);
-        return uriParts;
-    }
+    std::string authority() const;
+    std::string query() const;
+    const std::string query(const std::string& attribute) const;
 
     std::string asString() const;
     std::string asRawString() const;
@@ -100,13 +75,19 @@ protected: // methods
 
 private: // methods
 
-    void parseScheme(const std::string &uri);
+    size_t parseScheme(const std::string &uri);
+    void parse(const std::string& uri, size_t first, bool authority, bool query, bool fragment);
+    void parseQueryValues(const std::string& query);
 
 private: // members
 
     std::string name_;
     std::string scheme_;
-    URIParts* uriParts = nullptr;
+    std::string user_;
+    std::string host_;
+    int port_ = -1;
+    std::map<std::string, std::string> queryValues_;
+    std::string fragment_;
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
     friend Stream& operator<<(Stream& s,const URI& p) { p.encode(s); return s; }

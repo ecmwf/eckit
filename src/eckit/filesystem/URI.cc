@@ -21,60 +21,102 @@
 
 namespace eckit {
 
-URIParts::URIParts(const std::string& str) {
-    size_t first = 0;
-    size_t last = str.length();
+//----------------------------------------------------------------------------------------------------------------------
 
-    // get fragment start
-    std::size_t fragmentStart = str.find_last_of("#");
-    if (fragmentStart != std::string::npos) {
-        fragment_ = str.substr(fragmentStart + 1);
+URI::URI() {}
 
-        last = fragmentStart;
+URI::URI(const std::string& uri) {
+    if (!uri.empty()) {
+        size_t first = parseScheme(uri);
+        URIManager &um = URIManager::lookUp(scheme_);
+        parse(uri, first, um.authority(), um.query(), um.fragment());
     }
-
-    // get query start
-    std::size_t queryStart = str.find_last_of("?", last);
-    if (queryStart != std::string::npos) {
-        std::string query = str.substr(queryStart + 1, last - queryStart - 1);
-        last = queryStart;
-
-        if (!query.empty())
-            parseQueryValues(query);
-    }
-
-    if (1 < last && str[first] == '/' && str[first+1] == '/') {
-        first += 2;
-
-        std::size_t userEnd = str.find_last_of("@", last);
-        if (userEnd != std::string::npos && userEnd>first) {
-            user_ = str.substr(first, userEnd-first);
-            first = userEnd + 1;
-        }
-
-        std::size_t portStart = str.find(":", first);
-        if (portStart != std::string::npos && portStart < last) {
-            ASSERT(portStart > 0);
-            host_ = str.substr(first, portStart-first);
-            port_ = 0;
-            int i=portStart+1;
-            for (;i<last && std::isdigit(str[i]); i++) {
-                port_ = port_*10 + (str[i] - '0');
-            }
-            first = i;
-        } else {
-            port_ = -1;
-            std::size_t hostEnd = str.find("/", first);
-            ASSERT(hostEnd != std::string::npos);
-            host_ = str.substr(first, hostEnd-first);
-            first = hostEnd;
-        }
-    }
-
-    path_ = str.substr(first, last-first);
 }
 
-void URIParts::parseQueryValues(const std::string &query) {
+URI::URI(const URI &uri, const std::string &scheme):
+    scheme_(scheme), name_(uri.name_) {}
+
+URI::URI(const URI &uri, const std::string &scheme, const std::string &host, const int port):
+    scheme_(scheme), name_(uri.name_), host_(host), port_(port) {}
+
+URI::URI(Stream &s) {
+    s >> scheme_;
+    s >> name_;
+}
+
+URI::~URI() {}
+
+size_t URI::parseScheme(const std::string& uri) {
+    std::size_t schemeEnd = uri.find(":");
+    if (schemeEnd >= 0 && schemeEnd != std::string::npos) {
+        std::string schemeLowercase = StringTools::lower(uri.substr(0, schemeEnd));
+        std::size_t acceptableProtocolEnd = schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
+        if (acceptableProtocolEnd == std::string::npos) {
+            scheme_ = schemeEnd == 0 ? "unix" : uri.substr(0, schemeEnd);
+            return schemeEnd + 1;
+        }
+    }
+    scheme_ = "unix";
+    return 0;
+}
+
+void URI::parse(const std::string& str, size_t first, bool authority, bool query, bool fragment) {
+    size_t last = str.length();
+
+    if (fragment) { // get fragment start
+        std::size_t fragmentStart = str.find_last_of("#");
+        if (fragmentStart != std::string::npos) {
+            fragment_ = str.substr(fragmentStart + 1);
+
+            last = fragmentStart;
+        }
+    }
+
+    if (query) { // get query start
+        std::size_t queryStart = str.find_last_of("?", last);
+        if (queryStart != std::string::npos) {
+            std::string query = str.substr(queryStart + 1, last - queryStart - 1);
+            last = queryStart;
+
+            if (!query.empty())
+                parseQueryValues(query);
+        }
+    }
+
+    if (authority) {
+        if (1 < last && str[first] == '/' && str[first + 1] == '/') {
+            first += 2;
+
+            std::size_t userEnd = str.find_last_of("@", last);
+            if (userEnd != std::string::npos && userEnd > first) {
+                user_ = str.substr(first, userEnd - first);
+                first = userEnd + 1;
+            }
+
+            std::size_t portStart = str.find(":", first);
+            if (portStart != std::string::npos && portStart < last) {
+                ASSERT(portStart > 0);
+                host_ = str.substr(first, portStart - first);
+                port_ = 0;
+                int i = portStart + 1;
+                for (; i < last && std::isdigit(str[i]); i++) {
+                    port_ = port_ * 10 + (str[i] - '0');
+                }
+                first = i;
+            } else {
+                port_ = -1;
+                std::size_t hostEnd = str.find("/", first);
+                ASSERT(hostEnd != std::string::npos);
+                host_ = str.substr(first, hostEnd - first);
+                first = hostEnd;
+            }
+        }
+    }
+
+    name_ = str.substr(first, last-first);
+}
+
+void URI::parseQueryValues(const std::string &query) {
 
     Tokenizer parse("&");
     Tokenizer splitValues("=");
@@ -88,86 +130,6 @@ void URIParts::parseQueryValues(const std::string &query) {
             queryValues_[s[0]] = s[1];
         }
     }
-}
-
-std::string URIParts::authority() const {
-    std::string authority;
-    if (!user_.empty())
-        authority = user_ + "@";
-    if (!host_.empty())
-        authority += host_;
-    if (port_ != -1)
-        authority += ":" + std::to_string(port_);
-
-    return authority;
-}
-
-void URIParts::query(const std::string& attribute, const std::string& value) {
-    queryValues_[attribute] = value;
-}
-
-
-const std::string URIParts::query(const std::string& attribute) const {
-    auto it = queryValues_.find(attribute);
-    if (it != queryValues_.end())
-        return it->second;
-    return "";
-}
-
-std::string URIParts::query() const {
-    std::string query;
-    for (auto &attributeValue : queryValues_) {
-        if (!query.empty())
-            query += "&";
-
-        query += attributeValue.first + "=" + attributeValue.second;
-    }
-    return query;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-URI::URI() {}
-
-URI::URI(const std::string& uri) {
-    if (!uri.empty())
-        parseScheme(uri);
-    URIManager::lookUp(scheme_);
-}
-
-URI::URI(const URI &uri, const std::string &scheme):
-    scheme_(scheme), name_(uri.name_) {}
-
-URI::URI(const URI &uri, const std::string &scheme, const std::string &host, const int port):
-    scheme_(scheme), name_(uri.name_) {
-    parts()->host(host);
-    parts()->port(port);
-}
-
-
-URI::URI(Stream &s) {
-    s >> scheme_;
-    s >> name_;
-}
-
-URI::~URI() {}
-
-void URI::parseScheme(const std::string& uri) {
-    std::size_t schemeEnd = uri.find(":");
-    if (schemeEnd != std::string::npos) {
-        std::string schemeLowercase = StringTools::lower(uri.substr(0, schemeEnd));
-        std::size_t acceptableProtocolEnd = schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
-        if (acceptableProtocolEnd == std::string::npos) {
-            scheme_ = uri.substr(0, schemeEnd);
-            name_   = uri.substr(schemeEnd + 1);
-        }
-    }
-    if (name_.empty()) {
-        name_ = std::string(uri);
-    }
-
-    if (scheme_.empty())
-        scheme_ = "unix";
 }
 
 bool URI::exists() const {
@@ -194,6 +156,44 @@ DataHandle* URI::newReadHandle() const {
     return URIManager::lookUp(scheme_).newReadHandle(*this);
 }
 
+std::string URI::authority() const {
+    std::string authority;
+    if (!user_.empty())
+        authority = user_ + "@";
+    if (!host_.empty())
+        authority += host_;
+    if (port_ != -1)
+        authority += ":" + std::to_string(port_);
+
+    return authority;
+}
+
+void URI::query(const std::string& attribute, const std::string& value) {
+    queryValues_[attribute] = value;
+}
+
+const std::string URI::query(const std::string& attribute) const {
+    auto it = queryValues_.find(attribute);
+    if (it != queryValues_.end())
+        return it->second;
+    return "";
+}
+
+std::string URI::query() const {
+    std::string query;
+    for (auto &attributeValue : queryValues_) {
+        if (!query.empty())
+            query += "&";
+
+        query += attributeValue.first + "=" + attributeValue.second;
+    }
+    return query;
+}
+
+void URI::fragment(const std::string& fragment) {
+    fragment_ = fragment;
+}
+
 std::string URI::asString() const {
     ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
@@ -201,7 +201,14 @@ std::string URI::asString() const {
 }
 
 std::string URI::asRawString() const {
-    return scheme_ + ":" + name_;
+    std::string auth = authority();
+    if (!auth.empty())
+        auth = "//"+auth;
+    std::string q = query();
+    if (!q.empty())
+        q = "?"+q;
+
+    return scheme_ + ":" + auth + name_ + q + (fragment_.empty() ? "" : "#"+fragment_);
 }
 
 void URI::print(std::ostream& s) const {

@@ -29,6 +29,9 @@ class DataHandle;
 
 class URIManager {
 public:
+    virtual bool authority() { return false; }
+    virtual bool query() { return false; }
+    virtual bool fragment() { return false; }
 
     virtual bool exists(const URI&) = 0;
 

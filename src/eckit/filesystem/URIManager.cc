@@ -124,17 +124,17 @@ class TocFdbManager : public URIManager {
     virtual bool query() override { return true; }
     virtual bool fragment() override { return true; }
 
-    virtual bool exists(const URI& f) { return PathName(f.name()).exists(); }
+    virtual bool exists(const URI& f) override { return PathName(f.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& f) override { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& f) override { return PathName(f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
+    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) override {
         return PathName(f.name()).partHandle(ol, ll);
     }
 
-    virtual std::string asString(const URI& uri) const {
+    virtual std::string asString(const URI& uri) const override {
         std::string q = uri.query();
         if (!q.empty())
             q = "?" + q;
@@ -153,17 +153,17 @@ class RemoteFdbManager : public URIManager {
     virtual bool query() override { return true; }
     virtual bool fragment() override { return true; }
 
-    virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
+    virtual bool exists(const URI& f) override { return PathName(f.scheme() + ":" + f.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& f) override { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& f) override { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
+    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) override {
         return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);
     }
 
-    virtual std::string asString(const URI& uri) const {
+    virtual std::string asString(const URI& uri) const override {
 
         std::string auth = uri.authority();
         if (!auth.empty())

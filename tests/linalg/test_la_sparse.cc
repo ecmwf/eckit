@@ -53,24 +53,10 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct Fixture {
-
-    Fixture() :
-        A(S(3, 3, 4, 0, 0, 2., 0, 2, -3., 1, 1, 2., 2, 2, 2.)),
-
-        A2(S(2, 3, 4, 0, 0, 1., 0, 2, 2., 1, 0, 3., 1, 1, 4.)),
-
-        x(V(3, 1., 2., 3.)),
-
-        linalg(LinearAlgebra::backend()) {}
-
-    // A = 2 0 -3
-    //     0 2  0
-    //     0 0  2
-    SparseMatrix A;
-    // A2 = 1. 0. 2.
-    //      3. 4. 0.
-    SparseMatrix A2;
-    Vector x;
+    Fixture(Vector _x, SparseMatrix _A, Vector _y) : A(_A), x(_x), y(_y), linalg(LinearAlgebra::backend()) {}
+    const SparseMatrix A;
+    const Vector x;
+    const Vector y;
     const LinearAlgebra& linalg;
 };
 
@@ -96,7 +82,20 @@ void test(const SparseMatrix& A, const Index* outer, const Index* inner, const S
 
 CASE("test_eckit_la_sparse") {
 
-    Fixture F;
+    // "square" fixture
+    // A =  2  . -3
+    //      .  2  .
+    //      .  .  2
+    // x = 1 2 3
+    // y = 1 2 3
+    Fixture F(V(3, 1., 2., 3.), S(3, 3, 4, 0, 0, 2., 0, 2, -3., 1, 1, 2., 2, 2, 2.), V(3, 1., 2., 3.));
+
+    // "non-square" fixture
+    // A = 1  .  2
+    //     3  4  .
+    // x = 1 2
+    // y = 1 2 3
+    Fixture G(V(2, 1., 2.), S(2, 3, 4, 0, 0, 1., 0, 2, 2., 1, 0, 3., 1, 1, 4.), V(3, 1., 2., 3.));
 
     SECTION("test_set_from_triplets") {
         {
@@ -181,7 +180,7 @@ CASE("test_eckit_la_sparse") {
         test(A, outer, inner, data);
     }
 
-    SECTION("rowReduction") {
+    SECTION("test_row_reduction") {
 
         SparseMatrix A(S(4, 3, 6, 0, 0, 2., 0, 2, 1., 1, 0, 7., 1, 1, 2., 2, 2, 1., 3, 1, 3.));
 
@@ -268,21 +267,23 @@ CASE("test_eckit_la_sparse") {
         Index outer[4] = {0, 1, 2, 4};
         Index inner[4] = {0, 1, 0, 2};
         Scalar data[4] = {2., 2., -3., 2.};
-        test(F.A.transpose(), outer, inner, data);
+        SparseMatrix B(F.A);
+        test(B.transpose(), outer, inner, data);
     }
 
-    SECTION("test_transpose_nonsquare") {
+    SECTION("test_transpose_non-square") {
         Index outer[4] = {0, 2, 3, 4};
         Index inner[4] = {0, 1, 1, 0};
         Scalar data[4] = {1., 3., 4., 2.};
-        test(F.A2.transpose(), outer, inner, data);
+        SparseMatrix B(G.A);
+        test(B.transpose(), outer, inner, data);
     }
 
     SECTION("test_spmv") {
         Vector y(3);
         F.linalg.spmv(F.A, F.x, y);
         test(y, V(3, -7., 4., 6.));
-        Log::info() << "spmv of sparse matrix and vector of nonmatching sizes should fail" << std::endl;
+        Log::info() << "spmv of sparse matrix and vector of non-matching sizes should fail" << std::endl;
         EXPECT_THROWS_AS(F.linalg.spmv(F.A, Vector(2), y), AssertionFailed);
     }
 
@@ -290,30 +291,31 @@ CASE("test_eckit_la_sparse") {
         Matrix C(3, 2);
         F.linalg.spmm(F.A, M(3, 2, 1., 2., 3., 4., 5., 6.), C);
         test(C, M(3, 2, -13., -14., 6., 8., 10., 12.));
-        Log::info() << "spmm of sparse matrix and matrix of nonmatching sizes should fail" << std::endl;
+        Log::info() << "spmm of sparse matrix and matrix of non-matching sizes should fail" << std::endl;
         EXPECT_THROWS_AS(F.linalg.spmm(F.A, Matrix(2, 2), C), AssertionFailed);
     }
 
     SECTION("test_dsptd_square") {
         SparseMatrix B;
         F.linalg.dsptd(F.x, F.A, F.x, B);
-        Index outer[4] = {0, 1, 2, 4};
-        Index inner[4] = {0, 1, 0, 2};
-        Scalar data[4] = {2., 8., -9., 18.};
+        Index outer[4] = {0, 2, 3, 4};
+        Index inner[4] = {0, 2, 1, 2};
+        Scalar data[4] = {2., -9., 8., 18.};
         test(B, outer, inner, data);
-        Log::info() << "dsptd with vectors of nonmatching sizes should fail" << std::endl;
+        Log::info() << "dsptd with vectors of non-matching sizes should fail" << std::endl;
         EXPECT_THROWS_AS(F.linalg.dsptd(F.x, F.A, Vector(2), B), AssertionFailed);
     }
 
-    SECTION("test_dsptd_nonsquare") {
+    SECTION("test_dsptd_non-square") {
         SparseMatrix B;
-        F.linalg.dsptd(F.x, F.A2, V(2, 1., 2.), B);
-        Index outer[4] = {0, 2, 3, 4};
-        Index inner[4] = {0, 1, 1, 0};
-        Scalar data[4] = {1., 6., 16., 6.};
+        F.linalg.dsptd(G.x, G.A, G.y, B);
+        B.save("B.mat");
+        Index outer[4] = {0, 2, 4};
+        Index inner[4] = {0, 2, 0, 1};
+        Scalar data[4] = {1., 6., 6., 16.};
         test(B, outer, inner, data);
-        Log::info() << "dsptd with vectors of nonmatching sizes should fail" << std::endl;
-        EXPECT_THROWS_AS(F.linalg.dsptd(F.x, F.A2, F.x, B), AssertionFailed);
+        Log::info() << "dsptd with vectors of non-matching sizes should fail" << std::endl;
+        EXPECT_THROWS_AS(F.linalg.dsptd(G.y, G.A, G.x, B), AssertionFailed);
     }
 }
 

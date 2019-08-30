@@ -24,22 +24,6 @@ namespace linalg {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-/// Multiply A by the diagonal matrix d (in vector form)
-static void dsp(const Vector& d, SparseMatrix& A) {
-    const Index* outer = A.outer();
-    // FIXME: better use InnerIterator
-    Scalar* data = const_cast<Scalar*>(A.data());
-    for (Size r = 0; r < A.rows(); ++r) {
-        for (Index oi = outer[r]; oi < outer[r + 1]; ++oi) {
-            data[oi] *= d[r];
-        }
-    }
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-
-
 LinearAlgebraGeneric::LinearAlgebraGeneric() : LinearAlgebra("generic") {}
 
 
@@ -131,18 +115,28 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
 void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
 
-    ASSERT(x.size() == A.rows() && y.size() == A.cols());
+    ASSERT(x.size() == A.rows() && A.cols() == y.size());
+
+    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
 
     B = A;
-    dsp(y, B);
 
-    B.transpose();
-    dsp(x, B);
-    B.transpose();
+    const Index* outer = B.outer();
+    const Index* inner = B.inner();
+    Scalar* val        = const_cast<Scalar*>(B.data());
+
+    for (Size r = 0, k = 0; r < B.rows(); ++r) {
+        for (Index j = outer[r]; j < outer[r + 1]; ++j, ++k) {
+            auto c = static_cast<Size>(inner[j]);
+            ASSERT(c < B.cols());
+            val[k] *= x[r] * y[c];
+        }
+    }
 }
 
 
 static LinearAlgebraGeneric linearAlgebraGeneric;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

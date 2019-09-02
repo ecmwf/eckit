@@ -14,7 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/utils/xxHash.h"
+#include "eckit/utils/xxHashing.h"
 
 namespace eckit {
 

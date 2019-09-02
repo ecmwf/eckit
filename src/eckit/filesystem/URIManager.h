@@ -29,12 +29,15 @@ class DataHandle;
 
 class URIManager {
 public:
+    virtual bool authority() { return false; }
+    virtual bool query() { return false; }
+    virtual bool fragment() { return false; }
 
     virtual bool exists(const URI&) = 0;
 
     virtual DataHandle*  newWriteHandle(const URI&) = 0;
     virtual DataHandle*  newReadHandle(const URI&) = 0;
-    virtual DataHandle*  newReadHandle(const URI&,const OffsetList&, const LengthList&) = 0;
+    virtual DataHandle*  newReadHandle(const URI&, const OffsetList&, const LengthList&) = 0;
 
     virtual std::string asString(const URI&) const;
 

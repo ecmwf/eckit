@@ -20,12 +20,14 @@
 
 # Search with priority for XXHASH_PATH if given as CMake or env var
 
+if(NOT XXHASH_FOUND)
+
 find_path(XXHASH_INCLUDE_DIR xxhash.h
         HINTS $ENV{XXHASH_ROOT} ${XXHASH_ROOT}
         PATHS ${XXHASH_PATH} ENV XXHASH_PATH
-        PATH_SUFFIXES include NO_DEFAULT_PATH)
+        PATH_SUFFIXES include include/xxhash NO_DEFAULT_PATH)
 
-find_path(XXHASH_INCLUDE_DIR xxhash.h PATH_SUFFIXES include )
+find_path(XXHASH_INCLUDE_DIR xxhash.h PATH_SUFFIXES include include/xxhash )
 
 # Search with priority for XXHASH_PATH if given as CMake or env var
 find_library(XXHASH_LIBRARY xxhash
@@ -46,3 +48,5 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(xxHash DEFAULT_MSG XXHASH_LIBRARY XXHASH_INCLUDE_DIR)
 
 mark_as_advanced(XXHASH_INCLUDE_DIR XXHASH_LIBRARY)
+
+endif()

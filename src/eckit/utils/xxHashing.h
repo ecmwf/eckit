@@ -8,8 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_xxHash_H
-#define eckit_utils_xxHash_H
+#ifndef eckit_utils_HashxxHash_H
+#define eckit_utils_HashxxHash_H
+
+/// @note This file is named HashxxHash and not simply xxHash not to clash with the included header xxhash.h
+///       for case insensitive file systems
 
 #include "eckit/eckit.h"
 

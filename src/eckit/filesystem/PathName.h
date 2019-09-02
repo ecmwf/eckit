@@ -139,6 +139,10 @@ public:
     /// @return Time of creation
     time_t created()      const;
 
+    /// File owner
+    /// @return Owner ID
+    uid_t owner() const;
+
     /// Check if path is a directory
     /// @return true if the path is a directory
     bool isDir() const;

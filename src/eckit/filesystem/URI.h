@@ -16,6 +16,8 @@
 #ifndef eckit_filesystem_URI_h
 #define eckit_filesystem_URI_h
 
+#include <map>
+
 #include "eckit/eckit.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
@@ -33,27 +35,35 @@ class URI {
 public: // methods
 
     URI();
-    URI(const std::string&);
-    URI(const URI uri, const std::string &host, const int port);
+    URI(const std::string& uri);
+    URI(const URI& uri, const std::string& scheme);
+    URI(const URI& uri, const std::string& scheme, const std::string& host, int port);
     URI(Stream& s);
 
 	~URI();
 
     bool exists() const;
 
-	DataHandle*  newWriteHandle() const;
-	DataHandle*  newReadHandle(const OffsetList&, const LengthList&) const;
-	DataHandle*  newReadHandle() const;
+	DataHandle* newWriteHandle() const;
+	DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
+	DataHandle* newReadHandle() const;
 
+    void host(const std::string& host) { host_ = host; }
+    void port(int port) { port_ = port; }
+    void query(const std::string& attribute, const std::string& value);
+    void fragment(const std::string& fragment);
+
+    const std::string& name() const { return name_; }
     const std::string& scheme() const { return scheme_; }
-    const std::string authority() const;
     const std::string& user() const { return user_; }
     const std::string& host() const { return host_; }
-    const int port() const { return port_; }
-    const std::string& name() const { return path_; }
-    const std::string& path() const { return path_; }
-    const std::string query() const { return query_; }
-    const std::string fragment() const { return fragment_; }
+    int port() const { return port_; }
+    const std::string& path() const { return name_; }
+    const std::string& fragment() const { return fragment_; }
+
+    std::string authority() const;
+    std::string query() const;
+    const std::string query(const std::string& attribute) const;
 
     std::string asString() const;
     std::string asRawString() const;
@@ -65,17 +75,18 @@ protected: // methods
 
 private: // methods
 
-    void parse(const std::string &uri);
-    void parseAuthority(std::string &aux);
+    size_t parseScheme(const std::string &uri);
+    void parse(const std::string& uri, size_t first, bool authority, bool query, bool fragment);
+    void parseQueryValues(const std::string& query);
 
 private: // members
 
+    std::string name_;
     std::string scheme_;
     std::string user_;
     std::string host_;
-    int port_;
-    std::string path_;
-    std::string query_;
+    int port_ = -1;
+    std::map<std::string, std::string> queryValues_;
     std::string fragment_;
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }

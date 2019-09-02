@@ -20,7 +20,6 @@ namespace sql {
 namespace type {
 
 SQLString::SQLString(const std::string& name, size_t maxLen) : SQLType(name), maxLen_(maxLen) {
-    ASSERT(maxLen_ != 0);
     ASSERT(maxLen_ % 8 == 0);
 }
 

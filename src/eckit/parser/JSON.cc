@@ -17,7 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSON::JSON(std::ostream& out) : out_(out), null_(true) {
+JSON::JSON(std::ostream& out, bool null) : out_(out), null_(null) {
     sep_.push_back("");
     state_.push_back(true);
 }

@@ -122,12 +122,11 @@ static void get(int n, std::vector<std::string>& v) {
     Monitor::TaskArray& info = Monitor::instance().tasks();
 
     if (n != -1) {
-        int parent = info[n].parent();
-        if(parent == -1) {
-            v.push_back(info[n].name());
-        }
+
         get(info[n].parent(), v);
         static Translator<int, std::string> i2s;
+
+        v.push_back(info[n].name());
         v.push_back(i2s(n));
     }
 }

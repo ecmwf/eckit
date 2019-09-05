@@ -36,7 +36,7 @@ class JSON : private NonCopyable {
 public: // methods
 
     /// Contructor
-	JSON(std::ostream&);
+	JSON(std::ostream&,bool null=true);
 
     /// Destructor
 	~JSON();

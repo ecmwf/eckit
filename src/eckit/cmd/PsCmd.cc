@@ -15,6 +15,7 @@
 #include "eckit/log/Colour.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/parser/JSON.h"
+#include "eckit/utils/Translator.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -117,38 +118,29 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static void get(int n, std::vector<int>& v) {
+static void get(int n, std::vector<std::string>& v) {
     Monitor::TaskArray& info = Monitor::instance().tasks();
+
     if (n != -1) {
+        int parent = info[n].parent();
+        if(parent == -1) {
+            v.push_back(info[n].name());
+        }
         get(info[n].parent(), v);
-        v.push_back(n);
+        static Translator<int, std::string> i2s;
+        v.push_back(i2s(n));
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static std::string get(int n) {
-
-    Monitor::TaskArray& info = Monitor::instance().tasks();
-
-    if (info[n].parent() != -1)
-        return get(info[n].parent()) + "/" + info[n].name();
-
-    return info[n].name();
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 static bool sortTasks(int n1, int n2) {
 
-    std::string s1 = get(n1);
-    std::string s2 = get(n2);
-
-    if (s1 != s2)
-        return s1 < s2;
-
-    std::vector<int> v1;
-    std::vector<int> v2;
+    std::vector<std::string> v1;
+    std::vector<std::string> v2;
 
     get(n1, v1);
     get(n2, v2);

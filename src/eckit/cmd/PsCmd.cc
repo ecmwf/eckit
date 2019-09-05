@@ -190,7 +190,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
         grep = std::string(args["grep"]);
     }
 
-    JSON json(out);
+    JSON json(out, false);
     bool doJason = args.exists("json");
 
 

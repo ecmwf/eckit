@@ -62,6 +62,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
             ASSERT(opts.find((*j)->name()) == opts.end());
             opts[(*j)->name()] = *j;
             keys_.insert((*j)->name());
+            (*j)->setDefault(*this);
         }
     }
 

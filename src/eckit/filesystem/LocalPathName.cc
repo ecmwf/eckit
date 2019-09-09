@@ -22,7 +22,6 @@
 #include <cstring>  // for strlen
 #include <fstream>
 #include <vector>
-#include <stack>
 #include <deque>
 
 #include "eckit/config/LibEcKit.h"

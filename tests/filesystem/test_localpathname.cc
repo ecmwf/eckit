@@ -266,7 +266,6 @@ CASE("Tidy a path") {
     SECTION("Constants") {
         EXPECT(tidy(".") == ".");
         EXPECT(tidy("..") == "..");
-        EXPECT(tidy("..") == "..");
         EXPECT(tidy("/") == "/");
         EXPECT(tidy("a") == "a");
         EXPECT(tidy("/a") == "/a");
@@ -282,7 +281,10 @@ CASE("Tidy a path") {
         EXPECT(tidy("/a/.") == "/a");
         EXPECT(tidy("/a/b/..") == "/a");
         EXPECT(tidy("////") == "/");
+        EXPECT(tidy("./.") == ".");
         EXPECT(tidy("./..") == "..");
+        EXPECT(tidy("../..") == "../..");
+        EXPECT(tidy("../.") == "..");
     }
 
     SECTION("Cleanup unnecessary tokens") {
@@ -296,7 +298,7 @@ CASE("Tidy a path") {
         EXPECT(tidy("/a/./b/./c/./d") == "/a/b/c/d");
 
 
-        EXPECT(tidy("./../foo.bar") == "../foo.bar");
+        EXPECT(tidy("./../foo.bar") == "../foo.bar"); // ECKIT-421
         EXPECT(tidy(".//../foo.bar") == "../foo.bar");
         EXPECT(tidy("..//foo.bar") == "../foo.bar");
 

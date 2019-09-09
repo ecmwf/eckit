@@ -27,6 +27,8 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#if 0
+
 CASE("Building of paths") {
     LocalPathName p;
     EXPECT(p == "/");
@@ -251,6 +253,82 @@ CASE("Create a unique path") {
 
     unique.rmdir();
     EXPECT(!unique.exists());
+}
+#endif
+
+std::string tidy(const std::string& p) {
+    return LocalPathName(p).path();
+}
+
+CASE("Tidy a path") {
+
+
+    SECTION("Constants") {
+        EXPECT(tidy(".") == ".");
+        EXPECT(tidy("..") == "..");
+        EXPECT(tidy("..") == "..");
+        EXPECT(tidy("/") == "/");
+        EXPECT(tidy("a") == "a");
+        EXPECT(tidy("/a") == "/a");
+        EXPECT(tidy("aaa") == "aaa");
+        EXPECT(tidy("/aaa") == "/aaa");
+        EXPECT(tidy("a/b") == "a/b");
+        EXPECT(tidy("/a/b") == "/a/b");
+        EXPECT(tidy("/a/b/") == "/a/b/");
+    }
+
+
+    SECTION("Basic rules") {
+        EXPECT(tidy("/a/.") == "/a");
+        EXPECT(tidy("/a/b/..") == "/a");
+        EXPECT(tidy("////") == "/");
+        EXPECT(tidy("./..") == "..");
+    }
+
+    SECTION("Cleanup unnecessary tokens") {
+
+        EXPECT(tidy("/a/./b/../../c/") == "/c/");
+        EXPECT(tidy("/a/./b/../../c") == "/c");
+
+        EXPECT(tidy("/./../foo.bar") == "/foo.bar");
+        EXPECT(tidy("/../../../../../a") == "/a");
+
+        EXPECT(tidy("/a/./b/./c/./d") == "/a/b/c/d");
+
+
+        EXPECT(tidy("./../foo.bar") == "../foo.bar");
+        EXPECT(tidy(".//../foo.bar") == "../foo.bar");
+        EXPECT(tidy("..//foo.bar") == "../foo.bar");
+
+        EXPECT(tidy("././././././..//foo.bar") == "../foo.bar");
+
+        EXPECT(tidy("/a//b//c//////d") == "/a/b/c/d");
+    }
+
+    SECTION("Merging of tokens") {
+
+        EXPECT(tidy("/foo//bar/") == "/foo/bar/");
+        EXPECT(tidy("/p1/..//foo.bar") == "/foo.bar");
+        EXPECT(tidy("/p1/../p2/foo.bar") == "/p2/foo.bar");
+        EXPECT(tidy("/p1/p2/../../p2/foo.bar") == "/p2/foo.bar");
+    }
+
+    SECTION("Absolute paths") {
+        EXPECT(tidy("/a/..") == "/");
+        EXPECT(tidy("/.") == "/");
+    }
+
+    SECTION("Relative paths") {
+        EXPECT(tidy("../a/b/../../c") == "../c");
+        EXPECT(tidy("../a/../b/../../c") == "../../c");
+    }
+
+    SECTION("Odd ones") {
+        EXPECT(tidy("/../") == "/");
+        EXPECT(tidy("/a/b/../../../c/foo.bar") == "/c/foo.bar");
+        EXPECT(tidy("../a/b/../../../c/foo.bar") == "../../c/foo.bar");
+        EXPECT(tidy("/a/../.././../../.") == "/");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

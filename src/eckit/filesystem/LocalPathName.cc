@@ -496,7 +496,7 @@ static void tidy_path_stack(std::vector<std::string>& v) {
 static void rebuild_path(const std::vector<std::string>& v, std::string& path, bool last = false) {
     path.clear();
 
-    if(v.size() == 1 && v[0] == "") {
+    if(v.size() == 1 && v[0] == "") { // first entry as empty string is '/'
         path = "/";
         return;
     }
@@ -516,8 +516,6 @@ LocalPathName& LocalPathName::tidy(bool tildeIsUserHome) {
     if (path_.length() == 0)
         return *this;
 
-    Log::info() << "------------> " << path_ << std::endl;
-
     expandTilde(path_, tildeIsUserHome);
 
     bool last = (path_[path_.length() - 1] == '/');  // remember to put back ending '/' if there is one
@@ -531,14 +529,11 @@ LocalPathName& LocalPathName::tidy(bool tildeIsUserHome) {
         v.push_back(std::string(path_, q, p - q));
         q = p + 1;
     }
-
     v.push_back(std::string(path_, q));
 
     tidy_path_stack(v);
 
     rebuild_path(v, path_, last);
-
-    Log::info() << "============ " << path_ << std::endl;
 
     return *this;
 }

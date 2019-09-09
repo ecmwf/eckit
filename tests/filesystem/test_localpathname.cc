@@ -27,8 +27,6 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
-
 CASE("Building of paths") {
     LocalPathName p;
     EXPECT(p == "/");
@@ -254,7 +252,6 @@ CASE("Create a unique path") {
     unique.rmdir();
     EXPECT(!unique.exists());
 }
-#endif
 
 std::string tidy(const std::string& p) {
     return LocalPathName(p).path();
@@ -292,7 +289,6 @@ CASE("Tidy a path") {
         EXPECT(tidy("/a/./b/../../c/") == "/c/");
         EXPECT(tidy("/a/./b/../../c") == "/c");
 
-        EXPECT(tidy("/./../foo.bar") == "/foo.bar");
         EXPECT(tidy("/../../../../../a") == "/a");
 
         EXPECT(tidy("/a/./b/./c/./d") == "/a/b/c/d");
@@ -301,18 +297,21 @@ CASE("Tidy a path") {
         EXPECT(tidy("./../foo.bar") == "../foo.bar"); // ECKIT-421
         EXPECT(tidy(".//../foo.bar") == "../foo.bar");
         EXPECT(tidy("..//foo.bar") == "../foo.bar");
-
         EXPECT(tidy("././././././..//foo.bar") == "../foo.bar");
 
         EXPECT(tidy("/a//b//c//////d") == "/a/b/c/d");
     }
 
     SECTION("Merging of tokens") {
+        EXPECT(tidy("/a//b/") == "/a/b/");
+        EXPECT(tidy("/a/..//foo.bar") == "/foo.bar");
+        EXPECT(tidy("/a/../b/foo.bar") == "/b/foo.bar");
+        EXPECT(tidy("/a/b/../../c/foo.bar") == "/c/foo.bar");
 
-        EXPECT(tidy("/foo//bar/") == "/foo/bar/");
-        EXPECT(tidy("/p1/..//foo.bar") == "/foo.bar");
-        EXPECT(tidy("/p1/../p2/foo.bar") == "/p2/foo.bar");
-        EXPECT(tidy("/p1/p2/../../p2/foo.bar") == "/p2/foo.bar");
+        EXPECT(tidy("/a/../b/../c/../d") == "/d");
+        EXPECT(tidy("../a/../b/../c/../d") == "../d");
+        EXPECT(tidy("a/../b/../c/../d") == "d");
+        EXPECT(tidy("/a/./b/./c/./d") == "/a/b/c/d");
     }
 
     SECTION("Absolute paths") {
@@ -327,6 +326,7 @@ CASE("Tidy a path") {
 
     SECTION("Odd ones") {
         EXPECT(tidy("/../") == "/");
+        EXPECT(tidy("/./../foo.bar") == "/foo.bar");
         EXPECT(tidy("/a/b/../../../c/foo.bar") == "/c/foo.bar");
         EXPECT(tidy("../a/b/../../../c/foo.bar") == "../../c/foo.bar");
         EXPECT(tidy("/a/../.././../../.") == "/");

@@ -9,6 +9,8 @@ Point2.cc
 Point2.h
 Point3.cc
 Point3.h
+Polygon.cc
+Polygon.h
 Sphere.cc
 Sphere.h
 SphereT.h

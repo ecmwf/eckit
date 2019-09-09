@@ -14,7 +14,7 @@
 #include "eckit/cmd/PsCmd.h"
 #include "eckit/log/Colour.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/Translator.h"
 
 //----------------------------------------------------------------------------------------------------------------------

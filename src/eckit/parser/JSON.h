@@ -8,5 +8,5 @@
  * does it submit to any jurisdiction.
  */
 
-#warning "Header eckit/parser/JSON.h is deprecated -- include eckit/log/JSON.h"
-#include "eckit/utils/JSON.h"
+#warning "Header eckit/log/JSON.h is deprecated -- include eckit/log/JSON.h"
+#include "eckit/log/JSON.h"

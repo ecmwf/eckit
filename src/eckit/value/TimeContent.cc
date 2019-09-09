@@ -10,7 +10,7 @@
 
 
 #include "eckit/value/TimeContent.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/value/NumberContent.h"
 

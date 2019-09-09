@@ -11,7 +11,7 @@
 
 #include "eckit/value/DoubleContent.h"
 #include "eckit/maths/Functions.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/NumberContent.h"
 

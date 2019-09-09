@@ -10,7 +10,7 @@
 
 #include "eckit/value/NumberContent.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/DoubleContent.h"
 

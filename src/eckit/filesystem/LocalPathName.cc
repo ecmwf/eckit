@@ -403,47 +403,7 @@ static void expandTilde(std::string& path, bool tildeIsUserHome) {
     }
 }
 
-static void tidy_path(std::vector<std::string>& v) {
-
-    bool more = true;
-    while (more) {
-
-        more = false;
-
-        std::vector<std::string>::iterator i = v.begin();
-        std::vector<std::string>::iterator j = i + 1;
-
-        while (j != v.end()) {
-
-            if ((*i) == "." && (*j) == "..") {  // './..' contracts to '..'
-                *i = "..";
-                v.erase(j);
-                more = true;
-                break;
-            }
-
-            if ((*j) == "" || (*j) == ".") {  // remove empty tokens or '.' tokens not on first token
-                v.erase(j);
-                more = true;
-                break;
-            }
-
-            if ((*i) != ".." && (*j) == "..") {  // merge ".." entries
-                if ((*i) != "") {
-                    *i = ".";
-                }
-                v.erase(j);
-                more = true;
-                break;
-            }
-
-            ++i;
-            ++j;
-        }
-    }
-}
-
-static void tidy_path_stack(std::vector<std::string>& v) {
+static void tidy_path_tokens(std::vector<std::string>& v) {
 
     if(v.empty()) return;
 
@@ -519,20 +479,13 @@ LocalPathName& LocalPathName::tidy(bool tildeIsUserHome) {
 
     bool last = (path_[path_.length() - 1] == '/');  // remember to put back ending '/' if there is one
 
-    size_t p = 0;
-    size_t q = 0;
+    std::vector<std::string> tokens;
 
-    std::vector<std::string> v;
+    eckit::Tokenizer tok('/', true);
+    tok(path_, tokens);
 
-    while ((p = path_.find('/', q)) != std::string::npos) {
-        v.push_back(std::string(path_, q, p - q));
-        q = p + 1;
-    }
-    v.push_back(std::string(path_, q));
-
-    tidy_path_stack(v);
-
-    rebuild_path(v, path_, last);
+    tidy_path_tokens(tokens);
+    rebuild_path(tokens, path_, last);
 
     return *this;
 }

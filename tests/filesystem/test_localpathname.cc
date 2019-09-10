@@ -28,8 +28,7 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Building of paths") {
-    LocalPathName p;
-    EXPECT(p == "/");
+    EXPECT(LocalPathName().path() == "/");
 
     LocalPathName p1("/fred/bill");
     EXPECT(p1 == "/fred/bill");
@@ -42,35 +41,33 @@ CASE("Assignement of paths") {
     LocalPathName p;
     LocalPathName pd;
     p = pd;
-    EXPECT(p == "/");
+    EXPECT(p.path() == "/");
 
     LocalPathName p1("/fred/bill");
     LocalPathName p2;
     p2 = p1;
-    EXPECT(p2 == "/fred/bill");
+    EXPECT(p2.path() == "/fred/bill");
 
     LocalPathName p3;
     p3 = "/fred";
-    EXPECT(p3 == "/fred");
+    EXPECT(p3.path() == "/fred");
 
     LocalPathName p4;
-    p4 = std::string("/fredd");
-    EXPECT(p4 == "/fredd");
+    p4 = std::string("/martin");
+    EXPECT(p4.path() == "/martin");
 }
 
 CASE("Contactenation of paths") {
+
     LocalPathName p;
-
     p += "fred";
-
-    EXPECT(p == "/fred");
+    EXPECT(p.path() == "/fred");
 
     p += "/joe/90";
+    EXPECT(p.path() == "/fred/joe/90");
 
-    EXPECT(p == "/fred/joe/90");
-
+    // preserve trailing '/'
     p += '/';
-
     EXPECT(p == "/fred/joe/90/");
 }
 
@@ -81,7 +78,7 @@ CASE("Extract dirname") {
 
     // when no leading '/' on pathname, we append cwd to path, for fullName()
     LocalPathName p2("fred");
-    LocalPathName expected = LocalPathName::cwd() + "/" + "fred";
+    LocalPathName expected = LocalPathName::cwd() + LocalPathName("/fred");
     EXPECT(p2.fullName() == expected);
 }
 
@@ -296,7 +293,7 @@ CASE("Tidy a path") {
         EXPECT(tidy("/a/./b/./c/./d") == "/a/b/c/d");
 
 
-        EXPECT(tidy("./../foo.bar") == "../foo.bar"); // ECKIT-421
+        EXPECT(tidy("./../foo.bar") == "../foo.bar");  // ECKIT-421
         EXPECT(tidy(".//../foo.bar") == "../foo.bar");
         EXPECT(tidy("..//foo.bar") == "../foo.bar");
         EXPECT(tidy("././././././..//foo.bar") == "../foo.bar");

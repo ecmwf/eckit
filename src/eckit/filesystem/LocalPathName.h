@@ -27,103 +27,78 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class Length;
-struct FileSystemSize;
 class DataHandle;
 class BasePathName;
 
-// The class LocalPathName represent a unix path name.
+struct FileSystemSize;
+
+/// LocalPathName represents a UNIX path
+//  It expanses '~' and tidies the path on construction and preserves trailing '/'
 
 class LocalPathName {
-public:
-
+public:  // methods
     friend void operator<<(Stream&, const LocalPathName&);
     friend void operator>>(Stream&, LocalPathName&);
 
-    friend std::ostream& operator<<(std::ostream& s, const LocalPathName& p)
-    {
-        return s << p.path_;
-    }
+    friend std::ostream& operator<<(std::ostream& s, const LocalPathName& p) { return s << p.path_; }
 
-// Contructors
-
-    LocalPathName(const char* p = "/", bool tildeIsUserHome = false)    : path_(p) { tidy(tildeIsUserHome); }
-    LocalPathName(const std::string& p, bool tildeIsUserHome = false)        : path_(p) { tidy(tildeIsUserHome); }
+    LocalPathName(const char* p = "/", bool tildeIsUserHome = false) : path_(p) { tidy(tildeIsUserHome); }
+    LocalPathName(const std::string& p, bool tildeIsUserHome = false) : path_(p) { tidy(tildeIsUserHome); }
     LocalPathName(const LocalPathName& p) : path_(p.path_) {}
 
-// Assignment
+    // Assignment
 
-    LocalPathName& operator=(const LocalPathName& p)
-    {
+    LocalPathName& operator=(const LocalPathName& p) {
         path_ = p.path_;
         return *this;
     }
 
-    LocalPathName& operator=(const std::string& p)
-    {
-        path_ = p      ;
+    LocalPathName& operator=(const std::string& p) {
+        path_ = p;
         return tidy();
     }
 
-    LocalPathName& operator=(const char* p)
-    {
-        path_ = p      ;
+    LocalPathName& operator=(const char* p) {
+        path_ = p;
         return tidy();
     }
 
-// Convertors
+    // Convertors
 
     operator const std::string&() const { return path_; }
 
-    const char* localPath() const  { return path_.c_str(); }
+    const char* localPath() const { return path_.c_str(); }
 
-    const char* c_str() const  { return path_.c_str();  }
+    const char* c_str() const { return path_.c_str(); }
 
-// Operators
+    // Operators
 
-    LocalPathName& operator+=(const std::string& s)  {
+    LocalPathName& operator+=(const std::string& s) {
         path_ += s;
         return tidy();
     }
-    LocalPathName& operator+=(const char* s)    {
+    LocalPathName& operator+=(const char* s) {
         path_ += s;
         return tidy();
     }
-    LocalPathName& operator+=(char s)           {
+    LocalPathName& operator+=(char s) {
         path_ += s;
         return tidy();
     }
 
-    bool operator<(const LocalPathName& other) const
-    {
-        return path_ < other.path_;
-    }
+    bool operator<(const LocalPathName& other) const { return path_ < other.path_; }
 
-    bool operator>(const LocalPathName& other) const
-    {
-        return path_ > other.path_;
-    }
+    bool operator>(const LocalPathName& other) const { return path_ > other.path_; }
 
-    bool operator<=(const LocalPathName& other) const
-    {
-        return path_ <= other.path_;
-    }
+    bool operator<=(const LocalPathName& other) const { return path_ <= other.path_; }
 
-    bool operator>=(const LocalPathName& other) const
-    {
-        return path_ >= other.path_;
-    }
+    bool operator>=(const LocalPathName& other) const { return path_ >= other.path_; }
 
-    bool operator!=(const LocalPathName& other) const
-    {
-        return path_ != other.path_;
-    }
+    bool operator!=(const LocalPathName& other) const { return path_ != other.path_; }
 
-    bool operator==(const LocalPathName& other) const
-    {
-        return path_ == other.path_;
-    }
+    bool operator==(const LocalPathName& other) const { return path_ == other.path_; }
 
-// Methods
+    // Methods
 
     /// @returns a relative filepath to path to an optional start directory.
     /// This is a pure path computation, no filesystem is accessed to confirm the existence or nature of path
@@ -174,7 +149,7 @@ public:
 
     /// Last access time
     /// @return Time of last access
-    time_t lastAccess()   const;
+    time_t lastAccess() const;
 
     /// Last modification time
     /// @return Time of last modification
@@ -182,7 +157,7 @@ public:
 
     /// Creation time
     /// @return Time of creation
-    time_t created()      const;
+    time_t created() const;
 
     /// Check if path is a directory
     /// @return true if the path is a directory
@@ -208,10 +183,10 @@ public:
     void chmod(short mode) const;
 
     /// Unlink the path
-    void unlink(bool verbose=true) const;
+    void unlink(bool verbose = true) const;
 
     /// Remove the directory
-    void rmdir(bool verbose=true) const;
+    void rmdir(bool verbose = true) const;
 
     /// Create a copy with a unique path name
     void backup() const;
@@ -249,7 +224,7 @@ public:
 
     void syncParentDirectory() const;
 
-// Class methods
+    // Class methods
 
     static LocalPathName unique(const LocalPathName&);
     static void match(const LocalPathName&, std::vector<LocalPathName>&, bool = false);
@@ -260,37 +235,30 @@ public:
     static LocalPathName cwd();
 
 private:
-
-// Members
+    // Members
 
     std::string path_;
 
-// Methods
+    // Methods
 
     LocalPathName& tidy(bool tildeIsUserHome = false);
 
-// friend
+    // friend
 
-    friend LocalPathName operator+(const LocalPathName& p, const std::string& s)
-    {
-        return LocalPathName(p.path_ + s);
-    }
+    friend LocalPathName operator+(const LocalPathName& p, const std::string& s) { return LocalPathName(p.path_ + s); }
 
-    friend LocalPathName operator+(const LocalPathName& p, const char* s)
-    {
-        return LocalPathName(p.path_ + s);
-    }
+    friend LocalPathName operator+(const LocalPathName& p, const char* s) { return LocalPathName(p.path_ + s); }
 
-    friend LocalPathName operator+(const LocalPathName& p, char s)
-    {
-        return LocalPathName(p.path_ + s);
-    }
+    friend LocalPathName operator+(const LocalPathName& p, char s) { return LocalPathName(p.path_ + s); }
 };
 
-template <> struct VectorPrintSelector<LocalPathName> { typedef VectorPrintSimple selector; };
+template <>
+struct VectorPrintSelector<LocalPathName> {
+    typedef VectorPrintSimple selector;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -12,11 +12,11 @@
 /// @author Tiago Quintino
 /// @date   Aug 2011
 
-#ifndef eckit_JSON_h
-#define eckit_JSON_h
+#ifndef eckit_log_JSON_h
+#define eckit_log_JSON_h
 
-#include <set>
 #include <map>
+#include <set>
 #include <vector>
 
 #include "eckit/eckit.h"
@@ -33,40 +33,38 @@ class DateTime;
 
 class JSON : private NonCopyable {
 
-public: // methods
+public:  // methods
 
-    /// Contructor
-	JSON(std::ostream&,bool null=true);
+    JSON(std::ostream&, bool null = true);
 
-    /// Destructor
-	~JSON();
+    ~JSON();
 
-	JSON& operator<<(bool);
-	JSON& operator<<(char);
-	JSON& operator<<(unsigned char);
-	JSON& operator<<(int);
-	JSON& operator<<(unsigned int);
-	JSON& operator<<(long);
-	JSON& operator<<(unsigned long);
-	JSON& operator<<(long long);
-	JSON& operator<<(unsigned long long);
-	JSON& operator<<(float);
-	JSON& operator<<(double);
+    JSON& operator<<(bool);
+    JSON& operator<<(char);
+    JSON& operator<<(unsigned char);
+    JSON& operator<<(int);
+    JSON& operator<<(unsigned int);
+    JSON& operator<<(long);
+    JSON& operator<<(unsigned long);
+    JSON& operator<<(long long);
+    JSON& operator<<(unsigned long long);
+    JSON& operator<<(float);
+    JSON& operator<<(double);
 
     JSON& operator<<(const Date&);
     JSON& operator<<(const Time&);
     JSON& operator<<(const DateTime&);
 
-	JSON& operator<<(const std::string&);
-	JSON& operator<<(const char*);
+    JSON& operator<<(const std::string&);
+    JSON& operator<<(const char*);
 
-    template < typename T >
+    template <typename T>
     JSON& operator<<(const std::vector<T>&);
 
-    template < typename T >
+    template <typename T>
     JSON& operator<<(const std::set<T>&);
 
-    template < typename T >
+    template <typename T>
     JSON& operator<<(const std::map<std::string, T>&);
 
     JSON& null();
@@ -77,54 +75,48 @@ public: // methods
     JSON& startList();
     JSON& endList();
 
-    /// Set the precision for float and double (works like std::setprecision)
+    /// Sets the precision for float and double (works like std::setprecision)
     JSON& precision(int);
 
-private: // members
-
+private:  // members
     std::ostream& out_;
     std::vector<std::string> sep_;
     std::vector<bool> state_;
     bool null_;
 
-private: // methods
-
+private:  // methods
     void sep();
     bool inlist() { return !state_.back(); }
-    bool indict() { return  state_.back(); }
-
+    bool indict() { return state_.back(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template < typename T >
-JSON& JSON::operator<<(const std::vector<T> &v)
-{
+template <typename T>
+JSON& JSON::operator<<(const std::vector<T>& v) {
     startList();
-    for( size_t i = 0; i < v.size(); ++i ) {
+    for (size_t i = 0; i < v.size(); ++i) {
         *this << v[i];
     }
     endList();
     return *this;
 }
 
-template < typename T >
-JSON& JSON::operator<<(const std::set<T>& s)
-{
+template <typename T>
+JSON& JSON::operator<<(const std::set<T>& s) {
     startList();
-    for(typename std::set<T>::const_iterator i = s.begin(); i != s.end(); ++i ) {
+    for (typename std::set<T>::const_iterator i = s.begin(); i != s.end(); ++i) {
         *this << *i;
     }
     endList();
     return *this;
 }
 
-template < typename T >
-JSON& JSON::operator<<(const std::map<std::string, T> &m)
-{
+template <typename T>
+JSON& JSON::operator<<(const std::map<std::string, T>& m) {
     startObject();
 
-    for( typename std::map<std::string, T>::const_iterator it = m.begin(); it != m.end(); ++it )
+    for (typename std::map<std::string, T>::const_iterator it = m.begin(); it != m.end(); ++it)
         *this << (*it).first << (*it).second;
 
     endObject();
@@ -133,6 +125,6 @@ JSON& JSON::operator<<(const std::map<std::string, T> &m)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

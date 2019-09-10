@@ -452,7 +452,7 @@ static void tidy_path_tokens(std::vector<std::string>& v) {
     std::copy (path.begin(), path.end(),std::back_inserter(v));
 }
 
-static void rebuild_path(const std::vector<std::string>& v, std::string& path, bool last = false) {
+static void rebuild_path(const std::vector<std::string>& v, std::string& path, bool trail = false) {
     path.clear();
 
     if(v.size() == 1 && v[0] == "") { // first entry as empty string is '/'
@@ -466,7 +466,7 @@ static void rebuild_path(const std::vector<std::string>& v, std::string& path, b
         if (p != v.end() - 1)
             path += '/';
     }
-    if (last) {
+    if (trail) {  // preserve trailing '/'
         path += '/';
     }
 }
@@ -477,7 +477,7 @@ LocalPathName& LocalPathName::tidy(bool tildeIsUserHome) {
 
     expandTilde(path_, tildeIsUserHome);
 
-    bool last = (path_[path_.length() - 1] == '/');  // remember to put back ending '/' if there is one
+    bool trail = (path_[path_.length() - 1] == '/');  // remember to put back ending '/' if there is one
 
     std::vector<std::string> tokens;
 
@@ -485,7 +485,7 @@ LocalPathName& LocalPathName::tidy(bool tildeIsUserHome) {
     tok(path_, tokens);
 
     tidy_path_tokens(tokens);
-    rebuild_path(tokens, path_, last);
+    rebuild_path(tokens, path_, trail);
 
     return *this;
 }

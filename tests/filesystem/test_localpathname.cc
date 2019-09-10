@@ -261,6 +261,7 @@ CASE("Tidy a path") {
 
 
     SECTION("Constants") {
+        EXPECT(tidy("") == "");
         EXPECT(tidy(".") == ".");
         EXPECT(tidy("..") == "..");
         EXPECT(tidy("/") == "/");
@@ -275,6 +276,7 @@ CASE("Tidy a path") {
 
 
     SECTION("Basic rules") {
+        EXPECT(tidy("a/") == "a/");
         EXPECT(tidy("/a/.") == "/a");
         EXPECT(tidy("/a/b/..") == "/a");
         EXPECT(tidy("////") == "/");
@@ -320,6 +322,12 @@ CASE("Tidy a path") {
     }
 
     SECTION("Relative paths") {
+        EXPECT(tidy("../a") == "../a");
+        EXPECT(tidy("a/b/c/..") == "a/b");
+        EXPECT(tidy("a/b/c/../../..") == "");
+        EXPECT(tidy("a/../b/../c") == "c");
+        EXPECT(tidy("a/../b/../c/..") == "");
+        EXPECT(tidy("a/../b/../c/../../..") == "../..");
         EXPECT(tidy("../a/b/../../c") == "../c");
         EXPECT(tidy("../a/../b/../../c") == "../../c");
     }

@@ -27,7 +27,6 @@ public:
     Polygon() {}
 
     Polygon(std::initializer_list<Point2> vv) {
-        assert(c.size() <= std::size(m_array));
         for (auto& v : vv)
             vertices.push_back(v);
     }
@@ -37,6 +36,12 @@ public:
     }
     void push_front(const Point2& p) {
         vertices.push_front(p);
+    }
+    size_t num_vertices() const {
+        return vertices.size();
+    }
+    const Point2& vertex(size_t idx) const {
+        return vertices.at(idx);
     }
     bool sameAs(const Polygon& p) const {
         return vertices == p.vertices;

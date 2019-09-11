@@ -30,8 +30,13 @@ CASE("equality") {
     Polygon poly1;
     Polygon poly2;
 
+    EXPECT(poly1.num_vertices() == 0);
+
     Point2 p1 = {1.0, 2.0};
     poly1.push_front(p1);
+    EXPECT(poly1.num_vertices() == 1);
+    EXPECT(poly1.vertex(0) == p1);
+
     EXPECT(!poly1.sameAs(poly2));
 
     poly2.push_back(p1);
@@ -69,6 +74,9 @@ CASE("congruence") {
     Polygon poly3 = {p2, p3, p1};
     EXPECT(!poly2.sameAs(poly3));
     EXPECT(poly2.congruent(poly3));
+
+    EXPECT(poly2.num_vertices() == 3);
+    EXPECT(poly2.vertex(2) == poly3.vertex(1));
 
     Polygon poly4 = {p3, p1, p2};
     EXPECT(!poly2.sameAs(poly4));

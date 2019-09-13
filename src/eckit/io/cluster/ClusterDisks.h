@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 
 namespace eckit {
 

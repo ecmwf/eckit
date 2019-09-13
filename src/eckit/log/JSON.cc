@@ -10,7 +10,7 @@
 
 #include <iomanip>
 
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/types/DateTime.h"
 
 namespace eckit {

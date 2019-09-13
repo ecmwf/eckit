@@ -28,8 +28,7 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Building of paths") {
-    LocalPathName p;
-    EXPECT(p == "/");
+    EXPECT(LocalPathName().path() == "/");
 
     LocalPathName p1("/fred/bill");
     EXPECT(p1 == "/fred/bill");
@@ -42,35 +41,33 @@ CASE("Assignement of paths") {
     LocalPathName p;
     LocalPathName pd;
     p = pd;
-    EXPECT(p == "/");
+    EXPECT(p.path() == "/");
 
     LocalPathName p1("/fred/bill");
     LocalPathName p2;
     p2 = p1;
-    EXPECT(p2 == "/fred/bill");
+    EXPECT(p2.path() == "/fred/bill");
 
     LocalPathName p3;
     p3 = "/fred";
-    EXPECT(p3 == "/fred");
+    EXPECT(p3.path() == "/fred");
 
     LocalPathName p4;
-    p4 = std::string("/fredd");
-    EXPECT(p4 == "/fredd");
+    p4 = std::string("/martin");
+    EXPECT(p4.path() == "/martin");
 }
 
 CASE("Contactenation of paths") {
+
     LocalPathName p;
-
     p += "fred";
-
-    EXPECT(p == "/fred");
+    EXPECT(p.path() == "/fred");
 
     p += "/joe/90";
+    EXPECT(p.path() == "/fred/joe/90");
 
-    EXPECT(p == "/fred/joe/90");
-
+    // preserve trailing '/'
     p += '/';
-
     EXPECT(p == "/fred/joe/90/");
 }
 
@@ -81,7 +78,7 @@ CASE("Extract dirname") {
 
     // when no leading '/' on pathname, we append cwd to path, for fullName()
     LocalPathName p2("fred");
-    LocalPathName expected = LocalPathName::cwd() + "/" + "fred";
+    LocalPathName expected = LocalPathName::cwd() + LocalPathName("/fred");
     EXPECT(p2.fullName() == expected);
 }
 
@@ -251,6 +248,94 @@ CASE("Create a unique path") {
 
     unique.rmdir();
     EXPECT(!unique.exists());
+}
+
+std::string tidy(const std::string& p) {
+    return LocalPathName(p).path();
+}
+
+CASE("Tidy a path") {
+
+
+    SECTION("Constants") {
+        EXPECT(tidy("") == "");
+        EXPECT(tidy(".") == ".");
+        EXPECT(tidy("..") == "..");
+        EXPECT(tidy("/") == "/");
+        EXPECT(tidy("a") == "a");
+        EXPECT(tidy("/a") == "/a");
+        EXPECT(tidy("aaa") == "aaa");
+        EXPECT(tidy("/aaa") == "/aaa");
+        EXPECT(tidy("a/b") == "a/b");
+        EXPECT(tidy("/a/b") == "/a/b");
+        EXPECT(tidy("/a/b/") == "/a/b/");
+    }
+
+
+    SECTION("Basic rules") {
+        EXPECT(tidy("a/") == "a/");
+        EXPECT(tidy("/a/.") == "/a");
+        EXPECT(tidy("/a/b/..") == "/a");
+        EXPECT(tidy("////") == "/");
+        EXPECT(tidy("./.") == ".");
+        EXPECT(tidy("./..") == "..");
+        EXPECT(tidy("../..") == "../..");
+        EXPECT(tidy("../.") == "..");
+    }
+
+    SECTION("Cleanup unnecessary tokens") {
+
+        EXPECT(tidy("/a/./b/../../c/") == "/c/");
+        EXPECT(tidy("/a/./b/../../c") == "/c");
+
+        EXPECT(tidy("/../../../../../a") == "/a");
+
+        EXPECT(tidy("/a/./b/./c/./d") == "/a/b/c/d");
+
+
+        EXPECT(tidy("./../foo.bar") == "../foo.bar");  // ECKIT-421
+        EXPECT(tidy(".//../foo.bar") == "../foo.bar");
+        EXPECT(tidy("..//foo.bar") == "../foo.bar");
+        EXPECT(tidy("././././././..//foo.bar") == "../foo.bar");
+
+        EXPECT(tidy("/a//b//c//////d") == "/a/b/c/d");
+    }
+
+    SECTION("Merging of tokens") {
+        EXPECT(tidy("/a//b/") == "/a/b/");
+        EXPECT(tidy("/a/..//foo.bar") == "/foo.bar");
+        EXPECT(tidy("/a/../b/foo.bar") == "/b/foo.bar");
+        EXPECT(tidy("/a/b/../../c/foo.bar") == "/c/foo.bar");
+
+        EXPECT(tidy("/a/../b/../c/../d") == "/d");
+        EXPECT(tidy("../a/../b/../c/../d") == "../d");
+        EXPECT(tidy("a/../b/../c/../d") == "d");
+        EXPECT(tidy("/a/./b/./c/./d") == "/a/b/c/d");
+    }
+
+    SECTION("Absolute paths") {
+        EXPECT(tidy("/a/..") == "/");
+        EXPECT(tidy("/.") == "/");
+    }
+
+    SECTION("Relative paths") {
+        EXPECT(tidy("../a") == "../a");
+        EXPECT(tidy("a/b/c/..") == "a/b");
+        EXPECT(tidy("a/b/c/../../..") == "");
+        EXPECT(tidy("a/../b/../c") == "c");
+        EXPECT(tidy("a/../b/../c/..") == "");
+        EXPECT(tidy("a/../b/../c/../../..") == "../..");
+        EXPECT(tidy("../a/b/../../c") == "../c");
+        EXPECT(tidy("../a/../b/../../c") == "../../c");
+    }
+
+    SECTION("Odd ones") {
+        EXPECT(tidy("/../") == "/");
+        EXPECT(tidy("/./../foo.bar") == "/foo.bar");
+        EXPECT(tidy("/a/b/../../../c/foo.bar") == "/c/foo.bar");
+        EXPECT(tidy("../a/b/../../../c/foo.bar") == "../../c/foo.bar");
+        EXPECT(tidy("/a/../.././../../.") == "/");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

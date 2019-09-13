@@ -36,6 +36,8 @@ class Option : private eckit::NonCopyable {
 
     virtual ~Option(); // Change to virtual if base class
 
+    virtual Option* defaultValue(const std::string&);
+
     const std::string& name() const;
 
     virtual bool active() const;
@@ -43,11 +45,15 @@ class Option : private eckit::NonCopyable {
     virtual void set(Configured&) const;
     virtual void set(const std::string& value, Configured&) const = 0;
     virtual void copy(const Configuration& from, Configured& to) const = 0;
+    virtual void setDefault(Configured&) const;
 
   protected: // members
 
     std::string name_;
     std::string description_;
+
+    bool hasDefault_;
+    std::string default_;
 
     virtual void print(std::ostream&) const = 0; // Change to virtual if base class
 

@@ -23,7 +23,10 @@ namespace eckit {
 namespace option {
 
 
-Option::Option(const std::string& name, const std::string& description) : name_(name), description_(description) {}
+Option::Option(const std::string& name, const std::string& description) :
+    name_(name),
+    description_(description),
+    hasDefault_(false) {}
 
 
 Option::~Option() {}
@@ -41,6 +44,18 @@ void Option::set(Configured&) const {
     std::ostringstream os;
     os << "Option::set() not implemented for " << *this;
     throw eckit::SeriousBug(os.str());
+}
+
+Option* Option::defaultValue(const std::string& value) {
+    hasDefault_ = true;
+    default_ = value;
+    return this;
+}
+
+void Option::setDefault(Configured&  configured) const {
+    if (hasDefault_) {
+        set(default_, configured);
+    }
 }
 
 

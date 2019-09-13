@@ -12,7 +12,7 @@
 #include <sstream>
 
 #include "eckit/net/TCPClient.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/runtime/Application.h"
 
 

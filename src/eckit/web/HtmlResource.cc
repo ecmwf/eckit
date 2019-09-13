@@ -11,7 +11,7 @@
 
 #include "eckit/web/HtmlResource.h"
 #include "eckit/config/Resource.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/types/Types.h"
 #include "eckit/web/Html.h"
 #include "eckit/web/Url.h"

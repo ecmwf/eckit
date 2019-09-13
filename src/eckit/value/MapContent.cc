@@ -10,7 +10,7 @@
 
 
 #include "eckit/value/MapContent.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 
 #include "eckit/utils/Hash.h"
 

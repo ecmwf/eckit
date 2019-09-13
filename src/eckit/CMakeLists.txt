@@ -390,6 +390,8 @@ log/FileTarget.cc
 log/FileTarget.h
 log/IndentTarget.cc
 log/IndentTarget.h
+log/JSON.cc
+log/JSON.h
 log/LineBasedTarget.cc
 log/LineBasedTarget.h
 log/Log.cc
@@ -484,7 +486,6 @@ types/VerifyingDate.h
 list( APPEND eckit_parser_srcs
 parser/CSVParser.cc
 parser/CSVParser.h
-parser/JSON.cc
 parser/JSON.h
 parser/JSONDataBlob.cc
 parser/JSONDataBlob.h

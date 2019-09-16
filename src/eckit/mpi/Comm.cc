@@ -42,7 +42,8 @@ public:
         }
         else if (have_parallel() && (::getenv("OMPI_COMM_WORLD_SIZE") ||  // OpenMPI
                                      ::getenv("ALPS_APP_PE") ||           // Cray PE
-                                     ::getenv("PMI_SIZE"))) {             // Intel
+                                     ::getenv("PMI_SIZE") ||              // Intel
+                                     ::getenv("SLURM_NTASKS"))) {         // slurm srun
             return "parallel";
             // Use serial communicator otherwise
         }

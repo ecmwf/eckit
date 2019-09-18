@@ -52,7 +52,7 @@ SQLColumn::SQLColumn(const SQLColumn& other) :
     isBitfield_(other.isBitfield_),
     bitfieldDef_(other.bitfieldDef_),
     sizeDoubles_(other.sizeDoubles_) {
-    ASSERT(type_.size() % 8 == 0);
+    ASSERT(type_.get().size() % 8 == 0);
 }
 
 SQLColumn::~SQLColumn() {}

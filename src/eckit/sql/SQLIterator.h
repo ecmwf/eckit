@@ -17,6 +17,8 @@
 #include "eckit/memory/MemoryPool.h"
 #include "eckit/sql/type/SQLType.h"
 
+#include <functional>
+
 namespace eckit {
 namespace sql {
 
@@ -32,7 +34,8 @@ public:
 
     virtual ~SQLIterator() {} 
 
-	const type::SQLType& type() const { return type_; }
+    const type::SQLType& type() const { return type_.get(); }
+    void updateType(const type::SQLType& type) { type_ = std::cref(type); }
 
 	virtual void rewind()  = 0;
 	virtual double next(bool& missing)                = 0;
@@ -44,7 +47,7 @@ public:
     virtual size_t dataSizeDoubles() const { return 1; }
 
 protected:
-	const type::SQLType& type_;
+    std::reference_wrapper<const type::SQLType> type_;
 	
 	virtual void print(std::ostream&) const = 0; 	
 

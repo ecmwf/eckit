@@ -11,7 +11,6 @@
 #include "mir/search/PointSearch.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/log/Plural.h"
 #include "eckit/log/Timer.h"
 #include "eckit/thread/AutoLock.h"
 
@@ -19,6 +18,8 @@
 #include "mir/param/MIRParametrisation.h"
 #include "mir/repres/Iterator.h"
 #include "mir/repres/Representation.h"
+#include "mir/util/Pretty.h"
+
 
 namespace mir {
 namespace search {
@@ -45,7 +46,7 @@ void PointSearch::build(const repres::Representation& r) {
     ASSERT(npts > 0);
 
     eckit::Timer timer("PointSearch: building k-d tree");
-    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << eckit::Plural(npts, "point")
+    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << util::Pretty(npts, "point")
                        << ")" << std::endl;
 
     static bool fastBuildKDTrees =

@@ -18,7 +18,7 @@
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/memory/Zero.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/thread/AutoLock.h"
 
 //----------------------------------------------------------------------------------------------------------------------

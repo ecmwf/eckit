@@ -10,7 +10,7 @@
 
 
 #include "eckit/value/ListContent.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 
 #include "eckit/utils/Hash.h"
 

@@ -91,7 +91,7 @@ private:
 
     /// Retrive a data pointer and offsets from the cursor (SQLTableIterator) associated
     /// with the given SQL table.
-    void refreshCursorMetadata(const SQLTable* table, SQLTableIterator& cursor);
+    void refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor);
 
 // -- Members
 	Expressions select_;

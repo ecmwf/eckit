@@ -94,7 +94,9 @@ void SQLSimpleOutput::outputString(const char* s, size_t len, bool missing) {
         out_ << "NULL";
     }
     else {
-        out_ << std::string(s, len);
+        std::ostringstream ss;
+        ss << "'" << std::string(s, len) << "'";
+        out_ << ss.str();
     }
 }
 

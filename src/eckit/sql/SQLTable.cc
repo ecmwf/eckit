@@ -164,6 +164,18 @@ const SQLColumn& SQLTable::column(const std::string& name) const {
     throw eckit::UserError("Column not found", name);
 }
 
+void SQLTable::updateColumnDoublesWidth(const std::string& name, size_t nDoubles) {
+
+    std::map<std::string, SQLColumn*>::const_iterator j = columnsByName_.find(name);
+    if (j == columnsByName_.end()) throw eckit::UserError("Column not found", name);
+
+    if (j->second->type().getKind() == type::SQLType::stringType) {
+        j->second->updateType(type::SQLType::lookup("string", nDoubles));
+    } else {
+        ASSERT(nDoubles == 1);
+    }
+}
+
 void SQLTable::addLinkFrom(const SQLTable& from) {
     linksFrom_.insert(from);
 }

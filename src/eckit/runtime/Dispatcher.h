@@ -22,7 +22,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Plural.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/runtime/Dispatcher.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/Monitorable.h"

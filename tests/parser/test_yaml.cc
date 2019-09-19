@@ -9,7 +9,7 @@
  */
 
 #include "eckit/log/Log.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/parser/YAMLParser.h"
 
 #include "eckit/testing/Test.h"

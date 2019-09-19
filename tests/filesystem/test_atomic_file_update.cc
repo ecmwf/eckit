@@ -15,7 +15,7 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/parser/JSONParser.h"
 
 #include "eckit/testing/Test.h"

@@ -11,7 +11,7 @@
 
 #include <ostream>
 
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/StringContent.h"

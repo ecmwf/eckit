@@ -19,7 +19,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/TaskInfo.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 
 
 namespace eckit {

@@ -94,7 +94,7 @@ public:
         return std::sqrt(d);
     }
 
-    double distance(const KPoint& p) {
+    double distance(const KPoint& p) const {
         return distance(*this, p);
     }
 
@@ -107,7 +107,7 @@ public:
         return d;
     }
 
-    double distance2(const KPoint& p) {
+    double distance2(const KPoint& p) const {
         return distance2(*this, p);
     }
 
@@ -237,15 +237,15 @@ public:
     const double* begin() const { return x_; }
     const double* end() const { return x_ + dimensions(); }
 
-    KPoint operator+(const KPoint& other) {
+    KPoint operator+(const KPoint& other) const {
         return add(*this, other);
     }
 
-    KPoint operator-(const KPoint& other) {
+    KPoint operator-(const KPoint& other) const {
         return sub(*this, other);
     }
 
-    KPoint operator*(const double s) {
+    KPoint operator*(const double s) const {
         return mul(*this, s);
     }
 

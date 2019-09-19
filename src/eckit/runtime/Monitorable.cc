@@ -10,7 +10,7 @@
 
 
 #include "eckit/runtime/Monitorable.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -39,6 +39,7 @@ public:
 	virtual bool next()   = 0;
     virtual std::vector<size_t> columnOffsets() const = 0;
     virtual const double* data() const = 0;
+    virtual std::vector<size_t> doublesDataSizes() const = 0;
 };
 
 typedef std::vector<std::string> ColumnNames;
@@ -66,6 +67,7 @@ public:
 	bool isParentOf(const SQLTable&) const;
 
     virtual const SQLColumn& column(const std::string&) const;
+    void updateColumnDoublesWidth(const std::string& name, size_t nDoubles);
 //    virtual SQLColumn& column(const std::string&);
 
     virtual bool hasColumn(const std::string& name) const;

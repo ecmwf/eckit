@@ -23,7 +23,7 @@
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/memory/Zero.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Tokenizer.h"
 

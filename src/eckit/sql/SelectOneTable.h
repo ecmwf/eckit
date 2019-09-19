@@ -40,7 +40,7 @@ struct SelectOneTable {
 //    std::vector<std::pair<double*,bool&>>    values_;
 
     // How do we find the data inside the allocated buffer in SQLSelect?
-    std::vector<size_t> fetchSizeDoubles_;
+//    std::vector<size_t> fetchSizeDoubles_;
 
 	Expressions check_;
 	Expressions index_;

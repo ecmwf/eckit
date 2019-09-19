@@ -11,7 +11,7 @@
 #include <algorithm>
 
 #include "eckit/value/OrderedMapContent.h"
-#include "eckit/parser/JSON.h"
+#include "eckit/log/JSON.h"
 
 namespace eckit {
 

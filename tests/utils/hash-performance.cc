@@ -77,11 +77,11 @@ CASE("Test hash performance") {
 
         std::string name = hashes[i];
 
-        if (eckit::HashFactory::has(name)) {
+        if (eckit::HashFactory::instance().has(name)) {
 
             std::cout << name << std::endl;
 
-            std::unique_ptr<eckit::Hash> hash(eckit::HashFactory::build(name));
+            std::unique_ptr<eckit::Hash> hash(eckit::HashFactory::instance().build(name));
 
             timeAdd<20, 1>(*hash, buffer, timer);
             timeCompute<5>(*hash, buffer2, timer);

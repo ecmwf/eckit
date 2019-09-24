@@ -41,8 +41,6 @@ void GridBoxIntegral::reset() {
 void GridBoxIntegral::execute(const data::MIRField& field) {
 
     ASSERT(field.dimensions() == 1);
-    ASSERT(!field.hasMissing());
-
     const repres::RepresentationHandle rep(field.representation());
     ASSERT(rep);
 
@@ -53,7 +51,10 @@ void GridBoxIntegral::execute(const data::MIRField& field) {
 
     integral_ = 0.;
     for (size_t i = 0; i < values.size(); ++i) {
-        integral_ += boxes[i].area() * values[0];
+        auto value = values[i];
+        if (count(value)) {
+            integral_ += boxes[i].area() * value;
+        }
     }
 }
 

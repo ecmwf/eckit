@@ -11,15 +11,13 @@
 
 #include "mir/stats/statistics/GridBoxIntegral.h"
 
-#include <cmath>
 #include <limits>
 
 #include "eckit/exception/Exceptions.h"
 
-#include "mir/api/Atlas.h"
 #include "mir/data/MIRField.h"
 #include "mir/repres/Representation.h"
-#include "mir/util/Angles.h"
+#include "mir/util/GridBox.h"
 
 
 namespace mir {
@@ -41,8 +39,22 @@ void GridBoxIntegral::reset() {
 
 
 void GridBoxIntegral::execute(const data::MIRField& field) {
-    //TODO
-    NOTIMP;
+
+    ASSERT(field.dimensions() == 1);
+    ASSERT(!field.hasMissing());
+
+    const repres::RepresentationHandle rep(field.representation());
+    ASSERT(rep);
+
+    const auto boxes   = rep->gridBoxes();
+    const auto& values = field.values(0);
+    ASSERT(values.size() == rep->numberOfPoints());
+    ASSERT(values.size() == boxes.size());
+
+    integral_ = 0.;
+    for (size_t i = 0; i < values.size(); ++i) {
+        integral_ += boxes[i].area() * values[0];
+    }
 }
 
 

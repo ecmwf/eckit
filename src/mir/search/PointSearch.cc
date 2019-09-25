@@ -41,52 +41,6 @@ PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const
     }
 }
 
-void PointSearch::build(const repres::Representation& r) {
-    const size_t npts = tree_->itemCount();
-    ASSERT(npts > 0);
-
-    eckit::Timer timer("PointSearch: building k-d tree");
-    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << util::Pretty(npts, "point")
-                       << ")" << std::endl;
-
-    static bool fastBuildKDTrees =
-        eckit::Resource<bool>("$ATLAS_FAST_BUILD_KDTREES", true); // We use the same Resource as ATLAS for now
-
-    if (fastBuildKDTrees) {
-        std::vector<PointValueType> points;
-        points.reserve(npts);
-
-        const std::unique_ptr<repres::Iterator> it(r.iterator());
-        size_t i = 0;
-        while (it->next()) {
-            ASSERT(i < npts);
-            points.emplace_back(PointValueType(it->point3D(), i));
-            ++i;
-        }
-
-        ASSERT(npts == i);
-        tree_->build(points);
-    } else {
-        const std::unique_ptr<repres::Iterator> it(r.iterator());
-        size_t i = 0;
-        while (it->next()) {
-            ASSERT(i < npts);
-            tree_->insert(PointValueType(it->point3D(), i));
-            ++i;
-        }
-
-        ASSERT(npts == i);
-    }
-}
-
-void PointSearch::statsPrint(std::ostream& out, bool fancy) const {
-    tree_->statsPrint(out, fancy);
-}
-
-void PointSearch::statsReset() const {
-    tree_->statsReset();
-}
-
 PointSearch::PointValueType PointSearch::closestPoint(const PointSearch::PointType& pt) const {
     return tree_->nearestNeighbour(pt);
 }
@@ -107,5 +61,49 @@ void PointSearch::closestWithinRadius(const PointType& pt, double radius, std::v
     closest = tree_->findInSphere(pt, radius);
 }
 
-} // namespace search
-} // namespace mir
+void PointSearch::build(const repres::Representation& r) {
+    const size_t npts = tree_->itemCount();
+    ASSERT(npts > 0);
+
+    eckit::Timer timer("PointSearch: building k-d tree");
+    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << util::Pretty(npts, "point")
+                       << ")" << std::endl;
+
+    static bool fastBuildKDTrees =
+        eckit::Resource<bool>("$ATLAS_FAST_BUILD_KDTREES", true);  // We use the same Resource as ATLAS for now
+
+    if (fastBuildKDTrees) {
+        std::vector<PointValueType> points;
+        points.reserve(npts);
+
+        const std::unique_ptr<repres::Iterator> it(r.iterator());
+        size_t i = 0;
+        while (it->next()) {
+            ASSERT(i < npts);
+            points.emplace_back(PointValueType(it->point3D(), i));
+            ++i;
+        }
+
+        ASSERT(npts == i);
+        tree_->build(points);
+    }
+    else {
+        const std::unique_ptr<repres::Iterator> it(r.iterator());
+        size_t i = 0;
+        while (it->next()) {
+            ASSERT(i < npts);
+            tree_->insert(PointValueType(it->point3D(), i));
+            ++i;
+        }
+
+        ASSERT(npts == i);
+    }
+}
+
+void PointSearch::print(std::ostream& out) const {
+    tree_->statsPrint(out, false);
+    tree_->statsReset();
+}
+
+}  // namespace search
+}  // namespace mir

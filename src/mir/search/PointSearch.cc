@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "mir/search/PointSearch.h"
 
 #include "eckit/config/Resource.h"

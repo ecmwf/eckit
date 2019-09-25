@@ -16,8 +16,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace mir {
 namespace data {
@@ -33,7 +31,7 @@ namespace mir {
 namespace stats {
 
 
-class Method : public eckit::NonCopyable {
+class Method {
 public:
 
     // -- Exceptions
@@ -42,6 +40,7 @@ public:
     // -- Constructors
 
     Method(const param::MIRParametrisation&);
+    Method(const Method&) = delete;
 
     // -- Destructor
 
@@ -51,15 +50,16 @@ public:
     // None
 
     // -- Operators
-    // None
+
+    void operator=(const Method&) = delete;
 
     // -- Methods
 
-    virtual void resize(size_t) = 0;
-    virtual void execute(const data::MIRField&) = 0;
-    virtual void mean(data::MIRField&) const = 0;
+    virtual void resize(size_t)                  = 0;
+    virtual void execute(const data::MIRField&)  = 0;
+    virtual void mean(data::MIRField&) const     = 0;
     virtual void variance(data::MIRField&) const = 0;
-    virtual void stddev(data::MIRField&) const = 0;
+    virtual void stddev(data::MIRField&) const   = 0;
 
     // -- Overridden methods
     // None

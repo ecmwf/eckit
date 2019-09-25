@@ -16,8 +16,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace mir {
 namespace data {
@@ -33,7 +31,7 @@ namespace mir {
 namespace stats {
 
 
-class Statistics : public eckit::NonCopyable {
+class Statistics {
 public:
 
     // -- Exceptions
@@ -42,6 +40,7 @@ public:
     // -- Constructors
 
     Statistics(const param::MIRParametrisation&);
+    Statistics(const Statistics&) = delete;
 
     // -- Destructor
 
@@ -51,7 +50,8 @@ public:
     // None
 
     // -- Operators
-    // None
+
+    void operator=(const Statistics&) = delete;
 
     // -- Methods
 

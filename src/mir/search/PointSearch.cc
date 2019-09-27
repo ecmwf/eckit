@@ -67,7 +67,7 @@ void PointSearch::build(const repres::Representation& r) {
     ASSERT(npts > 0);
 
     eckit::Timer timer("PointSearch: building k-d tree");
-    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << util::Pretty(npts, "point")
+    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << Pretty(npts, {"point"})
                        << ")" << std::endl;
 
     static bool fastBuildKDTrees =

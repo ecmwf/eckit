@@ -45,11 +45,11 @@ public:
         return eckit::geometry::KPoint<2>::x(axis);
     }
 
-
     double operator[](const size_t& i) const {
         assert(i < 2);
         return x_[i];
     }
+
     double& operator[](const size_t& i) {
         assert(i < 2);
         return x_[i];

@@ -91,7 +91,7 @@ void SQLSelect::ensureFetch(const SQLTable& table, const std::string& columnName
     auto& fetch(tablesToFetch_[&table].fetch_);
     if (std::find_if(fetch.begin(), fetch.end(), [&](const SQLColumn& c) { return &c == &column; }) == fetch.end()) {
         fetch.push_back(column);
-        tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
+//        tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
         // This will create the value if it doesn't exist
         ValueLookup& value(values_[fullname]);
         tablesToFetch_[&table].values_.push_back(&value);
@@ -173,7 +173,9 @@ void SQLSelect::prepareExecute() {
 
     for (auto& tablePair : tablesToFetch_) {
         SelectOneTable& tbl(tablePair.second);
-        const SQLTable* sqlTable = tablePair.first;
+        // n.b. tablePair.first is only const to enable other functions to be const. But
+        //      it belongs to this structure, and we are a non-const fn, so this is ok.
+        SQLTable* sqlTable = const_cast<SQLTable*>(tablePair.first);
         cursors_.emplace_back(tbl.table_->iterator(
             tbl.fetch_, [this, sqlTable](SQLTableIterator& cursor) { refreshCursorMetadata(sqlTable, cursor); }));
         cursors_.back()->rewind();
@@ -418,7 +420,7 @@ void SQLSelect::postExecute() {
     reset();
 }
 
-void SQLSelect::refreshCursorMetadata(const SQLTable* table, SQLTableIterator& cursor) {
+void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor) {
 
     auto it = tablesToFetch_.find(table);
 
@@ -427,11 +429,20 @@ void SQLSelect::refreshCursorMetadata(const SQLTable* table, SQLTableIterator& c
 
     const double* data(cursor.data());
     const std::vector<size_t> offsets(cursor.columnOffsets());
+    const std::vector<size_t> doublesSizes(cursor.doublesDataSizes());
 
     for (size_t i = 0; i < tbl.fetch_.size(); i++) {
         std::string fullname(tbl.fetch_[i].get().fullName());
         // ASSERT is no longer true if using to refresh values
         // ASSERT(values_.find(fullname) == values_.end());
+
+        // HACK ALERT
+        // Our output functionality gets the width of strings from the column type.
+        // but the width can change on refreshCursorMetadata
+        // --> We need to update the column type.
+        // This is a function of the table. Aaaarg. Makes this horribly not parallelisable.
+        // eckit::sql needs a rewrite. Will enable us to work around this shit.
+        table->updateColumnDoublesWidth(fullname, doublesSizes[i]);
 
         // This will create the value if it does not exist.
         std::pair<const double*, bool>& value(values_[fullname]);

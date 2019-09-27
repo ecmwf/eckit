@@ -33,6 +33,19 @@ public:
         x_[YY] = y;
     }
 
+    double x() const {
+        return x_[0];
+    }
+
+    double y() const {
+        return x_[1];
+    }
+
+    double x(size_t axis) const {
+        return eckit::geometry::KPoint<2>::x(axis);
+    }
+
+
     double operator[](const size_t& i) const {
         assert(i < 2);
         return x_[i];

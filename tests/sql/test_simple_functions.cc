@@ -56,8 +56,10 @@ private:
             idx_(0),
             data_(5) {
             std::vector<size_t> offsets{0, 1, 3, 4};
+            std::vector<size_t> doublesSizes{1, 2, 1, 1};
             for (const auto& col : columns) {
                 offsets_.push_back(offsets[col.get().index()]);
+                doublesSizes_.push_back(doublesSizes[col.get().index()]);
             }
         }
 
@@ -79,11 +81,13 @@ private:
             data_[4] = REAL_DATA2[idx_];
         }
         virtual std::vector<size_t> columnOffsets() const { return offsets_; }
+        virtual std::vector<size_t> doublesDataSizes() const { return doublesSizes_; }
         virtual const double* data() const { return &data_[0]; }
 
         const TestTable& owner_;
         size_t idx_;
         std::vector<size_t> offsets_;
+        std::vector<size_t> doublesSizes_;
         std::vector<double> data_;
     };
 

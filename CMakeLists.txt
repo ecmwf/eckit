@@ -25,6 +25,23 @@ ecbuild_add_option( FEATURE SANDBOX
                     DEFAULT OFF
                     DESCRIPTION "Experimental features that havent graduated to production ready code" )
 
+### thread library ( preferably pthreads ) --- Must be called before FindCUDA!
+
+if( ${CMAKE_VERSION} VERSION_LESS 3.14 )
+    # Following variable is unused for CMake > 3.14
+    set( CMAKE_THREAD_PREFER_PTHREAD 1 )
+endif()
+
+if( NOT DEFINED THREADS_PREFER_PTHREAD_FLAG )
+  set( THREADS_PREFER_PTHREAD_FLAG 1 )
+endif()
+### Set THREADS_HAVE_PTHREAD_ARG variable to false so that it can be recomputed based on
+### THREADS_PREFER_PTHREAD_FLAG, in case other project had it on a different setting.
+### This is certainly a CMake bug ( see ECKIT-426 )
+set( THREADS_HAVE_PTHREAD_ARG FALSE )
+find_package( Threads REQUIRED )
+set( THREADS_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} )
+
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
@@ -172,11 +189,6 @@ ecbuild_add_option( FEATURE EXTRA_TESTS
 find_package( AIO )
 set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asynchronous IO" )
 
-### thread library ( preferably pthreads )
-
-set( CMAKE_THREAD_PREFER_PTHREAD 1 )
-find_package( Threads REQUIRED )
-
 ### c math library, needed when including "math.h"
 
 find_package( CMath )
@@ -185,9 +197,8 @@ find_package( CMath )
 # checks
 
 # check thread library is pthreads
-
 if( NOT ${CMAKE_USE_PTHREADS_INIT} )
-    message( FATAL_ERROR "Only pthreads supported - thread library found is [${CMAKE_THREAD_LIBS_INIT}]" )
+    message( FATAL_ERROR "Only pthreads supported - thread library found is [${THREADS_LIBRARIES}]" )
 endif()
 
 ############################################################################################

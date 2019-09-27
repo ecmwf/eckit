@@ -874,7 +874,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         ${AIO_LIBRARIES}
                         ${RADOS_LIBRARIES}
                         ${CMATH_LIBRARIES}
-                        ${CMAKE_THREAD_LIBS_INIT}
+                        ${THREADS_LIBRARIES}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
           LINKER_LANGUAGE CXX )

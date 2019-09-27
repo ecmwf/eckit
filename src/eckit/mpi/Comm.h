@@ -22,6 +22,7 @@
 
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
+#include "eckit/mpi/Info.h"
 #include "eckit/mpi/Operation.h"
 #include "eckit/mpi/Request.h"
 #include "eckit/mpi/Status.h"

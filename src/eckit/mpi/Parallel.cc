@@ -126,6 +126,15 @@ static MPI_Op toOp(Operation::Code code) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static MPI_Info mpi_infocode[Info::MAX_INFO_CODE] = {
+    /*[Data::INFO_NULL] = */ MPI_INFO_NULL};
+
+static MPI_Info toInfo(Info::Code code) {
+    return mpi_infocode[code];
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 Parallel::Parallel(const std::string& name) : Comm(name) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);

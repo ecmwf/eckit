@@ -19,9 +19,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace mir {
 namespace data {
@@ -37,7 +34,7 @@ namespace mir {
 namespace stats {
 
 
-class Comparator : public eckit::NonCopyable {
+class Comparator  {
 public:
 
     // -- Exceptions
@@ -46,6 +43,7 @@ public:
     // -- Constructors
 
     Comparator(const param::MIRParametrisation&, const param::MIRParametrisation&);
+    Comparator(const Comparator&) = delete;
 
     // -- Destructor
 
@@ -55,7 +53,8 @@ public:
     // None
 
     // -- Operators
-    // None
+
+    void operator=(const Comparator&) = delete;
 
     // -- Methods
 
@@ -79,7 +78,7 @@ protected:
 
     // -- Methods
 
-    virtual void print(std::ostream &) const = 0;   
+    virtual void print(std::ostream&) const = 0;
 
     // -- Overridden methods
     // None

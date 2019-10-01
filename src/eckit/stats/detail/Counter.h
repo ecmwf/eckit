@@ -15,8 +15,6 @@
 #include <cstddef>
 #include <iosfwd>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace mir {
 namespace data {

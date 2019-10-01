@@ -24,7 +24,6 @@ namespace detail {
 
 /// Scalar statistics (composition)
 struct Scalar : public CentralMomentsT<double> {
-    virtual ~Scalar() = default;
     void print(std::ostream& out) const {
         out << "Scalar[";
         CentralMomentsT<double>::print(out);

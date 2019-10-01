@@ -9,11 +9,10 @@
  */
 
 
-#ifndef mir_search_Search_h
-#define mir_search_Search_h
+#ifndef mir_search_PointSearch_h
+#define mir_search_PointSearch_h
 
-#include "eckit/memory/NonCopyable.h"
-#include "eckit/memory/ScopedPtr.h"
+#include <memory>
 
 #include "mir/search/Tree.h"
 
@@ -23,19 +22,34 @@ namespace search {
 
 
 /// Class for fast searches in point clouds following k-d tree algorithms
-/// @todo test kd-tree stored in shared memory?
-class PointSearch : private eckit::NonCopyable {
+/// @todo test k-d tree stored in shared memory?
+class PointSearch {
 public:
+    // -- Types
 
-    using ValueType = Tree::Payload;
-    using PointType = Tree::Point;
+    using ValueType      = Tree::Payload;
+    using PointType      = Tree::Point;
     using PointValueType = Tree::PointValueType;
 
-public:
+    // -- Exceptions
+    // None
+
+    // -- Constructors
 
     PointSearch(const param::MIRParametrisation&, const repres::Representation&);
+    PointSearch(const PointSearch&) = delete;
 
-public:
+    // -- Destructor
+    // None
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+
+    void operator=(const PointSearch&) = delete;
+
+    // -- Methods
 
     /// Finds closest point to an input point
     PointValueType closestPoint(const PointType&) const;
@@ -46,14 +60,57 @@ public:
     /// Finds closest points within a radius
     void closestWithinRadius(const PointType&, double radius, std::vector<PointValueType>& closest) const;
 
-    void statsPrint(std::ostream&, bool fancy) const;
-    void statsReset() const;
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
 
 private:
+    // -- Members
 
-    eckit::ScopedPtr<Tree> tree_;
+    std::unique_ptr<Tree> tree_;
+
+    // -- Methods
 
     void build(const repres::Representation&);
+
+    void print(std::ostream&) const;
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+
+    friend std::ostream& operator<<(std::ostream& out, const PointSearch& p) {
+        p.print(out);
+        return out;
+    }
 };
 
 

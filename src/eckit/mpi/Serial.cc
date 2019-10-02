@@ -84,6 +84,8 @@ public:
 
     static int anyTag() { return std::numeric_limits<int>::max(); }
 
+    static int infoNull() { return std::numeric_limits<int>::max(); }
+
 private:
     Request registerRequest(SerialRequest* request) {
         ++n_;
@@ -203,6 +205,10 @@ int Serial::anySource() const {
 
 int Serial::anyTag() const {
     return SerialRequestPool::anyTag();
+}
+
+int Serial::infoNull() const {
+    return SerialRequestPool::infoNull();
 }
 
 size_t Serial::getCount(Status& st, Data::Code) const {

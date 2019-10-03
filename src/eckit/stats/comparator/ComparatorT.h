@@ -12,12 +12,13 @@
 #ifndef mir_stats_comparator_ComparatorT_h
 #define mir_stats_comparator_ComparatorT_h
 
-#include <cmath>
-#include <ostream>
-
-#include "eckit/exception/Exceptions.h"
+#include <iosfwd>
+#include <limits>
+#include <memory>
+#include <string>
 
 #include "mir/data/MIRField.h"
+#include "mir/param/SameParametrisation.h"
 #include "mir/stats/Comparator.h"
 #include "mir/stats/detail/CounterBinary.h"
 
@@ -28,18 +29,23 @@ namespace comparator {
 
 
 /// Generic comparison on two MIRFields
-template<typename STATS>
+template <typename STATS>
 class ComparatorT : public Comparator, detail::CounterBinary, STATS {
 public:
-
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    ComparatorT(const param::MIRParametrisation& parametrisation1, const param::MIRParametrisation& parametrisation2) :
-        Comparator(parametrisation1, parametrisation2),
-        CounterBinary(parametrisation1, parametrisation2) {
+    ComparatorT(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
+        Comparator(param1, param2),
+        CounterBinary(param1, param2),
+        ignoreAboveLatitude_(std::numeric_limits<double>::quiet_NaN()),
+        ignoreBelowLatitude_(std::numeric_limits<double>::quiet_NaN()) {
+
+        std::unique_ptr<param::MIRParametrisation> param(new param::SameParametrisation(param1, param2, false));
+        param->get("ignore-above-latitude", ignoreAboveLatitude_);
+        param->get("ignore-below-latitude", ignoreBelowLatitude_);
     }
 
     // -- Destructor
@@ -65,16 +71,18 @@ public:
     // None
 
 private:
-
     // -- Members
-    //None
+
+    double ignoreAboveLatitude_;
+    double ignoreBelowLatitude_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    void print(std::ostream& out) const;
+    // From Comparator
+    void print(std::ostream&) const;
 
     // -- Class members
     // None
@@ -84,7 +92,6 @@ private:
 
     // -- Friends
     // None
-
 };
 
 

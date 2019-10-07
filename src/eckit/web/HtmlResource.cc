@@ -36,6 +36,15 @@ HtmlResource::~HtmlResource() {
     // Should do something here...
 }
 
+static void error(Url& url, std::ostream& out, eckit::Exception& e, int code) {
+    e.dumpStackTrace();
+    url.status(code, e.what());
+    JSON json(out);
+    json.startObject();
+    json << "error" << e.what();
+    json.endObject();
+}
+
 void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& out, Url& url) {
     std::string str;
 
@@ -114,39 +123,19 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
                 throw eckit::MethodNotYetImplemented(oss.str());
             }
             catch (eckit::HttpError& e) {
-                url.status(e.status(), e.what());
-                JSON json(out);
-                json.startObject();
-                json << "error" << e.what();
-                json.endObject();
+                error(url, out, e, e.status());
             }
             catch (eckit::MethodNotYetImplemented& e) {
-                url.status(HttpError::NOT_IMPLEMENTED, e.what());
-                JSON json(out);
-                json.startObject();
-                json << "error" << e.what();
-                json.endObject();
+                error(url, out, e, HttpError::NOT_IMPLEMENTED);
             }
             catch (eckit::NotImplemented& e) {
-                url.status(HttpError::NOT_IMPLEMENTED, e.what());
-                JSON json(out);
-                json.startObject();
-                json << "error" << e.what();
-                json.endObject();
+                error(url, out, e, HttpError::NOT_IMPLEMENTED);
             }
             catch (eckit::UserError& e) {
-                url.status(HttpError::BAD_REQUEST, e.what());
-                JSON json(out);
-                json.startObject();
-                json << "error" << e.what();
-                json.endObject();
+                error(url, out, e, HttpError::BAD_REQUEST);
             }
             catch (eckit::Exception& e) {
-                url.status(HttpError::INTERNAL_SERVER_ERROR, e.what());
-                JSON json(out);
-                json.startObject();
-                json << "error" << e.what();
-                json.endObject();
+                error(url, out, e, HttpError::INTERNAL_SERVER_ERROR);
             }
             return;
         }

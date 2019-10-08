@@ -42,6 +42,10 @@ Value JSONParser::parseValue() {
     return parseJSON();
 }
 
+std::string JSONParser::parserName() const {
+    return "JSONParser";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -10,11 +10,11 @@
 
 #include <string>
 
-#include "eckit/types/Types.h"
-
 #include "eckit/filesystem/URI.h"
-
+#include "eckit/io/ResizableBuffer.h"
+#include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
 
 using namespace std;
 using namespace eckit;
@@ -188,20 +188,20 @@ CASE("Parsing uri (authority)") {
 }
 CASE("Parsing uri (query & fragment)") {
     {
-        URI uri("posix://host:123/path?query#fragment");
-        EXPECT(uri.scheme() == "posix");
+        URI uri("toc://host:123/path?query#fragment");
+        EXPECT(uri.scheme() == "toc");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.path() == "//host:123/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.asRawString() == "posix://host:123/path#fragment");
+        EXPECT(uri.asRawString() == "toc://host:123/path#fragment");
         EXPECT(uri.asString() == "//host:123/path#fragment");
     }
     {
-        URI uri("posix:///path?length=123&foo=bar#fragment");
-        EXPECT(uri.scheme() == "posix");
+        URI uri("toc:///path?length=123&foo=bar#fragment");
+        EXPECT(uri.scheme() == "toc");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
@@ -211,12 +211,12 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.query("length") == "123");
         EXPECT(uri.query("non existing").empty());
         EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.asRawString() == "posix:///path?foo=bar&length=123#fragment");
+        EXPECT(uri.asRawString() == "toc:///path?foo=bar&length=123#fragment");
         EXPECT(uri.asString() == "///path?foo=bar&length=123#fragment");
     }
     {
-        URI uri("posix:///path?length=123&foo=bar");
-        EXPECT(uri.scheme() == "posix");
+        URI uri("toc:///path?length=123&foo=bar");
+        EXPECT(uri.scheme() == "toc");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
@@ -226,11 +226,59 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.query("length") == "123");
         EXPECT(uri.query("non existing").empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "posix:///path?foo=bar&length=123");
+        EXPECT(uri.asRawString() == "toc:///path?foo=bar&length=123");
         EXPECT(uri.asString() == "///path?foo=bar&length=123");
     }
 }
+CASE("Stream") {
+    {
+        URI uriOrig("fdb://username:password@host:123/path");
 
+        eckit::ResizableBuffer b(1000);  // must be enough
+        b.zero();
+        eckit::ResizableMemoryStream s(b);
+
+        s << uriOrig;
+
+        s.rewind();
+
+        URI uri(s);
+        EXPECT(uri.scheme() == "fdb");
+        EXPECT(uri.authority() == "username:password@host:123");
+        EXPECT(uri.user() == "username:password");
+        EXPECT(uri.host() == "host");
+        EXPECT(uri.port() == 123);
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "fdb://username:password@host:123/path");
+        EXPECT(uri.asString() == "fdb://username:password@host:123/path");
+    }
+    {
+        URI uriOrig("toc:///path?length=123&foo=bar#fragment");
+        eckit::ResizableBuffer b(1000);  // must be enough
+        b.zero();
+        eckit::ResizableMemoryStream s(b);
+
+        s << uriOrig;
+
+        s.rewind();
+
+        URI uri(s);
+        EXPECT(uri.scheme() == "toc");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.path() == "///path");
+        EXPECT(uri.query() == "foo=bar&length=123");
+        EXPECT(uri.query("foo") == "bar");
+        EXPECT(uri.query("length") == "123");
+        EXPECT(uri.query("non existing").empty());
+        EXPECT(uri.fragment() == "fragment");
+        EXPECT(uri.asRawString() == "toc:///path?foo=bar&length=123#fragment");
+        EXPECT(uri.asString() == "///path?foo=bar&length=123#fragment");
+    }
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

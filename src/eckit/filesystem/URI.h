@@ -19,6 +19,7 @@
 #include <map>
 
 #include "eckit/eckit.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 
@@ -34,13 +35,19 @@ class URI {
 
 public: // methods
 
+    // Contructors
     URI();
     URI(const std::string& uri);
+    URI(const std::string& scheme, const PathName& path);
     URI(const URI& uri, const std::string& scheme);
     URI(const URI& uri, const std::string& scheme, const std::string& host, int port);
     URI(Stream& s);
 
-	~URI();
+    // Destructor
+    ~URI();
+
+    // Operators
+    bool operator<(const URI& other) const;
 
     bool exists() const;
 
@@ -50,6 +57,7 @@ public: // methods
 
     void host(const std::string& host) { host_ = host; }
     void port(int port) { port_ = port; }
+    void path(const std::string& path) { name_ = path; }
     void query(const std::string& attribute, const std::string& value);
     void fragment(const std::string& fragment);
 

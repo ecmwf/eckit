@@ -33,6 +33,9 @@ URI::URI(const std::string& uri) {
     }
 }
 
+URI::URI(const std::string& scheme, const PathName& path):
+    scheme_(scheme), name_(path) {}
+
 URI::URI(const URI &uri, const std::string &scheme):
     scheme_(scheme), name_(uri.name_) {}
 
@@ -41,10 +44,19 @@ URI::URI(const URI &uri, const std::string &scheme, const std::string &host, con
 
 URI::URI(Stream &s) {
     s >> scheme_;
+    s >> user_;
+    s >> host_;
+    s >> port_;
     s >> name_;
+    s >> fragment_;
+    s >> queryValues_;
 }
 
 URI::~URI() {}
+
+bool URI::operator<(const URI& other) const {
+    return this->asString() < other.asString();
+}
 
 size_t URI::parseScheme(const std::string& uri) {
     std::size_t schemeEnd = uri.find(":");
@@ -217,7 +229,12 @@ void URI::print(std::ostream& s) const {
 
 void URI::encode(Stream &s) const {
     s << scheme_;
+    s << user_;
+    s << host_;
+    s << port_;
     s << name_;
+    s << fragment_;
+    s << queryValues_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -185,7 +185,7 @@ public:
 static LocalFileManager manager_unix("unix");
 static LocalFileManager manager_file("file");
 static MarsFSManager manager_marsfs("marsfs");
-static TocFdbManager manager_posix("posix");
+static TocFdbManager manager_posix("toc");
 static RemoteFdbManager manager_fdb("fdb");
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -433,6 +433,7 @@ void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor)
 
     for (size_t i = 0; i < tbl.fetch_.size(); i++) {
         std::string fullname(tbl.fetch_[i].get().fullName());
+
         // ASSERT is no longer true if using to refresh values
         // ASSERT(values_.find(fullname) == values_.end());
 
@@ -448,6 +449,15 @@ void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor)
         std::pair<const double*, bool>& value(values_[fullname]);
         value.first = &data[offsets[i]];
     }
+
+    for (Expressions::iterator c = select_.begin(); c != select_.end(); ++c) {
+        (*c)->prepare(*this);
+    }
+
+    if (where_)
+        where_->prepare(*this);
+
+    output_.updateTypes(*this);
 }
 
 void SQLSelect::reset() {

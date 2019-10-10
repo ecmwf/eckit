@@ -36,6 +36,7 @@ public:
 
     virtual void preprepare(SQLSelect&);
     virtual void prepare(SQLSelect&) = 0;
+    virtual void updateTypes(SQLSelect&) {};
     virtual void cleanup(SQLSelect&) = 0;
 
 	virtual void reset() = 0;

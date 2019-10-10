@@ -106,6 +106,50 @@ CASE("Parsing uri (scheme)") {
         EXPECT(uri.asString() == "/this/is/a/path:with:colons");
     }
 }
+CASE("Parsing uri (query & fragment)") {
+    {
+        URI uri("file://host:123/path?query#fragment");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.path() == "//host:123/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment() == "fragment");
+        EXPECT(uri.asRawString() == "file://host:123/path#fragment");
+        EXPECT(uri.asString() == "//host:123/path");
+    }
+    {
+        URI uri("file:///path?length=123&foo=bar#fragment");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.path() == "///path");
+        EXPECT(uri.query() == "foo=bar&length=123");
+        EXPECT(uri.query("foo") == "bar");
+        EXPECT(uri.query("length") == "123");
+        EXPECT(uri.query("non existing").empty());
+        EXPECT(uri.fragment() == "fragment");
+        EXPECT(uri.asRawString() == "file:///path?foo=bar&length=123#fragment");
+        EXPECT(uri.asString() == "///path");
+    }
+    {
+        URI uri("file:///path?length=123&foo=bar");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.path() == "///path");
+        EXPECT(uri.query() == "foo=bar&length=123");
+        EXPECT(uri.query("foo") == "bar");
+        EXPECT(uri.query("length") == "123");
+        EXPECT(uri.query("non existing").empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "file:///path?foo=bar&length=123");
+        EXPECT(uri.asString() == "///path");
+    }
+}
 CASE("Parsing uri (authority)") {
     {
         URI uri("http://username:password@host:123/path");

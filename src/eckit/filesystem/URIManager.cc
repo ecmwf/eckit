@@ -56,8 +56,8 @@ URIManager::~URIManager() {
     m.erase(name_);
 }
 
-std::string URIManager::asString(const URI& f) const {
-    return PathName(f.scheme() + ":" + f.name()).asString();
+std::string URIManager::asString(const URI& uri) const {
+    return PathName(uri.scheme() + ":" + uri.name()).asString();
 }
 
 URIManager& URIManager::lookUp(const std::string& name) {
@@ -79,7 +79,6 @@ URIManager& URIManager::lookUp(const std::string& name) {
     return *((*j).second);
 }
 
-
 void URIManager::print(std::ostream& s) const {
     s << "URIManager[" << name_ << "]";
 }
@@ -87,33 +86,52 @@ void URIManager::print(std::ostream& s) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LocalFileManager : public URIManager {
-    virtual bool exists(const URI& f) { return PathName(f.name()).exists(); }
+    virtual bool exists(const URI& uri) override { return PathName(uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.name()).partHandle(ol, ll);
+    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
+        return PathName(uri.name()).partHandle(ol, ll);
     }
 
-    virtual std::string asString(const URI& f) const {
-        return f.name();
+    virtual std::string asString(const URI& uri) const override {
+        return uri.name();
     }
 
 public:
     LocalFileManager(const std::string& name) : URIManager(name) {}
 };
 
+class LocalFilePartManager : public URIManager {
+    virtual bool query() override { return true; }
+    virtual bool fragment() override { return true; }
+
+    virtual bool exists(const URI& uri) override { return PathName(uri.name()).exists(); }
+
+    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
+
+    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
+
+    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
+        return PathName(uri.name()).partHandle(ol, ll);
+    }
+
+    virtual std::string asString(const URI& uri) const override { return uri.name(); }
+public:
+    LocalFilePartManager(const std::string& name) : URIManager(name) {}
+};
+
 class MarsFSManager : public URIManager {
-    virtual bool exists(const URI& f) { return PathName(f.scheme() + ":" + f.name()).exists(); }
+    virtual bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) {
-        return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);
+    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
+        return PathName(uri.scheme() + ":" + uri.name()).partHandle(ol, ll);
     }
 
 public:
@@ -125,14 +143,14 @@ class HttpURIManager : public URIManager {
     virtual bool query() override { return true; }
     virtual bool fragment() override { return true; }
 
-    virtual bool exists(const URI& f) override { return PathName(f.scheme() + ":" + f.name()).exists(); }
+    virtual bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& f) override { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f) override { return PathName(f.scheme() + ":" + f.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) override {
-        return PathName(f.scheme() + ":" + f.name()).partHandle(ol, ll);
+    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
+        return PathName(uri.scheme() + ":" + uri.name()).partHandle(ol, ll);
     }
 
     virtual std::string asString(const URI& uri) const override {
@@ -155,7 +173,7 @@ public:
 };
 
 static LocalFileManager manager_unix("unix");
-static LocalFileManager manager_file("file");
+static LocalFilePartManager manager_file("file");
 static MarsFSManager manager_marsfs("marsfs");
 static HttpURIManager manager_http("http");
 static HttpURIManager manager_https("https");

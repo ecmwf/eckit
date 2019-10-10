@@ -108,8 +108,8 @@ CASE("Parsing uri (scheme)") {
 }
 CASE("Parsing uri (authority)") {
     {
-        URI uri("fdb://username:password@host:123/path");
-        EXPECT(uri.scheme() == "fdb");
+        URI uri("http://username:password@host:123/path");
+        EXPECT(uri.scheme() == "http");
         EXPECT(uri.authority() == "username:password@host:123");
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
@@ -117,12 +117,12 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.path() == "/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "fdb://username:password@host:123/path");
-        EXPECT(uri.asString() == "fdb://username:password@host:123/path");
+        EXPECT(uri.asRawString() == "http://username:password@host:123/path");
+        EXPECT(uri.asString() == "http://username:password@host:123/path");
     }
     {
-        URI uri("fdb://username:password@host:123path");
-        EXPECT(uri.scheme() == "fdb");
+        URI uri("http://username:password@host:123path");
+        EXPECT(uri.scheme() == "http");
         EXPECT(uri.authority() == "username:password@host:123");
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
@@ -130,12 +130,12 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.path() == "path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "fdb://username:password@host:123path");
-        EXPECT(uri.asString() == "fdb://username:password@host:123path");
+        EXPECT(uri.asRawString() == "http://username:password@host:123path");
+        EXPECT(uri.asString() == "http://username:password@host:123path");
     }
     {
-        URI uri("fdb://nodename/path");
-        EXPECT(uri.scheme() == "fdb");
+        URI uri("http://nodename/path");
+        EXPECT(uri.scheme() == "http");
         EXPECT(uri.authority() == "nodename");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "nodename");
@@ -143,8 +143,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.path() == "/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "fdb://nodename/path");
-        EXPECT(uri.asString() == "fdb://nodename/path");
+        EXPECT(uri.asRawString() == "http://nodename/path");
+        EXPECT(uri.asString() == "http://nodename/path");
     }
     {
         URI uri("marsfs://nodename/path");
@@ -160,8 +160,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.asString() == "marsfs://nodename/path");
     }
     {
-        URI uri("fdb://localhost:123/path");
-        EXPECT(uri.scheme() == "fdb");
+        URI uri("https://localhost:123/path");
+        EXPECT(uri.scheme() == "https");
         EXPECT(uri.authority() == "localhost:123");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "localhost");
@@ -169,8 +169,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.path() == "/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "fdb://localhost:123/path");
-        EXPECT(uri.asString() == "fdb://localhost:123/path");
+        EXPECT(uri.asRawString() == "https://localhost:123/path");
+        EXPECT(uri.asString() == "https://localhost:123/path");
     }
     {
         URI uri("marsfs://localhost:123/path");
@@ -186,53 +186,9 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.asString() == "marsfs://localhost:123/path");
     }
 }
-CASE("Parsing uri (query & fragment)") {
-    {
-        URI uri("toc://host:123/path?query#fragment");
-        EXPECT(uri.scheme() == "toc");
-        EXPECT(uri.user().empty());
-        EXPECT(uri.host().empty());
-        EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "//host:123/path");
-        EXPECT(uri.query().empty());
-        EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.asRawString() == "toc://host:123/path#fragment");
-        EXPECT(uri.asString() == "//host:123/path#fragment");
-    }
-    {
-        URI uri("toc:///path?length=123&foo=bar#fragment");
-        EXPECT(uri.scheme() == "toc");
-        EXPECT(uri.user().empty());
-        EXPECT(uri.host().empty());
-        EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "///path");
-        EXPECT(uri.query() == "foo=bar&length=123");
-        EXPECT(uri.query("foo") == "bar");
-        EXPECT(uri.query("length") == "123");
-        EXPECT(uri.query("non existing").empty());
-        EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.asRawString() == "toc:///path?foo=bar&length=123#fragment");
-        EXPECT(uri.asString() == "///path?foo=bar&length=123#fragment");
-    }
-    {
-        URI uri("toc:///path?length=123&foo=bar");
-        EXPECT(uri.scheme() == "toc");
-        EXPECT(uri.user().empty());
-        EXPECT(uri.host().empty());
-        EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "///path");
-        EXPECT(uri.query() == "foo=bar&length=123");
-        EXPECT(uri.query("foo") == "bar");
-        EXPECT(uri.query("length") == "123");
-        EXPECT(uri.query("non existing").empty());
-        EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "toc:///path?foo=bar&length=123");
-        EXPECT(uri.asString() == "///path?foo=bar&length=123");
-    }
-}
 CASE("Stream") {
     {
-        URI uriOrig("fdb://username:password@host:123/path");
+        URI uriOrig("http://username:password@host:123/path");
 
         eckit::ResizableBuffer b(1000);  // must be enough
         b.zero();
@@ -243,7 +199,7 @@ CASE("Stream") {
         s.rewind();
 
         URI uri(s);
-        EXPECT(uri.scheme() == "fdb");
+        EXPECT(uri.scheme() == "http");
         EXPECT(uri.authority() == "username:password@host:123");
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
@@ -251,11 +207,11 @@ CASE("Stream") {
         EXPECT(uri.path() == "/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "fdb://username:password@host:123/path");
-        EXPECT(uri.asString() == "fdb://username:password@host:123/path");
+        EXPECT(uri.asRawString() == "http://username:password@host:123/path");
+        EXPECT(uri.asString() == "http://username:password@host:123/path");
     }
     {
-        URI uriOrig("toc:///path?length=123&foo=bar#fragment");
+        URI uriOrig("http:///path?length=123&foo=bar#fragment");
         eckit::ResizableBuffer b(1000);  // must be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
@@ -265,18 +221,18 @@ CASE("Stream") {
         s.rewind();
 
         URI uri(s);
-        EXPECT(uri.scheme() == "toc");
+        EXPECT(uri.scheme() == "http");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "///path");
+        EXPECT(uri.path() == "/path");
         EXPECT(uri.query() == "foo=bar&length=123");
         EXPECT(uri.query("foo") == "bar");
         EXPECT(uri.query("length") == "123");
         EXPECT(uri.query("non existing").empty());
         EXPECT(uri.fragment() == "fragment");
-        EXPECT(uri.asRawString() == "toc:///path?foo=bar&length=123#fragment");
-        EXPECT(uri.asString() == "///path?foo=bar&length=123#fragment");
+        EXPECT(uri.asRawString() == "http:/path?foo=bar&length=123#fragment");
+        EXPECT(uri.asString() == "http:/path?foo=bar&length=123#fragment");
     }
 }
 //----------------------------------------------------------------------------------------------------------------------

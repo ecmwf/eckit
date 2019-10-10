@@ -120,35 +120,7 @@ public:
     MarsFSManager(const std::string& name) : URIManager(name) {}
 };
 
-class TocFdbManager : public URIManager {
-    virtual bool query() override { return true; }
-    virtual bool fragment() override { return true; }
-
-    virtual bool exists(const URI& f) override { return PathName(f.name()).exists(); }
-
-    virtual DataHandle* newWriteHandle(const URI& f) override { return PathName(f.name()).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& f) override { return PathName(f.name()).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& f, const OffsetList& ol, const LengthList& ll) override {
-        return PathName(f.name()).partHandle(ol, ll);
-    }
-
-    virtual std::string asString(const URI& uri) const override {
-        std::string q = uri.query();
-        if (!q.empty())
-            q = "?" + q;
-        std::string f = uri.fragment();
-        if (!f.empty())
-            f = "#" + f;
-
-        return uri.name() + q + f;
-    }
-public:
-    TocFdbManager(const std::string& name) : URIManager(name) {}
-};
-
-class RemoteFdbManager : public URIManager {
+class HttpURIManager : public URIManager {
     virtual bool authority() override { return true; }
     virtual bool query() override { return true; }
     virtual bool fragment() override { return true; }
@@ -179,14 +151,14 @@ class RemoteFdbManager : public URIManager {
     }
 
 public:
-    RemoteFdbManager(const std::string& name) : URIManager(name) {}
+    HttpURIManager(const std::string& name) : URIManager(name) {}
 };
 
 static LocalFileManager manager_unix("unix");
 static LocalFileManager manager_file("file");
 static MarsFSManager manager_marsfs("marsfs");
-static TocFdbManager manager_posix("toc");
-static RemoteFdbManager manager_fdb("fdb");
+static HttpURIManager manager_http("http");
+static HttpURIManager manager_https("https");
 
 //----------------------------------------------------------------------------------------------------------------------
 

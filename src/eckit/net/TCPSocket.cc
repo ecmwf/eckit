@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <sys/types.h> // FreeBSD: must appear before netinet/ip.h
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>

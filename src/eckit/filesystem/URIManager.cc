@@ -178,6 +178,8 @@ static MarsFSManager manager_marsfs("marsfs");
 static HttpURIManager manager_http("http");
 static HttpURIManager manager_https("https");
 
+static LocalFileManager manager_toc("toc");
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -103,12 +103,12 @@ class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
         eckit::Tokenizer parse(":");
         parse(cacheDir, tmp);
 
-        std::vector<std::string> roots;
+        std::vector<std::string> r;
         for (const auto& root : tmp) {
-            roots.emplace_back(eckit::PathExpander::expand(root));
+            r.emplace_back(eckit::PathExpander::expand(root));
         }
 
-        return roots;
+        return r;
     }
 public:
     using P::P;

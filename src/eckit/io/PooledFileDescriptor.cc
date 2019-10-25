@@ -19,8 +19,8 @@ namespace eckit {
 
 PooledFileDescriptor::PooledFileDescriptor(const PathName& path, bool readOnly) :
     path_(path),
-    readOnly_(readOnly),
-    fd_(-1) {
+    fd_(-1),
+    readOnly_(readOnly) {
 }
 
 PooledFileDescriptor::~PooledFileDescriptor() {

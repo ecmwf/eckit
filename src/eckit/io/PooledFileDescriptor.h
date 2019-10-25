@@ -45,9 +45,9 @@ public:
 private:
 
     PathName path_;
-    bool readOnly_;
     std::unique_ptr<PooledFile> file_;
     int fd_;
+    bool readOnly_;
 };
 
 } // namespace eckit

@@ -41,8 +41,11 @@ public:
     long read(void*, long);
 
     off_t seek(off_t offset);
+    off_t seekEnd();
 
     off_t rewind();
+
+    int fileno() const;
 
     // for testing
 

@@ -196,6 +196,8 @@ io/Pipeline.cc
 io/Pipeline.h
 io/PooledFile.cc
 io/PooledFile.h
+io/PooledFileDescriptor.cc
+io/PooledFileDescriptor.h
 io/RawFileHandle.cc
 io/RawFileHandle.h
 io/ResizableBuffer.cc

@@ -183,6 +183,8 @@ CASE("Seeking to location") {
 
         EXPECT_NO_THROW( f.open() );
 
+        EXPECT(f.seekEnd() == 26);
+
         EXPECT(f.seek(10) == 10);
         EXPECT(f.read(b, 1) == 1);
 

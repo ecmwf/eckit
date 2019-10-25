@@ -165,7 +165,7 @@ class HttpURIManager : public URIManager {
         if (!f.empty())
             f = "#" + f;
 
-        return uri.scheme() + ":" + auth + uri.path() + q + f;
+        return uri.scheme() + ":" + auth + uri.path().path() + q + f;
     }
 
 public:

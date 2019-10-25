@@ -66,7 +66,7 @@ public: // methods
     const std::string& user() const { return user_; }
     const std::string& host() const { return host_; }
     int port() const { return port_; }
-    const std::string& path() const { return name_; }
+    PathName path() const { return PathName(name_); }
     const std::string& fragment() const { return fragment_; }
 
     std::string authority() const;

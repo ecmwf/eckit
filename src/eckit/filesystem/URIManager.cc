@@ -60,6 +60,15 @@ std::string URIManager::asString(const URI& uri) const {
     return PathName(uri.scheme() + ":" + uri.name()).asString();
 }
 
+bool URIManager::exists(const std::string& name) {
+    AutoLock<StaticMutex> lock(local_mutex);
+    URIManagerMap& m = URIManagerRegistry::instance().map();
+
+    std::map<std::string, URIManager*>::const_iterator j = m.find(name);
+
+    return j != m.end();
+}
+
 URIManager& URIManager::lookUp(const std::string& name) {
     AutoLock<StaticMutex> lock(local_mutex);
     URIManagerMap& m = URIManagerRegistry::instance().map();

@@ -28,8 +28,13 @@ URI::URI() {}
 URI::URI(const std::string& uri) {
     if (!uri.empty()) {
         size_t first = parseScheme(uri);
-        URIManager &um = URIManager::lookUp(scheme_);
-        parse(uri, first, um.authority(), um.query(), um.fragment());
+        if (URIManager::exists(scheme_)) {
+            URIManager &um = URIManager::lookUp(scheme_);
+            parse(uri, first, um.authority(), um.query(), um.fragment());
+        } else {
+            scheme_ = "unix";
+            name_ = uri;
+        }
     }
 }
 

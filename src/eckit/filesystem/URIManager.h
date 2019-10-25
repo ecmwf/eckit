@@ -41,6 +41,7 @@ public:
 
     virtual std::string asString(const URI&) const;
 
+    static bool exists(const std::string&);
 	static URIManager& lookUp(const std::string&);
 
 protected:

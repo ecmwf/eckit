@@ -39,8 +39,8 @@ public: // methods
     URI();
     URI(const std::string& uri);
     URI(const std::string& scheme, const PathName& path);
-    URI(const URI& uri, const std::string& scheme);
-    URI(const URI& uri, const std::string& scheme, const std::string& host, int port);
+    URI(const std::string& scheme, const URI& uri);
+    URI(const std::string& scheme, const URI& uri, const std::string& host, int port);
     URI(Stream& s);
 
     // Destructor

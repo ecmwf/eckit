@@ -34,12 +34,12 @@ URI::URI(const std::string& uri) {
 }
 
 URI::URI(const std::string& scheme, const PathName& path):
-    scheme_(scheme), name_(path) {}
+    scheme_(scheme), name_(path.path()) {}
 
-URI::URI(const URI &uri, const std::string &scheme):
+URI::URI(const std::string &scheme, const URI &uri):
     scheme_(scheme), name_(uri.name_) {}
 
-URI::URI(const URI &uri, const std::string &scheme, const std::string &host, const int port):
+URI::URI(const std::string &scheme, const URI &uri, const std::string &host, const int port):
     scheme_(scheme), name_(uri.name_), host_(host), port_(port) {}
 
 URI::URI(Stream &s) {

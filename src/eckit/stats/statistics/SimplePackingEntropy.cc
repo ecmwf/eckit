@@ -77,7 +77,7 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     reset();
 
     ASSERT(field.dimensions() == 1);
-    auto& values = field.values(0);
+    const auto& values = field.values(0);
 
     Counter::reset(field);
     for (auto& value : values) {

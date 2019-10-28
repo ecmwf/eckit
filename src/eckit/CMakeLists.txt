@@ -863,7 +863,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
-                                        LIBS
+                    LIBS
                         ${OPENSSL_LIBRARIES}
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}

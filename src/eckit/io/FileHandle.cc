@@ -22,6 +22,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/Stat.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit {
@@ -301,5 +302,11 @@ std::string FileHandle::title() const {
 DataHandle* FileHandle::clone() const {
     return new FileHandle(name_, overwrite_);
 }
+
+void FileHandle::hash(MD5& md5) const {
+    md5 << "FileHandle";
+    md5 << name_;
+}
+
 
 }  // namespace eckit

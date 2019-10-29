@@ -56,23 +56,19 @@ void BTree<K, V, S, L>::_NodePage::print(std::ostream& s) const {
 template <class K, class V, int S, class L>
 BTree<K, V, S, L>::BTree(const PathName& path, bool readOnly, off_t offset) :
     path_(path),
-    fd_(-1),
+    file_(path, readOnly),
     cacheReads_(true),
     cacheWrites_(true),
     readOnly_(readOnly),
     offset_(offset) {
-    SYSCALL2(fd_ = ::open(path.localPath(), readOnly_ ? O_RDONLY : (O_RDWR | O_CREAT), 0777), path);
+    file_.open();
 
     AutoLock<BTree<K, V, S, L> > lock(this);
 
-    off_t here = ::lseek(fd_, 0, SEEK_END);
-    if (here == off_t(-1))
-        throw FailedSystemCall("lseek");
+    off_t here = file_.seekEnd();
 
     if (here <= offset_) {
-        here = ::lseek(fd_, offset_, SEEK_SET);
-        if (here == off_t(-1))
-            throw FailedSystemCall("lseek");
+        here = file_.seek(offset_);
 
         // Add root page
         Page root;
@@ -96,9 +92,9 @@ BTree<K, V, S, L>::BTree(const PathName& path, bool readOnly, off_t offset) :
 
 template <class K, class V, int S, class L>
 BTree<K, V, S, L>::~BTree() {
-    if (fd_ >= 0) {
+    if (file_.fileno() >= 0) {
         flush();
-        SYSCALL(::close(fd_));
+        file_.close();
     }
 
     for (typename Cache::iterator j = cache_.begin(); j != cache_.end(); ++j)
@@ -119,7 +115,7 @@ void BTree<K, V, S, L>::flush() {
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::sync() {
-    SYSCALL2(eckit::fdatasync(fd_), path_);
+    file_.sync();
 }
 
 template <class K, class V, int S, class L>
@@ -517,12 +513,10 @@ void BTree<K, V, S, L>::_loadPage(unsigned long page, Page& p) const {
     // std::cout << "Load " << page << std::endl;
 
     off_t o = pageOffset(page);
-    off_t here;
-    SYSCALL(here = ::lseek(fd_, o, SEEK_SET));
+    off_t here = file_.seek(o);
     ASSERT(here == o);
 
-    int len;
-    SYSCALL(len = ::read(fd_, &p, sizeof(p)));
+    int len = file_.read(&p, sizeof(p));
     ASSERT(len == sizeof(p));
     ASSERT(page == p.id_);
 }
@@ -555,11 +549,10 @@ void BTree<K, V, S, L>::_savePage(const Page& p) {
 
     off_t o = pageOffset(p.id_);
     off_t here;
-    SYSCALL(here = ::lseek(fd_, o, SEEK_SET));
+    here = file_.seek(o);
     ASSERT(here == o);
 
-    int len;
-    SYSCALL(len = ::write(fd_, &p, sizeof(p)));
+    int len = file_.write(&p, sizeof(p));
     ASSERT(len == sizeof(p));
 }
 
@@ -592,9 +585,7 @@ template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::_newPage(Page& p) {
     ASSERT(!readOnly_);
 
-    off_t here = ::lseek(fd_, 0, SEEK_END);
-    if (here == off_t(-1))
-        throw FailedSystemCall("lseek");
+    off_t here = file_.seekEnd();
 
     unsigned long long page = (here - offset_) / sizeof(Page) + 1;
 
@@ -605,8 +596,7 @@ void BTree<K, V, S, L>::_newPage(Page& p) {
     ASSERT(page == p.id_);
     ASSERT(pageOffset(page) == here);
 
-    int len;
-    SYSCALL(len = ::write(fd_, &p, sizeof(p)));  // TODO: a sparse file....
+    int len = file_.write(&p, sizeof(p));  // TODO: a sparse file....
     ASSERT(len == sizeof(p));
 
     // return p.id_;
@@ -652,19 +642,19 @@ size_t BTree<K, V, S, L>::count(unsigned long page) const {
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::lockShared() {
-    L::lockRange(fd_, 0, 0, F_SETLKW, F_RDLCK);
+    L::lockRange(file_.fileno(), 0, 0, F_SETLKW, F_RDLCK);
 }
 
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::lock() {
-    L::lockRange(fd_, 0, 0, F_SETLKW, readOnly_ ? F_RDLCK : F_WRLCK);
+    L::lockRange(file_.fileno(), 0, 0, F_SETLKW, readOnly_ ? F_RDLCK : F_WRLCK);
 }
 
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::unlock() {
-    L::lockRange(fd_, 0, 0, F_SETLK, F_UNLCK);
+    L::lockRange(file_.fileno(), 0, 0, F_SETLK, F_UNLCK);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

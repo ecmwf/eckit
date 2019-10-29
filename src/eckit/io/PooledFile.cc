@@ -126,6 +126,13 @@ public:
         s->second.opened_ = false;
     }
 
+    int fileno(const PooledFile* file) const {
+        auto s = statuses_.find(file);
+        ASSERT(s != statuses_.end());
+        ASSERT(s->second.opened_);
+        return ::fileno(file_);
+    }
+
     long read(const PooledFile* file, void *buffer, long len) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
@@ -158,13 +165,31 @@ public:
 
         if (::fseeko(file_, position, SEEK_SET) != 0) {
             std::ostringstream s;
-            s << name_ << ": cannot seek to " << position << " (file=" << fileno(file_) << ")";
+            s << name_ << ": cannot seek to " << position << " (file=" << ::fileno(file_) << ")";
             throw ReadError(s.str());
         }
 
         s->second.position_ = ::ftello(file_);
 
         ASSERT(s->second.position_ == position);
+
+        nbSeeks_++;
+
+        return s->second.position_;
+    }
+
+    long seekEnd(const PooledFile* file) {
+        auto s = statuses_.find(file);
+        ASSERT(s != statuses_.end());
+        ASSERT(s->second.opened_);
+
+        if (::fseeko(file_, 0, SEEK_END) != 0) {
+            std::ostringstream s;
+            s << name_ << ": cannot seek to end (file=" << ::fileno(file_) << ")";
+            throw ReadError(s.str());
+        }
+
+        s->second.position_ = ::ftello(file_);
 
         nbSeeks_++;
 
@@ -207,8 +232,18 @@ off_t PooledFile::seek(off_t offset) {
     return entry_->seek(this, offset);
 }
 
+off_t PooledFile::seekEnd() {
+    ASSERT(entry_);
+    return entry_->seekEnd(this);
+}
+
 off_t PooledFile::rewind() {
     return seek(0);
+}
+
+int PooledFile::fileno() const {
+    ASSERT(entry_);
+    return entry_->fileno(this);
 }
 
 size_t PooledFile::nbOpens() const {

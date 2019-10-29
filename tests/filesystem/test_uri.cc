@@ -40,6 +40,18 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.asString() == "path");
     }
     {
+        URI uri("//:123");
+        EXPECT(uri.scheme() == "unix");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "//:123");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "unix://:123");
+        EXPECT(uri.asString() == "//:123");
+    }
+    {
         URI uri(":path");
         EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
@@ -75,6 +87,58 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:/folder1/folder2/file");
         EXPECT(uri.asString() == "/folder1/folder2/file");
+    }
+    {
+        URI uri("foo:");
+        EXPECT(uri.scheme() == "unix");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "foo:");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "unix:foo:");
+        EXPECT(uri.asString() == "foo:");
+    }
+    {
+        URI uri("!");
+        EXPECT(uri.scheme() == "unix");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "!");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "unix:!");
+        EXPECT(uri.asString() == "!");
+    }
+    {
+        URI uri("file:!");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "!");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "file:!");
+        EXPECT(uri.asString() == "!");
+    }
+    {
+        URI uri(":http://nodename/path");
+        EXPECT(uri.scheme() == "unix");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.path() == "http://nodename/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "unix:http://nodename/path");
+        EXPECT(uri.asString() == "http://nodename/path");
     }
 }
 
@@ -165,6 +229,18 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.asString() == "http://username:password@host:123/path");
     }
     {
+        URI uri("http//:123");
+        EXPECT(uri.scheme() == "unix");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "http//:123");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "unix:http//:123");
+        EXPECT(uri.asString() == "http//:123");
+    }
+    {
         URI uri("http://username:password@host:123path");
         EXPECT(uri.scheme() == "http");
         EXPECT(uri.authority() == "username:password@host:123");
@@ -176,6 +252,71 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://username:password@host:123path");
         EXPECT(uri.asString() == "http://username:password@host:123path");
+    }
+    {
+        URI uri("http://host:path");
+        EXPECT(uri.scheme() == "http");
+        EXPECT(uri.authority() == "host:");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "host");
+        EXPECT(uri.port() == 0);
+        EXPECT(uri.path() == "path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "http://host:path");
+        EXPECT(uri.asString() == "http://host:path");
+    }
+    {
+        URI uri("http://www.ecmwf.int");
+        EXPECT(uri.scheme() == "http");
+        EXPECT(uri.authority() == "www.ecmwf.int");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "www.ecmwf.int");
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name().empty());
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "http://www.ecmwf.int");
+        EXPECT(uri.asString() == "http://www.ecmwf.int");
+    }
+    {
+        URI uri("http://www.ecmwf.int:80");
+        EXPECT(uri.scheme() == "http");
+        EXPECT(uri.authority() == "www.ecmwf.int:80");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "www.ecmwf.int");
+        EXPECT(uri.port() == 80);
+        EXPECT(uri.name().empty());
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "http://www.ecmwf.int:80");
+        EXPECT(uri.asString() == "http://www.ecmwf.int:80");
+    }
+    {
+        URI uri("http://www.ecmwf.int/");
+        EXPECT(uri.scheme() == "http");
+        EXPECT(uri.authority() == "www.ecmwf.int");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "www.ecmwf.int");
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "/");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "http://www.ecmwf.int/");
+        EXPECT(uri.asString() == "http://www.ecmwf.int/");
+    }
+    {
+        URI uri("http://host");
+        EXPECT(uri.scheme() == "http");
+        EXPECT(uri.authority() == "host");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "host");
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name().empty());
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "http://host");
+        EXPECT(uri.asString() == "http://host");
     }
     {
         URI uri("http://nodename/path");

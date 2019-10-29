@@ -42,10 +42,10 @@ URI::URI(const std::string& scheme, const PathName& path):
     scheme_(scheme), name_(path.path()) {}
 
 URI::URI(const std::string &scheme, const URI &uri):
-    scheme_(scheme), name_(uri.name_) {}
+    scheme_(scheme), user_(uri.user_), host_(uri.host_), port_(uri.port_), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
 
 URI::URI(const std::string &scheme, const URI &uri, const std::string &host, const int port):
-    scheme_(scheme), name_(uri.name_), host_(host), port_(port) {}
+    scheme_(scheme), user_(uri.user_), host_(host), port_(port), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
 
 URI::URI(Stream &s) {
     s >> scheme_;
@@ -123,7 +123,9 @@ void URI::parse(const std::string& str, size_t first, bool authority, bool query
             } else {
                 port_ = -1;
                 std::size_t hostEnd = str.find("/", first);
-                ASSERT(hostEnd != std::string::npos);
+                if (hostEnd == std::string::npos) {
+                    hostEnd = last;
+                }
                 host_ = str.substr(first, hostEnd - first);
                 first = hostEnd;
             }
@@ -180,7 +182,7 @@ std::string URI::authority() const {
     if (!host_.empty())
         authority += host_;
     if (port_ != -1)
-        authority += ":" + std::to_string(port_);
+        authority += ":" + (port_>0 ? std::to_string(port_) : "");
 
     return authority;
 }
@@ -212,7 +214,7 @@ void URI::fragment(const std::string& fragment) {
 }
 
 std::string URI::asString() const {
-    ASSERT(!name_.empty());
+//    ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).asString(*this);
 }

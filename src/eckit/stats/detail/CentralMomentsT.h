@@ -18,6 +18,8 @@
 #include <limits>
 #include <ostream>
 
+#include "mir/stats/ValueStatistics.h"
+
 
 namespace mir {
 namespace stats {
@@ -33,7 +35,7 @@ namespace detail {
  * @note: kurtosis (γ_2 = μ_4/μ_2^2 - 3) is computed as kurtosis "excess", @see http://mathworld.wolfram.com/Kurtosis.html
  */
 template< typename T >
-struct CentralMomentsT {
+struct CentralMomentsT : ValueStatistics {
 private:
     T M1_;
     T M2_;

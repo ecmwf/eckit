@@ -16,6 +16,8 @@
 #include <cmath>
 #include <ostream>
 
+#include "mir/stats/ValueStatistics.h"
+
 
 namespace mir {
 namespace stats {
@@ -27,15 +29,16 @@ namespace detail {
  * @see https://en.wikipedia.org/wiki/Lp_space
  * @see https://en.wikipedia.org/wiki/Minkowski_distance
  */
-struct PNorms {
+template <typename T>
+struct PNormsT : ValueStatistics {
 private:
-    double normL1_;
-    double sumSquares_;
-    double normLinfinity_;
+    T normL1_;
+    T sumSquares_;
+    T normLinfinity_;
 
 public:
 
-    PNorms() {
+    PNormsT() {
         reset();
     }
 
@@ -45,21 +48,21 @@ public:
         normLinfinity_ = 0;
     }
 
-    double normL1()        const { return normL1_; }
-    double normL2()        const { return std::sqrt(sumSquares_); }
-    double normLinfinity() const { return normLinfinity_; }
+    T normL1()        const { return normL1_; }
+    T normL2()        const { return std::sqrt(sumSquares_); }
+    T normLinfinity() const { return normLinfinity_; }
 
-    double difference(const double& a, const double& b) const {
+    T difference(const T& a, const T& b) const {
         return std::abs(a - b);
     }
 
-    void operator()(const double& v) {
+    void operator()(const T& v) {
         normL1_       += std::abs(v);
         sumSquares_   += v*v;
         normLinfinity_ = std::max(normLinfinity_, std::abs(v));
     }
 
-    void operator+=(const PNorms& other) {
+    void operator+=(const PNormsT& other) {
         normL1_       += other.normL1_;
         sumSquares_   += other.sumSquares_;
         normLinfinity_ = std::max(normLinfinity_, other.normLinfinity_);

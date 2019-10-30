@@ -9,12 +9,7 @@
  */
 
 
-#ifndef mir_stats_detail_Scalar_h
-#define mir_stats_detail_Scalar_h
-
-#include <ostream>
-
-#include "mir/stats/detail/CentralMomentsT.h"
+#include "mir/stats/detail/ScalarT.h"
 
 
 namespace mir {
@@ -22,19 +17,10 @@ namespace stats {
 namespace detail {
 
 
-/// Scalar statistics (composition)
-struct Scalar : public CentralMomentsT<double> {
-    void print(std::ostream& out) const {
-        out << "Scalar[";
-        CentralMomentsT<double>::print(out);
-        out << "]";
-    }
-};
+static ValueStatisticsBuilder<ScalarT<double>> __valueStatistics("scalar");
 
 
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
 
-
-#endif

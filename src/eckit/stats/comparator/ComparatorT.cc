@@ -20,8 +20,8 @@
 #include "mir/repres/Representation.h"
 #include "mir/stats/detail/AngleT.h"
 #include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/stats/detail/PNorms.h"
-#include "mir/stats/detail/Scalar.h"
+#include "mir/stats/detail/PNormsT.h"
+#include "mir/stats/detail/ScalarT.h"
 
 
 namespace mir {
@@ -116,11 +116,11 @@ void ComparatorT<MinMax>::print(std::ostream& out) const {
 }
 
 
-static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>> __comp1("angle.degree");
-static ComparatorBuilder<ComparatorT<detail::AngleT<detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>> __comp2("angle.radian");
+static ComparatorBuilder<ComparatorT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>> __comp1("angle.degree");
+static ComparatorBuilder<ComparatorT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>> __comp2("angle.radian");
 static ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>> __comp3("central-moments");
-static ComparatorBuilder<ComparatorT<detail::PNorms>> __comp4("p-norms");
-static ComparatorBuilder<ComparatorT<detail::Scalar>> __comp5("scalar");
+static ComparatorBuilder<ComparatorT<detail::PNormsT<double>>> __comp4("p-norms");
+static ComparatorBuilder<ComparatorT<detail::ScalarT<double>>> __comp5("scalar");
 static ComparatorBuilder<ComparatorT<MinMax>> __comp6("min-max");
 
 

@@ -19,7 +19,7 @@ namespace detail {
 
 /// Angle statistics in degrees [0, 360]
 /// (range ] from std::arg(std::complex))
-template<> AngleT<AngleScale::DEGREE, AngleSpace::ASYMMETRIC>::AngleT() :
+template<> AngleT<double, AngleScale::DEGREE, AngleSpace::ASYMMETRIC>::AngleT() :
     rescale_(M_1_PI * 180.),
     descale_(M_PI / 180.),
     globe_(360),
@@ -29,7 +29,7 @@ template<> AngleT<AngleScale::DEGREE, AngleSpace::ASYMMETRIC>::AngleT() :
 
 /// Angle statistics in degrees [-180,180]
 /// (range ] from std::arg(std::complex))
-template<> AngleT<AngleScale::DEGREE, AngleSpace::SYMMETRIC>::AngleT() :
+template<> AngleT<double, AngleScale::DEGREE, AngleSpace::SYMMETRIC>::AngleT() :
     rescale_(M_1_PI * 180.),
     descale_(M_PI / 180.),
     globe_(360),
@@ -39,7 +39,7 @@ template<> AngleT<AngleScale::DEGREE, AngleSpace::SYMMETRIC>::AngleT() :
 
 /// Angle statistics in radians [0, 2π]
 /// (range ] from std::arg(std::complex))
-template<> AngleT<AngleScale::RADIAN, AngleSpace::ASYMMETRIC>::AngleT() :
+template<> AngleT<double, AngleScale::RADIAN, AngleSpace::ASYMMETRIC>::AngleT() :
     rescale_(1.),
     descale_(1.),
     globe_(2. * M_PI),
@@ -49,7 +49,7 @@ template<> AngleT<AngleScale::RADIAN, AngleSpace::ASYMMETRIC>::AngleT() :
 
 /// Angle statistics in radians [-π,π]
 /// (range ] from std::arg(std::complex))
-template<> AngleT<AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT() :
+template<> AngleT<double, AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT() :
     rescale_(1.),
     descale_(1.),
     globe_(2. * M_PI),

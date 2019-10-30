@@ -56,6 +56,7 @@ protected:
 	virtual void print(std::ostream& s) const override;
     virtual void preprepare(SQLSelect& sql) override;
 	virtual void prepare(SQLSelect& sql) override;
+    virtual void updateType(SQLSelect& sql) override;
 	virtual void cleanup(SQLSelect& sql) override;
 	virtual double eval(bool& missing) const override;
     virtual void eval(double* out, bool& missing) const override;

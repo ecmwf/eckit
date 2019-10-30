@@ -451,7 +451,7 @@ void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor)
     }
 
     for (Expressions::iterator c = select_.begin(); c != select_.end(); ++c) {
-        (*c)->prepare(*this);
+        (*c)->updateType(*this);
     }
 
     if (where_)

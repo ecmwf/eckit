@@ -43,7 +43,8 @@ public:
     /// for SQLSelect, this is here.
     virtual void preprepare(SQLSelect&) {}
 	virtual void prepare(SQLSelect&) = 0;
-	virtual void cleanup(SQLSelect&) = 0;
+    virtual void updateType(SQLSelect&) {}
+    virtual void cleanup(SQLSelect&) = 0;
 
     // @note Original SQL implementation used double for everything, but strings may
     // have more than 8 characters, so we need a way of getting bigger data out.

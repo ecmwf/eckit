@@ -33,6 +33,7 @@ public:
     virtual void print(std::ostream& s) const;
     virtual void preprepare(SQLSelect& sql);
     virtual void prepare(SQLSelect& sql);
+    virtual void updateType(SQLSelect& sql);
 	virtual void cleanup(SQLSelect& sql);
 	virtual bool isConstant() const;
     virtual std::shared_ptr<SQLExpression> simplify(bool&);

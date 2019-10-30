@@ -43,6 +43,16 @@ static void init() {
 }  // (anonymous namespace)
 
 
+void ValueStatistics::operator()(const double&) {
+    NOTIMP;  // ensure specialisation
+}
+
+
+void ValueStatistics::operator()(const float&) {
+    NOTIMP;  // ensure specialisation
+}
+
+
 ValueStatisticsFactory::ValueStatisticsFactory(const std::string& name) : name_(name) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);

@@ -17,7 +17,7 @@ namespace stats {
 namespace detail {
 
 
-static ValueStatisticsBuilder<ScalarT<double>> __valueStatistics("scalar");
+static ValueStatisticsBuilder<ScalarT<double>> __stats("scalar");
 
 
 }  // namespace detail

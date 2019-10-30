@@ -68,7 +68,7 @@ public:
     T kurtosis()          const { return count_<2? 0 : (M4_ * T(count_)) / (M2_*M2_) - 3.; }
     T standardDeviation() const { return std::sqrt(variance()); }
 
-    double difference(const double& a, const double& b) const {
+    T difference(const T& a, const T& b) const {
         return std::abs(a - b);
     }
 

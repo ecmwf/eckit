@@ -40,6 +40,8 @@ public:
 
     // -- Operators
 
+    virtual void operator()(const double&);
+    virtual void operator()(const float&);
     void operator=(const ValueStatistics&) = delete;
 
     // -- Methods

@@ -83,6 +83,10 @@ CASE("test_set_string") {
         EXPECT(*set_it == *vec_it);
     }
 
+    // array-like indexing
+    EXPECT(s[1] == "nine");
+    EXPECT(s.at(2) == "two");
+
     // clear the map
     s.clear();
     EXPECT(s.empty());
@@ -141,6 +145,10 @@ CASE("test_set_int") {
     for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);
     }
+
+    // array-like indexing
+    EXPECT(s[1] == 4);
+    EXPECT(s.at(2) == 9);
 
     // clear the map
     s.clear();

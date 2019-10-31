@@ -103,6 +103,11 @@ CASE("test_map_string_int") {
 
     EXPECT(m.size() == 4);
 
+    // array-like indexing
+    EXPECT(m["nine"] == 99);
+    EXPECT(m.at(1) == 44);
+    EXPECT(m[2] == 99);
+
     //
     // std::cout << m << std::endl;
 }

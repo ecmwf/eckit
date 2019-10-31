@@ -18,6 +18,10 @@ ecbuild_add_test( TARGET   eckit_test_container_densemap
                   SOURCES  test_densemap.cc
                   LIBS     eckit )
 
+ecbuild_add_test( TARGET   eckit_test_container_denseset
+                  SOURCES  test_denseset.cc
+                  LIBS     eckit )
+
 ecbuild_add_test( TARGET   eckit_test_container_cache_lru
                   SOURCES  test_cache_lru.cc
                   LIBS     eckit )

@@ -72,7 +72,7 @@ CASE("test_map_string_int") {
 
     // failed find
 
-    EXPECT(!m.has("one"));
+    EXPECT(!m.contains("one"));
 
     // replace an existing value
 
@@ -176,6 +176,21 @@ CASE("test_map_int_string") {
     EXPECT(m.get(9) == "NINE");
 
     EXPECT(m.size() == 4);
+
+    // iterate over the elements
+    std::vector<std::pair<int, std::string> > e = {{2, "two"}, {4, "FOUR"}, {5, "five"}, {9, "NINE"}};
+    auto map_it = m.begin();
+    auto vec_it = e.begin();
+    for(; map_it != m.end() && vec_it != e.end(); ++map_it, ++vec_it) {
+        EXPECT(map_it->key() == vec_it->first);
+        EXPECT(m.get(map_it) == vec_it->second);
+    }
+
+    // clear the map
+    m.clear();
+    EXPECT(m.empty());
+    EXPECT(m.size() == 0);
+    EXPECT(m.sorted());
 
     // std::cout << m << std::endl;
 }

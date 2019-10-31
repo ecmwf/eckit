@@ -58,7 +58,7 @@ private: // types
 
 public: // methods
 
-	typedef typename key_store_t::iterator iterator;
+	typedef typename key_store_t::const_iterator iterator;
 	typedef typename key_store_t::const_iterator const_iterator;
 
 	DenseMap( size_t s = 0 ) : sorted_(true)
@@ -113,36 +113,33 @@ public: // methods
 	{
 		if(!sorted_)
 		{
-			std::sort( begin(), end(), LessThan() );
+			std::sort( keys_.begin(), keys_.end(), LessThan() );
 			sorted_ = true;
 		}
 	}
 
-	iterator begin() { return keys_.begin(); }
+	iterator begin() const { return keys_.begin(); }
 	const_iterator cbegin() const { return keys_.begin(); }
 
-	iterator end() { return keys_.end(); }
+	iterator end() const { return keys_.end(); }
 	const_iterator cend() const { return keys_.end(); }
 
-	bool has( const K& k ) const { return find(k) != cend(); }
+	bool contains( const K& k ) const { return find(k) != cend(); }
 
 	const V& get( iterator it ) const { return values_[ it->idx() ]; }
 	V& get( iterator it ) { return values_[ it->idx() ]; }
-
-	const V& get( const_iterator it ) const { return values_[ it->idx() ]; }
-	V& get( const_iterator it ) { return values_[ it->idx() ]; }
 
 	const V& get( const K& k ) const { return values_[ find(k)->idx() ]; }
 	V& get( const K& k ) { return values_[ find(k)->idx() ]; }
 
 	const V& at( const size_t i ) const { ASSERT(i < keys_.size()); return values_[ keys_[i].idx() ]; }
-	V& at( const size_t i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+	V& at( const size_t i ) { ASSERT(i < keys_.size()); return values_[ keys_[i].idx() ]; }
 
 	const V& operator[] (const K& k ) const { return values_[ find(k)->idx() ]; }
 	V& operator[] (const K& k ) { return values_[ find(k)->idx() ]; }
 
-	const V& operator[] (const size_t& i ) const { ASSERT(i < values_.size()); return values_[ i ]; }
-	V& operator[] (const size_t& i ) { ASSERT(i < keys_.size()); return values_[ i ]; }
+	const V& operator[] (const size_t& i ) const { return values_[ keys_[i].idx() ]; }
+	V& operator[] (const size_t& i ) { return values_[ keys_[i].idx() ]; }
 
 	iterator find( const K& k )
 	{

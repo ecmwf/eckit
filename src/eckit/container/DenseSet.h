@@ -93,8 +93,8 @@ public: // methods
     const V& at( const size_t i ) const { ASSERT(i < values_.size()); return values_[i]; }
     V& at( const size_t i ) { ASSERT(i < values_.size()); return values_[i]; }
 
-    const V& operator[] (const size_t& i ) const { ASSERT(i < values_.size()); return values_[i]; }
-    V& operator[] (const size_t& i ) { ASSERT(i < values_.size()); return values_[i]; }
+    const V& operator[] (const size_t& i ) const { return values_[i]; }
+    V& operator[] (const size_t& i ) { return values_[i]; }
 
     iterator find( const V& v )
     {

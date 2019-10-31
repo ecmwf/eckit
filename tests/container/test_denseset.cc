@@ -86,6 +86,7 @@ CASE("test_set_string") {
     // array-like indexing
     EXPECT(s[1] == "nine");
     EXPECT(s.at(2) == "two");
+    EXPECT_THROWS(s.at(12));
 
     // clear the map
     s.clear();

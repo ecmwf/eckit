@@ -107,6 +107,7 @@ CASE("test_map_string_int") {
     EXPECT(m["nine"] == 99);
     EXPECT(m.at(1) == 44);
     EXPECT(m[2] == 99);
+    EXPECT_THROWS(m.at(12));
 
     //
     // std::cout << m << std::endl;

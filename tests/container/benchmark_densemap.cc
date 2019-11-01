@@ -61,7 +61,7 @@ void benchmark_densemap_int_string(const std::string& tname) {
 
             typename MAP::const_iterator it = m.find(idx);
             if (it != m.cend())
-                ASSERT(m.get(it) == "foo" + itos(idx));
+                ASSERT(it->second == "foo" + itos(idx));
             else
                 std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx) << std::endl;
         }

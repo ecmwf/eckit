@@ -90,6 +90,7 @@ container/CacheManager.cc
 container/CacheManager.h
 container/ClassExtent.h
 container/DenseMap.h
+container/DenseSet.h
 container/KDMapped.cc
 container/KDMapped.h
 container/KDMemory.h

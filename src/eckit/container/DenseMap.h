@@ -43,17 +43,9 @@ public: // methods
 	typedef typename store_t::iterator iterator;
 	typedef typename store_t::const_iterator const_iterator;
 
-	DenseMap( size_t s = 0 ) : sorted_(true)
-	{
-		if(s > 0) reserve(s);
-	}
+	DenseMap() : sorted_(true) {}
 
 	~DenseMap() {}
-
-	void reserve( size_t s )
-	{
-		//items_.reserve(s);
-	}
 
 	void insert( const K& k, const V& v )
 	{

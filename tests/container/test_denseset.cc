@@ -43,7 +43,9 @@ CASE("test_set_string") {
 
     s.insert("two");
 
+    // find fails if not sorted
     EXPECT(!s.sorted());
+    EXPECT_THROWS(s.find("two"));
 
     EXPECT(s.size() == 1);
 
@@ -88,7 +90,7 @@ CASE("test_set_string") {
     EXPECT(s.at(2) == "two");
     EXPECT_THROWS(s.at(12));
 
-    // clear the map
+    // clear the set
     s.clear();
     EXPECT(s.empty());
     EXPECT(s.size() == 0);
@@ -107,7 +109,9 @@ CASE("test_set_int") {
 
     s.insert(2);
 
+    // find fails if not sorted
     EXPECT(!s.sorted());
+    EXPECT_THROWS(s.find(2));
 
     EXPECT(s.size() == 1);
 
@@ -150,8 +154,72 @@ CASE("test_set_int") {
     // array-like indexing
     EXPECT(s[1] == 4);
     EXPECT(s.at(2) == 9);
+    EXPECT_THROWS(s.at(12));
 
-    // clear the map
+    // clear the set
+    s.clear();
+    EXPECT(s.empty());
+    EXPECT(s.size() == 0);
+    EXPECT(s.sorted());
+
+    // std::cout << s << std::endl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_set_bool") {
+    DenseSet<int> s;
+
+    //
+
+    s.insert(true);
+
+    // find fails if not sorted
+    EXPECT(!s.sorted());
+    EXPECT_THROWS(s.find(true));
+
+    EXPECT(s.size() == 1);
+
+    s.sort();
+
+    EXPECT(s.sorted());
+
+    // failed find
+
+    EXPECT(!s.contains(false));
+    EXPECT(s.find(false) == s.end());
+    EXPECT(s.contains(true));
+
+    //
+
+    s.insert(false);
+    s.insert(false);
+
+    EXPECT(!s.sorted());
+
+    s.sort();
+
+    EXPECT(s.sorted());
+
+    EXPECT(s.size() == 2);
+
+    EXPECT(s.find(true) != s.end());
+    EXPECT(s.find(false) != s.end());
+
+    // iterate over the elements
+    std::vector<bool> e = {false, true};
+    auto set_it = s.begin();
+    auto vec_it = e.begin();
+    for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
+        EXPECT(*set_it == *vec_it);
+    }
+
+    // array-like indexing
+    EXPECT(s[1] == true);
+    EXPECT(s.at(0) == false);
+    EXPECT_THROWS(s.at(12));
+
+    // clear the set
     s.clear();
     EXPECT(s.empty());
     EXPECT(s.size() == 0);

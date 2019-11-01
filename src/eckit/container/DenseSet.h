@@ -71,13 +71,15 @@ public: // methods
     bool sorted() const { return sorted_; }
 
     size_t size() const { return values_.size(); }
-    bool empty() const { return values_.size() == 0; }
+    bool empty() const { return values_.empty(); }
 
     void sort()
     {
         if(!sorted_)
         {
             std::sort( values_.begin(), values_.end() );
+            auto last = std::unique(values_.begin(), values_.end());
+            values_.erase(last, values_.end());
             sorted_ = true;
         }
     }
@@ -91,32 +93,32 @@ public: // methods
     bool contains( const V& v ) const { return find(v) != cend(); }
 
     const V& at( const size_t i ) const { ASSERT(i < values_.size()); return values_[i]; }
-    V& at( const size_t i ) { ASSERT(i < values_.size()); return values_[i]; }
 
     const V& operator[] (const size_t& i ) const { return values_[i]; }
-    V& operator[] (const size_t& i ) { return values_[i]; }
 
     iterator find( const V& v )
     {
-        if( !empty() )
-        {
-            ASSERT(sorted());
-            iterator it = std::lower_bound( begin(), end(), v);
-            if( it != end() && *it == v )
-                return it;
-        }
+        if( empty() )
+            return end();
+
+        ASSERT(sorted());
+        iterator it = std::lower_bound( begin(), end(), v);
+        if( it != end() && *it == v )
+            return it;
+
         return end();
     }
 
     const_iterator find( const V& v ) const
     {
-        if( !empty() )
-        {
-            ASSERT(sorted());
-            const_iterator it = std::lower_bound( cbegin(), cend(), v);
-            if( it != cend() && *it == v )
-                return it;
-        }
+        if( empty() )
+            return cend();
+
+        ASSERT(sorted());
+        const_iterator it = std::lower_bound( cbegin(), cend(), v);
+        if( it != cend() && *it == v )
+            return it;
+
         return cend();
     }
 

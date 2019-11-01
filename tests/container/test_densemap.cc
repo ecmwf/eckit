@@ -214,6 +214,9 @@ CASE("test_map_int_string") {
     EXPECT(m.size() == 0);
     EXPECT(m.sorted());
 
+    // find() should return end() now
+    EXPECT(m.find(2) == m.end());
+
     // std::cout << m << std::endl;
 }
 
@@ -307,6 +310,9 @@ CASE("test_map_double_bool") {
     EXPECT(m.empty());
     EXPECT(m.size() == 0);
     EXPECT(m.sorted());
+
+    // find() should return end() now
+    EXPECT(m.find(2.1) == m.end());
 
     // std::cout << m << std::endl;
 }

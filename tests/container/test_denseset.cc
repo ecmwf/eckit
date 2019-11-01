@@ -96,6 +96,9 @@ CASE("test_set_string") {
     EXPECT(s.size() == 0);
     EXPECT(s.sorted());
 
+    // find() should return end() now
+    EXPECT(s.find("two") == s.end());
+
     //
     // std::cout << s << std::endl;
 }
@@ -162,6 +165,9 @@ CASE("test_set_int") {
     EXPECT(s.size() == 0);
     EXPECT(s.sorted());
 
+    // find() should return end() now
+    EXPECT(s.find(2) == s.end());
+
     // std::cout << s << std::endl;
 }
 
@@ -224,6 +230,9 @@ CASE("test_set_bool") {
     EXPECT(s.empty());
     EXPECT(s.size() == 0);
     EXPECT(s.sorted());
+
+    // find() should return end() now
+    EXPECT(s.find(true) == s.end());
 
     // std::cout << s << std::endl;
 }

@@ -27,9 +27,13 @@ namespace detail {
 template <typename T>
 struct ScalarT : public CentralMomentsT<T> {
     void print(std::ostream& out) const {
-        out << "Scalar[";
-        CentralMomentsT<T>::print(out);
-        out << "]";
+        using t = CentralMomentsT<T>;
+        out << "Scalar["
+                "mean="     << t::mean()
+            << ",stddev="   << t::standardDeviation()
+            << ",skewness=" << t::skewness()
+            << ",kurtosis=" << t::kurtosis()
+            << "]";
     }
 };
 

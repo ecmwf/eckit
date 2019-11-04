@@ -38,4 +38,5 @@ ecbuild_add_test( TARGET      eckit_test_pooledfile
 ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   HAVE_RADOS
+				  INCLUDES    ${RADOS_INCLUDE_DIRS}
                   LIBS        eckit )

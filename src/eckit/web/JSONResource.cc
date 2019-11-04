@@ -31,6 +31,11 @@ void JSONResource::GET(std::ostream& out, Url& url) {
     json(j, url.json());
 }
 
+void JSONResource::POST(std::ostream& out, Url& url) {
+    url.headerOut().type("application/json");
+    JSON j(out);
+    json(j, url.json());
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -43,7 +43,6 @@ void benchmark_densemap_int_string(const std::string& tname) {
 
     {
         Timer timer("insert");
-        m.reserve(MSIZE);
         for (int i = 0; i < MSIZE; ++i) {
             m.insert(i, "foo" + itos(i));
         }

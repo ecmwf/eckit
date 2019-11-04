@@ -38,6 +38,8 @@ private: // types
 
 public: // methods
 
+    typedef typename store_t::const_reference const_reference;
+
     typedef typename store_t::const_iterator iterator;
     typedef typename store_t::const_iterator const_iterator;
 
@@ -94,9 +96,9 @@ public: // methods
 
     bool contains( const V& v ) const { return find(v) != cend(); }
 
-    const V& at( const size_t i ) const { ASSERT(i < values_.size()); return values_[i]; }
+    const_reference at( const size_t i ) const { ASSERT(i < values_.size()); return values_[i]; }
 
-    const V& operator[] (const size_t& i ) const { return values_[i]; }
+    const_reference operator[] (const size_t& i ) const { return values_[i]; }
 
     iterator find( const V& v )
     {

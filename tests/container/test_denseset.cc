@@ -174,7 +174,7 @@ CASE("test_set_int") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_set_bool") {
-    DenseSet<int> s;
+    DenseSet<bool> s;
 
     //
 
@@ -214,7 +214,7 @@ CASE("test_set_bool") {
 
     // iterate over the elements
     std::vector<bool> e = {false, true};
-    DenseSet<int>::const_iterator set_it = s.begin();
+    DenseSet<bool>::const_iterator set_it = s.begin();
     std::vector<bool>::const_iterator vec_it = e.begin();
     for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);

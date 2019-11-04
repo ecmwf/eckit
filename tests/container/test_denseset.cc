@@ -79,8 +79,8 @@ CASE("test_set_string") {
 
     // iterate over the elements
     std::vector<std::string> e = {"four", "nine", "two"};
-    auto set_it = s.begin();
-    auto vec_it = e.begin();
+    DenseSet<std::string>::const_iterator set_it = s.begin();
+    std::vector<std::string>::const_iterator vec_it = e.begin();
     for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);
     }
@@ -148,8 +148,8 @@ CASE("test_set_int") {
 
     // iterate over the elements
     std::vector<int> e = {2, 4, 9};
-    auto set_it = s.begin();
-    auto vec_it = e.begin();
+    DenseSet<int>::const_iterator set_it = s.begin();
+    std::vector<int>::const_iterator vec_it = e.begin();
     for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);
     }
@@ -214,8 +214,8 @@ CASE("test_set_bool") {
 
     // iterate over the elements
     std::vector<bool> e = {false, true};
-    auto set_it = s.begin();
-    auto vec_it = e.begin();
+    DenseSet<int>::const_iterator set_it = s.begin();
+    std::vector<bool>::const_iterator vec_it = e.begin();
     for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);
     }

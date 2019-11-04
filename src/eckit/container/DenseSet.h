@@ -85,10 +85,12 @@ public: // methods
     }
 
     iterator begin() { return values_.begin(); }
-    const_iterator cbegin() const { return values_.begin(); }
+    const_iterator begin() const { return values_.begin(); }
+    const_iterator cbegin() const { return values_.cbegin(); }
 
     iterator end() { return values_.end(); }
-    const_iterator cend() const { return values_.end(); }
+    const_iterator end() const { return values_.end(); }
+    const_iterator cend() const { return values_.cend(); }
 
     bool contains( const V& v ) const { return find(v) != cend(); }
 

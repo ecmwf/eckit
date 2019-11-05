@@ -20,11 +20,9 @@
 
 #include "eckit/exception/Exceptions.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 template < typename V >
 class DenseSet {
@@ -34,7 +32,7 @@ public: // types
 
 private: // types
 
-    typedef std::vector< value_type >      store_t;
+    typedef std::vector< value_type > store_t;
 
 public: // methods
 
@@ -132,6 +130,10 @@ public: // methods
         for( ; it != cend(); ++it )
             s << *it << std::endl;
     }
+
+    bool operator==(const DenseSet& rhs) const { return !operator!=(rhs); }
+
+    bool operator!=(const DenseSet& rhs) const { return values_ != rhs.values_; }
 
     friend std::ostream& operator<<(std::ostream& s, const DenseSet& m) { m.print(s);  return s; }
 

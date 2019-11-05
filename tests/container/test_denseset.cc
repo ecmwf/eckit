@@ -90,11 +90,29 @@ CASE("test_set_string") {
     EXPECT(s.at(2) == "two");
     EXPECT_THROWS(s.at(12));
 
+    // operator==
+    DenseSet<std::string> s2;
+    EXPECT(!(s == s2));
+    EXPECT(s != s2);
+    s2.insert("nine");
+    s2.sort();
+    EXPECT(!(s == s2));
+    EXPECT(s != s2);
+    s2.insert("four");
+    s2.insert("two");
+    s2.sort();
+    EXPECT(s == s2);
+    EXPECT(!(s != s2));
+
     // clear the set
     s.clear();
     EXPECT(s.empty());
     EXPECT(s.size() == 0);
     EXPECT(s.sorted());
+
+    // operator== on empty sets
+    s2.clear();
+    EXPECT(s == s2);
 
     // find() should return end() now
     EXPECT(s.find("two") == s.end());
@@ -159,11 +177,29 @@ CASE("test_set_int") {
     EXPECT(s.at(2) == 9);
     EXPECT_THROWS(s.at(12));
 
+    // operator==
+    DenseSet<int> s2;
+    EXPECT(!(s == s2));
+    EXPECT(s != s2);
+    s2.insert(9);
+    s2.sort();
+    EXPECT(!(s == s2));
+    EXPECT(s != s2);
+    s2.insert(4);
+    s2.insert(2);
+    s2.sort();
+    EXPECT(s == s2);
+    EXPECT(!(s != s2));
+
     // clear the set
     s.clear();
     EXPECT(s.empty());
     EXPECT(s.size() == 0);
     EXPECT(s.sorted());
+
+    // operator== on empty sets
+    s2.clear();
+    EXPECT(s == s2);
 
     // find() should return end() now
     EXPECT(s.find(2) == s.end());
@@ -225,11 +261,28 @@ CASE("test_set_bool") {
     EXPECT(s.at(0) == false);
     EXPECT_THROWS(s.at(12));
 
+    // operator==
+    DenseSet<bool> s2;
+    EXPECT(!(s == s2));
+    EXPECT(s != s2);
+    s2.insert(true);
+    s2.sort();
+    EXPECT(!(s == s2));
+    EXPECT(s != s2);
+    s2.insert(false);
+    s2.sort();
+    EXPECT(s == s2);
+    EXPECT(!(s != s2));
+
     // clear the set
     s.clear();
     EXPECT(s.empty());
     EXPECT(s.size() == 0);
     EXPECT(s.sorted());
+
+    // operator== on empty sets
+    s2.clear();
+    EXPECT(s == s2);
 
     // find() should return end() now
     EXPECT(s.find(true) == s.end());

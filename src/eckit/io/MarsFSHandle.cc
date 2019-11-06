@@ -11,6 +11,7 @@
 #include "eckit/io/MarsFSHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Log.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit {
@@ -173,6 +174,12 @@ std::string MarsFSHandle::title() const {
     os << "marsfs:/" << path_.node() << "/" << PathName::shorten(path_.path());
     return os.str();
 }
+
+void MarsFSHandle::hash(MD5& md5) const {
+    md5 << "MarsFSHandle";
+    md5 << path_;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

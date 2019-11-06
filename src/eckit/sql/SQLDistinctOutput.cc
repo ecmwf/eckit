@@ -68,11 +68,16 @@ void SQLDistinctOutput::preprepare(SQLSelect& sql) {
 
 void SQLDistinctOutput::prepare(SQLSelect& sql) {
     output_.prepare(sql);
+    updateTypes(sql);
+    seen_.clear();
+}
+
+void SQLDistinctOutput::updateTypes(SQLSelect& sql) {
+
+    output_.updateTypes(sql);
 
     // How much space is needed to store each row of selected data
-
     offsets_.clear();
-    seen_.clear();
     size_t offset = 0;
 
     for (const auto& column : sql.output()) {

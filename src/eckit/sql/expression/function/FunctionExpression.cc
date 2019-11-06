@@ -49,6 +49,12 @@ void FunctionExpression::prepare(SQLSelect& sql) {
         (*j)->prepare(sql);
 }
 
+void FunctionExpression::updateType(SQLSelect &sql) {
+    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+        (*j)->updateType(sql);
+
+}
+
 void FunctionExpression::cleanup(SQLSelect& sql) {
     for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
         (*j)->cleanup(sql);

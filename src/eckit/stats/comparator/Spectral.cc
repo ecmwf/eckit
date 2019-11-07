@@ -11,6 +11,7 @@
 
 #include "mir/stats/comparator/Spectral.h"
 
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <ostream>

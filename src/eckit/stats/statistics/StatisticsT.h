@@ -12,7 +12,6 @@
 #ifndef mir_stats_statistics_StatisticsT_h
 #define mir_stats_statistics_StatisticsT_h
 
-#include <cmath>
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"

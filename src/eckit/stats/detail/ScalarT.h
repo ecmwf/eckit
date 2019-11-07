@@ -14,7 +14,6 @@
 
 #include <ostream>
 
-#include "mir/stats/ValueStatistics.h"
 #include "mir/stats/detail/CentralMomentsT.h"
 
 

@@ -12,15 +12,18 @@
 #ifndef mir_stats_statistics_MethodT_h
 #define mir_stats_statistics_MethodT_h
 
-#include <cmath>
 #include <ostream>
 #include <vector>
 
-#include "eckit/exception/Exceptions.h"
-
-#include "mir/data/MIRField.h"
 #include "mir/stats/Method.h"
 #include "mir/stats/detail/Counter.h"
+
+
+namespace mir {
+namespace data {
+class MIRField;
+}
+}
 
 
 namespace mir {

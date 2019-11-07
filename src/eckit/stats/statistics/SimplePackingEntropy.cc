@@ -14,13 +14,11 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <memory>
 
 #include "eckit/exception/Exceptions.h"
 
 #include "mir/data/MIRField.h"
 #include "mir/param/MIRParametrisation.h"
-#include "mir/stats/statistics/StatisticsT.h"
 
 
 namespace mir {

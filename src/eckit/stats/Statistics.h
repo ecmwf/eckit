@@ -12,7 +12,6 @@
 #ifndef mir_stats_Statistics_h
 #define mir_stats_Statistics_h
 
-#include <cstddef>
 #include <iosfwd>
 #include <string>
 

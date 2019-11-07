@@ -17,10 +17,16 @@
 #include <memory>
 #include <string>
 
-#include "mir/data/MIRField.h"
 #include "mir/param/SameParametrisation.h"
 #include "mir/stats/Comparator.h"
 #include "mir/stats/detail/CounterBinary.h"
+
+
+namespace mir {
+namespace data {
+class MIRField;
+}
+}
 
 
 namespace mir {

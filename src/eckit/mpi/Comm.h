@@ -55,6 +55,8 @@ void deleteComm(const char* name);
 /// Check if a communicator is registered
 bool hasComm(const char* name);
 
+std::vector<std::string> commsList();
+
 /// Finalises all the comms that are registered
 ///
 /// @note This should not be necessary to be called, since all singletong Comms finalise themselves

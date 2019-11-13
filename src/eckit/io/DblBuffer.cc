@@ -104,7 +104,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
         try {
             Length copied = copy(in, out, estimate);
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
-            ASSERT(copied == estimate);
+            if(estimate) ASSERT(copied == estimate);
         }
         catch (RestartTransfer& retry) {
             Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
@@ -143,10 +143,10 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     int i = 0;
 
     Timer reader("Double buffer reader");
-    double rate  = 0;
-    double first = 0;
+    double rate  = 0.;
+    double first = 0.;
 
-    watcher_.watch(0, 0);
+    watcher_.watch(nullptr, 0);
 
     while (!error()) {
         Log::message() << "Wait " << i << std::endl;
@@ -165,7 +165,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
             double s           = reader.elapsed() - x;
             Log::status() << Bytes(estimate) << " at " << Bytes(buffers[i].length_ / s) << "/s" << std::endl;
             rate += s;
-            if (first == 0)
+            if (first == 0.)
                 first = rate;
 
             watcher_.watch(buffers[i].buffer_, buffers[i].length_);

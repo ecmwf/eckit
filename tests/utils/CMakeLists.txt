@@ -7,10 +7,11 @@ u-v_6ml.grib
 q_6ml_regrid.grib
 )
 
-ecbuild_get_test_multidata( TARGET get_eckit_test_data
-#                            DIRNAME eckit
-                            NAMES ${test_data_files}
-                            NOCHECK )
+if(HAVE_EXTRA_TESTS)
+        ecbuild_get_test_multidata( TARGET get_eckit_test_data
+                                    NAMES ${test_data_files}
+                                    NOCHECK )
+endif()
 
 ecbuild_add_test( TARGET      eckit_test_utils_string_tools
                   SOURCES     test_string_tools.cc

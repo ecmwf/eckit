@@ -32,7 +32,7 @@ CASE("RadosHandle") {
 
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    RadosHandle h("foobar");
+    RadosHandle h("mars:foobar");
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));
@@ -42,7 +42,7 @@ CASE("RadosHandle") {
     std::cout << "write done" << std::endl;
 
     Buffer mem(1024);
-    RadosHandle g("foobar");
+    RadosHandle g("mars:foobar");
     std::cout << "====> " << g << std::endl;
 
     std::cout << "Size is " << g.openForRead() << std::endl;
@@ -55,7 +55,7 @@ CASE("RadosHandle") {
     EXPECT(buf == std::string(mem));
 
 
-    RadosCluster::instance().remove(RadosObject("foobar"));
+    RadosCluster::instance().remove(RadosObject("mars:foobar"));
 }
 
 
@@ -71,7 +71,7 @@ CASE("RadosWriteHandle") {
     "abcdefghijklmnopqrstuvwxyz"
     ;
 
-    RadosWriteHandle h("foobar", 16);
+    RadosWriteHandle h("mars:foobar", 16);
     std::cout << "====> " << h << std::endl;
 
     h.openForWrite(sizeof(buf));
@@ -79,7 +79,7 @@ CASE("RadosWriteHandle") {
     h.close();
 
     Buffer mem(1024);
-    RadosReadHandle g("foobar");
+    RadosReadHandle g("mars:foobar");
     std::cout << "====> " << g << std::endl;
 
     std::cout << "Size is " << g.openForRead() << std::endl;
@@ -91,7 +91,7 @@ CASE("RadosWriteHandle") {
 
     EXPECT(buf == std::string(mem));
 
-    RadosCluster::instance().removeAll(RadosObject("foobar"));
+    RadosCluster::instance().removeAll(RadosObject("mars:foobar"));
 
 }
 

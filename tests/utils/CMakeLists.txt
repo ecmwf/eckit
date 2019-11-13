@@ -10,6 +10,7 @@ q_6ml_regrid.grib
 ecbuild_get_test_multidata( TARGET get_eckit_test_data
 #                            DIRNAME eckit
                             NAMES ${test_data_files}
+#                            CONDITION   HAVE_EXTRA_TESTS
                             NOCHECK )
 
 ecbuild_add_test( TARGET      eckit_test_utils_string_tools

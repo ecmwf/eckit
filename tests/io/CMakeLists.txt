@@ -3,10 +3,11 @@ list( APPEND test_data_files
 t.grib
 )
 
-ecbuild_get_test_multidata( TARGET get_eckit_io_test_data
-                            NAMES ${test_data_files}
-#                            CONDITION   HAVE_EXTRA_TESTS
-                            NOCHECK )
+if(HAVE_EXTRA_TESTS)
+    ecbuild_get_test_multidata( TARGET get_eckit_io_test_data
+                                NAMES ${test_data_files}
+                                NOCHECK )
+endif()
 
 ecbuild_add_test( TARGET   eckit_test_filepool
                   SOURCES  test_filepool.cc

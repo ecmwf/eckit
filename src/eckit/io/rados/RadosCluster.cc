@@ -115,7 +115,9 @@ Length RadosCluster::maxObjectSize() const {
     std::cout << vals <<std::endl;
 
     std::cout << keys <<std::endl;*/
+
     // TODO: Get from server
+    // ceph configuration parameter "osd_max_write_size" default value is 90MB
     static long long len = Resource<long long>("radosMaxObjectSize", 90 * 1024 * 1024);
     return len;
 

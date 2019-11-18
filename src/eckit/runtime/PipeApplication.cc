@@ -184,7 +184,14 @@ void PipeApplication::launch(const std::string& name, int input, int output) {
 
 
     PathName app = Main::instance().argv(0);
-    PathName cmd = app.dirName() / name;
+    PathName dir = app.dirName();
+    PathName cmd;
+    if (std::string(dir) == ".") {
+        cmd = name;
+    }
+    else {
+        cmd = dir / name;
+    }
 
     Log::debug() << "execlp(" << cmd.localPath() << ',' << cmd.baseName().localPath() << ',' << "-in," << in << ','
                  << "-out," << out << ',' << "-parent," << par << ")" << std::endl;
@@ -208,7 +215,7 @@ void PipeApplication::launch(const std::string& name, int input, int output) {
     snprintf(command, 1024, "%s", cmd.localPath());
     snprintf(basename, 1024, "%s", cmd.baseName().localPath());
 
-    ::execlp(command, basename, "-in", in, "-out", out, "-parent", par, (void*)0);
+    ::execlp(command, basename, "-in", in, "-out", out, "-parent", par, nullptr);
 
     std::cerr << "Exec failed " << cmd << Log::syserr << std::endl;
 

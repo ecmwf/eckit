@@ -183,7 +183,6 @@ void PipeHandler<Request>::run() {
     // Here, we should be in the child
     pipe_->childProcess();
 
-
     char in[20];
     snprintf(in, 20, "%d", pipe_->in());
     char out[20];
@@ -191,9 +190,15 @@ void PipeHandler<Request>::run() {
     char par[20];
     snprintf(par, 20, "%ld", Monitor::instance().self());
 
-
     PathName app = Main::instance().argv(0);
-    PathName cmd = app.dirName() / Request::commandName();
+    PathName dir = app.dirName();
+    PathName cmd;
+    if (std::string(dir) == ".") {
+        cmd = Request::commandName();
+    }
+    else {
+        cmd = dir / Request::commandName();
+    }
 
     Log::debug() << "execlp(" << cmd.localPath() << ',' << cmd.baseName().localPath() << ',' << "-in," << in << ','
                  << "-out," << out << ',' << "-parent," << par << ")" << std::endl;
@@ -218,7 +223,7 @@ void PipeHandler<Request>::run() {
     snprintf(command, 1024, "%s", cmd.localPath());
     snprintf(basename, 1024, "%s", cmd.baseName().localPath());
 
-    ::execlp(command, basename, "-in", in, "-out", out, "-parent", par, (void*)0);
+    ::execlp(command, basename, "-in", in, "-out", out, "-parent", par, nullptr);
 
     std::cerr << "Exec failed " << cmd << Log::syserr << std::endl;
 

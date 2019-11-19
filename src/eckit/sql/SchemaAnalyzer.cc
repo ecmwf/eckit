@@ -40,7 +40,7 @@ void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& 
     bitfieldTypes_[name] = make_pair(fields, sizes);
 }
 
-const BitfieldDef& SchemaAnalyzer::getBitfieldType(const std::string& typeName) {
+const BitfieldDef& SchemaAnalyzer::getBitfieldType(const std::string& typeName) const {
 
     auto it = bitfieldTypes_.find(typeName);
     if (it != bitfieldTypes_.end()) {

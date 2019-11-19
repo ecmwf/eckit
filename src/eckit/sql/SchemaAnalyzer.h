@@ -40,7 +40,7 @@ public: // methods
     void addBitfieldType(const std::string& name, const FieldNames& fields, const Sizes& sizes);
     //, const std::string& typeSignature);
 
-    const BitfieldDef& getBitfieldType(const std::string& typeName);
+    const BitfieldDef& getBitfieldType(const std::string& typeName) const;
 
     std::string generateSelectAll(const std::set<std::string>& skipTables=std::set<std::string>()) const;
 

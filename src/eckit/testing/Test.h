@@ -14,6 +14,7 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
+#include <functional>
 #include <vector>
 #include <sstream>
 #include <string>
@@ -46,9 +47,9 @@ class Test {
 
 public:  // methods
 
-    Test(const std::string& description, void (*testFn)(std::string&, int&, int)) :
+    Test(const std::string& description, std::function<void(std::string&, int&, int)> testFn) :
         description_(description),
-        testFn_(testFn) {}
+        testFn_(std::move(testFn)) {}
 
     bool run(TestVerbosity v, std::vector<std::string>& failures) {
 
@@ -117,7 +118,7 @@ private:  // members
     std::string description_;
     std::string subsection_;
 
-    void (* testFn_)(std::string&, int&, int);
+    std::function<void(std::string&, int&, int)> testFn_;
 };
 
 std::vector<Test>& specification() {

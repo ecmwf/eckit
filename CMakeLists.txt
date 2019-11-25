@@ -200,7 +200,7 @@ if( HAVE_ECKIT_CMD)
   list( APPEND ECKIT_LIBRARIES eckit_cmd )
 endif()
 
-if( HAVE_ECKIT_MPI )
+if( HAVE_MPI )
   list( APPEND ECKIT_LIBRARIES eckit_mpi )
 endif()
 

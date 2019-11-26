@@ -205,7 +205,7 @@ endif()
 # export package info
 
 set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_linalg eckit_maths eckit_web eckit_mpi )
+set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_linalg eckit_maths eckit_mpi eckit_web )
 
 if( HAVE_ECKIT_CMD)
   list( APPEND ECKIT_LIBRARIES eckit_cmd )

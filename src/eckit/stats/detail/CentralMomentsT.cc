@@ -34,6 +34,9 @@ template<> std::complex<float> CentralMomentsT<std::complex<float>>::mean() cons
 }
 
 
+static ValueStatisticsBuilder<CentralMomentsT<double>> __stats("central-moments");
+
+
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir

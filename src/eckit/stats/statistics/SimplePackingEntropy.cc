@@ -14,13 +14,11 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <memory>
 
 #include "eckit/exception/Exceptions.h"
 
 #include "mir/data/MIRField.h"
 #include "mir/param/MIRParametrisation.h"
-#include "mir/stats/statistics/StatisticsT.h"
 
 
 namespace mir {
@@ -77,7 +75,7 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     reset();
 
     ASSERT(field.dimensions() == 1);
-    auto& values = field.values(0);
+    const auto& values = field.values(0);
 
     Counter::reset(field);
     for (auto& value : values) {

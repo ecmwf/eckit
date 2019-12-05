@@ -18,6 +18,8 @@
 #include <limits>
 #include <ostream>
 
+#include "mir/stats/ValueStatistics.h"
+
 
 namespace mir {
 namespace stats {
@@ -33,7 +35,7 @@ namespace detail {
  * @note: kurtosis (γ_2 = μ_4/μ_2^2 - 3) is computed as kurtosis "excess", @see http://mathworld.wolfram.com/Kurtosis.html
  */
 template< typename T >
-struct CentralMomentsT {
+struct CentralMomentsT : ValueStatistics {
 private:
     T M1_;
     T M2_;
@@ -66,7 +68,7 @@ public:
     T kurtosis()          const { return count_<2? 0 : (M4_ * T(count_)) / (M2_*M2_) - 3.; }
     T standardDeviation() const { return std::sqrt(variance()); }
 
-    double difference(const double& a, const double& b) const {
+    T difference(const T& a, const T& b) const {
         return std::abs(a - b);
     }
 

@@ -9,52 +9,43 @@
  */
 
 
-#ifndef mir_stats_Statistics_h
-#define mir_stats_Statistics_h
+#ifndef mir_stats_ValueStatistics_h
+#define mir_stats_ValueStatistics_h
 
 #include <iosfwd>
 #include <string>
 
 
 namespace mir {
-namespace data {
-class MIRField;
-}
-namespace param {
-class MIRParametrisation;
-}
-}
-
-
-namespace mir {
 namespace stats {
 
 
-class Statistics {
+class ValueStatistics {
 public:
-
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Statistics(const param::MIRParametrisation&);
-    Statistics(const Statistics&) = delete;
+    ValueStatistics()                       = default;
+    ValueStatistics(ValueStatistics&&)      = default;
+    ValueStatistics(const ValueStatistics&) = delete;
 
     // -- Destructor
 
-    virtual ~Statistics();
+    virtual ~ValueStatistics() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    void operator=(const Statistics&) = delete;
+    virtual void operator()(const double&);
+    virtual void operator()(const float&);
+    void operator=(const ValueStatistics&) = delete;
 
     // -- Methods
-
-    virtual void execute(const data::MIRField&) = 0;
+    // None
 
     // -- Overridden methods
     // None
@@ -66,10 +57,8 @@ public:
     // None
 
 protected:
-
     // -- Members
-
-    const param::MIRParametrisation& parametrisation_;
+    // None
 
     // -- Methods
 
@@ -86,7 +75,6 @@ protected:
     // None
 
 private:
-
     // -- Members
     // None
 
@@ -104,36 +92,35 @@ private:
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& out, const Statistics& r) {
-        r.print(out);
+    friend std::ostream& operator<<(std::ostream& out, const ValueStatistics& s) {
+        s.print(out);
         return out;
     }
-
 };
 
 
-class StatisticsFactory {
+class ValueStatisticsFactory {
 private:
     std::string name_;
-    virtual Statistics* make(const param::MIRParametrisation&) = 0;
+    virtual ValueStatistics* make() = 0;
+
 protected:
-    StatisticsFactory(const std::string&);
-    virtual ~StatisticsFactory();
+    ValueStatisticsFactory(const std::string&);
+    virtual ~ValueStatisticsFactory();
+
 public:
     static void list(std::ostream&);
-    static Statistics* build(const std::string&, const param::MIRParametrisation&);
+    static ValueStatistics* build(const std::string&);
 };
 
 
-template<class T>
-class StatisticsBuilder : public StatisticsFactory {
+template <class T>
+class ValueStatisticsBuilder : public ValueStatisticsFactory {
 private:
-    Statistics* make(const param::MIRParametrisation& param) {
-        return new T(param);
-    }
+    ValueStatistics* make() { return new T(); }
+
 public:
-    StatisticsBuilder(const std::string& name) : StatisticsFactory(name) {
-    }
+    ValueStatisticsBuilder(const std::string& name) : ValueStatisticsFactory(name) {}
 };
 
 
@@ -142,4 +129,3 @@ public:
 
 
 #endif
-

@@ -24,7 +24,6 @@
 #include "eckit/thread/Mutex.h"
 
 #include "mir/config/LibMir.h"
-#include "mir/data/MIRField.h"
 
 
 namespace mir {

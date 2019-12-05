@@ -13,8 +13,8 @@
 
 #include <cmath>
 #include <limits>
-#include <ostream>
 #include <memory>
+#include <ostream>
 #include <sstream>
 
 #include "mir/param/SameParametrisation.h"

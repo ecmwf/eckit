@@ -32,17 +32,17 @@ enum AngleSpace { ASYMMETRIC, SYMMETRIC };
 
 
 /// Angle statistics in degrees [-180,180] or radians [-π,π]
-template< int SCALE, int SYMMETRY >
+template <typename T, int SCALE, int SYMMETRY>
 struct AngleT {
 private:
-    CentralMomentsT<std::complex<double>> centralMoments_;
+    CentralMomentsT<std::complex<T>> centralMoments_;
 
-    const double rescale_;
-    const double descale_;
-    const double globe_;
-    const double min_;
+    const T rescale_;
+    const T descale_;
+    const T globe_;
+    const T min_;
 
-    double normalise(double a, double minimum, double globe) const {
+    T normalise(T a, T minimum, T globe) const {
         while (a >= minimum + globe) {
             a -= globe;
         }
@@ -52,25 +52,25 @@ private:
         return a;
     }
 
-    double normalise(double a) const {
+    T normalise(T a) const {
         return normalise(a, min_, globe_);
     }
 
-    std::complex<double> decompose(const double& a) const {
+    std::complex<T> decompose(const T& a) const {
         return std::polar(1., a * descale_);
     }
 
-    double recompose(const std::complex<double>& c) const {
+    T recompose(const std::complex<T>& c) const {
         return normalise(std::arg(c) * rescale_);
     }
 
 public:
 
     AngleT() :
-        rescale_(std::numeric_limits<double>::signaling_NaN()),
-        descale_(std::numeric_limits<double>::signaling_NaN()),
-        globe_(std::numeric_limits<double>::signaling_NaN()),
-        min_(std::numeric_limits<double>::signaling_NaN()) {
+        rescale_(std::numeric_limits<T>::signaling_NaN()),
+        descale_(std::numeric_limits<T>::signaling_NaN()),
+        globe_(std::numeric_limits<T>::signaling_NaN()),
+        min_(std::numeric_limits<T>::signaling_NaN()) {
         NOTIMP;  // ensure specialisation
     }
 
@@ -78,12 +78,12 @@ public:
         centralMoments_.reset();
     }
 
-    double difference(const double& a, const double& b) const {
+    T difference(const T& a, const T& b) const {
         auto d = std::abs(normalise(b) - normalise(a));
         return std::min(globe_ - d, d);
     }
 
-    void operator()(const double& v) {
+    void operator()(const T& v) {
         centralMoments_(decompose(v));
     }
 
@@ -91,15 +91,15 @@ public:
         centralMoments_ += other.centralMoments_;
     }
 
-    double mean() const {
+    T mean() const {
         return recompose(centralMoments_.mean());
     }
 
-    double variance() const {
+    T variance() const {
         return recompose(centralMoments_.variance());
     }
 
-    double standardDeviation() const {
+    T standardDeviation() const {
         return recompose(centralMoments_.standardDeviation());
     }
 
@@ -113,10 +113,10 @@ public:
 
 
 // Available angle statistics
-template<> AngleT<AngleScale::DEGREE, AngleSpace::ASYMMETRIC>::AngleT::AngleT();
-template<> AngleT<AngleScale::DEGREE, AngleSpace::SYMMETRIC>::AngleT::AngleT();
-template<> AngleT<AngleScale::RADIAN, AngleSpace::ASYMMETRIC>::AngleT::AngleT();
-template<> AngleT<AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT::AngleT();
+template<> AngleT<double, AngleScale::DEGREE, AngleSpace::ASYMMETRIC>::AngleT::AngleT();
+template<> AngleT<double, AngleScale::DEGREE, AngleSpace::SYMMETRIC>::AngleT::AngleT();
+template<> AngleT<double, AngleScale::RADIAN, AngleSpace::ASYMMETRIC>::AngleT::AngleT();
+template<> AngleT<double, AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT::AngleT();
 
 
 }  // namespace detail

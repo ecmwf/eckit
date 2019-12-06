@@ -41,6 +41,7 @@ public: // methods
     //, const std::string& typeSignature);
 
     const BitfieldDef& getBitfieldType(const std::string& typeName) const;
+    const BitfieldDef& getBitfieldTypeDefinition(const std::string& columnName) const;
 
     std::string generateSelectAll(const std::set<std::string>& skipTables=std::set<std::string>()) const;
 

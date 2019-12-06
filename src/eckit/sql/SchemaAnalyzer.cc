@@ -51,6 +51,14 @@ const BitfieldDef& SchemaAnalyzer::getBitfieldType(const std::string& typeName) 
     return nullBitfieldDef;
 }
 
+const BitfieldDef& SchemaAnalyzer::getBitfieldTypeDefinition(const std::string& columnName) const {
+
+    auto it = columnTypes_.find(columnName);
+    ASSERT(it != columnTypes_.end());
+
+    return getBitfieldType(it->second);
+}
+
 std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipTables) const {
 
     std::string from;

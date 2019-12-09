@@ -39,6 +39,7 @@ private:
     double upperLimit_;
 
     double absoluteError_;
+    double packingError_;
     double relativeErrorMin_;
     double relativeErrorMax_;
 
@@ -47,7 +48,10 @@ private:
     double ignoreDifferentMissingValuesFactor_;
     double ignoreAboveUpperLimitFactor_;
 
-    enum absTolerance_t {NONE, ABSOLUTE, RELATIVE, PACKINGERROR } toleranceType_;
+    bool doAbsoluteCompare_;
+    bool doPackingCompare_;
+    bool doRelativeMinCompare_;
+    bool doRelativeMaxCompare_;
 
     bool hasLowerLimit_;
     bool hasUpperLimit_;
@@ -59,7 +63,7 @@ public:
 
     void reset(const data::MIRField&, const data::MIRField&);
     void print(std::ostream&) const;
-    bool count(const double& a, const double& b, const double& diff);
+    bool count(double a, double b, double diff);
     std::string check() const;
 
     size_t ignoreAboveUpperLimit() const;

@@ -39,6 +39,8 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const para
     countBelowLowerLimit_(0),
     countAboveUpperLimit_(0),
     max_(std::numeric_limits<double>::quiet_NaN()),
+    maxIndexValue1_(std::numeric_limits<double>::quiet_NaN()),
+    maxIndexValue2_(std::numeric_limits<double>::quiet_NaN()),
     packingError_(std::numeric_limits<double>::quiet_NaN()),
     first_(true) {
 
@@ -56,6 +58,7 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const para
     hasUpperLimit_ = upperLimit_ == upperLimit_;
 
     doAbsoluteCompare_    = same->get("absolute-error", absoluteError_ = nan);
+    doRelativeCompare_    = same->get("relative-error-factor", relativeErrorFactor_ = nan);
     doRelativeMinCompare_ = same->get("relative-error-min", relativeErrorMin_ = nan);
     doRelativeMaxCompare_ = same->get("relative-error-max", relativeErrorMax_ = nan);
 
@@ -83,8 +86,10 @@ void CounterBinary::reset(const data::MIRField& field1, const data::MIRField& fi
     countBelowLowerLimit_ = 0;
     countAboveUpperLimit_ = 0;
 
-    max_   = std::numeric_limits<double>::quiet_NaN();
-    first_ = true;
+    max_            = std::numeric_limits<double>::quiet_NaN();
+    maxIndexValue1_ = std::numeric_limits<double>::quiet_NaN();
+    maxIndexValue2_ = std::numeric_limits<double>::quiet_NaN();
+    first_          = true;
 }
 
 
@@ -93,6 +98,8 @@ void CounterBinary::print(std::ostream& out) const {
            "count=" << count()
         << ",max=" << max()
         << ",maxIndex=" << maxIndex()
+        << ",maxIndexValue1=" << maxIndexValue1_
+        << ",maxIndexValue2=" << maxIndexValue2_
         << ",missing=" << missing()
         << ",missingIn1NotIn2=" << missingIn1NotIn2()
         << ",missingIn2NotIn1=" << missingIn2NotIn1();
@@ -113,6 +120,10 @@ void CounterBinary::print(std::ostream& out) const {
         out << ",toleranceType=PackingError,tolerance=" << packingError_;
     }
 
+    if (doRelativeCompare_) {
+        out << ",toleranceType=RelativeError,toleranceFactor=" << relativeErrorFactor_;
+    }
+
     if (doRelativeMinCompare_) {
         out << ",toleranceType=RelativeMin,tolerance=" << relativeErrorMin_;
     }
@@ -127,8 +138,8 @@ void CounterBinary::print(std::ostream& out) const {
 
 bool CounterBinary::count(double a, double b, double diff) {
     size_t index = counter1_.count();
-    bool miss1 = !counter1_.count(a);
-    bool miss2 = !counter2_.count(b);
+    bool miss1   = !counter1_.count(a);
+    bool miss2   = !counter2_.count(b);
 
     if (!miss1 && !miss2) {
 
@@ -140,8 +151,10 @@ bool CounterBinary::count(double a, double b, double diff) {
         }
 
         if (max_ < diff || first_) {
-            max_ = diff;
-            maxIndex_ = index;
+            max_            = diff;
+            maxIndex_       = index;
+            maxIndexValue1_ = a;
+            maxIndexValue2_ = b;
         }
 
         first_ = false;
@@ -185,6 +198,13 @@ std::string CounterBinary::check() const {
         }
         return std::abs(a - b) / mx;
     };
+
+    if (doRelativeCompare_) {
+        double error = relative_error(maxIndexValue1_, maxIndexValue2_);
+        if (error > relativeErrorFactor_) {
+            reasons << "\n" "* relative error (" << error << ") greater than " << relativeErrorFactor_;
+        }
+    }
 
     if (doRelativeMinCompare_) {
         double error = relative_error(counter1_.min(), counter2_.min());

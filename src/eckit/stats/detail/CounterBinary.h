@@ -37,11 +37,14 @@ private:
     double max_;
     double lowerLimit_;
     double upperLimit_;
+    double maxIndexValue1_;
+    double maxIndexValue2_;
 
     double absoluteError_;
     double packingError_;
     double relativeErrorMin_;
     double relativeErrorMax_;
+    double relativeErrorFactor_;
 
     size_t ignoreDifferentMissingValues_;
     size_t ignoreAboveUpperLimit_;
@@ -50,6 +53,7 @@ private:
 
     bool doAbsoluteCompare_;
     bool doPackingCompare_;
+    bool doRelativeCompare_;
     bool doRelativeMinCompare_;
     bool doRelativeMaxCompare_;
 

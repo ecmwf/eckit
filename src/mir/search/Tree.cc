@@ -17,12 +17,10 @@
 
 #include "mir/search/Tree.h"
 
-#include <unistd.h>
 #include <iostream>
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/os/AutoUmask.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 

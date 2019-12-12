@@ -173,7 +173,7 @@ std::string name_;
 template <>
 std::gamma_distribution<double>::param_type DistributionT<std::gamma_distribution<double>>::param(
     const param::MIRParametrisation& p) const {
-    return std::gamma_distribution<double>::param_type(get_value(p, "a", 1.), get_value(p, "b", 1.));
+    return std::gamma_distribution<double>::param_type(get_value(p, "alpha", 1.), get_value(p, "beta", 1.));
 }
 
 

@@ -42,6 +42,7 @@ struct YYSTYPE {
     std::pair<std::string, int>                    bfdef;
     std::vector<std::pair<std::string, int>>       bfdefs;
     bool                                           bol;
+    std::pair<long, long>                          range;
 };
 
 #ifdef YY_DECL
@@ -135,7 +136,7 @@ Expressions emptyExpressionList;
 
 %type <exp>     expression assignment_rhs;
 %type <exp>     column factor term conjonction disjonction condition atom_or_number vector_index optional_hash;
-%type <exp>     where
+%type <exp>     where;
 %type <explist> expression_list group_by;
 
 %type <tablist> table_list;
@@ -160,7 +161,9 @@ Expressions emptyExpressionList;
 
 %type <bol> distinct;
 
-%type <val> bitfield_ref;
+%type <val> bitfield_ref default_value;
+
+%type <range> vector_range_decl;
 
 %%
 
@@ -391,19 +394,20 @@ column_def_list_: column_def                      { $$ = ColumnDefs(); $$.push_b
                 | column_def_list_ ',' column_def { $$ = $1; $$.push_back($3); }
                 ;
 
-column_def: column_name data_type // vector_range_decl default_value
+column_def: column_name vector_range_decl data_type default_value
     {
+        // n.b. Ignore vector range decl and default value. These are just for valid schema parsing
         std::string column_name($1);
-        std::string data_type($2);
+        std::string data_type($3);
         const BitfieldDef& bitfield(session->currentDatabase().schemaAnalyzer().getBitfieldType(data_type));
-        $$ = ColumnDef(column_name, data_type, bitfield); // $3, $2, $4);
+        $$ = ColumnDef(column_name, data_type, bitfield);
     }
     ;
-//
-//vector_range_decl: '[' DOUBLE ']'            { $$ = std::make_pair(1, $2); }
-//                 | '[' DOUBLE ':' DOUBLE ']' { $$ = std::make_pair($2, $4); }
-//                 | empty                     { $$ = std::make_pair(0, 0); }
-//                 ;
+
+vector_range_decl: '[' DOUBLE ']'            { $$ = std::make_pair(1, $2); }
+                 | '[' DOUBLE ':' DOUBLE ']' { $$ = std::make_pair($2, $4); }
+                 | empty                     { $$ = std::make_pair(0, 0); }
+                 ;
 
 column_name: IDENT { $$ = $1; }
            ;
@@ -420,10 +424,10 @@ data_type: IDENT                 { $$ = $1; }
 //                                 }
          ;
 
-//default_value: DEFAULT expression { SQLExpression* e($2); $$ = e->title(); }
-//             | empty { $$ = std::string(); }
-//             ;
-//
+default_value: DEFAULT expression { std::shared_ptr<SQLExpression> e($2); $$ = e->title(); }
+             | empty { $$ = std::string(); }
+             ;
+
 //create_view_statement: CREATE VIEW IDENT AS select_statement { $$ = $5; }
 //	;
 

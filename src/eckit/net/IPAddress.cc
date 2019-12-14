@@ -22,7 +22,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 IPAddress::IPAddress(const std::string& addr) {
-    if(inet_aton(addr.c_str(), &address_) != 0) {
+    if(inet_aton(addr.c_str(), &address_) == 0) {
          std::ostringstream os;
          os << "Invalid IP address [" << addr << "]";
          throw eckit::SeriousBug(os.str());

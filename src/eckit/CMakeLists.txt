@@ -594,7 +594,10 @@ net/UDPClient.cc
 net/UDPClient.h
 net/UDPServer.cc
 net/UDPServer.h
-)
+net/IPAddress.cc
+net/IPAddress.h
+net/NetMask.cc
+net/NetMask.h)
 
 list( APPEND eckit_serialisation_srcs
 serialisation/BadTag.cc

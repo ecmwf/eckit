@@ -37,6 +37,12 @@ public:
 
 	const std::vector<std::string>& lookUp(const std::string&);
     std::vector<std::string> keys();
+    std::vector<std::vector<std::string> > lines();
+
+    void reload();
+    bool exists() const;
+
+
 
 private: // methods
 

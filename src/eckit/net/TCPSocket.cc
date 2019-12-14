@@ -33,6 +33,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
+#include "eckit/net/IPAddress.h"
 
 #ifdef _AIX
 // TODO: Add check to cmake
@@ -658,7 +659,7 @@ std::string TCPSocket::addrToHost(in_addr addr) {
     h = gethostbyaddr(reinterpret_cast<char*>(&addr), sizeof(addr), AF_INET);
 #endif
 
-    std::string s      = h ? h->h_name : ::inet_ntoa(addr);
+    std::string s      = h ? std::string(h->h_name) : IPAddress(addr).asString();
     cache[addr.s_addr] = s;
     return s;
 }
@@ -782,7 +783,7 @@ void TCPSocket::print(std::ostream& s) const {
 }
 
 std::ostream& operator<<(std::ostream& s, in_addr a) {
-    s << inet_ntoa(a);
+    s << IPAddress(a);
     return s;
 }
 

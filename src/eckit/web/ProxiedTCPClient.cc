@@ -13,7 +13,6 @@
 #include "eckit/config/Resource.h"
 #include "eckit/web/HttpHeader.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -21,13 +20,12 @@ namespace eckit {
 
 ProxiedTCPClient::ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port) :
     TCPClient(port),
-    proxyHost_(proxyHost),
-    proxyPort_(proxyPort) {}
+    proxy_(proxyHost, proxyPort) {}
 
 ProxiedTCPClient::~ProxiedTCPClient() {}
 
 TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout) {
-    TCPSocket& socket = TCPClient::connect(proxyHost_, proxyPort_, retries, timeout);
+    TCPSocket& socket = TCPClient::connect(proxy_.hostname(), proxy_.port(), retries, timeout);
 
     socket.debug(debug_);
 
@@ -53,7 +51,7 @@ TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retr
 
 void ProxiedTCPClient::print(std::ostream& s) const {
     s << "ProxiedTCPClient["
-      << "proxyHost=" << proxyHost_ << "proxyPort=" << proxyPort_ << ",";
+      << "proxy=" << proxy_ << ",";
     TCPClient::print(s);
     s << "]";
 }

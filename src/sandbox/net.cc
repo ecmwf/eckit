@@ -9,7 +9,7 @@
  */
 
 #include "eckit/config/Resource.h"
-#include "eckit/net/NetAddress.h"
+#include "eckit/net/Endpoint.h"
 #include "eckit/runtime/Application.h"
 
 using namespace eckit;
@@ -23,12 +23,10 @@ public:
 
 
 void Test::run() {
-    NetAddress addr(Resource<std::string>("-addr;$ADDR;addr", "localhost:9000"));
+    Endpoint addr(Resource<std::string>("-addr;$ADDR;addr", "localhost:9000"));
 
     Log::info() << addr << std::endl;
 }
-
-//=============================================================
 
 int main(int argc, char** argv) {
     Test app(argc, argv);

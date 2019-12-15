@@ -8,16 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File ProxiedTCPClient.h
-// Baudouin Raoult - ECMWF Aug 2017
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Aug 2017
 
 #ifndef eckit_ProxiedTCPClient_h
 #define eckit_ProxiedTCPClient_h
 
-#include "eckit/net/NetAddress.h"
+#include "eckit/net/Endpoint.h"
 #include "eckit/net/TCPClient.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -42,13 +41,12 @@ private:
 
 // No copy allowed
 
-	ProxiedTCPClient(const ProxiedTCPClient&);
+    ProxiedTCPClient(const ProxiedTCPClient&);
 	ProxiedTCPClient& operator=(const ProxiedTCPClient&);
 
 // -- Members
 
-	std::string proxyHost_;
-	int proxyPort_;
+    Endpoint proxy_;
 
 // -- Overridden methods
 

@@ -13,6 +13,7 @@
 #include "eckit/io/FTPHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/TCPServer.h"
+#include "eckit/net/IPAddress.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -83,7 +84,7 @@ void FTPHandle::open(const std::string& cmd) {
     TCPServer server(0);  // Any port
 
     int port         = htons(server.localPort());
-    std::string addr = ::inet_ntoa(server.localAddr());
+    std::string addr = IPAddress(server.localAddr()).asString();
 
     char p[1024];
     snprintf(p, 1024, "PORT %s,%d,%d", addr.c_str(), port / 256, port % 256);

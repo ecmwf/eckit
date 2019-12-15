@@ -1,3 +1,14 @@
+### test data files
+list( APPEND test_data_files
+t.grib
+)
+
+if(HAVE_EXTRA_TESTS)
+    ecbuild_get_test_multidata( TARGET get_eckit_io_test_data
+                                NAMES ${test_data_files}
+                                NOCHECK )
+endif()
+
 ecbuild_add_test( TARGET   eckit_test_filepool
                   SOURCES  test_filepool.cc
                   LIBS     eckit )
@@ -38,5 +49,12 @@ ecbuild_add_test( TARGET      eckit_test_pooledfile
 ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   HAVE_RADOS
-				  INCLUDES    ${RADOS_INCLUDE_DIRS}
+                  INCLUDES    ${RADOS_INCLUDE_DIRS}
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_rados-performance
+                  SOURCES     rados-performance.cc
+                  CONDITION   (HAVE_EXTRA_TESTS AND HAVE_RADOS)
+                  INCLUDES    ${RADOS_INCLUDE_DIRS}
+                  TEST_DEPENDS get_eckit_io_test_data
                   LIBS        eckit )

@@ -36,6 +36,10 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_filemode
                   SOURCES     test_filemode.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_filesystem_uri
+                  SOURCES     test_uri.cc
+                  LIBS        eckit )
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tmp/foo)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/1)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testdir/foo/2)

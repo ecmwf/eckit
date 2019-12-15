@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "EtcTable.h"
+#include "eckit/config/EtcTable.h"
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/thread/AutoLock.h"
@@ -59,6 +59,26 @@ std::vector<std::string> EtcTable::keys() {
     }
 
     return v;
+}
+
+std::vector<std::vector<std::string> > EtcTable::lines() {
+    AutoLock<Mutex> lock(mutex_);
+    if (last_ == 0)
+        load();
+
+    return lines_;
+}
+
+
+void EtcTable::reload() {
+    AutoLock<Mutex> lock(mutex_);
+    last_ = 0;
+}
+
+
+bool EtcTable::exists() const {
+    LocalPathName path(std::string("~/") + dir_ + "/" + name_);
+    return path.exists();
 }
 
 void EtcTable::load() {

@@ -35,6 +35,13 @@ public:
 
 	TCPStreamBase() {}
 
+
+// -- Methods
+
+    in_addr remoteAddr() {
+        return socket().remoteAddr();
+    }
+
 // -- Overridden methods
 
 	// From Stream

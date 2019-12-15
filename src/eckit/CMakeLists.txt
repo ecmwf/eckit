@@ -594,7 +594,10 @@ net/UDPClient.cc
 net/UDPClient.h
 net/UDPServer.cc
 net/UDPServer.h
-)
+net/IPAddress.cc
+net/IPAddress.h
+net/NetMask.cc
+net/NetMask.h)
 
 list( APPEND eckit_serialisation_srcs
 serialisation/BadTag.cc
@@ -866,7 +869,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
-					LIBS
+                    LIBS
                         ${OPENSSL_LIBRARIES}
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}

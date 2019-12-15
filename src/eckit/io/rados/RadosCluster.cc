@@ -45,11 +45,11 @@ const RadosCluster& RadosCluster::instance() {
 RadosCluster::RadosCluster():
     cluster_(0) {
 
+    static const std::string radosClusterName = Resource<std::string>("radosClusterName", "mars");
+    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.mars");
+    static const std::string radosClusterConf = Resource<std::string>("radosClusterConf", "~/.ceph/ceph.conf");
 
-    static const std::string radosClusterName = Resource<std::string>("radosClusterName", "ceph");
-    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.test");
-    static const std::string radosClusterConf = Resource<std::string>("radosClusterConf", "/tmp/ceph-testbed.conf");
-
+    static const PathName radosClusterConfPath(radosClusterConf, true);
 
     uint64_t flags = 0;
 
@@ -61,7 +61,7 @@ RadosCluster::RadosCluster():
     RADOS_CALL(rados_create2(&cluster_, radosClusterName.c_str(), radosClusterUser.c_str(), flags));
 
     std::cout << "RadosClusterConf is " << radosClusterConf << std::endl;
-    RADOS_CALL(rados_conf_read_file(cluster_, radosClusterConf.c_str()));
+    RADOS_CALL(rados_conf_read_file(cluster_, radosClusterConfPath.fullName().path().c_str()));
 
     RADOS_CALL(rados_connect(cluster_));
 
@@ -104,8 +104,21 @@ void RadosCluster::error(int code, const char *msg, const char* file, int line, 
 
 
 Length RadosCluster::maxObjectSize() const {
+/*    rados_ioctx_t& ctx=ioCtx("mars");
+    char keys[1000000];
+    size_t keyLen;
+    char vals[1000000];
+    size_t valLen;
+
+    rados_application_metadata_list(ctx, "ceph", keys, &keyLen, vals, &valLen);
+
+    std::cout << vals <<std::endl;
+
+    std::cout << keys <<std::endl;*/
+
     // TODO: Get from server
-    static long long len = Resource<long long>("radosMaxObjectSize", 128 * 1024 * 1024);
+    // ceph configuration parameter "osd_max_write_size" default value is 90MB
+    static long long len = Resource<long long>("radosMaxObjectSize", 90 * 1024 * 1024);
     return len;
 
 }

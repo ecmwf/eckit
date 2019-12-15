@@ -8,65 +8,50 @@
  * does it submit to any jurisdiction.
  */
 
-// File TCPClient.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 96
 
 #ifndef eckit_TCPClient_h
 #define eckit_TCPClient_h
 
-#include "eckit/net/NetAddress.h"
 #include "eckit/net/TCPSocket.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
 class Endpoint;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class TCPClient : public TCPSocket {
 public:
+    TCPClient(int port = 0);
 
-// -- Contructors
+    ~TCPClient();
 
-	TCPClient(int port = 0);
-
-// -- Destructor
-
-	~TCPClient();
-
-// -- Methods
-
-	virtual TCPSocket& connect(const std::string& host,int port, int retries = 5, int timeout = 0);
+    virtual TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
     virtual TCPSocket& connect(const Endpoint& endpoint, int retries = 5, int timeout = 0);
 
 protected:
-
     virtual void print(std::ostream& s) const;
 
 private:
+    TCPClient(const TCPClient&);
+    TCPClient& operator=(const TCPClient&);
 
-// No copy allowed
+    // -- Members
 
-	TCPClient(const TCPClient&);
-	TCPClient& operator=(const TCPClient&);
+    int port_;
 
-// -- Members
+    // From TCPSocket
 
-	int port_;
-
-// -- Overridden methods
-
-	// From TCPSocket
-
-	virtual void bind();
-	virtual std::string bindingAddress() const;
-
+    virtual void bind();
+    virtual std::string bindingAddress() const;
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

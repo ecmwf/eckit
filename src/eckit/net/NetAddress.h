@@ -8,23 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-// File NetAddress.h
-// T. Quintino - ECMWF Feb 2012
+/// @author Tiago Quintino
+/// @date   Feb 2012
 
 #ifndef eckit_NetAddress_h
 #define eckit_NetAddress_h
 
-#include "eckit/serialisation/Stream.h"
+#include "eckit/deprecated.h"
 
-//-----------------------------------------------------------------------------
+#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // The class NetAddress represents a host plus its connection port
 
-class NetAddress {
+class DEPRECATED("Use eckit::Endpoint instead") NetAddress {
 public:
 
     friend Stream& operator<<(Stream&,const NetAddress&);
@@ -76,7 +76,7 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

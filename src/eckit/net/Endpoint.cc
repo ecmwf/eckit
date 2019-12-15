@@ -13,34 +13,62 @@
 #include <ostream>
 
 #include "eckit/serialisation/Stream.h"
-
+#include "eckit/utils/Tokenizer.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Endpoint::Endpoint(const std::string& host, int port) :
-    hostname_(host),
-    port_(port) {}
-
-Endpoint::Endpoint(Stream& s) {
-    s >> hostname_;
-    s >> port_;
+Endpoint::Endpoint(const std::string& s) {
+    Tokenizer tokenize(":");
+    std::vector<std::string> tokens;
+    tokenize(s, tokens);
+    ASSERT(tokens.size() == 2);
+    host_ = tokens[0];
+    port_     = Translator<std::string, int>()(tokens[1]);
+    validate();
 }
 
-Endpoint::Endpoint() : port_(0) {}
+Endpoint::Endpoint(const std::string& host, int port) :
+    host_(host),
+    port_(port)
+{
+    validate();
+}
+
+Endpoint::Endpoint(Stream& s) {
+    s >> host_;
+    s >> port_;
+    validate();
+}
+
+Endpoint::Endpoint() : port_(0) {
+    validate();
+}
 
 bool Endpoint::operator==(const Endpoint& other) {
-    return (port_ == other.port_ && hostname_ == other.hostname_);
+    return (port_ == other.port_ && host_ == other.host_);
 }
 
 void Endpoint::print(std::ostream& os) const {
-    os << hostname_ << ":" << port_;
+    os << host_ << ":" << port_;
 }
 
 void Endpoint::encode(Stream &s) const {
-    s << hostname_;
+    s << host_;
     s << port_;
+}
+
+void Endpoint::validate() const
+{
+    // IP ranges are valid 1 - 65535
+    if (port_ < 0 or port_ > 65535) {
+        std::ostringstream msg;
+        msg << "Invalid port number " << port_;
+        throw eckit::BadValue(msg.str(), Here());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

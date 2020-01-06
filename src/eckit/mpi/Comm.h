@@ -591,8 +591,11 @@ void eckit::mpi::Comm::gatherv(const std::vector<T>& send, std::vector<T>& recv,
                                size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(root < commsize);
-    ECKIT_MPI_ASSERT(recvcounts.size() == commsize);
-    ECKIT_MPI_ASSERT(displs.size() == commsize);
+    if( rank() == root ) {
+        ECKIT_MPI_ASSERT(recvcounts.size() == commsize);
+        ECKIT_MPI_ASSERT(displs.size() == commsize);
+        ECKIT_MPI_ASSERT(recv.size() >= displs[commsize - 1] + recvcounts[commsize - 1]);
+    }
 
     gatherv(send.begin(), send.end(), recv.begin(), recv.end(), recvcounts.data(), displs.data(),
             root);

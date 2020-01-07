@@ -38,7 +38,7 @@ public:
 
     ~FDBUser() {}
 
-    TCPServer data_;
+    EphemeralTCPServer data_;
 
 private:
     virtual void serve(eckit::Stream& control, std::istream&, std::ostream&) {

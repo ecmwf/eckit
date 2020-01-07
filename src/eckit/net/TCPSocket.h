@@ -119,7 +119,7 @@ protected: // members
 
 // -- Methods
 
-    int newSocket(int, bool reusePort = false);
+    int newSocket(int, bool reusePort = false, bool reuseAddress = true);
 
     virtual void print(std::ostream& s) const;
 

@@ -27,73 +27,66 @@ namespace eckit {
 // so I need to include socket here so all client of this
 // class actually see this #define. So much for encapsulation.
 
-class TCPServer : public TCPSocket {
+class TCPServer : public TCPSocket, private NonCopyable {
 public:
 
-// -- Contructors
-
-    TCPServer(int port = 0, const std::string& addr = "", bool reusePort = false);
-
-
-// -- Destructor
+    TCPServer(int port = 0, const std::string& addr = "", bool reusePort = false, bool reuseAddress = true);
 
     ~TCPServer();
 
-// -- Methods
-
     void willFork(bool);
 
-
     // accept a client, more can be accepted
-
     virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = 0);
+
     void closeExec(bool on) { closeExec_ = on; }
-
-// -- Overridden methods
-
-    // From TCPSocket
 
     virtual int socket();
 
     virtual void close();
 
-
-protected:
-
-// -- Members
+protected: // members
 
     int port_;
     int listen_;
     std::string addr_;
 
-// -- Overridden methods
-
-    // From TCPSocket
-
     virtual void bind();
 
-protected:
+protected: // methods
 
     virtual void print(std::ostream& s) const;
 
-private:
-
-// No copy allowed
-
-    TCPServer(const TCPServer&);
-    TCPServer& operator=(const TCPServer&);
+private: // methods
 
     // To be used by Select
 
     virtual std::string bindingAddress() const;
 
+private: // members
+
     bool closeExec_;
+
+    /// SO_REUSEPORT is useful if multiple threads want to bind to the same port and OS handles load balancing
+    /// otherwise better not to set it. Default is false.
     bool reusePort_;
+
+    /// SO_REUSEADDRESS tells OS to skip TIME_WAIT of 2MSL before rebinding to same address:port
+    /// This allows fast restart of services, at the added risk of duplicated/stray packets in route
+    /// from previous closed connections messing up new connections. This is likely under high network contention and/or
+    /// very short connections quickly reuse the available ports.
+    /// Set to false when openeing ephemeral ports/connections.
+    /// Default is true.
+    bool reuseAddress_;
 
 };
 
+class EphemeralTCPServer : public TCPServer {
+public:
+    EphemeralTCPServer(const std::string& addr = "");
+};
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

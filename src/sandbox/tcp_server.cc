@@ -67,7 +67,7 @@ void FDBConnection::run() {
                 Log::info() << "received file size " << fsize << std::endl;
 
                 // 3.2 send data port
-                TCPServer data_;
+                EphemeralTCPServer data_;
                 control << data_.localPort();
 
                 // 3.2 accept data connection

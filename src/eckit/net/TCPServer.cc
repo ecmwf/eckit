@@ -22,13 +22,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TCPServer::TCPServer(int port, const std::string& addr, bool reusePort) :
+TCPServer::TCPServer(int port, const std::string& addr, bool reusePort, bool reuseAddress) :
     TCPSocket(),
     port_(port),
     listen_(-1),
     addr_(addr),
     closeExec_(true),
-    reusePort_(reusePort) {}
+    reusePort_(reusePort),
+    reuseAddress_(reuseAddress) {}
 
 TCPServer::~TCPServer() {
     if (listen_ >= 0)
@@ -38,15 +39,11 @@ TCPServer::~TCPServer() {
 // Accept a client
 
 TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected) {
+
     bind();
 
-
     sockaddr_in from;
-#ifdef SGI
-    int fromlen = sizeof(from);
-#else
     socklen_t fromlen = sizeof(from);
-#endif
 
     for (;;) {
         int delay = timeout ? timeout : 10;
@@ -55,12 +52,16 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
         Log::status() << message << " (port " << port_ << ")" << std::endl;
 
         while (!select.ready(delay)) {
-            if (timeout && !connected)
+
+            if (timeout && !connected) {
                 throw TimeOut(message, timeout);
+            }
+
             if (connected) {
                 *connected = false;
                 return *this;
             }
+
             Log::status() << message << " (port " << port_ << ")" << std::endl;
         }
 
@@ -103,7 +104,7 @@ void TCPServer::close() {
 
 void TCPServer::bind() {
     if (listen_ == -1) {
-        listen_ = newSocket(port_, reusePort_);
+        listen_ = newSocket(port_, reusePort_, reuseAddress_);
         ::listen(listen_, 5);
 
         // if(!willFork_)
@@ -127,6 +128,8 @@ void TCPServer::print(std::ostream& s) const {
     TCPSocket::print(s);
     s << "]";
 }
+
+EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr, false, false) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

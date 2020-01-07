@@ -81,7 +81,7 @@ void FTPHandle::open(const std::string& cmd) {
     ftpCommand("PASS 04clave");
     ftpCommand("TYPE I");
 
-    TCPServer server(0);  // Any port
+    EphemeralTCPServer server;
 
     int port         = htons(server.localPort());
     std::string addr = IPAddress(server.localAddr()).asString();

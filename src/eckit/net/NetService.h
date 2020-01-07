@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File NetService.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
+/// @date   Jun 96
 
 #ifndef eckit_NetService_h
 #define eckit_NetService_h
@@ -17,7 +17,6 @@
 #include "eckit/net/TCPServer.h"
 #include "eckit/thread/Thread.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -28,50 +27,34 @@ class NetUser;
 class NetService : public Thread {
 
 public:
-
-// -- Contructors
-
     /// @param[in]  port     TCP port to listen on
     /// @param[in]  visible  Make the thread this service is running in visible
     ///                      on the Monitor (defaults to false)
     NetService(int port, bool visible = false);
 
-// -- Destructor
-
-	~NetService();
-
-// -- Methods
+    ~NetService();
 
     /// @returns hostname to which this server is answering
     std::string hostname() const;
     /// @returns port to which this server is answering
     int port() const;
 
-// -- Overriden methods
-
-	// From Task
-
-	virtual void run();
+    virtual void run();
 
 private:
+    TCPServer server_;
 
-// -- Members
+    bool visible_;  ///< Visible on the Monitor?
 
-	TCPServer server_;
+    // -- Methods
 
-    bool visible_; ///< Visible on the Monitor?
-
-// -- Methods
-
-	virtual NetUser* newUser(TCPSocket&) = 0;
-	virtual std::string   name() = 0;
-
+    virtual NetUser* newUser(TCPSocket&) = 0;
+    virtual std::string name()           = 0;
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif
-

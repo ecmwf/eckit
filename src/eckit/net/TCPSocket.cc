@@ -8,7 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/types.h> // FreeBSD: must appear before netinet/ip.h
+#include <sys/types.h>  // FreeBSD: must appear before netinet/ip.h
+
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -26,6 +27,7 @@
 #include "eckit/io/Select.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Seconds.h"
+#include "eckit/net/IPAddress.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/os/AutoAlarm.h"
@@ -33,13 +35,6 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Once.h"
-#include "eckit/net/IPAddress.h"
-
-#ifdef _AIX
-// TODO: Add check to cmake
-typedef void (*sighandler_t)(int);
-#endif
-
 
 namespace eckit {
 
@@ -211,7 +206,7 @@ long TCPSocket::read(void* buf, long length) {
 
     static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
     long received                    = 0;
-    char* p                          = (char*)buf;
+    char* p                          = static_cast<char*>(buf);
     bool nonews                      = false;
 
     while (length > 0) {
@@ -480,7 +475,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 }
 
 
-int TCPSocket::newSocket(int port, bool reusePort) {
+int TCPSocket::newSocket(int port, bool reusePort, bool reuseAddress) {
 
     localPort_ = port;
 
@@ -489,25 +484,29 @@ int TCPSocket::newSocket(int port, bool reusePort) {
     if (s < 0)
         throw FailedSystemCall("::socket");
 
-    int flg = 1;
-    if (::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg)) < 0)
-        Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << std::endl;
+    if (reuseAddress) {
+        int flg = 1;
+        if (::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg)) < 0)
+            Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << std::endl;
+    }
 
-    flg = 1;
-    if (::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg)) < 0)
-        Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
-
+    /// always set keepAlive
+    {
+        int flg = 1;
+        if (::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg)) < 0)
+            Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
+    }
 
     if (reusePort) {
 #ifdef SO_REUSEPORT
-        flg = 1;
+        int flg = 1;
         SYSCALL(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)));
 #else
         NOTIMP;
 #endif
     }
 
-#ifdef SO_LINGER
+#ifdef SO_LINGER ///< turn off SO_LINGER
     linger ling;
     ling.l_onoff  = 0;
     ling.l_linger = 0;

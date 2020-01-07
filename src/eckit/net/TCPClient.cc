@@ -13,7 +13,6 @@
 #include "eckit/config/Resource.h"
 #include "eckit/net/Endpoint.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 

@@ -42,7 +42,7 @@ class FDBForker : public ProcessControler {
 
         Log::status() << "Waiting for client " << socket_.remoteHost() << ":" << socket_.remotePort() << std::endl;
 
-        TCPServer data;
+        EphemeralTCPServer data;
 
         InstantTCPStream control(socket_);
 

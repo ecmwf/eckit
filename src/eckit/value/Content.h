@@ -231,7 +231,7 @@ private:
     virtual Content* div(const Content&) const = 0;
     virtual Content* mod(const Content&) const = 0;
 
-    void badConvertion(const std::string&) const;
+    void badConversion(const std::string&) const;
     void badComparison(const std::string&) const;
     void badOperator(const std::string&, const std::string&) const;
 

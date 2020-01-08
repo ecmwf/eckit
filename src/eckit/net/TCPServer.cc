@@ -82,9 +82,7 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
     if (closeExec_)
         SYSCALL(fcntl(socket_, F_SETFD, FD_CLOEXEC));
 
-    /// @todo change this to sigaction
-
-    ::signal(SIGPIPE, SIG_IGN);
+    register_ignore_sigpipe();  ///< @note uses sigaction to ignore SIGPIPE
 
     Log::status() << "Get connection from " << remoteHost() << std::endl;
 
@@ -104,11 +102,11 @@ void TCPServer::close() {
 
 void TCPServer::bind() {
     if (listen_ == -1) {
-        listen_ = newSocket(port_, reusePort_, reuseAddress_);
+        SocketOpts sockopts{};
+        sockopts.reuseAddress = reuseAddress_;
+        sockopts.reusePort    = reusePort_;
+        listen_               = newSocket(port_, sockopts);
         ::listen(listen_, 5);
-
-        // if(!willFork_)
-        //  SYSCALL(fcntl(socket_,F_SETFD,FD_CLOEXEC));
     }
 }
 

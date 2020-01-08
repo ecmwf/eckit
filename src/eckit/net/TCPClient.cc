@@ -23,13 +23,15 @@ TCPClient::TCPClient(int port) : TCPSocket(), port_(port) {}
 TCPClient::~TCPClient() {}
 
 void TCPClient::bind() {
-    if (socket_ == -1)
-        socket_ = newSocket(port_);
+    if (socket_ == -1) {
+        SocketOpts sockopts{};
+        sockopts.reuseAddress = false;
+        socket_               = newSocket(port_, sockopts);
+    }
 }
 
 std::string TCPClient::bindingAddress() const {
-    // return  Resource<std::string>("localBindingAddr","127.0.0.1");
-    return Resource<std::string>("localBindingAddr", "");
+    return Resource<std::string>("localBindingAddr", ""); /* "127.0.0.1" */
 }
 
 void TCPClient::print(std::ostream& s) const {

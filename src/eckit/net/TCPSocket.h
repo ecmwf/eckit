@@ -20,19 +20,27 @@
 
 namespace eckit {
 
-// NOTE: I am not realy happy about those classes, so they may change...
-//       Note that this class calls: signal(SIGPIPE,SIG_IGN);
+struct SocketOpts {
+    SocketOpts()      = default;
+    bool reusePort    = false;
+    bool reuseAddress = true;
+    bool keepAlive    = true;
+    bool noLinger     = true;
+};
 
-class TCPSocket  {
-public: // types
 
-// -- Exceptions
+/// @note this class calls sets a handler to ignore SIGPIPE
 
-    class UnknownHost : public Exception { public: UnknownHost(const std::string&); };
+class TCPSocket {
 
-public: // methodss
+public:  // types
+    class UnknownHost : public Exception {
+    public:
+        UnknownHost(const std::string&);
+    };
 
-	TCPSocket();
+public:  // methods
+    TCPSocket();
 
     // From an existing TCPSocket (see TCPServer::accept)
 
@@ -40,102 +48,95 @@ public: // methodss
     /// **** NOTE: copying gives ownership of the socket to new object
     /// **** Beware of 'slicing', i.e copying subclasses.
 
-	TCPSocket(TCPSocket&);
+    TCPSocket(TCPSocket&);
 
-// -- Destructor
+    virtual ~TCPSocket();
 
-	virtual ~TCPSocket();
+    // See note on copy constructor
 
-// -- Operators
+    TCPSocket& operator=(TCPSocket&);
 
-	// See note on copy constructor
-
-	TCPSocket& operator=(TCPSocket&);
-
-// -- Methods
-
-	// I/O
     long write(const void* buf, long length);
 
-	/// Read from a TCP socket
-	///
-	/// \param buf The buffer to read into
-	/// \param length The maximum number of bytes to read
-	///
-	/// **Configuration flags**
-	/// \arg **useSelectOnTCPSocket** (*bool*): use select for improved resilience
-	///   on flaky connections
-	/// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
-	///   (only if **useSelectOnTCPSocket** is enabled)
-	long read(void * buf,long length);
+    /// Read from a TCP socket
+    ///
+    /// \param buf The buffer to read into
+    /// \param length The maximum number of bytes to read
+    ///
+    /// **Configuration flags**
+    /// \arg **useSelectOnTCPSocket** (*bool*): use select for improved resilience
+    ///   on flaky connections
+    /// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
+    ///   (only if **useSelectOnTCPSocket** is enabled)
+    long read(void* buf, long length);
 
-	long rawRead(void*,long); // Non-blocking version
+    long rawRead(void*, long);  // Non-blocking version
 
-	bool isConnected() const { return socket_ != -1; }
-	bool stillConnected() const;
+    bool isConnected() const { return socket_ != -1; }
 
-	// close sockets
-	virtual void close();
+    bool stillConnected() const;
 
-	// peer name
+    // close sockets
+    virtual void close();
 
-	in_addr       remoteAddr() const;
+    // peer name
+
+    in_addr remoteAddr() const;
     const std::string& remoteHost() const;
-	int           remotePort() const;
+    int remotePort() const;
 
-	in_addr       localAddr() const;
+    in_addr localAddr() const;
     const std::string& localHost() const;
-	int           localPort() const;
+    int localPort() const;
 
-	void          bufferSize(int n) { bufSize_ = n; }
-	virtual int  socket();
+    void bufferSize(int n) { bufSize_ = n; }
+    virtual int socket();
 
-	void closeOutput();
+    void closeOutput();
     void closeInput();
 
     void debug(bool on);
 
-// -- Class methods
-
-    static std::string  addrToHost(in_addr);
+public:  // class methods
+    static std::string addrToHost(in_addr);
     static in_addr hostToAddr(const std::string&);
     static std::string hostName(const std::string& h, bool full = false);
 
-protected: // members
+    static void register_ignore_sigpipe();
 
-    int      socket_;      // i/o socket
-    int      localPort_;   // effective port
-    int      remotePort_;  // remote port
-    std::string   remoteHost_;  // remote host
-    in_addr  remoteAddr_;  // remote ip adress
-    std::string   localHost_;   // local host
-    in_addr  localAddr_;   // local ip adress
-    int      bufSize_;
+protected:                    // members
+    int socket_;              // i/o socket
+    int localPort_;           // effective port
+    int remotePort_;          // remote port
+    std::string remoteHost_;  // remote host
+    in_addr remoteAddr_;      // remote ip adress
+    std::string localHost_;   // local host
+    in_addr localAddr_;       // local ip adress
+    int bufSize_;
 
     // Debug
-    bool     debug_;
-    bool     newline_;
-    char     mode_;
+    bool debug_;
+    bool newline_;
+    char mode_;
 
-// -- Methods
-
-    int newSocket(int, bool reusePort = false, bool reuseAddress = true);
+protected:  // methods
+    int newSocket(int port, const SocketOpts options = {});
 
     virtual void print(std::ostream& s) const;
 
-
-private: // methods
-
-    virtual void bind();  // The socket must be made
+private:  // methods
+    /// @pre socket must be made
+    virtual void bind();
     virtual std::string bindingAddress() const;
 
-    friend std::ostream& operator<<(std::ostream& s,const TCPSocket& socket)
-        { socket.print(s); return s;}
-
+    friend std::ostream& operator<<(std::ostream& s, const TCPSocket& socket) {
+        socket.print(s);
+        return s;
+    }
 };
 
-std::ostream& operator<<(std::ostream&,in_addr);
+std::ostream& operator<<(std::ostream&, in_addr);
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

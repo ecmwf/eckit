@@ -24,7 +24,7 @@ class Endpoint;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TCPClient : public TCPSocket {
+class TCPClient : public TCPSocket, private eckit::NonCopyable {
 public:
     TCPClient(int port = 0);
 
@@ -33,19 +33,13 @@ public:
     virtual TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
     virtual TCPSocket& connect(const Endpoint& endpoint, int retries = 5, int timeout = 0);
 
-protected:
+protected:  // methods
     virtual void print(std::ostream& s) const;
 
-private:
-    TCPClient(const TCPClient&);
-    TCPClient& operator=(const TCPClient&);
-
-    // -- Members
-
+private:  // members
     int port_;
 
-    // From TCPSocket
-
+private:  // methods
     virtual void bind();
     virtual std::string bindingAddress() const;
 };
@@ -53,6 +47,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
-#endif // TCPClient_H
+#endif  // TCPClient_H

@@ -23,9 +23,9 @@ SQLBit::SQLBit(const std::string& name, unsigned long mask, unsigned long shift)
 
 SQLBit::~SQLBit() {}
 
+// This is an odd one, but it allows us to store values in DISTINCT/ORDER expressions
 size_t SQLBit::size() const {
-    NOTIMP;
-    // This should not be called
+    return sizeof(long);
 }
 
 void SQLBit::output(SQLOutput& o, double x, bool missing) const {

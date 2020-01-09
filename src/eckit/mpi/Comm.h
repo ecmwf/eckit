@@ -55,7 +55,7 @@ void deleteComm(const char* name);
 /// Check if a communicator is registered
 bool hasComm(const char* name);
 
-std::vector<std::string> commsList();
+std::vector<std::string> listComms();
 
 /// Finalises all the comms that are registered
 ///

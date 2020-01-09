@@ -99,7 +99,7 @@ public:
         return false;
     }
 
-    std::vector<std::string> commsList() {
+    std::vector<std::string> listComms() {
         AutoLock<Mutex> lock(mutex_);
         std::vector<std::string> allComms;
 
@@ -293,8 +293,8 @@ bool hasComm(const char* name) {
     return Environment::instance().hasComm(name);
 }
 
-std::vector<std::string> commsList() {
-    return Environment::instance().commsList();
+std::vector<std::string> listComms() {
+    return Environment::instance().listComms();
 }
 
 void finaliseAllComms() {

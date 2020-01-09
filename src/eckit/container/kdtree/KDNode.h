@@ -45,6 +45,8 @@ public:
 
     static KDNode<Traits>* insert(Alloc& a, const Value& value, KDNode<Traits>* node, int depth = 0);
 
+    /// Return the axis along which this node is split.
+    size_t axis() const { return axis_; }
 
 public:
     void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);

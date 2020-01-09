@@ -8,8 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/sql/expression/function/EqRegionCache.h"
+#include <algorithm>
+#include <cmath>
+
 #include "eckit/eckit.h"
+
+#include "eckit/sql/expression/function/EqRegionCache.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
@@ -22,40 +26,27 @@ namespace function {
 #define regions_1(i, j, k) regs_1[((k)-1) * (dim - 1) * 2 + ((j)-1) * (dim - 1) + (i)-1]
 #define region(i, j) reg[((j)-1) * dim + (i)-1]
 
-#define swap(T, vi, vj)         \
-    {                           \
-        register T temp = vi;   \
-        vi              = vj;   \
-        vj              = temp; \
-    }
-
 extern double mfmod(double x, double y);
 
-//==============================================================================
-EqRegionCache::EqRegionCache()
-    //==============================================================================
-    :
-    RegionCache() {}
 
-//==============================================================================
+EqRegionCache::EqRegionCache() : RegionCache() {}
+
+
 EqRegionCache::~EqRegionCache() {}
-//==============================================================================
 
-//==============================================================================
+
 int EqRegionCache::gcd(int a, int& b)
-//==============================================================================
 {
-    int m = ABS(a);
-    int n = ABS(b);
-    if (m > n)
-        swap(int, m, n);
+    int m = std::abs(a);
+    int n = std::abs(b);
+    if (m > n) {
+        std::swap(m, n);
+    }
     return (m == 0) ? n : gcd(n % m, m);
 }
 
 
-//==============================================================================
 void EqRegionCache::bot_cap_region(int& dim, double& a_cap, double reg[])
-//==============================================================================
 {
     //
     // An array of two points representing the bottom cap of radius a_cap as a region.
@@ -77,9 +68,8 @@ void EqRegionCache::bot_cap_region(int& dim, double& a_cap, double reg[])
     }
 }
 
-//==============================================================================
+
 double EqRegionCache::circle_offset(int& n_top, int& n_bot)
-//==============================================================================
 {
     //
     // CIRCLE_OFFSET Try to maximize minimum distance of center points for S^2 collars
@@ -100,10 +90,9 @@ double EqRegionCache::circle_offset(int& n_top, int& n_bot)
     return co;
 }
 
-//==============================================================================
+
 void EqRegionCache::cap_colats(int& dim, int& n, int& n_collars, double& c_polar,
                                const int n_regions[/* n_collars+2 */], double c_caps[/* n_collars+2 */])
-//==============================================================================
 {
     //
     // CAP_COLATS Colatitudes of spherical caps enclosing cumulative sum of regions
@@ -130,10 +119,9 @@ void EqRegionCache::cap_colats(int& dim, int& n, int& n_collars, double& c_polar
     c_caps[n_collars + 1] = piconst::pi;
 }
 
-//==============================================================================
+
 void EqRegionCache::round_to_naturals(int& n, int& n_collars, const double r_regions[/* n_collars+2 */],
                                       int n_regions[/* n_collars+2 */])
-//==============================================================================
 {
     //
     // ROUND_TO_NATURALS Round off a given list of numbers of regions
@@ -182,9 +170,8 @@ double EqRegionCache::area_of_cap(int& dim, double& s_cap) {
     return area;
 }
 
-//==============================================================================
+
 double EqRegionCache::area_of_collar(int& dim, double a_top, double a_bot)
-//==============================================================================
 {
     //
     // AREA_OF_COLLAR Area of spherical collar
@@ -206,10 +193,9 @@ double EqRegionCache::area_of_collar(int& dim, double a_top, double a_bot)
     return area_of_cap(dim, a_bot) - area_of_cap(dim, a_top);
 }
 
-//==============================================================================
+
 void EqRegionCache::ideal_region_list(int& dim, int& n, double& c_polar, int& n_collars,
                                       double r_regions[/* n_collars+2 */])
-//==============================================================================
 {
     //
     // IDEAL_REGION_LIST The ideal real number of regions in each zone
@@ -242,9 +228,8 @@ void EqRegionCache::ideal_region_list(int& dim, int& n, double& c_polar, int& n_
     r_regions[n_collars + 1] = 1;
 }
 
-//==============================================================================
+
 double EqRegionCache::area_of_ideal_region(int& dim, int& n)
-//==============================================================================
 {
     //
     // AREA = AREA_OF_IDEAL_REGION(dim,N) sets AREA to be the area of one of N equal
@@ -259,9 +244,7 @@ double EqRegionCache::area_of_ideal_region(int& dim, int& n)
 }
 
 
-//==============================================================================
 int EqRegionCache::num_collars(int& n, double& c_polar, double a_ideal)
-//==============================================================================
 {
     //
     // NUM_COLLARS The number of collars between the polar caps
@@ -285,9 +268,8 @@ int EqRegionCache::num_collars(int& n, double& c_polar, double a_ideal)
     return num_c;
 }
 
-//==============================================================================
+
 double EqRegionCache::ideal_collar_angle(int& dim, int& n)
-//==============================================================================
 {
     //
     // IDEAL_COLLAR_ANGLE The ideal angle for spherical collars of an EQ partition
@@ -306,9 +288,8 @@ double EqRegionCache::ideal_collar_angle(int& dim, int& n)
     return pow(area_of_ideal_region(dim, n), (1 / (double)(dim)));
 }
 
-//==============================================================================
+
 double EqRegionCache::my_gamma(double& x)
-//==============================================================================
 {
     const double p0  = 0.999999999999999990e0;
     const double p1  = -0.422784335098466784e0;
@@ -352,9 +333,7 @@ double EqRegionCache::my_gamma(double& x)
 }
 
 
-//==============================================================================
 double EqRegionCache::area_of_sphere(int& dim)
-//==============================================================================
 {
     //
     // AREA = AREA_OF_SPHERE(dim) sets AREA to be the area of the sphere S^dim
@@ -364,9 +343,7 @@ double EqRegionCache::area_of_sphere(int& dim)
 }
 
 
-//==============================================================================
 double EqRegionCache::sradius_of_cap(int& dim, double& area)
-//==============================================================================
 {
     //
     // S_CAP = SRADIUS_OF_CAP(dim, AREA) returns the spherical radius of
@@ -385,9 +362,9 @@ double EqRegionCache::sradius_of_cap(int& dim, double& area)
     return radius;
 }
 
-//==============================================================================
+
 double EqRegionCache::polar_colat(int& dim, int& n)
-//==============================================================================
+
 {
     //
     // Given dim and N, determine the colatitude of the North polar spherical cap.
@@ -405,9 +382,9 @@ double EqRegionCache::polar_colat(int& dim, int& n)
     return colat;
 }
 
-//==============================================================================
+
 void EqRegionCache::top_cap_region(int& dim, double& a_cap, double reg[])
-//==============================================================================
+
 {
     //
     // An array of two points representing the top cap of radius a_cap as a region.
@@ -429,9 +406,9 @@ void EqRegionCache::top_cap_region(int& dim, double& a_cap, double reg[])
     }
 }
 
-//==============================================================================
+
 void EqRegionCache::sphere_region(int& dim, double reg[])
-//==============================================================================
+
 {
     //
     //   An array of two points representing S^dim as a region.
@@ -455,9 +432,9 @@ void EqRegionCache::sphere_region(int& dim, double reg[])
     }
 }
 
-//==============================================================================
+
 void EqRegionCache::eq_caps(int& dim, int& n, double s_cap[/* n */], int n_regions[/* n */], int* N_collars)
-//==============================================================================
+
 {
     int j;
     double c_polar;
@@ -557,9 +534,8 @@ void EqRegionCache::eq_caps(int& dim, int& n, double s_cap[/* n */], int n_regio
 }
 
 
-//==============================================================================
 void EqRegionCache::eq_regions(int dim, int n, double regs[])
-//==============================================================================
+
 {
     //
     //
@@ -773,18 +749,18 @@ void EqRegionCache::eq_regions(int dim, int n, double regs[])
     delete[] n_regions;
 }
 
-//==============================================================================
+
 double EqRegionCache::eq_area(const double& rn)
-//==============================================================================
+
 {
     int n          = rn;
     double eq_area = (sphere_area / n);
     return eq_area;
 }
 
-//==============================================================================
+
 double EqRegionCache::eq_n(const double& resol)
-//==============================================================================
+
 {
     double dres    = (resol < min_resol ? min_resol : resol) * piconst::pi_over_180;
     double eq_area = dres * dres;                 /* Actually: (resol*pi/180)^2 * R^2 (approx.) */
@@ -792,15 +768,15 @@ double EqRegionCache::eq_n(const double& resol)
     return n;
 }
 
-//==============================================================================
+
 double EqRegionCache::get_resol(const double& nval)
-//==============================================================================
+
 {
     return eq_n(nval);
 }
-//==============================================================================
+
 double EqRegionCache::eq_resol(const double& rn)
-//==============================================================================
+
 {
     double eq_area_value = eq_area(rn);
     double resol = sqrt(eq_area_value) * piconst::recip_pi_over_180; /* In degrees ~ at Equator for small resol's */
@@ -809,9 +785,9 @@ double EqRegionCache::eq_resol(const double& rn)
     return resol;
 }
 
-//==============================================================================
+
 void EqRegionCache::create_cache(const double& resol, const int& n)
-//==============================================================================
+
 {
     // nothing done for this resolution
     double* regs = NULL;

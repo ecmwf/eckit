@@ -24,42 +24,26 @@ double mfmod(double x, double y) {
     return (a - int(a)) * y;
 }
 
-//==============================================================================
-RegionCache::RegionCache()
-    //==============================================================================
-    :
-    nboxes_(0),
-    resol_(0),
-    nbands_(0),
-    latband_(0),
-    midlat_(0),
-    loncnt_(0),
-    sum_loncnt_(0),
-    stlon_(0),
-    deltalon_(0) {}
 
-//==============================================================================
+RegionCache::RegionCache() :
+    nboxes_(0), resol_(0), nbands_(0), latband_(0), midlat_(0), loncnt_(0), sum_loncnt_(0), stlon_(0), deltalon_(0) {}
+
+
 RegionCache::~RegionCache() {}
-//==============================================================================
 
-//==============================================================================
-VectorRegionCache& RegionCache::instance()
-//==============================================================================
-{
+VectorRegionCache& RegionCache::instance() {
     return region_cache_.instance();
 }
 
-//==============================================================================
-double RegionCache::get_resol(const double& nval)
-//==============================================================================
-{
+
+double RegionCache::get_resol(const double& nval) {
     return -1;
 }
-//==============================================================================
+
 int RegionCache::interval_bsearch(const double& key, const int& n, const double x[/* with n+1 elements */],
                                   const double* delta, /* if present, only x[0] will be used */
                                   const double& add, const double& sign /* +1 forward and -1 for reverse search */)
-//==============================================================================
+
 {
     const double eps = 1.0e-7;
     double Delta     = delta ? *delta : 0;
@@ -71,7 +55,7 @@ int RegionCache::interval_bsearch(const double& key, const int& n, const double 
     while (lo <= hi) {
         int k     = (lo + hi) / 2;
         double xk = wrap_around ? sign * mfmod(x0 + k * Delta + add, add) : sign * (x[k] + halfDelta);
-        if (wrap_around && k > 0 && ABS(xk) < eps)
+        if (wrap_around && k > 0 && std::abs(xk) < eps)
             xk = add;
         if (Key < xk) {
             // Search the lower section
@@ -80,7 +64,7 @@ int RegionCache::interval_bsearch(const double& key, const int& n, const double 
         else {
             int kp1     = k + 1;
             double xkp1 = wrap_around ? sign * mfmod(x0 + kp1 * Delta + add, add) : sign * (x[kp1] + halfDelta);
-            if (wrap_around && ABS(xkp1) < eps)
+            if (wrap_around && std::abs(xkp1) < eps)
                 xkp1 = add;
             if (Key > xkp1) {
                 // Search the upper section
@@ -95,10 +79,8 @@ int RegionCache::interval_bsearch(const double& key, const int& n, const double 
     return -1;
 }
 
-//==============================================================================
-int RegionCache::find_lonbox(const int& jb, const double& lon, double* midlon, double* leftlon, double* rightlon)
-//==============================================================================
-{
+
+int RegionCache::find_lonbox(const int& jb, const double& lon, double* midlon, double* leftlon, double* rightlon) {
     const double three_sixty = 360;
     double mid               = 0;  // odb::MDI::realMDI();
     double left              = 0;  // odb::MDI::realMDI();
@@ -160,9 +142,8 @@ int RegionCache::find_lonbox(const int& jb, const double& lon, double* midlon, d
         *rightlon = right;
     return boxid;
 }
-//==============================================================================
+
 int RegionCache::find_latband(const double& lat) {
-    //==============================================================================
     int jb;
     int lastjb = last_->jb;
     if (lastjb >= 0 &&
@@ -188,10 +169,8 @@ int RegionCache::find_latband(const double& lat) {
     return jb;
 }
 
-//==============================================================================
-double RegionCache::get_midlat(const double& resol, const double& lat)
-//==============================================================================
-{
+
+double RegionCache::get_midlat(const double& resol, const double& lat) {
     double res = 0;  // odb::MDI::realMDI(); // should be initialised to missing
     get_cache(resol);
     int jb = find_latband(lat);
@@ -201,10 +180,8 @@ double RegionCache::get_midlat(const double& resol, const double& lat)
     return res;
 }
 
-//==============================================================================
-double RegionCache::get_midlon(const double& resol, const double& lat, const double& lon)
-//==============================================================================
-{
+
+double RegionCache::get_midlon(const double& resol, const double& lat, const double& lon) {
     double res = 0;  // odb::MDI::realMDI(); // should be initialised to missing
     get_cache(resol);
     int jb    = find_latband(lat);
@@ -214,10 +191,8 @@ double RegionCache::get_midlon(const double& resol, const double& lat, const dou
     return res;
 }
 
-//==============================================================================
-void RegionCache::get_cache(const double& nval)
-//==============================================================================
-{
+
+void RegionCache::get_cache(const double& nval) {
     double resol    = get_resol(nval);
     bool cache_save = true;
     int n           = resol;
@@ -247,18 +222,14 @@ void RegionCache::get_cache(const double& nval)
     if (cache_save)
         create_cache(resol, n);
 }
-//==============================================================================
-void RegionCache::create_cache(const double& resol, const int& n)
-//==============================================================================
-{
+
+void RegionCache::create_cache(const double& resol, const int& n) {
     // to be overloaded because it is specific to the grid
 }
 
-//==============================================================================
+
 void RegionCache::put_cache(const RegionCacheKind& kind, const double& resol, const int& nb, double latband[],
-                            double midlat[], double stlon[], double deltalon[], int loncnt[])
-//==============================================================================
-{
+                            double midlat[], double stlon[], double deltalon[], int loncnt[]) {
     VectorRegionCache* p = &(region_cache_.instance());
     int nelm             = p->size();
     p->resize(nelm + 1);

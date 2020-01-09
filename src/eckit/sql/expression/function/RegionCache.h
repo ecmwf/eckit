@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/sql/expression/function/piconst.h"
 
 namespace eckit {
@@ -31,9 +32,6 @@ static const double sphere_area = piconst::four_pi; /* Actually: 4 * pi * R^2 */
 
 /* Fortran90 compatible NINT-function */
 #define F90nint(x) ( ((x) > 0) ? (int)((x) + 0.5) : (int)((x) - 0.5) )
-
-#undef ABS
-#define ABS(x)   ( ((x) >= 0)  ? (x) : -(x) )
 
 #define R2D(x) ( (180/piconst::pi) * ( ((x) >  piconst::pi) ? ((x) - 2*piconst::pi) : (x) ) )
 
@@ -51,23 +49,18 @@ typedef std::vector<RegionCache *> VectorRegionCache;
       double left, mid, right;
    };
 
-class RegionCache {
+class RegionCache : private eckit::NonCopyable {
 public:
 
 	RegionCache();
-	~RegionCache();
+    virtual ~RegionCache();
 
  	static VectorRegionCache &  instance();
 
     double get_midlat(const double &, const double &);
     double get_midlon(const double &, const double &, const double &);
 
-private:
-// No copy allowed
-	RegionCache(const RegionCache&);
-	RegionCache& operator=(const RegionCache&);
-
-// -- Members
+private: // members
     RegionCacheKind *kind_; // type of cache (rgg, eq_boxes)
     int *nboxes_;        // Actual number of boxes
     double *resol_;      // Approximate resolution in degrees at Equator
@@ -80,7 +73,7 @@ private:
     double *deltalon_;  // longitudinal delta for each latitude band : size nb 
     Last *last_;
 
-// -- Class members
+private: // methods
      virtual double get_resol(const double & val);
      virtual void create_cache(const double &, const int &);
      void get_cache(const double &);

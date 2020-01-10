@@ -17,15 +17,9 @@
 #include "eckit/net/TCPSocket.h"
 
 
-
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
-
-// AIX #define accept to naccept. It took me a while :-(
-// this clashes with the method accept()
-// so I need to include socket here so all client of this
-// class actually see this #define. So much for encapsulation.
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
@@ -74,8 +68,10 @@ public:
     explicit EphemeralTCPServer(int port, const std::string& addr = "");
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+
+}  // namespace net
+}  // namespace eckit
+
 
 #endif

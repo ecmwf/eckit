@@ -259,7 +259,7 @@ std::string HttpHeader::content() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static std::string nextLine(TCPSocket& socket) {
+static std::string nextLine(net::TCPSocket& socket) {
     char c;
     std::string s;
 
@@ -276,7 +276,7 @@ static std::string nextLine(TCPSocket& socket) {
     }
 }
 
-HttpHeader::HttpHeader(TCPSocket& socket) : received_(true) {
+HttpHeader::HttpHeader(net::TCPSocket& socket) : received_(true) {
     std::string line = nextLine(socket);
 
     size_t i = line.find_first_of(' ');

@@ -38,8 +38,9 @@
 #include "eckit/thread/Once.h"
 
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 static in_addr none = {INADDR_NONE};
 
@@ -60,7 +61,7 @@ TCPSocket::TCPSocket() :
     mode_(0) {}
 
 // This contructor performs a change of ownership of the socket
-TCPSocket::TCPSocket(TCPSocket& other) :
+TCPSocket::TCPSocket(net::TCPSocket& other) :
     socket_(other.socket_),
     localPort_(other.localPort_),
     remotePort_(other.remotePort_),
@@ -83,7 +84,7 @@ TCPSocket::~TCPSocket() {
 }
 
 // This contructor performs a change of ownership of the socket
-TCPSocket& TCPSocket::operator=(TCPSocket& other) {
+TCPSocket& TCPSocket::operator=(net::TCPSocket& other) {
     socket_ = other.socket_;
 
     localAddr_  = other.localAddr_;
@@ -487,19 +488,19 @@ int TCPSocket::createSocket(int port, const SocketOptions opts) {
         throw FailedSystemCall("::socket");
     }
 
-    if (opts.reuseAddr) {
+    if (opts.reuseAddr()) {
         int flg = 1;
         if (::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg)) < 0)
             Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << std::endl;
     }
 
-    if (opts.keepAlive) {
+    if (opts.keepAlive()) {
         int flg = 1;
         if (::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg)) < 0)
             Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
     }
 
-    if (opts.reusePort) {
+    if (opts.reusePort()) {
 #ifdef SO_REUSEPORT
         int flg = 1;
         SYSCALL(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)));
@@ -508,7 +509,7 @@ int TCPSocket::createSocket(int port, const SocketOptions opts) {
 #endif
     }
 
-    if (opts.noLinger) {
+    if (opts.noLinger()) {
 #ifdef SO_LINGER  ///< turn off SO_LINGER
         linger ling;
         ling.l_onoff  = 0;
@@ -523,13 +524,16 @@ int TCPSocket::createSocket(int port, const SocketOptions opts) {
 #endif
     }
 
-    if (opts.lowDelay) {
+    if (opts.ipLowDelay()) {
         int tos = IPTOS_LOWDELAY;
         if (::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)) < 0)
             Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
+
+        /* #endif */
+        /* #endif */
     }
 
-    if (opts.noDelay) {
+    if (opts.tcpNoDelay()) {
         int flag = 1;
         if (::setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)) < 0)
             Log::warning() << "setsockopt TCP_NODELAY" << Log::syserr << std::endl;
@@ -709,17 +713,17 @@ int TCPSocket::remotePort() const {
 }
 
 in_addr TCPSocket::localAddr() const {
-    ((TCPSocket*)this)->bind();
+    ((net::TCPSocket*)this)->bind();
     return localAddr_;
 }
 
 const std::string& TCPSocket::localHost() const {
-    ((TCPSocket*)this)->bind();
+    ((net::TCPSocket*)this)->bind();
     return localHost_;
 }
 
 int TCPSocket::localPort() const {
-    ((TCPSocket*)this)->bind();
+    ((net::TCPSocket*)this)->bind();
     return localPort_;
 }
 
@@ -795,6 +799,6 @@ std::ostream& operator<<(std::ostream& s, in_addr a) {
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
 
+}  // namespace net
 }  // namespace eckit

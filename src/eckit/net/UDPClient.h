@@ -21,6 +21,8 @@ namespace eckit {
 
 class Buffer;
 
+namespace net {
+
 
 class UDPClient : private NonCopyable {
 
@@ -55,6 +57,8 @@ private: // members
 };
 
 
+}  // namespace net
 }  // namespace eckit
+
 
 #endif

@@ -17,73 +17,60 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/net/TCPClient.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class TCPHandle : public DataHandle {
 public:
+    // -- Contructors
 
-// -- Contructors
+    TCPHandle(Stream&);
+    TCPHandle(const std::string& host, int port);
 
-	TCPHandle(Stream&);
-	TCPHandle(const std::string& host,int port);
+    // -- Destructor
 
-// -- Destructor
+    ~TCPHandle();
 
-	~TCPHandle();
+    // -- Overridden methods
 
-// -- Overridden methods
-
-	// From DataHandle
+    // From DataHandle
 
     virtual Length openForRead();
     virtual void openForWrite(const Length&);
     virtual void openForAppend(const Length&);
 
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
-	virtual void close();
-	virtual void rewind();
+    virtual long read(void*, long);
+    virtual long write(const void*, long);
+    virtual void close();
+    virtual void rewind();
 
     virtual DataHandle* clone() const;
 
-	virtual void print(std::ostream&) const;
-	virtual std::string title() const;
+    virtual void print(std::ostream&) const;
+    virtual std::string title() const;
     virtual bool moveable() const { return true; }
 
-	// From Streamable
+    // From Streamable
 
-	virtual void encode(Stream&) const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const;
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-	static  const ClassSpec&  classSpec()         { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 protected:
-
-// -- Members
-
-	std::string      host_;
-	int         port_;
-	TCPClient   connection_;
+    std::string host_;
+    int port_;
+    net::TCPClient connection_;
 
 private:
-
-
-// -- Class members
-
-    static  ClassSpec               classSpec_;
-	static  Reanimator<TCPHandle>  reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<TCPHandle> reanimator_;
 };
 
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

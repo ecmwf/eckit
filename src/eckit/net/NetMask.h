@@ -15,26 +15,23 @@
 #ifndef eckit_net_NetMask_H
 #define eckit_net_NetMask_H
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 #include "eckit/net/IPAddress.h"
 
 
 namespace eckit {
+namespace net {
 
-
-//----------------------------------------------------------------------------------------------------------------------
 
 class NetMask {
-public: // methods
-
-    NetMask(const std::string&);
+public:  // methods
+    explicit NetMask(const std::string&);
 
     bool contains(const IPAddress&) const;
 
-private: // methods
-
+private:  // methods
     IPAddress network_;
     size_t bits_;
 
@@ -44,11 +41,10 @@ private: // methods
         ep.print(os);
         return os;
     }
-
 };
 
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace net
+}  // namespace eckit
 
-} // namespace eckit
 
-#endif // eckit_net_NetMask_H
+#endif

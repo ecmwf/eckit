@@ -114,10 +114,10 @@ void CmdApplication::userMode() {
 void CmdApplication::serveMode(long port) {
     Log::info() << "Offering remote commands on port " << port << std::endl;
 
-    TCPServer server(port);
+    net::TCPServer server(port);
 
     for (;;) {
-        TCPSocket p = server.accept();
+        net::TCPSocket p = server.accept();
         Log::info() << "Connection from " << p.remoteHost() << std::endl;
 
         SockBuf buf(p);

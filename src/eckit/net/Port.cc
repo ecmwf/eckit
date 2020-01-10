@@ -12,10 +12,13 @@
 #include "eckit/config/Resource.h"
 
 namespace eckit {
+namespace net {
 
 Port::Port(const std::string& name, int port) : port_(port) {
     int offset = Resource<int>("portOffset", 0);
     port_      = Resource<int>(name + "Port", port) + offset;
 }
 
+}  // namespace net
 }  // namespace eckit
+

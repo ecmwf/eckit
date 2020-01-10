@@ -10,13 +10,12 @@
 
 #include "eckit/net/TCPStream.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-TCPStream::TCPStream(TCPSocket& socket) : socket_(socket) {}
+
+TCPStream::TCPStream(net::TCPSocket& socket) : socket_(socket) {}
 
 TCPStream::~TCPStream() {}
 
@@ -36,11 +35,10 @@ std::string TCPStreamBase::name() const {
     return ((TCPStreamBase*)this)->nonConstName();
 }
 
-SharedTCPStream::SharedTCPStream(TCPSocket& s) : TCPStream(s) {}
+SharedTCPStream::SharedTCPStream(net::TCPSocket& s) : TCPStream(s) {}
 
 SharedTCPStream::~SharedTCPStream() {}
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
+}  // namespace net
 }  // namespace eckit

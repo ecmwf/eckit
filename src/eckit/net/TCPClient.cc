@@ -15,8 +15,8 @@
 
 
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 TCPClient::TCPClient(int port) : TCPSocket(), port_(port) {}
 
@@ -25,8 +25,8 @@ TCPClient::~TCPClient() {}
 void TCPClient::bind() {
     if (socket_ == -1) {
         SocketOptions socketOptions;
-        socketOptions.reuseAddr = false;
-        socket_                 = createSocket(port_, socketOptions);
+        socketOptions.reuseAddr(false);
+        socket_ = createSocket(port_, socketOptions);
     }
 }
 
@@ -42,10 +42,9 @@ void TCPClient::print(std::ostream& s) const {
 }
 
 /// @note TCPClient::connect(host, port, retries, timeout) is found in TCPSocket.cc
-TCPSocket& TCPClient::connect(const Endpoint& endpoint, int retries, int timeout) {
+TCPSocket& TCPClient::connect(const net::Endpoint& endpoint, int retries, int timeout) {
     return connect(endpoint.hostname(), endpoint.port(), retries, timeout);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
+}  // namespace net
 }  // namespace eckit

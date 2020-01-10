@@ -19,8 +19,8 @@
 
 
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 TCPServer::TCPServer(int port, const std::string& addr, const SocketOptions socketOptions) :
     TCPSocket(), port_(port), listen_(-1), addr_(addr), socketOpts_(socketOptions), closeExec_(true) {}
@@ -31,7 +31,6 @@ TCPServer::~TCPServer() {
     }
 }
 
-// Accept a client
 
 TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected) {
 
@@ -77,7 +76,7 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
     if (closeExec_)
         SYSCALL(fcntl(socket_, F_SETFD, FD_CLOEXEC));
 
-    register_ignore_sigpipe();  ///< @note uses sigaction to ignore SIGPIPE
+    register_ignore_sigpipe();
 
     Log::status() << "Get connection from " << remoteHost() << std::endl;
 
@@ -104,7 +103,7 @@ void TCPServer::bind() {
 
 
 int TCPServer::socket() {
-    ((TCPServer*)this)->bind();
+    bind();
     return listen_;
 }
 
@@ -120,15 +119,13 @@ void TCPServer::print(std::ostream& s) const {
 }
 
 EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr) {
-    socketOpts_.reusePort = false;
-    socketOpts_.reuseAddr = false;
+    socketOpts_.reusePort(false).reuseAddr(false);
 }
 
 EphemeralTCPServer::EphemeralTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {
-    socketOpts_.reusePort = false;
-    socketOpts_.reuseAddr = false;
+    socketOpts_.reusePort(false).reuseAddr(false);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
+}  // namespace net
 }  // namespace eckit

@@ -16,9 +16,7 @@
 #include "eckit/thread/ThreadControler.h"
 
 namespace eckit {
-
-//----------------------------------------------------------------------------------------------------------------------
-
+namespace net {
 
 NetService::NetService(int port, bool visible) : server_(port), visible_(visible) {}
 
@@ -45,7 +43,5 @@ void NetService::run() {
     }
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
-}  // namespace eckit
+} // namespace net
+} // namespace eckit

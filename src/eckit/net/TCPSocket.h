@@ -8,48 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_TCPSocket_h
-#define eckit_TCPSocket_h
-
-#include <cstdint>
+#ifndef eckit_net_TCPSocket_h
+#define eckit_net_TCPSocket_h
 
 #include <netinet/in.h>
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/net/SocketOptions.h"
 #include "eckit/utils/Hash.h"
 
-
 namespace eckit {
-
-
-struct SocketOptions {
-    SocketOptions() = default;
-
-    /// SO_REUSEPORT is useful if multiple threads want to bind to the same port and OS handles load balancing
-    /// otherwise better not to set it.
-    bool reusePort = false;
-
-    /// SO_REUSEADDRESS tells OS to skip TIME_WAIT of 2MSL before rebinding to same address:port
-    /// This allows fast restart of services, at the added risk of duplicated/stray packets in route
-    /// from previous closed connections messing up new connections. This is likely under high network contention and/or
-    /// very short connections quickly reuse the available ports.
-    /// Set to false when openeing ephemeral ports/connections.
-    bool reuseAddr = true;
-
-    /// Enable sending of keep-alive messages
-    bool keepAlive = true;
-
-    /// Do the close in the background (don't wait for queued messages) and return immedietly on close()
-    bool noLinger  = true;
-
-    /// sets IP_TOS to IPTOS_LOWDELAY to minimize delays for interactive traffic (small messages) as per manpage ip(7)
-    bool lowDelay  = true;
-
-    /// bypass Nagle Delays by disabling Nagle's algorithm and send the data as soon as it's available
-    bool noDelay  = true;
-};
-
+namespace net {
 
 /// @note this class calls sets a handler to ignore SIGPIPE
 
@@ -70,13 +40,13 @@ public:  // methods
     /// **** NOTE: copying gives ownership of the socket to new object
     /// **** Beware of 'slicing', i.e copying subclasses.
 
-    TCPSocket(TCPSocket&);
+    TCPSocket(net::TCPSocket&);
 
     virtual ~TCPSocket();
 
     // See note on copy constructor
 
-    TCPSocket& operator=(TCPSocket&);
+    TCPSocket& operator=(net::TCPSocket&);
 
     long write(const void* buf, long length);
 
@@ -124,6 +94,7 @@ public:  // class methods
     static in_addr hostToAddr(const std::string&);
     static std::string hostName(const std::string& h, bool full = false);
 
+    /// @note uses sigaction to ignore SIGPIPE
     static void register_ignore_sigpipe();
 
 protected:                    // members
@@ -159,6 +130,7 @@ private:  // methods
 
 std::ostream& operator<<(std::ostream&, in_addr);
 
+}  // namespace net
 }  // namespace eckit
 
 #endif

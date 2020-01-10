@@ -18,15 +18,23 @@
 namespace eckit {
 namespace net {
 
-Telnet::Telnet(int port) : NetService(port) {}
+TelnetUser::TelnetUser(TCPSocket& protocol) : NetUser(protocol), from_(protocol_.remoteHost()) {}
 
-Telnet::~Telnet() {}
+TelnetUser::~TelnetUser() {}
 
+void TelnetUser::serve(Stream&, std::istream& in, std::ostream& out) {
 
-net::NetUser* Telnet::newUser(net::TCPSocket& protocol) {
-    return new TelnetUser(protocol);
+    Log::debug() << "Starting a telnet connection " << std::endl;
+
+    Monitor::instance().kind("telnet");
+    Monitor::instance().name(from_);
+
+    while (!stopped()) {
+        out << "Telnet not supported any more (for now anyway)" << std::endl;
+        break;
+    }
+    Log::info() << "Exiting telnet user loop..." << std::endl;
 }
-
 
 }  // namespace net
 }  // namespace eckit

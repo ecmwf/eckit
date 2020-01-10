@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File Stream.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @date May 96
 
 #ifndef eckit_Stream_h
 #define eckit_Stream_h
@@ -23,7 +23,6 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 template <class T>
 class BufferedWriter;
@@ -31,16 +30,12 @@ template <class T>
 class BufferedReader;
 template <class T>
 class IOBuffer;
-
 class Buffer;
 
 class Stream : private NonCopyable {
 public:
-    // -- Destructor
 
     virtual ~Stream();
-
-    // -- Operators
 
     // Output
 
@@ -213,7 +208,6 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
 
 }  // namespace eckit
 

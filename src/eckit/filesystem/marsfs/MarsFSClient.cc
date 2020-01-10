@@ -49,7 +49,7 @@ MarsFSClientRetry::~MarsFSClientRetry() {
     settings.instance().retry(old_);
 }
 
-MarsFSClient::MarsFSClient(const MarsFSPath& path) : connector_(Connector::service("marsfs", path.node())) {}
+MarsFSClient::MarsFSClient(const MarsFSPath& path) : connector_(net::Connector::service("marsfs", path.node())) {}
 
 MarsFSClient::~MarsFSClient() {}
 
@@ -59,7 +59,7 @@ Length MarsFSClient::size(const std::string& path) {
     for (;;) {
 
         try {
-            AutoMemoize m(connector_, 1);
+            net::AutoMemoize m(connector_, 1);
 
             Stream& s = connector_;
             unsigned long long len;
@@ -68,7 +68,7 @@ Length MarsFSClient::size(const std::string& path) {
             s >> len;
             return len;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -83,7 +83,7 @@ bool MarsFSClient::exists(const std::string& path) {
     for (;;) {
 
         try {
-            // AutoMemoize m(connector_, 10);
+            // net::AutoMemoize m(connector_, 10);
 
             bool ok;
             Stream& s = connector_;
@@ -93,7 +93,7 @@ bool MarsFSClient::exists(const std::string& path) {
             s >> ok;
             return ok;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -107,7 +107,7 @@ std::string MarsFSClient::mountPoint(const std::string& path) {
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 60);
+            net::AutoMemoize m(connector_, 60);
 
             std::string p;
             Stream& s = connector_;
@@ -116,7 +116,7 @@ std::string MarsFSClient::mountPoint(const std::string& path) {
             s >> p;
             return p;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -130,7 +130,7 @@ std::string MarsFSClient::baseName(const std::string& path, bool ext) {
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 60);
+            net::AutoMemoize m(connector_, 60);
 
             std::string b;
             Stream& s = connector_;
@@ -140,7 +140,7 @@ std::string MarsFSClient::baseName(const std::string& path, bool ext) {
             s >> b;
             return b;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -154,7 +154,7 @@ std::string MarsFSClient::dirName(const std::string& path) {
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 60);
+            net::AutoMemoize m(connector_, 60);
 
             std::string d;
             Stream& s = connector_;
@@ -163,7 +163,7 @@ std::string MarsFSClient::dirName(const std::string& path) {
             s >> d;
             return d;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -177,7 +177,7 @@ std::string MarsFSClient::fullName(const std::string& path) {
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 60);
+            net::AutoMemoize m(connector_, 60);
 
             std::string f;
             Stream& s = connector_;
@@ -186,7 +186,7 @@ std::string MarsFSClient::fullName(const std::string& path) {
             s >> f;
             return f;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -207,7 +207,7 @@ std::string MarsFSClient::unique(const std::string& path) {
             s >> u;
             return u;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -221,7 +221,7 @@ bool MarsFSClient::sameAs(const std::string& path1, const std::string& path2) {
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 10);
+            net::AutoMemoize m(connector_, 10);
 
             bool ok;
             Stream& s = connector_;
@@ -231,7 +231,7 @@ bool MarsFSClient::sameAs(const std::string& path1, const std::string& path2) {
             s >> ok;
             return ok;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -253,7 +253,7 @@ void MarsFSClient::mkdir(const std::string& path, short mode) {
             s >> ok;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -267,7 +267,7 @@ void MarsFSClient::match(const std::string& path, std::vector<std::string>& resu
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 2);
+            net::AutoMemoize m(connector_, 2);
 
             Stream& s = connector_;
             s << "match";
@@ -287,7 +287,7 @@ void MarsFSClient::match(const std::string& path, std::vector<std::string>& resu
             }
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -301,7 +301,7 @@ void MarsFSClient::children(const std::string& path, std::vector<std::string>& f
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 2);
+            net::AutoMemoize m(connector_, 2);
 
             Stream& s = connector_;
             s << "children";
@@ -328,7 +328,7 @@ void MarsFSClient::children(const std::string& path, std::vector<std::string>& f
 
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -342,7 +342,7 @@ std::vector<std::string> MarsFSClient::getFileSpaces() {
     for (;;) {
         try {
 
-            AutoMemoize m(connector_, 20);
+            net::AutoMemoize m(connector_, 20);
 
             Stream& s = connector_;
             s << "getFileSpaces";
@@ -361,7 +361,7 @@ std::vector<std::string> MarsFSClient::getFileSpaces() {
 
             return result;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -375,7 +375,7 @@ std::vector<std::string> MarsFSClient::getFileSystems(const std::string& name) {
 
     for (;;) {
         try {
-            AutoMemoize m(connector_, 20);
+            net::AutoMemoize m(connector_, 20);
 
             Stream& s = connector_;
             s << "getFileSystems";
@@ -395,7 +395,7 @@ std::vector<std::string> MarsFSClient::getFileSystems(const std::string& name) {
 
             return result;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -416,7 +416,7 @@ void MarsFSClient::rename(const std::string& from, const std::string& to) {
             s >> ok;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -438,7 +438,7 @@ void MarsFSClient::link(const std::string& from, const std::string& to) {
             s >> ok;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -459,7 +459,7 @@ void MarsFSClient::unlink(const std::string& path) {
             s >> ok;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -480,7 +480,7 @@ void MarsFSClient::syncParentDirectory(const std::string& path) {
             s >> ok;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -502,7 +502,7 @@ void MarsFSClient::rmdir(const std::string& path) {
             s >> ok;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -524,7 +524,7 @@ void MarsFSClient::touch(const std::string& path) {
             s >> ok;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -537,7 +537,7 @@ void MarsFSClient::fileSystemSize(const std::string& path, FileSystemSize& fs) {
     X(MarsFSClient::fileSystemSize);
     for (;;) {
         try {
-            AutoMemoize m(connector_, 10);
+            net::AutoMemoize m(connector_, 10);
 
             Stream& s = connector_;
             s << "statfs";
@@ -547,7 +547,7 @@ void MarsFSClient::fileSystemSize(const std::string& path, FileSystemSize& fs) {
             s >> fs.total;
             return;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -562,7 +562,7 @@ time_t MarsFSClient::created(const std::string& path) {
 
         try {
 
-            AutoMemoize m(connector_, 60);
+            net::AutoMemoize m(connector_, 60);
 
             Stream& s = connector_;
             unsigned long long len;
@@ -571,7 +571,7 @@ time_t MarsFSClient::created(const std::string& path) {
             s >> len;
             return len;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -586,7 +586,7 @@ time_t MarsFSClient::lastAccess(const std::string& path) {
 
         try {
 
-            AutoMemoize m(connector_, 1);
+            net::AutoMemoize m(connector_, 1);
 
             Stream& s = connector_;
             unsigned long long len;
@@ -595,7 +595,7 @@ time_t MarsFSClient::lastAccess(const std::string& path) {
             s >> len;
             return len;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -610,7 +610,7 @@ time_t MarsFSClient::lastModified(const std::string& path) {
 
         try {
 
-            AutoMemoize m(connector_, 1);
+            net::AutoMemoize m(connector_, 1);
 
             Stream& s = connector_;
             unsigned long long len;
@@ -619,7 +619,7 @@ time_t MarsFSClient::lastModified(const std::string& path) {
             s >> len;
             return len;
         }
-        catch (ConnectorException& e) {
+        catch (net::ConnectorException& e) {
             if (!retry())
                 throw;
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;

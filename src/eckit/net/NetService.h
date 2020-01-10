@@ -19,8 +19,7 @@
 
 
 namespace eckit {
-
-//-----------------------------------------------------------------------------
+namespace net {
 
 class NetUser;
 
@@ -28,8 +27,7 @@ class NetService : public Thread {
 
 public:
     /// @param[in]  port     TCP port to listen on
-    /// @param[in]  visible  Make the thread this service is running in visible
-    ///                      on the Monitor (defaults to false)
+    /// @param[in]  visible  Make the thread this service is running in visible on the Monitor (defaults to false)
     NetService(int port, bool visible = false);
 
     ~NetService();
@@ -43,18 +41,15 @@ public:
 
 private:
     TCPServer server_;
-
     bool visible_;  ///< Visible on the Monitor?
 
-    // -- Methods
-
-    virtual NetUser* newUser(TCPSocket&) = 0;
+private:
+    virtual NetUser* newUser(net::TCPSocket&) = 0;
     virtual std::string name()           = 0;
 };
 
 
-//-----------------------------------------------------------------------------
-
+}  // namespace net
 }  // namespace eckit
 
 #endif

@@ -19,10 +19,11 @@
 
 
 namespace eckit {
+namespace net {
+
 
 class Endpoint;
 
-//----------------------------------------------------------------------------------------------------------------------
 
 class TCPClient : public TCPSocket, private eckit::NonCopyable {
 public:
@@ -31,10 +32,12 @@ public:
     ~TCPClient();
 
     virtual TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
-    virtual TCPSocket& connect(const Endpoint& endpoint, int retries = 5, int timeout = 0);
+    virtual TCPSocket& connect(const net::Endpoint& endpoint, int retries = 5, int timeout = 0);
 
 protected:  // methods
     virtual void print(std::ostream& s) const;
+
+    void buildSockAddress();
 
 private:  // members
     int port_;
@@ -44,9 +47,8 @@ private:  // methods
     virtual std::string bindingAddress() const;
 };
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
+}  // namespace net
 }  // namespace eckit
+
 
 #endif  // TCPClient_H

@@ -23,10 +23,10 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-class JavaUser : public eckit::NetUser {
+class JavaUser : public eckit::net::NetUser {
 public:
 
-	JavaUser(eckit::TCPSocket&);
+	JavaUser(eckit::net::TCPSocket&);
 
     ~JavaUser();
 

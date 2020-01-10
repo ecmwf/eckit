@@ -31,12 +31,12 @@ class FDBServer;
 
 class FDBConnection : public Thread {
 
-    TCPSocket socket_;
+    net::TCPSocket socket_;
 
     virtual void run();
 
 public:
-    FDBConnection(TCPSocket& socket) : socket_(socket) {}
+    FDBConnection(net::TCPSocket& socket) : socket_(socket) {}
 };
 
 void FDBConnection::run() {
@@ -48,7 +48,7 @@ void FDBConnection::run() {
         Log::status() << "Receiving connection from " << socket_.remoteHost() << ":" << socket_.remotePort()
                       << std::endl;
 
-        TCPStream control(socket_);
+        net::TCPStream control(socket_);
 
         for (;;) {
 
@@ -67,7 +67,7 @@ void FDBConnection::run() {
                 Log::info() << "received file size " << fsize << std::endl;
 
                 // 3.2 send data port
-                EphemeralTCPServer data_;
+                net::EphemeralTCPServer data_;
                 control << data_.localPort();
 
                 // 3.2 accept data connection
@@ -119,7 +119,7 @@ void FDBServer::run() {
 
     Log::status() << "Starting server" << std::endl;
 
-    TCPServer server(Port("fdb", 9013));
+    net::TCPServer server(net::Port("fdb", 9013));
 
     for (;;) {
         Log::status() << "-" << std::endl;

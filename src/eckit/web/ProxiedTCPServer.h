@@ -16,18 +16,10 @@
 
 #include "eckit/net/TCPServer.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
-// AIX #define accept to naccept. It took me a while :-(
-// this clashes with the method accept()
-// so I need to include socket here so all client of this
-// class actually see this #define. So much for encapsulation.
-
-class ProxiedTCPServer : public TCPServer {
+class ProxiedTCPServer : public net::TCPServer {
 public:
 
 // -- Contructors
@@ -44,7 +36,7 @@ public:
 
     // accept a client, more can be accepted
 
-    virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = 0);
+    virtual net::TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = 0);
 
 // -- Overridden methods
 

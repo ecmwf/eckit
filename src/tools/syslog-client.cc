@@ -44,7 +44,7 @@ void SysLogClient::run() {
 
     int nmsg = toInt(argv(4));
 
-    UDPClient client(hostname, toInt(port));
+    net::UDPClient client(hostname, toInt(port));
 
     for (int i = 0; i < nmsg; ++i) {
         SysLog log(message);

@@ -569,14 +569,14 @@ net/Connector.cc
 net/Connector.h
 net/Endpoint.cc
 net/Endpoint.h
-net/NetAddress.cc
-net/NetAddress.h
 net/NetService.cc
 net/NetService.h
 net/NetUser.cc
 net/NetUser.h
 net/Port.cc
 net/Port.h
+net/SocketOptions.cc
+net/SocketOptions.h
 net/TCPClient.cc
 net/TCPClient.h
 net/TCPServer.cc
@@ -587,6 +587,7 @@ net/TCPStream.cc
 net/TCPStream.h
 net/Telnet.cc
 net/Telnet.h
+net/TelnetUser.cc
 net/TelnetUser.h
 net/Telnetable.cc
 net/Telnetable.h

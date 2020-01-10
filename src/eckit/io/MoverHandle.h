@@ -36,7 +36,7 @@ public:
 private:
 
     std::unique_ptr<DataHandle> handle_;
-    TCPSocket data_;
+    net::TCPSocket data_;
     bool fail_;
     std::string error_;
     Mutex mutex_;

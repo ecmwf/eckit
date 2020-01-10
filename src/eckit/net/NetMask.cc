@@ -20,9 +20,9 @@
 #include "eckit/net/IPAddress.h"
 #include "eckit/exception/Exceptions.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
+namespace net {
 
 static Translator<std::string, size_t> s2l;
 
@@ -52,4 +52,6 @@ void NetMask::print(std::ostream& s) const {
     s << network_ << '/' << bits_;
 }
 
-}
+} // namespace net
+} // namespace eckit
+

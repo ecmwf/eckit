@@ -27,6 +27,8 @@
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
+namespace net {
+
 
 static void* get_sockaddr(struct sockaddr* sa) {
     if (sa->sa_family == AF_INET) {
@@ -122,4 +124,6 @@ std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const {
 }
 
 
+}  // namespace net
 }  // namespace eckit
+

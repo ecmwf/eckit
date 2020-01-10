@@ -23,7 +23,7 @@ public:
 
 
 void Test::run() {
-    Endpoint addr(Resource<std::string>("-addr;$ADDR;addr", "localhost:9000"));
+    net::Endpoint addr(Resource<std::string>("-addr;$ADDR;addr", "localhost:9000"));
 
     Log::info() << addr << std::endl;
 }

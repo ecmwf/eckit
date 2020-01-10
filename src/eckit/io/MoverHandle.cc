@@ -30,7 +30,7 @@ namespace eckit {
 class MoverHandleThread : public Thread {
 
     MoverHandle& owner_;
-    EphemeralTCPServer server_;
+    net::EphemeralTCPServer server_;
     TCPHandle local_;
     bool read_;
     bool fail_;
@@ -71,7 +71,7 @@ public:
         }
     }
 
-    TCPSocket& accept() {
+    net::TCPSocket& accept() {
 
         try {
             return server_.accept("MoverHandle waiting for connection", 60);

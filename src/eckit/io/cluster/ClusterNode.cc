@@ -39,16 +39,16 @@ public:
 void ClusterHeartBeat::run() {
     Monitor::instance().name("heartbeat");
     std::string host = Resource<std::string>("clusterHost", "localhost");
-    int port         = Port("cluster", 9555);
+    int port         = net::Port("cluster", 9555);
     std::string reply;
     NodeInfo remote;
 
     for (;;) {
-        TCPClient client;
+        net::TCPClient client;
 
         try {
             Log::status() << "Connecting to " << host << ":" << port << std::endl;
-            TCPStream s(client.connect(host, port));
+            net::TCPStream s(client.connect(host, port));
             Log::status() << "Connected to " << host << ":" << port << std::endl;
 
             NodeInfo::thisNode().port(owner_.port());

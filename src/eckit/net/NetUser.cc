@@ -13,13 +13,10 @@
 #include "eckit/io/SockBuf.h"
 #include "eckit/net/TCPStream.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
-
-NetUser::NetUser(TCPSocket& protocol) : protocol_(protocol) {
+NetUser::NetUser(net::TCPSocket& protocol) : protocol_(protocol) {
     Log::status() << "New connection from " << protocol_.remoteHost() << std::endl;
 }
 
@@ -36,6 +33,6 @@ void NetUser::run() {
     serve(stream, in, out);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
+}  // namespace net
 }  // namespace eckit

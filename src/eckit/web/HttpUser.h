@@ -22,9 +22,9 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class HttpUser : public eckit::NetUser {
+class HttpUser : public eckit::net::NetUser {
 public:
-	HttpUser(eckit::TCPSocket&);
+	HttpUser(eckit::net::TCPSocket&);
 	virtual ~HttpUser();
 private:
     virtual void serve(eckit::Stream&, std::istream&, std::ostream&);

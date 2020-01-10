@@ -17,24 +17,22 @@
 #include "eckit/web/HttpUser.h"
 #include "eckit/web/Url.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpService::HttpService(int port, bool visible) : NetService(port, visible) {}
+HttpService::HttpService(int port, bool visible) : net::NetService(port, visible) {}
 
 HttpService::~HttpService() {}
 
 
-NetUser* HttpService::newUser(TCPSocket& protocol) {
+net::NetUser* HttpService::newUser(net::TCPSocket& protocol) {
     return new HttpUser(protocol);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
-HttpUser::HttpUser(TCPSocket& protocol) : NetUser(protocol) {}
+HttpUser::HttpUser(net::TCPSocket& protocol) : net::NetUser(protocol) {}
 
 HttpUser::~HttpUser() {}
 

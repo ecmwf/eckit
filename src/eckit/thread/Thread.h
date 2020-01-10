@@ -17,7 +17,6 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

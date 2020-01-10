@@ -18,33 +18,21 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/net/TCPSocket.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
-
-//-----------------------------------------------------------------------------
+namespace net {
 
 class TCPServer;
 
-// Choose from
+//----------------------------------------------------------------------------------------------------------------------
 
 class TCPStreamBase : public Stream {
 public:
 
-// -- Contructors
-
-	TCPStreamBase() {}
-
-
-// -- Methods
+    TCPStreamBase() {}
 
     in_addr remoteAddr() {
         return socket().remoteAddr();
     }
-
-// -- Overridden methods
-
-	// From Stream
 
 	virtual long write(const void* buf,long len)
 		{ return socket().write(buf,len); }
@@ -54,42 +42,29 @@ public:
 
 protected:
 
-// -- Overridden methods
-
-	// From Stream
-
 	virtual std::string name() const;
 
 
-private:
-
-// -- Methods
+private: // methods
 
 	std::string nonConstName();
 	virtual TCPSocket& socket() = 0;
 
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class TCPStream : public TCPStreamBase {
 public:
 
-// -- Contructors
-
-	// Take ownership of TCPSocket;
-
-	TCPStream(TCPSocket&);
-
-// -- Destructor
+    /// @note Takes ownership of TCPSocket;
+	TCPStream(net::TCPSocket&);
 
 	~TCPStream();
 
-    // From TCPStreamBase
-
     virtual TCPSocket& socket() { return socket_; }
 
-protected:
-
-// -- Members
+protected: // members
 
 	TCPSocket socket_;
 
@@ -97,27 +72,18 @@ private:
 
 	TCPStream(TCPServer&);
 
-
-// -- Overridden methods
-
-	// From Stream
-
     virtual void closeOutput();
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 class InstantTCPStream : public TCPStreamBase {
 public:
 
-// -- Constructior
-
-	// Does not take ownership of TCPSocket
-
-	InstantTCPStream(TCPSocket& socket):
+    /// @note  does not take ownership of TCPSocket
+	InstantTCPStream(net::TCPSocket& socket):
 		socket_(socket) {}
-
-    // -- Overridden methods
-
-    // From TCPStream
 
     virtual TCPSocket& socket() { return socket_; }
 
@@ -125,36 +91,28 @@ private:
 
 	InstantTCPStream(TCPServer&);
 
-// -- Members
-
     TCPSocket& socket_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 class SharedTCPStream : public TCPStream, public Counted {
 public:
 
-// -- Contructors
-
-	SharedTCPStream(TCPSocket&);
-
+	SharedTCPStream(net::TCPSocket&);
 
 private:
 
-// -- Destructor
-
 	~SharedTCPStream();
-
-// -- Contructors
 
 	SharedTCPStream(TCPServer&);
 
-// -- Members
-
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
 
 #endif

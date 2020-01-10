@@ -477,16 +477,17 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 }
 
 
-int TCPSocket::newSocket(int port, SocketOpts opts) {
+int TCPSocket::createSocket(int port, const SocketOptions opts) {
 
     localPort_ = port;
 
     int s = ::socket(AF_INET, SOCK_STREAM, 0);
 
-    if (s < 0)
+    if (s < 0) {
         throw FailedSystemCall("::socket");
+    }
 
-    if (opts.reuseAddress) {
+    if (opts.reuseAddr) {
         int flg = 1;
         if (::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg)) < 0)
             Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << std::endl;
@@ -522,21 +523,13 @@ int TCPSocket::newSocket(int port, SocketOpts opts) {
 #endif
     }
 
-    /* #ifdef IPPROTO_IP */
-    /* #ifdef IP_TOS */
-    /* #ifndef IPTOS_LOWDELAY */
-    /* #define IPTOS_LOWDELAY 0x10 */
-    /* #endif */
-    int tos = IPTOS_LOWDELAY;
+    if (opts.lowDelay) {
+        int tos = IPTOS_LOWDELAY;
+        if (::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)) < 0)
+            Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
+    }
 
-    if (::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)) < 0)
-        Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
-
-    /* #endif */
-    /* #endif */
-
-
-    if (opts.noLinger) {
+    if (opts.noDelay) {
         int flag = 1;
         if (::setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)) < 0)
             Log::warning() << "setsockopt TCP_NODELAY" << Log::syserr << std::endl;

@@ -29,15 +29,14 @@ namespace eckit {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
-
-    TCPServer(int port = 0, const std::string& addr = "", bool reusePort = false, bool reuseAddress = true);
+    TCPServer(int port = 0, const std::string& addr = "", const SocketOptions = {});
 
     ~TCPServer();
 
     void willFork(bool);
 
     // accept a client, more can be accepted
-    virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = 0);
+    virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = nullptr);
 
     void closeExec(bool on) { closeExec_ = on; }
 
@@ -51,9 +50,11 @@ protected: // members
     int listen_;
     std::string addr_;
 
-    virtual void bind();
+    SocketOptions socketOpts_; //< options to build the socket
 
 protected: // methods
+
+    virtual void bind();
 
     virtual void print(std::ostream& s) const;
 
@@ -64,26 +65,13 @@ private: // methods
     virtual std::string bindingAddress() const;
 
 private: // members
-
     bool closeExec_;
-
-    /// SO_REUSEPORT is useful if multiple threads want to bind to the same port and OS handles load balancing
-    /// otherwise better not to set it. Default is false.
-    bool reusePort_;
-
-    /// SO_REUSEADDRESS tells OS to skip TIME_WAIT of 2MSL before rebinding to same address:port
-    /// This allows fast restart of services, at the added risk of duplicated/stray packets in route
-    /// from previous closed connections messing up new connections. This is likely under high network contention and/or
-    /// very short connections quickly reuse the available ports.
-    /// Set to false when openeing ephemeral ports/connections.
-    /// Default is true.
-    bool reuseAddress_;
-
 };
 
 class EphemeralTCPServer : public TCPServer {
 public:
-    EphemeralTCPServer(const std::string& addr = "");
+    explicit EphemeralTCPServer(const std::string& addr = "");
+    explicit EphemeralTCPServer(int port, const std::string& addr = "");
 };
 
 //----------------------------------------------------------------------------------------------------------------------

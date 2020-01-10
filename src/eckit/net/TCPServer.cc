@@ -22,18 +22,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TCPServer::TCPServer(int port, const std::string& addr, bool reusePort, bool reuseAddress) :
-    TCPSocket(),
-    port_(port),
-    listen_(-1),
-    addr_(addr),
-    closeExec_(true),
-    reusePort_(reusePort),
-    reuseAddress_(reuseAddress) {}
+TCPServer::TCPServer(int port, const std::string& addr, const SocketOptions socketOptions) :
+    TCPSocket(), port_(port), listen_(-1), addr_(addr), socketOpts_(socketOptions), closeExec_(true) {}
 
 TCPServer::~TCPServer() {
-    if (listen_ >= 0)
+    if (listen_ >= 0) {
         ::close(listen_);
+    }
 }
 
 // Accept a client
@@ -102,10 +97,7 @@ void TCPServer::close() {
 
 void TCPServer::bind() {
     if (listen_ == -1) {
-        SocketOpts sockopts{};
-        sockopts.reuseAddress = reuseAddress_;
-        sockopts.reusePort    = reusePort_;
-        listen_               = newSocket(port_, sockopts);
+        listen_ = createSocket(port_, socketOpts_);
         ::listen(listen_, 5);
     }
 }
@@ -127,7 +119,15 @@ void TCPServer::print(std::ostream& s) const {
     s << "]";
 }
 
-EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr, false, false) {}
+EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr) {
+    socketOpts_.reusePort = false;
+    socketOpts_.reuseAddr = false;
+}
+
+EphemeralTCPServer::EphemeralTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {
+    socketOpts_.reusePort = false;
+    socketOpts_.reuseAddr = false;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

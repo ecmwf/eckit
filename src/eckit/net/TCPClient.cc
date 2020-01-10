@@ -24,9 +24,9 @@ TCPClient::~TCPClient() {}
 
 void TCPClient::bind() {
     if (socket_ == -1) {
-        SocketOpts sockopts{};
-        sockopts.reuseAddress = false;
-        socket_               = newSocket(port_, sockopts);
+        SocketOptions socketOptions;
+        socketOptions.reuseAddr = false;
+        socket_                 = createSocket(port_, socketOptions);
     }
 }
 

@@ -52,6 +52,7 @@ EXPECT_NOT(false);
 EXPECT_NO_THROW({ bool b = true; });
 EXPECT_THROWS(throw std::exception());
 EXPECT_THROWS_AS(throw std::exception(), std::exception);
+EXPECT_EQUAL(3, 3);
 }  // namespace test
 }  // namespace eckit
 ,
@@ -108,6 +109,25 @@ EXPECT(1 == run(fail, TestVerbosity::Silent));
 }
 ,
 
+    {CASE("EXPECT_EQUAL causes an error to be reported on failure"){
+
+       Test fail = {CASE("F"){EXPECT_EQUAL(1, 2);
+}
+}
+;
+
+std::vector<std::string> f;
+bool ret = fail.run(TestVerbosity::Silent, f);
+if (ret || f.size() == 0) {
+  throw eckit::testing::TestException("No error reported when EXPECT_EQUAL failed", Here());
+}
+if (ret || f.size() > 1) {
+  throw eckit::testing::TestException("Too many errors reported when EXPECT_EQUAL failed", Here());
+}
+}
+}
+,
+
     {CASE("EXPECT succeeds for integer comparison"){EXPECT(7 == 7);
 EXPECT(7 != 8);
 EXPECT(7 >= 6);
@@ -120,6 +140,7 @@ EXPECT_NOT(7 <= 6);
 EXPECT_NOT(7 >= 8);
 EXPECT_NOT(7 < 6);
 EXPECT_NOT(7 > 8);
+EXPECT_EQUAL(7, 7);
 }
 }
 , {CASE("Expect succeeds for integer vs. real comparison"){EXPECT(7.0 == 7);
@@ -129,6 +150,8 @@ EXPECT(7 != 8.0);
 
 EXPECT_NOT(7.0 == 8);
 EXPECT_NOT(7 != 7.0);
+
+EXPECT_EQUAL(7, 7.0);
 }
 }
 ,
@@ -149,6 +172,8 @@ EXPECT_NOT(b <= a);
 EXPECT_NOT(a >= b);
 EXPECT_NOT(b < a);
 EXPECT_NOT(a > b);
+
+EXPECT_EQUAL(a, a);
 }
 }
 ,
@@ -268,6 +293,7 @@ SECTION("Compare Collections") {
     EXPECT_NOT(a != b);
     EXPECT_NOT(a > b);
     EXPECT_NOT(a < b);
+    EXPECT_EQUAL(a, b);
     a[0] = 0;
     EXPECT_NOT(a == b);
     EXPECT_NOT(a >= b);

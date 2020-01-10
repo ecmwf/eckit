@@ -390,6 +390,17 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection, int& _num_sub
         throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
     } while (false)
 
+// Consider using EXPECT_EQUAL instead of EXPECT when testing for equality of two expressions,
+// since this macro provides more informative output on failure.
+#define EXPECT_EQUAL(expr, expected) \
+    do { \
+        if (!((expr) == (expected))) { \
+            std::stringstream str; \
+            str << ("EXPECT condition '" #expr " == " #expected "' failed. ") \
+                << "(Received: " << expr << "; expected: " << expected << ")"; \
+            throw eckit::testing::TestException(str.str(), Here()); \
+        } \
+    } while (false)
 
 // Setup no longer does anything. Can be removed where it has been used
 #define SETUP(name)

@@ -23,7 +23,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class RemoteCommander : public NetService {
+class RemoteCommander : public net::NetService {
 public:
     // -- Contructors
 
@@ -36,9 +36,9 @@ public:
 private:
     // -- Overridden methods
 
-    // From NetService
+    // From net::NetService
 
-    virtual NetUser* newUser(TCPSocket&);
+    virtual net::NetUser* newUser(net::TCPSocket&);
     virtual std::string name() { return "monitor"; }
 };
 

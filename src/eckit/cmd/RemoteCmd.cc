@@ -13,7 +13,6 @@
 #include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Monitor.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -21,13 +20,9 @@ namespace eckit {
 
 RemoteCmd::RemoteCmd() : CmdResource("remote") {}
 
-//----------------------------------------------------------------------------------------------------------------------
-
 RemoteCmd::~RemoteCmd() {}
 
-//----------------------------------------------------------------------------------------------------------------------
-
-void RemoteCmd::execute(std::istream& in, std::ostream& out, CmdArg& arg) {
+void RemoteCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     Monitor::TaskArray& info = Monitor::instance().tasks();
 
     Value a(arg[1]);
@@ -71,7 +66,7 @@ void RemoteCmd::execute(std::istream& in, std::ostream& out, CmdArg& arg) {
         return;
     }
 
-    TCPStream remote(TCPClient().connect(host, port));
+    net::TCPStream remote(net::TCPClient().connect(host, port));
 
     Log::debug() << "RemoteCommand to " << host << ":" << port << std::endl;
 
@@ -91,20 +86,17 @@ void RemoteCmd::execute(std::istream& in, std::ostream& out, CmdArg& arg) {
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void RemoteCmd::help(std::ostream&) const {}
 
-//----------------------------------------------------------------------------------------------------------------------
 
 Arg RemoteCmd::usage(const std::string& cmd) const {
     return Arg("<process>") + Arg("<command>...");
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
 static RemoteCmd remoteCmd;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+
+}

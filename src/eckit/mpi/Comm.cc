@@ -10,6 +10,7 @@
 
 #include "eckit/mpi/Comm.h"
 
+#include <algorithm>
 #include <map>
 
 #include "eckit/eckit_config.h"
@@ -96,6 +97,16 @@ public:
             return true;
         }
         return false;
+    }
+
+    std::vector<std::string> listComms() {
+        AutoLock<Mutex> lock(mutex_);
+        std::vector<std::string> allComms;
+
+        std::transform(begin(communicators), end(communicators), std::back_inserter(allComms),
+                       [](const std::pair<std::string, Comm*>& c) { return c.first; });
+
+        return allComms;
     }
 
     void finaliseAllComms() {
@@ -280,6 +291,10 @@ void deleteComm(const char* name) {
 
 bool hasComm(const char* name) {
     return Environment::instance().hasComm(name);
+}
+
+std::vector<std::string> listComms() {
+    return Environment::instance().listComms();
 }
 
 void finaliseAllComms() {

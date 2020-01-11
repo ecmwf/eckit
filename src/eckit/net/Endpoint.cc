@@ -18,6 +18,7 @@
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
+namespace net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -48,7 +49,7 @@ Endpoint::Endpoint() : port_(0) {
     validate();
 }
 
-bool Endpoint::operator==(const Endpoint& other) {
+bool Endpoint::operator==(const net::Endpoint& other) {
     return (port_ == other.port_ && host_ == other.host_);
 }
 
@@ -73,4 +74,6 @@ void Endpoint::validate() const
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace net
 } // namespace eckit
+

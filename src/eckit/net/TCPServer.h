@@ -17,84 +17,61 @@
 #include "eckit/net/TCPSocket.h"
 
 
-
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-// AIX #define accept to naccept. It took me a while :-(
-// this clashes with the method accept()
-// so I need to include socket here so all client of this
-// class actually see this #define. So much for encapsulation.
-
-class TCPServer : public TCPSocket {
+class TCPServer : public TCPSocket, private NonCopyable {
 public:
-
-// -- Contructors
-
-    TCPServer(int port = 0, const std::string& addr = "", bool reusePort = false);
-
-
-// -- Destructor
+    TCPServer(int port = 0, const std::string& addr = "", const SocketOptions = {});
 
     ~TCPServer();
 
-// -- Methods
-
     void willFork(bool);
 
-
     // accept a client, more can be accepted
+    virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = nullptr);
 
-    virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = 0);
     void closeExec(bool on) { closeExec_ = on; }
-
-// -- Overridden methods
-
-    // From TCPSocket
 
     virtual int socket();
 
     virtual void close();
 
-
-protected:
-
-// -- Members
+protected: // members
 
     int port_;
     int listen_;
     std::string addr_;
 
-// -- Overridden methods
+    SocketOptions socketOpts_; //< options to build the socket
 
-    // From TCPSocket
+protected: // methods
 
     virtual void bind();
 
-protected:
-
     virtual void print(std::ostream& s) const;
 
-private:
-
-// No copy allowed
-
-    TCPServer(const TCPServer&);
-    TCPServer& operator=(const TCPServer&);
+private: // methods
 
     // To be used by Select
 
     virtual std::string bindingAddress() const;
 
+private: // members
     bool closeExec_;
-    bool reusePort_;
+};
 
+class EphemeralTCPServer : public TCPServer {
+public:
+    explicit EphemeralTCPServer(const std::string& addr = "");
+    explicit EphemeralTCPServer(int port, const std::string& addr = "");
 };
 
 
-//-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
+
 
 #endif

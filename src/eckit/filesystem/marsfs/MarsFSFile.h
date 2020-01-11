@@ -94,9 +94,9 @@ private:
 
 // -- Members
 //
-    TCPClient data_;
+    net::TCPClient data_;
     MarsFSPath path_;
-	AutoLock<Connector> lock_;
+    AutoLock<net::Connector> lock_;
 
     std::unique_ptr<Hash> hash_;
 

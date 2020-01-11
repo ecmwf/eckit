@@ -19,34 +19,25 @@
 
 
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-TCPServer::TCPServer(int port, const std::string& addr, bool reusePort) :
-    TCPSocket(),
-    port_(port),
-    listen_(-1),
-    addr_(addr),
-    closeExec_(true),
-    reusePort_(reusePort) {}
+TCPServer::TCPServer(int port, const std::string& addr, const SocketOptions socketOptions) :
+    TCPSocket(), port_(port), listen_(-1), addr_(addr), socketOpts_(socketOptions), closeExec_(true) {}
 
 TCPServer::~TCPServer() {
-    if (listen_ >= 0)
+    if (listen_ >= 0) {
         ::close(listen_);
+    }
 }
 
-// Accept a client
 
 TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected) {
+
     bind();
 
-
     sockaddr_in from;
-#ifdef SGI
-    int fromlen = sizeof(from);
-#else
     socklen_t fromlen = sizeof(from);
-#endif
 
     for (;;) {
         int delay = timeout ? timeout : 10;
@@ -55,12 +46,16 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
         Log::status() << message << " (port " << port_ << ")" << std::endl;
 
         while (!select.ready(delay)) {
-            if (timeout && !connected)
+
+            if (timeout && !connected) {
                 throw TimeOut(message, timeout);
+            }
+
             if (connected) {
                 *connected = false;
                 return *this;
             }
+
             Log::status() << message << " (port " << port_ << ")" << std::endl;
         }
 
@@ -81,9 +76,7 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
     if (closeExec_)
         SYSCALL(fcntl(socket_, F_SETFD, FD_CLOEXEC));
 
-    /// @todo change this to sigaction
-
-    ::signal(SIGPIPE, SIG_IGN);
+    register_ignore_sigpipe();
 
     Log::status() << "Get connection from " << remoteHost() << std::endl;
 
@@ -103,17 +96,14 @@ void TCPServer::close() {
 
 void TCPServer::bind() {
     if (listen_ == -1) {
-        listen_ = newSocket(port_, reusePort_);
+        listen_ = createSocket(port_, socketOpts_);
         ::listen(listen_, 5);
-
-        // if(!willFork_)
-        //  SYSCALL(fcntl(socket_,F_SETFD,FD_CLOEXEC));
     }
 }
 
 
 int TCPServer::socket() {
-    ((TCPServer*)this)->bind();
+    bind();
     return listen_;
 }
 
@@ -128,6 +118,14 @@ void TCPServer::print(std::ostream& s) const {
     s << "]";
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr) {
+    socketOpts_.reusePort(false).reuseAddr(false);
+}
 
+EphemeralTCPServer::EphemeralTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {
+    socketOpts_.reusePort(false).reuseAddr(false);
+}
+
+
+}  // namespace net
 }  // namespace eckit

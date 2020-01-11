@@ -8,13 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-// File EtcTable.h
-// Baudouin Raoult - (c) ECMWF Aug 11
+/// @author Baudouin Raoult
+/// @date   Aug 2011
 
 #ifndef eckit_EtcTable_h
 #define eckit_EtcTable_h
 
 #include <vector>
+#include <string>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
@@ -22,7 +23,7 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+
 
 class EtcTable : private NonCopyable {
 public:
@@ -65,7 +66,7 @@ private: // methods
 
 };
 
-//-----------------------------------------------------------------------------
+
 
 class EtcKeyTable : public EtcTable {
     bool match(const std::string& query, const std::vector<std::string>& line) const { return query == line[0]; }
@@ -73,7 +74,7 @@ public:
     EtcKeyTable(const std::string& name, int size = 0, const std::string& dir= "etc");
 };
 
-//-----------------------------------------------------------------------------
+
 
 class EtcStartWithTable : public EtcTable {
     bool match(const std::string& query, const std::vector<std::string>& line) const { return query.find(line[0]) == 0; }
@@ -81,7 +82,7 @@ public:
     EtcStartWithTable(const std::string& name, int size = 0, const std::string& dir= "etc");
 };
 
-//-----------------------------------------------------------------------------
+
 
 } // namespace eckit
 

@@ -8,31 +8,31 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_TCPSocket_h
-#define eckit_TCPSocket_h
+#ifndef eckit_net_TCPSocket_h
+#define eckit_net_TCPSocket_h
 
 #include <netinet/in.h>
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/net/SocketOptions.h"
 #include "eckit/utils/Hash.h"
 
-
 namespace eckit {
+namespace net {
 
-// NOTE: I am not realy happy about those classes, so they may change...
-//       Note that this class calls: signal(SIGPIPE,SIG_IGN);
+/// @note this class calls sets a handler to ignore SIGPIPE
 
-class TCPSocket  {
-public: // types
+class TCPSocket {
 
-// -- Exceptions
+public:  // types
+    class UnknownHost : public Exception {
+    public:
+        explicit UnknownHost(const std::string&);
+    };
 
-    class UnknownHost : public Exception { public: UnknownHost(const std::string&); };
-
-public: // methodss
-
-	TCPSocket();
+public:  // methods
+    TCPSocket();
 
     // From an existing TCPSocket (see TCPServer::accept)
 
@@ -40,102 +40,97 @@ public: // methodss
     /// **** NOTE: copying gives ownership of the socket to new object
     /// **** Beware of 'slicing', i.e copying subclasses.
 
-	TCPSocket(TCPSocket&);
+    TCPSocket(net::TCPSocket&);
 
-// -- Destructor
+    virtual ~TCPSocket();
 
-	virtual ~TCPSocket();
+    // See note on copy constructor
 
-// -- Operators
+    TCPSocket& operator=(net::TCPSocket&);
 
-	// See note on copy constructor
-
-	TCPSocket& operator=(TCPSocket&);
-
-// -- Methods
-
-	// I/O
     long write(const void* buf, long length);
 
-	/// Read from a TCP socket
-	///
-	/// \param buf The buffer to read into
-	/// \param length The maximum number of bytes to read
-	///
-	/// **Configuration flags**
-	/// \arg **useSelectOnTCPSocket** (*bool*): use select for improved resilience
-	///   on flaky connections
-	/// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
-	///   (only if **useSelectOnTCPSocket** is enabled)
-	long read(void * buf,long length);
+    /// Read from a TCP socket
+    ///
+    /// \param buf The buffer to read into
+    /// \param length The maximum number of bytes to read
+    ///
+    /// **Configuration flags**
+    /// \arg **useSelectOnTCPSocket** (*bool*): use select for improved resilience
+    ///   on flaky connections
+    /// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
+    ///   (only if **useSelectOnTCPSocket** is enabled)
+    long read(void* buf, long length);
 
-	long rawRead(void*,long); // Non-blocking version
+    long rawRead(void*, long);  // Non-blocking version
 
-	bool isConnected() const { return socket_ != -1; }
-	bool stillConnected() const;
+    bool isConnected() const { return socket_ != -1; }
 
-	// close sockets
-	virtual void close();
+    bool stillConnected() const;
 
-	// peer name
+    // close sockets
+    virtual void close();
 
-	in_addr       remoteAddr() const;
+    // peer name
+
+    in_addr remoteAddr() const;
     const std::string& remoteHost() const;
-	int           remotePort() const;
+    int remotePort() const;
 
-	in_addr       localAddr() const;
+    in_addr localAddr() const;
     const std::string& localHost() const;
-	int           localPort() const;
+    int localPort() const;
 
-	void          bufferSize(int n) { bufSize_ = n; }
-	virtual int  socket();
+    void bufferSize(int n) { bufSize_ = n; }
+    virtual int socket();
 
-	void closeOutput();
+    void closeOutput();
     void closeInput();
 
     void debug(bool on);
 
-// -- Class methods
-
-    static std::string  addrToHost(in_addr);
+public:  // class methods
+    static std::string addrToHost(in_addr);
     static in_addr hostToAddr(const std::string&);
     static std::string hostName(const std::string& h, bool full = false);
 
-protected: // members
+    /// @note uses sigaction to ignore SIGPIPE
+    static void register_ignore_sigpipe();
 
-    int      socket_;      // i/o socket
-    int      localPort_;   // effective port
-    int      remotePort_;  // remote port
-    std::string   remoteHost_;  // remote host
-    in_addr  remoteAddr_;  // remote ip adress
-    std::string   localHost_;   // local host
-    in_addr  localAddr_;   // local ip adress
-    int      bufSize_;
+protected:                    // members
+    int socket_;              // i/o socket
+    int localPort_;           // effective port
+    int remotePort_;          // remote port
+    std::string remoteHost_;  // remote host
+    in_addr remoteAddr_;      // remote ip adress
+    std::string localHost_;   // local host
+    in_addr localAddr_;       // local ip adress
+    int bufSize_;
 
     // Debug
-    bool     debug_;
-    bool     newline_;
-    char     mode_;
+    bool debug_;
+    bool newline_;
+    char mode_;
 
-// -- Methods
-
-    int newSocket(int, bool reusePort = false);
+protected:  // methods
+    int createSocket(int port, const SocketOptions options = {});
 
     virtual void print(std::ostream& s) const;
 
-
-private: // methods
-
-    virtual void bind();  // The socket must be made
+private:  // methods
+    /// @pre socket must be made
+    virtual void bind();
     virtual std::string bindingAddress() const;
 
-    friend std::ostream& operator<<(std::ostream& s,const TCPSocket& socket)
-        { socket.print(s); return s;}
-
+    friend std::ostream& operator<<(std::ostream& s, const TCPSocket& socket) {
+        socket.print(s);
+        return s;
+    }
 };
 
-std::ostream& operator<<(std::ostream&,in_addr);
+std::ostream& operator<<(std::ostream&, in_addr);
 
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
 
 #endif

@@ -81,10 +81,10 @@ void FTPHandle::open(const std::string& cmd) {
     ftpCommand("PASS 04clave");
     ftpCommand("TYPE I");
 
-    TCPServer server(0);  // Any port
+    net::EphemeralTCPServer server;
 
     int port         = htons(server.localPort());
-    std::string addr = IPAddress(server.localAddr()).asString();
+    std::string addr = net::IPAddress(server.localAddr()).asString();
 
     char p[1024];
     snprintf(p, 1024, "PORT %s,%d,%d", addr.c_str(), port / 256, port % 256);

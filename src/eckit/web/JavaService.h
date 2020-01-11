@@ -16,95 +16,24 @@
 
 #include "eckit/net/NetService.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
-
-class JavaService : public eckit::NetService {
+class JavaService : public eckit::net::NetService {
 public:
-
-// -- Exceptions
-	// None
-
-// -- Contructors
 
 	JavaService(int port);
 
-// -- Destructor
-
     ~JavaService();
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-protected:
-
-// -- Members
-	// None
-
-// -- Methods
-
-    // void print(std::ostream&) const;
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
 
 private:
 
-// No copy allowed
-
-	JavaService(const JavaService&);
-	JavaService& operator=(const JavaService&);
-
-// -- Members
-	// None
-
-// -- Methods
-	// None
-
-// -- Overridden methods
-
-	virtual eckit::NetUser* newUser(eckit::TCPSocket& socket);
+	virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& socket);
 	virtual std::string name() { return "java"; }
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const JavaService& p)
-	//	{ p.print(s); return s; }
 
 };
 
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

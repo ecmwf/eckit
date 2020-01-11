@@ -25,7 +25,7 @@ Select::Select() : last_(-1) {
     FD_ZERO(&files_);
 }
 
-Select::Select(TCPSocket& p) : last_(-1) {
+Select::Select(net::TCPSocket& p) : last_(-1) {
     FD_ZERO(&files_);
     add(p);
 }
@@ -44,7 +44,7 @@ void Select::add(int fd) {
         last_ = fd;
 }
 
-void Select::add(TCPSocket& p) {
+void Select::add(net::TCPSocket& p) {
     add(p.socket());
 }
 
@@ -53,7 +53,7 @@ void Select::remove(int fd) {
     FD_CLR(fd, &files_);
 }
 
-void Select::remove(TCPSocket& p) {
+void Select::remove(net::TCPSocket& p) {
     remove(p.socket());
 }
 
@@ -62,7 +62,7 @@ bool Select::set(int fd) {
     return FD_ISSET(fd, &set_);
 }
 
-bool Select::set(TCPSocket& p) {
+bool Select::set(net::TCPSocket& p) {
     return set(p.socket());
 }
 

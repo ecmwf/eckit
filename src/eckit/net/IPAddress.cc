@@ -18,8 +18,7 @@
 
 
 namespace eckit {
-
-//----------------------------------------------------------------------------------------------------------------------
+namespace net {
 
 IPAddress::IPAddress(const std::string& addr) {
     if(inet_aton(addr.c_str(), &address_) == 0) {
@@ -40,6 +39,6 @@ std::string IPAddress::asString() const {
     return inet_ntoa(address_);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
+} // namespace net
 } // namespace eckit
+

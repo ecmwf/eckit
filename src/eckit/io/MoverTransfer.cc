@@ -56,7 +56,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     for (std::map<std::string, Length>::iterator j = cost.begin(); j != cost.end(); ++j)
         Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
 
-    Connector& c(Connector::service("mover", cost));
+    net::Connector& c(net::Connector::service("mover", cost));
 
     Log::message() << c.host() << std::endl;
     Stream& s = c;

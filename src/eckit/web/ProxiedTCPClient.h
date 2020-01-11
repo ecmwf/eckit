@@ -20,9 +20,8 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
-class ProxiedTCPClient : public TCPClient {
+class ProxiedTCPClient : public net::TCPClient {
 public:
 
 // -- Contructors
@@ -31,11 +30,11 @@ public:
 
 // -- Destructor
 
-	~ProxiedTCPClient();
+    virtual ~ProxiedTCPClient();
 
 // -- Methods
 
-	virtual TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
+	virtual net::TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
 
 private:
 
@@ -46,7 +45,7 @@ private:
 
 // -- Members
 
-    Endpoint proxy_;
+    net::Endpoint proxy_;
 
 // -- Overridden methods
 
@@ -55,8 +54,6 @@ private:
 };
 
 
-//-----------------------------------------------------------------------------
-
 } // namespace eckit
 
-#endif // ProxiedTCPClient_H
+#endif

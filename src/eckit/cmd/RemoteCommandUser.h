@@ -17,15 +17,15 @@
 
 #include "eckit/net/NetUser.h"
 
-//-----------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
-class RemoteCommandUser : public eckit::NetUser {
+
+class RemoteCommandUser : public eckit::net::NetUser {
 public:
-    RemoteCommandUser(eckit::TCPSocket&);
+    RemoteCommandUser(eckit::net::TCPSocket&);
     virtual ~RemoteCommandUser();
     static void terminate(RemoteCommandUser& other) { other.stop(); }
 
@@ -34,7 +34,7 @@ private:
     std::string from_;
 };
 
-//-----------------------------------------------------------------------------
+
 
 } // namespace eckit
 

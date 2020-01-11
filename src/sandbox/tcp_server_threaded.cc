@@ -32,13 +32,13 @@ using namespace eckit;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class FDBUser : public eckit::NetUser {
+class FDBUser : public eckit::net::NetUser {
 public:
-    FDBUser(eckit::TCPSocket& protocol) : NetUser(protocol) {}
+    FDBUser(eckit::net::TCPSocket& protocol) : net::NetUser(protocol) {}
 
     ~FDBUser() {}
 
-    TCPServer data_;
+    net::EphemeralTCPServer data_;
 
 private:
     virtual void serve(eckit::Stream& control, std::istream&, std::ostream&) {
@@ -98,14 +98,14 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FDBService : public eckit::NetService {
+class FDBService : public eckit::net::NetService {
 public:
-    FDBService(int port) : NetService(port) {}
+    FDBService(int port) : net::NetService(port) {}
 
     ~FDBService() {}
 
 private:
-    virtual eckit::NetUser* newUser(eckit::TCPSocket& protocol) { return new FDBUser(protocol); }
+    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& protocol) { return new FDBUser(protocol); }
 
     virtual std::string name() { return "fdbsvr"; }
 };
@@ -126,7 +126,7 @@ private:  // methods
 
         unique();
 
-        eckit::ThreadControler tc(new FDBService(Port("fdbsvr", 9013)));
+        eckit::ThreadControler tc(new FDBService(net::Port("fdbsvr", 9013)));
         tc.start();
         for (;;) {
             Log::status() << "Idle" << std::endl;

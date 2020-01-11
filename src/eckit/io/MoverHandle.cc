@@ -22,7 +22,6 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -31,7 +30,7 @@ namespace eckit {
 class MoverHandleThread : public Thread {
 
     MoverHandle& owner_;
-    TCPServer server_;
+    net::EphemeralTCPServer server_;
     TCPHandle local_;
     bool read_;
     bool fail_;
@@ -39,10 +38,7 @@ class MoverHandleThread : public Thread {
 
 public:
     MoverHandleThread(MoverHandle& owner, bool read) :
-        owner_(owner),
-        local_(NodeInfo::thisNode().host(), server_.localPort()),
-        read_(read),
-        fail_(false) {}
+        owner_(owner), local_(NodeInfo::thisNode().host(), server_.localPort()), read_(read), fail_(false) {}
 
     void run() {
         {
@@ -75,7 +71,7 @@ public:
         }
     }
 
-    TCPSocket& accept() {
+    net::TCPSocket& accept() {
 
         try {
             return server_.accept("MoverHandle waiting for connection", 60);

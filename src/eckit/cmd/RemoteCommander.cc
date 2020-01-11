@@ -13,28 +13,28 @@
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Monitor.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-RemoteCommander::RemoteCommander(int p) : NetService(p) {
+
+RemoteCommander::RemoteCommander(int p) : net::NetService(p) {
     Monitor::instance().port(port());
     std::string host = Resource<std::string>("localBindingAddr", "localHost");
     Monitor::instance().host(host);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 RemoteCommander::~RemoteCommander() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 
-NetUser* RemoteCommander::newUser(TCPSocket& protocol) {
+
+net::NetUser* RemoteCommander::newUser(net::TCPSocket& protocol) {
     return new RemoteCommandUser(protocol);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 }  // namespace eckit

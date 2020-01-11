@@ -24,7 +24,7 @@
 
 namespace eckit {
 
-class TCPSocket;
+namespace net { class TCPSocket; };
 
 //-----------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ class HttpHeader : private eckit::NonCopyable {
 public: // methods
 
     HttpHeader();
-    HttpHeader(TCPSocket&);
+    HttpHeader(net::TCPSocket&);
 
 
     ~HttpHeader();

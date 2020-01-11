@@ -21,6 +21,7 @@
 
 
 namespace eckit {
+namespace net {
 
 class IPAddress {
 public:
@@ -53,8 +54,7 @@ private:
 };
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
+} // namespace net
 } // namespace eckit
 
-#endif // eckit_net_IPAddress_H
+#endif

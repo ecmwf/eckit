@@ -24,8 +24,8 @@ ProxiedTCPClient::ProxiedTCPClient(const std::string& proxyHost, int proxyPort, 
 
 ProxiedTCPClient::~ProxiedTCPClient() {}
 
-TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout) {
-    TCPSocket& socket = TCPClient::connect(proxy_.hostname(), proxy_.port(), retries, timeout);
+net::TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout) {
+    net::TCPSocket& socket = TCPClient::connect(proxy_.hostname(), proxy_.port(), retries, timeout);
 
     socket.debug(debug_);
 

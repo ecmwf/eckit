@@ -8,29 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-// File HttpService.h
-// Baudouin Raoult - ECMWF Oct 96
+/// @author Baudouin Raoult
+/// @date  Oct 96
 
 #ifndef HttpService_H
 #define HttpService_H
 
 #include "eckit/net/NetService.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
-
-class HttpService : public eckit::NetService {
+class HttpService : public eckit::net::NetService {
 public:
 
-// -- Contructors
-
-    HttpService(int port, bool visible = false);
-
-// -- Destructor
+    explicit HttpService(int port, bool visible = false);
 
     ~HttpService();
 
@@ -38,14 +31,13 @@ private:
 
 // -- Overridden methods
 
-    // From NetService
+    // From net::NetService
 
-    virtual eckit::NetUser* newUser(eckit::TCPSocket&);
+    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket&);
     virtual std::string name() { return "http"; }
 
 };
 
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

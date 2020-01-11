@@ -13,24 +13,25 @@
 #include "eckit/config/Resource.h"
 #include "eckit/net/Endpoint.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 TCPClient::TCPClient(int port) : TCPSocket(), port_(port) {}
 
 TCPClient::~TCPClient() {}
 
 void TCPClient::bind() {
-    if (socket_ == -1)
-        socket_ = newSocket(port_);
+    if (socket_ == -1) {
+        SocketOptions socketOptions;
+        socketOptions.reuseAddr(false);
+        socket_ = createSocket(port_, socketOptions);
+    }
 }
 
 std::string TCPClient::bindingAddress() const {
-    // return  Resource<std::string>("localBindingAddr","127.0.0.1");
-    return Resource<std::string>("localBindingAddr", "");
+    return Resource<std::string>("localBindingAddr", ""); /* "127.0.0.1" */
 }
 
 void TCPClient::print(std::ostream& s) const {
@@ -41,10 +42,9 @@ void TCPClient::print(std::ostream& s) const {
 }
 
 /// @note TCPClient::connect(host, port, retries, timeout) is found in TCPSocket.cc
-TCPSocket& TCPClient::connect(const Endpoint& endpoint, int retries, int timeout) {
+TCPSocket& TCPClient::connect(const net::Endpoint& endpoint, int retries, int timeout) {
     return connect(endpoint.hostname(), endpoint.port(), retries, timeout);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
+}  // namespace net
 }  // namespace eckit

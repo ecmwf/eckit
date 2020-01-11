@@ -22,6 +22,8 @@ namespace eckit {
 
 class Stream;
 
+namespace net {
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class Endpoint {
@@ -37,7 +39,7 @@ public: // methods
     const std::string& host() const { return host_; }
     int port() const { return port_; }
 
-    bool operator==(const Endpoint& other);
+    bool operator==(const net::Endpoint& other);
 
     void print(std::ostream& os) const;
     void encode(Stream& s) const;
@@ -45,12 +47,12 @@ public: // methods
 private: // methods
     void validate() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const Endpoint& ep) {
+    friend std::ostream& operator<<(std::ostream& os, const net::Endpoint& ep) {
         ep.print(os);
         return os;
     }
 
-    friend Stream& operator<<(Stream& s, const Endpoint& ep) {
+    friend Stream& operator<<(Stream& s, const net::Endpoint& ep) {
         ep.encode(s);
         return s;
     }
@@ -63,6 +65,8 @@ private: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace net
 } // namespace eckit
 
-#endif // eckit_net_Endpoint_H
+
+#endif

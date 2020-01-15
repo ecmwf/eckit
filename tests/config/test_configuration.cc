@@ -340,6 +340,57 @@ CASE("Hash a configuration") {
     EXPECT(h->digest() == "9f060b35735e98b0fdc0bf4c2d6d6d8d");
 }
 
+void testNumericKeys(const YAMLConfiguration &conf)
+{
+    LocalConfiguration discreteFunction;
+    EXPECT(conf.get("discrete_function", discreteFunction));
+
+    float valueAt1, valueAt2;
+    EXPECT(discreteFunction.get("1", valueAt1));
+    EXPECT(discreteFunction.get("2", valueAt2));
+    EXPECT(valueAt1 == 0.5f);
+    EXPECT(valueAt2 == 0.75f);
+}
+
+CASE("YAML-style map with unquoted numeric keys") {
+    std::string yaml(
+        "discrete_function:\n"
+        "  1: 0.5\n"
+        "  2: 0.75\n");
+    YAMLConfiguration conf(yaml);
+    testNumericKeys(conf);
+}
+
+CASE("YAML-style map with quoted numeric keys") {
+    std::string yaml(
+        "discrete_function:\n"
+        "  \"1\": 0.5\n"
+        "  \"2\": 0.75\n");
+    YAMLConfiguration conf(yaml);
+    testNumericKeys(conf);
+}
+
+CASE("YAML-style map with quoted textual keys") {
+    std::string yaml(
+        "discrete_function:\n"
+        "  \"abc\": 0.5\n"
+        "  \"def\": 0.75\n");
+    YAMLConfiguration conf(yaml);
+}
+
+CASE("JSON-style map with unquoted numeric keys") {
+    std::string yaml(
+        "discrete_function: { 1: 0.5, 2: 0.75 }\n");
+    YAMLConfiguration conf(yaml);
+    testNumericKeys(conf);
+}
+
+CASE("JSON-style map with quoted numeric keys") {
+    std::string yaml(
+        "discrete_function: { \"1\": 0.5, \"2\": 0.75 }\n");
+    YAMLConfiguration conf(yaml);
+    testNumericKeys(conf);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

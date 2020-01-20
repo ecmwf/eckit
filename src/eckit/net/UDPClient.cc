@@ -24,17 +24,31 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/net/UDPClient.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/config/Configuration.h"
 
 namespace eckit {
 namespace net {
+
+UDPClient::UDPClient(const Configuration &cfg) :
+    hostname_(cfg.getString("host")),
+    port_(cfg.getInt("port")),
+    socketfd_(0),
+    servinfo_(nullptr),
+    addr_(nullptr) {
+    init();
+}
 
 UDPClient::UDPClient(const std::string& hostname, int port) :
     hostname_(hostname),
     port_(port),
     socketfd_(0),
-    servinfo_(0),
-    addr_(0) {
+    servinfo_(nullptr),
+    addr_(nullptr) {
+    init();
+}
 
+void UDPClient::init()
+{
     struct addrinfo hints;
 
     ::memset(&hints, 0, sizeof(hints));
@@ -47,7 +61,7 @@ UDPClient::UDPClient(const std::string& hostname, int port) :
     if ((err = ::getaddrinfo(hostname_.c_str(), toStr(port_).c_str(), &hints, &servinfo_)) != 0) {
         std::ostringstream msg;
         msg << "getaddrinfo failed in UDPClient with "
-            << " hostname=" << hostname << " port=" << port << " --  " << ::gai_strerror(err);
+            << " hostname=" << hostname_ << " port=" << port_ << " --  " << ::gai_strerror(err);
         throw FailedSystemCall(msg.str());
     }
 

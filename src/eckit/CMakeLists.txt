@@ -359,6 +359,8 @@ runtime/PipeHandler.h
 runtime/ProcessControler.cc
 runtime/ProcessControler.h
 runtime/ProducerConsumer.h
+runtime/Stats.cc
+runtime/Stats.h
 runtime/SessionID.cc
 runtime/SessionID.h
 runtime/Task.cc

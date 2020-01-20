@@ -62,3 +62,13 @@ ecbuild_add_executable( TARGET sandbox_mpiobjsend NOINSTALL
                         CONDITION HAVE_SANDBOX
                         SOURCES mpiobjsend.cc
                         LIBS eckit_mpi eckit )
+
+ecbuild_add_executable( TARGET sandbox_udp_server NOINSTALL
+                        CONDITION HAVE_SANDBOX
+                        SOURCES udp_server.cc
+                        LIBS eckit )
+
+ecbuild_add_executable( TARGET sandbox_udp_client NOINSTALL
+                        CONDITION HAVE_SANDBOX
+                        SOURCES udp_client.cc
+                        LIBS eckit )

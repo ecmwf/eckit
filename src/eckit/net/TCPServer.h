@@ -62,10 +62,16 @@ private: // members
     bool closeExec_;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
+
 class EphemeralTCPServer : public TCPServer {
 public:
     explicit EphemeralTCPServer(const std::string& addr = "");
     explicit EphemeralTCPServer(int port, const std::string& addr = "");
+
+private:
+    static void init(SocketOptions& opts);
 };
 
 

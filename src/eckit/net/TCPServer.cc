@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "eckit/config/Resource.h"
 #include "eckit/io/Select.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/TCPServer.h"
@@ -118,12 +119,28 @@ void TCPServer::print(std::ostream& s) const {
     s << "]";
 }
 
+void EphemeralTCPServer::init(SocketOptions& opts) {
+    static bool ReusePort  = eckit::Resource<bool>("EphemeralTCPServerReusePort",  false);
+    static bool ReuseAddr  = eckit::Resource<bool>("EphemeralTCPServerReuseAddr",  false);
+    static bool NoLinger   = eckit::Resource<bool>("EphemeralTCPServerNoLinger",   false);
+    static bool KeepAlive  = eckit::Resource<bool>("EphemeralTCPServerKeepAlive",  true);
+    static bool IpLowDelay = eckit::Resource<bool>("EphemeralTCPServerIpLowDelay", true);
+    static bool TcpNoDelay = eckit::Resource<bool>("EphemeralTCPServerTcpNoDelay", true);
+
+    opts.reusePort(ReusePort);
+    opts.reuseAddr(ReuseAddr);
+    opts.noLinger(NoLinger);
+    opts.keepAlive(KeepAlive);
+    opts.ipLowDelay(IpLowDelay);
+    opts.tcpNoDelay(TcpNoDelay);
+}
+
 EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr) {
-    socketOpts_.reusePort(false).reuseAddr(false);
+    init(socketOpts_);
 }
 
 EphemeralTCPServer::EphemeralTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {
-    socketOpts_.reusePort(false).reuseAddr(false);
+    init(socketOpts_);
 }
 
 

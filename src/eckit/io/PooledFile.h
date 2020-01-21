@@ -16,7 +16,6 @@
 #define eckit_io_PooledFile_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
 

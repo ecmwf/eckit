@@ -63,7 +63,7 @@ public:
 
     void doClose() {
         if (handle_) {
-            Log::debug<LibEcKit>() << "PooledHandle::close(" << path_ << ")" << std::endl;
+            Log::log() << "PooledHandle::close(" << path_ << ")" << std::endl;
             handle_->close();
             handle_ = nullptr;
         }

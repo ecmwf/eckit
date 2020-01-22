@@ -28,7 +28,7 @@ class PoolHandleEntry;
 static thread_local std::map<PathName, PoolHandleEntry*> pool_;
 
 static int maxPooledHandles() {
-    static bool maxPooledHandles = eckit::Resource<int>("maxPooledHandles",  256);
+    static int maxPooledHandles = eckit::Resource<int>("maxPooledHandles",  256);
     return maxPooledHandles;
 }
 

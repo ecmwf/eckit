@@ -18,11 +18,12 @@
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/PooledFile.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
 
 namespace eckit {
+
+class PooledHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -41,7 +42,7 @@ public:
 
 // -- Methods
 
-	const PathName& path() const { return name_; }
+	const PathName& path() const { return path_; }
 
 // -- Overridden methods
 
@@ -83,8 +84,8 @@ private:
 
 // -- Members
 
-	PathName           name_;
-    std::unique_ptr<PooledFile> file_;
+	PathName           path_;
+    std::unique_ptr<PooledHandle> handle_;
 	long long          pos_;
 	Ordinal            index_;
 	OffsetList         offset_;

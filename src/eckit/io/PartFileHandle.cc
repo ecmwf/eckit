@@ -88,8 +88,11 @@ PartFileHandle::~PartFileHandle() {
 }
 
 Length PartFileHandle::openForRead() {
-    ASSERT(!handle_);
-    handle_.reset(new PooledHandle(path_));
+    if (!handle_) {
+        // The handle may already exists if a  restartReadFrom()
+        // is requested
+        handle_.reset(new PooledHandle(path_));
+    }
     handle_->openForRead();
     rewind();
     return estimate();

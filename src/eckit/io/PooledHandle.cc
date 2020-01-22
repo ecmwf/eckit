@@ -63,7 +63,7 @@ public:
 
     void doClose() {
         if (handle_) {
-            Log::debug<LibEcKit>() << "Closing handle " << path_ << std::endl;
+            Log::debug<LibEcKit>() << "PooledHandle::close(" << path_ << ")" << std::endl;
             handle_->close();
             handle_ = nullptr;
         }
@@ -96,7 +96,7 @@ public:
             nbOpens_++;
             handle_ = path_.fileHandle();
             ASSERT(handle_);
-            Log::debug<LibEcKit>() << "PooledHandle::openForRead " << path_ << std::endl;
+            Log::info() << "PooledHandle::openForRead(" << path_ << ")" << std::endl;
             estimate_ = handle_->openForRead();
         }
 

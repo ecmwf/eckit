@@ -167,7 +167,8 @@ void PartFileHandle::close() {
         handle_->close();
         // Don't delete the handle here so the PooledHandle entry continues
         // to live, so the underlying file is not closed, which give a chance to PooledHandle
-        // to do its work
+        // to do its work, for example of that PartFileHandle is itself part of
+        // a multihandle that points many time to the same path
         // handle_.reset();
     }
 }

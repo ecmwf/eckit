@@ -63,7 +63,7 @@ public:
 
     void doClose() {
         if (handle_) {
-            Log::log() << "PooledHandle::close(" << path_ << ")" << std::endl;
+            Log::info() << "PooledHandle::close(" << path_ << ")" << std::endl;
             handle_->close();
             handle_ = nullptr;
         }

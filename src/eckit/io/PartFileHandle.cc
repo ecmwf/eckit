@@ -166,7 +166,9 @@ long PartFileHandle::write(const void*, long) {
 void PartFileHandle::close() {
     if (handle_) {
         handle_->close();
-        handle_.reset();
+        // Don't delete the handle here so the entry stays in PooledHandle()
+        // so the underlying file is not close, which give a chance to cache
+        // handle_.reset();
     }
 }
 

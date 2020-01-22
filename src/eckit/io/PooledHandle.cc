@@ -26,7 +26,11 @@ namespace eckit {
 class PoolHandleEntry;
 
 static thread_local std::map<PathName, PoolHandleEntry*> pool_;
-static bool maxPooledHandles = eckit::Resource<int>("maxPooledHandles",  256);
+
+static int maxPooledHandles() {
+    static bool maxPooledHandles = eckit::Resource<int>("maxPooledHandles",  256);
+    return maxPooledHandles;
+}
 
 struct PoolHandleEntryStatus {
 
@@ -129,8 +133,8 @@ public:
             }
         }
 
-        if(opened >= maxPooledHandles) {
-            Log::info() << "PooledHandle maximum number of open files reached: " << maxPooledHandles << std::endl;
+        if(opened >= maxPooledHandles()) {
+            Log::info() << "PooledHandle maximum number of open files reached: " << maxPooledHandles() << std::endl;
             for(auto i = pool_.begin(); i != pool_.end(); ++i) {
                 if((*i).second->canClose()) {
                     (*i).second->doClose();

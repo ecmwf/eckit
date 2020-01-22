@@ -29,7 +29,6 @@ static thread_local std::map<PathName, PoolHandleEntry*> pool_;
 
 struct PoolHandleEntryStatus {
 
-    Length estimate_;
     Offset position_;
     bool opened_;
 
@@ -43,6 +42,8 @@ class PoolHandleEntry {
 public:
     PathName path_;
     DataHandle* handle_;
+    Length estimate_;
+
     size_t count_;
 
     std::map<const PooledHandle*, PoolHandleEntryStatus > statuses_;
@@ -96,13 +97,13 @@ public:
             handle_ = path_.fileHandle();
             ASSERT(handle_);
             Log::debug<LibEcKit>() << "PooledHandle::openForRead " << path_ << std::endl;
-            s->second.estimate_ = handle_->openForRead();
+            estimate_ = handle_->openForRead();
         }
 
         s->second.opened_ = true;
         s->second.position_ = 0;
 
-        return s->second.estimate_;
+        return estimate_;
     }
 
     void close(const PooledHandle* file)  {

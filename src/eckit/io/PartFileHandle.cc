@@ -85,7 +85,6 @@ bool PartFileHandle::compress(bool sorted) {
 }
 
 PartFileHandle::~PartFileHandle() {
-    close();
 }
 
 Length PartFileHandle::openForRead() {
@@ -166,8 +165,9 @@ long PartFileHandle::write(const void*, long) {
 void PartFileHandle::close() {
     if (handle_) {
         handle_->close();
-        // Don't delete the handle here so the entry stays in PooledHandle()
-        // so the underlying file is not close, which give a chance to cache
+        // Don't delete the handle here so the PooledHandle entry continues
+        // to live, so the underlying file is not closed, which give a chance to PooledHandle
+        // to do its work
         // handle_.reset();
     }
 }

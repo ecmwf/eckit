@@ -249,11 +249,11 @@ Length PartFileHandle::estimate() {
     return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
-void PartFileHandle::toRemote(Stream& s) const {
-    MarsFSPath p(PathName(path_).clusterName());
-    PartFileHandle remote(p, offset_, length_);
-    s << remote;
-}
+// void PartFileHandle::toRemote(Stream& s) const {
+//     MarsFSPath p(PathName(path_).clusterName());
+//     PartFileHandle remote(p, offset_, length_);
+//     s << remote;
+// }
 
 void PartFileHandle::cost(std::map<std::string, Length>& c, bool read) const {
     if (read) {

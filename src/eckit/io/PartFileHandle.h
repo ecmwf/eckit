@@ -65,7 +65,7 @@ public:
 	virtual void restartReadFrom(const Offset& from);
     virtual Offset seek(const Offset&);
 
-    virtual void toRemote(Stream&) const;
+    // virtual void toRemote(Stream&) const;
     virtual void cost(std::map<std::string,Length>&, bool) const;
     virtual std::string title() const;
     virtual bool moveable() const { return true; }

@@ -11,9 +11,31 @@
 #include <ostream>
 
 #include "eckit/net/SocketOptions.h"
+#include "eckit/config/Resource.h"
 
 namespace eckit {
 namespace net {
+
+static void init(SocketOptions& opts) {
+    static bool ReusePort  = eckit::Resource<bool>("socketOptionsReusePort",  false);
+    static bool ReuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr",  false);
+    static bool NoLinger   = eckit::Resource<bool>("socketOptionsNoLinger",   false);
+    static bool KeepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive",  false);
+    static bool IpLowDelay = eckit::Resource<bool>("socketOptionsIpLowDelay", false);
+    static bool TcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", false);
+
+    opts.reusePort(ReusePort);
+    opts.reuseAddr(ReuseAddr);
+    opts.noLinger(NoLinger);
+    opts.keepAlive(KeepAlive);
+    opts.ipLowDelay(IpLowDelay);
+    opts.tcpNoDelay(TcpNoDelay);
+}
+
+
+SocketOptions::SocketOptions() {
+    init(*this);
+}
 
 void SocketOptions::print(std::ostream& s) const {
     s << "SocketOptions["

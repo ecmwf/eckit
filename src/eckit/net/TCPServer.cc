@@ -120,12 +120,12 @@ void TCPServer::print(std::ostream& s) const {
 }
 
 void EphemeralTCPServer::init(SocketOptions& opts) {
-    static bool ReusePort  = eckit::Resource<bool>("EphemeralTCPServerReusePort",  false);
-    static bool ReuseAddr  = eckit::Resource<bool>("EphemeralTCPServerReuseAddr",  false);
-    static bool NoLinger   = eckit::Resource<bool>("EphemeralTCPServerNoLinger",   false);
-    static bool KeepAlive  = eckit::Resource<bool>("EphemeralTCPServerKeepAlive",  true);
-    static bool IpLowDelay = eckit::Resource<bool>("EphemeralTCPServerIpLowDelay", true);
-    static bool TcpNoDelay = eckit::Resource<bool>("EphemeralTCPServerTcpNoDelay", true);
+    static bool ReusePort  = eckit::Resource<bool>("ephemeralTCPServerReusePort",  false);
+    static bool ReuseAddr  = eckit::Resource<bool>("ephemeralTCPServerReuseAddr",  false);
+    static bool NoLinger   = eckit::Resource<bool>("ephemeralTCPServerNoLinger",   false);
+    static bool KeepAlive  = eckit::Resource<bool>("ephemeralTCPServerKeepAlive",  false);
+    static bool IpLowDelay = eckit::Resource<bool>("ephemeralTCPServerIpLowDelay", false);
+    static bool TcpNoDelay = eckit::Resource<bool>("ephemeralTCPServerTcpNoDelay", false);
 
     opts.reusePort(ReusePort);
     opts.reuseAddr(ReuseAddr);

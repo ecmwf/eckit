@@ -179,8 +179,6 @@ io/MarsFSPartHandle.cc
 io/MarsFSPartHandle.h
 io/MemoryHandle.cc
 io/MemoryHandle.h
-io/MoverHandle.cc
-io/MoverHandle.h
 io/MoverTransfer.cc
 io/MoverTransfer.h
 io/MultiHandle.cc

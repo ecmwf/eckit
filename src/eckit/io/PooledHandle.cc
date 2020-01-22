@@ -26,6 +26,7 @@ namespace eckit {
 class PoolHandleEntry;
 
 static thread_local std::map<PathName, PoolHandleEntry*> pool_;
+static bool maxPooledHandles = eckit::Resource<int>("maxPooledHandles",  256);
 
 struct PoolHandleEntryStatus {
 
@@ -48,9 +49,10 @@ public:
 
     std::map<const PooledHandle*, PoolHandleEntryStatus > statuses_;
 
-    size_t nbOpens_ = 0;
-    size_t nbReads_ = 0;
-    size_t nbSeeks_ = 0;
+    size_t nbOpens_  = 0;
+    size_t nbReads_  = 0;
+    size_t nbSeeks_  = 0;
+    size_t nbCloses_ = 0;
 
 public:
 
@@ -93,6 +95,9 @@ public:
         ASSERT(!s->second.opened_);
 
         if (!handle_) {
+
+            checkMaxPooledHandles();
+
             nbOpens_++;
             handle_ = path_.fileHandle();
             ASSERT(handle_);
@@ -106,12 +111,43 @@ public:
         return estimate_;
     }
 
+    bool canClose() {
+        for(auto i = statuses_.begin(); i != statuses_.end(); ++i) {
+            if((*i).second.opened_) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void checkMaxPooledHandles() {
+        size_t opened = 0;
+
+        for(auto i = pool_.begin(); i != pool_.end(); ++i) {
+            if((*i).second->handle_) {
+                opened++;
+            }
+        }
+
+        if(opened >= maxPooledHandles) {
+            Log::info() << "PooledHandle maximum number of open files reached: " << maxPooledHandles << std::endl;
+            for(auto i = pool_.begin(); i != pool_.end(); ++i) {
+                if((*i).second->canClose()) {
+                    (*i).second->doClose();
+                }
+            }
+        }
+
+    }
+
     void close(const PooledHandle* file)  {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
 
         ASSERT(s->second.opened_);
         s->second.opened_ = false;
+
+        nbCloses_++;
     }
 
     long read(const PooledHandle* handle, void *buffer, long len) {

@@ -31,7 +31,7 @@ RemoteCommander::~RemoteCommander() {}
 
 
 
-net::NetUser* RemoteCommander::newUser(net::TCPSocket& protocol) {
+net::NetUser* RemoteCommander::newUser(net::TCPSocket& protocol) const {
     return new RemoteCommandUser(protocol);
 }
 

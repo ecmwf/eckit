@@ -129,6 +129,7 @@ void ProcessControler::start() {
             // Log::info() << "Starting new process with a pid of " << pid_ << std::endl;
 
             try {
+                afterForkInChild();
                 run();
             }
             catch (std::exception& e) {
@@ -152,6 +153,8 @@ void ProcessControler::start() {
     sigemptyset(&newmask);
     sigaddset(&newmask, SIGCHLD);
     pthread_sigmask(SIG_UNBLOCK, &newmask, &oldmask);
+
+    afterForkInParent();
 }
 
 void ProcessControler::stop() {
@@ -227,6 +230,14 @@ bool ProcessControler::isRunning(pid_t pid) {
 #endif
 
 #endif
+}
+
+void ProcessControler::afterForkInParent() {
+
+}
+
+void ProcessControler::afterForkInChild() {
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

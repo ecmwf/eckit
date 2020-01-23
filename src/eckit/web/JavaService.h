@@ -29,8 +29,8 @@ public:
 
 private:
 
-	virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& socket);
-	virtual std::string name() { return "java"; }
+	virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& socket) const;
+	virtual std::string name() const { return "java"; }
 
 };
 

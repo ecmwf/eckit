@@ -43,5 +43,9 @@ void NetService::run() {
     }
 }
 
+bool NetService::process() const {
+    return false;
+}
+
 } // namespace net
 } // namespace eckit

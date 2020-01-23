@@ -70,6 +70,11 @@ private:
 
 	void end(result&);
 
+	// To override if needed
+
+	virtual void afterForkInParent();
+	virtual void afterForkInChild();
+
 // -- Class methods
 
 	static void* waitChild(void*);

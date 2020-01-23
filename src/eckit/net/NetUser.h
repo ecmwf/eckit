@@ -34,6 +34,8 @@ private:
     virtual void serve(Stream&, std::istream&, std::ostream&) = 0;
 
     virtual void run();
+
+    friend class NetServiceProcessControler;
 };
 
 

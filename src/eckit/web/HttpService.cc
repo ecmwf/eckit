@@ -27,7 +27,7 @@ HttpService::HttpService(int port, bool visible) : net::NetService(port, visible
 HttpService::~HttpService() {}
 
 
-net::NetUser* HttpService::newUser(net::TCPSocket& protocol) {
+net::NetUser* HttpService::newUser(net::TCPSocket& protocol) const {
     return new HttpUser(protocol);
 }
 

@@ -21,7 +21,7 @@ JavaService::JavaService(int port) : net::NetService(port) {}
 
 JavaService::~JavaService() {}
 
-net::NetUser* JavaService::newUser(net::TCPSocket& socket) {
+net::NetUser* JavaService::newUser(net::TCPSocket& socket) const {
     return new JavaUser(socket);
 }
 

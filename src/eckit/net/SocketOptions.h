@@ -18,34 +18,34 @@ namespace net {
 
 struct SocketOptions {
 
-    SocketOptions() = default;
+    SocketOptions();
 
-    SocketOptions& reusePort(bool v) {
+    SocketOptions& reusePort(bool v = true) {
         reusePort_ = v;
         return *this;
     }
 
-    SocketOptions& reuseAddr(bool v) {
+    SocketOptions& reuseAddr(bool v = true) {
         reuseAddr_ = v;
         return *this;
     }
 
-    SocketOptions& noLinger(bool v) {
+    SocketOptions& noLinger(bool v = true) {
         noLinger_ = v;
         return *this;
     }
 
-    SocketOptions& keepAlive(bool v) {
+    SocketOptions& keepAlive(bool v = true) {
         keepAlive_ = v;
         return *this;
     }
 
-    SocketOptions& ipLowDelay(bool v) {
+    SocketOptions& ipLowDelay(bool v = true) {
         ipLowDelay_ = v;
         return *this;
     }
 
-    SocketOptions& tcpNoDelay(bool v) {
+    SocketOptions& tcpNoDelay(bool v = true) {
         tcpNoDelay_ = v;
         return *this;
     }

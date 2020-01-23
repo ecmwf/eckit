@@ -44,8 +44,11 @@ private:
     bool visible_;  ///< Visible on the Monitor?
 
 private:
-    virtual NetUser* newUser(net::TCPSocket&) = 0;
-    virtual std::string name()           = 0;
+    virtual NetUser* newUser(net::TCPSocket&) const = 0;
+    virtual std::string name() const          = 0;
+
+    virtual bool process() const;
+
 };
 
 

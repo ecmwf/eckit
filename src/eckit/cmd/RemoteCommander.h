@@ -38,8 +38,8 @@ private:
 
     // From net::NetService
 
-    virtual net::NetUser* newUser(net::TCPSocket&);
-    virtual std::string name() { return "monitor"; }
+    virtual net::NetUser* newUser(net::TCPSocket&) const;
+    virtual std::string name() const { return "monitor"; }
 };
 
 //-----------------------------------------------------------------------------

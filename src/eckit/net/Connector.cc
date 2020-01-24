@@ -41,15 +41,17 @@ Connector::Connector(const std::string& host, int port) :
 
 Connector::~Connector() {
 
-    try {
-        if (socket_.isConnected()) {
-            (*this) << "bye";
-        }
-    }
-    catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is ignored" << std::endl;
-    }
+    socket_.close();
+
+    // try {
+    //     if (socket_.isConnected()) {
+    //         (*this) << "bye";
+    //     }
+    // }
+    // catch (std::exception& e) {
+    //     Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+    //     Log::error() << "** Exception is ignored" << std::endl;
+    // }
 }
 
 TCPSocket& Connector::socket() {

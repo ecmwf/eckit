@@ -48,7 +48,12 @@ Length MarsFSFile::open(const char* mode, bool overwrite) {
                 << std::endl;
     data_.connect(connector_.host(), port);
 
+    Log::info() << "Connected with socket " << data_ << std::endl;
+
     s >> length;
+
+    Log::info() << "File length is " << length << std::endl;
+
     return length;
 }
 

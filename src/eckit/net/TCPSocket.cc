@@ -782,8 +782,11 @@ void TCPSocket::debug(bool on) {
 }
 
 void TCPSocket::print(std::ostream& s) const {
-    s << "TCPSocket[fd=" << socket_ << "," << remoteHost() << ":" << remotePort() << " (" << remoteAddr_
-      << ")"
+    s << "TCPSocket[fd=" << socket_
+    << ",remote[" << remoteHost() << ":" << remotePort()
+    << " (" << remoteAddr_ << ")]"
+    << ",local[" << localHost() << ":" << localPort()
+    << " (" << localAddr_ << ")]"
       // << ",localPort=" << localPort_
       // << ",remotePort=" << remotePort_
       // << ",remoteHost=" << remoteHost_

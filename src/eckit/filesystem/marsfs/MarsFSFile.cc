@@ -48,7 +48,12 @@ Length MarsFSFile::open(const char* mode, bool overwrite) {
                 << std::endl;
     data_.connect(connector_.host(), port);
 
+    Log::info() << "Connected with socket " << data_ << std::endl;
+
     s >> length;
+
+    Log::info() << "File length is " << length << std::endl;
+
     return length;
 }
 
@@ -135,6 +140,11 @@ void MarsFSFile::skip(const Length& n) {
 
 void MarsFSFile::close() {
     Stream& s = connector_;
+
+    // Make sure to close the connection *before* the server
+
+    data_.close();
+
     bool ok;
     s << "close";
     s >> ok;

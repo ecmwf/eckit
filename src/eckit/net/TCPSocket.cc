@@ -468,7 +468,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 
     } while (status < 0);
 
-    remotePort_ = sin.sin_port;
+    remotePort_ = ntohs(sin.sin_port);
     remoteAddr_ = sin.sin_addr;
     remoteHost_ = addrToHost(sin.sin_addr);
 

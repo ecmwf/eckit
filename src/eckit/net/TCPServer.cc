@@ -70,7 +70,7 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
     remoteAddr_ = from.sin_addr;
     remoteHost_ = addrToHost(from.sin_addr);
-    remotePort_ = from.sin_port;
+    remotePort_ = htohs(from.sin_port);
 
     // Set the 'close on exec'
 

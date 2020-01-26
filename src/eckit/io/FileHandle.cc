@@ -203,18 +203,18 @@ bool FileHandle::isEmpty() const {
 
 // Try to be clever ....
 
-Length FileHandle::saveInto(DataHandle& other, TransferWatcher& w, bool dblBufferOK) {
+Length FileHandle::saveInto(DataHandle& other, TransferWatcher& w) {
     static bool fileHandleSaveIntoOptimisationUsingHardLinks =
         eckit::Resource<bool>("fileHandleSaveIntoOptimisationUsingHardLinks", false);
     if (!fileHandleSaveIntoOptimisationUsingHardLinks) {
-        return DataHandle::saveInto(other, w, dblBufferOK);
+        return DataHandle::saveInto(other, w);
     }
 
     // Poor man's RTTI,
     // Does not support inheritance
 
     if (!sameClass(other)) {
-        return DataHandle::saveInto(other, w, dblBufferOK);
+        return DataHandle::saveInto(other, w);
     }
     // We should be safe to cast now....
 
@@ -226,7 +226,7 @@ Length FileHandle::saveInto(DataHandle& other, TransferWatcher& w, bool dblBuffe
     else {
         Log::debug() << "Failed to link " << name_ << " to " << handle->name_ << Log::syserr << std::endl;
         Log::debug() << "Using defaut method" << std::endl;
-        return DataHandle::saveInto(other, w, dblBufferOK);
+        return DataHandle::saveInto(other, w);
     }
 
     return estimate();

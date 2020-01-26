@@ -83,7 +83,7 @@ bool MarsFSClient::exists(const std::string& path) {
     for (;;) {
 
         try {
-            // net::AutoMemoize m(connector_, 10);
+            net::AutoMemoize m(connector_, 10);
 
             bool ok;
             Stream& s = connector_;

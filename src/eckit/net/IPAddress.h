@@ -39,6 +39,9 @@ public:
         return address_;
     }
 
+
+    static IPAddress myIPAddress();
+
 private:
 
 // Members

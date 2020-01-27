@@ -60,7 +60,7 @@ TCPSocket& Connector::socket() {
             NodeInfo remote;
             TCPClient client(SocketOptions::control());
             Log::info() << "Connector::stream connecting to " << host_ << ":" << port_ << std::endl;
-            socket_ = client.connect(host_, port_);
+            socket_ = client.connect(host_, port_, -1);
             InstantTCPStream s(socket_);
 
             // Login

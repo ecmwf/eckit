@@ -16,12 +16,15 @@
 #include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/value/Value.h"
+#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 LocalConfiguration::LocalConfiguration(char separator) : Configuration(Value::makeMap(), separator) {}
+
+LocalConfiguration::LocalConfiguration(Stream& s) : Configuration(Value(s)) {}
 
 LocalConfiguration::LocalConfiguration(const Value& root, char separator) : Configuration(root, separator) {}
 

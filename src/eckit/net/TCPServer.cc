@@ -48,7 +48,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
         int delay = timeout ? timeout : 10;
 
         Select select(listen_);
-        Log::status() << message << " (port " << port_ << ")" << std::endl;
+        Log::status() << message;
+        if(port_) { Log::status() << " (port " << port_ << ")";}
+        Log::status() << std::endl;
 
         while (!select.ready(delay)) {
 
@@ -61,7 +63,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
                 return *this;
             }
 
-            Log::status() << message << " (port " << port_ << ")" << std::endl;
+            Log::status() << message;
+            if(port_) { Log::status() << " (port " << port_ << ")";}
+            Log::status() << std::endl;
         }
 
         if ((socket_ = ::accept(listen_, reinterpret_cast<sockaddr*>(&from), &fromlen)) >= 0) {

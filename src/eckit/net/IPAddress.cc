@@ -54,6 +54,7 @@ IPAddress IPAddress::myIPAddress() {
         ASSERT(entry);
 
         mine = IPAddress(inet_ntoa(*((struct in_addr*)entry->h_addr_list[0])));
+        done = true;
     }
 
     return mine;

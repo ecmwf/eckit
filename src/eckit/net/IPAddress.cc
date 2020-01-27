@@ -31,6 +31,14 @@ IPAddress::IPAddress(const std::string& addr) {
 }
 
 
+IPAddress::IPAddress(const char* addr) {
+    if(inet_aton(addr, &address_) == 0) {
+         std::ostringstream os;
+         os << "Invalid IP address [" << addr << "]";
+         throw eckit::SeriousBug(os.str());
+    }
+}
+
 void IPAddress::print(std::ostream& os) const {
     os << inet_ntoa(address_);
 }
@@ -44,7 +52,7 @@ std::string IPAddress::asString() const {
 
 IPAddress IPAddress::myIPAddress() {
     static bool done = false;
-    static IPAddress mine(std::string("255.255.255.255"));
+    static IPAddress mine("255.255.255.255");
 
     if(!done){
         char hostname[256] = {0, };

@@ -24,7 +24,9 @@ namespace net {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
-    TCPServer(int port = 0, const SocketOptions& = SocketOptions::server());
+
+    TCPServer(const SocketOptions& = SocketOptions::server());
+    explicit TCPServer(int port, const SocketOptions& = SocketOptions::server());
 
     ~TCPServer();
 
@@ -44,7 +46,7 @@ protected: // members
     int port_;
     int listen_;
 
-    SocketOptions socketOpts_; //< options to build the socket
+    SocketOptions options_; //< options to build the socket
 
 protected: // methods
 

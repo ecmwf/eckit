@@ -28,7 +28,8 @@ class Endpoint;
 class TCPClient : public TCPSocket, private eckit::NonCopyable {
 public:
 
-    TCPClient(int port = 0, const SocketOptions& options = SocketOptions::none());
+    TCPClient(const SocketOptions& options = SocketOptions::none());
+    TCPClient(int port, const SocketOptions& options = SocketOptions::none());
 
     ~TCPClient();
 

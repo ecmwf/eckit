@@ -23,8 +23,12 @@ namespace eckit {
 namespace net {
 
 
+TCPServer::TCPServer(const SocketOptions& options) :
+    TCPSocket(), port_(0), listen_(-1), options_(options), closeExec_(true) {
+}
+
 TCPServer::TCPServer(int port, const SocketOptions& options) :
-    TCPSocket(), port_(port), listen_(-1), socketOpts_(options), closeExec_(true) {}
+    TCPSocket(), port_(port), listen_(-1), options_(options), closeExec_(true) {}
 
 TCPServer::~TCPServer() {
     if (listen_ >= 0) {
@@ -97,7 +101,7 @@ void TCPServer::close() {
 
 void TCPServer::bind() {
     if (listen_ == -1) {
-        listen_ = createSocket(port_, socketOpts_);
+        listen_ = createSocket(port_, options_);
         ::listen(listen_, 5);
     }
 }
@@ -109,12 +113,12 @@ int TCPServer::socket() {
 }
 
 std::string TCPServer::bindingAddress() const {
-    return socketOpts_.bindAddress();
+    return options_.bindAddress();
 }
 
 void TCPServer::print(std::ostream& s) const {
     s << "TCPServer["
-      << "port=" << port_ << ",addr=" << bindingAddress() << ",socketOpts_=" << socketOpts_ << ",";
+      << "port=" << port_ << ",options_=" << options_ << ",";
     TCPSocket::print(s);
     s << "]";
 }

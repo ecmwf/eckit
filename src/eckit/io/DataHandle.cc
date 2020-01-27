@@ -86,7 +86,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
 
     static const bool doubleBuffer = Resource<bool>("doubleBuffer", 0);
 
-    if (doubleBuffer && doubleBufferOK()) {
+    if (doubleBuffer && doubleBufferOK() && other.doubleBufferOK()) {
         static const long bufsize = Resource<long>("doubleBufferSize", 10 * 1024 * 1024 / 20);
         static const long count   = Resource<long>("doubleBufferCount", 20);
 

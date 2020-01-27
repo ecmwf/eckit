@@ -23,8 +23,8 @@ namespace eckit {
 namespace net {
 
 
-TCPServer::TCPServer(int port, const std::string& addr, const SocketOptions socketOptions) :
-    TCPSocket(), port_(port), listen_(-1), addr_(addr), socketOpts_(socketOptions), closeExec_(true) {}
+TCPServer::TCPServer(int port, const SocketOptions& options) :
+    TCPSocket(), port_(port), listen_(-1), socketOpts_(options), closeExec_(true) {}
 
 TCPServer::~TCPServer() {
     if (listen_ >= 0) {
@@ -109,38 +109,20 @@ int TCPServer::socket() {
 }
 
 std::string TCPServer::bindingAddress() const {
-    return addr_;
+    return socketOpts_.bindAddress();
 }
 
 void TCPServer::print(std::ostream& s) const {
     s << "TCPServer["
-      << "port=" << port_ << ",addr=" << addr_ << ",";
+      << "port=" << port_ << ",addr=" << bindingAddress() << ",socketOpts_=" << socketOpts_ << ",";
     TCPSocket::print(s);
     s << "]";
 }
 
-void EphemeralTCPServer::init(SocketOptions& opts) {
-    static bool ReusePort  = eckit::Resource<bool>("ephemeralTCPServerReusePort",  false);
-    static bool ReuseAddr  = eckit::Resource<bool>("ephemeralTCPServerReuseAddr",  false);
-    static bool NoLinger   = eckit::Resource<bool>("ephemeralTCPServerNoLinger",   false);
-    static bool KeepAlive  = eckit::Resource<bool>("ephemeralTCPServerKeepAlive",  false);
-    static bool IpLowDelay = eckit::Resource<bool>("ephemeralTCPServerIpLowDelay", false);
-    static bool TcpNoDelay = eckit::Resource<bool>("ephemeralTCPServerTcpNoDelay", false);
-
-    opts.reusePort(ReusePort);
-    opts.reuseAddr(ReuseAddr);
-    opts.noLinger(NoLinger);
-    opts.keepAlive(KeepAlive);
-    opts.ipLowDelay(IpLowDelay);
-    opts.tcpNoDelay(TcpNoDelay);
+EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) : TCPServer(0, opts) {
 }
 
-EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr) {
-    init(socketOpts_);
-}
-
-EphemeralTCPServer::EphemeralTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {
-    init(socketOpts_);
+EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) : TCPServer(port, opts) {
 }
 
 

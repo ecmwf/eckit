@@ -11,6 +11,11 @@
 #ifndef eckit_net_SocketOptions_h
 #define eckit_net_SocketOptions_h
 
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jan 2020
+
+#include <string>
 #include <iosfwd>
 
 namespace eckit {
@@ -50,6 +55,11 @@ struct SocketOptions {
         return *this;
     }
 
+    SocketOptions& bindAddress(const std::string& addr) {
+        bindAddr_ = addr;
+        return *this;
+    }
+
     bool reusePort() const { return reusePort_; }
     bool reuseAddr() const { return reuseAddr_; }
     bool keepAlive() const { return keepAlive_; }
@@ -57,9 +67,14 @@ struct SocketOptions {
     bool ipLowDelay() const { return ipLowDelay_; }
     bool tcpNoDelay() const { return tcpNoDelay_; }
 
+    std::string bindAddress() const { return bindAddr_; }
+
     void print(std::ostream& s) const;
 
 private:
+    /// Binding address for this socket
+    std::string bindAddr_ = "";
+
     /// SO_REUSEPORT is useful if multiple threads want to bind to the same port and OS handles load balancing
     /// otherwise better not to set it.
     bool reusePort_ = false;
@@ -85,6 +100,25 @@ private:
 
 private:
     friend std::ostream& operator<<(std::ostream& s, const SocketOptions& socket);
+};
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Options set for server processes that need quick restarts
+struct ServerSocket : public SocketOptions {
+    ServerSocket();
+};
+
+/// Options set for ephemeral sockets transfering large buffers
+struct DataSocket : public SocketOptions {
+    DataSocket();
+};
+
+
+/// Options set for optimal nlow latency, small messages
+struct ControlSocket : public SocketOptions {
+    ControlSocket();
 };
 
 

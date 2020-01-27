@@ -504,8 +504,6 @@ int TCPSocket::createSocket(int port, const SocketOptions opts) {
 #ifdef SO_REUSEPORT
         int flg = 1;
         SYSCALL(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)));
-#else
-        NOTIMP;
 #endif
     }
 

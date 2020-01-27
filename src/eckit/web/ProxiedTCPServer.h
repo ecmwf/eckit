@@ -24,7 +24,7 @@ public:
 
 // -- Contructors
 
-    ProxiedTCPServer(int port = 0, const std::string& addr = "");
+    ProxiedTCPServer(int port = 0, const net::SocketOptions& = net::ServerSocket());
 
 
 // -- Destructor
@@ -36,7 +36,7 @@ public:
 
     // accept a client, more can be accepted
 
-    virtual net::TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = 0);
+    virtual net::TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = nullptr);
 
 // -- Overridden methods
 

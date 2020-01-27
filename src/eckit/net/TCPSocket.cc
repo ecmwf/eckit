@@ -417,9 +417,10 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 
             switch (errno) {
                 case ECONNREFUSED:
-                    if (++tries >= retries)
+                    if (++tries >= retries) {
                         if (retries >= 0)
                             throw TooManyRetries(tries);
+                    }
                     ::sleep(5);
                     break;
 
@@ -451,9 +452,10 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
                     Log::status() << "Waiting for network " << host << ":" << port << Log::syserr << std::endl;
 
 #if 0
-                if (++tries >= retries)
+                if (++tries >= retries) {
                     if (retries != 0)
                         throw TooManyRetries(tries);
+                }
 #endif
                     ::sleep(120);
                     break;

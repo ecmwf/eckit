@@ -21,8 +21,7 @@ namespace eckit {
 
 RemoteCommander::RemoteCommander(int p) : net::NetService(p) {
     Monitor::instance().port(port());
-    std::string host = Resource<std::string>("localBindingAddr", "localHost");
-    Monitor::instance().host(host);
+    Monitor::instance().host("localhost");
 }
 
 

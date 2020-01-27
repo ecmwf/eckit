@@ -9,6 +9,7 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
 /// @date   Jun 96
 
 #ifndef eckit_TCPServer_h
@@ -23,7 +24,7 @@ namespace net {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
-    TCPServer(int port = 0, const std::string& addr = "", const SocketOptions = {});
+    TCPServer(int port = 0, const SocketOptions& = ServerSocket());
 
     ~TCPServer();
 
@@ -42,7 +43,6 @@ protected: // members
 
     int port_;
     int listen_;
-    std::string addr_;
 
     SocketOptions socketOpts_; //< options to build the socket
 
@@ -62,16 +62,14 @@ private: // members
     bool closeExec_;
 };
 
+
 //----------------------------------------------------------------------------------------------------------------------
 
 
 class EphemeralTCPServer : public TCPServer {
 public:
-    explicit EphemeralTCPServer(const std::string& addr = "");
-    explicit EphemeralTCPServer(int port, const std::string& addr = "");
-
-private:
-    static void init(SocketOptions& opts);
+    EphemeralTCPServer(const SocketOptions& = DataSocket());
+    explicit EphemeralTCPServer(int port, const SocketOptions& = DataSocket());
 };
 
 

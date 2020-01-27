@@ -39,6 +39,7 @@ SocketOptions::SocketOptions() {
 
 void SocketOptions::print(std::ostream& s) const {
     s << "SocketOptions["
+      << "bindAddr=" << bindAddr_ << ", "
       << "reusePort=" << reusePort_ << ", "
       << "reuseAddr=" << reuseAddr_ << ", "
       << "keepAlive=" << keepAlive_ << ", "
@@ -50,6 +51,20 @@ void SocketOptions::print(std::ostream& s) const {
 std::ostream& operator<<(std::ostream& s, const SocketOptions& o) {
     o.print(s);
     return s;
+}
+
+ServerSocket::ServerSocket() {
+    reuseAddr(true);
+    keepAlive(true);
+}
+
+DataSocket::DataSocket() {
+}
+
+ControlSocket::ControlSocket() {
+    keepAlive(true);
+    ipLowDelay(true);
+    tcpNoDelay(true);
 }
 
 }  // namespace net

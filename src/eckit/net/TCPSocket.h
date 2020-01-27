@@ -113,7 +113,7 @@ protected:                    // members
     char mode_;
 
 protected:  // methods
-    int createSocket(int port, const SocketOptions options = {});
+    int createSocket(int port, const SocketOptions& options);
 
     virtual void print(std::ostream& s) const;
 

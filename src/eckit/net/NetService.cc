@@ -45,7 +45,9 @@ private:
 };
 
 
-NetService::NetService(int port, bool visible) : server_(port), visible_(visible) {}
+NetService::NetService(int port, bool visible, const SocketOptions& options):
+    server_(port, options),
+    visible_(visible) {}
 
 NetService::~NetService() {}
 
@@ -80,6 +82,7 @@ void NetService::run() {
 bool NetService::process() const {
     return Resource<bool>(name() + "NetServiceForkProcess", false);
 }
+
 
 //------------------------------------------------------------------------
 

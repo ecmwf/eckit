@@ -58,7 +58,7 @@ TCPSocket& Connector::socket() {
     if (!socket_.isConnected()) {
         try {
             NodeInfo remote;
-            TCPClient client;
+            TCPClient client(0, SocketOptions::control());
             Log::info() << "Connector::stream connecting to " << host_ << ":" << port_ << std::endl;
             socket_ = client.connect(host_, port_);
             InstantTCPStream s(socket_);

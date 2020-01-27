@@ -22,33 +22,13 @@ namespace eckit {
 class ProxiedTCPServer : public net::TCPServer {
 public:
 
-// -- Contructors
-
-    ProxiedTCPServer(int port = 0, const net::SocketOptions& = net::ServerSocket());
-
-
-// -- Destructor
+    ProxiedTCPServer(int port = 0, const net::SocketOptions& = net::SocketOptions::server());
 
     ~ProxiedTCPServer();
-
-// -- Methods
-
 
     // accept a client, more can be accepted
 
     virtual net::TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = nullptr);
-
-// -- Overridden methods
-
-
-
-protected:
-
-// -- Members
-
-
-// -- Overridden methods
-
 
 private:
 
@@ -62,8 +42,6 @@ private:
 
 };
 
-
-//-----------------------------------------------------------------------------
 
 } // namespace eckit
 

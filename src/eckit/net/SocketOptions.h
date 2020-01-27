@@ -23,34 +23,38 @@ namespace net {
 
 struct SocketOptions {
 
-    SocketOptions();
+    static SocketOptions none();
+    static SocketOptions server();
+    static SocketOptions control();
+    static SocketOptions data();
 
-    SocketOptions& reusePort(bool v = true) {
+
+    SocketOptions& reusePort(bool v) {
         reusePort_ = v;
         return *this;
     }
 
-    SocketOptions& reuseAddr(bool v = true) {
+    SocketOptions& reuseAddr(bool v) {
         reuseAddr_ = v;
         return *this;
     }
 
-    SocketOptions& noLinger(bool v = true) {
+    SocketOptions& noLinger(bool v) {
         noLinger_ = v;
         return *this;
     }
 
-    SocketOptions& keepAlive(bool v = true) {
+    SocketOptions& keepAlive(bool v) {
         keepAlive_ = v;
         return *this;
     }
 
-    SocketOptions& ipLowDelay(bool v = true) {
+    SocketOptions& ipLowDelay(bool v) {
         ipLowDelay_ = v;
         return *this;
     }
 
-    SocketOptions& tcpNoDelay(bool v = true) {
+    SocketOptions& tcpNoDelay(bool v) {
         tcpNoDelay_ = v;
         return *this;
     }
@@ -70,6 +74,12 @@ struct SocketOptions {
     std::string bindAddress() const { return bindAddr_; }
 
     void print(std::ostream& s) const;
+
+private:
+
+    SocketOptions();
+
+    friend std::ostream& operator<<(std::ostream& s, const SocketOptions& socket);
 
 private:
     /// Binding address for this socket
@@ -98,28 +108,8 @@ private:
     /// bypass Nagle Delays by disabling Nagle's algorithm and send the data as soon as it's available
     bool tcpNoDelay_ = true;
 
-private:
-    friend std::ostream& operator<<(std::ostream& s, const SocketOptions& socket);
 };
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// Options set for server processes that need quick restarts
-struct ServerSocket : public SocketOptions {
-    ServerSocket();
-};
-
-/// Options set for ephemeral sockets transfering large buffers
-struct DataSocket : public SocketOptions {
-    DataSocket();
-};
-
-
-/// Options set for optimal nlow latency, small messages
-struct ControlSocket : public SocketOptions {
-    ControlSocket();
-};
 
 
 }  // namespace net

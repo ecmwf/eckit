@@ -478,7 +478,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 }
 
 
-int TCPSocket::createSocket(int port, const SocketOptions opts) {
+int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
     localPort_ = port;
 

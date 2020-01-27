@@ -24,7 +24,7 @@ namespace net {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
-    TCPServer(int port = 0, const SocketOptions& = ServerSocket());
+    TCPServer(int port = 0, const SocketOptions& = SocketOptions::server());
 
     ~TCPServer();
 
@@ -68,8 +68,8 @@ private: // members
 
 class EphemeralTCPServer : public TCPServer {
 public:
-    EphemeralTCPServer(const SocketOptions& = DataSocket());
-    explicit EphemeralTCPServer(int port, const SocketOptions& = DataSocket());
+    EphemeralTCPServer(const SocketOptions& = SocketOptions::data());
+    explicit EphemeralTCPServer(int port, const SocketOptions& = SocketOptions::data());
 };
 
 

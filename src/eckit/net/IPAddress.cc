@@ -44,7 +44,7 @@ std::string IPAddress::asString() const {
 
 IPAddress IPAddress::myIPAddress() {
     static bool done = false;
-    static IPAddress mine("255.255.255.255");
+    static IPAddress mine(std::string("255.255.255.255"));
 
     if(!done){
         char hostname[256] = {0, };

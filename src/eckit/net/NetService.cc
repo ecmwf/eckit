@@ -91,6 +91,7 @@ NetServiceProcessControler::NetServiceProcessControler(const std::string& name,
         TCPServer& server,
         long parent,
         bool visible):
+    ProcessControler(true),
     name_(name),
     user_(user),
     server_(server),

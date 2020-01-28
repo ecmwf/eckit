@@ -106,6 +106,14 @@ void NetServiceProcessControler::run() {
     Monitor::instance().name(name_);
     // Monitor::instance().kind(name_);
     Monitor::instance().show(visible_);
+
+    try {
+        user_->run();
+    }
+    catch (std::exception& e) {
+        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+        Log::error() << "** Exception is ignored" << std::endl;
+    }
 }
 
 void NetServiceProcessControler::afterForkInParent() {

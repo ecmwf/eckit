@@ -106,7 +106,9 @@ void TCPServer::close() {
 void TCPServer::bind() {
     if (listen_ == -1) {
         listen_ = createSocket(port_, options_);
-        ::listen(listen_, options_.listenBacklog());
+        int backlog = options_.listenBacklog();
+        Log::info() << "Listening on socket " << listen_ << " port: " << port_ << " backlog: " << backlog << std::endl;
+        SYSCALL(::listen(listen_, backlog));
     }
 }
 

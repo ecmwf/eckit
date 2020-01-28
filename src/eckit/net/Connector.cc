@@ -35,7 +35,8 @@ Connector::Connector(const std::string& host, int port) :
     locked_(false),
     memoize_(false),
     sent_(false),
-    life_(0) {
+    life_(0),
+    autoclose_(false) {
     Log::info() << "Connector::Connector(" << host << "," << port << ")" << std::endl;
 }
 
@@ -258,7 +259,9 @@ void Connector::lock() {
 void Connector::unlock() {
     ASSERT(locked_);
     locked_ = false;
-    // reset();
+    if(autoclose_) {
+        reset();
+    }
 }
 
 void Connector::reset() {

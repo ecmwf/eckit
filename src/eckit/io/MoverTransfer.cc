@@ -57,6 +57,9 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
 
     net::Connector& c(net::Connector::service("mover", cost));
+    AutoLock<net::Connector> lock(c);
+    // This will close the connector on unlock
+    c.autoclose(true);
 
     Log::message() << c.host() << std::endl;
     Stream& s = c;

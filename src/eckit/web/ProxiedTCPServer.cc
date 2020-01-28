@@ -22,7 +22,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ProxiedTCPServer::ProxiedTCPServer(int port, const std::string& addr) : net::TCPServer(port, addr) {}
+ProxiedTCPServer::ProxiedTCPServer(int port, const net::SocketOptions& options) : net::TCPServer(port, options) {}
 
 ProxiedTCPServer::~ProxiedTCPServer() {}
 

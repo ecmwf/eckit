@@ -15,9 +15,10 @@
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Log.h"
 
-#include "eckit/io/MarsFSPartHandle.h"
 #include "eckit/io/PartFileHandle.h"
+#include "eckit/exception/Exceptions.h"
 
+#include "eckit/io/PooledHandle.h"
 
 namespace eckit {
 
@@ -33,18 +34,18 @@ void PartFileHandle::print(std::ostream& s) const {
     if (format(s) == Log::compactFormat)
         s << "PartFileHandle";
     else
-        s << "PartFileHandle[path=" << name_ << ",offset=" << offset_ << ",length=" << length_ << ']';
+        s << "PartFileHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_ << ']';
 }
 
 void PartFileHandle::encode(Stream& s) const {
     DataHandle::encode(s);
-    s << name_;
+    s << path_;
     s << offset_;
     s << length_;
 }
 
 PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
-    s >> name_;
+    s >> path_;
     s >> offset_;
     s >> length_;
 
@@ -52,8 +53,8 @@ PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
 }
 
 PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, const LengthList& length) :
-    name_(name),
-    file_(),
+    path_(name),
+    handle_(),
     pos_(0),
     index_(0),
     offset_(offset),
@@ -64,8 +65,8 @@ PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, c
 }
 
 PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const Length& length) :
-    name_(name),
-    file_(),
+    path_(name),
+    handle_(),
     pos_(0),
     index_(0),
     offset_(1, offset),
@@ -73,7 +74,7 @@ PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const
 
 
 DataHandle* PartFileHandle::clone() const {
-    return new PartFileHandle(name_, offset_, length_);
+    return new PartFileHandle(path_, offset_, length_);
 }
 
 
@@ -84,13 +85,15 @@ bool PartFileHandle::compress(bool sorted) {
 }
 
 PartFileHandle::~PartFileHandle() {
-    close();
 }
 
 Length PartFileHandle::openForRead() {
-    ASSERT(!file_);
-    file_.reset(new PooledFile(name_));
-    file_->open();
+    if (!handle_) {
+        // The handle may already exists if a  restartReadFrom()
+        // is requested
+        handle_.reset(new PooledHandle(path_));
+    }
+    handle_->openForRead();
     rewind();
     return estimate();
 }
@@ -104,7 +107,7 @@ void PartFileHandle::openForAppend(const Length&) {
 }
 
 long PartFileHandle::read1(char* buffer, long length) {
-    ASSERT(file_);
+    ASSERT(handle_);
 
     // skip empty entries if any
     while (index_ < offset_.size() && length_[index_] == Length(0))
@@ -117,7 +120,7 @@ long PartFileHandle::read1(char* buffer, long length) {
     Length ll = (long long)offset_[index_] + Length(pos_);
     off_t pos = ll;
 
-    file_->seek(pos);
+    handle_->seek(pos);
 
     ll           = length_[index_] - Length(pos_);
     Length lsize = std::min(Length(length), ll);
@@ -125,11 +128,11 @@ long PartFileHandle::read1(char* buffer, long length) {
 
     ASSERT(Length(size) == lsize);
 
-    long n = file_->read(buffer, size);
+    long n = handle_->read(buffer, size);
 
     if (n != size) {
         std::ostringstream s;
-        s << name_ << ": cannot read " << size << ", got only " << n;
+        s << path_ << ": cannot read " << size << ", got only " << n;
         throw ReadError(s.str());
     }
 
@@ -163,9 +166,13 @@ long PartFileHandle::write(const void*, long) {
 }
 
 void PartFileHandle::close() {
-    if (file_) {
-        file_->close();
-        file_.reset();
+    if (handle_) {
+        handle_->close();
+        // Don't delete the handle here so the PooledHandle entry continues
+        // to live, so the underlying file is not closed, which give a chance to PooledHandle
+        // to do its work, for example of that PartFileHandle is itself part of
+        // a multihandle that points many time to the same path
+        // handle_.reset();
     }
 }
 
@@ -224,7 +231,7 @@ bool PartFileHandle::merge(DataHandle* other) {
 
     PartFileHandle* handle = dynamic_cast<PartFileHandle*>(other);
 
-    if (name_ != handle->name_)
+    if (path_ != handle->path_)
         return false;
 
     ASSERT(handle->offset_.size() == handle->length_.size());
@@ -245,12 +252,6 @@ Length PartFileHandle::estimate() {
     return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
-void PartFileHandle::toRemote(Stream& s) const {
-    MarsFSPath p(PathName(name_).clusterName());
-    MarsFSPartHandle remote(p, offset_, length_);
-    s << remote;
-}
-
 void PartFileHandle::cost(std::map<std::string, Length>& c, bool read) const {
     if (read) {
         c[NodeInfo::thisNode().node()] += const_cast<PartFileHandle*>(this)->estimate();
@@ -260,7 +261,7 @@ void PartFileHandle::cost(std::map<std::string, Length>& c, bool read) const {
 
 std::string PartFileHandle::title() const {
     std::ostringstream os;
-    os << PathName::shorten(name_) << " (" << length_.size() << ")";
+    os << PathName::shorten(path_) << " (" << length_.size() << ")";
     return os.str();
 }
 

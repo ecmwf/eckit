@@ -45,6 +45,9 @@ PathName::PathName(const PathName& other) : path_(other.path_->clone()) {}
 
 PathName::PathName(const LocalPathName& other) : path_(new BasePathNameT<LocalPathName>(other)) {}
 
+PathName::PathName(const MarsFSPath& other):
+    path_(new BasePathNameT<MarsFSPath>(other)) {
+}
 
 PathName::PathName(BasePathName* path) : path_(path) {
     ASSERT(path);

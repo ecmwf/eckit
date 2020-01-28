@@ -23,7 +23,7 @@ Telnet::Telnet(int port) : NetService(port) {}
 Telnet::~Telnet() {}
 
 
-net::NetUser* Telnet::newUser(net::TCPSocket& protocol) {
+net::NetUser* Telnet::newUser(net::TCPSocket& protocol) const {
     return new TelnetUser(protocol);
 }
 

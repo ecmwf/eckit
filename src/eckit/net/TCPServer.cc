@@ -23,8 +23,12 @@ namespace eckit {
 namespace net {
 
 
-TCPServer::TCPServer(int port, const std::string& addr, const SocketOptions socketOptions) :
-    TCPSocket(), port_(port), listen_(-1), addr_(addr), socketOpts_(socketOptions), closeExec_(true) {}
+TCPServer::TCPServer(const SocketOptions& options) :
+    TCPSocket(), port_(0), listen_(-1), options_(options), closeExec_(true) {
+}
+
+TCPServer::TCPServer(int port, const SocketOptions& options) :
+    TCPSocket(), port_(port), listen_(-1), options_(options), closeExec_(true) {}
 
 TCPServer::~TCPServer() {
     if (listen_ >= 0) {
@@ -44,7 +48,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
         int delay = timeout ? timeout : 10;
 
         Select select(listen_);
-        Log::status() << message << " (port " << port_ << ")" << std::endl;
+        Log::status() << message;
+        if(port_) { Log::status() << " (port " << port_ << ")";}
+        Log::status() << std::endl;
 
         while (!select.ready(delay)) {
 
@@ -57,7 +63,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
                 return *this;
             }
 
-            Log::status() << message << " (port " << port_ << ")" << std::endl;
+            Log::status() << message;
+            if(port_) { Log::status() << " (port " << port_ << ")";}
+            Log::status() << std::endl;
         }
 
         if ((socket_ = ::accept(listen_, reinterpret_cast<sockaddr*>(&from), &fromlen)) >= 0) {
@@ -70,7 +78,7 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
     remoteAddr_ = from.sin_addr;
     remoteHost_ = addrToHost(from.sin_addr);
-    remotePort_ = from.sin_port;
+    remotePort_ = ntohs(from.sin_port);
 
     // Set the 'close on exec'
 
@@ -97,8 +105,8 @@ void TCPServer::close() {
 
 void TCPServer::bind() {
     if (listen_ == -1) {
-        listen_ = createSocket(port_, socketOpts_);
-        ::listen(listen_, 5);
+        listen_ = createSocket(port_, options_);
+        ::listen(listen_, options_.listenBacklog());
     }
 }
 
@@ -109,38 +117,20 @@ int TCPServer::socket() {
 }
 
 std::string TCPServer::bindingAddress() const {
-    return addr_;
+    return options_.bindAddress();
 }
 
 void TCPServer::print(std::ostream& s) const {
     s << "TCPServer["
-      << "port=" << port_ << ",addr=" << addr_ << ",";
+      << "port=" << port_ << ",options_=" << options_ << ",";
     TCPSocket::print(s);
     s << "]";
 }
 
-void EphemeralTCPServer::init(SocketOptions& opts) {
-    static bool ReusePort  = eckit::Resource<bool>("ephemeralTCPServerReusePort",  false);
-    static bool ReuseAddr  = eckit::Resource<bool>("ephemeralTCPServerReuseAddr",  false);
-    static bool NoLinger   = eckit::Resource<bool>("ephemeralTCPServerNoLinger",   false);
-    static bool KeepAlive  = eckit::Resource<bool>("ephemeralTCPServerKeepAlive",  false);
-    static bool IpLowDelay = eckit::Resource<bool>("ephemeralTCPServerIpLowDelay", false);
-    static bool TcpNoDelay = eckit::Resource<bool>("ephemeralTCPServerTcpNoDelay", false);
-
-    opts.reusePort(ReusePort);
-    opts.reuseAddr(ReuseAddr);
-    opts.noLinger(NoLinger);
-    opts.keepAlive(KeepAlive);
-    opts.ipLowDelay(IpLowDelay);
-    opts.tcpNoDelay(TcpNoDelay);
+EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) : TCPServer(0, opts) {
 }
 
-EphemeralTCPServer::EphemeralTCPServer(const std::string& addr) : TCPServer(0, addr) {
-    init(socketOpts_);
-}
-
-EphemeralTCPServer::EphemeralTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {
-    init(socketOpts_);
+EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) : TCPServer(port, opts) {
 }
 
 

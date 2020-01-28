@@ -43,8 +43,8 @@ private:
 
 	// From NetService
 
-	virtual NetUser* newUser(net::TCPSocket&);
-	virtual std::string   name() { return "telnet"; }
+	virtual NetUser* newUser(net::TCPSocket&) const;
+	virtual std::string   name() const { return "telnet"; }
 
 };
 

@@ -417,9 +417,10 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 
             switch (errno) {
                 case ECONNREFUSED:
-                    if (++tries >= retries)
+                    if (++tries >= retries) {
                         if (retries >= 0)
                             throw TooManyRetries(tries);
+                    }
                     ::sleep(5);
                     break;
 
@@ -451,9 +452,10 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
                     Log::status() << "Waiting for network " << host << ":" << port << Log::syserr << std::endl;
 
 #if 0
-                if (++tries >= retries)
+                if (++tries >= retries) {
                     if (retries != 0)
                         throw TooManyRetries(tries);
+                }
 #endif
                     ::sleep(120);
                     break;
@@ -468,7 +470,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 
     } while (status < 0);
 
-    remotePort_ = sin.sin_port;
+    remotePort_ = ntohs(sin.sin_port);
     remoteAddr_ = sin.sin_addr;
     remoteHost_ = addrToHost(sin.sin_addr);
 
@@ -478,7 +480,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 }
 
 
-int TCPSocket::createSocket(int port, const SocketOptions opts) {
+int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
     localPort_ = port;
 
@@ -504,8 +506,6 @@ int TCPSocket::createSocket(int port, const SocketOptions opts) {
 #ifdef SO_REUSEPORT
         int flg = 1;
         SYSCALL(::setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &flg, sizeof(flg)));
-#else
-        NOTIMP;
 #endif
     }
 

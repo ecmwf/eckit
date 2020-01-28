@@ -25,7 +25,7 @@ namespace eckit {
 
 class PoolFileEntry;
 
-thread_local std::map<PathName, PoolFileEntry*> pool_;
+static thread_local std::map<PathName, PoolFileEntry*> pool_;
 
 struct PoolFileEntryStatus {
 

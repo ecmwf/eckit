@@ -105,9 +105,9 @@ public:
     ~FDBService() {}
 
 private:
-    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& protocol) { return new FDBUser(protocol); }
+    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& protocol) const { return new FDBUser(protocol); }
 
-    virtual std::string name() { return "fdbsvr"; }
+    virtual std::string name() const { return "fdbsvr"; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -17,6 +17,16 @@ namespace eckit {
 namespace net {
 
 static void init(SocketOptions& opts) {
+
+    static std::string bindAddrAlias = Resource<std::string>("localBindingAddress", ""); /* "127.0.0.1" */
+    static std::string bindAddr = Resource<std::string>("localBindingAddr", bindAddrAlias);
+
+    opts.bindAddress(bindAddr);
+
+    static int ListenBacklog = eckit::Resource<int>("socketOptionsListenBacklog", 5);
+
+    opts.listenBacklog(ListenBacklog);
+
     static bool ReusePort  = eckit::Resource<bool>("socketOptionsReusePort",  false);
     static bool ReuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr",  false);
     static bool NoLinger   = eckit::Resource<bool>("socketOptionsNoLinger",   false);
@@ -39,12 +49,30 @@ SocketOptions::SocketOptions() {
 
 void SocketOptions::print(std::ostream& s) const {
     s << "SocketOptions["
+      << "bindAddr=" << bindAddr_ << ", "
+      << "listenBacklog=" << listenBacklog_ << ", "
       << "reusePort=" << reusePort_ << ", "
       << "reuseAddr=" << reuseAddr_ << ", "
       << "keepAlive=" << keepAlive_ << ", "
       << "noLinger=" << noLinger_ << ", "
       << "ipLowDelay=" << ipLowDelay_ << ", "
       << "tcpNoDelay=" << tcpNoDelay_ << "]" << std::endl;
+}
+
+SocketOptions SocketOptions::none() {
+    return SocketOptions();
+}
+
+SocketOptions SocketOptions::server() {
+    return SocketOptions().reuseAddr(true).keepAlive(true);
+}
+
+SocketOptions SocketOptions::control() {
+    return SocketOptions().keepAlive(true).ipLowDelay(true).tcpNoDelay(true);
+}
+
+SocketOptions SocketOptions::data() {
+    return SocketOptions();
 }
 
 std::ostream& operator<<(std::ostream& s, const SocketOptions& o) {

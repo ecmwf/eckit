@@ -18,25 +18,20 @@ namespace eckit {
 namespace net {
 
 
-TCPClient::TCPClient(int port) : TCPSocket(), port_(port) {}
+TCPClient::TCPClient(const SocketOptions& options) : TCPSocket(), port_(0), options_(options) {}
+TCPClient::TCPClient(int port, const SocketOptions& options) : TCPSocket(), port_(port), options_(options) {}
 
 TCPClient::~TCPClient() {}
 
 void TCPClient::bind() {
     if (socket_ == -1) {
-        SocketOptions socketOptions;
-        socketOptions.reuseAddr(false);
-        socket_ = createSocket(port_, socketOptions);
+        socket_ = createSocket(port_, options_);
     }
-}
-
-std::string TCPClient::bindingAddress() const {
-    return Resource<std::string>("localBindingAddr", ""); /* "127.0.0.1" */
 }
 
 void TCPClient::print(std::ostream& s) const {
     s << "TCPClient["
-      << "port=" << port_ << ",addr=" << bindingAddress() << ",";
+      << "port=" << port_ << ",options=" << options_;
     TCPSocket::print(s);
     s << "]";
 }

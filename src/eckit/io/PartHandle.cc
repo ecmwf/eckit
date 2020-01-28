@@ -16,7 +16,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 
-#include "eckit/io/MarsFSPartHandle.h"
+#include "eckit/io/PartFileHandle.h"
 #include "eckit/io/PartHandle.h"
 
 

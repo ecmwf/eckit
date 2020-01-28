@@ -27,7 +27,9 @@ class Endpoint;
 
 class TCPClient : public TCPSocket, private eckit::NonCopyable {
 public:
-    TCPClient(int port = 0);
+
+    TCPClient(const SocketOptions& options = SocketOptions::none());
+    TCPClient(int port, const SocketOptions& options = SocketOptions::none());
 
     ~TCPClient();
 
@@ -41,10 +43,11 @@ protected:  // methods
 
 private:  // members
     int port_;
+    SocketOptions options_;
 
 private:  // methods
     virtual void bind();
-    virtual std::string bindingAddress() const;
+    virtual std::string bindingAddress() const { return options_.bindAddress();  }
 };
 
 }  // namespace net

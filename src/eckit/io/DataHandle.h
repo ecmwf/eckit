@@ -83,9 +83,9 @@ public:
 
 	// Save into an other datahandle
 
-	virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true);
+	virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());
 
-	Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy(), bool dblBufferOK = true); // Save into a file
+	Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy()); // Save into a file
 
     /// Quiet version of saveInto. Does not support progess, restart and double buffering
     Length copyTo(DataHandle&);
@@ -128,6 +128,10 @@ public:
     // This is the MD5 of the Handle, not the data it points to
 
     virtual void hash(MD5& md5) const;
+
+    // This DataHandle can doubleBufferOK
+
+    virtual bool doubleBufferOK() const { return true; }
 
 // -- Overridden methods
 

@@ -21,8 +21,7 @@ namespace eckit {
 
 RemoteCommander::RemoteCommander(int p) : net::NetService(p) {
     Monitor::instance().port(port());
-    std::string host = Resource<std::string>("localBindingAddr", "localHost");
-    Monitor::instance().host(host);
+    Monitor::instance().host("localhost");
 }
 
 
@@ -31,7 +30,7 @@ RemoteCommander::~RemoteCommander() {}
 
 
 
-net::NetUser* RemoteCommander::newUser(net::TCPSocket& protocol) {
+net::NetUser* RemoteCommander::newUser(net::TCPSocket& protocol) const {
     return new RemoteCommandUser(protocol);
 }
 

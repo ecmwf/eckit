@@ -140,6 +140,11 @@ void MarsFSFile::skip(const Length& n) {
 
 void MarsFSFile::close() {
     Stream& s = connector_;
+
+    // Make sure to close the connection *before* the server
+
+    data_.close();
+
     bool ok;
     s << "close";
     s >> ok;

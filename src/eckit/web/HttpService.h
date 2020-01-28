@@ -33,8 +33,8 @@ private:
 
     // From net::NetService
 
-    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket&);
-    virtual std::string name() { return "http"; }
+    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket&) const;
+    virtual std::string name() const { return "http"; }
 
 };
 

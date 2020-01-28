@@ -15,6 +15,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <unistd.h>
+#include <netdb.h>
 
 
 namespace eckit {
@@ -29,6 +31,14 @@ IPAddress::IPAddress(const std::string& addr) {
 }
 
 
+IPAddress::IPAddress(const char* addr) {
+    if(inet_aton(addr, &address_) == 0) {
+         std::ostringstream os;
+         os << "Invalid IP address [" << addr << "]";
+         throw eckit::SeriousBug(os.str());
+    }
+}
+
 void IPAddress::print(std::ostream& os) const {
     os << inet_ntoa(address_);
 }
@@ -37,6 +47,25 @@ void IPAddress::print(std::ostream& os) const {
 
 std::string IPAddress::asString() const {
     return inet_ntoa(address_);
+}
+
+
+IPAddress IPAddress::myIPAddress() {
+    static bool done = false;
+    static IPAddress mine("255.255.255.255");
+
+    if(!done){
+        char hostname[256] = {0, };
+        SYSCALL(::gethostname(hostname, sizeof(hostname) - 1));
+
+        struct hostent *entry = gethostbyname(hostname);
+        ASSERT(entry);
+
+        mine = IPAddress(inet_ntoa(*((struct in_addr*)entry->h_addr_list[0])));
+        done = true;
+    }
+
+    return mine;
 }
 
 } // namespace net

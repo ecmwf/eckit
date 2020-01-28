@@ -46,6 +46,10 @@ ecbuild_add_test( TARGET      eckit_test_pooledfile
                   SOURCES     test_pooledfile.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_pooledhandle
+                  SOURCES     test_pooledhandle.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   HAVE_RADOS

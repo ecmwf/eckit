@@ -11,6 +11,11 @@
 #ifndef eckit_net_SocketOptions_h
 #define eckit_net_SocketOptions_h
 
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jan 2020
+
+#include <string>
 #include <iosfwd>
 
 namespace eckit {
@@ -18,34 +23,48 @@ namespace net {
 
 struct SocketOptions {
 
-    SocketOptions();
+    static SocketOptions none();
+    static SocketOptions server();
+    static SocketOptions control();
+    static SocketOptions data();
 
-    SocketOptions& reusePort(bool v = true) {
+
+    SocketOptions& bindAddress(const std::string& addr) {
+        bindAddr_ = addr;
+        return *this;
+    }
+
+    SocketOptions& listenBacklog(int backlog) {
+        listenBacklog_ = backlog;
+        return *this;
+    }
+
+    SocketOptions& reusePort(bool v) {
         reusePort_ = v;
         return *this;
     }
 
-    SocketOptions& reuseAddr(bool v = true) {
+    SocketOptions& reuseAddr(bool v) {
         reuseAddr_ = v;
         return *this;
     }
 
-    SocketOptions& noLinger(bool v = true) {
+    SocketOptions& noLinger(bool v) {
         noLinger_ = v;
         return *this;
     }
 
-    SocketOptions& keepAlive(bool v = true) {
+    SocketOptions& keepAlive(bool v) {
         keepAlive_ = v;
         return *this;
     }
 
-    SocketOptions& ipLowDelay(bool v = true) {
+    SocketOptions& ipLowDelay(bool v) {
         ipLowDelay_ = v;
         return *this;
     }
 
-    SocketOptions& tcpNoDelay(bool v = true) {
+    SocketOptions& tcpNoDelay(bool v) {
         tcpNoDelay_ = v;
         return *this;
     }
@@ -57,9 +76,25 @@ struct SocketOptions {
     bool ipLowDelay() const { return ipLowDelay_; }
     bool tcpNoDelay() const { return tcpNoDelay_; }
 
+    int listenBacklog() const { return listenBacklog_; }
+
+    std::string bindAddress() const { return bindAddr_; }
+
     void print(std::ostream& s) const;
 
 private:
+
+    SocketOptions();
+
+    friend std::ostream& operator<<(std::ostream& s, const SocketOptions& socket);
+
+private:
+    /// Binding address for this socket
+    std::string bindAddr_ = "";
+
+    /// Value to pass as backlog to ::listen() sockets
+    int listenBacklog_ = 5;
+
     /// SO_REUSEPORT is useful if multiple threads want to bind to the same port and OS handles load balancing
     /// otherwise better not to set it.
     bool reusePort_ = false;
@@ -83,9 +118,8 @@ private:
     /// bypass Nagle Delays by disabling Nagle's algorithm and send the data as soon as it's available
     bool tcpNoDelay_ = true;
 
-private:
-    friend std::ostream& operator<<(std::ostream& s, const SocketOptions& socket);
 };
+
 
 
 }  // namespace net

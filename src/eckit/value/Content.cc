@@ -68,7 +68,7 @@ Content::Content(Stream& s) : Streamable(s) {}
 
 Content::~Content() {}
 
-void Content::badConvertion(const std::string& to) const {
+void Content::badConversion(const std::string& to) const {
     std::ostringstream s;
     s << "Cannot convert " << *this << " (" << typeName() << ") to " << to;
     throw BadConversion(s.str(), Here());
@@ -124,35 +124,35 @@ Value Content::negate() const {
 }
 
 void Content::value(long long&) const {
-    badConvertion("long long");
+    badConversion("long long");
 }
 
 void Content::value(bool&) const {
-    badConvertion("bool");
+    badConversion("bool");
 }
 
 void Content::value(double&) const {
-    badConvertion("double");
+    badConversion("double");
 }
 
 void Content::value(std::string&) const {
-    badConvertion("std::string");
+    badConversion("std::string");
 }
 
 void Content::value(Date&) const {
-    badConvertion("Date");
+    badConversion("Date");
 }
 
 void Content::value(Time&) const {
-    badConvertion("Time");
+    badConversion("Time");
 }
 
 void Content::value(DateTime&) const {
-    badConvertion("DateTime");
+    badConversion("DateTime");
 }
 
 void Content::value(ValueMap&) const {
-    badConvertion("Map");
+    badConversion("Map");
 }
 
 

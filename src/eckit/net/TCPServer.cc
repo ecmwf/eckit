@@ -102,7 +102,7 @@ void TCPServer::close() {
 void TCPServer::bind() {
     if (listen_ == -1) {
         listen_ = createSocket(port_, options_);
-        ::listen(listen_, 5);
+        ::listen(listen_, options_.listenBacklog());
     }
 }
 

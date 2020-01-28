@@ -29,6 +29,16 @@ struct SocketOptions {
     static SocketOptions data();
 
 
+    SocketOptions& bindAddress(const std::string& addr) {
+        bindAddr_ = addr;
+        return *this;
+    }
+
+    SocketOptions& listenBacklog(int backlog) {
+        listenBacklog_ = backlog;
+        return *this;
+    }
+
     SocketOptions& reusePort(bool v) {
         reusePort_ = v;
         return *this;
@@ -59,17 +69,14 @@ struct SocketOptions {
         return *this;
     }
 
-    SocketOptions& bindAddress(const std::string& addr) {
-        bindAddr_ = addr;
-        return *this;
-    }
-
     bool reusePort() const { return reusePort_; }
     bool reuseAddr() const { return reuseAddr_; }
     bool keepAlive() const { return keepAlive_; }
     bool noLinger() const { return noLinger_; }
     bool ipLowDelay() const { return ipLowDelay_; }
     bool tcpNoDelay() const { return tcpNoDelay_; }
+
+    int listenBacklog() const { return listenBacklog_; }
 
     std::string bindAddress() const { return bindAddr_; }
 
@@ -84,6 +91,9 @@ private:
 private:
     /// Binding address for this socket
     std::string bindAddr_ = "";
+
+    /// Value to pass as backlog to ::listen() sockets
+    int listenBacklog_ = 5;
 
     /// SO_REUSEPORT is useful if multiple threads want to bind to the same port and OS handles load balancing
     /// otherwise better not to set it.

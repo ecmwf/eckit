@@ -23,6 +23,10 @@ static void init(SocketOptions& opts) {
 
     opts.bindAddress(bindAddr);
 
+    static int ListenBacklog = eckit::Resource<int>("socketOptionsListenBacklog", 5);
+
+    opts.listenBacklog(ListenBacklog);
+
     static bool ReusePort  = eckit::Resource<bool>("socketOptionsReusePort",  false);
     static bool ReuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr",  false);
     static bool NoLinger   = eckit::Resource<bool>("socketOptionsNoLinger",   false);
@@ -46,6 +50,7 @@ SocketOptions::SocketOptions() {
 void SocketOptions::print(std::ostream& s) const {
     s << "SocketOptions["
       << "bindAddr=" << bindAddr_ << ", "
+      << "listenBacklog=" << listenBacklog_ << ", "
       << "reusePort=" << reusePort_ << ", "
       << "reuseAddr=" << reuseAddr_ << ", "
       << "keepAlive=" << keepAlive_ << ", "

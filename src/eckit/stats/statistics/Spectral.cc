@@ -27,8 +27,7 @@ namespace stats {
 namespace statistics {
 
 
-Spectral::Spectral(const param::MIRParametrisation& parametrisation) :
-    Statistics(parametrisation) {
+Spectral::Spectral(const param::MIRParametrisation& parametrisation) : Statistics(parametrisation) {
     reset();
 }
 
@@ -76,7 +75,7 @@ void Spectral::execute(const data::MIRField& field) {
     // Note: assumes triangular truncation (from GribInput.cc)
     const size_t J = field.representation()->truncation();
     const size_t N = repres::sh::SphericalHarmonics::number_of_complex_coefficients(J);
-    ASSERT(2*N == values.size());
+    ASSERT(2 * N == values.size());
 
 
     // calculate mean, variance and energy norm
@@ -85,15 +84,15 @@ void Spectral::execute(const data::MIRField& field) {
     mean_ = values[0];
 
     double var = 0;
-    for (size_t i = 2; i < 2*J; i += 2) {
+    for (size_t i = 2; i < 2 * J; i += 2) {
         var += values[i] * values[i];
     }
-    for (size_t i = 2*J; i < values.size(); i += 2) {
+    for (size_t i = 2 * J; i < values.size(); i += 2) {
         var += 2. * values[i] * values[i] + 2. * values[i + 1] * values[i + 1];
     }
 
     variance_ = var;
-    stddev_ = std::sqrt(var);
+    stddev_   = std::sqrt(var);
 
     enorm_ = std::sqrt(mean_ * mean_ + var);
 }
@@ -101,11 +100,8 @@ void Spectral::execute(const data::MIRField& field) {
 
 void Spectral::print(std::ostream& out) const {
     out << "Spectral["
-            "mean=" << mean()
-        << ",variance=" << variance()
-        << ",stddev=" << standardDeviation()
-        << ",enorm=" << enorm()
-        << "]";
+           "mean="
+        << mean() << ",variance=" << variance() << ",stddev=" << standardDeviation() << ",enorm=" << enorm() << "]";
 }
 
 
@@ -117,4 +113,3 @@ static StatisticsBuilder<Spectral> __stats("spectral");
 }  // namespace statistics
 }  // namespace stats
 }  // namespace mir
-

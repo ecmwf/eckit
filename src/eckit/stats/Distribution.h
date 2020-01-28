@@ -14,8 +14,8 @@
 #define mir_stats_Distribution_h
 
 #include <cstddef>
-#include <string>
 #include <iosfwd>
+#include <string>
 
 
 namespace mir {
@@ -45,7 +45,7 @@ public:
     // -- Operators
 
     virtual double operator()() const = 0;
-    virtual void reset() = 0;
+    virtual void reset()              = 0;
 
     // -- Methods
     // None

@@ -24,4 +24,3 @@ static ValueStatisticsBuilder<PNormsT<double>> __stats("p-norms");
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-

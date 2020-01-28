@@ -30,30 +30,27 @@ namespace stats {
 namespace {
 
 
-static eckit::Mutex* local_mutex = nullptr;
-static std::map< std::string, StatisticsFactory* > *m = nullptr;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
+static eckit::Mutex* local_mutex                    = nullptr;
+static std::map<std::string, StatisticsFactory*>* m = nullptr;
+static pthread_once_t once                          = PTHREAD_ONCE_INIT;
 
 
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map< std::string, StatisticsFactory* >();
+    m           = new std::map<std::string, StatisticsFactory*>();
 }
 
 
-}  // (anonymous namespace)
+}  // namespace
 
 
-Statistics::Statistics(const param::MIRParametrisation& parametrisation) :
-    parametrisation_(parametrisation) {
-}
+Statistics::Statistics(const param::MIRParametrisation& parametrisation) : parametrisation_(parametrisation) {}
 
 
 Statistics::~Statistics() = default;
 
 
-StatisticsFactory::StatisticsFactory(const std::string& name) :
-    name_(name) {
+StatisticsFactory::StatisticsFactory(const std::string& name) : name_(name) {
     pthread_once(&once, init);
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
@@ -104,4 +101,3 @@ Statistics* StatisticsFactory::build(const std::string& name, const param::MIRPa
 
 }  // namespace stats
 }  // namespace mir
-

@@ -24,7 +24,6 @@ namespace detail {
 /// Counter accounting for missing values, for differences of two MIRFIelds
 struct CounterBinary {
 private:
-
     Counter counter1_;
     Counter counter2_;
 
@@ -63,7 +62,6 @@ private:
     bool first_;
 
 public:
-
     CounterBinary(const param::MIRParametrisation&, const param::MIRParametrisation&);
 
     void reset(const data::MIRField&, const data::MIRField&);
@@ -84,7 +82,6 @@ public:
     size_t missing() const;
     size_t missingIn1NotIn2() const;
     size_t missingIn2NotIn1() const;
-
 };
 
 

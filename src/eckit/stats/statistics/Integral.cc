@@ -52,9 +52,9 @@ void Integral::execute(const data::MIRField& field) {
     const atlas::StructuredGrid structured(rep->atlasGrid());
     ASSERT(structured);
 
-    integral_ = 0.;
+    integral_      = 0.;
     double weights = 0.;
-    auto& values = field.values(0);
+    auto& values   = field.values(0);
 
     Counter::reset(field);
     size_t i = 0;
@@ -66,7 +66,7 @@ void Integral::execute(const data::MIRField& field) {
         }
 
         const double lat = structured.y(jlat);
-        const double w = std::cos(util::degree_to_radian(lat)) / pts_on_latitude;
+        const double w   = std::cos(util::degree_to_radian(lat)) / pts_on_latitude;
 
         for (atlas::idx_t jlon = 0; jlon < pts_on_latitude; ++jlon) {
             auto value = values[i++];
@@ -95,4 +95,3 @@ static StatisticsBuilder<Integral> __stats("integral");
 }  // namespace statistics
 }  // namespace stats
 }  // namespace mir
-

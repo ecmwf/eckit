@@ -49,41 +49,37 @@ Counter::Counter(const param::MIRParametrisation& parametrisation) :
 void Counter::reset(const data::MIRField& field) {
     ASSERT(field.dimensions() == 1);
 
-    count_   = 0;
-    missing_ = 0;
+    count_                = 0;
+    missing_              = 0;
     countBelowLowerLimit_ = 0;
     countAboveUpperLimit_ = 0;
 
     missingValue_ = field.missingValue();
-    hasMissing_ = field.hasMissing();
+    hasMissing_   = field.hasMissing();
 
     minIndex_ = 0;
     maxIndex_ = 0;
-    min_ = std::numeric_limits<double>::quiet_NaN();
-    max_ = std::numeric_limits<double>::quiet_NaN();
-    first_ = true;
+    min_      = std::numeric_limits<double>::quiet_NaN();
+    max_      = std::numeric_limits<double>::quiet_NaN();
+    first_    = true;
 }
 
 
 void Counter::print(std::ostream& out) const {
     out << "Counter["
-            "count=" << count()
-        << ",missing=" << missing();
+           "count="
+        << count() << ",missing=" << missing();
     if (hasUpperLimit_) {
         out << ",countAboveUpperLimit=" << countAboveUpperLimit();
     }
     if (hasLowerLimit_) {
         out << ",countBelowLowerLimit=" << countBelowLowerLimit();
     }
-    out << ",max="      << max()
-        << ",maxIndex=" << maxIndex()
-        << ",min="      << min()
-        << ",minIndex=" << minIndex()
-        << "]";
+    out << ",max=" << max() << ",maxIndex=" << maxIndex() << ",min=" << min() << ",minIndex=" << minIndex() << "]";
 }
 
 
-bool Counter::count(const double &v) {
+bool Counter::count(const double& v) {
 
     if (hasMissing_ && missingValue_ == v) {
         count_++;
@@ -100,12 +96,12 @@ bool Counter::count(const double &v) {
     }
 
     if (min_ > v || first_) {
-        min_ = v;
+        min_      = v;
         minIndex_ = count_;
     }
 
     if (max_ < v || first_) {
-        max_ = v;
+        max_      = v;
         maxIndex_ = count_;
     }
 
@@ -158,4 +154,3 @@ size_t Counter::maxIndex() const {
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-

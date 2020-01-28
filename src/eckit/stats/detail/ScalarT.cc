@@ -24,4 +24,3 @@ static ValueStatisticsBuilder<ScalarT<double>> __stats("scalar");
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-

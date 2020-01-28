@@ -73,4 +73,3 @@ static StatisticsBuilder<GridBoxIntegral> __stats("grid-box-integral");
 }  // namespace statistics
 }  // namespace stats
 }  // namespace mir
-

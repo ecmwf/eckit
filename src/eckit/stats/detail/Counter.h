@@ -24,7 +24,7 @@ class MIRField;
 namespace param {
 class MIRParametrisation;
 }
-}
+}  // namespace mir
 
 
 namespace mir {
@@ -35,7 +35,6 @@ namespace detail {
 /// Counter accounting for missing values, for a single MIRFIeld
 class Counter {
 private:
-
     size_t count_;
     size_t missing_;
     size_t countBelowLowerLimit_;
@@ -60,7 +59,6 @@ private:
     }
 
 public:
-
     Counter(const param::MIRParametrisation&);
 
     void reset(const data::MIRField&);
@@ -77,7 +75,6 @@ public:
 
     double max() const;
     size_t maxIndex() const;
-
 };
 
 

@@ -21,16 +21,18 @@ namespace stats {
 namespace detail {
 
 
-template<> std::complex<double> CentralMomentsT<std::complex<double>>::mean() const {
+template <>
+std::complex<double> CentralMomentsT<std::complex<double>>::mean() const {
     using limits = std::numeric_limits<double>;
-    static std::complex<double> NaN {limits::quiet_NaN(), limits::quiet_NaN()};
+    static std::complex<double> NaN{limits::quiet_NaN(), limits::quiet_NaN()};
     return count_ < 1 ? NaN : M1_;
 }
 
 
-template<> std::complex<float> CentralMomentsT<std::complex<float>>::mean() const {
+template <>
+std::complex<float> CentralMomentsT<std::complex<float>>::mean() const {
     using limits = std::numeric_limits<float>;
-    static std::complex<float> NaN {limits::quiet_NaN(), limits::quiet_NaN()};
+    static std::complex<float> NaN{limits::quiet_NaN(), limits::quiet_NaN()};
     return count_ < 1 ? NaN : M1_;
 }
 

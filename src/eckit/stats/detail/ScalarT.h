@@ -29,11 +29,9 @@ struct ScalarT : public CentralMomentsT<T> {
     void print(std::ostream& out) const {
         using t = CentralMomentsT<T>;
         out << "Scalar["
-                "mean="     << t::mean()
-            << ",stddev="   << t::standardDeviation()
-            << ",skewness=" << t::skewness()
-            << ",kurtosis=" << t::kurtosis()
-            << "]";
+               "mean="
+            << t::mean() << ",stddev=" << t::standardDeviation() << ",skewness=" << t::skewness()
+            << ",kurtosis=" << t::kurtosis() << "]";
     }
 };
 

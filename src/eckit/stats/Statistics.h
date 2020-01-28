@@ -24,7 +24,7 @@ class MIRField;
 namespace param {
 class MIRParametrisation;
 }
-}
+}  // namespace mir
 
 
 namespace mir {
@@ -33,7 +33,6 @@ namespace stats {
 
 class Statistics {
 public:
-
     // -- Exceptions
     // None
 
@@ -67,7 +66,6 @@ public:
     // None
 
 protected:
-
     // -- Members
 
     const param::MIRParametrisation& parametrisation_;
@@ -87,7 +85,6 @@ protected:
     // None
 
 private:
-
     // -- Members
     // None
 
@@ -109,7 +106,6 @@ private:
         r.print(out);
         return out;
     }
-
 };
 
 
@@ -117,24 +113,24 @@ class StatisticsFactory {
 private:
     std::string name_;
     virtual Statistics* make(const param::MIRParametrisation&) = 0;
+
 protected:
     StatisticsFactory(const std::string&);
     virtual ~StatisticsFactory();
+
 public:
     static void list(std::ostream&);
     static Statistics* build(const std::string&, const param::MIRParametrisation&);
 };
 
 
-template<class T>
+template <class T>
 class StatisticsBuilder : public StatisticsFactory {
 private:
-    Statistics* make(const param::MIRParametrisation& param) {
-        return new T(param);
-    }
+    Statistics* make(const param::MIRParametrisation& param) { return new T(param); }
+
 public:
-    StatisticsBuilder(const std::string& name) : StatisticsFactory(name) {
-    }
+    StatisticsBuilder(const std::string& name) : StatisticsFactory(name) {}
 };
 
 
@@ -143,4 +139,3 @@ public:
 
 
 #endif
-

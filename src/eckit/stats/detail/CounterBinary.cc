@@ -96,14 +96,10 @@ void CounterBinary::reset(const data::MIRField& field1, const data::MIRField& fi
 
 void CounterBinary::print(std::ostream& out) const {
     out << "CounterBinary["
-           "count=" << count()
-        << ",max=" << max()
-        << ",maxIndex=" << maxIndex()
-        << ",maxIndexValue1=" << maxIndexValue1_
-        << ",maxIndexValue2=" << maxIndexValue2_
-        << ",missing=" << missing()
-        << ",missingIn1NotIn2=" << missingIn1NotIn2()
-        << ",missingIn2NotIn1=" << missingIn2NotIn1();
+           "count="
+        << count() << ",max=" << max() << ",maxIndex=" << maxIndex() << ",maxIndexValue1=" << maxIndexValue1_
+        << ",maxIndexValue2=" << maxIndexValue2_ << ",missing=" << missing()
+        << ",missingIn1NotIn2=" << missingIn1NotIn2() << ",missingIn2NotIn1=" << missingIn2NotIn1();
 
     if (hasUpperLimit_) {
         out << ",countAboveUpperLimit=" << countAboveUpperLimit();
@@ -173,22 +169,30 @@ std::string CounterBinary::check() const {
 
     auto missingDifferent = missingIn1NotIn2_ + missingIn2NotIn1_;
     if (missingDifferent > ignoreDifferentMissingValues()) {
-        reasons << "\n" "* different missing values (" << missingDifferent << ") greater than " << ignoreDifferentMissingValues();
+        reasons << "\n"
+                   "* different missing values ("
+                << missingDifferent << ") greater than " << ignoreDifferentMissingValues();
     }
 
     if (countAboveUpperLimit_ > ignoreAboveUpperLimit()) {
-        reasons << "\n" "* counter above limit " << upperLimit_ << " (" << countAboveUpperLimit() << ") greater than " << ignoreAboveUpperLimit();
+        reasons << "\n"
+                   "* counter above limit "
+                << upperLimit_ << " (" << countAboveUpperLimit() << ") greater than " << ignoreAboveUpperLimit();
     }
 
     if (doAbsoluteCompare_) {
         if (max_ > absoluteError_) {
-            reasons << "\n" "* maximum difference (" << max_ << ") greater than " << absoluteError_;
+            reasons << "\n"
+                       "* maximum difference ("
+                    << max_ << ") greater than " << absoluteError_;
         }
     }
 
     if (doPackingCompare_) {
         if (max_ > packingError_) {
-            reasons << "\n" "* maximum difference (" << max_ << ") greater than " << packingError_;
+            reasons << "\n"
+                       "* maximum difference ("
+                    << max_ << ") greater than " << packingError_;
         }
     }
 
@@ -203,21 +207,27 @@ std::string CounterBinary::check() const {
     if (doRelativeCompare_) {
         double error = relative_error(maxIndexValue1_, maxIndexValue2_);
         if (error > relativeErrorFactor_) {
-            reasons << "\n" "* relative error (" << error << ") greater than " << relativeErrorFactor_;
+            reasons << "\n"
+                       "* relative error ("
+                    << error << ") greater than " << relativeErrorFactor_;
         }
     }
 
     if (doRelativeMinCompare_) {
         double error = relative_error(counter1_.min(), counter2_.min());
         if (error > relativeErrorMin_) {
-            reasons << "\n" "* minimum relative error (" << error << ") greater than " << relativeErrorMin_;
+            reasons << "\n"
+                       "* minimum relative error ("
+                    << error << ") greater than " << relativeErrorMin_;
         }
     }
 
     if (doRelativeMaxCompare_) {
         double error = relative_error(counter1_.max(), counter2_.max());
         if (error > relativeErrorMax_) {
-            reasons << "\n" "* maximum relative error (" << error << ") greater than " << relativeErrorMax_;
+            reasons << "\n"
+                       "* maximum relative error ("
+                    << error << ") greater than " << relativeErrorMax_;
         }
     }
 
@@ -226,16 +236,16 @@ std::string CounterBinary::check() const {
 
 
 size_t CounterBinary::ignoreAboveUpperLimit() const {
-    return ignoreAboveUpperLimitFactor_ == ignoreAboveUpperLimitFactor_ ?
-                size_t(double(count()) * ignoreAboveUpperLimitFactor_) :
-                ignoreAboveUpperLimit_;
+    return ignoreAboveUpperLimitFactor_ == ignoreAboveUpperLimitFactor_
+               ? size_t(double(count()) * ignoreAboveUpperLimitFactor_)
+               : ignoreAboveUpperLimit_;
 }
 
 
 size_t CounterBinary::ignoreDifferentMissingValues() const {
-    return ignoreDifferentMissingValuesFactor_ == ignoreDifferentMissingValuesFactor_ ?
-                size_t(double(count()) * ignoreDifferentMissingValuesFactor_) :
-                ignoreDifferentMissingValues_;
+    return ignoreDifferentMissingValuesFactor_ == ignoreDifferentMissingValuesFactor_
+               ? size_t(double(count()) * ignoreDifferentMissingValuesFactor_)
+               : ignoreDifferentMissingValues_;
 }
 
 

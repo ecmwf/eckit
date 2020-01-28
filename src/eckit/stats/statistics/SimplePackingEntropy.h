@@ -28,7 +28,6 @@ namespace statistics {
  */
 class SimplePackingEntropy : public Statistics, detail::Counter {
 public:
-
     // -- Exceptions
     // None
 
@@ -63,7 +62,6 @@ public:
     // None
 
 private:
-
     // -- Members
 
     double entropy_;
@@ -86,7 +84,6 @@ private:
 
     // -- Friends
     // None
-
 };
 
 
@@ -96,4 +93,3 @@ private:
 
 
 #endif
-

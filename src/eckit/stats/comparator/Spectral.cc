@@ -67,21 +67,24 @@ std::string Spectral::execute(const data::MIRField& field1, const data::MIRField
     statistics::Spectral stats2(parametrisation2_);
     stats2.execute(field2);
 
-    meanDiff_ = std::abs(stats2.mean() - stats1.mean());
+    meanDiff_  = std::abs(stats2.mean() - stats1.mean());
     enormDiff_ = std::abs(stats2.enorm() - stats1.enorm());
 
     std::ostringstream str;
-    str << ",Field1=" << stats1
-        << ",Field2=" << stats2;
+    str << ",Field1=" << stats1 << ",Field2=" << stats2;
     stats_ = str.str();
 
     std::ostringstream reasons;
     if (meanDiff_ > meanDiffMax_) {
-        reasons << "\n" "* difference of spectral mean (" << meanDiff_ << ") greater than " << meanDiffMax_;
+        reasons << "\n"
+                   "* difference of spectral mean ("
+                << meanDiff_ << ") greater than " << meanDiffMax_;
     }
 
     if (enormDiff_ > enormDiffMax_) {
-        reasons << "\n" "* difference of spectral energy norm (" << enormDiff_ << ") greater than " << enormDiffMax_;
+        reasons << "\n"
+                   "* difference of spectral energy norm ("
+                << enormDiff_ << ") greater than " << enormDiffMax_;
     }
 
     return reasons.str();
@@ -90,10 +93,8 @@ std::string Spectral::execute(const data::MIRField& field1, const data::MIRField
 
 void Spectral::print(std::ostream& out) const {
     out << "Spectral["
-            "meanDiff="  << meanDiff()
-        << ",enormDiff=" << enormDiff()
-        << stats_
-        << "]";
+           "meanDiff="
+        << meanDiff() << ",enormDiff=" << enormDiff() << stats_ << "]";
 }
 
 
@@ -105,4 +106,3 @@ static ComparatorBuilder<Spectral> __stats("spectral");
 }  // namespace comparator
 }  // namespace stats
 }  // namespace mir
-

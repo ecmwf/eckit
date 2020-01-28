@@ -25,7 +25,7 @@ class MIRField;
 namespace param {
 class MIRParametrisation;
 }
-}
+}  // namespace mir
 
 
 namespace mir {
@@ -34,7 +34,6 @@ namespace stats {
 
 class Method {
 public:
-
     // -- Exceptions
     // None
 
@@ -72,7 +71,6 @@ public:
     // None
 
 protected:
-
     // -- Members
 
     const param::MIRParametrisation& parametrisation_;
@@ -92,7 +90,6 @@ protected:
     // None
 
 private:
-
     // -- Members
     // None
 
@@ -114,7 +111,6 @@ private:
         r.print(out);
         return out;
     }
-
 };
 
 
@@ -122,24 +118,24 @@ class MethodFactory {
 private:
     std::string name_;
     virtual Method* make(const param::MIRParametrisation&) = 0;
+
 protected:
     MethodFactory(const std::string&);
     virtual ~MethodFactory();
+
 public:
     static void list(std::ostream&);
     static Method* build(const std::string&, const param::MIRParametrisation&);
 };
 
 
-template<class T>
+template <class T>
 class MethodBuilder : public MethodFactory {
 private:
-    Method* make(const param::MIRParametrisation& param) {
-        return new T(param);
-    }
+    Method* make(const param::MIRParametrisation& param) { return new T(param); }
+
 public:
-    MethodBuilder(const std::string& name) : MethodFactory(name) {
-    }
+    MethodBuilder(const std::string& name) : MethodFactory(name) {}
 };
 
 
@@ -148,4 +144,3 @@ public:
 
 
 #endif
-

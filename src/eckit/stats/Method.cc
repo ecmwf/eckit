@@ -30,30 +30,27 @@ namespace stats {
 namespace {
 
 
-static eckit::Mutex* local_mutex = nullptr;
-static std::map< std::string, MethodFactory* > *m = nullptr;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
+static eckit::Mutex* local_mutex                = nullptr;
+static std::map<std::string, MethodFactory*>* m = nullptr;
+static pthread_once_t once                      = PTHREAD_ONCE_INIT;
 
 
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map< std::string, MethodFactory* >();
+    m           = new std::map<std::string, MethodFactory*>();
 }
 
 
-}  // (anonymous namespace)
+}  // namespace
 
 
-Method::Method(const param::MIRParametrisation& parametrisation) :
-    parametrisation_(parametrisation) {
-}
+Method::Method(const param::MIRParametrisation& parametrisation) : parametrisation_(parametrisation) {}
 
 
 Method::~Method() = default;
 
 
-MethodFactory::MethodFactory(const std::string& name) :
-    name_(name) {
+MethodFactory::MethodFactory(const std::string& name) : name_(name) {
     pthread_once(&once, init);
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
@@ -104,4 +101,3 @@ Method* MethodFactory::build(const std::string& name, const param::MIRParametris
 
 }  // namespace stats
 }  // namespace mir
-

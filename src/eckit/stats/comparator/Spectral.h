@@ -26,7 +26,6 @@ namespace comparator {
  */
 class Spectral : public Comparator {
 public:
-
     // -- Exceptions
     // None
 
@@ -60,7 +59,6 @@ public:
     // None
 
 private:
-
     // -- Members
 
     double meanDiffMax_;
@@ -86,7 +84,6 @@ private:
 
     // -- Friends
     // None
-
 };
 
 
@@ -96,4 +93,3 @@ private:
 
 
 #endif
-

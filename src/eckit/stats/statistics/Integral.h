@@ -25,7 +25,6 @@ namespace statistics {
 
 class Integral : public Statistics, detail::Counter {
 public:
-
     // -- Exceptions
     // None
 
@@ -46,9 +45,7 @@ public:
 
     void reset();
 
-    double integral() const {
-        return integral_;
-    }
+    double integral() const { return integral_; }
 
     // -- Overridden methods
     // None
@@ -60,7 +57,6 @@ public:
     // None
 
 private:
-
     // -- Members
 
     double integral_;
@@ -81,7 +77,6 @@ private:
 
     // -- Friends
     // None
-
 };
 
 

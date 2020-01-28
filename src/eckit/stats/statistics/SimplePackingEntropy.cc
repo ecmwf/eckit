@@ -51,8 +51,8 @@ SimplePackingEntropy::~SimplePackingEntropy() = default;
 
 
 void SimplePackingEntropy::reset() {
-    entropy_ = std::numeric_limits<double>::quiet_NaN();
-    scale_   = std::numeric_limits<double>::quiet_NaN();
+    entropy_     = std::numeric_limits<double>::quiet_NaN();
+    scale_       = std::numeric_limits<double>::quiet_NaN();
     bucketCount_ = 0;
 }
 
@@ -90,10 +90,10 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
 
     // set/fill buckets and compute entropy
     std::vector<size_t> buckets(bucketCount_);
-    scale_ = (bucketCount_ - 1)  / (_max - _min);
+    scale_ = (bucketCount_ - 1) / (_max - _min);
     buckets.assign(bucketCount_, 0);
 
-    const auto N = double(count());
+    const auto N               = double(count());
     const double one_over_log2 = 1. / M_LN2;
 
     Counter::reset(field);
@@ -118,10 +118,7 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
 void SimplePackingEntropy::print(std::ostream& out) const {
     out << "SimplePackingEntropy[";
     Counter::print(out);
-    out << ",entropy=" << entropy()
-        << ",scale=" << scale()
-        << ",bucketCount="  << bucketCount()
-        << "]";
+    out << ",entropy=" << entropy() << ",scale=" << scale() << ",bucketCount=" << bucketCount() << "]";
 }
 
 
@@ -133,4 +130,3 @@ static StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy")
 }  // namespace statistics
 }  // namespace stats
 }  // namespace mir
-

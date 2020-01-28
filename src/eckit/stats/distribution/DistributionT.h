@@ -28,7 +28,7 @@ namespace stats {
 namespace distribution {
 
 
-template <typename DISTRIBUTION >
+template <typename DISTRIBUTION>
 class DistributionT : public Distribution {
 public:
     // -- Exceptions

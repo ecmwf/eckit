@@ -28,10 +28,9 @@ namespace statistics {
 
 
 /// Generic statistics on a MIRField
-template<typename STATS>
+template <typename STATS>
 class StatisticsT : public Statistics, detail::Counter, STATS {
 public:
-
     // -- Exceptions
     // None
 
@@ -39,8 +38,7 @@ public:
 
     StatisticsT(const param::MIRParametrisation& parametrisation) :
         Statistics(parametrisation),
-        Counter(parametrisation) {
-    }
+        Counter(parametrisation) {}
 
     // -- Destructor
     // None
@@ -75,7 +73,6 @@ public:
     // None
 
 private:
-
     // -- Members
     // None
 
@@ -100,7 +97,6 @@ private:
 
     // -- Friends
     // None
-
 };
 
 

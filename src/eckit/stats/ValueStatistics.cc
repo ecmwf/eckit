@@ -41,7 +41,7 @@ static void init() {
 }
 
 
-}  // (anonymous namespace)
+}  // namespace
 
 
 void ValueStatistics::operator()(const double&) {

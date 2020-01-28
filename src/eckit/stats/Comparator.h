@@ -24,16 +24,15 @@ class MIRField;
 namespace param {
 class MIRParametrisation;
 }
-}
+}  // namespace mir
 
 
 namespace mir {
 namespace stats {
 
 
-class Comparator  {
+class Comparator {
 public:
-
     // -- Exceptions
     // None
 
@@ -67,7 +66,6 @@ public:
     // None
 
 protected:
-
     // -- Members
 
     const param::MIRParametrisation& parametrisation1_;
@@ -87,7 +85,6 @@ protected:
     // None
 
 private:
-
     // -- Members
     // None
 
@@ -109,7 +106,6 @@ private:
         r.print(out);
         return out;
     }
-
 };
 
 
@@ -117,23 +113,25 @@ class ComparatorFactory {
 private:
     std::string name_;
     virtual Comparator* make(const param::MIRParametrisation&, const param::MIRParametrisation&) = 0;
+
 protected:
     ComparatorFactory(const std::string&);
     virtual ~ComparatorFactory();
+
 public:
     static void list(std::ostream&);
     static Comparator* build(const std::string&, const param::MIRParametrisation&, const param::MIRParametrisation&);
 };
 
 
-template<class T>
+template <class T>
 class ComparatorBuilder : public ComparatorFactory {
     virtual Comparator* make(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) {
         return new T(param1, param2);
     }
+
 public:
-    ComparatorBuilder(const std::string& name) : ComparatorFactory(name) {
-    }
+    ComparatorBuilder(const std::string& name) : ComparatorFactory(name) {}
 };
 
 

@@ -30,31 +30,29 @@ namespace stats {
 namespace {
 
 
-static eckit::Mutex* local_mutex = nullptr;
-static std::map< std::string, ComparatorFactory* > *m = nullptr;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
+static eckit::Mutex* local_mutex                    = nullptr;
+static std::map<std::string, ComparatorFactory*>* m = nullptr;
+static pthread_once_t once                          = PTHREAD_ONCE_INIT;
 
 
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map< std::string, ComparatorFactory* >();
+    m           = new std::map<std::string, ComparatorFactory*>();
 }
 
 
-}  // (anonymous namespace)
+}  // namespace
 
 
 Comparator::Comparator(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
     parametrisation1_(param1),
-    parametrisation2_(param2) {
-}
+    parametrisation2_(param2) {}
 
 
 Comparator::~Comparator() = default;
 
 
-ComparatorFactory::ComparatorFactory(const std::string& name) :
-    name_(name) {
+ComparatorFactory::ComparatorFactory(const std::string& name) : name_(name) {
     pthread_once(&once, init);
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
@@ -87,7 +85,8 @@ void ComparatorFactory::list(std::ostream& out) {
 }
 
 
-Comparator* ComparatorFactory::build(const std::string& name, const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) {
+Comparator* ComparatorFactory::build(const std::string& name, const param::MIRParametrisation& param1,
+                                     const param::MIRParametrisation& param2) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
@@ -105,4 +104,3 @@ Comparator* ComparatorFactory::build(const std::string& name, const param::MIRPa
 
 }  // namespace stats
 }  // namespace mir
-

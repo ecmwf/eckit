@@ -101,6 +101,9 @@ NetServiceProcessControler::NetServiceProcessControler(const std::string& name,
 }
 
 void NetServiceProcessControler::run() {
+    Log::info() << "NetServiceProcessControler::run run" << std::endl;
+
+
     eckit::Monitor::instance().reset(); // needed to the monitor to work on forked (but not execed process)
     Monitor::instance().parent(parent_);
     Monitor::instance().name(name_);
@@ -123,11 +126,13 @@ void NetServiceProcessControler::run() {
 
 void NetServiceProcessControler::afterForkInParent() {
     // This will close the connected socket
+    Log::info() << "NetServiceProcessControler::run afterForkInParent" << std::endl;
     user_.reset(0);
 }
 
 void NetServiceProcessControler::afterForkInChild() {
     // Close the accept() socket that is used in the parent
+    Log::info() << "NetServiceProcessControler::run afterForkInChild" << std::endl;
     server_.close();
 }
 

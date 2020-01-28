@@ -97,12 +97,11 @@ NetServiceProcessControler::NetServiceProcessControler(const std::string& name,
     server_(server),
     parent_(parent),
     visible_(visible) {
+    Log::info() << "NetServiceProcessControler::NetServiceProcessControler" << std::endl;
 
 }
 
 void NetServiceProcessControler::run() {
-    Log::info() << "NetServiceProcessControler::run run" << std::endl;
-
 
     eckit::Monitor::instance().reset(); // needed to the monitor to work on forked (but not execed process)
     Monitor::instance().parent(parent_);

@@ -67,8 +67,7 @@ bool TreeMemory::ready() const {
 }
 
 
-void TreeMemory::commit() {
-}
+void TreeMemory::commit() {}
 
 
 void TreeMemory::print(std::ostream& out) const {
@@ -76,14 +75,12 @@ void TreeMemory::print(std::ostream& out) const {
 }
 
 
-TreeMemory::TreeMemory(const repres::Representation& r, const param::MIRParametrisation&) :
-    Tree(r) {
-}
+TreeMemory::TreeMemory(const repres::Representation& r, const param::MIRParametrisation&) : Tree(r) {}
 
 
 static TreeBuilder<TreeMemory> builder("memory");
 
 
-} // namespace tree
-} // namespace search
-} // namespace mir
+}  // namespace tree
+}  // namespace search
+}  // namespace mir

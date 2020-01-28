@@ -68,8 +68,8 @@ void PointSearch::build(const repres::Representation& r) {
     ASSERT(npts > 0);
 
     eckit::Timer timer("PointSearch: building k-d tree");
-    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << Pretty(npts, {"point"})
-                       << ")" << std::endl;
+    eckit::Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << Pretty(npts, {"point"}) << ")"
+                       << std::endl;
 
     static bool fastBuildKDTrees =
         eckit::Resource<bool>("$ATLAS_FAST_BUILD_KDTREES", true);  // We use the same Resource as ATLAS for now

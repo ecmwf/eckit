@@ -26,7 +26,7 @@ namespace tree {
 class TreeMapped : public Tree {
 
 protected:
-    eckit::AutoUmask umask_; // Must be first
+    eckit::AutoUmask umask_;  // Must be first
     eckit::PathName path_;
     eckit::KDTreeMapped<Tree> tree_;
 
@@ -55,9 +55,9 @@ public:
 };
 
 
-} // namespace tree
-} // namespace search
-} // namespace mir
+}  // namespace tree
+}  // namespace search
+}  // namespace mir
 
 
 #endif

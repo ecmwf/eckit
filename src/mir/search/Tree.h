@@ -28,7 +28,7 @@ class MIRParametrisation;
 namespace repres {
 class Representation;
 }
-}
+}  // namespace mir
 
 
 namespace mir {
@@ -37,8 +37,8 @@ namespace search {
 
 class Tree {
 public:
-    using Point = Point3;
-    using Payload = size_t;
+    using Point          = Point3;
+    using Payload        = size_t;
     using PointValueType = eckit::SPValue<Tree>;
 
 public:
@@ -62,9 +62,7 @@ public:
     virtual void lock();
     virtual void unlock();
 
-    size_t itemCount() const {
-        return itemCount_;
-    }
+    size_t itemCount() const { return itemCount_; }
 
     friend std::ostream& operator<<(std::ostream& s, const Tree& p) {
         p.print(s);
@@ -88,7 +86,8 @@ public:
     static void list(std::ostream&);
 };
 
-template <class T> class TreeBuilder : public TreeFactory {
+template <class T>
+class TreeBuilder : public TreeFactory {
     virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation& param) {
         return new T(r, param);
     }

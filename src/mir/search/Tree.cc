@@ -117,14 +117,14 @@ void Tree::unlock() {
 
 
 namespace {
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-static eckit::Mutex* local_mutex = nullptr;
+static pthread_once_t once                    = PTHREAD_ONCE_INIT;
+static eckit::Mutex* local_mutex              = nullptr;
 static std::map<std::string, TreeFactory*>* m = nullptr;
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map<std::string, TreeFactory*>();
+    m           = new std::map<std::string, TreeFactory*>();
 }
-} // (anonymous namespace)
+}  // namespace
 
 
 TreeFactory::TreeFactory(const std::string& name) : name_(name) {
@@ -147,8 +147,7 @@ TreeFactory::~TreeFactory() {
 }
 
 
-Tree* TreeFactory::build(const std::string& name,
-                         const repres::Representation& r,
+Tree* TreeFactory::build(const std::string& name, const repres::Representation& r,
                          const param::MIRParametrisation& params) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);

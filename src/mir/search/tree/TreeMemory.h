@@ -52,9 +52,9 @@ public:
 };
 
 
-} // namespace tree
-} // namespace search
-} // namespace mir
+}  // namespace tree
+}  // namespace search
+}  // namespace mir
 
 
 #endif

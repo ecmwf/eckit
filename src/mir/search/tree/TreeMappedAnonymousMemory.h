@@ -23,21 +23,14 @@ namespace tree {
 
 class TreeMappedAnonymousMemory : public TreeMapped {
 
-    virtual bool ready() const  {
-        return false;
-    }
+    virtual bool ready() const { return false; }
 
-    virtual void commit() {
-    }
+    virtual void commit() {}
 
-    virtual void print(std::ostream& out) const  {
-        out << "TreeMappedAnonymousMemory[]";
-    }
+    virtual void print(std::ostream& out) const { out << "TreeMappedAnonymousMemory[]"; }
 
 public:
-
-    TreeMappedAnonymousMemory(const repres::Representation&,
-                              const param::MIRParametrisation&);
+    TreeMappedAnonymousMemory(const repres::Representation&, const param::MIRParametrisation&);
 };
 
 
@@ -47,4 +40,3 @@ public:
 
 
 #endif
-

@@ -30,29 +30,24 @@ namespace search {
 namespace tree {
 
 
-template<class T>
+template <class T>
 class TreeMappedFile : public TreeMapped {
 
 protected:
     eckit::PathName real_;
-    eckit::Semaphore lock_; // Must be after real
+    eckit::Semaphore lock_;  // Must be after real
 
-    virtual bool ready() const  {
-        return path_ == real_;
-    }
+    virtual bool ready() const { return path_ == real_; }
 
-    virtual void commit() {
-        eckit::PathName::rename(path_, real_);
-    }
+    virtual void commit() { eckit::PathName::rename(path_, real_); }
 
-    virtual void print(std::ostream& out) const  {
+    virtual void print(std::ostream& out) const {
         out << "TreeMappedFile["
-               "path=" << path_
-            << ",ready?" << ready()
-            << "]";
+               "path="
+            << path_ << ",ready?" << ready() << "]";
     }
 
-    virtual  void lock() {
+    virtual void lock() {
         eckit::AutoUmask umask(0);
 
         eckit::PathName path = lockFile(real_);
@@ -83,9 +78,7 @@ protected:
 
 
 public:
-
-    TreeMappedFile(const repres::Representation& r,
-                   const param::MIRParametrisation&) :
+    TreeMappedFile(const repres::Representation& r, const param::MIRParametrisation&) :
         TreeMapped(r, treePath(r, true)),
         real_(treePath(r, false)),
         lock_(lockFile(real_)) {
@@ -105,4 +98,3 @@ public:
 
 
 #endif
-

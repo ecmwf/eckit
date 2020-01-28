@@ -66,10 +66,9 @@ TreeMapped::TreeMapped(const repres::Representation& r, const eckit::PathName& p
     Tree(r),
     umask_(0),
     path_(path),
-    tree_(path, path.exists() ? 0 : itemCount(), 0) {
-}
+    tree_(path, path.exists() ? 0 : itemCount(), 0) {}
 
 
-} // namespace tree
-} // namespace search
-} // namespace mir
+}  // namespace tree
+}  // namespace search
+}  // namespace mir

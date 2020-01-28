@@ -12,8 +12,8 @@
 
 #include "mir/search/tree/TreeMappedFile.h"
 
-#include "eckit/utils/Tokenizer.h"
 #include "eckit/filesystem/PathExpander.h"
+#include "eckit/utils/Tokenizer.h"
 
 #include "mir/repres/Representation.h"
 
@@ -26,7 +26,7 @@ namespace tree {
 // -----------------------------------------------------------------------------
 
 
-template<class T>
+template <class T>
 eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, bool makeUnique) {
 
     // LocalPathName::unique and LocalPathName::mkdir call mkdir, make sure to use umask = 0
@@ -34,26 +34,21 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
 
     static const long VERSION = 2;
 
-    const std::string relative = "mir/search/"
-            + std::to_string(VERSION)
-            + "/"
-            + r.uniqueName()
-            + ".kdtree";
+    const std::string relative = "mir/search/" + std::to_string(VERSION) + "/" + r.uniqueName() + ".kdtree";
 
-    auto writable = [](const eckit::PathName& path) -> bool {
-        return (::access(path.asString().c_str(), W_OK) == 0);
-    };
+    auto writable = [](const eckit::PathName& path) -> bool { return (::access(path.asString().c_str(), W_OK) == 0); };
 
     for (eckit::PathName path : T::roots()) {
 
-        if(not path.exists()) {
+        if (not path.exists()) {
 
-            if(not writable(path.dirName()))
+            if (not writable(path.dirName()))
                 continue;
 
             try {
                 path.mkdir(0777);
-            } catch (eckit::FailedSystemCall&) {
+            }
+            catch (eckit::FailedSystemCall&) {
                 // ignore
             }
         }
@@ -68,7 +63,8 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             path = eckit::PathName::unique(path);
         }
 
-        eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path  << "'" << (makeUnique ? " (unique)" : "") << std::endl;
+        eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path << "'" << (makeUnique ? " (unique)" : "")
+                                    << std::endl;
         return path;
     }
 
@@ -76,7 +72,7 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
 }
 
 
-template<class T>
+template <class T>
 eckit::PathName TreeMappedFile<T>::lockFile(const std::string& path) {
     eckit::AutoUmask umask(0);
 
@@ -105,6 +101,7 @@ class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
 
         return r;
     }
+
 public:
     using P::P;
     static std::vector<std::string> roots() {
@@ -122,10 +119,11 @@ static TreeBuilder<TreeMappedCacheFile> builder1("mapped-cache-file");
 
 class TreeMappedTempFile : public TreeMappedFile<TreeMappedTempFile> {
     using P = TreeMappedFile<TreeMappedTempFile>;
+
 public:
     using P::P;
     static std::vector<std::string> roots() {
-        static std::vector<std::string> _root {"/tmp"};
+        static std::vector<std::string> _root{"/tmp"};
         return _root;
     }
 };
@@ -137,4 +135,3 @@ static TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
 }  // namespace tree
 }  // namespace search
 }  // namespace mir
-

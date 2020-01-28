@@ -23,6 +23,8 @@ namespace eckit {
 MarsFSFile::MarsFSFile(const MarsFSPath& path) : MarsFSClient(path), path_(path), lock_(connector_) {
     static std::string marsFsHashing = eckit::Resource<std::string>("marsFsHashing", "None");
     hash_.reset(eckit::HashFactory::instance().build(marsFsHashing));
+
+    connector_.autoclose(true); // Will close the connector
 }
 
 MarsFSFile::~MarsFSFile() {}

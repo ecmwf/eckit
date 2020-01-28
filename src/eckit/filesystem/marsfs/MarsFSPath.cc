@@ -13,7 +13,8 @@
 #include "eckit/filesystem/marsfs/MarsFSClient.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/MarsFSHandle.h"
-#include "eckit/io/MarsFSPartHandle.h"
+#include "eckit/io/PartFileHandle.h"
+#include "eckit/io/FileHandle.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
@@ -220,16 +221,20 @@ void MarsFSPath::rename(const MarsFSPath& from, const MarsFSPath& to) {
 }
 
 DataHandle* MarsFSPath::fileHandle(bool overwrite) const {
-    return new MarsFSHandle(*this, overwrite);
-    // return new MoverHandle(new MarsFSHandle(*this, overwrite));
+    if(isLocal()) {
+        return new FileHandle(path_, overwrite);
+    }
+    else {
+        return new MarsFSHandle(*this, overwrite);
+    }
 }
 
 DataHandle* MarsFSPath::partHandle(const OffsetList& o, const LengthList& l) const {
-    return new MarsFSPartHandle(*this, o, l);
+    return new PartFileHandle(*this, o, l);
 }
 
 DataHandle* MarsFSPath::partHandle(const Offset& o, const Length& l) const {
-    return new MarsFSPartHandle(*this, o, l);
+    return new PartFileHandle(*this, o, l);
 }
 
 MarsFSPath MarsFSPath::mountPoint() const {

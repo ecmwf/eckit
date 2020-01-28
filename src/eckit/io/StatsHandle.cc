@@ -210,8 +210,8 @@ std::string StatsHandle::title() const {
     return handle().title();
 }
 
-Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool dblBufferOK) {
-    return handle().saveInto(other, watcher, dblBufferOK);
+Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
+    return handle().saveInto(other, watcher);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -167,6 +167,8 @@ io/FileLocker.cc
 io/FileLocker.h
 io/FilePool.cc
 io/FilePool.h
+io/FileHandle.cc
+io/FileHandle.h
 io/HandleBuf.cc
 io/HandleBuf.h
 io/HandleHolder.cc
@@ -175,12 +177,8 @@ io/Length.cc
 io/Length.h
 io/MarsFSHandle.cc
 io/MarsFSHandle.h
-io/MarsFSPartHandle.cc
-io/MarsFSPartHandle.h
 io/MemoryHandle.cc
 io/MemoryHandle.h
-io/MoverHandle.cc
-io/MoverHandle.h
 io/MoverTransfer.cc
 io/MoverTransfer.h
 io/MultiHandle.cc
@@ -197,6 +195,8 @@ io/Pipeline.cc
 io/Pipeline.h
 io/PooledFile.cc
 io/PooledFile.h
+io/PooledHandle.cc
+io/PooledHandle.h
 io/PooledFileDescriptor.cc
 io/PooledFileDescriptor.h
 io/RawFileHandle.cc

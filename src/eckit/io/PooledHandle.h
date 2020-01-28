@@ -12,39 +12,34 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_PooledFile_h
-#define eckit_io_PooledFile_h
+#ifndef eckit_io_PooledHandle_h
+#define eckit_io_PooledHandle_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
 
-class PoolFileEntry;
+class PoolHandleEntry;
 
-class PooledFile : private NonCopyable {
+class PooledHandle : public DataHandle {
 public:
 
-    PooledFile(const PathName& name);
+    PooledHandle(const PathName& name);
 
     /// @pre must have been closed
-    ~PooledFile();
+    ~PooledHandle();
 
-    void open();
+    virtual Length openForRead();
+    virtual void openForWrite(const Length&);
+    virtual void openForAppend(const Length&);
 
-    /// @throws on fclose failure
-    void close() noexcept(false);
-
-    long read(void*, long);
-
-    off_t seek(off_t offset);
-    off_t seekEnd();
-
-    off_t rewind();
-
-    int fileno() const;
+    virtual long read(void*,long);
+    virtual long write(const void*,long);
+    virtual void close();
+    virtual Offset seek(const Offset&);
 
     // for testing
 
@@ -54,14 +49,11 @@ public:
 
 private:
 
-    PathName name_;
-    PoolFileEntry* entry_;
-};
+    PathName path_;
+    PoolHandleEntry* entry_;
 
+    virtual void print(std::ostream& s) const;
 
-class PooledFileError : public FileError {
-public:
-    PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc);
 };
 
 } // namespace eckit

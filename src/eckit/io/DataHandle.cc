@@ -70,7 +70,7 @@ void DataHandle::flush() {
     throw NotImplemented(os.str(), Here());
 }
 
-Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool dblBufferOK) {
+Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
 
     compress();
@@ -86,7 +86,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool db
 
     static const bool doubleBuffer = Resource<bool>("doubleBuffer", 0);
 
-    if (doubleBuffer && dblBufferOK) {
+    if (doubleBuffer && doubleBufferOK() && other.doubleBufferOK()) {
         static const long bufsize = Resource<long>("doubleBufferSize", 10 * 1024 * 1024 / 20);
         static const long count   = Resource<long>("doubleBufferCount", 20);
 
@@ -176,9 +176,9 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool db
     }
 }
 
-Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, bool dblBufferOK) {
+Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
     std::unique_ptr<DataHandle> file{path.fileHandle()};
-    return saveInto(*file, w, dblBufferOK);
+    return saveInto(*file, w);
 }
 
 Length DataHandle::copyTo(DataHandle& other, long bufsize) {

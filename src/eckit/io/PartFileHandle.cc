@@ -254,7 +254,7 @@ Length PartFileHandle::estimate() {
 
 void PartFileHandle::cost(std::map<std::string, Length>& c, bool read) const {
     if (read) {
-        c[NodeInfo::thisNode().node()] += const_cast<PartFileHandle*>(this)->estimate();
+        c[path_.node()] += const_cast<PartFileHandle*>(this)->estimate();
     }
 }
 

@@ -68,7 +68,7 @@ void NetService::run() {
 
     while (!stopped()) {
 
-        if (process()) {
+        if (runAsProcess()) {
             NetServiceProcessControler t(name(), newUser(server_.accept()), server_, Monitor::instance().self(), visible_);
             t.start();
         }
@@ -79,10 +79,13 @@ void NetService::run() {
     }
 }
 
-bool NetService::process() const {
-    return Resource<bool>(name() + "NetServiceForkProcess", false);
+bool NetService::runAsProcess() const {
+    return Resource<bool>(name() + "NetServiceForkProcess", preferToRunAsProcess());
 }
 
+bool NetService::preferToRunAsProcess() const {
+    return false;
+}
 
 //------------------------------------------------------------------------
 

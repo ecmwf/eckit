@@ -104,19 +104,19 @@ private:
     /// from previous closed connections messing up new connections. This is likely under high network contention and/or
     /// very short connections quickly reuse the available ports.
     /// Set to false when openeing ephemeral ports/connections.
-    bool reuseAddr_ = true;
+    bool reuseAddr_ = false;
 
     /// Enable sending of keep-alive messages
-    bool keepAlive_ = true;
+    bool keepAlive_ = false;
 
     /// Do the close in the background (don't wait for queued messages) and return immedietly on close()
-    bool noLinger_ = true;
+    bool noLinger_ = false;
 
     /// sets IP_TOS to IPTOS_LOWDELAY to minimize delays for interactive traffic (small messages) as per manpage ip(7)
-    bool ipLowDelay_ = true;
+    bool ipLowDelay_ = false;
 
     /// bypass Nagle Delays by disabling Nagle's algorithm and send the data as soon as it's available
-    bool tcpNoDelay_ = true;
+    bool tcpNoDelay_ = false;
 
 };
 

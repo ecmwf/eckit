@@ -18,8 +18,7 @@ namespace net {
 
 static void init(SocketOptions& opts) {
 
-    static std::string bindAddrAlias = Resource<std::string>("localBindingAddress", ""); /* "127.0.0.1" */
-    static std::string bindAddr = Resource<std::string>("localBindingAddr", bindAddrAlias);
+    static std::string bindAddr = Resource<std::string>("localBindingAddress", ""); /* "127.0.0.1" */
 
     opts.bindAddress(bindAddr);
 

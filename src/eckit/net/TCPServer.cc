@@ -17,6 +17,7 @@
 #include "eckit/io/Select.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/TCPServer.h"
+#include "eckit/thread/AutoLock.h"
 
 
 namespace eckit {
@@ -104,6 +105,10 @@ void TCPServer::close() {
 }
 
 void TCPServer::bind() {
+    // There can be a race condition is two thread asks for localPort()
+    // and both try to bind at the same time
+    AutoLock<Mutex> lock(mutex_);
+
     if (listen_ == -1) {
         listen_ = createSocket(port_, options_);
         int backlog = options_.listenBacklog();

@@ -16,6 +16,7 @@
 #define eckit_TCPServer_h
 
 #include "eckit/net/TCPSocket.h"
+#include "eckit/thread/Mutex.h"
 
 
 namespace eckit {
@@ -62,6 +63,7 @@ private: // methods
 
 private: // members
     bool closeExec_;
+    Mutex mutex_;
 };
 
 

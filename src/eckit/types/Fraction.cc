@@ -219,7 +219,13 @@ void Fraction::decode(Stream& s) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+#if defined(__GNUCC__) || defined(__clang__)
+#define ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__((no_sanitize("undefined")))
+#else
+#define ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED
+#endif
+
+inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
     if (overflow) {
         return Fraction::value_type();
@@ -232,7 +238,7 @@ inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction
     return a * b;
 }
 
-inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
     if (overflow) {
         return Fraction::value_type();

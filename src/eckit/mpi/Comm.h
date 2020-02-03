@@ -521,11 +521,15 @@ void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, 
     const diff_t recvcount = rsize / commsize;
     ECKIT_MPI_ASSERT(sendcount == recvcount);
 
-    Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
-    Data::Code type  = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+    using CValue = typename std::iterator_traits<CIter>::value_type;
+    using Value = typename std::iterator_traits<Iter>::value_type;
+    Data::Code ctype = Data::Type<CValue>::code();
+    Data::Code type  = Data::Type<Value>::code();
     ECKIT_MPI_ASSERT(ctype == type);
 
-    gather(&(*first), sendcount, &(*rfirst), recvcount, type, root);
+    const CValue* sendbuf = (first != last) ? &(*first) : nullptr;
+    Value* recvbuf = (rfirst != rlast) ? &(*rfirst) : nullptr;
+    gather(sendbuf, sendcount, recvbuf, recvcount, type, root);
 }
 
 template <typename T>
@@ -568,11 +572,16 @@ void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast,
     typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
     // typename std::iterator_traits<CIter>::difference_type recvsize  = std::distance(rfirst,
     // rlast);
-    Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
-    Data::Code type  = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+
+    using CValue = typename std::iterator_traits<CIter>::value_type;
+    using Value = typename std::iterator_traits<Iter>::value_type;
+    Data::Code ctype = Data::Type<CValue>::code();
+    Data::Code type  = Data::Type<Value>::code();
     ECKIT_MPI_ASSERT(ctype == type);
 
-    gatherv(&(*first), sendcount, &(*rfirst), recvcounts, displs, type, root);
+    const CValue* sendbuf = (first != last) ? &(*first) : nullptr;
+    Value* recvbuf = (rfirst != rlast) ? &(*rfirst) : nullptr;
+    gatherv(sendbuf, sendcount, recvbuf, recvcounts, displs, type, root);
 }
 
 template <class CIter, class Iter>
@@ -653,11 +662,16 @@ void eckit::mpi::Comm::scatterv(CIter first, CIter last, const int sendcounts[],
 
     typename std::iterator_traits<Iter>::difference_type recvcounts = std::distance(rfirst, rlast);
     // typename std::iterator_traits<Iter>::difference_type sendsize   = std::distance(first, last);
-    Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
-    Data::Code type  = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+
+    using CValue = typename std::iterator_traits<CIter>::value_type;
+    using Value = typename std::iterator_traits<Iter>::value_type;
+    Data::Code ctype = Data::Type<CValue>::code();
+    Data::Code type  = Data::Type<Value>::code();
     ECKIT_MPI_ASSERT(ctype == type);
 
-    scatterv(&(*first), sendcounts, displs, &(*rfirst), recvcounts, type, root);
+    const CValue* sendbuf = (first != last) ? &(*first) : nullptr;
+    Value* recvbuf = (rfirst != rlast) ? &(*rfirst) : nullptr;
+    scatterv(sendbuf, sendcounts, displs, recvbuf, recvcounts, type, root);
 }
 
 template <class CIter, class Iter>
@@ -738,13 +752,22 @@ void eckit::mpi::Comm::allGather(T sendval, Iter rfirst, Iter rlast) const {
 ///
 
 template <typename CIter, typename Iter>
-void eckit::mpi::Comm::allGatherv(CIter first, CIter last, Iter recvbuf, const int recvcounts[],
+void eckit::mpi::Comm::allGatherv(CIter first, CIter last, Iter rfirst, const int recvcounts[],
                                   const int displs[]) const {
     typename std::iterator_traits<CIter>::difference_type sendcount = std::distance(first, last);
-    Data::Code ctype = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
+    int recvcount = 0;
+    int commsize = static_cast<int>(size());
+    for( int i=0; i<commsize; ++i ) {
+        recvcount += recvcounts[i];
+    }
+    using Value = typename std::iterator_traits<CIter>::value_type;
+    Data::Code ctype = Data::Type<Value>::code();
     Data::Code type  = Data::Type<typename std::iterator_traits<CIter>::value_type>::code();
     ECKIT_MPI_ASSERT(ctype == type);
-    allGatherv(&(*first), sendcount, &(*recvbuf), recvcounts, displs, type);
+
+    const Value* sendbuf = ( sendcount > 0 ) ? &(*first) : nullptr;
+    Value* recvbuf =  ( recvcount > 0 ) ? &(*rfirst) : nullptr;
+    allGatherv(sendbuf, sendcount, recvbuf, recvcounts, displs, type);
 }
 
 ///
@@ -864,7 +887,6 @@ template <typename T>
 void eckit::mpi::Comm::allToAll(const std::vector<std::vector<T> >& sendvec,
                                 std::vector<std::vector<T> >& recvvec) const {
     size_t commsize = size();
-
     ECKIT_MPI_ASSERT(sendvec.size() == commsize);
     ECKIT_MPI_ASSERT(recvvec.size() == commsize);
 
@@ -881,7 +903,6 @@ void eckit::mpi::Comm::allToAll(const std::vector<std::vector<T> >& sendvec,
         sendcounts[jproc] = sendvec[jproc].size();
         sendcnt += sendcounts[jproc];
     }
-
 
     // Get recv-information
     std::vector<int> recvcounts(commsize);

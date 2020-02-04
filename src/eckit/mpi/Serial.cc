@@ -172,7 +172,7 @@ Status Serial::wait(Request& req) const {
 
         SendRequest& sendReq = SerialRequestPool::instance().matchingSendRequest(recvReq);
 
-        if( sendReq.count() > 0 ) {
+        if (sendReq.count() > 0) {
             ::memcpy(recvReq.buffer(), sendReq.buffer(), sendReq.count() * dataSize[sendReq.type()]);
         }
 
@@ -283,7 +283,7 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
         ASSERT(tag == send.tag());
     }
     ASSERT(count == send.count());
-    if( count > 0 ) {
+    if (count > 0) {
         memcpy(recv, send.buffer(), send.count() * dataSize[send.type()]);
     }
 

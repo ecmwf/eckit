@@ -49,7 +49,7 @@ Buffer::~Buffer() {
 }
 
 void Buffer::zero() {
-    if( buffer_ ) {
+    if (buffer_) {
         ::memset(buffer_, 0, size_);
     }
 }
@@ -59,19 +59,19 @@ void Buffer::create() {
 }
 
 void Buffer::destroy() {
-    if( buffer_ ) {
+    if (buffer_) {
         MemoryPool::largeDeallocate(buffer_);
     }
 }
 
 void Buffer::copy(const std::string& s) {
-    if( s.size() ) {
+    if (s.size()) {
         ::strcpy(static_cast<char*>(buffer_), s.c_str());
     }
 }
 
 void Buffer::copy(const char* p, size_t size) {
-    if( size ) {
+    if (size) {
         ::memcpy(buffer_, p, size);
     }
 }

@@ -372,7 +372,7 @@ Stream& Stream::operator<<(const std::string& x) {
     long len = x.length();
     putLong(len);
 
-    if( len ) {
+    if (len) {
         char buf[len];
         assert(sizeof(unsigned char) == 1);
         for (long i = 0; i < len; i++)
@@ -630,7 +630,7 @@ Stream& Stream::operator>>(double& x) {
 Stream& Stream::operator>>(std::string& s) {
     readTag(tag_string);
     long length = getLong();
-    if( length ) {
+    if (length) {
         char buf[length];
         getBytes(buf, length);
 

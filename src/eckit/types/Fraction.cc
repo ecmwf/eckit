@@ -225,7 +225,8 @@ void Fraction::decode(Stream& s) {
 #define ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED
 #endif
 
-inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED mul(bool& overflow, Fraction::value_type a,
+                                                                      Fraction::value_type b) {
 
     if (overflow) {
         return Fraction::value_type();
@@ -238,7 +239,8 @@ inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED mul(bool& over
     return a * b;
 }
 
-inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
+inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED add(bool& overflow, Fraction::value_type a,
+                                                                      Fraction::value_type b) {
 
     if (overflow) {
         return Fraction::value_type();

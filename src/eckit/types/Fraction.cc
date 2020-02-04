@@ -219,14 +219,7 @@ void Fraction::decode(Stream& s) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if defined(__GNUCC__) || defined(__clang__)
-#define ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__((no_sanitize("undefined")))
-#else
-#define ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED
-#endif
-
-inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED mul(bool& overflow, Fraction::value_type a,
-                                                                      Fraction::value_type b) {
+inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
     if (overflow) {
         return Fraction::value_type();
@@ -236,11 +229,14 @@ inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED mul(bool& over
         overflow = std::abs(a) > std::numeric_limits<Fraction::value_type>::max() / std::abs(b);
     }
 
+    if (overflow) {
+        return Fraction::value_type();
+    }
+
     return a * b;
 }
 
-inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED add(bool& overflow, Fraction::value_type a,
-                                                                      Fraction::value_type b) {
+inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
     if (overflow) {
         return Fraction::value_type();
@@ -248,6 +244,10 @@ inline Fraction::value_type ECKIT_ATTRIBUTE_NO_SANITIZE_UNDEFINED add(bool& over
 
     overflow = b > 0 ? a > std::numeric_limits<Fraction::value_type>::max() - b
                      : a < std::numeric_limits<Fraction::value_type>::lowest() - b;
+
+    if (overflow) {
+        return Fraction::value_type();
+    }
 
     return a + b;
 }

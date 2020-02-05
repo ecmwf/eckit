@@ -21,7 +21,7 @@
 
 namespace eckit {
 
-typedef void (*channel_callback_t) (void* data, const char* msg);
+typedef void (*channel_callback_t)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,19 +30,18 @@ typedef void (*channel_callback_t) (void* data, const char* msg);
 
 class Log {
 
-public: // types
-
+public:  // types
     /// Output formats
-    enum {
-        compactFormat = 0,
-        normalFormat = 1,
-        fullFormat = 2,
-        monitorFormat = 3,
+    enum
+    {
+        compactFormat     = 0,
+        normalFormat      = 1,
+        fullFormat        = 2,
+        monitorFormat     = 3,
         applicationFormat = 4,  // Free to use for applications
     };
 
-public: // methods
-
+public:  // methods
     /// Channel for debug output
     static Channel& debug();
 
@@ -82,7 +81,7 @@ public: // methods
 
     static Channel& null();
 
-    template<typename T>
+    template <typename T>
     static Channel& debug(const T* = 0) {
         return T::instance().debugChannel();
     }
@@ -101,8 +100,7 @@ public: // methods
 
     static void print(std::ostream& os);
 
-private: // methods
-
+private:     // methods
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
 };
@@ -127,14 +125,15 @@ inline std::ostream& newl(std::ostream& out) {
 
 class Voidify {
 public:
-  Voidify(){}
-  void operator&(std::ostream&){}
+    Voidify() {}
+    void operator&(std::ostream&) {}
 };
 
-#define LOG_DEBUG(condition,lib) static_cast<void>(0), !(condition) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
+#define LOG_DEBUG(condition, lib) \
+    static_cast<void>(0), !(condition) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

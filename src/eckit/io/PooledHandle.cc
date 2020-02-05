@@ -12,12 +12,12 @@
 #include <string>
 #include <thread>
 
-#include "eckit/config/Resource.h"
 #include "eckit/config/LibEcKit.h"
-#include "eckit/io/PooledHandle.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/PooledHandle.h"
 #include "eckit/log/Bytes.h"
 
 
@@ -28,7 +28,7 @@ class PoolHandleEntry;
 static thread_local std::map<PathName, PoolHandleEntry*> pool_;
 
 static int maxPooledHandles() {
-    static int maxPooledHandles = eckit::Resource<int>("maxPooledHandles",  16);
+    static int maxPooledHandles = eckit::Resource<int>("maxPooledHandles", 16);
     return maxPooledHandles;
 }
 
@@ -37,10 +37,7 @@ struct PoolHandleEntryStatus {
     Offset position_;
     bool opened_;
 
-    PoolHandleEntryStatus() :
-        position_(0),
-        opened_(false) {
-    }
+    PoolHandleEntryStatus() : position_(0), opened_(false) {}
 };
 
 class PoolHandleEntry {
@@ -51,7 +48,7 @@ public:
 
     size_t count_;
 
-    std::map<const PooledHandle*, PoolHandleEntryStatus > statuses_;
+    std::map<const PooledHandle*, PoolHandleEntryStatus> statuses_;
 
     size_t nbOpens_  = 0;
     size_t nbReads_  = 0;
@@ -59,17 +56,12 @@ public:
     size_t nbCloses_ = 0;
 
 public:
-
-    PoolHandleEntry(const PathName& path):
-        path_(path),
-        handle_(nullptr),
-        count_(0)
-    {
-    }
+    PoolHandleEntry(const PathName& path) : path_(path), handle_(nullptr), count_(0) {}
 
     void doClose() {
         if (handle_) {
-            Log::info() << "PooledHandle::close(" << path_ << ")" << std::endl;
+            static const bool debug = LibEcKit::instance().debug();
+            LOG_DEBUG(debug, LibEcKit) << "PooledHandle::close(" << path_ << ")" << std::endl;
             handle_->close();
             handle_ = nullptr;
         }
@@ -105,19 +97,20 @@ public:
             nbOpens_++;
             handle_ = path_.fileHandle();
             ASSERT(handle_);
-            Log::info() << "PooledHandle::openForRead(" << path_ << ")" << std::endl;
+            static const bool debug = LibEcKit::instance().debug();
+            LOG_DEBUG(debug, LibEcKit) << "PooledHandle::openForRead(" << path_ << ")" << std::endl;
             estimate_ = handle_->openForRead();
         }
 
-        s->second.opened_ = true;
+        s->second.opened_   = true;
         s->second.position_ = 0;
 
         return estimate_;
     }
 
     bool canClose() {
-        for(auto i = statuses_.begin(); i != statuses_.end(); ++i) {
-            if((*i).second.opened_) {
+        for (auto i = statuses_.begin(); i != statuses_.end(); ++i) {
+            if ((*i).second.opened_) {
                 return false;
             }
         }
@@ -127,24 +120,25 @@ public:
     void checkMaxPooledHandles() {
         size_t opened = 0;
 
-        for(auto i = pool_.begin(); i != pool_.end(); ++i) {
-            if((*i).second->handle_) {
+        for (auto i = pool_.begin(); i != pool_.end(); ++i) {
+            if ((*i).second->handle_) {
                 opened++;
             }
         }
 
-        if(opened >= maxPooledHandles()) {
-            Log::info() << "PooledHandle maximum number of open files reached: " << maxPooledHandles() << std::endl;
-            for(auto i = pool_.begin(); i != pool_.end(); ++i) {
-                if((*i).second->canClose()) {
+        if (opened >= maxPooledHandles()) {
+            static const bool debug = LibEcKit::instance().debug();
+            LOG_DEBUG(debug, LibEcKit) << "PooledHandle maximum number of open files reached: " << maxPooledHandles()
+                                       << std::endl;
+            for (auto i = pool_.begin(); i != pool_.end(); ++i) {
+                if ((*i).second->canClose()) {
                     (*i).second->doClose();
                 }
             }
         }
-
     }
 
-    void close(const PooledHandle* file)  {
+    void close(const PooledHandle* file) {
         auto s = statuses_.find(file);
         ASSERT(s != statuses_.end());
 
@@ -154,7 +148,7 @@ public:
         nbCloses_++;
     }
 
-    long read(const PooledHandle* handle, void *buffer, long len) {
+    long read(const PooledHandle* handle, void* buffer, long len) {
         auto s = statuses_.find(handle);
         ASSERT(s != statuses_.end());
         ASSERT(s->second.opened_);
@@ -162,7 +156,7 @@ public:
         ASSERT(handle_->seek(s->second.position_) == s->second.position_);
 
         size_t length = size_t(len);
-        long n = handle_->read(buffer, len);
+        long n        = handle_->read(buffer, len);
 
         s->second.position_ = handle_->position();
         nbReads_++;
@@ -185,18 +179,14 @@ public:
 
         return s->second.position_;
     }
-
 };
 
 
-PooledHandle::PooledHandle(const PathName& path):
-    path_(path),
-    entry_(nullptr)
-{
+PooledHandle::PooledHandle(const PathName& path) : path_(path), entry_(nullptr) {
     auto j = pool_.find(path);
     if (j == pool_.end()) {
         pool_[path] = new PoolHandleEntry(path);
-        j = pool_.find(path);
+        j           = pool_.find(path);
     }
 
     entry_ = (*j).second;
@@ -255,11 +245,10 @@ size_t PooledHandle::nbSeeks() const {
     return entry_->nbSeeks_;
 }
 
-long PooledHandle::read(void *buffer, long len) {
+long PooledHandle::read(void* buffer, long len) {
     ASSERT(entry_);
     return entry_->read(this, buffer, len);
 }
 
 
-} // namespace eckit
-
+}  // namespace eckit

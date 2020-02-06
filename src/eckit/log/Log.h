@@ -132,6 +132,9 @@ public:
 #define LOG_DEBUG(condition, lib) \
     static_cast<void>(0), !(condition) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
 
+#define LOG_DEBUG_LIB(lib) \
+    static_cast<void>(0), !(lib::instance().debug()) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

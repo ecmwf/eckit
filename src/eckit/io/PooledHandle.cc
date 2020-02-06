@@ -60,8 +60,7 @@ public:
 
     void doClose() {
         if (handle_) {
-            static const bool debug = LibEcKit::instance().debug();
-            LOG_DEBUG(debug, LibEcKit) << "PooledHandle::close(" << path_ << ")" << std::endl;
+            LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::close(" << path_ << ")" << std::endl;
             handle_->close();
             handle_ = nullptr;
         }
@@ -97,8 +96,7 @@ public:
             nbOpens_++;
             handle_ = path_.fileHandle();
             ASSERT(handle_);
-            static const bool debug = LibEcKit::instance().debug();
-            LOG_DEBUG(debug, LibEcKit) << "PooledHandle::openForRead(" << path_ << ")" << std::endl;
+            LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::openForRead(" << path_ << ")" << std::endl;
             estimate_ = handle_->openForRead();
         }
 
@@ -127,9 +125,8 @@ public:
         }
 
         if (opened >= maxPooledHandles()) {
-            static const bool debug = LibEcKit::instance().debug();
-            LOG_DEBUG(debug, LibEcKit) << "PooledHandle maximum number of open files reached: " << maxPooledHandles()
-                                       << std::endl;
+            LOG_DEBUG_LIB(LibEcKit) << "PooledHandle maximum number of open files reached: " << maxPooledHandles()
+                                    << std::endl;
             for (auto i = pool_.begin(); i != pool_.end(); ++i) {
                 if ((*i).second->canClose()) {
                     (*i).second->doClose();

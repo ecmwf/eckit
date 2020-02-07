@@ -206,6 +206,8 @@ test_reanimate(uchar, 'A', max);
 
 test_decode(bool, true, true);
 test_reanimate(bool, true, true);
+test_decode(bool, false, false);
+test_reanimate(bool, false, false);
 
 test_decode(int, numeric_limits<int32_t>::max(), max);
 test_decode(int, numeric_limits<int32_t>::min(), min);
@@ -252,8 +254,11 @@ test_decode(double, numeric_limits<double>::min(), min);
 test_reanimate(double, numeric_limits<double>::max(), max);
 test_reanimate(double, numeric_limits<double>::min(), min);
 
-test_decode(string, "Hello, World!", _);
-test_reanimate(string, "Hello, World!", _);
+test_decode(string, "Hello, World!", Hello);
+test_reanimate(string, "Hello, World!", Hello);
+
+test_decode(string, "", empty);
+test_reanimate(string, "", empty);
 
 //----------------------------------------------------------------------------------------------------------------------
 

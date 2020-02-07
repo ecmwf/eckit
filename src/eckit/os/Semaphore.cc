@@ -60,8 +60,11 @@ void Semaphore::lock(void) {
     mutex_.lock();
     if (++level_ == 1)
         while (semop(semaphore_, _lock, NUMBER(_lock)) < 0) {
-            if (errno != EINTR)
+            if (errno != EINTR) {
+                --level_;
+                mutex_.unlock();
                 throw FailedSystemCall("semop lock");
+            }
         }
 }
 
@@ -70,11 +73,10 @@ bool Semaphore::tryLock(void) {
         return false;
     if (++level_ == 1)
         if (semop(semaphore_, _try_lock, NUMBER(_try_lock)) < 0) {
-            if (errno == EAGAIN) {
-                --level_;
-                mutex_.unlock();
+            --level_;
+            mutex_.unlock();
+            if (errno == EAGAIN)
                 return false;
-            }
             else
                 throw FailedSystemCall("semop try_lock");
         }
@@ -86,8 +88,10 @@ void Semaphore::unlock(void) {
 
     if (--level_ == 0)
         while (semop(semaphore_, _unlock, NUMBER(_unlock)) < 0) {
-            if (errno != EINTR)
+            if (errno != EINTR) {
+                ++level_;
                 throw FailedSystemCall("semop unlock");
+            }
         }
 
     mutex_.unlock();

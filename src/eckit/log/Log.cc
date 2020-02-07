@@ -365,6 +365,27 @@ std::ostream& setformat(std::ostream& s, int n) {
 
 template class ThreadSingleton<UserChannel>;
 
+std::ostream& set_compact_format(std::ostream& s) {
+    setformat(s, Log::compactFormat);
+    return s;
+}
+
+
+std::ostream& set_normal_format(std::ostream& s) {
+    setformat(s, Log::normalFormat);
+    return s;
+}
+
+std::ostream& set_full_format(std::ostream& s) {
+    setformat(s, Log::fullFormat);
+    return s;
+}
+
+std::ostream& set_monitor_format(std::ostream& s) {
+    setformat(s, Log::monitorFormat);
+    return s;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

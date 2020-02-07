@@ -107,12 +107,15 @@ private:     // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Format manipulators
+
 std::ostream& setformat(std::ostream&, int);
 int format(std::ostream&);
 
-#define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
-#define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
-
+std::ostream& set_compact_format(std::ostream& s);
+std::ostream& set_normal_format(std::ostream& s);
+std::ostream& set_full_format(std::ostream& s);
+std::ostream& set_monitor_format(std::ostream& s);
 
 // Non-flushing version of std::endl
 inline std::ostream& newl(std::ostream& out) {
@@ -120,6 +123,9 @@ inline std::ostream& newl(std::ostream& out) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+#define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
+#define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
 
 /// Optimisation for DEBUG with elision of stream code. For performance critical code blocks.
 

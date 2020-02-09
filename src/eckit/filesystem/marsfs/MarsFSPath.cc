@@ -89,7 +89,7 @@ void operator<<(Stream& s, MarsFSPath const& path) {
 }
 
 bool MarsFSPath::isLocal() const {
-    Log::info() << "MarsFSPath::isLocal(): " << (node_ == NodeInfo::thisNode().node()) << " node_: \'" << node_ << "\' node(): \'" << NodeInfo::thisNode().node() << "\' backtrace:" << BackTrace::dump() << std::endl;
+    // Log::info() << "MarsFSPath::isLocal(): " << (node_ == NodeInfo::thisNode().node()) << " node_: \'" << node_ << "\' node(): \'" << NodeInfo::thisNode().node() << "\' backtrace:" << BackTrace::dump() << std::endl;
     return node_ == NodeInfo::thisNode().node();
 }
 
@@ -224,7 +224,7 @@ void MarsFSPath::rename(const MarsFSPath& from, const MarsFSPath& to) {
 }
 
 DataHandle* MarsFSPath::fileHandle(bool overwrite) const {
-    Log::info() << "MarsFSPath::fileHandle() path_: " << path_ << std::endl;
+    // Log::info() << "MarsFSPath::fileHandle() path_: " << path_ << std::endl;
     if(isLocal()) {
         return new FileHandle(path_, overwrite);
     }

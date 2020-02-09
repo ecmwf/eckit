@@ -29,9 +29,9 @@ static void init(SocketOptions& opts) {
     static bool ReusePort  = eckit::Resource<bool>("socketOptionsReusePort",  false);
     static bool ReuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr",  false);
     static bool NoLinger   = eckit::Resource<bool>("socketOptionsNoLinger",   false);
-    static bool KeepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive",  false);
-    static bool IpLowDelay = eckit::Resource<bool>("socketOptionsIpLowDelay", false);
-    static bool TcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", false);
+    static bool KeepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive",  true);
+    static bool IpLowDelay = eckit::Resource<bool>("socketOptionsIpLowDelay", true);
+    static bool TcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", true);
 
     opts.reusePort(ReusePort);
     opts.reuseAddr(ReuseAddr);

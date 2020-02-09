@@ -662,6 +662,41 @@ bool Stream::next(std::string& s) {
     return true;
 }
 
+bool Stream::next(int& x) {
+
+    tag t = nextTag();
+    if (t == tag_eof)
+        return false;
+
+    if (t != tag_int)
+        badTag(tag_int, t);
+
+    union {
+        uint32_t u;
+        int32_t s;
+    } u;
+    readTag(tag_int);
+    u.u = getLong();
+    x   = u.s;
+    T("r int", x);
+    return true;
+}
+
+
+bool Stream::next(bool& b) {
+
+    int x = 0;
+    if(!next(x)) {
+        return false;
+    }
+
+    b = x;
+    T("r bool", b);
+
+    return true;
+}
+
+
 void Stream::startObject() {
     T("w start", 0);
     writeTag(tag_start_obj);

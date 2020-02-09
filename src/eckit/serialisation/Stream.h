@@ -100,6 +100,8 @@ public:
     // -- Methods
 
     bool next(std::string&);
+    bool next(bool&);
+    bool next(int&);
 
     bool endObjectFound();
     bool next();

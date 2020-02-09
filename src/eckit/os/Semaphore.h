@@ -33,6 +33,7 @@ public: // methods
 
     void lock(void);
     void unlock(void);
+    bool tryLock(void);
     bool test(unsigned short n = 0);
 
     int  get(int n = 0) const;

@@ -89,8 +89,12 @@ void PipeApplication::run() {
         }
 
         try {
-            bool end_;
-            pipe >> end_;  // End of batch marker
+            bool end_; // End of batch marker
+
+            if(!pipe.next(end_)) {
+                Log::info() << "End of input, exiting" << std::endl;
+                return;
+            }
             if (end_)
                 endBatch();
             else

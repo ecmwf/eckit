@@ -21,6 +21,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/BadTag.h"
+#include "eckit/os/BackTrace.h"
 
 namespace eckit {
 
@@ -155,6 +156,7 @@ void Stream::badTag(Stream::tag need, Stream::tag got) {
     os << ". Expecting a " << need << ", got a " << got;
 
     Log::error() << os.str() << std::endl;
+    Log::error() << BackTrace::dump() << std::endl;
 
     if (got == tag_string) {
         long length = getLong();
@@ -661,6 +663,41 @@ bool Stream::next(std::string& s) {
 
     return true;
 }
+
+bool Stream::next(int& x) {
+
+    tag t = nextTag();
+    if (t == tag_eof)
+        return false;
+
+    if (t != tag_int)
+        badTag(tag_int, t);
+
+    union {
+        uint32_t u;
+        int32_t s;
+    } u;
+
+    u.u = getLong();
+    x   = u.s;
+    T("r int", x);
+    return true;
+}
+
+
+bool Stream::next(bool& b) {
+
+    int x = 0;
+    if(!next(x)) {
+        return false;
+    }
+
+    b = x;
+    T("r bool", b);
+
+    return true;
+}
+
 
 void Stream::startObject() {
     T("w start", 0);

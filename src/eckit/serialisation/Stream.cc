@@ -677,7 +677,7 @@ bool Stream::next(int& x) {
         uint32_t u;
         int32_t s;
     } u;
-    readTag(tag_int);
+
     u.u = getLong();
     x   = u.s;
     T("r int", x);

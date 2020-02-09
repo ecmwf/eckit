@@ -352,38 +352,18 @@ std::ostream& Log::syserr(std::ostream& s) {
     return s;
 }
 
+template class ThreadSingleton<UserChannel>;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 static int xindex = std::ios::xalloc();
 
 int format(std::ostream& s) {
     return s.iword(xindex);
 }
 
-std::ostream& setformat(std::ostream& s, int n) {
-    s.iword(xindex) = n;
-    return s;
-}
-
-template class ThreadSingleton<UserChannel>;
-
-std::ostream& set_compact_format(std::ostream& s) {
-    setformat(s, Log::compactFormat);
-    return s;
-}
-
-
-std::ostream& set_normal_format(std::ostream& s) {
-    setformat(s, Log::normalFormat);
-    return s;
-}
-
-std::ostream& set_full_format(std::ostream& s) {
-    setformat(s, Log::fullFormat);
-    return s;
-}
-
-std::ostream& set_monitor_format(std::ostream& s) {
-    setformat(s, Log::monitorFormat);
-    return s;
+void format(std::ostream& s, int f) {
+    s.iword(xindex) = f;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

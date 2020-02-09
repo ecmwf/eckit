@@ -60,7 +60,7 @@ public:
 
 CASE("Multihandle") {
 
-    setformat(std::cout, Log::fullFormat);
+    format(std::cout, Log::fullFormat);
 
     Tester test;
 

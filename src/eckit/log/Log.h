@@ -109,13 +109,24 @@ private:     // methods
 
 /// Format manipulators
 
-std::ostream& setformat(std::ostream&, int);
 int format(std::ostream&);
+void format(std::ostream&, int);
 
-std::ostream& set_compact_format(std::ostream& s);
-std::ostream& set_normal_format(std::ostream& s);
-std::ostream& set_full_format(std::ostream& s);
-std::ostream& set_monitor_format(std::ostream& s);
+class LogFormatSetter {
+    int format_;
+
+public:
+    explicit LogFormatSetter(int f) : format_(f) {}
+
+    friend std::ostream& operator<<(std::ostream& s, const LogFormatSetter& f) {
+        format(s, f.format_);
+        return s;
+    }
+};
+
+inline LogFormatSetter setformat(int format) {
+    return LogFormatSetter(format);
+}
 
 // Non-flushing version of std::endl
 inline std::ostream& newl(std::ostream& out) {

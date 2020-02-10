@@ -366,6 +366,11 @@ void format(std::ostream& s, int f) {
     s.iword(xindex) = f;
 }
 
+std::ostream& setformat(std::ostream& s, int f) {
+    format(s, f);
+    return s;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

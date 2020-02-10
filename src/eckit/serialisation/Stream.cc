@@ -22,6 +22,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/BadTag.h"
 #include "eckit/os/BackTrace.h"
+#include "eckit/maths/Functions.h"
 
 namespace eckit {
 
@@ -371,17 +372,10 @@ Stream& Stream::operator<<(const char* x) {
 Stream& Stream::operator<<(const std::string& x) {
     T("w std::string", x);
     writeTag(tag_string);
-    long len = x.length();
+    const long len = x.length();
     putLong(len);
-
-    if (len) {
-        char buf[len];
-        assert(sizeof(unsigned char) == 1);
-        for (long i = 0; i < len; i++)
-            buf[i] = x[i];
-
-        putBytes(buf, len);
-    }
+    assert(sizeof(unsigned char) == 1);
+    putBytes(x.c_str(), len);
     return *this;
 }
 
@@ -631,16 +625,15 @@ Stream& Stream::operator>>(double& x) {
 
 Stream& Stream::operator>>(std::string& s) {
     readTag(tag_string);
-    long length = getLong();
-    if (length) {
-        char buf[length];
-        getBytes(buf, length);
+    const long length = getLong();
 
-        s.resize(length);
+    const long sz = eckit::round(length + 1, 8); // some padding to avoid zero-length buffer
+    char buf[sz];
+    getBytes(buf, length);
 
-        for (long i = 0; i < length; i++)
-            s[i] = buf[i];
-    }
+    s.resize(length);
+    s.assign(buf, length);
+
     T("r std::string", s);
     return *this;
 }
@@ -658,9 +651,7 @@ bool Stream::next(std::string& s) {
     getBytes(buf, length);
 
     s.resize(length);
-
-    for (long i = 0; i < length; i++)
-        s[i] = buf[i];
+    s.assign(buf, length);
 
     T("r std::string", s);
 

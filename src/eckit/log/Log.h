@@ -125,10 +125,7 @@ public:
     }
 };
 
-DEPRECATED("Use eckit::format() instead") std::ostream& setformat(std::ostream& s, int f) {
-    format(s, f);
-    return s;
-}
+DEPRECATED("Use eckit::format() instead") std::ostream& setformat(std::ostream& s, int f);
 
 inline LogFormatSetter setformat(int format) {
     return LogFormatSetter(format);

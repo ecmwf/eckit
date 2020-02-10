@@ -25,8 +25,6 @@ namespace stats {
 namespace distribution {
 
 
-namespace {
-
 static DistributionBuilder<DistributionT<std::bernoulli_distribution>> __random1("bernoulli-distribution");
 static DistributionBuilder<DistributionT<std::binomial_distribution<int>>> __random2("binomial-distribution");
 static DistributionBuilder<DistributionT<std::cauchy_distribution<double>>> __random3("cauchy-distribution");
@@ -53,6 +51,10 @@ static DistributionBuilder<DistributionT<std::uniform_real_distribution<double>>
     "uniform-real-distribution");
 static DistributionBuilder<DistributionT<std::weibull_distribution<double>>> __random20("weibull-distribution");
 
+
+namespace {
+
+
 template <typename T>
 T get_value(const param::MIRParametrisation& param, const std::string& key, T value) {
     param.get(key, value);
@@ -70,6 +72,7 @@ std::string put_vector(const std::vector<T>& v) {
     s += "]";
     return s;
 }
+
 
 }  // namespace
 

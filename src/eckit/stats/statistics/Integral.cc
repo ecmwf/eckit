@@ -87,9 +87,7 @@ void Integral::print(std::ostream& out) const {
 }
 
 
-namespace {
 static StatisticsBuilder<Integral> __stats("integral");
-}
 
 
 }  // namespace statistics

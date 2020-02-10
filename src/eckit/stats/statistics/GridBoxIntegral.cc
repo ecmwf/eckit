@@ -65,9 +65,7 @@ void GridBoxIntegral::print(std::ostream& out) const {
 }
 
 
-namespace {
 static StatisticsBuilder<GridBoxIntegral> __stats("grid-box-integral");
-}
 
 
 }  // namespace statistics

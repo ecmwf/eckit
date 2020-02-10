@@ -27,21 +27,13 @@ namespace mir {
 namespace stats {
 
 
-namespace {
-
-
 static eckit::Mutex* local_mutex                         = nullptr;
 static std::map<std::string, ValueStatisticsFactory*>* m = nullptr;
 static pthread_once_t once                               = PTHREAD_ONCE_INIT;
-
-
 static void init() {
     local_mutex = new eckit::Mutex();
     m           = new std::map<std::string, ValueStatisticsFactory*>();
 }
-
-
-}  // namespace
 
 
 void ValueStatistics::operator()(const double&) {

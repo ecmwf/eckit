@@ -27,21 +27,13 @@ namespace mir {
 namespace stats {
 
 
-namespace {
-
-
 static eckit::Mutex* local_mutex                = nullptr;
 static std::map<std::string, MethodFactory*>* m = nullptr;
 static pthread_once_t once                      = PTHREAD_ONCE_INIT;
-
-
 static void init() {
     local_mutex = new eckit::Mutex();
     m           = new std::map<std::string, MethodFactory*>();
 }
-
-
-}  // namespace
 
 
 Method::Method(const param::MIRParametrisation& parametrisation) : parametrisation_(parametrisation) {}

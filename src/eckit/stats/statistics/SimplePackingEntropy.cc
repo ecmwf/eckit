@@ -122,9 +122,7 @@ void SimplePackingEntropy::print(std::ostream& out) const {
 }
 
 
-namespace {
 static StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy");
-}
 
 
 }  // namespace statistics

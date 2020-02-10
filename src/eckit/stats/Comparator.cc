@@ -27,21 +27,13 @@ namespace mir {
 namespace stats {
 
 
-namespace {
-
-
 static eckit::Mutex* local_mutex                    = nullptr;
 static std::map<std::string, ComparatorFactory*>* m = nullptr;
 static pthread_once_t once                          = PTHREAD_ONCE_INIT;
-
-
 static void init() {
     local_mutex = new eckit::Mutex();
     m           = new std::map<std::string, ComparatorFactory*>();
 }
-
-
-}  // namespace
 
 
 Comparator::Comparator(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :

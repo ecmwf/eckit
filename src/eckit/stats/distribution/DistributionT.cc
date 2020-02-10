@@ -171,7 +171,6 @@ std::fisher_f_distribution<double>::param_type DistributionT<std::fisher_f_distr
     const param::MIRParametrisation& p) const {
     return std::fisher_f_distribution<double>::param_type(get_value(p, "m", 1.), get_value(p, "n", 1.));
 }
-std::string name_;
 
 
 template <>

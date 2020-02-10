@@ -16,6 +16,7 @@
 #ifndef eckit_log_Log_h
 #define eckit_log_Log_h
 
+#include "eckit/deprecated.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
 
@@ -123,6 +124,8 @@ public:
         return s;
     }
 };
+
+DEPRECATED("Use eckit::format() instead") std::ostream& setformat(std::ostream& s, int f);
 
 inline LogFormatSetter setformat(int format) {
     return LogFormatSetter(format);

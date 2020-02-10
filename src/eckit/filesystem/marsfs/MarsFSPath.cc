@@ -21,7 +21,10 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/MD5.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/os/BackTrace.h"
+#include "eckit/config/LibEcKit.h"
+
+
 
 namespace eckit {
 
@@ -87,6 +90,7 @@ void operator<<(Stream& s, MarsFSPath const& path) {
 }
 
 bool MarsFSPath::isLocal() const {
+    LOG_DEBUG_LIB(LibEcKit) << "MarsFSPath::isLocal: " << (node_ == NodeInfo::thisNode().node()) << std::endl;
     return node_ == NodeInfo::thisNode().node();
 }
 
@@ -221,6 +225,7 @@ void MarsFSPath::rename(const MarsFSPath& from, const MarsFSPath& to) {
 }
 
 DataHandle* MarsFSPath::fileHandle(bool overwrite) const {
+    LOG_DEBUG_LIB(LibEcKit) << "MarsFSPath::fileHandle() path_: " << path_ << std::endl;
     if(isLocal()) {
         return new FileHandle(path_, overwrite);
     }

@@ -107,12 +107,26 @@ private:     // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::ostream& setformat(std::ostream&, int);
+/// Format manipulators
+
 int format(std::ostream&);
+void format(std::ostream&, int);
 
-#define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
-#define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
+class LogFormatSetter {
+    int format_;
 
+public:
+    explicit LogFormatSetter(int f) : format_(f) {}
+
+    friend std::ostream& operator<<(std::ostream& s, const LogFormatSetter& f) {
+        format(s, f.format_);
+        return s;
+    }
+};
+
+inline LogFormatSetter setformat(int format) {
+    return LogFormatSetter(format);
+}
 
 // Non-flushing version of std::endl
 inline std::ostream& newl(std::ostream& out) {
@@ -120,6 +134,9 @@ inline std::ostream& newl(std::ostream& out) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+#define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
+#define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
 
 /// Optimisation for DEBUG with elision of stream code. For performance critical code blocks.
 
@@ -131,6 +148,9 @@ public:
 
 #define LOG_DEBUG(condition, lib) \
     static_cast<void>(0), !(condition) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
+
+#define LOG_DEBUG_LIB(lib) \
+    static_cast<void>(0), !(lib::instance().debug()) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
 
 //----------------------------------------------------------------------------------------------------------------------
 

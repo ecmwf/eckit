@@ -39,6 +39,7 @@ public: // methods
 
 	void lock();
 	void unlock();
+	bool tryLock();
 	char tag() const { return tag_; }
 
 protected: // members

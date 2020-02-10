@@ -25,6 +25,11 @@ struct sembuf _lock[] = {
     {0, 1, SEM_UNDO}, /* lock */
 };
 
+struct sembuf _try_lock[] = {
+    {0, 0, SEM_UNDO | IPC_NOWAIT}, /* test */
+    {0, 1, SEM_UNDO}, /* lock */
+};
+
 struct sembuf _unlock[] = {
     {0, -1, SEM_UNDO}, /* ulck */
 };
@@ -55,9 +60,27 @@ void Semaphore::lock(void) {
     mutex_.lock();
     if (++level_ == 1)
         while (semop(semaphore_, _lock, NUMBER(_lock)) < 0) {
-            if (errno != EINTR)
+            if (errno != EINTR) {
+                --level_;
+                mutex_.unlock();
                 throw FailedSystemCall("semop lock");
+            }
         }
+}
+
+bool Semaphore::tryLock(void) {
+    if (!mutex_.tryLock())
+        return false;
+    if (++level_ == 1)
+        if (semop(semaphore_, _try_lock, NUMBER(_try_lock)) < 0) {
+            --level_;
+            mutex_.unlock();
+            if (errno == EAGAIN)
+                return false;
+            else
+                throw FailedSystemCall("semop try_lock");
+        }
+    return true;
 }
 
 void Semaphore::unlock(void) {
@@ -65,8 +88,10 @@ void Semaphore::unlock(void) {
 
     if (--level_ == 0)
         while (semop(semaphore_, _unlock, NUMBER(_unlock)) < 0) {
-            if (errno != EINTR)
+            if (errno != EINTR) {
+                ++level_;
                 throw FailedSystemCall("semop unlock");
+            }
         }
 
     mutex_.unlock();

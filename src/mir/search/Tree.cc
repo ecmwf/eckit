@@ -113,9 +113,6 @@ void Tree::unlock() {
 }
 
 
-// -----------------------------------------------------------------------------
-
-
 static pthread_once_t once                    = PTHREAD_ONCE_INIT;
 static eckit::Mutex* local_mutex              = nullptr;
 static std::map<std::string, TreeFactory*>* m = nullptr;
@@ -158,7 +155,7 @@ Tree* TreeFactory::build(const std::string& name, const repres::Representation& 
         throw eckit::SeriousBug("TreeFactory: unknown '" + name + "'");
     }
 
-    return (*j).second->make(r, params);
+    return j->second->make(r, params);
 }
 
 

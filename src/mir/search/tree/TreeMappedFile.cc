@@ -23,9 +23,6 @@ namespace search {
 namespace tree {
 
 
-// -----------------------------------------------------------------------------
-
-
 template <class T>
 eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, bool makeUnique) {
 
@@ -42,8 +39,9 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
 
         if (not path.exists()) {
 
-            if (not writable(path.dirName()))
+            if (not writable(path.dirName())) {
                 continue;
+            }
 
             try {
                 path.mkdir(0777);
@@ -82,9 +80,6 @@ eckit::PathName TreeMappedFile<T>::lockFile(const std::string& path) {
 }
 
 
-// -----------------------------------------------------------------------------
-
-
 class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
     using P = TreeMappedFile<TreeMappedCacheFile>;
     static std::vector<std::string> getRoots() {
@@ -95,6 +90,8 @@ class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
         parse(cacheDir, tmp);
 
         std::vector<std::string> r;
+        r.reserve(tmp.size());
+
         for (const auto& root : tmp) {
             r.emplace_back(eckit::PathExpander::expand(root));
         }
@@ -112,9 +109,6 @@ public:
 
 
 static TreeBuilder<TreeMappedCacheFile> builder1("mapped-cache-file");
-
-
-// -----------------------------------------------------------------------------
 
 
 class TreeMappedTempFile : public TreeMappedFile<TreeMappedTempFile> {

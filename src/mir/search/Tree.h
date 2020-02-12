@@ -36,6 +36,9 @@ namespace search {
 
 
 class Tree {
+    Tree(const Tree&) = delete;
+    Tree& operator=(const Tree&) = delete;
+
 public:
     using Point          = Point3;
     using Payload        = size_t;
@@ -74,6 +77,8 @@ private:
 };
 
 class TreeFactory {
+    TreeFactory(const TreeFactory&) = delete;
+    TreeFactory& operator=(const TreeFactory&) = delete;
 
 protected:
     std::string name_;

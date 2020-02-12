@@ -90,7 +90,7 @@ ValueStatistics* ValueStatisticsFactory::build(const std::string& name) {
         throw eckit::SeriousBug("No ValueStatisticsFactory '" + name + "'");
     }
 
-    return (*j).second->make();
+    return j->second->make();
 }
 
 

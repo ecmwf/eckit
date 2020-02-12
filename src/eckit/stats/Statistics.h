@@ -114,6 +114,9 @@ private:
     std::string name_;
     virtual Statistics* make(const param::MIRParametrisation&) = 0;
 
+    StatisticsFactory(const StatisticsFactory&) = delete;
+    StatisticsFactory& operator=(const StatisticsFactory&) = delete;
+
 protected:
     StatisticsFactory(const std::string&);
     virtual ~StatisticsFactory();

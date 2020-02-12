@@ -105,6 +105,9 @@ private:
     std::string name_;
     virtual ValueStatistics* make() = 0;
 
+    ValueStatisticsFactory(const ValueStatisticsFactory&) = delete;
+    ValueStatisticsFactory& operator=(const ValueStatisticsFactory&) = delete;
+
 protected:
     ValueStatisticsFactory(const std::string&);
     virtual ~ValueStatisticsFactory();

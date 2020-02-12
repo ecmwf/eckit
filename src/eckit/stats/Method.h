@@ -119,6 +119,9 @@ private:
     std::string name_;
     virtual Method* make(const param::MIRParametrisation&) = 0;
 
+    MethodFactory(const MethodFactory&) = delete;
+    MethodFactory& operator=(const MethodFactory&) = delete;
+
 protected:
     MethodFactory(const std::string&);
     virtual ~MethodFactory();

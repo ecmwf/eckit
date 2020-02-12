@@ -90,7 +90,7 @@ Comparator* ComparatorFactory::build(const std::string& name, const param::MIRPa
         throw eckit::SeriousBug("No ComparatorFactory '" + name + "'");
     }
 
-    return (*j).second->make(param1, param2);
+    return j->second->make(param1, param2);
 }
 
 

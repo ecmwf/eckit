@@ -34,6 +34,7 @@ public:
     // -- Constructors
 
     Distribution();
+    Distribution(const Distribution&) = delete;
 
     // -- Destructor
 
@@ -43,9 +44,9 @@ public:
     // None
 
     // -- Operators
-
-    virtual double operator()() const = 0;
-    virtual void reset()              = 0;
+    Distribution& operator=(const Distribution&) = delete;
+    virtual double operator()() const            = 0;
+    virtual void reset()                         = 0;
 
     // -- Methods
     // None

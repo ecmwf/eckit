@@ -87,7 +87,7 @@ Statistics* StatisticsFactory::build(const std::string& name, const param::MIRPa
         throw eckit::SeriousBug("No StatisticsFactory '" + name + "'");
     }
 
-    return (*j).second->make(params);
+    return j->second->make(params);
 }
 
 

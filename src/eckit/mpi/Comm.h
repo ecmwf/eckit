@@ -87,10 +87,10 @@ public:  // methods
     virtual std::string processorName() const = 0;
 
     /// @brief MPI rank of process in this communicator
-    virtual size_t rank() const = 0;
+    size_t rank() const { return rank_; }
 
     /// @brief MPI size of this communicator
-    virtual size_t size() const = 0;
+    size_t size() const { return size_; }
 
     /// @brief MPI barrier for this communicator
     virtual void barrier() const = 0;
@@ -395,6 +395,8 @@ protected:  // methods
     virtual ~Comm();
 
     std::string name_;
+    size_t rank_;
+    size_t size_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

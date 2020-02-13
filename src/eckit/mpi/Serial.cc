@@ -113,9 +113,15 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Serial::Serial(const std::string& name) : Comm(name) {}
+Serial::Serial(const std::string& name) : Comm{name} {
+    rank_ = 0;
+    size_ = 1;
+}
 
-Serial::Serial(const std::string& name, int) : Comm(name) {}
+Serial::Serial(const std::string& name, int) : Comm{name} {
+    rank_ = 0;
+    size_ = 1;
+}
 
 Serial::~Serial() {}
 
@@ -125,14 +131,6 @@ Comm* Serial::self() const {
 
 std::string Serial::processorName() const {
     return Main::hostname();
-}
-
-size_t Serial::rank() const {
-    return 0;
-}
-
-size_t Serial::size() const {
-    return 1;
 }
 
 void Serial::barrier() const {

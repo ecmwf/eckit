@@ -25,11 +25,14 @@ namespace eckit {
 
 class PoolHandleEntry;
 
-static thread_local std::map<PathName, PoolHandleEntry*> pool_;
+/// @note in anonymous namespace to solve some compilers link issue (eg. xlc)
+namespace  {
+    static thread_local std::map<PathName, PoolHandleEntry*> pool_;
+}
 
-static int maxPooledHandles() {
+static size_t maxPooledHandles() {
     static int maxPooledHandles = eckit::Resource<int>("maxPooledHandles", 16);
-    return maxPooledHandles;
+    return size_t(maxPooledHandles);
 }
 
 struct PoolHandleEntryStatus {
@@ -57,7 +60,7 @@ public:
 
 public:
 
-    PoolHandleEntry(const PathName& path) : path_(path), handle_(nullptr), count_(0) {}
+    explicit PoolHandleEntry(const PathName& path) : path_(path), handle_(nullptr), count_(0) {}
     ~PoolHandleEntry() {
         LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
     }

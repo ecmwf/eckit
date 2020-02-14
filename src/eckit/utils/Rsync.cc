@@ -14,7 +14,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpFile.h"
-#include "eckit/io/DataHandle.h"
 #include "eckit/io/StdFile.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"

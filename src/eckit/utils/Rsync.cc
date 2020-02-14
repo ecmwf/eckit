@@ -8,15 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iomanip>
-#include <memory>
-#include <stdio.h>
-
 #include <librsync.h>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/io/DataHandle.h"

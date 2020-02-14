@@ -85,7 +85,7 @@ void Rsync::syncData(const PathName& source, const PathName& destination) {
         RSCALL(rs_delta_file(sig, sourceFile, deltaFile, nullptr));
     }
 
-    TmpFile patched;
+    PathName patched = PathName::unique(destination);
     Log::debug<LibEcKit>() << "Rsync::syncFile using temporary output file " << patched << std::endl;
     {
         AutoStdFile destinationFile(destination);
@@ -93,9 +93,7 @@ void Rsync::syncData(const PathName& source, const PathName& destination) {
         AutoStdFile patchedFile(patched, "w");
         RSCALL(rs_patch_file(destinationFile, deltaFile, patchedFile, nullptr));
     }
-
-    std::unique_ptr<DataHandle> tmp_handle(patched.fileHandle());
-    tmp_handle->saveInto(destination);
+    PathName::rename(patched, destination);
 }
 
 static PathName rebasePath(const PathName& path, const PathName& base, const PathName& newbase) {

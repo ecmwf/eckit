@@ -24,8 +24,8 @@ public:  // methods
 
   ~Rsync();
 
-  void syncData(const PathName& src, const PathName& dst);
-  void syncRecursive(const PathName& src, const PathName& dst);
+  void syncData(const PathName& source, const PathName& destination);
+  void syncRecursive(const PathName& source, const PathName& destination);
 
 private: // members
 

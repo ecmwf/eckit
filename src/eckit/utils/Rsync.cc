@@ -35,8 +35,8 @@ static void handle_rs_error(rs_result res, const char *call, const char *file, i
 class Signature {
 public:
 
-    Signature(const PathName& sig_path, rs_stats_t *stats = nullptr) : sig_(nullptr) {
-        AutoStdFile sig_file(sig_path);
+    Signature(const PathName& path, rs_stats_t *stats = nullptr) : sig_(nullptr) {
+        AutoStdFile sig_file(path);
         RSCALL(rs_loadsig_file(sig_file, &sig_, stats));
         RSCALL(rs_build_hash_table(sig_));
     }
@@ -61,40 +61,41 @@ Rsync::Rsync() : block_len_(RS_DEFAULT_BLOCK_LEN), strong_len_(0) {
 Rsync::~Rsync() {
 }
 
-void Rsync::syncData(const PathName& src, const PathName& dst) {
-    Log::debug<LibEcKit>() << "Rsync::syncFile(src=" << src.fullName()
-        << ", dst=" << dst.fullName() << ")" << std::endl;
+void Rsync::syncData(const PathName& source, const PathName& destination) {
+    Log::debug<LibEcKit>() << "Rsync::syncFile(source=" << source.fullName()
+        << ", destination=" << destination.fullName() << ")" << std::endl;
 
-    dst.touch();
-    TmpFile sig_path;
-    Log::debug<LibEcKit>() << "Rsync::syncFile using signature file " << sig_path << std::endl;
+    destination.touch();
+    TmpFile signature;
+    Log::debug<LibEcKit>() << "Rsync::syncFile using signature file " << signature << std::endl;
     {
-        AutoStdFile dst_file(dst);
-        AutoStdFile sig_file(sig_path, "w");
-        RSCALL(rs_sig_file(dst_file, sig_file, block_len_, strong_len_, RS_RK_BLAKE2_SIG_MAGIC, nullptr));
+        AutoStdFile destinationFile(destination);
+        AutoStdFile signatureFile(signature, "w");
+        RSCALL(rs_sig_file(destinationFile, signatureFile, block_len_, strong_len_,
+            RS_RK_BLAKE2_SIG_MAGIC, nullptr));
     }
 
-    TmpFile del_path;
-    Log::debug<LibEcKit>() << "Rsync::syncFile using delta file " << del_path << std::endl;
+    TmpFile delta;
+    Log::debug<LibEcKit>() << "Rsync::syncFile using delta file " << delta << std::endl;
     {
-        Signature sig(sig_path);
+        Signature sig(signature);
 
-        AutoStdFile src_file(src);
-        AutoStdFile del_file(del_path, "w");
-        RSCALL(rs_delta_file(sig, src_file, del_file, nullptr));
+        AutoStdFile sourceFile(source);
+        AutoStdFile deltaFile(delta, "w");
+        RSCALL(rs_delta_file(sig, sourceFile, deltaFile, nullptr));
     }
 
-    TmpFile new_path;
-    Log::debug<LibEcKit>() << "Rsync::syncFile using temporary output file " << new_path << std::endl;
+    TmpFile patched;
+    Log::debug<LibEcKit>() << "Rsync::syncFile using temporary output file " << patched << std::endl;
     {
-        AutoStdFile dst_file(dst);
-        AutoStdFile del_file(del_path);
-        AutoStdFile new_file(new_path, "w");
-        RSCALL(rs_patch_file(dst_file, del_file, new_file, nullptr));
+        AutoStdFile destinationFile(destination);
+        AutoStdFile deltaFile(delta);
+        AutoStdFile patchedFile(patched, "w");
+        RSCALL(rs_patch_file(destinationFile, deltaFile, patchedFile, nullptr));
     }
 
-    std::unique_ptr<DataHandle> tmp_handle(new_path.fileHandle());
-    tmp_handle->saveInto(dst);
+    std::unique_ptr<DataHandle> tmp_handle(patched.fileHandle());
+    tmp_handle->saveInto(destination);
 }
 
 static PathName rebasePath(const PathName& path, const PathName& base, const PathName& newbase) {
@@ -122,15 +123,15 @@ static PathName rebasePath(const PathName& path, const PathName& base, const Pat
     return result;
 }
 
-void Rsync::syncRecursive(const PathName& src, const PathName& dst) {
-    ASSERT(src.isDir());
-    dst.mkdir();
+void Rsync::syncRecursive(const PathName& source_path, const PathName& destination_path) {
+    ASSERT(source_path.isDir());
+    destination_path.mkdir();
 
     std::vector<PathName> files, dirs;
-    src.childrenRecursive(files, dirs);
+    source_path.childrenRecursive(files, dirs);
 
     for (const auto& dir : dirs) {
-        PathName dstdir = rebasePath(dir, src, dst);
+        PathName dstdir = rebasePath(dir, source_path, destination_path);
         Log::debug<LibEcKit>() << "Making sure directory " << dstdir << " exists" << std::endl;
         dstdir.mkdir();
     }
@@ -141,7 +142,7 @@ void Rsync::syncRecursive(const PathName& src, const PathName& dst) {
             continue;
         }
 
-        PathName dstfile = rebasePath(file, src, dst);
+        PathName dstfile = rebasePath(file, source_path, destination_path);
         Log::debug<LibEcKit>() << "Syncing " << file << " -> " << dstfile << std::endl;
         syncData(file, dstfile);
     }

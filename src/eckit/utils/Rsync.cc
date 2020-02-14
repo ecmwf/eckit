@@ -22,8 +22,8 @@
 
 namespace eckit {
 
-static void handle_rs_error(rs_result res, const char *call, const char *file, int line, const char *func) {
-    if(res == RS_DONE)
+static void handle_rs_error(rs_result res, const char* call, const char* file, int line, const char* func) {
+    if (res == RS_DONE)
         return;
 
     throw new FailedLibraryCall("librsync", call, rs_strerror(res), CodeLocation(file, line, func));
@@ -33,66 +33,59 @@ static void handle_rs_error(rs_result res, const char *call, const char *file, i
 
 class Signature {
 public:
-
-    Signature(const PathName& path, rs_stats_t *stats = nullptr) : sig_(nullptr) {
-        AutoStdFile sig_file(path);
-        RSCALL(rs_loadsig_file(sig_file, &sig_, stats));
-        RSCALL(rs_build_hash_table(sig_));
+    Signature(const PathName& path, rs_stats_t* stats = nullptr) : signature_(nullptr) {
+        AutoStdFile file(path);
+        RSCALL(rs_loadsig_file(file, &signature_, stats));
+        RSCALL(rs_build_hash_table(signature_));
     }
 
     ~Signature() {
-        if (sig_)
-            rs_free_sumset(sig_);
+        if (signature_)
+            rs_free_sumset(signature_);
     }
 
-    operator rs_signature_t*() {
-        return sig_;
-    }
+    operator rs_signature_t*() { return signature_; }
 
 private:
-
-    rs_signature_t *sig_;
+    rs_signature_t* signature_;
 };
 
-Rsync::Rsync() : block_len_(RS_DEFAULT_BLOCK_LEN), strong_len_(0) {
-}
+Rsync::Rsync() : block_len_(RS_DEFAULT_BLOCK_LEN), strong_len_(0) {}
 
-Rsync::~Rsync() {
-}
+Rsync::~Rsync() {}
 
-void Rsync::syncData(const PathName& source, const PathName& destination) {
-    Log::debug<LibEcKit>() << "Rsync::syncFile(source=" << source.fullName()
-        << ", destination=" << destination.fullName() << ")" << std::endl;
+void Rsync::syncData(const PathName& source, const PathName& target) {
+    Log::debug<LibEcKit>() << "Rsync::syncData(source=" << source.fullName()
+                           << ", target=" << target.fullName() << ")" << std::endl;
 
-    destination.touch();
+    target.touch();
     TmpFile signature;
-    Log::debug<LibEcKit>() << "Rsync::syncFile using signature file " << signature << std::endl;
+    Log::debug<LibEcKit>() << "Rsync::syncData using signature file " << signature << std::endl;
     {
-        AutoStdFile destinationFile(destination);
-        AutoStdFile signatureFile(signature, "w");
-        RSCALL(rs_sig_file(destinationFile, signatureFile, block_len_, strong_len_,
-            RS_RK_BLAKE2_SIG_MAGIC, nullptr));
+        AutoStdFile tgt(target);
+        AutoStdFile sig(signature, "w");
+        RSCALL(rs_sig_file(tgt, sig, block_len_, strong_len_, RS_RK_BLAKE2_SIG_MAGIC, nullptr));
     }
 
     TmpFile delta;
-    Log::debug<LibEcKit>() << "Rsync::syncFile using delta file " << delta << std::endl;
+    Log::debug<LibEcKit>() << "Rsync::syncData using delta file " << delta << std::endl;
     {
         Signature sig(signature);
 
-        AutoStdFile sourceFile(source);
-        AutoStdFile deltaFile(delta, "w");
-        RSCALL(rs_delta_file(sig, sourceFile, deltaFile, nullptr));
+        AutoStdFile src(source);
+        AutoStdFile dlt(delta, "w");
+        RSCALL(rs_delta_file(sig, src, dlt, nullptr));
     }
 
-    PathName patched = PathName::unique(destination);
-    Log::debug<LibEcKit>() << "Rsync::syncFile using temporary output file " << patched << std::endl;
+    PathName patched = PathName::unique(target);
+    Log::debug<LibEcKit>() << "Rsync::syncData using temporary output file " << patched << std::endl;
     {
-        AutoStdFile destinationFile(destination);
-        AutoStdFile deltaFile(delta);
-        AutoStdFile patchedFile(patched, "w");
-        RSCALL(rs_patch_file(destinationFile, deltaFile, patchedFile, nullptr));
+        AutoStdFile tgt(target);
+        AutoStdFile dlt(delta);
+        AutoStdFile patch(patched, "w");
+        RSCALL(rs_patch_file(tgt, dlt, patch, nullptr));
     }
-    PathName::rename(patched, destination);
+    PathName::rename(patched, target);
 }
 
 static PathName rebasePath(const PathName& path, const PathName& base, const PathName& newbase) {
@@ -120,17 +113,17 @@ static PathName rebasePath(const PathName& path, const PathName& base, const Pat
     return result;
 }
 
-void Rsync::syncRecursive(const PathName& source_path, const PathName& destination_path) {
-    ASSERT(source_path.isDir());
-    destination_path.mkdir();
+void Rsync::syncRecursive(const PathName& source, const PathName& target) {
+    ASSERT(source.isDir());
+    target.mkdir();
 
     std::vector<PathName> files, dirs;
-    source_path.childrenRecursive(files, dirs);
+    source.childrenRecursive(files, dirs);
 
     for (const auto& dir : dirs) {
-        PathName dstdir = rebasePath(dir, source_path, destination_path);
-        Log::debug<LibEcKit>() << "Making sure directory " << dstdir << " exists" << std::endl;
-        dstdir.mkdir();
+        PathName rebased = rebasePath(dir, source, target);
+        Log::debug<LibEcKit>() << "Making sure directory " << rebased << " exists" << std::endl;
+        rebased.mkdir();
     }
 
     for (const auto& file : files) {
@@ -139,11 +132,10 @@ void Rsync::syncRecursive(const PathName& source_path, const PathName& destinati
             continue;
         }
 
-        PathName dstfile = rebasePath(file, source_path, destination_path);
-        Log::debug<LibEcKit>() << "Syncing " << file << " -> " << dstfile << std::endl;
-        syncData(file, dstfile);
+        PathName rebased = rebasePath(file, source, target);
+        Log::debug<LibEcKit>() << "Syncing " << file << " -> " << rebased << std::endl;
+        syncData(file, rebased);
     }
 }
 
-}
-
+}  // namespace eckit

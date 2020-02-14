@@ -48,6 +48,7 @@ mark_as_advanced(LIBRSYNC_INCLUDE_DIR LIBRSYNC_LIBRARY)
 if(LibRsync_FOUND)
     add_library(rsync UNKNOWN IMPORTED GLOBAL)
     set_target_properties(rsync PROPERTIES
+        IMPORTED_LOCATION ${LIBRSYNC_LIBRARY}
         INTERFACE_INCLUDE_DIRECTORIES ${LIBRSYNC_INCLUDE_DIR}
     )
 endif()

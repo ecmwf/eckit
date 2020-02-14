@@ -27,7 +27,7 @@ public:
     RsyncTool(int argc, char** argv) : Tool(argc, argv) {
         options_.push_back(new eckit::option::SimpleOption<std::string>("from", "copy from this path"));
         options_.push_back(new eckit::option::SimpleOption<std::string>("to", "copy to this path"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("dirs", "perform a recursive copy"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("recursive", "perform a recursive copy"));
     }
 
     virtual void run();
@@ -37,7 +37,7 @@ public:
 
 static void usage(const std::string& tool) {
 
-    Log::info() << "Usage: " << tool << " [--dirs] --from=[PATH1] --to=[PATH2]" << std::endl << std::endl;
+    Log::info() << "Usage: " << tool << " [--recursive] --from=[PATH1] --to=[PATH2]" << std::endl << std::endl;
 }
 
 
@@ -45,7 +45,7 @@ void RsyncTool::run() {
 
     eckit::option::CmdArgs args(&usage, options_, 0, 0);
 
-    bool recursive = args.getBool("dirs", false);
+    bool recursive = args.getBool("recursive", false);
 
     PathName from(args.getString("from"));
     PathName to(args.getString("to"));

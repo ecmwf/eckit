@@ -22,7 +22,7 @@ public:  // methods
 
   Rsync();
 
-  virtual ~Rsync();
+  ~Rsync();
 
   void syncData(const PathName& src, const PathName& dst);
   void syncRecursive(const PathName& src, const PathName& dst);

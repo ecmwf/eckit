@@ -13,7 +13,6 @@
 
 namespace eckit {
 
-class LocalPathName;
 class PathName;
 
 class Rsync {

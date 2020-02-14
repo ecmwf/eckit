@@ -143,6 +143,8 @@ CASE("Delta at the end") {
     EXPECT(isSame(source, target));
 }
 
+/// @todo test directory syncing
+
 }  // end namespace test
 }  // end namespace eckit
 

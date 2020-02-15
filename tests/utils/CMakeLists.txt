@@ -49,3 +49,8 @@ ecbuild_add_test( TARGET      eckit_test_utils_compression_performance
                   TEST_DEPENDS get_eckit_test_data
                   SOURCES     compression-performance.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_rsync
+                  CONDITION   HAVE_RSYNC
+                  SOURCES     test_rsync.cc
+                  LIBS        eckit )

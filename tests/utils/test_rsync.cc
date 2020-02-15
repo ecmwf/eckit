@@ -11,11 +11,13 @@
 #include <fstream>
 #include <string>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/log/Log.h"
 #include "eckit/utils/Rsync.h"
 
 #include "eckit/testing/Test.h"
@@ -27,7 +29,7 @@ using namespace eckit::testing;
 namespace eckit {
 namespace test {
 
-static void removeDir(const PathName& dir) {
+static void remove_dir_recursive(const PathName& dir) {
     if (not dir.exists())
         return;
 
@@ -48,24 +50,66 @@ static void removeDir(const PathName& dir) {
     dir.rmdir();
 }
 
-static bool isSame(const PathName& right, const PathName& left) {
-    std::unique_ptr<DataHandle> rhs(right.fileHandle());
+static bool same_contents(const PathName& left, const PathName& right) {
     std::unique_ptr<DataHandle> lhs(left.fileHandle());
+    std::unique_ptr<DataHandle> rhs(right.fileHandle());
     return rhs->compare(*lhs);
 }
 
-static void isSameDir(const PathName& right, const PathName& left) {
-    std::vector<PathName> files;
-    std::vector<PathName> dirs;
-    right.childrenRecursive(files, dirs);
+static bool same_dir(const PathName& left, const PathName& right) {
+    std::vector<PathName> lfiles;
+    std::vector<PathName> ldirs;
+    left.childrenRecursive(lfiles, ldirs);
 
-    for (const auto& dir : dirs) {
-        std::cout << "dir: " << dir << std::endl;
+    Log::debug<LibEcKit>() << "left files " << lfiles << std::endl;
+    Log::debug<LibEcKit>() << "left dirs " << ldirs << std::endl;
+
+    std::vector<PathName> rfiles;
+    std::vector<PathName> rdirs;
+    right.childrenRecursive(rfiles, rdirs);
+
+    Log::debug<LibEcKit>() << "right files " << rfiles << std::endl;
+    Log::debug<LibEcKit>() << "right dirs " << rdirs << std::endl;
+
+    if (rfiles.size() != lfiles.size() or rdirs.size() != ldirs.size())
+        return false;
+
+    // compare files
+    {
+        std::vector<PathName>::const_iterator riter = rfiles.begin();
+        std::vector<PathName>::const_iterator liter = lfiles.begin();
+
+        for (; riter != rfiles.end(); ++riter, ++liter) {
+            LocalPathName rhs = LocalPathName(*riter).relativePath(right.localPath());
+            LocalPathName lhs = LocalPathName(*liter).relativePath(left.localPath());
+
+            Log::debug<LibEcKit>() << "comparing files " << lhs << " to " << rhs << std::endl;
+
+            if (rhs != lhs)
+                return false;
+
+            if (not same_contents(*liter, *riter))
+                return false;
+        }
     }
 
-    for (const auto& file : files) {
-        std::cout << "file: " << file << std::endl;
+    // compare dirs
+    {
+        std::vector<PathName>::const_iterator riter = rdirs.begin();
+        std::vector<PathName>::const_iterator liter = ldirs.begin();
+
+        for (; riter != rdirs.end(); ++riter, ++liter) {
+            LocalPathName rhs = LocalPathName(*riter).relativePath(right.localPath());
+            LocalPathName lhs = LocalPathName(*liter).relativePath(left.localPath());
+
+            Log::debug<LibEcKit>() << "comparing dirs " << lhs << " to " << rhs << std::endl;
+
+            if (rhs != lhs)
+                return false;
+        }
     }
+
+    return true;
 }
 
 static void fill(const PathName& path, const std::string& msg) {
@@ -84,7 +128,7 @@ CASE("File sync") {
         fill(source, "The quick brown fox jumps over the lazy dog");
 
         EXPECT_NO_THROW(rsync.syncData(source, target));
-        EXPECT(isSame(source, target));
+        EXPECT(same_contents(source, target));
     }
 
     SECTION("File sync from empty file ") {
@@ -92,7 +136,7 @@ CASE("File sync") {
         fill(target, "The quick brown fox jumps over the lazy dog");
 
         EXPECT_NO_THROW(rsync.syncData(source, target));
-        EXPECT(isSame(source, target));
+        EXPECT(same_contents(source, target));
     }
 
     SECTION("File sync to existing empty file") {
@@ -100,7 +144,7 @@ CASE("File sync") {
         target.touch();
 
         EXPECT_NO_THROW(rsync.syncData(source, target));
-        EXPECT(isSame(source, target));
+        EXPECT(same_contents(source, target));
     }
 
     SECTION("Delta in the begining") {
@@ -113,7 +157,7 @@ CASE("File sync") {
              "born and I will give you a complete account of the system...");
 
         EXPECT_NO_THROW(rsync.syncData(source, target));
-        EXPECT(isSame(source, target));
+        EXPECT(same_contents(source, target));
     }
 
     SECTION("Delta in the middle") {
@@ -123,7 +167,7 @@ CASE("File sync") {
         fill(target, "One morning transformed in his bed into a horrible vermin.");
 
         EXPECT_NO_THROW(rsync.syncData(source, target));
-        EXPECT(isSame(source, target));
+        EXPECT(same_contents(source, target));
     }
 
     SECTION("Delta at the end") {
@@ -131,7 +175,7 @@ CASE("File sync") {
         fill(target, "The quick brown fox jumps over the curious duck.");
 
         EXPECT_NO_THROW(rsync.syncData(source, target));
-        EXPECT(isSame(source, target));
+        EXPECT(same_contents(source, target));
     }
 
     SECTION("Source file doesnt exist") {
@@ -164,13 +208,31 @@ CASE("Directory sync") {
 
     PathName target = PathName::unique(PathName(LocalPathName::cwd()) / "rsync" / "target");
 
-    // SECTION("Sync dirs") {
-    //     EXPECT_NO_THROW(rsync.syncRecursive(source, target));
-    //     isSameDir(source, target);
-    // }
+    SECTION("Sync empty dirs") {
+        EXPECT_NO_THROW(rsync.syncRecursive(source, target));
+        EXPECT(same_dir(source, target));
+    }
 
-    removeDir(target);
-    removeDir(source);
+    SECTION("Sync full dirs") {
+
+        PathName f1d1  = d1 / "f1"; fill(f1d1, "F1D1");
+        PathName f2d1  = d1 / "f2"; fill(f2d1, "F2D1");
+        PathName f3d1  = d1 / "f3"; fill(f3d1, "F3D1");
+        PathName f1d2  = d2 / "f1"; fill(f1d2, "F1D2");
+        PathName f2d2  = d2 / "f2"; fill(f2d2, "F2D2");
+        PathName f1d23 = d23 / "f1"; fill(f1d23, "F1D23");
+
+        PathName d234  = d23 / "dir234";
+        d234.mkdir();
+        PathName d12 = d1 / "dir12";
+        d12.mkdir();
+
+        EXPECT_NO_THROW(rsync.syncRecursive(source, target));
+        EXPECT(same_dir(source, target));
+    }
+
+    remove_dir_recursive(target);
+    remove_dir_recursive(source);
 }
 
 

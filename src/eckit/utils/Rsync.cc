@@ -117,7 +117,8 @@ void Rsync::syncRecursive(const PathName& source, const PathName& target) {
     ASSERT(source.isDir());
     target.mkdir();
 
-    std::vector<PathName> files, dirs;
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
     source.childrenRecursive(files, dirs);
 
     for (const auto& dir : dirs) {

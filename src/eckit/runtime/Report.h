@@ -11,8 +11,8 @@
 /// @author Tiago Quintino
 /// @date   Jan 2020
 
-#ifndef eckit_runtime_Stats_h
-#define eckit_runtime_Stats_h
+#ifndef eckit_runtime_Report_h
+#define eckit_runtime_Report_h
 
 #include <string>
 
@@ -20,14 +20,15 @@
 
 namespace eckit {
 
-namespace net {
-    class UDPClient;
-}
-
-class Stats : public NonCopyable {
+class Report : public NonCopyable {
 public:
+    static bool active();
 
-    static void report(const std::string& domain, const std::string& msg);
+    static void monitor(const std::string& domain, const std::string& msg);
+
+    static void meter(const std::string& domain, const long m);
+    static void meter(const std::string& domain, const size_t m);
+    static void meter(const std::string& domain, const double m);
 
 };
 

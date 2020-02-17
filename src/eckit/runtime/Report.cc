@@ -13,20 +13,21 @@
 #include <memory>
 
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/net/UDPClient.h"
-#include "eckit/runtime/Stats.h"
-#include "eckit/thread/ThreadSingleton.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
+#include "eckit/net/UDPClient.h"
+#include "eckit/runtime/Report.h"
+#include "eckit/thread/ThreadSingleton.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Reporter : public NonCopyable {
-public:
+public:  // methods
     static Reporter& instance();
 
     Reporter();
@@ -35,9 +36,11 @@ public:
 
     bool enabled() { return not clients_.empty(); }
 
-    void broadcast(void* buf, long length);
+    void monitor(const std::string& domain, const std::string& msg);
 
-    void report(const std::string& domain, const std::string& msg);
+private:  // methods
+    void broadcast(const char *buf, size_t length);
+
 
 private:  // members
     std::vector<std::unique_ptr<net::UDPClient>> clients_;
@@ -46,9 +49,7 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 Reporter& Reporter::instance() {
-    ECKIT_DEBUG_HERE
     static ThreadSingleton<Reporter> s;
-    ECKIT_DEBUG_HERE
     return s.instance();
 }
 
@@ -73,8 +74,7 @@ Reporter::Reporter() {
     pthread_t thread = pthread_self();
 }
 
-void Reporter::report(const std::string& domain, const std::string& msg) {
-    if (enabled()) {
+void Reporter::monitor(const std::string& domain, const std::string& msg) {
 
         //        time_t timestamp  = ::time(0);
 
@@ -89,20 +89,25 @@ void Reporter::report(const std::string& domain, const std::string& msg) {
 
         ECKIT_DEBUG_VAR(str)
 
-        broadcast((void*) str.data(), str.size());
-    }
+        broadcast(str.data(), str.size());
 }
 
-void Reporter::broadcast(void* buf, long length) {
+void Reporter::broadcast(const char* buf, size_t length) {
     for (auto& c : clients_) {
         c->send(buf, length);
     }
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------
 
-void Stats::report(const std::string& domain, const std::string& msg) {
-    Reporter::instance().report(domain, msg);
+bool Report::active() {
+    static bool reporting = eckit::Resource<bool>("reporting", true);
+    return reporting;
+}
+
+void Report::monitor(const std::string& domain, const std::string& msg) {
+    Reporter::instance().monitor(domain, msg);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

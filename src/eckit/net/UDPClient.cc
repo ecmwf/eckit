@@ -85,7 +85,7 @@ UDPClient::~UDPClient() {
     SYSCALL(::close(socketfd_));
 }
 
-void UDPClient::send(void* buffer, long length) {
+void UDPClient::send(const void *buffer, size_t length) {
     ssize_t sent = ::sendto(socketfd_, buffer, length, 0, addr_->ai_addr, addr_->ai_addrlen);
     if (sent == -1) {
         std::ostringstream msg;

@@ -19,7 +19,7 @@ class Rsync {
 
 public:  // methods
 
-  Rsync();
+  Rsync(bool statistics = false);
 
   ~Rsync();
 
@@ -30,6 +30,8 @@ private: // members
 
   size_t block_len_;
   size_t strong_len_;
+
+  bool statistics_;
 
 };
 

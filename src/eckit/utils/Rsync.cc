@@ -50,13 +50,28 @@ private:
     rs_signature_t* signature_;
 };
 
-Rsync::Rsync() : block_len_(RS_DEFAULT_BLOCK_LEN), strong_len_(0) {}
+Rsync::Rsync(bool statistics) :
+    block_len_(RS_DEFAULT_BLOCK_LEN),
+    strong_len_(0),
+    statistics_(statistics) {}
 
 Rsync::~Rsync() {}
 
+void logStats(const rs_stats_t* stats, std::ostream& os) {
+    char buffer[256];
+    rs_format_stats(stats, buffer, sizeof(buffer) - 1);
+    os << buffer << std::endl;
+}
+
 void Rsync::syncData(const PathName& source, const PathName& target) {
-    Log::debug<LibEcKit>() << "Rsync::syncData(source=" << source.fullName()
-                           << ", target=" << target.fullName() << ")" << std::endl;
+    if (statistics_)
+        Log::info() << "Rsync::syncData(source=" << source.fullName()
+                    << ", target=" << target.fullName() << ")" << std::endl;
+    else
+        Log::debug<LibEcKit>() << "Rsync::syncData(source=" << source.fullName()
+                               << ", target=" << target.fullName() << ")" << std::endl;
+
+    rs_stats_t stats;
 
     target.touch();
     TmpFile signature(false);
@@ -64,8 +79,9 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
     {
         AutoStdFile tgt(target);
         AutoStdFile sig(signature, "w");
-        RSCALL(rs_sig_file(tgt, sig, block_len_, strong_len_, RS_RK_BLAKE2_SIG_MAGIC, nullptr));
+        RSCALL(rs_sig_file(tgt, sig, block_len_, strong_len_, RS_RK_BLAKE2_SIG_MAGIC, &stats));
     }
+    logStats(&stats, statistics_? Log::info() : Log::debug<LibEcKit>());
 
     TmpFile delta(false);
     Log::debug<LibEcKit>() << "Rsync::syncData using delta file " << delta << std::endl;
@@ -74,8 +90,9 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
 
         AutoStdFile src(source);
         AutoStdFile dlt(delta, "w");
-        RSCALL(rs_delta_file(sig, src, dlt, nullptr));
+        RSCALL(rs_delta_file(sig, src, dlt, &stats));
     }
+    logStats(&stats, statistics_? Log::info() : Log::debug<LibEcKit>());
 
     PathName patched = PathName::unique(target);
     Log::debug<LibEcKit>() << "Rsync::syncData using temporary output file " << patched << std::endl;
@@ -83,8 +100,9 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
         AutoStdFile tgt(target);
         AutoStdFile dlt(delta);
         AutoStdFile patch(patched, "w");
-        RSCALL(rs_patch_file(tgt, dlt, patch, nullptr));
+        RSCALL(rs_patch_file(tgt, dlt, patch, &stats));
     }
+    logStats(&stats, statistics_? Log::info() : Log::debug<LibEcKit>());
     PathName::rename(patched, target);
 }
 

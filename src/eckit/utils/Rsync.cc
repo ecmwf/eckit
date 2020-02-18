@@ -152,9 +152,29 @@ void Rsync::syncRecursive(const PathName& source, const PathName& target) {
         }
 
         PathName rebased = rebasePath(file, source, target);
+
+        if (!shouldUpdate(file, rebased)) {
+            Log::debug<LibEcKit>() << "eckit::Rsync: skipping " << file
+                                   << " due to file size / date" << std::endl;
+            continue;
+        }
+
         Log::debug<LibEcKit>() << "Syncing " << file << " -> " << rebased << std::endl;
         syncData(file, rebased);
     }
+}
+
+bool Rsync::shouldUpdate(const PathName& source, const PathName& target) {
+    if (!target.exists())
+        return true;
+
+    if (source.size() != target.size())
+        return true;
+
+    if (source.lastModified() > target.lastModified())
+        return true;
+
+    return false;
 }
 
 }  // namespace eckit

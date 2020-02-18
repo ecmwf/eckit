@@ -26,6 +26,8 @@ public:  // methods
   void syncData(const PathName& source, const PathName& target);
   void syncRecursive(const PathName& source, const PathName& target);
 
+  bool shouldUpdate(const PathName& source, const PathName& target);
+
 private: // members
 
   size_t block_len_;

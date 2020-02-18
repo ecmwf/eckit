@@ -59,7 +59,7 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
                            << ", target=" << target.fullName() << ")" << std::endl;
 
     target.touch();
-    TmpFile signature;
+    TmpFile signature(false);
     Log::debug<LibEcKit>() << "Rsync::syncData using signature file " << signature << std::endl;
     {
         AutoStdFile tgt(target);
@@ -67,7 +67,7 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
         RSCALL(rs_sig_file(tgt, sig, block_len_, strong_len_, RS_RK_BLAKE2_SIG_MAGIC, nullptr));
     }
 
-    TmpFile delta;
+    TmpFile delta(false);
     Log::debug<LibEcKit>() << "Rsync::syncData using delta file " << delta << std::endl;
     {
         Signature sig(signature);

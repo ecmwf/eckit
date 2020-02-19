@@ -528,6 +528,8 @@ Comm& Parallel::split(int color, const std::string& name) const {
 
 void Parallel::free() {
     MPI_CALL(MPI_Comm_free(&comm_));
+    rank_ = 0;
+    size_ = 0;
 }
 
 void Parallel::print(std::ostream& os) const {

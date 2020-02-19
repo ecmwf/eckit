@@ -115,6 +115,11 @@ protected:  // methods
 
     static MPI_Request* toRequest(Request&);
 
+public:
+    /// Access internal MPI_Comm.
+    /// Warning! Do not use the return value to free or modify the MPI communicator!
+    MPI_Comm MPIComm() const;
+
 private:  // methods
     static void initialize();
 

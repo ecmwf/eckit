@@ -12,6 +12,7 @@
 
 #include "eckit/filesystem/marsfs/MarsFSService.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/serialisation/Stream.h"
 
 #include <fstream>
@@ -25,7 +26,8 @@ MarsFSServer::MarsFSServer(int port):
     marsfs_(svc_),
     lastExport_(0)
 {
-	marsfs_.start();
+    ClusterNodes::reset();
+    marsfs_.start();
     heartbeat();
 }
 

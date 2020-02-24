@@ -300,6 +300,12 @@ filesystem/marsfs/MarsFSFile.cc
 filesystem/marsfs/MarsFSFile.h
 filesystem/marsfs/MarsFSPath.cc
 filesystem/marsfs/MarsFSPath.h
+filesystem/marsfs/MarsFSServer.cc
+filesystem/marsfs/MarsFSServer.h
+filesystem/marsfs/MarsFSService.cc
+filesystem/marsfs/MarsFSService.h
+filesystem/marsfs/MarsFSUser.cc
+filesystem/marsfs/MarsFSUser.h
 )
 
 list( APPEND eckit_thread_srcs

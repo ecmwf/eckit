@@ -25,7 +25,8 @@ MarsFSServer::MarsFSServer(int port):
     marsfs_(svc_),
     lastExport_(0)
 {
-	marsfs_.start();
+    ClusterNodes::reset();
+    marsfs_.start();
     heartbeat();
 }
 

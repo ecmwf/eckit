@@ -237,6 +237,12 @@ io/cluster/ClusterNode.cc
 io/cluster/ClusterNode.h
 io/cluster/ClusterNodes.cc
 io/cluster/ClusterNodes.h
+io/cluster/ClusterServer.cc
+io/cluster/ClusterServer.h
+io/cluster/ClusterService.cc
+io/cluster/ClusterService.h
+io/cluster/ClusterUser.cc
+io/cluster/ClusterUser.h
 io/cluster/NodeInfo.cc
 io/cluster/NodeInfo.h
 )

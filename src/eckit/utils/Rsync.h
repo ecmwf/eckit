@@ -13,6 +13,7 @@
 
 namespace eckit {
 
+class DataHandle;
 class PathName;
 
 class Rsync {
@@ -27,6 +28,10 @@ public:  // methods
   void syncRecursive(const PathName& source, const PathName& target);
 
   bool shouldUpdate(const PathName& source, const PathName& target);
+
+  void computeSignature(DataHandle& input, DataHandle& output);
+  void computeDelta(DataHandle& signature, DataHandle& input, DataHandle& output);
+  void updateData(DataHandle& input, DataHandle& delta, DataHandle& output);
 
 private: // members
 

@@ -68,6 +68,7 @@ void ClusterUser::serve(eckit::Stream& s, std::istream& in,std::ostream& out)
                 {
                     s << "sync";
                     ClusterNodes::send(s);
+                    ClusterDisks::send(s);
                 }
                 else
                 {

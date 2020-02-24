@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "eckit/config/Resource.h"
+#include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/ClusterNode.h"
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
@@ -71,6 +72,7 @@ void ClusterHeartBeat::run() {
 
                 if (reply == "sync") {
                     ClusterNodes::receive(s);
+                    ClusterDisks::receive(s);
                 }
 
                 if (reply == "exit") {

@@ -34,8 +34,7 @@ namespace linalg {
 ///
 class Vector {
 
-public: // methods
-
+public:  // methods
     // -- Constructors
 
     /// Default constructor (empty vector)
@@ -45,7 +44,7 @@ public: // methods
     Vector(Size length);
 
     /// Construct vector from existing data (does NOT take ownership)
-    Vector(Scalar* array, Size length);
+    Vector(const Scalar array[], Size length);
 
     /// Constructor from Stream
     Vector(Stream&);
@@ -102,20 +101,19 @@ public: // methods
     /// @returns const iterator to end of the data
     const Scalar* end() const { return array_ + length_; }
 
-protected:  // member variables
-
+protected:           // member variables
     Scalar* array_;  ///< Container
 
-    Size length_;    ///< Vector length/size
+    Size length_;  ///< Vector length/size
 
-    bool own_;       ///< do we own the memory allocated in the container ?
+    bool own_;  ///< do we own the memory allocated in the container ?
 };
 
 Stream& operator<<(Stream&, const Vector&);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace linalg
-} // namespace eckit
+}  // namespace linalg
+}  // namespace eckit
 
 #endif

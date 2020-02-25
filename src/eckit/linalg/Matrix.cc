@@ -29,7 +29,11 @@ Matrix::Matrix(Size rows, Size cols) : array_(new Scalar[rows * cols]), rows_(ro
 }
 
 
-Matrix::Matrix(Scalar* array, Size rows, Size cols) : array_(array), rows_(rows), cols_(cols), own_(false) {
+Matrix::Matrix(const Scalar* array, Size rows, Size cols) :
+    array_(const_cast<Scalar*>(array)),
+    rows_(rows),
+    cols_(cols),
+    own_(false) {
     ASSERT(size() > 0);
     ASSERT(array_);
 }

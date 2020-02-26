@@ -40,73 +40,93 @@ struct handle_with_buffer {
 };
 
 static rs_result fillInputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* opaque) {
-    handle_with_buffer* hwb = reinterpret_cast<handle_with_buffer*>(opaque);
-    DataHandle* h = hwb->handle;
-    Buffer& b = *hwb->buffer;
+    try {
+        handle_with_buffer* hwb = reinterpret_cast<handle_with_buffer*>(opaque);
+        DataHandle* h = hwb->handle;
+        Buffer& b = *hwb->buffer;
 
-    char* w = static_cast<char*>(b);
-    size_t len = b.size();
-    // *buffers is zeroed before entering this function for the first time
-    if (buffers->next_in) {
-        ptrdiff_t pos = buffers->next_in - static_cast<char*>(b);
-        ASSERT(pos >= 0);
-        ASSERT(pos <= b.size());
-        ASSERT(pos + buffers->avail_in <= b.size());
+        char* w = static_cast<char*>(b);
+        size_t len = b.size();
+        // *buffers is zeroed before entering this function for the first time
+        if (buffers->next_in) {
+            ptrdiff_t pos = buffers->next_in - static_cast<char*>(b);
+            ASSERT(pos >= 0);
+            ASSERT(pos <= b.size());
+            ASSERT(pos + buffers->avail_in <= b.size());
 
-        if (pos < b.size()) {
-            w = buffers->next_in + buffers->avail_in;
-            len = b.size() - buffers->avail_in - pos;
+            if (pos < b.size()) {
+                w = buffers->next_in + buffers->avail_in;
+                len = b.size() - buffers->avail_in - pos;
+            }
         }
-    }
-    else {
-        ASSERT(buffers->avail_in == 0);
-        buffers->next_in = w;
-    }
+        else {
+            ASSERT(buffers->avail_in == 0);
+            buffers->next_in = w;
+        }
 
-    if (len == 0)
-        return RS_DONE;
+        if (len == 0)
+            return RS_DONE;
 
-    long r_len = h->read(static_cast<void*>(w), len);
-    if (r_len <= 0) {
-        // XXX: what if there is an error?
-        buffers->eof_in = 1;
-        return RS_DONE;
+        long r_len = h->read(static_cast<void*>(w), len);
+        if (r_len <= 0) {
+            // XXX: what if there is an error?
+            buffers->eof_in = 1;
+            return RS_DONE;
+        }
+
+        buffers->avail_in += r_len;
     }
-
-    buffers->avail_in += r_len;
+    catch (std::exception& e) {
+        Log::error() << "eckit::Rsync: exception during read: " << e.what() << std::endl;
+        return RS_IO_ERROR;
+    }
+    catch (...) {
+        Log::error() << "eckit::Rsync: unknown exception during read" << std::endl;
+        return RS_IO_ERROR;
+    }
 
     return RS_DONE;
 }
 
 static rs_result drainOutputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* opaque) {
-    handle_with_buffer* hwb = reinterpret_cast<handle_with_buffer*>(opaque);
-    DataHandle* h = hwb->handle;
-    Buffer& b = *hwb->buffer;
+    try {
+        handle_with_buffer* hwb = reinterpret_cast<handle_with_buffer*>(opaque);
+        DataHandle* h = hwb->handle;
+        Buffer& b = *hwb->buffer;
 
-    // first call: initialise output buffer
-    if (!buffers->next_out) {
-        ASSERT(buffers->avail_out == 0);
+        // first call: initialise output buffer
+        if (!buffers->next_out) {
+            ASSERT(buffers->avail_out == 0);
+            buffers->next_out = static_cast<char*>(b);
+            buffers->avail_out = b.size();
+            return RS_DONE;
+        }
+
+        ptrdiff_t len = buffers->next_out - static_cast<char*>(b);
+        ASSERT(len >= 0);
+        ASSERT(len <= b.size());
+        ASSERT(len + buffers->avail_out == b.size());
+
+        if (len == 0)
+            return RS_DONE;
+
+        long w_len = h->write(b, len);
+        if (w_len != len) {
+            Log::error() << "wrote only " << w_len << " out of " << len << " to " << *h << std::endl;
+            return RS_IO_ERROR;
+        }
+
         buffers->next_out = static_cast<char*>(b);
         buffers->avail_out = b.size();
-        return RS_DONE;
     }
-
-    ptrdiff_t len = buffers->next_out - static_cast<char*>(b);
-    ASSERT(len >= 0);
-    ASSERT(len <= b.size());
-    ASSERT(len + buffers->avail_out == b.size());
-
-    if (len == 0)
-        return RS_DONE;
-
-    long w_len = h->write(b, len);
-    if (w_len != len) {
-        Log::error() << "wrote only " << w_len << " out of " << len << " to " << *h << std::endl;
+    catch (std::exception& e) {
+        Log::error() << "eckit::Rsync: exception during write: " << e.what() << std::endl;
         return RS_IO_ERROR;
     }
-
-    buffers->next_out = static_cast<char*>(b);
-    buffers->avail_out = b.size();
+    catch (...) {
+        Log::error() << "eckit::Rsync: unknown exception during write" << std::endl;
+        return RS_IO_ERROR;
+    }
 
     return RS_DONE;
 }
@@ -292,14 +312,25 @@ void Rsync::computeDelta(DataHandle& signature, DataHandle& input, DataHandle& o
 
 
 static rs_result readDataHandle(void *opaque, rs_long_t pos, size_t* len, void** buf) {
-    DataHandle* dh = reinterpret_cast<DataHandle*>(opaque);
-    dh->seek(pos);
+    try {
+        DataHandle* dh = reinterpret_cast<DataHandle*>(opaque);
+        dh->seek(pos);
 
-    long rlen = dh->read(*buf, *len);
-    if(rlen == 0)
-        return RS_INPUT_ENDED;
+        long rlen = dh->read(*buf, *len);
+        if(rlen == 0)
+            return RS_INPUT_ENDED;
 
-    *len = rlen;
+        *len = rlen;
+    }
+    catch (std::exception& e) {
+        Log::error() << "eckit::Rsync: exception during read: " << e.what() << std::endl;
+        return RS_IO_ERROR;
+    }
+    catch (...) {
+        Log::error() << "eckit::Rsync: unknown exception during read" << std::endl;
+        return RS_IO_ERROR;
+    }
+
     return RS_DONE;
 }
 

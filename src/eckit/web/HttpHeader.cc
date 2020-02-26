@@ -15,7 +15,6 @@
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 

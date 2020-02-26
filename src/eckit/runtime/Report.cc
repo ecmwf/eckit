@@ -87,7 +87,7 @@ void Reporter::monitor(const std::string& domain, const std::string& msg) {
 
         std::string str = out.str();
 
-        ECKIT_DEBUG_VAR(str)
+//        ECKIT_DEBUG_VAR(str)
 
         broadcast(str.data(), str.size());
 }

@@ -8,32 +8,57 @@
  * does it submit to any jurisdiction.
  */
 
+#include <map>
+#include <mutex>
 
-#include "eckit/web/HtmlResource.h"
 #include "eckit/config/Resource.h"
 #include "eckit/log/JSON.h"
 #include "eckit/types/Types.h"
 #include "eckit/web/Html.h"
+#include "eckit/web/HtmlResource.h"
 #include "eckit/web/Url.h"
 
-
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// remember to add a mutex
+typedef std::map<std::string, HtmlResource*> store_t;
 
-HtmlResourceMap HtmlResource::resources_;
+class HtmlResourceRegistry : private eckit::NonCopyable {
+private:
+    HtmlResourceRegistry() {}
+
+    store_t store_;               ///< registry of html resources
+    std::recursive_mutex mutex_;  ///< mutex for the registry of html resources
+
+public:
+    /// Ensures correct static initialization order
+    /// and mutex initialisation
+    static HtmlResourceRegistry& instance() {
+        static HtmlResourceRegistry self;
+        return self;
+    }
+
+    void regist(HtmlResource* r) {
+        std::lock_guard<std::recursive_mutex> autolock(mutex_);
+        store_[r->resourceUrl()] = r;
+    }
+
+    void lock() { mutex_.lock(); }
+    void unlock() { mutex_.unlock(); }
+
+    store_t& store() { return store_; }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 HtmlResource::HtmlResource(const std::string& s) : resourceUrl_(s) {
-    resources_.init();
-    (*resources_)[s] = this;
+    HtmlResourceRegistry::instance().regist(this);
 }
 
 HtmlResource::~HtmlResource() {
-    // Should do something here...
+    // we choose not to unregist the library since these are global static objects
 }
 
 static void error(Url& url, std::ostream& out, eckit::Exception& e, int code) {
@@ -45,15 +70,19 @@ static void error(Url& url, std::ostream& out, eckit::Exception& e, int code) {
     json.endObject();
 }
 
-void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& out, Url& url) {
+void HtmlResource::dispatch(eckit::Stream&, std::istream&, std::ostream& out, Url& url) {
+
+    std::lock_guard<HtmlResourceRegistry> lock(HtmlResourceRegistry::instance());
+    store_t& store = HtmlResourceRegistry::instance().store();
+
     std::string str;
 
     for (int i = 0; i < url.size(); i++) {
         str += "/" + url[i];
 
 
-        HtmlResourceMap::iterator j = resources_->find(str);
-        if (j != resources_->end()) {
+        store_t::const_iterator j = store.find(str);
+        if (j != store.end()) {
             HtmlResource* r = (*j).second;
 
             if (r->restricted() && !url.authenticated()) {
@@ -149,10 +178,16 @@ void HtmlResource::dispatch(eckit::Stream& s, std::istream& in, std::ostream& ou
     index(out, url);
 }
 
-void HtmlResource::index(std::ostream& s, Url& url) {
-    for (HtmlResourceMap::iterator j = resources_->begin(); j != resources_->end(); ++j) {
+void HtmlResource::index(std::ostream& s, Url&) {
+    std::lock_guard<HtmlResourceRegistry> lock(HtmlResourceRegistry::instance());
+    store_t& store = HtmlResourceRegistry::instance().store();
+    for (store_t::const_iterator j = store.begin(); j != store.end(); ++j) {
         s << Html::Link((*j).first) << (*j).first << Html::Link() << std::endl;
     }
+}
+
+const std::string& HtmlResource::resourceUrl() const {
+    return resourceUrl_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

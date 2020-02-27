@@ -113,12 +113,12 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Serial::Serial(const std::string& name) : Comm{name} {
+Serial::Serial(const std::string& name) : Comm(name) {
     rank_ = 0;
     size_ = 1;
 }
 
-Serial::Serial(const std::string& name, int) : Comm{name} {
+Serial::Serial(const std::string& name, int) : Comm(name) {
     rank_ = 0;
     size_ = 1;
 }

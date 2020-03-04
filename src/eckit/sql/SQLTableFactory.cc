@@ -29,12 +29,24 @@ SQLTable* SQLTableFactory::build(SQLDatabase& owner, const std::string& name, co
 
     std::string location2 = location.size() ? location : name;
 
-    std::lock_guard<std::mutex> lock(mutex_);
+    // This sub-scope looks to be entirely superflouse.
+    // See ECKIT-473
+    // In this case, the cray compiler (8.6, 8.7) are optimising out the call of
+    // std::~lock_guard() in the exception case if no factory succeeds.
+    // This leads to the mutex still being held - at best resulting in an infinite hang
+    // on destruction of global objects at the end of execution.
+    //
+    // The extra scope ensures that the mutex destructor is called _before_ the throw
+    // statement.
 
-    for (const auto& factory : factories_) {
-        SQLTable* t = factory->build(owner, name, location2);
-        if (t)
-            return t;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        for (const auto& factory : factories_) {
+            SQLTable* t = factory->build(owner, name, location2);
+            if (t)
+                return t;
+        }
     }
 
     throw UserError("No SQL table could be built for " + name + " (" + location2 + ")", Here());

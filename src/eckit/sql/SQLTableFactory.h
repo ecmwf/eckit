@@ -42,20 +42,28 @@ class SQLTableFactory {
     // typedef std::map<std::string, const SQLTableFactoryBase*> factory_map;
     typedef std::vector<const SQLTableFactoryBase*> factory_map;
 
+private: // methods
+
+    // Can only be constructed by instance()
+    SQLTableFactory() = default;
+    ~SQLTableFactory() = default;
+
 public: // methods
 
+    static SQLTableFactory& instance();
+	
     /// Build an SQLTable from a give name. Location is optional - if it is not supplied
     /// then the name may be treated as a location at the discretion of the handler.
 
-    static SQLTable* build(SQLDatabase& owner, const std::string& name, const std::string& location="");
+    SQLTable* build(SQLDatabase& owner, const std::string& name, const std::string& location="");
 
-    static void registration(SQLTableFactoryBase* f);
-    static void deregister(SQLTableFactoryBase* f);
+    void enregister(SQLTableFactoryBase* f);
+    void deregister(SQLTableFactoryBase* f);
 
 private: // methods
 
-    static factory_map& factories();
-    static std::mutex& mutex();
+    factory_map factories_;
+    std::mutex mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

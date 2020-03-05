@@ -553,6 +553,10 @@ MPI_Request* Parallel::toRequest(Request& req) {
     return &(req.as<ParallelRequest>().request_);
 }
 
+MPI_Comm Parallel::MPIComm() const {
+    return comm_;
+}
+
 int Parallel::communicator() const {
     return MPI_Comm_c2f(comm_);
 }

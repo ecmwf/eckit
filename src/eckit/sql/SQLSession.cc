@@ -103,7 +103,7 @@ SQLOutput& SQLSession::output() {
 SQLTable& SQLSession::findTable(const std::string& name) {
     if (!currentDatabase().hasTable(name)) {
         Log::debug<LibEcKit>() << "No table named \"" << name << "\" found. Looking in table factory" << std::endl;
-        currentDatabase().addTable(SQLTableFactory::build(currentDatabase(), name));
+        currentDatabase().addTable(SQLTableFactory::instance().build(currentDatabase(), name));
     }
     return currentDatabase().table(name);
 }

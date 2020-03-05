@@ -93,6 +93,26 @@ CASE("test backend") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("test wrapping of const data") {
+    using namespace linalg;
+    std::vector<double> array{1., -2., -4., 2.};
+    const double* data = array.data();
+    Matrix A{data, 2, 2};
+    Vector y{data, 2};
+
+    // Matrix access is column-major!!!
+    EXPECT(A(0, 0) == 1.);
+    EXPECT(A(1, 0) == -2.);
+    EXPECT(A(0, 1) == -4.);
+    EXPECT(A(1, 1) == 2.);
+
+    EXPECT(y[0] == 1.);
+    EXPECT(y[1] == -2.);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace test
 }  // namespace eckit
 

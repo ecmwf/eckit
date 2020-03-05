@@ -48,7 +48,6 @@ double FunctionNORM::eval(bool& missing) const {
         return (double)0;
     }
     double lvalue = (value_ > 0) ? sqrt(value_) : (double)0;
-    eckit::Log::info() << "lval: " << lvalue << std::endl;
     return lvalue;
 }
 
@@ -67,12 +66,10 @@ void FunctionNORM::partialResult() {
     bool missing2 = false;
     double x      = args_[0]->eval(missing1);
     double y      = args_[1]->eval(missing2);
-    eckit::Log::info() << "x, y: " << x << ", " << y << std::endl;
     if (!missing1 && !missing2) {
         value_ += x * y;
         resultNULL_ = false;
     }
-    eckit::Log::info() << "Value: " << value_ << std::endl;
 }
 
 }  // namespace function

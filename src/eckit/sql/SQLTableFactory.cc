@@ -20,58 +20,65 @@ namespace sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+SQLTableFactory& SQLTableFactory::instance() {
+    static SQLTableFactory theInstance;
+    return theInstance;
+}
+
 SQLTable* SQLTableFactory::build(SQLDatabase& owner, const std::string& name, const std::string& location) {
 
     std::string location2 = location.size() ? location : name;
 
-    std::lock_guard<std::mutex> lock(mutex());
+    // This sub-scope looks to be entirely superflouse.
+    // See ECKIT-473
+    // In this case, the cray compiler (8.6, 8.7) are optimising out the call of
+    // std::~lock_guard() in the exception case if no factory succeeds.
+    // This leads to the mutex still being held - at best resulting in an infinite hang
+    // on destruction of global objects at the end of execution.
+    //
+    // The extra scope ensures that the mutex destructor is called _before_ the throw
+    // statement.
 
-    for (const auto& factory : factories()) {
-        SQLTable* t = factory->build(owner, name, location2);
-        if (t)
-            return t;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        for (const auto& factory : factories_) {
+            SQLTable* t = factory->build(owner, name, location2);
+            if (t)
+                return t;
+        }
     }
 
     throw UserError("No SQL table could be built for " + name + " (" + location2 + ")", Here());
 }
 
-void SQLTableFactory::registration(SQLTableFactoryBase* f) {
+void SQLTableFactory::enregister(SQLTableFactoryBase* f) {
 
-    std::lock_guard<std::mutex> lock(mutex());
+    std::lock_guard<std::mutex> lock(mutex_);
 
     ASSERT(f);
-    ASSERT(std::find(factories().begin(), factories().end(), f) == factories().end());
-    factories().push_back(f);
+    ASSERT(std::find(factories_.begin(), factories_.end(), f) == factories_.end());
+    factories_.push_back(f);
 }
 
 void SQLTableFactory::deregister(SQLTableFactoryBase* f) {
 
-    std::lock_guard<std::mutex> lock(mutex());
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    auto it = std::find(factories().begin(), factories().end(), f);
-    ASSERT(it != factories().end());
-    factories().erase(it);
-}
-
-SQLTableFactory::factory_map& SQLTableFactory::factories() {
-    static factory_map m;
-    return m;
-}
-
-std::mutex& SQLTableFactory::mutex() {
-    static std::mutex m;
-    return m;
+    auto it = std::find(factories_.begin(), factories_.end(), f);
+    ASSERT(it != factories_.end());
+    factories_.erase(it);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 SQLTableFactoryBase::SQLTableFactoryBase() {
-    SQLTableFactory::registration(this);
+    SQLTableFactory::instance().enregister(this);
 }
 
 
 SQLTableFactoryBase::~SQLTableFactoryBase() {
-    SQLTableFactory::deregister(this);
+    SQLTableFactory::instance().deregister(this);
 }
 
 

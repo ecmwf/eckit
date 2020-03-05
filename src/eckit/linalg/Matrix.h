@@ -32,7 +32,6 @@ public:  // types
     typedef eckit::linalg::Size Size;
 
 public:  // methods
-
     // -- Constructors
 
     /// Default constructor (empty matrix)
@@ -42,7 +41,7 @@ public:  // methods
     Matrix(Size rows, Size cols);
 
     /// Construct matrix from existing data (does NOT take ownership)
-    Matrix(Scalar* array, Size rows, Size cols);
+    Matrix(const Scalar* array, Size rows, Size cols);
 
     /// Constructor from Stream
     Matrix(Stream&);
@@ -77,7 +76,7 @@ public:  // methods
     // -- Accessors
 
     /// @returns size (rows * cols)
-    Size size() const { return rows_*cols_; }
+    Size size() const { return rows_ * cols_; }
     /// @returns number of rows
     Size rows() const { return rows_; }
     /// @returns number of columns
@@ -85,8 +84,8 @@ public:  // methods
 
     /// Access by row and column
     /// @note implements column-major (Fortran-style) ordering
-    Scalar& operator()(Size row, Size col) { return array_[col*rows_ + row]; }
-    const Scalar& operator()(Size row, Size col) const { return array_[col*rows_ + row]; }
+    Scalar& operator()(Size row, Size col) { return array_[col * rows_ + row]; }
+    const Scalar& operator()(Size row, Size col) const { return array_[col * rows_ + row]; }
 
     /// Access to linearised storage
     Scalar& operator[](Size i) { return array_[i]; }
@@ -107,7 +106,6 @@ public:  // methods
     const Scalar* end() const { return array_ + size(); }
 
 protected:  // member variables
-
     /// Container
     Scalar* array_;
 
@@ -119,7 +117,6 @@ protected:  // member variables
 
     /// Indicate ownership
     bool own_;
-
 };
 
 //-----------------------------------------------------------------------------
@@ -129,6 +126,6 @@ Stream& operator<<(Stream&, const Matrix&);
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit
 
 #endif

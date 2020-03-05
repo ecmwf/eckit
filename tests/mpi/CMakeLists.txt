@@ -29,3 +29,11 @@ ecbuild_add_test(
     LIBS eckit_mpi
     MPI 4
 )
+
+ecbuild_add_test(
+    TARGET      eckit_test_mpi_internal_access
+    SOURCES     eckit_test_mpi_internal_access.cc
+    CONDITION   HAVE_MPI
+    LIBS eckit_mpi
+    MPI 4
+)

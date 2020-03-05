@@ -700,6 +700,13 @@ if(ECKIT_HAVE_XXHASH)
     )
 endif()
 
+if(ECKIT_HAVE_RSYNC)
+  list( APPEND eckit_utils_srcs
+    utils/Rsync.cc
+    utils/Rsync.h
+  )
+endif()
+
 list( APPEND eckit_memory_srcs
 memory/Builder.cc
 memory/Builder.h
@@ -884,6 +891,10 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         ${THREADS_LIBRARIES}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
+
+                    PRIVATE_LIBS
+                        ${LIBRSYNC_LIBRARIES}
+
           LINKER_LANGUAGE CXX )
 
 ### sub-directories

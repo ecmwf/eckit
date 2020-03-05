@@ -26,8 +26,8 @@ namespace mpi {
 class Parallel : public eckit::mpi::Comm {
 
 protected:  // methods
-
-    template< class T> friend class CommBuilder;
+    template <class T>
+    friend class CommBuilder;
 
     Parallel(const std::string& name);
     Parallel(const std::string& name, MPI_Comm comm, bool);
@@ -38,10 +38,6 @@ protected:  // methods
     virtual eckit::mpi::Comm* self() const;
 
     virtual std::string processorName() const;
-
-    virtual size_t rank() const;
-
-    virtual size_t size() const;
 
     virtual void barrier() const;
 
@@ -61,28 +57,33 @@ protected:  // methods
 
     virtual void broadcast(void* buffer, size_t count, Data::Code type, size_t root) const;
 
-    virtual void gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const;
+    virtual void gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type,
+                        size_t root) const;
 
-    virtual void scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type, size_t root) const;
+    virtual void scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type,
+                         size_t root) const;
 
-    virtual void gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[], const int displs[], Data::Code type, size_t root) const;
+    virtual void gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[],
+                         const int displs[], Data::Code type, size_t root) const;
 
-    virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf, size_t recvcount, Data::Code type, size_t root) const;
+    virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
+                          size_t recvcount, Data::Code type, size_t root) const;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op) const;
 
     virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op) const;
 
-    virtual void allGather(const void *sendbuf, size_t sendcount, void *recvbuf, size_t recvcount, Data::Code type) const;
-
-    virtual void allGatherv(const void *sendbuf, size_t sendcount,
-                            void *recvbuf, const int recvcounts[], const int displs[], Data::Code type) const;
-
-    virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type) const;
-
-    virtual void allToAllv(const void *sendbuf, const int sendcounts[], const int sdispls[],
-                           void *recvbuf, const int recvcounts[], const int rdispls[],
+    virtual void allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount,
                            Data::Code type) const;
+
+    virtual void allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[],
+                            const int displs[], Data::Code type) const;
+
+    virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount,
+                          Data::Code type) const;
+
+    virtual void allToAllv(const void* sendbuf, const int sendcounts[], const int sdispls[], void* recvbuf,
+                           const int recvcounts[], const int rdispls[], Data::Code type) const;
 
     virtual Status receive(void* recv, size_t count, Data::Code type, int source, int tag) const;
 
@@ -94,28 +95,32 @@ protected:  // methods
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const;
 
-    virtual eckit::SharedBuffer broadcastFile( const eckit::PathName& filepath, size_t root ) const;
+    virtual eckit::SharedBuffer broadcastFile(const eckit::PathName& filepath, size_t root) const;
 
-    virtual Comm & split( int color, const std::string & name  ) const;
+    virtual Comm& split(int color, const std::string& name) const;
 
     virtual void free();
 
     virtual void print(std::ostream&) const;
 
-    virtual Status status() const    { return createStatus(); }
+    virtual Status status() const { return createStatus(); }
 
     virtual Request request(int) const;
 
     virtual int communicator() const;
 
-    static Status  createStatus();
+    static Status createStatus();
 
     static MPI_Status* toStatus(Status&);
 
     static MPI_Request* toRequest(Request&);
 
-private: // methods
+public:
+    /// Access internal MPI_Comm.
+    /// Warning! Do not use the return value to free or modify the MPI communicator!
+    MPI_Comm MPIComm() const;
 
+private:  // methods
     static void initialize();
 
     static void finalize();
@@ -124,10 +129,8 @@ private: // methods
 
     static bool finalized();
 
-private: // members
-
+private:  // members
     MPI_Comm comm_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

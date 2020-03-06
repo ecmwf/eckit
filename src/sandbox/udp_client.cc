@@ -2,7 +2,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Stats.h"
+#include "eckit/runtime/Report.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Tokenizer.h"
 
@@ -32,7 +32,7 @@ void StatsClient::run() {
         msg << " " << argv(i);
     }
 
-    Stats::report("foo", msg.str());
+    Report::monitor("foo", msg.str());
 
 }
 

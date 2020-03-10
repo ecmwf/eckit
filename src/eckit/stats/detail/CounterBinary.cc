@@ -42,36 +42,36 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const para
     max_(std::numeric_limits<double>::quiet_NaN()),
     maxIndexValue1_(std::numeric_limits<double>::quiet_NaN()),
     maxIndexValue2_(std::numeric_limits<double>::quiet_NaN()),
-    packingError_(std::numeric_limits<double>::quiet_NaN()),
     first_(true) {
 
     std::unique_ptr<param::MIRParametrisation> same(new param::SameParametrisation(param1, param2, false));
-    static const double nan = std::numeric_limits<double>::quiet_NaN();
+    constexpr double nan = std::numeric_limits<double>::quiet_NaN();
 
     same->get("ignore-different-missing-values", ignoreDifferentMissingValues_ = 0);
     same->get("ignore-different-missing-values-factor", ignoreDifferentMissingValuesFactor_ = nan);
-    same->get("counter-lower-limit", lowerLimit_ = nan);
-    same->get("counter-upper-limit", upperLimit_ = nan);
     same->get("ignore-above-upper-limit", ignoreAboveUpperLimit_ = 0);
     same->get("ignore-above-upper-limit-factor", ignoreAboveUpperLimitFactor_ = nan);
 
-    hasLowerLimit_ = lowerLimit_ == lowerLimit_;
-    hasUpperLimit_ = upperLimit_ == upperLimit_;
-
+    hasLowerLimit_        = same->get("counter-lower-limit", lowerLimit_ = nan);
+    hasUpperLimit_        = same->get("counter-upper-limit", upperLimit_ = nan);
     doAbsoluteCompare_    = same->get("absolute-error", absoluteError_ = nan);
     doRelativeCompare_    = same->get("relative-error-factor", relativeErrorFactor_ = nan);
     doRelativeMinCompare_ = same->get("relative-error-min", relativeErrorMin_ = nan);
     doRelativeMaxCompare_ = same->get("relative-error-max", relativeErrorMax_ = nan);
+    doPackingCompare_     = same->get("packing-error-factor", packingError_ = nan);
 
-    double pef = nan;
-    if ((doPackingCompare_ = same->get("packing-error-factor", pef))) {
+    if (doPackingCompare_) {
         double packingError1 = 0.;
         double packingError2 = 0.;
         ASSERT(param1.fieldParametrisation().get("packingError", packingError1) ||
                param2.fieldParametrisation().get("packingError", packingError2));
 
-        packingError_ = pef * std::max(packingError1, packingError2);
+        packingError_ *= std::max(packingError1, packingError2);
         ASSERT(packingError_ > 0.);
+    }
+    else if (!doAbsoluteCompare_ && !doRelativeCompare_ && !doRelativeMinCompare_ && !doRelativeMaxCompare_) {
+        absoluteError_     = 0.;
+        doAbsoluteCompare_ = true;
     }
 }
 

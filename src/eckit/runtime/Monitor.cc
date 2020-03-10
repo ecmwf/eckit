@@ -18,7 +18,6 @@
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/runtime/Report.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
 
@@ -280,7 +279,6 @@ char Monitor::state(char c) {
 }
 
 void Monitor::status(const std::string& msg) {
-    Report::monitor("status", msg);
     if (!ready_)
         return;
     task().status(msg);

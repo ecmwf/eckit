@@ -107,13 +107,15 @@ std::string Html::removeHex(const std::string& s) {
     return t;
 }
 
-//=======================================================
+//----------------------------------------------------------------------------------------------------------------------
+
 
 Html::Include::Include(const std::string& name, HtmlObject* sub) : sub_(sub), name_(name) {}
 
 Html::Include::Include(const std::string& name, HtmlObject& sub) : sub_(&sub), name_(name) {}
 
-//=======================================================
+//----------------------------------------------------------------------------------------------------------------------
+
 
 void Html::Include::print(std::ostream& s) const {
     eckit::PathName path = eckit::Resource<PathName>("htmlPath", "~/html");
@@ -159,7 +161,8 @@ void Html::Include::print(std::ostream& s) const {
     s << HttpBuf::doEncode;
 }
 
-//=======================================================
+//----------------------------------------------------------------------------------------------------------------------
+
 
 Html::Image::Image(const std::string& name) : name_(name) {}
 
@@ -172,7 +175,8 @@ std::string Html::Image::resource() {
 }
 
 
-//=======================================================
+//----------------------------------------------------------------------------------------------------------------------
+
 
 Html::Link::Link(Url& url) : url_(addHex(url.str())) {}
 
@@ -183,7 +187,8 @@ void Html::Link::print(std::ostream& s) const {
         s << "</A>";
 }
 
-//=======================================================
+//----------------------------------------------------------------------------------------------------------------------
+
 
 void Html::Substitute::substitute(std::ostream& s, const std::string& p) {
     std::map<std::string, std::string, std::less<std::string> >::iterator i = map_.find(p);

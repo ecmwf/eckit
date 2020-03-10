@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef Html_H
-#define Html_H
+#ifndef eckit_web_Html_H
+#define eckit_web_Html_H
 
 #include <map>
+#include <string>
 
 #include "eckit/web/HtmlObject.h"
 
@@ -122,7 +123,7 @@ public:
         }
     };
 
-    //-----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 
     class BeginFormatted : public RawTag {
     public:
@@ -153,7 +154,7 @@ public:
         EndBold() : RawTag("</B>") {}
     };
 
-    //-----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 
     class BeginForm : public Tag {
     public:
@@ -250,7 +251,7 @@ public:
     static std::string addHex(const std::string&);
     static std::string removeHex(const std::string&);
 
-    //-----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 
     // Table stuff
 

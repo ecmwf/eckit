@@ -60,7 +60,7 @@ void ResourceBase::GET(std::ostream& s, Url& url) {
 }
 
 
-//=================================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 class ConfigResource : public HtmlResource {
     virtual bool restricted() { return true; }

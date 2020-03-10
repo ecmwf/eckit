@@ -22,7 +22,7 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 
@@ -50,7 +50,6 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     }
 
     Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;
-    ;
 
     Log::info() << "MoverTransfer::transfer cost:" << std::endl;
     for (std::map<std::string, Length>::iterator j = cost.begin(); j != cost.end(); ++j)

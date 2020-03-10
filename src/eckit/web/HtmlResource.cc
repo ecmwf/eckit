@@ -41,8 +41,18 @@ public:
     }
 
     void regist(HtmlResource* r) {
+        ASSERT(r);
         std::lock_guard<std::recursive_mutex> autolock(mutex_);
-        store_[r->resourceUrl()] = r;
+        store_t::key_type k = r->resourceUrl();
+
+        store_t::iterator it = store_.find(k);
+        if (it != store_.end()) {
+            std::ostringstream oss;
+            oss << "HtmlResource already registered with key [" << k << "] : " << *store_[k];
+            throw SeriousBug(oss.str(), Here());
+        }
+        store_[k] = r;
+        Log::debug() << "Registering " << *r << std::endl;
     }
 
     void lock() { mutex_.lock(); }
@@ -59,6 +69,10 @@ HtmlResource::HtmlResource(const std::string& s) : resourceUrl_(s) {
 
 HtmlResource::~HtmlResource() {
     // we choose not to unregist the library since these are global static objects
+}
+
+void HtmlResource::print(std::ostream& s) const {
+    s << "HtmlResource[url=" << resourceUrl_ << "]";
 }
 
 static void error(Url& url, std::ostream& out, eckit::Exception& e, int code) {

@@ -134,15 +134,15 @@ void TaskInfo::start(unsigned long long min, unsigned long long max) {
     progress_.min_                     = min;
     progress_.max_                     = max;
     progress_.val_                     = min;
-    gettimeofday(&progress_.start_, 0);
-    gettimeofday(&progress_.last_, 0);
+    ::gettimeofday(&progress_.start_, nullptr);
+    ::gettimeofday(&progress_.last_, nullptr);
 
     touch();
 }
 
 void TaskInfo::progress(unsigned long long val) {
     ::timeval now;
-    gettimeofday(&now, 0);
+    ::gettimeofday(&now, nullptr);
 
     ::timeval diff = now - progress_.last_;
 
@@ -154,7 +154,7 @@ void TaskInfo::progress(unsigned long long val) {
 
     progress_.val_ = val;
 
-    gettimeofday(&progress_.last_, 0);
+    ::gettimeofday(&progress_.last_, nullptr);
     touch();
 }
 

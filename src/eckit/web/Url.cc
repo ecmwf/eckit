@@ -18,8 +18,6 @@
 #include "eckit/web/Html.h"
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -253,7 +251,7 @@ const std::string& Url::operator[](int n) const {
 eckit::Value Url::json() const {
     std::string p = in_.content();
 
-    if(p.empty()) {
+    if (p.empty()) {
         return eckit::Value();
     }
 

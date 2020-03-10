@@ -71,6 +71,7 @@ void DataHandle::flush() {
 }
 
 Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
+
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
 
     compress();
@@ -233,7 +234,7 @@ std::string DataHandle::title() const {
 #ifndef IBM
 template <>
 Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const {
-    return 0;
+    return nullptr;
 }
 #endif
 

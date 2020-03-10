@@ -73,8 +73,7 @@ class SharedMemoryTxnArray : public TxnArray {
 
 public:
     SharedMemoryTxnArray(const PathName& path, const std::string& name, unsigned long size) :
-        TxnArray(),
-        map_(path, name, size) {}
+        TxnArray(), map_(path, name, size) {}
 };
 
 
@@ -198,10 +197,7 @@ public:
 
 template <class T>
 RecoverThread<T>::RecoverThread(const PathName& path, TxnArray& nextID, TxnRecoverer<T>& client, long age) :
-    nextID_(nextID),
-    client_(client),
-    age_(age),
-    now_(::time(0)) {
+    nextID_(nextID), client_(client), age_(age), now_(::time(0)) {
     AutoLock<TxnArray> lock(nextID_);
     PathName::match(path + "/[0-9]*", result_);
 
@@ -263,37 +259,46 @@ void TxnLog<T>::recover(TxnRecoverer<T>& client, bool inThread, long age) {
 template <class T>
 void TxnLog<T>::find(TxnFinder<T>& r) {
 
-    PathName path = path_ + "/[0-9]*";
-    std::vector<PathName> active;
+    // Look for active transactions
 
-    PathName::match(path, active);
+    if (r.active()) {
 
-    for (Ordinal j = 0; (j < active.size()); ++j) {
-        try {
-            FileStream log(active[j], "r");
-            auto c = closer(log);
-            std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
-            if (task)
-                if (!r.found(*task))
-                    return;
-        }
-        catch (Abort& e) {
-            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-            Log::error() << "** Exception is re-thrown" << std::endl;
-            throw;
-        }
-        catch (std::exception& e) {
-            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-            Log::error() << "** Exception is ignored" << std::endl;
+        PathName path = path_ + "/[0-9]*";
+        std::vector<PathName> active;
+
+        PathName::match(path, active);
+
+//        Log::info() << "TxnLog found active: " << active << std::endl;
+
+        for (Ordinal j = 0; (j < active.size()); ++j) {
+            try {
+                FileStream log(active[j], "r");
+                auto c = closer(log);
+                std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
+                if (task) {
+                    if (r.found(*task)) {
+                        return;
+                    }
+                }
+            }
+            catch (Abort& e) {
+                Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+                Log::error() << "** Exception is re-thrown" << std::endl;
+                throw;
+            }
+            catch (std::exception& e) {
+                Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+                Log::error() << "** Exception is ignored" << std::endl;
+            }
         }
     }
 
 
+    // Look for non-active transactions
+
     if (r.old()) {
 
-        // Look for non active transactions
-
-        path = path_ + "/done/[0-9]*";
+        PathName path = path_ + "/done/[0-9]*";
         std::vector<PathName> dates;
 
         PathName::match(path, dates);
@@ -301,6 +306,7 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
         // Sort by date in reverse order
         std::sort(dates.begin(), dates.end(), std::greater<PathName>());
 
+//      Log::info() << "TxnLog found dates: " << dates << std::endl;
 
         for (Ordinal k = 0; k < dates.size(); k++) {
             Log::info() << "Searching " << dates[k] << std::endl;
@@ -309,8 +315,10 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
                 auto c = closer(log);
                 std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 while (task) {
-                    if (!r.found(*task))
+//                  Log::info() << "Task found: " << *task << std::endl;
+                    if (r.found(*task)) {
                         return;
+                    }
                     task.reset(Reanimator<T>::reanimate(log));
                 }
             }

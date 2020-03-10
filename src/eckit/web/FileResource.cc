@@ -37,7 +37,7 @@ void FileResource::GET(std::ostream& s, Url& url) {
     s << HttpBuf::doEncode;
 }
 
-static FileResource fileResourceInstance;
+//static FileResource fileResourceInstance;
 
 
 }  // namespace eckit

@@ -27,6 +27,8 @@ JSONResource::~JSONResource() {
 
 void JSONResource::GET(std::ostream& out, Url& url) {
     url.headerOut().type("application/json");
+
+
     JSON j(out);
     json(j, url.json());
 }

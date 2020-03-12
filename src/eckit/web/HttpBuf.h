@@ -8,19 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File HttpBuf.h
-// Baudouin Raoult - ECMWF Oct 96
+/// @author Baudouin Raoult
 
-#ifndef HttpBuf_H
-#define HttpBuf_H
+#ifndef eckit_web_HttpBuf_H
+#define eckit_web_HttpBuf_H
 
 #include "eckit/web/Url.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class HttpStream;
 
@@ -36,30 +33,42 @@ class HttpBuf : public std::streambuf {
 public:
 
 	HttpBuf(HttpStream&);
-	~HttpBuf();
+    ~HttpBuf();
 
+    void reset();
 	void write(std::ostream&, Url&);
 
 	static std::ostream& dontEncode(std::ostream&);
 	static std::ostream& doEncode(std::ostream&);
+
+    void print(std::ostream&) const;
 
 private:
 
 	std::vector<char>  buffer_;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class HttpStream : public std::ostream {
-	HttpBuf* buf_;
 public:
-	HttpStream();
+
+    HttpStream();
 	~HttpStream();
-	void write(std::ostream&, Url&, DataHandle&);
+
+    void reset();
+    void write(std::ostream&, Url&, DataHandle&);
+
+    void print(std::ostream& s) const;
+
+private:
+
+    HttpBuf* buf_;
+
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

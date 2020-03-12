@@ -17,6 +17,7 @@
 #include "eckit/web/Html.h"
 #include "eckit/web/HtmlResource.h"
 #include "eckit/web/Url.h"
+#include "eckit/web/HttpBuf.h"
 
 
 namespace eckit {
@@ -75,16 +76,29 @@ void HtmlResource::print(std::ostream& s) const {
     s << "HtmlResource[url=" << resourceUrl_ << "]";
 }
 
-static void error(Url& url, std::ostream& out, eckit::Exception& e, int code) {
+static void error(Url& url, HttpStream& out, eckit::Exception& e, int code) {
+
     e.dumpStackTrace();
+
+    out.print(Log::info());
+    Log::info() << std::endl;
+
+    out.reset();
+
+    out.print(Log::info());
+    Log::info() << std::endl;
+
     url.status(code, e.what());
     JSON json(out);
     json.startObject();
     json << "error" << e.what();
     json.endObject();
+
+    out.print(Log::info());    Log::info() << std::endl;
+
 }
 
-void HtmlResource::dispatch(eckit::Stream&, std::istream&, std::ostream& out, Url& url) {
+void HtmlResource::dispatch(eckit::Stream&, std::istream&, HttpStream& out, Url& url) {
 
     std::lock_guard<HtmlResourceRegistry> lock(HtmlResourceRegistry::instance());
     store_t& store = HtmlResourceRegistry::instance().store();

@@ -24,6 +24,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class Stream;
+class HttpStream;
 
 class HtmlResource : public HtmlObject, public eckit::NonCopyable {
 public:  // methods
@@ -33,7 +34,7 @@ public:  // methods
 
     virtual bool restricted() { return false; }
 
-    static void dispatch(eckit::Stream&, std::istream&, std::ostream&, Url&);
+    static void dispatch(eckit::Stream&, std::istream&, HttpStream&, Url&);
     static void index(std::ostream&, Url&);
 
     const std::string& resourceUrl() const;

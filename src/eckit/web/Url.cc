@@ -252,6 +252,9 @@ eckit::Value Url::json() const {
     std::string p = in_.content();
 
     if (p.empty()) {
+
+        // todo: parse the URL query part and add to the dict
+
         return eckit::Value();
     }
 

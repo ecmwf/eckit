@@ -13,8 +13,10 @@ HtmlObject.cc
 HtmlObject.h
 HtmlResource.cc
 HtmlResource.h
-HttpBuf.cc
-HttpBuf.h
+HttpResource.cc
+HttpResource.h
+HttpStream.cc
+HttpStream.h
 HttpHeader.cc
 HttpHeader.h
 HttpServer.cc
@@ -52,4 +54,3 @@ ecbuild_add_library( TARGET eckit_web TYPE SHARED
 						${INSTALL_INCLUDE_DIR}/eckit/web
 					 LIBS
 						eckit )
-

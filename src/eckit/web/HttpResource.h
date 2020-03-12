@@ -9,29 +9,41 @@
  */
 
 /// @author Baudouin Raoult
-/// @author Tiago Quintino
 
-#ifndef eckit_web_HtmlResource_H
-#define eckit_web_HtmlResource_H
+#ifndef eckit_web_HttpResource_H
+#define eckit_web_HttpResource_H
 
 #include <string>
 
-#include "eckit/web/HttpResource.h"
+#include "eckit/memory/NonCopyable.h"
+#include "eckit/web/HtmlObject.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Intermediate Class
-/// Derive all resources that provide an Html content
+class Stream;
+class HttpStream;
 
-class HtmlResource : public HttpResource {
+class HttpResource : public HtmlObject, public eckit::NonCopyable {
 public:  // methods
-    HtmlResource(const std::string&);
+    HttpResource(const std::string&);
 
-    virtual ~HtmlResource();
+    virtual ~HttpResource();
 
+    virtual bool restricted() { return false; }
+
+    static void dispatch(eckit::Stream&, std::istream&, HttpStream&, Url&);
+    static void index(std::ostream&, Url&);
+
+    const std::string& resourceUrl() const;
+
+protected:  // methods
+    virtual void print(std::ostream&) const;
+
+protected:  // members
+    const std::string resourceUrl_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

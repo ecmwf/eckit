@@ -9,9 +9,10 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
 
-#ifndef eckit_web_HttpBuf_H
-#define eckit_web_HttpBuf_H
+#ifndef eckit_web_HttpStream_H
+#define eckit_web_HttpStream_H
 
 #include "eckit/web/Url.h"
 
@@ -19,36 +20,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class HttpStream;
-
-class HttpBuf : public std::streambuf {
-
-
-	char    out_[4096];
-	virtual int overflow(int c);
-	virtual int sync();
-
-	HttpStream& owner_;
-
-public:
-
-	HttpBuf(HttpStream&);
-    ~HttpBuf();
-
-    void reset();
-	void write(std::ostream&, Url&);
-
-	static std::ostream& dontEncode(std::ostream&);
-	static std::ostream& doEncode(std::ostream&);
-
-    void print(std::ostream&) const;
-
-private:
-
-	std::vector<char>  buffer_;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
+class HttpBuf;
 
 class HttpStream : public std::ostream {
 public:
@@ -60,6 +32,9 @@ public:
     void write(std::ostream&, Url&, DataHandle&);
 
     void print(std::ostream& s) const;
+
+    static std::ostream& dontEncode(std::ostream&);
+    static std::ostream& doEncode(std::ostream&);
 
 private:
 

@@ -16,7 +16,7 @@
 #include "eckit/web/Html.h"
 #include "eckit/web/HtmlObject.h"
 #include "eckit/web/HtmlResource.h"
-#include "eckit/web/HttpBuf.h"
+#include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
 
 
@@ -25,9 +25,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 std::ostream& operator<<(std::ostream& s, const Html::Tag& tag) {
-    s << HttpBuf::dontEncode;
+    s << HttpStream::dontEncode;
     tag.print(s);
-    s << HttpBuf::doEncode;
+    s << HttpStream::doEncode;
     return s;
 }
 
@@ -135,7 +135,7 @@ void Html::Include::print(std::ostream& s) const {
     bool word = false;
 
 
-    s << HttpBuf::dontEncode;
+    s << HttpStream::dontEncode;
 
     while (in.get(c)) {
         if (c == '%') {
@@ -158,7 +158,7 @@ void Html::Include::print(std::ostream& s) const {
             s << c;
     }
 
-    s << HttpBuf::doEncode;
+    s << HttpStream::doEncode;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ void Html::Substitute::substitute(std::ostream& s, const std::string& p) {
     if (i == map_.end())
         s << '%' << p << '%';
     else
-        s << HttpBuf::doEncode << (*i).second << HttpBuf::dontEncode;
+        s << HttpStream::doEncode << (*i).second << HttpStream::dontEncode;
 }
 
 Html::Substitute::Substitute() {}
@@ -243,9 +243,9 @@ void Html::EndForm::print(std::ostream& s) const {
 }
 
 void Html::TextField::print(std::ostream& s) const {
-    s << title_ << HttpBuf::dontEncode;
+    s << title_ << HttpStream::dontEncode;
     s << "<INPUT NAME=\"" << name_ << "\" VALUE=\"" << value_ << "\">";
-    s << HttpBuf::doEncode;
+    s << HttpStream::doEncode;
 }
 
 void Html::HiddenField::print(std::ostream& s) const {
@@ -264,12 +264,12 @@ void Html::Button::print(std::ostream& s) const {
 }
 
 void Html::BeginTextArea::print(std::ostream& s) const {
-    s << HttpBuf::dontEncode;
+    s << HttpStream::dontEncode;
     s << "<TEXTAREA NAME=\"" << name_ << "\" ROWS=" << row_ << " COLS=" << col_ << ">";
 }
 
 void Html::EndTextArea::print(std::ostream& s) const {
-    s << "</TEXTAREA>" << std::endl << HttpBuf::doEncode;
+    s << "</TEXTAREA>" << std::endl << HttpStream::doEncode;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -296,11 +296,11 @@ void ImageProvider::GET(std::ostream& out, Url& url) {
     else {
         (url.headerOut()).type("image/gif");
 
-        out << HttpBuf::dontEncode;
+        out << HttpStream::dontEncode;
         char c;
         while (in.get(c))
             out << c;
-        out << HttpBuf::doEncode;
+        out << HttpStream::doEncode;
     }
 }
 

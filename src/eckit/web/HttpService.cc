@@ -13,7 +13,7 @@
 #include "eckit/io/TCPSocketHandle.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/web/HtmlResource.h"
-#include "eckit/web/HttpBuf.h"
+#include "eckit/web/HttpStream.h"
 #include "eckit/web/HttpUser.h"
 #include "eckit/web/Url.h"
 

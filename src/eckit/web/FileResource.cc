@@ -18,7 +18,7 @@
 namespace eckit {
 
 
-FileResource::FileResource() : HtmlResource("/html") {}
+FileResource::FileResource() : HtmlResource("/files") {}
 
 FileResource::~FileResource() {}
 
@@ -37,7 +37,7 @@ void FileResource::GET(std::ostream& s, Url& url) {
     s << HttpStream::doEncode;
 }
 
-//static FileResource fileResourceInstance;
+static FileResource fileResourceInstance;
 
 
 }  // namespace eckit

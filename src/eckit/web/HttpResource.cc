@@ -198,7 +198,7 @@ void HttpResource::dispatch(eckit::Stream&, std::istream&, HttpStream& out, Url&
         }
     }
 
-    url.status(Url::notFound);
+    url.status(HttpError::NOT_FOUND);
     out << "Url not found: " << url << std::endl;
 
     out << "Urls are:" << std::endl;

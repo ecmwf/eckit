@@ -12,23 +12,17 @@
 #include "eckit/log/JSON.h"
 #include "eckit/web/Url.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSONResource::JSONResource(const std::string& name) : HtmlResource(name) {
-    // Should do something here...
-}
-JSONResource::~JSONResource() {
-    // Should do something here...
-}
+JSONResource::JSONResource(const std::string& name) : HttpResource(name) {}
+
+JSONResource::~JSONResource() {}
 
 void JSONResource::GET(std::ostream& out, Url& url) {
     url.headerOut().type("application/json");
-
-
     JSON j(out);
     json(j, url.json());
 }

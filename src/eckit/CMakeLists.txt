@@ -577,6 +577,10 @@ net/NetUser.cc
 net/NetUser.h
 net/Port.cc
 net/Port.h
+net/ProxiedTCPClient.cc
+net/ProxiedTCPClient.h
+net/ProxiedTCPServer.cc
+net/ProxiedTCPServer.h
 net/SocketOptions.cc
 net/SocketOptions.h
 net/TCPClient.cc

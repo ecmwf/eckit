@@ -13,6 +13,7 @@
 #ifndef eckit_web_Url_h
 #define eckit_web_Url_h
 
+#include <map>
 #include <memory>
 
 #include "eckit/value/Value.h"
@@ -43,10 +44,6 @@ public:
 
 class Url : private eckit::NonCopyable {
 public:
-    enum
-    {
-        notFound = 404
-    };
 
     Url(std::istream&);
     Url(const std::string&);
@@ -117,10 +114,13 @@ private:  // methods
     }
 
 private:  // members
-    typedef std::map<std::string, std::string, std::less<std::string> > Map;
 
-    Map map_;
+    typedef std::map<std::string,std::string>  dict_t;
+
+    dict_t dict_;
+
     std::vector<std::string> url_;
+
     HttpHeader in_;
     HttpHeader out_;
 

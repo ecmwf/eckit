@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File HttpHeader.h
-// Manuel Fuentes - ECMWF Oct 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef HttpHeader_H
 #define HttpHeader_H

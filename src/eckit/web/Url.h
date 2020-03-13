@@ -17,7 +17,7 @@
 #include <memory>
 
 #include "eckit/value/Value.h"
-#include "eckit/web/HttpHeader.h"
+#include "eckit/net/HttpHeader.h"
 
 namespace eckit {
 

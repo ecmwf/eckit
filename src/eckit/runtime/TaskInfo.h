@@ -9,6 +9,7 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
 /// @date   Nov 96
 
 #ifndef eckit_TaskInfo_h
@@ -24,6 +25,7 @@
 namespace eckit {
 
 class JSON;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 struct Info {
@@ -96,15 +98,8 @@ class TaskInfo : public Padded<Info,4096>,
                  public NonCopyable {
 public:
 
-// -- Contructors
-
 	TaskInfo();
-
-// -- Destructor
-
 	~TaskInfo();
-
-// -- Methods
 
     void  out(char*, char*);
 	bool  busy(bool = false);
@@ -185,14 +180,10 @@ public:
 
 	std::string   host() const             { return host_; }
 
-private:
-
-// -- Methods
+private:  // methods
 
 	void print(std::ostream&) const;
 	void json(JSON&) const;
-
-// -- Friends
 
 	friend std::ostream& operator<<(std::ostream& s,const TaskInfo& p)
 		{ p.print(s); return s; }

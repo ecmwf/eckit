@@ -12,6 +12,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <iterator>
+
 #include "eckit/log/Timer.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/os/SignalHandler.h"
@@ -198,9 +200,10 @@ void TaskInfo::parent(long p) {
 void TaskInfo::json(JSON& json) const {
 
     Monitor& monitor = Monitor::instance();
-    size_t n = this - monitor.tasks().begin();
+    size_t n         = std::distance(monitor.tasks().cbegin(), this);
 
     json.startObject();
+
     json << "id" << n;
     json << "busy" << busy_;
     // json << "thread" << thread_;

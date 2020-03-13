@@ -571,6 +571,12 @@ net/Connector.cc
 net/Connector.h
 net/Endpoint.cc
 net/Endpoint.h
+net/HttpHeader.cc
+net/HttpHeader.h
+net/IPAddress.cc
+net/IPAddress.h
+net/NetMask.cc
+net/NetMask.h
 net/NetService.cc
 net/NetService.h
 net/NetUser.cc
@@ -601,10 +607,7 @@ net/UDPClient.cc
 net/UDPClient.h
 net/UDPServer.cc
 net/UDPServer.h
-net/IPAddress.cc
-net/IPAddress.h
-net/NetMask.cc
-net/NetMask.h)
+)
 
 list( APPEND eckit_serialisation_srcs
 serialisation/BadTag.cc

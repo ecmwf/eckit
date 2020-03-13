@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/web/HttpHeader.h"
+#include "eckit/net/HttpHeader.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/utils/Tokenizer.h"

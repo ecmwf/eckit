@@ -226,6 +226,11 @@ JSON& JSON::operator<<(const DateTime& datetime) {
     return *this;
 }
 
+JSON& JSON::operator<<(const ::timeval& t) {
+    *this << double(t.tv_sec + t.tv_usec / 1000000.0);
+    return *this;
+}
+
 JSON& JSON::precision(int n) {
     out_ << std::setprecision(n);
     return *this;

@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <ctime>
 
 #include "eckit/eckit.h"
 
@@ -54,6 +55,7 @@ public:  // methods
     JSON& operator<<(const Date&);
     JSON& operator<<(const Time&);
     JSON& operator<<(const DateTime&);
+    JSON& operator<<(const ::timeval&);
 
     JSON& operator<<(const std::string&);
     JSON& operator<<(const char*);

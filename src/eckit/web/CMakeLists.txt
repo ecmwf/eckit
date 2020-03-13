@@ -17,8 +17,6 @@ HttpResource.cc
 HttpResource.h
 HttpStream.cc
 HttpStream.h
-HttpHeader.cc
-HttpHeader.h
 HttpServer.cc
 HttpServer.h
 HttpService.cc

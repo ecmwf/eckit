@@ -188,8 +188,8 @@ private:  // methods
 	friend std::ostream& operator<<(std::ostream& s,const TaskInfo& p)
 		{ p.print(s); return s; }
 
-	friend JSON& operator<<(JSON& s,const TaskInfo& p)
-		{ p.json(s); return s; }
+    friend JSON& operator<<(JSON& s,const TaskInfo& p)
+        { p.json(s); return s; }
 
 };
 

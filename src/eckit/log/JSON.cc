@@ -236,6 +236,10 @@ JSON& JSON::precision(int n) {
     return *this;
 }
 
+void JSON::raw(const char* buffer, long len) {
+    out_ << std::string(buffer, len);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

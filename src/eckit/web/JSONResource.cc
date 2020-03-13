@@ -23,13 +23,13 @@ JSONResource::~JSONResource() {}
 
 void JSONResource::GET(std::ostream& out, Url& url) {
     url.headerOut().type("application/json");
-    JSON j(out);
+    JSON j(out, false);
     json(j, url.json());
 }
 
 void JSONResource::POST(std::ostream& out, Url& url) {
     url.headerOut().type("application/json");
-    JSON j(out);
+    JSON j(out, false);
     json(j, url.json());
 }
 //----------------------------------------------------------------------------------------------------------------------

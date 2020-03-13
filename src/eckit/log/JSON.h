@@ -80,6 +80,10 @@ public:  // methods
     /// Sets the precision for float and double (works like std::setprecision)
     JSON& precision(int);
 
+    /// write raw characters into the json stream
+    /// @warning use with care as this may create invalid json
+    void raw(const char*, long);
+
 private:  // members
     std::ostream& out_;
     std::vector<std::string> sep_;

@@ -35,12 +35,16 @@ class URI {
 
 public: // methods
 
+    friend Stream& operator<<(Stream& s,const URI& uri) { uri.encode(s); return s; }
+    friend void operator>>(Stream&,URI&);
+
     // Contructors
     URI();
     URI(const std::string& uri);
     URI(const std::string& scheme, const PathName& path);
     URI(const std::string& scheme, const URI& uri);
-    URI(const std::string& scheme, const URI& uri, const std::string& host, int port);
+    URI(const std::string& scheme, const std::string& hostname, int port);
+    URI(const std::string& scheme, const URI& uri, const std::string& hostname, int port);
     URI(Stream& s);
 
     // Destructor
@@ -116,8 +120,6 @@ private: // members
     std::string fragment_;
 
     friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
-    friend Stream& operator<<(Stream& s,const URI& p) { p.encode(s); return s; }
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

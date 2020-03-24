@@ -9,6 +9,7 @@
  */
 
 #include <librsync.h>
+#include <memory>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
@@ -274,6 +275,14 @@ void Rsync::syncRecursive(const PathName& source, const PathName& target) {
         }
 
         PathName rebased = rebasePath(file, source, target);
+
+        if (!rebased.exists()) {
+            Log::debug<LibEcKit>() << "Direct copy " << file << " -> " << rebased << std::endl;
+            std::unique_ptr<DataHandle> in(file.fileHandle());
+            std::unique_ptr<DataHandle> out(rebased.fileHandle(true));
+            in->saveInto(*out);
+            continue;
+        }
 
         if (!shouldUpdate(file, rebased)) {
             Log::debug<LibEcKit>() << "eckit::Rsync: skipping " << file

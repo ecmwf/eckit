@@ -236,6 +236,12 @@ CASE("Directory sync") {
         EXPECT(same_dir(source, target));
     }
 
+    SECTION("Sync dirs with update") {
+        PathName f1d1  = d1 / "f1"; fill(f1d1, "F1D1bis");
+        EXPECT_NO_THROW(rsync.syncRecursive(source, target));
+        EXPECT(same_dir(source, target));
+    }
+
     remove_dir_recursive(target);
     remove_dir_recursive(source);
 }

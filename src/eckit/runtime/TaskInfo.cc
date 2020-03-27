@@ -148,11 +148,17 @@ void TaskInfo::progress(unsigned long long val) {
 
     ::timeval diff = now - progress_.last_;
 
-    progress_.rate_ = (val - progress_.val_) / ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
+    double elapsed = ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
+    if(elapsed > 0) {
+        progress_.rate_ = (val - progress_.val_) / elapsed;
+    }
 
     diff = now - progress_.start_;
 
-    progress_.speed_ = (val - progress_.min_) / ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
+    elapsed = ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
+    if(elapsed > 0) {
+        progress_.speed_ = (val - progress_.min_) / elapsed;
+    }
 
     progress_.val_ = val;
 

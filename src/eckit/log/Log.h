@@ -130,7 +130,6 @@ DEPRECATED("Use eckit::format() instead") std::ostream& setformat(std::ostream& 
 inline LogFormatSetter setformat(int format) {
     return LogFormatSetter(format);
 }
-
 // Non-flushing version of std::endl
 inline std::ostream& newl(std::ostream& out) {
     return out << '\n';

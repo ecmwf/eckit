@@ -229,6 +229,7 @@ public:
 class UnexpectedState : public Exception {
 public:
     UnexpectedState(const std::string& msg);
+    UnexpectedState(const std::string&, const CodeLocation&);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -378,6 +378,8 @@ RemoteException::RemoteException(const std::string& msg, const std::string& from
 
 UnexpectedState::UnexpectedState(const std::string& msg) : Exception(msg) {}
 
+UnexpectedState::UnexpectedState(const std::string& msg, const CodeLocation& loc) : Exception(msg, loc) {}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void handle_panic(const char* msg) {

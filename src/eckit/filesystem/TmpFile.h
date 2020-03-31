@@ -24,9 +24,13 @@ namespace eckit {
 
 class TmpFile : public PathName, private NonCopyable {
 public:
-    TmpFile();
+    TmpFile(bool verbose = true);
 
     ~TmpFile();
+
+private:
+
+    bool verbose_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

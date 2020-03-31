@@ -42,10 +42,10 @@ static PathName tmp() {
 }
 
 
-TmpFile::TmpFile() : PathName(tmp()) {}
+TmpFile::TmpFile(bool verbose) : PathName(tmp()), verbose_(verbose) {}
 
 TmpFile::~TmpFile() {
-    unlink();
+    unlink(verbose_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

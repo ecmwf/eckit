@@ -11,13 +11,16 @@
 #ifndef eckit_AIOHandle_h
 #define eckit_AIOHandle_h
 
-#include <aio.h>
-
 #include "eckit/eckit.h"
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/filesystem/PathName.h"
+
+#ifndef ECKIT_HAVE_AIO
+// This warning should only ever appear in build dirs as this file will not be installed
+#warning eckit compiled without AIO
+#else
 
 //-----------------------------------------------------------------------------
 
@@ -87,4 +90,5 @@ private: // members
 
 } // namespace eckit
 
+#endif
 #endif

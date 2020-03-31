@@ -197,7 +197,9 @@ ecbuild_add_option( FEATURE EXTRA_TESTS
 ### async io support
 
 find_package( AIO )
-set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asynchronous IO" )
+ecbuild_add_option( FEATURE AIO 
+                    CONDITION ${AIO_FOUND}
+                    DESCRIPTION "support for asynchronous IO" )
 
 ### c math library, needed when including "math.h"
 

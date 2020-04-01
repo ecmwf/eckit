@@ -11,19 +11,13 @@
 #ifndef eckit_io_AIOHandle_h
 #define eckit_io_AIOHandle_h
 
-#include "eckit/eckit.h"
-
-#ifndef ECKIT_HAVE_AIO
-#error "eckit not configured with async IO support -- use ECKIT_HAVE_AIO guard around AIOHandle.h"
-#endif
-
-#include <aio.h>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 
 namespace eckit {
+
+class AIOBuffer;
 
 class AIOHandle : public DataHandle {
 
@@ -51,11 +45,7 @@ protected:  // members
     PathName path_;
 
 private:  // members
-    std::vector<Buffer*> buffers_;
-    std::vector<const aiocb*> aiop_;
-    std::vector<aiocb> aio_;
-    std::vector<long> len_;
-    std::vector<bool> active_;
+    std::vector<AIOBuffer*> buffers_;
 
     size_t used_;
     size_t count_;

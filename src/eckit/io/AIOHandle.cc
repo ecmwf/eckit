@@ -234,10 +234,7 @@ void AIOHandle::flush() {
 
 #else  // NO ECKIT_HAVE_AIO
 
-namespace eckit {
-
-struct AIOBuffer : private eckit::NonCopyable {
-}
+struct AIOBuffer : private eckit::NonCopyable {};
 
 AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync) {
     NOTIMP;

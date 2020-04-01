@@ -8,40 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_AIOHandle_h
-#define eckit_AIOHandle_h
+#ifndef eckit_io_AIOHandle_h
+#define eckit_io_AIOHandle_h
 
 #include "eckit/eckit.h"
 
+#ifndef ECKIT_HAVE_AIO
+#error "eckit not configured with async IO support -- use ECKIT_HAVE_AIO guard around AIOHandle.h"
+#endif
+
+#include <aio.h>
+
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/filesystem/PathName.h"
-
-#ifndef ECKIT_HAVE_AIO
-// This warning should only ever appear in build dirs as this file will not be installed
-#warning eckit compiled without AIO
-#else
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
 class AIOHandle : public DataHandle {
 
-public: // methods
-
-
-    /// Contructor
-
+public:  // methods
     AIOHandle(const PathName& path, size_t count = 64, size_t = 1024 * 1024, bool fsync = false);
 
-    /// Destructor
-
     virtual ~AIOHandle();
-
-    // From DataHandle
 
     virtual Length openForRead();
     virtual void openForWrite(const Length&);
@@ -58,37 +47,27 @@ public: // methods
     virtual Offset position();
 
 
-protected: // members
+protected:  // members
+    PathName path_;
 
-    PathName                   path_;
+private:  // members
+    std::vector<Buffer*> buffers_;
+    std::vector<const aiocb*> aiop_;
+    std::vector<aiocb> aio_;
+    std::vector<long> len_;
+    std::vector<bool> active_;
 
-private: // members
+    size_t used_;
+    size_t count_;
 
-    std::vector<Buffer*>       buffers_;
-    std::vector<const aiocb*>  aiop_;
-    std::vector<aiocb>         aio_;
-    std::vector<long>          len_;
-    std::vector<bool>          active_;
-
-    size_t                     used_;
-    size_t                     count_;
-
-    int                        fd_;
-    off_t                      pos_;
-    bool                       fsync_;
+    int fd_;
+    off_t pos_;
+    bool fsync_;
 
 
     virtual std::string title() const;
-
-// -- Class members
-
-
 };
 
+}  // namespace eckit
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
-
-#endif
 #endif

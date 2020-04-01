@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>
+
 #include <algorithm>
 
 #include "eckit/exception/Exceptions.h"

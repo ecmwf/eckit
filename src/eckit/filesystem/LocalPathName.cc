@@ -28,6 +28,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/PartFileHandle.h"
@@ -50,6 +51,8 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+static PathNameBuilder<LocalPathName> localBuilder("local");
 
 static StaticMutex local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;

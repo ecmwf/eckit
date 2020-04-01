@@ -23,6 +23,8 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
+#include <map>
+#include <mutex>
 
 namespace eckit {
 
@@ -254,7 +256,6 @@ private:
 };
 
 template <> struct VectorPrintSelector<PathName> { typedef VectorPrintSimple selector; };
-
 
 } // namespace eckit
 

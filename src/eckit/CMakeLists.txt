@@ -284,6 +284,8 @@ filesystem/PathExpander.cc
 filesystem/PathExpander.h
 filesystem/PathName.cc
 filesystem/PathName.h
+filesystem/PathNameFactory.cc
+filesystem/PathNameFactory.h
 filesystem/TempFile.cc
 filesystem/TempFile.h
 filesystem/TmpDir.cc

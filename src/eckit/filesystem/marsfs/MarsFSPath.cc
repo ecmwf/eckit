@@ -11,6 +11,7 @@
 #include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/marsfs/MarsFSClient.h"
+#include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/MarsFSHandle.h"
 #include "eckit/io/PartFileHandle.h"
@@ -29,6 +30,8 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+static PathNameBuilder<MarsFSPath> marsfsBuilder("marsfs");
 
 MarsFSPath::MarsFSPath(const std::string& path, bool tildeIsUserHome) {
     ASSERT(!tildeIsUserHome);

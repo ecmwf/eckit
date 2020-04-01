@@ -10,6 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Simon Smart
 /// @date   June 2011
 
 #ifndef eckit_filesystem_BasePathNameT_h

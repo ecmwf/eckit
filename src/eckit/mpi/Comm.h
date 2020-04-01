@@ -326,9 +326,6 @@ public:  // methods
     /// @brief The communicator
     virtual int communicator() const = 0;
 
-private:  // class methods
-    static void initDefaultComm();
-
 protected:  // methods
     virtual size_t getCount(Status& status, Data::Code datatype) const = 0;
 

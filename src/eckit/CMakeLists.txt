@@ -122,6 +122,8 @@ container/sptree/SPValue.h
 list( APPEND eckit_io_srcs
 io/AsyncHandle.cc
 io/AsyncHandle.h
+io/AIOHandle.cc
+io/AIOHandle.h
 io/AutoCloser.h
 io/Base64.cc
 io/Base64.h
@@ -239,12 +241,6 @@ io/cluster/NodeInfo.cc
 io/cluster/NodeInfo.h
 )
 
-if(HAVE_AIO)
-list(APPEND eckit_io_srcs
-io/AIOHandle.cc
-io/AIOHandle.h
-)
-endif()
 
 if(HAVE_RADOS)
 list( APPEND eckit_io_srcs

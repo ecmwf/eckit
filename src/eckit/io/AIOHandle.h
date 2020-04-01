@@ -17,7 +17,7 @@
 
 namespace eckit {
 
-class AIOBuffer;
+struct AIOBuffer;
 
 class AIOHandle : public DataHandle {
 

@@ -22,14 +22,16 @@
 #include "eckit/memory/Zero.h"
 
 #ifdef ECKIT_HAVE_AIO
-
 #include <aio.h>
+#endif
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class AIOBuffer : private eckit::NonCopyable {
+#ifdef ECKIT_HAVE_AIO
+
+struct AIOBuffer : private eckit::NonCopyable {
 
 public:  // methods
     explicit AIOBuffer(size_t size) {
@@ -74,7 +76,7 @@ public:  // methods
     void active(bool v) { active_ = v; }
     size_t length() const { return len_; }
 
-private:  // methods
+private:  // members
     aiocb aio_;
     eckit::Buffer* buff_ = nullptr;
     size_t len_          = 0;
@@ -100,33 +102,6 @@ AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync
     for (size_t i = 0; i < count_; i++) {
         buffers_[i] = new AIOBuffer(size);
     }
-}
-
-AIOHandle::~AIOHandle() {
-    close();
-    for (size_t i = 0; i < count_; i++) {
-        delete buffers_[i];
-    }
-}
-
-Length AIOHandle::openForRead() {
-    NOTIMP;
-}
-
-void AIOHandle::openForWrite(const Length&) {
-    used_ = 0;
-    SYSCALL2(fd_ = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_TRUNC, 0777), path_);
-    pos_ = 0;
-}
-
-void AIOHandle::openForAppend(const Length&) {
-    used_ = 0;
-    SYSCALL2(fd_ = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_APPEND, 0777), path_);
-    SYSCALL2(pos_ = ::lseek(fd_, 0, SEEK_CUR), path_);
-}
-
-long AIOHandle::read(void*, long) {
-    NOTIMP;
 }
 
 long AIOHandle::write(const void* buffer, long length) {
@@ -181,14 +156,6 @@ long AIOHandle::write(const void* buffer, long length) {
     pos_ += length;
 
     return length;
-}
-
-void AIOHandle::close() {
-    if (fd_ != -1) {
-        flush();  // this waits for the async requests to finish
-        SYSCALL(::close(fd_));
-        fd_ = -1;
-    }
 }
 
 void AIOHandle::flush() {
@@ -265,6 +232,64 @@ void AIOHandle::flush() {
     }
 }
 
+#else  // NO ECKIT_HAVE_AIO
+
+namespace eckit {
+
+struct AIOBuffer : private eckit::NonCopyable {
+}
+
+AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync) {
+    NOTIMP;
+}
+
+long AIOHandle::write(const void* buffer, long length) {
+    NOTIMP;
+}
+
+void AIOHandle::flush() {
+    NOTIMP;
+}
+
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
+
+AIOHandle::~AIOHandle() {
+    close();
+    for (size_t i = 0; i < count_; i++) {
+        delete buffers_[i];
+    }
+}
+
+Length AIOHandle::openForRead() {
+    NOTIMP;
+}
+
+void AIOHandle::openForWrite(const Length&) {
+    used_ = 0;
+    SYSCALL2(fd_ = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_TRUNC, 0777), path_);
+    pos_ = 0;
+}
+
+void AIOHandle::openForAppend(const Length&) {
+    used_ = 0;
+    SYSCALL2(fd_ = ::open(path_.localPath(), O_WRONLY | O_CREAT | O_APPEND, 0777), path_);
+    SYSCALL2(pos_ = ::lseek(fd_, 0, SEEK_CUR), path_);
+}
+
+long AIOHandle::read(void*, long) {
+    NOTIMP;
+}
+
+void AIOHandle::close() {
+    if (fd_ != -1) {
+        flush();  // this waits for the async requests to finish
+        SYSCALL(::close(fd_));
+        fd_ = -1;
+    }
+}
+
 void AIOHandle::rewind() {
     NOTIMP;
 }
@@ -289,14 +314,3 @@ std::string AIOHandle::title() const {
 
 }  // namespace eckit
 
-#else  // NO ECKIT_HAVE_AIO
-
-namespace eckit {
-
-AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync) {
-    NOTIMP;
-}
-
-}  // namespace eckit
-
-#endif

@@ -11,8 +11,9 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AIOHandle.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/io/FileHandle.h"
+#include "eckit/io/MemoryHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
@@ -27,83 +28,66 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TestAIOHandle {
+// size is prime number 89
+const char tbuf[] = "74e1feb8d0b1d328cbea63832c2dcfb2b4fa1adfeb8d0b1d328cb53d50e63a50fba73f0151028a695a238ff0";
+
+class TestAIO {
 public:
-    void setup();
-    void teardown();
-    void test_write();
-    void test_append();
+    TestAIO() {
+        std::string base = Resource<std::string>("$TMPDIR", "/tmp");
+        path_            = PathName::unique(base + "/file") + ".dat";
+        reference_       = PathName::unique(base + "/reference") + ".dat";
+
+        std::unique_ptr<DataHandle> fh(reference_.fileHandle());
+        auto close = closer(*fh);
+        writeTo(*fh);
+    }
+
+    size_t writeTo(DataHandle& dh) {
+        long sz = sizeof(tbuf);
+
+        dh.openForWrite(0);
+
+        size_t nblocks = 30 * 1024 * 1024 / sz;
+        size_t total   = 0;
+
+        for (size_t i = 0; i < nblocks; ++i) {
+            total += dh.write(tbuf, sz);
+        }
+
+        dh.close();
+
+        return total;
+    }
+
+    bool verify() {
+        std::unique_ptr<DataHandle> fh(path_.fileHandle());
+        std::unique_ptr<DataHandle> rh(reference_.fileHandle());
+        return rh->compare(*fh);
+    }
+
+    ~TestAIO() { path_.unlink(); }
+
     PathName path_;
+    PathName reference_;
 };
 
+CASE("Write to a new file") {
 
-void TestAIOHandle::test_write() {
-    std::unique_ptr<DataHandle> aioh(new AIOHandle(path_));
+    TestAIO test;
 
-    aioh->openForWrite(0);
+    SECTION("Single write") {
+        std::unique_ptr<DataHandle> rh(test.reference_.fileHandle());
+        std::unique_ptr<DataHandle> aioh(new AIOHandle(test.path_));
+        rh->saveInto(*aioh);
+        EXPECT(test.verify());
+    }
 
-    const char buf[] = "74e1feb8d0b1d328cbea63832c2dcfb2b4fa1adf";
-
-    aioh->write(buf, sizeof(buf));
-
-    aioh->close();
-
-    std::unique_ptr<DataHandle> fh(path_.fileHandle());
-
-    fh->openForRead();
-
-    Buffer buf2(1024);
-
-    fh->read(buf2, buf2.size());
-    fh->close();
-
-    EXPECT(buf == std::string(buf2));
-}
-
-
-void TestAIOHandle::test_append() {
-    std::unique_ptr<DataHandle> aioh(new AIOHandle(path_));
-
-    aioh->openForAppend(0);
-
-    const char buf[] = "53d50e63a50fba73f0151028a695a238ff06491c";
-
-    aioh->write(buf, sizeof(buf));
-
-    aioh->close();
-
-    std::unique_ptr<DataHandle> fh(path_.fileHandle());
-
-    fh->openForRead();
-
-    fh->seek(sizeof(buf));
-
-    Buffer buf2(1024);
-
-    fh->read(buf2, buf2.size());
-    fh->close();
-
-    EXPECT(buf == std::string(buf2));
-}
-
-
-void TestAIOHandle::setup() {
-    std::string base = Resource<std::string>("$TMPDIR", "/tmp");
-    path_            = PathName::unique(base + "/lolo");
-    path_ += ".dat";
-}
-
-void TestAIOHandle::teardown() {
-    path_.unlink();
-}
-
-
-CASE("test_aiohandle") {
-    TestAIOHandle test;
-    test.setup();
-    test.test_write();
-    test.test_append();
-    test.teardown();
+    SECTION("Multiple writes write") {
+        std::unique_ptr<DataHandle> aioh(new AIOHandle(test.path_));
+        test.writeTo(*aioh);
+        EXPECT(test.verify());
+    }
 }
 
 }  // namespace test

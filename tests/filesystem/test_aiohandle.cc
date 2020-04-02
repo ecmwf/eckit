@@ -66,7 +66,10 @@ public:
         return rh->compare(*fh);
     }
 
-    ~TestAIO() { path_.unlink(); }
+    ~TestAIO() {
+        path_.unlink();
+        reference_.unlink();
+    }
 
     PathName path_;
     PathName reference_;

@@ -206,8 +206,6 @@ ecbuild_add_option( FEATURE AIO
 
 find_package( CMath )
 
-if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
-
 ### realtime library implements shm_open on Linux
 if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
     find_package( Realtime )

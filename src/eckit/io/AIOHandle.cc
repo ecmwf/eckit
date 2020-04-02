@@ -90,10 +90,6 @@ private:  // members
 
 AIOHandle::AIOHandle(const PathName& path, size_t count, size_t /* buffsize */, bool fsync) :
     path_(path), used_(0), count_(count), fd_(-1), pos_(0), fsync_(fsync) {
-#ifndef ECKIT_HAVE_AIO
-    throw eckit::NotImplemented("eckit not built with AIO support", Here());
-#endif
-
 #ifdef AIO_LISTIO_MAX
     count_ = std::min<size_t>(count_, AIO_LISTIO_MAX);
 #endif

@@ -14,14 +14,14 @@
 
 #include "eckit/utils/MD5.h"
 
-namespace eckit {
-
-//----------------------------------------------------------------------------------------------------------------------
-
 // Cray C++ compiler should not try to optimize this code
 #if _CRAYC
 #pragma _CRI noopt
 #endif
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /* Constants for MD5Transform routine. */
 

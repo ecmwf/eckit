@@ -16,12 +16,13 @@
 
 #include <algorithm>
 
-#include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/AIOHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/memory/Zero.h"
+#include "eckit/os/Stat.h"
+#include "eckit/types/Types.h"
 
 #ifdef ECKIT_HAVE_AIO
 #include <aio.h>
@@ -305,8 +306,16 @@ void AIOHandle::print(std::ostream& s) const {
     s << "AIOHandle[" << path_ << ']';
 }
 
+Length AIOHandle::size() {
+    Stat::Struct info;
+    SYSCALL(Stat::fstat(fd_, &info));
+    return info.st_size;
+}
+
 Length AIOHandle::estimate() {
-    return 0;
+    Stat::Struct info;
+    SYSCALL(Stat::fstat(fd_, &info));
+    return info.st_size;
 }
 
 Offset AIOHandle::position() {

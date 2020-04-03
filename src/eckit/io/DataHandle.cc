@@ -308,6 +308,12 @@ Offset DataHandle::seek(const Offset& from) {
     throw NotImplemented(os.str(), Here());
 }
 
+Length DataHandle::size() {
+    std::ostringstream oss;
+    oss << "DataHandle::size() [" << *this << "]";
+    throw NotImplemented(oss.str(), Here());
+}
+
 void DataHandle::skip(const Length& len) {
     seek(position() + len);
 }
@@ -439,6 +445,7 @@ long FOpenDataHandle::seek(long pos, int whence) {
 
     try {
         long where = pos;
+        std::cerr << "whence: " << whence << std::endl;
         switch (whence) {
 
             case SEEK_SET:
@@ -454,13 +461,16 @@ long FOpenDataHandle::seek(long pos, int whence) {
                 break;
 
             default:
-                NOTIMP;
+                std::ostringstream oss;
+                oss << "FOpenDataHandle can't seek(pos=" << pos << ", whence=" << whence << ")";
+                throw NotImplemented(oss.str(), Here());
         }
 
         if (where == position_) {
             return where;
         }
-
+        ECKIT_DEBUG_VAR(*handle_);
+        ECKIT_DEBUG_VAR(where);
         long w = handle_->seek(where);
         if (w >= 0) {
             position_ = w;

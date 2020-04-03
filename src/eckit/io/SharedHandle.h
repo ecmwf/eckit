@@ -54,6 +54,7 @@ public:
     virtual void close();
     virtual void flush();
 
+    virtual Length size();
     virtual Length estimate();
     virtual Offset position();
     virtual Offset seek(const Offset&);

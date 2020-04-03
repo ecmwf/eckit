@@ -60,11 +60,13 @@ public:
     virtual void print(std::ostream&) const;
 	void restartReadFrom(const Offset& from);
 
+    virtual Offset seek(const Offset&);
 
 	virtual bool merge(DataHandle*);
 	virtual bool compress(bool = false);
 
-	virtual Length estimate();
+    virtual Length size();
+    virtual Length estimate();
     virtual void toRemote(Stream&) const;
     virtual void toLocal(Stream&) const;
     virtual DataHandle* toLocal();

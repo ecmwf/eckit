@@ -22,7 +22,7 @@ struct AIOBuffer;
 class AIOHandle : public DataHandle {
 
 public:  // methods
-    AIOHandle(const PathName& path, size_t count = 64, size_t = 1024 * 1024, bool fsync = false);
+    AIOHandle(const PathName& path, size_t count = 16, size_t buffsize = 1024 * 1024, bool fsync = false);
 
     virtual ~AIOHandle();
 
@@ -37,9 +37,12 @@ public:  // methods
     virtual void rewind();
     virtual void print(std::ostream&) const;
 
+    virtual Length size();
     virtual Length estimate();
     virtual Offset position();
 
+private:  // methods
+    size_t getFreeSlot();
 
 protected:  // members
     PathName path_;

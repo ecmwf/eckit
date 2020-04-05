@@ -48,6 +48,7 @@ public:
   virtual void flush();
   virtual void rewind();
   virtual void print(std::ostream&) const;
+  virtual Length size();
   virtual Length estimate();
   virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());
   virtual Offset position();

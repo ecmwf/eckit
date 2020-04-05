@@ -66,6 +66,10 @@ void SharedHandle::flush() {
     return handle_.flush();
 }
 
+Length SharedHandle::size() {
+    return handle_.size();
+}
+
 Length SharedHandle::estimate() {
     return handle_.estimate();
 }

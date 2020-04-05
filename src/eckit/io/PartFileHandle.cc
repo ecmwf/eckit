@@ -248,6 +248,10 @@ bool PartFileHandle::merge(DataHandle* other) {
     return true;
 }
 
+Length PartFileHandle::size() {
+    return std::accumulate(length_.begin(), length_.end(), Length(0));
+}
+
 Length PartFileHandle::estimate() {
     return std::accumulate(length_.begin(), length_.end(), Length(0));
 }

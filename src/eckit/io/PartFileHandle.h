@@ -59,8 +59,9 @@ public:
 
 	virtual void print(std::ostream&) const;
 	virtual bool merge(DataHandle*);
-	virtual bool compress(bool = false);
-	virtual Length estimate();
+    virtual bool compress(bool = false);
+    virtual Length size();
+    virtual Length estimate();
 
 	virtual void restartReadFrom(const Offset& from);
     virtual Offset seek(const Offset&);

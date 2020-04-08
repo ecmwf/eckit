@@ -40,7 +40,9 @@ JSON& operator<<(eckit::JSON& s, const Report& p) {
 const char* report_type_name[] = {
     [Report::APPSTART] = "appstart",
     [Report::APPSTOP]  = "appstop",
+    [Report::INFO]     = "info",
     [Report::METER]    = "meter",
+    [Report::COUNTER]  = "counter",
 };
 
 const char* report_type_to_name(Report::Type t) {
@@ -53,7 +55,7 @@ const char* report_type_to_name(Report::Type t) {
 //----------------------------------------------------------------------------------------------------------------------
 
 class Reporter : public NonCopyable {
-public:  // methods
+public:
     static Reporter& instance();
     static int version() { return 1; }
 
@@ -67,13 +69,12 @@ public:  // methods
 
     void report(Report::Type type, const Report& p);
 
-    void header(Report::Type type, JSON& j);
-
-private:                                                    // members
+private:
     std::vector<std::unique_ptr<net::UDPClient>> clients_;  //< list of clients to contact servers
 
     std::string service_type;
     std::string service_name;
+    std::string node_name;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -84,8 +85,6 @@ Reporter& Reporter::instance() {
 }
 
 Reporter::Reporter() {
-
-    ECKIT_DEBUG_VAR(sizeof(report_type_name));
 
     PathName path = "~/etc/config/telemetry.yaml";
 
@@ -98,41 +97,47 @@ Reporter::Reporter() {
 
     service_type = config.getString("service_type", "unknown");
     service_name = config.getString("service_name", "unknown");
+    node_name    = Resource<std::string>("node", "unknown");  // same as in NodeInfo
 
     for (auto& cfg : config.getSubConfigurations("servers")) {
         clients_.emplace_back(new net::UDPClient(cfg));
     }
 }
 
-void Reporter::header(Report::Type type, JSON& j) {
-    j << "header";
-    j.startObject();
-    j << "version" << version();
-    j << "report" << report_type_to_name(type);
-    j << "service_type" << service_type;
-    j << "service_name" << service_name;
-    j << "application" << Main::instance().name();
-    j << "hostname" << Main::hostname();
-    j << "pid" << ::getpid();
-    j << "thread" << ::pthread_self();
-    j << "time" << ::time(nullptr);
-    j.endObject();
-}
-
 void Reporter::report(Report::Type type, const Report& report) {
+
+    if (not enabled())  //< early return when we don't have servers configured
+        return;
 
     std::ostringstream out;
     JSON j(out);
     j.startObject();
-    header(type, j);
-    j << report;
+
+    j << "version" << version();
+    j << "type" << report_type_to_name(type);
+    j << "service_type" << service_type;
+    j << "service_name" << service_name;
+    j << "node" << node_name;
+    j << "application" << Main::instance().name();
+    j << "hostname" << Main::hostname();
+    j << "pid" << int(::getpid());
+    j << "thread" << (unsigned long)::pthread_self();
+    j << "time" << ::time(nullptr);
+
+    j << "report";
+    {
+        j.startObject();
+        j << report;
+        j.endObject();
+    }
+
     j.endObject();
 
-    std::string str = out.str();
+    std::string msg = out.str();
 
-    ECKIT_DEBUG_VAR(str)
+    ECKIT_DEBUG_VAR(msg)
 
-    broadcast((void*)str.data(), str.size());
+    broadcast((void*)msg.data(), msg.size());
 }
 
 void Reporter::broadcast(void* buf, long length) {
@@ -150,6 +155,14 @@ public:
     virtual void json(JSON&) const override {}
 };
 
+class WraperReport : public Report {
+public:
+    WraperReport(std::function<void(JSON&)>& f) : callable_(f) {}
+    ~WraperReport() override {}
+    virtual void json(JSON& j) const override { callable_(j); }
+    std::function<void(JSON&)>& callable_;
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void Telemetry::report(Report::Type t) {
@@ -158,8 +171,11 @@ void Telemetry::report(Report::Type t) {
 }
 
 void Telemetry::report(Report::Type t, Report& r) {
-    if (not Reporter::instance().enabled())
-        return;
+    Reporter::instance().report(t, r);
+}
+
+void Telemetry::report(Report::Type t, std::function<void(JSON&)> callable) {
+    WraperReport r(callable);
     Reporter::instance().report(t, r);
 }
 

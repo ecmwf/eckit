@@ -9,6 +9,7 @@
  */
 
 #include <limits>
+#include <cstring>
 
 #include "eckit/exception/Exceptions.h"
 

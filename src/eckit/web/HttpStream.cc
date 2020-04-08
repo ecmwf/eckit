@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/web/HttpStream.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"

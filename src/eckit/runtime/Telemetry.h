@@ -32,7 +32,9 @@ public:
     {
         APPSTART = 0,
         APPSTOP,
+        INFO,
         METER,
+        COUNTER,
         MAXREPORT,
     };
 
@@ -51,6 +53,7 @@ class Telemetry : public NonCopyable {
 public:
     static void report(Report::Type);
     static void report(Report::Type, Report&);
+    static void report(Report::Type, std::function<void(JSON&)>);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

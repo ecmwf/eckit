@@ -74,8 +74,6 @@ NodeInfo& NodeInfo::init() {
     return *this;
 }
 
-NodeInfo::~NodeInfo() {}
-
 static ThreadSingleton<NodeInfo> n;
 
 NodeInfo& NodeInfo::thisNode() {

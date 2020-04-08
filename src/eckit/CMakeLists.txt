@@ -885,6 +885,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
                         ${SNAPPY_LIBRARIES}
+                        ${LIBRSYNC_LIBRARIES} # move to private libs in ecbuild 3
                         ${LZ4_LIBRARIES}
                         ${BZIP2_LIBRARIES}
                         ${AEC_LIBRARIES}
@@ -895,9 +896,6 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         ${THREADS_LIBRARIES}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
-
-                    PRIVATE_LIBS
-                        ${LIBRSYNC_LIBRARIES}
 
           LINKER_LANGUAGE CXX )
 

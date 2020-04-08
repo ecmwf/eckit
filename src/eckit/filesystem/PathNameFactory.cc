@@ -54,10 +54,7 @@ void PathNameFactory::deregister(const PathNameBuilderBase* builder) {
     ss << "Cannot deregister PathNameBuilder " << (void*)builder << ". Not found";
     throw SeriousBug(ss.str(), Here());
 }
-
 BasePathName* PathNameFactory::build(const std::string& path, bool tildeIsUserHome) const {
-
-    std::lock_guard<std::mutex> lock_(m_);
 
     std::string type = "local";
 
@@ -66,6 +63,13 @@ BasePathName* PathNameFactory::build(const std::string& path, bool tildeIsUserHo
     if (pos != std::string::npos) {
         type = path.substr(0, pos);
     }
+
+    return build(type, path, tildeIsUserHome);
+}
+
+BasePathName* PathNameFactory::build(const std::string& type, const std::string& path, bool tildeIsUserHome) const {
+
+    std::lock_guard<std::mutex> lock_(m_);
 
     auto it = builders_.find(type);
     if (it == builders_.end()) {

@@ -38,6 +38,7 @@ public: // methods
     void deregister(const PathNameBuilderBase* builder);
 
     BasePathName* build(const std::string& path, bool tildeIsUserHome = false) const;
+    BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false) const;
 
 private: // methods
 

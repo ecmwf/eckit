@@ -127,6 +127,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.asRawString() == "file:!");
         EXPECT(uri.asString() == "!");
     }
+    Log::info() << "z" << std::endl;
     {
         URI uri(":http://nodename/path");
         EXPECT(uri.scheme() == "unix");

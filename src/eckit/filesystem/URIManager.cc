@@ -117,14 +117,14 @@ class LocalFilePartManager : public URIManager {
     virtual bool query() override { return true; }
     virtual bool fragment() override { return true; }
 
-    virtual bool exists(const URI& uri) override { return PathName(uri.name()).exists(); }
+    virtual bool exists(const URI& uri) override { return PathName("local", uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName("local", uri.name()).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName("local", uri.name()).fileHandle(); }
 
     virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
-        return PathName(uri.name()).partHandle(ol, ll);
+        return PathName("local", uri.name()).partHandle(ol, ll);
     }
 
     virtual std::string asString(const URI& uri) const override { return uri.name(); }

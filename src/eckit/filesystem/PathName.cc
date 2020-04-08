@@ -28,6 +28,10 @@ PathName::PathName(const std::string& p, bool tildeIsUserHome) {
     path_ = PathNameFactory::instance().build(p, tildeIsUserHome);
 }
 
+PathName::PathName(const std::string& type, const std::string& p, bool tildeIsUserHome) {
+    path_ = PathNameFactory::instance().build(type, p, tildeIsUserHome);
+}
+
 PathName::PathName(const PathName& other) : path_(other.path_->clone()) {}
 
 PathName::PathName(const LocalPathName& other) : path_(new BasePathNameT<LocalPathName>(other)) {}

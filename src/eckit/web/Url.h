@@ -116,12 +116,10 @@ private:  // methods
 
 private:  // members
 
-<<<<<<< HEAD
     typedef std::map<std::string,std::string>  dict_t;
-=======
-	std::unique_ptr<DataHandle> handle_;
+
+    std::unique_ptr<DataHandle> handle_;
 	std::string        type_;
->>>>>>> develop
 
     dict_t dict_;
 
@@ -133,8 +131,6 @@ private:  // members
     std::string method_;
 
     std::vector<std::string> remaining_;
-
-    std::unique_ptr<DataHandle> handle_;
 };
 
 //-----------------------------------------------------------------------------

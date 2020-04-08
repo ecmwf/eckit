@@ -86,7 +86,7 @@ public:
     void location(const std::string& s) { headerOut().forward(s); }
 
     void retryAfter(long s) { headerOut().retryAfter(s); }
-
+    
     void dontCache() { headerOut().dontCache(); }
 
     void cgiParam(std::ostream&, char sep = ' ') const;
@@ -97,9 +97,10 @@ public:
 
     const std::vector<std::string>& remaining() const { return remaining_; }
 
-    void streamFrom(DataHandle*);
+    void streamFrom(DataHandle*, const std::string& type="application/octet-stream");
 
-    DataHandle* streamFrom();
+  	DataHandle* streamFrom();
+  	const std::string& streamType() const;
 
 protected:  // methods
     void print(std::ostream&) const;
@@ -115,7 +116,12 @@ private:  // methods
 
 private:  // members
 
+<<<<<<< HEAD
     typedef std::map<std::string,std::string>  dict_t;
+=======
+	std::unique_ptr<DataHandle> handle_;
+	std::string        type_;
+>>>>>>> develop
 
     dict_t dict_;
 

@@ -280,12 +280,17 @@ HttpHeader& Url::headerOut() {
     return out_;
 }
 
-void Url::streamFrom(DataHandle* handle) {
+void Url::streamFrom(DataHandle* handle, const std::string& type) {
     handle_.reset(handle);
+    type_ = type;
 }
 
 DataHandle* Url::streamFrom() {
     return handle_.get();
+}
+
+const std::string& Url::streamType() const {
+    return type_;
 }
 
 

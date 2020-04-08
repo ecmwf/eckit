@@ -880,24 +880,23 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
+                    PRIVATE_LIBS
+                        "${SNAPPY_LIBRARIES}"
+                        "${LIBRSYNC_LIBRARIES}"
+                        "${LZ4_LIBRARIES}"
+                        "${BZIP2_LIBRARIES}"
+                        "${AEC_LIBRARIES}"
                     LIBS
-                        ${OPENSSL_LIBRARIES}
-                        ${CURL_LIBRARIES}
-                        ${XXHASH_LIBRARIES}
-                        ${SNAPPY_LIBRARIES}
-                        ${LZ4_LIBRARIES}
-                        ${BZIP2_LIBRARIES}
-                        ${AEC_LIBRARIES}
-                        ${AIO_LIBRARIES}
-                        ${RADOS_LIBRARIES}
+                        "${OPENSSL_LIBRARIES}"
+                        "${CURL_LIBRARIES}"
+                        "${XXHASH_LIBRARIES}"
+                        "${AIO_LIBRARIES}"
+                        "${RADOS_LIBRARIES}"
                         ${CMATH_LIBRARIES}
                         ${RT_LIBRARIES}
                         ${THREADS_LIBRARIES}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
-
-                    PRIVATE_LIBS
-                        ${LIBRSYNC_LIBRARIES}
 
           LINKER_LANGUAGE CXX )
 

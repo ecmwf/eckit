@@ -2,24 +2,27 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Stats.h"
+#include "eckit/runtime/Telemetry.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Tokenizer.h"
+
+using eckit::runtime::Telemetry;
+using eckit::runtime::Report;
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StatsClient : public eckit::Tool {
+class TelemetryClient : public eckit::Tool {
 public:
-    StatsClient(int argc, char** argv) : Tool(argc, argv, "STATS_HOME") {}
+    TelemetryClient(int argc, char** argv) : Tool(argc, argv, "TELEMETRY_HOME") {}
 
-    ~StatsClient() {}
+    ~TelemetryClient() {}
 
     virtual void run();
 };
 
-void StatsClient::run() {
+void TelemetryClient::run() {
 
     if (argc() == 1) {
         std::cerr << "usage: " << argv(0) << " <message> [...]" << std::endl;
@@ -32,8 +35,9 @@ void StatsClient::run() {
         msg << " " << argv(i);
     }
 
-    Stats::report("foo", msg.str());
+    Telemetry::report(Report::APPSTART);
 
+    Telemetry::report(Report::APPSTOP);
 }
 
 }  // namespace eckit
@@ -43,6 +47,6 @@ void StatsClient::run() {
 
 
 int main(int argc, char* argv[]) {
-    eckit::StatsClient app(argc, argv);
-    return app.start();
+    eckit::TelemetryClient tool(argc, argv);
+    return tool.start();
 }

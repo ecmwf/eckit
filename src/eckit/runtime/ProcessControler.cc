@@ -20,7 +20,7 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 

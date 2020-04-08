@@ -29,11 +29,7 @@ public:
 
     static Application& instance();
 
-    // -- Contructors
-
     Application(int argc, char **argv, const char* homeenv = nullptr);
-
-    // -- Destructor
 
     virtual ~Application();
 
@@ -60,12 +56,7 @@ public:
 
     time_t uptime();
 
-private: // members
-
-
-    bool   running_;
-
-    /// From Main
+private: // methods
 
     virtual LogTarget* createInfoLogTarget() const;
     virtual LogTarget* createWarningLogTarget() const;
@@ -74,9 +65,11 @@ private: // members
 
 
     /// overriden from Configurable
-
     virtual std::string kind() const  { return "Application"; }
 
+private: // members
+
+    bool   running_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -8,42 +8,46 @@
  * does it submit to any jurisdiction.
  */
 
-
 /// @author Baudouin Raoult
-/// @author Tiago Quintino
-///
-/// @date Jun 2012
 
-#ifndef eckit_web_HtmlResource_H
-#define eckit_web_HtmlResource_H
+#ifndef eckit_web_HttpResource_H
+#define eckit_web_HttpResource_H
 
-#include "eckit/web/HttpResource.h"
+#include <string>
+
+#include "eckit/memory/NonCopyable.h"
+#include "eckit/web/HtmlObject.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSON;
-class Value;
+class Stream;
+class HttpStream;
 
-class JSONResource : public HttpResource {
-public:
+class HttpResource : public HtmlObject, public eckit::NonCopyable {
+public:  // methods
+    HttpResource(const std::string&);
 
-    JSONResource(const std::string&);
+    virtual ~HttpResource();
 
-    virtual ~JSONResource();
+    virtual bool restricted() { return false; }
 
-private:
+    static void dispatch(eckit::Stream&, std::istream&, HttpStream&, Url&);
+    static void index(std::ostream&, Url&);
 
-    virtual void GET(std::ostream&, Url&);
-    virtual void POST(std::ostream&, Url&);
-    virtual void json(eckit::JSON&, const eckit::Value&) = 0;    
+    const std::string& resourceUrl() const;
 
+protected:  // methods
+    virtual void print(std::ostream&) const;
+
+protected:  // members
+    const std::string resourceUrl_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

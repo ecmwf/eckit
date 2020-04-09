@@ -17,6 +17,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ### dependencies and options
 
+ecbuild_add_option( FEATURE BUILD_TOOLS
+                    DEFAULT ON
+                    DESCRIPTION "Build the command line tools" )
+
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT OFF
                     DESCRIPTION "Experimental features that havent graduated to production ready code" )

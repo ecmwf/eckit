@@ -13,9 +13,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "eckit/net/ProxiedTCPServer.h"
+
 #include "eckit/io/Select.h"
 #include "eckit/log/Log.h"
-#include "eckit/web/ProxiedTCPServer.h"
 
 
 namespace eckit {

@@ -360,8 +360,8 @@ runtime/PipeHandler.h
 runtime/ProcessControler.cc
 runtime/ProcessControler.h
 runtime/ProducerConsumer.h
-runtime/Stats.cc
-runtime/Stats.h
+runtime/Telemetry.cc
+runtime/Telemetry.h
 runtime/SessionID.cc
 runtime/SessionID.h
 runtime/Task.cc
@@ -572,12 +572,22 @@ net/Connector.cc
 net/Connector.h
 net/Endpoint.cc
 net/Endpoint.h
+net/HttpHeader.cc
+net/HttpHeader.h
+net/IPAddress.cc
+net/IPAddress.h
+net/NetMask.cc
+net/NetMask.h
 net/NetService.cc
 net/NetService.h
 net/NetUser.cc
 net/NetUser.h
 net/Port.cc
 net/Port.h
+net/ProxiedTCPClient.cc
+net/ProxiedTCPClient.h
+net/ProxiedTCPServer.cc
+net/ProxiedTCPServer.h
 net/SocketOptions.cc
 net/SocketOptions.h
 net/TCPClient.cc
@@ -598,10 +608,7 @@ net/UDPClient.cc
 net/UDPClient.h
 net/UDPServer.cc
 net/UDPServer.h
-net/IPAddress.cc
-net/IPAddress.h
-net/NetMask.cc
-net/NetMask.h)
+)
 
 list( APPEND eckit_serialisation_srcs
 serialisation/BadTag.cc

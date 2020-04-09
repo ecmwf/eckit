@@ -8,83 +8,36 @@
  * does it submit to any jurisdiction.
  */
 
-// File ClusterNode.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
 #ifndef eckit_ClusterNode_h
 #define eckit_ClusterNode_h
 
-//-----------------------------------------------------------------------------
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Stream;
 class NodeInfo;
 
-class ClusterNode {
+class ClusterNode : private eckit::NonCopyable {
 public:
+    ClusterNode();
 
-// -- Contructors
+    virtual ~ClusterNode();
 
-	ClusterNode();
+    void heartbeat();
 
-// -- Destructor
-
-	virtual ~ClusterNode();
-
-// -- Methods
-
-	void heartbeat();
-
-// -- For cluster MARS
-
-	virtual int port() const = 0;
-	virtual void initialise(Stream&)  = 0;
-	virtual void refresh(Stream&)  = 0;
-
-// -- Overridden methods
-
-
-// -- Class methods
-
-	//static Stream& connector(const std::string& name, const std::string& node);
-
-
-//	static bool         exited()    { return instance_ != 0; }
-
-protected:
-
-
-// -- Overridden methods
-
-	// From Configurable
-
-// -- Class methods
-
-private:
-
-// No copy allowed
-
-	ClusterNode(const ClusterNode&);
-	ClusterNode& operator=(const ClusterNode&);
-
-// -- Members
-
-
-// -- Overridden methods
-
-	// From Configurable
-
-
-// -- Class members
-
+    virtual int port() const         = 0;
+    virtual void initialise(Stream&) = 0;
+    virtual void refresh(Stream&)    = 0;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

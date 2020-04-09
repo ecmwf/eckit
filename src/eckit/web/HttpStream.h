@@ -8,39 +8,40 @@
  * does it submit to any jurisdiction.
  */
 
-
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-///
-/// @date Jun 2012
 
-#ifndef eckit_web_HtmlResource_H
-#define eckit_web_HtmlResource_H
+#ifndef eckit_web_HttpStream_H
+#define eckit_web_HttpStream_H
 
-#include "eckit/web/HttpResource.h"
-
+#include "eckit/web/Url.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSON;
-class Value;
+class HttpBuf;
 
-class JSONResource : public HttpResource {
+class HttpStream : public std::ostream {
 public:
 
-    JSONResource(const std::string&);
+    HttpStream();
+	~HttpStream();
 
-    virtual ~JSONResource();
+    void reset();
+    void write(std::ostream&, Url&, DataHandle&);
+
+    void print(std::ostream& s) const;
+
+    static std::ostream& dontEncode(std::ostream&);
+    static std::ostream& doEncode(std::ostream&);
 
 private:
 
-    virtual void GET(std::ostream&, Url&);
-    virtual void POST(std::ostream&, Url&);
-    virtual void json(eckit::JSON&, const eckit::Value&) = 0;    
+    HttpBuf* buf_;
 
 };
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

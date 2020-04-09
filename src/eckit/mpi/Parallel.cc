@@ -567,7 +567,7 @@ eckit::SharedBuffer Parallel::broadcastFile(const PathName& filepath, size_t roo
 
     bool isRoot = rank() == root;
 
-    eckit::CountedBuffer* buffer;
+    eckit::CountedBuffer* buffer = nullptr;
 
     struct BFileOp {
         int err_;
@@ -589,7 +589,7 @@ eckit::SharedBuffer Parallel::broadcastFile(const PathName& filepath, size_t roo
                 op.err_ = EISDIR;
             }
         }
-        catch (Exception& e) {
+        catch (Exception&) {
             op.err_ = errno;
         }
     }

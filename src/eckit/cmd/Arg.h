@@ -8,7 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   Arg.h
 /// @author Manuel Fuentes
 /// @date   Jan 1997
 

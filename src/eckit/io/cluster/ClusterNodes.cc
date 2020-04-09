@@ -17,8 +17,8 @@
 #include "eckit/container/MappedArray.h"
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/memory/Zero.h"
 #include "eckit/log/JSON.h"
+#include "eckit/memory/Zero.h"
 #include "eckit/thread/AutoLock.h"
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -38,10 +38,7 @@ class ClusterNodeEntry {
 
 public:
     ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port) :
-        active_(true),
-        lastSeen_(::time(0)),
-        offLine_(false),
-        port_(port) {
+        active_(true), lastSeen_(::time(0)), offLine_(false), port_(port) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
         zero(type_);

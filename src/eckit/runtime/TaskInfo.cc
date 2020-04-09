@@ -12,6 +12,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <iterator>
+
 #include "eckit/log/Timer.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/os/SignalHandler.h"
@@ -134,15 +136,15 @@ void TaskInfo::start(unsigned long long min, unsigned long long max) {
     progress_.min_                     = min;
     progress_.max_                     = max;
     progress_.val_                     = min;
-    gettimeofday(&progress_.start_, 0);
-    gettimeofday(&progress_.last_, 0);
+    ::gettimeofday(&progress_.start_, nullptr);
+    ::gettimeofday(&progress_.last_, nullptr);
 
     touch();
 }
 
 void TaskInfo::progress(unsigned long long val) {
     ::timeval now;
-    gettimeofday(&now, 0);
+    ::gettimeofday(&now, nullptr);
 
     ::timeval diff = now - progress_.last_;
 
@@ -160,7 +162,7 @@ void TaskInfo::progress(unsigned long long val) {
 
     progress_.val_ = val;
 
-    gettimeofday(&progress_.last_, 0);
+    ::gettimeofday(&progress_.last_, nullptr);
     touch();
 }
 
@@ -204,9 +206,10 @@ void TaskInfo::parent(long p) {
 void TaskInfo::json(JSON& json) const {
 
     Monitor& monitor = Monitor::instance();
-    size_t n = this - monitor.tasks().begin();
+    size_t n         = std::distance(monitor.tasks().cbegin(), this);
 
     json.startObject();
+
     json << "id" << n;
     json << "busy" << busy_;
     // json << "thread" << thread_;

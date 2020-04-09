@@ -470,8 +470,7 @@ long FOpenDataHandle::seek(long pos, int whence) {
         if (where == position_) {
             return where;
         }
-        ECKIT_DEBUG_VAR(*handle_);
-        ECKIT_DEBUG_VAR(where);
+
         long w = handle_->seek(where);
         if (w >= 0) {
             position_ = w;

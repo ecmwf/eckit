@@ -134,9 +134,10 @@ public:
 		return remaining_;
 	}
 
-	void streamFrom(DataHandle*);
+	void streamFrom(DataHandle*, const std::string& type="application/octet-stream");
 
 	DataHandle* streamFrom();
+	const std::string& streamType() const;
 
 protected:
 
@@ -160,6 +161,7 @@ private:
 	std::vector<std::string> remaining_;
 
 	std::unique_ptr<DataHandle> handle_;
+	std::string        type_;
 
 
 // -- Methods

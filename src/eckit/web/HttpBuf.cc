@@ -161,7 +161,7 @@ void HttpStream::write(std::ostream& s, Url& url, DataHandle& stream) {
         HttpHeader& header = url.headerOut();
 
         header.length(handle->estimate());
-        header.type("application/octet-stream");
+        header.type(url.streamType());
 
         AutoClose close(*handle);
         s << header;

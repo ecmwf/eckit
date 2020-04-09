@@ -34,7 +34,7 @@ public:  // methods
 
     ~UDPClient();
 
-    void send(void* buf, long length);
+    void send(const void* buf, size_t length);
 
 protected: // methods
 

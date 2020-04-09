@@ -8,21 +8,47 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/web/HttpBuf.h"
+#include <cstring>
+
+#include "eckit/web/HttpStream.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/Mutex.h"
 
+namespace eckit {
+
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
+class HttpBuf : public std::streambuf {
+
+
+    char    out_[4096];
+    virtual int overflow(int c);
+    virtual int sync();
+
+    HttpStream& owner_;
+
+public:
+
+    explicit HttpBuf(HttpStream& s);
+    virtual ~HttpBuf();
+
+    void reset();
+    void write(std::ostream&, Url&);
+
+    void print(std::ostream&) const;
+
+private:
+
+    std::vector<char>  buffer_;
+};
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 static int xindex = std::ios::xalloc();
 
-//----------------------------------------------------------------------------------------------------------------------
 
 typedef std::vector<char> VC;
 
@@ -70,12 +96,18 @@ inline back_encoder_iterator back_encoder(VC& x) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpBuf::HttpBuf(HttpStream& owner) : owner_(owner) {
+HttpBuf::HttpBuf(HttpStream& s) : owner_(s) {
     setp(out_, out_ + sizeof(out_));
 }
 
 HttpBuf::~HttpBuf() {
     sync();
+}
+
+void HttpBuf::reset() {
+    ::memset(out_, 0, sizeof(out_));
+    setp(out_, out_ + sizeof(out_));
+    buffer_.clear();
 }
 
 int HttpBuf::sync() {
@@ -130,7 +162,7 @@ void HttpBuf::write(std::ostream& out, Url& url) {
 #endif
 }
 
-std::ostream& HttpBuf::dontEncode(std::ostream& s) {
+std::ostream& HttpStream::dontEncode(std::ostream& s) {
     ASSERT(s.iword(xindex) == 1);
     // s.rdbuf()->sync(); // << std::flush;
     s << std::flush;
@@ -138,12 +170,16 @@ std::ostream& HttpBuf::dontEncode(std::ostream& s) {
     return s;
 }
 
-std::ostream& HttpBuf::doEncode(std::ostream& s) {
+std::ostream& HttpStream::doEncode(std::ostream& s) {
     ASSERT(s.iword(xindex) == 0);
     // s.rdbuf()->sync(); // << std::flush;
     s << std::flush;
     s.iword(xindex) = 1;
     return s;
+}
+
+void HttpBuf::print(std::ostream& os) const {
+    os << "HttpBuf[buffer=" << buffer_ << "]";
 }
 
 HttpStream::HttpStream() : std::ostream(new HttpBuf(*this)) {
@@ -153,6 +189,10 @@ HttpStream::HttpStream() : std::ostream(new HttpBuf(*this)) {
 
 HttpStream::~HttpStream() {
     delete buf_;
+}
+
+void HttpStream::reset() {
+    buf_->reset();
 }
 
 void HttpStream::write(std::ostream& s, Url& url, DataHandle& stream) {
@@ -179,6 +219,11 @@ void HttpStream::write(std::ostream& s, Url& url, DataHandle& stream) {
         flush();
         buf_->write(s, url);
     }
+}
+
+void HttpStream::print(std::ostream& s) const {
+    buf_->pubsync();
+    buf_->print(s);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

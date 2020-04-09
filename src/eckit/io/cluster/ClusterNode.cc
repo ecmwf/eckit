@@ -18,11 +18,9 @@
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -88,6 +86,7 @@ void ClusterHeartBeat::run() {
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 ClusterNode::ClusterNode() {}
 

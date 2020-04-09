@@ -18,8 +18,6 @@
 #include "eckit/web/Html.h"
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -64,7 +62,7 @@ void Url::parse(const std::string& url, bool param) {
 
             case '&':
                 if (param) {
-                    map_[Html::removeHex(p)] = Html::removeHex(s);
+                    dict_[Html::removeHex(p)] = Html::removeHex(s);
                     s                        = "";
                     p                        = "";
                 }
@@ -102,7 +100,7 @@ void Url::parse(const std::string& url, bool param) {
     }
     else {
         if (p != "")
-            map_[Html::removeHex(p)] = Html::removeHex(s);
+            dict_[Html::removeHex(p)] = Html::removeHex(s);
     }
 }
 
@@ -214,8 +212,8 @@ void Url::print(std::ostream& s) const {
         s << "/" << *j;
 
     char c = '?';
-    Map::const_iterator i;
-    for (i = map_.begin(); i != map_.end(); ++i) {
+    dict_t::const_iterator i;
+    for (i = dict_.begin(); i != dict_.end(); ++i) {
         s << c << (*i).first << '=' << (*i).second;
         c = '&';
     }
@@ -223,8 +221,8 @@ void Url::print(std::ostream& s) const {
 
 void Url::cgiParam(std::ostream& s, char sep) const {
     char c = ' ';
-    Map::const_iterator i;
-    for (i = map_.begin(); i != map_.end(); ++i) {
+    dict_t::const_iterator i;
+    for (i = dict_.begin(); i != dict_.end(); ++i) {
         s << c << (*i).first << '=' << (*i).second;
         c = sep;
     }
@@ -235,15 +233,15 @@ UrlAccess Url::operator[](const std::string& s) {
 }
 
 void Url::set(const std::string& p, const std::string& s) {
-    map_[p] = s;
+    dict_[p] = s;
 }
 
 const std::string& Url::get(const std::string& s) {
-    return map_[s];
+    return dict_[s];
 }
 
 void Url::erase(const std::string& s) {
-    map_.erase(s);
+    dict_.erase(s);
 }
 
 const std::string& Url::operator[](int n) const {
@@ -253,8 +251,8 @@ const std::string& Url::operator[](int n) const {
 eckit::Value Url::json() const {
     std::string p = in_.content();
 
-    if(p.empty()) {
-        return eckit::Value();
+    if (p.empty()) {
+        return toValue(dict_);
     }
 
     std::cout << "================" << std::endl;
@@ -295,6 +293,8 @@ const std::string& Url::streamType() const {
     return type_;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
 
 UrlAccess::operator long() {
     return Translator<std::string, long>()(url_.get(s_));

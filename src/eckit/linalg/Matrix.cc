@@ -11,6 +11,7 @@
 #include "eckit/linalg/Matrix.h"
 
 #include <cstring>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"

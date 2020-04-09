@@ -8,26 +8,32 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef Html_H
-#define Html_H
+#ifndef eckit_web_Html_H
+#define eckit_web_Html_H
 
 #include <map>
+#include <string>
 
 #include "eckit/web/HtmlObject.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Url;
 
 class Html {
 public:
-
-	enum { None = 0, Left = 1, Right = 2, Center = 4,
-		Top = 8, Bottom = 16 };
+    enum
+    {
+        None   = 0,
+        Left   = 1,
+        Right  = 2,
+        Center = 4,
+        Top    = 8,
+        Bottom = 16
+    };
 
     class Tag {
         virtual void print(std::ostream& s) const = 0;
@@ -37,6 +43,7 @@ public:
     class RawTag : public Tag {
         std::string tag_;
         virtual void print(std::ostream& s) const { s << tag_; }
+
     protected:
         RawTag(const std::string& s) : tag_(s) {}
     };
@@ -49,8 +56,9 @@ public:
     // To be used with 'include'
 
     class Substitute : public HtmlObject {
-        std::map<std::string,std::string,std::less<std::string> > map_;
-        virtual void substitute(std::ostream&,const std::string&);
+        std::map<std::string, std::string, std::less<std::string> > map_;
+        virtual void substitute(std::ostream&, const std::string&);
+
     public:
         Substitute();
         ~Substitute();
@@ -59,22 +67,22 @@ public:
 
     class Include {
     public:
-
-        Include(const std::string&,HtmlObject* = 0);
-        Include(const std::string&,HtmlObject&);
+        Include(const std::string&, HtmlObject* = 0);
+        Include(const std::string&, HtmlObject&);
 
     private:
-
         Include(const Include&);
         Include& operator=(const Include&);
 
-        HtmlObject*          sub_;
-        std::string               name_;
+        HtmlObject* sub_;
+        std::string name_;
 
         void print(std::ostream& s) const;
 
-        friend std::ostream& operator<<(std::ostream& s, const Include& n)
-        { n.print(s); return s; }
+        friend std::ostream& operator<<(std::ostream& s, const Include& n) {
+            n.print(s);
+            return s;
+        }
     };
 
     class Image : public Tag {
@@ -87,7 +95,7 @@ public:
         Image(const Image&);
         Image& operator=(const Image&);
 
-        std::string  name_;
+        std::string name_;
         virtual void print(std::ostream& s) const;
     };
 
@@ -96,6 +104,7 @@ public:
         Link(Url&);
         Link() {}
         Link(const std::string& url) : url_(addHex(url)) {}
+
     private:
         virtual void print(std::ostream& s) const;
         std::string url_;
@@ -104,14 +113,17 @@ public:
     class Class {
     public:
         Class(const std::string& str) : str_(str) {}
+
     private:
         std::string str_;
         void print(std::ostream& s) const;
-        friend std::ostream& operator<<(std::ostream& s, const Class& n)
-        { n.print(s); return s; }
+        friend std::ostream& operator<<(std::ostream& s, const Class& n) {
+            n.print(s);
+            return s;
+        }
     };
 
-    //-----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 
     class BeginFormatted : public RawTag {
     public:
@@ -142,11 +154,12 @@ public:
         EndBold() : RawTag("</B>") {}
     };
 
-    //-----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 
     class BeginForm : public Tag {
     public:
         BeginForm(const std::string& str = "") : str_(str) {}
+
     private:
         std::string str_;
         virtual void print(std::ostream& s) const;
@@ -158,21 +171,25 @@ public:
 
     class BeginTextArea {
     public:
-        BeginTextArea(const std::string& name,int row,int col):
-            name_(name), row_(row),col_(col) {}
+        BeginTextArea(const std::string& name, int row, int col) : name_(name), row_(row), col_(col) {}
+
     private:
         std::string name_;
         int row_;
         int col_;
         void print(std::ostream& s) const;
-        friend std::ostream& operator<<(std::ostream& s, const BeginTextArea& n)
-        { n.print(s); return s; }
+        friend std::ostream& operator<<(std::ostream& s, const BeginTextArea& n) {
+            n.print(s);
+            return s;
+        }
     };
 
     class EndTextArea {
         void print(std::ostream& s) const;
-        friend std::ostream& operator<<(std::ostream& s, const EndTextArea& n)
-        { n.print(s); return s; }
+        friend std::ostream& operator<<(std::ostream& s, const EndTextArea& n) {
+            n.print(s);
+            return s;
+        }
     };
 
     class TextField {
@@ -180,20 +197,23 @@ public:
         std::string value_;
         std::string title_;
         void print(std::ostream& s) const;
+
     public:
-        TextField(const std::string& name,const std::string& value = "",const std::string& title = ""):
-            name_(name),value_(value),title_(title) {}
-        friend std::ostream& operator<<(std::ostream& s, const TextField& n)
-        { n.print(s); return s; }
+        TextField(const std::string& name, const std::string& value = "", const std::string& title = "") :
+            name_(name), value_(value), title_(title) {}
+        friend std::ostream& operator<<(std::ostream& s, const TextField& n) {
+            n.print(s);
+            return s;
+        }
     };
 
     class HiddenField : public Tag {
         std::string name_;
         std::string value_;
         virtual void print(std::ostream& s) const;
+
     public:
-        HiddenField(const std::string& name,const std::string& value):
-            name_(name),value_(value) {}
+        HiddenField(const std::string& name, const std::string& value) : name_(name), value_(value) {}
     };
 
 
@@ -201,52 +221,49 @@ public:
         std::string type_;
         std::string title_;
         virtual void print(std::ostream& s) const;
+
     public:
-        Button(const std::string& type,const std::string& title):
-            type_(type),title_(title) {}
+        Button(const std::string& type, const std::string& title) : type_(type), title_(title) {}
     };
 
     class CheckBox : public Tag {
         std::string name_;
         std::string value_;
-        bool   on_;
+        bool on_;
         virtual void print(std::ostream& s) const;
+
     public:
-        CheckBox(const std::string& name,const std::string& value,bool on):
-            name_(name), value_(value), on_(on) {}
+        CheckBox(const std::string& name, const std::string& value, bool on) : name_(name), value_(value), on_(on) {}
     };
 
     class ResetButton : public Button {
     public:
-        ResetButton(const std::string& title = "Reset"):
-            Button("reset",title) {}
+        ResetButton(const std::string& title = "Reset") : Button("reset", title) {}
     };
 
     class SubmitButton : public Button {
     public:
-        SubmitButton(const std::string& title = "Submit"):
-            Button("submit",title) {}
+        SubmitButton(const std::string& title = "Submit") : Button("submit", title) {}
     };
 
-    class Hidden : public Tag {
-    };
+    class Hidden : public Tag {};
 
     static std::string addHex(const std::string&);
     static std::string removeHex(const std::string&);
 
-    //-----------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 
     // Table stuff
 
     class BeginTable : public Tag {
         bool border_;
-        int  padding_;
-        int  spacing_;
+        int padding_;
+        int spacing_;
         int width_;
         virtual void print(std::ostream& s) const;
+
     public:
-        BeginTable(bool border = true,int width = 0,
-                   int padding = 0, int spacing = 0):
+        BeginTable(bool border = true, int width = 0, int padding = 0, int spacing = 0) :
             border_(border), padding_(padding), spacing_(spacing), width_(width) {}
     };
 
@@ -262,15 +279,15 @@ public:
         int colspan_;
         int rowspan_;
         virtual void print(std::ostream& s) const;
+
     protected:
-        TableTag(const std::string& tag,int align,int colspan, int rowspan):
-            tag_(tag),align_(align),colspan_(colspan),rowspan_(rowspan) {}
+        TableTag(const std::string& tag, int align, int colspan, int rowspan) :
+            tag_(tag), align_(align), colspan_(colspan), rowspan_(rowspan) {}
     };
 
     class BeginHeader : public TableTag {
     public:
-        BeginHeader(int align = None,int colspan = 0, int rowspan = 0):
-            TableTag("TH",align,colspan,rowspan) {}
+        BeginHeader(int align = None, int colspan = 0, int rowspan = 0) : TableTag("TH", align, colspan, rowspan) {}
     };
 
     class EndHeader : public RawTag {
@@ -280,8 +297,7 @@ public:
 
     class BeginRow : public TableTag {
     public:
-        BeginRow(int align = None,int colspan = 0, int rowspan = 0):
-            TableTag("TR",align,colspan,rowspan) {}
+        BeginRow(int align = None, int colspan = 0, int rowspan = 0) : TableTag("TR", align, colspan, rowspan) {}
     };
 
     class EndRow : public RawTag {
@@ -291,8 +307,7 @@ public:
 
     class BeginData : public TableTag {
     public:
-        BeginData(int align = None,int colspan = 0, int rowspan = 0):
-            TableTag("TD",align,colspan,rowspan) {}
+        BeginData(int align = None, int colspan = 0, int rowspan = 0) : TableTag("TD", align, colspan, rowspan) {}
     };
 
     class EndData : public RawTag {
@@ -300,11 +315,11 @@ public:
         EndData() : RawTag("</TD>") {}
     };
 
-}; // class Html
+};  // class Html
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

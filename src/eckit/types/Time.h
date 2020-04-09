@@ -21,118 +21,95 @@
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
 class DumpLoad;
 class Bless;
 class Hash;
 
-// Forwarded declarations
-
 typedef double Second;
-
-class Time {
-
-public:
-
-// -- Exceptions
-	// None
-
-// -- Contructors
-
-	Time(long, long, long);
-	Time(long seconds = 0);
-	Time(const std::string&);
-
-#include "eckit/types/Time.b"
-
-// -- Copy
-
-	Time(const Time&);
-	Time& operator=(const Time&);
-
-// -- Destructor
-
-	~Time();
-
-// -- Convertors
-
-	operator std::string() const;
-	operator Second() const { return seconds_; }
-
-// -- Operators
-
-        bool operator==(const Time& other) const;
-
-        bool operator!=(const Time& other) const;
-
-	bool operator>(const Time& other) const
-		{ return (seconds_ > other.seconds_); }
-
-	bool operator<(const Time& other) const
-		{ return (seconds_ < other.seconds_); }
-
-	bool operator>=(const Time& other) const
-		{ return (seconds_ >= other.seconds_); }
-
-	bool operator<=(const Time& other) const
-		{ return (seconds_ <= other.seconds_); }
-
-	Second operator-(const Time& other) const
-		{ return seconds_ - other.seconds_; }
-
-//  Does not make sens
-//	Time operator+(const Time& other) const
-//		{ return seconds_ + other.seconds_; }
-
-	Time& operator+=(const Second& sec)
-		{ seconds_ += sec; return *this; }
-
-	Time& operator-=(const Second& sec)
-		{ seconds_ -= sec; return *this; }
-
-// -- Methods
-	long hours() const;
-	long minutes() const;
-	long seconds() const;
-	long hhmmss() const;
-
-	void dump(DumpLoad&) const;
-	void load(DumpLoad&);
-
-    void hash(Hash&) const;
-
-// -- Class Methods
-
-	static Time now();
-
-protected:
-
-// -- Methods
-
-	void print(std::ostream&) const;
-
-private:
-
-// -- Members
-
-	Second seconds_;
-
-	friend std::ostream& operator<<(std::ostream& s,const Time& t)
-		{ t.print(s); return s; }
-
-};
-
-
-class BadTime: public BadValue {
-public:
-	BadTime(const std::string& t);
-
-};
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+class Time {
+
+public:  // methods
+    Time(long, long, long);
+    Time(long seconds = 0);
+    Time(const std::string&);
+
+#include "eckit/types/Time.b"
+
+    Time(const Time&);
+    Time& operator=(const Time&);
+
+    ~Time();
+
+    operator std::string() const;
+
+    operator Second() const { return seconds_; }
+
+    bool operator==(const Time& other) const;
+
+    bool operator!=(const Time& other) const;
+
+    bool operator>(const Time& other) const { return (seconds_ > other.seconds_); }
+
+    bool operator<(const Time& other) const { return (seconds_ < other.seconds_); }
+
+    bool operator>=(const Time& other) const { return (seconds_ >= other.seconds_); }
+
+    bool operator<=(const Time& other) const { return (seconds_ <= other.seconds_); }
+
+    Second operator-(const Time& other) const { return seconds_ - other.seconds_; }
+
+    //  Does not make sense
+    //	Time operator+(const Time& other) const
+    //		{ return seconds_ + other.seconds_; }
+
+    Time& operator+=(const Second& sec) {
+        seconds_ += sec;
+        return *this;
+    }
+
+    Time& operator-=(const Second& sec) {
+        seconds_ -= sec;
+        return *this;
+    }
+
+    long hours() const;
+    long minutes() const;
+    long seconds() const;
+    long hhmmss() const;
+
+    void dump(DumpLoad&) const;
+    void load(DumpLoad&);
+
+    void hash(Hash&) const;
+
+    static Time now();
+
+protected:  // methods
+
+    void print(std::ostream&) const;
+
+private:  // members
+
+    Second seconds_;
+
+    friend std::ostream& operator<<(std::ostream& s, const Time& t) {
+        t.print(s);
+        return s;
+    }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class BadTime : public BadValue {
+public:
+    BadTime(const std::string& t);
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit
 
 #endif

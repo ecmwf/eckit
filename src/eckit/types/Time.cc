@@ -28,7 +28,7 @@ inline void printTime(std::ostream& s, long n) {
 
 Time::Time(long seconds) : seconds_(seconds) {
     if (seconds >= 86400 || seconds < 0) {
-        std::string msg = "Time in seconds cannot exceed 86400 ";
+        std::string msg = "Time in seconds must be positive and cannot exceed 86400, seconds: ";
         Translator<long, std::string> t;
         msg += t(seconds);
         throw BadTime(msg);

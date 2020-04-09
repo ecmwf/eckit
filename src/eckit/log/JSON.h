@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <ctime>
 
 #include "eckit/eckit.h"
 
@@ -54,6 +55,7 @@ public:  // methods
     JSON& operator<<(const Date&);
     JSON& operator<<(const Time&);
     JSON& operator<<(const DateTime&);
+    JSON& operator<<(const ::timeval&);
 
     JSON& operator<<(const std::string&);
     JSON& operator<<(const char*);
@@ -77,6 +79,10 @@ public:  // methods
 
     /// Sets the precision for float and double (works like std::setprecision)
     JSON& precision(int);
+
+    /// write raw characters into the json stream
+    /// @warning use with care as this may create invalid json
+    void raw(const char*, long);
 
 private:  // members
     std::ostream& out_;

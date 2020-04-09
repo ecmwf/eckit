@@ -29,15 +29,12 @@
 
 // TODO: remember to add a mutex
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CmdResource::Map* CmdResource::resources_ = 0;
-
-// ============================================================
+CmdResource::Map* CmdResource::resources_ = nullptr;
 
 CmdResource::CmdResource(const std::string& s) {
     Tokenizer tokenize(",");

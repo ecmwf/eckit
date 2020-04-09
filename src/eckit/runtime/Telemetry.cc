@@ -106,7 +106,7 @@ Reporter::Reporter() {
 
 void Reporter::report(Report::Type type, const Report& report) {
 
-    if (not enabled())  //< early return when we don't have servers configured
+    if (not enabled())  //< early return if we don't have servers configured
         return;
 
     std::ostringstream out;
@@ -170,7 +170,7 @@ void Telemetry::report(Report::Type t) {
     report(t, r);
 }
 
-void Telemetry::report(Report::Type t, Report& r) {
+void Telemetry::report(Report::Type t, const Report& r) {
     Reporter::instance().report(t, r);
 }
 

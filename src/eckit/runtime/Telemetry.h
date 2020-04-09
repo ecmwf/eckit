@@ -15,6 +15,7 @@
 #define eckit_runtime_Telemetry_h
 
 #include <string>
+#include <functional>
 
 #include "eckit/memory/NonCopyable.h"
 
@@ -52,7 +53,7 @@ public:
 class Telemetry : public NonCopyable {
 public:
     static void report(Report::Type);
-    static void report(Report::Type, Report&);
+    static void report(Report::Type, const Report&);
     static void report(Report::Type, std::function<void(JSON&)>);
 };
 

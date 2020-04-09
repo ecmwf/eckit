@@ -12,6 +12,7 @@
 #include <fstream>
 #include <memory>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
@@ -93,7 +94,7 @@ Reporter::Reporter() {
 
     YAMLConfiguration config(path);
 
-    ECKIT_DEBUG_VAR(config)
+    LOG_DEBUG_LIB(LibEcKit) << "Telemetry config: " << config << std::endl;
 
     service_type = config.getString("service_type", "unknown");
     service_name = config.getString("service_name", "unknown");
@@ -135,7 +136,7 @@ void Reporter::report(Report::Type type, const Report& report) {
 
     std::string msg = out.str();
 
-    ECKIT_DEBUG_VAR(msg)
+    LOG_DEBUG_LIB(LibEcKit) << "Telemetry message: " << msg << std::endl;
 
     broadcast((void*)msg.data(), msg.size());
 }

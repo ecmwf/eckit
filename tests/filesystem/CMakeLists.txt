@@ -4,7 +4,7 @@
 option( ENABLE_ECKIT-352 "Control if ECKIT-352 tests should be enabled" ON )
 
 ecbuild_add_test( TARGET      eckit_test_filesystem_aiohandle
-                  CONDITION   NOT DEFINED ENV{CRAYOS_VERSION}
+                  CONDITION   NOT DEFINED ENV{CRAYOS_VERSION} AND ${HAVE_AIO}
                   SOURCES     test_aiohandle.cc
                   LIBS        eckit )
 

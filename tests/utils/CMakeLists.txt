@@ -53,4 +53,4 @@ ecbuild_add_test( TARGET      eckit_test_utils_compression_performance
 ecbuild_add_test( TARGET      eckit_test_rsync
                   CONDITION   HAVE_RSYNC
                   SOURCES     test_rsync.cc
-                  LIBS        eckit )
+                  LIBS        eckit rsync )

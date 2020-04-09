@@ -13,11 +13,10 @@
 
 #include "eckit/cmd/PsCmd.h"
 #include "eckit/log/Colour.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/log/JSON.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/utils/Translator.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -25,15 +24,12 @@ namespace eckit {
 
 static PsCmd ps;
 
-//----------------------------------------------------------------------------------------------------------------------
 
 PsCmd::PsCmd() : CmdResource("ps") {}
 
-//----------------------------------------------------------------------------------------------------------------------
 
 PsCmd::~PsCmd() {}
 
-//----------------------------------------------------------------------------------------------------------------------
 void PsCmd::display(JSON& json, TaskInfo& info, long tasknb, const std::string& grep) const {
     json << info;
 }
@@ -116,7 +112,6 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
     out << Colour::reset;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 static void get(int n, std::vector<std::string>& v) {
     Monitor::TaskArray& info = Monitor::instance().tasks();
@@ -131,11 +126,6 @@ static void get(int n, std::vector<std::string>& v) {
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------------------------------------------------
-
 static bool sortTasks(int n1, int n2) {
 
     std::vector<std::string> v1;
@@ -147,7 +137,6 @@ static bool sortTasks(int n1, int n2) {
     return v1 < v2;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 static bool isChild(Monitor::TaskArray& info, const std::string& name, int task) {
     int parent = info[task].parent();
@@ -160,7 +149,6 @@ static bool isChild(Monitor::TaskArray& info, const std::string& name, int task)
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 static bool isParent(Monitor::TaskArray& info, int taskid, int task) {
     int parenttask = info[task].parent();
@@ -172,7 +160,6 @@ static bool isParent(Monitor::TaskArray& info, int taskid, int task) {
            ((parentid != -1) && isParent(info, parentid, task));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
     std::string grep;
@@ -190,8 +177,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
     }
 
     JSON json(out, false);
-    bool doJason = args.exists("json");
-
+    bool doJson = args.exists("json");
 
 
     for (size_t i = 1; i < args.size(); ++i)
@@ -214,7 +200,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
 
     std::sort(t.begin(), t.end(), sortTasks);
 
-    if (doJason) {
+    if (doJson) {
         json.startList();
     }
     else {
@@ -226,7 +212,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
 
     if (all)
         for (size_t j = 0; j < t.size(); j++) {
-            if (!doJason) {
+            if (!doJson) {
                 display(out, info[t[j]], t[j], grep);
             }
             else {
@@ -237,7 +223,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
         for (size_t j = 0; j < t.size(); j++) {
             for (Ordinal i = 0; i < tasks.size(); ++i)
                 if (isChild(info, tasks[i], t[j])) {
-                    if (!doJason) {
+                    if (!doJson) {
                         display(out, info[t[j]], t[j], grep);
                     }
                     else {
@@ -247,7 +233,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                 }
             for (Ordinal k = 0; k < taskids.size(); ++k)
                 if (isParent(info, taskids[k], t[j])) {
-                    if (!doJason) {
+                    if (!doJson) {
                         display(out, info[t[j]], t[j], grep);
                     }
                     else {
@@ -257,7 +243,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                 }
             for (Ordinal l = 0; l < pids.size(); ++l)
                 if (pids[l] == info[t[j]].pid()) {
-                    if (!doJason) {
+                    if (!doJson) {
                         display(out, info[t[j]], t[j], grep);
                     }
                     else {
@@ -267,18 +253,16 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                 }
         }
 
-    if (doJason) {
+    if (doJson) {
         json.endList();
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void PsCmd::help(std::ostream& out) const {
     out << "as the UNIX counterpart";
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 Arg PsCmd::usage(const std::string& cmd) const {
     return ~Arg("-json") + ~Arg("-grep", Arg::text) + Arg("<name> ...", Arg::text);

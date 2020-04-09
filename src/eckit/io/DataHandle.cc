@@ -71,6 +71,7 @@ void DataHandle::flush() {
 }
 
 Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
+
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
 
     compress();
@@ -233,7 +234,7 @@ std::string DataHandle::title() const {
 #ifndef IBM
 template <>
 Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const {
-    return 0;
+    return nullptr;
 }
 #endif
 
@@ -306,6 +307,12 @@ Offset DataHandle::seek(const Offset& from) {
     std::ostringstream os;
     os << "DataHandle::seek(" << from << ") [" << *this << "]";
     throw NotImplemented(os.str(), Here());
+}
+
+Length DataHandle::size() {
+    std::ostringstream oss;
+    oss << "DataHandle::size() [" << *this << "]";
+    throw NotImplemented(oss.str(), Here());
 }
 
 void DataHandle::skip(const Length& len) {
@@ -439,6 +446,7 @@ long FOpenDataHandle::seek(long pos, int whence) {
 
     try {
         long where = pos;
+        std::cerr << "whence: " << whence << std::endl;
         switch (whence) {
 
             case SEEK_SET:
@@ -454,7 +462,9 @@ long FOpenDataHandle::seek(long pos, int whence) {
                 break;
 
             default:
-                NOTIMP;
+                std::ostringstream oss;
+                oss << "FOpenDataHandle can't seek(pos=" << pos << ", whence=" << whence << ")";
+                throw NotImplemented(oss.str(), Here());
         }
 
         if (where == position_) {

@@ -47,7 +47,9 @@ public: // types
         virtual iterator begin() = 0;
         virtual iterator end() = 0;
         virtual const_iterator begin() const = 0;
-        virtual const_iterator end()   const = 0;
+        virtual const_iterator end() const   = 0;
+        virtual const_iterator cbegin() const { return begin(); }
+        virtual const_iterator cend()   const { return end(); }
 
         virtual unsigned long size() = 0;
         virtual TaskInfo& operator[](unsigned long n) = 0;

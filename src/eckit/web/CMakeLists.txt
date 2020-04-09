@@ -13,10 +13,10 @@ HtmlObject.cc
 HtmlObject.h
 HtmlResource.cc
 HtmlResource.h
-HttpBuf.cc
-HttpBuf.h
-HttpHeader.cc
-HttpHeader.h
+HttpResource.cc
+HttpResource.h
+HttpStream.cc
+HttpStream.h
 HttpServer.cc
 HttpServer.h
 HttpService.cc
@@ -34,10 +34,6 @@ JavaService.cc
 JavaService.h
 JavaUser.cc
 JavaUser.h
-ProxiedTCPClient.cc
-ProxiedTCPClient.h
-ProxiedTCPServer.cc
-ProxiedTCPServer.h
 Url.cc
 Url.h)
 
@@ -52,4 +48,3 @@ ecbuild_add_library( TARGET eckit_web TYPE SHARED
 						${INSTALL_INCLUDE_DIR}/eckit/web
 					 LIBS
 						eckit )
-

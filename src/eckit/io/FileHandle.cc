@@ -188,6 +188,12 @@ void FileHandle::rewind() {
     ::rewind(file_);
 }
 
+Length FileHandle::size() {
+    Stat::Struct info;
+    SYSCALL(Stat::stat(name_.c_str(), &info));
+    return info.st_size;
+}
+
 Length FileHandle::estimate() {
     Stat::Struct info;
     SYSCALL(Stat::stat(name_.c_str(), &info));

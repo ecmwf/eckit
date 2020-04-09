@@ -22,6 +22,9 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+void operator>>(Stream& s, URI& uri) {
+    uri = URI(s);
+}
 
 URI::URI() {}
 
@@ -44,8 +47,11 @@ URI::URI(const std::string& scheme, const PathName& path):
 URI::URI(const std::string &scheme, const URI &uri):
     scheme_(scheme), user_(uri.user_), host_(uri.host_), port_(uri.port_), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
 
-URI::URI(const std::string &scheme, const URI &uri, const std::string &host, const int port):
-    scheme_(scheme), user_(uri.user_), host_(host), port_(port), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
+URI::URI(const std::string &scheme, const std::string &hostname, const int port):
+    scheme_(scheme), host_(hostname), port_(port) {}
+
+URI::URI(const std::string &scheme, const URI &uri, const std::string &hostname, const int port):
+    scheme_(scheme), user_(uri.user_), host_(hostname), port_(port), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
 
 URI::URI(Stream &s) {
     s >> scheme_;
@@ -235,6 +241,8 @@ void URI::print(std::ostream& s) const {
 }
 
 void URI::encode(Stream &s) const {
+    std::cout << "URI " << asRawString() << " - start encoding\n";
+
     s << scheme_;
     s << user_;
     s << host_;
@@ -242,6 +250,8 @@ void URI::encode(Stream &s) const {
     s << name_;
     s << fragment_;
     s << queryValues_;
+
+    std::cout << "URI " << asRawString() << " encoded\n";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

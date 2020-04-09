@@ -20,9 +20,15 @@
 #include "eckit/net/IPAddress.h"
 #include "eckit/exception/Exceptions.h"
 
+// Cray C++ compiler should not try to optimize this code
+#if _CRAYC
+#pragma _CRI noopt
+#endif
+
 
 namespace eckit {
 namespace net {
+
 
 static Translator<std::string, size_t> s2l;
 
@@ -54,4 +60,3 @@ void NetMask::print(std::ostream& s) const {
 
 } // namespace net
 } // namespace eckit
-

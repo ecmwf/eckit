@@ -8,35 +8,26 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/RawFileHandle.h
-// Baudouin Raoult - ECMWF Dec 2013
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Dec 2013
 
 #ifndef eckit_filesystem_RawFileHandle_h
 #define eckit_filesystem_RawFileHandle_h
 
 #include "eckit/io/DataHandle.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class RawFileHandle : public DataHandle {
 public:
 
-    // -- Contructors
-
-    RawFileHandle(const std::string&,bool = false);
-
-
-    // -- Destructor
+    RawFileHandle(const std::string& path, bool overwrite = false);
 
     ~RawFileHandle();
-
-    // -- Overridden methods
-
-    // From DataHandle
 
     virtual Length openForRead();
     virtual void openForWrite(const Length&);
@@ -47,31 +38,22 @@ public:
     virtual void   close();
     virtual void   print(std::ostream&) const;
 
+    virtual Length size();
+    virtual Length estimate();
     virtual Offset position();
     virtual Offset seek(const Offset&);
     virtual void skip(const Length &);
 
-    // From Streamable
-
     virtual void encode(Stream&) const;
 
-    // -- Class methods
-
-
 private:
-
-    // -- Members
 
     std::string path_;
     bool overwrite_;
     int fd_;
-
-    // -- Class members
-
 };
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

@@ -1,5 +1,6 @@
 ecbuild_add_executable( TARGET      eckit_version
                         OUTPUT_NAME eckit-version
+                        CONDITION   HAVE_BUILD_TOOLS
                         SOURCES     eckit-version.cc
                         LIBS        eckit )
 
@@ -7,25 +8,28 @@ ecbuild_add_executable( TARGET      eckit_version
 
 ecbuild_add_executable( TARGET      dhcopy
                         OUTPUT_NAME eckit-dhcopy
+                        CONDITION   HAVE_BUILD_TOOLS
                         NOINSTALL
                         SOURCES     dhcopy.cc
                         LIBS        eckit_option eckit )
 
 ecbuild_add_executable( TARGET      syslog_server
                         OUTPUT_NAME eckit-syslog-server
+                        CONDITION   HAVE_BUILD_TOOLS
                         NOINSTALL
                         SOURCES     syslog-server.cc
                         LIBS        eckit )
 
 ecbuild_add_executable( TARGET      syslog_client
                         OUTPUT_NAME eckit-syslog-client
+                        CONDITION   HAVE_BUILD_TOOLS
                         NOINSTALL
                         SOURCES     syslog-client.cc
                         LIBS        eckit )
 
 ecbuild_add_executable( TARGET      eckit_rsync
                         OUTPUT_NAME eckit-rsync
-                        CONDITION   ECKIT_HAVE_RSYNC
+                        CONDITION   HAVE_BUILD_TOOLS AND ECKIT_HAVE_RSYNC
                         NOINSTALL
                         SOURCES     rsync.cc
                         LIBS        eckit_option eckit )

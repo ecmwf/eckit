@@ -37,98 +37,98 @@ namespace system {
 
 typedef std::map<std::string, Library*> LibraryMap;
 
-// Builds the map on demand, needed for correct static initialization because factories can be
-// initialized first
-struct LibraryRegistry {
+/// Registry for all libraries
+///
+class LibraryRegistry {
+public:  // methods
+    /// Builds the registry on demand, needed for correct static initialization
+    /// because factories can be initialized first
     static LibraryRegistry& instance() {
         static LibraryRegistry reg;
         return reg;
     }
 
+    void lock() const { mutex_.lock(); }
+    void unlock() const { mutex_.unlock(); }
+
+    /// Registers an entry to the registry
+    /// @pre Cannot exist yet
+    void enregister(const std::string& name, Library* obj) {
+        AutoLock<LibraryRegistry> lockme(instance());
+        ASSERT(map_.find(name) == map_.end());
+        map_[name] = obj;
+    }
+
+    /// List entries in library
+    std::vector<std::string> list() const {
+        AutoLock<LibraryRegistry> lockme(instance());
+        std::vector<std::string> result;
+        for (LibraryMap::const_iterator j = map_.begin(); j != map_.end(); ++j) {
+            result.push_back(j->first);
+        }
+        return result;
+    }
+
+    /// Check entry exists in registry
+    bool exists(const std::string& name) {
+        AutoLock<LibraryRegistry> lockme(instance());
+        LibraryMap::const_iterator j = map_.find(name);
+        return (j != map_.end());
+    }
+
+    /// Prints the entries in registry
+    void print(std::ostream& out, const char* separator) {
+        std::vector<std::string> l = LibraryRegistry::instance().list();
+        const char* sep               = "";
+        for (auto j : l) {
+            out << sep << j;
+            sep = separator;
+        }
+    }
+
+    /// Lookup entry in the registry
+    const Library& lookup(const std::string& name) {
+        AutoLock<LibraryRegistry> lockme(instance());
+
+        LibraryMap::const_iterator j = map_.find(name);
+
+        if (j == map_.end()) {
+            eckit::Log::error() << "No Library found with name '" << name << "'" << std::endl;
+            eckit::Log::error() << "Registered libraries are:";
+            print(eckit::Log::error(), "\n");
+            throw eckit::SeriousBug(std::string("No Library found with name ") + name);
+        }
+
+        ASSERT(j->second);
+        return *(j->second);
+    }
+
+private:  // members
     LibraryMap map_;
-
-    LibraryMap& map() { return map_; }
+    mutable Mutex mutex_;
 };
-
-
-static pthread_once_t once       = PTHREAD_ONCE_INIT;
-static eckit::Mutex* local_mutex = nullptr;
-
-static void init() {
-    local_mutex = new eckit::Mutex();
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 std::vector<std::string> Library::list() {
-    std::vector<std::string> result;
-
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    LibraryMap& m = LibraryRegistry::instance().map();
-
-    for (LibraryMap::const_iterator j = m.begin(); j != m.end(); ++j) {
-        result.push_back(j->first);
-    }
-    return result;
+    return LibraryRegistry::instance().list();
 }
 
 void Library::list(std::ostream& out) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    LibraryMap& m = LibraryRegistry::instance().map();
-
-    const char* sep = "";
-    for (LibraryMap::const_iterator j = m.begin(); j != m.end(); ++j) {
-        out << sep << (*j).first;
-        sep = ", ";
-    }
+    return LibraryRegistry::instance().print(out, ", ");
 }
 
 bool Library::exists(const std::string& name) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    LibraryMap& m = LibraryRegistry::instance().map();
-
-    LibraryMap::const_iterator j = m.find(name);
-
-    return (j != m.end());
+    return LibraryRegistry::instance().exists(name);
 }
 
 const Library& Library::lookup(const std::string& name) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-
-    LibraryMap& m = LibraryRegistry::instance().map();
-
-    LibraryMap::const_iterator j = m.find(name);
-
-    // eckit::Log::info() << "Looking for Library '" << name << "'" << std::endl;
-
-    if (j == m.end()) {
-        eckit::Log::error() << "No Library found with name '" << name << "'" << std::endl;
-        eckit::Log::error() << "Registered libraries are:" << std::endl;
-        for (j = m.begin(); j != m.end(); ++j)
-            eckit::Log::error() << "   " << (*j).first << std::endl;
-        throw eckit::SeriousBug(std::string("No Library found with name ") + name);
-    }
-
-    ASSERT(j->second);
-
-    return *(j->second);
+    return LibraryRegistry::instance().lookup(name);
 }
 
 Library::Library(const std::string& name) : name_(name), prefix_(name), debug_(false) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    LibraryMap& m = LibraryRegistry::instance().map();
-
-    ASSERT(m.find(name) == m.end());
-    m[name] = this;
+    LibraryRegistry::instance().enregister(name, this);
 
     std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(), ::toupper);
 
@@ -153,7 +153,7 @@ const std::string& Library::name() const {
 }
 
 std::string Library::prefixDirectory() const {
-    eckit::AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex_);
 
     if (prefixDirectory_.empty()) {
         prefixDirectory_ = LocalPathName(libraryPath()).dirName().dirName().realName();
@@ -163,7 +163,7 @@ std::string Library::prefixDirectory() const {
 }
 
 std::string Library::home() const {
-    eckit::AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex_);
 
     std::string libhome = prefix_ + "_HOME";
     char* home          = ::getenv(libhome.c_str());
@@ -183,12 +183,12 @@ std::string Library::libraryHome() const {
 }
 
 void Library::libraryHome(const std::string& home) {
-    eckit::AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex_);
     home_ = home;
 }
 
 std::string Library::libraryPath() const {
-    eckit::AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex_);
 
     if (libraryPath_.empty()) {
         std::string p = eckit::System::addrToPath(addr());
@@ -198,7 +198,7 @@ std::string Library::libraryPath() const {
 }
 
 Channel& Library::debugChannel() const {
-    eckit::AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex_);
 
     if (debugChannel_) {
         return *debugChannel_;
@@ -217,7 +217,7 @@ Channel& Library::debugChannel() const {
 }
 
 const Configuration& Library::configuration() const {
-    eckit::AutoLock<Mutex> lock(mutex_);
+    AutoLock<Mutex> lock(mutex_);
 
     if (configuration_)
         return *configuration_;

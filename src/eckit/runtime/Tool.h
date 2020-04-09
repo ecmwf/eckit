@@ -25,11 +25,7 @@ class Tool : public Main {
 
 public: // methods
 
-    /// Contructors
-
-    Tool(int argc, char **argv, const char* homeenv = 0);
-
-    /// Destructor
+    Tool(int argc, char **argv, const char* homeenv = nullptr);
 
 	virtual ~Tool();
 

@@ -8,87 +8,34 @@
  * does it submit to any jurisdiction.
  */
 
-// File HtmlResource.h
-// Baudouin Raoult - ECMWF Oct 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
-#ifndef HtmlResource_H
-#define HtmlResource_H
+#ifndef eckit_web_HtmlResource_H
+#define eckit_web_HtmlResource_H
 
 #include <string>
-#include <map>
 
-#include "eckit/memory/NonCopyable.h"
-#include "eckit/web/HtmlObject.h"
+#include "eckit/web/HttpResource.h"
 
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-class Stream;
-class HtmlResource;
+/// Intermediate Class
+/// Derive all resources that provide an Html content
 
-class HtmlResourceMap {
+class HtmlResource : public HttpResource {
+public:  // methods
+    HtmlResource(const std::string&);
 
-private:
-	typedef std::map<std::string,HtmlResource*,std::less<std::string> > Map;
-	Map * ptr_;
-
-public:
-	void init() {
-		if (!ptr_) ptr_ = new Map;
-	}
-
-	~HtmlResourceMap() {
-		if (ptr_) {
-			delete ptr_;
-                        ptr_ = nullptr;
-		}
-	}
-
-	Map * operator->() const {
-		return ptr_;
-	}
-
-	Map & operator*() const {
-		return *ptr_;
-	}
-
-	typedef Map::iterator iterator;
-};
-
-class HtmlResource : public HtmlObject,
-                     public eckit::NonCopyable {
-public:
-
-// -- Contructors
-
-	HtmlResource(const std::string&);
-
-// -- Destructor
-
-	virtual ~HtmlResource();
-
-
-// -- Methods
-	virtual bool restricted() { return false; }
-
-
-// -- Class methods
-
-    static void dispatch(eckit::Stream&,std::istream&,std::ostream&,Url&);
-	static void index(std::ostream&,Url&);
-
-	static HtmlResourceMap resources_;
-
-protected:
-
-	const std::string resourceUrl_;
+    virtual ~HtmlResource();
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

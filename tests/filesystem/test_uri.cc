@@ -33,7 +33,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "path");
-        EXPECT(uri.path() == "path");
+        EXPECT(uri.path() == "local://path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:path");
@@ -46,6 +46,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "//:123");
+        EXPECT(uri.path() == "local:///:123");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix://:123");
@@ -58,6 +59,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "path");
+        EXPECT(uri.path() == "local://path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:path");
@@ -70,6 +72,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "path1:path2");
+        EXPECT(uri.path() == "local://path1:path2");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:path1:path2");
@@ -83,6 +86,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "/folder1/folder2/file");
+        EXPECT(uri.path() == "local:///folder1/folder2/file");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:/folder1/folder2/file");
@@ -96,6 +100,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "foo:");
+        EXPECT(uri.path() == "local://foo:");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:foo:");
@@ -109,6 +114,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "!");
+        EXPECT(uri.path() == "local://!");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:!");
@@ -122,12 +128,12 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "!");
+        EXPECT(uri.path() == "local://!");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "file:!");
         EXPECT(uri.asString() == "!");
     }
-    Log::info() << "z" << std::endl;
     {
         URI uri(":http://nodename/path");
         EXPECT(uri.scheme() == "unix");
@@ -135,7 +141,8 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "http://nodename/path");
+        EXPECT(uri.name() == "http://nodename/path");
+        EXPECT(uri.path() == "local://http://nodename/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:http://nodename/path");
@@ -151,7 +158,8 @@ CASE("Parsing uri (scheme)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "///path");
+        EXPECT(uri.name() == "///path");
+        EXPECT(uri.path() == "/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "file:///path");
@@ -164,6 +172,7 @@ CASE("Parsing uri (scheme)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "/this/is/a/path:with:colons");
         EXPECT(uri.path() == "/this/is/a/path:with:colons");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
@@ -171,6 +180,7 @@ CASE("Parsing uri (scheme)") {
         EXPECT(uri.asString() == "/this/is/a/path:with:colons");
     }
 }
+
 CASE("Parsing uri (query & fragment)") {
     {
         URI uri("file://host:123/path?query#fragment");
@@ -178,7 +188,8 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "//host:123/path");
+        EXPECT(uri.name() == "//host:123/path");
+        EXPECT(uri.path() == "/host:123/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment() == "fragment");
         EXPECT(uri.asRawString() == "file://host:123/path#fragment");
@@ -190,7 +201,8 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "///path");
+        EXPECT(uri.name() == "///path");
+        EXPECT(uri.path() == "/path");
         EXPECT(uri.query() == "foo=bar&length=123");
         EXPECT(uri.query("foo") == "bar");
         EXPECT(uri.query("length") == "123");
@@ -205,7 +217,8 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "///path");
+        EXPECT(uri.name() == "///path");
+        EXPECT(uri.path() == "/path");
         EXPECT(uri.query() == "foo=bar&length=123");
         EXPECT(uri.query("foo") == "bar");
         EXPECT(uri.query("length") == "123");
@@ -215,6 +228,7 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.asString() == "///path");
     }
 }
+
 CASE("Parsing uri (authority)") {
     {
         URI uri("http://username:password@host:123/path");
@@ -223,7 +237,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == 123);
-        EXPECT(uri.path() == "/path");
+        EXPECT(uri.name() == "/path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://username:password@host:123/path");
@@ -236,6 +251,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "http//:123");
+        EXPECT(uri.path() == "local://http//:123");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "unix:http//:123");
@@ -248,7 +264,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == 123);
-        EXPECT(uri.path() == "path");
+        EXPECT(uri.name() == "path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://username:password@host:123path");
@@ -261,7 +278,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == 0);
-        EXPECT(uri.path() == "path");
+        EXPECT(uri.name() == "path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://host:path");
@@ -275,6 +293,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.host() == "www.ecmwf.int");
         EXPECT(uri.port() == -1);
         EXPECT(uri.name().empty());
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://www.ecmwf.int");
@@ -288,6 +307,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.host() == "www.ecmwf.int");
         EXPECT(uri.port() == 80);
         EXPECT(uri.name().empty());
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://www.ecmwf.int:80");
@@ -301,6 +321,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.host() == "www.ecmwf.int");
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "/");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://www.ecmwf.int/");
@@ -314,6 +335,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == -1);
         EXPECT(uri.name().empty());
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://host");
@@ -326,7 +348,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "nodename");
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "/path");
+        EXPECT(uri.name() == "/path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://nodename/path");
@@ -339,7 +362,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "//nodename/path");
+        EXPECT(uri.name() == "//nodename/path");
+        EXPECT(uri.path() == "marsfs://nodename/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "marsfs://nodename/path");
@@ -352,7 +376,8 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "localhost");
         EXPECT(uri.port() == 123);
-        EXPECT(uri.path() == "/path");
+        EXPECT(uri.name() == "/path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "https://localhost:123/path");
@@ -365,13 +390,15 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "//localhost:123/path");
+        EXPECT(uri.name() == "//localhost:123/path");
+        EXPECT(uri.path() == "marsfs://localhost:123/path");
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "marsfs://localhost:123/path");
         EXPECT(uri.asString() == "marsfs://localhost:123/path");
     }
 }
+
 CASE("Stream") {
     {
         URI uriOrig("http://username:password@host:123/path");
@@ -390,7 +417,8 @@ CASE("Stream") {
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == 123);
-        EXPECT(uri.path() == "/path");
+        EXPECT(uri.name() == "/path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://username:password@host:123/path");
@@ -411,7 +439,8 @@ CASE("Stream") {
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
         EXPECT(uri.port() == -1);
-        EXPECT(uri.path() == "/path");
+        EXPECT(uri.name() == "/path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query() == "foo=bar&length=123");
         EXPECT(uri.query("foo") == "bar");
         EXPECT(uri.query("length") == "123");
@@ -421,6 +450,7 @@ CASE("Stream") {
         EXPECT(uri.asString() == "http:/path?foo=bar&length=123#fragment");
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

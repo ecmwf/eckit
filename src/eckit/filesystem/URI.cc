@@ -213,6 +213,11 @@ void URI::fragment(const std::string& fragment) {
     fragment_ = fragment;
 }
 
+PathName URI::path() const {
+    ASSERT(!scheme_.empty());
+    return URIManager::lookUp(scheme_).path(*this);
+}
+
 std::string URI::asString() const {
 //    ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());

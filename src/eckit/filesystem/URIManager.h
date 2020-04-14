@@ -18,6 +18,7 @@
 #include "eckit/eckit.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
+#include "eckit/filesystem/PathName.h"
 
 
 namespace eckit {
@@ -39,7 +40,8 @@ public:
     virtual DataHandle*  newReadHandle(const URI&) = 0;
     virtual DataHandle*  newReadHandle(const URI&, const OffsetList&, const LengthList&) = 0;
 
-    virtual std::string asString(const URI&) const;
+    virtual std::string     asString(const URI&) const;
+    virtual eckit::PathName path(const URI&) const;
 
     static bool exists(const std::string&);
 	static URIManager& lookUp(const std::string&);

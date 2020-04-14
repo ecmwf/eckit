@@ -58,11 +58,25 @@ static StaticMutex local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
 
+static void expandTilde(std::string& path, bool tildeIsUserHome);
+
 static void readPathsTable() {
 
-    static PathName path = eckit::Resource<PathName>("libraryConfigPaths,$LIBRARY_CONFIG_PATHS", "~/etc/paths");
+    // We would normally just use a PathName object, defaulting to ~/etc/paths. However, this function
+    // is typically called within the constructor of a PathName object, and the recursive call will
+    // hang forever on the std::mutex in the PathName factory.
+    //
+    // expandTilde is internal to LocalPathName anyway, so we call it directly.
 
-    std::ifstream in(path.localPath());
+    static std::string path = eckit::Resource<std::string>("libraryConfigPaths,$LIBRARY_CONFIG_PATHS", "~/etc/paths");
+    static bool expanded = false;
+
+    if (!expanded) {
+        expandTilde(path, false);
+        expanded = true;
+    }
+
+    std::ifstream in(path);
 
     eckit::Log::debug() << "Loading library paths from " << path << std::endl;
 

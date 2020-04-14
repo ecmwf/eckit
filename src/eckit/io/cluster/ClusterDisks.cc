@@ -61,7 +61,9 @@ public:
 
     int compare(const ClusterDisk& other) const {
         int cmp = ::strcmp(path_, other.path_);
-        if (cmp == 0) cmp = ::strcmp(node_, other.node_);
+        // n.b. We do NOT compare the node. It is legitimate for a path to move to
+        //      another node.
+        //if (cmp == 0) cmp = ::strcmp(node_, other.node_);
         return cmp;
     }
 

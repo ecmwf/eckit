@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-// File ProxiedTCPServer.h
-// Baudouin Raoult - ECMWF Aug 2017
+/// @author Baudouin Raoult
+/// @date   Aug 2017
 
 #ifndef eckit_ProxiedTCPServer_h
 #define eckit_ProxiedTCPServer_h
@@ -32,12 +32,6 @@ public:
 
 private:
 
-// No copy allowed
-
-    ProxiedTCPServer(const ProxiedTCPServer&);
-    ProxiedTCPServer& operator=(const ProxiedTCPServer&);
-
-    //
     virtual void print(std::ostream& s) const;
 
 };

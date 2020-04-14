@@ -8,20 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/MemoryHandle.h
-// Manuel Fuentes - ECMWF Jul 96
-
 #ifndef eckit_filesystem_MemoryHandle_h
 #define eckit_filesystem_MemoryHandle_h
 
 #include "eckit/io/DataHandle.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 class Buffer;
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class MemoryHandle : public DataHandle {
 public:
@@ -37,13 +32,7 @@ public:
 
     MemoryHandle(size_t size = 1024 * 1024, bool grow = true);
 
-    /// Destructor
-
     virtual ~MemoryHandle();
-
-// -- Operators
-
-// -- Methods
 
     const void* data() const;
     std::string str() const;
@@ -73,9 +62,6 @@ public:
 
     virtual DataHandle* clone() const;
 
-private: // methods
-
-
 private: // members
 
     char*          address_;
@@ -93,7 +79,7 @@ private: // members
     virtual std::string title() const;
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

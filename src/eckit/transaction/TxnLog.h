@@ -35,8 +35,9 @@ struct TxnRecoverer {
 template<class T>
 struct TxnFinder {
    virtual ~TxnFinder() {}
-	virtual bool found(T&) = 0;
-	virtual bool old() { return false; }
+    virtual bool found(T&) = 0;
+    virtual bool active() { return true; }
+    virtual bool old() { return false; }
 };
 
 

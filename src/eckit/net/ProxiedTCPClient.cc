@@ -9,9 +9,10 @@
  */
 
 
-#include "eckit/web/ProxiedTCPClient.h"
+#include "eckit/net/ProxiedTCPClient.h"
+
 #include "eckit/config/Resource.h"
-#include "eckit/web/HttpHeader.h"
+#include "eckit/net/HttpHeader.h"
 
 
 namespace eckit {
@@ -19,8 +20,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 ProxiedTCPClient::ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port) :
-    TCPClient(port),
-    proxy_(proxyHost, proxyPort) {}
+    TCPClient(port), proxy_(proxyHost, proxyPort) {}
 
 ProxiedTCPClient::~ProxiedTCPClient() {}
 

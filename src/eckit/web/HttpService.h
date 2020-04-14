@@ -9,10 +9,10 @@
  */
 
 /// @author Baudouin Raoult
-/// @date  Oct 96
+/// @author Tiago Quintino
 
-#ifndef HttpService_H
-#define HttpService_H
+#ifndef eckit_web_HttpService_H
+#define eckit_web_HttpService_H
 
 #include "eckit/net/NetService.h"
 
@@ -25,19 +25,14 @@ public:
 
     explicit HttpService(int port, bool visible = false);
 
-    ~HttpService();
+    virtual ~HttpService();
 
 private:
-
-// -- Overridden methods
-
-    // From net::NetService
 
     virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket&) const;
     virtual std::string name() const { return "http"; }
 
 };
-
 
 } // namespace eckit
 

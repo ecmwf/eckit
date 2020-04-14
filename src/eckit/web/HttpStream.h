@@ -8,46 +8,43 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/TmpFile.h"
+#ifndef eckit_web_HttpStream_H
+#define eckit_web_HttpStream_H
 
+#include "eckit/web/Url.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static PathName tmp() {
-    const char* tmpdir = ::getenv("TMPDIR");
-    if (!tmpdir) {
-        tmpdir = "/tmp";
-    }
+class HttpBuf;
 
-    long max = pathconf(tmpdir, _PC_PATH_MAX);
-    char* path = new char[max];
+class HttpStream : public std::ostream {
+public:
 
-    sprintf(path, "%s/eckitXXXXXXXXXXX", tmpdir);
-    int fd;
-    SYSCALL(fd = ::mkstemp(path));
+    HttpStream();
+	~HttpStream();
 
-    PathName result(path);
-    result.touch();
+    void reset();
+    void write(std::ostream&, Url&, DataHandle&);
 
-    SYSCALL(::close(fd));
+    void print(std::ostream& s) const;
 
-    delete[] path;
+    static std::ostream& dontEncode(std::ostream&);
+    static std::ostream& doEncode(std::ostream&);
 
-    return result;
-}
+private:
 
+    HttpBuf* buf_;
 
-TmpFile::TmpFile(bool verbose) : PathName(tmp()), verbose_(verbose) {}
+};
 
-TmpFile::~TmpFile() {
-    unlink(verbose_);
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
+
+#endif

@@ -120,10 +120,10 @@ container/sptree/SPValue.h
 )
 
 list( APPEND eckit_io_srcs
-io/AIOHandle.cc
-io/AIOHandle.h
 io/AsyncHandle.cc
 io/AsyncHandle.h
+io/AIOHandle.cc
+io/AIOHandle.h
 io/AutoCloser.h
 io/Base64.cc
 io/Base64.h
@@ -246,6 +246,7 @@ io/cluster/ClusterUser.h
 io/cluster/NodeInfo.cc
 io/cluster/NodeInfo.h
 )
+
 
 if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
@@ -373,6 +374,8 @@ runtime/PipeHandler.h
 runtime/ProcessControler.cc
 runtime/ProcessControler.h
 runtime/ProducerConsumer.h
+runtime/Telemetry.cc
+runtime/Telemetry.h
 runtime/SessionID.cc
 runtime/SessionID.h
 runtime/Task.cc
@@ -583,12 +586,22 @@ net/Connector.cc
 net/Connector.h
 net/Endpoint.cc
 net/Endpoint.h
+net/HttpHeader.cc
+net/HttpHeader.h
+net/IPAddress.cc
+net/IPAddress.h
+net/NetMask.cc
+net/NetMask.h
 net/NetService.cc
 net/NetService.h
 net/NetUser.cc
 net/NetUser.h
 net/Port.cc
 net/Port.h
+net/ProxiedTCPClient.cc
+net/ProxiedTCPClient.h
+net/ProxiedTCPServer.cc
+net/ProxiedTCPServer.h
 net/SocketOptions.cc
 net/SocketOptions.h
 net/TCPClient.cc
@@ -609,10 +622,7 @@ net/UDPClient.cc
 net/UDPClient.h
 net/UDPServer.cc
 net/UDPServer.h
-net/IPAddress.cc
-net/IPAddress.h
-net/NetMask.cc
-net/NetMask.h)
+)
 
 list( APPEND eckit_serialisation_srcs
 serialisation/BadTag.cc
@@ -891,23 +901,23 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
+                    PRIVATE_LIBS
+                        "${SNAPPY_LIBRARIES}"
+                        "${LIBRSYNC_LIBRARIES}"
+                        "${LZ4_LIBRARIES}"
+                        "${BZIP2_LIBRARIES}"
+                        "${AEC_LIBRARIES}"
                     LIBS
-                        ${OPENSSL_LIBRARIES}
-                        ${CURL_LIBRARIES}
-                        ${XXHASH_LIBRARIES}
-                        ${SNAPPY_LIBRARIES}
-                        ${LZ4_LIBRARIES}
-                        ${BZIP2_LIBRARIES}
-                        ${AEC_LIBRARIES}
-                        ${AIO_LIBRARIES}
-                        ${RADOS_LIBRARIES}
+                        "${OPENSSL_LIBRARIES}"
+                        "${CURL_LIBRARIES}"
+                        "${XXHASH_LIBRARIES}"
+                        "${AIO_LIBRARIES}"
+                        "${RADOS_LIBRARIES}"
                         ${CMATH_LIBRARIES}
+                        ${RT_LIBRARIES}
                         ${THREADS_LIBRARIES}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
-
-                    PRIVATE_LIBS
-                        ${LIBRSYNC_LIBRARIES}
 
           LINKER_LANGUAGE CXX )
 

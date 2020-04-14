@@ -13,8 +13,8 @@
 /// @date Apr 2015
 
 
-#ifndef SimpleOption_H
-#define SimpleOption_H
+#ifndef eckit_option_SimpleOption_H
+#define eckit_option_SimpleOption_H
 
 #include <iosfwd>
 
@@ -22,99 +22,29 @@
 
 
 namespace eckit {
-
 namespace option {
 
 
-template<class T>
+template <class T>
 class SimpleOption : public Option {
-  public:
-
-// -- Exceptions
-    // None
-
-// -- Contructors
-
+public:
     SimpleOption(const std::string& name, const std::string& description);
 
-// -- Destructor
+    virtual ~SimpleOption();
 
-    virtual ~SimpleOption(); // Change to virtual if base class
+protected:
+    virtual void print(std::ostream&) const;
 
-// -- Convertors
-    // None
-
-// -- Operators
-    // None
-
-// -- Methods
-    // None
-
-
-
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-  protected:
-
-// -- Members
-
-// -- Methods
-
-    virtual void print(std::ostream&) const; // Change to virtual if base class
-
-// -- Overridden methods
-    // None
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-  private:
-
-// No copy allowed
-
-    SimpleOption(const SimpleOption&);
-    SimpleOption& operator=(const SimpleOption&);
-
-// -- Members
-    // None
-
-// -- Methods
-    // None
-
-// -- Overridden methods
-
+private:
     virtual void set(Configured&) const;
     virtual void set(const std::string& value, Configured&) const;
     virtual void copy(const Configuration& from, Configured& to) const;
-
-// -- Class members
-    // None
-
-// -- Class methods
-    // None
-
-// -- Friends
-
-
 };
 
 
-} // namespace option
-
-} // namespace eckit
+}  // namespace option
+}  // namespace eckit
 
 #include "eckit/option/SimpleOption.cc"
 
 #endif
-

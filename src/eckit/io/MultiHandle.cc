@@ -276,6 +276,13 @@ bool MultiHandle::merge(DataHandle* other) {
     return true;
 }
 
+Length MultiHandle::size() {
+    Length total = 0;
+    for (size_t i = 0; i < datahandles_.size(); i++)
+        total += datahandles_[i]->size();
+    return total;
+}
+
 Length MultiHandle::estimate() {
     Length total = 0;
     for (size_t i = 0; i < datahandles_.size(); i++)
@@ -291,25 +298,46 @@ DataHandle* MultiHandle::clone() const {
     return mh;
 }
 
+Offset MultiHandle::seek(const Offset& offset) {
+    ASSERT(read_);  /// seek only allowed on read mode
+    if (current_ != datahandles_.end())
+        (*current_)->close();
 
-void MultiHandle::restartReadFrom(const Offset& from) {
-    Log::warning() << *this << " restart read from " << from << std::endl;
+    long long seekto = offset;
+    long long pos    = 0;
+    for (current_ = datahandles_.begin(); current_ != datahandles_.end(); ++current_) {
+        long long e = (*current_)->size();
+        if (seekto >= pos && seekto < pos + e) {
+            openCurrent();
+            (*current_)->seek(seekto - pos);
+            return offset;
+        }
+        pos += e;
+    }
+    // FTM we throw an error if we try to seek beyond the end of the last file
+    std::ostringstream oss;
+    oss << "Trying to seek beyond the last file inside MultiHandle " << *this;
+    throw BadValue(oss.str(), Here());
+}
+
+void MultiHandle::restartReadFrom(const Offset& offset) {
+    Log::warning() << *this << " restart read from " << offset << std::endl;
 
     ASSERT(read_);
     if (current_ != datahandles_.end())
         (*current_)->close();
 
-    long long len = from;
+    long long from = offset;
     long long pos = 0;
     for (current_ = datahandles_.begin(); current_ != datahandles_.end(); ++current_) {
         long long e = (*current_)->estimate();
-        if (len >= pos && len < pos + e) {
+        if (from >= pos && from < pos + e) {
             Log::warning() << *this
                            << " restart read from " << from
                            << ", current=" << (current_ - datahandles_.begin()) << std::endl;
 
             openCurrent();
-            (*current_)->restartReadFrom(len - pos);
+            (*current_)->restartReadFrom(from - pos);
             return;
         }
         pos += e;

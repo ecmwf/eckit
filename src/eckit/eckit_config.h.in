@@ -29,6 +29,7 @@
 #cmakedefine ECKIT_HAVE_DIRFD
 #cmakedefine ECKIT_HAVE_DIRENT_D_TYPE
 #cmakedefine ECKIT_HAVE_CXX_INT_128
+#cmakedefine ECKIT_HAVE_AIO
 
 // external packages
 

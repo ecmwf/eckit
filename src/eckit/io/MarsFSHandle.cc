@@ -117,6 +117,10 @@ Offset MarsFSHandle::seek(const Offset& offset) {
     return position_;
 }
 
+Length MarsFSHandle::size() {
+    return MarsFSClient(path_).size(path_.path());
+}
+
 Length MarsFSHandle::estimate() {
     return MarsFSClient(path_).size(path_.path());
 }

@@ -9,7 +9,10 @@
  */
 
 #include <fstream>
+#include <memory>
 #include <string>
+
+#include <librsync.h>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
@@ -17,6 +20,8 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/MemoryHandle.h"
+#include "eckit/io/StdFile.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/Rsync.h"
 
@@ -231,8 +236,109 @@ CASE("Directory sync") {
         EXPECT(same_dir(source, target));
     }
 
+    SECTION("Sync dirs with update") {
+        PathName f1d1  = d1 / "f1"; fill(f1d1, "F1D1bis");
+        EXPECT_NO_THROW(rsync.syncRecursive(source, target));
+        EXPECT(same_dir(source, target));
+    }
+
     remove_dir_recursive(target);
     remove_dir_recursive(source);
+}
+
+CASE("DataHandle operations") {
+
+    Rsync rsync;
+
+    PathName source = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName target = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName signature = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName delta = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName patched = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+
+    fill(source,
+         "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was "
+         "born and I will give you a complete account of the system...");
+
+    fill(target,
+         "He should complain to you how all this mistaken idea of denouncing pleasure and praising pain was "
+         "born and I will give you a complete account of the system...");
+
+    {
+        AutoStdFile tgt(target);
+        AutoStdFile sig(signature, "w");
+        ASSERT(rs_sig_file(tgt, sig, RS_DEFAULT_BLOCK_LEN, 0, RS_RK_BLAKE2_SIG_MAGIC, nullptr) == RS_DONE);
+    }
+
+    {
+        AutoStdFile sigf(signature);
+        rs_signature_t* sig;
+        ASSERT(rs_loadsig_file(sigf, &sig, nullptr) == RS_DONE);
+        ASSERT(rs_build_hash_table(sig) == RS_DONE);
+
+        AutoStdFile src(source);
+        AutoStdFile dlt(delta, "w");
+        ASSERT(rs_delta_file(sig, src, dlt, nullptr) == RS_DONE);
+    }
+
+    {
+        AutoStdFile tgt(target);
+        AutoStdFile dlt(delta);
+        AutoStdFile patch(patched, "w");
+        ASSERT(rs_patch_file(tgt, dlt, patch, nullptr) == RS_DONE);
+    }
+
+    SECTION("Compute signature") {
+        std::unique_ptr<DataHandle> in(target.fileHandle());
+        in->openForRead();
+        MemoryHandle out;
+        out.openForWrite(0);
+        EXPECT_NO_THROW(rsync.computeSignature(*in, out));
+
+        std::unique_ptr<DataHandle> ref(signature.fileHandle());
+        EXPECT(ref->compare(out));
+    }
+
+    SECTION("Compute delta") {
+        std::unique_ptr<DataHandle> in(source.fileHandle());
+        in->openForRead();
+        std::unique_ptr<DataHandle> sig(signature.fileHandle());
+        sig->openForRead();
+        MemoryHandle out;
+        out.openForWrite(0);
+        EXPECT_NO_THROW(rsync.computeDelta(*sig, *in, out));
+
+        std::unique_ptr<DataHandle> ref(delta.fileHandle());
+        EXPECT(ref->compare(out));
+    }
+
+    SECTION("Update data") {
+        std::unique_ptr<DataHandle> in(target.fileHandle());
+        in->openForRead();
+        std::unique_ptr<DataHandle> dlt(delta.fileHandle());
+        dlt->openForRead();
+        MemoryHandle out;
+        out.openForWrite(0);
+        EXPECT_NO_THROW(rsync.updateData(*in, *dlt, out));
+
+        std::unique_ptr<DataHandle> ref(patched.fileHandle());
+        EXPECT(ref->compare(out));
+    }
+
+    if (source.exists())
+        source.unlink();
+
+    if (target.exists())
+        target.unlink();
+
+    if (signature.exists())
+        signature.unlink();
+
+    if (delta.exists())
+        delta.unlink();
+
+    if (patched.exists())
+        patched.unlink();
 }
 
 

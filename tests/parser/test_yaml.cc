@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/YAMLParser.h"
@@ -458,6 +459,18 @@ CASE("test_eckit_yaml_text_5") {
     //     v.dump(std::cout) << std::endl;
     //     EXPECT(v["foo "] == Value("bar"));
     // }
+}
+
+CASE("test_eckit_yaml_text_6") {
+
+    const char* text = R"YAML(
+---
+foo:
+    bar: 1
+  spam: true
+)YAML";
+
+    EXPECT_THROWS_AS(YAMLParser::decodeString(text), eckit::SeriousBug);
 }
 
 #endif

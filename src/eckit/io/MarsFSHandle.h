@@ -57,6 +57,7 @@ public:
     virtual void skip(const Length& len);
     virtual Offset seek(const Offset&);
     virtual void print(std::ostream&) const;
+    virtual Length size();
     virtual Length estimate();
     virtual Offset position();
     virtual bool isEmpty() const;

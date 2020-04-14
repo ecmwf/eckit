@@ -35,7 +35,7 @@ constexpr bool have_parallel() {
 
 class Environment {
 public:
-    static const char* getDefaultComm() {
+    static const char* getDefaultCommType() {
         // Force a given communicator (only required if e.g. running serial applications with MPI)
         if (const char* forcedComm = ::getenv("ECKIT_MPI_FORCE")) {
             return forcedComm;
@@ -63,7 +63,7 @@ public:
 
         ASSERT(!default_);
 
-        Comm* world = CommFactory::build("world", getDefaultComm());
+        Comm* world = CommFactory::build("world", getDefaultCommType());
 
         communicators[world->name()] = world;
 
@@ -110,6 +110,8 @@ public:
     }
 
     void finaliseAllComms() {
+        AutoLock<Mutex> lock(mutex_);
+
         std::map<std::string, Comm*>::iterator itr = communicators.begin();
         for (; itr != communicators.end(); ++itr) {
             delete itr->second;
@@ -146,16 +148,18 @@ public:
 
     void addComm(const char* name, int comm) {
         AutoLock<Mutex> lock(mutex_);
+
         if (hasComm(name)) {
             throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
         }
 
-        Comm* pComm         = CommFactory::build(name, getDefaultComm(), comm);
+        Comm* pComm         = CommFactory::build(name, getDefaultCommType(), comm);
         communicators[name] = pComm;
     }
 
     void addComm(const char* name, Comm* comm) {
         AutoLock<Mutex> lock(mutex_);
+
         if (hasComm(name)) {
             throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
         }
@@ -163,8 +167,8 @@ public:
     }
 
     void deleteComm(const char* name) {
-
         AutoLock<Mutex> lock(mutex_);
+
         auto itr = communicators.find(name);
 
         if (itr != communicators.end()) {

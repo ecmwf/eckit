@@ -20,6 +20,7 @@
 namespace eckit {
 
 class Buffer;
+class Configuration;
 
 namespace net {
 
@@ -28,11 +29,12 @@ class UDPClient : private NonCopyable {
 
 public:  // methods
 
+    explicit UDPClient(const Configuration& cfg);
     UDPClient(const std::string& hostname, int port);
 
     ~UDPClient();
 
-    void send(void* buf, long length);
+    void send(const void* buf, size_t length);
 
 protected: // methods
 
@@ -54,6 +56,7 @@ private: // members
     struct addrinfo* servinfo_;
     struct addrinfo* addr_;
 
+    void init();
 };
 
 

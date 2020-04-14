@@ -9,28 +9,41 @@
  */
 
 /// @author Baudouin Raoult
-/// @date   Sep 2001
 
-#ifndef eckit_TmpFile_h
-#define eckit_TmpFile_h
+#ifndef eckit_web_HttpResource_H
+#define eckit_web_HttpResource_H
 
-#include "eckit/filesystem/PathName.h"
+#include <string>
+
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/web/HtmlObject.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TmpFile : public PathName, private NonCopyable {
-public:
-    TmpFile(bool verbose = true);
+class Stream;
+class HttpStream;
 
-    ~TmpFile();
+class HttpResource : public HtmlObject, public eckit::NonCopyable {
+public:  // methods
+    HttpResource(const std::string&);
 
-private:
+    virtual ~HttpResource();
 
-    bool verbose_;
+    virtual bool restricted() { return false; }
+
+    static void dispatch(eckit::Stream&, std::istream&, HttpStream&, Url&);
+    static void index(std::ostream&, Url&);
+
+    const std::string& resourceUrl() const;
+
+protected:  // methods
+    virtual void print(std::ostream&) const;
+
+protected:  // members
+    const std::string resourceUrl_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

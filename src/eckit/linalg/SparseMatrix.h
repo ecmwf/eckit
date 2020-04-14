@@ -45,12 +45,12 @@ public: // types
 
     struct Layout {
 
-        Layout() : data_(0), outer_(0), inner_(0) {}
+        Layout() : data_(nullptr), outer_(nullptr), inner_(nullptr) {}
 
         void reset() {
-            data_   = 0;
-            outer_  = 0;
-            inner_  = 0;
+            data_   = nullptr;
+            outer_  = nullptr;
+            inner_  = nullptr;
         }
 
         Scalar*      data_;   ///< matrix entries, sized with number of non-zeros (nnz)
@@ -132,10 +132,10 @@ public:  // methods
     // -- Constructors
 
     /// Default constructor, empty matrix
-    SparseMatrix(Allocator* alloc = 0);
+    SparseMatrix(Allocator* alloc = nullptr);
 
     /// Constructs an identity matrix with provided dimensions
-    SparseMatrix(Size rows, Size cols, Allocator* alloc = 0);
+    SparseMatrix(Size rows, Size cols, Allocator* alloc = nullptr);
 
     /// Constructor from triplets
     SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets);

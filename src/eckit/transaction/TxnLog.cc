@@ -17,6 +17,8 @@
 #include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/log/Log.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Monitor.h"
@@ -268,7 +270,7 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
 
         PathName::match(path, active);
 
-        Log::info() << "TxnLog found active: " << active << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "TxnLog found active: " << active << std::endl;
 
         for (Ordinal j = 0; (j < active.size()); ++j) {
             try {
@@ -276,6 +278,7 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
                 auto c = closer(log);
                 std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 if (task) {
+                    LOG_DEBUG_LIB(LibEcKit) << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
                     if (r.found(*task)) {
                         return;
                     }
@@ -306,7 +309,7 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
         // Sort by date in reverse order
         std::sort(dates.begin(), dates.end(), std::greater<PathName>());
 
-        Log::info() << "TxnLog found dates: " << dates << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "TxnLog found dates: " << dates << std::endl;
 
         for (Ordinal k = 0; k < dates.size(); k++) {
             Log::info() << "Searching " << dates[k] << std::endl;
@@ -315,7 +318,7 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
                 auto c = closer(log);
                 std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 while (task) {
-                    Log::info() << "Task found: " << *task << std::endl;
+                    LOG_DEBUG_LIB(LibEcKit) << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
                     if (r.found(*task)) {
                         return;
                     }

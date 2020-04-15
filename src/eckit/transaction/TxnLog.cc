@@ -278,7 +278,7 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
                 auto c = closer(log);
                 std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 if (task) {
-                    LOG_DEBUG_LIB(LibEcKit) << "Task found: " << *task << std::endl;
+                    LOG_DEBUG_LIB(LibEcKit) << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
                     if (r.found(*task)) {
                         return;
                     }
@@ -318,7 +318,7 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
                 auto c = closer(log);
                 std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 while (task) {
-                    LOG_DEBUG_LIB(LibEcKit) << "Task found: " << *task << std::endl;
+                    LOG_DEBUG_LIB(LibEcKit) << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
                     if (r.found(*task)) {
                         return;
                     }

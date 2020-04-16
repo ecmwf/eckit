@@ -41,6 +41,7 @@ typedef std::map<std::string, Library*> LibraryMap;
 ///
 class LibraryRegistry {
 public:  // methods
+
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static LibraryRegistry& instance() {
@@ -53,10 +54,20 @@ public:  // methods
 
     /// Registers an entry to the registry
     /// @pre Cannot exist yet
+    /// @param obj pointer must be valid
     void enregister(const std::string& name, Library* obj) {
         AutoLock<LibraryRegistry> lockme(instance());
+        ASSERT(obj);
         ASSERT(map_.find(name) == map_.end());
         map_[name] = obj;
+    }
+
+    /// Removes an entry from the registry
+    /// @pre Must exist
+    void deregister(const std::string& name) {
+        AutoLock<LibraryRegistry> lockme(instance());
+        ASSERT(map_.find(name) != map_.end());
+        map_.erase(name);
     }
 
     /// List entries in library
@@ -70,14 +81,14 @@ public:  // methods
     }
 
     /// Check entry exists in registry
-    bool exists(const std::string& name) {
+    bool exists(const std::string& name) const {
         AutoLock<LibraryRegistry> lockme(instance());
         LibraryMap::const_iterator j = map_.find(name);
         return (j != map_.end());
     }
 
     /// Prints the entries in registry
-    void print(std::ostream& out, const char* separator) {
+    void print(std::ostream& out, const char* separator) const {
         std::vector<std::string> l = LibraryRegistry::instance().list();
         const char* sep               = "";
         for (auto j : l) {
@@ -87,7 +98,7 @@ public:  // methods
     }
 
     /// Lookup entry in the registry
-    const Library& lookup(const std::string& name) {
+    Library& lookup(const std::string& name) const {
         AutoLock<LibraryRegistry> lockme(instance());
 
         LibraryMap::const_iterator j = map_.find(name);

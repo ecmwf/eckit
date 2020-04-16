@@ -215,6 +215,7 @@ struct YAMLItemKey : public YAMLItem {
 
 
             const YAMLItem& next = parser.peekItem();
+            YAMLItemLock nextLock(&next);
 
             // std::cout << "key " << *key << " next " << next << std::endl;
 

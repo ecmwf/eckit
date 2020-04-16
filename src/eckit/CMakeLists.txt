@@ -120,10 +120,10 @@ container/sptree/SPValue.h
 )
 
 list( APPEND eckit_io_srcs
-io/AIOHandle.cc
-io/AIOHandle.h
 io/AsyncHandle.cc
 io/AsyncHandle.h
+io/AIOHandle.cc
+io/AIOHandle.h
 io/AutoCloser.h
 io/Base64.cc
 io/Base64.h
@@ -167,6 +167,8 @@ io/FileLocker.cc
 io/FileLocker.h
 io/FilePool.cc
 io/FilePool.h
+io/FileHandle.cc
+io/FileHandle.h
 io/HandleBuf.cc
 io/HandleBuf.h
 io/HandleHolder.cc
@@ -175,12 +177,8 @@ io/Length.cc
 io/Length.h
 io/MarsFSHandle.cc
 io/MarsFSHandle.h
-io/MarsFSPartHandle.cc
-io/MarsFSPartHandle.h
 io/MemoryHandle.cc
 io/MemoryHandle.h
-io/MoverHandle.cc
-io/MoverHandle.h
 io/MoverTransfer.cc
 io/MoverTransfer.h
 io/MultiHandle.cc
@@ -197,6 +195,8 @@ io/Pipeline.cc
 io/Pipeline.h
 io/PooledFile.cc
 io/PooledFile.h
+io/PooledHandle.cc
+io/PooledHandle.h
 io/PooledFileDescriptor.cc
 io/PooledFileDescriptor.h
 io/RawFileHandle.cc
@@ -240,6 +240,7 @@ io/cluster/ClusterNodes.h
 io/cluster/NodeInfo.cc
 io/cluster/NodeInfo.h
 )
+
 
 if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
@@ -359,6 +360,8 @@ runtime/PipeHandler.h
 runtime/ProcessControler.cc
 runtime/ProcessControler.h
 runtime/ProducerConsumer.h
+runtime/Telemetry.cc
+runtime/Telemetry.h
 runtime/SessionID.cc
 runtime/SessionID.h
 runtime/Task.cc
@@ -569,14 +572,24 @@ net/Connector.cc
 net/Connector.h
 net/Endpoint.cc
 net/Endpoint.h
-net/NetAddress.cc
-net/NetAddress.h
+net/HttpHeader.cc
+net/HttpHeader.h
+net/IPAddress.cc
+net/IPAddress.h
+net/NetMask.cc
+net/NetMask.h
 net/NetService.cc
 net/NetService.h
 net/NetUser.cc
 net/NetUser.h
 net/Port.cc
 net/Port.h
+net/ProxiedTCPClient.cc
+net/ProxiedTCPClient.h
+net/ProxiedTCPServer.cc
+net/ProxiedTCPServer.h
+net/SocketOptions.cc
+net/SocketOptions.h
 net/TCPClient.cc
 net/TCPClient.h
 net/TCPServer.cc
@@ -587,6 +600,7 @@ net/TCPStream.cc
 net/TCPStream.h
 net/Telnet.cc
 net/Telnet.h
+net/TelnetUser.cc
 net/TelnetUser.h
 net/Telnetable.cc
 net/Telnetable.h
@@ -694,6 +708,13 @@ if(ECKIT_HAVE_XXHASH)
       utils/xxHashing.cc
       utils/xxHashing.h
     )
+endif()
+
+if(ECKIT_HAVE_RSYNC)
+  list( APPEND eckit_utils_srcs
+    utils/Rsync.cc
+    utils/Rsync.h
+  )
 endif()
 
 list( APPEND eckit_memory_srcs
@@ -866,20 +887,24 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
+                    PRIVATE_LIBS
+                        "${SNAPPY_LIBRARIES}"
+                        "${LIBRSYNC_LIBRARIES}"
+                        "${LZ4_LIBRARIES}"
+                        "${BZIP2_LIBRARIES}"
+                        "${AEC_LIBRARIES}"
                     LIBS
-                        ${OPENSSL_LIBRARIES}
-                        ${CURL_LIBRARIES}
-                        ${XXHASH_LIBRARIES}
-                        ${SNAPPY_LIBRARIES}
-                        ${LZ4_LIBRARIES}
-                        ${BZIP2_LIBRARIES}
-                        ${AEC_LIBRARIES}
-                        ${AIO_LIBRARIES}
-                        ${RADOS_LIBRARIES}
+                        "${OPENSSL_LIBRARIES}"
+                        "${CURL_LIBRARIES}"
+                        "${XXHASH_LIBRARIES}"
+                        "${AIO_LIBRARIES}"
+                        "${RADOS_LIBRARIES}"
                         ${CMATH_LIBRARIES}
+                        ${RT_LIBRARIES}
                         ${THREADS_LIBRARIES}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
+
           LINKER_LANGUAGE CXX )
 
 ### sub-directories

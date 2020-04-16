@@ -13,55 +13,60 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "eckit/config/Resource.h"
 #include "eckit/io/Select.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/TCPServer.h"
+#include "eckit/thread/AutoLock.h"
 
 
 namespace eckit {
+namespace net {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-TCPServer::TCPServer(int port, const std::string& addr, bool reusePort) :
-    TCPSocket(),
-    port_(port),
-    listen_(-1),
-    addr_(addr),
-    closeExec_(true),
-    reusePort_(reusePort) {}
-
-TCPServer::~TCPServer() {
-    if (listen_ >= 0)
-        ::close(listen_);
+TCPServer::TCPServer(const SocketOptions& options) :
+    TCPSocket(), port_(0), listen_(-1), options_(options), closeExec_(true) {
 }
 
-// Accept a client
+TCPServer::TCPServer(int port, const SocketOptions& options) :
+    TCPSocket(), port_(port), listen_(-1), options_(options), closeExec_(true) {}
+
+TCPServer::~TCPServer() {
+    if (listen_ >= 0) {
+        ::close(listen_);
+    }
+}
+
 
 TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected) {
+
     bind();
 
-
     sockaddr_in from;
-#ifdef SGI
-    int fromlen = sizeof(from);
-#else
     socklen_t fromlen = sizeof(from);
-#endif
 
     for (;;) {
         int delay = timeout ? timeout : 10;
 
         Select select(listen_);
-        Log::status() << message << " (port " << port_ << ")" << std::endl;
+        Log::status() << message;
+        if(port_) { Log::status() << " (port " << port_ << ")";}
+        Log::status() << std::endl;
 
         while (!select.ready(delay)) {
-            if (timeout && !connected)
+
+            if (timeout && !connected) {
                 throw TimeOut(message, timeout);
+            }
+
             if (connected) {
                 *connected = false;
                 return *this;
             }
-            Log::status() << message << " (port " << port_ << ")" << std::endl;
+
+            Log::status() << message;
+            if(port_) { Log::status() << " (port " << port_ << ")";}
+            Log::status() << std::endl;
         }
 
         if ((socket_ = ::accept(listen_, reinterpret_cast<sockaddr*>(&from), &fromlen)) >= 0) {
@@ -74,16 +79,14 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
     remoteAddr_ = from.sin_addr;
     remoteHost_ = addrToHost(from.sin_addr);
-    remotePort_ = from.sin_port;
+    remotePort_ = ntohs(from.sin_port);
 
     // Set the 'close on exec'
 
     if (closeExec_)
         SYSCALL(fcntl(socket_, F_SETFD, FD_CLOEXEC));
 
-    /// @todo change this to sigaction
-
-    ::signal(SIGPIPE, SIG_IGN);
+    register_ignore_sigpipe();
 
     Log::status() << "Get connection from " << remoteHost() << std::endl;
 
@@ -102,32 +105,42 @@ void TCPServer::close() {
 }
 
 void TCPServer::bind() {
-    if (listen_ == -1) {
-        listen_ = newSocket(port_, reusePort_);
-        ::listen(listen_, 5);
+    // There can be a race condition is two thread asks for localPort()
+    // and both try to bind at the same time
+    AutoLock<Mutex> lock(mutex_);
 
-        // if(!willFork_)
-        //  SYSCALL(fcntl(socket_,F_SETFD,FD_CLOEXEC));
+    if (listen_ == -1) {
+        listen_ = createSocket(port_, options_);
+        int backlog = options_.listenBacklog();
+        Log::info() << "Listening on socket " << listen_ << " port: " << port_ << " backlog: " << backlog << std::endl;
+        SYSCALL(::listen(listen_, backlog));
     }
 }
 
 
 int TCPServer::socket() {
-    ((TCPServer*)this)->bind();
+    bind();
     return listen_;
 }
 
 std::string TCPServer::bindingAddress() const {
-    return addr_;
+    return options_.bindAddress();
 }
 
 void TCPServer::print(std::ostream& s) const {
     s << "TCPServer["
-      << "port=" << port_ << ",addr=" << addr_ << ",";
+      << "port=" << port_ << ",options_=" << options_ << ",";
     TCPSocket::print(s);
     s << "]";
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
+EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) : TCPServer(0, opts) {
+}
+
+EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) : TCPServer(port, opts) {
+}
+
+
+}  // namespace net
 }  // namespace eckit

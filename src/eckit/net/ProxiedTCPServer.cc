@@ -13,24 +13,24 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "eckit/net/ProxiedTCPServer.h"
+
 #include "eckit/io/Select.h"
 #include "eckit/log/Log.h"
-#include "eckit/web/ProxiedTCPServer.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ProxiedTCPServer::ProxiedTCPServer(int port, const std::string& addr) : TCPServer(port, addr) {}
+ProxiedTCPServer::ProxiedTCPServer(int port, const net::SocketOptions& options) : net::TCPServer(port, options) {}
 
 ProxiedTCPServer::~ProxiedTCPServer() {}
 
 // Accept a client
 
-TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout, bool* connected) {
-    TCPSocket& socket = TCPServer::accept(message, timeout, connected);
+net::TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout, bool* connected) {
+    net::TCPSocket& socket = TCPServer::accept(message, timeout, connected);
 
     // Strip http-header
 

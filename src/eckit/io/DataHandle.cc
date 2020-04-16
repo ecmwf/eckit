@@ -70,7 +70,8 @@ void DataHandle::flush() {
     throw NotImplemented(os.str(), Here());
 }
 
-Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool dblBufferOK) {
+Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
+
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
 
     compress();
@@ -86,7 +87,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool db
 
     static const bool doubleBuffer = Resource<bool>("doubleBuffer", 0);
 
-    if (doubleBuffer && dblBufferOK) {
+    if (doubleBuffer && doubleBufferOK() && other.doubleBufferOK()) {
         static const long bufsize = Resource<long>("doubleBufferSize", 10 * 1024 * 1024 / 20);
         static const long count   = Resource<long>("doubleBufferCount", 20);
 
@@ -176,9 +177,9 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool db
     }
 }
 
-Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, bool dblBufferOK) {
+Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
     std::unique_ptr<DataHandle> file{path.fileHandle()};
-    return saveInto(*file, w, dblBufferOK);
+    return saveInto(*file, w);
 }
 
 Length DataHandle::copyTo(DataHandle& other, long bufsize) {
@@ -233,7 +234,7 @@ std::string DataHandle::title() const {
 #ifndef IBM
 template <>
 Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const {
-    return 0;
+    return nullptr;
 }
 #endif
 
@@ -306,6 +307,12 @@ Offset DataHandle::seek(const Offset& from) {
     std::ostringstream os;
     os << "DataHandle::seek(" << from << ") [" << *this << "]";
     throw NotImplemented(os.str(), Here());
+}
+
+Length DataHandle::size() {
+    std::ostringstream oss;
+    oss << "DataHandle::size() [" << *this << "]";
+    throw NotImplemented(oss.str(), Here());
 }
 
 void DataHandle::skip(const Length& len) {
@@ -439,6 +446,7 @@ long FOpenDataHandle::seek(long pos, int whence) {
 
     try {
         long where = pos;
+        std::cerr << "whence: " << whence << std::endl;
         switch (whence) {
 
             case SEEK_SET:
@@ -454,7 +462,9 @@ long FOpenDataHandle::seek(long pos, int whence) {
                 break;
 
             default:
-                NOTIMP;
+                std::ostringstream oss;
+                oss << "FOpenDataHandle can't seek(pos=" << pos << ", whence=" << whence << ")";
+                throw NotImplemented(oss.str(), Here());
         }
 
         if (where == position_) {

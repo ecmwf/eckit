@@ -18,6 +18,7 @@
 
 
 namespace eckit {
+namespace net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -34,30 +35,33 @@ Connector::Connector(const std::string& host, int port) :
     locked_(false),
     memoize_(false),
     sent_(false),
-    life_(0) {
+    life_(0),
+    autoclose_(false) {
     Log::info() << "Connector::Connector(" << host << "," << port << ")" << std::endl;
 }
 
 Connector::~Connector() {
 
-    try {
-        if (socket_.isConnected()) {
-            (*this) << "bye";
-        }
-    }
-    catch (std::exception& e) {
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception is ignored" << std::endl;
-    }
+    socket_.close();
+
+    // try {
+    //     if (socket_.isConnected()) {
+    //         (*this) << "bye";
+    //     }
+    // }
+    // catch (std::exception& e) {
+    //     Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
+    //     Log::error() << "** Exception is ignored" << std::endl;
+    // }
 }
 
 TCPSocket& Connector::socket() {
     if (!socket_.isConnected()) {
         try {
             NodeInfo remote;
-            TCPClient client;
+            TCPClient client(SocketOptions::control());
             Log::info() << "Connector::stream connecting to " << host_ << ":" << port_ << std::endl;
-            socket_ = client.connect(host_, port_);
+            socket_ = client.connect(host_, port_, -1);
             InstantTCPStream s(socket_);
 
             // Login
@@ -255,7 +259,9 @@ void Connector::lock() {
 void Connector::unlock() {
     ASSERT(locked_);
     locked_ = false;
-    // reset();
+    if(autoclose_) {
+        reset();
+    }
 }
 
 void Connector::reset() {
@@ -416,4 +422,5 @@ void Connector::memoize(bool on, unsigned long life) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace net
+} // namespace eckit

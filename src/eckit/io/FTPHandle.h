@@ -18,77 +18,73 @@
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPSocket.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class FTPHandle : public DataHandle {
 public:
+    // -- Exceptions
 
-// -- Exceptions
+    class FTPError : public std::exception {
+        virtual const char* what() const noexcept;
+    };
 
-    class FTPError : public std::exception { virtual const char *what() const noexcept; };
+    // -- Contructors
 
-// -- Contructors
+    FTPHandle(const std::string&, const std::string&, int port = 21);
+    FTPHandle(Stream&);
 
-	FTPHandle(const std::string&,const std::string&,int port = 21);
-	FTPHandle(Stream&);
+    // -- Destructor
 
-// -- Destructor
+    ~FTPHandle() {}
 
-	~FTPHandle() {}
+    // -- Overridden methods
 
-// -- Overridden methods
-
-	// From DataHandle
+    // From DataHandle
 
     virtual Length openForRead();
     virtual void openForWrite(const Length&);
     virtual void openForAppend(const Length&);
 
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
-	virtual void close();
-	virtual void rewind();
-	virtual void print(std::ostream&) const;
+    virtual long read(void*, long);
+    virtual long write(const void*, long);
+    virtual void close();
+    virtual void rewind();
+    virtual void print(std::ostream&) const;
 
-	// From Streamable
+    // From Streamable
 
-	virtual void encode(Stream&) const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const;
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-	static  const ClassSpec&  classSpec()        { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+    // -- Members
 
-// -- Members
+    std::string remote_;
+    std::string host_;
+    int port_;
+    net::TCPClient cmds_;
+    net::TCPSocket data_;
 
-	std::string        remote_;
-	std::string        host_;
-	int           port_;
-	TCPClient     cmds_;
-	TCPSocket     data_;
+    // -- Methods
 
-// -- Methods
+    void ftpCommand(const std::string&);
+    std::string readLine();
+    void open(const std::string&);
 
-	void   ftpCommand(const std::string&);
-	std::string readLine();
-	void   open(const std::string&);
+    // -- Class members
 
-// -- Class members
-
-    static  ClassSpec               classSpec_;
-	static  Reanimator<FTPHandle>  reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<FTPHandle> reanimator_;
 };
 
 
-//-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <future>
+
 #include "eckit/thread/Mutex.h"
 
 #include "eckit/testing/Test.h"
@@ -26,7 +28,19 @@ CASE("TestMutex") {
 
     EXPECT_NO_THROW(m = new Mutex());
 
+    bool gotLock = false;
+    EXPECT_NO_THROW(gotLock = m->tryLock());
+    EXPECT(gotLock);
+    EXPECT_NO_THROW(m->unlock());
+
     EXPECT_NO_THROW(m->lock());
+
+    // Mutex is recursive, therefore another thread is needed for tryLock to return false
+    auto f_gotLock = async(launch::async, [&m] () {
+            return m->tryLock();
+        });
+    EXPECT_NO_THROW(gotLock = f_gotLock.get());
+    EXPECT(!gotLock);
 
     EXPECT_NO_THROW(m->unlock());
 

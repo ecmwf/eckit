@@ -19,7 +19,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RemoteCommandUser::RemoteCommandUser(TCPSocket& protocol) : NetUser(protocol), from_(protocol_.remoteHost()) {}
+RemoteCommandUser::RemoteCommandUser(net::TCPSocket& protocol) : net::NetUser(protocol), from_(protocol_.remoteHost()) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

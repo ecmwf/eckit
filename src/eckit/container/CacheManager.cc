@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <deque>
 #include <fstream>
+#include <cstring>
 
 #include "eckit/container/BTree.h"
 #include "eckit/container/CacheManager.h"

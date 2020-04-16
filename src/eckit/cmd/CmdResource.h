@@ -11,17 +11,14 @@
 #ifndef eckit_cmd_CmdResource_H
 #define eckit_cmd_CmdResource_H
 
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/eckit.h"
 #include "eckit/memory/NonCopyable.h"
 
-#include "eckit/cmd/Arg.h"
-#include "eckit/cmd/CmdArg.h"
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
 class CmdResource : private eckit::NonCopyable {
 
@@ -55,7 +52,7 @@ protected:  // methods
     virtual void execute(std::istream&, std::ostream&, CmdArg&) = 0;
 
     virtual Arg usage(const std::string& cmd) const = 0;
-    virtual void help(std::ostream&) const = 0;
+    virtual void help(std::ostream&) const          = 0;
 
     virtual void print(std::ostream&) const;
 
@@ -75,8 +72,7 @@ private:  // friends
     }
 };
 
-//-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

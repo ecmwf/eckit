@@ -36,7 +36,7 @@ static void end(const char* msg) {
     in_end = true;
 
     delete[] reserve_;
-    reserve_ = 0;
+    reserve_ = nullptr;
 
     try {
         throw;
@@ -57,10 +57,10 @@ static void catch_unexpected() {
     end("Unexpected was called");
 }
 
-static void catch_new_handler() {
+[[ noreturn ]] static void catch_new_handler() {
     delete[] reserve_;
-    reserve_ = 0;
-    throw OutOfMemory();
+    reserve_ = nullptr;
+    throw eckit::OutOfMemory();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ Application& Application::instance() {
 }
 
 Application::Application(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv), running_(false) {
-    reserve_ = new char[20 * 1024];  // In case we runout of memory
+    reserve_ = new char[20 * 1024];  // reserve in case we runout of memory
 
     std::set_new_handler(&catch_new_handler);
     std::set_terminate(&catch_terminate);
@@ -129,7 +129,7 @@ void Application::start() {
 
 
 void Application::stop() {
-    ::exit(0);  // or: throw Stop();
+    ::exit(0);  // or throw Stop();
 }
 
 
@@ -164,7 +164,6 @@ void Application::unique() {
     std::ofstream os(lockFile.localPath());
     os << ::getpid();
 }
-
 
 time_t Application::uptime() {
 

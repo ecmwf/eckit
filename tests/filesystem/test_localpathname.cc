@@ -9,6 +9,7 @@
  */
 
 #include <string>
+#include <unistd.h>
 
 #include "eckit/types/Types.h"
 
@@ -248,6 +249,22 @@ CASE("Create a unique path") {
 
     unique.rmdir();
     EXPECT(!unique.exists());
+}
+
+CASE("Check link") {
+
+    LocalPathName unique = LocalPathName::unique(LocalPathName::cwd());
+    unique.mkdir();
+
+    LocalPathName linkpath = LocalPathName::cwd() + "link";
+
+    ::symlink(unique.c_str(), linkpath.c_str());
+
+    EXPECT(linkpath.exists());
+    EXPECT(linkpath.isLink());
+
+    unique.rmdir();
+    linkpath.unlink();
 }
 
 std::string tidy(const std::string& p) {

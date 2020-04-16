@@ -19,6 +19,12 @@
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/sql/type/SQLBit.h"
 
+// Cray C++ compiler should not try to optimize this code
+#if _CRAYC
+#pragma _CRI noopt
+#endif
+
+
 namespace eckit {
 namespace sql {
 namespace expression {

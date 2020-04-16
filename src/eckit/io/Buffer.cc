@@ -49,7 +49,9 @@ Buffer::~Buffer() {
 }
 
 void Buffer::zero() {
-    ::memset(buffer_, 0, size_);
+    if (buffer_) {
+        ::memset(buffer_, 0, size_);
+    }
 }
 
 void Buffer::create() {
@@ -63,11 +65,15 @@ void Buffer::destroy() {
 }
 
 void Buffer::copy(const std::string& s) {
-    ::strcpy(static_cast<char*>(buffer_), s.c_str());
+    if (s.size()) {
+        ::strcpy(static_cast<char*>(buffer_), s.c_str());
+    }
 }
 
 void Buffer::copy(const char* p, size_t size) {
-    ::memcpy(buffer_, p, size);
+    if (size) {
+        ::memcpy(buffer_, p, size);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -8,31 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-// File HtmlResource.h
-// Baudouin Raoult - ECMWF Jun 12
 
-#ifndef JSONResource_H
-#define JSONResource_H
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+///
+/// @date Jun 2012
 
-#include "eckit/web/HtmlResource.h"
+#ifndef eckit_web_HtmlResource_H
+#define eckit_web_HtmlResource_H
 
-//-----------------------------------------------------------------------------
+#include "eckit/web/HttpResource.h"
+
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class JSON;
 class Value;
 
-class JSONResource : public HtmlResource {
+class JSONResource : public HttpResource {
 public:
 
-// -- Contructors
-
     JSONResource(const std::string&);
-
-// -- Destructor
 
     virtual ~JSONResource();
 
@@ -40,11 +38,11 @@ private:
 
     virtual void GET(std::ostream&, Url&);
     virtual void POST(std::ostream&, Url&);
-    virtual void json(eckit::JSON&, const eckit::Value&) = 0;
+    virtual void json(eckit::JSON&, const eckit::Value&) = 0;    
 
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

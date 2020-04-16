@@ -17,50 +17,43 @@
 #include "eckit/net/TCPSocket.h"
 
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
 
-class SockBuf : public std::streambuf  {
+class SockBuf : public std::streambuf {
 public:
+    // -- Contructors
 
-// -- Contructors
+    SockBuf(net::TCPSocket& proto);
 
-	SockBuf(TCPSocket& proto);
+    // -- Destructor
 
-// -- Destructor
-
-	~SockBuf();
+    ~SockBuf();
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    SockBuf(const SockBuf&);
+    SockBuf& operator=(const SockBuf&);
 
-	SockBuf(const SockBuf&);
-	SockBuf& operator=(const SockBuf&);
+    // -- Members
 
-// -- Members
+    char in_[1];
+    char out_[80];
+    net::TCPSocket& protocol_;
 
-	char in_[1];
-	char out_[80];
-	TCPSocket& protocol_;
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From streambuf
 
-	// From streambuf
-
-	virtual int overflow(int c);
-	virtual int underflow();
-	virtual int sync();
-//	virtual int uflow();
-
+    virtual int overflow(int c);
+    virtual int underflow();
+    virtual int sync();
+    //	virtual int uflow();
 };
 
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

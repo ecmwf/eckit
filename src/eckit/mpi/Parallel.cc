@@ -126,6 +126,22 @@ static MPI_Op toOp(Operation::Code code) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace {
+size_t getRank(MPI_Comm comm) {
+    int rank;
+    MPI_CALL(MPI_Comm_rank(comm, &rank));
+    return size_t(rank);
+}
+
+size_t getSize(MPI_Comm comm) {
+    int size;
+    MPI_CALL(MPI_Comm_size(comm, &size));
+    return size_t(size);
+}
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
 Parallel::Parallel(const std::string& name) : Comm(name) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);
@@ -137,6 +153,8 @@ Parallel::Parallel(const std::string& name) : Comm(name) /* don't use member ini
     initCounter++;
 
     comm_ = MPI_COMM_WORLD;
+    rank_ = getRank(comm_);
+    size_ = getSize(comm_);
 }
 
 Parallel::Parallel(const std::string& name, MPI_Comm comm, bool) :
@@ -151,6 +169,8 @@ Parallel::Parallel(const std::string& name, MPI_Comm comm, bool) :
     initCounter++;
 
     comm_ = comm;
+    rank_ = getRank(comm_);
+    size_ = getSize(comm_);
 }
 
 Parallel::Parallel(const std::string& name, int comm) : Comm(name) {
@@ -164,6 +184,8 @@ Parallel::Parallel(const std::string& name, int comm) : Comm(name) {
     initCounter++;
 
     comm_ = MPI_Comm_f2c(comm);
+    rank_ = getRank(comm_);
+    size_ = getSize(comm_);
 }
 
 Parallel::~Parallel() {
@@ -275,18 +297,6 @@ std::string Parallel::processorName() const {
     int size = sizeof(hostname);
     MPI_CALL(MPI_Get_processor_name(hostname, &size));
     return hostname;
-}
-
-size_t Parallel::rank() const {
-    int rank;
-    MPI_CALL(MPI_Comm_rank(comm_, &rank));
-    return size_t(rank);
-}
-
-size_t Parallel::size() const {
-    int size;
-    MPI_CALL(MPI_Comm_size(comm_, &size));
-    return size_t(size);
 }
 
 void Parallel::barrier() const {
@@ -518,6 +528,8 @@ Comm& Parallel::split(int color, const std::string& name) const {
 
 void Parallel::free() {
     MPI_CALL(MPI_Comm_free(&comm_));
+    rank_ = 0;
+    size_ = 0;
 }
 
 void Parallel::print(std::ostream& os) const {
@@ -541,6 +553,10 @@ MPI_Request* Parallel::toRequest(Request& req) {
     return &(req.as<ParallelRequest>().request_);
 }
 
+MPI_Comm Parallel::MPIComm() const {
+    return comm_;
+}
+
 int Parallel::communicator() const {
     return MPI_Comm_c2f(comm_);
 }
@@ -551,7 +567,7 @@ eckit::SharedBuffer Parallel::broadcastFile(const PathName& filepath, size_t roo
 
     bool isRoot = rank() == root;
 
-    eckit::CountedBuffer* buffer;
+    eckit::CountedBuffer* buffer = nullptr;
 
     struct BFileOp {
         int err_;
@@ -573,7 +589,7 @@ eckit::SharedBuffer Parallel::broadcastFile(const PathName& filepath, size_t roo
                 op.err_ = EISDIR;
             }
         }
-        catch (Exception& e) {
+        catch (Exception&) {
             op.err_ = errno;
         }
     }

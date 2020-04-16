@@ -47,7 +47,7 @@ ThreadControler::~ThreadControler() {
         // Log::warning() << "Deleting Thread in ThreadControler::~ThreadControler()" << " " << hex << pthread_self() <<
         // std::endl;
         delete proc_;
-        proc_ = 0;
+        proc_ = nullptr;
     }
 }
 
@@ -57,7 +57,7 @@ void ThreadControler::execute() {
     // Make a copy, because "this" will desappear
     Thread* proc = proc_;
     if (detached_)
-        proc_ = 0;
+        proc_ = nullptr;
 
     // cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================

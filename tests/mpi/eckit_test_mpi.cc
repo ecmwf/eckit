@@ -184,37 +184,44 @@ CASE("test_gatherv_unequal_stride") {
     size_t size = mpi::comm().size();
     size_t rank = mpi::comm().rank();
 
-    size_t stride = 10 * rank;
+    auto stride = [](size_t rank) { return 10*(rank); };
 
-    std::vector<long> send(stride);
+    std::vector<long> send(stride(rank));
 
-    for (size_t i = 0; i < stride; ++i) {
+    for (size_t i = 0; i < stride(rank); ++i) {
         send[i] = long(rank * i);
     }
 
-    std::vector<int> displs(size);
-    std::vector<int> recvcounts(size);
+    std::vector<int> displs;
+    std::vector<int> recvcounts;
 
-    for (size_t i = 0; i < size; ++i) {
-        displs[i]     = int(i ? displs[i - 1] + stride : 0);
-        recvcounts[i] = int(stride);
+    if( rank == root ) {
+        // displs and recvcounts only significant at root
+        displs.resize(size);
+        recvcounts.resize(size);
+        for (size_t i = 0; i < size; ++i) {
+            recvcounts[i] = int(stride(i));
+            displs[i]     = int(i ? displs[i - 1] + recvcounts[i - 1] : 0);
+        }
     }
-
     size_t recvsize = size_t(std::accumulate(recvcounts.begin(), recvcounts.end(), 0));
 
     std::vector<long> recv(recvsize);
 
     EXPECT_NO_THROW(mpi::comm().gatherv(send, recv, recvcounts, displs, root));
 
-    size_t e = 0;
-    std::vector<long> expected(recvsize);
-    for (size_t i = 0; i < size; ++i) {
-        for (size_t j = 0; j < stride; ++j, ++e) {
-            expected[e] = long(i * j);
-        }
-    }
+    if ( rank == root ) {
 
-    if (rank == root) {
+        EXPECT( recv.size() == recvsize );
+
+        size_t e = 0;
+        std::vector<long> expected(recvsize);
+        for (size_t i = 0; i < size; ++i) {
+            for (size_t j = 0; j < stride(i); ++j, ++e) {
+                expected[e] = long(i * j);
+            }
+        }
+
         EXPECT(recv == expected);
     }
 }

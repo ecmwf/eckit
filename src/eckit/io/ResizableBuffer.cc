@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include <sys/mman.h>
 #include <unistd.h>
 

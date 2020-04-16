@@ -8,24 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-// File TelnetUser.h
-// Manuel Fuentes - ECMWF Jul 96
-
-#ifndef eckit_TelnetUser_h
-#define eckit_TelnetUser_h
+#ifndef eckit_net_TelnetUser_h
+#define eckit_net_TelnetUser_h
 
 #include "eckit/net/NetUser.h"
 
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
-
-//-----------------------------------------------------------------------------
+namespace net {
 
 class TelnetUser : public NetUser {
 public:
-	TelnetUser(TCPSocket&);
+    explicit TelnetUser(net::TCPSocket&);
 	virtual ~TelnetUser();
 static void terminate(TelnetUser& other)	{ other.stop(); }
 
@@ -34,10 +28,7 @@ private:
 	std::string from_;
 };
 
-
-
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
 
 #endif

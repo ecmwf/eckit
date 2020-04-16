@@ -38,8 +38,8 @@ void Client::run() {
     std::string remoteHost = "localhost";
 
 
-    TCPClient client;
-    TCPStream s(client.connect(remoteHost, 9013));
+    net::TCPClient client;
+    net::TCPStream s(client.connect(remoteHost, 9013));
 
     Log::info() << "Connecting to " << s.socket().remoteHost() << ":" << s.socket().remotePort() << std::endl;
 

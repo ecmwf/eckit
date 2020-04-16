@@ -68,14 +68,7 @@ expression/SQLExpressionEvaluated.h
 expression/OrderByExpressions.cc
 expression/OrderByExpressions.h
 
-expression/function/piconst.h
 expression/function/DoubleFunctions.cc
-expression/function/EqRegionCache.cc
-expression/function/EqRegionCache.h
-expression/function/RggRegionCache.cc
-expression/function/RggRegionCache.h
-expression/function/RegionCache.cc
-expression/function/RegionCache.h
 expression/function/FunctionExpression.cc
 expression/function/FunctionExpression.h
 expression/function/FunctionAND.cc

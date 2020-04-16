@@ -11,6 +11,7 @@
 #include "eckit/linalg/Vector.h"
 
 #include <cstring>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
@@ -26,7 +27,7 @@ Vector::Vector() : array_(0), length_(0), own_(false) {}
 Vector::Vector(Size length) : array_(new Scalar[length]), length_(length), own_(true) {}
 
 
-Vector::Vector(Scalar* array, Size length) : array_(&array[0]), length_(length), own_(false) {
+Vector::Vector(const Scalar array[], Size length) : array_(const_cast<Scalar*>(array)), length_(length), own_(false) {
     ASSERT(array_ && length_ > 0);
 }
 

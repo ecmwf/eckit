@@ -6,7 +6,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 2.9 )
+ecbuild_requires_macro_version( 3.0 )
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
@@ -16,6 +16,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ### dependencies and options
+
+ecbuild_add_option( FEATURE BUILD_TOOLS
+                    DEFAULT ON
+                    DESCRIPTION "Build the command line tools" )
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT OFF
@@ -178,6 +182,16 @@ set_package_properties( ViennaCL PROPERTIES
                         TYPE RECOMMENDED
                         PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
 
+### LibRsync
+
+ecbuild_add_option( FEATURE RSYNC
+                    DEFAULT OFF
+                    DESCRIPTION "librsync implementation of the rsync algorithm"
+                    REQUIRED_PACKAGES LibRsync )
+if( HAVE_RSYNC )
+  set( LIBRSYNC_LIBRARIES rsync )
+endif()
+
 ### Performance tests
 
 ecbuild_add_option( FEATURE EXTRA_TESTS
@@ -187,11 +201,24 @@ ecbuild_add_option( FEATURE EXTRA_TESTS
 ### async io support
 
 find_package( AIO )
-set_package_properties( AIO PROPERTIES TYPE RECOMMENDED PURPOSE "support for asynchronous IO" )
+ecbuild_add_option( FEATURE AIO
+                    DEFAULT ON
+                    CONDITION ${AIO_FOUND}
+                    DESCRIPTION "support for asynchronous IO")
 
 ### c math library, needed when including "math.h"
 
 find_package( CMath )
+
+### realtime library implements shm_open on Linux
+if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
+    find_package( Realtime )
+    if( REALTIME_FOUND ) # check that aio needs realtime
+        set( RT_LIBRARIES ${RT_LIB} )
+    endif()
+else()
+  set( RT_LIBRARIES "" )
+endif()
 
 ###############################################################################
 # checks

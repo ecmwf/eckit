@@ -23,6 +23,7 @@
 
 
 namespace eckit {
+namespace net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -52,6 +53,8 @@ public:
 	bool locked() const { return locked_; }
 
 	const std::string& host() const { return host_; }
+
+    void autoclose(bool on) { autoclose_ = true; }
 
 	void memoize(bool on, unsigned long time);
 
@@ -95,6 +98,7 @@ private:
 
 	BufferCache out_;
 	BufferCache in_;
+    bool autoclose_;
 
     std::map<BufferCache, BufferCache> cache_;
 
@@ -142,6 +146,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace net
 } // namespace eckit
 
 #endif

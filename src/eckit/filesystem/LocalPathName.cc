@@ -651,7 +651,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 #if defined(ECKIT_HAVE_DIRENT_D_TYPE)
         do_stat = false;
         if (e->d_type == DT_DIR) {
-            dirs.push_back(full); 
+            dirs.push_back(full);
         } else if (e->d_type == DT_UNKNOWN) {
             do_stat = true;
         } else {
@@ -738,7 +738,7 @@ bool LocalPathName::isDir() const {
 
 bool LocalPathName::isLink() const {
     Stat::Struct info;
-    if (Stat::stat(path_.c_str(), &info) < 0)
+    if (Stat::lstat(path_.c_str(), &info) < 0)
         throw FailedSystemCall(path_);
     return S_ISLNK(info.st_mode);
 }

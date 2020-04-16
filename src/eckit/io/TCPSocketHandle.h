@@ -24,81 +24,73 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 // Does not takes ownership of the socket
-// See TCPSocketHandle below
+// See net::TCPSocketHandle below
 
 
 class InstantTCPSocketHandle : public DataHandle {
 public:
+    // -- Contructors
 
-// -- Contructors
+    InstantTCPSocketHandle(net::TCPSocket&);
 
-	InstantTCPSocketHandle(TCPSocket&);
+    // -- Destructor
 
-// -- Destructor
+    ~InstantTCPSocketHandle();
 
-	~InstantTCPSocketHandle();
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From DataHandle
 
-	// From DataHandle
+    virtual Length openForRead();
+    virtual void openForWrite(const Length&);
+    virtual void openForAppend(const Length&);
 
-	virtual Length openForRead();
-	virtual void openForWrite(const Length&);
-	virtual void openForAppend(const Length&);
+    virtual long read(void*, long);
+    virtual long write(const void*, long);
+    virtual void close();
+    virtual void rewind();
+    virtual void print(std::ostream&) const;
+    virtual Offset seek(const Offset&);
 
-	virtual long read(void*, long);
-	virtual long write(const void*, long);
-	virtual void close();
-	virtual void rewind();
-	virtual void print(std::ostream&) const;
-	virtual Offset seek(const Offset&);
-
-	// From Streamable
+    // From Streamable
 
 
-// -- Class methods
+    // -- Class methods
 
 protected:
+    // -- Members
 
-// -- Members
-
-	TCPSocket&   connection_;
+    net::TCPSocket& connection_;
 
 private:
+    // No copy allowed
 
-// No copy allowed
-
-	InstantTCPSocketHandle(const InstantTCPSocketHandle&);
-	InstantTCPSocketHandle& operator=(const InstantTCPSocketHandle&);
-
-
-	bool read_;
-	Offset position_;
-
-// -- Class members
+    InstantTCPSocketHandle(const InstantTCPSocketHandle&);
+    InstantTCPSocketHandle& operator=(const InstantTCPSocketHandle&);
 
 
+    bool read_;
+    Offset position_;
+
+    // -- Class members
 };
 
 // Takes ownership of the socket
 
 class TCPSocketHandle : public InstantTCPSocketHandle {
 public:
-
-	TCPSocketHandle(TCPSocket&);
+    TCPSocketHandle(net::TCPSocket&);
 
 private:
+    net::TCPSocket socket_;
 
-	TCPSocket socket_;
-
-	virtual void print(std::ostream&) const;
-	virtual void close();
-
+    virtual void print(std::ostream&) const;
+    virtual void close();
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

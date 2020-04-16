@@ -375,7 +375,7 @@ CASE("Stream") {
     {
         URI uriOrig("http://username:password@host:123/path");
 
-        eckit::ResizableBuffer b(1000);  // must be enough
+        eckit::ResizableBuffer b(1000);  // should be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
 
@@ -384,6 +384,31 @@ CASE("Stream") {
         s.rewind();
 
         URI uri(s);
+        EXPECT(uri.scheme() == "http");
+        EXPECT(uri.authority() == "username:password@host:123");
+        EXPECT(uri.user() == "username:password");
+        EXPECT(uri.host() == "host");
+        EXPECT(uri.port() == 123);
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "http://username:password@host:123/path");
+        EXPECT(uri.asString() == "http://username:password@host:123/path");
+    }
+    {
+        URI uriOrig("http://username:password@host:123/path");
+
+        eckit::ResizableBuffer b(1000);  // should be enough
+        b.zero();
+        eckit::ResizableMemoryStream s(b);
+
+        s << uriOrig;
+
+        s.rewind();
+
+        URI uri("/");
+
+        s >> uri;
         EXPECT(uri.scheme() == "http");
         EXPECT(uri.authority() == "username:password@host:123");
         EXPECT(uri.user() == "username:password");

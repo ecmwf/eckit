@@ -16,12 +16,13 @@
 #ifndef eckit_log_Log_h
 #define eckit_log_Log_h
 
+#include "eckit/deprecated.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
 
 namespace eckit {
 
-typedef void (*channel_callback_t) (void* data, const char* msg);
+typedef void (*channel_callback_t)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,19 +31,18 @@ typedef void (*channel_callback_t) (void* data, const char* msg);
 
 class Log {
 
-public: // types
-
+public:  // types
     /// Output formats
-    enum {
-        compactFormat = 0,
-        normalFormat = 1,
-        fullFormat = 2,
-        monitorFormat = 3,
+    enum
+    {
+        compactFormat     = 0,
+        normalFormat      = 1,
+        fullFormat        = 2,
+        monitorFormat     = 3,
         applicationFormat = 4,  // Free to use for applications
     };
 
-public: // methods
-
+public:  // methods
     /// Channel for debug output
     static Channel& debug();
 
@@ -82,7 +82,7 @@ public: // methods
 
     static Channel& null();
 
-    template<typename T>
+    template <typename T>
     static Channel& debug(const T* = 0) {
         return T::instance().debugChannel();
     }
@@ -101,21 +101,35 @@ public: // methods
 
     static void print(std::ostream& os);
 
-private: // methods
-
+private:     // methods
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::ostream& setformat(std::ostream&, int);
+/// Format manipulators
+
 int format(std::ostream&);
+void format(std::ostream&, int);
 
-#define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
-#define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
+class LogFormatSetter {
+    int format_;
 
+public:
+    explicit LogFormatSetter(int f) : format_(f) {}
 
+    friend std::ostream& operator<<(std::ostream& s, const LogFormatSetter& f) {
+        format(s, f.format_);
+        return s;
+    }
+};
+
+DEPRECATED("Use eckit::format() instead") std::ostream& setformat(std::ostream& s, int f);
+
+inline LogFormatSetter setformat(int format) {
+    return LogFormatSetter(format);
+}
 // Non-flushing version of std::endl
 inline std::ostream& newl(std::ostream& out) {
     return out << '\n';
@@ -123,18 +137,25 @@ inline std::ostream& newl(std::ostream& out) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#define ECKIT_DEBUG_HERE std::cerr << " DEBUG () @ " << Here() << std::endl;
+#define ECKIT_DEBUG_VAR(x) std::cerr << " DEBUG (" << #x << ":" << x << ") @ " << Here() << std::endl;
+
 /// Optimisation for DEBUG with elision of stream code. For performance critical code blocks.
 
 class Voidify {
 public:
-  Voidify(){}
-  void operator&(std::ostream&){}
+    Voidify() {}
+    void operator&(std::ostream&) {}
 };
 
-#define LOG_DEBUG(condition,lib) static_cast<void>(0), !(condition) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
+#define LOG_DEBUG(condition, lib) \
+    static_cast<void>(0), !(condition) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
+
+#define LOG_DEBUG_LIB(lib) \
+    static_cast<void>(0), !(lib::instance().debug()) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

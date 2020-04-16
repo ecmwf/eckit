@@ -22,7 +22,7 @@
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 
@@ -50,13 +50,15 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     }
 
     Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;
-    ;
 
     Log::info() << "MoverTransfer::transfer cost:" << std::endl;
     for (std::map<std::string, Length>::iterator j = cost.begin(); j != cost.end(); ++j)
         Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
 
-    Connector& c(Connector::service("mover", cost));
+    net::Connector& c(net::Connector::service("mover", cost));
+    AutoLock<net::Connector> lock(c);
+    // This will close the connector on unlock
+    c.autoclose(true);
 
     Log::message() << c.host() << std::endl;
     Stream& s = c;

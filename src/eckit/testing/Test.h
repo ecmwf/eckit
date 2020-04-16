@@ -14,6 +14,7 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
+#include <functional>
 #include <vector>
 #include <sstream>
 #include <string>
@@ -46,9 +47,9 @@ class Test {
 
 public:  // methods
 
-    Test(const std::string& description, void (*testFn)(std::string&, int&, int)) :
+    Test(const std::string& description, std::function<void(std::string&, int&, int)> testFn) :
         description_(description),
-        testFn_(testFn) {}
+        testFn_(std::move(testFn)) {}
 
     bool run(TestVerbosity v, std::vector<std::string>& failures) {
 
@@ -117,7 +118,7 @@ private:  // members
     std::string description_;
     std::string subsection_;
 
-    void (* testFn_)(std::string&, int&, int);
+    std::function<void(std::string&, int&, int)> testFn_;
 };
 
 std::vector<Test>& specification() {
@@ -389,6 +390,17 @@ void UNIQUE_NAME2(test_, __LINE__) (std::string& _test_subsection, int& _num_sub
         throw eckit::testing::TestException("Exception expected but was not thrown", Here()); \
     } while (false)
 
+// Consider using EXPECT_EQUAL instead of EXPECT when testing for equality of two expressions,
+// since this macro provides more informative output on failure.
+#define EXPECT_EQUAL(expr, expected) \
+    do { \
+        if (!((expr) == (expected))) { \
+            std::stringstream str; \
+            str << ("EXPECT condition '" #expr " == " #expected "' failed. ") \
+                << "(Received: " << expr << "; expected: " << expected << ")"; \
+            throw eckit::testing::TestException(str.str(), Here()); \
+        } \
+    } while (false)
 
 // Setup no longer does anything. Can be removed where it has been used
 #define SETUP(name)

@@ -45,7 +45,8 @@ private: // methods (overrides)
     virtual void flush();
     virtual bool output(const expression::Expressions&);
 	virtual void prepare(SQLSelect&);
-	virtual void cleanup(SQLSelect&);
+    virtual void updateTypes(SQLSelect&);
+    virtual void cleanup(SQLSelect&);
 	virtual unsigned long long count();
 
 	virtual void outputReal(double, bool);

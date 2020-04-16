@@ -345,6 +345,12 @@ DataHandle* DataHandle::clone() const {
     throw NotImplemented(os.str(), Here());
 }
 
+void DataHandle::hash(MD5& md5) const{
+    std::ostringstream os;
+    os << "DataHandle::hash(" << *this << ")";
+    throw NotImplemented(os.str(), Here());
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -70,6 +70,8 @@ private:
 
     Value parseStringOrNumber(bool& isKey);
 
+    virtual std::string parserName() const;
+
 
     void anchor(const Value& key, const Value& value);
     Value anchor(const Value& key) const;
@@ -80,6 +82,8 @@ private:
     friend struct YAMLItemEndDocument;
     friend struct YAMLItemAnchor;
     friend struct YAMLItemReference;
+
+
 
 };
 

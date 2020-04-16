@@ -18,6 +18,7 @@
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/utils/MD5.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -265,6 +266,12 @@ std::string MarsFSPath::clusterName() const {
 std::string MarsFSPath::extension() const {
     NOTIMP;
 }
+
+void MarsFSPath::hash(MD5& md5) const {
+    md5 << node_;
+    md5 << path_;
+}
+
 
 BasePathName* MarsFSPath::checkClusterNode() const {
     try {

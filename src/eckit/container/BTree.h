@@ -21,6 +21,7 @@
 #include "eckit/container/BTree.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/PooledFileDescriptor.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/Padded.h"
 #include "eckit/os/Stat.h"
@@ -217,7 +218,7 @@ private:
 
     PathName path_;
 
-    int fd_;
+    mutable PooledFileDescriptor file_;
 
     bool cacheReads_;
     bool cacheWrites_;

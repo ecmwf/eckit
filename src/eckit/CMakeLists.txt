@@ -90,6 +90,7 @@ container/CacheManager.cc
 container/CacheManager.h
 container/ClassExtent.h
 container/DenseMap.h
+container/DenseSet.h
 container/KDMapped.cc
 container/KDMapped.h
 container/KDMemory.h
@@ -196,6 +197,8 @@ io/Pipeline.cc
 io/Pipeline.h
 io/PooledFile.cc
 io/PooledFile.h
+io/PooledFileDescriptor.cc
+io/PooledFileDescriptor.h
 io/RawFileHandle.cc
 io/RawFileHandle.h
 io/ResizableBuffer.cc
@@ -863,7 +866,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                     INCLUDES
                         "${OPENSSL_INCLUDE_DIR}"
                         "${AIO_INCLUDE_DIRS}"
-					LIBS
+                    LIBS
                         ${OPENSSL_LIBRARIES}
                         ${CURL_LIBRARIES}
                         ${XXHASH_LIBRARIES}
@@ -874,7 +877,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
                         ${AIO_LIBRARIES}
                         ${RADOS_LIBRARIES}
                         ${CMATH_LIBRARIES}
-                        ${CMAKE_THREAD_LIBS_INIT}
+                        ${THREADS_LIBRARIES}
                         ${CMAKE_DL_LIBS}
                         ${ECKIT_SYSTEM_EXTRA_LIBS}
           LINKER_LANGUAGE CXX )

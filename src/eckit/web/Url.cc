@@ -253,6 +253,10 @@ const std::string& Url::operator[](int n) const {
 eckit::Value Url::json() const {
     std::string p = in_.content();
 
+    if(p.empty()) {
+        return eckit::Value();
+    }
+
     std::cout << "================" << std::endl;
     std::cout << p << std::endl;
     std::cout << "================" << std::endl;

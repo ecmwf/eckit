@@ -61,6 +61,10 @@ const eckit::sql::type::SQLType* BitColumnExpression::type() const {
 }
 
 void BitColumnExpression::prepare(SQLSelect& sql) {
+    updateType(sql);
+}
+
+void BitColumnExpression::updateType(SQLSelect &sql) {
     std::string name = name_ + "." + field_ + tableReference_;
     if (!table_)
         table_ = &sql.findTable(name);

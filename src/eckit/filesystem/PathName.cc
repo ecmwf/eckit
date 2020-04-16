@@ -103,6 +103,12 @@ time_t PathName::created() const {
     return path_->created();
 }
 
+uid_t PathName::owner() const {
+    struct stat s;
+    SYSCALL(::stat(path_->localPath(), &s));
+    return s.st_uid;
+}
+
 bool PathName::isDir() const {
     return path_->isDir();
 }

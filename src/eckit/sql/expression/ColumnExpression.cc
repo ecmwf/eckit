@@ -107,6 +107,11 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
 }
 
 void ColumnExpression::prepare(SQLSelect& sql) {
+    updateType(sql);
+}
+
+void ColumnExpression::updateType(SQLSelect& sql) {
+
     // Get the memory address associated with reading from the column. (this is _not_
     // the SQLColumn object used in preprepare (which describe the columns requested
     // in the Select statement), but instead describes the mapping to the
@@ -116,7 +121,7 @@ void ColumnExpression::prepare(SQLSelect& sql) {
     value_ = &sql.column(columnName_, table_);
     type_  = sql.typeOf(columnName_, table_);
 
-    Log::debug() << "ColumnExpression::prepare: columnName_=" << columnName_ << ", title=" << title()
+    Log::debug() << "ColumnExpression::updateType: columnName_=" << columnName_ << ", title=" << title()
                  << ", table=" << table_->name() << ", fullName =" << fullName_ << " type=" << *type_
                  << " bitfieldDef.first.size =" << bitfieldDef_.first.size() << std::endl;
 }

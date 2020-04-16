@@ -39,6 +39,7 @@ public:
 private:
 
     virtual void GET(std::ostream&, Url&);
+    virtual void POST(std::ostream&, Url&);
     virtual void json(eckit::JSON&, const eckit::Value&) = 0;
 
 };

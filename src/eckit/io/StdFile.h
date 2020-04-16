@@ -55,6 +55,7 @@ private: // members
 /// Use this for stack objects that automatically close
 
 class AutoStdFile : public StdFile {
+    void close() { StdFile::close(); }
 public:
     AutoStdFile(const PathName& name, const std::string& mode = "r") : StdFile(name, mode)
     {}

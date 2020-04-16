@@ -10,6 +10,7 @@
 
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
@@ -25,6 +26,15 @@ namespace test {
 
 CASE("test_debug") {
     Log::debug() << "debug message 1" << std::endl;
+}
+
+CASE("test_debug_library") {
+    Log::debug<LibEcKit>()  << "debug message 2" << std::endl;
+}
+
+CASE("test_debug_macro") {
+  LOG_DEBUG(true, LibEcKit)  << "debug message 3" << std::endl;
+  LOG_DEBUG(false, LibEcKit)  << "debug message 4" << std::endl;
 }
 
 CASE("test_info") {

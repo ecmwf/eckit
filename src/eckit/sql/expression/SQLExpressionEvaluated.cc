@@ -72,6 +72,11 @@ void SQLExpressionEvaluated::output(SQLOutput& o) const {
 void SQLExpressionEvaluated::prepare(SQLSelect&) {
     NOTIMP;
 }
+
+void SQLExpressionEvaluated::updateType(SQLSelect &) {
+    NOTIMP;
+}
+
 void SQLExpressionEvaluated::cleanup(SQLSelect&) {
     NOTIMP;
 }

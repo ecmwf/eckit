@@ -51,25 +51,25 @@ Value ObjectParser::parseNumber() {
     }
 
     switch (c) {
-        case '0':
-            s += c;
-            break;
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            s += c;
-            while (isdigit(peek())) {
-                s += next();
-            }
-            break;
-        default:
-            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
+    case '0':
+        s += c;
+        break;
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+        s += c;
+        while (isdigit(peek())) {
+            s += next();
+        }
+        break;
+    default:
+        throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
     }
 
     if (peek() == '.') {
@@ -127,46 +127,46 @@ Value ObjectParser::parseString(char quote) {
             c = next(true);
             switch (c) {
 
-                case '\\':
-                    s += '\\';
-                    break;
+            case '\\':
+                s += '\\';
+                break;
 
-                case '/':
-                    s += '/';
-                    break;
+            case '/':
+                s += '/';
+                break;
 
-                case 'b':
-                    s += '\b';
-                    break;
+            case 'b':
+                s += '\b';
+                break;
 
-                case 'f':
-                    s += '\f';
-                    break;
+            case 'f':
+                s += '\f';
+                break;
 
-                case 'n':
-                    s += '\n';
-                    break;
+            case 'n':
+                s += '\n';
+                break;
 
-                case 'r':
-                    s += '\r';
-                    break;
+            case 'r':
+                s += '\r';
+                break;
 
-                case 't':
-                    s += '\t';
-                    break;
+            case 't':
+                s += '\t';
+                break;
 
-                case 'u':
-                    throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
+            case 'u':
+                throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
 
-                default:
-                    if (c == quote) {
-                        s += c;
-                    }
-                    else {
-                        throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c +
-                                                  "'");
-                    }
-                    break;
+            default:
+                if (c == quote) {
+                    s += c;
+                }
+                else {
+                    throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c +
+                                              "'");
+                }
+                break;
             }
         }
         else {
@@ -250,44 +250,53 @@ Value ObjectParser::parseJSON() {
     char c = peek();
     switch (c) {
 
-        case 't':
-            return parseTrue();
-        case 'f':
-            return parseFalse();
-        case 'n':
-            return parseNull();
-        case '{':
-            return parseObject();
-        case '[':
-            return parseArray();
-        case '\"':
-            return parseString();
+    case 't':
+        return parseTrue();
+    case 'f':
+        return parseFalse();
+    case 'n':
+        return parseNull();
+    case '{':
+        return parseObject();
+    case '[':
+        return parseArray();
+    case '\"':
+        return parseString();
 
-        case '-':
-            return parseNumber();
-        case '0':
-            return parseNumber();
-        case '1':
-            return parseNumber();
-        case '2':
-            return parseNumber();
-        case '3':
-            return parseNumber();
-        case '4':
-            return parseNumber();
-        case '5':
-            return parseNumber();
-        case '6':
-            return parseNumber();
-        case '7':
-            return parseNumber();
-        case '8':
-            return parseNumber();
-        case '9':
-            return parseNumber();
+    case '-':
+        return parseNumber();
+    case '0':
+        return parseNumber();
+    case '1':
+        return parseNumber();
+    case '2':
+        return parseNumber();
+    case '3':
+        return parseNumber();
+    case '4':
+        return parseNumber();
+    case '5':
+        return parseNumber();
+    case '6':
+        return parseNumber();
+    case '7':
+        return parseNumber();
+    case '8':
+        return parseNumber();
+    case '9':
+        return parseNumber();
 
-        default:
-            throw StreamParser::Error(std::string("YAMLParser::parseValue unexpected char '") + c + "'");
+    default: {
+        std::ostringstream oss;
+        oss << parserName() << " ObjectParser::parseValue unexpected char ";
+        if (isprint(c) && !isspace(c)) {
+            oss << "'" << c << "'";
+        }
+        else {
+            oss << int(c);
+        }
+        throw StreamParser::Error(oss.str());
+    }
     }
 }
 
@@ -297,8 +306,17 @@ ObjectParser::ObjectParser(std::istream& in, bool comments) : StreamParser(in, c
 Value ObjectParser::parse() {
     Value v = parseValue();
     char c  = peek();
-    if (c != 0)
-        throw StreamParser::Error(std::string("ObjectParser::parse extra char '") + c + "'");
+    if (c != 0) {
+        std::ostringstream oss;
+        oss << parserName() << " ObjectParser::parseValue extra char ";
+        if (isprint(c) && !isspace(c)) {
+            oss << "'" << c << "'";
+        }
+        else {
+            oss << int(c);
+        }
+        throw StreamParser::Error(oss.str());
+    }
     return v;
 }
 

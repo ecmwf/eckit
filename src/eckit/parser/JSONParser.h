@@ -32,6 +32,7 @@ public: // methods
 private:
 
     virtual Value parseValue();
+    virtual std::string parserName() const;
 
 };
 

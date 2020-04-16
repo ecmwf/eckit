@@ -327,10 +327,6 @@ int Parallel::anyTag() const {
     return MPI_ANY_TAG;
 }
 
-int Parallel::infoNull() const {
-    return MPI_Info_c2f(MPI_INFO_NULL);
-}
-
 size_t Parallel::getCount(Status& st, Data::Code type) const {
     int count = 0;
 

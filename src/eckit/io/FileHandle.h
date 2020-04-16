@@ -63,6 +63,7 @@ public:
   virtual void skip(const Length&);
 
   virtual DataHandle* clone() const;
+  virtual void hash(MD5& md5) const;
 
   // From Streamable
 

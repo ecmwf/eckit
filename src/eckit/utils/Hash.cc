@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
 #include <map>
 
 #include "eckit/utils/Hash.h"

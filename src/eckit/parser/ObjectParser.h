@@ -49,6 +49,8 @@ protected: // methods
 
     virtual void parseKeyValue(ValueMap&, ValueList&);
 
+    virtual std::string parserName() const = 0;
+
 };
 
 

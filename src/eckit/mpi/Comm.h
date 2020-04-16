@@ -110,8 +110,6 @@ public:  // methods
 
     virtual int anyTag() const = 0;
 
-    virtual int infoNull() const = 0;
-
     virtual Status status() const = 0;
 
     virtual Request request(int) const = 0;

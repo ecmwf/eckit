@@ -40,7 +40,7 @@ void SchemaAnalyzer::addBitfieldType(const std::string& name, const FieldNames& 
     bitfieldTypes_[name] = make_pair(fields, sizes);
 }
 
-const BitfieldDef& SchemaAnalyzer::getBitfieldType(const std::string& typeName) {
+const BitfieldDef& SchemaAnalyzer::getBitfieldType(const std::string& typeName) const {
 
     auto it = bitfieldTypes_.find(typeName);
     if (it != bitfieldTypes_.end()) {
@@ -49,6 +49,14 @@ const BitfieldDef& SchemaAnalyzer::getBitfieldType(const std::string& typeName) 
 
     static const BitfieldDef nullBitfieldDef;
     return nullBitfieldDef;
+}
+
+const BitfieldDef& SchemaAnalyzer::getBitfieldTypeDefinition(const std::string& columnName) const {
+
+    auto it = columnTypes_.find(columnName);
+    ASSERT(it != columnTypes_.end());
+
+    return getBitfieldType(it->second);
 }
 
 std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipTables) const {

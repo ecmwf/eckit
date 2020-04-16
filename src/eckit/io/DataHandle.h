@@ -26,6 +26,8 @@
 
 namespace eckit {
 
+class MD5;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class RestartTransfer  {
@@ -42,6 +44,9 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& s,const DataHandle& handle)
 		{ handle.print(s); return s;}
+
+    friend MD5& operator<<(MD5& s,const DataHandle& handle)
+        { handle.hash(s); return s;}
 
 // -- Contructors
 
@@ -119,6 +124,10 @@ public:
     virtual void toRemote(Stream& s) const;
     virtual void cost(std::map<std::string,Length>&, bool) const;
     virtual std::string title() const;
+
+    // This is the MD5 of the Handle, not the data it points to
+
+    virtual void hash(MD5& md5) const;
 
 // -- Overridden methods
 

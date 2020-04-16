@@ -32,6 +32,7 @@ public:
 	// Overriden
 
     virtual void prepare(SQLSelect&) override;
+    virtual void updateType(SQLSelect&) override;
     virtual void cleanup(SQLSelect&) override;
     virtual double eval(bool& missing) const override;
     virtual void eval(double* out, bool& missing) const override;

@@ -123,6 +123,18 @@ inline std::ostream& newl(std::ostream& out) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Optimisation for DEBUG with elision of stream code. For performance critical code blocks.
+
+class Voidify {
+public:
+  Voidify(){}
+  void operator&(std::ostream&){}
+};
+
+#define LOG_DEBUG(condition,lib) static_cast<void>(0), !(condition) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace eckit
 
 #endif

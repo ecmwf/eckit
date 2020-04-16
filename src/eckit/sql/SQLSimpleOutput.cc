@@ -117,19 +117,37 @@ void SQLSimpleOutput::outputBitfield(double x, bool missing) {
 }
 
 void SQLSimpleOutput::prepare(SQLSelect& sql) {
+    updateTypes(sql);
     printHeader(sql);
 }
 
-void SQLSimpleOutput::printHeader(SQLSelect& sql) {
+void SQLSimpleOutput::updateTypes(SQLSelect& sql) {
+
+    bool first = columnWidths_.size() == 0;
+
     const expression::Expressions& columns(sql.output());
     for (size_t i(0); i < columns.size(); i++) {
         const std::string& name(columns[i]->title());
         const type::SQLType* type(columns[i]->type());
 
-        columnWidths_.push_back(config_.disableAlignmentOfColumns() ? 1 : std::max(type->width(), name.size()));
-        columnAlignments_.push_back(type->format());
+        size_t width = config_.disableAlignmentOfColumns() ? 1 : std::max(type->width(), name.size());
+        if (first) {
+            columnWidths_.push_back(width);
+            columnAlignments_.push_back(type->format());
+        } else {
+            columnWidths_[i] = std::max(width, columnWidths_[i]);
+            columnAlignments_[i] = type->format();
+        }
+    }
+}
 
-        if (!config_.doNotWriteColumnNames()) {
+void SQLSimpleOutput::printHeader(SQLSelect& sql) {
+    if (!config_.doNotWriteColumnNames()) {
+        const expression::Expressions& columns(sql.output());
+        for (size_t i(0); i < columns.size(); i++) {
+            const std::string& name(columns[i]->title());
+            const type::SQLType* type(columns[i]->type());
+
             if (i)
                 out_ << config_.fieldDelimiter();
 
@@ -143,9 +161,8 @@ void SQLSimpleOutput::printHeader(SQLSelect& sql) {
                 out_ << ss.str();
             }
         }
-    }
-    if (!config_.doNotWriteColumnNames())
         out_ << "\n";
+    }
 }
 
 void SQLSimpleOutput::cleanup(SQLSelect& sql) {}

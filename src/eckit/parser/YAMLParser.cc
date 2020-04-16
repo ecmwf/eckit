@@ -765,6 +765,9 @@ Value YAMLParser::parseValue() {
     return v;
 }
 
+std::string YAMLParser::parserName() const {
+    return "YAMLParser";
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

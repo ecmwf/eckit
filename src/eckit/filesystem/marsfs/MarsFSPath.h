@@ -27,6 +27,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class BasePathName;
+class MD5;
 
 class MarsFSPath {
 public:
@@ -113,6 +114,9 @@ public:
     DataHandle* fileHandle(bool overwrite) const;
     DataHandle* partHandle(const OffsetList&, const LengthList&) const;
     DataHandle* partHandle(const Offset&, const Length&) const;
+
+    // MD5 of name, not of content
+    void hash(MD5& md5) const;
 
 protected:
 

@@ -28,7 +28,7 @@ namespace {
 static const std::vector<long> INTEGER_DATA{9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111};
 static const std::vector<double> REAL_DATA{99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1};
 static const std::vector<std::string> STRING_DATA{
-    "a-longer-string", "cccc",           "cccc",           "cccc", "cccc", "hijklmno", "aaaabbbb",
+    "cccc", "a-longer-string", "cccc", "cccc", "cccc", "hijklmno", "aaaabbbb",
     "a-longer-string", "another-string", "another-string2"};
 
 
@@ -38,7 +38,7 @@ public:
     TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name) :
         SQLTable(db, path, name) {
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
-        addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 2), false, 0);
+        addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 1), false, 0);
         addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
     }
 
@@ -46,13 +46,16 @@ private:
     class TestTableIterator : public eckit::sql::SQLTableIterator {
     public:
         TestTableIterator(const TestTable& owner,
-                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) :
+                          const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
+                          std::function<void(eckit::sql::SQLTableIterator&)> updateCallback) :
             owner_(owner),
             idx_(0),
-            data_(4) {
-            std::vector<size_t> offsets{0, 1, 3};
-            std::vector<size_t> doublesSizes{1, 2, 1};
+            data_(4),
+            updateCallback_(updateCallback) {
+            std::vector<size_t> offsets{0, 1, 2};
+            std::vector<size_t> doublesSizes{1, 1, 1};
             for (const auto& col : columns) {
+                columnIndexes_.push_back(col.get().index());
                 offsets_.push_back(offsets[col.get().index()]);
                 doublesSizes_.push_back(doublesSizes[col.get().index()]);
             }
@@ -62,6 +65,22 @@ private:
         virtual ~TestTableIterator() {}
         virtual void rewind() { idx_ = 0; }
         virtual bool next() {
+
+            // After the first element, we resize things, so we can test the callback and type resizing
+            // functionality
+
+            if (idx_ == 0) {
+                offsets_.clear();
+                doublesSizes_.clear();
+                std::vector<size_t> offsets{0, 1, 3};
+                std::vector<size_t> doublesSizes{1, 2, 1};
+                for (const auto& idx : columnIndexes_) {
+                    offsets_.push_back(offsets[idx]);
+                    doublesSizes_.push_back(doublesSizes[idx]);
+                }
+                updateCallback_(*this);
+            }
+
             if (idx_ < INTEGER_DATA.size()) {
                 copyRow();
                 idx_++;
@@ -82,14 +101,15 @@ private:
         size_t idx_;
         std::vector<size_t> offsets_;
         std::vector<size_t> doublesSizes_;
+        std::vector<size_t> columnIndexes_;
         std::vector<double> data_;
+        std::function<void(eckit::sql::SQLTableIterator&)> updateCallback_;
     };
 
     virtual eckit::sql::SQLTableIterator* iterator(
         const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
         std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
-        // TODO: Test callback
-        return new TestTableIterator(*this, columns);
+        return new TestTableIterator(*this, columns, metadataUpdateCallback);
     }
 };
 
@@ -245,7 +265,7 @@ CASE("Select from constructed table") {
                 EXPECT(o.intOutput.empty() && o.strOutput.empty());
             }
             else if (i == 2) {
-                EXPECT(o.strOutput == std::vector<std::string>({"a-longer-string", "cccc", "hijklmno", "aaaabbbb",
+                EXPECT(o.strOutput == std::vector<std::string>({"cccc", "a-longer-string", "hijklmno", "aaaabbbb",
                                                                 "another-string", "another-string2"}));
                 EXPECT(o.intOutput.empty() && o.floatOutput.empty());
             }
@@ -285,7 +305,7 @@ CASE("Select from constructed table") {
             }
             else {
                 EXPECT(o.intOutput.empty());
-                EXPECT(o.floatOutput == std::vector<double>({88.8, 66.6, 77.7, 88.8, 11.1, 22.2, 44.4, 33.3, 99.9}));
+                EXPECT(o.floatOutput == std::vector<double>({88.8, 66.6, 77.7, 99.9, 11.1, 22.2, 44.4, 33.3, 88.8}));
                 EXPECT(o.strOutput ==
                        std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2",
                                                  "another-string", "aaaabbbb", "a-longer-string", "a-longer-string"}));

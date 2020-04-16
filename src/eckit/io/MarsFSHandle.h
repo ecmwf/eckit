@@ -69,6 +69,7 @@ public:
 
     virtual std::string title() const;
     virtual bool moveable() const { return true; }
+    virtual void hash(MD5& md5) const;
 
     // From Streamable
 

@@ -138,17 +138,8 @@ void SQLSession::loadDefaultSchema() {
 }
 
 std::string SQLSession::schemaFile() {
-    const char* pn =
-#ifdef ECKIT_SQL_SCHEMA_PATH
-#define STR_VALUE(s) #s
-#define STRING(s) STR_VALUE(s)
-#define ECKIT_SQL_SCHEMA_PATH_STRING STRING(odc_SCHEMA_PATH)
-        STRING(ECKIT_SQL_SCHEMA_PATH_STRING)
-#endif
-            "";
-
     // TODO; This resource is a really bad way of doing this...
-    static std::string pathName(eckit::StringTools::unQuote(Resource<std::string>("$ECKIT_SQL_SCHEMA_PATH", pn)));
+    static std::string pathName(eckit::StringTools::unQuote(Resource<std::string>("$ECKIT_SQL_SCHEMA_PATH", "")));
     return pathName;
 }
 

@@ -57,7 +57,7 @@ RadosHandle::RadosHandle(const std::string& object):
 }
 
 RadosHandle::~RadosHandle() {
-    std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;
+    //std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;
 
     if (opened_) {
         close();
@@ -66,7 +66,7 @@ RadosHandle::~RadosHandle() {
 
 void RadosHandle::open() {
 
-    std::cout << "RadosHandle::open " << object_ << std::endl;
+    //std::cout << "RadosHandle::open " << object_ << std::endl;
 
     ASSERT(!opened_);
 
@@ -81,7 +81,7 @@ Length RadosHandle::estimate() {
 
 Length RadosHandle::openForRead() {
 
-    std::cout << "RadosHandle::openForRead " << object_ << std::endl;
+    //std::cout << "RadosHandle::openForRead " << object_ << std::endl;
 
     open();
     write_ = false;
@@ -91,7 +91,7 @@ Length RadosHandle::openForRead() {
 
 void RadosHandle::openForWrite(const Length& length) {
 
-    std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
+    //std::cout << "RadosHandle::openForWrite " << object_ << " " << length << std::endl;
 
     RadosCluster::instance().ensurePool(object_);
     RadosCluster::instance().truncate(object_);
@@ -106,15 +106,19 @@ void RadosHandle::openForAppend(const Length&) {
 
 long RadosHandle::read(void* buffer, long length) {
 
-    std::cout << "RadosHandle::read " << object_ << " " << length << std::endl;
+    //std::cout << "RadosHandle::read " << object_ << " " << length << std::endl;
 
     ASSERT(opened_);
     ASSERT(!write_);
 
+    long maxLength = RadosCluster::instance().maxObjectSize();
+
+    long readLength = length>maxLength ? maxLength : length;
+
     int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_),
                                     object_.oid().c_str(),
                                     reinterpret_cast<char*>(buffer),
-                                    length,
+                                    readLength,
                                     offset_));
     // ASSERT(len  > 0);
 
@@ -127,7 +131,7 @@ long RadosHandle::write(const void* buffer, long length) {
 
     ASSERT(length);
 
-    std::cout << "RadosHandle::write " << object_ << " " << length << std::endl;
+    //std::cout << "RadosHandle::write " << object_ << " " << length << std::endl;
 
     ASSERT(opened_);
     ASSERT(write_);

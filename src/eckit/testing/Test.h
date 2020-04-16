@@ -49,7 +49,7 @@ public:  // methods
 
     Test(const std::string& description, std::function<void(std::string&, int&, int)> testFn) :
         description_(description),
-        testFn_(std::move(testFn))
+        testFn_(std::move(testFn)) {}
 
     bool run(TestVerbosity v, std::vector<std::string>& failures) {
 

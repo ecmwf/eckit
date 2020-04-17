@@ -14,6 +14,11 @@
 
 #include "eckit/utils/MD4.h"
 
+// Cray C++ compiler should not try to optimize this code
+#if _CRAYC
+#pragma _CRI noopt
+#endif
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

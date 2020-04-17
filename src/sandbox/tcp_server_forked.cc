@@ -29,7 +29,7 @@ using namespace eckit;
 
 class FDBForker : public ProcessControler {
 
-    TCPSocket socket_;
+    net::TCPSocket socket_;
 
     void run() {
         Log::info() << " *********** pid is " << getpid() << std::endl;
@@ -42,9 +42,9 @@ class FDBForker : public ProcessControler {
 
         Log::status() << "Waiting for client " << socket_.remoteHost() << ":" << socket_.remotePort() << std::endl;
 
-        TCPServer data;
+        net::EphemeralTCPServer data;
 
-        InstantTCPStream control(socket_);
+        net::InstantTCPStream control(socket_);
 
         try {
             std::string verb;
@@ -96,7 +96,7 @@ class FDBForker : public ProcessControler {
     }
 
 public:
-    FDBForker(TCPSocket& socket) : ProcessControler(true), socket_(socket) {}
+    FDBForker(net::TCPSocket& socket) : ProcessControler(true), socket_(socket) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ private:
     virtual void run() {
         unique();
 
-        TCPServer server(Port("fdbsvr", 9013));
+        net::TCPServer server(net::Port("fdbsvr", 9013));
         server.closeExec(false);
 
         port_ = server.localPort();

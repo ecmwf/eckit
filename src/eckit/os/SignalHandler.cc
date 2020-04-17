@@ -13,8 +13,6 @@
 #include "eckit/log/Log.h"
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -33,7 +31,7 @@ SignalHandler::SignalHandler(void (*handler)(int), SignalHandler::Signal sig) : 
 
     // volatile int sigtype = sigsetjmp(buf_,1);
     // if(sigtype == 0)
-    sigaction(signal_, &a, &save_);
+    ::sigaction(signal_, &a, &save_);
     // else {
     // Log::warning() << "Got signal " << sigtype << std::endl;
     // throw Abort("Signal received");
@@ -45,7 +43,7 @@ SignalHandler::~SignalHandler() {
     current_ = next_;
 
     struct sigaction ignore;
-    sigaction(signal_, &save_, &ignore);
+    ::sigaction(signal_, &save_, &ignore);
 
     //	Log::info() << "Removing signal handler " << signal_ << std::endl;
 }

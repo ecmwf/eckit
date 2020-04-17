@@ -10,7 +10,7 @@
 
 #include "eckit/io/TCPSocketHandle.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 
@@ -21,7 +21,7 @@ void InstantTCPSocketHandle::print(std::ostream& s) const {
 }
 
 
-InstantTCPSocketHandle::InstantTCPSocketHandle(TCPSocket& s) : connection_(s), read_(true), position_(0) {}
+InstantTCPSocketHandle::InstantTCPSocketHandle(net::TCPSocket& s) : connection_(s), read_(true), position_(0) {}
 
 InstantTCPSocketHandle::~InstantTCPSocketHandle() {}
 
@@ -79,7 +79,7 @@ Offset InstantTCPSocketHandle::seek(const Offset& o) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TCPSocketHandle::TCPSocketHandle(TCPSocket& socket) :
+TCPSocketHandle::TCPSocketHandle(net::TCPSocket& socket) :
     InstantTCPSocketHandle(socket),
     socket_(socket)  // Will take onwership
 {}
@@ -93,5 +93,6 @@ void TCPSocketHandle::close() {
     connection_.close();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

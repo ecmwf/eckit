@@ -12,7 +12,7 @@
 #include <fstream>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/web/HttpBuf.h"
+#include "eckit/web/HttpStream.h"
 #include "eckit/web/JavaResource.h"
 #include "eckit/web/Url.h"
 
@@ -40,11 +40,11 @@ void JavaResource::GET(std::ostream& s, Url& url) {
     else {
         //	(url.headerOut()).type("image/gif");
 
-        s << HttpBuf::dontEncode;
+        s << HttpStream::dontEncode;
         char c;
         while (in.get(c))
             s << c;
-        s << HttpBuf::doEncode;
+        s << HttpStream::doEncode;
     }
 }
 

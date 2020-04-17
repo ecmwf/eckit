@@ -8,66 +8,50 @@
  * does it submit to any jurisdiction.
  */
 
-// File TCPClient.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 96
 
 #ifndef eckit_TCPClient_h
 #define eckit_TCPClient_h
 
-#include "eckit/net/NetAddress.h"
 #include "eckit/net/TCPSocket.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
+namespace net {
+
 
 class Endpoint;
 
-//-----------------------------------------------------------------------------
 
-class TCPClient : public TCPSocket {
+class TCPClient : public TCPSocket, private eckit::NonCopyable {
 public:
 
-// -- Contructors
+    TCPClient(const SocketOptions& options = SocketOptions::none());
+    TCPClient(int port, const SocketOptions& options = SocketOptions::none());
 
-	TCPClient(int port = 0);
+    ~TCPClient();
 
-// -- Destructor
+    virtual TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
+    virtual TCPSocket& connect(const net::Endpoint& endpoint, int retries = 5, int timeout = 0);
 
-	~TCPClient();
-
-// -- Methods
-
-	virtual TCPSocket& connect(const std::string& host,int port, int retries = 5, int timeout = 0);
-    virtual TCPSocket& connect(const Endpoint& endpoint, int retries = 5, int timeout = 0);
-
-protected:
-
+protected:  // methods
     virtual void print(std::ostream& s) const;
 
-private:
+    void buildSockAddress();
 
-// No copy allowed
+private:  // members
+    int port_;
+    SocketOptions options_;
 
-	TCPClient(const TCPClient&);
-	TCPClient& operator=(const TCPClient&);
-
-// -- Members
-
-	int port_;
-
-// -- Overridden methods
-
-	// From TCPSocket
-
-	virtual void bind();
-	virtual std::string bindingAddress() const;
-
+private:  // methods
+    virtual void bind();
+    virtual std::string bindingAddress() const { return options_.bindAddress();  }
 };
 
+}  // namespace net
+}  // namespace eckit
 
-//-----------------------------------------------------------------------------
 
-} // namespace eckit
-
-#endif // TCPClient_H
+#endif  // TCPClient_H

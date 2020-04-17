@@ -59,7 +59,7 @@ void Client::run() {
 
         ::sleep(3);
 
-        TCPClient c;
+        net::TCPClient c;
         c.connect(remoteHost, 10000);
 
         std::ostringstream os;

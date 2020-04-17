@@ -40,7 +40,7 @@ private:
     virtual void run();
 
 private:  // members
-    eckit::Port port_;
+    eckit::net::Port port_;
 };
 
 SysLogServer::SysLogServer(int argc, char** argv) : Application(argc, argv), port_("syslog", 6512) {}
@@ -51,7 +51,7 @@ void SysLogServer::run() {
 
     unique();
 
-    UDPServer server(port_);
+    net::UDPServer server(port_);
 
     Log::info() << Application::name() << " listening on port " << port_ << std::endl;
 

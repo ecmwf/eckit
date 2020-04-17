@@ -9,13 +9,12 @@
  */
 
 
-#include "eckit/web/HttpHeader.h"
+#include "eckit/net/HttpHeader.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -259,7 +258,7 @@ std::string HttpHeader::content() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static std::string nextLine(TCPSocket& socket) {
+static std::string nextLine(net::TCPSocket& socket) {
     char c;
     std::string s;
 
@@ -276,7 +275,7 @@ static std::string nextLine(TCPSocket& socket) {
     }
 }
 
-HttpHeader::HttpHeader(TCPSocket& socket) : received_(true) {
+HttpHeader::HttpHeader(net::TCPSocket& socket) : received_(true) {
     std::string line = nextLine(socket);
 
     size_t i = line.find_first_of(' ');

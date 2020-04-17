@@ -21,6 +21,8 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/BadTag.h"
+#include "eckit/os/BackTrace.h"
+#include "eckit/maths/Functions.h"
 
 namespace eckit {
 
@@ -155,6 +157,7 @@ void Stream::badTag(Stream::tag need, Stream::tag got) {
     os << ". Expecting a " << need << ", got a " << got;
 
     Log::error() << os.str() << std::endl;
+    Log::error() << BackTrace::dump() << std::endl;
 
     if (got == tag_string) {
         long length = getLong();
@@ -369,15 +372,10 @@ Stream& Stream::operator<<(const char* x) {
 Stream& Stream::operator<<(const std::string& x) {
     T("w std::string", x);
     writeTag(tag_string);
-    long len = x.length();
+    const long len = x.length();
     putLong(len);
-
-    char buf[len];
     assert(sizeof(unsigned char) == 1);
-    for (long i = 0; i < len; i++)
-        buf[i] = x[i];
-
-    putBytes(buf, len);
+    putBytes(x.c_str(), len);
     return *this;
 }
 
@@ -627,14 +625,14 @@ Stream& Stream::operator>>(double& x) {
 
 Stream& Stream::operator>>(std::string& s) {
     readTag(tag_string);
-    long length = getLong();
-    char buf[length];
+    const long length = getLong();
+
+    const long sz = eckit::round(length + 1, 8); // some padding to avoid zero-length buffer
+    char buf[sz];
     getBytes(buf, length);
 
     s.resize(length);
-
-    for (long i = 0; i < length; i++)
-        s[i] = buf[i];
+    s.assign(buf, length);
 
     T("r std::string", s);
     return *this;
@@ -653,14 +651,47 @@ bool Stream::next(std::string& s) {
     getBytes(buf, length);
 
     s.resize(length);
-
-    for (long i = 0; i < length; i++)
-        s[i] = buf[i];
+    s.assign(buf, length);
 
     T("r std::string", s);
 
     return true;
 }
+
+bool Stream::next(int& x) {
+
+    tag t = nextTag();
+    if (t == tag_eof)
+        return false;
+
+    if (t != tag_int)
+        badTag(tag_int, t);
+
+    union {
+        uint32_t u;
+        int32_t s;
+    } u;
+
+    u.u = getLong();
+    x   = u.s;
+    T("r int", x);
+    return true;
+}
+
+
+bool Stream::next(bool& b) {
+
+    int x = 0;
+    if(!next(x)) {
+        return false;
+    }
+
+    b = x;
+    T("r bool", b);
+
+    return true;
+}
+
 
 void Stream::startObject() {
     T("w start", 0);

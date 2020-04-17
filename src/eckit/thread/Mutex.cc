@@ -39,6 +39,23 @@ void Mutex::lock(void) {
     THRCALL(::pthread_mutex_lock(&mutex_));
 }
 
+bool Mutex::tryLock(void) {
+    if (!exists_) {
+        std::cerr << "Mutex used before being constructed" << std::endl;
+        ::abort();
+    }
+    
+    int errcode = ::pthread_mutex_trylock(&mutex_);
+    if (errcode == 0)
+        return true;
+
+    if (errcode == EBUSY)
+        return false;
+
+    ThrCall(errcode, "::pthread_mutex_trylock(&mutex_)", __FILE__, __LINE__, __func__);
+    return false; // never reached
+}
+
 void Mutex::unlock(void) {
     if (!exists_) {
         std::cerr << "Mutex used before being constructed" << std::endl;

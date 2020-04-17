@@ -66,6 +66,10 @@ void SharedHandle::flush() {
     return handle_.flush();
 }
 
+Length SharedHandle::size() {
+    return handle_.size();
+}
+
 Length SharedHandle::estimate() {
     return handle_.estimate();
 }
@@ -140,8 +144,8 @@ std::string SharedHandle::title() const {
     return handle_.title();
 }
 
-Length SharedHandle::saveInto(DataHandle& other, TransferWatcher& watcher, bool dblBufferOK) {
-    return handle_.saveInto(other, watcher, dblBufferOK);
+Length SharedHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
+    return handle_.saveInto(other, watcher);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

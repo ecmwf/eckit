@@ -11,10 +11,10 @@
 #include "eckit/web/CgiResource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdPipe.h"
-#include "eckit/web/HttpBuf.h"
+#include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+
 
 namespace eckit {
 
@@ -44,12 +44,12 @@ void CgiResource::GET(std::ostream& s, Url& url) {
     AutoCloser<StdPipe> closer(pipe);
     char line[1024];
 
-    s << HttpBuf::dontEncode;
+    s << HttpStream::dontEncode;
 
     while (fgets(line, sizeof(line), pipe))
         s << line;
 
-    s << HttpBuf::doEncode;
+    s << HttpStream::doEncode;
 }
 
 static CgiResource cgiResourceInstance;

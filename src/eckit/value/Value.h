@@ -17,13 +17,16 @@
 
 #include <list>
 
-#include "eckit/value/Content.h"
+#include "eckit/deprecated.h"
+
 #include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"
+#include "eckit/value/Content.h"
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+
 
 namespace eckit {
 
@@ -144,8 +147,7 @@ class JSON;
 
 class Value {
 public:
-
-// -- Contructors
+    // -- Contructors
 
     Value();
 
@@ -171,57 +173,130 @@ public:
     Value(const ValueList&);
     Value(const ValueMap&);
 
-// -- Copy
+    // -- Copy
 
     Value(const Value&);
     Value& operator=(const Value&);
 
-// -- Destructor
+    // -- Destructor
 
     ~Value();
 
-// -- Operators
+    // -- Operators
 
     /// Explicitly cast value to the given type. For list of supported types, see the definitions of the
     /// member function value() in eckit/value/Content.h
-    template< typename T > T as() const { T r; content_->value(r); return r; }
+    template <typename T>
+    T as() const {
+        T r;
+        content_->value(r);
+        return r;
+    }
 
-    operator short() const              { long long l;  content_->value(l); return l; }
-    operator unsigned short() const     { long long l;  content_->value(l); return l; }
+    operator short() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
+    operator unsigned short() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
 
-    operator int() const                { long long l;  content_->value(l); return l; }
-    operator unsigned int() const       { long long l;  content_->value(l); return l; }
+    operator int() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
+    operator unsigned int() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
 
-    operator long() const               { long long l;  content_->value(l); return l; }
-    operator unsigned long() const      { long long l;  content_->value(l); return l; }
+    operator long() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
+    operator unsigned long() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
 
-    operator long long() const          { long long l;  content_->value(l); return l; }
-    operator unsigned long long() const { long long l;  content_->value(l); return l; }
+    operator long long() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
+    operator unsigned long long() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
 
-    operator double() const             { double d;     content_->value(d); return d; }
-    operator bool() const               { bool d;       content_->value(d); return d; }
+    operator double() const {
+        double d;
+        content_->value(d);
+        return d;
+    }
+    operator bool() const {
+        bool d;
+        content_->value(d);
+        return d;
+    }
 
-    operator std::string() const  { std::string s; content_->value(s); return s; }
-    operator PathName() const     { std::string s; content_->value(s); return s; }
+    operator std::string() const {
+        std::string s;
+        content_->value(s);
+        return s;
+    }
+    operator PathName() const {
+        std::string s;
+        content_->value(s);
+        return s;
+    }
 
-    operator Date() const      { Date d; content_->value(d); return d; }
-    operator Time() const      { Time t; content_->value(t); return t; }
-    operator DateTime() const  { DateTime d; content_->value(d); return d; }
+    operator Date() const {
+        Date d;
+        content_->value(d);
+        return d;
+    }
+    operator Time() const {
+        Time t;
+        content_->value(t);
+        return t;
+    }
+    operator DateTime() const {
+        DateTime d;
+        content_->value(d);
+        return d;
+    }
 
-    operator Length() const    { long long l;  content_->value(l); return l; }
-    operator Offset() const    { long long l;  content_->value(l); return l; }
+    operator Length() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
+    operator Offset() const {
+        long long l;
+        content_->value(l);
+        return l;
+    }
 
     operator ValueList() const;
     operator ValueMap() const;
 
-    bool operator<(const Value& v) const  { return *content_ < *(v.content_); }
+    bool operator<(const Value& v) const { return *content_ < *(v.content_); }
     bool operator==(const Value& v) const { return *content_ == *(v.content_); }
 
-    bool operator>(const Value& v) const  { return v < *this;     }
+    bool operator>(const Value& v) const { return v < *this; }
     bool operator!=(const Value& v) const { return !(*this == v); }
 
-    bool operator>=(const Value& v) const  { return !(*this < v);     }
-    bool operator<=(const Value& v) const  { return !(v < *this);     }
+    bool operator>=(const Value& v) const { return !(*this < v); }
+    bool operator<=(const Value& v) const { return !(v < *this); }
 
 
     Value operator+(const Value&) const;
@@ -232,7 +307,7 @@ public:
     Value operator-(const Value&) const;
     Value& operator-=(const Value&);
 
-    Value operator*(const Value&) const;
+    Value operator*(const Value&)const;
     Value& operator*=(const Value&);
 
     Value operator/(const Value&) const;
@@ -272,27 +347,27 @@ public:
 
     // -- Methods
 
-    int      compare(const Value& v) const { return content_->compare(*(v.content_)); }
+    int compare(const Value& v) const { return content_->compare(*(v.content_)); }
 
-    bool     isNil()      const { return content_->isNil(); }
-    bool     isNumber()   const { return content_->isNumber(); }
-    bool     isBool()     const { return content_->isBool(); }
-    bool     isDouble()   const { return content_->isDouble(); }
-    bool     isString()   const { return content_->isString(); }
-    bool     isList()     const { return content_->isList(); }
-    bool     isMap()      const { return content_->isMap(); }
-    bool     isDate()     const { return content_->isDate(); }
-    bool     isTime()     const { return content_->isTime(); }
-    bool     isDateTime() const { return content_->isDateTime(); }
-    bool     isOrderedMap() const { return content_->isOrderedMap(); }
+    bool isNil() const { return content_->isNil(); }
+    bool isNumber() const { return content_->isNumber(); }
+    bool isBool() const { return content_->isBool(); }
+    bool isDouble() const { return content_->isDouble(); }
+    bool isString() const { return content_->isString(); }
+    bool isList() const { return content_->isList(); }
+    bool isMap() const { return content_->isMap(); }
+    bool isDate() const { return content_->isDate(); }
+    bool isTime() const { return content_->isTime(); }
+    bool isDateTime() const { return content_->isDateTime(); }
+    bool isOrderedMap() const { return content_->isOrderedMap(); }
 
-    Value    tail() const;
-    Value    head() const;
+    Value tail() const;
+    Value head() const;
 
-    Value    clone() const;
-    bool     shared() const; // Ensure that value is not shared
+    Value clone() const;
+    bool shared() const;  // Ensure that value is not shared
 
-// -- Class Methods
+    // -- Class Methods
 
     static Value makeList();
     static Value makeList(const Value&);
@@ -306,80 +381,84 @@ public:
 
 
 protected:
-
     Value(Content*);
 
-private: // members
-
+private:  // members
     Content* content_;
 
-private: // methods
-
-    void json(JSON& s) const        { s << *content_; }
-    void print(std::ostream& s) const    { s << *content_; }
-    void encode(Stream& s) const    { s << *content_; }
+private:  // methods
+    void json(JSON& s) const { s << *content_; }
+    void print(std::ostream& s) const { s << *content_; }
+    void encode(Stream& s) const { s << *content_; }
 
 
     void update();
 
-    friend JSON& operator<<(JSON& s, const Value& v) { v.json(s);  return s; }
-    friend std::ostream& operator<<(std::ostream& s, const Value& v) { v.print(s);  return s; }
-    friend Stream&  operator<<(Stream&  s, const Value& v) { v.encode(s); return s; }
+    friend JSON& operator<<(JSON& s, const Value& v) {
+        v.json(s);
+        return s;
+    }
+    friend std::ostream& operator<<(std::ostream& s, const Value& v) {
+        v.print(s);
+        return s;
+    }
+    friend Stream& operator<<(Stream& s, const Value& v) {
+        v.encode(s);
+        return s;
+    }
 
     friend class Content;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-template< typename T >
+
+template <typename T>
 Value toValue(const T& v) {
     return Value(v);
 }
 
-template < typename T >
-Value toValue( const std::set<T>& l ) {
+template <typename T>
+Value toValue(const std::set<T>& l) {
     ValueList r;
     r.reserve(l.size());
     for (typename std::set<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
-        r.push_back( toValue( *j ) );
+        r.push_back(toValue(*j));
     }
     return Value::makeList(r);
 }
 
-template < typename T >
-Value toValue( const std::list<T>& l )
-{
+template <typename T>
+Value toValue(const std::list<T>& l) {
     ValueList r;
     r.reserve(l.size());
     for (typename std::list<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
-        r.push_back( toValue( *j ) );
+        r.push_back(toValue(*j));
     }
     return Value::makeList(r);
 }
 
 
-template < typename T >
-Value toValue( const std::vector<T>& l )
-{
+template <typename T>
+Value toValue(const std::vector<T>& l) {
     ValueList r;
     r.reserve(l.size());
-    for (typename  std::vector<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
-        r.push_back( toValue( *j ) );
+    for (typename std::vector<T>::const_iterator j = l.begin(); j != l.end(); ++j) {
+        r.push_back(toValue(*j));
     }
     return Value::makeList(r);
 }
 
 
-template < typename T, typename U >
+template <typename T, typename U>
 Value toValue(const std::pair<T, U>& v) {
     ValueList r;
-    r.push_back( v.first );
-    r.push_back( v.second );
+    r.push_back(v.first);
+    r.push_back(v.second);
     return Value::makeList(r);
 }
 
 
-template < typename K, typename V >
+template <typename K, typename V>
 Value toValue(const std::map<K, V>& l) {
     ValueMap r;
     for (typename std::map<K, V>::const_iterator j = l.begin(); j != l.end(); ++j) {
@@ -388,35 +467,24 @@ Value toValue(const std::map<K, V>& l) {
     return Value::makeMap(r);
 }
 
-#ifdef __GNUC__
-#define ECKIT_DEPRECATED __attribute__((deprecated))
-#else
-#define ECKIT_DEPRECATED /**/
-#endif
-
-
-template < typename T >
-ECKIT_DEPRECATED
-Value makeVectorValue(const std::vector<T>& v) {
+template <typename T>
+DEPRECATED("Use toValue() instead") Value makeVectorValue(const std::vector<T>& v) {
     return toValue(v);
 }
 
-template < typename T >
-ECKIT_DEPRECATED
-Value makeVectorValue(const std::list<T>& v) {
+template <typename T>
+DEPRECATED("Use toValue instead") Value makeVectorValue(const std::list<T>& v) {
     return toValue(v);
 }
-
-#undef ECKIT_DEPRECATED
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template< typename T >
+template <typename T>
 void fromValue(T& v, const Value& value) {
     v = T(value);
 }
 
-template < typename T >
+template <typename T>
 void fromValue(std::vector<T>& v, const Value& value) {
     v.clear();
     for (size_t i = 0; i < value.size(); ++i) {
@@ -427,14 +495,14 @@ void fromValue(std::vector<T>& v, const Value& value) {
 }
 
 
-template < typename T, typename U >
+template <typename T, typename U>
 void fromValue(std::pair<T, U>& v, const Value& value) {
     ASSERT(value.size() == 2);
     fromValue(v.first, value[0]);
     fromValue(v.second, value[1]);
 }
 
-template < typename T >
+template <typename T>
 void fromValue(std::set<T>& v, const Value& value) {
     v.clear();
     for (size_t i = 0; i < value.size(); ++i) {
@@ -444,7 +512,7 @@ void fromValue(std::set<T>& v, const Value& value) {
     }
 }
 
-template < typename K, typename V >
+template <typename K, typename V>
 void fromValue(std::map<K, V>& v, const Value& value) {
     v.clear();
     Value keys = value.keys();
@@ -459,8 +527,11 @@ void fromValue(std::map<K, V>& v, const Value& value) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template <> struct VectorPrintSelector<Value> { typedef VectorPrintSimple selector; };
+template <>
+struct VectorPrintSelector<Value> {
+    typedef VectorPrintSimple selector;
+};
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

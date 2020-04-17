@@ -14,49 +14,32 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Thread.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
 class Stream;
+
+namespace net {
 
 class NetUser : public Thread {
 public:
+    NetUser(net::TCPSocket&);
 
-
-// -- Contructors
-
-	NetUser(TCPSocket&);
-
-// -- Destructor
-
-	~NetUser();
-
+    ~NetUser();
 
 protected:
-
-// -- Members
-
-	TCPSocket protocol_;
+    TCPSocket protocol_;
 
 private:
-
-// -- Methods
-
     virtual void serve(Stream&, std::istream&, std::ostream&) = 0;
 
-// -- Overridden methods
-	// From Task
+    virtual void run();
 
-	virtual void run();
-
+    friend class NetServiceProcessControler;
 };
 
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
 
 #endif

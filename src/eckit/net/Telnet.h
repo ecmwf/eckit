@@ -17,11 +17,9 @@
 #include "eckit/net/NetService.h"
 
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
+namespace net {
 
-//-----------------------------------------------------------------------------
 
 class Telnet : public NetService {
 public:
@@ -45,14 +43,14 @@ private:
 
 	// From NetService
 
-	virtual NetUser* newUser(TCPSocket&);
-	virtual std::string   name() { return "telnet"; }
+	virtual NetUser* newUser(net::TCPSocket&) const;
+	virtual std::string   name() const { return "telnet"; }
 
 };
 
 
-//-----------------------------------------------------------------------------
+}  // namespace net
+}  // namespace eckit
 
-} // namespace eckit
 
 #endif

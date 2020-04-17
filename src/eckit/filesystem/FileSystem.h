@@ -8,41 +8,27 @@
  * does it submit to any jurisdiction.
  */
 
-// File FileSystem.h
-// MARS (Baudouin Raoult) - ECMWF Nov 01
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Nov 2001
 
 #ifndef eckit_FileSystem_h
 #define eckit_FileSystem_h
 
 #include "eckit/filesystem/PathName.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+class JSON;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class FileSystem {
 public:
 
-// -- Exceptions
-	// None
-
-// -- Contructors
-
 	FileSystem(const PathName&);
 
-// -- Destructor
-
 	~FileSystem();
-
-// -- Convertors
-	// None
-
-// -- Operators
-	// None
-
-// -- Methods
 
 	void update();
 
@@ -52,74 +38,33 @@ public:
 	unsigned long long  total() const;
 	unsigned long long  avail() const;
 	long usage() const;
-	bool offLine() const { return offLine_; }
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
+    bool offLine() const { return offLine_; }
 
 protected:
 
-// -- Members
-	// None
+    void json(eckit::JSON& s) const;
 
-
-
-// -- Methods
-
-	void print(std::ostream&) const;
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    void print(std::ostream&) const;
 
 private:
-
-// No copy allowed
-
-//	FileSystem(const FileSystem&);
-//	FileSystem& operator=(const FileSystem&);
-
-// -- Members
-	// None
 
 	PathName name_;
 	PathName mount_;
 	FileSystemSize fs_;
 	bool offLine_;
 
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
-
-// -- Friends
-
 	friend std::ostream& operator<<(std::ostream& s,const FileSystem& p)
 		{ p.print(s); return s; }
+
+    friend JSON& operator<<(JSON& s, const FileSystem& v) {
+        v.json(s);
+        return s;
+    }
 
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace eckit
 

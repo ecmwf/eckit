@@ -54,6 +54,7 @@ public:
     virtual void close();
     virtual void flush();
 
+    virtual Length size();
     virtual Length estimate();
     virtual Offset position();
     virtual Offset seek(const Offset&);
@@ -65,7 +66,7 @@ public:
 
     virtual DataHandle* clone() const;
 
-    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher, bool dblBufferOK = true);
+    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher);
 
     virtual std::string name() const;
 

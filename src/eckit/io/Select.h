@@ -8,31 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-// File Select.h
-// Baudouin Raoult - ECMWF Mar 97
+/// @author Baudouin Raoult
+/// @date Mar 97
 
 #ifndef eckit_Select_h
 #define eckit_Select_h
 
-#if 0
-#ifdef __hpux
-#include <sys/time.h>
-#else
-#include <sys/select.h>
-#endif
-#endif
 
 #include <sys/select.h>
 
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class TCPSocket;
+namespace net { class TCPSocket; };
 
 /// Wraps calls to select
 class Select : private NonCopyable {
@@ -42,8 +34,8 @@ public:
 // -- Contructors
 
 	Select();
-	Select(int);
-	Select(TCPSocket&);
+    explicit Select(int);
+    explicit Select(net::TCPSocket&);
 
 // -- Destructor
 
@@ -53,13 +45,13 @@ public:
 
 	bool ready(long sec = 20);
 
-	void add(TCPSocket&);
+    void add(net::TCPSocket&);
 	void add(int);
 
-	void remove(TCPSocket&);
+    void remove(net::TCPSocket&);
 	void remove(int);
 
-	bool set(TCPSocket&);
+    bool set(net::TCPSocket&);
 	bool set(int);
 
 private:

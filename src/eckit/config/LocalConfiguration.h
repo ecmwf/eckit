@@ -23,6 +23,7 @@
 namespace eckit {
 
 class PathName;
+class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -31,8 +32,11 @@ class LocalConfiguration : public Configuration, public Configured {
     ///       eckit::Value should remain an internal detail of configuration objects
 
 public:  // methods
-    LocalConfiguration(char separator = '.');
-    LocalConfiguration(const Configuration& other);
+
+    explicit LocalConfiguration(char separator = '.');
+    explicit LocalConfiguration(Stream& s);
+    explicit LocalConfiguration(const Configuration& other);
+
     LocalConfiguration(const Configuration& other, const std::string& path);
 
     virtual ~LocalConfiguration();

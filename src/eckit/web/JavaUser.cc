@@ -19,7 +19,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-JavaUser::JavaUser(TCPSocket& socket) : NetUser(socket) {}
+JavaUser::JavaUser(net::TCPSocket& socket) : net::NetUser(socket) {}
 
 JavaUser::~JavaUser() {}
 

@@ -113,9 +113,15 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Serial::Serial(const std::string& name) : Comm(name) {}
+Serial::Serial(const std::string& name) : Comm(name) {
+    rank_ = 0;
+    size_ = 1;
+}
 
-Serial::Serial(const std::string& name, int) : Comm(name) {}
+Serial::Serial(const std::string& name, int) : Comm(name) {
+    rank_ = 0;
+    size_ = 1;
+}
 
 Serial::~Serial() {}
 
@@ -125,14 +131,6 @@ Comm* Serial::self() const {
 
 std::string Serial::processorName() const {
     return Main::hostname();
-}
-
-size_t Serial::rank() const {
-    return 0;
-}
-
-size_t Serial::size() const {
-    return 1;
 }
 
 void Serial::barrier() const {
@@ -172,7 +170,9 @@ Status Serial::wait(Request& req) const {
 
         SendRequest& sendReq = SerialRequestPool::instance().matchingSendRequest(recvReq);
 
-        ::memcpy(recvReq.buffer(), sendReq.buffer(), sendReq.count() * dataSize[sendReq.type()]);
+        if (sendReq.count() > 0) {
+            ::memcpy(recvReq.buffer(), sendReq.buffer(), sendReq.count() * dataSize[sendReq.type()]);
+        }
 
         SerialStatus* st = new SerialStatus();
 
@@ -214,30 +214,35 @@ void Serial::broadcast(void*, size_t, Data::Code, size_t) const {
 }
 
 void Serial::gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type, size_t) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && sendcount > 0) {
         memcpy(recvbuf, sendbuf, sendcount * dataSize[type]);
+    }
 }
 
 void Serial::scatter(const void* sendbuf, size_t, void* recvbuf, size_t recvcount, Data::Code type, size_t) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && recvcount > 0) {
         memcpy(recvbuf, sendbuf, recvcount * dataSize[type]);
+    }
 }
 
 void Serial::gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int[], const int[], Data::Code type,
                      size_t) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && sendcount > 0) {
         memcpy(recvbuf, sendbuf, sendcount * dataSize[type]);
+    }
 }
 
 void Serial::scatterv(const void* sendbuf, const int[], const int[], void* recvbuf, size_t recvcount, Data::Code type,
                       size_t) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && recvcount > 0) {
         memcpy(recvbuf, sendbuf, recvcount * dataSize[type]);
+    }
 }
 
 void Serial::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && count > 0) {
         memcpy(recvbuf, sendbuf, count * dataSize[type]);
+    }
 }
 
 void Serial::allReduceInPlace(void*, size_t, Data::Code, Operation::Code) const {
@@ -245,24 +250,26 @@ void Serial::allReduceInPlace(void*, size_t, Data::Code, Operation::Code) const 
 }
 
 void Serial::allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && sendcount > 0) {
         memcpy(recvbuf, sendbuf, sendcount * dataSize[type]);
+    }
 }
 
 void Serial::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int[], const int[],
                         Data::Code type) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && sendcount > 0) {
         memcpy(recvbuf, sendbuf, sendcount * dataSize[type]);
+    }
 }
 
 void Serial::allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && sendcount > 0)
         memcpy(recvbuf, sendbuf, sendcount * dataSize[type]);
 }
 
 void Serial::allToAllv(const void* sendbuf, const int sendcounts[], const int[], void* recvbuf, const int[],
                        const int[], Data::Code type) const {
-    if (recvbuf != sendbuf)
+    if (recvbuf != sendbuf && sendcounts[0] > 0)
         memcpy(recvbuf, sendbuf, sendcounts[0] * dataSize[type]);
 }
 
@@ -274,7 +281,9 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
         ASSERT(tag == send.tag());
     }
     ASSERT(count == send.count());
-    memcpy(recv, send.buffer(), send.count() * dataSize[send.type()]);
+    if (count > 0) {
+        memcpy(recv, send.buffer(), send.count() * dataSize[send.type()]);
+    }
 
     SerialStatus* st = new SerialStatus();
     (*st).count_     = send.count();

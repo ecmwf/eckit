@@ -221,12 +221,9 @@ void Fraction::decode(Stream& s) {
 
 inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
-    if (overflow) {
+    if (overflow or (b != 0 and std::abs(a) > (std::numeric_limits<Fraction::value_type>::max() / std::abs(b)))) {
+        overflow = true;  // report overflow
         return Fraction::value_type();
-    }
-
-    if (b != 0) {
-        overflow = std::abs(a) > std::numeric_limits<Fraction::value_type>::max() / std::abs(b);
     }
 
     return a * b;
@@ -234,12 +231,11 @@ inline Fraction::value_type mul(bool& overflow, Fraction::value_type a, Fraction
 
 inline Fraction::value_type add(bool& overflow, Fraction::value_type a, Fraction::value_type b) {
 
-    if (overflow) {
+    if (overflow or (b > 0 ? a > std::numeric_limits<Fraction::value_type>::max() - b
+                           : a < std::numeric_limits<Fraction::value_type>::lowest() - b)) {
+        overflow = true;  // report overflow
         return Fraction::value_type();
     }
-
-    overflow = b > 0 ? a > std::numeric_limits<Fraction::value_type>::max() - b
-                     : a < std::numeric_limits<Fraction::value_type>::lowest() - b;
 
     return a + b;
 }

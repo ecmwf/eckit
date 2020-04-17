@@ -9,6 +9,7 @@
  */
 
 /// @author Simon Smart
+/// @author Tiago Quintino
 /// @date   May 2019
 
 #ifndef eckit_net_Endpoint_H
@@ -21,44 +22,51 @@ namespace eckit {
 
 class Stream;
 
+namespace net {
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class Endpoint {
 
 public: // methods
 
+    Endpoint(const std::string&); // parses the std::string formated as hostname:port
     Endpoint(const std::string& host, int port);
     Endpoint(Stream& s);
     Endpoint();
 
-    const std::string& hostname() const { return hostname_; }
+    const std::string& hostname() const { return host_; }
+    const std::string& host() const { return host_; }
     int port() const { return port_; }
 
-    bool operator==(const Endpoint& other);
+    bool operator==(const net::Endpoint& other);
 
     void print(std::ostream& os) const;
     void encode(Stream& s) const;
 
 private: // methods
+    void validate() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const Endpoint& ep) {
+    friend std::ostream& operator<<(std::ostream& os, const net::Endpoint& ep) {
         ep.print(os);
         return os;
     }
 
-    friend Stream& operator<<(Stream& s, const Endpoint& ep) {
+    friend Stream& operator<<(Stream& s, const net::Endpoint& ep) {
         ep.encode(s);
         return s;
     }
 
 private: // members
 
-    std::string hostname_;
+    std::string host_;
     int port_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
+} // namespace net
 } // namespace eckit
 
-#endif // eckit_net_Endpoint_H
+
+#endif

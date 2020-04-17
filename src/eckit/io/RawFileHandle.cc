@@ -8,18 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
-
-#include "eckit/io/RawFileHandle.h"
-
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "eckit/eckit.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/RawFileHandle.h"
+#include "eckit/os/Stat.h"
+
 
 namespace eckit {
 
@@ -77,7 +76,7 @@ long RawFileHandle::write(const void* buffer, long length) {
 }
 
 void RawFileHandle::close() {
-    // TODO: fsync
+    /// @todo fsync
     SYSCALL(::close(fd_));
     fd_ = -1;
 }
@@ -92,6 +91,18 @@ Offset RawFileHandle::seek(const Offset& o) {
 
 void RawFileHandle::skip(const Length& l) {
     ::lseek(fd_, l, SEEK_CUR);
+}
+
+Length RawFileHandle::size() {
+    Stat::Struct info;
+    SYSCALL(Stat::fstat(fd_, &info));
+    return info.st_size;
+}
+
+Length RawFileHandle::estimate() {
+    Stat::Struct info;
+    SYSCALL(Stat::fstat(fd_, &info));
+    return info.st_size;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

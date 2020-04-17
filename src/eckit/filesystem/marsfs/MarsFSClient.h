@@ -73,7 +73,7 @@ protected:
 
 // -- Members
 
-	Connector& connector_;
+    net::Connector& connector_;
 
 private:
 

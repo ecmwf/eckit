@@ -21,12 +21,14 @@ namespace eckit {
 
 class Buffer;
 
+namespace net {
+
 
 class UDPServer : private NonCopyable {
 
 public:  // methods
 
-    UDPServer(int port);
+    explicit UDPServer(int port);
 
     ~UDPServer();
 
@@ -52,6 +54,8 @@ private: // members
 };
 
 
+}  // namespace net
 }  // namespace eckit
+
 
 #endif

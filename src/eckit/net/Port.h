@@ -18,17 +18,21 @@
 #include <string>
 
 namespace eckit {
+namespace net {
+
 
 class Port {
-public:  // methods
+public:
     Port(const std::string&, int);
 
     operator int() const { return port_; }
 
-private:  // members
+private:
     int port_;
 };
 
+}  // namespace net
 }  // namespace eckit
+
 
 #endif

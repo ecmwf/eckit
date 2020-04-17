@@ -10,7 +10,7 @@
 
 #include "eckit/filesystem/FileSystem.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/log/JSON.h"
 
 namespace eckit {
 
@@ -49,6 +49,14 @@ long FileSystem::usage() const {
     if (!fs_.total)
         return 0;
     return long(((double)(fs_.total - fs_.available) / fs_.total * 100) + 0.5);
+}
+
+void FileSystem::json(JSON& s) const {
+    s.startObject();
+    s << "offline" << offLine();
+    s << "total" << total();
+    s << "available" << avail();
+    s.endObject();
 }
 
 void FileSystem::print(std::ostream& s) const {

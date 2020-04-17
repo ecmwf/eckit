@@ -553,6 +553,8 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
 
     SelectOneTable& fetchTable(*sortedTables_[tableIndex]);
 
+    total_++;
+
     while (cursors_[tableIndex]->next()) {
 
         // Extract the missing values
@@ -575,8 +577,13 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
 
         if (ok)
             return true;
+
         skips_++;
+        total_++;
     }
+
+    // If no row was found, then ensure total_ was not incremented.
+    total_--;
 
     return false;
 }
@@ -610,8 +617,6 @@ bool SQLSelect::processOneRow() {
                 return false;  // If false, there is no data
         }
 
-        total_ = 1;
-
         if (writeOutput()) {
             count_++;
             return true;
@@ -630,7 +635,6 @@ bool SQLSelect::processOneRow() {
             // n.b. keep going until writeOutput() has done something - i.e. a row has been
             // returned. This allows us to have filtering/unique/aggregation in the Output
             while (processNextTableRow(idx)) {
-                total_++;
                 if (writeOutput()) {
                     count_++;
                     return true;

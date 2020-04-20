@@ -128,6 +128,27 @@ CASE("Point distance2 comparison") {
     EXPECT(25.0 - std::numeric_limits<float>::epsilon() < p1.distance2(p3));
 }
 
+
+CASE("Point3 cross") {
+    Point3 p1 = {1.0, 0.0, 0.0};
+    Point3 p2 = {0.0, 1.0, 0.0};
+    Point3 p3 = {0.0, 0.0, 1.0};
+
+    EXPECT(p3 == Point3::cross(p1,p2));
+    EXPECT(p1 == Point3::cross(p2,p3));
+
+
+    Point3 p4 = {1.0, 2.0, 3.0};
+    Point3 p5 = {-1.0, -2.0, 4.0};
+    Point3 p6 = {2.0, 1.0, 0.0};
+
+    Point3 p7 = Point3::cross(p4,p5);
+    Point3 epsilon = {std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon()};
+
+    EXPECT(Point3::normalize(p7) < (Point3::normalize(p6)+epsilon));
+    EXPECT((Point3::normalize(p6)-epsilon) < Point3::normalize(p7));
+}
+
 }  // namespace test
 }  // namespace eckit
 

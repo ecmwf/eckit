@@ -109,23 +109,22 @@ CASE("Point distance comparison") {
     Point2 p1 = {2.0, 1.0};
     Point2 p2 = {1.0, 2.0};
 
-    EXPECT(p1.distance(p2) < 1.5);
-    EXPECT(1.4 < p1.distance(p2));
+    EXPECT(types::is_approximately_equal(sqrt(2.0), p1.distance(p2)));
 
     Point2 p3 = {5.0, 5.0};
-    EXPECT(p1.distance(p3) < 5.0 + std::numeric_limits<float>::epsilon());
-    EXPECT(5.0 - std::numeric_limits<float>::epsilon() < p1.distance(p3));
+
+    EXPECT(types::is_approximately_equal(p1.distance(p3), 5.0));
 }
 
 CASE("Point distance2 comparison") {
     Point2 p1 = {2.0, 1.0};
     Point2 p2 = {1.0, 2.0};
 
-    EXPECT(p1.distance2(p2) < 2.0 + std::numeric_limits<float>::epsilon());
+    EXPECT(types::is_approximately_equal(p1.distance2(p2), 2.0));
 
     Point2 p3 = {5.0, 5.0};
-    EXPECT(p1.distance2(p3) < 25.0 + std::numeric_limits<float>::epsilon());
-    EXPECT(25.0 - std::numeric_limits<float>::epsilon() < p1.distance2(p3));
+
+    EXPECT(types::is_approximately_equal(p1.distance2(p3), 25.0));
 }
 
 
@@ -137,16 +136,16 @@ CASE("Point3 cross") {
     EXPECT(p3 == Point3::cross(p1,p2));
     EXPECT(p1 == Point3::cross(p2,p3));
 
-
     Point3 p4 = {1.0, 2.0, 3.0};
     Point3 p5 = {-1.0, -2.0, 4.0};
-    Point3 p6 = {2.0, 1.0, 0.0};
+    Point3 p6 = {2.0, -1.0, 0.0};
 
-    Point3 p7 = Point3::cross(p4,p5);
-    Point3 epsilon = {std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon(), std::numeric_limits<float>::epsilon()};
+    Point3 p7 = Point3::normalize(Point3::cross(p4,p5));
+    Point3 p8 = Point3::normalize(p6);
 
-    EXPECT(Point3::normalize(p7) < (Point3::normalize(p6)+epsilon));
-    EXPECT((Point3::normalize(p6)-epsilon) < Point3::normalize(p7));
+    EXPECT(types::is_approximately_equal(p7[XX], p8[XX]));
+    EXPECT(types::is_approximately_equal(p7[YY], p8[YY]));
+    EXPECT(types::is_approximately_equal(p7[ZZ], p8[ZZ]));
 }
 
 }  // namespace test

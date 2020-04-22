@@ -180,7 +180,10 @@ void FileSpace::load() const {
     }
 
     if(fileSystems_.empty()) {
-        Log::warning() << "FileSpace " + name_ + " is empty" << std::endl;
+        if(!hasConfigFile) {
+            // Having an empty file removes that warning
+            Log::warning() << "FileSpace " + name_ + " is empty" << std::endl;
+        }
     }
 }
 

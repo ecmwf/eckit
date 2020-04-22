@@ -132,11 +132,11 @@ void FileSpace::load() const {
     PathName config(std::string("~/etc/disks/") + name_);
     bool hasConfigFile = config.exists();
 
-    time_t mod1     = hasConfigFile ? config.lastModified() : 0;
+    time_t mod1     = hasConfigFile ? config.lastModified() : 1;
     time_t mod2     = ClusterDisks::lastModified(name_);
     time_t modified = std::max(mod1, mod2);
 
-    if (last_ == modified)
+    if ((last_ == modified) && (last_ != 0))
         return;
 
     ::srandom(static_cast<unsigned>(::getpid()));
@@ -179,7 +179,7 @@ void FileSpace::load() const {
         }
     }
 
-    if(disks.empty()) {
+    if(fileSystems_.empty()) {
         if(!hasConfigFile) {
             // An empty FileSpace is only OK if the file ~/etc/disks/<name> exists and is empty
             throw SeriousBug("FileSpace " + name_ + " is empty");

@@ -46,7 +46,7 @@ const PathName& FileSpace::selectFileSystem(const std::string& s) const {
     load();
 
     if (fileSystems_.size() == 0) {
-        throw Retry(std::string("FileSpace [") + name_ + "] is undefined");
+        throw Retry(std::string("FileSpace [") + name_ + "] is empty");
     }
 
     return FileSpaceStrategies::selectFileSystem(fileSystems_, s);

@@ -180,10 +180,7 @@ void FileSpace::load() const {
     }
 
     if(fileSystems_.empty()) {
-        if(!hasConfigFile) {
-            // An empty FileSpace is only OK if the file ~/etc/disks/<name> exists and is empty
-            throw SeriousBug("FileSpace " + name_ + " is empty");
-        }
+        Log::warning() << "FileSpace " + name_ + " is empty" << std::endl;
     }
 }
 

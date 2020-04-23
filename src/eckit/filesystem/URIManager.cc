@@ -75,7 +75,7 @@ URIManager& URIManager::lookUp(const std::string& name) {
 
     std::map<std::string, URIManager*>::const_iterator j = m.find(name);
 
-    Log::debug<LibEcKit>() << "Looking for URIManager [" << name << "]" << std::endl;
+    // Log::debug<LibEcKit>() << "Looking for URIManager [" << name << "]" << std::endl;
 
     if (j == m.end()) {
         Log::error() << "No URIManager for [" << name << "]" << std::endl;

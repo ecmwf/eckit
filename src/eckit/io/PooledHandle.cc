@@ -19,6 +19,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/PooledHandle.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit {

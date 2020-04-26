@@ -26,7 +26,7 @@ public: // methods
 
     /// Contructors
 
-    Library(int argc, char **argv, const char* homeenv = 0);
+    Library(int argc, char **argv, const char* homeenv = nullptr);
 
     /// Destructor
 

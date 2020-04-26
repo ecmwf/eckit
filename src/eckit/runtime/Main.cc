@@ -110,17 +110,17 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 }
 
 Main::~Main() {
-    if (instance_ == 0) {
+    if (not instance_) {
         std::cerr << "Attempting to delete a non-existent instance of Main()" << std::endl;
         std::cerr << BackTrace::dump() << std::endl;
         _exit(1);
     }
 
-    instance_ = 0;
+    instance_ = nullptr;
 }
 
 Main& Main::instance() {
-    if (!instance_) {
+    if (not instance_) {
         std::cerr << "Attempting to access a non-existent instance of Main()" << std::endl;
         std::cerr << BackTrace::dump() << std::endl;
         _exit(1);
@@ -174,7 +174,7 @@ const std::string& Main::displayName() const {
 }
 
 bool Main::ready() {
-    return instance_ != 0;
+    return instance_ != nullptr;
 }
 
 void Main::terminate() {
@@ -183,7 +183,7 @@ void Main::terminate() {
 
 void Main::initialise(int argc, char** argv, const char* homeenv) {
     AutoLock<StaticMutex> lock(local_mutex);
-    if (instance_ == 0) {
+    if (not instance_) {
         new Library(argc, argv, homeenv);
     }
 }

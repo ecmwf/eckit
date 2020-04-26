@@ -51,7 +51,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static StaticMutex local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
 
@@ -203,12 +202,13 @@ bool LocalPathName::available() const {
 }
 
 LocalPathName LocalPathName::cwd() {
-    AutoLock<StaticMutex> lock(local_mutex);
     char buf[PATH_MAX + 1];
-    if (!getcwd(buf, sizeof(buf)))
+    if (!::getcwd(buf, sizeof(buf)))
         throw FailedSystemCall("getcwd");
     return LocalPathName(buf);
 }
+
+static StaticMutex local_mutex;  // for LocalPathName::unique()
 
 LocalPathName LocalPathName::unique(const LocalPathName& path) {
     AutoLock<StaticMutex> lock(local_mutex);

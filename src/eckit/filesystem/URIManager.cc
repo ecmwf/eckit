@@ -14,7 +14,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/StaticMutex.h"
+#include "eckit/thread/Mutex.h"
 
 
 namespace eckit {
@@ -23,37 +23,92 @@ namespace eckit {
 
 typedef std::map<std::string, URIManager*> URIManagerMap;
 
-// Builds the map on demand, needed for correct static initialization because factories can be
-// initialized first
-struct URIManagerRegistry {
+/// Registry for all URI managers
+///
+class URIManagerRegistry {
+public:  // methods
+    /// Builds the registry on demand, needed for correct static initialization
+    /// because factories can be initialized first
     static URIManagerRegistry& instance() {
         static URIManagerRegistry reg;
         return reg;
     }
 
-    URIManagerMap map_;
+    /// Registers an entry to the registry
+    /// @pre Cannot exist yet
+    void enregister(const std::string& name, URIManager* obj) {
+        AutoLock<Mutex> lockme(mutex_);
+        ASSERT(map_.find(name) == map_.end());
+        map_[name] = obj;
+    }
 
-    URIManagerMap& map() { return map_; }
+    /// Removes an entry from the registry
+    /// @pre Must exist
+    void deregister(const std::string& name) {
+        AutoLock<Mutex> lockme(mutex_);
+        ASSERT(map_.find(name) != map_.end());
+        map_.erase(name);
+    }
+
+    /// List entries in URIManager
+    std::vector<std::string> list() const {
+        AutoLock<Mutex> lockme(mutex_);
+        std::vector<std::string> result;
+        for (URIManagerMap::const_iterator j = map_.begin(); j != map_.end(); ++j) {
+            result.push_back(j->first);
+        }
+        return result;
+    }
+
+    /// Check entry exists in registry
+    bool exists(const std::string& name) const {
+        AutoLock<Mutex> lockme(mutex_);
+        URIManagerMap::const_iterator j = map_.find(name);
+        return (j != map_.end());
+    }
+
+    /// Prints the entries in registry
+    void print(std::ostream& out, const char* separator) const {
+        AutoLock<Mutex> lockme(mutex_);
+        std::vector<std::string> l = URIManagerRegistry::instance().list();
+        const char* sep               = "";
+        for (auto j : l) {
+            out << sep << j;
+            sep = separator;
+        }
+    }
+
+    /// Lookup entry in the registry
+    URIManager& lookup(const std::string& name) const {
+        AutoLock<Mutex> lockme(mutex_);
+
+        URIManagerMap::const_iterator j = map_.find(name);
+
+        if (j == map_.end()) {
+            eckit::Log::error() << "No URIManager found with name '" << name << "'" << std::endl;
+            eckit::Log::error() << "Registered URIManager's are:";
+            print(eckit::Log::error(), "\n");
+            throw eckit::SeriousBug(std::string("No URIManager found with name ") + name);
+        }
+
+        ASSERT(j->second);
+        return *(j->second);
+    }
+
+private:  // members
+    URIManagerMap map_;
+    mutable Mutex mutex_;
 };
 
-
-static StaticMutex local_mutex;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 URIManager::URIManager(const std::string& name) : name_(name) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    URIManagerMap& m = URIManagerRegistry::instance().map();
-
-    ASSERT(m.find(name) == m.end());
-    m[name] = this;
+    URIManagerRegistry::instance().enregister(name, this);
 }
 
 URIManager::~URIManager() {
-    AutoLock<StaticMutex> lock(local_mutex);
-    URIManagerMap& m = URIManagerRegistry::instance().map();
-
-    m.erase(name_);
+    URIManagerRegistry::instance().deregister(name_);
 }
 
 std::string URIManager::asString(const URI& uri) const {
@@ -61,31 +116,11 @@ std::string URIManager::asString(const URI& uri) const {
 }
 
 bool URIManager::exists(const std::string& name) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    URIManagerMap& m = URIManagerRegistry::instance().map();
-
-    std::map<std::string, URIManager*>::const_iterator j = m.find(name);
-
-    return j != m.end();
+    return URIManagerRegistry::instance().exists(name);
 }
 
 URIManager& URIManager::lookUp(const std::string& name) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    URIManagerMap& m = URIManagerRegistry::instance().map();
-
-    std::map<std::string, URIManager*>::const_iterator j = m.find(name);
-
-    // Log::debug<LibEcKit>() << "Looking for URIManager [" << name << "]" << std::endl;
-
-    if (j == m.end()) {
-        Log::error() << "No URIManager for [" << name << "]" << std::endl;
-        Log::error() << "Managers are:" << std::endl;
-        for (j = m.begin(); j != m.end(); ++j)
-            Log::error() << "   " << *((*j).second) << std::endl;
-        throw SeriousBug(std::string("No URIManager called ") + name);
-    }
-
-    return *((*j).second);
+    return URIManagerRegistry::instance().lookup(name);
 }
 
 void URIManager::print(std::ostream& s) const {

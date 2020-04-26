@@ -40,6 +40,7 @@ public:
     virtual long write(const void*,long);
     virtual void close();
     virtual Offset seek(const Offset&);
+    virtual void hash(MD5& md5) const;
 
     // for testing
 

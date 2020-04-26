@@ -269,7 +269,7 @@ long PooledHandle::read(void* buffer, long len) {
 
 void PooledHandle::hash(MD5& md5) const {
     md5 << "PooledHandle";
-    md5 << entry_->path_;
+    md5 << std::string(entry_->path_);
 }
 
 }  // namespace eckit

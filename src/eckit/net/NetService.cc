@@ -87,7 +87,7 @@ bool NetService::preferToRunAsProcess() const {
     return false;
 }
 
-//------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 NetServiceProcessControler::NetServiceProcessControler(const std::string& name,
         NetUser *user,
@@ -129,7 +129,7 @@ void NetServiceProcessControler::run() {
 void NetServiceProcessControler::afterForkInParent() {
     // This will close the connected socket
     Log::info() << "NetServiceProcessControler::run afterForkInParent" << std::endl;
-    user_.reset(0);
+    user_.reset(nullptr);
 }
 
 void NetServiceProcessControler::afterForkInChild() {

@@ -17,11 +17,13 @@
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+static StaticMutex local_mutex;
 
 class RotationOutputStream {
 public:
@@ -31,12 +33,12 @@ public:
     }
 
     void write(const char* start, const char* end) {
-        AutoLock<Mutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(local_mutex);
         rotout().write(start, end - start);
     }
 
     void flush() {
-        AutoLock<Mutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(local_mutex);
         if (last_)
             last_->flush();
     }
@@ -74,8 +76,6 @@ private:  // members
     time_t lastTime_     = 0;
 
     std::string logfileFormat_;
-
-    Mutex mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

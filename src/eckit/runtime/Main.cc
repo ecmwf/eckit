@@ -30,7 +30,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 static StaticMutex local_mutex;
-static Main* instance_ = 0;
+static Main* instance_ = nullptr;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     ::srand(::getpid() + ::time(0));
     ::srandom(::getpid() + ::time(0));
 
-    const char* home = homeenv ? ::getenv(homeenv) : 0;
+    const char* home = homeenv ? ::getenv(homeenv) : nullptr;
 
     if (home) {
         home_ = home;

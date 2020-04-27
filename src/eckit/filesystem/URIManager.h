@@ -16,6 +16,8 @@
 #define eckit_filesystem_URIManager_h
 
 #include "eckit/eckit.h"
+
+
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
 

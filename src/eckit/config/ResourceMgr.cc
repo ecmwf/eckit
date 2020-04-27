@@ -18,32 +18,22 @@
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static StaticMutex smutex;
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-
-static ResourceMgr* mgr = 0;
-
-void ResourceMgr::init() {
-    mgr = new ResourceMgr();
-}
-
 ResourceMgr& ResourceMgr::instance() {
-    pthread_once(&once, ResourceMgr::init);
-    return *mgr;
+    static ResourceMgr theinstance;
+    return theinstance;
 }
 
 bool ResourceMgr::lookUp(const std::string& s1, const std::string& s2, const std::string& s3, std::string& v) {
-    return ResourceMgr::instance().lookUp_(s1, s2, s3, v);
+    return ResourceMgr::instance().doLookUp(s1, s2, s3, v);
 }
 
 void ResourceMgr::reset() {
-    AutoLock<StaticMutex> lock(smutex);
+    AutoLock<Mutex> lock(mutex_);
     resmap_.clear();
     inited_ = false;
 }
@@ -118,7 +108,6 @@ bool ResourceMgr::parse(const char* p) {
 }
 
 void ResourceMgr::readConfigFile(const LocalPathName& file) {
-    // Read file ...
 
     // Log::info() << "ResourceMgr::readConfigFile(" << file << ")" << std::endl;
 
@@ -136,16 +125,16 @@ void ResourceMgr::readConfigFile(const LocalPathName& file) {
 }
 
 void ResourceMgr::set(const std::string& name, const std::string& value) {
-    AutoLock<StaticMutex> lock(smutex);
+    AutoLock<Mutex> lock(mutex_);
 
     std::string s = name + ": " + value;
     if (!parse(s.c_str()))
         Log::warning() << "Failed to parse " << s << std::endl;
 }
 
-bool ResourceMgr::lookUp_(const std::string& kind, const std::string& owner, const std::string& name,
+bool ResourceMgr::doLookUp(const std::string& kind, const std::string& owner, const std::string& name,
                           std::string& result) {
-    AutoLock<StaticMutex> lock(smutex);
+    AutoLock<Mutex> lock(mutex_);
 
     if (!inited_) {
         inited_ = true;
@@ -180,8 +169,7 @@ bool ResourceMgr::lookUp_(const std::string& kind, const std::string& owner, con
 }
 
 bool ResourceMgr::registCmdArgOptions(const std::string&) {
-    AutoLock<StaticMutex> lock(smutex);
-
+    AutoLock<Mutex> lock(mutex_);
     NOTIMP;
 }
 

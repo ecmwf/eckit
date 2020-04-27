@@ -30,16 +30,12 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 static StaticMutex local_mutex;
-static Main* instance_ = 0;
+static Main* instance_ = nullptr;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 Main::Main(int argc, char** argv, const char* homeenv) :
-    taskID_(-1),
-    argc_(argc),
-    argv_(argv),
-    home_("/"),
-    debug_(false) {
+    taskID_(-1), argc_(argc), argv_(argv), home_("/"), debug_(false) {
 
     if (instance_) {
         std::cerr << "Attempting to create a new instance of Main()" << std::endl;
@@ -94,7 +90,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     ::srand(::getpid() + ::time(0));
     ::srandom(::getpid() + ::time(0));
 
-    const char* home = homeenv ? ::getenv(homeenv) : 0;
+    const char* home = homeenv ? ::getenv(homeenv) : nullptr;
 
     if (home) {
         home_ = home;
@@ -110,17 +106,17 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 }
 
 Main::~Main() {
-    if (instance_ == 0) {
+    if (not instance_) {
         std::cerr << "Attempting to delete a non-existent instance of Main()" << std::endl;
         std::cerr << BackTrace::dump() << std::endl;
         _exit(1);
     }
 
-    instance_ = 0;
+    instance_ = nullptr;
 }
 
 Main& Main::instance() {
-    if (!instance_) {
+    if (not instance_) {
         std::cerr << "Attempting to access a non-existent instance of Main()" << std::endl;
         std::cerr << BackTrace::dump() << std::endl;
         _exit(1);
@@ -134,9 +130,8 @@ int Main::argc() const {
 }
 
 std::string Main::argv(int n) const {
-    ASSERT(argc_ != 0 && argv_ != 0);  // check initialized
-    ASSERT(n < argc_ && n >= 0);       // check bounds
-    // ASSERT(argv_[n] != 0);             // check initialized??
+    ASSERT(argc_ != 0 && argv_ != nullptr);  // check initialized
+    ASSERT(n < argc_ && n >= 0);             // check bounds
     return argv_[n] ? argv_[n] : "<undefined>";
 }
 
@@ -174,7 +169,7 @@ const std::string& Main::displayName() const {
 }
 
 bool Main::ready() {
-    return instance_ != 0;
+    return instance_ != nullptr;
 }
 
 void Main::terminate() {
@@ -183,7 +178,7 @@ void Main::terminate() {
 
 void Main::initialise(int argc, char** argv, const char* homeenv) {
     AutoLock<StaticMutex> lock(local_mutex);
-    if (instance_ == 0) {
+    if (not instance_) {
         new Library(argc, argv, homeenv);
     }
 }

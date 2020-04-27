@@ -8,85 +8,61 @@
  * does it submit to any jurisdiction.
  */
 
-// File PipeHandler.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 96
 
 #ifndef eckit_PipeHandler_h
 #define eckit_PipeHandler_h
 
 #include "eckit/container/ClassExtent.h"
-#include "eckit/serialisation/PipeStream.h"
-#include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/Dispatcher.h"
+#include "eckit/runtime/ProcessControler.h"
+#include "eckit/serialisation/PipeStream.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-template<class Request>
-class PipeHandler : public ProcessControler,
-					public ClassExtent<PipeHandler<Request> >,
-					public DefaultHandler<Request> {
+template <class Request>
+class PipeHandler : public ProcessControler, public ClassExtent<PipeHandler<Request> >, public DefaultHandler<Request> {
 public:
+    PipeHandler();
+    ~PipeHandler();
 
-// -- Contructors
+    void handle(const std::vector<Request*>&);
+    void pick(std::list<Request*>&, std::vector<Request*>&);
+    void idle();
 
-	PipeHandler();
+    bool busy() const { return busy_; }
+    void ready(bool&);
+    void age(time_t&);
 
-// -- Destructor
+    virtual void start();
+    virtual void stop();
 
-	~PipeHandler();
+protected:  // methods
+    bool canPick();
 
-// -- Methods
+private:  // methods
 
-	void handle(const std::vector<Request*>&);
-	void pick(std::list<Request*>&,std::vector<Request*>&);
-	void idle();
+    virtual void endBatch(Stream&);
 
-	bool busy() const { return busy_; }
-	void ready(bool&) ;
-	void age(time_t&) ;
+    void send(Request*);
+    void receive(Request*);
 
-// -- Overridden methods
+    virtual void run();
 
-	// From ProcessControler
-
-	virtual void start();
-	virtual void stop();
-
-protected:
-
-// -- Methods
-
-	bool canPick();
-
-private:
-
-// -- Members
-
-	PipeStream *pipe_;
-	bool        busy_;
-	time_t      last_;
-
-// -- Methods
-
-	virtual void endBatch(Stream&);
-
-	void send(Request*);
-	void receive(Request*);
-
-	// From ProcessControler
-
-	virtual void run();
-
+private:  // members
+    PipeStream* pipe_;
+    bool busy_;
+    time_t last_;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #include "eckit/runtime/PipeHandler.cc"
 

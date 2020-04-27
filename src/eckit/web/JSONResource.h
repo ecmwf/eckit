@@ -14,8 +14,8 @@
 ///
 /// @date Jun 2012
 
-#ifndef eckit_web_HtmlResource_H
-#define eckit_web_HtmlResource_H
+#ifndef eckit_web_JSONResource_H
+#define eckit_web_JSONResource_H
 
 #include "eckit/web/HttpResource.h"
 
@@ -38,7 +38,7 @@ private:
 
     virtual void GET(std::ostream&, Url&);
     virtual void POST(std::ostream&, Url&);
-    virtual void json(eckit::JSON&, const eckit::Value&) = 0;    
+    virtual void json(eckit::JSON&, const eckit::Value&) = 0;
 
 };
 

@@ -46,7 +46,7 @@ const PathName& FileSpace::selectFileSystem(const std::string& s) const {
     load();
 
     if (fileSystems_.size() == 0) {
-        throw Retry(std::string("FileSpace [") + name_ + "] is undefined");
+        throw Retry(std::string("FileSpace [") + name_ + "] is empty");
     }
 
     return FileSpaceStrategies::selectFileSystem(fileSystems_, s);
@@ -130,11 +130,13 @@ void FileSpace::load() const {
     FileSpace* self = const_cast<FileSpace*>(this);
 
     PathName config(std::string("~/etc/disks/") + name_);
-    time_t mod1     = config.lastModified();
+    bool hasConfigFile = config.exists();
+
+    time_t mod1     = hasConfigFile ? config.lastModified() : 1;
     time_t mod2     = ClusterDisks::lastModified(name_);
     time_t modified = std::max(mod1, mod2);
 
-    if (last_ == modified)
+    if ((last_ == modified) && (last_ != 0))
         return;
 
     ::srandom(static_cast<unsigned>(::getpid()));
@@ -144,18 +146,22 @@ void FileSpace::load() const {
 
     // Log::info() << "Loading FileSpace " << name_ << " modified " << TimeStamp(last_) << std::endl;
 
-    std::ifstream in(config.localPath());
-    if (!in)
-        throw CantOpenFile(config);
-
     std::vector<std::string> disks;
 
-    char line[1024] = {
-        0,
-    };
-    while (in >> line) {
-        if (line[0] != 0 && line[0] != '#') {
-            disks.push_back(line);
+    if(hasConfigFile) {
+        std::ifstream in(config.localPath());
+        if (!in)
+            throw CantOpenFile(config);
+
+
+
+        char line[1024] = {
+            0,
+        };
+        while (in >> line) {
+            if (line[0] != 0 && line[0] != '#') {
+                disks.push_back(line);
+            }
         }
     }
 
@@ -170,6 +176,13 @@ void FileSpace::load() const {
         }
         catch (std::exception& e) {
             Log::error() << "mkdir(" << path << ") failed : " << e.what() << std::endl;
+        }
+    }
+
+    if(fileSystems_.empty()) {
+        if(!hasConfigFile) {
+            // Having an empty file removes that warning
+            Log::warning() << "FileSpace " + name_ + " is empty" << std::endl;
         }
     }
 }

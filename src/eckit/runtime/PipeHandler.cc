@@ -17,8 +17,6 @@
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/runtime/Main.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -28,15 +26,11 @@ PipeHandler<Request>::PipeHandler() : ClassExtent<PipeHandler<Request> >(this), 
     Monitor::instance().show(false);
 }
 
-//=========================================================================
-
 template <class Request>
 PipeHandler<Request>::~PipeHandler() {
     stop();
     delete pipe_;
 }
-
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::send(Request* r) {
@@ -72,7 +66,6 @@ void PipeHandler<Request>::send(Request* r) {
     }
 }
 
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::receive(Request* r) {
@@ -80,7 +73,6 @@ void PipeHandler<Request>::receive(Request* r) {
     r->reply(*pipe_);
 }
 
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::handle(const std::vector<Request*>& v) {
@@ -137,12 +129,12 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v) {
     Log::status() << "-" << std::endl;
 }
 
+
 template <class Request>
 void PipeHandler<Request>::idle() {
     Monitor::instance().show(active());
 }
 
-//=========================================================================
 
 static StaticMutex PipeHandler_static_mutex;
 
@@ -168,14 +160,11 @@ void PipeHandler<Request>::start() {
     Log::debug() << "PipeHandler - UnLocked..." << std::endl;
 }
 
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::stop() {
     ProcessControler::stop();
 }
-
-//=========================================================================
 
 
 template <class Request>
@@ -244,9 +233,8 @@ void PipeHandler<Request>::age(time_t& a) {
             a = last_;
 }
 
-//=========================================================================
-// Check if an other thread is avialable and as already forked.
-// In this case don't pick the request otherwise, choose it
+/// @note Check if an other thread is available and as already forked.
+///       In this case don't pick the request otherwise, choose it
 
 template <class Request>
 bool PipeHandler<Request>::canPick() {

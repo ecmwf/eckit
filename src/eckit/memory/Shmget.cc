@@ -22,13 +22,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static eckit::StaticMutex mutex_;
+
 static long count_;
 static long maxCount_;
 
 static size_t length_;
 static size_t maxLength_;
-
-static eckit::StaticMutex mutex_;
 
 static std::map<int, size_t> sizes_;
 static std::map<const void*, int> ids_;

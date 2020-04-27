@@ -35,11 +35,7 @@ static Main* instance_ = nullptr;
 //----------------------------------------------------------------------------------------------------------------------
 
 Main::Main(int argc, char** argv, const char* homeenv) :
-    taskID_(-1),
-    argc_(argc),
-    argv_(argv),
-    home_("/"),
-    debug_(false) {
+    taskID_(-1), argc_(argc), argv_(argv), home_("/"), debug_(false) {
 
     if (instance_) {
         std::cerr << "Attempting to create a new instance of Main()" << std::endl;
@@ -134,9 +130,8 @@ int Main::argc() const {
 }
 
 std::string Main::argv(int n) const {
-    ASSERT(argc_ != 0 && argv_ != 0);  // check initialized
-    ASSERT(n < argc_ && n >= 0);       // check bounds
-    // ASSERT(argv_[n] != 0);             // check initialized??
+    ASSERT(argc_ != 0 && argv_ != nullptr);  // check initialized
+    ASSERT(n < argc_ && n >= 0);             // check bounds
     return argv_[n] ? argv_[n] : "<undefined>";
 }
 

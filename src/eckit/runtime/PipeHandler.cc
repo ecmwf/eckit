@@ -16,7 +16,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeHandler.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/StaticMutex.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 

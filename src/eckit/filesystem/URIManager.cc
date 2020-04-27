@@ -71,7 +71,7 @@ public:  // methods
     void print(std::ostream& out, const char* separator) const {
         AutoLock<Mutex> lockme(mutex_);
         std::vector<std::string> l = URIManagerRegistry::instance().list();
-        const char* sep               = "";
+        const char* sep            = "";
         for (auto j : l) {
             out << sep << j;
             sep = separator;
@@ -140,13 +140,13 @@ class LocalFileManager : public URIManager {
         return PathName(uri.name()).partHandle(ol, ll);
     }
 
-    virtual std::string asString(const URI& uri) const override {
-        return uri.name();
-    }
+    virtual std::string asString(const URI& uri) const override { return uri.name(); }
 
 public:
     LocalFileManager(const std::string& name) : URIManager(name) {}
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class LocalFilePartManager : public URIManager {
     virtual bool query() override { return true; }
@@ -163,16 +163,23 @@ class LocalFilePartManager : public URIManager {
     }
 
     virtual std::string asString(const URI& uri) const override { return uri.name(); }
+
 public:
     LocalFilePartManager(const std::string& name) : URIManager(name) {}
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class MarsFSManager : public URIManager {
     virtual bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& uri) override {
+        return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
+    }
 
-    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& uri) override {
+        return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
+    }
 
     virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
         return PathName(uri.scheme() + ":" + uri.name()).partHandle(ol, ll);
@@ -182,6 +189,8 @@ public:
     MarsFSManager(const std::string& name) : URIManager(name) {}
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class HttpURIManager : public URIManager {
     virtual bool authority() override { return true; }
     virtual bool query() override { return true; }
@@ -189,9 +198,13 @@ class HttpURIManager : public URIManager {
 
     virtual bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& uri) override {
+        return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
+    }
 
-    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& uri) override {
+        return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
+    }
 
     virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
         return PathName(uri.scheme() + ":" + uri.name()).partHandle(ol, ll);
@@ -216,13 +229,13 @@ public:
     HttpURIManager(const std::string& name) : URIManager(name) {}
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static LocalFileManager manager_unix("unix");
 static LocalFilePartManager manager_file("file");
 static MarsFSManager manager_marsfs("marsfs");
 static HttpURIManager manager_http("http");
 static HttpURIManager manager_https("https");
-
-static LocalFileManager manager_toc("toc");
 
 //----------------------------------------------------------------------------------------------------------------------
 

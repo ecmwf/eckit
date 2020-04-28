@@ -33,9 +33,11 @@ public:
     virtual ~MemoryHandle();
 
     /// Access the underlying buffer
-    /// Size is provided by the overriden virtual function size() returning Lenght
+    /// Size is provided by both the non-const overriden virtual function size()
+    /// and the const version (available only on this class)
     const void* data() const;
     std::string str() const;
+    Length size() const;
 
 // -- Overridden methods
 

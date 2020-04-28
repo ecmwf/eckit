@@ -219,6 +219,10 @@ std::string MemoryHandle::str() const {
     return std::string(address_, address_ + position_);
 }
 
+Length MemoryHandle::size() const {
+    return size_;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

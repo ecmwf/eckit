@@ -446,7 +446,6 @@ long FOpenDataHandle::seek(long pos, int whence) {
 
     try {
         long where = pos;
-        std::cerr << "whence: " << whence << std::endl;
         switch (whence) {
 
             case SEEK_SET:

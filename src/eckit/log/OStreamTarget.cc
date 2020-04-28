@@ -19,7 +19,6 @@ namespace eckit {
 OStreamTarget::OStreamTarget(std::ostream& out) : out_(out) {}
 
 OStreamTarget::~OStreamTarget() {
-    //    std::cerr << "OStreamTarget::~OStreamTarget()" << std::endl;
 }
 
 void OStreamTarget::write(const char* start, const char* end) {

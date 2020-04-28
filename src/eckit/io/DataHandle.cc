@@ -595,7 +595,7 @@ FILE* DataHandle::openf(bool delete_on_close) {
     ASSERT(sizeof(long) >= sizeof(ssize_t));
 
     cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
-    return ::fopencookie(new FOpenDataHandle(this, mode, delete_on_close, false), mode, f);
+    return ::fopencookie(new FOpenDataHandle(this, "", delete_on_close, false), "r+", f);
 }
 
 #else

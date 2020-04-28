@@ -21,8 +21,6 @@ class Buffer;
 class MemoryHandle : public DataHandle {
 public:
 
-
-
     MemoryHandle(const Buffer&);
     MemoryHandle(Buffer&);
 
@@ -34,10 +32,12 @@ public:
 
     virtual ~MemoryHandle();
 
+    /// Access the underlying buffer
+    /// Size is provided by both the non-const overriden virtual function size()
+    /// and the const version (available only on this class)
     const void* data() const;
     std::string str() const;
-    size_t size() const;
-
+    Length size() const;
 
 // -- Overridden methods
 
@@ -57,6 +57,7 @@ public:
 
     virtual Offset seek(const Offset&);
 
+    virtual Length size();
     virtual Length estimate();
     virtual Offset position();
 

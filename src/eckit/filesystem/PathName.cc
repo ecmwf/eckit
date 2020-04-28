@@ -14,7 +14,6 @@
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 
@@ -35,10 +34,6 @@ PathName::PathName(const std::string& type, const std::string& p, bool tildeIsUs
 PathName::PathName(const PathName& other) : path_(other.path_->clone()) {}
 
 PathName::PathName(const LocalPathName& other) : path_(new BasePathNameT<LocalPathName>(other)) {}
-
-PathName::PathName(const MarsFSPath& other):
-    path_(new BasePathNameT<MarsFSPath>(other)) {
-}
 
 PathName::PathName(BasePathName* path) : path_(path) {
     ASSERT(path);

@@ -141,24 +141,6 @@ public:
     LocalFilePartManager(const std::string& name) : URIManager(name) {}
 };
 
-class MarsFSManager : public URIManager {
-    virtual bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
-
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
-        return PathName(uri.scheme() + ":" + uri.name()).partHandle(ol, ll);
-    }
-
-    virtual std::string asString(const URI& uri) const override { return std::string("marsfs:") + uri.name(); }
-    
-    virtual PathName path(const URI& uri) const override { return PathName(asString(uri)); }
-
-public:
-    MarsFSManager(const std::string& name) : URIManager(name) {}
-};
 
 class HttpURIManager : public URIManager {
     virtual bool authority() override { return true; }
@@ -196,7 +178,6 @@ public:
 
 static LocalFileManager manager_unix("unix");
 static LocalFilePartManager manager_file("file");
-static MarsFSManager manager_marsfs("marsfs");
 static HttpURIManager manager_http("http");
 static HttpURIManager manager_https("https");
 

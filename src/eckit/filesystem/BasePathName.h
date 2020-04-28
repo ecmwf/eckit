@@ -22,8 +22,6 @@
 #include "eckit/io/Length.h"
 #include "eckit/memory/NonCopyable.h"
 
-struct FileSystemSize;
-
 namespace eckit {
 
 

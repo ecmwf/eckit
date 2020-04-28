@@ -14,10 +14,9 @@
 #include "eckit/eckit.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/FDataSync.h"
 #include "eckit/io/FileHandle.h"
-#include "eckit/io/MarsFSHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
@@ -285,9 +284,9 @@ void FileHandle::skip(const Length& n) {
 }
 
 void FileHandle::toRemote(Stream& s) const {
-    MarsFSPath p(PathName(name_).clusterName());
-    MarsFSHandle remote(p);
-    s << remote;
+    PathName p(PathName(name_).clusterName());
+    std::unique_ptr<DataHandle> remote(p.fileHandle());
+    s << *remote;
 }
 
 void FileHandle::cost(std::map<std::string, Length>& c, bool read) const {

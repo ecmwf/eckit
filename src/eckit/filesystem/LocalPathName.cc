@@ -27,7 +27,6 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/Length.h"
@@ -189,7 +188,7 @@ BasePathName* LocalPathName::checkClusterNode() const {
     std::string n = ClusterDisks::node(path_);
     if (n != "local") {
         //        Log::warning() << *this << " is now on node [" << n << "]" << std::endl;
-        return new BasePathNameT<MarsFSPath>(MarsFSPath(n, path_));
+        return PathNameFactory::instance().build(std::string("marsfs://") + n + path_);
     }
     return new BasePathNameT<LocalPathName>(LocalPathName(path_));
 }

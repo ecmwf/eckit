@@ -54,7 +54,6 @@ public:
     PathName(const std::string& type, const std::string& p, bool tildeIsUserHome = false);
     PathName(const PathName& p);
     PathName(const LocalPathName&);
-    PathName(const MarsFSPath&);
 
     // Destructor
     ~PathName();

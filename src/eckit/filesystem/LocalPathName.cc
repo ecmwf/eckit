@@ -53,7 +53,6 @@ namespace eckit {
 
 static PathNameBuilder<LocalPathName> localBuilder("local");
 
-static StaticMutex local_mutex;
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
 
@@ -219,12 +218,13 @@ bool LocalPathName::available() const {
 }
 
 LocalPathName LocalPathName::cwd() {
-    AutoLock<StaticMutex> lock(local_mutex);
     char buf[PATH_MAX + 1];
-    if (!getcwd(buf, sizeof(buf)))
+    if (!::getcwd(buf, sizeof(buf)))
         throw FailedSystemCall("getcwd");
     return LocalPathName(buf);
 }
+
+static StaticMutex local_mutex;  // for LocalPathName::unique()
 
 LocalPathName LocalPathName::unique(const LocalPathName& path) {
     AutoLock<StaticMutex> lock(local_mutex);
@@ -237,12 +237,15 @@ LocalPathName LocalPathName::unique(const LocalPathName& path) {
     std::ostringstream os;
     os << path << '.' << TimeStamp(format) << '.' << hostname << '.' << n++;
 
-    while (::access(os.str().c_str(), F_OK) == 0) {
+    std::string name = os.str();
+
+    while (::access(name.c_str(), F_OK) == 0) {
         std::ostringstream os;
         os << path << '.' << TimeStamp(format) << '.' << hostname << '.' << n++;
+        name = os.str();
     }
 
-    LocalPathName result(os.str());
+    LocalPathName result(name);
     result.dirName().mkdir();
     return result;
 }

@@ -21,7 +21,6 @@
 #include "eckit/thread/ThreadControler.h"
 
 
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -29,11 +28,7 @@ namespace eckit {
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 ProcessControler::ProcessControler(bool forget) :
-    ClassExtent<ProcessControler>(this),
-    pid_(-1),
-    child_(false),
-    status_(0),
-    forget_(forget) {}
+    ClassExtent<ProcessControler>(this), pid_(-1), child_(false), status_(0), forget_(forget) {}
 
 ProcessControler::~ProcessControler() {
     if (!forget_ && active())
@@ -232,13 +227,9 @@ bool ProcessControler::isRunning(pid_t pid) {
 #endif
 }
 
-void ProcessControler::afterForkInParent() {
+void ProcessControler::afterForkInParent() {}
 
-}
-
-void ProcessControler::afterForkInChild() {
-
-}
+void ProcessControler::afterForkInChild() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

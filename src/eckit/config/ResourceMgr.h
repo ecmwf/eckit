@@ -63,11 +63,9 @@ public: // class methods
 
 private:
 
-    static void init();
-
     ResourceMgr();
 
-    bool lookUp_(const std::string&, const std::string&, const std::string&, std::string&);
+    bool doLookUp(const std::string&, const std::string&, const std::string&, std::string&);
 
     // Only for my friends
     // You should never call these, resources have a read-only semantics
@@ -89,6 +87,8 @@ private: // members
     ResMap resmap_;
 
     std::map<std::string, std::string> resoptions_;
+
+    Mutex mutex_;
 
     bool inited_;
 };

@@ -10,14 +10,13 @@
 
 #include <signal.h>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeHandler.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/StaticMutex.h"
-#include "eckit/runtime/Main.h"
-
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -28,15 +27,11 @@ PipeHandler<Request>::PipeHandler() : ClassExtent<PipeHandler<Request> >(this), 
     Monitor::instance().show(false);
 }
 
-//=========================================================================
-
 template <class Request>
 PipeHandler<Request>::~PipeHandler() {
     stop();
     delete pipe_;
 }
-
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::send(Request* r) {
@@ -72,7 +67,6 @@ void PipeHandler<Request>::send(Request* r) {
     }
 }
 
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::receive(Request* r) {
@@ -80,7 +74,6 @@ void PipeHandler<Request>::receive(Request* r) {
     r->reply(*pipe_);
 }
 
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::handle(const std::vector<Request*>& v) {
@@ -137,14 +130,16 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v) {
     Log::status() << "-" << std::endl;
 }
 
+
 template <class Request>
 void PipeHandler<Request>::idle() {
     Monitor::instance().show(active());
 }
 
-//=========================================================================
 
-static StaticMutex PipeHandler_static_mutex;
+/// @note This is not a StaticMutex as we don't need it to be cleared on fork since itself is guarding the fork calls
+///       and therefore by construction we will have a lock on it when we are forking
+static Mutex pipehandler_global_mutex;
 
 template <class Request>
 void PipeHandler<Request>::start() {
@@ -154,8 +149,8 @@ void PipeHandler<Request>::start() {
     // thread is creating a pipe. The child process
     // will then also has a file descriptor for this pipe
 
-    AutoLock<StaticMutex> lock(PipeHandler_static_mutex);
-    Log::debug() << "PipeHandler - Locked..." << std::endl;
+    AutoLock<Mutex> lock(pipehandler_global_mutex);
+    LOG_DEBUG_LIB(LibEcKit) << "PipeHandler - Locked..." << std::endl;
 
 
     delete pipe_;
@@ -163,19 +158,16 @@ void PipeHandler<Request>::start() {
 
     ProcessControler::start();
 
-    // Here, we still are in the parent
+    // Her we are still in the parent
     pipe_->parentProcess();
-    Log::debug() << "PipeHandler - UnLocked..." << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "PipeHandler - UnLocked..." << std::endl;
 }
 
-//=========================================================================
 
 template <class Request>
 void PipeHandler<Request>::stop() {
     ProcessControler::stop();
 }
-
-//=========================================================================
 
 
 template <class Request>
@@ -244,9 +236,8 @@ void PipeHandler<Request>::age(time_t& a) {
             a = last_;
 }
 
-//=========================================================================
-// Check if an other thread is avialable and as already forked.
-// In this case don't pick the request otherwise, choose it
+/// @note Check if an other thread is available and as already forked.
+///       In this case don't pick the request otherwise, choose it
 
 template <class Request>
 bool PipeHandler<Request>::canPick() {

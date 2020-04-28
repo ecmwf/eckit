@@ -19,6 +19,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/PooledHandle.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit {
@@ -266,5 +267,9 @@ long PooledHandle::read(void* buffer, long len) {
     return entry_->read(this, buffer, len);
 }
 
+void PooledHandle::hash(MD5& md5) const {
+    md5 << "PooledHandle";
+    md5 << std::string(entry_->path_);
+}
 
 }  // namespace eckit

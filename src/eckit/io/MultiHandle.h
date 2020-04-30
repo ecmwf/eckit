@@ -60,6 +60,7 @@ public:
     virtual void print(std::ostream&) const;
 	void restartReadFrom(const Offset& from);
 
+    virtual Offset position();
     virtual Offset seek(const Offset&);
 
 	virtual bool merge(DataHandle*);

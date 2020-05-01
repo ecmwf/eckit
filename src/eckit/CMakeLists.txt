@@ -161,6 +161,8 @@ io/FileDescHandle.cc
 io/FileDescHandle.h
 io/FileHandle.cc
 io/FileHandle.h
+io/MMappedFileHandle.cc
+io/MMappedFileHandle.h
 io/FileLock.cc
 io/FileLock.h
 io/FileLocker.cc

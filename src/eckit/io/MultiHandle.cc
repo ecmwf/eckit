@@ -300,10 +300,10 @@ DataHandle* MultiHandle::clone() const {
 
 Offset MultiHandle::position() {
     long long position = 0;
-    for (HandleList::iterator it = datahandles_.begin(); it != current_; ++it) {
-        position += (*it)->estimate();
+    for (HandleList::iterator it = datahandles_.begin(); it != current_ && it!=datahandles_.end(); ++it) {
+        position += (*it)->size();
     }
-    return position + (*current_)->position();
+    return position + (current_==datahandles_.end() ? Offset(0) : (*current_)->position());
 }
 
 Offset MultiHandle::seek(const Offset& offset) {

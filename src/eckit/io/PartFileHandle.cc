@@ -203,7 +203,7 @@ void PartFileHandle::restartReadFrom(const Offset& from) {
 Offset PartFileHandle::position() {
     long long position = 0;
     for (int i = 0; i < index_; i++) {
-        position += length_[index_];
+        position += length_[i];
     }
     return position + Length(pos_);
 }

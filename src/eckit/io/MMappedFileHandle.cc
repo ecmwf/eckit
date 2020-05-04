@@ -73,7 +73,7 @@ Length MMappedFileHandle::openForRead() {
 
     handle_.reset(new MemoryHandle(mmap_, length_));
 
-    return handle_.openForRead();
+    return handle_->openForRead();
 
 }
 

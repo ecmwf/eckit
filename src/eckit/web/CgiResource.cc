@@ -13,6 +13,7 @@
 #include "eckit/io/StdPipe.h"
 #include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
+#include "eckit/config/Resource.h"
 
 
 
@@ -25,7 +26,8 @@ CgiResource::CgiResource() : HtmlResource("/cgi") {}
 CgiResource::~CgiResource() {}
 
 void CgiResource::GET(std::ostream& s, Url& url) {
-    eckit::PathName path("~/http/" + url.name());
+    eckit::PathName cgiScriptsPath = eckit::Resource<eckit::PathName>("cgiScriptsPath", "~/admin/cgi-scripts");
+    eckit::PathName path(cgiScriptsPath / url.name());
     std::ostringstream cmd;
 
     std::string mode = url["parameter"];

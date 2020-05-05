@@ -28,19 +28,13 @@ class PooledHandle;
 //----------------------------------------------------------------------------------------------------------------------
 
 class PartFileHandle : public DataHandle {
-public:
-
-// -- Contructors
+public: // methods
 
     PartFileHandle(const PathName&,const OffsetList&,const LengthList&);
     PartFileHandle(const PathName&,const Offset&,const Length&);
-    PartFileHandle(Stream&);
+    explicit PartFileHandle(Stream&);
 
-// -- Destructor
-
-    ~PartFileHandle();
-
-// -- Methods
+    virtual ~PartFileHandle() override;
 
     const PathName& path() const { return path_; }
 
@@ -81,9 +75,7 @@ public:
 
     static  const ClassSpec&  classSpec()        { return classSpec_;}
 
-private:
-
-// -- Members
+private:  // members
 
     PathName           path_;
     std::unique_ptr<PooledHandle> handle_;
@@ -92,11 +84,9 @@ private:
     OffsetList         offset_;
     LengthList         length_;
 
-// -- Methods
+private:  // methods
 
     long read1(char*,long);
-
-// -- Class members
 
     static  ClassSpec               classSpec_;
     static  Reanimator<PartFileHandle>  reanimator_;

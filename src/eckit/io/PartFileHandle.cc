@@ -200,6 +200,14 @@ void PartFileHandle::restartReadFrom(const Offset& from) {
     ASSERT(from == Offset(0) && estimate() == Length(0));
 }
 
+Offset PartFileHandle::position() {
+    long long position = 0;
+    for (int i = 0; i < index_; i++) {
+        position += length_[i];
+    }
+    return position + Length(pos_);
+}
+
 Offset PartFileHandle::seek(const Offset& from) {
     rewind();
     long long len = from;

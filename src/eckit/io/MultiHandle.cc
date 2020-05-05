@@ -298,6 +298,14 @@ DataHandle* MultiHandle::clone() const {
     return mh;
 }
 
+Offset MultiHandle::position() {
+    long long position = 0;
+    for (HandleList::iterator it = datahandles_.begin(); it != current_ && it!=datahandles_.end(); ++it) {
+        position += (*it)->size();
+    }
+    return position + (current_==datahandles_.end() ? Offset(0) : (*current_)->position());
+}
+
 Offset MultiHandle::seek(const Offset& offset) {
     ASSERT(read_);  /// seek only allowed on read mode
     if (current_ != datahandles_.end())

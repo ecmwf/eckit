@@ -28,77 +28,68 @@ class PooledHandle;
 //----------------------------------------------------------------------------------------------------------------------
 
 class PartFileHandle : public DataHandle {
-public:
+public: // methods
 
-// -- Contructors
+    PartFileHandle(const PathName&,const OffsetList&,const LengthList&);
+    PartFileHandle(const PathName&,const Offset&,const Length&);
+    explicit PartFileHandle(Stream&);
 
-	PartFileHandle(const PathName&,const OffsetList&,const LengthList&);
-	PartFileHandle(const PathName&,const Offset&,const Length&);
-	PartFileHandle(Stream&);
+    virtual ~PartFileHandle() override;
 
-// -- Destructor
-
-	~PartFileHandle();
-
-// -- Methods
-
-	const PathName& path() const { return path_; }
+    const PathName& path() const { return path_; }
 
 // -- Overridden methods
 
-	// From DataHandle
+    // From DataHandle
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
-	virtual void close();
-	virtual void rewind();
+    virtual long read(void*,long) override;
+    virtual long write(const void*,long) override;
+    virtual void close() override;
+    virtual void rewind() override;
 
-	virtual void print(std::ostream&) const;
-	virtual bool merge(DataHandle*);
-    virtual bool compress(bool = false);
-    virtual Length size();
-    virtual Length estimate();
+    virtual void print(std::ostream&) const override;
+    virtual bool merge(DataHandle*) override;
+    virtual bool compress(bool = false) override;
+    virtual Length size() override;
+    virtual Length estimate() override;
 
-	virtual void restartReadFrom(const Offset& from);
-    virtual Offset seek(const Offset&);
+    virtual void restartReadFrom(const Offset& from) override;
+    virtual Offset position() override;
+    virtual Offset seek(const Offset&) override;
 
-    virtual void cost(std::map<std::string,Length>&, bool) const;
-    virtual std::string title() const;
-    virtual bool moveable() const { return true; }
-    virtual DataHandle* clone() const;
+    virtual void cost(std::map<std::string,Length>&, bool) const override;
+    virtual std::string title() const override;
+    virtual bool moveable() const override { return true; }
+    virtual DataHandle* clone() const override;
 
-	// From Streamable
+    // From Streamable
 
-	virtual void encode(Stream&) const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 // -- Class methods
 
-	static  const ClassSpec&  classSpec()        { return classSpec_;}
+    static  const ClassSpec&  classSpec()        { return classSpec_;}
 
-private:
+private:  // members
 
-// -- Members
-
-	PathName           path_;
+    PathName           path_;
     std::unique_ptr<PooledHandle> handle_;
-	long long          pos_;
-	Ordinal            index_;
-	OffsetList         offset_;
-	LengthList         length_;
+    long long          pos_;
+    Ordinal            index_;
+    OffsetList         offset_;
+    LengthList         length_;
 
-// -- Methods
+private:  // methods
 
-	long read1(char*,long);
-
-// -- Class members
+    long read1(char*,long);
 
     static  ClassSpec               classSpec_;
-	static  Reanimator<PartFileHandle>  reanimator_;
+    static  Reanimator<PartFileHandle>  reanimator_;
 
 };
 

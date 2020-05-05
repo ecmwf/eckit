@@ -9,11 +9,12 @@
  */
 
 #include <map>
-#include <mutex>
 
 #include "eckit/config/Resource.h"
 #include "eckit/log/JSON.h"
 #include "eckit/types/Types.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
 #include "eckit/web/Html.h"
 #include "eckit/web/HttpResource.h"
 #include "eckit/web/Url.h"
@@ -24,52 +25,106 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, HttpResource*> store_t;
+/// Registry for all HttpResource's
+///
+class HttpResourceRegistry {
 
-class HtmlResourceRegistry : private eckit::NonCopyable {
-private:
-    HtmlResourceRegistry() {}
+    typedef std::map<std::string, HttpResource*> HttpResourceMap;
 
-    store_t store_;               ///< registry of html resources
-    std::recursive_mutex mutex_;  ///< mutex for the registry of html resources
-
-public:
-    /// Ensures correct static initialization order
-    /// and mutex initialisation
-    static HtmlResourceRegistry& instance() {
-        static HtmlResourceRegistry self;
-        return self;
+public:  // methods
+    /// Builds the registry on demand, needed for correct static initialization
+    /// because factories can be initialized first
+    static HttpResourceRegistry& instance() {
+        static HttpResourceRegistry reg;
+        return reg;
     }
 
-    void regist(HttpResource* r) {
-        ASSERT(r);
-        std::lock_guard<std::recursive_mutex> autolock(mutex_);
-        store_t::key_type k = r->resourceUrl();
+    /// Registers an entry to the registry
+    /// @pre Cannot exist yet
+    /// @param obj pointer must be valid
+    void enregister(const std::string& name, HttpResource* obj) {
+        AutoLock<Mutex> lockme(mutex_);
+        ASSERT(obj);
+        ASSERT(map_.find(name) == map_.end());
+        map_[name] = obj;
+    }
 
-        store_t::iterator it = store_.find(k);
-        if (it != store_.end()) {
-            std::ostringstream oss;
-            oss << "HttpResource already registered with key [" << k << "] : " << *store_[k];
-            throw SeriousBug(oss.str(), Here());
+    /// Removes an entry from the registry
+    /// @pre Must exist
+    void deregister(const std::string& name) {
+        AutoLock<Mutex> lockme(mutex_);
+        ASSERT(map_.find(name) != map_.end());
+        map_.erase(name);
+    }
+
+    /// List entries in HttpResource
+    std::vector<std::string> list() const {
+        AutoLock<Mutex> lockme(mutex_);
+        std::vector<std::string> result;
+        for (HttpResourceMap::const_iterator j = map_.begin(); j != map_.end(); ++j) {
+            result.push_back(j->first);
         }
-        store_[k] = r;
-        Log::debug() << "Registering " << *r << std::endl;
+        return result;
     }
 
-    void lock() { mutex_.lock(); }
-    void unlock() { mutex_.unlock(); }
+    /// Check entry exists in registry
+    bool exists(const std::string& name) const {
+        AutoLock<Mutex> lockme(mutex_);
+        HttpResourceMap::const_iterator j = map_.find(name);
+        return (j != map_.end());
+    }
 
-    store_t& store() { return store_; }
+    /// Prints the entries in registry
+    void print(std::ostream& out, const char* separator = ", ") const {
+        AutoLock<Mutex> lockme(mutex_);
+        std::vector<std::string> l = HttpResourceRegistry::instance().list();
+        const char* sep            = "";
+        for (auto j : l) {
+            out << sep << j;
+            sep = separator;
+        }
+    }
+
+    /// Prints the index with the registry entries
+    void index(std::ostream& s) const {
+        AutoLock<Mutex> lockme(mutex_);
+        for (HttpResourceMap::const_iterator j = map_.begin(); j != map_.end(); ++j) {
+            s << Html::Link((*j).first) << (*j).first << Html::Link() << std::endl;
+        }
+    }
+
+    /// Lookup entry in the registry
+    /// @returns nullptr if registry not found
+    HttpResource* lookup(const std::string& name) const {
+        AutoLock<Mutex> lockme(mutex_);
+        HttpResource* r = nullptr;
+        HttpResourceMap::const_iterator j = map_.find(name);
+        if (j != map_.end()) {
+             r = j->second; // guarranteed not null
+        }
+        return r;
+    }
+
+protected:
+
+    friend std::ostream& operator<<(std::ostream& s, const HttpResourceRegistry& r) {
+        r.print(s);
+        return s;
+    }
+
+private:  // members
+    HttpResourceMap map_;
+    mutable Mutex mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 HttpResource::HttpResource(const std::string& s) : resourceUrl_(s) {
-    HtmlResourceRegistry::instance().regist(this);
+    HttpResourceRegistry::instance().enregister(resourceUrl_, this);
 }
 
 HttpResource::~HttpResource() {
-    // we choose not to unregist the library since these are global static objects
+    HttpResourceRegistry::instance().deregister(resourceUrl_);
 }
 
 void HttpResource::print(std::ostream& s) const {
@@ -100,18 +155,14 @@ static void error(Url& url, HttpStream& out, eckit::Exception& e, int code) {
 
 void HttpResource::dispatch(eckit::Stream&, std::istream&, HttpStream& out, Url& url) {
 
-    std::lock_guard<HtmlResourceRegistry> lock(HtmlResourceRegistry::instance());
-    store_t& store = HtmlResourceRegistry::instance().store();
-
     std::string str;
 
     for (int i = 0; i < url.size(); i++) {
         str += "/" + url[i];
 
+        HttpResource* r = HttpResourceRegistry::instance().lookup(str);
 
-        store_t::const_iterator j = store.find(str);
-        if (j != store.end()) {
-            HttpResource* r = (*j).second;
+        if (r) {
 
             if (r->restricted() && !url.authenticated()) {
                 url.authenticate();
@@ -207,11 +258,7 @@ void HttpResource::dispatch(eckit::Stream&, std::istream&, HttpStream& out, Url&
 }
 
 void HttpResource::index(std::ostream& s, Url&) {
-    std::lock_guard<HtmlResourceRegistry> lock(HtmlResourceRegistry::instance());
-    store_t& store = HtmlResourceRegistry::instance().store();
-    for (store_t::const_iterator j = store.begin(); j != store.end(); ++j) {
-        s << Html::Link((*j).first) << (*j).first << Html::Link() << std::endl;
-    }
+    HttpResourceRegistry::instance().index(s);
 }
 
 const std::string& HttpResource::resourceUrl() const {

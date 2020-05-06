@@ -8,11 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file   CSVParser.h
-/// @author Baudouin Raoult
-/// @author Tiago Quintino
-/// @date   Jun 2012
-
 #include <fstream>
 
 #include "eckit/parser/CSVParser.h"

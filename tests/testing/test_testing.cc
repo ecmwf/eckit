@@ -43,15 +43,19 @@ void ThrowStd() {
     throw std::exception();
 }
 
+
 Tests tests = {{CASE("CASE with no EXPECT passes"){
 
                }},
 
                {CASE("EXPECT macros are defined correctly"){EXPECT(true);
 EXPECT_NOT(false);
+EXPECT_EQUAL(1, 1);
+EXPECT_NOT_EQUAL(1, 2);
 EXPECT_NO_THROW({ bool b = true; });
 EXPECT_THROWS(throw std::exception());
 EXPECT_THROWS_AS(throw std::exception(), std::exception);
+EXPECT_MSG(1 == 1, [=]() { std::cerr << Colour::red << "1 != 1" << Colour::reset << std::endl; };);
 }  // namespace test
 }  // namespace eckit
 ,
@@ -133,7 +137,9 @@ EXPECT_NOT(7 != 7.0);
 }
 ,
 
-    {CASE("Expect succeeds for string comparison"){std::string a("a");
+    {CASE("Expect succeeds for string comparison"){
+
+        std::string a("a");
 std::string b("b");
 
 EXPECT(a == a);
@@ -346,7 +352,8 @@ EXPECT(!is_approximately_equal(d1, make_view(d2), 0.0001));             // vecto
 }
 ,
 }
-;
+;  // end of tests
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

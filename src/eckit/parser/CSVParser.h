@@ -9,7 +9,8 @@
  */
 
 /// @author Baudouin Raoult
-/// @date Feb 2019
+/// @author Tiago Quintino
+/// @date   Feb 2019
 
 #ifndef eckit_CSVParser_h
 #define eckit_CSVParser_h

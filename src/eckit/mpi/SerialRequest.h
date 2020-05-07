@@ -100,7 +100,6 @@ public: // methods
 private:
 
     void* buffer_;
-    size_t size_;
     size_t count_;
     int tag_;
     Data::Code type_;

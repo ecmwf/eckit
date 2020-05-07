@@ -41,10 +41,13 @@ public:  // methods
     virtual void get(const std::string& name, std::string& value) const { NOTIMP; }
     virtual void get(const std::string& name, long& value) const { NOTIMP; }
     virtual void get(const std::string& name, double& value) const { NOTIMP; }
+    /*
+    // unused
     friend std::ostream& operator<<(std::ostream& s, const TestMetadata& p) {
         p.print(s);
         return s;
     }
+    */
 
 protected:  // methods
     virtual void print(std::ostream& os) const { os << "TestMetadata()"; }

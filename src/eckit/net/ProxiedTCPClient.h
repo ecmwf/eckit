@@ -23,22 +23,20 @@ namespace eckit {
 
 class ProxiedTCPClient : public net::TCPClient {
 public:
-
-	ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port = 0);
+    ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port = 0);
 
     virtual ~ProxiedTCPClient();
 
-	virtual net::TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
+    using net::TCPClient::connect;
+    virtual net::TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0) override;
 
 private:
-
     net::Endpoint proxy_;
 
-    virtual void print(std::ostream& s) const;
-
+    virtual void print(std::ostream& s) const override;
 };
 
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -172,7 +172,6 @@ public:
 
         ASSERT(handle_->seek(s->second.position_) == s->second.position_);
 
-        size_t length = size_t(len);
         long n        = handle_->read(buffer, len);
 
         s->second.position_ = handle_->position();

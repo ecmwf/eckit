@@ -59,7 +59,7 @@ Configuration& Configuration::operator=(const Configuration& other) {
 
 Configuration::~Configuration() {}
 
-Configuration::operator bool() const {return !(root_->isNil() || root_->keys().size() == 0);}
+bool Configuration::empty() const {return root_->isNil() || root_->keys().size() == 0;}
 
 char Configuration::separator() const {
     return separator_;

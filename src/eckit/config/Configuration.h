@@ -90,7 +90,7 @@ public:  // methods
     std::vector<std::string> getStringVector(const std::string& name,
                                              const std::vector<std::string>& defaultValue) const;
 
-    operator bool() const;
+    bool empty() const;
 
     std::vector<std::string> keys() const;
 

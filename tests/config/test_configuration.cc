@@ -243,15 +243,15 @@ CASE("test_yaml_empty") {
     }
 
     LocalConfiguration emptyconf;  // LocalConfiguration is empty
-    EXPECT(!emptyconf);
+    EXPECT(emptyconf.empty());
 
     YAMLConfiguration conf(yamlpath);
     LocalConfiguration office(conf, "office");  // LocalConfiguration has content
-    EXPECT(office);
+    EXPECT(!office.empty());
 
 //  Not sure this is correct yaml but since the parser accepts it we need to handle it
     LocalConfiguration nilconf(office, "manager");  // LocalConfiguration is nil
-    EXPECT(!nilconf);
+    EXPECT(nilconf.empty());
 }
 
 

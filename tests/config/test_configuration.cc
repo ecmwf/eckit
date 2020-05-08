@@ -229,6 +229,35 @@ CASE("test_configuration_interface") {
 //----------------------------------------------------------------------------------------------------------------------
 
 
+CASE("test_yaml_empty") {
+    PathName yamlpath = "test_yaml_empty.yaml";
+
+    std::string yamlstr(
+        "office:\n"
+        "  manager :\n"
+        );
+
+    {
+        std::ofstream yamlfile(yamlpath.localPath());
+        yamlfile << yamlstr;
+    }
+
+    LocalConfiguration emptyconf;  // LocalConfiguration is empty
+    EXPECT(!emptyconf);
+
+    YAMLConfiguration conf(yamlpath);
+    LocalConfiguration office(conf, "office");  // LocalConfiguration has content
+    EXPECT(office);
+
+//  Not sure this is correct yaml but since the parser accepts it we need to handle it
+    LocalConfiguration nilconf(office, "manager");  // LocalConfiguration is nil
+    EXPECT(!nilconf);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
 CASE("test_json_configuration") {
     PathName jsonpath = "test_json_configuration.json";
 

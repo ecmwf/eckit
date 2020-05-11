@@ -25,36 +25,58 @@ namespace eckit {
 
 static StaticMutex local_mutex;
 
-static std::ofstream* last = nullptr;
-static time_t lastTime     = 0;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-static std::ostream& rotout() {
-
-    time_t now = ::time(0) / 86400;
-
-    if (now != lastTime || last == nullptr) {
-
-        static std::string logfileFormat = Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out");
-
-        TimeStamp ts(logfileFormat);
-        PathName path(ts);
-        path.mkdir(0777);
-
-        std::ostringstream os;
-        os << path << "/" << Main::instance().name();
-
-        delete last;
-
-        /// @todo Find a way to set the close on exec flags
-        last = new std::ofstream(os.str().c_str(), std::ios::app);
-
-        lastTime = now;
+class RotationOutputStream {
+public:
+    static RotationOutputStream& instance() {
+        static RotationOutputStream theinstance;
+        return theinstance;
     }
 
-    return *last;
-}
+    void write(const char* start, const char* end) {
+        AutoLock<StaticMutex> lock(local_mutex);
+        rotout().write(start, end - start);
+    }
+
+    void flush() {
+        AutoLock<StaticMutex> lock(local_mutex);
+        if (last_)
+            last_->flush();
+    }
+
+private:
+    RotationOutputStream() : logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")) {}
+
+    std::ostream& rotout() {
+
+        time_t now = ::time(nullptr) / 86400;
+
+        if (now != lastTime_ || last_ == nullptr) {
+
+            TimeStamp ts(logfileFormat_);
+            PathName path(ts);
+            path.mkdir(0777);
+
+            std::ostringstream os;
+            os << path << "/" << Main::instance().name();
+
+            delete last_;
+
+            /// @todo Find a way to set the close on exec flags
+            last_ = new std::ofstream(os.str().c_str(), std::ios::app);
+
+            lastTime_ = now;
+        }
+
+        return *last_;
+    }
+
+
+private:  // members
+    std::ofstream* last_ = nullptr;
+    time_t lastTime_     = 0;
+
+    std::string logfileFormat_;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -63,12 +85,10 @@ RotationTarget::RotationTarget() {}
 RotationTarget::~RotationTarget() {}
 
 void RotationTarget::write(const char* start, const char* end) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    rotout().write(start, end - start);
+    RotationOutputStream::instance().write(start, end);
 }
 void RotationTarget::flush() {
-    AutoLock<StaticMutex> lock(local_mutex);
-    rotout().flush();
+    RotationOutputStream::instance().flush();
 }
 
 void RotationTarget::print(std::ostream& s) const {

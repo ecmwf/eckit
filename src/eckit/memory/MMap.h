@@ -24,16 +24,14 @@ namespace eckit {
 
 class MMap {
 
-public: // methods
-
+public:  // methods
     static void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset);
     static int munmap(void* addr, size_t length);
     static void info(size_t& count, size_t& size);
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

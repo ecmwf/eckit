@@ -30,7 +30,7 @@ static Value root(std::istream& in) {
 
 
 static Value root(const std::string& path) {
-    Log::debug<LibEcKit>() << "Reading YAMLConfiguration from file " << path << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Reading YAMLConfiguration from file " << path << std::endl;
     std::ifstream in(path.c_str());
     if (!in)
         throw eckit::CantOpenFile(path);
@@ -45,8 +45,8 @@ static Value root(Stream& in) {
 }
 
 static Value root_from_string(const std::string& str) {
-    Log::debug<LibEcKit>() << "Reading YAMLConfiguration from string:" << std::endl;
-    Log::debug<LibEcKit>() << str << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Reading YAMLConfiguration from string:" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << str << std::endl;
     std::istringstream in(str);
     return root(in);
 }

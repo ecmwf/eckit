@@ -110,6 +110,7 @@ public:
 
     /// Create a FILE* from this handle
     FILE* openf(const char* mode, bool delete_on_close = false);
+    FILE* openf(bool delete_on_close = false);
 
     /// Compare bytes
     bool compare(DataHandle&);

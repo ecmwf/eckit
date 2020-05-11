@@ -23,14 +23,13 @@ namespace eckit {
 class LogStream;
 class PathName;
 
-class Main  : private NonCopyable {
+class Main : private NonCopyable {
 protected:
+    Main(int argc, char** argv, const char* homeenv = nullptr);
 
-    Main(int argc, char** argv, const char* homeenv = 0);
     virtual ~Main();
 
-public: // methods
-
+public:  // methods
     static Main& instance();
 
     int argc() const;
@@ -59,7 +58,7 @@ public: // methods
 
     /// Ensure that there exits a Main object. This is to be used
     /// For unit tests and fortran bindinds only
-    static void initialise(int argc, char** argv, const char* homeenv = 0);
+    static void initialise(int argc, char** argv, const char* homeenv = nullptr);
 
     // To be used before main() to check if the instance is ready
     static bool ready();
@@ -76,7 +75,6 @@ public: // methods
     virtual LogTarget* createDebugLogTarget() const;
 
 protected:
-
     std::string name_;
     std::string displayName_;  ///< name to be displayed of running application
     long taskID_;
@@ -85,21 +83,19 @@ protected:
 
     virtual LogTarget* createDefaultLogTarget() const;
 
-private: // members
+private:  // members
+    int argc_;
+    char** argv_;
 
-    int     argc_;
-    char**  argv_;
-
-    std::string  home_; ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
+    std::string home_;  ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
 
     bool debug_;
 
     friend class Log;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
-#endif // eckit_Main_h
+#endif  // eckit_Main_h

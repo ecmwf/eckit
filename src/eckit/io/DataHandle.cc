@@ -369,10 +369,11 @@ class FOpenDataHandle {
     DataHandle* handle_;
     const char* mode_;
     bool delete_on_close_;
+    bool open_close_;
     Offset position_;  // Keep track of position to cater for
 
 public:
-    FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close);
+    FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close, bool open_close);
     ~FOpenDataHandle();
 
     long read(char* buffer, long length);
@@ -382,33 +383,39 @@ public:
 };
 
 
-FOpenDataHandle::FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close) :
+FOpenDataHandle::FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close, bool open_close) :
     handle_(handle),
     mode_(mode),
     delete_on_close_(delete_on_close),
+    open_close_(open_close),
     position_(0) {
 
-    bool ok = false;
+    if(open_close_) {
 
-    if (::strcmp(mode, "r") == 0) {
-        handle_->openForRead();
-        ok = true;
-    }
-    if (::strcmp(mode, "w") == 0) {
-        handle_->openForWrite(0);
-        ok = true;
-    }
-    if (::strcmp(mode, "a") == 0) {
-        handle_->openForAppend(0);
-        ok = true;
-    }
+        bool ok = false;
 
-    ASSERT(ok);
+        if (::strcmp(mode, "r") == 0) {
+            handle_->openForRead();
+            ok = true;
+        }
+        if (::strcmp(mode, "w") == 0) {
+            handle_->openForWrite(0);
+            ok = true;
+        }
+        if (::strcmp(mode, "a") == 0) {
+            handle_->openForAppend(0);
+            ok = true;
+        }
+
+        ASSERT(ok);
+    }
 }
 
 FOpenDataHandle::~FOpenDataHandle() {
 
-    handle_->close();
+    if(open_close_) {
+        handle_->close();
+    }
 
     if (delete_on_close_) {
         delete handle_;
@@ -446,7 +453,6 @@ long FOpenDataHandle::seek(long pos, int whence) {
 
     try {
         long where = pos;
-        std::cerr << "whence: " << whence << std::endl;
         switch (whence) {
 
             case SEEK_SET:
@@ -581,7 +587,15 @@ FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
     ASSERT(sizeof(long) >= sizeof(ssize_t));
 
     cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
-    return ::fopencookie(new FOpenDataHandle(this, mode, delete_on_close), mode, f);
+    return ::fopencookie(new FOpenDataHandle(this, mode, delete_on_close, true), mode, f);
+}
+
+FILE* DataHandle::openf(bool delete_on_close) {
+    ASSERT(sizeof(long) >= sizeof(size_t));
+    ASSERT(sizeof(long) >= sizeof(ssize_t));
+
+    cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
+    return ::fopencookie(new FOpenDataHandle(this, "", delete_on_close, false), "r+", f);
 }
 
 #else
@@ -604,7 +618,12 @@ static int _close(void* data) {
 
 FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
     ASSERT(sizeof(long) >= sizeof(fpos_t));
-    return ::funopen(new FOpenDataHandle(this, mode, delete_on_close), &_read, &_write, &_seek, &_close);
+    return ::funopen(new FOpenDataHandle(this, mode, delete_on_close, true), &_read, &_write, &_seek, &_close);
+}
+
+FILE* DataHandle::openf(bool delete_on_close) {
+    ASSERT(sizeof(long) >= sizeof(fpos_t));
+    return ::funopen(new FOpenDataHandle(this, "", delete_on_close, false), &_read, &_write, &_seek, &_close);
 }
 
 #endif

@@ -199,7 +199,7 @@ DataHandle* MemoryHandle::clone() const {
     }
     else {
         if (readOnly_) {
-            return new MemoryHandle((const void*)address_, size_);
+            return new MemoryHandle(static_cast<const void*>(address_), size_);
         }
         else {
             return new MemoryHandle(address_, size_);
@@ -211,13 +211,16 @@ const void* MemoryHandle::data() const {
     return address_;
 }
 
-size_t MemoryHandle::size() const {
+Length MemoryHandle::size() {
     return size_;
 }
 
-
 std::string MemoryHandle::str() const {
     return std::string(address_, address_ + position_);
+}
+
+Length MemoryHandle::size() const {
+    return size_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

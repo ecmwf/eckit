@@ -35,12 +35,14 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, Library*> LibraryMap;
-
 /// Registry for all libraries
 ///
 class LibraryRegistry {
+
+typedef std::map<std::string, Library*> LibraryMap;
+
 public:  // methods
+
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static LibraryRegistry& instance() {
@@ -48,20 +50,27 @@ public:  // methods
         return reg;
     }
 
-    void lock() const { mutex_.lock(); }
-    void unlock() const { mutex_.unlock(); }
-
     /// Registers an entry to the registry
     /// @pre Cannot exist yet
+    /// @param obj pointer must be valid
     void enregister(const std::string& name, Library* obj) {
-        AutoLock<LibraryRegistry> lockme(instance());
+        AutoLock<Mutex> lockme(mutex_);
+        ASSERT(obj);
         ASSERT(map_.find(name) == map_.end());
         map_[name] = obj;
     }
 
+    /// Removes an entry from the registry
+    /// @pre Must exist
+    void deregister(const std::string& name) {
+        AutoLock<Mutex> lockme(mutex_);
+        ASSERT(map_.find(name) != map_.end());
+        map_.erase(name);
+    }
+
     /// List entries in library
     std::vector<std::string> list() const {
-        AutoLock<LibraryRegistry> lockme(instance());
+        AutoLock<Mutex> lockme(mutex_);
         std::vector<std::string> result;
         for (LibraryMap::const_iterator j = map_.begin(); j != map_.end(); ++j) {
             result.push_back(j->first);
@@ -70,14 +79,15 @@ public:  // methods
     }
 
     /// Check entry exists in registry
-    bool exists(const std::string& name) {
-        AutoLock<LibraryRegistry> lockme(instance());
+    bool exists(const std::string& name) const {
+        AutoLock<Mutex> lockme(mutex_);
         LibraryMap::const_iterator j = map_.find(name);
         return (j != map_.end());
     }
 
     /// Prints the entries in registry
-    void print(std::ostream& out, const char* separator) {
+    void print(std::ostream& out, const char* separator) const {
+        AutoLock<Mutex> lockme(mutex_);
         std::vector<std::string> l = LibraryRegistry::instance().list();
         const char* sep               = "";
         for (auto j : l) {
@@ -87,8 +97,8 @@ public:  // methods
     }
 
     /// Lookup entry in the registry
-    const Library& lookup(const std::string& name) {
-        AutoLock<LibraryRegistry> lockme(instance());
+    Library& lookup(const std::string& name) const {
+        AutoLock<Mutex> lockme(mutex_);
 
         LibraryMap::const_iterator j = map_.find(name);
 

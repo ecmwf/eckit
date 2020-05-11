@@ -25,7 +25,6 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/types/FloatCompare.h"
 
-
 namespace eckit {
 namespace testing {
 
@@ -82,17 +81,17 @@ public:  // methods
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary) {
-                    eckit::Log::error() << Colour::red << "Test \"" << description() << "\" failed: " << e.what()
-                                        << " @ " << e.location() << Colour::reset << std::endl;
+                    eckit::Log::error() << eckit::Colour::red << "Test \"" << description() << "\" failed: " << e.what()
+                                        << " @ " << e.location() << eckit::Colour::reset << std::endl;
                 }
             }
             catch (eckit::Exception& e) {
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary) {
-                    eckit::Log::error() << Colour::red << "Test \"" << description()
+                    eckit::Log::error() << eckit::Colour::red << "Test \"" << description()
                                         << "\" failed with unhandled eckit::Exception: " << e.what() << " @ "
-                                        << e.location() << Colour::reset << std::endl;
+                                        << e.location() << eckit::Colour::reset << std::endl;
                     eckit::Log::error() << "    Stack trace: " << e.callStack() << std::endl;
                 }
             }
@@ -100,8 +99,8 @@ public:  // methods
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary) {
-                    eckit::Log::error() << Colour::red << "Test \"" << description()
-                                        << "\" failed with unhandled exception: " << e.what() << Colour::reset
+                    eckit::Log::error() << eckit::Colour::red << "Test \"" << description()
+                                        << "\" failed with unhandled exception: " << e.what() << eckit::Colour::reset
                                         << std::endl;
                 }
             }
@@ -109,8 +108,8 @@ public:  // methods
                 success = false;
                 failures.push_back(description());
                 if (v >= Summary) {
-                    eckit::Log::error() << Colour::red << "Test \"" << description()
-                                        << "\" failed with unknown unhandled exception." << Colour::reset << std::endl;
+                    eckit::Log::error() << eckit::Colour::red << "Test \"" << description()
+                                        << "\" failed with unknown unhandled exception." << eckit::Colour::reset << std::endl;
                 }
             }
         }
@@ -401,14 +400,14 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 #define EXPECT_EQUAL(a, b)                                                                                         \
     EXPECT_MSG(a == b, [=]() {                                                                                     \
-        std::cerr << Colour::red << "FAILED " << #a " == " << #b << " evaluated as [" << a << "] == [" << b << "]" \
-                  << Colour::reset << std::endl;                                                                   \
+        std::cerr << eckit::Colour::red << "FAILED " << #a " == " << #b << " evaluated as [" << a << "] == [" << b << "]" \
+                  << eckit::Colour::reset << std::endl;                                                                   \
     };)
 
 #define EXPECT_NOT_EQUAL(a, b)                                                                                     \
     EXPECT_MSG(a != b, [=]() {                                                                                     \
-        std::cerr << Colour::red << "FAILED " << #a " != " << #b << " evaluated as [" << a << "] != [" << b << "]" \
-                  << Colour::reset << std::endl;                                                                   \
+        std::cerr << eckit::Colour::red << "FAILED " << #a " != " << #b << " evaluated as [" << a << "] != [" << b << "]" \
+                  << eckit::Colour::reset << std::endl;                                                                   \
     };)
 
 

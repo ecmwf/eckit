@@ -23,8 +23,7 @@
 
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit_test { // Not eckit namespace on purpose to test downstream usage of macros
 
 typedef std::vector<Test> Tests;
 
@@ -55,7 +54,7 @@ EXPECT_NOT_EQUAL(1, 2);
 EXPECT_NO_THROW({ bool b = true; });
 EXPECT_THROWS(throw std::exception());
 EXPECT_THROWS_AS(throw std::exception(), std::exception);
-EXPECT_MSG(1 == 1, [=]() { std::cerr << Colour::red << "1 != 1" << Colour::reset << std::endl; };);
+EXPECT_MSG(1 == 1, [=]() { std::cerr << eckit::Colour::red << "1 != 1" << eckit::Colour::reset << std::endl; };);
 }  // namespace test
 }  // namespace eckit
 ,
@@ -357,11 +356,10 @@ EXPECT(!is_approximately_equal(d1, make_view(d2), 0.0001));             // vecto
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
 }  // namespace eckit
 
 
-using eckit::test::global_counters;
+using eckit_test::global_counters;
 
 
 int main(int argc, char* argv[]) {
@@ -375,7 +373,7 @@ int main(int argc, char* argv[]) {
     }
 
     eckit::Main::initialise(argc, argv);
-    int retval2 = eckit::testing::run_tests(eckit::test::tests, argc, argv);
+    int retval2 = eckit::testing::run_tests(eckit_test::tests, argc, argv);
 
     int retval3 = 0;
     if (global_counters[0] != 3 || global_counters[1] != 1 || global_counters[2] != 1 || global_counters[3] != 11 ||

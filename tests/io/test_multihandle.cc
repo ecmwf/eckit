@@ -185,6 +185,7 @@ CASE("Multihandle") {
         mh3 += new MemoryHandle(100);
         mh3 += new MemoryHandle(100);
         EXPECT_THROWS(mh3.seek(0)); // MultiHandle is not open in read mode
+        EXPECT_THROWS(mh3.openForWrite(10)); // MultiHandle cannot be opened in write mode
 
         MultiHandle mh;
         mh += new PartFileHandle(test.path1_, ol1, ll1);

@@ -323,7 +323,7 @@ Offset MultiHandle::seek(const Offset& offset) {
         }
         pos += e;
     }
-    if (seekto == Offset(0))
+    if (seekto == pos)
         return offset;
 
     // FTM we throw an error if we try to seek beyond the end of the last file

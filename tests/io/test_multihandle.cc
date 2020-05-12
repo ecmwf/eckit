@@ -152,9 +152,24 @@ CASE("Multihandle") {
         }
         EXPECT_THROWS(mh1.seek(1));
 
-        MultiHandle mh;
+        MultiHandle mh2;
         OffsetList ol1={0,2,6,13,23};
         LengthList ll1={1,2,4,6,8};
+        mh2 += new PartFileHandle(test.path1_, ol1, ll1);
+        mh2 += new MemoryHandle(0);
+        mh2 += new PartFileHandle(test.path3_, ol0, ll0);
+
+        mh2.openForRead();
+        EXPECT_NO_THROW(mh2.seek(21));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh2.read(buff, 10);
+            EXPECT(r == 0);
+        }
+        EXPECT_THROWS(mh2.seek(22));
+
+        MultiHandle mh;
         mh += new PartFileHandle(test.path1_, ol1, ll1);
         // 0         1         2         3
         // 0123456789012345678901234567890

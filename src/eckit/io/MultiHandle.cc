@@ -308,6 +308,7 @@ Offset MultiHandle::position() {
 
 Offset MultiHandle::seek(const Offset& offset) {
     ASSERT(read_);  /// seek only allowed on read mode
+
     if (current_ != datahandles_.end())
         (*current_)->close();
 
@@ -315,13 +316,16 @@ Offset MultiHandle::seek(const Offset& offset) {
     long long pos    = 0;
     for (current_ = datahandles_.begin(); current_ != datahandles_.end(); ++current_) {
         long long e = (*current_)->size();
-        if (seekto >= pos && seekto < pos + e) {
+        if (pos <= seekto && seekto < pos + e) {
             openCurrent();
             (*current_)->seek(seekto - pos);
             return offset;
         }
         pos += e;
     }
+    if (seekto == Offset(0))
+        return offset;
+
     // FTM we throw an error if we try to seek beyond the end of the last file
     std::ostringstream oss;
     oss << "Trying to seek beyond the last file inside MultiHandle " << *this;

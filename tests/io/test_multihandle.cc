@@ -124,6 +124,34 @@ CASE("Multihandle") {
 
     SECTION("Multihandle seek/skip/position in PartFileHandle") {
 
+        MultiHandle mh0;
+        mh0.openForRead();
+        EXPECT_NO_THROW(mh0.seek(0));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh0.read(buff, 10);
+            EXPECT(r == 0);
+        }
+        EXPECT_THROWS(mh0.seek(1));
+
+        MultiHandle mh1;
+        OffsetList ol0={};
+        LengthList ll0={};
+        mh1 += new PartFileHandle(test.path1_, ol0, ll0);
+        mh1 += new MemoryHandle(0);
+        mh1 += new PartFileHandle(test.path3_, ol0, ll0);
+
+        mh1.openForRead();
+        EXPECT_NO_THROW(mh1.seek(0));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh1.read(buff, 10);
+            EXPECT(r == 0);
+        }
+        EXPECT_THROWS(mh1.seek(1));
+
         MultiHandle mh;
         OffsetList ol1={0,2,6,13,23};
         LengthList ll1={1,2,4,6,8};

@@ -133,7 +133,13 @@ CASE("Multihandle") {
             long r = mh0.read(buff, 10);
             EXPECT(r == 0);
         }
-        EXPECT_THROWS(mh0.seek(1));
+        EXPECT_NO_THROW(mh0.seek(1));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh0.read(buff, 10);
+            EXPECT(r == 0);
+        }
 
         MultiHandle mh1;
         OffsetList ol0={};
@@ -150,7 +156,14 @@ CASE("Multihandle") {
             long r = mh1.read(buff, 10);
             EXPECT(r == 0);
         }
-        EXPECT_THROWS(mh1.seek(1));
+
+        EXPECT_NO_THROW(mh1.seek(1));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh1.read(buff, 10);
+            EXPECT(r == 0);
+        }
 
         MultiHandle mh2;
         OffsetList ol1={0,2,6,13,23};
@@ -167,7 +180,11 @@ CASE("Multihandle") {
             long r = mh2.read(buff, 10);
             EXPECT(r == 0);
         }
-        EXPECT_THROWS(mh2.seek(22));
+
+        MultiHandle mh3;
+        mh3 += new MemoryHandle(100);
+        mh3 += new MemoryHandle(100);
+        EXPECT_THROWS(mh3.seek(0)); // MultiHandle is not open in read mode
 
         MultiHandle mh;
         mh += new PartFileHandle(test.path1_, ol1, ll1);
@@ -253,7 +270,13 @@ CASE("Multihandle") {
         }
         EXPECT(mh.position() == Offset(112));
 
-        EXPECT_THROWS_AS(mh.seek(120), eckit::BadValue);
+        EXPECT_NO_THROW(mh.seek(120));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh.read(buff, 10);
+            EXPECT(r == 0);
+        }
     }
 
     SECTION("Multihandle seek in FileHandle") {
@@ -306,7 +329,13 @@ CASE("Multihandle") {
             EXPECT(std::string(buff) == "Z56789");
         }
 
-        EXPECT_THROWS_AS(mh.seek(100), eckit::BadValue);
+        EXPECT_NO_THROW(mh.seek(100));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh.read(buff, 10);
+            EXPECT(r == 0);
+        }
     }
 }
 

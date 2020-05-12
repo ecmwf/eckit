@@ -323,13 +323,8 @@ Offset MultiHandle::seek(const Offset& offset) {
         }
         pos += e;
     }
-    if (seekto == pos)
+    if (seekto >= pos)
         return offset;
-
-    // FTM we throw an error if we try to seek beyond the end of the last file
-    std::ostringstream oss;
-    oss << "Trying to seek beyond the last file inside MultiHandle " << *this;
-    throw BadValue(oss.str(), Here());
 }
 
 void MultiHandle::restartReadFrom(const Offset& offset) {

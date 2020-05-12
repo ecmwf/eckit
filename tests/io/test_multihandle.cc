@@ -119,7 +119,7 @@ CASE("Multihandle") {
 
         EXPECT_NO_THROW(mh1.saveInto(result));
 
-        EXPECT(::memcmp(expect, result.data(), sizeof(expect)) == 0);
+        EXPECT(::memcmp(expect, result.data(), strlen(expect)) == 0);
     }
 
     SECTION("Multihandle seek/skip/position in PartFileHandle") {

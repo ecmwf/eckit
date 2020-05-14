@@ -45,6 +45,7 @@ MultiHandle::MultiHandle(Stream& s) : DataHandle(s), read_(false) {
     }
     s >> length_;
     current_ = datahandles_.end();
+    position_ = 0;
 }
 
 void MultiHandle::encode(Stream& s) const {
@@ -93,6 +94,7 @@ Length MultiHandle::openForRead() {
     read_ = true;
 
     current_ = datahandles_.begin();
+    position_ = 0;
     openCurrent();
 
     // compress();
@@ -111,8 +113,8 @@ void MultiHandle::openForWrite(const Length& length) {
     Log::info() << "MultiHandle::openForWrite " << length_.size() << std::endl;
     current_ = datahandles_.begin();
     curlen_  = length_.begin();
+    position_ = 0;
     openCurrent();
-
 
     written_ = 0;
 
@@ -138,6 +140,7 @@ void MultiHandle::openCurrent() {
         else {
             (*current_)->openForWrite(*curlen_);
         }
+        position_ = 0;
     }
 }
 
@@ -303,7 +306,7 @@ Offset MultiHandle::position() {
     for (HandleList::iterator it = datahandles_.begin(); it != current_ && it!=datahandles_.end(); ++it) {
         position += (*it)->size();
     }
-    return position + (current_==datahandles_.end() ? Offset(0) : (*current_)->position());
+    return position + (current_==datahandles_.end() ? position_ : (*current_)->position());
 }
 
 Offset MultiHandle::seek(const Offset& offset) {
@@ -323,8 +326,8 @@ Offset MultiHandle::seek(const Offset& offset) {
         }
         pos += e;
     }
-    if (seekto >= pos)
-        return offset;
+    position_ = seekto - pos;
+    return offset;
 }
 
 void MultiHandle::restartReadFrom(const Offset& offset) {
@@ -349,7 +352,7 @@ void MultiHandle::restartReadFrom(const Offset& offset) {
         }
         pos += e;
     }
-    ASSERT(from == Offset(0) && estimate() == Length(0));
+    position_ = from - pos;
 }
 
 void MultiHandle::toRemote(Stream& s) const {

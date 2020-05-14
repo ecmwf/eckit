@@ -221,7 +221,8 @@ Offset PartFileHandle::seek(const Offset& from) {
         }
         pos += e;
     }
-    return pos;
+    pos_ = len - pos;
+    return pos_;
 }
 
 

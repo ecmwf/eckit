@@ -140,6 +140,9 @@ CASE("Multihandle") {
             long r = mh0.read(buff, 10);
             EXPECT(r == 0);
         }
+        EXPECT(mh0.position() == Offset(1));
+        EXPECT_NO_THROW(mh0.skip(4));
+        EXPECT(mh0.position() == Offset(5));
 
         MultiHandle mh1;
         OffsetList ol0={};
@@ -164,6 +167,9 @@ CASE("Multihandle") {
             long r = mh1.read(buff, 10);
             EXPECT(r == 0);
         }
+        EXPECT(mh1.position() == Offset(1));
+        EXPECT_NO_THROW(mh1.skip(4));
+        EXPECT(mh1.position() == Offset(5));
 
         MultiHandle mh2;
         OffsetList ol1={0,2,6,13,23};
@@ -278,6 +284,17 @@ CASE("Multihandle") {
             long r = mh.read(buff, 10);
             EXPECT(r == 0);
         }
+        EXPECT_NO_THROW(mh.skip(-20));
+        EXPECT(mh.position() == Offset(100));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = mh.read(buff, 30);
+            EXPECT(r == 12);
+            std::cout << std::string(buff) << std::endl;
+            EXPECT(std::string(buff) == "tuvwxyz01234");
+        }
+
     }
 
     SECTION("Multihandle seek in FileHandle") {

@@ -58,13 +58,13 @@ public:
     virtual void flush();
     virtual void rewind();
     virtual void print(std::ostream&) const;
-	void restartReadFrom(const Offset& from);
+    void restartReadFrom(const Offset& from);
 
     virtual Offset position();
     virtual Offset seek(const Offset&);
 
-	virtual bool merge(DataHandle*);
-	virtual bool compress(bool = false);
+    virtual bool merge(DataHandle*);
+    virtual bool compress(bool = false);
 
     virtual Length size();
     virtual Length estimate();
@@ -89,12 +89,13 @@ private:
 
 // -- Members
 
-	HandleList			    datahandles_;
-	HandleList::iterator 	current_;
-	LengthList::iterator    curlen_;
-	LengthList              length_;
-	Length                  written_;
-	bool                    read_;
+    HandleList              datahandles_;
+    HandleList::iterator    current_;
+    LengthList::iterator    curlen_;
+    LengthList              length_;
+    Length                  written_;
+    bool                    read_;
+    Offset                  position_;
 
 // -- Methods
 

@@ -36,6 +36,7 @@ public:
         INFO,
         METER,
         COUNTER,
+        KEEPALIVE,
         MAXREPORT,
     };
 

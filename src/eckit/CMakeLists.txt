@@ -664,6 +664,7 @@ list( APPEND eckit_utils_srcs
   utils/StringTools.h
   utils/Tokenizer.cc
   utils/Tokenizer.h
+  utils/Clock.h
   utils/Translator.cc
   utils/Translator.h
 )

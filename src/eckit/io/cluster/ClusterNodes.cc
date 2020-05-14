@@ -20,8 +20,7 @@
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/thread/AutoLock.h"
-
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/utils/Clock.h"
 
 namespace eckit {
 
@@ -38,7 +37,7 @@ class ClusterNodeEntry {
 
 public:
     ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port) :
-        active_(true), lastSeen_(::time(0)), offLine_(false), port_(port) {
+        active_(true), lastSeen_(Clock::now()), offLine_(false), port_(port) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
         zero(type_);
@@ -105,7 +104,7 @@ public:
 
     bool available() const {
         static long maxNodeLastSeen = Resource<long>("maxNodeLastSeen", 60);
-        return ((::time(0) - lastSeen_) <= maxNodeLastSeen) && !offLine_;
+        return ((Clock::now() - lastSeen_) <= maxNodeLastSeen) && !offLine_;
     }
 
     void active(bool on) { active_ = on; }
@@ -138,7 +137,7 @@ public:
 };
 std::ostream& operator<<(std::ostream& s, const ClusterNodeEntry& d) {
     s << "ClusterNodeEntry[" << d.node_ << "," << d.type_ << "," << d.host_ << ":" << d.port_ << ","
-      << (::time(0) - d.lastSeen_) << "," << (d.available() ? "available" : "not-available") << ","
+      << (Clock::now() - d.lastSeen_) << "," << (d.available() ? "available" : "not-available") << ","
       << (d.offLine_ ? "off" : "on") << "-line"
       << "]";
     return s;
@@ -192,7 +191,7 @@ void ClusterNodes::refresh(const NodeInfo& info) {
     pthread_once(&once, init);
     AutoLock<NodeArray> lock(*nodeArray);
 
-    time_t now = ::time(0);
+    time_t now = Clock::now();
 
     for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
         if ((*k).active()) {

@@ -8,16 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/runtime/Task.h"
+#ifndef eckit_utils_Clock_h
+#define eckit_utils_Clock_h
+
+#include "time.h"
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
+class Clock {
+public:
+    /// @returns UNIX Time since Epoch
+    static time_t now() { return ::time(nullptr); }
+};
 
-Task::Task() {}
+} // namespace eckit
 
-Task::~Task() {}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-}  // namespace eckit
+#endif

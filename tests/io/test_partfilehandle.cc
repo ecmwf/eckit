@@ -127,6 +127,8 @@ CASE("PartFileHandle") {
             EXPECT(std::string(buff) == "qrsxyz01234");
         }
         EXPECT(ph.position() == Offset(21));
+
+
         //move to end of first PartFileHandle
         EXPECT_NO_THROW(ph.skip(-2));
         EXPECT(ph.position() == Offset(19));
@@ -139,6 +141,33 @@ CASE("PartFileHandle") {
             long r = ph.read(buff, 10);
             EXPECT(r == 0);
         }
+
+        // complete read
+
+        EXPECT_NO_THROW(ph.rewind());
+        EXPECT(ph.position() == Offset(0));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = ph.read(buff, 40);
+            EXPECT(r == 21);
+            std::cout << std::string(buff) << std::endl;
+            EXPECT(std::string(buff) == "acdghijnopqrsxyz01234");
+        }
+
+        // partial read in the middle and overlapping parts
+
+        EXPECT_NO_THROW(ph.seek(5));
+        EXPECT(ph.position() == Offset(5));
+        {
+            char buff[64];
+            eckit::zero(buff);
+            long r = ph.read(buff, 12);
+            EXPECT(r == 12);
+            std::cout << std::string(buff) << std::endl;
+            EXPECT(std::string(buff) == "ijnopqrsxyz0");
+        }
+
     }
 }
 

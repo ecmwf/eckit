@@ -33,7 +33,6 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 const char buf1[] = "abcdefghijklmnopqrstuvwxyz01234";
-const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ56789";
 
 class Tester {
 public:
@@ -43,12 +42,6 @@ public:
         path1_           = PathName::unique(base + "/path1");
         path1_ += ".dat";
 
-        path2_ = PathName::unique(base + "/path2");
-        path2_ += ".dat";
-
-        path3_ = PathName::unique(base + "/path3");
-        path3_ += ".dat";
-
         {
             FileHandle f1(path1_);
             f1.openForWrite(0);
@@ -56,37 +49,14 @@ public:
             f1.close();
             std::cout << "created: " << path1_ << std::endl;
         }
-
-        {
-            FileHandle f2(path2_);
-            f2.openForWrite(0);
-            f2.write(buf2, sizeof(buf2)-1);
-            f2.write(buf2, sizeof(buf2)-1);
-            f2.close();
-            std::cout << "created: " << path2_ << std::endl;
-        }
-
-        {
-            FileHandle f3(path3_);
-            f3.openForWrite(0);
-            f3.write(buf1, sizeof(buf1)-1);
-            f3.write(buf1, sizeof(buf1)-1);
-            f3.write(buf1, sizeof(buf1)-1);
-            f3.close();
-            std::cout << "created: " << path3_ << std::endl;
-        }
     }
 
     ~Tester() {
         bool verbose = false;
         path1_.unlink(verbose);
-        path2_.unlink(verbose);
-        path3_.unlink(verbose);
     }
 
     PathName path1_;
-    PathName path2_;
-    PathName path3_;
 };
 
 CASE("PartFileHandle") {

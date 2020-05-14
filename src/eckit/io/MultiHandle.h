@@ -9,14 +9,15 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Emanuele Danovaro
+/// @author Simon Smart
+/// @author Tiago Quintino
 /// @date May 96
 
 #ifndef eckit_filesystem_MultiHandle_h
 #define eckit_filesystem_MultiHandle_h
 
 #include "eckit/io/DataHandle.h"
-
-
 
 namespace eckit {
 

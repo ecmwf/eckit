@@ -9,6 +9,8 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Emanuele Danovaro
+/// @author Simon Smart
 /// @author Tiago Quintino
 /// @date   May 1996
 

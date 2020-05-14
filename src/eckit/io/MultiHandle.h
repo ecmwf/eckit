@@ -94,8 +94,8 @@ private:
     LengthList::iterator    curlen_;
     LengthList              length_;
     Length                  written_;
+    Offset                  beyond_;
     bool                    read_;
-    Offset                  position_;
 
 // -- Methods
 

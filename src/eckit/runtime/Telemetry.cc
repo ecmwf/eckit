@@ -19,6 +19,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/utils/Clock.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/UDPClient.h"
@@ -76,16 +77,20 @@ public:
 
     void broadcast(const void* buf, size_t length);
 
-    void report(Report::Type type, const Report& p);
+    std::string report(Report::Type type, const Report& p);
+
+    unsigned long long countSent() { return countSent_; }
 
 private:
     std::vector<std::unique_ptr<net::UDPClient>> clients_;  //< list of clients to contact servers
 
-    std::string service_type;
-    std::string service_name;
-    std::string node_name;
+    std::string service_type_;
+    std::string service_name_;
+    std::string node_name_;
 
-    std::vector<std::string> service_groups;
+    std::vector<std::string> service_groups_;
+
+    unsigned long long countSent_ = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -95,31 +100,47 @@ Reporter& Reporter::instance() {
     return s.instance();
 }
 
+static YAMLConfiguration* loadConfig() {
+
+    char* config_str = ::getenv("TELEMETRY_CONFIG");
+    if (config_str) {
+        std::string s(config_str);
+        return new YAMLConfiguration(s);
+    }
+
+    PathName telemetryConfigFile =
+        Resource<PathName>("$TELEMETRY_CONFIG_FILE,telemetryConfigFile", "~/etc/config/telemetry.yaml");
+
+    if (telemetryConfigFile.exists())
+        return new YAMLConfiguration(telemetryConfigFile);
+
+    return nullptr;
+}
+
 Reporter::Reporter() {
 
-    PathName path = "~/etc/config/telemetry.yaml";
+    std::unique_ptr<YAMLConfiguration> config(loadConfig());
 
-    if (not path.exists())
+    if(not config)
         return;
 
-    YAMLConfiguration config(path);
+    LOG_DEBUG_LIB(LibEcKit) << "Telemetry config: " << *config << std::endl;
 
-    LOG_DEBUG_LIB(LibEcKit) << "Telemetry config: " << config << std::endl;
+    service_type_   = config->getString("service_type", "unknown");
+    service_name_   = config->getString("service_name", "unknown");
+    service_groups_ = config->getStringVector("service_groups", {});
 
-    service_type   = config.getString("service_type", "unknown");
-    service_name   = config.getString("service_name", "unknown");
-    service_groups = config.getStringVector("service_groups", {});
-    node_name      = Resource<std::string>("node", "unknown");  // same as in NodeInfo
+    node_name_      = Resource<std::string>("node", "unknown");  // same as in NodeInfo
 
-    for (auto& cfg : config.getSubConfigurations("servers")) {
+    for (auto& cfg : config->getSubConfigurations("servers")) {
         clients_.emplace_back(new net::UDPClient(cfg));
     }
 }
 
-void Reporter::report(Report::Type type, const Report& report) {
+std::string Reporter::report(Report::Type type, const Report& report) {
 
     if (not enabled())  //< early return if we don't have servers configured
-        return;
+        return std::string();
 
     std::ostringstream out;
     JSON j(out);
@@ -130,15 +151,15 @@ void Reporter::report(Report::Type type, const Report& report) {
 
     j << "version" << version();
     j << "type" << report_type_to_name(type);
-    j << "service_type" << service_type;
-    j << "service_name" << service_name;
-    j << "service_groups" << service_groups;
-    j << "node" << node_name;
+    j << "service_type" << service_type_;
+    j << "service_name" << service_name_;
+    j << "service_groups" << service_groups_;
+    j << "node" << node_name_;
     j << "application" << Main::instance().name();
     j << "hostname" << Main::hostname();
     j << "pid" << int(::getpid());
     j << "thread" << thread;
-    j << "time" << ::time(nullptr);
+    j << "time" << Clock::now();
 
     j << "report";
     {
@@ -154,12 +175,15 @@ void Reporter::report(Report::Type type, const Report& report) {
     LOG_DEBUG_LIB(LibEcKit) << "Telemetry message: " << msg << std::endl;
 
     broadcast(msg.data(), msg.size());
+
+    return msg;
 }
 
 void Reporter::broadcast(const void* buf, size_t length) {
     for (auto& c : clients_) {
         c->send(buf, length);
     }
+    countSent_++;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -181,19 +205,24 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Telemetry::report(Report::Type t) {
+std::string Telemetry::report(Report::Type t) {
     NullReport r;
-    report(t, r);
+    return report(t, r);
 }
 
-void Telemetry::report(Report::Type t, const Report& r) {
-    Reporter::instance().report(t, r);
+std::string Telemetry::report(Report::Type t, const Report& r) {
+    return Reporter::instance().report(t, r);
 }
 
-void Telemetry::report(Report::Type t, std::function<void(JSON&)> callable) {
+std::string Telemetry::report(Report::Type t, std::function<void(JSON&)> callable) {
     WraperReport r(callable);
-    Reporter::instance().report(t, r);
+    return Reporter::instance().report(t, r);
 }
+
+unsigned long long Telemetry::countSent() {
+    return Reporter::instance().countSent();
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

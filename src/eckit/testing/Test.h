@@ -9,6 +9,7 @@
  */
 
 /// @author Simon Smart
+/// @author Tiago Quintino
 /// @date   July 2017
 
 #ifndef eckit_testing_Test_h
@@ -46,6 +47,33 @@ enum InitEckitMain
 {
     NoInitEckitMain = 0,
     DoInitEckitMain = 1
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class SetEnv {
+public:
+    SetEnv(const std::string& key, const std::string& value) : key_(key) {
+
+        char* old = ::getenv(key.c_str());
+        if (old)
+            oldValue_ = std::string(old);
+
+        ::setenv(key.c_str(), value.c_str(), true);
+    }
+
+    ~SetEnv() {
+        if (oldValue_.empty()) {
+            ::unsetenv(key_.c_str());
+        }
+        else {
+            ::setenv(key_.c_str(), oldValue_.c_str(), true);
+        }
+    }
+
+private:
+    std::string key_;
+    std::string oldValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -293,25 +321,25 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     // force colour output unless explicitly deactivated
     // this is useful for test harness ctest that redirects output and is not attached to a tty
-    if (not::getenv("ECKIT_COLOUR_OUTPUT")) {
+    if (not ::getenv("ECKIT_COLOUR_OUTPUT")) {
         ::setenv("ECKIT_COLOUR_OUTPUT", "1", true);
     }
 
     // Suppress noisy exceptions in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+    if (not ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
         ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
     }
 
     // Suppress noisy ASSERT in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+    if (not ::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
         ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
     }
 
     // Suppress noisy SeriousBug exception in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
+    if (not ::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
         ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
     }
 

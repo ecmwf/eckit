@@ -9,6 +9,7 @@
  */
 
 /// @author Baudouin Raoult
+/// @author Tiago Quintino
 /// @date   Sep 2001
 
 #ifndef eckit_TmpFile_h
@@ -29,7 +30,6 @@ public:
     ~TmpFile();
 
 private:
-
     bool verbose_;
 };
 

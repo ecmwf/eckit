@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include <fstream>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/LocalConfiguration.h"
@@ -38,19 +40,25 @@ JSON& operator<<(eckit::JSON& s, const Report& p) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const char* report_type_name[] = {
-    [Report::APPSTART] = "appstart",
-    [Report::APPSTOP]  = "appstop",
-    [Report::INFO]     = "info",
-    [Report::METER]    = "meter",
-    [Report::COUNTER]  = "counter",
-};
+std::string report_type_to_name(Report::Type t) {
 
-const char* report_type_to_name(Report::Type t) {
-    if (t < Report::MAXREPORT)
-        return report_type_name[t];
-    /* otherwise */
-    NOTIMP;
+    ASSERT(t < Report::MAXREPORT); // ensure client code sticks to enum Report
+
+    static const std::map<int, std::string> type_to_name = {
+        {Report::APPSTART, "appstart"}, {Report::APPSTOP, "appstop"}, {Report::INFO, "info"},
+        {Report::METER, "meter"},       {Report::COUNTER, "counter"}, {Report::KEEPALIVE, "keepalive"},
+    };
+
+    size_t count = type_to_name.size();
+
+    ASSERT(count == Report::MAXREPORT); // ensure we didnt forget to populate the map
+
+    auto r = type_to_name.find(t);
+    if (r != type_to_name.end()) {
+        return r->second;
+    }
+
+    NOTIMP; // we shoudn't ever reach this
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,7 +74,7 @@ public:
 
     bool enabled() { return not clients_.empty(); }
 
-    void broadcast(const void *buf, size_t length);
+    void broadcast(const void* buf, size_t length);
 
     void report(Report::Type type, const Report& p);
 
@@ -76,6 +84,8 @@ private:
     std::string service_type;
     std::string service_name;
     std::string node_name;
+
+    std::vector<std::string> service_groups;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -96,9 +106,10 @@ Reporter::Reporter() {
 
     LOG_DEBUG_LIB(LibEcKit) << "Telemetry config: " << config << std::endl;
 
-    service_type = config.getString("service_type", "unknown");
-    service_name = config.getString("service_name", "unknown");
-    node_name    = Resource<std::string>("node", "unknown");  // same as in NodeInfo
+    service_type   = config.getString("service_type", "unknown");
+    service_name   = config.getString("service_name", "unknown");
+    service_groups = config.getStringVector("service_groups", {});
+    node_name      = Resource<std::string>("node", "unknown");  // same as in NodeInfo
 
     for (auto& cfg : config.getSubConfigurations("servers")) {
         clients_.emplace_back(new net::UDPClient(cfg));
@@ -121,6 +132,7 @@ void Reporter::report(Report::Type type, const Report& report) {
     j << "type" << report_type_to_name(type);
     j << "service_type" << service_type;
     j << "service_name" << service_name;
+    j << "service_groups" << service_groups;
     j << "node" << node_name;
     j << "application" << Main::instance().name();
     j << "hostname" << Main::hostname();

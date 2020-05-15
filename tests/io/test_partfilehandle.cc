@@ -38,6 +38,8 @@ class Tester {
 public:
     Tester() {
 
+        format(std::cout, Log::fullFormat);
+
         std::string base = Resource<std::string>("$TMPDIR", "/tmp");
         path1_           = PathName::unique(base + "/path1");
         path1_ += ".dat";
@@ -45,7 +47,7 @@ public:
         {
             FileHandle f1(path1_);
             f1.openForWrite(0);
-            f1.write(buf1, sizeof(buf1)-1);
+            f1.write(buf1, sizeof(buf1) - 1);
             f1.close();
             std::cout << "created: " << path1_ << std::endl;
         }
@@ -56,119 +58,134 @@ public:
         path1_.unlink(verbose);
     }
 
+    static Buffer makeBuffer() {
+        Buffer buffer(64);
+        buffer.zero();
+        return buffer;
+    }
+
     PathName path1_;
 };
 
-CASE("PartFileHandle") {
+//----------------------------------------------------------------------------------------------------------------------
 
-    format(std::cout, Log::fullFormat);
+CASE("PartFileHandle with no parts (empty)") {
 
     Tester test;
 
-    SECTION("PartFileHandle seek/skip/position") {
-        OffsetList ol0={};
-        LengthList ll0={};
-        PartFileHandle ph(test.path1_, ol0, ll0);
+    OffsetList ol0 = {};
+    LengthList ll0 = {};
+    PartFileHandle ph(test.path1_, ol0, ll0);
 
-        ph.openForRead();
+    ph.openForRead();
+
+    SECTION("Read @ start") {
         EXPECT_NO_THROW(ph.seek(0));
         {
-            char buff[64];
-            eckit::zero(buff);
-            long r = ph.read(buff, 10);
+            Buffer buff = Tester::makeBuffer();
+            long r      = ph.read(buff, 10);
             EXPECT(r == 0);
         }
         EXPECT(ph.position() == Offset(0));
-
-        EXPECT_NO_THROW(ph.seek(1));
-        {
-            char buff[64];
-            eckit::zero(buff);
-            long r = ph.read(buff, 10);
-            EXPECT(r == 0);
-        }
-        EXPECT(ph.position() == Offset(1));
-
-
-        EXPECT_NO_THROW(ph.skip(4));
-        EXPECT(ph.position() == Offset(5));
-
+        EXPECT_NO_THROW(ph.skip(0));
     }
-    SECTION("PartFileHandle seek/skip/position") {
-        OffsetList ol1={0,2,6,13,23};
-        LengthList ll1={1,2,4,6,8};
-        PartFileHandle ph(test.path1_, ol1, ll1);
-        // 0         1         2         3
-        // 0123456789012345678901234567890
-        // abcdefghijklmnopqrstuvwxyz01234
-        // = ==  ====   ======    ========
-        // a cd  ghij   nopqrs    xyz01234
 
-        ph.openForRead();
-        EXPECT_NO_THROW(ph.seek(21));
+    SECTION("Seek beyond EOF throws, but we can still read without error") {
+        EXPECT_THROWS_AS(ph.seek(1), AssertionFailed);
+        EXPECT_NO_THROW(ph.seek(0));
         {
-            char buff[64];
-            eckit::zero(buff);
-            long r = ph.read(buff, 10);
+            Buffer buff = Tester::makeBuffer();
+            long r      = ph.read(buff, 10);
             EXPECT(r == 0);
         }
+        EXPECT(ph.position() == Offset(0));
+        EXPECT_NO_THROW(ph.skip(0));
+    }
 
+    ph.close();
+}
+
+CASE("PartFileHandle with multiple parts") {
+
+    Tester test;
+
+    OffsetList ol1 = {0, 2, 6, 13, 23};
+    LengthList ll1 = {1, 2, 4, 6, 8};
+
+    PartFileHandle ph(test.path1_, ol1, ll1);
+
+    // 0         1         2         3
+    // 0123456789012345678901234567890
+    // abcdefghijklmnopqrstuvwxyz01234
+    // = ==  ====   ======    ========
+    // a cd  ghij   nopqrs    xyz01234
+    // size = 21
+
+    ph.openForRead();
+
+    SECTION("Seek to EOF") {
 
         EXPECT(ph.size() == Length(21));
+
+        EXPECT_NO_THROW(ph.seek(21));
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r      = ph.read(buff, 10);
+            EXPECT(r == 0);
+        }
 
         EXPECT_NO_THROW(ph.seek(10));
         EXPECT(ph.position() == Offset(10));
         {
-            char buff[64];
-            eckit::zero(buff);
-            long r = ph.read(buff, 13);
+            Buffer buff = Tester::makeBuffer();
+            long r      = ph.read(buff, 13);
             EXPECT(r == 11);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "qrsxyz01234");
         }
         EXPECT(ph.position() == Offset(21));
 
-
-        //move to end of first PartFileHandle
         EXPECT_NO_THROW(ph.skip(-2));
         EXPECT(ph.position() == Offset(19));
 
-        EXPECT_NO_THROW(ph.skip(9));
-        EXPECT(ph.position() == Offset(28));
+        // skipping past the EOF asserts, and leaves position @ EOF
         {
-            char buff[64];
-            eckit::zero(buff);
-            long r = ph.read(buff, 10);
+            EXPECT_THROWS_AS(ph.skip(9), AssertionFailed);
+            Offset position = ph.position();
+            EXPECT_EQUAL(position, Offset(21));
+            Buffer buff = Tester::makeBuffer();
+            long r      = ph.read(buff, 10);
             EXPECT(r == 0);
         }
 
         // complete read
-
-        EXPECT_NO_THROW(ph.rewind());
-        EXPECT(ph.position() == Offset(0));
         {
-            char buff[64];
-            eckit::zero(buff);
-            long r = ph.read(buff, 40);
+            EXPECT_NO_THROW(ph.rewind());
+            EXPECT(ph.position() == Offset(0));
+            Buffer buff = Tester::makeBuffer();
+            long r      = ph.read(buff, 40);
             EXPECT(r == 21);
-            std::cout << std::string(buff) << std::endl;
-            EXPECT(std::string(buff) == "acdghijnopqrsxyz01234");
+            std::string read(buff);
+            std::cout << read << std::endl;
+            EXPECT_EQUAL(read, "acdghijnopqrsxyz01234");
         }
 
         // partial read in the middle and overlapping parts
 
-        EXPECT_NO_THROW(ph.seek(5));
-        EXPECT(ph.position() == Offset(5));
         {
-            char buff[64];
-            eckit::zero(buff);
+            EXPECT_NO_THROW(ph.seek(5));
+            EXPECT(ph.position() == Offset(5));
+            Buffer buff = Tester::makeBuffer();
             long r = ph.read(buff, 12);
             EXPECT(r == 12);
-            std::cout << std::string(buff) << std::endl;
-            EXPECT(std::string(buff) == "ijnopqrsxyz0");
+            std::string read(buff);
+            std::cout << read << std::endl;
+            EXPECT_EQUAL(read, "ijnopqrsxyz0");
         }
 
     }
+
+    ph.close();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

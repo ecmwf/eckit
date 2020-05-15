@@ -66,7 +66,7 @@ public:
 
     bool enabled() { return not clients_.empty(); }
 
-    void broadcast(void* buf, long length);
+    void broadcast(const void *buf, size_t length);
 
     void report(Report::Type type, const Report& p);
 
@@ -114,6 +114,9 @@ void Reporter::report(Report::Type type, const Report& report) {
     JSON j(out);
     j.startObject();
 
+
+    unsigned long thread = reinterpret_cast<unsigned long>(::pthread_self());
+
     j << "version" << version();
     j << "type" << report_type_to_name(type);
     j << "service_type" << service_type;
@@ -122,7 +125,7 @@ void Reporter::report(Report::Type type, const Report& report) {
     j << "application" << Main::instance().name();
     j << "hostname" << Main::hostname();
     j << "pid" << int(::getpid());
-    j << "thread" << (unsigned long)::pthread_self();
+    j << "thread" << thread;
     j << "time" << ::time(nullptr);
 
     j << "report";
@@ -138,10 +141,10 @@ void Reporter::report(Report::Type type, const Report& report) {
 
     LOG_DEBUG_LIB(LibEcKit) << "Telemetry message: " << msg << std::endl;
 
-    broadcast((void*)msg.data(), msg.size());
+    broadcast(msg.data(), msg.size());
 }
 
-void Reporter::broadcast(void* buf, long length) {
+void Reporter::broadcast(const void* buf, size_t length) {
     for (auto& c : clients_) {
         c->send(buf, length);
     }

@@ -210,8 +210,11 @@ Offset PartFileHandle::seek(const Offset& offset) {
         }
         accumulated += len;
     }
-    pos_ = seekto - accumulated; // position goes beyond EOF which is POSIX compliant
-    return pos_;
+    long long beyond = seekto - accumulated;
+    // check if seek went beyond EOF which is POSIX compliant, but we ASSERT so we find possible bugs
+    ASSERT(not beyond);
+    pos_ = 0;
+    return seekto;
 }
 
 

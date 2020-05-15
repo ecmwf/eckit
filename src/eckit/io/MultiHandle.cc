@@ -43,7 +43,6 @@ MultiHandle::MultiHandle(Stream& s) : DataHandle(s), read_(false) {
     }
     s >> length_;
     current_  = datahandles_.end();
-    beyond_ = 0;
 }
 
 void MultiHandle::encode(Stream& s) const {
@@ -93,7 +92,6 @@ Length MultiHandle::openForRead() {
     read_ = true;
 
     current_  = datahandles_.begin();
-    beyond_ = 0;
     openCurrent();
 
     // compress();
@@ -112,7 +110,6 @@ void MultiHandle::openForWrite(const Length& length) {
     Log::info() << "MultiHandle::openForWrite " << length_.size() << std::endl;
     current_  = datahandles_.begin();
     curlen_   = length_.begin();
-    beyond_ = 0;
     openCurrent();
 
     written_ = 0;
@@ -139,7 +136,6 @@ void MultiHandle::openCurrent() {
         else {
             (*current_)->openForWrite(*curlen_);
         }
-        beyond_ = 0;
     }
 }
 
@@ -305,7 +301,7 @@ Offset MultiHandle::position() {
     for (HandleList::iterator it = datahandles_.begin(); it != current_ && it != datahandles_.end(); ++it) {
         accumulated += (*it)->size();
     }
-    return accumulated + (current_ == datahandles_.end() ? beyond_ : (*current_)->position());
+    return accumulated + (current_ == datahandles_.end() ? Offset(0) : (*current_)->position());
 }
 
 Offset MultiHandle::seek(const Offset& offset) {
@@ -325,13 +321,14 @@ Offset MultiHandle::seek(const Offset& offset) {
         }
         accumulated += size;
     }
-    beyond_ = seekto - accumulated;  // position goes beyond EOF which is POSIX compliant
+    // check if we went beyond EOF which is POSIX compliant, but we ASSERT so we find possible bugs
+    Offset beyond = seekto - accumulated;
+    ASSERT(not beyond);
     return offset;
 }
 
 void MultiHandle::restartReadFrom(const Offset& offset) {
     Log::warning() << *this << " restart read from " << offset << std::endl;
-
     ASSERT(read_);
     if (current_ != datahandles_.end())
         (*current_)->close();
@@ -350,7 +347,9 @@ void MultiHandle::restartReadFrom(const Offset& offset) {
         }
         accumulated += e;
     }
-    beyond_ = from - accumulated; // position goes beyond EOF which is POSIX compliant
+    // check if we went beyond EOF which is POSIX compliant, but we ASSERT so we find possible bugs
+    Offset beyond = from - accumulated;
+    ASSERT(not beyond);
 }
 
 void MultiHandle::toRemote(Stream& s) const {

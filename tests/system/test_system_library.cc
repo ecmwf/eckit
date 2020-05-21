@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "eckit/config/LibEcKit.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/system/Library.h"
@@ -84,6 +85,16 @@ CASE("test_eckit_system_library") {
 
 CASE("test_libeckit") {
     EXPECT_NO_THROW(LibEcKit::instance().configuration());  // tests an empty configuration
+}
+
+CASE("test dynamic load") {
+#ifdef ECKIT_HAVE_ECKIT_CMD
+    using eckit::system::Library;
+
+    EXPECT(!Library::exists("eckit_cmd"));
+    Library::load("eckit_cmd");
+    EXPECT(Library::exists("eckit_cmd"));
+#endif
 }
 
 

@@ -16,6 +16,8 @@
 #include <cctype>
 #include <map>
 
+#include <dlfcn.h>
+
 #include "eckit/system/Library.h"
 
 #include "eckit/config/Resource.h"
@@ -130,6 +132,23 @@ void Library::list(std::ostream& out) {
 
 bool Library::exists(const std::string& name) {
     return LibraryRegistry::instance().exists(name);
+}
+
+void Library::load(const std::string& name) {
+
+    if (!exists(name)) {
+        // If we wish to operate on other systems, we can come up with a more sophisticated
+        // filename construction mechanism...
+        PathName path = std::string("~eckit/lib/lib") + name + ".so";
+
+        void* p;
+        if ((p = ::dlopen(path.localPath(), RTLD_NOW | RTLD_GLOBAL)) == nullptr) {
+            std::ostringstream ss;
+            ss << "dlopen(" << path << ", ...)";
+            throw FailedSystemCall(ss.str().c_str(), Here(), errno);
+        }
+    }
+    ASSERT(exists(name));
 }
 
 const Library& Library::lookup(const std::string& name) {

@@ -47,4 +47,8 @@
 #cmakedefine ECKIT_HAVE_CURL
 #cmakedefine ECKIT_HAVE_JEMALLOC
 
+// Have we built certain libraries
+
+#cmakedefine ECKIT_HAVE_ECKIT_CMD
+
 #endif // eckit_config_h

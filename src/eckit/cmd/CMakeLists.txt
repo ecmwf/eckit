@@ -1,5 +1,4 @@
 list( APPEND eckit_cmd_srcs
-cmdlib.h
 AliasCmd.cc
 AliasCmd.h
 Arg.cc
@@ -28,6 +27,8 @@ HistoryCmd.cc
 HistoryCmd.h
 KillCmd.cc
 KillCmd.h
+LibEcKitCmd.cc
+LibEcKitCmd.h
 LockCmd.cc
 LockCmd.h
 ManCmd.cc

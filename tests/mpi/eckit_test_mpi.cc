@@ -556,6 +556,78 @@ CASE("test_broadcastFile") {
     EXPECT(comm.broadcastFile(path, root).str() == str);
 }
 
+CASE("test_waitall") {
+
+    auto & comm = mpi::comm("world");  
+    int nproc = comm.size ();
+    int irank = comm.rank ();
+
+    std::vector<mpi::Request> rqr;
+    std::vector<mpi::Request> rqs;
+
+    std::vector<int> data (nproc, -1);
+
+    for (int i = 0; i < nproc; i++)
+      rqr.push_back (comm.iReceive (&data[i], 1, i, 100));
+
+    comm.barrier ();
+
+    for (int i = 0; i < nproc; i++)
+      rqs.push_back (comm.iSend (&irank, 1, i, 100));
+
+    std::vector<mpi::Status> str = comm.waitall (rqr);
+
+    for (int i = 0; i < nproc; i++)
+      EXPECT (i == data[i]);
+
+    for (auto & st : str)
+      EXPECT (st.error () == 0);
+        
+    std::vector<mpi::Status> sts = comm.waitall (rqs);
+
+    for (auto & st : sts)
+      EXPECT (st.error () == 0);
+        
+}
+
+CASE("test_waitany") {
+
+    auto & comm = mpi::comm("world");  
+    int nproc = comm.size ();
+    int irank = comm.rank ();
+
+    std::vector<mpi::Request> rqr;
+    std::vector<mpi::Request> rqs;
+
+    std::vector<int> data (nproc, -1);
+
+    for (int i = 0; i < nproc; i++)
+      rqr.push_back (comm.iReceive (&data[i], 1, i, 100));
+
+    comm.barrier ();
+
+    for (int i = 0; i < nproc; i++)
+      rqs.push_back (comm.iSend (&irank, 1, i, 100));
+
+    int count = rqr.size ();
+    while (count > 0)
+     {
+       int ireq = -1;
+       mpi::Status st = comm.waitany (rqr, ireq); 
+       EXPECT (st.error () == 0);
+       count--;
+     }
+
+    for (int i = 0; i < nproc; i++)
+      EXPECT (i == data[i]);
+        
+    std::vector<mpi::Status> sts = comm.waitall (rqs);
+
+    for (auto & st : sts) 
+      EXPECT (st.error () == 0);
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

@@ -192,6 +192,15 @@ Status Serial::wait(Request& req) const {
     }
 }
 
+std::vector<Status> Serial::waitall (std::vector<Request> & rq) const {
+    throw NotImplemented ("Serial::waitall", Here ());
+}
+
+Status Serial::waitany(std::vector<Request> &, int &) const
+{
+    throw NotImplemented ("Serial::waitany", Here ());
+}
+
 Status Serial::probe(int source, int) const {
     ASSERT(source == 0);
     return status();

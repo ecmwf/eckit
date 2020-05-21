@@ -321,6 +321,49 @@ Status Parallel::wait(Request& req) const {
     return st;
 }
 
+std::vector<Status> Parallel::waitall (std::vector<Request> & req) const
+{
+    int count = req.size ();
+    std::vector<Status> st (count);
+    std::vector<MPI_Status> st_ (count);
+    std::vector<MPI_Request> req_ (count);
+
+    for (int i = 0; i < count; i++)
+      {
+        st[i] = createStatus ();
+        st_[i] = *(toStatus (st[i]));
+        req_[i] = *(toRequest (req[i]));
+      }
+
+    MPI_CALL(MPI_Waitall(count, &req_[0], &st_[0]));
+
+    for (int i = 0; i < count; i++)
+      {
+        *(toStatus (st[i])) = st_[i];
+        *(toRequest (req[i])) = req_[i];
+      }
+    
+    return st;
+}
+
+Status Parallel::waitany (std::vector<Request> & req, int & ireq) const
+{
+    int count = req.size ();
+    Status st = createStatus();
+    std::vector<MPI_Request> req_ (count);
+
+    for (int i = 0; i < count; i++)
+      req_[i] = *(toRequest (req[i]));
+     
+
+    MPI_CALL(MPI_Waitany(count, &req_[0], &ireq, toStatus (st)));
+
+    for (int i = 0; i < count; i++)
+      *(toRequest (req[i])) = req_[i];
+    
+    return st;
+}
+
 Status Parallel::probe(int source, int tag) const {
     Status st = createStatus();
 

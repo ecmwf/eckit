@@ -8,7 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Baudouin Raoul
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
 /// @date   Jul 96
 
 #ifndef eckit_log_TimeStamp_h

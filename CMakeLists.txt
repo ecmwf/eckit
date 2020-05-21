@@ -15,6 +15,10 @@ ecbuild_declare_project()
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+### architecture checks
+
+include(cmake/check_time_t_Y2038.cmake) # check Y2038 time_t compatibility
+
 ### dependencies and options
 
 ecbuild_add_option( FEATURE BUILD_TOOLS
@@ -27,7 +31,7 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 
 ecbuild_add_option( FEATURE SANDBOX
                     DEFAULT OFF
-                    DESCRIPTION "Experimental features that havent graduated to production ready code" )
+                    DESCRIPTION "Sandbox playground for prototyping code that may never see the light of day" )
 
 ### thread library ( preferably pthreads ) --- Must be called before FindCUDA!
 

@@ -14,8 +14,8 @@
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Log.h"
 
-#include "eckit/io/PartFileHandle.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/PartFileHandle.h"
 
 #include "eckit/io/PooledHandle.h"
 
@@ -52,24 +52,14 @@ PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
 }
 
 PartFileHandle::PartFileHandle(const PathName& name, const OffsetList& offset, const LengthList& length) :
-    path_(name),
-    handle_(),
-    pos_(0),
-    index_(0),
-    offset_(offset),
-    length_(length) {
+    path_(name), handle_(), pos_(0), index_(0), offset_(offset), length_(length) {
     //    Log::info() << "PartFileHandle::PartFileHandle " << name << std::endl;
     ASSERT(offset_.size() == length_.size());
     compress(false);
 }
 
 PartFileHandle::PartFileHandle(const PathName& name, const Offset& offset, const Length& length) :
-    path_(name),
-    handle_(),
-    pos_(0),
-    index_(0),
-    offset_(1, offset),
-    length_(1, length) {}
+    path_(name), handle_(), pos_(0), index_(0), offset_(1, offset), length_(1, length) {}
 
 
 DataHandle* PartFileHandle::clone() const {
@@ -83,8 +73,7 @@ bool PartFileHandle::compress(bool sorted) {
     return eckit::compress(offset_, length_);
 }
 
-PartFileHandle::~PartFileHandle() {
-}
+PartFileHandle::~PartFileHandle() {}
 
 Length PartFileHandle::openForRead() {
     if (!handle_) {
@@ -199,20 +188,32 @@ void PartFileHandle::restartReadFrom(const Offset& from) {
     ASSERT(from == Offset(0) && estimate() == Length(0));
 }
 
-Offset PartFileHandle::seek(const Offset& from) {
+Offset PartFileHandle::position() {
+    long long position = 0;
+    for (Ordinal i = 0; i < index_; i++) {
+        position += length_[i];
+    }
+    return position + Length(pos_);
+}
+
+Offset PartFileHandle::seek(const Offset& offset) {
     rewind();
-    long long len = from;
-    long long pos = 0;
+    const long long seekto = offset;
+    long long accumulated  = 0;
 
     for (index_ = 0; index_ < length_.size(); index_++) {
-        long long e = length_[index_];
-        if (len >= pos && len < pos + e) {
-            pos_ = len - pos;
-            return from;
+        long long len = length_[index_];
+        if (accumulated <= seekto && seekto < accumulated + len) {
+            pos_ = seekto - accumulated;
+            return offset;
         }
-        pos += e;
+        accumulated += len;
     }
-    return pos;
+    long long beyond = seekto - accumulated;
+    // check if seek went beyond EOF which is POSIX compliant, but we ASSERT so we find possible bugs
+    ASSERT(not beyond);
+    pos_ = 0;
+    return seekto;
 }
 
 

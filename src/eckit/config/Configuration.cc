@@ -59,6 +59,7 @@ Configuration& Configuration::operator=(const Configuration& other) {
 
 Configuration::~Configuration() {}
 
+bool Configuration::empty() const {return root_->isNil() || root_->keys().size() == 0;}
 
 char Configuration::separator() const {
     return separator_;
@@ -78,7 +79,7 @@ eckit::Value Configuration::lookUp(const std::string& s, bool& found) const {
             return result;
         }
         // For some strange reasons clang decide to use
-        // the non-const version, that will clone the internat map
+        // the non-const version, that will clone the internal map
         const Value& const_result = result;
         result                    = const_result[key];
     }

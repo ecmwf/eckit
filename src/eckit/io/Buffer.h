@@ -26,8 +26,10 @@ namespace eckit {
 
 class Buffer : private NonCopyable {
 public:  // methods
-    Buffer(size_t size);
-    Buffer(const std::string& s);
+
+    explicit Buffer(size_t size);
+    explicit Buffer(const std::string& s);
+
     Buffer(const char*, size_t size);
 
     Buffer(Buffer&& rhs);

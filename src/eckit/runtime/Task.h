@@ -8,44 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
-// File Task.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @date   May 96
 
 #ifndef eckit_Task_h
 #define eckit_Task_h
 
 #include "eckit/memory/NonCopyable.h"
 
-//-----------------------------------------------------------------------------
-
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Task : private NonCopyable {
 public:
+    Task();
 
-// -- Contructors
+    virtual ~Task();
 
-	Task();
-
-// -- Destructor
-
-	virtual ~Task();
-
-// -- Methods
-
-	virtual void start()  = 0;
-	virtual void stop()   = 0;
-	virtual void wait()   = 0;
-	virtual bool active() = 0;
-	virtual void kill()   = 0;
-
+    virtual void start()  = 0;
+    virtual void stop()   = 0;
+    virtual void wait()   = 0;
+    virtual bool active() = 0;
+    virtual void kill()   = 0;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

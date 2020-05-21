@@ -13,7 +13,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/TmpFile.h"
 
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

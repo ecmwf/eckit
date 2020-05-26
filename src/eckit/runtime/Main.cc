@@ -109,7 +109,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
     // If we are runtime configured to (dynamically) load any libraries, do it here.
 
-    std::vector<std::string> libraries = Resource<std::vector<std::string>>("libraries", {});
+    std::vector<std::string> libraries = Resource<std::vector<std::string>>("dynamicLibraries", {});
     for (const std::string& library : libraries) {
         system::Library::load(library);
     }

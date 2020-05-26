@@ -28,6 +28,7 @@
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
+#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Translator.h"
@@ -136,19 +137,44 @@ bool Library::exists(const std::string& name) {
 
 void Library::load(const std::string& name) {
 
-    if (!exists(name)) {
-        // If we wish to operate on other systems, we can come up with a more sophisticated
-        // filename construction mechanism...
-        PathName path = std::string("~eckit/lib/lib") + name + ".so";
+    static std::vector<std::string> libPaths(Resource<std::vector<std::string>>("dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib", "~eckit/lib"}));
 
-        void* p;
-        if ((p = ::dlopen(path.localPath(), RTLD_NOW | RTLD_GLOBAL)) == nullptr) {
-            std::ostringstream ss;
-            ss << "dlopen(" << path << ", ...)";
-            throw FailedSystemCall(ss.str().c_str(), Here(), errno);
+    if (!exists(name)) {
+
+        // Get the (system specific) library name for the given library instance
+
+        std::string libraryName = SystemInfo::instance().dynamicLibraryName(name);
+
+        // Try the various paths in the way
+
+        for (const eckit::PathName& dir : libPaths) {
+
+            eckit::PathName p = dir / libraryName;
+            if (p.exists()) {
+                void* plib;
+                if ((plib = ::dlopen(p.localPath(), RTLD_NOW | RTLD_GLOBAL)) == nullptr) {
+                    std::ostringstream ss;
+                    ss << "dlopen(" << p << ", ...)";
+                    throw FailedSystemCall(ss.str().c_str(), Here(), errno);
+                }
+
+                // If the library still doesn't exist after a successful call of dlopen, then
+                // we have managed to load something other than a (self-registering) eckit library
+                if (!exists(name)) {
+                    std::ostringstream ss;
+                    ss << "Shared library " << p << " loaded but Library " << name << " not registered";
+                    throw UnexpectedState(ss.str(), Here());
+                }
+
+                return;
+            }
         }
+
+        // Not found!!!
+        std::ostringstream ss;
+        ss << "Library " << name << " not found";
+        throw SeriousBug(ss.str(), Here());
     }
-    ASSERT(exists(name));
 }
 
 const Library& Library::lookup(const std::string& name) {

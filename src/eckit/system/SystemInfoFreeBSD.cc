@@ -61,6 +61,10 @@ MemoryInfo SystemInfoFreeBSD::memoryUsage() const {
     return mem;
 }
 
+std::string SystemInfoFreeBSD::dynamicLibraryName(const std::string& name) const {
+    return std::string("lib") + name + ".so";
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

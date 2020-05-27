@@ -164,6 +164,17 @@ Status Serial::wait(Request& req) const {
 
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
 
+    auto& serialRequest = req.as<SerialRequest>();
+
+    // Return early if request was already handled.
+    if (serialRequest.handled()) {
+        return new SerialStatus{};
+    }
+
+    // Continue if request was not yet handled.
+    serialRequest.handled(true);
+
+    // Only do memcpy when waiting for a ReceiveRequest, and return status.
     if (req.as<SerialRequest>().isReceive()) {
 
         ReceiveRequest& recvReq = req.as<ReceiveRequest>();
@@ -183,44 +194,29 @@ Status Serial::wait(Request& req) const {
 
         return Status(st);
     }
-    else {
 
-        SerialStatus* st = new SerialStatus();
-
-        (*st).error_ = 0;
-
-        return Status(st);
-    }
+    // For SendRequests, do nothing and return a default SerialStatus
+    return new SerialStatus{};
 }
 
 std::vector<Status> Serial::waitall(std::vector<Request>& requests) const {
     std::vector<Status> statuses;
     statuses.reserve(requests.size());
-    for (size_t i = 0; i < requests.size(); ++i) {
-        SerialRequest& request = requests[i].as<SerialRequest>();
-        if (!request.handled_) {
-            request.handled_ = true;
-            statuses.emplace_back(wait(requests[i]));
-        }
-        else {
-            statuses.emplace_back(new SerialStatus{});
-        }
+    for (auto& req : requests) {
+        statuses.push_back(wait(req));
     }
     return statuses;
 }
 
 Status Serial::waitany(std::vector<Request>& requests, int& index) const {
     for (size_t i = 0; i < requests.size(); ++i) {
-        SerialRequest& request = requests[i].as<SerialRequest>();
-        if (!request.handled_) {
-            Status status    = wait(requests[i]);
-            request.handled_ = true;
-            index            = i;
+        if (!requests[i].as<SerialRequest>().handled()) {
+            Status status = wait(requests[i]);
+            index         = i;
             return status;
         }
     }
 
-    // Error
     index = undefined();
     return new SerialStatus{};
 }

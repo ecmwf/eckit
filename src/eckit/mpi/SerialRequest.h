@@ -41,6 +41,9 @@ public:  // methods
 private:  // methods
     virtual void print(std::ostream&) const;
 
+    bool handled() const { return handled_; }
+    void handled(bool v) { handled_ = v; }
+
 private:  // members
     friend class SerialRequestPool;
     friend class Serial;

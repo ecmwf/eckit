@@ -192,13 +192,29 @@ Status Serial::wait(Request& req) const {
     }
 }
 
-std::vector<Status> Serial::waitall (std::vector<Request> & rq) const {
-    throw NotImplemented ("Serial::waitall", Here ());
+std::vector<Status> Serial::waitall(std::vector<Request>& requests) const {
+    std::vector<Status> statuses;
+    statuses.reserve(requests.size());
+    for (auto& request : requests) {
+        statuses.push_back(wait(request));
+    }
+    return statuses;
 }
 
-Status Serial::waitany(std::vector<Request> &, int &) const
-{
-    throw NotImplemented ("Serial::waitany", Here ());
+Status Serial::waitany(std::vector<Request>& requests, int& index) const {
+    for (size_t i = 0; i < requests.size(); ++i) {
+        SerialRequest& request = requests[i].as<SerialRequest>();
+        if (!request.handled_) {
+            Status status    = wait(requests[i]);
+            request.handled_ = true;
+            index            = i;
+            return status;
+        }
+    }
+
+    // Error
+    index = -1;  // undefined
+    return Status(new NullStatus{});
 }
 
 Status Serial::probe(int source, int) const {

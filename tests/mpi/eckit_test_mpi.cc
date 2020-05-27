@@ -28,9 +28,6 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int argc;
-char** argv;
-
 CASE("test_rank_size") {
     EXPECT_NO_THROW(mpi::comm().size());
     EXPECT_NO_THROW(mpi::comm().rank());
@@ -184,7 +181,7 @@ CASE("test_gatherv_unequal_stride") {
     size_t size = mpi::comm().size();
     size_t rank = mpi::comm().rank();
 
-    auto stride = [](size_t rank) { return 10*(rank); };
+    auto stride = [](size_t rank) { return 10 * (rank); };
 
     std::vector<long> send(stride(rank));
 
@@ -195,7 +192,7 @@ CASE("test_gatherv_unequal_stride") {
     std::vector<int> displs;
     std::vector<int> recvcounts;
 
-    if( rank == root ) {
+    if (rank == root) {
         // displs and recvcounts only significant at root
         displs.resize(size);
         recvcounts.resize(size);
@@ -210,9 +207,9 @@ CASE("test_gatherv_unequal_stride") {
 
     EXPECT_NO_THROW(mpi::comm().gatherv(send, recv, recvcounts, displs, root));
 
-    if ( rank == root ) {
+    if (rank == root) {
 
-        EXPECT( recv.size() == recvsize );
+        EXPECT(recv.size() == recvsize);
 
         size_t e = 0;
         std::vector<long> expected(recvsize);
@@ -558,74 +555,80 @@ CASE("test_broadcastFile") {
 
 CASE("test_waitall") {
 
-    auto & comm = mpi::comm("world");  
-    int nproc = comm.size ();
-    int irank = comm.rank ();
+    auto& comm = mpi::comm("world");
+    int nproc  = comm.size();
+    int irank  = comm.rank();
 
     std::vector<mpi::Request> rqr;
     std::vector<mpi::Request> rqs;
 
-    std::vector<int> data (nproc, -1);
+    std::vector<int> data(nproc, -1);
 
-    for (int i = 0; i < nproc; i++)
-      rqr.push_back (comm.iReceive (&data[i], 1, i, 100));
+    for (int i = 0; i < nproc; i++) {
+        rqr.push_back(comm.iReceive(&data[i], 1, i, 100));
+    }
 
-    comm.barrier ();
+    comm.barrier();
 
-    for (int i = 0; i < nproc; i++)
-      rqs.push_back (comm.iSend (&irank, 1, i, 100));
+    for (int i = 0; i < nproc; i++) {
+        rqs.push_back(comm.iSend(&irank, 1, i, 100));
+    }
 
-    std::vector<mpi::Status> str = comm.waitall (rqr);
+    std::vector<mpi::Status> str = comm.waitall(rqr);
 
-    for (int i = 0; i < nproc; i++)
-      EXPECT (i == data[i]);
+    for (int i = 0; i < nproc; i++) {
+        EXPECT(i == data[i]);
+    }
 
-    for (auto & st : str)
-      EXPECT (st.error () == 0);
-        
-    std::vector<mpi::Status> sts = comm.waitall (rqs);
+    for (auto& st : str) {
+        EXPECT(st.error() == 0);
+    }
 
-    for (auto & st : sts)
-      EXPECT (st.error () == 0);
-        
+    std::vector<mpi::Status> sts = comm.waitall(rqs);
+
+    for (auto& st : sts) {
+        EXPECT(st.error() == 0);
+    }
 }
 
 CASE("test_waitany") {
 
-    auto & comm = mpi::comm("world");  
-    int nproc = comm.size ();
-    int irank = comm.rank ();
+    auto& comm = mpi::comm("world");
+    int nproc  = comm.size();
+    int irank  = comm.rank();
 
     std::vector<mpi::Request> rqr;
     std::vector<mpi::Request> rqs;
 
-    std::vector<int> data (nproc, -1);
+    std::vector<int> data(nproc, -1);
 
-    for (int i = 0; i < nproc; i++)
-      rqr.push_back (comm.iReceive (&data[i], 1, i, 100));
+    for (int i = 0; i < nproc; i++) {
+        rqr.push_back(comm.iReceive(&data[i], 1, i, 100));
+    }
 
-    comm.barrier ();
+    comm.barrier();
 
-    for (int i = 0; i < nproc; i++)
-      rqs.push_back (comm.iSend (&irank, 1, i, 100));
+    for (int i = 0; i < nproc; i++) {
+        rqs.push_back(comm.iSend(&irank, 1, i, 100));
+    }
 
-    int count = rqr.size ();
-    while (count > 0)
-     {
-       int ireq = -1;
-       mpi::Status st = comm.waitany (rqr, ireq); 
-       EXPECT (st.error () == 0);
-       count--;
-     }
+    int count = rqr.size();
+    while (count > 0) {
+        int ireq       = -1;
+        mpi::Status st = comm.waitany(rqr, ireq);
+        EXPECT(st.error() == 0);
+        count--;
+    }
 
-    for (int i = 0; i < nproc; i++)
-      EXPECT (i == data[i]);
-        
-    std::vector<mpi::Status> sts = comm.waitall (rqs);
+    for (int i = 0; i < nproc; i++) {
+        EXPECT(i == data[i]);
+    }
 
-    for (auto & st : sts) 
-      EXPECT (st.error () == 0);
+    std::vector<mpi::Status> sts = comm.waitall(rqs);
 
+    for (auto& st : sts) {
+        EXPECT(st.error() == 0);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -634,9 +637,7 @@ CASE("test_waitany") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    eckit::test::argc = argc;
-    eckit::test::argv = argv;
-    int failures      = run_tests(argc, argv);
+    int failures = run_tests(argc, argv);
     eckit::mpi::finaliseAllComms();
     return failures;
 }

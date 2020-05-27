@@ -543,7 +543,7 @@ CASE("test_broadcastFile") {
     size_t root     = 0;
 
     std::string str = "Hello World!\n";
-    LocalPathName path("test_mpi_broadcastFile.txt");
+    LocalPathName path(eckit::Main::instance().name() + "_broadcastFile.txt");
     if (comm.rank() == root) {
         std::ofstream file(path.c_str(), std::ios_base::out);
         file << str;

@@ -1,9 +1,16 @@
 ecbuild_add_test(
-    TARGET      eckit_test_mpi
+    TARGET      eckit_test_mpi_parallel
     SOURCES     eckit_test_mpi.cc
     CONDITION   HAVE_MPI
     LIBS eckit_mpi
     MPI 4
+)
+
+ecbuild_add_test(
+    TARGET      eckit_test_mpi_serial
+    SOURCES     eckit_test_mpi.cc
+    LIBS eckit_mpi
+    ENVIRONMENT ECKIT_MPI_FORCE=serial
 )
 
  ecbuild_add_test(

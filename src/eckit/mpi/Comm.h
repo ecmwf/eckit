@@ -104,8 +104,13 @@ public:  // methods
     /// @brief Wait for Request to be completed, ignoring the return status
     virtual Status wait(Request&) const = 0;
 
-    virtual Status waitany(std::vector<Request>&, int&) const = 0;
+    /// @brief Wait for one request out of a vector of requests to finish
+    ///
+    /// @param[in]  requests The requests that one will be wiated for.
+    /// @param[out] index    The request index in requests that has been waited for.
+    virtual Status waitany(std::vector<Request>& requests, int& index) const = 0;
 
+    /// @brief Wait for one request out of a vector of requests to finish
     virtual std::vector<Status> waitall(std::vector<Request>&) const = 0;
 
     /// @brief Probe for incoming messages (blocking)

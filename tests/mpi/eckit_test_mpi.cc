@@ -456,6 +456,9 @@ CASE("test_nonblocking_send_receive") {
     // Wait for receiving to finish
     if (comm.rank() == comm.size() - 1) {
         mpi::Status recvstatus = comm.wait(recvreq);
+        EXPECT(recvstatus.error() == 0);
+        EXPECT(recvstatus.tag() == tag);
+        EXPECT(recvstatus.source() == 0);
         EXPECT(is_approximately_equal(recv, 0.5, 1.e-9));
     }
     else {
@@ -465,6 +468,7 @@ CASE("test_nonblocking_send_receive") {
     // Wait for sending to finish
     if (comm.rank() == 0) {
         mpi::Status sendstatus = comm.wait(sendreq);
+        EXPECT(sendstatus.error() == 0);
     }
 }
 
@@ -497,6 +501,9 @@ CASE("test_blocking_send_nonblocking_receive") {
     // Wait for receiving to finish
     for (size_t i = 0; i < recvreqs.size(); ++i) {
         mpi::Status recvstatus = comm.wait(recvreqs[i]);
+        EXPECT(recvstatus.error() == 0);
+        EXPECT(recvstatus.tag() == tag);
+        EXPECT(recvstatus.source() == int(comm.size()) - 1);
         EXPECT(is_approximately_equal(recv[i], recv_check[i], 1.e-9));
     }
 }
@@ -575,6 +582,23 @@ CASE("test_waitall") {
     }
 
     std::vector<mpi::Status> str = comm.waitall(rqr);
+    for (int i = 0; i < nproc; i++) {
+        auto status = str[i];
+        EXPECT(status.error() == 0);
+        EXPECT(status.tag() == 100);
+        EXPECT(status.source() == i);
+    }
+
+    // Test case where requests have been handled already
+    {
+        auto statuses = comm.waitall(rqr);
+        for (int i = 0; i < nproc; i++) {
+            auto status = statuses[i];
+            EXPECT(status.error() == 0);
+            EXPECT(status.tag() == comm.anyTag());
+            EXPECT(status.source() == comm.anySource());
+        }
+    }
 
     for (int i = 0; i < nproc; i++) {
         EXPECT(i == data[i]);
@@ -617,7 +641,19 @@ CASE("test_waitany") {
         int ireq       = -1;
         mpi::Status st = comm.waitany(rqr, ireq);
         EXPECT(st.error() == 0);
+        EXPECT(st.tag() == 100);
+        EXPECT(st.source() == ireq);
         count--;
+    }
+
+    // Test case where requests have been handled already
+    {
+        int ireq;
+        mpi::Status st = comm.waitany(rqr, ireq);
+        EXPECT(st.error() == 0);
+        EXPECT(st.source() == comm.anySource());
+        EXPECT(st.tag() == comm.anyTag());
+        EXPECT(ireq == comm.undefined());
     }
 
     for (int i = 0; i < nproc; i++) {

@@ -82,7 +82,7 @@ public:
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
-    static int anyTag() { return std::numeric_limits<int>::max(); }
+    static constexpr int anyTag() { return Serial::Constants::anyTag(); }
 
 private:
     Request registerRequest(SerialRequest* request) {
@@ -141,7 +141,7 @@ Request Serial::iBarrier() const {
     return Request();
 }
 
-Comm& Serial::split(int color, const std::string& name) const {
+Comm& Serial::split(int /*color*/, const std::string& name) const {
     if (hasComm(name.c_str())) {
         throw SeriousBug("Communicator with name " + name + " already exists");
     }
@@ -178,6 +178,7 @@ Status Serial::wait(Request& req) const {
 
         (*st).count_  = sendReq.count();
         (*st).source_ = 0;
+        (*st).tag_    = sendReq.tag();
         (*st).error_  = 0;
 
         return Status(st);
@@ -195,8 +196,15 @@ Status Serial::wait(Request& req) const {
 std::vector<Status> Serial::waitall(std::vector<Request>& requests) const {
     std::vector<Status> statuses;
     statuses.reserve(requests.size());
-    for (auto& request : requests) {
-        statuses.push_back(wait(request));
+    for (size_t i = 0; i < requests.size(); ++i) {
+        SerialRequest& request = requests[i].as<SerialRequest>();
+        if (!request.handled_) {
+            request.handled_ = true;
+            statuses.emplace_back(wait(requests[i]));
+        }
+        else {
+            statuses.emplace_back(new SerialStatus{});
+        }
     }
     return statuses;
 }
@@ -213,8 +221,8 @@ Status Serial::waitany(std::vector<Request>& requests, int& index) const {
     }
 
     // Error
-    index = -1;  // undefined
-    return Status(new NullStatus{});
+    index = undefined();
+    return new SerialStatus{};
 }
 
 Status Serial::probe(int source, int) const {
@@ -223,11 +231,15 @@ Status Serial::probe(int source, int) const {
 }
 
 int Serial::anySource() const {
-    return 0;
+    return Serial::Constants::anySource();
 }
 
 int Serial::anyTag() const {
-    return SerialRequestPool::anyTag();
+    return Serial::Constants::anyTag();
+}
+
+int Serial::undefined() const {
+    return Serial::Constants::undefined();
 }
 
 size_t Serial::getCount(Status& st, Data::Code) const {

@@ -34,7 +34,7 @@ private:  // methods
 
     virtual void print(std::ostream&) const;
 
-private:  // members
+protected:  // members
     int source_;
     int tag_;
     int error_;

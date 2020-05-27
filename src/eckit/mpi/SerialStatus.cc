@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+#include "eckit/mpi/Serial.h"
 #include "eckit/mpi/SerialStatus.h"
 
 namespace eckit {
@@ -17,7 +18,9 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SerialStatus::SerialStatus() : source_(0), tag_(0), error_(0) {}
+SerialStatus::SerialStatus() : source_(Serial::Constants::anySource()), tag_(Serial::Constants::anyTag()), error_(0) {}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void SerialStatus::print(std::ostream& os) const {
     os << "SerialStatus("

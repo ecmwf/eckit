@@ -104,12 +104,14 @@ public:  // methods
     /// @brief Wait for Request to be completed, ignoring the return status
     virtual Status wait(Request&) const = 0;
 
-    virtual Status waitany(std::vector<Request> &, int &) const = 0;
+    virtual Status waitany(std::vector<Request>&, int&) const = 0;
 
-    virtual std::vector<Status> waitall (std::vector<Request> &) const = 0;
+    virtual std::vector<Status> waitall(std::vector<Request>&) const = 0;
 
     /// @brief Probe for incoming messages (blocking)
     virtual Status probe(int source, int tag) const = 0;
+
+    virtual int undefined() const = 0;
 
     virtual int anySource() const = 0;
 

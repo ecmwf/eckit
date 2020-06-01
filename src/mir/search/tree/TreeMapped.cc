@@ -63,10 +63,7 @@ std::vector<Tree::PointValueType> TreeMapped::findInSphere(const Tree::Point& pt
 
 
 TreeMapped::TreeMapped(const repres::Representation& r, const eckit::PathName& path) :
-    Tree(r),
-    umask_(0),
-    path_(path),
-    tree_(path, path.exists() ? 0 : itemCount(), 0) {}
+    Tree(r), umask_(0), path_(path), tree_(path, path.exists() ? 0 : itemCount(), 0) {}
 
 
 }  // namespace tree

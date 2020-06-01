@@ -79,9 +79,7 @@ protected:
 
 public:
     TreeMappedFile(const repres::Representation& r, const param::MIRParametrisation&) :
-        TreeMapped(r, treePath(r, true)),
-        real_(treePath(r, false)),
-        lock_(lockFile(real_)) {
+        TreeMapped(r, treePath(r, true)), real_(treePath(r, false)), lock_(lockFile(real_)) {
 
         lockFile(real_).touch();
 

@@ -29,9 +29,7 @@ namespace statistics {
 
 
 Integral::Integral(const param::MIRParametrisation& parametrisation) :
-    Statistics(parametrisation),
-    Counter(parametrisation),
-    integral_(std::numeric_limits<double>::quiet_NaN()) {
+    Statistics(parametrisation), Counter(parametrisation), integral_(std::numeric_limits<double>::quiet_NaN()) {
     reset();
 }
 

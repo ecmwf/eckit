@@ -37,8 +37,7 @@ public:
     // -- Constructors
 
     StatisticsT(const param::MIRParametrisation& parametrisation) :
-        Statistics(parametrisation),
-        Counter(parametrisation) {}
+        Statistics(parametrisation), Counter(parametrisation) {}
 
     // -- Destructor
     // None

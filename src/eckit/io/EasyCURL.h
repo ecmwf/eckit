@@ -21,12 +21,12 @@
 #include "eckit/io/MemoryHandle.h"
 
 
-#ifdef ECKIT_HAVE_CURL
-#include <curl/curl.h>
-#else
-typedef int CURL;
-typedef int CURLM;
-#endif
+// #ifdef ECKIT_HAVE_CURL
+// #include <curl/curl.h>
+// #else
+// typedef int CURL;
+// typedef int CURLM;
+// #endif
 
 
 namespace eckit {
@@ -45,6 +45,7 @@ class URLException : public Exception {
 //----------------------------------------------------------------------------------------------------------------------
 
 class EasyCURLResponseImp;
+class CURLHandle;
 
 class EasyCURLResponse {
     mutable EasyCURLResponseImp* imp_;
@@ -62,6 +63,7 @@ public:
 
     unsigned long long contentLength() const;
     size_t read(void* ptr, size_t size) const;
+    eckit::DataHandle* dataHandle() const;
 
 };
 
@@ -124,9 +126,7 @@ private:
 
 // -- Members
 
-    CURL *curl_;
-    curl_slist* chunks_;
-    bool stream_;
+    CURLHandle *ch_;
 
     // CURLM *multi_;
 
@@ -134,12 +134,10 @@ private:
 
 // -- Methods
 
-    void clearStream();
 
 // -- Class members
 
-    static size_t _writeCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
-    static size_t _headersCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
+
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURL& c) {
         c.print(s);

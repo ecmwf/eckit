@@ -20,6 +20,7 @@
 
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/parser/JSONParser.h"
 
 
 #ifdef ECKIT_HAVE_CURL
@@ -73,9 +74,11 @@ void EasyCURL::print(std::ostream& s) const {
 EasyCURL::EasyCURL(const std::string& uri) :
 
     curl_(0),
+    chunks_(0),
     multi_(0),
     body_(false),
-    activeTransfers_(0) {
+    activeTransfers_(0),
+    buffer_(4096, true) {
     pthread_once(&once, init);
     curl_ = curl_easy_init();
     ASSERT(curl_);
@@ -96,6 +99,7 @@ EasyCURL::EasyCURL(const std::string& uri) :
 }
 
 EasyCURL::~EasyCURL() {
+    curl_slist_free_all(chunks_);
     curl_multi_remove_handle(multi_, curl_);
     curl_easy_cleanup(curl_);
     curl_multi_cleanup(multi_);
@@ -136,26 +140,65 @@ void EasyCURL::customRequest(const std::string& value) {
 
 // ============================
 
-int EasyCURL::responseCode() const {
+int EasyCURL::responseCode() {
     int code;
+    ensureHeaders();
     _(curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &code));
     return code;
 }
 
-unsigned long long EasyCURL::contentLength() {
 
+void EasyCURL::ensureHeaders() {
     // This will read the headers
     while (!body_) {
         waitForData();
 
         // Does not seems to work automaticalyy
-        if (responseCode() == 301) {
-            body_ = false;
-        }
+        // if (responseCode() == 301) {
+        //     body_ = false;
+        //     headers_.clear();
+        //     buffer_.close();
+        // }
     }
+}
 
-    double length;
-    _(curl_easy_getinfo(curl_, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &length));
+void EasyCURL::ensureBody() {
+    ensureHeaders();
+    buffer_.openForWrite(0);
+    while (activeTransfers()) {
+        waitForData();
+    }
+    buffer_.close();
+}
+
+const EasyCURL::Headers& EasyCURL::headers() {
+    ensureHeaders();
+    return headers_;
+}
+
+const void* EasyCURL::body(size_t& size) {
+    ensureBody();
+    size = buffer_.size();
+    return buffer_.data();
+}
+
+std::string EasyCURL::body() {
+    size_t size;
+    const char *p = reinterpret_cast<const char*>(body(size));
+    return std::string(p, p + size);
+}
+
+Value EasyCURL::json() {
+    return JSONParser::decodeString(body());
+}
+
+
+unsigned long long EasyCURL::contentLength() {
+
+    ensureHeaders();
+
+    curl_off_t length;
+    _(curl_easy_getinfo(curl_, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &length));
     if (length < 0) {
 
         if (responseCode() != 200) {
@@ -165,7 +208,7 @@ unsigned long long EasyCURL::contentLength() {
         }
 
         std::ostringstream oss;
-        oss << "EasyCURL(" << uri_ << ") contentLength returned by server";
+        oss << "EasyCURL(" << uri_ << ") contentLength returned by server " << length;
         throw eckit::SeriousBug(oss.str());
     }
     return length;
@@ -175,16 +218,16 @@ unsigned long long EasyCURL::contentLength() {
 
 void EasyCURL::headers(const Headers& headers) {
 
-    struct curl_slist* chunk = 0;
+    curl_slist_free_all(chunks_);
+
     for (Headers::const_iterator j = headers.begin(); j != headers.end(); ++j) {
         std::ostringstream oss;
         oss << (*j).first << ": " << (*j).second;
-        chunk = curl_slist_append(chunk, oss.str().c_str());
+        chunks_ = curl_slist_append(chunks_, oss.str().c_str());
     }
 
-    if (chunk) {
-        _(curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, chunk));
-        curl_slist_free_all(chunk);
+    if (chunks_) {
+        _(curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, chunks_));
     }
 }
 
@@ -199,6 +242,7 @@ size_t EasyCURL::headersCallback(const void* ptr, size_t size) {
         // We come back here after a redirect, so we must clear the previous headers
         headers_.clear();
         body_ = false;
+        buffer_.close();
     }
 
     ASSERT(size >= 2);
@@ -207,8 +251,11 @@ size_t EasyCURL::headersCallback(const void* ptr, size_t size) {
 
     std::string line(p, p + size - 2);
 
+    std::cout << "HEADER [" << line << "]" << std::endl;
+
     if (line.empty()) {
         body_ = true;
+        buffer_.openForWrite(0);
     }
     else {
         std::vector<std::string> v;
@@ -268,6 +315,11 @@ size_t EasyCURL::activeTransfers() const {
     return activeTransfers_;
 }
 
+
+size_t EasyCURL::writeCallback(const void* ptr, size_t size) {
+    return buffer_.write(ptr, size);
+}
+
 #else
 
 EasyCURL::EasyCURL(const std::string&) {
@@ -283,6 +335,11 @@ void EasyCURL::waitForData() {}
 size_t EasyCURL::headersCallback(const void* ptr, size_t size) {
     return 0;
 }
+
+size_t EasyCURL::writeCallback(void* ptr, size_t size) {
+    return 0;
+}
+
 int EasyCURL::responseCode() const {
     return 500;
 }

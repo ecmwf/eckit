@@ -18,6 +18,7 @@
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/MemoryHandle.h"
 
 
 #ifdef ECKIT_HAVE_CURL
@@ -30,6 +31,7 @@ typedef int CURLM;
 
 namespace eckit {
 
+class Value;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -68,8 +70,12 @@ public:
 
     void headers(const Headers& headers);
 
-    int responseCode() const;
+    int responseCode();
     unsigned long long contentLength();
+    const Headers& headers();
+    const void* body(size_t& size);
+    std::string body();
+    Value json();
 
     void waitForData();
     size_t activeTransfers() const;
@@ -97,9 +103,16 @@ private:
     Headers headers_;
     int activeTransfers_;
 
+    curl_slist* chunks_;
+
+    MemoryHandle buffer_;
+
 // -- Methods
 
-    virtual size_t writeCallback(void *ptr, size_t size) = 0;
+    void ensureHeaders();
+    void ensureBody();
+
+    virtual size_t writeCallback(const void *ptr, size_t size);
 
     virtual size_t headersCallback(const void *ptr, size_t size);
 

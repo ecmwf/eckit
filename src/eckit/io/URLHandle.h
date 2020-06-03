@@ -76,7 +76,7 @@ private:
 
     void init();
 
-    virtual size_t writeCallback(void *ptr, size_t size);
+    virtual size_t writeCallback(const void *ptr, size_t size);
 
 // -- Class members
 

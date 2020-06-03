@@ -96,7 +96,7 @@ void URLHandle::close() {
 }
 
 
-size_t URLHandle::writeCallback(void* ptr, size_t size) {
+size_t URLHandle::writeCallback(const void* ptr, size_t size) {
     return buffer_.write(ptr, size);
 }
 

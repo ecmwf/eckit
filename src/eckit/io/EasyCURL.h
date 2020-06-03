@@ -33,12 +33,8 @@ namespace eckit {
 
 class Value;
 
-//----------------------------------------------------------------------------------------------------------------------
-
-class EasyCURL {
-public:
-
-    class URLException : public Exception {
+typedef std::map<std::string, std::string> EasyCURLHeaders;
+class URLException : public Exception {
         int code_;
     public:
         URLException(const std::string& what, int code):
@@ -46,44 +42,77 @@ public:
         int code() const { return code_; }
     };
 
-    typedef std::map<std::string, std::string> Headers;
+//----------------------------------------------------------------------------------------------------------------------
+
+class EasyCURLResponseImp;
+
+class EasyCURLResponse {
+    mutable EasyCURLResponseImp* imp_;
+
+public:
+    EasyCURLResponse(EasyCURLResponseImp*);
+    ~EasyCURLResponse();
+
+    EasyCURLResponse(const EasyCURLResponse&);
+    EasyCURLResponse& operator=(const EasyCURLResponse&);
+
+    Value json() const;
+    std::string body() const;
+    const EasyCURLHeaders& headers() const;
+
+    unsigned long long contentLength() const;
+    size_t read(void* ptr, size_t size) const;
+
+};
+
+class EasyCURL {
+public:
+
 
 // -- Exceptions
 
 // -- Contructors
 
-    EasyCURL(const std::string& url = std::string());
+    EasyCURL();
 
 // -- Destructor
 
-    virtual ~EasyCURL();
+    ~EasyCURL();
+
+// -- Methods
+
+    EasyCURLResponse GET(const std::string& url, bool stream=false);
+    EasyCURLResponse HEAD(const std::string& url);
+    EasyCURLResponse PUT(const std::string& url, const std::string& data);
+    EasyCURLResponse POST(const std::string& url, const std::string& data);
+    EasyCURLResponse DELETE(const std::string& url);
 
     void verbose(bool on);
     void followLocation(bool on);
     void sslVerifyPeer(bool on);
     void sslVerifyHost(bool on);
-
-
-    void url(const std::string&);
-    void userAgent(const std::string&);
     void customRequest(const std::string&);
+    void headers(const EasyCURLHeaders& headers);
+    void userAgent(const std::string&);
 
-    void headers(const Headers& headers);
+public:
 
-    int responseCode();
-    unsigned long long contentLength();
-    const Headers& headers();
-    const void* body(size_t& size);
-    std::string body();
-    Value json();
+    // void url(const std::string&);
 
-    void waitForData();
-    size_t activeTransfers() const;
+
+    // int responseCode();
+    // unsigned long long contentLength();
+    // // const Headers& headers();
+    // const void* body(size_t& size);
+    // std::string body();
+
+    // void waitForData();
+    // size_t activeTransfers() const;
 
 // -- Overridden methods
 
     // virtual void rewind();
-    virtual void print(std::ostream&) const;
+    void print(std::ostream&) const;
 
     // From Streamable
 
@@ -96,37 +125,26 @@ private:
 // -- Members
 
     CURL *curl_;
-    CURLM *multi_;
-
-    std::string uri_;
-    bool body_;
-    Headers headers_;
-    int activeTransfers_;
-
     curl_slist* chunks_;
+    bool stream_;
 
-    MemoryHandle buffer_;
+    // CURLM *multi_;
+
+    EasyCURLResponse request(const std::string& url, bool stream=false);
 
 // -- Methods
 
-    void ensureHeaders();
-    void ensureBody();
-
-    virtual size_t writeCallback(const void *ptr, size_t size);
-
-    virtual size_t headersCallback(const void *ptr, size_t size);
-
-
+    void clearStream();
 
 // -- Class members
 
     static size_t _writeCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
     static size_t _headersCallback(void *ptr, size_t size, size_t nmemb, void *userdata);
 
-
-
-    friend std::ostream& operator<<(std::ostream& s, const EasyCURL& c)
-    { c.print(s); return s;}
+    friend std::ostream& operator<<(std::ostream& s, const EasyCURL& c) {
+        c.print(s);
+        return s;
+    }
 
 
 };

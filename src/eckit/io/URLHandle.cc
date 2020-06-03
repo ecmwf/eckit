@@ -12,9 +12,9 @@
 
 #include "eckit/io/URLHandle.h"
 
-
 namespace eckit {
 
+#if 0
 //----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec URLHandle::classSpec_ = {
@@ -35,7 +35,6 @@ void URLHandle::encode(Stream& s) const {
 
 URLHandle::URLHandle(Stream& s) : DataHandle(s) {
     s >> uri_;
-    EasyCURL::url(uri_);
 }
 
 
@@ -95,13 +94,9 @@ void URLHandle::close() {
     }
 }
 
-
-size_t URLHandle::writeCallback(const void* ptr, size_t size) {
-    return buffer_.write(ptr, size);
-}
+#endif
 
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 }  // namespace eckit

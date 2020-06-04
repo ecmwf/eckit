@@ -560,7 +560,7 @@ CASE("test_broadcastFile") {
     EXPECT(comm.broadcastFile(path, root).str() == str);
 }
 
-CASE("test_waitall") {
+CASE("test_waitAll") {
 
     auto& comm = mpi::comm("world");
     int nproc  = comm.size();
@@ -581,7 +581,7 @@ CASE("test_waitall") {
         rqs.push_back(comm.iSend(&irank, 1, i, 100));
     }
 
-    std::vector<mpi::Status> str = comm.waitall(rqr);
+    std::vector<mpi::Status> str = comm.waitAll(rqr);
     for (int i = 0; i < nproc; i++) {
         auto status = str[i];
         EXPECT(status.error() == 0);
@@ -591,7 +591,7 @@ CASE("test_waitall") {
 
     // Test case where requests have been handled already
     {
-        auto statuses = comm.waitall(rqr);
+        auto statuses = comm.waitAll(rqr);
         for (int i = 0; i < nproc; i++) {
             auto status = statuses[i];
             EXPECT(status.error() == 0);
@@ -608,14 +608,14 @@ CASE("test_waitall") {
         EXPECT(st.error() == 0);
     }
 
-    std::vector<mpi::Status> sts = comm.waitall(rqs);
+    std::vector<mpi::Status> sts = comm.waitAll(rqs);
 
     for (auto& st : sts) {
         EXPECT(st.error() == 0);
     }
 }
 
-CASE("test_waitany") {
+CASE("test_waitAny") {
 
     auto& comm = mpi::comm("world");
     int nproc  = comm.size();
@@ -639,7 +639,7 @@ CASE("test_waitany") {
     int count = rqr.size();
     while (count > 0) {
         int ireq       = -1;
-        mpi::Status st = comm.waitany(rqr, ireq);
+        mpi::Status st = comm.waitAny(rqr, ireq);
         EXPECT(st.error() == 0);
         EXPECT(st.tag() == 100);
         EXPECT(st.source() == ireq);
@@ -649,7 +649,7 @@ CASE("test_waitany") {
     // Test case where requests have been handled already
     {
         int ireq;
-        mpi::Status st = comm.waitany(rqr, ireq);
+        mpi::Status st = comm.waitAny(rqr, ireq);
         EXPECT(st.error() == 0);
         EXPECT(st.source() == comm.anySource());
         EXPECT(st.tag() == comm.anyTag());
@@ -660,7 +660,7 @@ CASE("test_waitany") {
         EXPECT(i == data[i]);
     }
 
-    std::vector<mpi::Status> sts = comm.waitall(rqs);
+    std::vector<mpi::Status> sts = comm.waitAll(rqs);
 
     for (auto& st : sts) {
         EXPECT(st.error() == 0);

@@ -47,9 +47,9 @@ protected:  // methods
 
     virtual Status wait(Request&) const;
 
-    virtual Status waitany(std::vector<Request>&, int&) const;
+    virtual Status waitAny(std::vector<Request>&, int&) const;
 
-    virtual std::vector<Status> waitall(std::vector<Request>&) const;
+    virtual std::vector<Status> waitAll(std::vector<Request>&) const;
 
     virtual Status probe(int source, int tag) const;
 

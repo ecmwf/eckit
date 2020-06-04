@@ -321,7 +321,7 @@ Status Parallel::wait(Request& req) const {
     return st;
 }
 
-std::vector<Status> Parallel::waitall(std::vector<Request>& req) const {
+std::vector<Status> Parallel::waitAll(std::vector<Request>& req) const {
     int count = req.size();
     std::vector<Status> st(count);
     std::vector<MPI_Status> st_(count);
@@ -343,7 +343,7 @@ std::vector<Status> Parallel::waitall(std::vector<Request>& req) const {
     return st;
 }
 
-Status Parallel::waitany(std::vector<Request>& req, int& ireq) const {
+Status Parallel::waitAny(std::vector<Request>& req, int& ireq) const {
     int count = req.size();
     Status st = createStatus();
     std::vector<MPI_Request> req_(count);

@@ -106,12 +106,12 @@ public:  // methods
 
     /// @brief Wait for one request out of a vector of requests to finish
     ///
-    /// @param[in]  requests The requests that one will be wiated for.
+    /// @param[in]  requests The requests that one will be waited for.
     /// @param[out] index    The request index in requests that has been waited for.
-    virtual Status waitany(std::vector<Request>& requests, int& index) const = 0;
+    virtual Status waitAny(std::vector<Request>& requests, int& index) const = 0;
 
-    /// @brief Wait for one request out of a vector of requests to finish
-    virtual std::vector<Status> waitall(std::vector<Request>&) const = 0;
+    /// @brief Wait for all given requests to finish
+    virtual std::vector<Status> waitAll(std::vector<Request>&) const = 0;
 
     /// @brief Probe for incoming messages (blocking)
     virtual Status probe(int source, int tag) const = 0;

@@ -199,7 +199,7 @@ Status Serial::wait(Request& req) const {
     return new SerialStatus{};
 }
 
-std::vector<Status> Serial::waitall(std::vector<Request>& requests) const {
+std::vector<Status> Serial::waitAll(std::vector<Request>& requests) const {
     std::vector<Status> statuses;
     statuses.reserve(requests.size());
     for (auto& req : requests) {
@@ -208,7 +208,7 @@ std::vector<Status> Serial::waitall(std::vector<Request>& requests) const {
     return statuses;
 }
 
-Status Serial::waitany(std::vector<Request>& requests, int& index) const {
+Status Serial::waitAny(std::vector<Request>& requests, int& index) const {
     for (size_t i = 0; i < requests.size(); ++i) {
         if (!requests[i].as<SerialRequest>().handled()) {
             Status status = wait(requests[i]);

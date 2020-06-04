@@ -35,25 +35,19 @@ namespace eckit {
 
 
 static void call(const char* what, CURLcode code) {
-    // std::cout << "==> " << what << std::endl;
-
     if (code != CURLE_OK) {
         std::ostringstream oss;
         oss << what << " failed: " << curl_easy_strerror(code);
         throw SeriousBug(oss.str());
     }
-    // std::cout << "<== " << what << std::endl;
 }
 
-
 static void call(const char* what, CURLMcode code) {
-    // std::cout << "==> " << what << std::endl;
     if (code != CURLM_OK) {
         std::ostringstream oss;
         oss << what << " failed: " << curl_multi_strerror(code);
         throw SeriousBug(oss.str());
     }
-    // std::cout << "<== " << what << std::endl;
 }
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
@@ -177,8 +171,6 @@ public:
 
     size_t writeCallback(const void *ptr, size_t size) {
 
-        std::cout << "EasyCURLResponseImpDirect::writeCallback(" << size << ")" << std::endl;
-
         if (!handle_) {
             handle_.reset(new MemoryHandle(1024 * 64, true));
             handle_->openForWrite(0);
@@ -219,14 +211,9 @@ public:
         int active = 0;
         _(curl_multi_perform(multi, &active));
         _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
-
-
-        // std::cout << "EasyCURLResponseImpStream::perform " << active << " " << buffer_.length() << std::endl;
-        // std::cout << "EasyCURLResponseImpStream::perform " << *this << std::endl;
     }
 
     size_t writeCallback(const void *ptr, size_t size) {
-        // std::cout << "EasyCURLResponseImpStream::writeCallback(" << size << ")" << std::endl;
         return buffer_.write(ptr, size);
     }
 
@@ -482,7 +469,6 @@ EasyCURL::~EasyCURL() {
 // ============================
 
 void EasyCURL::verbose(bool on) {
-    std::cout << "EasyCURL::verbose(" << on << ")" << std::endl;
     _(curl_easy_setopt(ch_->curl_, CURLOPT_VERBOSE, on ? 1L : 0L));
 }
 
@@ -525,22 +511,18 @@ EasyCURLResponse EasyCURL::request(const std::string& url, bool stream) {
 }
 
 EasyCURLResponse EasyCURL::GET(const std::string& url, bool stream) {
-    std::cout << "EasyCURL::GET(" << url << ")" << std::endl;
     _(curl_easy_setopt(ch_->curl_, CURLOPT_CUSTOMREQUEST, NULL));
     _(curl_easy_setopt(ch_->curl_, CURLOPT_HTTPGET, 1L));
-
     return request(url, stream);
 }
 
 EasyCURLResponse EasyCURL::HEAD(const std::string& url) {
-    std::cout << "EasyCURL::HEAD(" << url << ")" << std::endl;
     _(curl_easy_setopt(ch_->curl_, CURLOPT_CUSTOMREQUEST, NULL));
     _(curl_easy_setopt(ch_->curl_, CURLOPT_NOBODY, 1L));
     return request(url);
 }
 
 EasyCURLResponse EasyCURL::POST(const std::string& url, const std::string& data) {
-    std::cout << "EasyCURL::POST(" << url << "," << data << ")" << std::endl;
     _(curl_easy_setopt(ch_->curl_, CURLOPT_CUSTOMREQUEST, NULL));
     _(curl_easy_setopt(ch_->curl_, CURLOPT_POST, 1L));
     _(curl_easy_setopt(ch_->curl_, CURLOPT_POSTFIELDS, data.c_str()));
@@ -548,7 +530,6 @@ EasyCURLResponse EasyCURL::POST(const std::string& url, const std::string& data)
 }
 
 EasyCURLResponse EasyCURL::PUT(const std::string& url, const std::string& data) {
-    std::cout << "EasyCURL::PUT(" << url << ")" << std::endl;
     NOTIMP;
     _(curl_easy_setopt(ch_->curl_, CURLOPT_CUSTOMREQUEST, NULL));
     _(curl_easy_setopt(ch_->curl_, CURLOPT_PUT, 1L));
@@ -556,14 +537,11 @@ EasyCURLResponse EasyCURL::PUT(const std::string& url, const std::string& data) 
 }
 
 EasyCURLResponse EasyCURL::DELETE(const std::string& url) {
-    std::cout << "EasyCURL::DELETE(" << url << ")" << std::endl;
     _(curl_easy_setopt(ch_->curl_, CURLOPT_CUSTOMREQUEST, "DELETE"));
     return request(url);
 }
 
-
 void EasyCURL::userAgent(const std::string& value) {
-    std::cout << "EasyCURL::userAgent(" << value << ")" << std::endl;
     _(curl_easy_setopt(ch_->curl_, CURLOPT_USERAGENT, value.c_str()));
 }
 
@@ -581,7 +559,6 @@ void EasyCURL::headers(const EasyCURLHeaders& headers) {
 
     for (auto j = headers.begin(); j != headers.end(); ++j) {
         std::ostringstream oss;
-        std::cout << "EasyCURL::headers(" << (*j).first << ": " << (*j).second << ")" << std::endl;
         oss << (*j).first << ": " << (*j).second;
         ch_->chunks_ = curl_slist_append(ch_->chunks_, oss.str().c_str());
     }

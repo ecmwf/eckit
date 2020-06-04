@@ -67,13 +67,14 @@ private:
 
 // -- Members
 
-    std::string    uri_;
-    EasyCURL       curl_;
+    std::string                 uri_;
+    std::unique_ptr<DataHandle> handle_;
+
 
 
 // -- Methods
 
-    void init();
+    DataHandle& handle();
 
 
 // -- Class members

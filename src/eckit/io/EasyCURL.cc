@@ -151,6 +151,24 @@ public:
         _(curl_easy_setopt(ch_->curl_, CURLOPT_WRITEDATA, this));
         _(curl_easy_perform(ch_->curl_));
         _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
+
+
+        if (code_ == 301) { // Move permanently
+            // CURL's built-in redirect is not what we want
+            char *url = NULL;
+            _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
+            _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
+
+            if (url) {
+                body_ = false;
+                handle_.reset(0);
+                _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url));
+                _(curl_easy_perform(ch_->curl_));
+                _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
+            }
+
+        }
+
     }
 
     virtual std::string body() {
@@ -168,7 +186,7 @@ public:
         std::cout << "EasyCURLResponseImpDirect::writeCallback(" << size << ")" << std::endl;
 
         if (!handle_) {
-            handle_.reset(new MemoryHandle(1024 * 4, true));
+            handle_.reset(new MemoryHandle(1024 * 64, true));
             handle_->openForWrite(0);
         }
         return handle_->write(ptr, size);
@@ -207,6 +225,7 @@ public:
         int active = 0;
         _(curl_multi_perform(multi, &active));
         _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
+
 
         // std::cout << "EasyCURLResponseImpStream::perform " << active << " " << buffer_.length() << std::endl;
         // std::cout << "EasyCURLResponseImpStream::perform " << *this << std::endl;

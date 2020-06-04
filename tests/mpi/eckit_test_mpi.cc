@@ -28,9 +28,6 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int argc;
-char** argv;
-
 CASE("test_rank_size") {
     EXPECT_NO_THROW(mpi::comm().size());
     EXPECT_NO_THROW(mpi::comm().rank());
@@ -184,7 +181,7 @@ CASE("test_gatherv_unequal_stride") {
     size_t size = mpi::comm().size();
     size_t rank = mpi::comm().rank();
 
-    auto stride = [](size_t rank) { return 10*(rank); };
+    auto stride = [](size_t rank) { return 10 * (rank); };
 
     std::vector<long> send(stride(rank));
 
@@ -195,7 +192,7 @@ CASE("test_gatherv_unequal_stride") {
     std::vector<int> displs;
     std::vector<int> recvcounts;
 
-    if( rank == root ) {
+    if (rank == root) {
         // displs and recvcounts only significant at root
         displs.resize(size);
         recvcounts.resize(size);
@@ -210,9 +207,9 @@ CASE("test_gatherv_unequal_stride") {
 
     EXPECT_NO_THROW(mpi::comm().gatherv(send, recv, recvcounts, displs, root));
 
-    if ( rank == root ) {
+    if (rank == root) {
 
-        EXPECT( recv.size() == recvsize );
+        EXPECT(recv.size() == recvsize);
 
         size_t e = 0;
         std::vector<long> expected(recvsize);
@@ -459,6 +456,9 @@ CASE("test_nonblocking_send_receive") {
     // Wait for receiving to finish
     if (comm.rank() == comm.size() - 1) {
         mpi::Status recvstatus = comm.wait(recvreq);
+        EXPECT(recvstatus.error() == 0);
+        EXPECT(recvstatus.tag() == tag);
+        EXPECT(recvstatus.source() == 0);
         EXPECT(is_approximately_equal(recv, 0.5, 1.e-9));
     }
     else {
@@ -468,6 +468,7 @@ CASE("test_nonblocking_send_receive") {
     // Wait for sending to finish
     if (comm.rank() == 0) {
         mpi::Status sendstatus = comm.wait(sendreq);
+        EXPECT(sendstatus.error() == 0);
     }
 }
 
@@ -500,6 +501,9 @@ CASE("test_blocking_send_nonblocking_receive") {
     // Wait for receiving to finish
     for (size_t i = 0; i < recvreqs.size(); ++i) {
         mpi::Status recvstatus = comm.wait(recvreqs[i]);
+        EXPECT(recvstatus.error() == 0);
+        EXPECT(recvstatus.tag() == tag);
+        EXPECT(recvstatus.source() == int(comm.size()) - 1);
         EXPECT(is_approximately_equal(recv[i], recv_check[i], 1.e-9));
     }
 }
@@ -546,7 +550,7 @@ CASE("test_broadcastFile") {
     size_t root     = 0;
 
     std::string str = "Hello World!\n";
-    LocalPathName path("test_mpi_broadcastFile.txt");
+    LocalPathName path(eckit::Main::instance().name() + "_broadcastFile.txt");
     if (comm.rank() == root) {
         std::ofstream file(path.c_str(), std::ios_base::out);
         file << str;
@@ -556,15 +560,120 @@ CASE("test_broadcastFile") {
     EXPECT(comm.broadcastFile(path, root).str() == str);
 }
 
+CASE("test_waitAll") {
+
+    auto& comm = mpi::comm("world");
+    int nproc  = comm.size();
+    int irank  = comm.rank();
+
+    std::vector<mpi::Request> rqr;
+    std::vector<mpi::Request> rqs;
+
+    std::vector<int> data(nproc, -1);
+
+    for (int i = 0; i < nproc; i++) {
+        rqr.push_back(comm.iReceive(&data[i], 1, i, 100));
+    }
+
+    comm.barrier();
+
+    for (int i = 0; i < nproc; i++) {
+        rqs.push_back(comm.iSend(&irank, 1, i, 100));
+    }
+
+    std::vector<mpi::Status> str = comm.waitAll(rqr);
+    for (int i = 0; i < nproc; i++) {
+        auto status = str[i];
+        EXPECT(status.error() == 0);
+        EXPECT(status.tag() == 100);
+        EXPECT(status.source() == i);
+    }
+
+    // Test case where requests have been handled already
+    {
+        auto statuses = comm.waitAll(rqr);
+        for (int i = 0; i < nproc; i++) {
+            auto status = statuses[i];
+            EXPECT(status.error() == 0);
+            EXPECT(status.tag() == comm.anyTag());
+            EXPECT(status.source() == comm.anySource());
+        }
+    }
+
+    for (int i = 0; i < nproc; i++) {
+        EXPECT(i == data[i]);
+    }
+
+    for (auto& st : str) {
+        EXPECT(st.error() == 0);
+    }
+
+    std::vector<mpi::Status> sts = comm.waitAll(rqs);
+
+    for (auto& st : sts) {
+        EXPECT(st.error() == 0);
+    }
+}
+
+CASE("test_waitAny") {
+
+    auto& comm = mpi::comm("world");
+    int nproc  = comm.size();
+    int irank  = comm.rank();
+
+    std::vector<mpi::Request> rqr;
+    std::vector<mpi::Request> rqs;
+
+    std::vector<int> data(nproc, -1);
+
+    for (int i = 0; i < nproc; i++) {
+        rqr.push_back(comm.iReceive(&data[i], 1, i, 100));
+    }
+
+    comm.barrier();
+
+    for (int i = 0; i < nproc; i++) {
+        rqs.push_back(comm.iSend(&irank, 1, i, 100));
+    }
+
+    int count = rqr.size();
+    while (count > 0) {
+        int ireq       = -1;
+        mpi::Status st = comm.waitAny(rqr, ireq);
+        EXPECT(st.error() == 0);
+        EXPECT(st.tag() == 100);
+        EXPECT(st.source() == ireq);
+        count--;
+    }
+
+    // Test case where requests have been handled already
+    {
+        int ireq;
+        mpi::Status st = comm.waitAny(rqr, ireq);
+        EXPECT(st.error() == 0);
+        EXPECT(st.source() == comm.anySource());
+        EXPECT(st.tag() == comm.anyTag());
+        EXPECT(ireq == comm.undefined());
+    }
+
+    for (int i = 0; i < nproc; i++) {
+        EXPECT(i == data[i]);
+    }
+
+    std::vector<mpi::Status> sts = comm.waitAll(rqs);
+
+    for (auto& st : sts) {
+        EXPECT(st.error() == 0);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    eckit::test::argc = argc;
-    eckit::test::argv = argv;
-    int failures      = run_tests(argc, argv);
+    int failures = run_tests(argc, argv);
     eckit::mpi::finaliseAllComms();
     return failures;
 }

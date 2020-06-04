@@ -12,20 +12,20 @@
 #define eckit_mpi_SerialRequest_h
 
 #include "eckit/io/Buffer.h"
-#include "eckit/mpi/Request.h"
 #include "eckit/mpi/DataType.h"
+#include "eckit/mpi/Request.h"
 
 namespace eckit {
 namespace mpi {
 
-  class SerialRequestPool;
+class SerialRequestPool;
+class Serial;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SerialRequest : public RequestContent {
 
-public: // methods
-
+public:  // methods
     SerialRequest();
 
     virtual ~SerialRequest();
@@ -38,22 +38,24 @@ public: // methods
 
     virtual bool test() { return true; }
 
-private: // methods
-
+private:  // methods
     virtual void print(std::ostream&) const;
 
-private: // members
+    bool handled() const { return handled_; }
+    void handled(bool v) { handled_ = v; }
 
+private:  // members
     friend class SerialRequestPool;
+    friend class Serial;
     int request_;
+    bool handled_{false};
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SendRequest : public SerialRequest {
 
-public: // methods
-
+public:  // methods
     SendRequest(const void* buffer, size_t count, Data::Code type, int tag);
 
     virtual ~SendRequest();
@@ -69,7 +71,6 @@ public: // methods
     Data::Code type() const { return type_; }
 
 private:
-
     eckit::Buffer buffer_;
     size_t count_;
     int tag_;
@@ -80,8 +81,7 @@ private:
 
 class ReceiveRequest : public SerialRequest {
 
-public: // methods
-
+public:  // methods
     ReceiveRequest(void* buffer, size_t count, Data::Code type, int tag);
 
     virtual bool isReceive() const { return true; }
@@ -98,7 +98,6 @@ public: // methods
     Data::Code type() const { return type_; }
 
 private:
-
     void* buffer_;
     size_t count_;
     int tag_;

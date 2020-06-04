@@ -242,11 +242,13 @@ CASE("Multihandle") {
         //   c ef  ijkl    qrstuvwx        bcdefghijklmnopq                cdefghijklmnopqrstuvwxyz01234
 
         //                                                                                                                 1         1
-        //             0         1         2         3         4         5         6         7         8         9 0 1
+        //             0         1         2         3         4         5         6         7         8         9         0         1
         //             0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
-        char expect[] =
-            "acdghijnopqrsxyz01234CEFIJKLQRSTUVWXBCDEFGHIJKLMNOPQcefijklqrstuvwxbcdefghijklmnopqcdefghijklmnopqrstuvwxy"
-            "z01234";
+
+        // Unused variable expect[]
+        // char expect[] =
+        //     "acdghijnopqrsxyz01234CEFIJKLQRSTUVWXBCDEFGHIJKLMNOPQcefijklqrstuvwxbcdefghijklmnopqcdefghijklmnopqrstuvwxy"
+        //     "z01234";
 
         mh.openForRead();
 

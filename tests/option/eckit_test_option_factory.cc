@@ -54,7 +54,10 @@ public:
             sep = ", ";
         }
     }
+    /*
+    // unused
     static ObjectBase* build(const std::string& nm) { return factory()[nm]->make(); }
+    */
 };
 
 

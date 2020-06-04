@@ -46,7 +46,6 @@ SendRequest::~SendRequest() {}
 
 ReceiveRequest::ReceiveRequest(void* buffer, size_t count, Data::Code type, int tag) :
     buffer_(buffer),
-    size_(count * dataSize[type]),
     count_(count),
     tag_(tag),
     type_(type) {}

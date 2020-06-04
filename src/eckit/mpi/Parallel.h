@@ -47,11 +47,17 @@ protected:  // methods
 
     virtual Status wait(Request&) const;
 
+    virtual Status waitAny(std::vector<Request>&, int&) const;
+
+    virtual std::vector<Status> waitAll(std::vector<Request>&) const;
+
     virtual Status probe(int source, int tag) const;
 
     virtual int anySource() const;
 
     virtual int anyTag() const;
+
+    virtual int undefined() const;
 
     virtual size_t getCount(Status& st, Data::Code type) const;
 

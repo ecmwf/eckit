@@ -11,6 +11,7 @@
 // #include <arpa/inet.h>
 #include <unistd.h>
 #include <curl/curl.h>
+#include <memory>
 
 #include "eckit/eckit.h"
 

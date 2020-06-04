@@ -37,7 +37,7 @@ public:
         METER,
         COUNTER,
         KEEPALIVE,
-        MAXREPORT,
+        ENDTAG,
     };
 
 public:

@@ -43,7 +43,7 @@ JSON& operator<<(eckit::JSON& s, const Report& p) {
 
 std::string report_type_to_name(Report::Type t) {
 
-    ASSERT(t < Report::MAXREPORT); // ensure client code sticks to enum Report
+    ASSERT(t < Report::ENDTAG); // ensure client code sticks to enum Report
 
     static const std::map<int, std::string> type_to_name = {
         {Report::APPSTART, "appstart"}, {Report::APPSTOP, "appstop"}, {Report::INFO, "info"},
@@ -52,7 +52,7 @@ std::string report_type_to_name(Report::Type t) {
 
     size_t count = type_to_name.size();
 
-    ASSERT(count == Report::MAXREPORT); // ensure we didnt forget to populate the map
+    ASSERT(count == Report::ENDTAG); // ensure we didnt forget to populate the map
 
     auto r = type_to_name.find(t);
     if (r != type_to_name.end()) {

@@ -14,6 +14,8 @@
 #ifndef eckit_filesystem_URLHandle_h
 #define eckit_filesystem_URLHandle_h
 
+#include <memory>
+
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/EasyCURL.h"
 

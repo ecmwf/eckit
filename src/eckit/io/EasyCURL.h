@@ -99,25 +99,9 @@ public:
 
 public:
 
-    // void url(const std::string&);
-
-
-    // int responseCode();
-    // unsigned long long contentLength();
-    // // const Headers& headers();
-    // const void* body(size_t& size);
-    // std::string body();
-
-    // void waitForData();
-    // size_t activeTransfers() const;
-
 // -- Overridden methods
 
-    // virtual void rewind();
     void print(std::ostream&) const;
-
-    // From Streamable
-
 
 // -- Class methods
 

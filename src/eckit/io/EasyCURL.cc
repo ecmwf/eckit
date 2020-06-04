@@ -10,6 +10,7 @@
 
 // #include <arpa/inet.h>
 #include <unistd.h>
+#include <curl/curl.h>
 
 #include "eckit/eckit.h"
 
@@ -25,16 +26,9 @@
 #include "eckit/io/CircularBuffer.h"
 
 
-#ifdef ECKIT_HAVE_CURL
-#include <curl/curl.h>
-#endif
-
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-#ifdef ECKIT_HAVE_CURL
 
 
 #define _(a) call(#a, a)
@@ -597,16 +591,6 @@ void EasyCURL::headers(const EasyCURLHeaders& headers) {
     }
 }
 
-#else
-
-EasyCURL::EasyCURL() {
-    NOTIMP;
-}
-
-EasyCURL::~EasyCURL() {
-}
-
-#endif /* ECKIT_HAVE_CURLHandle */
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -22,7 +22,7 @@ namespace eckit {
 namespace {
 
 // If mode_t is a signed type
-template< typename Mode, typename enable_if< std::is_signed<Mode>::value >::type* = nullptr>
+template< typename Mode, typename std::enable_if< std::is_signed<Mode>::value >::type* = nullptr>
 bool invalidMode( Mode m ) {
     return m < 0 || m > 0777;
 }

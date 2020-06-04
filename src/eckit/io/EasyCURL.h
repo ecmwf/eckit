@@ -63,7 +63,7 @@ public:
 
     unsigned long long contentLength() const;
     size_t read(void* ptr, size_t size) const;
-    eckit::DataHandle* dataHandle() const;
+    eckit::DataHandle* dataHandle(const std::string& message = "") const;
 
 };
 

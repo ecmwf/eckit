@@ -40,6 +40,7 @@ public: // methods
 
     size_t length() const;
     size_t capacity() const;
+    size_t size() const;
 
     void clear();
 

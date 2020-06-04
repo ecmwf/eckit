@@ -24,6 +24,8 @@
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/io/CircularBuffer.h"
+#include "eckit/log/Timer.h"
+#include "eckit/log/Bytes.h"
 
 
 namespace eckit {
@@ -195,7 +197,10 @@ class EasyCURLResponseStream : public EasyCURLResponseImp {
 public:
     CircularBuffer buffer_;
 
-    EasyCURLResponseStream(const std::string& url, CURLHandle *curl): EasyCURLResponseImp(url, curl) {}
+    EasyCURLResponseStream(const std::string& url, CURLHandle *curl):
+        EasyCURLResponseImp(url, curl),
+        buffer_(1024 * 1024) {}
+
     ~EasyCURLResponseStream() {
         _(curl_multi_remove_handle(multi, ch_->curl_));
     }
@@ -280,11 +285,13 @@ public:
 
     virtual size_t read(void* ptr, size_t size) {
 
-        while (buffer_.length() < size) {
+        while (buffer_.length() == 0) {
             if (waitForData() == 0) {
                 break;
             }
         }
+
+        // std::cout << "CAPACITY " << buffer_.size() << std::endl;
 
         return buffer_.read(ptr, size);
 
@@ -352,11 +359,15 @@ size_t EasyCURLResponseImp::headersCallback(const void *ptr, size_t size) {
 
 class EasyCURLHandle : public DataHandle {
 public:
-    EasyCURLHandle(EasyCURLResponseImp* imp);
+    EasyCURLHandle(EasyCURLResponseImp* imp, const std::string& message);
     ~EasyCURLHandle();
 
 private:
     EasyCURLResponseImp* imp_;
+    Timer timer_;
+    double read_;
+    Length total_;
+    std::string message_;
 
     virtual void print(std::ostream& s) const;
     virtual Length openForRead();
@@ -366,10 +377,13 @@ private:
     virtual long write(const void*, long);
     virtual void close();
     virtual Length size();
+    virtual Length estimate();
 };
 
 
-EasyCURLHandle::EasyCURLHandle(EasyCURLResponseImp* imp):
+EasyCURLHandle::EasyCURLHandle(EasyCURLResponseImp* imp, const std::string& message):
+    read_(0),
+    message_(message),
     imp_(imp) {
     imp_->attach();
 }
@@ -390,6 +404,10 @@ Length EasyCURLHandle::size() {
     return imp_->contentLength();
 }
 
+Length EasyCURLHandle::estimate() {
+    return imp_->contentLength();
+}
+
 void EasyCURLHandle::openForWrite(const Length&) {
     NOTIMP;
 }
@@ -399,7 +417,11 @@ void EasyCURLHandle::openForAppend(const Length&) {
 }
 
 long EasyCURLHandle::read(void* ptr, long size) {
-    return imp_->read(ptr, size);
+    double now = timer_.elapsed();
+    size = imp_->read(ptr, size);
+    read_ += timer_.elapsed() - now;
+    total_ += size;
+    return size;
 }
 
 long EasyCURLHandle::write(const void*, long) {
@@ -408,6 +430,12 @@ long EasyCURLHandle::write(const void*, long) {
 
 void EasyCURLHandle::close() {
     ASSERT(imp_->code_ == 200);
+    if (!message_.empty()) {
+        Log::info() << message_
+                    << " "
+                    << Bytes(total_, read_)
+                    << std::endl;
+    }
 }
 
 // ===========================================================
@@ -451,8 +479,8 @@ size_t EasyCURLResponse::read(void* ptr, size_t size) const {
     return imp_->read(ptr, size);
 }
 
-DataHandle* EasyCURLResponse::dataHandle() const {
-    return new EasyCURLHandle(imp_);
+DataHandle* EasyCURLResponse::dataHandle(const std::string& message) const {
+    return new EasyCURLHandle(imp_, message);
 }
 
 // ===========================================================

@@ -49,6 +49,8 @@ size_t CircularBuffer::write(const void* buffer, size_t length) {
     if (length > left) {
         size_t newsize = eckit::round(size_ + length, increment_);
 
+// std::cout << "CircularBuffer::resize(" << size_ << " => " << newsize << std::endl;
+
         if (newsize > capacity_) {
             std::ostringstream oss;
             oss << "CircularBuffer: cannot grow beyound capacity of " << capacity_ << " bytes";
@@ -127,6 +129,11 @@ void CircularBuffer::clear() {
 size_t CircularBuffer::capacity() const {
     AutoLock<Mutex> lock(mutex_);
     return capacity_;
+}
+
+size_t CircularBuffer::size() const {
+    AutoLock<Mutex> lock(mutex_);
+    return size_;
 }
 
 

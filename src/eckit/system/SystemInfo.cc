@@ -14,6 +14,10 @@
 
 #include "SystemInfo.h"
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 #include <memory>
 
 #include "eckit/eckit.h"
@@ -80,6 +84,15 @@ const SystemInfo& SystemInfo::instance() {
     pthread_once(&once, createInstance);
     ASSERT(systemInfoPtr);
     return *systemInfoPtr;
+}
+
+std::string SystemInfo::userName() const {
+    char buf[4096];
+    struct passwd pwbuf;
+    struct passwd* pwbufp = nullptr;
+    SYSCALL(::getpwuid_r(::getuid(), &pwbuf, buf, sizeof(buf), &pwbufp));
+    ASSERT(pwbufp);
+    return std::string(pwbuf.pw_name);
 }
 
 void SystemInfo::dumpProcMemInfo(std::ostream& os, const char* prepend) const {

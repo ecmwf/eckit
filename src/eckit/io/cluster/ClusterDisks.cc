@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <string>
 
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
@@ -26,7 +27,7 @@
 #include "eckit/log/JSON.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Tokenizer.h"
-
+#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
 
@@ -165,21 +166,27 @@ static DiskArray* clusterDisks = nullptr;
 static pthread_once_t once     = PTHREAD_ONCE_INIT;
 
 static void diskarray_init() {
-    LocalPathName path("~/etc/cluster/disks");  // Avoid recursion...
+    LocalPathName path("~/etc/cluster/disks");  // avoid recursion...
+
     size_t disksArraySize = Resource<size_t>("disksArraySize", 10240);
 
     std::string diskArrayType = Resource<std::string>("disksArrayType", "MemoryMapped");
 
-    if (diskArrayType == "MemoryMapped")
+    if (diskArrayType == "MemoryMapped") {
         clusterDisks = new MemoryMappedDiskArray(path, disksArraySize);
-    else if (diskArrayType == "SharedMemory")
-        clusterDisks = new SharedMemoryDiskArray(path, "/etc-cluster-disks", disksArraySize);
-    else {
-        std::ostringstream oss;
-        oss << "Invalid diskArrayType : " << diskArrayType << ", valid types are 'MemoryMapped' and 'SharedMemory'"
-            << std::endl;
-        throw eckit::BadParameter(oss.str(), Here());
+        return;
     }
+
+    if (diskArrayType == "SharedMemory") {
+        std::string shmpath = eckit::system::SystemInfo::instance().userName() + "-etc-cluster-disks";
+        clusterDisks = new SharedMemoryDiskArray(path, shmpath, disksArraySize);
+        return;
+    }
+
+    std::ostringstream oss;
+    oss << "Invalid diskArrayType : " << diskArrayType << ", valid types are 'MemoryMapped' and 'SharedMemory'"
+        << std::endl;
+    throw eckit::BadParameter(oss.str(), Here());
 }
 
 

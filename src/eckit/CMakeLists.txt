@@ -147,8 +147,6 @@ io/DataHandle.cc
 io/DataHandle.h
 io/DblBuffer.cc
 io/DblBuffer.h
-io/EasyCURL.cc
-io/EasyCURL.h
 io/EmptyHandle.cc
 io/EmptyHandle.h
 io/FDataSync.cc
@@ -231,8 +229,6 @@ io/TeeHandle.cc
 io/TeeHandle.h
 io/TransferWatcher.cc
 io/TransferWatcher.h
-io/URLHandle.cc
-io/URLHandle.h
 io/cluster/ClusterDisks.cc
 io/cluster/ClusterDisks.h
 io/cluster/ClusterNode.cc
@@ -242,6 +238,14 @@ io/cluster/ClusterNodes.h
 io/cluster/NodeInfo.cc
 io/cluster/NodeInfo.h
 )
+
+if(HAVE_CURL)
+list(APPEND eckit_io_srcs
+io/EasyCURL.cc
+io/EasyCURL.h
+io/URLHandle.cc
+io/URLHandle.h)
+endif()
 
 
 if(HAVE_RADOS)
@@ -664,6 +668,7 @@ list( APPEND eckit_utils_srcs
   utils/StringTools.h
   utils/Tokenizer.cc
   utils/Tokenizer.h
+  utils/Clock.h
   utils/Translator.cc
   utils/Translator.h
 )

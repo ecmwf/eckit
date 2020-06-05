@@ -12,6 +12,8 @@
 
 // system
 
+#define ECKIT_SIZEOF_TIME_T    @ECKIT_SIZEOF_TIME_T@
+
 #cmakedefine ECKIT_HAVE_DLFCN_H
 #cmakedefine ECKIT_HAVE_DLADDR
 #cmakedefine ECKIT_HAVE_MAP_ANONYMOUS

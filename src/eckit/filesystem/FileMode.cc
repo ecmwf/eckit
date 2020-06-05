@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <type_traits>
 
 #include "eckit/filesystem/FileMode.h"
 #include "eckit/filesystem/PathName.h"
@@ -18,9 +19,25 @@
 
 namespace eckit {
 
+namespace {
+
+// If mode_t is a signed type
+template< typename Mode, typename std::enable_if< std::is_signed<Mode>::value >::type* = nullptr>
+bool invalidMode( Mode m ) {
+    return m < 0 || m > 0777;
+}
+
+// If mode_t is a unsigned type
+template< typename Mode, typename std::enable_if< std::is_unsigned<Mode>::value >::type* = nullptr>
+bool invalidMode( Mode m ) {
+    return m > 0777;
+}
+
+}
+
 FileMode::FileMode(mode_t m) :
     mode_(m) {
-    if (m < 0 || m > 0777) {
+    if (invalidMode(m)) {
         std::ostringstream oss;
         oss << "FileMode: invalid mode 0" << std::setw(3) << std::setfill('0') << std::oct << m;
         throw BadValue(oss.str(), Here());

@@ -9,7 +9,6 @@
  */
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/YAMLParser.h"
 
@@ -267,6 +266,9 @@ CASE("test_eckit_yaml_21_extra") {
     EXPECT(YAMLParser::decodeString("n").typeName() == "String");
     EXPECT(YAMLParser::decodeString("string").typeName() == "String");
     EXPECT(YAMLParser::decodeString("'12345'").typeName() == "String");
+    EXPECT(YAMLParser::decodeString("\"42\"").typeName() == "String");
+
+    EXPECT_EQUAL(YAMLParser::decodeString("42").typeName(), "Number");
 
     EXPECT(YAMLParser::decodeString("null") == Value());
     EXPECT(YAMLParser::decodeString("false") == Value(false));

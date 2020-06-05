@@ -8,21 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <time.h>
-
 #include <sstream>
 
 #include "eckit/eckit.h"
 
+#include "eckit/utils/Clock.h"
 #include "eckit/log/TimeStamp.h"
 
 
 namespace eckit {
 
-
 const char* TimeStamp::defaultFormat_ = "%Y-%m-%d %H:%M:%S";
 
-TimeStamp::TimeStamp(const std::string& format) : time_(::time(0)), format_(format) {}
+TimeStamp::TimeStamp(const std::string& format) : time_(Clock::now()), format_(format) {}
 
 TimeStamp::TimeStamp(time_t t, const std::string& format) : time_(t), format_(format) {}
 

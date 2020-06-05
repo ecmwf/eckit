@@ -229,6 +229,35 @@ CASE("test_configuration_interface") {
 //----------------------------------------------------------------------------------------------------------------------
 
 
+CASE("test_yaml_empty") {
+    PathName yamlpath = "test_yaml_empty.yaml";
+
+    std::string yamlstr(
+        "office:\n"
+        "  manager :\n"
+        );
+
+    {
+        std::ofstream yamlfile(yamlpath.localPath());
+        yamlfile << yamlstr;
+    }
+
+    LocalConfiguration emptyconf;  // LocalConfiguration is empty
+    EXPECT(emptyconf.empty());
+
+    YAMLConfiguration conf(yamlpath);
+    LocalConfiguration office(conf, "office");  // LocalConfiguration has content
+    EXPECT(!office.empty());
+
+//  Not sure this is correct yaml but since the parser accepts it we need to handle it
+    LocalConfiguration nilconf(office, "manager");  // LocalConfiguration is nil
+    EXPECT(nilconf.empty());
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
 CASE("test_json_configuration") {
     PathName jsonpath = "test_json_configuration.json";
 
@@ -279,6 +308,43 @@ CASE("test_json_configuration") {
     EXPECT(staff[1].get("office", office));
     EXPECT(name == std::string("Wiske"));
     EXPECT(office == 3);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("YAML configuration converts numbers to strings or numbers") {
+    const char* text = R"YAML(
+---
+base:
+  one : "1"
+  two : "2"
+  three : 3
+  four : 4
+  neg7 : "-7"
+)YAML";
+
+    std::string cfgtxt(text);
+
+    YAMLConfiguration conf(cfgtxt);
+
+    LocalConfiguration local;
+
+    EXPECT_NO_THROW(conf.get("base", local));
+
+    std::cerr << Colour::green << local << Colour::reset << std::endl;
+
+    EXPECT_EQUAL(local.getString("one"), "1");
+    EXPECT_EQUAL(local.getString("two"), "2");
+    EXPECT_EQUAL(local.getString("three"), "3");
+    EXPECT_EQUAL(local.getString("four"), "4");
+
+    EXPECT_EQUAL(local.getInt("one"), 1);
+    EXPECT_EQUAL(local.getLong("two"), 2);
+    EXPECT_EQUAL(local.getInt32("three"), 3);
+    EXPECT_EQUAL(local.getInt64("four"), 4);
+
+    EXPECT_EQUAL(local.getString("neg7"), "-7");
+    EXPECT_EQUAL(local.getInt("neg7"), -7);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -339,7 +405,6 @@ CASE("Hash a configuration") {
 
     EXPECT(h->digest() == "9f060b35735e98b0fdc0bf4c2d6d6d8d");
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

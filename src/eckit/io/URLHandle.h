@@ -14,8 +14,9 @@
 #ifndef eckit_filesystem_URLHandle_h
 #define eckit_filesystem_URLHandle_h
 
+#include <memory>
+
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/CircularBuffer.h"
 #include "eckit/io/EasyCURL.h"
 
 
@@ -24,7 +25,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class URLHandle : public DataHandle, private EasyCURL {
+class URLHandle : public DataHandle  {
 public:
 
 
@@ -68,15 +69,15 @@ private:
 
 // -- Members
 
-    std::string uri_;
-    CircularBuffer buffer_;
+    std::string                 uri_;
+    std::unique_ptr<DataHandle> handle_;
+
 
 
 // -- Methods
 
-    void init();
+    DataHandle& handle();
 
-    virtual size_t writeCallback(void *ptr, size_t size);
 
 // -- Class members
 

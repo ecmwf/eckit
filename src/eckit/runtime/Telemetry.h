@@ -36,7 +36,8 @@ public:
         INFO,
         METER,
         COUNTER,
-        MAXREPORT,
+        KEEPALIVE,
+        ENDTAG,
     };
 
 public:
@@ -52,9 +53,13 @@ public:
 
 class Telemetry : public NonCopyable {
 public:
-    static void report(Report::Type);
-    static void report(Report::Type, const Report&);
-    static void report(Report::Type, std::function<void(JSON&)>);
+    static std::string report(Report::Type);
+    static std::string report(Report::Type, const Report&);
+    static std::string report(Report::Type, std::function<void(JSON&)>);
+
+    /// @returns total number of broadcasts sent so far (independent of the number of configured servers)
+    /// Used for statistics and testing
+    static unsigned long long countSent();
 };
 
 //----------------------------------------------------------------------------------------------------------------------

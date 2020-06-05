@@ -12,7 +12,6 @@
 
 #include "eckit/io/URLHandle.h"
 
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,73 +34,52 @@ void URLHandle::encode(Stream& s) const {
 
 URLHandle::URLHandle(Stream& s) : DataHandle(s) {
     s >> uri_;
-    EasyCURL::url(uri_);
 }
 
-
-URLHandle::URLHandle(const std::string& uri) : EasyCURL(uri), uri_(uri) {
-    init();
+URLHandle::URLHandle(const std::string& uri):
+    uri_(uri) {
 }
 
-void URLHandle::init() {
-    // verbose(true);
-    followLocation(true);
+URLHandle::~URLHandle() {
 }
-
-URLHandle::~URLHandle() {}
 
 Length URLHandle::estimate() {
-    Length len = contentLength();
-    if (responseCode() != 200) {
-        std::ostringstream oss;
-        oss << "URLHandle::(" << uri_ << ") returns code " << responseCode();
-        throw eckit::SeriousBug(oss.str());
-    }
-    return len;
+    return handle().estimate();
 }
 
 Length URLHandle::openForRead() {
-    return estimate();
+    return handle().estimate();
 }
 
-void URLHandle::openForWrite(const Length&) {
-    NOTIMP;
+void URLHandle::openForWrite(const Length& length) {
+    handle().openForWrite(length);
 }
 
-void URLHandle::openForAppend(const Length&) {
-    NOTIMP;
+void URLHandle::openForAppend(const Length& length) {
+    handle().openForAppend(length);
 }
 
 long URLHandle::read(void* buffer, long length) {
-    ASSERT(length >= 0);
-    auto len = size_t(length);
-    while (activeTransfers() > 0 && buffer_.length() < len) {
-        waitForData();
-    }
-    return buffer_.read(buffer, len);
+    return handle().read(buffer, length);
 }
 
-long URLHandle::write(const void*, long) {
-    NOTIMP;
+long URLHandle::write(const void* buffer, long length) {
+    return handle().write(buffer, length);
 }
 
 void URLHandle::close() {
-    int code = responseCode();
-
-    if (code != 200) {
-        std::ostringstream oss;
-        oss << "URLHandle::close(" << uri_ << ") returns code " << code;
-        throw eckit::SeriousBug(oss.str());
-    }
+    return handle().close();
 }
 
-
-size_t URLHandle::writeCallback(void* ptr, size_t size) {
-    return buffer_.write(ptr, size);
+DataHandle& URLHandle::handle() {
+    if(!handle_) {
+        EasyCURL curl;
+        handle_.reset(curl.GET(uri_, true).dataHandle());
+    }
+    return *handle_.get();
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 }  // namespace eckit

@@ -23,8 +23,7 @@
 
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit_test { // Not eckit namespace on purpose to test downstream usage of macros
 
 typedef std::vector<Test> Tests;
 
@@ -43,15 +42,19 @@ void ThrowStd() {
     throw std::exception();
 }
 
+
 Tests tests = {{CASE("CASE with no EXPECT passes"){
 
                }},
 
                {CASE("EXPECT macros are defined correctly"){EXPECT(true);
 EXPECT_NOT(false);
+EXPECT_EQUAL(1, 1);
+EXPECT_NOT_EQUAL(1, 2);
 EXPECT_NO_THROW({ bool b = true; });
 EXPECT_THROWS(throw std::exception());
 EXPECT_THROWS_AS(throw std::exception(), std::exception);
+EXPECT_MSG(1 == 1, [=]() { std::cerr << eckit::Colour::red << "1 != 1" << eckit::Colour::reset << std::endl; };);
 }  // namespace test
 }  // namespace eckit
 ,
@@ -133,7 +136,9 @@ EXPECT_NOT(7 != 7.0);
 }
 ,
 
-    {CASE("Expect succeeds for string comparison"){std::string a("a");
+    {CASE("Expect succeeds for string comparison"){
+
+        std::string a("a");
 std::string b("b");
 
 EXPECT(a == a);
@@ -346,15 +351,15 @@ EXPECT(!is_approximately_equal(d1, make_view(d2), 0.0001));             // vecto
 }
 ,
 }
-;
+;  // end of tests
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
 }  // namespace eckit
 
 
-using eckit::test::global_counters;
+using eckit_test::global_counters;
 
 
 int main(int argc, char* argv[]) {
@@ -368,7 +373,7 @@ int main(int argc, char* argv[]) {
     }
 
     eckit::Main::initialise(argc, argv);
-    int retval2 = eckit::testing::run_tests(eckit::test::tests, argc, argv);
+    int retval2 = eckit::testing::run_tests(eckit_test::tests, argc, argv);
 
     int retval3 = 0;
     if (global_counters[0] != 3 || global_counters[1] != 1 || global_counters[2] != 1 || global_counters[3] != 11 ||

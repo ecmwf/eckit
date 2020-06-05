@@ -15,11 +15,13 @@
 #include "eckit/container/MappedArray.h"
 #include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
+#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
 
@@ -75,25 +77,33 @@ public:
 
 static bool active_ = false;
 
-static Monitor::TaskArray* mapArray = 0;
+static Monitor::TaskArray* mapArray = nullptr;
 static pthread_once_t once          = PTHREAD_ONCE_INIT;
 
 static void taskarray_init(void) {
-    std::string monitor = Resource<std::string>("monitorPath", "~/etc/monitor");
+
+    LocalPathName monitorPath(Resource<std::string>("monitorPath", "~/etc/monitor"));
     size_t size         = Resource<size_t>("monitorSize", 1000);
 
     std::string monitorArrayType = Resource<std::string>("monitorArrayType", "MemoryMapped");
 
-    if (monitorArrayType == "MemoryMapped")
-        mapArray = new MemoryMappedTaskArray(monitor, size);
-    else if (monitorArrayType == "SharedMemory")
-        mapArray = new SharedMemoryTaskArray(monitor, "/etc-monitor", size);
-    else {
-        std::ostringstream oss;
-        oss << "Invalid monitorArrayType : " << monitorArrayType
-            << ", valid types are 'MemoryMapped' and 'SharedMemory'" << std::endl;
-        throw eckit::BadParameter(oss.str(), Here());
+    // Log::info() << "monitorPath: " << monitorPath << std::endl;
+
+    if (monitorArrayType == "MemoryMapped") {
+        mapArray = new MemoryMappedTaskArray(monitorPath, size);
+        return;
     }
+
+    if (monitorArrayType == "SharedMemory") {
+        std::string shmpath = eckit::system::SystemInfo::instance().userName() + "-etc-monitor";
+        mapArray = new SharedMemoryTaskArray(monitorPath, shmpath, size);
+        return;
+    }
+
+    std::ostringstream oss;
+    oss << "Invalid monitorArrayType : " << monitorArrayType << ", valid types are 'MemoryMapped' and 'SharedMemory'"
+        << std::endl;
+    throw eckit::BadParameter(oss.str(), Here());
 }
 
 Monitor::TaskArray& Monitor::tasks() {

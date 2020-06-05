@@ -15,10 +15,12 @@
 #ifndef eckit_log_JSON_h
 #define eckit_log_JSON_h
 
+#include <ctime>
+#include <iosfwd>
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
-#include <ctime>
 
 #include "eckit/eckit.h"
 

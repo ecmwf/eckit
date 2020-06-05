@@ -38,6 +38,8 @@ public:  // methods
 
     static const SystemInfo& instance();
 
+    virtual std::string userName() const;
+
     virtual eckit::LocalPathName executablePath() const = 0;
 
     virtual MemoryInfo memoryUsage() const = 0;

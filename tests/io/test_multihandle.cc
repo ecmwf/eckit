@@ -52,7 +52,7 @@ public:
         {
             FileHandle f1(path1_);
             f1.openForWrite(0);
-            f1.write(buf1, sizeof(buf1)-1);
+            f1.write(buf1, sizeof(buf1) - 1);
             f1.close();
             std::cout << "created: " << path1_ << std::endl;
         }
@@ -60,8 +60,8 @@ public:
         {
             FileHandle f2(path2_);
             f2.openForWrite(0);
-            f2.write(buf2, sizeof(buf2)-1);
-            f2.write(buf2, sizeof(buf2)-1);
+            f2.write(buf2, sizeof(buf2) - 1);
+            f2.write(buf2, sizeof(buf2) - 1);
             f2.close();
             std::cout << "created: " << path2_ << std::endl;
         }
@@ -69,9 +69,9 @@ public:
         {
             FileHandle f3(path3_);
             f3.openForWrite(0);
-            f3.write(buf1, sizeof(buf1)-1);
-            f3.write(buf1, sizeof(buf1)-1);
-            f3.write(buf1, sizeof(buf1)-1);
+            f3.write(buf1, sizeof(buf1) - 1);
+            f3.write(buf1, sizeof(buf1) - 1);
+            f3.write(buf1, sizeof(buf1) - 1);
             f3.close();
             std::cout << "created: " << path3_ << std::endl;
         }
@@ -84,10 +84,18 @@ public:
         path3_.unlink(verbose);
     }
 
+    static Buffer makeBuffer() {
+        Buffer buffer(128);
+        buffer.zero();
+        return buffer;
+    }
+
     PathName path1_;
     PathName path2_;
     PathName path3_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 CASE("Multihandle") {
 
@@ -95,15 +103,20 @@ CASE("Multihandle") {
 
     Tester test;
 
+    OffsetList ol0 = {};
+    LengthList ll0 = {};
+    OffsetList ol1 = {0, 2, 6, 13, 23};
+    LengthList ll1 = {1, 2, 4, 6, 8};
+
     SECTION("PartFileHandle compress") {
 
-        char expect[]="aAbcBCdefgDEFGhijklmnoHIJKLMNOpqrstuvwxyz01234PQRSTUVWXYZ56789";
+        char expect[] = "aAbcBCdefgDEFGhijklmnoHIJKLMNOpqrstuvwxyz01234PQRSTUVWXYZ56789";
 
         MultiHandle mh1;
         {
             for (int i = 0; i < 5; i++) {
-                mh1 += new PartFileHandle(test.path1_, (1<<i) - 1, 1<<i);
-                mh1 += new PartFileHandle(test.path2_, (1<<i) - 1, 1<<i);
+                mh1 += new PartFileHandle(test.path1_, (1 << i) - 1, 1 << i);
+                mh1 += new PartFileHandle(test.path2_, (1 << i) - 1, 1 << i);
             }
 
             // std::cout << mh1 << std::endl;
@@ -119,14 +132,90 @@ CASE("Multihandle") {
 
         EXPECT_NO_THROW(mh1.saveInto(result));
 
-        EXPECT(::memcmp(expect, result.data(), sizeof(expect)) == 0);
+        EXPECT(::memcmp(expect, result.data(), strlen(expect)) == 0);
     }
 
-    SECTION("Multihandle seek/skip/position in PartFileHandle") {
+    SECTION("Seek/skip/position in empty MultiHandle") {
+
+        MultiHandle mh0;
+
+        Length size = mh0.size();
+        EXPECT_EQUAL(size, Length(0));
+
+        mh0.openForRead();
+        EXPECT_NO_THROW(mh0.seek(0));
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh0.read(buff, 10);
+            EXPECT(r == 0);
+        }
+
+        EXPECT_THROWS_AS(mh0.seek(1), AssertionFailed); // seeking beoynd EOF asserts
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh0.read(buff, 10);
+            EXPECT(r == 0);
+        }
+
+        EXPECT(mh0.position() == Offset(0));
+
+        EXPECT_THROWS_AS(mh0.skip(4), AssertionFailed);  // skipping beoynd EOF asserts
+        EXPECT(mh0.position() == Offset(0));
+    }
+
+    SECTION("Clinical case of empty PartFileHandles making a MultiHandle") {
+
+        MultiHandle mh1;
+
+        mh1 += new PartFileHandle(test.path1_, ol0, ll0);
+        mh1 += new MemoryHandle(0);
+        mh1 += new PartFileHandle(test.path3_, ol0, ll0);
+
+        mh1.openForRead();
+        EXPECT_NO_THROW(mh1.seek(0));
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh1.read(buff, 10);
+            EXPECT(r == 0);
+        }
+
+        EXPECT_THROWS_AS(mh1.seek(1), AssertionFailed); // seeking beoynd EOF asserts
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh1.read(buff, 10);
+            EXPECT(r == 0);
+        }
+
+        EXPECT(mh1.position() == Offset(0));
+        EXPECT_THROWS_AS(mh1.skip(4), AssertionFailed);  // skipping beoynd EOF asserts
+        EXPECT(mh1.position() == Offset(0));
+    }
+
+    SECTION("MultiHandle of PartFileHandles") {
+
+        MultiHandle mh2;
+
+        mh2 += new PartFileHandle(test.path1_, ol1, ll1);
+        mh2 += new MemoryHandle(0);
+        mh2 += new PartFileHandle(test.path3_, ol0, ll0);
+
+        mh2.openForRead();
+        EXPECT_NO_THROW(mh2.seek(21));
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh2.read(buff, 10);
+            EXPECT(r == 0);
+        }
+    }
+
+    SECTION("MultiHandle of MemoryHandle") {
+        MultiHandle mh3;
+        mh3 += new MemoryHandle(100);
+        mh3 += new MemoryHandle(100);
+        EXPECT_THROWS(mh3.seek(0));           // MultiHandle is not open in read mode
+        EXPECT_THROWS(mh3.openForWrite(10));  // MultiHandle cannot be opened in write mode
 
         MultiHandle mh;
-        OffsetList ol1={0,2,6,13,23};
-        LengthList ll1={1,2,4,6,8};
         mh += new PartFileHandle(test.path1_, ol1, ll1);
         // 0         1         2         3
         // 0123456789012345678901234567890
@@ -134,8 +223,8 @@ CASE("Multihandle") {
         // = ==  ====   ======    ========
         // a cd  ghij   nopqrs    xyz01234
 
-        OffsetList ol2={2,4,8,16,32};
-        LengthList ll2={1,2,4,8,16};
+        OffsetList ol2 = {2, 4, 8, 16, 32};
+        LengthList ll2 = {1, 2, 4, 8, 16};
         mh += new PartFileHandle(test.path2_, ol2, ll2);
         // 0         1         2         3         4         5         6
         // 01234567890123456789012345678901234567890123456789012345678901
@@ -143,8 +232,8 @@ CASE("Multihandle") {
         //   = ==  ====    ========        ================
         //   C EF  IJKL    QRSTUVWX        BCDEFGHIJKLMNOPQ
 
-        OffsetList ol3={2,4,8,16,32,64};
-        LengthList ll3={1,2,4,8,16,29};
+        OffsetList ol3 = {2, 4, 8, 16, 32, 64};
+        LengthList ll3 = {1, 2, 4, 8, 16, 29};
         mh += new PartFileHandle(test.path3_, ol3, ll3);
         // 0         1         2         3         4         5         6         7         8         9
         // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
@@ -155,7 +244,11 @@ CASE("Multihandle") {
         //                                                                                                                 1         1
         //             0         1         2         3         4         5         6         7         8         9         0         1
         //             0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
-        char expect[]="acdghijnopqrsxyz01234CEFIJKLQRSTUVWXBCDEFGHIJKLMNOPQcefijklqrstuvwxbcdefghijklmnopqcdefghijklmnopqrstuvwxyz01234";
+
+        // Unused variable expect[]
+        // char expect[] =
+        //     "acdghijnopqrsxyz01234CEFIJKLQRSTUVWXBCDEFGHIJKLMNOPQcefijklqrstuvwxbcdefghijklmnopqcdefghijklmnopqrstuvwxy"
+        //     "z01234";
 
         mh.openForRead();
 
@@ -164,23 +257,21 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh.seek(10));
         EXPECT(mh.position() == Offset(10));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 13);
             EXPECT(r == 13);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "qrsxyz01234CE");
         }
         EXPECT(mh.position() == Offset(23));
-        //move to end of first PartFileHandle
+        // move to end of first PartFileHandle
         EXPECT_NO_THROW(mh.skip(-2));
         EXPECT(mh.position() == Offset(21));
 
         EXPECT_NO_THROW(mh.skip(9));
         EXPECT(mh.position() == Offset(30));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 10);
             EXPECT(r == 10);
             std::cout << std::string(buff) << std::endl;
@@ -189,8 +280,7 @@ CASE("Multihandle") {
 
         EXPECT_NO_THROW(mh.seek(0));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 7);
             EXPECT(r == 7);
             std::cout << std::string(buff) << std::endl;
@@ -201,8 +291,7 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh.seek(106));
         EXPECT(mh.position() == Offset(106));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 10);
             EXPECT(r == 6);
             std::cout << std::string(buff) << std::endl;
@@ -210,7 +299,23 @@ CASE("Multihandle") {
         }
         EXPECT(mh.position() == Offset(112));
 
-        EXPECT_THROWS_AS(mh.seek(120), eckit::BadValue);
+        EXPECT_THROWS_AS(mh.seek(120), AssertionFailed); // seek beyond EOF throws
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh.read(buff, 10);
+            EXPECT(r == 0);
+        }
+        EXPECT(mh.position() == Offset(112));
+
+        EXPECT_NO_THROW(mh.skip(-20)); // go back -20 from 112 => 92
+        EXPECT(mh.position() == Offset(92));
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh.read(buff, 30);
+            EXPECT(r == 20);
+            std::cout << std::string(buff) << std::endl;
+            EXPECT(std::string(buff) == "lmnopqrstuvwxyz01234");
+        }
     }
 
     SECTION("Multihandle seek in FileHandle") {
@@ -221,12 +326,11 @@ CASE("Multihandle") {
 
         mh.openForRead();
 
-        EXPECT(mh.size() == Length(31*3));
+        EXPECT(mh.size() == Length(31 * 3));
 
         EXPECT_NO_THROW(mh.seek(20));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 13);
             EXPECT(r == 13);
             std::cout << std::string(buff) << std::endl;
@@ -235,8 +339,7 @@ CASE("Multihandle") {
 
         EXPECT_NO_THROW(mh.seek(35));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 10);
             EXPECT(r == 10);
             std::cout << std::string(buff) << std::endl;
@@ -245,25 +348,29 @@ CASE("Multihandle") {
 
         EXPECT_NO_THROW(mh.seek(0));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 7);
             EXPECT(r == 7);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "abcdefg");
         }
 
-        EXPECT_NO_THROW(mh.seek(93-6));
+        EXPECT_NO_THROW(mh.seek(93 - 6));
         {
-            char buff[64];
-            eckit::zero(buff);
+            Buffer buff = Tester::makeBuffer();
             long r = mh.read(buff, 10);
             EXPECT(r == 6);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "Z56789");
         }
 
-        EXPECT_THROWS_AS(mh.seek(100), eckit::BadValue);
+        EXPECT_THROWS_AS(mh.seek(100), AssertionFailed); // Seek beyond EOF throws
+        EXPECT(mh.position() == Offset(31 * 3));
+        {
+            Buffer buff = Tester::makeBuffer();
+            long r = mh.read(buff, 10);
+            EXPECT(r == 0);
+        }
     }
 }
 

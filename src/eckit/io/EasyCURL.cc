@@ -27,6 +27,7 @@
 #include "eckit/io/CircularBuffer.h"
 #include "eckit/log/Timer.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/io/BufferedHandle.h"
 
 
 namespace eckit {
@@ -286,7 +287,7 @@ public:
 
     virtual size_t read(void* ptr, size_t size) {
 
-        while (buffer_.length() == 0) {
+        while (buffer_.length() < size) {
             if (waitForData() == 0) {
                 break;
             }
@@ -368,6 +369,8 @@ private:
     Timer timer_;
     double read_;
     Length total_;
+    Offset position_;
+
     std::string message_;
 
     virtual void print(std::ostream& s) const;
@@ -379,6 +382,13 @@ private:
     virtual void close();
     virtual Length size();
     virtual Length estimate();
+    virtual Offset position() { return position_; }
+    virtual Offset seek(const Offset& where) {
+        std::cout << "EasyCURLHandle::seek(where="
+                  << where << ",pos=" << position_ << ")" << std::endl;
+        NOTIMP;
+    }
+
 };
 
 
@@ -394,7 +404,7 @@ EasyCURLHandle::~EasyCURLHandle() {
 }
 
 void EasyCURLHandle::print(std::ostream& s) const {
-    s << "EasyCURLHandle[]";
+    s << "EasyCURLHandle[" << imp_->url_ << "]";
 }
 
 Length EasyCURLHandle::openForRead() {
@@ -422,6 +432,7 @@ long EasyCURLHandle::read(void* ptr, long size) {
     size = imp_->read(ptr, size);
     read_ += timer_.elapsed() - now;
     total_ += size;
+    position_ += size;
     return size;
 }
 
@@ -430,7 +441,7 @@ long EasyCURLHandle::write(const void*, long) {
 }
 
 void EasyCURLHandle::close() {
-    ASSERT(imp_->code_ == 200);
+    // ASSERT(imp_->code_ == 200);
     if (!message_.empty()) {
         Log::info() << message_
                     << " "
@@ -482,6 +493,7 @@ size_t EasyCURLResponse::read(void* ptr, size_t size) const {
 
 DataHandle* EasyCURLResponse::dataHandle(const std::string& message) const {
     return new EasyCURLHandle(imp_, message);
+    // return new BufferedHandle(new EasyCURLHandle(imp_, message));
 }
 
 // ===========================================================

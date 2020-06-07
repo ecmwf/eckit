@@ -60,6 +60,7 @@ public:
     virtual void reserve(const Length&) const = 0;
 
     virtual BasePathName* unique() const = 0;
+    virtual const char* type() const = 0;
     virtual BasePathName* dirName() const = 0;
     virtual BasePathName* fullName() const = 0;
     virtual BasePathName* orphanName() const = 0;

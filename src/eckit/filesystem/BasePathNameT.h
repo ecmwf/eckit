@@ -78,6 +78,7 @@ private:
     virtual void reserve(const Length&) const;
 
     virtual BasePathName* unique() const;
+    virtual const char* type() const;
     virtual BasePathName* dirName() const;
     virtual BasePathName* fullName() const;
     virtual BasePathName* orphanName() const;

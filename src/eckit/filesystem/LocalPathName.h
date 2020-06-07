@@ -100,6 +100,8 @@ public:  // methods
 
     // Methods
 
+    static const char* type() { return "local"; }
+
     /// @returns a relative filepath to path to a start directory.
     /// This is a pure path computation, no filesystem is accessed to confirm the existence or nature of path
     /// @pre both paths need to be absolute paths, i.e starting with "/"

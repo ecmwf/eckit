@@ -210,6 +210,10 @@ PathName PathName::unique(const PathName& path) {
     return PathName(path.path_->unique());
 }
 
+const char* PathName::type() const {
+    return path_->type();
+}
+
 PathName PathName::dirName() const {
     return PathName(path_->dirName());
 }

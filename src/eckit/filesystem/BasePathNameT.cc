@@ -171,6 +171,11 @@ BasePathName* BasePathNameT<T>::unique() const {
     return new BasePathNameT<T>(T::unique(path_));
 }
 
+template <typename T>
+const char* BasePathNameT<T>::type() const {
+    return T::type();
+}
+
 template <class T>
 BasePathName* BasePathNameT<T>::dirName() const {
     return new BasePathNameT<T>(path_.dirName());

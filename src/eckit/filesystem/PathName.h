@@ -91,6 +91,9 @@ public:
 
     // Methods
 
+    /// What type of PathName object is this
+    const char* type() const;
+
     /// Directory part of the path
     /// @return directory part of the path
     PathName dirName() const;

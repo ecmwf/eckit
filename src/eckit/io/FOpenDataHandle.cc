@@ -168,15 +168,9 @@ static long readfn(void* data, char* buffer, long length) {
 }
 
 static long writefn(void* data, const char* buffer, long length) {
-    FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
-    return fd->write(buffer, length);
-}
-
-static long seekfn(void* data, long pos, int whence) {
     try {
-
         FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
-        return fd->seek(pos, whence);
+        return fd->write(buffer, length);
     }
     catch (std::exception& e) {
 
@@ -189,10 +183,39 @@ static long seekfn(void* data, long pos, int whence) {
     }
 }
 
-static int closefn(void* data) {
-    FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
-    return fd->close();
+static long seekfn(void* data, long pos, int whence) {
+    try {
+
+        FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
+        return fd->seek(pos, whence);
+    }
+    catch (std::exception& e) {
+
+        // Catch all exceptions on a possible C/C++ boundary
+        eckit::Log::error() << "Exception caught in wrapped DataHandle seek: "
+                            << e.what()
+                            << std::endl;
+        // See man fopencookie. Returns -1 on error
+        return -1;
+    }
 }
+
+static int closefn(void* data) {
+    try {
+        FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
+        return fd->close();
+    }
+    catch (std::exception& e) {
+
+        // Catch all exceptions on a possible C/C++ boundary
+        eckit::Log::error() << "Exception caught in wrapped DataHandle close: "
+                            << e.what()
+                            << std::endl;
+        // See man fopencookie. Returns -1 on error
+        return -1;
+    }
+}
+
 
 #ifdef ECKIT_HAVE_FOPENCOOKIE
 

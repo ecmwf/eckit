@@ -342,6 +342,7 @@ size_t EasyCURLResponseImp::headersCallback(const void *ptr, size_t size) {
 
     if (line.empty()) {
         body_ = true;
+        _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
     }
     else {
         std::vector<std::string> v;
@@ -422,6 +423,7 @@ long EasyCURLHandle::read(void* ptr, long size) {
 }
 
 void EasyCURLHandle::close() {
+    std::cout << "EasyCURLHandle::close " << *imp_ << std::endl;
     // ASSERT(imp_->code_ == 200);
     if (!message_.empty()) {
         Log::info() << message_

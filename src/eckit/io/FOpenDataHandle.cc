@@ -240,14 +240,14 @@ static int _read(void* data, char* buffer, int length) {
 
 static int _write(void* data, const char* buffer, int length) {
     int len = writefn(data, buffer, length);
-    if(len == 0 && length > 0) {
+    if (len == 0 && length > 0) {
         return -1;
     }
     return len;
 }
 
 static fpos_t _seek(void* data, fpos_t pos, int whence) {
-    if(seekfn(data, &pos, whence) < 0)
+    if (seekfn(data, &pos, whence) < 0)
     {
         return -1;
     }

@@ -224,6 +224,16 @@ static int closefn(void* data) {
     }
 }
 
+
+#if defined(ECKIT_HAVE_FOPENCOOKIE)
+FILE* opencookie(FOpenDataHandle *h, const char* mode) {
+    ASSERT(sizeof(long) >= sizeof(size_t));
+    ASSERT(sizeof(long) >= sizeof(ssize_t));
+    cookie_io_functions_t func = {&readfn, &writefn, &seekfn, &closefn};
+    return ::fopencookie(h, mode, func);
+}
+#elif defined(ECKIT_HAVE_FUNOPEN)
+
 static int _read(void* data, char* buffer, int length) {
     return readfn(data, buffer, length);
 }
@@ -248,14 +258,6 @@ static int _close(void* data) {
     return closefn(data);
 }
 
-#if defined(ECKIT_HAVE_FOPENCOOKIE)
-FILE* opencookie(FOpenDataHandle *h, const char* mode) {
-    ASSERT(sizeof(long) >= sizeof(size_t));
-    ASSERT(sizeof(long) >= sizeof(ssize_t));
-    cookie_io_functions_t func = {&readfn, &writefn, &seekfn, &closefn};
-    return ::fopencookie(h, mode, func);
-}
-#elif defined(ECKIT_HAVE_FUNOPEN)
 FILE* opencookie(FOpenDataHandle *h, const char* mode) {
     return ::funopen(h, &_read, &_write, &_seek, &_close);
 }

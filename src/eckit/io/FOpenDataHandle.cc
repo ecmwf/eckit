@@ -240,9 +240,9 @@ FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
     ASSERT(sizeof(long) >= sizeof(size_t));
     ASSERT(sizeof(long) >= sizeof(ssize_t));
 
-    cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
+    cookie_io_functions_t func = {&_read, &_write, &_seek, &_close};
     FOpenDataHandle* h = new FOpenDataHandle(this, mode, delete_on_close, true);
-    FILE* f = ::fopencookie(h, mode, f);
+    FILE* f = ::fopencookie(h, mode, func);
     if (canSeek()) {
         setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
     }
@@ -256,9 +256,9 @@ FILE* DataHandle::openf(bool delete_on_close) {
     ASSERT(sizeof(long) >= sizeof(size_t));
     ASSERT(sizeof(long) >= sizeof(ssize_t));
 
-    cookie_io_functions_t f = {&_read, &_write, &_seek, &_close};
+    cookie_io_functions_t func = {&_read, &_write, &_seek, &_close};
     FOpenDataHandle* h = new FOpenDataHandle(this, "", delete_on_close, false);
-    FILE* f = ::fopencookie(h, "r+", f);
+    FILE* f = ::fopencookie(h, "r+", func);
     if (canSeek()) {
         setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
     }

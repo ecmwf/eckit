@@ -375,19 +375,12 @@ private:
 
     virtual void print(std::ostream& s) const;
     virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
     virtual long read(void*, long);
-    virtual long write(const void*, long);
     virtual void close();
     virtual Length size();
     virtual Length estimate();
     virtual Offset position() { return position_; }
-    virtual Offset seek(const Offset& where) {
-        std::cout << "EasyCURLHandle::seek(where="
-                  << where << ",pos=" << position_ << ")" << std::endl;
-        NOTIMP;
-    }
+    virtual bool canSeek() const { return false; }
 
 };
 
@@ -419,14 +412,6 @@ Length EasyCURLHandle::estimate() {
     return imp_->contentLength();
 }
 
-void EasyCURLHandle::openForWrite(const Length&) {
-    NOTIMP;
-}
-
-void EasyCURLHandle::openForAppend(const Length&) {
-    NOTIMP;
-}
-
 long EasyCURLHandle::read(void* ptr, long size) {
     double now = timer_.elapsed();
     size = imp_->read(ptr, size);
@@ -434,10 +419,6 @@ long EasyCURLHandle::read(void* ptr, long size) {
     total_ += size;
     position_ += size;
     return size;
-}
-
-long EasyCURLHandle::write(const void*, long) {
-    NOTIMP;
 }
 
 void EasyCURLHandle::close() {

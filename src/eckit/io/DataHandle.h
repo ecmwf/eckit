@@ -65,19 +65,20 @@ public:
 
     virtual void print(std::ostream& s) const = 0;
 
-    virtual Length openForRead()              = 0;  //< Returns estimated length
-    virtual void openForWrite(const Length&)  = 0;  //< Receive estimated length
-    virtual void openForAppend(const Length&) = 0;  //< Receive estimated length
+    virtual Length openForRead()             ;  //< Returns estimated length
+    virtual void openForWrite(const Length&) ;  //< Receive estimated length
+    virtual void openForAppend(const Length&);  //< Receive estimated length
 
-    virtual long read(void*, long)        = 0;
-    virtual long write(const void*, long) = 0;
-    virtual void close()                  = 0;
+    virtual long read(void*, long)       ;
+    virtual long write(const void*, long);
+    virtual void close()                 ;
     virtual void flush();
 
     virtual Length size();
-    virtual Length estimate() { return 0; }
+    virtual Length estimate();
     virtual Offset position();
     virtual Offset seek(const Offset&);
+    virtual bool canSeek() const;
     virtual void skip(const Length&);
 
     virtual void rewind();

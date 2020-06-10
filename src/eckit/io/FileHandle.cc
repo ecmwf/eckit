@@ -207,37 +207,6 @@ bool FileHandle::isEmpty() const {
     return info.st_size == 0;
 }
 
-// Try to be clever ....
-
-Length FileHandle::saveInto(DataHandle& other, TransferWatcher& w) {
-    static bool fileHandleSaveIntoOptimisationUsingHardLinks =
-        eckit::Resource<bool>("fileHandleSaveIntoOptimisationUsingHardLinks", false);
-    if (!fileHandleSaveIntoOptimisationUsingHardLinks) {
-        return DataHandle::saveInto(other, w);
-    }
-
-    // Poor man's RTTI,
-    // Does not support inheritance
-
-    if (!sameClass(other)) {
-        return DataHandle::saveInto(other, w);
-    }
-    // We should be safe to cast now....
-
-    FileHandle* handle = dynamic_cast<FileHandle*>(&other);
-
-    if (::link(name_.c_str(), handle->name_.c_str()) == 0) {
-        Log::debug() << "Saved ourselves a file to file copy!!!" << std::endl;
-    }
-    else {
-        Log::debug() << "Failed to link " << name_ << " to " << handle->name_ << Log::syserr << std::endl;
-        Log::debug() << "Using defaut method" << std::endl;
-        return DataHandle::saveInto(other, w);
-    }
-
-    return estimate();
-}
-
 Offset FileHandle::position() {
     ASSERT(file_);
     return ::ftello(file_);
@@ -276,6 +245,10 @@ Offset FileHandle::seek(const Offset& from) {
     off_t w = ::ftello(file_);
     ASSERT(w == l);
     return w;
+}
+
+bool FileHandle::canSeek() const {
+    return true;
 }
 
 void FileHandle::skip(const Length& n) {

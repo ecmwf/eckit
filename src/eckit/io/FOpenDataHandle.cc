@@ -28,7 +28,6 @@
 namespace eckit {
 
 
-#if defined(ECKIT_HAVE_FOPENCOOKIE) || defined(ECKIT_HAVE_FUNOPEN)
 
 class FOpenDataHandle {
 
@@ -36,7 +35,7 @@ class FOpenDataHandle {
     const char* mode_;
     bool delete_on_close_;
     bool open_close_;
-    Offset position_;  // Keep track of position to cater for
+    off_t position_;  // Keep track of position to cater for
 
 public:
     FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close, bool open_close);
@@ -44,7 +43,7 @@ public:
 
     long read(char* buffer, long length);
     long write(const char* buffer, long length);
-    long seek(long pos, int whence);
+    off_t seek(off_t pos, int whence);
     int close();
 
 
@@ -110,9 +109,9 @@ long FOpenDataHandle::write(const char* buffer, long length) {
 
 }
 
-long FOpenDataHandle::seek(long pos, int whence) {
+off_t FOpenDataHandle::seek(off_t pos, int whence) {
 
-    long where = pos;
+    off_t where = pos;
     switch (whence) {
 
     case SEEK_SET:
@@ -120,11 +119,11 @@ long FOpenDataHandle::seek(long pos, int whence) {
         break;
 
     case SEEK_CUR:
-        where = long(position_) + pos;
+        where = position_ + pos;
         break;
 
     case SEEK_END:
-        where = long(handle_->estimate()) - pos;
+        where = (long long)(handle_->size()) - pos;
         break;
 
     default:
@@ -137,10 +136,10 @@ long FOpenDataHandle::seek(long pos, int whence) {
         return where;
     }
 
-    long w = handle_->seek(where);
-    if (w >= 0) {
-        position_ = w;
-    }
+    off_t w = handle_->seek(where);
+    ASSERT(w == where);
+    position_ = w;
+
     return w;
 
 }
@@ -151,10 +150,14 @@ int FOpenDataHandle::close() {
 }
 
 
-static long readfn(void* data, char* buffer, long length) {
+static ssize_t readfn(void* data, char* buffer, size_t length) {
     try {
         FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
-        return fd->read(buffer, length);
+        ssize_t len = fd->read(buffer, length);
+        if (len < 0) { // Some datahandles return -1 on EOF
+            len = 0;
+        }
+        return len;
     }
     catch (std::exception& e) {
 
@@ -167,10 +170,14 @@ static long readfn(void* data, char* buffer, long length) {
     }
 }
 
-static long writefn(void* data, const char* buffer, long length) {
+static ssize_t writefn(void* data, const char* buffer, size_t length) {
     try {
         FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
-        return fd->write(buffer, length);
+        ssize_t len = fd->write(buffer, length);
+        if (len < 0) { // Some datahandles return -1 on error
+            len = 0;
+        }
+        return len;
     }
     catch (std::exception& e) {
 
@@ -183,11 +190,12 @@ static long writefn(void* data, const char* buffer, long length) {
     }
 }
 
-static long seekfn(void* data, long pos, int whence) {
+static int seekfn(void* data, off_t* offset, int whence) {
     try {
 
         FOpenDataHandle* fd = reinterpret_cast<FOpenDataHandle*>(data);
-        return fd->seek(pos, whence);
+        *offset = fd->seek(*offset, whence);
+        return 0;
     }
     catch (std::exception& e) {
 
@@ -216,115 +224,72 @@ static int closefn(void* data) {
     }
 }
 
-
-#ifdef ECKIT_HAVE_FOPENCOOKIE
-
-static ssize_t _read(void* cookie, char* buf, size_t size) {
-    return readfn(cookie, buf, size);
-}
-
-static ssize_t _write(void* cookie, const char* buf, size_t size) {
-    return writefn(cookie, buf, size);
-}
-
-static int _seek(void* cookie, off64_t* offset, int whence) {
-    *offset = seekfn(cookie, *offset, whence);
-    return *offset >= 0 ? 0 : -1;
-}
-
-static int _close(void* cookie) {
-    return closefn(cookie);
-}
-
-FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
-    ASSERT(sizeof(long) >= sizeof(size_t));
-    ASSERT(sizeof(long) >= sizeof(ssize_t));
-
-    cookie_io_functions_t func = {&_read, &_write, &_seek, &_close};
-    FOpenDataHandle* h = new FOpenDataHandle(this, mode, delete_on_close, true);
-    FILE* f = ::fopencookie(h, mode, func);
-    if (canSeek()) {
-        setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
-    }
-    else {
-        setvbuf(f, 0, _IONBF, 0);
-    }
-    return f;
-}
-
-FILE* DataHandle::openf(bool delete_on_close) {
-    ASSERT(sizeof(long) >= sizeof(size_t));
-    ASSERT(sizeof(long) >= sizeof(ssize_t));
-
-    cookie_io_functions_t func = {&_read, &_write, &_seek, &_close};
-    FOpenDataHandle* h = new FOpenDataHandle(this, "", delete_on_close, false);
-    FILE* f = ::fopencookie(h, "r+", func);
-    if (canSeek()) {
-        setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
-    }
-    else {
-        setvbuf(f, 0, _IONBF, 0);
-    }
-    return f;
-}
-
-#else
-
 static int _read(void* data, char* buffer, int length) {
     return readfn(data, buffer, length);
 }
 
 static int _write(void* data, const char* buffer, int length) {
-    return writefn(data, buffer, length);
+    int len = writefn(data, buffer, length);
+    if(len == 0 && length > 0) {
+        return -1;
+    }
+    return len;
 }
 
 static fpos_t _seek(void* data, fpos_t pos, int whence) {
-    return seekfn(data, pos, whence);
+    if(seekfn(data, &pos, whence) < 0)
+    {
+        return -1;
+    }
+    return pos;
 }
 
 static int _close(void* data) {
     return closefn(data);
 }
 
-FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
-    ASSERT(sizeof(long) >= sizeof(fpos_t));
-    FOpenDataHandle* h = new FOpenDataHandle(this, mode, delete_on_close, true);
-    FILE* f = ::funopen(h, &_read, &_write, &_seek, &_close);
-    if (canSeek()) {
-        setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
-    }
-    else {
-        setvbuf(f, 0, _IONBF, 0);
-    }
-    return f;
+#if defined(ECKIT_HAVE_FOPENCOOKIE)
+FILE* opencookie(FOpenDataHandle *h, const char* mode) {
+    ASSERT(sizeof(long) >= sizeof(size_t));
+    ASSERT(sizeof(long) >= sizeof(ssize_t));
+    cookie_io_functions_t func = {&readfn, &writefn, &seekfn, &closefn};
+    return ::fopencookie(h, mode, func);
 }
-
-FILE* DataHandle::openf(bool delete_on_close) {
-    ASSERT(sizeof(long) >= sizeof(fpos_t));
-    FOpenDataHandle* h = new FOpenDataHandle(this, "", delete_on_close, false);
-    FILE* f = ::funopen(h, &_read, &_write, &_seek, &_close);
-    if (canSeek()) {
-        setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
-    }
-    else {
-        setvbuf(f, 0, _IONBF, 0);
-    }
-    return f;
+#elif defined(ECKIT_HAVE_FUNOPEN)
+FILE* opencookie(FOpenDataHandle *h, const char* mode) {
+    return ::funopen(h, &_read, &_write, &_seek, &_close);
 }
-
-#endif
-
 #else
+FILE* opencookie(FOpenDataHandle *h, const char* mode) {
+    NOTIMP;
+}
+#endif
+
+
+static FILE* open(DataHandle* handle,
+                  const char* mode,
+                  bool delete_on_close,
+                  bool open_close) {
+    FOpenDataHandle* h = new FOpenDataHandle(handle, mode, delete_on_close, open_close);
+    FILE* f = opencookie(h, mode);
+    if (handle->canSeek()) {
+        setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
+    }
+    else {
+        setvbuf(f, 0, _IONBF, 0);
+    }
+    return f;
+}
 
 FILE* DataHandle::openf(const char* mode, bool delete_on_close) {
-    NOTIMP;
+    return open(this, mode, delete_on_close, true);
 }
 
 FILE* DataHandle::openf(bool delete_on_close) {
-    NOTIMP;
+    return open(this, "r+", delete_on_close, false);
 }
 
-#endif
+
 
 
 //----------------------------------------------------------------------------------------------------------------------

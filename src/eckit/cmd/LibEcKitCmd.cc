@@ -8,45 +8,40 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Baudouin Raoult
-/// @author Tiago Quintino
-/// @author Simon Smart
-/// @date   March 2017
+#include "eckit/cmd/LibEcKitCmd.h"
 
-#ifndef eckit_system_SystemInfoFreeBSD_H
-#define eckit_system_SystemInfoFreeBSD_H
-
-#include <iosfwd>
-
-#include "eckit/system/SystemInfo.h"
+#include "eckit/eckit_version.h"
 
 namespace eckit {
-namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SystemInfoFreeBSD : public SystemInfo {
+REGISTER_LIBRARY(LibEcKitCmd);
 
-public: // methods
+LibEcKitCmd::LibEcKitCmd() : Library("eckit_cmd") {}
 
-    virtual ~SystemInfoFreeBSD();
+LibEcKitCmd& LibEcKitCmd::instance() {
+    static LibEcKitCmd lib;
+    return lib;
+}
 
-    virtual eckit::LocalPathName executablePath() const;
+const void* LibEcKitCmd::addr() const {
+    return this;
+}
 
-    virtual MemoryInfo memoryUsage() const;
+std::string LibEcKitCmd::version() const {
+    return eckit_version_str();
+}
 
-    virtual std::string dynamicLibraryName(const std::string& name) const;
+std::string LibEcKitCmd::gitsha1(unsigned int count) const {
+    std::string sha1(eckit_git_sha1());
+    if (sha1.empty()) {
+        return "not available";
+    }
 
-protected: // methods
-
-private: // members
-
-};
+    return sha1.substr(0, std::min(count, 40u));
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
-
-#endif
-
+}  // namespace eckit

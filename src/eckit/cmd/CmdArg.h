@@ -15,8 +15,6 @@
 #include "eckit/value/Value.h"
 #include "eckit/config/Resource.h"
 
-#include "eckit/cmd/cmdlib.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {

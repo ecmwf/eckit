@@ -16,6 +16,8 @@
 #include <cctype>
 #include <map>
 
+#include <dlfcn.h>
+
 #include "eckit/system/Library.h"
 
 #include "eckit/config/Resource.h"
@@ -26,6 +28,7 @@
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
+#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Translator.h"
@@ -130,6 +133,48 @@ void Library::list(std::ostream& out) {
 
 bool Library::exists(const std::string& name) {
     return LibraryRegistry::instance().exists(name);
+}
+
+void Library::load(const std::string& name) {
+
+    static std::vector<std::string> libPaths(Resource<std::vector<std::string>>("dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib", "~eckit/lib"}));
+
+    if (!exists(name)) {
+
+        // Get the (system specific) library name for the given library instance
+
+        std::string libraryName = SystemInfo::instance().dynamicLibraryName(name);
+
+        // Try the various paths in the way
+
+        for (const eckit::PathName& dir : libPaths) {
+
+            eckit::PathName p = dir / libraryName;
+            if (p.exists()) {
+                void* plib;
+                if ((plib = ::dlopen(p.localPath(), RTLD_NOW | RTLD_GLOBAL)) == nullptr) {
+                    std::ostringstream ss;
+                    ss << "dlopen(" << p << ", ...)";
+                    throw FailedSystemCall(ss.str().c_str(), Here(), errno);
+                }
+
+                // If the library still doesn't exist after a successful call of dlopen, then
+                // we have managed to load something other than a (self-registering) eckit library
+                if (!exists(name)) {
+                    std::ostringstream ss;
+                    ss << "Shared library " << p << " loaded but Library " << name << " not registered";
+                    throw UnexpectedState(ss.str(), Here());
+                }
+
+                return;
+            }
+        }
+
+        // Not found!!!
+        std::ostringstream ss;
+        ss << "Library " << name << " not found";
+        throw SeriousBug(ss.str(), Here());
+    }
 }
 
 const Library& Library::lookup(const std::string& name) {

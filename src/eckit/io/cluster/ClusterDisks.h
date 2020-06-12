@@ -44,6 +44,8 @@ public:
     static void list(std::ostream& out);
     static void json(JSON& out);
 
+    static void send(Stream& s);
+    static void receive(Stream& s);
 
     static time_t lastModified(const std::string&);
     static void   load(const std::string&, std::vector<std::string>&);

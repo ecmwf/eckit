@@ -55,9 +55,17 @@ public:
     }
 
     bool operator<(const ClusterDisk& other) const {
-        if (strcmp(path_, other.path_) < 0)
+        if (compare(other) < 0)
             return true;
         return false;
+    }
+
+    int compare(const ClusterDisk& other) const {
+        int cmp = ::strcmp(path_, other.path_);
+        // n.b. We do NOT compare the node. It is legitimate for a path to move to
+        //      another node.
+        //if (cmp == 0) cmp = ::strcmp(node_, other.node_);
+        return cmp;
     }
 
     void active(bool on) { active_ = on; }
@@ -82,6 +90,39 @@ public:
         s << "type" << type_;
         s << "path" << path_;
         s.endObject();
+    }
+
+    void send(Stream& s) const {
+        unsigned long long t = lastSeen_;
+        s << t;
+        s << offLine_;
+        s << node_;
+        s << type_;
+        s << path_;
+    }
+
+    void receive(Stream& s) {
+        unsigned long long t;
+        std::string x;
+
+        s >> t;
+        lastSeen_ = t;
+
+        s >> offLine_;
+
+        s >> x;
+        zero(node_);
+        ::strncpy(node_, x.c_str(), sizeof(node_) - 1);
+
+        s >> x;
+        zero(type_);
+        ::strncpy(type_, x.c_str(), sizeof(type_) - 1);
+
+        s >> x;
+        zero(path_);
+        ::strncpy(path_, x.c_str(), sizeof(path_) - 1);
+
+        active_ = true;
     }
 };
 std::ostream& operator<<(std::ostream& s, const ClusterDisk& d) {
@@ -261,14 +302,14 @@ void ClusterDisks::update(const std::string& node, const std::string& type, cons
     for (std::vector<std::string>::const_iterator j = disks.begin(); j != disks.end(); ++j) {
         ClusterDisk c(node, type, *j);
         DiskArray::iterator k = std::lower_bound(clusterDisks->begin(), clusterDisks->end(), c);
-        if (k != clusterDisks->end() && !(c < *k)) {
+        if (k != clusterDisks->end() && c.compare(*k) == 0) {
             // Log::info() << "=========== Update " << node << "-" << type << " " << *j << std::endl;
             // TODO check for change of node or type
             *k = c;
         }
         else {
             ASSERT(!(*clusterDisks)[0].active());
-            //	Log::info() << "================ New " << node << "-" << type << " " << * j << std::endl;
+            // Log::info() << "================ New " << node << "-" << type << " " << * j << std::endl;
             (*clusterDisks)[0] = c;
             std::sort(clusterDisks->begin(), clusterDisks->end());
         }
@@ -387,6 +428,45 @@ std::string ClusterDisks::node(const std::string& path) {
     }
 
     return (*j).node();
+}
+
+void ClusterDisks::send(Stream& s) {
+
+    pthread_once(&once, diskarray_init);
+
+    AutoLock<DiskArray> lock(*clusterDisks);
+    for (const ClusterDisk& disk : *clusterDisks) {
+        if (disk.active()) {
+            s << bool(true);
+            disk.send(s);
+        }
+    }
+
+    s << bool(false);
+}
+
+void ClusterDisks::receive(Stream& s) {
+
+    pthread_once(&once, diskarray_init);
+
+    AutoLock<DiskArray> lock(*clusterDisks);
+    for (ClusterDisk& disk : *clusterDisks) {
+        disk.active(false);
+    }
+
+    bool more;
+    DiskArray::iterator k = clusterDisks->begin();
+
+    while (true) {
+
+        s >> more;
+        if (!more) break;
+
+        ASSERT(k != clusterDisks->end());
+        (*k).receive(s);
+
+        ++k;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

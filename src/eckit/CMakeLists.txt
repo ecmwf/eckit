@@ -176,8 +176,6 @@ io/HandleHolder.cc
 io/HandleHolder.h
 io/Length.cc
 io/Length.h
-io/MarsFSHandle.cc
-io/MarsFSHandle.h
 io/MemoryHandle.cc
 io/MemoryHandle.h
 io/MoverTransfer.cc
@@ -286,6 +284,8 @@ filesystem/PathExpander.cc
 filesystem/PathExpander.h
 filesystem/PathName.cc
 filesystem/PathName.h
+filesystem/PathNameFactory.cc
+filesystem/PathNameFactory.h
 filesystem/TempFile.cc
 filesystem/TempFile.h
 filesystem/TmpDir.cc
@@ -296,12 +296,6 @@ filesystem/URI.cc
 filesystem/URI.h
 filesystem/URIManager.cc
 filesystem/URIManager.h
-filesystem/marsfs/MarsFSClient.cc
-filesystem/marsfs/MarsFSClient.h
-filesystem/marsfs/MarsFSFile.cc
-filesystem/marsfs/MarsFSFile.h
-filesystem/marsfs/MarsFSPath.cc
-filesystem/marsfs/MarsFSPath.h
 )
 
 list( APPEND eckit_thread_srcs

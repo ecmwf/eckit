@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -36,7 +36,7 @@ class SQLStatement;
 class SQLTable;
 class SQLOutputConfig;
 
-class SQLSession : private eckit::NonCopyable {
+class SQLSession {
 public:
 
     // Constructors
@@ -45,12 +45,16 @@ public:
     SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter=",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);
     SQLSession(const std::string& csvDelimiter=",");
+
     virtual ~SQLSession();
 
-    // Enable move constructor
+    // Enable move constructor, but disable copy construction
 
     SQLSession(SQLSession&& rhs) = default;
     SQLSession& operator=(SQLSession&& rhs) = default;
+
+    SQLSession(const SQLSession&) = delete;
+    SQLSession& operator=(const SQLSession&) = delete;
 
     // For sqly.y (used parsing SQL strings)
 

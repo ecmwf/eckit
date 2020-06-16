@@ -135,24 +135,19 @@ void URIManager::print(std::ostream& s) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LocalFileManager : public URIManager {
-    virtual bool exists(const URI& uri) override { return PathName("local", uri.name()).exists(); }
+bool LocalFileManager::exists(const URI& uri) { return PathName("local", uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return path(uri).fileHandle(); }
+DataHandle* LocalFileManager::newWriteHandle(const URI& uri) { return path(uri).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& uri) override { return path(uri).fileHandle(); }
+DataHandle* LocalFileManager::newReadHandle(const URI& uri) { return path(uri).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
-        return path(uri).partHandle(ol, ll);
-    }
+DataHandle* LocalFileManager::newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) {
+    return path(uri).partHandle(ol, ll);
+}
 
-    virtual std::string asString(const URI& uri) const override { return uri.name(); }
+std::string LocalFileManager::asString(const URI& uri) const { return uri.name(); }
 
-    PathName path(const URI& uri) const { return PathName("local", uri.name()); }
-
-public:
-    LocalFileManager(const std::string& name) : URIManager(name) {}
-};
+PathName LocalFileManager::path(const URI& uri) const { return PathName("local", uri.name()); }
 
 //----------------------------------------------------------------------------------------------------------------------
 

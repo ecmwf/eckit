@@ -135,27 +135,6 @@ void URIManager::print(std::ostream& s) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LocalFileManager : public URIManager {
-    virtual bool exists(const URI& uri) override { return PathName("local", uri.name()).exists(); }
-
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return path(uri).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& uri) override { return path(uri).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
-        return path(uri).partHandle(ol, ll);
-    }
-
-    virtual std::string asString(const URI& uri) const override { return uri.name(); }
-
-    PathName path(const URI& uri) const { return PathName("local", uri.name()); }
-
-public:
-    LocalFileManager(const std::string& name) : URIManager(name) {}
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 class LocalFilePartManager : public URIManager {
     virtual bool query() override { return true; }
     virtual bool fragment() override { return true; }
@@ -220,7 +199,6 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static LocalFileManager manager_unix("unix");
 static LocalFilePartManager manager_file("file");
 static HttpURIManager manager_http("http");
 static HttpURIManager manager_https("https");

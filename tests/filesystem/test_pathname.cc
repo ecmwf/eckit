@@ -25,12 +25,12 @@ CASE("Unknown path type fails") {
     EXPECT_THROWS_AS(PathName("unknown://a/path/component"), SeriousBug);
 }
 
-CASE("Creation of marsfs paths") {
+/* CASE("Creation of marsfs paths") {
     PathName m("marsfs://nodexxx/a/path/component");
 
     EXPECT(m.node() == "nodexxx");
     EXPECT(m.path() == "/a/path/component");
-}
+}*/
 
 CASE("Creation of local paths") {
 

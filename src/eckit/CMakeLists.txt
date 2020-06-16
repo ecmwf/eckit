@@ -298,6 +298,8 @@ filesystem/URI.cc
 filesystem/URI.h
 filesystem/URIManager.cc
 filesystem/URIManager.h
+filesystem/LocalFileManager.cc
+filesystem/LocalFileManager.h
 )
 
 list( APPEND eckit_thread_srcs

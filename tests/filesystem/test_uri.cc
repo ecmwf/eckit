@@ -356,6 +356,20 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.asString() == "http://nodename/path");
     }
     {
+        URI uri("https://localhost:123/path");
+        EXPECT(uri.scheme() == "https");
+        EXPECT(uri.authority() == "localhost:123");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host() == "localhost");
+        EXPECT(uri.port() == 123);
+        EXPECT(uri.name() == "/path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "https://localhost:123/path");
+        EXPECT(uri.asString() == "https://localhost:123/path");
+    }
+/*    {
         URI uri("marsfs://nodename/path");
         EXPECT(uri.scheme() == "marsfs");
         EXPECT(uri.authority().empty());
@@ -370,20 +384,6 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.asString() == "marsfs://nodename/path");
     }
     {
-        URI uri("https://localhost:123/path");
-        EXPECT(uri.scheme() == "https");
-        EXPECT(uri.authority() == "localhost:123");
-        EXPECT(uri.user().empty());
-        EXPECT(uri.host() == "localhost");
-        EXPECT(uri.port() == 123);
-        EXPECT(uri.name() == "/path");
-        EXPECT_THROWS_AS(uri.path(), NotImplemented);
-        EXPECT(uri.query().empty());
-        EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "https://localhost:123/path");
-        EXPECT(uri.asString() == "https://localhost:123/path");
-    }
-    {
         URI uri("marsfs://localhost:123/path");
         EXPECT(uri.scheme() == "marsfs");
         EXPECT(uri.authority().empty());
@@ -396,7 +396,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "marsfs://localhost:123/path");
         EXPECT(uri.asString() == "marsfs://localhost:123/path");
-    }
+    }*/
 }
 
 CASE("Stream") {
@@ -443,7 +443,7 @@ CASE("Stream") {
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
         EXPECT(uri.port() == 123);
-        EXPECT(uri.path() == "/path");
+        EXPECT_THROWS_AS(uri.path(), NotImplemented);
         EXPECT(uri.query().empty());
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "http://username:password@host:123/path");

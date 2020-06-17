@@ -151,7 +151,7 @@ class LocalFilePartManager : public URIManager {
 
     virtual std::string asString(const URI& uri) const override { return uri.name(); }
 
-    PathName path(const URI& uri) const { return PathName("local", uri.name()); }
+    PathName path(const URI& uri) const override { return PathName("local", uri.name()); }
 
 public:
     LocalFilePartManager(const std::string& name) : URIManager(name) {}

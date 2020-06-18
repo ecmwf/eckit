@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// File io/PeekHandle.h
+// File io/SeekableHandle.h
 // Baudouin Raoult - ECMWF May 2020
 
-#ifndef eckit_filesystem_PeekHandle_h
-#define eckit_filesystem_PeekHandle_h
+#ifndef eckit_filesystem_SeekableHandle_h
+#define eckit_filesystem_SeekableHandle_h
 
-#include <deque>
+#include <memory>
 
 #include "eckit/io/HandleHolder.h"
+#include "eckit/io/PeekHandle.h"
 
 //-----------------------------------------------------------------------------
 
@@ -24,28 +25,25 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class PeekHandle : public DataHandle, public HandleHolder {
+class SeekableHandle : public DataHandle {
 public:
 
 
     /// Contructor, taking ownership
 
-	PeekHandle(DataHandle*);
+	SeekableHandle(DataHandle*);
 
     /// Contructor, not taking ownership
 
-	PeekHandle(DataHandle&);
+	SeekableHandle(DataHandle&);
 
     /// Destructor
 
-	virtual ~PeekHandle();
+	virtual ~SeekableHandle();
 
 // -- Operators
 
 // -- Methods
-
-    unsigned char peek(size_t);
-    long peek(void* buffer, size_t size, size_t offset=0);
 
 // -- Overridden methods
 
@@ -66,11 +64,13 @@ public:
 	virtual Length estimate();
 	virtual Offset position();
 
-    virtual std::string title() const;
 
 private: // members
 
-	std::deque<unsigned char> peek_;
+	PeekHandle handle_;
+    size_t position_;
+
+    virtual std::string title() const;
 
 };
 

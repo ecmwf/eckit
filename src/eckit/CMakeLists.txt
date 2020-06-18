@@ -137,6 +137,8 @@ io/BufferedHandle.cc
 io/BufferedHandle.h
 io/PeekHandle.cc
 io/PeekHandle.h
+io/SeekableHandle.cc
+io/SeekableHandle.h
 io/CircularBuffer.cc
 io/CircularBuffer.h
 io/CommandStream.cc

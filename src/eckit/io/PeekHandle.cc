@@ -18,19 +18,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
-ClassSpec PeekHandle::classSpec_ = {&DataHandle::classSpec(), "PeekHandle",};
-Reanimator<PeekHandle> PeekHandle::reanimator_;
-#endif
+PeekHandle::PeekHandle(DataHandle* h):
+    HandleHolder(h) {
+    }
 
+PeekHandle::PeekHandle(DataHandle& h):
+    HandleHolder(h) {
+    }
 
-PeekHandle::PeekHandle(DataHandle* h) :
-    HandleHolder(h) {}
-
-PeekHandle::PeekHandle(DataHandle& h) :
-    HandleHolder(h) {}
-
-PeekHandle::~PeekHandle() {}
+PeekHandle::~PeekHandle() {
+}
 
 Length PeekHandle::openForRead() {
     peek_.clear();
@@ -49,7 +46,6 @@ unsigned char PeekHandle::peek(size_t n) {
     }
     return peek_[n];
 }
-
 
 long PeekHandle::peek(void* buffer, size_t size, size_t pos) {
     size_t last = pos + size;
@@ -151,49 +147,6 @@ Offset PeekHandle::position() {
 
 std::string PeekHandle::title() const {
     return std::string("{") + handle().title() + "}";
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-
-PeekWrapperHandle::PeekWrapperHandle(PeekHandle& handle) :
-    handle_(handle) {}
-
-PeekWrapperHandle::~PeekWrapperHandle() {}
-
-
-void PeekWrapperHandle::skip(const Length& len) {
-    position_ += len;
-}
-
-long PeekWrapperHandle::read(void* buffer, long length) {
-    long len = handle_.peek(buffer, length, position_);
-    ASSERT(len >= 0);
-    position_ += len;
-    return len;
-}
-
-void PeekWrapperHandle::rewind() {
-    position_ = 0;
-}
-
-Offset PeekWrapperHandle::seek(const Offset& off) {
-    position_ = off;
-    return position_;
-}
-
-void PeekWrapperHandle::print(std::ostream& s) const {
-    s << "PeekWrapperHandle[";
-    handle_.print(s);
-    s << ']';
-}
-
-bool PeekWrapperHandle::canSeek() const {
-    return true;
-}
-
-Offset PeekWrapperHandle::position() {
-    return position_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -9,6 +9,7 @@
  */
 
 #include <cstring>
+#include <algorithm>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/PeekHandle.h"
@@ -49,6 +50,39 @@ unsigned char PeekHandle::peek(size_t n) {
     return peek_[n];
 }
 
+
+long PeekHandle::peek(void* buffer, size_t size, size_t pos) {
+    size_t last = pos + size;
+
+    unsigned char* buf = static_cast<unsigned char*>(buffer);
+
+    while (last > peek_.size()) {
+        long n = std::min(last - peek_.size(), size);
+        long p = handle().read(buf, n);
+
+        ASSERT(p >= 0);
+        if (p == 0) {
+            break;
+        }
+
+        std::copy(buf,
+                  buf + p,
+                  std::back_inserter(peek_));
+
+    }
+
+    int len = std::min(last, peek_.size());
+    ASSERT(len >= pos);
+    len -= pos;
+
+    std::copy(peek_.begin() + pos,
+              peek_.begin() + pos + len,
+              buf);
+
+    return len;
+
+}
+
 long PeekHandle::read(void* buffer, long length) {
 
     if (peek_.empty()) {
@@ -60,13 +94,16 @@ long PeekHandle::read(void* buffer, long length) {
 
     size_t s = std::min(peek_.size(), size_t(length));
 
-    ::memcpy(p, &peek_[0], s);
+    std::copy(peek_.begin(),
+              peek_.begin() + s,
+              p);
+
     p += s;
     len += s;
     length -= s;
 
     while (s--) {
-        peek_.erase(peek_.begin());
+        peek_.pop_front();
     }
 
     if (length) {
@@ -116,9 +153,48 @@ std::string PeekHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
-DataHandle* PeekHandle::clone() const {
-    return new PeekHandle(handle().clone());
-}
 //----------------------------------------------------------------------------------------------------------------------
 
+
+PeekWrapperHandle::PeekWrapperHandle(PeekHandle& handle) :
+    handle_(handle) {}
+
+PeekWrapperHandle::~PeekWrapperHandle() {}
+
+
+void PeekWrapperHandle::skip(const Length& len) {
+    position_ += len;
+}
+
+long PeekWrapperHandle::read(void* buffer, long length) {
+    long len = handle_.peek(buffer, length, position_);
+    ASSERT(len >= 0);
+    position_ += len;
+    return len;
+}
+
+void PeekWrapperHandle::rewind() {
+    position_ = 0;
+}
+
+Offset PeekWrapperHandle::seek(const Offset& off) {
+    position_ = off;
+    return position_;
+}
+
+void PeekWrapperHandle::print(std::ostream& s) const {
+    s << "PeekWrapperHandle[";
+    handle_.print(s);
+    s << ']';
+}
+
+bool PeekWrapperHandle::canSeek() const {
+    return true;
+}
+
+Offset PeekWrapperHandle::position() {
+    return position_;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 }  // namespace eckit

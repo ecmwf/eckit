@@ -14,7 +14,8 @@
 #ifndef eckit_filesystem_PeekHandle_h
 #define eckit_filesystem_PeekHandle_h
 
-#include "eckit/io/Buffer.h"
+#include <deque>
+
 #include "eckit/io/HandleHolder.h"
 
 //-----------------------------------------------------------------------------
@@ -44,6 +45,7 @@ public:
 // -- Methods
 
     unsigned char peek(size_t);
+    long peek(void* buffer, size_t size, size_t offset=0);
 
 // -- Overridden methods
 
@@ -64,37 +66,42 @@ public:
 	virtual Length estimate();
 	virtual Offset position();
 
-    virtual DataHandle* clone() const;
-
-
-    // From Streamable
-
-#if 0
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
-#endif
-
-// -- Class methods
-
-#if 0
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
-#endif
-
-private:
-
 
 private: // members
 
-	std::vector<unsigned char> peek_;
+	std::deque<unsigned char> peek_;
 
     virtual std::string title() const;
 
-// -- Class members
+};
 
-#if 0
-	static  ClassSpec                 classSpec_;
-    static  Reanimator<PeekHandle>  reanimator_;
-#endif
+//-----------------------------------------------------------------------------
+
+class PeekWrapperHandle : public DataHandle {
+public:
+
+    PeekWrapperHandle(PeekHandle&);
+
+    /// Destructor
+
+    virtual ~PeekWrapperHandle();
+
+    virtual long read(void*,long);
+
+    virtual void rewind();
+    virtual void print(std::ostream&) const;
+    virtual void skip(const Length&);
+
+    virtual Offset seek(const Offset&);
+    virtual bool canSeek() const;
+
+    // virtual Length estimate();
+    virtual Offset position();
+
+public:
+
+    PeekHandle& handle_;
+    size_t position_;
 
 };
 

@@ -149,5 +149,9 @@ std::string PeekHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
+size_t PeekHandle::peeked() const {
+    return peek_.size();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 }  // namespace eckit

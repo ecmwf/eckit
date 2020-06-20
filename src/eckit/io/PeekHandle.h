@@ -47,6 +47,8 @@ public:
     unsigned char peek(size_t);
     long peek(void* buffer, size_t size, size_t offset=0);
 
+    size_t peeked() const;
+
 // -- Overridden methods
 
     // From DataHandle

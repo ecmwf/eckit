@@ -741,6 +741,7 @@ memory/MemoryPool.cc
 memory/MemoryPool.h
 memory/NonCopyable.cc
 memory/NonCopyable.h
+memory/OnlyMovable.h
 memory/Owned.h
 memory/Padded.h
 memory/ScopedPtr.h

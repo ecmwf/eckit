@@ -20,6 +20,7 @@ namespace eckit { class DataHandle; }
 
 #include <memory>
 
+#include "eckit/memory/OnlyMovable.h"
 #include "eckit/sql/SQLSelectFactory.h"
 //#include "eckit/sql/SQLInsertFactory.h"
 #include "eckit/sql/SQLDatabase.h"
@@ -37,6 +38,7 @@ class SQLTable;
 class SQLOutputConfig;
 
 class SQLSession {
+class SQLSession : private eckit::OnlyMovable {
 public:
 
     // Constructors
@@ -47,14 +49,6 @@ public:
     SQLSession(const std::string& csvDelimiter=",");
 
     virtual ~SQLSession();
-
-    // Enable move constructor, but disable copy construction
-
-    SQLSession(SQLSession&& rhs) = default;
-    SQLSession& operator=(SQLSession&& rhs) = default;
-
-    SQLSession(const SQLSession&) = delete;
-    SQLSession& operator=(const SQLSession&) = delete;
 
     // For sqly.y (used parsing SQL strings)
 

@@ -45,6 +45,12 @@ public:
     SQLDatabase(const std::string& name = "default");
 	virtual ~SQLDatabase(); 
 
+    SQLDatabase(const SQLDatabase&) = delete;
+    SQLDatabase& operator=(const SQLDatabase&) = delete;
+
+    SQLDatabase(SQLDatabase&&) = default;
+    SQLDatabase& operator=(SQLDatabase&&) = default;
+
 // -- Methods
     void open();
     void close();
@@ -92,8 +98,6 @@ protected:
 
 private:
 // No copy allowed
-	SQLDatabase(const SQLDatabase&);
-	SQLDatabase& operator=(const SQLDatabase&);
 
 	void loadIOMAP();
 	void loadDD();

@@ -37,7 +37,6 @@ class SQLStatement;
 class SQLTable;
 class SQLOutputConfig;
 
-class SQLSession {
 class SQLSession : private eckit::OnlyMovable {
 public:
 

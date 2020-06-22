@@ -31,11 +31,11 @@ public:
 
     /// Contructor, taking ownership
 
-	SeekableHandle(DataHandle*);
+	SeekableHandle(PeekHandle*);
 
     /// Contructor, not taking ownership
 
-	SeekableHandle(DataHandle&);
+	SeekableHandle(PeekHandle&);
 
     /// Destructor
 
@@ -67,8 +67,9 @@ public:
 
 private: // members
 
-	PeekHandle handle_;
+	PeekHandle& handle_;
     size_t position_;
+    bool owned_;
 
     virtual std::string title() const;
 

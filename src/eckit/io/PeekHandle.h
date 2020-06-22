@@ -67,6 +67,7 @@ public:
 
 	virtual Length estimate();
 	virtual Offset position();
+    virtual Length size();
 
     virtual std::string title() const;
 

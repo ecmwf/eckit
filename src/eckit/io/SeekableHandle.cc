@@ -19,18 +19,21 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-SeekableHandle::SeekableHandle(DataHandle* h):
-    handle_(h) {
+SeekableHandle::SeekableHandle(PeekHandle* h):
+    handle_(*h),
+    position_(0) {
 }
 
-SeekableHandle::SeekableHandle(DataHandle& h):
-    handle_(h) {
+SeekableHandle::SeekableHandle(PeekHandle& h):
+    handle_(h),
+    position_(0) {
 }
 
 SeekableHandle::~SeekableHandle() {
 }
 
 Length SeekableHandle::openForRead() {
+    position_ = 0;
     return handle_.openForRead();
 }
 

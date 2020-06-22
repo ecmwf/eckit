@@ -137,6 +137,11 @@ Length PeekHandle::estimate() {
     return handle().estimate();
 }
 
+Length PeekHandle::size() {
+    return handle().size();
+}
+
+
 bool PeekHandle::canSeek() const {
     return handle().canSeek();
 }

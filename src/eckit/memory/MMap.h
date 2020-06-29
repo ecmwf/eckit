@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author  Baudouin Raoult
-/// @author  Tiago Quintino
-/// @date    Dec 2017
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date Dec 2017
 
 #ifndef eckit_memory_MMap_h
 #define eckit_memory_MMap_h

@@ -1,16 +1,16 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
 /// @author Baudouin Raoult
-/// @author Simon SMart
-/// ECMWF Dec 03
+/// @author Simon Smart
+/// @date Dec 2003
 
 #ifndef eckit_sql_SQLSelect_H
 #define eckit_sql_SQLSelect_H
@@ -56,7 +56,7 @@ public:
               std::shared_ptr<expression::SQLExpression> where,
               SQLOutput& out,
               std::vector<std::unique_ptr<SQLOutput>>&& ownedOutputs_=std::vector<std::unique_ptr<SQLOutput>>());
-	~SQLSelect(); 
+	~SQLSelect();
 
 // -- Methods
     void prepareExecute();
@@ -71,7 +71,7 @@ public:
     const SQLTable& findTable(const std::string& name) const;
     void ensureFetch(const SQLTable& table, const std::string& columnName);
 
-	virtual Expressions output() const; 
+	virtual Expressions output() const;
 
     std::vector<eckit::PathName> outputFiles() const;
     void outputFiles(const std::vector<eckit::PathName>& files);
@@ -82,7 +82,7 @@ public:
     unsigned long long execute();
 
 protected:
-	virtual void print(std::ostream&) const; 	
+	virtual void print(std::ostream&) const;
 
 private:
 // No copy allowed

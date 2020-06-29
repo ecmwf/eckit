@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author SimonSmart
+/// @author Simon Smart
 /// @date   Dec 2018
 
 #ifndef eckit_TmpDir_h

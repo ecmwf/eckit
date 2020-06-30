@@ -873,11 +873,14 @@ void LocalPathName::syncParentDirectory() const {
     SYSCALL(dir = dirfd(d));
     int ret = fsync(dir);
 
-    while (ret < 0 && errno == EINTR)
+    while (ret < 0 && errno == EINTR){
         ret = fsync(dir);
+    }
 
     if (ret < 0) {
-        Log::error() << "Cannot fsync directory [" << directory << "]" << Log::syserr << std::endl;
+        std::ostringstream oss;
+        Log::error() << "Cannot fsync directory [" << directory << "]";
+        throw FailedSystemCall(oss.str());
     }
 
     ::closedir(d);

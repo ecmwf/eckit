@@ -148,8 +148,14 @@ void FileHandle::flush() {
 
             int ret = eckit::fsync(fileno(file_));
 
+            while (ret < 0 && errno == EINTR) {
+                ret = eckit::fsync(fileno(file_));
+            }
+
             if (ret < 0) {
-                Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) << Log::syserr << std::endl;
+                std::ostringstream oss;
+                oss << "Cannot fsync(" << name_ << ") " << fileno(file_);
+                throw FailedSystemCall(oss.str());
             }
 
             // On Linux, you must also flush the directory

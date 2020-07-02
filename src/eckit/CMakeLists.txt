@@ -248,6 +248,18 @@ io/URLHandle.cc
 io/URLHandle.h)
 endif()
 
+list(APPEND eckit_message_srcs
+message/Decoder.cc
+message/Decoder.h
+message/Message.cc
+message/Message.h
+message/MessageContent.cc
+message/MessageContent.h
+message/Reader.cc
+message/Reader.h
+message/Splitter.cc
+message/Splitter.h
+)
 
 if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
@@ -812,6 +824,7 @@ list( APPEND eckit_dirs
     io
     log
     memory
+    message
     net
     os
     parser

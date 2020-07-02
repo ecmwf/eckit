@@ -145,8 +145,8 @@ io/CommandStream.cc
 io/CommandStream.h
 io/Compress.cc
 io/Compress.h
-io/DataBlob.cc
-io/DataBlob.h
+# io/DataBlob.cc
+# io/DataBlob.h
 io/DataHandle.cc
 io/DataHandle.h
 io/DblBuffer.cc
@@ -480,8 +480,8 @@ types/Fraction.cc
 types/Fraction.h
 types/Grid.cc
 types/Grid.h
-types/Metadata.cc
-types/Metadata.h
+# types/Metadata.cc
+# types/Metadata.h
 types/Month.cc
 types/Month.h
 types/Time.cc
@@ -500,10 +500,10 @@ list( APPEND eckit_parser_srcs
 parser/CSVParser.cc
 parser/CSVParser.h
 parser/JSON.h
-parser/JSONDataBlob.cc
-parser/JSONDataBlob.h
-parser/JSONMetadata.cc
-parser/JSONMetadata.h
+# parser/JSONDataBlob.cc
+# parser/JSONDataBlob.h
+# parser/JSONMetadata.cc
+# parser/JSONMetadata.h
 parser/JSONParser.cc
 parser/JSONParser.h
 parser/ObjectParser.cc

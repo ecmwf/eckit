@@ -34,8 +34,11 @@ namespace message {
 
 class MessageContent;
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class MetadataGatherer {
 public:
+    virtual ~MetadataGatherer();
     virtual void setValue(const std::string& key, const std::string& value) = 0;
     virtual void setValue(const std::string& key, long value) = 0;
     virtual void setValue(const std::string& key, double value) = 0;

@@ -8,13 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <future>
-
 #include "eckit/thread/Mutex.h"
+#include "eckit/thread/Thread.h"
+#include "eckit/thread/ThreadControler.h"
 
 #include "eckit/testing/Test.h"
 
-using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
@@ -23,8 +22,17 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("TestMutex") {
-    Mutex* m = 0;
+class Locker : public eckit::Thread {
+public:
+    Locker(Mutex* m, bool& v) : m_(m), v_(v) {}
+    Mutex* m_;
+    bool& v_;
+    void run() { v_ = m_->tryLock(); }
+};
+
+CASE("Mutex Lock/Unlock") {
+
+    Mutex* m;
 
     EXPECT_NO_THROW(m = new Mutex());
 
@@ -35,11 +43,10 @@ CASE("TestMutex") {
 
     EXPECT_NO_THROW(m->lock());
 
-    // Mutex is recursive, therefore another thread is needed for tryLock to return false
-    auto f_gotLock = async(launch::async, [&m] () {
-            return m->tryLock();
-        });
-    EXPECT_NO_THROW(gotLock = f_gotLock.get());
+    ThreadControler thread(new Locker(m, gotLock), false);
+    thread.start();
+    EXPECT_NO_THROW(thread.wait());
+
     EXPECT(!gotLock);
 
     EXPECT_NO_THROW(m->unlock());

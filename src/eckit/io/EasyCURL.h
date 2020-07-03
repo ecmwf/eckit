@@ -104,6 +104,9 @@ public:
     void followLocation(bool on);
     void sslVerifyPeer(bool on);
     void sslVerifyHost(bool on);
+    void failOnError(bool on);
+
+
     void customRequest(const std::string&);
     void headers(const EasyCURLHeaders& headers);
     void userAgent(const std::string&);

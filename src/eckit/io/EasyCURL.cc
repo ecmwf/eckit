@@ -521,6 +521,9 @@ void EasyCURL::sslVerifyHost(bool on) {
     _(curl_easy_setopt(ch_->curl_, CURLOPT_SSL_VERIFYHOST, on ? 1L : 0L));
 }
 
+void EasyCURL::failOnError(bool on) {
+    _(curl_easy_setopt(ch_->curl_, CURLOPT_FAILONERROR, on ? 1L : 0L));
+}
 // ============================
 
 EasyCURLResponse EasyCURL::request(const std::string& url, bool stream) {

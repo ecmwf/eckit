@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File thread/ThreadControler.h
-// Baudouin Raoult - ECMWF May 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   May 96
 
 #ifndef eckit_ThreadControler_h
 #define eckit_ThreadControler_h
@@ -17,12 +18,10 @@
 #include "eckit/thread/MutexCond.h"
 #include "eckit/runtime/Task.h"
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
+//----------------------------------------------------------------------------------------------------------------------
 
 class Thread;
 
@@ -30,18 +29,10 @@ class Thread;
 class ThreadControler : public Task {
 public:
 
-// -- Contructors
-
 	/// @note ThreadControler takes ownership of Thread
-    ThreadControler(Thread*, bool detached = true, size_t stack = 0);
+    explicit ThreadControler(Thread*, bool detached = true, size_t stack = 0);
 
-// -- Destructor
-
-	~ThreadControler();
-
-// -- Overridden methods
-
-	// From Task
+    virtual ~ThreadControler();
 
 	virtual void start();
 	virtual void stop();
@@ -49,23 +40,19 @@ public:
 	virtual void wait();
 	virtual bool active();
 
-protected:
-
-// -- Members
+protected: // members
 
 	MutexCond  cond_;
 	bool       detached_;
 
-private:
-
-// -- Members
+private: // members
 
     pthread_t   thread_;
     Thread*     proc_;
     size_t      stack_;
     bool        running_;
 
-// -- Methods
+private: // methods
 
 	void execute();
 

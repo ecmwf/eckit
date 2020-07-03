@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File thread/Thread.h
-// Baudouin Raoult - ECMWF Jun 96
+/// @author Baudouin Raoult
+/// @author Tiago Quintino
+/// @date   Jun 96
 
 #ifndef eckit_Thread_h
 #define eckit_Thread_h
@@ -20,52 +21,41 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 // This should be a Task
 
 class Thread : private NonCopyable {
 public:
-	friend class ThreadControler;
+    friend class ThreadControler;
 
-// -- Contructors
+    Thread(bool autodel = true);
 
-	Thread(bool autodel = true); //
+    virtual ~Thread();
 
-// -- Destructor
+    void stop();
 
-	virtual ~Thread();
+protected: // members
 
-// -- Methods
+    Mutex mutex_;
 
-	void stop();
+protected: // methods
 
-protected:
+    bool stopped();
 
-// -- Members
+private: // members
 
-	Mutex mutex_;
+    bool stop_;
+    bool autodel_;
 
-// -- Methods
+private: // methods
 
-	bool  stopped();
-
-private:
-
-// -- Members
-
-	bool    stop_;
-	bool    autodel_;
-
-// -- Methods
-
-	virtual void run() = 0;
-
+    virtual void run() = 0;
 };
 
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

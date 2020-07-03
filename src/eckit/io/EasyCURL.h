@@ -61,9 +61,20 @@ public:
     std::string body() const;
     const EasyCURLHeaders& headers() const;
 
+    int code() const;
+
     unsigned long long contentLength() const;
     size_t read(void* ptr, size_t size) const;
     eckit::DataHandle* dataHandle(const std::string& message = "") const;
+
+private:
+
+    void print(std::ostream&) const;
+
+    friend std::ostream& operator<<(std::ostream& s, const EasyCURLResponse& c) {
+        c.print(s);
+        return s;
+    }
 
 };
 

@@ -105,7 +105,7 @@ public:
         return headers_;
     }
 
-    virtual std::string body() = 0;
+    virtual std::string body() const = 0;
     virtual unsigned long long contentLength() = 0;
     virtual size_t read(void* ptr, size_t size) = 0;
     virtual void ensureHeaders() = 0;
@@ -117,7 +117,7 @@ public:
 
     EasyCURLHeaders headers_;
 
-    void print(std::ostream&) const;
+    virtual void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURLResponseImp& c) {
         c.print(s);
@@ -163,7 +163,7 @@ public:
 
     }
 
-    virtual std::string body() {
+    virtual std::string body() const {
         if (!handle_) {
             return "";
         }
@@ -224,7 +224,7 @@ public:
         return buffer_.write(ptr, size);
     }
 
-    virtual std::string body() {
+    virtual std::string body() const {
         NOTIMP;
     }
 
@@ -322,8 +322,8 @@ EasyCURLResponseImp::~EasyCURLResponseImp() {
 }
 
 void EasyCURLResponseImp::print(std::ostream& s) const {
-    s << "EasyCURLResponseImp[" << this
-      << ",body=" << body_
+    s << "EasyCURLResponseImp["
+      << "body=" << body()
       << ",code=" << code_
       << "]";
 }
@@ -444,6 +444,11 @@ EasyCURLResponse::~EasyCURLResponse() {
     imp_->detach();
 }
 
+EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other):
+    imp_(other.imp_) {
+    imp_->attach();
+}
+
 EasyCURLResponse& EasyCURLResponse::operator=(const eckit::EasyCURLResponse &other) {
     if (imp_ != other.imp_) {
         imp_->detach();
@@ -474,9 +479,17 @@ size_t EasyCURLResponse::read(void* ptr, size_t size) const {
     return imp_->read(ptr, size);
 }
 
+int EasyCURLResponse::code() const {
+    return imp_->code_;
+}
+
 DataHandle* EasyCURLResponse::dataHandle(const std::string& message) const {
     return new EasyCURLHandle(imp_, message);
     // return new BufferedHandle(new EasyCURLHandle(imp_, message));
+}
+
+void EasyCURLResponse::print(std::ostream& out) const {
+    imp_->print(out);
 }
 
 // ===========================================================

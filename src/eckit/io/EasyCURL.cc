@@ -117,7 +117,7 @@ public:
 
     EasyCURLHeaders headers_;
 
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURLResponseImp& c) {
         c.print(s);
@@ -135,7 +135,7 @@ public:
     std::unique_ptr<MemoryHandle> handle_;
     EasyCURLResponseDirect(const std::string& url, CURLHandle *curl): EasyCURLResponseImp(url, curl) {};
 
-    virtual void perform() {
+    virtual void perform() override {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERFUNCTION, &_headersCallback));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERDATA, this));
@@ -163,7 +163,7 @@ public:
 
     }
 
-    virtual std::string body() const {
+    virtual std::string body() const override {
         if (!handle_) {
             return "";
         }
@@ -173,7 +173,7 @@ public:
     }
 
 
-    size_t writeCallback(const void *ptr, size_t size) {
+    size_t writeCallback(const void *ptr, size_t size) override {
 
         if (!handle_) {
             handle_.reset(new MemoryHandle(1024 * 64, true));
@@ -182,18 +182,29 @@ public:
         return handle_->write(ptr, size);
     }
 
-    virtual unsigned long long contentLength() {
+    virtual unsigned long long contentLength() override {
         NOTIMP;
     }
 
-    virtual size_t read(void* ptr, size_t size) {
+    virtual size_t read(void* ptr, size_t size) override {
         NOTIMP;
     }
 
-    virtual void ensureHeaders() {
+    virtual void ensureHeaders() override {
     }
+
+    virtual void print(std::ostream&) const override ;
 
 };
+
+
+void EasyCURLResponseDirect::print(std::ostream& s) const {
+    s << "EasyCURLResponseStream["
+      << body()
+      << ",code=" << code_
+      << "]";
+}
+
 
 class EasyCURLResponseStream : public EasyCURLResponseImp {
 public:
@@ -207,7 +218,7 @@ public:
         _(curl_multi_remove_handle(multi, ch_->curl_));
     }
 
-    virtual void perform() {
+    virtual void perform() override {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERFUNCTION, &_headersCallback));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERDATA, this));
@@ -220,15 +231,15 @@ public:
         _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
     }
 
-    size_t writeCallback(const void *ptr, size_t size) {
+    size_t writeCallback(const void *ptr, size_t size) override {
         return buffer_.write(ptr, size);
     }
 
-    virtual std::string body() const {
+    virtual std::string body() const override {
         NOTIMP;
     }
 
-    virtual unsigned long long contentLength() {
+    virtual unsigned long long contentLength() override {
         ensureHeaders();
         auto j = headers_.find("content-length");
         if (j != headers_.end()) {
@@ -285,7 +296,7 @@ public:
         return active;
     }
 
-    virtual size_t read(void* ptr, size_t size) {
+    virtual size_t read(void* ptr, size_t size) override {
 
         while (buffer_.length() < size) {
             if (waitForData() == 0) {
@@ -299,7 +310,7 @@ public:
 
     }
 
-    virtual void ensureHeaders() {
+    virtual void ensureHeaders() override {
         while (!body_) {
             if (waitForData() == 0) {
                 break;
@@ -307,7 +318,17 @@ public:
         }
     }
 
+    virtual void print(std::ostream&) const override ;
+
 };
+
+
+void EasyCURLResponseStream::print(std::ostream& s) const {
+    s << "EasyCURLResponseStream["
+      << "code=" << code_
+      << "]";
+}
+
 
 EasyCURLResponseImp::EasyCURLResponseImp(const std::string& url, CURLHandle *curl):
     url_(url),
@@ -319,13 +340,6 @@ EasyCURLResponseImp::EasyCURLResponseImp(const std::string& url, CURLHandle *cur
 
 EasyCURLResponseImp::~EasyCURLResponseImp() {
     ch_->detach();
-}
-
-void EasyCURLResponseImp::print(std::ostream& s) const {
-    s << "EasyCURLResponseImp["
-      << "body=" << body()
-      << ",code=" << code_
-      << "]";
 }
 
 size_t EasyCURLResponseImp::headersCallback(const void *ptr, size_t size) {
@@ -423,7 +437,7 @@ long EasyCURLHandle::read(void* ptr, long size) {
 }
 
 void EasyCURLHandle::close() {
-    std::cout << "EasyCURLHandle::close " << *imp_ << std::endl;
+    // std::cout << "EasyCURLHandle::close " << *imp_ << std::endl;
     // ASSERT(imp_->code_ == 200);
     if (!message_.empty()) {
         Log::info() << message_

@@ -32,6 +32,82 @@
 
 namespace eckit {
 
+namespace {
+
+struct http_code {
+    int code_;
+    const char* message_;
+    bool retriable_;
+    bool redirect_;
+};
+
+std::vector<http_code> http_codes = {
+    {100, "Continue", false, false,},
+    {101, "Switching Protocols", false, false,},
+    {102, "Processing", false, false,},
+    {103, "Early Hints", false, false,},
+
+    {200, "OK", false, false,},
+    {201, "Created", false, false,},
+    {202, "Accepted", false, false,},
+    {203, "Non-Authoritative Information", false, false,},
+    {204, "No Content", false, false,},
+    {205, "Reset Content", false, false,},
+    {206, "Partial Content", false, false,},
+
+    {300, "Multiple Choices", false, false,},
+    {301, "Moved Permanently", false, true,},
+    {302, "Found", false, true,},
+    {303, "See Other", false, true,},
+    {304, "Not Modified", false, false,},
+    {305, "Use Proxy", false, false,},
+    {306, "Switch Proxy", false, false,},
+    {307, "Temporary Redirect", false, true,},
+    {308, "Permanent Redirect", false, true,},
+
+    {400, "Bad Request", false, false,},
+    {401, "Unauthorized", false, false,},
+    {402, "Payment Required", false, false,},
+    {403, "Forbidden", false, false,},
+    {404, "Not Found", false, false,},
+    {405, "Method Not Allowed", false, false,},
+    {406, "Not Acceptable", false, false,},
+    {407, "Proxy Authentication Required", false, false,},
+    {408, "Request Timeout", false, false,},
+    {409, "Conflict", false, false,},
+    {410, "Gone", false, false,},
+    {411, "Length Required", false, false,},
+    {412, "Precondition Failed", false, false,},
+    {413, "Request Entity Too Large", false, false,},
+    {414, "URI Too Long", false, false,},
+    {415, "Unsupported Media Type", false, false,},
+    {416, "Range Not Satisfiable", false, false,},
+    {417, "Expectation Failed", false, false,},
+    {418, "I'm a teapot", false, false,},
+    {421, "Misdirected Request", false, false,},
+    {422, "Unprocessable Entity", false, false,},
+    {423, "Locked", false, false,},
+    {425, "Too Early", true, false,},
+    {426, "Upgrade Required", false, false,},
+    {428, "Precondition Required", false, false,},
+    {429, "Too Many Requests", true, false,},
+    {431, "Request Header Fields Too Large", false, false,},
+    {451, "Unavailable For Legal Reasons", false, false,},
+
+    {500, "Internal Server Error", true, false,},
+    {501, "Not Implemented", false, false,},
+    {502, "Bad Gateway", true, false,},
+    {503, "Service Unavailable", true, false,},
+    {504, "Gateway Timeout", true, false,},
+    {505, "HTTP Version Not Supported", false, false,},
+    {506, "Variant Also Negotiates", false, false,},
+    {507, "Insufficient Storage", false, false,},
+    {510, "Not Extended", false, false,},
+    {511, "Network Authentication Required", false, false,},
+
+};
+
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 
@@ -201,7 +277,7 @@ public:
 void EasyCURLResponseDirect::print(std::ostream& s) const {
     s << "EasyCURLResponseStream["
       << body()
-      << ",code=" << code_
+      << ", code=" << code_
       << "]";
 }
 

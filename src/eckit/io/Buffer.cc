@@ -61,16 +61,18 @@ void Buffer::create() {
 void Buffer::destroy() {
     if (buffer_) {
         delete[] static_cast<char*>(buffer_);
+        buffer_ = nullptr;
+        size_ = 0;
     }
 }
 
 void Buffer::copy(const std::string& s) {
-    if (s.size()) {
-        ::strcpy(static_cast<char*>(buffer_), s.c_str());
-    }
+    ASSERT(buffer_);
+    ::strncpy(static_cast<char*>(buffer_), s.c_str(), std::min(size_, s.size()));
 }
 
 void Buffer::copy(const char* p, size_t size) {
+    ASSERT(buffer_ && size_ >= size);
     if (size) {
         ::memcpy(buffer_, p, size);
     }

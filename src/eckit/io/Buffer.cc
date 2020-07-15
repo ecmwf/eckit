@@ -55,12 +55,12 @@ void Buffer::zero() {
 }
 
 void Buffer::create() {
-    buffer_ = MemoryPool::largeAllocate(size_);
+    buffer_ = static_cast<void*>(new char[size_]);
 }
 
 void Buffer::destroy() {
     if (buffer_) {
-        MemoryPool::largeDeallocate(buffer_);
+        delete[] static_cast<char*>(buffer_);
     }
 }
 

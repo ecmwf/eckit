@@ -68,9 +68,7 @@ void Buffer::destroy() {
 
 void Buffer::copy(const std::string& s) {
     ASSERT(buffer_);
-    if (s.size()) {
-      ::strncpy(static_cast<char*>(buffer_), s.c_str(), size_);
-    }
+    ::strncpy(static_cast<char*>(buffer_), s.c_str(), std::min(size_, s.size()));
 }
 
 void Buffer::copy(const char* p, size_t size) {

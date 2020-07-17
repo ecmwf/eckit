@@ -19,8 +19,6 @@ namespace eckit {
 
 Parametrisation::~Parametrisation() {}
 
-asadas
-
 bool Parametrisation::get(const std::string& name, long long& value) const {
     NOTIMP;
 }

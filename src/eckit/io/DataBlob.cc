@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/io/DataBlob.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
@@ -65,7 +66,7 @@ const DataBlobFactory& DataBlobFactory::findFactory(const std::string& name) {
 
     AutoLock<Mutex> lock(local_mutex);
 
-    Log::info() << "Looking for DataBlobFactory [" << name << "]" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Looking for DataBlobFactory [" << name << "]" << std::endl;
 
     std::map<std::string, DataBlobFactory*>::const_iterator j = m->find(name);
     if (j == m->end()) {

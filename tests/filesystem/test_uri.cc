@@ -31,6 +31,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "path");
         EXPECT(uri.path() == "local://path");
@@ -44,6 +45,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "//:123");
         EXPECT(uri.path() == "local:///:123");
@@ -57,6 +59,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "path");
         EXPECT(uri.path() == "local://path");
@@ -70,6 +73,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "path1:path2");
         EXPECT(uri.path() == "local://path1:path2");
@@ -84,6 +88,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.authority().empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "/folder1/folder2/file");
         EXPECT(uri.path() == "local:///folder1/folder2/file");
@@ -98,6 +103,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.authority().empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "foo:");
         EXPECT(uri.path() == "local://foo:");
@@ -112,6 +118,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.authority().empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "!");
         EXPECT(uri.path() == "local://!");
@@ -126,6 +133,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.authority().empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "!");
         EXPECT(uri.path() == "local://!");
@@ -140,6 +148,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.authority().empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "http://nodename/path");
         EXPECT(uri.path() == "local://http://nodename/path");
@@ -157,6 +166,7 @@ CASE("Parsing uri (scheme)") {
         EXPECT(uri.authority().empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "///path");
         EXPECT(uri.path() == "/path");
@@ -171,6 +181,7 @@ CASE("Parsing uri (scheme)") {
         EXPECT(uri.authority().empty());
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "/this/is/a/path:with:colons");
         EXPECT(uri.path() == "/this/is/a/path:with:colons");
@@ -187,6 +198,7 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "//host:123/path");
         EXPECT(uri.path() == "/host:123/path");
@@ -200,6 +212,7 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "///path");
         EXPECT(uri.path() == "/path");
@@ -216,6 +229,7 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "///path");
         EXPECT(uri.path() == "/path");
@@ -236,6 +250,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "username:password@host:123");
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
+        EXPECT(uri.hostport() == "host:123");
         EXPECT(uri.port() == 123);
         EXPECT(uri.name() == "/path");
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -249,6 +264,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.scheme() == "unix");
         EXPECT(uri.user().empty());
         EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "http//:123");
         EXPECT(uri.path() == "local://http//:123");
@@ -263,6 +279,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "username:password@host:123");
         EXPECT(uri.user() == "username:password");
         EXPECT(uri.host() == "host");
+        EXPECT(uri.hostport() == "host:123");
         EXPECT(uri.port() == 123);
         EXPECT(uri.name() == "path");
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -277,6 +294,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "host:");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "host");
+        EXPECT(uri.hostport() == "host:");
         EXPECT(uri.port() == 0);
         EXPECT(uri.name() == "path");
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -291,6 +309,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "www.ecmwf.int");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "www.ecmwf.int");
+        EXPECT(uri.hostport() == "www.ecmwf.int");
         EXPECT(uri.port() == -1);
         EXPECT(uri.name().empty());
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -305,6 +324,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "www.ecmwf.int:80");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "www.ecmwf.int");
+        EXPECT(uri.hostport() == "www.ecmwf.int:80");
         EXPECT(uri.port() == 80);
         EXPECT(uri.name().empty());
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -319,6 +339,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "www.ecmwf.int");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "www.ecmwf.int");
+        EXPECT(uri.hostport() == "www.ecmwf.int");
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "/");
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -333,6 +354,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "host");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "host");
+        EXPECT(uri.hostport() == "host");
         EXPECT(uri.port() == -1);
         EXPECT(uri.name().empty());
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -347,6 +369,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "nodename");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "nodename");
+        EXPECT(uri.hostport() == "nodename");
         EXPECT(uri.port() == -1);
         EXPECT(uri.name() == "/path");
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -361,6 +384,7 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.authority() == "localhost:123");
         EXPECT(uri.user().empty());
         EXPECT(uri.host() == "localhost");
+        EXPECT(uri.hostport() == "localhost:123");
         EXPECT(uri.port() == 123);
         EXPECT(uri.name() == "/path");
         EXPECT_THROWS_AS(uri.path(), NotImplemented);
@@ -473,6 +497,10 @@ CASE("Stream") {
         EXPECT(uri.fragment() == "fragment");
         EXPECT(uri.asRawString() == "http:/path?foo=bar&length=123#fragment");
         EXPECT(uri.asString() == "http:/path?foo=bar&length=123#fragment");
+
+        uri.endpoint(eckit::net::Endpoint("host", 123));
+        EXPECT(uri.host() == "host");
+        EXPECT(uri.port() == 123);
     }
 }
 

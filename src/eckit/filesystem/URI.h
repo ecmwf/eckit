@@ -22,6 +22,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
+#include "eckit/net/Endpoint.h"
 
 
 namespace eckit {
@@ -55,10 +56,14 @@ public: // methods
 
     bool exists() const;
 
-	DataHandle* newWriteHandle() const;
-	DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
-	DataHandle* newReadHandle() const;
+    DataHandle* newWriteHandle() const;
+    DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
+    DataHandle* newReadHandle() const;
 
+    void endpoint(const eckit::net::Endpoint& endpoint) {
+        host_ = endpoint.host();
+        port_ = endpoint.port();
+    }
     void host(const std::string& host) { host_ = host; }
     void port(int port) { port_ = port; }
     void path(const std::string& path) { name_ = path; }
@@ -73,6 +78,7 @@ public: // methods
     PathName path() const;
     const std::string& fragment() const { return fragment_; }
 
+    std::string hostport() const;
     std::string authority() const;
     std::string query() const;
     const std::string query(const std::string& attribute) const;

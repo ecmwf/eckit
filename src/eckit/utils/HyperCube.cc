@@ -8,10 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eckit/utils/HyperCube.h"
-
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 

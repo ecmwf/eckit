@@ -1,4 +1,4 @@
-%define api.pure
+%pure-parser
 %lex-param {void * scanner}
 %lex-param {eckit::sql::SQLSession* session}
 %parse-param {void * scanner}

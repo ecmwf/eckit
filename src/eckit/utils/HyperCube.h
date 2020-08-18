@@ -66,7 +66,7 @@ private:  // members
 
 /// Method is inlined for speed
 inline Ordinal HyperCube::count() const {
-    return accumulate(dimensions_.begin(), dimensions_.end(), 1, std::multiplies<Ordinal>());
+    return std::accumulate(dimensions_.begin(), dimensions_.end(), 1, std::multiplies<Ordinal>());
 }
 
 /// Method is inlined for speed

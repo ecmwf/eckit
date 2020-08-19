@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( eckit CXX )
+project( eckit VERSION 1.13.0 LANGUAGES CXX )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
 
@@ -266,8 +266,8 @@ add_subdirectory( src )
 add_subdirectory( tests )
 add_subdirectory( regressions )
 
-ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files 
-					   SOURCES AUTHORS README.md NOTICE LICENSE 
+ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
+					   SOURCES AUTHORS README.md NOTICE LICENSE
 					   INSTALL ChangeLog COPYING )
 
 ############################################################################################

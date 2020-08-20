@@ -892,34 +892,32 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
 						${eckit_templates}
 					PERSISTENT
 						${eckit_persistent}
-                    PRIVATE_INCLUDES
-                        "${CURL_INCLUDE_DIRS}"
-                        "${XXHASH_INCLUDE_DIRS}"
-                        "${SNAPPY_INCLUDE_DIRS}"
-                        "${LZ4_INCLUDE_DIRS}"
-                        "${BZIP2_INCLUDE_DIRS}"
-                        "${AEC_INCLUDE_DIRS}"
-                        "${RADOS_INCLUDE_DIRS}"
-                    INCLUDES
-                        "${OPENSSL_INCLUDE_DIR}"
-                        "${AIO_INCLUDE_DIRS}"
-                    PRIVATE_LIBS
-                        "${SNAPPY_LIBRARIES}"
-                        "${LIBRSYNC_LIBRARIES}"
-                        "${LZ4_LIBRARIES}"
-                        "${BZIP2_LIBRARIES}"
-                        "${AEC_LIBRARIES}"
-                    LIBS
-                        "${OPENSSL_LIBRARIES}"
-                        "${CURL_LIBRARIES}"
-                        "${XXHASH_LIBRARIES}"
-                        "${AIO_LIBRARIES}"
-                        "${RADOS_LIBRARIES}"
-                        ${CMATH_LIBRARIES}
-                        ${RT_LIBRARIES}
-                        ${THREADS_LIBRARIES}
-                        ${CMAKE_DL_LIBS}
-                        ${ECKIT_SYSTEM_EXTRA_LIBS}
+          PRIVATE_INCLUDES
+              "${CURL_INCLUDE_DIRS}"
+              "${XXHASH_INCLUDE_DIRS}"
+              "${SNAPPY_INCLUDE_DIRS}"
+              "${LZ4_INCLUDE_DIRS}"
+              "${BZIP2_INCLUDE_DIRS}"
+              "${AEC_INCLUDE_DIRS}"
+              "${RADOS_INCLUDE_DIRS}"
+              "${OPENSSL_INCLUDE_DIR}"
+              "${AIO_INCLUDE_DIRS}"
+          PRIVATE_LIBS
+              "${SNAPPY_LIBRARIES}"
+              "${LIBRSYNC_LIBRARIES}"
+              "${LZ4_LIBRARIES}"
+              "${BZIP2_LIBRARIES}"
+              "${AEC_LIBRARIES}"
+              "${OPENSSL_LIBRARIES}"
+              "${CURL_LIBRARIES}"
+              "${XXHASH_LIBRARIES}"
+              "${AIO_LIBRARIES}"
+              "${RADOS_LIBRARIES}"
+              ${CMATH_LIBRARIES}
+              ${RT_LIBRARIES}
+              ${THREADS_LIBRARIES}
+              ${CMAKE_DL_LIBS}
+              ${ECKIT_SYSTEM_EXTRA_LIBS}
 
           LINKER_LANGUAGE CXX )
 

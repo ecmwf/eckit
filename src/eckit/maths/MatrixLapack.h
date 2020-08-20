@@ -259,7 +259,7 @@ public:
 			break;
 		}
 		default: { // invert with LU-factorization
-#ifdef ECKIT_HAVE_LAPACK
+#ifdef eckit_HAVE_LAPACK
 			inv = *this;
 			int M = nr_;
 			int N = nc_;

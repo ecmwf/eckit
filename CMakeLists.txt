@@ -125,8 +125,8 @@ ecbuild_add_option( FEATURE AEC
 
 ### LAPACK
 
-if( ECKIT_HAVE_MKL )
-    set( ECKIT_HAVE_LAPACK 1 )
+if( eckit_HAVE_MKL )
+    set( eckit_HAVE_LAPACK 1 )
     set( LAPACK_LIBRARIES ${MKL_LIBRARIES} )
 else()
     ecbuild_add_option( FEATURE LAPACK

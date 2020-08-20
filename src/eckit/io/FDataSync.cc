@@ -28,18 +28,18 @@ int fsync(int fd) {
 
 int fdatasync(int fd) {
     int ret = 0;
-#if defined(ECKIT_HAVE_FDATASYNC)
+#if defined(eckit_HAVE_FDATASYNC)
     // usually available on Linux, but not Darwin (macosx) and xBSD
     // syncs all the data but avoids some of the metadata e.g. mtime
     ret = ::fdatasync(fd);
-#elif defined(ECKIT_HAVE_F_FULLSYNC)
+#elif defined(eckit_HAVE_F_FULLSYNC)
     // usually available on Darwin (macosx) and xBSD
     // provides stronger guarantees than fsync that data fully committed to persistent storage
     ret = ::fcntl(fd, F_FULLFSYNC);
     while (ret == -1 && errno == EINTR) {
         ret = ::fcntl(fd, F_FULLFSYNC);
     }
-#elif defined(ECKIT_HAVE_FSYNC)
+#elif defined(eckit_HAVE_FSYNC)
     // last resort, but note this is slower than ::fdatasync and less strong as F_FULLSYNC
     ret = eckit::fsync(fd);
 #else

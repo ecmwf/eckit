@@ -21,7 +21,7 @@
 #include "eckit/io/MemoryHandle.h"
 
 
-// #ifdef ECKIT_HAVE_CURL
+// #ifdef eckit_HAVE_CURL
 // #include <curl/curl.h>
 // #else
 // typedef int CURL;

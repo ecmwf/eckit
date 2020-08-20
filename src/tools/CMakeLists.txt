@@ -29,7 +29,7 @@ ecbuild_add_executable( TARGET      syslog_client
 
 ecbuild_add_executable( TARGET      eckit_rsync
                         OUTPUT_NAME eckit-rsync
-                        CONDITION   HAVE_BUILD_TOOLS AND ECKIT_HAVE_RSYNC
+                        CONDITION   HAVE_BUILD_TOOLS AND eckit_HAVE_RSYNC
                         NOINSTALL
                         SOURCES     rsync.cc
                         LIBS        eckit_option eckit )

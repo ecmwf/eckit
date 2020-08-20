@@ -33,16 +33,16 @@ CASE("test_list") {
     LinearAlgebra::list(oss);
     Log::info() << "Available linear algebra backends: " << oss.str() << std::endl;
     EXPECT(oss.str().find("generic") != std::string::npos);
-#ifdef ECKIT_HAVE_ARMADILLO
+#ifdef eckit_HAVE_ARMADILLO
     EXPECT(oss.str().find("armadillo") != std::string::npos);
 #endif
-#ifdef ECKIT_HAVE_CUDA
+#ifdef eckit_HAVE_CUDA
     EXPECT(oss.str().find("cuda") != std::string::npos);
 #endif
-#ifdef ECKIT_HAVE_EIGEN
+#ifdef eckit_HAVE_EIGEN
     EXPECT(oss.str().find("eigen") != std::string::npos);
 #endif
-#ifdef ECKIT_HAVE_MKL
+#ifdef eckit_HAVE_MKL
     EXPECT(oss.str().find("mkl") != std::string::npos);
 #endif
 }
@@ -51,19 +51,19 @@ CASE("test_backend") {
     LinearAlgebra::backend();
     LinearAlgebra::backend("generic");
     LinearAlgebra::backend();
-#ifdef ECKIT_HAVE_ARMADILLO
+#ifdef eckit_HAVE_ARMADILLO
     LinearAlgebra::backend("armadillo");
     LinearAlgebra::backend();
 #endif
-#ifdef ECKIT_HAVE_CUDA
+#ifdef eckit_HAVE_CUDA
     LinearAlgebra::backend("cuda");
     LinearAlgebra::backend();
 #endif
-#ifdef ECKIT_HAVE_EIGEN
+#ifdef eckit_HAVE_EIGEN
     LinearAlgebra::backend("eigen");
     LinearAlgebra::backend();
 #endif
-#ifdef ECKIT_HAVE_MKL
+#ifdef eckit_HAVE_MKL
     LinearAlgebra::backend("mkl");
     LinearAlgebra::backend();
 #endif

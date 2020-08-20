@@ -17,7 +17,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_MKL
+#ifdef eckit_HAVE_MKL
 
 #include "eckit/linalg/LinearAlgebra.h"
 

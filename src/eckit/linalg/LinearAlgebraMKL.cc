@@ -10,7 +10,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_MKL
+#ifdef eckit_HAVE_MKL
 
 #include "mkl.h"
 #include "mkl_cblas.h"
@@ -143,4 +143,4 @@ static LinearAlgebraMKL linearAlgebraMKL;
 }  // namespace linalg
 }  // namespace eckit
 
-#endif  // ECKIT_HAVE_MKL
+#endif  // eckit_HAVE_MKL

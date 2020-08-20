@@ -27,7 +27,7 @@ namespace linalg {
 
 namespace {
 
-#ifdef ECKIT_HAVE_EIGEN
+#ifdef eckit_HAVE_EIGEN
 static const char* defaultBackend = "eigen";
 #else
 static const char* defaultBackend = "generic";

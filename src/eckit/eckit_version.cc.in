@@ -1,12 +1,11 @@
 #include "eckit/eckit_version.h"
 
-const char * eckit_version()     { return ECKIT_VERSION; }
-const char * eckit_version_str() { return ECKIT_VERSION_STR; }
+const char * eckit_version()     { return eckit_VERSION; }
+const char * eckit_version_str() { return eckit_VERSION_STR; }
 
 unsigned int eckit_version_int()
 {
-  return 10000*ECKIT_MAJOR_VERSION + 100*ECKIT_MINOR_VERSION + 1*ECKIT_PATCH_VERSION;
+  return 10000*eckit_VERSION_MAJOR + 100*eckit_VERSION_MINOR + 1*eckit_VERSION_PATCH;
 }
 
-const char * eckit_git_sha1() { return "@ECKIT_GIT_SHA1@"; }
-
+const char * eckit_git_sha1() { return "@eckit_GIT_SHA1@"; }

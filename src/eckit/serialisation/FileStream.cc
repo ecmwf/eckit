@@ -52,7 +52,7 @@ void FileStream::close() {
 
         // On Linux, you must also flush the directory
 
-#ifdef ECKIT_HAVE_DIRFD
+#ifdef eckit_HAVE_DIRFD
         PathName directory = PathName(name_).dirName();
         DIR* d             = ::opendir(directory.localPath());
         if (!d)

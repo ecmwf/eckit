@@ -17,7 +17,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_ARMADILLO
+#ifdef eckit_HAVE_ARMADILLO
 
 #include "eckit/linalg/LinearAlgebra.h"
 
@@ -51,6 +51,6 @@ private:
 }  // namespace linalg
 } // namespace eckit
 
-#endif  // ECKIT_HAVE_ARMADILLO
+#endif  // eckit_HAVE_ARMADILLO
 
 #endif

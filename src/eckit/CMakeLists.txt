@@ -15,47 +15,47 @@ set( ECKIT_LITTLE_ENDIAN ${ECKIT_LITTLE_ENDIAN} )
 
 ### check support for DL library
 
-check_include_files( dlfcn.h  ECKIT_HAVE_DLFCN_H )
+check_include_files( dlfcn.h  eckit_HAVE_DLFCN_H )
 
 cmake_push_check_state(RESET)
     set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_DL_LIBS} )
     check_c_source_compiles( "#define _GNU_SOURCE\n#include <dlfcn.h>\nint main(){ void* addr; Dl_info info; dladdr(addr, &info); }\n"
-        ECKIT_HAVE_DLADDR )
+        eckit_HAVE_DLADDR )
 cmake_pop_check_state()
 
 ### system headers and symbols tests for eckit config headers
 
-check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"  ECKIT_HAVE_MAP_ANONYMOUS )
-check_symbol_exists( MAP_ANON      "sys/mman.h"  ECKIT_HAVE_MAP_ANON )
-check_symbol_exists( funopen       "stdio.h"     ECKIT_HAVE_FUNOPEN )
-check_symbol_exists( fsync         "unistd.h"    ECKIT_HAVE_FSYNC)
-check_symbol_exists( fdatasync     "unistd.h"    ECKIT_HAVE_FDATASYNC)
-check_symbol_exists( F_FULLFSYNC   "fcntl.h"     ECKIT_HAVE_F_FULLFSYNC)
-check_symbol_exists( fmemopen      "stdio.h"     ECKIT_HAVE_FMEMOPEN )
+check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"  eckit_HAVE_MAP_ANONYMOUS )
+check_symbol_exists( MAP_ANON      "sys/mman.h"  eckit_HAVE_MAP_ANON )
+check_symbol_exists( funopen       "stdio.h"     eckit_HAVE_FUNOPEN )
+check_symbol_exists( fsync         "unistd.h"    eckit_HAVE_FSYNC)
+check_symbol_exists( fdatasync     "unistd.h"    eckit_HAVE_FDATASYNC)
+check_symbol_exists( F_FULLFSYNC   "fcntl.h"     eckit_HAVE_F_FULLFSYNC)
+check_symbol_exists( fmemopen      "stdio.h"     eckit_HAVE_FMEMOPEN )
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
-    ECKIT_HAVE_FOPENCOOKIE )
+    eckit_HAVE_FOPENCOOKIE )
 
 check_c_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(){ void ** buffer; int i = backtrace(buffer, 256); }\n"
-    ECKIT_HAVE_EXECINFO_BACKTRACE )
+    eckit_HAVE_EXECINFO_BACKTRACE )
 
 check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
-    ECKIT_HAVE_CXXABI_H )
+    eckit_HAVE_CXXABI_H )
 
 check_c_source_compiles( "#include <time.h>\nint main(){ time_t now; time(&now); struct tm t; gmtime_r(&now,&t); }\n"
-    ECKIT_HAVE_GMTIME_R )
+    eckit_HAVE_GMTIME_R )
 
 check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; struct dirent **result; int i = readdir_r(dirp, entry, result); }\n"
-    ECKIT_HAVE_READDIR_R )
+    eckit_HAVE_READDIR_R )
 
 check_c_source_compiles( "#include <sys/types.h>\n#include <dirent.h>\nint main(){ DIR *dirp; int i = dirfd(dirp); }\n"
-    ECKIT_HAVE_DIRFD )
+    eckit_HAVE_DIRFD )
 
 check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; if(entry->d_type) { dirp = 0; } }\n"
-    ECKIT_HAVE_DIRENT_D_TYPE )
+    eckit_HAVE_DIRENT_D_TYPE )
 
 check_cxx_source_compiles( "int main() { __int128 i = 0; return 0;}"
-    ECKIT_HAVE_CXX_INT_128 )
+    eckit_HAVE_CXX_INT_128 )
 
 ### config headers
 
@@ -680,35 +680,35 @@ list( APPEND eckit_utils_srcs
   utils/Translator.h
 )
 
-if(ECKIT_HAVE_BZIP2)
+if(eckit_HAVE_BZIP2)
     list( APPEND eckit_utils_srcs
       utils/BZip2Compressor.cc
       utils/BZip2Compressor.h
     )
 endif()
 
-if(ECKIT_HAVE_SNAPPY)
+if(eckit_HAVE_SNAPPY)
   list( APPEND eckit_utils_srcs
     utils/SnappyCompressor.cc
     utils/SnappyCompressor.h
   )
 endif()
 
-if(ECKIT_HAVE_LZ4)
+if(eckit_HAVE_LZ4)
   list( APPEND eckit_utils_srcs
     utils/LZ4Compressor.cc
     utils/LZ4Compressor.h
   )
 endif()
 
-if(ECKIT_HAVE_AEC)
+if(eckit_HAVE_AEC)
   list( APPEND eckit_utils_srcs
     utils/AECCompressor.cc
     utils/AECCompressor.h
   )
 endif()
 
-if(ECKIT_HAVE_SSL)
+if(eckit_HAVE_SSL)
     list( APPEND eckit_utils_srcs
       utils/MD4.cc
       utils/MD4.h
@@ -717,14 +717,14 @@ if(ECKIT_HAVE_SSL)
     )
 endif()
 
-if(ECKIT_HAVE_XXHASH)
+if(eckit_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
       utils/xxHashing.cc
       utils/xxHashing.h
     )
 endif()
 
-if(ECKIT_HAVE_RSYNC)
+if(eckit_HAVE_RSYNC)
   list( APPEND eckit_utils_srcs
     utils/Rsync.cc
     utils/Rsync.h

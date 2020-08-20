@@ -13,7 +13,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_LAPACK
+#ifdef eckit_HAVE_LAPACK
 
 #include "eckit/linalg/LinearAlgebra.h"
 
@@ -47,5 +47,5 @@ private:
 }  // namespace linalg
 }  // namespace eckit
 
-#endif  // ECKIT_HAVE_LAPACK
+#endif  // eckit_HAVE_LAPACK
 #endif

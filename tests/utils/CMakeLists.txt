@@ -34,7 +34,7 @@ ecbuild_add_test( TARGET      eckit_test_utils_compressor
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_utils_hashing
-                  CONDITION   ECKIT_HAVE_SSL
+                  CONDITION   eckit_HAVE_SSL
                   INCLUDES    "${OPENSSL_INCLUDE_DIR}"
                   SOURCES     test_hashing.cc
                   LIBS        eckit )

@@ -43,9 +43,9 @@ ecbuild_add_library( TARGET eckit_mpi TYPE SHARED
                          ${eckit_mpi_srcs}
                      DEFINITIONS
                          "${eckit_mpi_defs}"
-                     PRIVATE_INCLUDES
+                     PUBLIC_INCLUDES
                          "${eckit_mpi_incs}"
-                     PRIVATE_LIBS
+                     PUBLIC_LIBS
                          "${eckit_mpi_libs}"
                      PUBLIC_LIBS
                          eckit )

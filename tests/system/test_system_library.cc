@@ -87,7 +87,7 @@ CASE("test_libeckit") {
     EXPECT_NO_THROW(LibEcKit::instance().configuration());  // tests an empty configuration
 }
 
-#ifdef ECKIT_HAVE_ECKIT_CMD
+#ifdef eckit_HAVE_ECKIT_CMD
 CASE("test dynamic load") {
     using eckit::system::Library;
     EXPECT(!Library::exists("eckit_cmd"));
@@ -102,7 +102,7 @@ CASE("test fail dynamic load") {
     EXPECT_THROWS_AS(Library::load("fake-library"), SeriousBug);
 }
 
-#ifdef ECKIT_HAVE_ECKIT_SQL
+#ifdef eckit_HAVE_ECKIT_SQL
 CASE("test load non-eckit::Library library") {
     using eckit::system::Library;
     EXPECT(!Library::exists("eckit_sql"));

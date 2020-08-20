@@ -10,7 +10,7 @@
 
 #include "eckit/linalg/LinearAlgebraLAPACK.h"
 
-#ifdef ECKIT_HAVE_LAPACK
+#ifdef eckit_HAVE_LAPACK
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
@@ -97,4 +97,4 @@ static LinearAlgebraLAPACK __la;
 }  // namespace linalg
 }  // namespace eckit
 
-#endif  // ECKIT_HAVE_LAPACK
+#endif  // eckit_HAVE_LAPACK

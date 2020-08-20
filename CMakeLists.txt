@@ -59,17 +59,20 @@ ecbuild_add_option( FEATURE MPI
 
 ### eckit::cmd
 
+ecbuild_find_lexyacc()
+
 ecbuild_add_option( FEATURE ECKIT_CMD
                     DEFAULT ON
                     DESCRIPTION "Utilities for administration tools"
-                    REQUIRED_PACKAGES "LEXYACC" "Curses" )
+                    CONDITION "${LEXXYACC_FOUND}"
+                    REQUIRED_PACKAGES "Curses" )
 
 ### eckit::sql
 
 ecbuild_add_option( FEATURE ECKIT_SQL
                     DEFAULT ON
                     DESCRIPTION "An SQL engine"
-                    REQUIRED_PACKAGES "LEXYACC" )
+                    CONDITION "${LEXXYACC_FOUND}" )
 
 ### Eigen
 

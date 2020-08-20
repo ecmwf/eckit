@@ -174,7 +174,7 @@ ecbuild_add_library( TARGET              eckit_sql TYPE SHARED
                      TEMPLATES
                                          SQLIteratorOutput.cc
                                          expression/ShiftedColumnExpression.cc
-                     LIBS                eckit )
+                     PUBLIC_LIBS         eckit )
 
 # Disable all warnings for PGI compiler as it is overzealous and cherry-picking is not possible
 target_compile_options( eckit_sql PRIVATE $<$<CXX_COMPILER_ID:PGI>:-w> )

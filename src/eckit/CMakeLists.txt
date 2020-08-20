@@ -880,7 +880,9 @@ list( APPEND eckit_persistent
 
 ### eckit library
 
-ecbuild_add_library(TARGET eckit TYPE SHARED
+ecbuild_add_library(
+          TARGET eckit
+          TYPE SHARED
 					INSTALL_HEADERS LISTED
 					HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit
@@ -913,6 +915,7 @@ ecbuild_add_library(TARGET eckit TYPE SHARED
               "${XXHASH_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+          PUBLIC_LIBS
               ${CMATH_LIBRARIES}
               ${RT_LIBRARIES}
               ${THREADS_LIBRARIES}

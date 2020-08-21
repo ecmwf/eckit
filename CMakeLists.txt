@@ -16,7 +16,7 @@ find_package( ecbuild 3.4 REQUIRED )
 ########################################################################################################################
 # Initialise project
 
-project( eckit VERSION 1.13.0 LANGUAGES CXX )
+project( eckit LANGUAGES CXX )
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 

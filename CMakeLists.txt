@@ -64,7 +64,7 @@ ecbuild_find_lexyacc()
 ecbuild_add_option( FEATURE ECKIT_CMD
                     DEFAULT ON
                     DESCRIPTION "Utilities for administration tools"
-                    CONDITION LEXXYACC_FOUND
+                    CONDITION LEXYACC_FOUND
                     REQUIRED_PACKAGES "Curses" )
 
 ### eckit::sql
@@ -72,7 +72,7 @@ ecbuild_add_option( FEATURE ECKIT_CMD
 ecbuild_add_option( FEATURE ECKIT_SQL
                     DEFAULT ON
                     DESCRIPTION "An SQL engine"
-                    CONDITION LEXXYACC_FOUND )
+                    CONDITION LEXYACC_FOUND )
 
 ### Eigen
 

@@ -13,9 +13,6 @@ cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
 find_package( ecbuild 3.4 REQUIRED )
 
-########################################################################################################################
-# Initialise project
-
 project( eckit LANGUAGES CXX )
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support

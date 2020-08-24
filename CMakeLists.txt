@@ -241,36 +241,15 @@ if( NOT ${CMAKE_USE_PTHREADS_INIT} )
 endif()
 
 ############################################################################################
-# export package info
-
-set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_linalg eckit_maths eckit_mpi eckit_web )
-
-if( HAVE_ECKIT_CMD)
-  list( APPEND ECKIT_LIBRARIES eckit_cmd )
-endif()
-
-if( HAVE_EXPERIMENTAL )
-
-  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
-
-endif()
-
-get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
-
-############################################################################################
 # sources
 
 ecbuild_find_project_files()
 
-include_directories( ${ECKIT_INCLUDE_DIRS} )
-if( HAVE_EIGEN )
-    include_directories( ${EIGEN3_INCLUDE_DIR} )
-endif()
+add_subdirectory( src )
+set( ECKIT_LIBRARIES ${eckit_ALL_LIBS} ) # used for ecbuild_pkgconfig further
 
 add_subdirectory( bamboo )
 add_subdirectory( doc )
-add_subdirectory( src )
 add_subdirectory( tests )
 add_subdirectory( regressions )
 
@@ -282,12 +261,10 @@ ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
 # finalize
 
 foreach( _lib ${ECKIT_LIBRARIES} )
-  if( TARGET ${_lib} )
     ecbuild_pkgconfig( NAME ${_lib}
                        DESCRIPTION "ECMWF C++ Toolkit - ${_lib} library"
                        URL "https://software.ecmwf.int/wiki/display/ECKIT/ecKit"
                        LIBRARIES ${_lib} )
-  endif()
 endforeach()
 
 ecbuild_install_project( NAME ${PROJECT_NAME} )

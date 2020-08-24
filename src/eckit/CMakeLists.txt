@@ -894,6 +894,9 @@ ecbuild_add_library(
 						${eckit_templates}
 					PERSISTENT
 						${eckit_persistent}
+          PUBLIC_INCLUDES
+              $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
+              $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
           PRIVATE_INCLUDES
               "${CURL_INCLUDE_DIRS}"
               "${XXHASH_INCLUDE_DIRS}"
@@ -921,7 +924,6 @@ ecbuild_add_library(
               ${THREADS_LIBRARIES}
               ${CMAKE_DL_LIBS}
               ${ECKIT_SYSTEM_EXTRA_LIBS}
-
           LINKER_LANGUAGE CXX )
 
 ### sub-directories

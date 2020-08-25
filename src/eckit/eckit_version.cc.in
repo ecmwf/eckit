@@ -1,5 +1,12 @@
 #include "eckit/eckit_version.h"
 
+#define eckit_VERSION_STR "@eckit_VERSION_STR@"
+#define eckit_VERSION     "@eckit_VERSION@"
+
+#define eckit_VERSION_MAJOR @eckit_VERSION_MAJOR@
+#define eckit_VERSION_MINOR @eckit_VERSION_MINOR@
+#define eckit_VERSION_PATCH @eckit_VERSION_PATCH@
+
 const char * eckit_version()     { return eckit_VERSION; }
 const char * eckit_version_str() { return eckit_VERSION_STR; }
 

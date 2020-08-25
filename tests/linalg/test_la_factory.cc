@@ -42,7 +42,7 @@ CASE("test_list") {
 #ifdef eckit_HAVE_EIGEN
     EXPECT(oss.str().find("eigen") != std::string::npos);
 #endif
-#ifdef eckit_HAVE_MKL
+#if ECKIT_HAVE_MKL
     EXPECT(oss.str().find("mkl") != std::string::npos);
 #endif
 }
@@ -63,7 +63,7 @@ CASE("test_backend") {
     LinearAlgebra::backend("eigen");
     LinearAlgebra::backend();
 #endif
-#ifdef eckit_HAVE_MKL
+#if ECKIT_HAVE_MKL
     LinearAlgebra::backend("mkl");
     LinearAlgebra::backend();
 #endif

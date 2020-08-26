@@ -883,20 +883,25 @@ list( APPEND eckit_persistent
 ecbuild_add_library(
           TARGET eckit
           TYPE SHARED
-					INSTALL_HEADERS LISTED
-					HEADER_DESTINATION
-						${INSTALL_INCLUDE_DIR}/eckit
-					SOURCES
-						${eckit_srcs}
-					GENERATED
-						eckit_version.cc
-					TEMPLATES
-						${eckit_templates}
-					PERSISTENT
-						${eckit_persistent}
+          INSTALL_HEADERS LISTED
+          HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
+
+          SOURCES
+						  ${eckit_srcs}
+
+          GENERATED
+						  eckit_version.cc
+
+          TEMPLATES
+						  ${eckit_templates}
+
+          PERSISTENT
+						  ${eckit_persistent}
+
           PUBLIC_INCLUDES
               $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+
           PRIVATE_INCLUDES
               "${CURL_INCLUDE_DIRS}"
               "${XXHASH_INCLUDE_DIRS}"
@@ -907,6 +912,7 @@ ecbuild_add_library(
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
+
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
               "${LIBRSYNC_LIBRARIES}"
@@ -918,12 +924,14 @@ ecbuild_add_library(
               "${XXHASH_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}
               ${RT_LIBRARIES}
               ${THREADS_LIBRARIES}
               ${CMAKE_DL_LIBS}
               ${ECKIT_SYSTEM_EXTRA_LIBS}
+
           LINKER_LANGUAGE CXX )
 
 ### sub-directories

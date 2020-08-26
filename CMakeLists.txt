@@ -7,7 +7,6 @@
 # does it submit to any jurisdiction.
 
 ########################################################################################################################
-# eckit
 
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
@@ -15,15 +14,10 @@ find_package( ecbuild 3.4 REQUIRED )
 
 project( eckit LANGUAGES CXX )
 
-set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-### architecture checks
-
-include(cmake/check_time_t_Y2038.cmake) # check Y2038 time_t compatibility
-
+########################################################################################################################
 ### dependencies and options
 
 ecbuild_add_option( FEATURE BUILD_TOOLS
@@ -48,6 +42,7 @@ endif()
 if( NOT DEFINED THREADS_PREFER_PTHREAD_FLAG )
   set( THREADS_PREFER_PTHREAD_FLAG 1 )
 endif()
+
 ### Set THREADS_HAVE_PTHREAD_ARG variable to false so that it can be recomputed based on
 ### THREADS_PREFER_PTHREAD_FLAG, in case other project had it on a different setting.
 ### This is certainly a CMake bug ( see ECKIT-426 )
@@ -113,7 +108,7 @@ ecbuild_add_option( FEATURE MKL
                     DESCRIPTION "MKL linear algebra library"
                     REQUIRED_PACKAGES MKL )
 
-### Compression
+### Compression options
 
 ecbuild_add_option( FEATURE BZIP2
                     DESCRIPTION "BZip2 support for compression"
@@ -232,8 +227,9 @@ else()
   set( RT_LIBRARIES "" )
 endif()
 
-###############################################################################
-# checks
+### sanity checks
+
+include(cmake/check_time_t_Y2038.cmake) # check Y2038 time_t compatibility
 
 # check thread library is pthreads
 if( NOT ${CMAKE_USE_PTHREADS_INIT} )
@@ -243,10 +239,9 @@ endif()
 ############################################################################################
 # sources
 
-ecbuild_find_project_files()
+set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-set( ECKIT_LIBRARIES ${eckit_ALL_LIBS} ) # used for ecbuild_pkgconfig further
 
 add_subdirectory( bamboo )
 add_subdirectory( doc )
@@ -259,6 +254,8 @@ ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
 
 ############################################################################################
 # finalize
+
+set( ECKIT_LIBRARIES ${eckit_ALL_LIBS} ) # used for ecbuild_pkgconfig
 
 foreach( _lib ${ECKIT_LIBRARIES} )
     ecbuild_pkgconfig( NAME ${_lib}

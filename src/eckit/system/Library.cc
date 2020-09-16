@@ -137,7 +137,7 @@ bool Library::exists(const std::string& name) {
 
 void Library::load(const std::string& name) {
 
-    static std::vector<std::string> libPaths(Resource<std::vector<std::string>>("dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib", "~eckit/lib"}));
+    static std::vector<std::string> libPaths(Resource<std::vector<std::string>>("dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib64", "~/lib", "~eckit/lib64", "~eckit/lib"}));
 
     if (!exists(name)) {
 

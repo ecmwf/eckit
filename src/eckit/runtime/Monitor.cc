@@ -320,6 +320,14 @@ bool Monitor::stopped() {
     return task().stopped();
 }
 
+bool Monitor::stopTriggered() {
+    return task().stopTriggered();
+}
+
+void Monitor::setStopped() {
+    task().setStopped();
+}
+
 void Monitor::abort() {
     task().abort();
 }

@@ -159,7 +159,7 @@ public:
 	void stoppable(bool s) { stoppable_ = s;touch(); }
 	bool stoppable() const { return stoppable_; }
 	bool stopTriggered() const { return stop_; }
-	bool setStopped() { stopped_ = true; stop_ = false; }
+	void setStopped() { stopped_ = true; stop_ = false; }
 
 	void touch();
 

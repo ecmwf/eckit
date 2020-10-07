@@ -45,5 +45,6 @@ ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
                                         "${MKL_LIBRARIES}" )
 
 if (CUDA_FOUND)
+set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
 cuda_add_cublas_to_target( eckit_linalg )
 endif()

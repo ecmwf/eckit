@@ -13,6 +13,10 @@ if(HAVE_EXTRA_TESTS)
                                     NOCHECK )
 endif()
 
+ecbuild_add_test( TARGET      eckit_test_utils_bitswap
+                  SOURCES     test_bitswap.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_utils_string_tools
                   SOURCES     test_string_tools.cc
                   LIBS        eckit )

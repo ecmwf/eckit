@@ -1,0 +1,72 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Tool.h"
+#include "eckit/types/Types.h"
+#include "eckit/utils/BitSwap.h"
+
+#include "eckit/testing/Test.h"
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+
+
+namespace eckit {
+namespace test {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("Low-level swap 16 bits") {
+
+    uint16_t v = 123;
+
+    uint16_t s = eckit::bitswap16(v);
+    // std::cout << s << std::endl;
+    EXPECT(s == 31488);
+
+    uint16_t r = eckit::bitswap16(s);
+    EXPECT(r == v);
+}
+
+CASE("Low-level swap 32 bits") {
+
+    uint32_t v = 1234;
+
+    uint32_t s = eckit::bitswap32(v);
+    std::cout << s << std::endl;
+    EXPECT(s == 3523477504);
+
+    uint32_t r = eckit::bitswap32(s);
+    EXPECT(r == v);
+}
+
+CASE("Low-level swap 64 bits") {
+
+    uint64_t v = 12345;
+
+    uint64_t s = eckit::bitswap64(v);
+    std::cout << s << std::endl;
+    EXPECT(s == 4120793659044003840);
+
+    uint64_t r = eckit::bitswap64(s);
+    EXPECT(r == v);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace test
+}  // namespace eckit
+
+
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
+}

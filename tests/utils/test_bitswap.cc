@@ -137,10 +137,11 @@ CASE("Check correctness 64 bit swap") {
 CASE("Low-level roundtrip 8 bits") {
     unsigned char v = 't';
     uint16_t s      = eckit::bitswap8(v);
-    // std::cout << s << std::endl;
+    std::cout << bits_to_str(s) << std::endl;
     EXPECT(s != v);
 
     uint16_t r = eckit::bitswap8(s);
+    std::cout << bits_to_str(r) << std::endl;
     EXPECT(r == v);
 }
 

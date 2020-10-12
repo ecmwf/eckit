@@ -192,6 +192,7 @@ void test_scalar_value(T v, std::string bitstr, std::string swapped) {
 }
 
 CASE("ByteSwap short") {
+    SECTION("short 1234") { test_scalar_value<short>(1234, "0000010011010010", "1101001000000100"); }
     SECTION("short 3145") { test_scalar_value<short>(3145, "0000110001001001", "0100100100001100"); }
     SECTION("short 32767") { test_scalar_value<short>(32767, "0111111111111111", "1111111101111111"); }
 }

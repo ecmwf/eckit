@@ -60,6 +60,36 @@ CASE("Check correctness 32 bit swap") {
     EXPECT_EQUAL(bits_to_str(s), "10100111101101101101110110000011");
 }
 
+CASE("Check correctness 64 bit swap") {
+
+    union u64 {
+        uint64_t v;
+        struct {
+            uint32_t hi;
+            uint32_t lo;
+        } s;
+    };
+
+    u64 v;
+    v.v = 891067242212345511;
+    std::cout << v.v << " = " << bits_to_str(v.v) << std::endl;
+    EXPECT_EQUAL(bits_to_str(v.v), "0000110001011101101101001110111110001011000011011100011010100111");
+
+    uint32_t r_hi = htonl(v.s.hi);
+    uint32_t r_lo = htonl(v.s.lo);
+    std::cout << bits_to_str(r_hi) + bits_to_str(r_lo) << std::endl;
+    EXPECT_EQUAL(bits_to_str(r_hi) + bits_to_str(r_lo),
+                 "1010011111000110000011011000101111101111101101000101110100001100");
+
+    uint64_t sr = htonll(v.v);
+    std::cout << bits_to_str(sr) << std::endl;
+    EXPECT_EQUAL(bits_to_str(sr), "1010011111000110000011011000101111101111101101000101110100001100");
+
+    uint64_t s = eckit::bitswap(v.v);
+    std::cout << bits_to_str(s) << std::endl;
+    EXPECT_EQUAL(bits_to_str(s), "1010011111000110000011011000101111101111101101000101110100001100");
+}
+
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------

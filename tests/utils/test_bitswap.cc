@@ -45,6 +45,46 @@ CASE("Check correctness 16 bit swap") {
     EXPECT_EQUAL(bits_to_str(s), "1111111100000001");
 }
 
+CASE("Check correctness 16 bit swap") {  // special case of symmetric swap
+
+    // std::string bitstr("1010101010101010");  // 43690
+    // std::bitset<16> s(bitstr);
+    // unsigned long v = s.to_ulong();
+    // std::cout << v << " = " << bits_to_str(v) << std::endl;
+
+    uint16_t v = 43690;
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT_EQUAL(bits_to_str(v), "1010101010101010");
+
+    uint16_t r = htons(v);
+    std::cout << r << " = " << bits_to_str(r) << std::endl;
+    EXPECT_EQUAL(bits_to_str(r), "1010101010101010");
+
+    uint16_t s = eckit::bitswap(v);
+    std::cout << s << " = " << bits_to_str(s) << std::endl;
+    EXPECT_EQUAL(bits_to_str(s), "1010101010101010");
+}
+
+CASE("Check correctness 16 bit swap") {  // special case of anti-symmetric swap
+
+    // std::string bitstr("0101010110101010");  // 21930
+    // std::bitset<16> s(bitstr);
+    // unsigned long v = s.to_ulong();
+    // std::cout << v << " = " << bits_to_str(v) << std::endl;
+
+    uint16_t v = 21930;
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT_EQUAL(bits_to_str(v), "0101010110101010");
+
+    uint16_t r = htons(v);
+    std::cout << r << " = " << bits_to_str(r) << std::endl;
+    EXPECT_EQUAL(bits_to_str(r), "1010101001010101");
+
+    uint16_t s = eckit::bitswap(v);
+    std::cout << s << " = " << bits_to_str(s) << std::endl;
+    EXPECT_EQUAL(bits_to_str(s), "1010101001010101");
+}
+
 CASE("Check correctness 32 bit swap") {
 
     uint32_t v = 2212345511;

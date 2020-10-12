@@ -82,14 +82,16 @@ void test_roundtrip() {
 
     // First roundtrip with array API
     eckit::bitswap(v);
-    EXPECT( v != ref );
-    eckit::bitswap(v.data(),v.size());
+    std::cout << "v[512] " << v[512] << std::endl;
+    EXPECT(v != ref);
+    eckit::bitswap(v.data(), v.size());
     EXPECT( v == ref );
     
     // // Second roundtrip with scalar API
     // for( auto& x : v ) {
     //   x = eckit::bitswap(x);
     // }
+    // std::cout << "v[512] " << v[512] << std::endl;
     // EXPECT( v != ref );
     // eckit::bitswap(v);
     // EXPECT( v == ref );
@@ -99,9 +101,9 @@ CASE( "test_roundtrip" ) {
     SECTION("short") { test_roundtrip<short>(); }
     SECTION("int") { test_roundtrip<int>(); }
     SECTION("unsigned int") { test_roundtrip<unsigned int>(); }
-    SECTION("long") { test_roundtrip<int>(); }
-    SECTION("float") { test_roundtrip<int>(); }
-    SECTION("double") { test_roundtrip<int>(); }
+    SECTION("long") { test_roundtrip<long>(); }
+    SECTION("float") { test_roundtrip<float>(); }
+    SECTION("double") { test_roundtrip<double>(); }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

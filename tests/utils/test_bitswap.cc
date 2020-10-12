@@ -27,6 +27,16 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("Low-level swap 8 bits") {
+    unsigned char v = 't';
+    uint16_t s = eckit::bitswap8(v);
+    // std::cout << s << std::endl;
+    EXPECT(s != v);
+
+    uint16_t r = eckit::bitswap8(s);
+    EXPECT(r == v);
+}
+
 CASE("Low-level swap 16 bits") {
 
     uint16_t v = 123;
@@ -60,6 +70,17 @@ CASE("Low-level swap 64 bits") {
     EXPECT(s == 4120793659044003840);
 
     uint64_t r = eckit::bitswap64(s);
+    EXPECT(r == v);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("BitSwap short") {
+    short v = 3145;
+    short s = eckit::bitswap(v);
+    std::cout << s << std::endl;
+    EXPECT(s == 18700);
+    short r = eckit::bitswap(s);
     EXPECT(r == v);
 }
 

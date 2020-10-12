@@ -121,9 +121,11 @@ CASE("Check correctness 64 bit swap") {
     EXPECT_EQUAL(bits_to_str(r_hi) + bits_to_str(r_lo),
                  "1010011111000110000011011000101111101111101101000101110100001100");
 
+#if defined(htonll)
     uint64_t sr = htonll(v.v);
     std::cout << bits_to_str(sr) << std::endl;
     EXPECT_EQUAL(bits_to_str(sr), "1010011111000110000011011000101111101111101101000101110100001100");
+#endif
 
     uint64_t s = eckit::bitswap(v.v);
     std::cout << bits_to_str(s) << std::endl;

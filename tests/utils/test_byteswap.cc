@@ -263,7 +263,7 @@ std::ostream& print_bits(std::ostream& out, const std::vector<T>& v) {
 }
 
 template <typename T>
-void test_roundtrip() {
+void test_roundtrip_vector() {
 
     // std::cout << "sizeof(T)*8 " << sizeof(T)*8 << std::endl;
 
@@ -299,17 +299,17 @@ void test_roundtrip() {
     EXPECT(v == ref);
 }
 
-CASE( "test_roundtrip" ) {
-    SECTION("short") { test_roundtrip<short>(); }
-    SECTION("unsigned short") { test_roundtrip<unsigned short>(); }
-    SECTION("int") { test_roundtrip<int>(); }
-    SECTION("unsigned int") { test_roundtrip<unsigned int>(); }
-    SECTION("long") { test_roundtrip<long>(); }
-    SECTION("unsigned long") { test_roundtrip<unsigned long>(); }
-    SECTION("long long") { test_roundtrip<long long>(); }
-    SECTION("unsigned long long") { test_roundtrip<unsigned long long>(); }
-    SECTION("float") { test_roundtrip<float>(); }
-    SECTION("double") { test_roundtrip<double>(); }
+CASE( "test_roundtrip_vector" ) {
+    SECTION("short") { test_roundtrip_vector<short>(); }
+    SECTION("unsigned short") { test_roundtrip_vector<unsigned short>(); }
+    SECTION("int") { test_roundtrip_vector<int>(); }
+    SECTION("unsigned int") { test_roundtrip_vector<unsigned int>(); }
+    SECTION("long") { test_roundtrip_vector<long>(); }
+    SECTION("unsigned long") { test_roundtrip_vector<unsigned long>(); }
+    SECTION("long long") { test_roundtrip_vector<long long>(); }
+    SECTION("unsigned long long") { test_roundtrip_vector<unsigned long long>(); }
+    SECTION("float") { test_roundtrip_vector<float>(); }
+    SECTION("double") { test_roundtrip_vector<double>(); }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

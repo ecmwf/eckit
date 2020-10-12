@@ -9,6 +9,8 @@
  */
 
 #include <arpa/inet.h>
+
+#include <cmath>
 #include <vector>
 
 #include "eckit/log/Log.h"
@@ -173,55 +175,78 @@ CASE("Check correctness 64 bit swap") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+template <typename T>
+void test_scalar_value(T v, std::string bitstr, std::string swapped) {
+
+    T ref = v;
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT(bits_to_str(v) == bitstr);
+
+    eckit::byteswap(v);
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT(bits_to_str(v) == swapped);
+
+    eckit::byteswap(v);
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT(bits_to_str(v) == bitstr);
+
+    EXPECT(ref == v);
+}
+
 CASE("ByteSwap short") {
-    short v = 3145;
-    short r = v;
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    SECTION("short 3145") { test_scalar_value<short>(3145, "0000110001001001", "0100100100001100"); }
+    SECTION("short 32767") { test_scalar_value<short>(32767, "0111111111111111", "1111111101111111"); }
+}
 
-    eckit::byteswap(v);
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
-    EXPECT(v == 18700);
-
-    eckit::byteswap(v);
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
-    EXPECT(r == v);
+CASE("ByteSwap int") {
+    SECTION("int 2212345511") {
+        test_scalar_value<int>(212345511, "00001100101010000010001010100111", "10100111001000101010100000001100");
+    }
+    SECTION("int 1024*1024") {
+        test_scalar_value<int>(1024 * 1024, "00000000000100000000000000000000", "00000000000000000001000000000000");
+    }
 }
 
 CASE("ByteSwap long") {
-    long long v = 7;
-    long long r = v;
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
 
-    eckit::byteswap(v);
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
-    
-    eckit::byteswap(v);
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
-    EXPECT(r == v);
+    SECTION("long 7") {
+        test_scalar_value<long>(7, "0000000000000000000000000000000000000000000000000000000000000111",
+                                "0000011100000000000000000000000000000000000000000000000000000000");
+    }
+    SECTION("long 870633123454325131") {
+        test_scalar_value<long>(870633123454325131, 
+        "0000110000010101000111000011011010000101001011110001000110001011",
+        "1000101100010001001011111000010100110110000111000001010100001100");
+    }
 }
 
 
 CASE("ByteSwap double") {
-    double v = 7.0;
-    double r = v;
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
 
-    eckit::byteswap(v);
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    SECTION("double exact integer 7.0") {
+        test_scalar_value<double>(7.0, 
+        "0100000000011100000000000000000000000000000000000000000000000000",
+        "0000000000000000000000000000000000000000000000000001110001000000");
+    }
 
-    eckit::byteswap(v);
-    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    SECTION("double PI") {
+        test_scalar_value<double>(M_PI, 
+        "0100000000001001001000011111101101010100010001000010110100011000",
+        "0001100000101101010001000101010011111011001000010000100101000000");
+    }
 
-    EXPECT(r == v);
+    SECTION("double max") {
+        test_scalar_value<double>(std::numeric_limits<double>::max(),
+                                  "0111111111101111111111111111111111111111111111111111111111111111",
+                                  "1111111111111111111111111111111111111111111111111110111101111111");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 1
-
 template <typename T>
 std::vector<T> build_reference() {
-    std::vector<T> ref(10);
+    std::vector<T> ref(1024);
     for (size_t i = 0; i < ref.size(); ++i) {
         ref[i] = T(i);
     }
@@ -240,24 +265,24 @@ std::ostream& print_bits(std::ostream& out, const std::vector<T>& v) {
 template <typename T>
 void test_roundtrip() {
 
-    std::cout << "sizeof(T)*8 " << sizeof(T)*8 << std::endl;
+    // std::cout << "sizeof(T)*8 " << sizeof(T)*8 << std::endl;
 
     const auto ref = build_reference<T>();
-    std::cout << "reference" << std::endl; print_bits(std::cout, ref);
+    // std::cout << "reference" << std::endl; print_bits(std::cout, ref);
 
     auto v = ref;
-    std::cout << "v initial" << std::endl; print_bits(std::cout, v);
+    // std::cout << "v initial" << std::endl; print_bits(std::cout, v);
 
     // First roundtrip with array API
     eckit::byteswap(v);
-    std::cout << "v swapped" << std::endl; print_bits(std::cout, v);
+    // std::cout << "v swapped" << std::endl; print_bits(std::cout, v);
     // std::cout << "v[1/2] " << v[v.size() / 2] << std::endl;
     EXPECT(v != ref);
 
     const auto swap = v; // save swaped state
 
     eckit::byteswap(v.data(), v.size());
-    std::cout << "v back" << std::endl; print_bits(std::cout, v);
+    // std::cout << "v back" << std::endl; print_bits(std::cout, v);
     EXPECT(v == ref);
 
     // Second roundtrip with scalar API
@@ -265,26 +290,27 @@ void test_roundtrip() {
     for (auto& x : v) {
         eckit::byteswap(x);
     }
-    std::cout << "v elem swapped" << std::endl; print_bits(std::cout, v);
+    // std::cout << "v elem swapped" << std::endl; print_bits(std::cout, v);
     EXPECT(v != ref);
     EXPECT(v == swap);
 
     eckit::byteswap(v);
-    std::cout << "v elem swapped back" << std::endl;
-    print_bits(std::cout, v);
+    // std::cout << "v elem swapped back" << std::endl; print_bits(std::cout, v);
     EXPECT(v == ref);
 }
 
 CASE( "test_roundtrip" ) {
     SECTION("short") { test_roundtrip<short>(); }
+    SECTION("unsigned short") { test_roundtrip<unsigned short>(); }
     SECTION("int") { test_roundtrip<int>(); }
     SECTION("unsigned int") { test_roundtrip<unsigned int>(); }
     SECTION("long") { test_roundtrip<long>(); }
+    SECTION("unsigned long") { test_roundtrip<unsigned long>(); }
+    SECTION("long long") { test_roundtrip<long long>(); }
+    SECTION("unsigned long long") { test_roundtrip<unsigned long long>(); }
     SECTION("float") { test_roundtrip<float>(); }
     SECTION("double") { test_roundtrip<double>(); }
 }
-
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

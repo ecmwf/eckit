@@ -11,8 +11,8 @@
 /// @author Tiago Quintino
 /// @date October 2020
 
-#ifndef eckit_utils_BitSwap_H
-#define eckit_utils_BitSwap_H
+#ifndef eckit_utils_ByteSwap_H
+#define eckit_utils_ByteSwap_H
 
 #include <algorithm>
 #include <cstdint>
@@ -55,60 +55,67 @@ uint64_t bitswap64(uint64_t a) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// BitSwap selects the swap function based on data type size
+/// ByteSwap selects the swap function based on data type size
 
-template <int T> struct BitSwap {};
+template <int T> struct ByteSwap {};
 
 template <>
-struct BitSwap<8> {
+struct ByteSwap<8> {
   typedef uint64_t inter_t;
-  static uint64_t swap(uint64_t i) { return eckit::bitswap64(i); }
+  static void bitswap(uint64_t& i) { i = eckit::bitswap64(i); }
 };
 
 template <>
-struct BitSwap<4> {
+struct ByteSwap<4> {
   typedef uint32_t inter_t;
-  static uint32_t swap(uint32_t i) { return eckit::bitswap32(i); }
+  static void bitswap(uint32_t& i) { i = eckit::bitswap32(i); }
 };
 
 template <>
-struct BitSwap<2> {
+struct ByteSwap<2> {
   typedef uint16_t inter_t;
-  static uint16_t swap(uint16_t i) { return eckit::bitswap16(i); }
+  static void bitswap(uint16_t& i) { i = eckit::bitswap16(i); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Scalar bitswap template function uses BitSwap to select based on type T size
+/// Scalar bitswap template function uses ByteSwap to select based on type T size
 
-template <typename T> T bitswap(T i) {
-  constexpr std::size_t sz = sizeof(T);
-  typename BitSwap<sz>::inter_t* v = reinterpret_cast<typename BitSwap<sz>::inter_t*>(&i);
-  typename BitSwap<sz>::inter_t  r = BitSwap<sz>::swap(*v);
-  return * reinterpret_cast<typename BitSwap<sz>::inter_t*>(&r);
+template <typename T>
+void byteswap(T& i) {
+    constexpr std::size_t sz = sizeof(T);
+    // std::cerr << "byteswap(T) sizeof T = " << sz << std::endl;
+    typename ByteSwap<sz>::inter_t* v = reinterpret_cast<typename ByteSwap<sz>::inter_t*>(&i);
+    ByteSwap<sz>::bitswap(*v);
 }
 
-/// C-array bitswap template function uses BitSwap to select based on type T size
+/// C-array bitswap template function uses ByteSwap to select based on type T size
 
-template <typename T> void bitswap(T data[], size_t size) {
-  constexpr std::size_t sz = sizeof(T);
-  typename BitSwap<sz>::inter_t* vt = reinterpret_cast<typename BitSwap<sz>::inter_t*>(data);
-  std::transform(vt, vt + size, vt,
-                   [](typename BitSwap<sz>::inter_t& e) -> typename BitSwap<sz>::inter_t { return eckit::bitswap(e); });
+template <typename T>
+void byteswap(T data[], size_t size) {
+    constexpr std::size_t sz          = sizeof(T);
+    // std::cerr << "array byteswap(T) sizeof T = " << sz << std::endl;
+    typename ByteSwap<sz>::inter_t* vt = reinterpret_cast<typename ByteSwap<sz>::inter_t*>(data);
+    std::transform(vt, vt + size, vt, 
+      [](typename ByteSwap<sz>::inter_t& e) -> typename ByteSwap<sz>::inter_t 
+      { eckit::byteswap(e); return e; });
 }
 
-/// std::vector bitswap template function uses BitSwap to select based on type T size
+/// std::vector bitswap template function uses ByteSwap to select based on type T size
 
-template <typename T> void bitswap(std::vector<T>& vi) {
-  bitswap(vi.data(),vi.size());
+template <typename T>
+void byteswap(std::vector<T>& vi) {
+    eckit::byteswap<T>(vi.data(), vi.size());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 std::string bits_to_str(T v) {
-    constexpr std::size_t sz = 8 * sizeof(T);
-    std::bitset<sz> bits(v);
+    constexpr std::size_t sz         = sizeof(T);
+    typename ByteSwap<sz>::inter_t* t = reinterpret_cast<typename ByteSwap<sz>::inter_t*>(&v);
+    constexpr std::size_t nbits      = 8 * sizeof(T);
+    std::bitset<nbits> bits(*t);
     return bits.to_string();
 }
 

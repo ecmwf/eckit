@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <arpa/inet.h>
 #include <vector>
 
 #include "eckit/log/Log.h"
@@ -27,9 +28,46 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("Low-level swap 8 bits") {
+#if ECKIT_LITTLE_ENDIAN  // use htonl as correctness test, and test against specifc bit patterns
+
+CASE("Check correctness 16 bit swap") {
+
+    uint16_t v = 511;
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT_EQUAL(bits_to_str(v), "0000000111111111");
+
+    uint16_t r = htons(v);
+    std::cout << r << " = " << bits_to_str(r) << std::endl;
+    EXPECT_EQUAL(bits_to_str(r), "1111111100000001");
+
+    uint16_t s = eckit::bitswap(v);
+    std::cout << s << " = " << bits_to_str(s) << std::endl;
+    EXPECT_EQUAL(bits_to_str(s), "1111111100000001");
+}
+
+CASE("Check correctness 32 bit swap") {
+
+    uint32_t v = 511;
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT_EQUAL(bits_to_str(v), "0000000111111111");
+
+    uint32_t r = htons(v);
+    std::cout << r << " = " << bits_to_str(r) << std::endl;
+    EXPECT_EQUAL(bits_to_str(r), "1111111100000001");
+
+    uint32_t s = eckit::bitswap(v);
+    std::cout << s << " = " << bits_to_str(s) << std::endl;
+    EXPECT_EQUAL(bits_to_str(s), "1111111100000001");
+
+}
+
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("Low-level roundtrip 8 bits") {
     unsigned char v = 't';
-    uint16_t s = eckit::bitswap8(v);
+    uint16_t s      = eckit::bitswap8(v);
     // std::cout << s << std::endl;
     EXPECT(s != v);
 
@@ -37,19 +75,17 @@ CASE("Low-level swap 8 bits") {
     EXPECT(r == v);
 }
 
-CASE("Low-level swap 16 bits") {
+CASE("Low-level roundtrip 16 bits") {
 
     uint16_t v = 123;
-
     uint16_t s = eckit::bitswap16(v);
     // std::cout << s << std::endl;
     EXPECT(s == 31488);
-
     uint16_t r = eckit::bitswap16(s);
     EXPECT(r == v);
 }
 
-CASE("Low-level swap 32 bits") {
+CASE("Low-level roundtrip 32 bits") {
 
     uint32_t v = 1234;
 
@@ -61,7 +97,7 @@ CASE("Low-level swap 32 bits") {
     EXPECT(r == v);
 }
 
-CASE("Low-level swap 64 bits") {
+CASE("Low-level roundtrip 64 bits") {
 
     uint64_t v = 12345;
 
@@ -77,10 +113,14 @@ CASE("Low-level swap 64 bits") {
 
 CASE("BitSwap short") {
     short v = 3145;
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+
     short s = eckit::bitswap(v);
-    std::cout << s << std::endl;
+    std::cout << s << " = " <<  bits_to_str(s) << std::endl;
     EXPECT(s == 18700);
+
     short r = eckit::bitswap(s);
+    std::cout << r << " = " << bits_to_str(r) << std::endl;
     EXPECT(r == v);
 }
 

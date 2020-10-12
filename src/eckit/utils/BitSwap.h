@@ -14,9 +14,11 @@
 #ifndef eckit_utils_BitSwap_H
 #define eckit_utils_BitSwap_H
 
-#include <cstdint>
-#include <vector>
 #include <algorithm>
+#include <cstdint>
+#include <bitset>
+#include <vector>
+#include <string>
 
 #include "eckit/eckit.h"
 
@@ -110,6 +112,15 @@ template <typename T> void bitswap(T data[], size_t size) {
 
 template <typename T> void bitswap(std::vector<T>& vi) {
   bitswap(vi.data(),vi.size());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+std::string bits_to_str(T v) {
+    constexpr std::size_t sz = 8 * sizeof(T);
+    std::bitset<sz> bits(v);
+    return bits.to_string();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

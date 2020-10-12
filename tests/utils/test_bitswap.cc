@@ -47,18 +47,17 @@ CASE("Check correctness 16 bit swap") {
 
 CASE("Check correctness 32 bit swap") {
 
-    // uint32_t v = 511;
-    // std::cout << v << " = " << bits_to_str(v) << std::endl;
-    // EXPECT_EQUAL(bits_to_str(v), "0000000111111111");
+    uint32_t v = 2212345511;
+    std::cout << v << " = " << bits_to_str(v) << std::endl;
+    EXPECT_EQUAL(bits_to_str(v), "10000011110111011011011010100111");
 
-    // uint32_t r = htonl(v);
-    // std::cout << r << " = " << bits_to_str(r) << std::endl;
-    // EXPECT_EQUAL(bits_to_str(r), "1111111100000001");
+    uint32_t r = htonl(v);
+    std::cout << r << " = " << bits_to_str(r) << std::endl;
+    EXPECT_EQUAL(bits_to_str(r), "10100111101101101101110110000011");
 
-    // uint32_t s = eckit::bitswap(v);
-    // std::cout << s << " = " << bits_to_str(s) << std::endl;
-    // EXPECT_EQUAL(bits_to_str(s), "1111111100000001");
-
+    uint32_t s = eckit::bitswap(v);
+    std::cout << s << " = " << bits_to_str(s) << std::endl;
+    EXPECT_EQUAL(bits_to_str(s), "10100111101101101101110110000011");
 }
 
 #endif

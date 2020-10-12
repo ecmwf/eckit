@@ -28,11 +28,6 @@ namespace eckit {
 
 // Low Level bitswap functions
 
-unsigned char bitswap8(unsigned char a) {
-  a = ((a * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32; // faster
-  return a;
-}
-
 uint16_t bitswap16(uint16_t a) {
   a = ((a & 0x00FF) << 8) | ((a & 0xFF00) >> 8);
   return a;
@@ -80,12 +75,6 @@ template <>
 struct BitSwap<2> {
   typedef uint16_t inter_t;
   static uint16_t swap(uint16_t i) { return eckit::bitswap16(i); }
-};
-
-template <>
-struct BitSwap<1> {
-  typedef unsigned char inter_t;
-  static unsigned char swap(unsigned char i) { return eckit::bitswap8(i); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

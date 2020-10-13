@@ -31,8 +31,8 @@ public:
 
 // -- Contructors
 
-	Seconds(double);
-	Seconds(const struct ::timeval&);
+	Seconds(double, bool compact=false);
+	Seconds(const struct ::timeval&, bool compact=false);
 
 //#include "eckit/types/Seconds.b"
 
@@ -50,6 +50,7 @@ private:
 // -- Members
 
 	double seconds_;
+	bool compact_;
 
 };
 

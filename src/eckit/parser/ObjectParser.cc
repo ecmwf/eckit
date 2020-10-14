@@ -13,6 +13,9 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
+#include <codecvt>
+#include <locale>
+
 #include "eckit/parser/ObjectParser.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
@@ -118,59 +121,98 @@ Value ObjectParser::parseNumber() {
     }
 }
 
+static std::string utf8(uint32_t code) {
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    return conv.to_bytes(char32_t(code));
+}
+
+
+std::string ObjectParser::unicode() {
+    std::string tmp;
+
+    while (true) {
+        char c = peek();
+
+        if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+            consume(c);
+            tmp += c;
+        }
+        else {
+            break;
+        }
+    }
+
+
+    std::istringstream iss(tmp);
+    uint32_t code;
+    iss >> std::hex >> code;
+
+    // std::cout << " [" << code << ", " << utf8(code) << "]" << std::endl;
+
+    return utf8(code);
+}
+
+
 Value ObjectParser::parseString(char quote) {
+
+    bool save = comments_;
+    comments_ = false;
+
     consume(quote);
     std::string s;
     for (;;) {
         char c = next(true);
+
         if (c == '\\') {
             c = next(true);
             switch (c) {
+                case '\\':
+                    s += '\\';
+                    break;
 
-            case '\\':
-                s += '\\';
-                break;
+                case '/':
+                    s += '/';
+                    break;
 
-            case '/':
-                s += '/';
-                break;
+                case 'b':
+                    s += '\b';
+                    break;
 
-            case 'b':
-                s += '\b';
-                break;
+                case 'f':
+                    s += '\f';
+                    break;
 
-            case 'f':
-                s += '\f';
-                break;
+                case 'n':
+                    s += '\n';
+                    break;
 
-            case 'n':
-                s += '\n';
-                break;
+                case 'r':
+                    s += '\r';
+                    break;
 
-            case 'r':
-                s += '\r';
-                break;
+                case 't':
+                    s += '\t';
+                    break;
 
-            case 't':
-                s += '\t';
-                break;
+                case 'u':
+                    s += unicode();
+                    break;
 
-            case 'u':
-                throw StreamParser::Error(std::string("ObjectParser::parseString \\uXXXX format not supported"));
-
-            default:
-                if (c == quote) {
-                    s += c;
-                }
-                else {
-                    throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c +
-                                              "'");
-                }
-                break;
+                default:
+                    if (c == quote) {
+                        s += c;
+                    }
+                    else {
+                        comments_ = save;
+                        throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c +
+                                                  "'");
+                    }
+                    break;
             }
         }
         else {
             if (c == quote) {
+                comments_ = save;
                 return Value(s);
             }
             s += c;

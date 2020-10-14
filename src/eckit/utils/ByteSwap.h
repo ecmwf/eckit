@@ -95,10 +95,10 @@ template <typename T>
 void byteswap(T data[], size_t size) {
     constexpr std::size_t sz          = sizeof(T);
     // std::cerr << "array byteswap(T) sizeof T = " << sz << std::endl;
-    typename ByteSwap<sz>::inter_t* vt = reinterpret_cast<typename ByteSwap<sz>::inter_t*>(data);
-    std::transform(vt, vt + size, vt, 
-      [](typename ByteSwap<sz>::inter_t& e) -> typename ByteSwap<sz>::inter_t 
-      { eckit::byteswap(e); return e; });
+    auto vt = reinterpret_cast<typename ByteSwap<sz>::inter_t*>(data);
+    std::for_each(vt, vt + size, [](typename ByteSwap<sz>::inter_t &e) {
+      eckit::byteswap(e);
+    });
 }
 
 /// std::vector bitswap template function uses ByteSwap to select based on type T size

@@ -27,7 +27,7 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/PartFileHandle.h"
@@ -51,14 +51,30 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static PathNameBuilder<LocalPathName> localBuilder("local");
+
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
 
+static void expandTilde(std::string& path, bool tildeIsUserHome);
+
 static void readPathsTable() {
 
-    static PathName path = eckit::Resource<PathName>("libraryConfigPaths,$LIBRARY_CONFIG_PATHS", "~/etc/paths");
+    // We would normally just use a PathName object, defaulting to ~/etc/paths. However, this function
+    // is typically called within the constructor of a PathName object, and the recursive call will
+    // hang forever on the std::mutex in the PathName factory.
+    //
+    // expandTilde is internal to LocalPathName anyway, so we call it directly.
 
-    std::ifstream in(path.localPath());
+    static std::string path = eckit::Resource<std::string>("libraryConfigPaths,$LIBRARY_CONFIG_PATHS", "~/etc/paths");
+    static bool expanded = false;
+
+    if (!expanded) {
+        expandTilde(path, false);
+        expanded = true;
+    }
+
+    std::ifstream in(path);
 
     eckit::Log::debug() << "Loading library paths from " << path << std::endl;
 
@@ -171,7 +187,7 @@ BasePathName* LocalPathName::checkClusterNode() const {
     std::string n = ClusterDisks::node(path_);
     if (n != "local") {
         //        Log::warning() << *this << " is now on node [" << n << "]" << std::endl;
-        return new BasePathNameT<MarsFSPath>(MarsFSPath(n, path_));
+        return PathNameFactory::instance().build(std::string("marsfs://") + n + path_);
     }
     return new BasePathNameT<LocalPathName>(LocalPathName(path_));
 }
@@ -533,7 +549,7 @@ void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>&
 
     for (;;) {
         struct dirent* e;
-#ifdef ECKIT_HAVE_READDIR_R
+#ifdef eckit_HAVE_READDIR_R
         errno = 0;
         if (readdir_r(d, &buf, &e) != 0) {
             if (errno)
@@ -628,7 +644,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 
     for (;;) {
         struct dirent* e;
-#ifdef ECKIT_HAVE_READDIR_R
+#ifdef eckit_HAVE_READDIR_R
         errno = 0;
         if (readdir_r(d, &buf, &e) != 0) {
             if (errno)
@@ -651,7 +667,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 
         bool do_stat = true;
 
-#if defined(ECKIT_HAVE_DIRENT_D_TYPE)
+#if defined(eckit_HAVE_DIRENT_D_TYPE)
         do_stat = false;
         if (e->d_type == DT_DIR) {
             dirs.push_back(full);
@@ -847,7 +863,7 @@ LocalPathName LocalPathName::mountPoint() const {
 
 void LocalPathName::syncParentDirectory() const {
     PathName directory = dirName();
-#ifdef ECKIT_HAVE_DIRFD
+#ifdef eckit_HAVE_DIRFD
     //    Log::info() << "Syncing directory " << directory << std::endl;
     DIR* d = opendir(directory.localPath());
     if (!d)

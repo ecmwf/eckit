@@ -6,4 +6,5 @@ doc/latex
 *.sublime-workspace
 .*.sw*
 .*un~
+.vscode
 .idea

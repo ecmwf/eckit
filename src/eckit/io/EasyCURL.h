@@ -21,7 +21,7 @@
 #include "eckit/io/MemoryHandle.h"
 
 
-// #ifdef ECKIT_HAVE_CURL
+// #ifdef eckit_HAVE_CURL
 // #include <curl/curl.h>
 // #else
 // typedef int CURL;
@@ -61,9 +61,20 @@ public:
     std::string body() const;
     const EasyCURLHeaders& headers() const;
 
+    int code() const;
+
     unsigned long long contentLength() const;
     size_t read(void* ptr, size_t size) const;
     eckit::DataHandle* dataHandle(const std::string& message = "") const;
+
+private:
+
+    void print(std::ostream&) const;
+
+    friend std::ostream& operator<<(std::ostream& s, const EasyCURLResponse& c) {
+        c.print(s);
+        return s;
+    }
 
 };
 
@@ -93,6 +104,9 @@ public:
     void followLocation(bool on);
     void sslVerifyPeer(bool on);
     void sslVerifyHost(bool on);
+    void failOnError(bool on);
+
+
     void customRequest(const std::string&);
     void headers(const EasyCURLHeaders& headers);
     void userAgent(const std::string&);

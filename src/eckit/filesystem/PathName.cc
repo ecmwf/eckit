@@ -13,41 +13,27 @@
 #include "eckit/filesystem/BasePathName.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
+#include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 
 namespace eckit {
 
-
-static BasePathName* make(const std::string& p, bool tildeIsUserHome) {
-    if (p.find("marsfs:") == 0)
-        return new BasePathNameT<MarsFSPath>(p);
-
-    /*
-    const std::string& node = ClusterDisks::node(p);
-    if(node.length())
-        return new BasePathNameT<MarsFSPath>(std::string("marsfs://") + node +  p , ext);
-    */
-
-    return new BasePathNameT<LocalPathName>(p, tildeIsUserHome);
-}
-
 PathName::PathName(const char* p, bool tildeIsUserHome) {
-    path_ = make(p, tildeIsUserHome);
+    path_ = PathNameFactory::instance().build(p, tildeIsUserHome);
 }
 
 PathName::PathName(const std::string& p, bool tildeIsUserHome) {
-    path_ = make(p, tildeIsUserHome);
+    path_ = PathNameFactory::instance().build(p, tildeIsUserHome);
+}
+
+PathName::PathName(const std::string& type, const std::string& p, bool tildeIsUserHome) {
+    path_ = PathNameFactory::instance().build(type, p, tildeIsUserHome);
 }
 
 PathName::PathName(const PathName& other) : path_(other.path_->clone()) {}
 
 PathName::PathName(const LocalPathName& other) : path_(new BasePathNameT<LocalPathName>(other)) {}
-
-PathName::PathName(const MarsFSPath& other):
-    path_(new BasePathNameT<MarsFSPath>(other)) {
-}
 
 PathName::PathName(BasePathName* path) : path_(path) {
     ASSERT(path);
@@ -222,6 +208,10 @@ bool PathName::operator>=(const PathName& other) const {
 
 PathName PathName::unique(const PathName& path) {
     return PathName(path.path_->unique());
+}
+
+const char* PathName::type() const {
+    return path_->type();
 }
 
 PathName PathName::dirName() const {

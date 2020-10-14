@@ -23,6 +23,8 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
+#include <map>
+#include <mutex>
 
 namespace eckit {
 
@@ -49,9 +51,9 @@ public:
 
     PathName(const char* p = "/", bool tildeIsUserHome = false);
     PathName(const std::string& p, bool tildeIsUserHome = false);
+    PathName(const std::string& type, const std::string& p, bool tildeIsUserHome = false);
     PathName(const PathName& p);
     PathName(const LocalPathName&);
-    PathName(const MarsFSPath&);
 
     // Destructor
     ~PathName();
@@ -88,6 +90,9 @@ public:
     bool operator==(const PathName& other) const;
 
     // Methods
+
+    /// What type of PathName object is this
+    const char* type() const;
 
     /// Directory part of the path
     /// @return directory part of the path
@@ -254,7 +259,6 @@ private:
 };
 
 template <> struct VectorPrintSelector<PathName> { typedef VectorPrintSimple selector; };
-
 
 } // namespace eckit
 

@@ -50,7 +50,7 @@ public:
   virtual void print(std::ostream&) const;
   virtual Length size();
   virtual Length estimate();
-  virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());
+
   virtual Offset position();
   virtual bool isEmpty() const;
   virtual void restartReadFrom(const Offset& from);
@@ -61,6 +61,7 @@ public:
   virtual bool moveable() const { return true; }
 
   virtual Offset seek(const Offset&);
+  virtual bool canSeek() const;
   virtual void skip(const Length&);
 
   virtual DataHandle* clone() const;

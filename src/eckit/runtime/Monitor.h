@@ -84,6 +84,8 @@ public: // methods
 	std::string status();
 	std::string statusTree();
 	void stoppable(bool);
+	bool stopTriggered();
+	void setStopped();
 	bool stopped();
 
 	long       self();

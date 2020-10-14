@@ -46,5 +46,5 @@ ecbuild_add_library( TARGET eckit_web TYPE SHARED
 						HtmlObject.h
 					 HEADER_DESTINATION
 						${INSTALL_INCLUDE_DIR}/eckit/web
-					 LIBS
+					 PUBLIC_LIBS
 						eckit )

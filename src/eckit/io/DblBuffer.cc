@@ -96,13 +96,13 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
     AutoClose c2(out);
 
     Length total = estimate;
-
+    Length copied = 0;
 
     bool more = true;
     while (more) {
         more = false;
         try {
-            Length copied = copy(in, out, estimate);
+            copied = copy(in, out, estimate);
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
             if(estimate) ASSERT(copied == estimate);
         }
@@ -117,7 +117,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
     }
 
     Log::info() << "Transfer rate " << Bytes(estimate, timer) << std::endl;
-    return total;
+    return copied;
 }
 
 Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) {

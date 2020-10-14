@@ -37,6 +37,8 @@ public: // methods
 
     virtual MemoryInfo memoryUsage() const;
 
+    virtual std::string dynamicLibraryName(const std::string& name) const;
+
 protected: // methods
 
 private: // members

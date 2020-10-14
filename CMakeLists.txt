@@ -1,24 +1,23 @@
-cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
+# (C) Copyright 2011- ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
 
-project( eckit CXX )
+########################################################################################################################
 
-set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
+cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-include( ecbuild_system NO_POLICY_SCOPE )
+find_package( ecbuild 3.4 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
 
-ecbuild_requires_macro_version( 3.0 )
-
-set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
-
-ecbuild_declare_project()
+project( eckit LANGUAGES CXX )
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-### architecture checks
-
-include(cmake/check_time_t_Y2038.cmake) # check Y2038 time_t compatibility
-
+########################################################################################################################
 ### dependencies and options
 
 ecbuild_add_option( FEATURE BUILD_TOOLS
@@ -43,6 +42,7 @@ endif()
 if( NOT DEFINED THREADS_PREFER_PTHREAD_FLAG )
   set( THREADS_PREFER_PTHREAD_FLAG 1 )
 endif()
+
 ### Set THREADS_HAVE_PTHREAD_ARG variable to false so that it can be recomputed based on
 ### THREADS_PREFER_PTHREAD_FLAG, in case other project had it on a different setting.
 ### This is certainly a CMake bug ( see ECKIT-426 )
@@ -59,17 +59,20 @@ ecbuild_add_option( FEATURE MPI
 
 ### eckit::cmd
 
+ecbuild_find_lexyacc()
+
 ecbuild_add_option( FEATURE ECKIT_CMD
                     DEFAULT ON
                     DESCRIPTION "Utilities for administration tools"
-                    REQUIRED_PACKAGES "LEXYACC" "Curses" )
+                    CONDITION LEXYACC_FOUND
+                    REQUIRED_PACKAGES "Curses" )
 
 ### eckit::sql
 
 ecbuild_add_option( FEATURE ECKIT_SQL
                     DEFAULT ON
                     DESCRIPTION "An SQL engine"
-                    REQUIRED_PACKAGES "LEXYACC" )
+                    CONDITION LEXYACC_FOUND )
 
 ### Eigen
 
@@ -105,7 +108,7 @@ ecbuild_add_option( FEATURE MKL
                     DESCRIPTION "MKL linear algebra library"
                     REQUIRED_PACKAGES MKL )
 
-### Compression
+### Compression options
 
 ecbuild_add_option( FEATURE BZIP2
                     DESCRIPTION "BZip2 support for compression"
@@ -125,8 +128,8 @@ ecbuild_add_option( FEATURE AEC
 
 ### LAPACK
 
-if( ECKIT_HAVE_MKL )
-    set( ECKIT_HAVE_LAPACK 1 )
+if( eckit_HAVE_MKL )
+    set( eckit_HAVE_LAPACK 1 )
     set( LAPACK_LIBRARIES ${MKL_LIBRARIES} )
 else()
     ecbuild_add_option( FEATURE LAPACK
@@ -224,8 +227,9 @@ else()
   set( RT_LIBRARIES "" )
 endif()
 
-###############################################################################
-# checks
+### sanity checks
+
+include(cmake/check_time_t_Y2038.cmake) # check Y2038 time_t compatibility
 
 # check thread library is pthreads
 if( NOT ${CMAKE_USE_PTHREADS_INIT} )
@@ -233,53 +237,31 @@ if( NOT ${CMAKE_USE_PTHREADS_INIT} )
 endif()
 
 ############################################################################################
-# export package info
-
-set( ECKIT_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src )
-set( ECKIT_LIBRARIES      eckit eckit_geometry eckit_linalg eckit_maths eckit_mpi eckit_web )
-
-if( HAVE_ECKIT_CMD)
-  list( APPEND ECKIT_LIBRARIES eckit_cmd )
-endif()
-
-if( HAVE_EXPERIMENTAL )
-
-  list( APPEND ECKIT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/experimental )
-
-endif()
-
-get_directory_property( ECKIT_DEFINITIONS COMPILE_DEFINITIONS )
-
-############################################################################################
 # sources
 
-ecbuild_find_project_files()
+set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
-include_directories( ${ECKIT_INCLUDE_DIRS} )
-if( HAVE_EIGEN )
-    include_directories( ${EIGEN3_INCLUDE_DIR} )
-endif()
+add_subdirectory( src )
 
 add_subdirectory( bamboo )
 add_subdirectory( doc )
-add_subdirectory( src )
 add_subdirectory( tests )
 add_subdirectory( regressions )
 
-ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files 
-					   SOURCES AUTHORS README.md NOTICE LICENSE 
+ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
+					   SOURCES AUTHORS README.md NOTICE LICENSE
 					   INSTALL ChangeLog COPYING )
 
 ############################################################################################
 # finalize
 
+set( ECKIT_LIBRARIES ${eckit_ALL_LIBS} ) # used for ecbuild_pkgconfig
+
 foreach( _lib ${ECKIT_LIBRARIES} )
-  if( TARGET ${_lib} )
     ecbuild_pkgconfig( NAME ${_lib}
                        DESCRIPTION "ECMWF C++ Toolkit - ${_lib} library"
                        URL "https://software.ecmwf.int/wiki/display/ECKIT/ecKit"
                        LIBRARIES ${_lib} )
-  endif()
 endforeach()
 
 ecbuild_install_project( NAME ${PROJECT_NAME} )

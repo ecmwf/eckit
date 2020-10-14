@@ -12,7 +12,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_VIENNACL
+#ifdef eckit_HAVE_VIENNACL
 
 #include <viennacl/compressed_matrix.hpp>
 #include <viennacl/linalg/inner_prod.hpp>
@@ -120,4 +120,4 @@ static LinearAlgebraViennaCL LinearAlgebraViennaCL;
 }  // namespace linalg
 }  // namespace eckit
 
-#endif  // ECKIT_HAVE_VIENNACL
+#endif  // eckit_HAVE_VIENNACL

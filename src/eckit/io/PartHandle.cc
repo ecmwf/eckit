@@ -11,7 +11,6 @@
 #include <numeric>
 
 #include "eckit/config/Resource.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"

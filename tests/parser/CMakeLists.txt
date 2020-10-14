@@ -18,10 +18,6 @@ ecbuild_add_test( TARGET   eckit_test_parser_yaml
                   SOURCES  test_yaml.cc
                   LIBS     eckit )
 
-ecbuild_add_test( TARGET   eckit_test_parser_json_metadata
-                  SOURCES  test_json_metadata.cc
-                  LIBS     eckit )
-
 ecbuild_add_test( TARGET   eckit_test_parser_stream_parser
                   SOURCES  test_stream_parser.cc
                   LIBS     eckit )

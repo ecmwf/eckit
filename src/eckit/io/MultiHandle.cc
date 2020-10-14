@@ -296,6 +296,16 @@ DataHandle* MultiHandle::clone() const {
     return mh;
 }
 
+
+bool MultiHandle::canSeek() const {
+    for (size_t i = 0; i < datahandles_.size(); i++) {
+        if(!datahandles_[i]->canSeek()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 Offset MultiHandle::position() {
     long long accumulated = 0;
     for (HandleList::iterator it = datahandles_.begin(); it != current_ && it != datahandles_.end(); ++it) {

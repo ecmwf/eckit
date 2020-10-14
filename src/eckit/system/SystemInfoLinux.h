@@ -37,6 +37,8 @@ public: // methods
     virtual void dumpProcMemInfo(std::ostream&, const char* prepend = "") const;
     virtual void dumpSysMemInfo(std::ostream&, const char* prepend = "") const;
 
+    virtual std::string dynamicLibraryName(const std::string& name) const;
+
 protected: // methods
 
 private: // members

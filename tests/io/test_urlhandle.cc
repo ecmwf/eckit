@@ -26,7 +26,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#ifdef ECKIT_HAVE_CURL
+#ifdef eckit_HAVE_CURL
 
 CASE("test_urlhandle_get") {
     URLHandle h("https://www.ecmwf.int/");

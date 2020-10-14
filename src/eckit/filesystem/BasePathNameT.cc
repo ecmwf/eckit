@@ -12,6 +12,8 @@
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/FileMode.h"
 
+#include <algorithm>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -167,6 +169,11 @@ void BasePathNameT<T>::reserve(const Length& length) const {
 template <class T>
 BasePathName* BasePathNameT<T>::unique() const {
     return new BasePathNameT<T>(T::unique(path_));
+}
+
+template <typename T>
+const char* BasePathNameT<T>::type() const {
+    return T::type();
 }
 
 template <class T>

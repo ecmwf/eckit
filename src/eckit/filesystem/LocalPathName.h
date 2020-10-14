@@ -42,8 +42,8 @@ public:  // methods
 
     friend std::ostream& operator<<(std::ostream& s, const LocalPathName& p) { return s << p.path_; }
 
-    LocalPathName(const char* p = "/", bool tildeIsUserHome = false) : path_(p) { tidy(tildeIsUserHome); }
-    LocalPathName(const std::string& p, bool tildeIsUserHome = false) : path_(p) { tidy(tildeIsUserHome); }
+    LocalPathName(const char* p = "/", bool tildeIsUserHome = false) : path_(parsePath(p)) { tidy(tildeIsUserHome); }
+    LocalPathName(const std::string& p, bool tildeIsUserHome = false) : path_(parsePath(p)) { tidy(tildeIsUserHome); }
     LocalPathName(const LocalPathName& p) : path_(p.path_) {}
 
     // Assignment
@@ -54,12 +54,12 @@ public:  // methods
     }
 
     LocalPathName& operator=(const std::string& p) {
-        path_ = p;
+        path_ = parsePath(p);
         return tidy();
     }
 
     LocalPathName& operator=(const char* p) {
-        path_ = p;
+        path_ = parsePath(p);
         return tidy();
     }
 
@@ -99,6 +99,8 @@ public:  // methods
     bool operator==(const LocalPathName& other) const { return path_ == other.path_; }
 
     // Methods
+
+    static const char* type() { return "local"; }
 
     /// @returns a relative filepath to path to a start directory.
     /// This is a pure path computation, no filesystem is accessed to confirm the existence or nature of path
@@ -242,6 +244,13 @@ private:
     // Methods
 
     LocalPathName& tidy(bool tildeIsUserHome = false);
+
+    std::string parsePath(const std::string& p) {
+        if (p.compare(0, 8, "local://") == 0) {
+            return p.substr(8);
+        }
+        return p;
+    }
 
     // friend
 

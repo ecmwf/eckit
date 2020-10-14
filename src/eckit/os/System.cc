@@ -14,7 +14,7 @@
 #include "eckit/os/System.h"
 #include "eckit/types/Types.h"
 
-#if defined(ECKIT_HAVE_DLFCN_H) && defined(ECKIT_HAVE_DLADDR)
+#if defined(eckit_HAVE_DLFCN_H) && defined(eckit_HAVE_DLADDR)
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE

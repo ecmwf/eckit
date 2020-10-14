@@ -112,7 +112,13 @@ URIManager::~URIManager() {
 }
 
 std::string URIManager::asString(const URI& uri) const {
-    return PathName(uri.scheme() + ":" + uri.name()).asString();
+    return path(uri).asString();
+}
+
+PathName URIManager::path(const URI& uri) const {
+    // There is no general mechanism
+    NOTIMP;
+    // return PathName(uri.scheme() + ":" + uri.name());
 }
 
 bool URIManager::exists(const std::string& name) {
@@ -129,64 +135,26 @@ void URIManager::print(std::ostream& s) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class LocalFileManager : public URIManager {
-    virtual bool exists(const URI& uri) override { return PathName(uri.name()).exists(); }
-
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
-
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
-        return PathName(uri.name()).partHandle(ol, ll);
-    }
-
-    virtual std::string asString(const URI& uri) const override { return uri.name(); }
-
-public:
-    LocalFileManager(const std::string& name) : URIManager(name) {}
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 class LocalFilePartManager : public URIManager {
     virtual bool query() override { return true; }
     virtual bool fragment() override { return true; }
 
-    virtual bool exists(const URI& uri) override { return PathName(uri.name()).exists(); }
+    virtual bool exists(const URI& uri) override { return path(uri).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
+    virtual DataHandle* newWriteHandle(const URI& uri) override { return path(uri).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& uri) override { return PathName(uri.name()).fileHandle(); }
+    virtual DataHandle* newReadHandle(const URI& uri) override { return path(uri).fileHandle(); }
 
     virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
-        return PathName(uri.name()).partHandle(ol, ll);
+        return path(uri).partHandle(ol, ll);
     }
 
     virtual std::string asString(const URI& uri) const override { return uri.name(); }
 
+    PathName path(const URI& uri) const override { return PathName("local", uri.name()); }
+
 public:
     LocalFilePartManager(const std::string& name) : URIManager(name) {}
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class MarsFSManager : public URIManager {
-    virtual bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
-
-    virtual DataHandle* newWriteHandle(const URI& uri) override {
-        return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
-    }
-
-    virtual DataHandle* newReadHandle(const URI& uri) override {
-        return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
-    }
-
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
-        return PathName(uri.scheme() + ":" + uri.name()).partHandle(ol, ll);
-    }
-
-public:
-    MarsFSManager(const std::string& name) : URIManager(name) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -222,7 +190,7 @@ class HttpURIManager : public URIManager {
         if (!f.empty())
             f = "#" + f;
 
-        return uri.scheme() + ":" + auth + uri.path().path() + q + f;
+        return uri.scheme() + ":" + auth + uri.name() + q + f;
     }
 
 public:
@@ -231,9 +199,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static LocalFileManager manager_unix("unix");
 static LocalFilePartManager manager_file("file");
-static MarsFSManager manager_marsfs("marsfs");
 static HttpURIManager manager_http("http");
 static HttpURIManager manager_https("https");
 

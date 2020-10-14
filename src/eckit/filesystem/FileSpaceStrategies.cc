@@ -84,7 +84,7 @@ const PathName& FileSpaceStrategies::leastUsed(const std::vector<PathName>& file
     ASSERT(fileSystems.size() != 0);
 
     for (Ordinal i = 0; i < fileSystems.size(); i++) {
-        Log::info() << "leastUsed: " << fileSystems[i] << " " << fileSystems[i].available() << std::endl;
+        // Log::info() << "leastUsed: " << fileSystems[i] << " " << fileSystems[i].available() << std::endl;
         if (fileSystems[i].available()) {
             FileSystemSize fs;
 

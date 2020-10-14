@@ -8,19 +8,37 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Tiago Quintino
-/// @date Dec 2015
+/// @author Simon Smart
+/// @date   May 2020
 
-#include "eckit/types/Metadata.h"
+#ifndef eckit_cmd_LibEcKitCmd_H
+#define eckit_cmd_LibEcKitCmd_H
 
-using namespace eckit;
+#include "eckit/system/Library.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Metadata::~Metadata() {}
+class LibEcKitCmd : public eckit::system::Library {
+
+public: // methods
+
+    LibEcKitCmd();
+
+    static LibEcKitCmd& instance();
+
+protected: // methods
+
+    const void* addr() const override;
+
+    std::string version() const override;
+
+    std::string gitsha1(unsigned int count) const override;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace eckit
+
+#endif

@@ -14,37 +14,43 @@
 
 #define ECKIT_SIZEOF_TIME_T    @ECKIT_SIZEOF_TIME_T@
 
-#cmakedefine ECKIT_HAVE_DLFCN_H
-#cmakedefine ECKIT_HAVE_DLADDR
-#cmakedefine ECKIT_HAVE_MAP_ANONYMOUS
-#cmakedefine ECKIT_HAVE_MAP_ANON
-#cmakedefine ECKIT_HAVE_FUNOPEN
-#cmakedefine ECKIT_HAVE_FSYNC
-#cmakedefine ECKIT_HAVE_FDATASYNC
-#cmakedefine ECKIT_HAVE_F_FULLFSYNC
-#cmakedefine ECKIT_HAVE_FMEMOPEN
-#cmakedefine ECKIT_HAVE_FOPENCOOKIE
-#cmakedefine ECKIT_HAVE_EXECINFO_BACKTRACE
-#cmakedefine ECKIT_HAVE_CXXABI_H
-#cmakedefine ECKIT_HAVE_GMTIME_R
-#cmakedefine ECKIT_HAVE_READDIR_R
-#cmakedefine ECKIT_HAVE_DIRFD
-#cmakedefine ECKIT_HAVE_DIRENT_D_TYPE
-#cmakedefine ECKIT_HAVE_CXX_INT_128
-#cmakedefine ECKIT_HAVE_AIO
+#cmakedefine eckit_HAVE_DLFCN_H
+#cmakedefine eckit_HAVE_DLADDR
+#cmakedefine eckit_HAVE_MAP_ANONYMOUS
+#cmakedefine eckit_HAVE_MAP_ANON
+#cmakedefine eckit_HAVE_FUNOPEN
+#cmakedefine eckit_HAVE_FSYNC
+#cmakedefine eckit_HAVE_FDATASYNC
+#cmakedefine eckit_HAVE_F_FULLFSYNC
+#cmakedefine eckit_HAVE_FMEMOPEN
+#cmakedefine eckit_HAVE_FOPENCOOKIE
+#cmakedefine eckit_HAVE_EXECINFO_BACKTRACE
+#cmakedefine eckit_HAVE_CXXABI_H
+#cmakedefine eckit_HAVE_GMTIME_R
+#cmakedefine eckit_HAVE_READDIR_R
+#cmakedefine eckit_HAVE_DIRFD
+#cmakedefine eckit_HAVE_DIRENT_D_TYPE
+#cmakedefine eckit_HAVE_CXX_INT_128
+#cmakedefine eckit_HAVE_AIO
 
 // external packages
 
-#cmakedefine ECKIT_HAVE_ARMADILLO
-#cmakedefine ECKIT_HAVE_CUDA
-#cmakedefine ECKIT_HAVE_EIGEN
-#cmakedefine ECKIT_HAVE_LAPACK
-#cmakedefine ECKIT_HAVE_MKL
-#cmakedefine ECKIT_HAVE_MPI
-#cmakedefine ECKIT_HAVE_VIENNACL
-#cmakedefine ECKIT_HAVE_SSL
-#cmakedefine ECKIT_HAVE_XXHASH
-#cmakedefine ECKIT_HAVE_CURL
-#cmakedefine ECKIT_HAVE_JEMALLOC
+#cmakedefine eckit_HAVE_ARMADILLO
+#cmakedefine eckit_HAVE_CUDA
+#cmakedefine eckit_HAVE_EIGEN
+#cmakedefine eckit_HAVE_LAPACK
+#cmakedefine eckit_HAVE_VIENNACL
+#cmakedefine eckit_HAVE_SSL
+#cmakedefine eckit_HAVE_XXHASH
+#cmakedefine eckit_HAVE_CURL
+#cmakedefine eckit_HAVE_JEMALLOC
+
+#define ECKIT_HAVE_MKL @eckit_HAVE_MKL@
+#define ECKIT_HAVE_MPI @eckit_HAVE_MPI@
+
+// Have we built certain libraries
+
+#cmakedefine eckit_HAVE_ECKIT_CMD
+#cmakedefine eckit_HAVE_ECKIT_SQL
 
 #endif // eckit_config_h

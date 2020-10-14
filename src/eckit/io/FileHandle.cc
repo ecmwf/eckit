@@ -14,10 +14,9 @@
 #include "eckit/eckit.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/FDataSync.h"
 #include "eckit/io/FileHandle.h"
-#include "eckit/io/MarsFSHandle.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
@@ -213,37 +212,6 @@ bool FileHandle::isEmpty() const {
     return info.st_size == 0;
 }
 
-// Try to be clever ....
-
-Length FileHandle::saveInto(DataHandle& other, TransferWatcher& w) {
-    static bool fileHandleSaveIntoOptimisationUsingHardLinks =
-        eckit::Resource<bool>("fileHandleSaveIntoOptimisationUsingHardLinks", false);
-    if (!fileHandleSaveIntoOptimisationUsingHardLinks) {
-        return DataHandle::saveInto(other, w);
-    }
-
-    // Poor man's RTTI,
-    // Does not support inheritance
-
-    if (!sameClass(other)) {
-        return DataHandle::saveInto(other, w);
-    }
-    // We should be safe to cast now....
-
-    FileHandle* handle = dynamic_cast<FileHandle*>(&other);
-
-    if (::link(name_.c_str(), handle->name_.c_str()) == 0) {
-        Log::debug() << "Saved ourselves a file to file copy!!!" << std::endl;
-    }
-    else {
-        Log::debug() << "Failed to link " << name_ << " to " << handle->name_ << Log::syserr << std::endl;
-        Log::debug() << "Using defaut method" << std::endl;
-        return DataHandle::saveInto(other, w);
-    }
-
-    return estimate();
-}
-
 Offset FileHandle::position() {
     ASSERT(file_);
     return ::ftello(file_);
@@ -284,6 +252,10 @@ Offset FileHandle::seek(const Offset& from) {
     return w;
 }
 
+bool FileHandle::canSeek() const {
+    return true;
+}
+
 void FileHandle::skip(const Length& n) {
     off_t l = n;
     if (::fseeko(file_, l, SEEK_CUR) < 0)
@@ -291,9 +263,9 @@ void FileHandle::skip(const Length& n) {
 }
 
 void FileHandle::toRemote(Stream& s) const {
-    MarsFSPath p(PathName(name_).clusterName());
-    MarsFSHandle remote(p);
-    s << remote;
+    PathName p(PathName(name_).clusterName());
+    std::unique_ptr<DataHandle> remote(p.fileHandle());
+    s << *remote;
 }
 
 void FileHandle::cost(std::map<std::string, Length>& c, bool read) const {

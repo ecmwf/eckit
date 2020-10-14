@@ -10,7 +10,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_MKL
+#if ECKIT_HAVE_MKL
 
 #include "mkl.h"
 #include "mkl_cblas.h"

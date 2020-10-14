@@ -67,6 +67,10 @@ void SystemInfoLinux::dumpSysMemInfo(std::ostream& os, const char* prepend) cons
     }
 }
 
+std::string SystemInfoLinux::dynamicLibraryName(const std::string& name) const {
+    return std::string("lib") + name + ".so";
+}
+
 MemoryInfo SystemInfoLinux::memoryUsage() const {
 
 

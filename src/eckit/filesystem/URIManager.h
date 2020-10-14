@@ -18,8 +18,9 @@
 #include "eckit/eckit.h"
 
 
-#include "eckit/io/Offset.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 
 
 namespace eckit {
@@ -37,33 +38,34 @@ public:
 
     virtual bool exists(const URI&) = 0;
 
-    virtual DataHandle*  newWriteHandle(const URI&) = 0;
-    virtual DataHandle*  newReadHandle(const URI&) = 0;
-    virtual DataHandle*  newReadHandle(const URI&, const OffsetList&, const LengthList&) = 0;
+    virtual DataHandle* newWriteHandle(const URI&)                                      = 0;
+    virtual DataHandle* newReadHandle(const URI&)                                       = 0;
+    virtual DataHandle* newReadHandle(const URI&, const OffsetList&, const LengthList&) = 0;
 
     virtual std::string asString(const URI&) const;
+    virtual eckit::PathName path(const URI&) const;
 
     static bool exists(const std::string&);
-	static URIManager& lookUp(const std::string&);
+    static URIManager& lookUp(const std::string&);
 
 protected:
-
-	URIManager(const std::string&);
+    URIManager(const std::string&);
 
     virtual ~URIManager();
 
-	virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const;
 
 private:
+    std::string name_;
 
-	std::string name_;
-
-    friend std::ostream& operator<<(std::ostream& s,const URIManager& p) { p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const URIManager& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

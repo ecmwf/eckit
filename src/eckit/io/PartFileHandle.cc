@@ -11,7 +11,6 @@
 
 #include <numeric>
 
-#include "eckit/filesystem/marsfs/MarsFSPath.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Log.h"
 
@@ -217,6 +216,9 @@ Offset PartFileHandle::seek(const Offset& offset) {
     return seekto;
 }
 
+bool PartFileHandle::canSeek() const {
+    return true;
+}
 
 bool PartFileHandle::merge(DataHandle* other) {
     if (other->isEmpty())

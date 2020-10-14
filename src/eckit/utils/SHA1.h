@@ -13,10 +13,10 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_SSL
+#ifdef eckit_HAVE_SSL
 #include <openssl/sha.h>
 #else
-#error "eckit was not configured with OpenSSL, SHA1 is disabled. Use conditional ECKIT_HAVE_SSL from eckit/eckit.h"
+#error "eckit was not configured with OpenSSL, SHA1 is disabled. Use conditional eckit_HAVE_SSL from eckit/eckit.h"
 #endif
 
 #ifndef SHA_DIGEST_LENGTH

@@ -15,47 +15,47 @@ set( ECKIT_LITTLE_ENDIAN ${ECKIT_LITTLE_ENDIAN} )
 
 ### check support for DL library
 
-check_include_files( dlfcn.h  ECKIT_HAVE_DLFCN_H )
+check_include_files( dlfcn.h  eckit_HAVE_DLFCN_H )
 
 cmake_push_check_state(RESET)
     set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_DL_LIBS} )
     check_c_source_compiles( "#define _GNU_SOURCE\n#include <dlfcn.h>\nint main(){ void* addr; Dl_info info; dladdr(addr, &info); }\n"
-        ECKIT_HAVE_DLADDR )
+        eckit_HAVE_DLADDR )
 cmake_pop_check_state()
 
 ### system headers and symbols tests for eckit config headers
 
-check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"  ECKIT_HAVE_MAP_ANONYMOUS )
-check_symbol_exists( MAP_ANON      "sys/mman.h"  ECKIT_HAVE_MAP_ANON )
-check_symbol_exists( funopen       "stdio.h"     ECKIT_HAVE_FUNOPEN )
-check_symbol_exists( fsync         "unistd.h"    ECKIT_HAVE_FSYNC)
-check_symbol_exists( fdatasync     "unistd.h"    ECKIT_HAVE_FDATASYNC)
-check_symbol_exists( F_FULLFSYNC   "fcntl.h"     ECKIT_HAVE_F_FULLFSYNC)
-check_symbol_exists( fmemopen      "stdio.h"     ECKIT_HAVE_FMEMOPEN )
+check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"  eckit_HAVE_MAP_ANONYMOUS )
+check_symbol_exists( MAP_ANON      "sys/mman.h"  eckit_HAVE_MAP_ANON )
+check_symbol_exists( funopen       "stdio.h"     eckit_HAVE_FUNOPEN )
+check_symbol_exists( fsync         "unistd.h"    eckit_HAVE_FSYNC)
+check_symbol_exists( fdatasync     "unistd.h"    eckit_HAVE_FDATASYNC)
+check_symbol_exists( F_FULLFSYNC   "fcntl.h"     eckit_HAVE_F_FULLFSYNC)
+check_symbol_exists( fmemopen      "stdio.h"     eckit_HAVE_FMEMOPEN )
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
-    ECKIT_HAVE_FOPENCOOKIE )
+    eckit_HAVE_FOPENCOOKIE )
 
 check_c_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(){ void ** buffer; int i = backtrace(buffer, 256); }\n"
-    ECKIT_HAVE_EXECINFO_BACKTRACE )
+    eckit_HAVE_EXECINFO_BACKTRACE )
 
 check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
-    ECKIT_HAVE_CXXABI_H )
+    eckit_HAVE_CXXABI_H )
 
 check_c_source_compiles( "#include <time.h>\nint main(){ time_t now; time(&now); struct tm t; gmtime_r(&now,&t); }\n"
-    ECKIT_HAVE_GMTIME_R )
+    eckit_HAVE_GMTIME_R )
 
 check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; struct dirent **result; int i = readdir_r(dirp, entry, result); }\n"
-    ECKIT_HAVE_READDIR_R )
+    eckit_HAVE_READDIR_R )
 
 check_c_source_compiles( "#include <sys/types.h>\n#include <dirent.h>\nint main(){ DIR *dirp; int i = dirfd(dirp); }\n"
-    ECKIT_HAVE_DIRFD )
+    eckit_HAVE_DIRFD )
 
 check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; if(entry->d_type) { dirp = 0; } }\n"
-    ECKIT_HAVE_DIRENT_D_TYPE )
+    eckit_HAVE_DIRENT_D_TYPE )
 
 check_cxx_source_compiles( "int main() { __int128 i = 0; return 0;}"
-    ECKIT_HAVE_CXX_INT_128 )
+    eckit_HAVE_CXX_INT_128 )
 
 ### config headers
 
@@ -135,14 +135,16 @@ io/BufferCache.cc
 io/BufferCache.h
 io/BufferedHandle.cc
 io/BufferedHandle.h
+io/PeekHandle.cc
+io/PeekHandle.h
+io/SeekableHandle.cc
+io/SeekableHandle.h
 io/CircularBuffer.cc
 io/CircularBuffer.h
 io/CommandStream.cc
 io/CommandStream.h
 io/Compress.cc
 io/Compress.h
-io/DataBlob.cc
-io/DataBlob.h
 io/DataHandle.cc
 io/DataHandle.h
 io/DblBuffer.cc
@@ -159,6 +161,7 @@ io/FileDescHandle.cc
 io/FileDescHandle.h
 io/FileHandle.cc
 io/FileHandle.h
+io/FOpenDataHandle.cc
 io/MMappedFileHandle.cc
 io/MMappedFileHandle.h
 io/FileLock.cc
@@ -175,8 +178,6 @@ io/HandleHolder.cc
 io/HandleHolder.h
 io/Length.cc
 io/Length.h
-io/MarsFSHandle.cc
-io/MarsFSHandle.h
 io/MemoryHandle.cc
 io/MemoryHandle.h
 io/MoverTransfer.cc
@@ -247,6 +248,18 @@ io/URLHandle.cc
 io/URLHandle.h)
 endif()
 
+list(APPEND eckit_message_srcs
+message/Decoder.cc
+message/Decoder.h
+message/Message.cc
+message/Message.h
+message/MessageContent.cc
+message/MessageContent.h
+message/Reader.cc
+message/Reader.h
+message/Splitter.cc
+message/Splitter.h
+)
 
 if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
@@ -285,6 +298,8 @@ filesystem/PathExpander.cc
 filesystem/PathExpander.h
 filesystem/PathName.cc
 filesystem/PathName.h
+filesystem/PathNameFactory.cc
+filesystem/PathNameFactory.h
 filesystem/TempFile.cc
 filesystem/TempFile.h
 filesystem/TmpDir.cc
@@ -295,12 +310,8 @@ filesystem/URI.cc
 filesystem/URI.h
 filesystem/URIManager.cc
 filesystem/URIManager.h
-filesystem/marsfs/MarsFSClient.cc
-filesystem/marsfs/MarsFSClient.h
-filesystem/marsfs/MarsFSFile.cc
-filesystem/marsfs/MarsFSFile.h
-filesystem/marsfs/MarsFSPath.cc
-filesystem/marsfs/MarsFSPath.h
+filesystem/LocalFileManager.cc
+filesystem/LocalFileManager.h
 )
 
 list( APPEND eckit_thread_srcs
@@ -479,8 +490,8 @@ types/Fraction.cc
 types/Fraction.h
 types/Grid.cc
 types/Grid.h
-types/Metadata.cc
-types/Metadata.h
+# types/Metadata.cc
+# types/Metadata.h
 types/Month.cc
 types/Month.h
 types/Time.cc
@@ -499,10 +510,6 @@ list( APPEND eckit_parser_srcs
 parser/CSVParser.cc
 parser/CSVParser.h
 parser/JSON.h
-parser/JSONDataBlob.cc
-parser/JSONDataBlob.h
-parser/JSONMetadata.cc
-parser/JSONMetadata.h
 parser/JSONParser.cc
 parser/JSONParser.h
 parser/ObjectParser.cc
@@ -673,35 +680,35 @@ list( APPEND eckit_utils_srcs
   utils/Translator.h
 )
 
-if(ECKIT_HAVE_BZIP2)
+if(eckit_HAVE_BZIP2)
     list( APPEND eckit_utils_srcs
       utils/BZip2Compressor.cc
       utils/BZip2Compressor.h
     )
 endif()
 
-if(ECKIT_HAVE_SNAPPY)
+if(eckit_HAVE_SNAPPY)
   list( APPEND eckit_utils_srcs
     utils/SnappyCompressor.cc
     utils/SnappyCompressor.h
   )
 endif()
 
-if(ECKIT_HAVE_LZ4)
+if(eckit_HAVE_LZ4)
   list( APPEND eckit_utils_srcs
     utils/LZ4Compressor.cc
     utils/LZ4Compressor.h
   )
 endif()
 
-if(ECKIT_HAVE_AEC)
+if(eckit_HAVE_AEC)
   list( APPEND eckit_utils_srcs
     utils/AECCompressor.cc
     utils/AECCompressor.h
   )
 endif()
 
-if(ECKIT_HAVE_SSL)
+if(eckit_HAVE_SSL)
     list( APPEND eckit_utils_srcs
       utils/MD4.cc
       utils/MD4.h
@@ -710,14 +717,14 @@ if(ECKIT_HAVE_SSL)
     )
 endif()
 
-if(ECKIT_HAVE_XXHASH)
+if(eckit_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
       utils/xxHashing.cc
       utils/xxHashing.h
     )
 endif()
 
-if(ECKIT_HAVE_RSYNC)
+if(eckit_HAVE_RSYNC)
   list( APPEND eckit_utils_srcs
     utils/Rsync.cc
     utils/Rsync.h
@@ -740,6 +747,7 @@ memory/MemoryPool.cc
 memory/MemoryPool.h
 memory/NonCopyable.cc
 memory/NonCopyable.h
+memory/OnlyMovable.h
 memory/Owned.h
 memory/Padded.h
 memory/ScopedPtr.h
@@ -816,6 +824,7 @@ list( APPEND eckit_dirs
     io
     log
     memory
+    message
     net
     os
     parser
@@ -871,46 +880,57 @@ list( APPEND eckit_persistent
 
 ### eckit library
 
-ecbuild_add_library(TARGET eckit TYPE SHARED
-					INSTALL_HEADERS LISTED
-					HEADER_DESTINATION
-						${INSTALL_INCLUDE_DIR}/eckit
-					SOURCES
-						${eckit_srcs}
-					GENERATED
-						eckit_version.cc
-					TEMPLATES
-						${eckit_templates}
-					PERSISTENT
-						${eckit_persistent}
-                    PRIVATE_INCLUDES
-                        "${CURL_INCLUDE_DIRS}"
-                        "${XXHASH_INCLUDE_DIRS}"
-                        "${SNAPPY_INCLUDE_DIRS}"
-                        "${LZ4_INCLUDE_DIRS}"
-                        "${BZIP2_INCLUDE_DIRS}"
-                        "${AEC_INCLUDE_DIRS}"
-                        "${RADOS_INCLUDE_DIRS}"
-                    INCLUDES
-                        "${OPENSSL_INCLUDE_DIR}"
-                        "${AIO_INCLUDE_DIRS}"
-                    PRIVATE_LIBS
-                        "${SNAPPY_LIBRARIES}"
-                        "${LIBRSYNC_LIBRARIES}"
-                        "${LZ4_LIBRARIES}"
-                        "${BZIP2_LIBRARIES}"
-                        "${AEC_LIBRARIES}"
-                    LIBS
-                        "${OPENSSL_LIBRARIES}"
-                        "${CURL_LIBRARIES}"
-                        "${XXHASH_LIBRARIES}"
-                        "${AIO_LIBRARIES}"
-                        "${RADOS_LIBRARIES}"
-                        ${CMATH_LIBRARIES}
-                        ${RT_LIBRARIES}
-                        ${THREADS_LIBRARIES}
-                        ${CMAKE_DL_LIBS}
-                        ${ECKIT_SYSTEM_EXTRA_LIBS}
+ecbuild_add_library(
+          TARGET eckit
+          TYPE SHARED
+          INSTALL_HEADERS LISTED
+          HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
+
+          SOURCES
+						  ${eckit_srcs}
+
+          GENERATED
+						  eckit_version.cc
+
+          TEMPLATES
+						  ${eckit_templates}
+
+          PERSISTENT
+						  ${eckit_persistent}
+
+          PUBLIC_INCLUDES
+              $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
+              $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+
+          PRIVATE_INCLUDES
+              "${CURL_INCLUDE_DIRS}"
+              "${XXHASH_INCLUDE_DIRS}"
+              "${SNAPPY_INCLUDE_DIRS}"
+              "${LZ4_INCLUDE_DIRS}"
+              "${BZIP2_INCLUDE_DIRS}"
+              "${AEC_INCLUDE_DIRS}"
+              "${RADOS_INCLUDE_DIRS}"
+              "${OPENSSL_INCLUDE_DIR}"
+              "${AIO_INCLUDE_DIRS}"
+
+          PRIVATE_LIBS
+              "${SNAPPY_LIBRARIES}"
+              "${LIBRSYNC_LIBRARIES}"
+              "${LZ4_LIBRARIES}"
+              "${BZIP2_LIBRARIES}"
+              "${AEC_LIBRARIES}"
+              "${OPENSSL_LIBRARIES}"
+              "${CURL_LIBRARIES}"
+              "${XXHASH_LIBRARIES}"
+              "${AIO_LIBRARIES}"
+              "${RADOS_LIBRARIES}"
+
+          PUBLIC_LIBS
+              ${CMATH_LIBRARIES}
+              ${RT_LIBRARIES}
+              ${THREADS_LIBRARIES}
+              ${CMAKE_DL_LIBS}
+              ${ECKIT_SYSTEM_EXTRA_LIBS}
 
           LINKER_LANGUAGE CXX )
 

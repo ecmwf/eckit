@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -20,6 +20,7 @@ namespace eckit { class DataHandle; }
 
 #include <memory>
 
+#include "eckit/memory/OnlyMovable.h"
 #include "eckit/sql/SQLSelectFactory.h"
 //#include "eckit/sql/SQLInsertFactory.h"
 #include "eckit/sql/SQLDatabase.h"
@@ -36,7 +37,7 @@ class SQLStatement;
 class SQLTable;
 class SQLOutputConfig;
 
-class SQLSession : private eckit::NonCopyable {
+class SQLSession : private eckit::OnlyMovable {
 public:
 
     // Constructors
@@ -45,12 +46,8 @@ public:
     SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter=",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);
     SQLSession(const std::string& csvDelimiter=",");
+
     virtual ~SQLSession();
-
-    // Enable move constructor
-
-    SQLSession(SQLSession&& rhs) = default;
-    SQLSession& operator=(SQLSession&& rhs) = default;
 
     // For sqly.y (used parsing SQL strings)
 

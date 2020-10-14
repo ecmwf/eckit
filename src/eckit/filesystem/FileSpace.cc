@@ -10,6 +10,7 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <fstream>
 
 #include "eckit/config/Resource.h"
@@ -165,7 +166,21 @@ void FileSpace::load() const {
         }
     }
 
-    ClusterDisks::load(name_, disks);
+    std::vector<std::string> clusterDisks;
+    ClusterDisks::load(name_, clusterDisks);
+
+    // If the path is local, and available with the current disks config
+    // then don't duplicate it as a marsfs path in the filespace
+
+    for (Ordinal i = 0; i < clusterDisks.size(); i++) {
+        PathName path(clusterDisks[i]);
+        if (path.node() == NodeInfo::thisNode().node()) {
+            if (std::find(disks.begin(), disks.end(), path.path()) != disks.end()) continue;
+        }
+        disks.push_back(clusterDisks[i]);
+    }
+
+    // And ad the paths to the available filesystems lists
 
     for (Ordinal i = 0; i < disks.size(); i++) {
         PathName path(disks[i]);

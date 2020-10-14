@@ -63,6 +63,7 @@ public:
 
     virtual Offset position();
     virtual Offset seek(const Offset&);
+    virtual bool canSeek() const;
 
     virtual bool merge(DataHandle*);
     virtual bool compress(bool = false);

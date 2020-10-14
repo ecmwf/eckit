@@ -44,6 +44,8 @@ public:  // methods
 
     virtual MemoryInfo memoryUsage() const = 0;
 
+    virtual std::string dynamicLibraryName(const std::string& name) const = 0;
+
     virtual void dumpProcMemInfo(std::ostream&, const char* prepend = nullptr) const;
     virtual void dumpSysMemInfo(std::ostream&, const char* prepend = nullptr) const;
 

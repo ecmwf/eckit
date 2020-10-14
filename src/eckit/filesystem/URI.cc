@@ -42,13 +42,14 @@ URI::URI(const std::string& uri) {
 }
 
 URI::URI(const std::string& scheme, const PathName& path):
-    scheme_(scheme), name_(path.path()) {}
+    scheme_(scheme), user_(""), host_(""), port_(-1), name_(path.path()), fragment_(""), queryValues_({}) {}
 
 URI::URI(const std::string &scheme, const URI &uri):
     scheme_(scheme), user_(uri.user_), host_(uri.host_), port_(uri.port_), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
 
 URI::URI(const std::string &scheme, const std::string &hostname, const int port):
-    scheme_(scheme), host_(hostname), port_(port) {}
+    scheme_(scheme), user_(""), host_(hostname), port_(port), name_(""), fragment_(""), queryValues_({}) {
+}
 
 URI::URI(const std::string &scheme, const URI &uri, const std::string &hostname, const int port):
     scheme_(scheme), user_(uri.user_), host_(hostname), port_(port), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
@@ -181,16 +182,22 @@ DataHandle* URI::newReadHandle() const {
     return URIManager::lookUp(scheme_).newReadHandle(*this);
 }
 
-std::string URI::authority() const {
-    std::string authority;
-    if (!user_.empty())
-        authority = user_ + "@";
-    if (!host_.empty())
-        authority += host_;
-    if (port_ != -1)
-        authority += ":" + (port_>0 ? std::to_string(port_) : "");
+std::string URI::hostport() const {
+    if (host_.empty() || port_ < 0)
+        return host_;
 
-    return authority;
+    if (port_ == 0)
+        return host_ + ":";
+
+    return host_ + ":" + std::to_string(port_);
+}
+
+std::string URI::authority() const {
+    std::string host = hostport();
+    if (host.empty() || user_.empty())
+        return host;
+
+    return user_ + "@" + host;
 }
 
 void URI::query(const std::string& attribute, const std::string& value) {
@@ -219,6 +226,11 @@ void URI::fragment(const std::string& fragment) {
     fragment_ = fragment;
 }
 
+PathName URI::path() const {
+    ASSERT(!scheme_.empty());
+    return URIManager::lookUp(scheme_).path(*this);
+}
+
 std::string URI::asString() const {
 //    ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
@@ -237,12 +249,22 @@ std::string URI::asRawString() const {
 }
 
 void URI::print(std::ostream& s) const {
-    s << "URI[scheme=" << scheme_ << ",name=" << name_ << "]";
+    s << "URI[scheme=" << scheme_;
+    if (!user_.empty())
+        s << ",user=" << user_;
+    if (!host_.empty())
+        s << ",host=" << host_;
+    if (port_ != -1)
+        s << ",port=" << port_;
+    s << ",name=" << name_;
+    if (!fragment_.empty())
+        s << ",fragment=" << fragment_;
+    if (!queryValues_.empty())
+        s << ",query=" << queryValues_;
+    s << "]";
 }
 
 void URI::encode(Stream &s) const {
-    std::cout << "URI " << asRawString() << " - start encoding\n";
-
     s << scheme_;
     s << user_;
     s << host_;
@@ -250,8 +272,6 @@ void URI::encode(Stream &s) const {
     s << name_;
     s << fragment_;
     s << queryValues_;
-
-    std::cout << "URI " << asRawString() << " encoded\n";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

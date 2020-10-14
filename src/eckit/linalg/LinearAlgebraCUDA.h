@@ -17,7 +17,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_CUDA
+#ifdef eckit_HAVE_CUDA
 
 #include "eckit/linalg/LinearAlgebra.h"
 
@@ -50,6 +50,6 @@ private:
 }  // namespace linalg
 } // namespace eckit
 
-#endif  // ECKIT_HAVE_CUDA
+#endif  // eckit_HAVE_CUDA
 
 #endif

@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <complex>
 #include <utility>
 
 #include "eckit/mpi/DataType.h"
@@ -173,6 +174,19 @@ Data::Code Data::Type<std::pair<double, int> >::code() {
 template <>
 size_t Data::Type<std::pair<double, int> >::size() {
     return sizeof(std::pair<double, int>);
+}
+
+template <>
+const char* Data::Type<std::complex<double> >::name() {
+    return "complex<double>";
+}
+template <>
+Data::Code Data::Type<std::complex<double> >::code() {
+    return Data::DOUBLE_COMPLEX;
+}
+template <>
+size_t Data::Type<std::complex<double> >::size() {
+    return sizeof(std::complex<double>);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

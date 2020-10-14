@@ -30,17 +30,21 @@ ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/linalg
                      SOURCES            ${eckit_la_srcs}
-                     INCLUDES           "${ARMADILLO_INCLUDE_DIRS}"
+                     PRIVATE_INCLUDES
+                                        "${ARMADILLO_INCLUDE_DIRS}"
                                         "${CUDA_INCLUDE_DIRS}"
                                         "${MKL_INCLUDE_DIRS}"
                                         "${VIENNACL_INCLUDE_DIRS}"
                                         "${EIGEN3_INCLUDE_DIRS}"
-                     LIBS               eckit
+                     PUBLIC_LIBS
+                                        eckit
+                     PRIVATE_LIBS
                                         "${ARMADILLO_LIBRARIES}"
                                         "${CUDA_LIBRARIES}" "${CUDA_cusparse_LIBRARY}"
                                         "${LAPACK_LIBRARIES}"
                                         "${MKL_LIBRARIES}" )
 
 if (CUDA_FOUND)
+set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
 cuda_add_cublas_to_target( eckit_linalg )
 endif()

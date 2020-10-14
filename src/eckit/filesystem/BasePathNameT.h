@@ -10,6 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Simon Smart
 /// @date   June 2011
 
 #ifndef eckit_filesystem_BasePathNameT_h
@@ -77,6 +78,7 @@ private:
     virtual void reserve(const Length&) const;
 
     virtual BasePathName* unique() const;
+    virtual const char* type() const;
     virtual BasePathName* dirName() const;
     virtual BasePathName* fullName() const;
     virtual BasePathName* orphanName() const;

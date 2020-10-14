@@ -62,6 +62,7 @@ public: // methods
     virtual void restartReadFrom(const Offset& from) override;
     virtual Offset position() override;
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override;
 
     virtual void cost(std::map<std::string,Length>&, bool) const override;
     virtual std::string title() const override;

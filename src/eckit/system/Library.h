@@ -65,6 +65,7 @@ public:  // class methods
     static void list(std::ostream&);
 
     static bool exists(const std::string& name);
+    static void load(const std::string& name);
     static const Library& lookup(const std::string& name);
 
     void lock() { mutex_.lock(); }

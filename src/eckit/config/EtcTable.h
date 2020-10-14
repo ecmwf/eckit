@@ -40,7 +40,7 @@ public:
     std::vector<std::string> keys();
     std::vector<std::vector<std::string> > lines();
 
-    void reload();
+    bool reload();
     bool exists() const;
 
 

@@ -9,16 +9,19 @@
  */
 
 #include <unistd.h>
+#include <string>
 #include <cstdlib>
 #include <cstring>
 
 #include "eckit/bases/Loader.h"
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Library.h"
 #include "eckit/runtime/Main.h"
+#include "eckit/system/Library.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -100,7 +103,16 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         home_                = execHome;
     }
 
+    // n.b. instance_ must be set before call to eckit::Resource
+
     instance_ = this;
+
+    // If we are runtime configured to (dynamically) load any libraries, do it here.
+
+    std::vector<std::string> libraries = Resource<std::vector<std::string>>("dynamicLibraries", {});
+    for (const std::string& library : libraries) {
+        system::Library::load(library);
+    }
 
     Loader::callAll(&Loader::execute);
 }

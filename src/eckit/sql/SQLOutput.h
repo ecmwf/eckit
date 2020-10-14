@@ -10,7 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Simon Smart
-/// ECMWF Dec 03
+/// @date Dec 2003
 
 #ifndef eckit_sql_SQLOutput_H
 #define eckit_sql_SQLOutput_H

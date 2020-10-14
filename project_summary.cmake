@@ -4,8 +4,7 @@ if( MPI_C_FOUND )
 
 	message( STATUS "	MPI_C_INCLUDE_PATH  : [${MPI_C_INCLUDE_PATH}]")
 	message( STATUS "	MPI_C_LIBRARIES     : [${MPI_C_LIBRARIES}]")
-
-	message( STATUS "	MPIEXEC               : [${MPIEXEC}]")
+	message( STATUS "	MPIEXEC             : [${MPIEXEC}]")
 
 endif()
 

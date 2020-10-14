@@ -43,7 +43,7 @@ template < typename scalar, typename index > class Matrix;
 
 } // namespace eckit
 
-#ifdef ECKIT_HAVE_EIGEN
+#ifdef eckit_HAVE_EIGEN
 
 // Implementation using Eigen
 #include "eckit/maths/MatrixEigen.h"

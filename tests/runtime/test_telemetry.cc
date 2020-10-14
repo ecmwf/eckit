@@ -58,7 +58,7 @@ CASE("Telemetry standard configuration") {
 
     Tester tester;
 
-    const std::string config_str(R"XXX(
+    const char* config_str = R"XXX(
 ---
 service_type: myServiceType
 service_name: myServiceName
@@ -68,7 +68,7 @@ service_groups:
 servers:
   - host: localhost
     port: 30302
-)XXX");
+)XXX";
 
     eckit::testing::SetEnv env("TELEMETRY_CONFIG", config_str);
 

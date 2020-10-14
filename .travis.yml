@@ -1,10 +1,4 @@
-sudo: false
-
 language: cpp
-
-# Workaround for https://github.com/travis-ci/travis-ci/issues/4681
-matrix:
-  - TRAVIS_EMPTY_JOB_WORKAROUND=true
 
 cache:
   directories:
@@ -12,41 +6,79 @@ cache:
     # - ${HOME}/deps/openmpi
     # - ${HOME}/deps/mpich
 
-matrix:
-  exclude:
-
-    - env: TRAVIS_EMPTY_JOB_WORKAROUND
-
+jobs:
   include:
 
     - os: linux
+      arch: amd64
       compiler: clang
       env:
         - CACHE_NAME=linux-clang38
         - CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_MPI=OFF"
       addons:
         apt:
           sources:  ['llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
           packages: ['clang-3.8']
 
     - os: linux
+      arch: ppc64le
+      compiler: clang
+      env:
+        - CACHE_NAME=linux-clang38
+        - CXX_COMPILER='clang++-3.8' C_COMPILER='clang-3.8'
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_MPI=OFF"
+        - ECKIT_CTEST_OPTIONS="-E eckit_test_memory_mmap"
+      addons:
+        apt:
+          sources:  ['llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
+          packages: ['clang-3.8']
+
+    - os: linux
+      arch: amd64
       compiler: gcc
       env:
         - CACHE_NAME=linux-gcc5
         - CXX_COMPILER='g++-5' C_COMPILER='gcc-5'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_MPI=OFF"
       addons:
         apt:
           sources:  ['ubuntu-toolchain-r-test']
           packages: ['g++-5', 'gcc-5']
 
     - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env:
+        - CACHE_NAME=linux-gcc5
+        - CXX_COMPILER='g++-5' C_COMPILER='gcc-5'
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_MPI=OFF"
+        - ECKIT_CTEST_OPTIONS="-E eckit_test_memory_mmap"
+      addons:
+        apt:
+          sources:  ['ubuntu-toolchain-r-test']
+          packages: ['g++-5', 'gcc-5']
+
+    - os: linux
+      arch: amd64
       compiler: gcc
       env:
         - CACHE_NAME=linux-gcc7
         - CXX_COMPILER='g++-7' C_COMPILER='gcc-7'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_GPROF=ON"
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_GPROF=ON -DENABLE_MPI=OFF"
+      addons:
+        apt:
+          sources:  ['ubuntu-toolchain-r-test']
+          packages: ['g++-7', 'gcc-7']
+
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env:
+        - CACHE_NAME=linux-gcc7
+        - CXX_COMPILER='g++-7' C_COMPILER='gcc-7'
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_MPI=OFF"
+        - ECKIT_CTEST_OPTIONS="-E eckit_test_memory_mmap"
       addons:
         apt:
           sources:  ['ubuntu-toolchain-r-test']
@@ -56,8 +88,8 @@ matrix:
       env:
         - CACHE_NAME=osx-clang
         - CXX_COMPILER='clang++' C_COMPILER='clang'
-        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF"
-      osx_image: xcode9
+        - ECKIT_CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG -DENABLE_EXPERIMENTAL=OFF -DENABLE_MPI=OFF"
+      osx_image: xcode12
 
 before_install:
 
@@ -99,24 +131,41 @@ install:
   # Install CMake
   - |
     ### Install CMake
+    #sudo apt-get install libuv1-dbg libuv1-dev libuv1 rhash libstdc++6;
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_VERSION=3.18.4
       if [[ -z "$(ls -A ${DEPS_DIR}/cmake)" ]]; then
-        CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.tar.gz"
-        mkdir -p ${DEPS_DIR}/cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
+        if [[ "${TRAVIS_ARCH}" == "amd64" ]]; then
+          CMAKE_URL="https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz"
+          mkdir -p ${DEPS_DIR}/cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
+        fi
+        if [[ "${TRAVIS_ARCH}" = "ppc64le" ]]; then
+          # Build from source
+          CMAKE_URL="https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}.tar.gz"
+          mkdir -p ${DEPS_DIR}/cmake-source && travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake-source
+          (
+            cd ${DEPS_DIR}/cmake-source
+            mkdir -p build && cd build
+            ../bootstrap --prefix=${DEPS_DIR}/cmake && make -j4 install
+          )
+        fi
+      else
+        echo "CMake already found in cache"
       fi
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
     else
       brew upgrade cmake || brew install cmake
+      brew install openssl
+      export OPENSSL_ROOT_DIR=/usr/local/opt/openssl
     fi
     cmake --version
 
   # Install ecbuild
   - |
     ### Install ecbuild
-    git clone --depth 1 -b master https://github.com/ecmwf/ecbuild ${DEPS_DIR}/ecbuild
-    export PATH=${DEPS_DIR}/ecbuild/bin:${PATH}
-    export ECBUILD_MODULE_PATH=${DEPS_DIR}/ecbuild/cmake
-    ecbuild --version
+    git clone --depth 1 -b develop https://github.com/ecmwf/ecbuild ${DEPS_DIR}/ecbuild
+    export ecbuild_ROOT=${DEPS_DIR}/ecbuild
+    ${ecbuild_ROOT}/bin/ecbuild --version
 
 script:
 
@@ -132,12 +181,12 @@ script:
 
   # build eckit
   - mkdir -p ${ECKIT_BUILD_DIR} && cd ${ECKIT_BUILD_DIR}
-  - cmake -DCMAKE_MODULE_PATH=${ECBUILD_MODULE_PATH} ${ECKIT_CMAKE_OPTIONS} ${ECKIT_SOURCE_DIR}
+  - cmake ${ECKIT_CMAKE_OPTIONS} ${ECKIT_SOURCE_DIR}
   - make -j4
   - bin/eckit-version
 
   # test eckit
-  - ctest
+  - ctest ${ECKIT_CTEST_OPTIONS}
 
 after_success:
 
@@ -155,5 +204,5 @@ after_success:
 after_failure:
 
   - cd ${ECKIT_BUILD_DIR}
-  - ctest -VV --rerun-failed
+  - ctest -VV --rerun-failed ${ECKIT_CTEST_OPTIONS}
   - cat ecbuild.log

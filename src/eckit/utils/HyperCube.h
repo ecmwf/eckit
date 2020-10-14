@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-// File HyperCube.h
-// Baudouin Raoult - ECMWF Oct 96
+/// @author Baudouin Raoult
+/// @date   Oct 96
 
-#ifndef eckit_HyperCube_h
-#define eckit_HyperCube_h
+#ifndef eckit_utils_HyperCube_h
+#define eckit_utils_HyperCube_h
 
 #include <numeric>
 
@@ -22,33 +22,27 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-// Helper class to handle multi-dimension objects
-// The first dimension should be the one most likely to change
+/// Helper class to handle multi-dimension objects
+/// @note The first dimension should be the one most likely to change
 
 class HyperCube {
-public:
+public:  // types
     typedef std::vector<Ordinal> Dimensions;
     typedef std::vector<Ordinal> Coordinates;
     typedef std::vector<Ordinal> Remapping;
 
-    // -- Contructors
+public:  // methods
+    explicit HyperCube(const Dimensions& d) : dimensions_(d) {}
 
-    HyperCube(const Dimensions& d) : dimensions_(d) {}
-
-    // -- Methods
-
-    // Translate coordinates into an index to a 1 dimension array.
-
+    /// Translate coordinates into an index to a 1 dimension array
     Ordinal index(const Coordinates&) const;
 
-    // Return the number of elemets
-
+    /// @returns the number of elemets
     Ordinal count() const;
 
-    // Translate index to coordinates
-
+    /// Translate index to coordinates
     void coordinates(Ordinal index, Coordinates&) const;
 
     // Accessors
@@ -58,31 +52,25 @@ public:
     Ordinal dimensions(Ordinal n) const { return dimensions_[n]; }
     Ordinal size() const { return dimensions_.size(); }
 
-    // Return the 'remapping' std::vector needing to add 'count' labels
-    // for the dimension 'which' at position 'where'
-
+    /// @returns the 'remapping' std::vector needing to add 'count' labels for the dimension 'which' at position 'where'
     HyperCube addToDimension(Ordinal which, Ordinal where, Ordinal count, Remapping&) const;
 
-    // Combine two 'remapping' vectors
-
+    /// Combines two 'remapping' vectors
     static void combine(Remapping&, const Remapping&);
 
-private:
-    // -- Members
-
+private:  // members
     Dimensions dimensions_;
 };
 
-inline  // For speed
-    Ordinal
-    HyperCube::count() const {
-    return accumulate(dimensions_.begin(), dimensions_.end(), 1, std::multiplies<Ordinal>());
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Method is inlined for speed
+inline Ordinal HyperCube::count() const {
+    return std::accumulate(dimensions_.begin(), dimensions_.end(), 1, std::multiplies<Ordinal>());
 }
 
-
-inline  // For speed
-    Ordinal
-    HyperCube::index(const Coordinates& coord) const {
+/// Method is inlined for speed
+inline Ordinal HyperCube::index(const Coordinates& coord) const {
     Ordinal n = 1;
     Ordinal a = 0;
 
@@ -99,10 +87,8 @@ inline  // For speed
     return a;
 }
 
-
-inline  // For speed
-    void
-    HyperCube::combine(Remapping& map1, const Remapping& map2) {
+/// Method is inlined for speed
+inline void HyperCube::combine(Remapping& map1, const Remapping& map2) {
     if (map1.size() == 0)
         map1 = map2;
     else
@@ -112,8 +98,7 @@ inline  // For speed
         }
 }
 
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
 

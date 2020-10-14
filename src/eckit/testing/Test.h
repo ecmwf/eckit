@@ -53,27 +53,24 @@ enum InitEckitMain
 
 class SetEnv {
 public:
-    SetEnv(const std::string& key, const std::string& value) : key_(key) {
-
-        char* old = ::getenv(key.c_str());
-        if (old)
-            oldValue_ = std::string(old);
-
-        ::setenv(key.c_str(), value.c_str(), true);
+    SetEnv(const char * key, const char * val) : key_(key), value_(val) {
+        oldValue_ = ::getenv(key_);
+        ::setenv(key_, value_, true);
     }
 
     ~SetEnv() {
-        if (oldValue_.empty()) {
-            ::unsetenv(key_.c_str());
+        if (not oldValue_) {
+            ::unsetenv(key_);
         }
         else {
-            ::setenv(key_.c_str(), oldValue_.c_str(), true);
+            ::setenv(key_, oldValue_, true);
         }
     }
 
 private:
-    std::string key_;
-    std::string oldValue_;
+    const char * key_;
+    const char * value_;
+    const char * oldValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

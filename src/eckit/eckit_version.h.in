@@ -1,13 +1,6 @@
 #ifndef eckit_version_h
 #define eckit_version_h
 
-#define ECKIT_VERSION_STR "@ECKIT_VERSION_STR@"
-#define ECKIT_VERSION     "@ECKIT_VERSION@"
-
-#define ECKIT_MAJOR_VERSION @ECKIT_MAJOR_VERSION@
-#define ECKIT_MINOR_VERSION @ECKIT_MINOR_VERSION@
-#define ECKIT_PATCH_VERSION @ECKIT_PATCH_VERSION@
-
 const char * eckit_version();
 
 unsigned int eckit_version_int();

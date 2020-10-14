@@ -12,7 +12,7 @@
 
 #include "eckit/eckit.h"
 
-#ifdef ECKIT_HAVE_EIGEN
+#ifdef eckit_HAVE_EIGEN
 
 #include "eckit/linalg/LinearAlgebraEigen.h"
 
@@ -114,4 +114,4 @@ static LinearAlgebraEigen linearAlgebraEigen;
 }  // namespace linalg
 }  // namespace eckit
 
-#endif  // ECKIT_HAVE_EIGEN
+#endif  // eckit_HAVE_EIGEN

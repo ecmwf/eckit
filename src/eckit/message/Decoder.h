@@ -8,52 +8,50 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Tiago Quintino
-/// @date Dec 2015
+/// @author Baudouin Raoult
+/// @date   Jun 2020
 
-
-#ifndef eckit_Metadata_H
-#define eckit_Metadata_H
+#ifndef eckit_message_Decoder_h
+#define eckit_message_Decoder_h
 
 #include <iosfwd>
-#include <string>
-#include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
+namespace message {
 
+class Message;
+class MetadataGatherer;
 //----------------------------------------------------------------------------------------------------------------------
 
-class Metadata : private eckit::NonCopyable {
 
+class Decoder {
 public: // methods
 
-    virtual ~Metadata();
+    Decoder();
 
-    virtual std::vector<std::string> keywords() const = 0;
+    virtual ~Decoder();
 
-    virtual bool has(const std::string& name) const = 0;
+    virtual void getMetadata(const Message& msg, MetadataGatherer&) const = 0;
 
-    virtual void get(const std::string& name, std::string& value) const = 0;
-    virtual void get(const std::string& name, long& value) const = 0;
-    virtual void get(const std::string& name, double& value) const = 0;
+    static Decoder& lookup(const Message&);
 
-protected: // methods
+private: // methods
 
-    friend std::ostream& operator<<(std::ostream& s, const Metadata& p) {
+    virtual bool match(const Message&) const = 0;
+    virtual void print(std::ostream&) const = 0;
+
+    friend std::ostream& operator<<(std::ostream &s, const Decoder& p) {
         p.print(s);
         return s;
     }
 
-
-    virtual void print(std::ostream&) const = 0;
-
 };
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+} // namespace message
+} // namespace eckit
 
 #endif
-

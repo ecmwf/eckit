@@ -151,8 +151,8 @@ void Library::load(const std::string& name) {
 
             eckit::PathName p = dir / libraryName;
             if (p.exists()) {
-                void* plib;
-                if ((plib = ::dlopen(p.localPath(), RTLD_NOW | RTLD_GLOBAL)) == nullptr) {
+                void* plib = ::dlopen(p.localPath(), RTLD_NOW | RTLD_GLOBAL);
+                if (plib == nullptr) {
                     std::ostringstream ss;
                     ss << "dlopen(" << p << ", ...)";
                     throw FailedSystemCall(ss.str().c_str(), Here(), errno);

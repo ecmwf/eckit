@@ -661,9 +661,12 @@ EasyCURLResponse EasyCURL::POST(const std::string& url, const std::string& data)
 
 EasyCURLResponse EasyCURL::PUT(const std::string& url, const std::string& data) {
     NOTIMP;
+    // Disable unreachable code
+#if 0
     _(curl_easy_setopt(ch_->curl_, CURLOPT_CUSTOMREQUEST, NULL));
     _(curl_easy_setopt(ch_->curl_, CURLOPT_PUT, 1L));
     return request(url);
+#endif
 }
 
 EasyCURLResponse EasyCURL::DELETE(const std::string& url) {

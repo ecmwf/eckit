@@ -205,12 +205,11 @@ ecbuild_add_option( FEATURE SANDBOX
 
 ### Performance tests
 
-include(CheckCXXSymbolExists)
-check_cxx_symbol_exists(std::codecvt_utf8 "codecvt" HAVE_STD_CODECVT_UTF8)
+check_include_file_cxx("codecvt" HAVE_CXX_CODECVT)
 
 ecbuild_add_option( FEATURE UNICODE
                     DEFAULT ON
-                    # CONDITION ${HAVE_STD_CODECVT_UTF8}
+                    CONDITION HAVE_CXX_CODECVT
                     DESCRIPTION "Add support for Unicode characters in Yaml/JSON parsers" )
 
 ### async io support

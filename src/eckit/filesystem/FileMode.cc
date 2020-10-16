@@ -99,7 +99,7 @@ mode_t FileMode::toMode(const std::string& s) const  {
             }
         }
 
-        if (m < 0 || m > 0777) {
+        if ( invalidMode(m) ) {
             std::ostringstream oss;
             oss << "FileMode: invalid mode 0" << std::setw(3) << std::setfill('0') << std::oct << m;
             throw BadValue(oss.str(), Here());

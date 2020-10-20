@@ -132,6 +132,29 @@ CASE("test_eckit_parser_eof") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("test_eckit_parser_comment_in_string") {
+    istringstream in("{\"test\": \"#fff\"}");
+    JSONParser p(in);
+
+    Value v = p.parse();
+    Log::info() << v << std::endl;
+
+    EXPECT(v["test"] == "#fff");
+}
+
+CASE("test_eckit_parser_unicode") {
+    istringstream in("{\"test\": \"\\u0061\"}");
+    JSONParser p(in);
+
+    Value v = p.parse();
+    Log::info() << v << std::endl;
+
+    EXPECT(v["test"] == "a");
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace test
 }  // namespace eckit
 

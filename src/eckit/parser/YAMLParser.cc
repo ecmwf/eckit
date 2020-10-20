@@ -192,7 +192,6 @@ struct YAMLItemKey : public YAMLItem {
 
     void set(ValueMap& m, ValueList& l, const Value& k, const Value& v, bool unique=false) const {
 
-        // std::cout << "SET " << k << " " << v << std::endl;
 
         if (m.find(k) == m.end()) {
             l.push_back(k);
@@ -262,7 +261,6 @@ struct YAMLItemKey : public YAMLItem {
             }
 
             const YAMLItem& peek = parser.peekItem();
-            // std::cout << "key " << *key << " peek " << peek << std::endl;
 
             if (peek.indent_ < key->indent_) {
                 more = false;
@@ -278,12 +276,10 @@ struct YAMLItemKey : public YAMLItem {
 
             if (next.value_.isString() && peek.indent_ > key->indent_ && peek.value_.isString()) {
 
-                std::cout << "===" << *key << " " << peek << std::endl;
                 std::ostringstream oss;
                 oss << next.value_;
                 for (;;) {
                     const YAMLItem& peek = parser.peekItem();
-                                    std::cout << "===" << *key << " " << peek << std::endl;
 
                     if (!(peek.indent_ > key->indent_ && peek.value_.isString())) {
                         break;
@@ -291,7 +287,6 @@ struct YAMLItemKey : public YAMLItem {
 
                     oss << ' ' << parser.nextItem().value_;
                 }
-                std::cout << "===" << *key << " {" << oss.str() << "}" << std::endl;
 
                 set(_m, _l, key->value_, oss.str());
                 continue;

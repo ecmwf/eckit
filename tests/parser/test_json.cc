@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/eckit_config.h"
+
 #include "eckit/log/Log.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/JSONParser.h"
@@ -142,6 +144,7 @@ CASE("test_eckit_parser_comment_in_string") {
     EXPECT(v["test"] == "#fff");
 }
 
+#ifdef eckit_HAVE_UNICODE
 CASE("test_eckit_parser_unicode") {
     istringstream in("{\"test\": \"\\u0061\"}");
     JSONParser p(in);
@@ -151,7 +154,7 @@ CASE("test_eckit_parser_unicode") {
 
     EXPECT(v["test"] == "a");
 }
-
+#endif // eckit_HAVE_UNICODE
 
 //----------------------------------------------------------------------------------------------------------------------
 

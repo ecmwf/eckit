@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/eckit_config.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/YAMLParser.h"
@@ -359,10 +361,12 @@ CASE("test_eckit_yaml_cfg_1") {
     std::cout << toJSON(v) << std::endl;
 }
 
+#ifdef eckit_HAVE_UNICODE
 CASE("test_eckit_yaml_unicode") {
     Value v = YAMLParser::decodeFile("unicode.yaml");
     EXPECT(v["test1"] == v["test2"]);
 }
+#endif // eckit_HAVE_UNICODE
 
 CASE("test_eckit_yaml_comment_in_string") {
     Value v = YAMLParser::decodeFile("string.yaml");

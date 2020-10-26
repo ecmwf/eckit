@@ -2,6 +2,10 @@ ecbuild_add_library( TARGET     eckit_test_value_custom_params TYPE SHARED
                      NOINSTALL
                      SOURCES    AnyKeyParams.cc
                      PUBLIC_LIBS eckit )
+if( ECBUILD_2_COMPAT )
+  list( REMOVE_ITEM ${PROJECT_NAME}_ALL_LIBS eckit_test_value_custom_params )
+  set( ${PROJECT_NAME}_ALL_LIBS ${${PROJECT_NAME}_ALL_LIBS} CACHE INTERNAL "" )
+endif()
 
 ecbuild_add_test( TARGET   eckit_test_value_value_params
                   SOURCES  test_value_params.cc

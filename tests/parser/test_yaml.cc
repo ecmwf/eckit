@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/eckit_config.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/YAMLParser.h"
@@ -359,6 +361,29 @@ CASE("test_eckit_yaml_cfg_1") {
     std::cout << toJSON(v) << std::endl;
 }
 
+#ifdef eckit_HAVE_UNICODE
+CASE("test_eckit_yaml_unicode") {
+    Value v = YAMLParser::decodeFile("unicode.yaml");
+    EXPECT(v["test1"] == v["test2"]);
+}
+#endif // eckit_HAVE_UNICODE
+
+CASE("test_eckit_yaml_comment_in_string") {
+    Value v = YAMLParser::decodeFile("string.yaml");
+    std::cout << toJSON(v) << std::endl;
+    EXPECT(v["test1"] == "#fff");
+    EXPECT(v["test2"] == "#aaa");
+
+    std::string e = "starts here and continues here and more";
+
+    EXPECT(v["test3"] == e);
+    EXPECT(v["test4"][0] == e);
+    EXPECT(v["test5"]["test6"] == e);
+}
+
+
+
+
 /// @todo FIX this test
 
 // CASE ( "test_eckit_yaml_key_with_space" ) {
@@ -463,17 +488,17 @@ CASE("test_eckit_yaml_text_5") {
     // }
 }
 
-CASE("test_eckit_yaml_text_6") {
+// CASE("test_eckit_yaml_text_6") {
 
-    const char* text = R"YAML(
----
-foo:
-    bar: 1
-  spam: true
-)YAML";
+//     const char* text = R"YAML(
+// ---
+// foo:
+//     bar: 1
+//   spam: true
+// )YAML";
 
-    EXPECT_THROWS_AS(YAMLParser::decodeString(text), eckit::SeriousBug);
-}
+//     EXPECT_THROWS_AS(YAMLParser::decodeString(text), eckit::SeriousBug);
+// }
 
 #endif
 

@@ -199,11 +199,18 @@ if( HAVE_RSYNC )
   set( LIBRSYNC_LIBRARIES rsync )
 endif()
 
+ecbuild_add_option( FEATURE SANDBOX
+                    DEFAULT OFF
+                    DESCRIPTION "Sandbox playground for prototyping code that may never see the light of day" )
+
 ### Performance tests
 
-ecbuild_add_option( FEATURE EXTRA_TESTS
-                    DEFAULT OFF
-                    DESCRIPTION "Add additional unit/performance tests" )
+check_include_file_cxx("codecvt" HAVE_CXX_CODECVT)
+
+ecbuild_add_option( FEATURE UNICODE
+                    DEFAULT ON
+                    CONDITION HAVE_CXX_CODECVT
+                    DESCRIPTION "Add support for Unicode characters in Yaml/JSON parsers" )
 
 ### async io support
 

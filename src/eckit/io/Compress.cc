@@ -69,8 +69,6 @@ static void print_code(std::ostream& out, size_t s) {
 */
 
 class Entry {
-    void print(std::ostream& out) const;
-
     std::vector<unsigned char> chars_;
     size_t code_;
 

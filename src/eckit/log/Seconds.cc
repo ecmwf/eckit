@@ -17,60 +17,83 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Seconds::Seconds(double seconds) : seconds_(seconds) {}
+Seconds::Seconds(double seconds, bool compact) : seconds_(seconds), compact_(compact) {}
 
-Seconds::Seconds(const ::timeval& time) : seconds_(time.tv_sec + time.tv_usec / 1000000.0) {}
+Seconds::Seconds(const ::timeval& time, bool compact) : seconds_(time.tv_sec + time.tv_usec / 1000000.0), compact_(compact) {}
 
 static struct {
     int length_;
     const char* name_;
+    const char shortName_;
 } periods[] = {
     {
         7 * 24 * 60 * 60,
         "week",
+        'w',
     },
     {
         24 * 60 * 60,
         "day",
+        'd',
     },
     {
         60 * 60,
         "hour",
+        'h',
     },
     {
         60,
         "minute",
+        'm',
     },
     {
         1,
         "second",
+        's',
     },
     {
+        0,
         0,
         0,
     },
 };
 
 std::ostream& operator<<(std::ostream& s, const Seconds& sec) {
+
+    // Use an intermediate std::stringstream, so that the entire
+    // grouping can be manipulated with std::setw(), ...
+
+    std::ostringstream ss;
     double t = sec.seconds_;
     long n   = t;
     int flg  = 0;
 
     for (int i = 0; periods[i].length_; i++) {
         long m = n / periods[i].length_;
-        if (m) {
-            if (flg)
-                s << ' ';
-            s << m << ' ' << periods[i].name_;
-            if (m > 1)
-                s << 's';
-            n %= periods[i].length_;
-            flg++;
+        if (sec.compact_) {
+            if (m || flg) {
+                ss << m << periods[i].shortName_;
+                n %= periods[i].length_;
+                flg++;
+            }
+        } else {
+            if (m) {
+                if (flg)
+                    ss << ' ';
+                ss << m << ' ' << periods[i].name_;
+                if (m > 1)
+                    ss << 's';
+                n %= periods[i].length_;
+                flg++;
+            }
         }
     }
 
-    if (!flg)
-        s << t << " second";
+    if (!flg) {
+        ss << t << (sec.compact_ ? "s" : " second");
+    }
+
+    s << ss.str();
 
     return s;
 }

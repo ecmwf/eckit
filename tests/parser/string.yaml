@@ -1,0 +1,16 @@
+---
+test1: '#fff'
+test2: '#aaa'
+
+test3: starts here
+   and continues here
+  and more
+
+test4:
+  - starts here
+       and continues here
+          and more
+test5:
+  test6: starts here
+    and continues here
+    and more

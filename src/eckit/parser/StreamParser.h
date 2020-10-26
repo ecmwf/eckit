@@ -48,6 +48,7 @@ public: // methods
 
 protected: // members
 
+    bool comments_;
     size_t line_;
     size_t pos_;
 
@@ -55,7 +56,6 @@ private: // members
 
     std::istream& in_;
 
-    bool comments_;
     std::set<char> comment_;
 
     char _get();

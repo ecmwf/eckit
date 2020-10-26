@@ -190,10 +190,16 @@ struct YAMLItemKey : public YAMLItem {
     }
 
 
-    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v) const {
+    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v, bool unique=false) const {
+
 
         if (m.find(k) == m.end()) {
             l.push_back(k);
+        }
+        else {
+            if(unique) {
+                return;
+            }
         }
 
         m[k] = v;
@@ -221,7 +227,7 @@ struct YAMLItemKey : public YAMLItem {
 
             if (next.indent_ == key->indent_) {
                 // Special case
-                set(_m, _l, key->value_, Value());  // null
+                set(_m, _l, key->value_, Value(), true);  // null
 
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
@@ -231,7 +237,7 @@ struct YAMLItemKey : public YAMLItem {
 
             if (next.indent_ < key->indent_) {
                 // Special case
-                set(_m, _l, key->value_, Value());  // null
+                set(_m, _l, key->value_, Value(), true);  // null
 
                 more = false;
                 continue;
@@ -255,7 +261,6 @@ struct YAMLItemKey : public YAMLItem {
             }
 
             const YAMLItem& peek = parser.peekItem();
-            // std::cout << "key " << *key << " peek " << peek << std::endl;
 
             if (peek.indent_ < key->indent_) {
                 more = false;
@@ -268,6 +273,25 @@ struct YAMLItemKey : public YAMLItem {
                 lock.set(key);
                 continue;
             }
+
+            if (next.value_.isString() && peek.indent_ > key->indent_ && peek.value_.isString()) {
+
+                std::ostringstream oss;
+                oss << next.value_;
+                for (;;) {
+                    const YAMLItem& peek = parser.peekItem();
+
+                    if (!(peek.indent_ > key->indent_ && peek.value_.isString())) {
+                        break;
+                    }
+
+                    oss << ' ' << parser.nextItem().value_;
+                }
+
+                set(_m, _l, key->value_, oss.str());
+                continue;
+            }
+
 
             std::ostringstream oss;
             oss << "Invalid sequence " << *key << " then " << next << " then " << peek << std::endl;
@@ -327,6 +351,8 @@ struct YAMLItemEntry : public YAMLItem {
                 ASSERT(dynamic_cast<const YAMLItemEntry*>(advance));
                 continue;
             }
+
+            std::cout << "2 ---" << std::endl;
 
             std::ostringstream oss;
             oss << "Invalid sequence " << *this << " then " << next << " then " << peek << std::endl;

@@ -9,6 +9,7 @@
  */
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/maths/Functions.h"
 
 #include "eckit/log/LineBasedTarget.h"
 
@@ -22,10 +23,6 @@ LineBasedTarget::LineBasedTarget() : size_(4096), buffer_(new char[size_]), posi
 
 LineBasedTarget::~LineBasedTarget() {
     delete[] buffer_;
-}
-
-static inline size_t round(size_t x, size_t n) {
-    return ((x + n - 1) / n) * n;
 }
 
 void LineBasedTarget::reserve(size_t size) {

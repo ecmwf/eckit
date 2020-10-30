@@ -205,6 +205,10 @@ CASE("test_eckit_container_kdtree_constructor") {
     lbound = Point::add(lbound, delta);
     ubound = Point::add(ubound, delta);
     EXPECT_NOT(isAnyPointInBoxInterior(kd, lbound, ubound));
+
+    // Test size()
+    EXPECT_EQUAL( kd.size(), points.size() );
+
 }
 
 CASE("test_eckit_container_kdtree_insert") {
@@ -283,6 +287,56 @@ CASE("test_eckit_container_kdtree_insert") {
             Log::info() << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) << std::endl;
             EXPECT(Point::distance(Point(0.0, 0.0), diff, i) == 0.5);
         }
+    }
+}
+
+CASE( "test_kdtree_mapped" ) {
+    using Tree = KDTreeMapped<TestTreeTrait>;
+    using Point = Tree::PointType;
+    std::vector<Tree::Value> points;
+    for (unsigned int i = 0; i < 10; i++) {
+        for (unsigned int j = 0; j < 10; j++) {
+            Point p = Point(double(i), double(j));
+            Tree::Value v(p, 99.9);
+            points.push_back(v);
+        }
+    }
+    auto passTest = [&](Tree& kd) ->bool {
+            // pick some point from the vector
+            Point refPoint = points[points.size() / 2].point();
+
+            // perturb it a little
+            Point delta(0.1, 0.1);
+            Point testPoint = Point::add(refPoint, delta);
+
+            Point nr = kd.nearestNeighbour(testPoint).point();
+
+            // we should find the same point
+            for (unsigned int i = 0; i < Point::dimensions(); i++) {
+                if( nr.x(i) != refPoint.x(i) ) {
+                    return false;
+                }
+            }
+            return true;
+    };
+
+    eckit::PathName path("test_kdtree_mapped.kdtree");
+
+    // Write file with kdtree
+    {
+        if( path.exists() ) path.unlink();
+        Tree kd(path, points.size(), 0);
+        EXPECT_EQUAL( kd.size(), 0 );
+        kd.build( points );
+        EXPECT_EQUAL( kd.size(), points.size() );
+        EXPECT( passTest(kd) );
+    }
+
+    // Load file with kdtree
+    {
+        Tree kd(path, 0, 0);
+        EXPECT_EQUAL( kd.size(), points.size() );
+        EXPECT( passTest(kd) );
     }
 }
 

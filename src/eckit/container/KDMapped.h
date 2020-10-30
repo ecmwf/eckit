@@ -60,31 +60,31 @@ public:
     Node* convert(Ptr p, const Node* dummy) {
         Node* r = base(dummy);
         /* ASSERT(p < count_); */
-        return p ? &r[p] : NULL;
+        return p ? &r[p] : nullptr;
     }
 
     template <class Node, class A>
     Node* newNode1(const A& a, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT(count_ > 0);
+        ASSERT( !readonly_ );
         // ASSERT(count_ * sizeof(Node) < size_);
-        return new (&r[count_++]) Node(a);
+        return new (&r[++count_]) Node(a);
     }
 
     template <class Node, class A, class B>
     Node* newNode2(const A& a, const B& b, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT(count_ > 0);
+        ASSERT( !readonly_ );
         // ASSERT(count_ * sizeof(Node) < size_);
-        return new (&r[count_++]) Node(a, b);
+        return new (&r[++count_]) Node(a, b);
     }
 
     template <class Node, class A, class B, class C>
     Node* newNode3(const A& a, const B& b, const C& c, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT(count_ > 0);
+        ASSERT( !readonly_ );
         // ASSERT(count_ * sizeof(Node) < size_);
-        return new (&r[count_++]) Node(a, b, c);
+        return new (&r[++count_]) Node(a, b, c);
     }
 
 
@@ -107,12 +107,15 @@ public:
         getMetadata(&meta, sizeof(meta));
     }
 
+    size_t nbItems() const { return count_; }
+
 private:
     PathName path_;
 
     KDMappedHeader header_;
 
-    size_t count_;
+    size_t count_{0};
+    bool readonly_{true};
 
     long long size_;
     char* base_;

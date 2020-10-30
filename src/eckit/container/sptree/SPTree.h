@@ -155,6 +155,10 @@ public:
     }
 
     iterator end() { return iterator(alloc_, 0); }
+
+    bool empty() const { return size() == 0; }
+
+    size_t size() const { return alloc_.nbItems(); }
 };
 
 }  // namespace eckit

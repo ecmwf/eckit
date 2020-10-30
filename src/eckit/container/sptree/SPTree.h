@@ -147,6 +147,9 @@ public:
     }
 
     iterator begin() {
+        if( empty() ) {
+            return end();
+        }
         if (!root_) {
             root_ = alloc_.root();
         }

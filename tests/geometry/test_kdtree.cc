@@ -340,6 +340,17 @@ CASE( "test_kdtree_mapped" ) {
     }
 }
 
+CASE( "test_kdtree_iterate_empty" ) {
+    using Tree = KDTreeMemory<TestTreeTrait>;
+
+    Tree kd;
+    size_t count{0};
+    for( auto& item: kd ) {
+        count++;
+    }
+    EXPECT_EQUAL(count, 0);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

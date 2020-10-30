@@ -183,6 +183,10 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) {
     }
 }
 
+SparseMatrix::SparseMatrix(SparseMatrix&& other) : SparseMatrix() {
+    swap(other);
+}
+
 SparseMatrix& SparseMatrix::operator=(const SparseMatrix& other) {
     SparseMatrix copy(other);
     swap(copy);

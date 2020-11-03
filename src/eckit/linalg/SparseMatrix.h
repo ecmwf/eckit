@@ -146,10 +146,13 @@ public:  // methods
     /// Constructor from MemoryBuffer
     SparseMatrix(const MemoryBuffer&);
 
-    ~SparseMatrix();
+    /// Move constructor
+    SparseMatrix(SparseMatrix&&);
 
     /// Copy constructor
     SparseMatrix(const SparseMatrix&);
+
+    ~SparseMatrix();
 
     /// Assignment operator (allocates and copies data)
     SparseMatrix& operator=(const SparseMatrix&);

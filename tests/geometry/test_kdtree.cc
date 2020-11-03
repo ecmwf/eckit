@@ -335,6 +335,13 @@ CASE( "test_kdtree_mapped" ) {
     // Load file with kdtree
     {
         Tree kd(path, 0, 0);
+
+        // Cannot insert point as the tree is readonly
+        EXPECT_THROWS_AS( kd.insert( points.front() ), eckit::AssertionFailed );
+
+        // Cannot build with points as the tree is readonly
+        EXPECT_THROWS_AS( kd.build( points ), eckit::AssertionFailed );
+
         EXPECT_EQUAL( kd.size(), points.size() );
         EXPECT( passTest(kd) );
     }

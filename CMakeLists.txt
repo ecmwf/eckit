@@ -205,6 +205,12 @@ ecbuild_add_option( FEATURE SANDBOX
 
 ### Performance tests
 
+ecbuild_add_option( FEATURE EXTRA_TESTS
+                    DEFAULT OFF
+                    DESCRIPTION "Add additional unit/performance tests" )
+
+### UNICODE support 
+
 check_include_file_cxx("codecvt" HAVE_CXX_CODECVT)
 
 ecbuild_add_option( FEATURE UNICODE

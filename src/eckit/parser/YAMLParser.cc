@@ -352,8 +352,6 @@ struct YAMLItemEntry : public YAMLItem {
                 continue;
             }
 
-            std::cout << "2 ---" << std::endl;
-
             std::ostringstream oss;
             oss << "Invalid sequence " << *this << " then " << next << " then " << peek << std::endl;
             throw eckit::SeriousBug(oss.str());

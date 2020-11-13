@@ -19,12 +19,14 @@
 #include "eckit/system/Library.h"
 #include "eckit/system/ResourceUsage.h"
 #include "eckit/system/SystemInfo.h"
-
+#include "eckit/system/LibraryManager.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
+using eckit::system::Library;
+using eckit::system::LibraryManager;
 
 namespace eckit {
 namespace test {
@@ -59,17 +61,16 @@ CASE("test_eckit_system_info") {
 }
 
 CASE("test_eckit_system_library") {
-    using eckit::system::Library;
 
-    std::vector<std::string> libs = Library::list();
+    std::vector<std::string> libs = LibraryManager::list();
 
     std::string libpath;
 
     for (std::vector<std::string>::const_iterator libname = libs.begin(); libname != libs.end(); ++libname) {
 
-        EXPECT_NO_THROW(Library::lookup(*libname));
+        EXPECT_NO_THROW(LibraryManager::lookup(*libname));
 
-        const Library& lib = Library::lookup(*libname);
+        const Library& lib = LibraryManager::lookup(*libname);
 
         EXPECT_NO_THROW(lib.prefixDirectory());
 
@@ -89,24 +90,21 @@ CASE("test_libeckit") {
 
 #ifdef eckit_HAVE_ECKIT_CMD
 CASE("test dynamic load") {
-    using eckit::system::Library;
-    EXPECT(!Library::exists("eckit_cmd"));
-    Library::load("eckit_cmd");
-    EXPECT(Library::exists("eckit_cmd"));
+    EXPECT(!LibraryManager::exists("eckit_cmd"));
+    LibraryManager::load("eckit_cmd");
+    EXPECT(LibraryManager::exists("eckit_cmd"));
 }
 #endif
 
 CASE("test fail dynamic load") {
-    using eckit::system::Library;
-    EXPECT(!Library::exists("fake-library"));
-    EXPECT_THROWS_AS(Library::load("fake-library"), SeriousBug);
+    EXPECT(!LibraryManager::exists("fake-library"));
+    EXPECT_THROWS_AS(LibraryManager::load("fake-library"), SeriousBug);
 }
 
 #ifdef eckit_HAVE_ECKIT_SQL
 CASE("test load non-eckit::Library library") {
-    using eckit::system::Library;
-    EXPECT(!Library::exists("eckit_sql"));
-    EXPECT_THROWS_AS(Library::load("eckit_sql"), UnexpectedState);
+    EXPECT(!LibraryManager::exists("eckit_sql"));
+    EXPECT_THROWS_AS(LibraryManager::load("eckit_sql"), UnexpectedState);
 }
 #endif
 

@@ -60,18 +60,20 @@ public:  // methods
 
     virtual const Configuration& configuration() const;
 
-public:  // class methods
-    static std::vector<std::string> list();
-    static void list(std::ostream&);
+    virtual bool isPlugin() const { return false; }
 
-    static bool exists(const std::string& name);
-    static void load(const std::string& name);
-    static const Library& lookup(const std::string& name);
+public:  // methods
+
+    /* DEPRECATED("Use LibraryManager instead") */ static  std::vector<std::string> list();
+    /* DEPRECATED("Use LibraryManager instead") */ static  void list(std::ostream& s);
+    /* DEPRECATED("Use LibraryManager instead") */ static  bool exists(const std::string& name);
+    /* DEPRECATED("Use LibraryManager instead") */ static  const Library& lookup(const std::string& name);
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
 protected:  // methods
+
     virtual std::string home() const;
 
     virtual const void* addr() const = 0;

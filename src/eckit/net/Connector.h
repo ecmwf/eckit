@@ -54,7 +54,7 @@ public:
 
     const std::string& host() const { return host_; }
 
-    void autoclose(bool on) { autoclose_ = true; }
+    void autoclose(bool on) { autoclose_ = on; }
 
     void memoize(bool on, unsigned long time);
 

@@ -28,8 +28,7 @@ namespace type {
 
 SQLBitfield::SQLBitfield(const std::string& name, const FieldNames& fields, const Sizes& sizes,
                          const std::string& ddlName) :
-    SQLType(name, ddlName),
-    bitfieldDef_(make_pair(fields, sizes)) {
+    SQLType(name, ddlName), bitfieldDef_(make_pair(fields, sizes)) {
     int shift = 0;
     for (size_t i = 0; i < fields.size(); i++) {
         shift_[fields[i]] = shift;

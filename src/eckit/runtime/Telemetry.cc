@@ -19,13 +19,13 @@
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/utils/Clock.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/UDPClient.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Telemetry.h"
 #include "eckit/thread/ThreadSingleton.h"
+#include "eckit/utils/Clock.h"
 
 namespace eckit {
 namespace runtime {
@@ -43,7 +43,7 @@ JSON& operator<<(eckit::JSON& s, const Report& p) {
 
 std::string report_type_to_name(Report::Type t) {
 
-    ASSERT(t < Report::ENDTAG); // ensure client code sticks to enum Report
+    ASSERT(t < Report::ENDTAG);  // ensure client code sticks to enum Report
 
     static const std::map<int, std::string> type_to_name = {
         {Report::APPSTART, "appstart"}, {Report::APPSTOP, "appstop"}, {Report::INFO, "info"},
@@ -52,14 +52,14 @@ std::string report_type_to_name(Report::Type t) {
 
     size_t count = type_to_name.size();
 
-    ASSERT(count == Report::ENDTAG); // ensure we didnt forget to populate the map
+    ASSERT(count == Report::ENDTAG);  // ensure we didnt forget to populate the map
 
     auto r = type_to_name.find(t);
     if (r != type_to_name.end()) {
         return r->second;
     }
 
-    NOTIMP; // we shoudn't ever reach this
+    NOTIMP;  // we shoudn't ever reach this
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ Reporter::Reporter() {
 
     std::unique_ptr<YAMLConfiguration> config(loadConfig());
 
-    if(not config)
+    if (not config)
         return;
 
     LOG_DEBUG_LIB(LibEcKit) << "Telemetry config: " << *config << std::endl;
@@ -130,7 +130,7 @@ Reporter::Reporter() {
     service_name_   = config->getString("service_name", "unknown");
     service_groups_ = config->getStringVector("service_groups", {});
 
-    node_name_      = Resource<std::string>("node", "unknown");  // same as in NodeInfo
+    node_name_ = Resource<std::string>("node", "unknown");  // same as in NodeInfo
 
     for (auto& cfg : config->getSubConfigurations("servers")) {
         clients_.emplace_back(new net::UDPClient(cfg));

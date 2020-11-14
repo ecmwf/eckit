@@ -26,8 +26,7 @@ namespace eckit {
 
 class Tokenizer : private NonCopyable {
 
-public: // methods
-
+public:  // methods
     /// Contructor
 
     Tokenizer(char, bool keepEmpty = false);
@@ -35,7 +34,7 @@ public: // methods
 
     /// Destructor
 
-	~Tokenizer();
+    ~Tokenizer();
 
     void operator()(const std::string&, std::vector<std::string>&) const;
     void operator()(std::istream&, std::vector<std::string>&) const;
@@ -43,25 +42,24 @@ public: // methods
     void operator()(const std::string&, std::set<std::string>&) const;
     void operator()(std::istream&, std::set<std::string>&) const;
 
-private: // members
-
-    std::set<char,std::less<char> > separator_;     // To make searching faster
+private:                                          // members
+    std::set<char, std::less<char> > separator_;  // To make searching faster
 
     bool keepEmpty_;
 
-private: // methods
+private:  // methods
+    void print(std::ostream&) const;
 
-	void print(std::ostream&) const;
-
-	friend std::ostream& operator<<(std::ostream& s,const Tokenizer& p) { p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const Tokenizer& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit
 
 
 #endif

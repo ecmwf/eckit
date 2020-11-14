@@ -29,16 +29,14 @@ class JSON;
 
 class ClusterNodes {
 public:
+    // -- Class methods
+    // None
 
-
-// -- Class methods
-	// None
-
-	static void reset();
-	static void cleanup();
-	static void forget(const NodeInfo&);
-	static void offLine(const NodeInfo&);
-	static void refresh(const NodeInfo&);
+    static void reset();
+    static void cleanup();
+    static void forget(const NodeInfo&);
+    static void offLine(const NodeInfo&);
+    static void refresh(const NodeInfo&);
     static void list(std::ostream& out);
     static void json(JSON& out);
 
@@ -50,16 +48,15 @@ public:
 
     static bool available(const std::string&, const std::string&);
 
-	static void offLine(const std::string&, int);
-	static void onLine(const std::string&, int);
+    static void offLine(const std::string&, int);
+    static void onLine(const std::string&, int);
 
     static std::vector<NodeInfo> all();
-
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

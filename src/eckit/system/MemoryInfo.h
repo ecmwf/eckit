@@ -71,15 +71,15 @@ struct MemoryInfo {
     void delta(std::ostream&, const MemoryInfo& other) const;
 
 
-    friend std::ostream& operator<<(std::ostream& s, const MemoryInfo& m)
-    { m.print(s); return s;}
-
+    friend std::ostream& operator<<(std::ostream& s, const MemoryInfo& m) {
+        m.print(s);
+        return s;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
+}  // namespace system
+}  // namespace eckit
 
 #endif
-

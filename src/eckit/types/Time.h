@@ -88,11 +88,9 @@ public:  // methods
     static Time now();
 
 protected:  // methods
-
     void print(std::ostream&) const;
 
 private:  // members
-
     Second seconds_;
 
     friend std::ostream& operator<<(std::ostream& s, const Time& t) {

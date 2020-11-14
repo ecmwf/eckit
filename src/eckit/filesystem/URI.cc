@@ -32,29 +32,41 @@ URI::URI(const std::string& uri) {
     if (!uri.empty()) {
         size_t first = parseScheme(uri);
         if (URIManager::exists(scheme_)) {
-            URIManager &um = URIManager::lookUp(scheme_);
+            URIManager& um = URIManager::lookUp(scheme_);
             parse(uri, first, um.authority(), um.query(), um.fragment());
-        } else {
+        }
+        else {
             scheme_ = "unix";
-            name_ = uri;
+            name_   = uri;
         }
     }
 }
 
-URI::URI(const std::string& scheme, const PathName& path):
+URI::URI(const std::string& scheme, const PathName& path) :
     scheme_(scheme), user_(""), host_(""), port_(-1), name_(path.path()), fragment_(""), queryValues_({}) {}
 
-URI::URI(const std::string &scheme, const URI &uri):
-    scheme_(scheme), user_(uri.user_), host_(uri.host_), port_(uri.port_), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
+URI::URI(const std::string& scheme, const URI& uri) :
+    scheme_(scheme),
+    user_(uri.user_),
+    host_(uri.host_),
+    port_(uri.port_),
+    name_(uri.name_),
+    fragment_(uri.fragment_),
+    queryValues_(uri.queryValues_) {}
 
-URI::URI(const std::string &scheme, const std::string &hostname, const int port):
-    scheme_(scheme), user_(""), host_(hostname), port_(port), name_(""), fragment_(""), queryValues_({}) {
-}
+URI::URI(const std::string& scheme, const std::string& hostname, const int port) :
+    scheme_(scheme), user_(""), host_(hostname), port_(port), name_(""), fragment_(""), queryValues_({}) {}
 
-URI::URI(const std::string &scheme, const URI &uri, const std::string &hostname, const int port):
-    scheme_(scheme), user_(uri.user_), host_(hostname), port_(port), name_(uri.name_), fragment_(uri.fragment_), queryValues_(uri.queryValues_) {}
+URI::URI(const std::string& scheme, const URI& uri, const std::string& hostname, const int port) :
+    scheme_(scheme),
+    user_(uri.user_),
+    host_(hostname),
+    port_(port),
+    name_(uri.name_),
+    fragment_(uri.fragment_),
+    queryValues_(uri.queryValues_) {}
 
-URI::URI(Stream &s) {
+URI::URI(Stream& s) {
     s >> scheme_;
     s >> user_;
     s >> host_;
@@ -74,7 +86,8 @@ size_t URI::parseScheme(const std::string& uri) {
     std::size_t schemeEnd = uri.find(":");
     if (schemeEnd != std::string::npos) {
         std::string schemeLowercase = StringTools::lower(uri.substr(0, schemeEnd));
-        std::size_t acceptableProtocolEnd = schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
+        std::size_t acceptableProtocolEnd =
+            schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
         if (acceptableProtocolEnd == std::string::npos) {
             scheme_ = schemeEnd == 0 ? "unix" : uri.substr(0, schemeEnd);
             return schemeEnd + 1;
@@ -87,7 +100,7 @@ size_t URI::parseScheme(const std::string& uri) {
 void URI::parse(const std::string& str, size_t first, bool authority, bool query, bool fragment) {
     size_t last = str.length();
 
-    if (fragment) { // get fragment start
+    if (fragment) {  // get fragment start
         std::size_t fragmentStart = str.find_last_of("#");
         if (fragmentStart != std::string::npos) {
             fragment_ = str.substr(fragmentStart + 1);
@@ -96,11 +109,11 @@ void URI::parse(const std::string& str, size_t first, bool authority, bool query
         }
     }
 
-    if (query) { // get query start
+    if (query) {  // get query start
         std::size_t queryStart = str.find_last_of("?", last);
         if (queryStart != std::string::npos) {
             std::string query = str.substr(queryStart + 1, last - queryStart - 1);
-            last = queryStart;
+            last              = queryStart;
 
             if (!query.empty())
                 parseQueryValues(query);
@@ -127,8 +140,9 @@ void URI::parse(const std::string& str, size_t first, bool authority, bool query
                     port_ = port_ * 10 + (str[i] - '0');
                 }
                 first = i;
-            } else {
-                port_ = -1;
+            }
+            else {
+                port_               = -1;
                 std::size_t hostEnd = str.find("/", first);
                 if (hostEnd == std::string::npos) {
                     hostEnd = last;
@@ -139,17 +153,17 @@ void URI::parse(const std::string& str, size_t first, bool authority, bool query
         }
     }
 
-    name_ = str.substr(first, last-first);
+    name_ = str.substr(first, last - first);
 }
 
-void URI::parseQueryValues(const std::string &query) {
+void URI::parseQueryValues(const std::string& query) {
 
     Tokenizer parse("&");
     Tokenizer splitValues("=");
     std::vector<std::string> attributeValuePairs;
 
     parse(query, attributeValuePairs);
-    for (std::string &attributeValue : attributeValuePairs) {
+    for (std::string& attributeValue : attributeValuePairs) {
         std::vector<std::string> s;
         splitValues(attributeValue, s);
         if (s.size() == 2) {
@@ -213,7 +227,7 @@ const std::string URI::query(const std::string& attribute) const {
 
 std::string URI::query() const {
     std::string query;
-    for (auto &attributeValue : queryValues_) {
+    for (auto& attributeValue : queryValues_) {
         if (!query.empty())
             query += "&";
 
@@ -232,7 +246,7 @@ PathName URI::path() const {
 }
 
 std::string URI::asString() const {
-//    ASSERT(!name_.empty());
+    //    ASSERT(!name_.empty());
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).asString(*this);
 }
@@ -240,12 +254,12 @@ std::string URI::asString() const {
 std::string URI::asRawString() const {
     std::string auth = authority();
     if (!auth.empty())
-        auth = "//"+auth;
+        auth = "//" + auth;
     std::string q = query();
     if (!q.empty())
-        q = "?"+q;
+        q = "?" + q;
 
-    return scheme_ + ":" + auth + name_ + q + (fragment_.empty() ? "" : "#"+fragment_);
+    return scheme_ + ":" + auth + name_ + q + (fragment_.empty() ? "" : "#" + fragment_);
 }
 
 void URI::print(std::ostream& s) const {
@@ -264,7 +278,7 @@ void URI::print(std::ostream& s) const {
     s << "]";
 }
 
-void URI::encode(Stream &s) const {
+void URI::encode(Stream& s) const {
     s << scheme_;
     s << user_;
     s << host_;

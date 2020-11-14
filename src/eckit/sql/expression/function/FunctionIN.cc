@@ -22,12 +22,10 @@ namespace function {
 static FunctionBuilder<FunctionIN> inFunctionBuilder("in");
 
 FunctionIN::FunctionIN(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    size_(args.size() - 1) {}
+    FunctionExpression(name, args), size_(args.size() - 1) {}
 
 FunctionIN::FunctionIN(const FunctionIN& other) :
-    FunctionExpression(other.name_, other.args_),
-    size_(other.args_.size() - 1) {}
+    FunctionExpression(other.name_, other.args_), size_(other.args_.size() - 1) {}
 
 FunctionIN::~FunctionIN() {}
 

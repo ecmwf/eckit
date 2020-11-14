@@ -11,8 +11,8 @@
 #ifndef eckit_utils_RendezvousHash_H
 #define eckit_utils_RendezvousHash_H
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "eckit/memory/NonCopyable.h"
@@ -31,56 +31,50 @@ namespace eckit {
 
 class RendezvousHash : private eckit::NonCopyable {
 
-public: // types
-
+public:  // types
     typedef std::string Node;
 
     typedef std::map<std::string, std::string> Key;
 
     typedef std::string (*hash_func_ptr)(const std::string&);
 
-private: // types
-
+private:  // types
     typedef std::vector<Node>::iterator iterator;
 
-public: // methods
-
+public:  // methods
     static std::string md5(const std::string& str);
 
-  RendezvousHash(const hash_func_ptr hash = &md5);
+    RendezvousHash(const hash_func_ptr hash = &md5);
 
-  RendezvousHash(const std::vector<Node>& nodes, const hash_func_ptr hash = &md5);
+    RendezvousHash(const std::vector<Node>& nodes, const hash_func_ptr hash = &md5);
 
-  ~RendezvousHash();
+    ~RendezvousHash();
 
-  /// Provide a list of nodes / indices in the list of nodes for the given key
+    /// Provide a list of nodes / indices in the list of nodes for the given key
 
-  void hashOrder(const Key& key, std::vector<Node>& nodes);
+    void hashOrder(const Key& key, std::vector<Node>& nodes);
 
-  void hashOrder(const Key& key, std::vector<size_t>& indices);
+    void hashOrder(const Key& key, std::vector<size_t>& indices);
 
-  /// Adds node to node list. No effect if node already present
-  /// @returns true is node insertion was successful
-  bool addNode(const Node& node);
+    /// Adds node to node list. No effect if node already present
+    /// @returns true is node insertion was successful
+    bool addNode(const Node& node);
 
-  /// Removes node from node list. No effect if node not present
-  /// @returns true is node removal was successful
-  bool removeNode(const Node& node);
+    /// Removes node from node list. No effect if node not present
+    /// @returns true is node removal was successful
+    bool removeNode(const Node& node);
 
-private: // methods
+private:  // methods
+    std::string flatten(const Key&) const;
 
-  std::string flatten(const Key&) const;
+    void hashOrderInternal(const Key& key, std::vector<size_t>& indexes);
 
-  void hashOrderInternal(const Key& key, std::vector<size_t>& indexes);
+private:                  // types
+    eckit::Mutex mutex_;  //< protects addition and removal of nodes
 
-private:  // types
+    hash_func_ptr hash_;
 
-  eckit::Mutex mutex_;   //< protects addition and removal of nodes
-
-  hash_func_ptr hash_;
-
-  std::vector<Node> nodes_;
-
+    std::vector<Node> nodes_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

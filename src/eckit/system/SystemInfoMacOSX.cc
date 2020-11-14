@@ -79,8 +79,6 @@ size_t SystemInfoMacOSX::arenaSize() const {
 
 std::string SystemInfoMacOSX::dynamicLibraryName(const std::string& name) const {
     return std::string("lib") + name + ".dylib";
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

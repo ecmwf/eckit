@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
 #include <unistd.h>
+#include <string>
 
 #include "eckit/types/Types.h"
 

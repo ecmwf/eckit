@@ -23,45 +23,42 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class HandleBuf : public std::streambuf  {
+class HandleBuf : public std::streambuf {
 public:
+    // -- Contructors
 
-// -- Contructors
+    HandleBuf(DataHandle& handle, bool throwOnError = false);
 
-	HandleBuf(DataHandle& handle, bool throwOnError=false);
+    // -- Destructor
 
-// -- Destructor
-
-	~HandleBuf();
+    ~HandleBuf();
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    HandleBuf(const HandleBuf&);
+    HandleBuf& operator=(const HandleBuf&);
 
-	HandleBuf(const HandleBuf&);
-	HandleBuf& operator=(const HandleBuf&);
+    // -- Members
 
-// -- Members
+    char in_[1];
+    char out_[80];
+    DataHandle& handle_;
+    bool throwOnError_;
 
-	char in_[1];
-	char out_[80];
-	DataHandle& handle_;
-	bool throwOnError_;
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From streambuf
 
-	// From streambuf
-
-	virtual int overflow(int c);
-	virtual int underflow();
-	virtual int sync();
-//	virtual int uflow();
-
+    virtual int overflow(int c);
+    virtual int underflow();
+    virtual int sync();
+    //	virtual int uflow();
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

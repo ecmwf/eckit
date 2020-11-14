@@ -62,7 +62,7 @@ void Buffer::destroy() {
     if (buffer_) {
         delete[] static_cast<char*>(buffer_);
         buffer_ = nullptr;
-        size_ = 0;
+        size_   = 0;
     }
 }
 

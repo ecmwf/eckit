@@ -14,8 +14,8 @@
 #ifndef eckit_net_IPAddress_H
 #define eckit_net_IPAddress_H
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 #include <netinet/in.h>
 
@@ -25,39 +25,36 @@ namespace net {
 
 class IPAddress {
 public:
-
-// Contructors
-    IPAddress(const in_addr& address):
-        address_(address) {}
+    // Contructors
+    IPAddress(const in_addr& address) : address_(address) {}
 
     IPAddress(const std::string&);
     IPAddress(const char*);
 
     std::string asString() const;
 
-    const in_addr& address() const {
-        return address_;
-    }
+    const in_addr& address() const { return address_; }
 
 
     static IPAddress myIPAddress();
 
 private:
-
-// Members
+    // Members
 
     in_addr address_;
 
-// Methods
+    // Methods
 
     void print(std::ostream&) const;
 
-    friend std::ostream& operator<<(std::ostream& s,const IPAddress& p)
-        { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const IPAddress& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 
-} // namespace net
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
 
 #endif

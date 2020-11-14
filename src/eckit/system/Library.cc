@@ -42,10 +42,9 @@ namespace system {
 ///
 class LibraryRegistry {
 
-typedef std::map<std::string, Library*> LibraryMap;
+    typedef std::map<std::string, Library*> LibraryMap;
 
 public:  // methods
-
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static LibraryRegistry& instance() {
@@ -92,7 +91,7 @@ public:  // methods
     void print(std::ostream& out, const char* separator) const {
         AutoLock<Mutex> lockme(mutex_);
         std::vector<std::string> l = LibraryRegistry::instance().list();
-        const char* sep               = "";
+        const char* sep            = "";
         for (auto j : l) {
             out << sep << j;
             sep = separator;
@@ -137,7 +136,8 @@ bool Library::exists(const std::string& name) {
 
 void Library::load(const std::string& name) {
 
-    static std::vector<std::string> libPaths(Resource<std::vector<std::string>>("dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib64", "~/lib", "~eckit/lib64", "~eckit/lib"}));
+    static std::vector<std::string> libPaths(Resource<std::vector<std::string>>(
+        "dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib64", "~/lib", "~eckit/lib64", "~eckit/lib"}));
 
     if (!exists(name)) {
 
@@ -147,7 +147,7 @@ void Library::load(const std::string& name) {
 
         // Try the various paths in the way
 
-        for (const eckit::PathName& dir : libPaths) {
+        for (eckit::PathName dir : libPaths) {
 
             eckit::PathName p = dir / libraryName;
             if (p.exists()) {

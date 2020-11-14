@@ -18,8 +18,8 @@
 #include <string>
 
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/utils/Translator.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
@@ -30,8 +30,7 @@ class Url;
 
 class ResourceBase : private NonCopyable {
 
-public: // methods
-
+public:  // methods
     ResourceBase(Configurable* owner, const std::string& str);
 
     virtual ~ResourceBase();
@@ -42,31 +41,27 @@ public: // methods
 
     std::string name() const;
 
-protected: // methods
-
+protected:  // methods
     void init();
 
     virtual bool setFromConfigFile();
 
-private: // members
+private:  // members
+    Configurable* owner_;
 
-    Configurable*       owner_;
+    std::string name_;         // In the config file
+    std::string environment_;  // In the environment variables
+    std::string options_;      // For the command line options
 
-    std::string         name_;        // In the config file
-    std::string         environment_; // In the environment variables
-    std::string         options_;     // For the command line options
+    bool inited_;
 
-    bool                inited_;
-
-private: // methods
-
+private:  // methods
     virtual void setValue(const std::string&) = 0;
     virtual std::string getValue() const      = 0;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

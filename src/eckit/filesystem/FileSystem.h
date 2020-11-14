@@ -25,47 +25,45 @@ class JSON;
 
 class FileSystem {
 public:
+    FileSystem(const PathName&);
 
-	FileSystem(const PathName&);
+    ~FileSystem();
 
-	~FileSystem();
+    void update();
 
-	void update();
+    std::string name() const { return name_; }
+    std::string mountPoint() const;
 
-	std::string  name()       const { return name_; }
-	std::string  mountPoint() const;
-
-	unsigned long long  total() const;
-	unsigned long long  avail() const;
-	long usage() const;
+    unsigned long long total() const;
+    unsigned long long avail() const;
+    long usage() const;
     bool offLine() const { return offLine_; }
 
 protected:
-
     void json(eckit::JSON& s) const;
 
     void print(std::ostream&) const;
 
 private:
+    PathName name_;
+    PathName mount_;
+    FileSystemSize fs_;
+    bool offLine_;
 
-	PathName name_;
-	PathName mount_;
-	FileSystemSize fs_;
-	bool offLine_;
-
-	friend std::ostream& operator<<(std::ostream& s,const FileSystem& p)
-		{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const FileSystem& p) {
+        p.print(s);
+        return s;
+    }
 
     friend JSON& operator<<(JSON& s, const FileSystem& v) {
         v.json(s);
         return s;
     }
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

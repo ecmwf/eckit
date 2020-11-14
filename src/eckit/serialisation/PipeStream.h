@@ -26,49 +26,46 @@ namespace eckit {
 
 class PipeStream : public Stream {
 public:
+    // -- Contructors
 
-// -- Contructors
+    PipeStream();
+    PipeStream(int, int);
 
-	PipeStream();
-	PipeStream(int,int);
+    // -- Destructor
 
-// -- Destructor
+    ~PipeStream();
 
-	~PipeStream();
+    // -- Methods
 
-// -- Methods
+    // After a fork:
 
-	// After a fork:
+    void parentProcess();  // Notify that we are in the parent
+    void childProcess();   // Notify that we are in the child
 
-	void parentProcess(); // Notify that we are in the parent
-	void childProcess();  // Notify that we are in the child
-
-	int in()  { return in_;  }
-	int out() { return out_; }
+    int in() { return in_; }
+    int out() { return out_; }
 
 private:
+    // -- Members
 
-// -- Members
+    int toChild_[2];
+    int toParent_[2];
 
-	int toChild_[2];
-	int toParent_[2];
+    int in_;
+    int out_;
 
-	int in_;
-	int out_;
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From Stream
 
-	// From Stream
-
-	virtual long write(const void*,long);
-	virtual long read(void*,long);
-	virtual std::string name() const { return "pipe"; }
-
+    virtual long write(const void*, long) override;
+    virtual long read(void*, long) override;
+    virtual std::string name() const override { return "pipe"; }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

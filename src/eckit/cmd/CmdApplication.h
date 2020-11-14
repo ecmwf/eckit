@@ -30,7 +30,7 @@ protected:
     void execute();
 
 private:
-    virtual std::string prompt() const;
+    virtual std::string prompt() const override;
     virtual std::string name() const;
 
     void startup(std::ostream&);
@@ -41,6 +41,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

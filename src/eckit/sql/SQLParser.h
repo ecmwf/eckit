@@ -17,11 +17,15 @@
 
 #include <stack>
 
-#include "eckit/exception/Exceptions.h"
 #include "SQLOutputConfig.h"
+#include "eckit/exception/Exceptions.h"
 
-namespace eckit { class PathName; }
-namespace eckit { class DataHandle; }
+namespace eckit {
+class PathName;
+}
+namespace eckit {
+class DataHandle;
+}
 
 namespace eckit {
 namespace sql {
@@ -46,17 +50,17 @@ struct ParseFrame {
 
 class SQLParser {
 public:
-	static int line();
+    static int line();
 
-//    static void parseString(SQLSession&, const std::string&, eckit::DataHandle*, SQLOutputConfig, bool resetSession = true);
-//    static void parseString(SQLSession&, const std::string&, std::istream*, SQLOutputConfig, const std::string& cvsDelimiter);
+    //    static void parseString(SQLSession&, const std::string&, eckit::DataHandle*, SQLOutputConfig, bool
+    //    resetSession = true); static void parseString(SQLSession&, const std::string&, std::istream*, SQLOutputConfig,
+    //    const std::string& cvsDelimiter);
     static void parseString(SQLSession&, const std::string&);
-//    static void parseString(SQLSession&, const std::string&, SQLDatabase&, SQLOutputConfig);
+    //    static void parseString(SQLSession&, const std::string&, SQLDatabase&, SQLOutputConfig);
 
-	static std::stack<ParseFrame> frames_;
+    static std::stack<ParseFrame> frames_;
 
 private:
-
     static void parseStringInternal(SQLSession&, const std::string&);
 
     static std::string cleanUpSQLText(const std::string&);
@@ -64,7 +68,7 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

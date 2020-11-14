@@ -20,79 +20,77 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T> class Once : private NonCopyable {
+template <class T>
+class Once : private NonCopyable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    Once();
 
-	Once();
+    // -- Destructor
 
-// -- Destructor
+    ~Once();
 
-	~Once();
+    // -- Class methods
 
-// -- Class methods
-
-	operator T&();
+    operator T&();
 
 private:
-
-// -- Members
+    // -- Members
     T* value_;
 
-// -- Class members
+    // -- Class members
 
-	static pthread_once_t once_;
-	static pthread_mutex_t mutex_;
+    static pthread_once_t once_;
+    static pthread_mutex_t mutex_;
 
-// -- Class methods
+    // -- Class methods
 
-	static void init(void);
-
+    static void init(void);
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T> pthread_once_t Once<T>::once_ = PTHREAD_ONCE_INIT;
-template<class T> pthread_mutex_t Once<T>::mutex_;
+template <class T>
+pthread_once_t Once<T>::once_ = PTHREAD_ONCE_INIT;
+template <class T>
+pthread_mutex_t Once<T>::mutex_;
 
-template<class T> Once<T>::Once() : value_(0)
-{
+template <class T>
+Once<T>::Once() : value_(0) {}
+
+template <class T>
+Once<T>::~Once() {}
+
+template <class T>
+Once<T>::operator T&() {
+    ::pthread_once(&once_, init);
+
+    ::pthread_mutex_lock(&mutex_);
+
+    if (!value_)
+        value_ = new T();
+
+    ::pthread_mutex_unlock(&mutex_);
+
+    return *value_;
 }
 
-template<class T> Once<T>::~Once()
-{
-}
 
-template<class T>
-Once<T>::operator T&()
-{
-	::pthread_once(&once_,init);
-
-	::pthread_mutex_lock(&mutex_);
-
-	if(!value_) value_ = new T();
-
-	::pthread_mutex_unlock(&mutex_);
-
-	return *value_;
-}
-
-
-template<class T> void Once<T>::init()
-{
-	pthread_mutexattr_t attr;
+template <class T>
+void Once<T>::init() {
+    pthread_mutexattr_t attr;
 
     ::pthread_mutexattr_init(&attr);
 
-	//::pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
+    //::pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
 
-	pthread_mutex_init(&mutex_,&attr);
+    pthread_mutex_init(&mutex_, &attr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

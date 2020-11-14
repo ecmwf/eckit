@@ -12,13 +12,13 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/log/JSON.h"
-#include "eckit/types/Types.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/types/Types.h"
 #include "eckit/web/Html.h"
 #include "eckit/web/HttpResource.h"
-#include "eckit/web/Url.h"
 #include "eckit/web/HttpStream.h"
+#include "eckit/web/Url.h"
 
 
 namespace eckit {
@@ -97,16 +97,15 @@ public:  // methods
     /// @returns nullptr if registry not found
     HttpResource* lookup(const std::string& name) const {
         AutoLock<Mutex> lockme(mutex_);
-        HttpResource* r = nullptr;
+        HttpResource* r                   = nullptr;
         HttpResourceMap::const_iterator j = map_.find(name);
         if (j != map_.end()) {
-             r = j->second; // guarranteed not null
+            r = j->second;  // guarranteed not null
         }
         return r;
     }
 
 protected:
-
     friend std::ostream& operator<<(std::ostream& s, const HttpResourceRegistry& r) {
         r.print(s);
         return s;
@@ -149,8 +148,8 @@ static void error(Url& url, HttpStream& out, eckit::Exception& e, int code) {
     json << "error" << e.what();
     json.endObject();
 
-    out.print(Log::info());    Log::info() << std::endl;
-
+    out.print(Log::info());
+    Log::info() << std::endl;
 }
 
 void HttpResource::dispatch(eckit::Stream&, std::istream&, HttpStream& out, Url& url) {

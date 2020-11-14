@@ -25,28 +25,25 @@ namespace eckit {
 
 class TeeTarget : public LogTarget {
 
-public: // methods
-
+public:  // methods
     TeeTarget(LogTarget* left, LogTarget* right);
 
-    virtual ~TeeTarget();
+    virtual ~TeeTarget() override;
 
 protected:
-    void print(std::ostream& s) const;
+    void print(std::ostream& s) const override;
 
 private:
     LogTarget* left_;
     LogTarget* right_;
 
 private:
-
-    virtual void write(const char* start, const char* end);
-    virtual void flush();
-
+    virtual void write(const char* start, const char* end) override;
+    virtual void flush() override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

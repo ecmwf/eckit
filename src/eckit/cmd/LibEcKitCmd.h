@@ -22,14 +22,12 @@ namespace eckit {
 
 class LibEcKitCmd : public eckit::system::Library {
 
-public: // methods
-
+public:  // methods
     LibEcKitCmd();
 
     static LibEcKitCmd& instance();
 
-protected: // methods
-
+protected:  // methods
     const void* addr() const override;
 
     std::string version() const override;
@@ -39,6 +37,6 @@ protected: // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

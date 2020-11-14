@@ -22,55 +22,52 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class EmptyHandle :  public DataHandle {
+class EmptyHandle : public DataHandle {
 public:
+    // -- Contructors
+    EmptyHandle() {}
+    EmptyHandle(Stream& s) : DataHandle(s) {}
 
-// -- Contructors
-	EmptyHandle()							{ }
-	EmptyHandle(Stream& s): DataHandle(s) 	{ }
+    // -- Destructor
 
-// -- Destructor
+    ~EmptyHandle() {}
 
-	~EmptyHandle() 							{ }
-
-// -- Overridden methods
+    // -- Overridden methods
 
     // From DataHandle
 
-    virtual Length openForRead()              { return 0;}
-    virtual void openForWrite(const Length&)  {}
-    virtual void openForAppend(const Length&) {}
+    virtual Length openForRead() override { return 0; }
+    virtual void openForWrite(const Length&) override {}
+    virtual void openForAppend(const Length&) override {}
 
-    virtual long   read(void*,long)			{ return 0; }
-    virtual long   write(const void*,long n){ return n; }
-    virtual void   close()					{ }
-    virtual void   flush()					{ }
-    virtual Offset position()				{ return 0; }
-    virtual void   rewind()					{ }
-    virtual void   print(std::ostream& s) const	{ s << "Empty Handle"; }
-	virtual bool   isEmpty() const          { return true; }
+    virtual long read(void*, long) override { return 0; }
+    virtual long write(const void*, long n) override { return n; }
+    virtual void close() override {}
+    virtual void flush() override {}
+    virtual Offset position() override { return 0; }
+    virtual void rewind() override {}
+    virtual void print(std::ostream& s) const override { s << "Empty Handle"; }
+    virtual bool isEmpty() const override { return true; }
 
     // From Streamable
 
-    virtual void encode(Stream& s) const		 { DataHandle::encode(s); }
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream& s) const override { DataHandle::encode(s); }
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+    // -- Class members
 
-// -- Class members
-
-    static  ClassSpec                 classSpec_;
-    static  Reanimator<EmptyHandle>  reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<EmptyHandle> reanimator_;
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

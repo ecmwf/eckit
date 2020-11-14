@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
-#include <vector>
 #include <iomanip>
+#include <string>
 #include <type_traits>
+#include <vector>
 
 #include "eckit/filesystem/FileMode.h"
 #include "eckit/filesystem/PathName.h"
@@ -22,21 +22,20 @@ namespace eckit {
 namespace {
 
 // If mode_t is a signed type
-template< typename Mode, typename std::enable_if< std::is_signed<Mode>::value >::type* = nullptr>
-bool invalidMode( Mode m ) {
+template <typename Mode, typename std::enable_if<std::is_signed<Mode>::value>::type* = nullptr>
+bool invalidMode(Mode m) {
     return m < 0 || m > 0777;
 }
 
 // If mode_t is a unsigned type
-template< typename Mode, typename std::enable_if< std::is_unsigned<Mode>::value >::type* = nullptr>
-bool invalidMode( Mode m ) {
+template <typename Mode, typename std::enable_if<std::is_unsigned<Mode>::value>::type* = nullptr>
+bool invalidMode(Mode m) {
     return m > 0777;
 }
 
-}
+}  // namespace
 
-FileMode::FileMode(mode_t m) :
-    mode_(m) {
+FileMode::FileMode(mode_t m) : mode_(m) {
     if (invalidMode(m)) {
         std::ostringstream oss;
         oss << "FileMode: invalid mode 0" << std::setw(3) << std::setfill('0') << std::oct << m;
@@ -78,7 +77,7 @@ void FileMode::testAssign(const std::string& s, char got, char test, mode_t& mod
     }
 }
 
-mode_t FileMode::toMode(const std::string& s) const  {
+mode_t FileMode::toMode(const std::string& s) const {
 
 
     ASSERT(s.size() > 0);
@@ -99,7 +98,7 @@ mode_t FileMode::toMode(const std::string& s) const  {
             }
         }
 
-        if ( invalidMode(m) ) {
+        if (invalidMode(m)) {
             std::ostringstream oss;
             oss << "FileMode: invalid mode 0" << std::setw(3) << std::setfill('0') << std::oct << m;
             throw BadValue(oss.str(), Here());
@@ -146,17 +145,26 @@ std::string FileMode::toString() const {
 
     std::string s("---,---,---");
 
-    if (mode_ & S_IRUSR) s[0] = 'r';
-    if (mode_ & S_IWUSR) s[1] = 'w';
-    if (mode_ & S_IXUSR) s[2] = 'x';
+    if (mode_ & S_IRUSR)
+        s[0] = 'r';
+    if (mode_ & S_IWUSR)
+        s[1] = 'w';
+    if (mode_ & S_IXUSR)
+        s[2] = 'x';
 
-    if (mode_ & S_IRGRP) s[4] = 'r';
-    if (mode_ & S_IWGRP) s[5] = 'w';
-    if (mode_ & S_IXGRP) s[6] = 'x';
+    if (mode_ & S_IRGRP)
+        s[4] = 'r';
+    if (mode_ & S_IWGRP)
+        s[5] = 'w';
+    if (mode_ & S_IXGRP)
+        s[6] = 'x';
 
-    if (mode_ & S_IROTH) s[8] = 'r';
-    if (mode_ & S_IWOTH) s[9] = 'w';
-    if (mode_ & S_IXOTH) s[10] = 'x';
+    if (mode_ & S_IROTH)
+        s[8] = 'r';
+    if (mode_ & S_IWOTH)
+        s[9] = 'w';
+    if (mode_ & S_IXOTH)
+        s[10] = 'x';
 
     return s;
 }
@@ -164,9 +172,9 @@ std::string FileMode::toString() const {
 FileMode FileMode::fromPath(const PathName& path) {
     struct stat s;
     SYSCALL(::stat(path.asString().c_str(), &s));
-    return FileMode((s.st_mode & S_IRUSR) | (s.st_mode & S_IWUSR) | (s.st_mode & S_IXUSR) |
-                    (s.st_mode & S_IRGRP) | (s.st_mode & S_IWGRP) | (s.st_mode & S_IXGRP) |
-                    (s.st_mode & S_IROTH) | (s.st_mode & S_IWOTH) | (s.st_mode & S_IXOTH));
+    return FileMode((s.st_mode & S_IRUSR) | (s.st_mode & S_IWUSR) | (s.st_mode & S_IXUSR) | (s.st_mode & S_IRGRP) |
+                    (s.st_mode & S_IWGRP) | (s.st_mode & S_IXGRP) | (s.st_mode & S_IROTH) | (s.st_mode & S_IWOTH) |
+                    (s.st_mode & S_IXOTH));
 }
 
 void FileMode::print(std::ostream& os) const {

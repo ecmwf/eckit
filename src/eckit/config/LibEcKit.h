@@ -25,8 +25,7 @@ typedef void (*abort_handler_t)();
 
 class LibEcKit : public eckit::system::Library {
 
-public: // methods
-
+public:  // methods
     LibEcKit();
 
     static LibEcKit& instance();
@@ -35,21 +34,19 @@ public: // methods
 
     void abort();
 
-protected: // methods
-
+protected:  // methods
     const void* addr() const;
 
     virtual std::string version() const;
 
     virtual std::string gitsha1(unsigned int count) const;
 
-private: // members
-
+private:  // members
     abort_handler_t abort_handler_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

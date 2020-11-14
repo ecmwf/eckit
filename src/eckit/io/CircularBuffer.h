@@ -29,8 +29,7 @@ namespace eckit {
 
 class CircularBuffer : public eckit::NonCopyable {
 
-public: // methods
-
+public:  // methods
     CircularBuffer(size_t size = 64 * 1024, size_t capactity = std::numeric_limits<size_t>::max());
 
     ~CircularBuffer();
@@ -44,11 +43,10 @@ public: // methods
 
     void clear();
 
-private: // members
-
+private:  // members
     mutable Mutex mutex_;
 
-    char*  buffer_;
+    char* buffer_;
 
     size_t increment_;
     size_t size_;
@@ -56,11 +54,9 @@ private: // members
 
     size_t pos_;
     size_t used_;
-
-
 };
 
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

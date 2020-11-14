@@ -12,8 +12,8 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/utils/Clock.h"
 #include "eckit/log/TimeStamp.h"
+#include "eckit/utils/Clock.h"
 
 
 namespace eckit {

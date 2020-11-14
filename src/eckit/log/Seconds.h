@@ -14,8 +14,8 @@
 #ifndef eckit_Seconds_h
 #define eckit_Seconds_h
 
-#include <time.h>
 #include <sys/time.h>
+#include <time.h>
 #include <iosfwd>
 
 //-----------------------------------------------------------------------------
@@ -24,39 +24,36 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-//class Bless;
+// class Bless;
 
 class Seconds {
 public:
+    // -- Contructors
 
-// -- Contructors
+    Seconds(double, bool compact = false);
+    Seconds(const struct ::timeval&, bool compact = false);
 
-	Seconds(double, bool compact=false);
-	Seconds(const struct ::timeval&, bool compact=false);
+    //#include "eckit/types/Seconds.b"
 
-//#include "eckit/types/Seconds.b"
+    // -- Operators
 
-// -- Operators
+    operator std::string() const;
+    operator double() const { return seconds_; }
 
-	operator std::string() const;
-	operator double() const { return seconds_; }
-
-	friend std::ostream& operator<<(std::ostream&,const Seconds&);
+    friend std::ostream& operator<<(std::ostream&, const Seconds&);
 
 private:
+    // There is no private copy constructor as this will confuse g++ 4.x.x
 
-// There is no private copy constructor as this will confuse g++ 4.x.x
+    // -- Members
 
-// -- Members
-
-	double seconds_;
-	bool compact_;
-
+    double seconds_;
+    bool compact_;
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

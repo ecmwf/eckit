@@ -18,24 +18,21 @@
 #include "eckit/net/NetUser.h"
 
 
-
 namespace eckit {
-
 
 
 class RemoteCommandUser : public eckit::net::NetUser {
 public:
     RemoteCommandUser(eckit::net::TCPSocket&);
-    virtual ~RemoteCommandUser();
+    virtual ~RemoteCommandUser() override;
     static void terminate(RemoteCommandUser& other) { other.stop(); }
 
 private:
-    virtual void serve(eckit::Stream&, std::istream&, std::ostream&);
+    virtual void serve(eckit::Stream&, std::istream&, std::ostream&) override;
     std::string from_;
 };
 
 
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

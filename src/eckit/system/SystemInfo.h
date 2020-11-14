@@ -30,7 +30,6 @@ struct MemoryInfo;
 
 class SystemInfo : private eckit::NonCopyable {
 public:  // methods
-
     static bool isBigEndian();
     static bool isLittleEndian();
 

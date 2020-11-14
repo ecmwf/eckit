@@ -201,9 +201,9 @@ CASE("test_map_int_string") {
 
     // iterate over the elements
     std::vector<std::pair<int, std::string> > e = {{2, "TWO"}, {4, "FOUR"}, {5, "five"}, {9, "NINE"}};
-    auto map_it = m.begin();
-    auto vec_it = e.begin();
-    for(; map_it != m.end() && vec_it != e.end(); ++map_it, ++vec_it) {
+    auto map_it                                 = m.begin();
+    auto vec_it                                 = e.begin();
+    for (; map_it != m.end() && vec_it != e.end(); ++map_it, ++vec_it) {
         EXPECT(map_it->first == vec_it->first);
         EXPECT(map_it->second == vec_it->second);
     }
@@ -298,9 +298,9 @@ CASE("test_map_double_bool") {
 
     // iterate over the elements
     std::vector<std::pair<double, bool> > e = {{2.1, true}, {4.0, false}, {5.3, true}, {9.5, true}};
-    auto map_it = m.begin();
-    auto vec_it = e.begin();
-    for(; map_it != m.end() && vec_it != e.end(); ++map_it, ++vec_it) {
+    auto map_it                             = m.begin();
+    auto vec_it                             = e.begin();
+    for (; map_it != m.end() && vec_it != e.end(); ++map_it, ++vec_it) {
         EXPECT(map_it->first == vec_it->first);
         EXPECT(map_it->second == vec_it->second);
     }

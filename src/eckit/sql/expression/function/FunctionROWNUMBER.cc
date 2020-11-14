@@ -26,13 +26,11 @@ namespace function {
 static FunctionBuilder<FunctionROWNUMBER> rownumberFunctionBuilder("rownumber");
 
 FunctionROWNUMBER::FunctionROWNUMBER(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    count_(0) {}
+    FunctionExpression(name, args), count_(0) {}
 
 
 FunctionROWNUMBER::FunctionROWNUMBER(const FunctionROWNUMBER& other) :
-    FunctionExpression(other.name_, other.args_),
-    count_(other.count_) {}
+    FunctionExpression(other.name_, other.args_), count_(other.count_) {}
 
 std::shared_ptr<SQLExpression> FunctionROWNUMBER::clone() const {
     return std::make_shared<FunctionROWNUMBER>(*this);

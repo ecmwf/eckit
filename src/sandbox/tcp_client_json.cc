@@ -11,8 +11,8 @@
 #include <unistd.h>
 #include <sstream>
 
-#include "eckit/net/TCPClient.h"
 #include "eckit/log/JSON.h"
+#include "eckit/net/TCPClient.h"
 #include "eckit/runtime/Application.h"
 
 

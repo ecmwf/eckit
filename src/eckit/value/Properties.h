@@ -18,8 +18,8 @@
 #include <map>
 #include <string>
 
-#include "eckit/value/Value.h"
 #include "eckit/value/Params.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
@@ -29,13 +29,11 @@ class MD5;
 
 class Properties {
 
-public: // types
-
+public:  // types
     typedef Value property_t;
     typedef std::string key_t;
 
-public: // methods
-
+public:  // methods
     Properties();
     Properties(const property_t&);
 
@@ -44,25 +42,25 @@ public: // methods
     virtual ~Properties() {}
 
     /// @returns true is a property exists
-    bool has( const key_t& ) const;
+    bool has(const key_t&) const;
 
     /// @returns a property
-    property_t get( const key_t& k ) const;
+    property_t get(const key_t& k) const;
 
     /// Sets a property by inserting a new or overwrites an existing property
-    Properties& set( const key_t& k, const property_t& v );
+    Properties& set(const key_t& k, const property_t& v);
 
     /// Sets a property by inserting a new or overwrites an existing property
-    Properties& set( const key_t& k, const Properties& p );
+    Properties& set(const key_t& k, const Properties& p);
 
     /// merge other properties
-    Properties& set( const Properties& p );
+    Properties& set(const Properties& p);
 
     /// Removes a property
-    bool remove( const key_t& k );
+    bool remove(const key_t& k);
 
     /// @returns a property
-    property_t operator[]( const key_t& k ) const { return get(k); }
+    property_t operator[](const key_t& k) const { return get(k); }
 
     /// @returns a bool, true if empty false otherwise
     bool empty() const { return props_.empty(); }
@@ -74,35 +72,40 @@ public: // methods
     void hash(eckit::MD5&) const;
 
 protected:
-
     void print(std::ostream& s) const;
 
-private: // types
+private:  // types
+    typedef std::map<key_t, property_t> PropertyMap;
 
-    typedef std::map< key_t, property_t > PropertyMap;
+private:                 // members
+    PropertyMap props_;  //< storage of values
 
-private: // members
-
-    PropertyMap  props_; //< storage of values
-
-protected: // methods
-
+protected:  // methods
     void json(JSON& s) const;
     void encode(Stream& s) const;
 
-    friend JSON& operator<<(JSON& s, const Properties& v) { v.json(s);  return s; }
-    friend std::ostream& operator<<(std::ostream& s, const Properties& v) { v.print(s);  return s; }
-    friend Stream&  operator<<(Stream&  s, const Properties& v) { v.encode(s); return s; }
+    friend JSON& operator<<(JSON& s, const Properties& v) {
+        v.json(s);
+        return s;
+    }
+    friend std::ostream& operator<<(std::ostream& s, const Properties& v) {
+        v.print(s);
+        return s;
+    }
+    friend Stream& operator<<(Stream& s, const Properties& v) {
+        v.encode(s);
+        return s;
+    }
 
-    friend property_t getValue( const Properties& p, const key_t& key );
-    friend void print( const Properties& p, std::ostream& s );
-    friend void encode( const Properties& p, Stream& s );
+    friend property_t getValue(const Properties& p, const key_t& key);
+    friend void print(const Properties& p, std::ostream& s);
+    friend void encode(const Properties& p, Stream& s);
 
     friend class Value;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

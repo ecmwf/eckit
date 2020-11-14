@@ -15,8 +15,8 @@
 #ifndef eckit_log_Bytes_h
 #define eckit_log_Bytes_h
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -27,9 +27,8 @@ class Timer;
 
 class Bytes {
 
-public: // methods
-
-	Bytes(double);
+public:  // methods
+    Bytes(double);
 
     /// Computes a rate
     Bytes(double, Timer&);
@@ -39,16 +38,16 @@ public: // methods
 
     operator std::string() const;
 
-    friend std::ostream& operator<<(std::ostream&,const Bytes&);
+    friend std::ostream& operator<<(std::ostream&, const Bytes&);
 
-    static unsigned long long KiB( unsigned long long n ) { return 1024*n; }
-    static unsigned long long MiB( unsigned long long n ) { return 1024*KiB(n); }
-    static unsigned long long GiB( unsigned long long n ) { return 1024*MiB(n); }
-    static unsigned long long TiB( unsigned long long n ) { return 1024*GiB(n); }
-    static unsigned long long PiB( unsigned long long n ) { return 1024*TiB(n); }
-    static unsigned long long EiB( unsigned long long n ) { return 1024*PiB(n); }
-    static unsigned long long ZiB( unsigned long long n ) { return 1024*EiB(n); }
-    static unsigned long long YiB( unsigned long long n ) { return 1024*ZiB(n); }
+    static unsigned long long KiB(unsigned long long n) { return 1024 * n; }
+    static unsigned long long MiB(unsigned long long n) { return 1024 * KiB(n); }
+    static unsigned long long GiB(unsigned long long n) { return 1024 * MiB(n); }
+    static unsigned long long TiB(unsigned long long n) { return 1024 * GiB(n); }
+    static unsigned long long PiB(unsigned long long n) { return 1024 * TiB(n); }
+    static unsigned long long EiB(unsigned long long n) { return 1024 * PiB(n); }
+    static unsigned long long ZiB(unsigned long long n) { return 1024 * EiB(n); }
+    static unsigned long long YiB(unsigned long long n) { return 1024 * ZiB(n); }
 
     /// Handle rate computations avoiding floating point exceptions
     static double rate(double num, double den);
@@ -57,21 +56,18 @@ public: // methods
 
     std::string shorten() const;
 
-private: // members
-
+private:  // members
     int sign() const;
     std::pair<double, char> reduceTo1024() const;
     std::pair<double, char> reduceTo100() const;
 
     double bytes_;
-    size_t scale_;
-    bool   rate_;
-
+    bool rate_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

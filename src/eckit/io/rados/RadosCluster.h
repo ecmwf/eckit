@@ -15,10 +15,10 @@
 #ifndef eckit_io_rados_RadosCluster_h
 #define eckit_io_rados_RadosCluster_h
 
-#include <memory>
-#include <string>
 #include <iostream>
 #include <map>
+#include <memory>
+#include <string>
 
 #include <rados/librados.h>
 
@@ -35,9 +35,8 @@ class RadosIOCtx;
 
 #define RADOS_CALL(a) eckit::rados_call(a, #a, __FILE__, __LINE__, __func__)
 
-class RadosCluster  {
+class RadosCluster {
 public:
-
     rados_ioctx_t& ioCtx(const std::string& pool) const;
     rados_ioctx_t& ioCtx(const RadosObject& object) const;
 
@@ -49,8 +48,7 @@ public:
     void ensurePool(const RadosObject& object) const;
 
 
-    void attributes(const RadosObject&,
-                    const RadosAttributes& ) const;
+    void attributes(const RadosObject&, const RadosAttributes&) const;
 
     RadosAttributes attributes(const RadosObject&) const;
 
@@ -67,44 +65,39 @@ public:
     void removeAll(const RadosObject&) const;
 
 
-
     static const RadosCluster& instance();
 
 private:
-
     RadosCluster();
 
     ~RadosCluster();
 
 
 private:
-
     rados_t cluster_;
     mutable std::map<std::string, RadosIOCtx*> ctx_;
 
     void reset();
 
 public:
-    static void error(int code, const char *msg, const char* file, int line, const char* func);
-
+    static void error(int code, const char* msg, const char* file, int line, const char* func);
 };
 
 
-static inline int rados_call(int code, const char *msg, const char* file, int line, const char* func) {
+static inline int rados_call(int code, const char* msg, const char* file, int line, const char* func) {
 
     std::cout << "RADOS_CALL => " << msg << std::endl;
 
     if (code < 0) {
         std::cout << "RADOS_FAIL !! " << msg << std::endl;
 
-        RadosCluster::error(code, msg, file,  line, func);
+        RadosCluster::error(code, msg, file, line, func);
     }
 
     std::cout << "RADOS_CALL <= " << msg << std::endl;
 
     return code;
 }
-
 
 
 }  // namespace eckit

@@ -234,8 +234,7 @@ CASE("test_yaml_empty") {
 
     std::string yamlstr(
         "office:\n"
-        "  manager :\n"
-        );
+        "  manager :\n");
 
     {
         std::ofstream yamlfile(yamlpath.localPath());
@@ -249,7 +248,7 @@ CASE("test_yaml_empty") {
     LocalConfiguration office(conf, "office");  // LocalConfiguration has content
     EXPECT(!office.empty());
 
-//  Not sure this is correct yaml but since the parser accepts it we need to handle it
+    //  Not sure this is correct yaml but since the parser accepts it we need to handle it
     LocalConfiguration nilconf(office, "manager");  // LocalConfiguration is nil
     EXPECT(nilconf.empty());
 }

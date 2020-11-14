@@ -27,55 +27,51 @@ namespace eckit {
 class RadosHandle : public eckit::DataHandle {
 
 public:  // methods
+    RadosHandle(const RadosObject&);
+    RadosHandle(const std::string&);
 
-  RadosHandle(const RadosObject&);
-  RadosHandle(const std::string&);
+    RadosHandle(Stream&);
 
-  RadosHandle(Stream&);
+    virtual ~RadosHandle() override;
 
-  virtual ~RadosHandle();
+    // -- Class methods
 
-  // -- Class methods
+    static const ClassSpec& classSpec() { return classSpec_; }
 
-  static const ClassSpec& classSpec() { return classSpec_; }
-
-  std::string title() const;
+    std::string title() const;
 
 public:  // methods
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-  virtual Length openForRead();
-  virtual void openForWrite(const Length&);
-  virtual void openForAppend(const Length&);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
 
-  virtual long read(void*, long);
-  virtual long write(const void*, long);
-  virtual void close();
-  virtual void flush();
-  virtual void rewind();
+    virtual Offset position() override;
+    virtual Length estimate() override;
 
-  virtual Offset position();
-  virtual Length estimate();
+    virtual void print(std::ostream&) const override;
 
-  virtual void print(std::ostream&) const;
+    // From Streamable
 
-  // From Streamable
-
-  virtual void encode(Stream&) const;
-  virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
+    RadosObject object_;
 
-  RadosObject object_;
+    uint64_t offset_;
+    bool opened_;
+    bool write_;
 
-  uint64_t offset_;
-  bool opened_;
-  bool write_;
+    void open();
 
-  void open();
-
-  static ClassSpec classSpec_;
-  static Reanimator<RadosHandle> reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<RadosHandle> reanimator_;
 };
 
 }  // namespace eckit

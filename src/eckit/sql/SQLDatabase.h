@@ -20,8 +20,8 @@
 #include <memory>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/sql/SchemaAnalyzer.h"
 #include "eckit/sql/SQLTable.h"
+#include "eckit/sql/SchemaAnalyzer.h"
 
 
 namespace eckit {
@@ -32,9 +32,11 @@ namespace sql {
 // Forward declarations
 
 class SQLStatement;
-namespace expression { class SQLExpression; }
+namespace expression {
+class SQLExpression;
+}
 
-typedef std::map<std::string, std::set<std::string> > Links;
+typedef std::map<std::string, std::set<std::string>> Links;
 typedef std::map<std::string, std::shared_ptr<expression::SQLExpression>> Variables;
 
 
@@ -43,7 +45,7 @@ typedef std::map<std::string, std::shared_ptr<expression::SQLExpression>> Variab
 class SQLDatabase {
 public:
     SQLDatabase(const std::string& name = "default");
-	virtual ~SQLDatabase();
+    virtual ~SQLDatabase();
 
     SQLDatabase(const SQLDatabase&) = delete;
     SQLDatabase& operator=(const SQLDatabase&) = delete;
@@ -51,7 +53,7 @@ public:
     SQLDatabase(SQLDatabase&&) = default;
     SQLDatabase& operator=(SQLDatabase&&) = default;
 
-// -- Methods
+    // -- Methods
     void open();
     void close();
 
@@ -61,24 +63,24 @@ public:
     SQLTable& defaultTable();
     std::vector<std::reference_wrapper<SQLTable>> implicitTables();
 
-//    SQLTable& openDataHandle(eckit::DataHandle&);
-//    SQLTable& openDataStream(std::istream&, const std::string& delimiter);
+    //    SQLTable& openDataHandle(eckit::DataHandle&);
+    //    SQLTable& openDataStream(std::istream&, const std::string& delimiter);
 
     void addTable(SQLTable* table);
     void addImplicitTable(SQLTable* table);
 
-	void setLinks(const Links&);
-	void setLinks() { setLinks(links_); }
+    void setLinks(const Links&);
+    void setLinks() { setLinks(links_); }
 
-	void addLinks(const Links& ls) { links_.insert(ls.begin(), ls.end()); }
-	Links& links() { return links_; }
+    void addLinks(const Links& ls) { links_.insert(ls.begin(), ls.end()); }
+    Links& links() { return links_; }
 
     const std::string& name() const { return name_; }
 
     std::shared_ptr<expression::SQLExpression> getVariable(const std::string&) const;
     void setVariable(const std::string&, std::shared_ptr<expression::SQLExpression>);
 
-	Variables& variables() { return variables_; }
+    Variables& variables() { return variables_; }
 
     SchemaAnalyzer& schemaAnalyzer() { return schemaAnalyzer_; }
 
@@ -86,26 +88,25 @@ public:
     const std::vector<eckit::PathName>& includePath() const { return includePath_; }
 
 protected:
-	Links links_;
+    Links links_;
     std::map<std::string, std::unique_ptr<SQLTable>> tablesByName_;
     std::vector<std::unique_ptr<SQLTable>> implicitTables_;
 
     std::vector<eckit::PathName> includePath_;
 
-	Variables variables_;
-	std::string name_;
+    Variables variables_;
+    std::string name_;
     SchemaAnalyzer schemaAnalyzer_;
 
 private:
-// No copy allowed
+    // No copy allowed
 
-	void loadIOMAP();
-	void loadDD();
-	void loadFLAGS();
+    void loadIOMAP();
+    void loadDD();
+    void loadFLAGS();
 
-// -- Friends
-    friend std::ostream& operator<< (std::ostream& s, const SQLDatabase& p)
-	{
+    // -- Friends
+    friend std::ostream& operator<<(std::ostream& s, const SQLDatabase& p) {
         s << "[SQLDatabase@" << &p << " tables: ";
         for (const auto& it : p.tablesByName_) {
             s << it.first << ",";
@@ -118,7 +119,7 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
-#endif // eckit_sql_SQLDatabase_H
+#endif  // eckit_sql_SQLDatabase_H

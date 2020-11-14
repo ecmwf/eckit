@@ -126,4 +126,3 @@ std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const {
 
 }  // namespace net
 }  // namespace eckit
-

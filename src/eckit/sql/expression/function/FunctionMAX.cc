@@ -24,12 +24,10 @@ namespace function {
 static FunctionBuilder<FunctionMAX> maxFunctionBuilder("max");
 
 FunctionMAX::FunctionMAX(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    value_(-DBL_MAX) {}
+    FunctionExpression(name, args), value_(-DBL_MAX) {}
 
 FunctionMAX::FunctionMAX(const FunctionMAX& other) :
-    FunctionExpression(other.name_, other.args_),
-    value_(other.value_) {}
+    FunctionExpression(other.name_, other.args_), value_(other.value_) {}
 
 std::shared_ptr<SQLExpression> FunctionMAX::clone() const {
     return std::make_shared<FunctionMAX>(*this);

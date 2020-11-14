@@ -40,8 +40,8 @@ class MetadataGatherer {
 public:
     virtual ~MetadataGatherer();
     virtual void setValue(const std::string& key, const std::string& value) = 0;
-    virtual void setValue(const std::string& key, long value) = 0;
-    virtual void setValue(const std::string& key, double value) = 0;
+    virtual void setValue(const std::string& key, long value)               = 0;
+    virtual void setValue(const std::string& key, double value)             = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -92,42 +92,32 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class StringSetter : public MetadataGatherer {
     T& object_;
 
-    virtual void setValue(const std::string& key, const std::string& value) override {
-        object_.setValue(key, value);
-    }
+    virtual void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, long value)   override {
-    }
+    virtual void setValue(const std::string& key, long value) override {}
 
-    virtual void setValue(const std::string& key, double value)  override  {
-    }
+    virtual void setValue(const std::string& key, double value) override {}
 
 public:
-    StringSetter(T& object): object_(object) {}
+    StringSetter(T& object) : object_(object) {}
 };
 
-template<class T>
+template <class T>
 class TypedSetter : public MetadataGatherer {
     T& object_;
 
-    virtual void setValue(const std::string& key, const std::string& value) override {
-        object_.setValue(key, value);
-    }
+    virtual void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, long value)   override  {
-        object_.setValue(key, value);
-    }
+    virtual void setValue(const std::string& key, long value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, double value)  override  {
-        object_.setValue(key, value);
-    }
+    virtual void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
 
 public:
-    TypedSetter(T& object): object_(object) {}
+    TypedSetter(T& object) : object_(object) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 

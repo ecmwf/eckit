@@ -12,63 +12,58 @@
 #define SPIterator_H
 
 
-
 namespace eckit {
 
-template<class Traits,class NodeType>
+template <class Traits, class NodeType>
 class SPIterator {
 
-    typedef typename Traits::Point   Point;
+    typedef typename Traits::Point Point;
     typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc   Alloc;
+    typedef typename Traits::Alloc Alloc;
 
-    typedef SPValue<Traits>             Value;
+    typedef SPValue<Traits> Value;
 
     typedef typename Alloc::Ptr Ptr;
     typedef typename Alloc::Ptr ID;
     typedef NodeType Node;
 
     Alloc& alloc_;
-    Ptr   ptr_;
+    Ptr ptr_;
 
 
 public:
-    SPIterator(Alloc& alloc, Ptr ptr):
-        alloc_(alloc), ptr_(ptr) {
-        //std::cout << "SPIterator " << ptr << std::endl;
-        Node* node = alloc_.convert(ptr_,(Node*)0);
-        if(node) {
-            if(!node->next(alloc_)) {
+    SPIterator(Alloc& alloc, Ptr ptr) : alloc_(alloc), ptr_(ptr) {
+        // std::cout << "SPIterator " << ptr << std::endl;
+        Node* node = alloc_.convert(ptr_, (Node*)0);
+        if (node) {
+            if (!node->next(alloc_)) {
                 Node* prev = 0;
                 node->linkNodes(alloc, prev);
             }
         }
     }
 
-    bool operator !=(const SPIterator& other)
-    { return ptr_ != other.ptr_; }
+    bool operator!=(const SPIterator& other) { return ptr_ != other.ptr_; }
 
     operator Value*() {
-        Node* n = alloc_.convert(ptr_,(Node*)0);
+        Node* n = alloc_.convert(ptr_, (Node*)0);
         return &(n->value());
     }
 
     Value* operator->() {
-        Node* n = alloc_.convert(ptr_,(Node*)0);
+        Node* n = alloc_.convert(ptr_, (Node*)0);
         return &(n->value());
     }
 
     SPIterator& operator++() {
-        ptr_ = alloc_.convert(ptr_,(Node*)0)->next_;
+        ptr_ = alloc_.convert(ptr_, (Node*)0)->next_;
         return *this;
     }
 
-    ID nodeID() const {
-        return ptr_;
-    }
+    ID nodeID() const { return ptr_; }
 };
 
-} // end namespace
+}  // namespace eckit
 
 
 #endif

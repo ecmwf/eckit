@@ -14,8 +14,8 @@
 #ifndef eckit_EtcTable_h
 #define eckit_EtcTable_h
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
@@ -24,19 +24,17 @@
 namespace eckit {
 
 
-
 class EtcTable : private NonCopyable {
 public:
-
-// -- Contructors
+    // -- Contructors
 
     EtcTable(const std::string&, int = 0, const std::string& = "etc");
 
-// -- Destructor
+    // -- Destructor
 
     virtual ~EtcTable();
 
-	const std::vector<std::string>& lookUp(const std::string&);
+    const std::vector<std::string>& lookUp(const std::string&);
     std::vector<std::string> keys();
     std::vector<std::vector<std::string> > lines();
 
@@ -44,13 +42,10 @@ public:
     bool exists() const;
 
 
-
-private: // methods
-
+private:  // methods
     void load();
 
-private: // members
-
+private:  // members
     time_t last_;
     std::string dir_;
     std::string name_;
@@ -60,30 +55,29 @@ private: // members
 
     std::vector<std::vector<std::string> > lines_;
 
-private: // methods
-
-    virtual bool match(const std::string&, const std::vector<std::string>&) const  = 0;
-
+private:  // methods
+    virtual bool match(const std::string&, const std::vector<std::string>&) const = 0;
 };
-
 
 
 class EtcKeyTable : public EtcTable {
     bool match(const std::string& query, const std::vector<std::string>& line) const { return query == line[0]; }
-public:
-    EtcKeyTable(const std::string& name, int size = 0, const std::string& dir= "etc");
-};
 
+public:
+    EtcKeyTable(const std::string& name, int size = 0, const std::string& dir = "etc");
+};
 
 
 class EtcStartWithTable : public EtcTable {
-    bool match(const std::string& query, const std::vector<std::string>& line) const { return query.find(line[0]) == 0; }
+    bool match(const std::string& query, const std::vector<std::string>& line) const {
+        return query.find(line[0]) == 0;
+    }
+
 public:
-    EtcStartWithTable(const std::string& name, int size = 0, const std::string& dir= "etc");
+    EtcStartWithTable(const std::string& name, int size = 0, const std::string& dir = "etc");
 };
 
 
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

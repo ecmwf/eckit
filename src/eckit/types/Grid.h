@@ -17,8 +17,8 @@
 #include <string>
 #include <vector>
 
-#include "eckit/persist/Bless.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
@@ -28,118 +28,118 @@ class DumpLoad;
 
 class Grid {
 public:
+    enum
+    {
+        undef = -1
+    };
 
-	enum { undef = -1 };
+    // -- Exceptions
 
-// -- Exceptions
+    class InvalidGrid : public Exception {
+    public:
+        InvalidGrid(const std::string& s);
+    };
 
-	class InvalidGrid : public Exception {
-	public:
-                InvalidGrid(const std::string& s);
-	};
+    // -- Contructors
 
-// -- Contructors
+    Grid(const std::string&);
 
-	Grid(const std::string&);
+    Grid(double ns = undef, double ew = undef) : northSouth_(ns), eastWest_(ew) {}
 
-	Grid(double ns = undef,double ew = undef):
-		northSouth_(ns), eastWest_(ew) {}
-
-	Grid(const std::vector<double>&);
+    Grid(const std::vector<double>&);
 
 #include "eckit/types/Grid.b"
 
-// -- Destructor
+    // -- Destructor
 
-	~Grid() {}
+    ~Grid() {}
 
-// -- Convertors
-	// None
+    // -- Convertors
+    // None
 
-// -- Operators
-	// None
+    // -- Operators
+    // None
 
-	operator std::string() const;
+    operator std::string() const;
 
-	bool operator==(const Grid& other) const
-		{ return northSouth_ == other.northSouth_ && eastWest_ == other.eastWest_; }
+    bool operator==(const Grid& other) const {
+        return northSouth_ == other.northSouth_ && eastWest_ == other.eastWest_;
+    }
 
-	bool operator!=(const Grid& other) const
-		{ return northSouth_ != other.northSouth_ || eastWest_ != other.eastWest_; }
+    bool operator!=(const Grid& other) const {
+        return northSouth_ != other.northSouth_ || eastWest_ != other.eastWest_;
+    }
 
-	bool operator<(const Grid& other) const;
+    bool operator<(const Grid& other) const;
 
-	bool operator>(const Grid& other) const
-		{ return other < *this; }
+    bool operator>(const Grid& other) const { return other < *this; }
 
-// -- Methods
+    // -- Methods
 
-	double northSouth() const { return northSouth_; }
-	double eastWest() const   { return eastWest_; }
+    double northSouth() const { return northSouth_; }
+    double eastWest() const { return eastWest_; }
 
-	// Score return 2 if the grid is a multiple of the parameter
-	// 1 if only one value is a multiple
-	// or 0 if the grid are not compatible.
+    // Score return 2 if the grid is a multiple of the parameter
+    // 1 if only one value is a multiple
+    // or 0 if the grid are not compatible.
 
-	long score(const Grid&) const;
-	double distance(const Grid&) const;
-	const Grid& bestMatch(const std::vector<Grid>&) const;
+    long score(const Grid&) const;
+    double distance(const Grid&) const;
+    const Grid& bestMatch(const std::vector<Grid>&) const;
 
-	bool undefined() const
-		{ return northSouth_ == undef && eastWest_ == undef; }
+    bool undefined() const { return northSouth_ == undef && eastWest_ == undef; }
 
-	void dump(DumpLoad&) const;
-	void load(DumpLoad&);
+    void dump(DumpLoad&) const;
+    void load(DumpLoad&);
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Class members
+    // -- Class members
 
-	static char gridName(const Grid&);
-	static Grid grid(const char);
+    static char gridName(const Grid&);
+    static Grid grid(const char);
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
 
-// -- Methods
+    void print(std::ostream& s) const;
 
-	void print(std::ostream& s) const;
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    // -- Members
 
-// -- Members
-
-	double northSouth_;
-	double eastWest_;
+    double northSouth_;
+    double eastWest_;
 
 
-// -- Friends
+    // -- Friends
 
-	friend std::ostream& operator<<(std::ostream& s,const Grid& p)
-		{ p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const Grid& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

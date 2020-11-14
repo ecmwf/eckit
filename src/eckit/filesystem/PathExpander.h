@@ -30,8 +30,7 @@ public:  // methods
     static std::string expand(const std::string& path);
 
 protected:  // methods
-    virtual void expand(const std::string& var, const std::string& path,
-                        eckit::StringDict& vars) const = 0;
+    virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const = 0;
 
     PathExpander(const std::string&);
 

@@ -24,30 +24,28 @@ namespace eckit {
 
 class RawFileHandle : public DataHandle {
 public:
-
     RawFileHandle(const std::string& path, bool overwrite = false);
 
     ~RawFileHandle();
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual long   read(void*,long);
-    virtual long   write(const void*,long);
-    virtual void   close();
-    virtual void   print(std::ostream&) const;
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void print(std::ostream&) const override;
 
-    virtual Length size();
-    virtual Length estimate();
-    virtual Offset position();
-    virtual Offset seek(const Offset&);
-    virtual void skip(const Length &);
+    virtual Length size() override;
+    virtual Length estimate() override;
+    virtual Offset position() override;
+    virtual Offset seek(const Offset&) override;
+    virtual void skip(const Length&) override;
 
-    virtual void encode(Stream&) const;
+    virtual void encode(Stream&) const override;
 
 private:
-
     std::string path_;
     bool overwrite_;
     int fd_;
@@ -55,6 +53,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

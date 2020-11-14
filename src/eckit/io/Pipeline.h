@@ -16,9 +16,9 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/TransferWatcher.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/io/TransferWatcher.h"
 
 //-----------------------------------------------------------------------------
 
@@ -28,57 +28,53 @@ namespace eckit {
 
 class Pipeline : private NonCopyable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    Pipeline(TransferWatcher& = TransferWatcher::dummy());
 
-	Pipeline(TransferWatcher& = TransferWatcher::dummy());
+    // -- Destructor
 
-// -- Destructor
+    virtual ~Pipeline();
 
-	virtual ~Pipeline();
+    // -- Methods
 
-// -- Methods
+    Length copy(DataHandle&, DataHandle&);
 
-	Length copy(DataHandle&,DataHandle&);
-
-	bool   error();
-    void   error(const std::string&);
-	void   restart(RestartTransfer&);
+    bool error();
+    void error(const std::string&);
+    void restart(RestartTransfer&);
 
 
 private:
+    virtual void execute(DataHandle& in, DataHandle& out) = 0;
 
-    virtual void execute(DataHandle& in,DataHandle& out) = 0;
 
+private:  // members
+    Mutex mutex_;
 
-private: // members
+    long count_;
+    long bufSize_;
 
-	Mutex  mutex_;
+    Length inBytes_;
+    Length outBytes_;
 
-    long   count_;
-	long   bufSize_;
-
-	Length inBytes_;
-	Length outBytes_;
-
-	bool error_;
+    bool error_;
     std::string why_;
 
     bool restart_;
 
-	Offset restartFrom_;
-	TransferWatcher& watcher_;
+    Offset restartFrom_;
+    TransferWatcher& watcher_;
 
-// -- Friends
+    // -- Friends
 
     friend class PipelineExecutor;
     friend class PipelineReader;
-
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

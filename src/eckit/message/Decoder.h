@@ -26,8 +26,7 @@ class MetadataGatherer;
 
 
 class Decoder {
-public: // methods
-
+public:  // methods
     Decoder();
 
     virtual ~Decoder();
@@ -36,22 +35,20 @@ public: // methods
 
     static Decoder& lookup(const Message&);
 
-private: // methods
-
+private:  // methods
     virtual bool match(const Message&) const = 0;
-    virtual void print(std::ostream&) const = 0;
+    virtual void print(std::ostream&) const  = 0;
 
-    friend std::ostream& operator<<(std::ostream &s, const Decoder& p) {
+    friend std::ostream& operator<<(std::ostream& s, const Decoder& p) {
         p.print(s);
         return s;
     }
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace message
-} // namespace eckit
+}  // namespace message
+}  // namespace eckit
 
 #endif

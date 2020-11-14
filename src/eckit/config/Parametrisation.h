@@ -24,34 +24,32 @@ namespace eckit {
 
 class Parametrisation {
 
-public: // methods
-
+public:  // methods
     /// Destructor redundant but fixes sanity compiler warnings
     virtual ~Parametrisation();
 
     virtual bool has(const std::string& name) const = 0;
 
     virtual bool get(const std::string& name, std::string& value) const = 0;
-    virtual bool get(const std::string& name, bool& value) const = 0;
-    virtual bool get(const std::string& name, int& value) const = 0;
-    virtual bool get(const std::string& name, long& value) const = 0;
+    virtual bool get(const std::string& name, bool& value) const        = 0;
+    virtual bool get(const std::string& name, int& value) const         = 0;
+    virtual bool get(const std::string& name, long& value) const        = 0;
     virtual bool get(const std::string& name, long long& value) const;
     virtual bool get(const std::string& name, size_t& value) const = 0;
-    virtual bool get(const std::string& name, float& value) const = 0;
+    virtual bool get(const std::string& name, float& value) const  = 0;
     virtual bool get(const std::string& name, double& value) const = 0;
 
-    virtual bool get(const std::string& name, std::vector<int>& value) const = 0;
+    virtual bool get(const std::string& name, std::vector<int>& value) const  = 0;
     virtual bool get(const std::string& name, std::vector<long>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<long long>& value) const;
-    virtual bool get(const std::string& name, std::vector<size_t>& value) const = 0;
-    virtual bool get(const std::string& name, std::vector<float>& value) const = 0;
-    virtual bool get(const std::string& name, std::vector<double>& value) const = 0;
+    virtual bool get(const std::string& name, std::vector<size_t>& value) const      = 0;
+    virtual bool get(const std::string& name, std::vector<float>& value) const       = 0;
+    virtual bool get(const std::string& name, std::vector<double>& value) const      = 0;
     virtual bool get(const std::string& name, std::vector<std::string>& value) const = 0;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

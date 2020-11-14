@@ -96,7 +96,8 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
     }
     else {
 
-        static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
+        static const long bufsize =
+            Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
 
         Buffer buffer(bufsize);
         // ResizableBuffer buffer(bufsize);
@@ -316,7 +317,7 @@ Length DataHandle::estimate() {
     return 0;
 }
 
-Length DataHandle::openForRead()             {
+Length DataHandle::openForRead() {
     std::ostringstream os;
     os << "DataHandle::openForRead() [" << *this << "]";
     throw NotImplemented(os.str(), Here());
@@ -334,7 +335,7 @@ void DataHandle::openForAppend(const Length&) {
     throw NotImplemented(os.str(), Here());
 }
 
-long DataHandle::read(void*, long)       {
+long DataHandle::read(void*, long) {
     std::ostringstream os;
     os << "DataHandle::read() [" << *this << "]";
     throw NotImplemented(os.str(), Here());
@@ -399,7 +400,6 @@ void DataHandle::hash(MD5& md5) const {
     os << "DataHandle::hash(" << *this << ")";
     throw NotImplemented(os.str(), Here());
 }
-
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -19,25 +19,22 @@ class DataHandle;
 
 //-----------------------------------------------------------------------------
 
-class Compress  {
+class Compress {
 
-public: // methods
-
+public:  // methods
     Compress(size_t maxBits = 16);
-// --
+    // --
 
     size_t decode(DataHandle& in, DataHandle& out);
     size_t encode(DataHandle& in, DataHandle& out);
 
 private:
-
     const size_t maxBits_;
-
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

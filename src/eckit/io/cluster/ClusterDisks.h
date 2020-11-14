@@ -31,15 +31,12 @@ class JSON;
 
 class ClusterDisks {
 public:
+    static void reset();
+    static void cleanup();
 
-
-
-	static void reset();
-	static void cleanup();
-
-	static void offLine(const NodeInfo&);
-	static void forget(const NodeInfo&);
-	static void update(const std::string&,const std::string&, const std::vector<std::string>&);
+    static void offLine(const NodeInfo&);
+    static void forget(const NodeInfo&);
+    static void update(const std::string&, const std::string&, const std::vector<std::string>&);
 
     static void list(std::ostream& out);
     static void json(JSON& out);
@@ -48,14 +45,12 @@ public:
     static void receive(Stream& s);
 
     static time_t lastModified(const std::string&);
-    static void   load(const std::string&, std::vector<std::string>&);
+    static void load(const std::string&, std::vector<std::string>&);
     static std::string node(const std::string& path);
-
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

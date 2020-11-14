@@ -29,7 +29,7 @@ class DataHandle;
 
 class Exporter : private NonCopyable {
 
-    class Datatype  {
+    class Datatype {
         char type_;
         bool used_;
         double double_;
@@ -51,29 +51,31 @@ class Exporter : private NonCopyable {
 
         void print(std::ostream& s) const;
 
-        friend std::ostream& operator<<(std::ostream& s,const Datatype& p) { p.print(s); return s; }
+        friend std::ostream& operator<<(std::ostream& s, const Datatype& p) {
+            p.print(s);
+            return s;
+        }
     };
 
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    Exporter(DataHandle&);
 
-	Exporter(DataHandle&);
+    // -- Destructor
 
-// -- Destructor
+    ~Exporter();
 
-	~Exporter();
+    // -- Convertors
+    // None
 
-// -- Convertors
-	// None
+    // -- Operators
+    // None
 
-// -- Operators
-	// None
-
-// -- Methods
+    // -- Methods
 
     void openForWrite();
     void close();
@@ -106,14 +108,14 @@ public:
     std::string readString();
     double readDouble();
 
-    bool nextDatabase(std::string& name,unsigned long long& id, unsigned long long& count);
+    bool nextDatabase(std::string& name, unsigned long long& id, unsigned long long& count);
 
     size_t nextObject();
     void endObject();
     void nextSubObject();
 
-    unsigned long long type() const     { return type_; }
-    void type(unsigned long long  t)    { type_ = t; }
+    unsigned long long type() const { return type_; }
+    void type(unsigned long long t) { type_ = t; }
 
     unsigned long long location() const { return location_; }
 
@@ -127,38 +129,36 @@ public:
     void endSubObject();
 
     unsigned long long getUnsignedMember(const std::string&);
-    long long          getSignedMember(const std::string&);
-    double             getDoubleMember(const std::string&);
+    long long getSignedMember(const std::string&);
+    double getDoubleMember(const std::string&);
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
 
-// -- Methods
+    void print(std::ostream&) const;
 
-	void print(std::ostream&) const;
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
+    // -- Class methods
+    // None
 
-// -- Class methods
-	// None
-
-private: // members
-
+private:  // members
     DataHandle& handle_;
     unsigned long long type_;
     unsigned long long location_;
@@ -168,11 +168,11 @@ private: // members
     unsigned long long subCount_;
 
     std::vector<std::string> stack_;
-    std::map<std::string,Datatype> members_;
+    std::map<std::string, Datatype> members_;
 
     bool inObject_;
 
-// -- Methods
+    // -- Methods
     long long _readSigned();
     unsigned long long _readUnsigned();
     std::string _readString();
@@ -181,24 +181,25 @@ private: // members
     std::string path() const;
 
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
-// -- Friends
+    // -- Friends
 
-	friend std::ostream& operator<<(std::ostream& s,const Exporter& p)
-		{ p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const Exporter& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

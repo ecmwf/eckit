@@ -15,8 +15,8 @@
 
 namespace eckit {
 
-  typedef unsigned long long TaskID;
+typedef unsigned long long TaskID;
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

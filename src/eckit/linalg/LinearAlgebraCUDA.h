@@ -32,7 +32,6 @@ public:
     LinearAlgebraCUDA();
 
 private:
-
     // Overridden methods
 
     virtual Scalar dot(const Vector&, const Vector&) const;
@@ -42,13 +41,13 @@ private:
     virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
     virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
 
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 };
 
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit
 
 #endif  // eckit_HAVE_CUDA
 

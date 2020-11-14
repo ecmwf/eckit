@@ -26,10 +26,7 @@ const type::SQLType* FunctionVAR::type() const {
 }
 
 FunctionVAR::FunctionVAR(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    count_(0),
-    value_(0),
-    squares_(0) {}
+    FunctionExpression(name, args), count_(0), value_(0), squares_(0) {}
 
 FunctionVAR::FunctionVAR(const FunctionVAR& other) :
     FunctionExpression(other.name_, other.args_),

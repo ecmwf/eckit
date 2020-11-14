@@ -152,9 +152,7 @@ private:
     //	friend long operator-(const Date& d1)
     //		{ NOTIMP; return 0; }
 
-    friend Date operator+(const Date& d1, const long n) {
-        return Date::julianToDate(d1.julian_ + n);
-    }
+    friend Date operator+(const Date& d1, const long n) { return Date::julianToDate(d1.julian_ + n); }
 
     friend Date operator+(const long n, const Date& d1) { return d1 + n; }
 

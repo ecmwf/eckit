@@ -136,13 +136,7 @@ public:
 };
 
 Exporter::Exporter(DataHandle& handle) :
-    handle_(handle),
-    type_(0),
-    location_(0),
-    objectId_(0),
-    objectCount_(0),
-    subCount_(0),
-    inObject_(false) {}
+    handle_(handle), type_(0), location_(0), objectId_(0), objectCount_(0), subCount_(0), inObject_(false) {}
 
 Exporter::~Exporter() {}
 
@@ -592,11 +586,7 @@ Exporter::Datatype::Datatype(double d) : type_(TAG_DOUBLE), used_(false), double
 Exporter::Datatype::Datatype(long long d) : type_(TAG_SIGNED), used_(false), double_(0), signed_(d), unsigned_(0) {}
 
 Exporter::Datatype::Datatype(unsigned long long d) :
-    type_(TAG_UNSIGNED),
-    used_(false),
-    double_(0),
-    signed_(0),
-    unsigned_(d) {}
+    type_(TAG_UNSIGNED), used_(false), double_(0), signed_(0), unsigned_(d) {}
 
 Exporter::Datatype::operator long long() {
     ASSERT(type_ == TAG_SIGNED);

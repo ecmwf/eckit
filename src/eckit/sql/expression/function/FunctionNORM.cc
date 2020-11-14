@@ -23,14 +23,10 @@ namespace function {
 static FunctionBuilder<FunctionNORM> normFunctionBuilder("norm");
 
 FunctionNORM::FunctionNORM(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    value_(0),
-    resultNULL_(true) {}
+    FunctionExpression(name, args), value_(0), resultNULL_(true) {}
 
 FunctionNORM::FunctionNORM(const FunctionNORM& other) :
-    FunctionExpression(other.name_, other.args_),
-    value_(other.value_),
-    resultNULL_(other.resultNULL_) {}
+    FunctionExpression(other.name_, other.args_), value_(other.value_), resultNULL_(other.resultNULL_) {}
 
 std::shared_ptr<SQLExpression> FunctionNORM::clone() const {
     return std::make_shared<FunctionNORM>(*this);

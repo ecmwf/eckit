@@ -27,89 +27,85 @@ class TransferWatcher;
 
 class MoverTransfer {
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    MoverTransfer(TransferWatcher& = TransferWatcher::dummy());
 
-	MoverTransfer(TransferWatcher& = TransferWatcher::dummy());
+    // -- Destructor
 
-// -- Destructor
+    ~MoverTransfer();
 
-	~MoverTransfer();
+    // -- Convertors
+    // None
 
-// -- Convertors
-	// None
+    // -- Operators
+    // None
 
-// -- Operators
-	// None
-
-// -- Methods
+    // -- Methods
 
     Length transfer(DataHandle&, DataHandle&);
     TransferWatcher& watcher() const { return watcher_; }
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
 
-// -- Methods
+    // void print(std::ostream&) const;
 
-	// void print(std::ostream&) const;
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    MoverTransfer(const MoverTransfer&);
+    MoverTransfer& operator=(const MoverTransfer&);
 
-	MoverTransfer(const MoverTransfer&);
-	MoverTransfer& operator=(const MoverTransfer&);
-
-// -- Members
-	// None
+    // -- Members
+    // None
     TransferWatcher& watcher_;
 
-// -- Methods
-	// None
+    // -- Methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
-// -- Friends
+    // -- Friends
 
-	//friend std::ostream& operator<<(std::ostream& s,const MoverTransfer& p)
-	//	{ p.print(s); return s; }
-
+    // friend std::ostream& operator<<(std::ostream& s,const MoverTransfer& p)
+    //	{ p.print(s); return s; }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

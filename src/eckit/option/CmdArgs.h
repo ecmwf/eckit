@@ -17,9 +17,9 @@
 #ifndef eckit_option_CmdArgs_H
 #define eckit_option_CmdArgs_H
 
+#include <functional>
 #include <set>
 #include <vector>
-#include <functional>
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/memory/NonCopyable.h"
@@ -34,20 +34,20 @@ class Option;
 
 class CmdArgs : public LocalConfiguration, private NonCopyable {
 
-public: // types
-
+public:  // types
     typedef void (*usage_proc)(const std::string& name);
 
-public: // methods
-
+public:  // methods
     CmdArgs(usage_proc usage, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
 
     /// Initialise argument parser with a list of options
     /// @note Will take ownership of the contents of the vector, and delete them in destructor
     /// @todo This should probably have some form of smart pointer.
-    CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
+    CmdArgs(usage_proc usage, std::vector<Option*>& options, int args_count = -1, int minimum_args = 0,
+            bool throw_on_error = false);
 
-    CmdArgs(std::function<void(const std::string&)> usage, std::vector<Option*>& options, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
+    CmdArgs(std::function<void(const std::string&)> usage, std::vector<Option*>& options, int args_count = -1,
+            int minimum_args = 0, bool throw_on_error = false);
 
     ~CmdArgs();
 
@@ -73,21 +73,17 @@ public: // methods
     std::vector<std::string>::iterator begin() { return args_.begin(); }
     std::vector<std::string>::iterator end() { return args_.end(); }
 
-private: // methods
-
+private:  // methods
     void init(std::function<void(const std::string&)> usage, int args_count, int minumum_args, bool throw_on_errror);
 
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
-private: // members
-
+private:  // members
     std::set<std::string> keys_;
     std::vector<std::string> args_;
     std::vector<Option*> options_;
 
     std::string tool_;
-
-    bool throwOnError_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -95,5 +91,4 @@ private: // members
 }  // namespace option
 }  // namespace eckit
 
-#endif // eckit_option_CmdArgs_H
-
+#endif  // eckit_option_CmdArgs_H

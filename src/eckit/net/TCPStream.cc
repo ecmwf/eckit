@@ -14,7 +14,6 @@ namespace eckit {
 namespace net {
 
 
-
 TCPStream::TCPStream(net::TCPSocket& socket) : socket_(socket) {}
 
 TCPStream::~TCPStream() {}

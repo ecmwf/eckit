@@ -33,7 +33,7 @@ protected:  // methods
     Parallel(const std::string& name, MPI_Comm comm, bool);
     Parallel(const std::string& name, int comm);
 
-    virtual ~Parallel();
+    virtual ~Parallel() override;
 
     virtual eckit::mpi::Comm* self() const;
 
@@ -107,7 +107,7 @@ protected:  // methods
 
     virtual void free();
 
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
     virtual Status status() const { return createStatus(); }
 

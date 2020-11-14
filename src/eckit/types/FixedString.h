@@ -1,4 +1,4 @@
- /*
+/*
  * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
@@ -20,8 +20,8 @@
 #include <algorithm>
 #include <string>
 
-#include "eckit/memory/Zero.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/Zero.h"
 
 namespace eckit {
 
@@ -39,11 +39,9 @@ namespace eckit {
 /// @note length() returns the length of the stored string, and size() returns the number of bytes taken by the array
 ///       such that length() <= size().
 
-template< int SIZE >
+template <int SIZE>
 class FixedString {
 public:
-
-
     /// Constructors
     /// @note that constructing FixedStrings initialised from another FixedString of a different SIZE actually
     ///       routes through the const std::string& constructor, via the provided implicit cast to std::string below.
@@ -87,13 +85,11 @@ public:
     static size_t static_size() { return SIZE; }
 
 private:
+    char data_[SIZE];
 
-	char data_[SIZE];
+    void print(std::ostream& s) const;
 
-    void print(std::ostream& s) const ;
-
-    friend std::ostream& operator<<(std::ostream& s,const FixedString& p)
-    {
+    friend std::ostream& operator<<(std::ostream& s, const FixedString& p) {
         p.print(s);
         return s;
     }
@@ -101,82 +97,72 @@ private:
 
 //-----------------------------------------------------------------------------
 
-template<int SIZE>
-FixedString<SIZE>::FixedString()
-{
-	zero(data_);
+template <int SIZE>
+FixedString<SIZE>::FixedString() {
+    zero(data_);
 }
 
-template<int SIZE>
-FixedString<SIZE>:: FixedString(const std::string& s)
-{
-	ASSERT(s.length() <= SIZE && sizeof(s[0]) == 1);
-	zero(data_);
-	std::copy(s.begin(), s.end(), data_);
+template <int SIZE>
+FixedString<SIZE>::FixedString(const std::string& s) {
+    ASSERT(s.length() <= SIZE && sizeof(s[0]) == 1);
+    zero(data_);
+    std::copy(s.begin(), s.end(), data_);
 }
 
-template<int SIZE>
-FixedString<SIZE>:: FixedString(const FixedString& other)
-{
-    ::memcpy(data_,other.data_,SIZE);
+template <int SIZE>
+FixedString<SIZE>::FixedString(const FixedString& other) {
+    ::memcpy(data_, other.data_, SIZE);
 }
 
-template<int SIZE>
+template <int SIZE>
 FixedString<SIZE>::FixedString(const char* s) {
     ASSERT(sizeof(char) == 1 && s && strlen(s) <= SIZE);
-	zero(data_);
+    zero(data_);
     ::memcpy(data_, s, strlen(s));
 }
 
-template<int SIZE>
-FixedString<SIZE>& FixedString<SIZE>::operator=(const FixedString& s)
-{
-	if (this != &s)
-	{
-        ::memcpy(data_,s.data_,SIZE);
-	}
-	return *this;
+template <int SIZE>
+FixedString<SIZE>& FixedString<SIZE>::operator=(const FixedString& s) {
+    if (this != &s) {
+        ::memcpy(data_, s.data_, SIZE);
+    }
+    return *this;
 }
 
-template<int SIZE>
-FixedString<SIZE>& FixedString<SIZE>::operator=(const std::string& s)
-{
-	ASSERT(s.length() <= SIZE && sizeof(s[0]) == 1);
+template <int SIZE>
+FixedString<SIZE>& FixedString<SIZE>::operator=(const std::string& s) {
+    ASSERT(s.length() <= SIZE && sizeof(s[0]) == 1);
 
     ::memcpy(data_, s.c_str(), s.length());
-    if(s.length() < SIZE) {
+    if (s.length() < SIZE) {
         ::memset(data_ + s.length(), 0, SIZE - s.length());
     }
 
-	return *this;
+    return *this;
 }
 
-template<int SIZE>
-size_t FixedString<SIZE>::length() const
-{
-	return std::find(data_, data_ + SIZE, 0) - data_;
+template <int SIZE>
+size_t FixedString<SIZE>::length() const {
+    return std::find(data_, data_ + SIZE, 0) - data_;
 }
 
-template<int SIZE>
-std::string FixedString<SIZE>::asString() const
-{
-	return std::string(data_, data_ + length());
+template <int SIZE>
+std::string FixedString<SIZE>::asString() const {
+    return std::string(data_, data_ + length());
 }
 
-template<int SIZE>
-void FixedString<SIZE>::print(std::ostream& s) const
-{
-	s.write(data_,length());
+template <int SIZE>
+void FixedString<SIZE>::print(std::ostream& s) const {
+    s.write(data_, length());
 }
 
-template<int SIZE>
-FixedString<SIZE>::operator std::string() const
-{
-	return std::string(data_, data_ + length());
+template <int SIZE>
+FixedString<SIZE>::operator std::string() const {
+    return std::string(data_, data_ + length());
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

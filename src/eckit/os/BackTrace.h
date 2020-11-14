@@ -19,13 +19,11 @@ namespace eckit {
 
 class BackTrace {
 public:
-
     static std::string dump();
-
 };
 
 //--------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

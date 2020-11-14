@@ -36,71 +36,68 @@ struct TestTreeTrait {
 /// axis-aligned box.
 template <typename TreeTrait>
 class PointInBoxInteriorFinder {
- public:
-  typedef eckit::KDTreeX<TreeTrait> KDTree;
-  typedef typename KDTree::Point Point;
+public:
+    typedef eckit::KDTreeX<TreeTrait> KDTree;
+    typedef typename KDTree::Point Point;
 
- private:
-  typedef typename KDTree::Alloc Alloc;
-  typedef typename KDTree::Node Node;
+private:
+    typedef typename KDTree::Alloc Alloc;
+    typedef typename KDTree::Node Node;
 
- public:
-  /// \brief Returns true if any point in \p tree lies in the interior of the specified
-  /// axis-aligned box.
-  ///
-  /// \param tree
-  ///   Tree to search.
-  /// \param lbound
-  ///   Lower-left corner of the axis-aligned box.
-  /// \param ubound
-  ///   Upper-right corner of the axis-aligned box.
-  static bool isAnyPointInBoxInterior(const KDTree &tree,
-                                      const Point &lbound, const Point &ubound) {
-    if (!tree.root_) {
-      return false;
+public:
+    /// \brief Returns true if any point in \p tree lies in the interior of the specified
+    /// axis-aligned box.
+    ///
+    /// \param tree
+    ///   Tree to search.
+    /// \param lbound
+    ///   Lower-left corner of the axis-aligned box.
+    /// \param ubound
+    ///   Upper-right corner of the axis-aligned box.
+    static bool isAnyPointInBoxInterior(const KDTree& tree, const Point& lbound, const Point& ubound) {
+        if (!tree.root_) {
+            return false;
+        }
+        Alloc& alloc = tree.alloc_;
+        Node* root   = alloc.convert(tree.root_, static_cast<Node*>(nullptr));
+
+        return isAnyPointInBoxInterior(root, alloc, lbound, ubound);
     }
-    Alloc &alloc = tree.alloc_;
-    Node *root = alloc.convert(tree.root_, static_cast<Node*>(nullptr));
 
-    return isAnyPointInBoxInterior(root, alloc, lbound, ubound);
-  }
+private:
+    /// \brief Returns true if the point stored in \p node or any of its descendants lies in the
+    /// interior of the axis-aligned box with bottom-left and top-right corners at
+    /// \p lbound and \p ubound.
+    static bool isAnyPointInBoxInterior(const Node* node, Alloc& alloc, const Point& lbound, const Point& ubound) {
+        const Point& point = node->value().point();
 
- private:
-  /// \brief Returns true if the point stored in \p node or any of its descendants lies in the
-  /// interior of the axis-aligned box with bottom-left and top-right corners at
-  /// \p lbound and \p ubound.
-  static bool isAnyPointInBoxInterior(const Node *node, Alloc &alloc,
-                                      const Point &lbound, const Point &ubound) {
-    const Point &point = node->value().point();
+        if (isPointInBoxInterior(point, lbound, ubound))
+            return true;
 
-    if (isPointInBoxInterior(point, lbound, ubound))
-      return true;
+        const size_t axis = node->axis();
 
-    const size_t axis = node->axis();
+        if (lbound.x(axis) < point.x(axis))
+            if (Node* left = node->left(alloc))
+                if (isAnyPointInBoxInterior(left, alloc, lbound, ubound))
+                    return true;
 
-    if (lbound.x(axis) < point.x(axis))
-      if (Node *left = node->left(alloc))
-        if (isAnyPointInBoxInterior(left, alloc, lbound, ubound))
-          return true;
+        if (ubound.x(axis) > point.x(axis))
+            if (Node* right = node->right(alloc))
+                if (isAnyPointInBoxInterior(right, alloc, lbound, ubound))
+                    return true;
 
-    if (ubound.x(axis) > point.x(axis))
-      if (Node *right = node->right(alloc))
-        if (isAnyPointInBoxInterior(right, alloc, lbound, ubound))
-          return true;
-
-    return false;
-  }
-
-  /// \brief Returns true if \p point is in the interior of the axis-aligned box
-  /// with bottom-left and top-right corners at \p lbound and \p ubound.
-  static bool isPointInBoxInterior(
-      const Point &point, const Point &lbound, const Point &ubound) {
-    for (size_t d = 0; d < Point::DIMS; ++d) {
-      if (point.x(d) <= lbound.x(d) || point.x(d) >= ubound.x(d))
         return false;
     }
-    return true;
-  }
+
+    /// \brief Returns true if \p point is in the interior of the axis-aligned box
+    /// with bottom-left and top-right corners at \p lbound and \p ubound.
+    static bool isPointInBoxInterior(const Point& point, const Point& lbound, const Point& ubound) {
+        for (size_t d = 0; d < Point::DIMS; ++d) {
+            if (point.x(d) <= lbound.x(d) || point.x(d) >= ubound.x(d))
+                return false;
+        }
+        return true;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -108,10 +105,10 @@ class PointInBoxInteriorFinder {
 /// \brief Returns true if any point in \p tree is in the interior of the axis-aligned box
 /// with bottom-left and top-right corners at \p lbound and \p ubound.
 template <typename TreeTraits>
-bool isAnyPointInBoxInterior(const eckit::KDTreeX<TreeTraits> &tree,
-                             const typename eckit::KDTreeX<TreeTraits>::Point &lbound,
-                             const typename eckit::KDTreeX<TreeTraits>::Point &ubound) {
-  return PointInBoxInteriorFinder<TreeTraits>::isAnyPointInBoxInterior(tree, lbound, ubound);
+bool isAnyPointInBoxInterior(const eckit::KDTreeX<TreeTraits>& tree,
+                             const typename eckit::KDTreeX<TreeTraits>::Point& lbound,
+                             const typename eckit::KDTreeX<TreeTraits>::Point& ubound) {
+    return PointInBoxInteriorFinder<TreeTraits>::isAnyPointInBoxInterior(tree, lbound, ubound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -196,19 +193,18 @@ CASE("test_eckit_container_kdtree_constructor") {
 
     // Test a custom visitor. The purpose of doing that in this test is to ensure that the public
     // interface of KDTree is sufficient to write a custom class traversing the tree.
-    delta = Point(0.25, 0.25);
+    delta        = Point(0.25, 0.25);
     Point lbound = Point::sub(refPoint, delta);
     Point ubound = Point::add(refPoint, delta);
     EXPECT(isAnyPointInBoxInterior(kd, lbound, ubound));
 
-    delta = Point(0.5, 0.5);
+    delta  = Point(0.5, 0.5);
     lbound = Point::add(lbound, delta);
     ubound = Point::add(ubound, delta);
     EXPECT_NOT(isAnyPointInBoxInterior(kd, lbound, ubound));
 
     // Test size()
-    EXPECT_EQUAL( kd.size(), points.size() );
-
+    EXPECT_EQUAL(kd.size(), points.size());
 }
 
 CASE("test_eckit_container_kdtree_insert") {
@@ -290,8 +286,8 @@ CASE("test_eckit_container_kdtree_insert") {
     }
 }
 
-CASE( "test_kdtree_mapped" ) {
-    using Tree = KDTreeMapped<TestTreeTrait>;
+CASE("test_kdtree_mapped") {
+    using Tree  = KDTreeMapped<TestTreeTrait>;
     using Point = Tree::PointType;
     std::vector<Tree::Value> points;
     for (unsigned int i = 0; i < 10; i++) {
@@ -301,35 +297,36 @@ CASE( "test_kdtree_mapped" ) {
             points.push_back(v);
         }
     }
-    auto passTest = [&](Tree& kd) ->bool {
-            // pick some point from the vector
-            Point refPoint = points[points.size() / 2].point();
+    auto passTest = [&](Tree& kd) -> bool {
+        // pick some point from the vector
+        Point refPoint = points[points.size() / 2].point();
 
-            // perturb it a little
-            Point delta(0.1, 0.1);
-            Point testPoint = Point::add(refPoint, delta);
+        // perturb it a little
+        Point delta(0.1, 0.1);
+        Point testPoint = Point::add(refPoint, delta);
 
-            Point nr = kd.nearestNeighbour(testPoint).point();
+        Point nr = kd.nearestNeighbour(testPoint).point();
 
-            // we should find the same point
-            for (unsigned int i = 0; i < Point::dimensions(); i++) {
-                if( nr.x(i) != refPoint.x(i) ) {
-                    return false;
-                }
+        // we should find the same point
+        for (unsigned int i = 0; i < Point::dimensions(); i++) {
+            if (nr.x(i) != refPoint.x(i)) {
+                return false;
             }
-            return true;
+        }
+        return true;
     };
 
     eckit::PathName path("test_kdtree_mapped.kdtree");
 
     // Write file with kdtree
     {
-        if( path.exists() ) path.unlink();
+        if (path.exists())
+            path.unlink();
         Tree kd(path, points.size(), 0);
-        EXPECT_EQUAL( kd.size(), 0 );
-        kd.build( points );
-        EXPECT_EQUAL( kd.size(), points.size() );
-        EXPECT( passTest(kd) );
+        EXPECT_EQUAL(kd.size(), 0);
+        kd.build(points);
+        EXPECT_EQUAL(kd.size(), points.size());
+        EXPECT(passTest(kd));
     }
 
     // Load file with kdtree
@@ -337,22 +334,22 @@ CASE( "test_kdtree_mapped" ) {
         Tree kd(path, 0, 0);
 
         // Cannot insert point as the tree is readonly
-        EXPECT_THROWS_AS( kd.insert( points.front() ), eckit::AssertionFailed );
+        EXPECT_THROWS_AS(kd.insert(points.front()), eckit::AssertionFailed);
 
         // Cannot build with points as the tree is readonly
-        EXPECT_THROWS_AS( kd.build( points ), eckit::AssertionFailed );
+        EXPECT_THROWS_AS(kd.build(points), eckit::AssertionFailed);
 
-        EXPECT_EQUAL( kd.size(), points.size() );
-        EXPECT( passTest(kd) );
+        EXPECT_EQUAL(kd.size(), points.size());
+        EXPECT(passTest(kd));
     }
 }
 
-CASE( "test_kdtree_iterate_empty" ) {
+CASE("test_kdtree_iterate_empty") {
     using Tree = KDTreeMemory<TestTreeTrait>;
 
     Tree kd;
     size_t count{0};
-    for( auto& item: kd ) {
+    for (auto& item : kd) {
         count++;
     }
     EXPECT_EQUAL(count, 0);

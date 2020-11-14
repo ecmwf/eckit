@@ -24,92 +24,83 @@ namespace eckit {
 
 class DayOfYear {
 public:
+    // -- Contructors
 
-// -- Contructors
-
-	DayOfYear(const Date& = Date(0));
-	DayOfYear(long,long);
-	DayOfYear(const std::string&);
+    DayOfYear(const Date& = Date(0));
+    DayOfYear(long, long);
+    DayOfYear(const std::string&);
 
 #include "eckit/types/DayOfYear.b"
 
-// -- Destructor
+    // -- Destructor
 
-	~DayOfYear() {}
+    ~DayOfYear() {}
 
-// -- Convertors
+    // -- Convertors
 
-	operator std::string() const;
+    operator std::string() const;
 
-// -- Operators
+    // -- Operators
 
-	bool operator==(const DayOfYear& other) const
-		{ return value_ == other.value_ ;}
+    bool operator==(const DayOfYear& other) const { return value_ == other.value_; }
 
-	bool operator!=(const DayOfYear& other) const
-		{ return value_ != other.value_ ;}
+    bool operator!=(const DayOfYear& other) const { return value_ != other.value_; }
 
-	bool operator<(const DayOfYear& other)  const
-		{ return value_ < other.value_; }
+    bool operator<(const DayOfYear& other) const { return value_ < other.value_; }
 
-	bool operator>(const DayOfYear& other)  const
-		{ return value_ > other.value_; }
+    bool operator>(const DayOfYear& other) const { return value_ > other.value_; }
 
-	bool operator<=(const DayOfYear& other)  const
-		{ return value_ <= other.value_; }
+    bool operator<=(const DayOfYear& other) const { return value_ <= other.value_; }
 
-	bool operator>=(const DayOfYear& other)  const
-		{ return value_ >= other.value_; }
+    bool operator>=(const DayOfYear& other) const { return value_ >= other.value_; }
 
 
-// -- Methods
+    // -- Methods
 
-	void dump(DumpLoad&) const;
-	void load(DumpLoad&);
+    void dump(DumpLoad&) const;
+    void load(DumpLoad&);
 
-// -- Class methods
+    // -- Class methods
 
 
-// -- Friends
+    // -- Friends
 
-	friend std::ostream& operator<< (std::ostream& s, const DayOfYear& month)
-		{ month.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const DayOfYear& month) {
+        month.print(s);
+        return s;
+    }
 
 protected:
+    // -- Members
+    // None
 
+    // -- Methods
+    // None
 
-// -- Members
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Methods
-	// None
+    // -- Class members
+    // None
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // -- Members
 
-// -- Members
+    long value_;
 
-	long value_;
+    // -- Methods
 
-// -- Methods
+    void print(std::ostream&) const;
 
-	void print(std::ostream&) const;
-
-// -- Class methods
-
+    // -- Class methods
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

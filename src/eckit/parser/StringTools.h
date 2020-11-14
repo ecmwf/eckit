@@ -10,4 +10,3 @@
 
 #warning "Header eckit/parser/StringTools.h is deprecated -- include eckit/utils/StringTools.h"
 #include "eckit/utils/StringTools.h"
-

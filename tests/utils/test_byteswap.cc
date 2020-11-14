@@ -213,9 +213,8 @@ CASE("ByteSwap long") {
                                 "0000011100000000000000000000000000000000000000000000000000000000");
     }
     SECTION("long 870633123454325131") {
-        test_scalar_value<long>(870633123454325131, 
-        "0000110000010101000111000011011010000101001011110001000110001011",
-        "1000101100010001001011111000010100110110000111000001010100001100");
+        test_scalar_value<long>(870633123454325131, "0000110000010101000111000011011010000101001011110001000110001011",
+                                "1000101100010001001011111000010100110110000111000001010100001100");
     }
 }
 
@@ -223,15 +222,13 @@ CASE("ByteSwap long") {
 CASE("ByteSwap double") {
 
     SECTION("double exact integer 7.0") {
-        test_scalar_value<double>(7.0, 
-        "0100000000011100000000000000000000000000000000000000000000000000",
-        "0000000000000000000000000000000000000000000000000001110001000000");
+        test_scalar_value<double>(7.0, "0100000000011100000000000000000000000000000000000000000000000000",
+                                  "0000000000000000000000000000000000000000000000000001110001000000");
     }
 
     SECTION("double PI") {
-        test_scalar_value<double>(M_PI, 
-        "0100000000001001001000011111101101010100010001000010110100011000",
-        "0001100000101101010001000101010011111011001000010000100101000000");
+        test_scalar_value<double>(M_PI, "0100000000001001001000011111101101010100010001000010110100011000",
+                                  "0001100000101101010001000101010011111011001000010000100101000000");
     }
 
     SECTION("double max") {
@@ -280,7 +277,7 @@ void test_roundtrip_vector() {
     // std::cout << "v[1/2] " << v[v.size() / 2] << std::endl;
     EXPECT(v != ref);
 
-    const auto swap = v; // save swaped state
+    const auto swap = v;  // save swaped state
 
     eckit::byteswap(v.data(), v.size());
     // std::cout << "v back" << std::endl; print_bits(std::cout, v);
@@ -300,7 +297,7 @@ void test_roundtrip_vector() {
     EXPECT(v == ref);
 }
 
-CASE( "test_roundtrip_vector" ) {
+CASE("test_roundtrip_vector") {
     SECTION("short") { test_roundtrip_vector<short>(); }
     SECTION("unsigned short") { test_roundtrip_vector<unsigned short>(); }
     SECTION("int") { test_roundtrip_vector<int>(); }

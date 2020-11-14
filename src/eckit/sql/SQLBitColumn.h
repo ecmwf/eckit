@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -22,29 +22,30 @@ namespace sql {
 class SQLBitColumn : public SQLColumn {
 public:
     SQLBitColumn(const SQLColumn&, const std::string&);
-	~SQLBitColumn(); 
+    ~SQLBitColumn();
+
 private:
-// No copy allowed
-	SQLBitColumn(const SQLBitColumn&);
-	SQLBitColumn& operator=(const SQLBitColumn&);
-	
-	std::string     field_;
-	unsigned long mask_;
-	unsigned long shift_;
+    // No copy allowed
+    SQLBitColumn(const SQLBitColumn&);
+    SQLBitColumn& operator=(const SQLBitColumn&);
 
-// -- Overridden methods
+    std::string field_;
+    unsigned long mask_;
+    unsigned long shift_;
 
-	// From ODBIterator
-	virtual void rewind();
-	virtual double next(bool& missing);
-	virtual void advance(unsigned long);
-	virtual void print(std::ostream&) const; 	
+    // -- Overridden methods
 
-	//friend std::ostream& operator<<(std::ostream& s,const SQLBitColumn& p)
-	//	{ p.print(s); return s; }
+    // From ODBIterator
+    virtual void rewind() override;
+    virtual double next(bool& missing) override;
+    virtual void advance(unsigned long) override;
+    virtual void print(std::ostream&) const override;
+
+    // friend std::ostream& operator<<(std::ostream& s,const SQLBitColumn& p)
+    //	{ p.print(s); return s; }
 };
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

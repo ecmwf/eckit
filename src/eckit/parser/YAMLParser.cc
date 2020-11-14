@@ -190,14 +190,14 @@ struct YAMLItemKey : public YAMLItem {
     }
 
 
-    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v, bool unique=false) const {
+    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v, bool unique = false) const {
 
 
         if (m.find(k) == m.end()) {
             l.push_back(k);
         }
         else {
-            if(unique) {
+            if (unique) {
                 return;
             }
         }

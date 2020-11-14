@@ -14,9 +14,9 @@
 /// @author Tiago Quintino
 /// @author Olivier Iffrig
 
-#include <vector>
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -24,37 +24,30 @@
 namespace eckit {
 
 
-template < typename V >
+template <typename V>
 class DenseSet {
-public: // types
+public:                    // types
+    typedef V value_type;  ///< value type
 
-    typedef V value_type;   ///< value type
+private:  // types
+    typedef std::vector<value_type> store_t;
 
-private: // types
-
-    typedef std::vector< value_type > store_t;
-
-public: // methods
-
+public:  // methods
     typedef typename store_t::const_reference const_reference;
 
     typedef typename store_t::const_iterator iterator;
     typedef typename store_t::const_iterator const_iterator;
 
-    DenseSet( size_t s = 0 ) : sorted_(true)
-    {
-        if(s > 0) reserve(s);
+    DenseSet(size_t s = 0) : sorted_(true) {
+        if (s > 0)
+            reserve(s);
     }
 
     ~DenseSet() {}
 
-    void reserve( size_t s )
-    {
-        values_.reserve(s);
-    }
+    void reserve(size_t s) { values_.reserve(s); }
 
-    void insert( const V& v )
-    {
+    void insert(const V& v) {
         values_.push_back(v);
         sorted_ = false;
     }
@@ -62,8 +55,7 @@ public: // methods
     /// @TODO shoudl we implement this?
     //    size_t erase( const value_type& v );
 
-    void clear()
-    {
+    void clear() {
         values_.clear();
         sorted_ = true;
     }
@@ -73,11 +65,9 @@ public: // methods
     size_t size() const { return values_.size(); }
     bool empty() const { return values_.empty(); }
 
-    void sort()
-    {
-        if(!sorted_)
-        {
-            std::sort( values_.begin(), values_.end() );
+    void sort() {
+        if (!sorted_) {
+            std::sort(values_.begin(), values_.end());
             auto last = std::unique(values_.begin(), values_.end());
             values_.erase(last, values_.end());
             sorted_ = true;
@@ -92,42 +82,42 @@ public: // methods
     const_iterator end() const { return values_.end(); }
     const_iterator cend() const { return values_.cend(); }
 
-    bool contains( const V& v ) const { return find(v) != cend(); }
+    bool contains(const V& v) const { return find(v) != cend(); }
 
-    const_reference at( const size_t i ) const { ASSERT(i < values_.size()); return values_[i]; }
+    const_reference at(const size_t i) const {
+        ASSERT(i < values_.size());
+        return values_[i];
+    }
 
-    const_reference operator[] (const size_t& i ) const { return values_[i]; }
+    const_reference operator[](const size_t& i) const { return values_[i]; }
 
-    iterator find( const V& v )
-    {
-        if( empty() )
+    iterator find(const V& v) {
+        if (empty())
             return end();
 
         ASSERT(sorted());
-        iterator it = std::lower_bound( begin(), end(), v);
-        if( it != end() && *it == v )
+        iterator it = std::lower_bound(begin(), end(), v);
+        if (it != end() && *it == v)
             return it;
 
         return end();
     }
 
-    const_iterator find( const V& v ) const
-    {
-        if( empty() )
+    const_iterator find(const V& v) const {
+        if (empty())
             return cend();
 
         ASSERT(sorted());
-        const_iterator it = std::lower_bound( cbegin(), cend(), v);
-        if( it != cend() && *it == v )
+        const_iterator it = std::lower_bound(cbegin(), cend(), v);
+        if (it != cend() && *it == v)
             return it;
 
         return cend();
     }
 
-    void print(std::ostream& s) const
-    {
+    void print(std::ostream& s) const {
         const_iterator it = cbegin();
-        for( ; it != cend(); ++it )
+        for (; it != cend(); ++it)
             s << *it << std::endl;
     }
 
@@ -135,18 +125,19 @@ public: // methods
 
     bool operator!=(const DenseSet& rhs) const { return values_ != rhs.values_; }
 
-    friend std::ostream& operator<<(std::ostream& s, const DenseSet& m) { m.print(s);  return s; }
+    friend std::ostream& operator<<(std::ostream& s, const DenseSet& m) {
+        m.print(s);
+        return s;
+    }
 
-private: // members
-
-    store_t values_; ///< storage of the values
+private:              // members
+    store_t values_;  ///< storage of the values
 
     bool sorted_;
-
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

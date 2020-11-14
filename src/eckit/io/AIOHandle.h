@@ -24,22 +24,22 @@ class AIOHandle : public DataHandle {
 public:  // methods
     AIOHandle(const PathName& path, size_t count = 16, size_t buffsize = 1024 * 1024, bool fsync = false);
 
-    virtual ~AIOHandle();
+    virtual ~AIOHandle() override;
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual long read(void*, long);
-    virtual long write(const void*, long);
-    virtual void close();
-    virtual void flush();
-    virtual void rewind();
-    virtual void print(std::ostream&) const;
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
 
-    virtual Length size();
-    virtual Length estimate();
-    virtual Offset position();
+    virtual Length size() override;
+    virtual Length estimate() override;
+    virtual Offset position() override;
 
 private:  // methods
     size_t getFreeSlot();
@@ -58,7 +58,7 @@ private:  // members
     bool fsync_;
 
 
-    virtual std::string title() const;
+    virtual std::string title() const override;
 };
 
 }  // namespace eckit

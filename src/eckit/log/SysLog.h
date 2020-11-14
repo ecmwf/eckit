@@ -14,8 +14,8 @@
 #ifndef eckit_log_SysLog_h
 #define eckit_log_SysLog_h
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -51,10 +51,11 @@ public:
         Local4,
         Local5,
         Local6,
-        Local7, //< we use this for MARS
+        Local7,  //< we use this for MARS
     };
 
-    enum Severity {
+    enum Severity
+    {
         Emergency = 0,
         Alert,
         Critical,
@@ -66,13 +67,12 @@ public:
     };
 
 public:  // methods
-
     static char nilvalue() { return '-'; }
 
 
     SysLog(const std::string& msg, int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
 
-    unsigned priotity() const { return facility_*8 + severity_; }
+    unsigned priotity() const { return facility_ * 8 + severity_; }
 
     unsigned version() const { return 1; }
 
@@ -99,12 +99,10 @@ public:  // methods
         return s;
     }
 
-private: // methods
-
+private:  // methods
     void print(std::ostream& out) const;
 
-private: // members
-
+private:  // members
     Facility facility_;
     Severity severity_;
 
@@ -116,6 +114,6 @@ private: // members
     std::string msg_;
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

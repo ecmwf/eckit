@@ -25,33 +25,29 @@ namespace eckit {
 
 class Mutex : private NonCopyable {
 
-public: // methods
+public:  // methods
+         // -- Contructors
+    Mutex(char tag = ' ');
 
-// -- Contructors
+    // -- Destructor
 
-	Mutex(char tag = ' ');
+    ~Mutex();
 
-// -- Destructor
+    // -- Methods
 
-	~Mutex();
+    void lock();
+    void unlock();
+    bool tryLock();
+    char tag() const { return tag_; }
 
-// -- Methods
-
-	void lock();
-	void unlock();
-	bool tryLock();
-	char tag() const { return tag_; }
-
-protected: // members
-
-	pthread_mutex_t mutex_;
-	bool            exists_;
-	char            tag_;
-
+protected:  // members
+    pthread_mutex_t mutex_;
+    bool exists_;
+    char tag_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

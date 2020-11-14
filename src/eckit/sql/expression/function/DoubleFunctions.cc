@@ -281,7 +281,9 @@ inline double rad(double reflat, double reflon, double refdeg, double obslat, do
     //    int digs ( 3 + DBL_MANT_DIG - DBL_MIN_EXP );
 
     return (acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) +
-                 Func_sin(reflat) * Func_sin(obslat)) <= D2R * refdeg) ? 1.0 : 0.0;
+                 Func_sin(reflat) * Func_sin(obslat)) <= D2R * refdeg)
+               ? 1.0
+               : 0.0;
 }
 
 inline double between(double x, double a, double b) {

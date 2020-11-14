@@ -26,12 +26,10 @@ namespace function {
 static FunctionBuilder<FunctionTHIN> thinFunctionBuilder("thin");
 
 FunctionTHIN::FunctionTHIN(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    count_(0) {}
+    FunctionExpression(name, args), count_(0) {}
 
 FunctionTHIN::FunctionTHIN(const FunctionTHIN& other) :
-    FunctionExpression(other.name_, other.args_),
-    count_(other.count_) {}
+    FunctionExpression(other.name_, other.args_), count_(other.count_) {}
 
 FunctionTHIN::~FunctionTHIN() {}
 

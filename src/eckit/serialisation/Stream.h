@@ -34,7 +34,6 @@ class Buffer;
 
 class Stream : private NonCopyable {
 public:
-
     virtual ~Stream();
 
     // Output
@@ -208,7 +207,6 @@ private:
 
     friend std::ostream& operator<<(std::ostream& out, const Stream& s);
 };
-
 
 
 }  // namespace eckit

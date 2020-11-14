@@ -21,8 +21,7 @@ namespace geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-class Polygon
-{
+class Polygon {
 public:
     Polygon() {}
 
@@ -31,21 +30,11 @@ public:
             vertices.push_back(v);
     }
 
-    void push_back(const Point2& p) {
-        vertices.push_back(p);
-    }
-    void push_front(const Point2& p) {
-        vertices.push_front(p);
-    }
-    size_t num_vertices() const {
-        return vertices.size();
-    }
-    const Point2& vertex(size_t idx) const {
-        return vertices.at(idx);
-    }
-    bool sameAs(const Polygon& p) const {
-        return vertices == p.vertices;
-    }
+    void push_back(const Point2& p) { vertices.push_back(p); }
+    void push_front(const Point2& p) { vertices.push_front(p); }
+    size_t num_vertices() const { return vertices.size(); }
+    const Point2& vertex(size_t idx) const { return vertices.at(idx); }
+    bool sameAs(const Polygon& p) const { return vertices == p.vertices; }
     bool congruent(const Polygon& p) const;
 
 
@@ -56,13 +45,13 @@ public:
         return s;
     }
 
-private: //members
+private:  // members
     std::deque<Point2> vertices;
 };
 
 //------------------------------------------------------------------------------------------------------
 
-} // namespace geometry
-} // namespace eckit
+}  // namespace geometry
+}  // namespace eckit
 
-#endif // Polygon_H
+#endif  // Polygon_H

@@ -24,13 +24,11 @@ class TaskInfo;
 
 class PsCmd : public eckit::CmdResource {
 public:
-
     PsCmd();
 
-    virtual ~PsCmd();
+    virtual ~PsCmd() override;
 
-private: // methods
-
+private:  // methods
     void display(std::ostream&, eckit::TaskInfo&, long, const std::string&) const;
     void display(JSON&, eckit::TaskInfo&, long, const std::string&) const;
 
@@ -39,14 +37,14 @@ private: // methods
 
     // From CmdResource
 
-    virtual void execute(std::istream&, std::ostream& out, eckit::CmdArg&);
-    virtual void help(std::ostream&) const;
+    virtual void execute(std::istream&, std::ostream& out, eckit::CmdArg&) override;
+    virtual void help(std::ostream&) const override;
 
-    virtual eckit::Arg usage(const std::string& cmd) const;
+    virtual eckit::Arg usage(const std::string& cmd) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

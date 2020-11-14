@@ -22,12 +22,10 @@ namespace function {
 static FunctionBuilder<FunctionNOT_IN> not_inFunctionBuilder("not_in");
 
 FunctionNOT_IN::FunctionNOT_IN(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    size_(args.size() - 1) {}
+    FunctionExpression(name, args), size_(args.size() - 1) {}
 
 FunctionNOT_IN::FunctionNOT_IN(const FunctionNOT_IN& other) :
-    FunctionExpression(other.name_, other.args_),
-    size_(other.args_.size() - 1) {}
+    FunctionExpression(other.name_, other.args_), size_(other.args_.size() - 1) {}
 
 FunctionNOT_IN::~FunctionNOT_IN() {}
 

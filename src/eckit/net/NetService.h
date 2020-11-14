@@ -45,11 +45,10 @@ private:
 
 private:
     virtual NetUser* newUser(net::TCPSocket&) const = 0;
-    virtual std::string name() const          = 0;
+    virtual std::string name() const                = 0;
 
     virtual bool preferToRunAsProcess() const;
     virtual bool runAsProcess() const;
-
 };
 
 

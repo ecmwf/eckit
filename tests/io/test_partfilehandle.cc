@@ -176,13 +176,12 @@ CASE("PartFileHandle with multiple parts") {
             EXPECT_NO_THROW(ph.seek(5));
             EXPECT(ph.position() == Offset(5));
             Buffer buff = Tester::makeBuffer();
-            long r = ph.read(buff, 12);
+            long r      = ph.read(buff, 12);
             EXPECT(r == 12);
             std::string read(buff);
             std::cout << read << std::endl;
             EXPECT_EQUAL(read, "ijnopqrsxyz0");
         }
-
     }
 
     ph.close();

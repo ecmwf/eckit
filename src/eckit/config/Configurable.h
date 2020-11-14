@@ -29,56 +29,51 @@ class ResourceBase;
 
 class Configurable : public ClassExtent<Configurable> {
 public:
+    // -- Contructors
 
-// -- Contructors
+    Configurable();
 
-	Configurable();
+    // -- Destructor
 
-// -- Destructor
+    virtual ~Configurable();
+    // -- Class methods
 
-	virtual ~Configurable();
-// -- Class methods
-
-	static void reconfigureAll();  // Config file as changed, update
-	static void dumpAllResources(std::ostream&); // Dump the configuration to a file
-    static void htmlAllResources(std::ostream&,Url&);
+    static void reconfigureAll();                 // Config file as changed, update
+    static void dumpAllResources(std::ostream&);  // Dump the configuration to a file
+    static void htmlAllResources(std::ostream&, Url&);
 
     /// @returns the name of the class
-    virtual std::string kind() const  { return "Configurable"; }
+    virtual std::string kind() const { return "Configurable"; }
     /// @returns the name of the instance
-    virtual std::string name() const  { return "Unknown"; }
+    virtual std::string name() const { return "Unknown"; }
 
 protected:
-
-// -- Methods
+    // -- Methods
 
     virtual void reconfigure() = 0;
 
 
 private:
+    friend class ResourceBase;
 
-	friend class ResourceBase;
-
-// -- Members
+    // -- Members
 
     typedef std::set<ResourceBase*> Set;
     Mutex mutex_;
-	Set resources_;
+    Set resources_;
 
-// -- Methods
+    // -- Methods
 
-	void add(ResourceBase*);    // Add a resource
-	void remove(ResourceBase*); // Remove a resource
+    void add(ResourceBase*);     // Add a resource
+    void remove(ResourceBase*);  // Remove a resource
 
-	void resetResources();
-	void dumpResources(std::ostream&) const;       // Dump all resources to a stream
-    void htmlResources(std::ostream&,Url&);
-
+    void resetResources();
+    void dumpResources(std::ostream&) const;  // Dump all resources to a stream
+    void htmlResources(std::ostream&, Url&);
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif
-

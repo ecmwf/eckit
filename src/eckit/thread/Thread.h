@@ -35,21 +35,17 @@ public:
 
     void stop();
 
-protected: // members
-
+protected:  // members
     Mutex mutex_;
 
-protected: // methods
-
+protected:  // methods
     bool stopped();
 
-private: // members
-
+private:  // members
     bool stop_;
     bool autodel_;
 
-private: // methods
-
+private:  // methods
     virtual void run() = 0;
 };
 

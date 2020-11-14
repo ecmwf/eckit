@@ -24,19 +24,16 @@ namespace eckit {
 
 class MessageTarget : public LineBasedTarget {
 
-public: // methods
-
+public:  // methods
     MessageTarget();
 
 private:
-
-    virtual void line(const char* line);
-    virtual void print(std::ostream& s) const;
-
+    virtual void line(const char* line) override;
+    virtual void print(std::ostream& s) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

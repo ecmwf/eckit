@@ -53,11 +53,7 @@ BitColumnExpression::BitColumnExpression(const std::string& name, const std::str
 }
 
 BitColumnExpression::BitColumnExpression(const BitColumnExpression& o) :
-    ColumnExpression(o),
-    mask_(o.mask_),
-    bitShift_(o.bitShift_),
-    field_(o.field_),
-    name_(o.name_) {}
+    ColumnExpression(o), mask_(o.mask_), bitShift_(o.bitShift_), field_(o.field_), name_(o.name_) {}
 
 BitColumnExpression::~BitColumnExpression() {}
 
@@ -70,7 +66,7 @@ void BitColumnExpression::prepare(SQLSelect& sql) {
     updateType(sql);
 }
 
-void BitColumnExpression::updateType(SQLSelect &sql) {
+void BitColumnExpression::updateType(SQLSelect& sql) {
     std::string name = name_ + "." + field_ + tableReference_;
     if (!table_)
         table_ = &sql.findTable(name);

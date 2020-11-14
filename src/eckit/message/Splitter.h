@@ -28,8 +28,7 @@ class Message;
 
 
 class Splitter {
-public: // methods
-
+public:  // methods
     Splitter(eckit::PeekHandle&);
 
     virtual ~Splitter();
@@ -37,23 +36,19 @@ public: // methods
     virtual Message next() = 0;
 
 protected:
-
     eckit::PeekHandle& handle_;
 
-private: // methods
-
+private:  // methods
     virtual void print(std::ostream&) const = 0;
 
-    friend std::ostream& operator<<(std::ostream &s, const Splitter& p) {
+    friend std::ostream& operator<<(std::ostream& s, const Splitter& p) {
         p.print(s);
         return s;
     }
-
 };
 
 class SplitterFactory {
 public:
-
     SplitterFactory();
 
     virtual ~SplitterFactory();
@@ -64,16 +59,12 @@ public:
     static Splitter* lookup(eckit::PeekHandle&);
 
 protected:
-
     virtual bool match(eckit::PeekHandle&) const = 0;
-
 };
 
 template <class T>
 class SplitterBuilder : public SplitterFactory {
-    virtual Splitter* make(eckit::PeekHandle& handle) const {
-        return new T(handle);
-    }
+    virtual Splitter* make(eckit::PeekHandle& handle) const { return new T(handle); }
 
     virtual bool match(eckit::PeekHandle& handle) const;
     //     return M(handle);
@@ -83,7 +74,7 @@ class SplitterBuilder : public SplitterFactory {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace message
-} // namespace eckit
+}  // namespace message
+}  // namespace eckit
 
 #endif

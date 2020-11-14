@@ -78,12 +78,7 @@ void ThreadPoolThread::run() {
 }
 
 ThreadPool::ThreadPool(const std::string& name, size_t count, size_t stack) :
-    count_(0),
-    stack_(stack),
-    running_(0),
-    tasks_(0),
-    name_(name),
-    error_(false) {
+    count_(0), stack_(stack), running_(0), tasks_(0), name_(name), error_(false) {
     // Log::info() << "ThreadPool::ThreadPool " << nme_ << " " << count << std::endl;
     resize(count);
 }

@@ -24,6 +24,6 @@ public:
     BadTag(const std::string& what);
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

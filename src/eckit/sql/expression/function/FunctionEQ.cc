@@ -32,8 +32,7 @@ const type::SQLType* FunctionEQ::type() const {
 FunctionEQ::FunctionEQ(const FunctionEQ& other) : FunctionExpression(other.name_, other.args_), tmp_(other.tmp_) {}
 
 FunctionEQ::FunctionEQ(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    tmp_(0) {}
+    FunctionExpression(name, args), tmp_(0) {}
 
 std::shared_ptr<SQLExpression> FunctionEQ::clone() const {
     return std::make_shared<FunctionEQ>(*this);

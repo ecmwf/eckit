@@ -18,37 +18,33 @@
 #include "eckit/io/DataHandle.h"
 
 
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class StdFileHandle : public DataHandle {
 public:
+    StdFileHandle(FILE*);
 
-	StdFileHandle(FILE *);
+    ~StdFileHandle();
 
-	~StdFileHandle();
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void print(std::ostream&) const override;
 
-	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-	virtual void   close();
-	virtual void   print(std::ostream&) const;
+    virtual void encode(Stream&) const override;
 
-	virtual void encode(Stream&) const;
-
-private: // members
-
+private:  // members
     FILE* f_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

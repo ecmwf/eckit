@@ -17,11 +17,11 @@
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/runtime/Main.h"
 
 
 namespace eckit {
@@ -29,10 +29,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 PipeApplication::PipeApplication(int argc, char** argv, const char* homeenv) :
-    Application(argc, argv, homeenv),
-    in_("-in", -1),
-    out_("-out", -1),
-    terminate_(false) {
+    Application(argc, argv, homeenv), in_("-in", -1), out_("-out", -1), terminate_(false) {
     // Establish relationship with 'parent' thread for the monitoring
 
     long parent = Resource<long>("-parent", 0);
@@ -89,9 +86,9 @@ void PipeApplication::run() {
         }
 
         try {
-            bool end_; // End of batch marker
+            bool end_;  // End of batch marker
 
-            if(!pipe.next(end_)) {
+            if (!pipe.next(end_)) {
                 Log::info() << "End of input, exiting" << std::endl;
                 return;
             }

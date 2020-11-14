@@ -16,7 +16,7 @@
 namespace eckit {
 namespace mpi {
 
-static size_t dataSize [Data::MAX_DATA_CODE] = {
+static size_t dataSize[Data::MAX_DATA_CODE] = {
     /*[Data::CHAR]                 = */ sizeof(char),
     /*[Data::WCHAR]                = */ sizeof(wchar_t),
     /*[Data::SHORT]                = */ sizeof(short),
@@ -30,21 +30,21 @@ static size_t dataSize [Data::MAX_DATA_CODE] = {
     /*[Data::FLOAT]                = */ sizeof(float),
     /*[Data::DOUBLE]               = */ sizeof(double),
     /*[Data::LONG_DOUBLE]          = */ sizeof(long double),
-//    /*[Data::BOOL]                 = */ sizeof(bool),
+    //    /*[Data::BOOL]                 = */ sizeof(bool),
     /*[Data::COMPLEX]              = */ sizeof(std::complex<float>),
     /*[Data::DOUBLE_COMPLEX]       = */ sizeof(std::complex<double>),
-//    /*[Data::LONG_DOUBLE_COMPLEX]  = */ sizeof(std::complex<long double>),
+    //    /*[Data::LONG_DOUBLE_COMPLEX]  = */ sizeof(std::complex<long double>),
     /*[Data::BYTE]                 = */ sizeof(char),
     /*[Data::PACKED]               = */ sizeof(char),
-    /*[Data::SHORT_INT]            = */ sizeof(std::pair<short,int>),
-    /*[Data::INT_INT]              = */ sizeof(std::pair<int,int>),
-    /*[Data::LONG_INT]             = */ sizeof(std::pair<long,int>),
-    /*[Data::FLOAT_INT]            = */ sizeof(std::pair<float,int>),
-    /*[Data::DOUBLE_INT]           = */ sizeof(std::pair<double,int>),
-    /*[Data::LONG_DOUBLE_INT]      = */ sizeof(std::pair<long double,int>),
+    /*[Data::SHORT_INT]            = */ sizeof(std::pair<short, int>),
+    /*[Data::INT_INT]              = */ sizeof(std::pair<int, int>),
+    /*[Data::LONG_INT]             = */ sizeof(std::pair<long, int>),
+    /*[Data::FLOAT_INT]            = */ sizeof(std::pair<float, int>),
+    /*[Data::DOUBLE_INT]           = */ sizeof(std::pair<double, int>),
+    /*[Data::LONG_DOUBLE_INT]      = */ sizeof(std::pair<long double, int>),
 };
 
-} // namespace mpi
-} // namepsace eckit
+}  // namespace mpi
+}  // namespace eckit
 
 #endif

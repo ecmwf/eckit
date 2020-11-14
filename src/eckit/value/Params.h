@@ -17,9 +17,9 @@
 
 #include <list>
 
+#include "eckit/config/Parametrisation.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/value/Value.h"
-#include "eckit/config/Parametrisation.h"
 
 //----------------------------------------------------------------------------
 
@@ -62,78 +62,63 @@ class Params {
 
     struct Concept;
 
-public: // types
-
+public:  // types
     typedef std::list<Params> List;
-    typedef std::string  key_t;
+    typedef std::string key_t;
     typedef Value value_t;
 
     struct BaseFactory {
         virtual ~BaseFactory() {}
-        virtual Concept* build( Stream& s ) = 0;
+        virtual Concept* build(Stream& s) = 0;
     };
 
     typedef BaseFactory* factory_t;
 
     template <typename T>
     struct Factory : BaseFactory {
-        Factory()
-        {
-            Params::registerFactory(T::className(), this);
-        }
+        Factory() { Params::registerFactory(T::className(), this); }
 
-        Concept* build( Stream& s );
+        Concept* build(Stream& s);
     };
 
-public: // methods
-
+public:  // methods
     template <typename T>
-    explicit Params( const T& x ) : self_(new Model<T>(x)) {}
+    explicit Params(const T& x) : self_(new Model<T>(x)) {}
 
-    Params( const Params& x ) : self_(x.self_->copy_()) {}
+    Params(const Params& x) : self_(x.self_->copy_()) {}
 
-    static void registerFactory( const std::string& name, factory_t f )
-    {
-        factories()[name] = f;
+    static void registerFactory(const std::string& name, factory_t f) { factories()[name] = f; }
+
+    static factory_t& getFactory(const std::string& name) { return factories()[name]; }
+
+    static Params build(const std::string& name, Stream& s) {
+        return Params(getFactory(name)->build(s));  // returns Concept*
     }
 
-    static factory_t& getFactory(const std::string& name )
-    {
-        return factories()[name];
-    }
-
-    static Params build(const std::string& name, Stream& s)
-    {
-         return Params( getFactory(name)->build(s) ); // returns Concept*
-    }
-
-    static Params decode( Stream& s )
-    {
+    static Params decode(Stream& s) {
         std::string name;
         s >> name;
-        return build(name,s);
+        return build(name, s);
     }
 
     ~Params() { delete self_; }
 
-    Params& operator=( Params x )
-    {
+    Params& operator=(Params x) {
         std::swap(x.self_, this->self_);
         return *this;
     }
 
-    bool has(const std::string& name ) const;
+    bool has(const std::string& name) const;
 
-    value_t operator[] ( const key_t& key ) const;
+    value_t operator[](const key_t& key) const;
 
-    friend void print( const Params& p, std::ostream& s );
+    friend void print(const Params& p, std::ostream& s);
 
-    friend void encode( const Params& p, Stream& s );
+    friend void encode(const Params& p, Stream& s);
 
-    friend value_t getValue( const Params& p, const key_t& key );
+    friend value_t getValue(const Params& p, const key_t& key);
 
-private: // internal classes
-
+private:  // internal classes
     typedef std::map<std::string, factory_t> factory_map;
     static factory_map& factories();
 
@@ -141,59 +126,49 @@ private: // internal classes
 
     struct Concept {
         virtual ~Concept() {}
-        virtual Concept* copy_() const = 0;
-        virtual value_t get_( const key_t& key ) const = 0;
-        virtual void print_( std::ostream& s ) const = 0;
-        virtual void encode_( Stream& s ) const = 0;
+        virtual Concept* copy_() const               = 0;
+        virtual value_t get_(const key_t& key) const = 0;
+        virtual void print_(std::ostream& s) const   = 0;
+        virtual void encode_(Stream& s) const        = 0;
     };
 
     template <typename T>
-    struct Model : Concept
-    {
-        Model( T x ) : data_(x) {}
-        Model( Stream& s ) : data_(s) {}
+    struct Model : Concept {
+        Model(T x) : data_(x) {}
+        Model(Stream& s) : data_(s) {}
 
-        virtual Concept* copy_() const {
-            return new Model(data_);
-        }
+        virtual Concept* copy_() const { return new Model(data_); }
 
-        virtual value_t get_( const key_t& key ) const {
-            return getValue( data_, key );
-        }
+        virtual value_t get_(const key_t& key) const { return getValue(data_, key); }
 
-        virtual void print_( std::ostream& s ) const {
-            print( data_, s );
-        }
+        virtual void print_(std::ostream& s) const { print(data_, s); }
 
-        virtual void encode_( Stream& s ) const {
+        virtual void encode_(Stream& s) const {
             s << T::className();
-            encode( data_, s );
+            encode(data_, s);
         }
 
         T data_;
     };
 
-private: // methods
-
+private:  // methods
     friend std::ostream& operator<<(std::ostream& s, const Params& p);
 
     friend Stream& operator<<(Stream& s, const Params& p);
 
-private: // members
-
+private:  // members
     const Concept* self_;
 };
 
 //----------------------------------------------------------------------------
 
 template <typename T>
-Params::Concept* Params::Factory<T>::build(Stream & s)
-{
+Params::Concept* Params::Factory<T>::build(Stream& s) {
     return new Model<T>(s);
 }
 
 //----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

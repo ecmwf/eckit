@@ -30,7 +30,6 @@ class PathName;
 
 class StdFile : private NonCopyable {
 public:
-
     StdFile(const PathName& name, const std::string& mode = "r");
 
     /// @pre must have been closed
@@ -44,10 +43,8 @@ public:
     /// @throws on fclose failure
     void close() noexcept(false);
 
-private: // members
-
-	FILE *file_;
-
+private:  // members
+    FILE* file_;
 };
 
 
@@ -56,14 +53,13 @@ private: // members
 
 class AutoStdFile : public StdFile {
     void close() { StdFile::close(); }
+
 public:
-    AutoStdFile(const PathName& name, const std::string& mode = "r") : StdFile(name, mode)
-    {}
-    ~AutoStdFile() noexcept(false)
-    { close(); }
+    AutoStdFile(const PathName& name, const std::string& mode = "r") : StdFile(name, mode) {}
+    ~AutoStdFile() noexcept(false) { close(); }
 };
 
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

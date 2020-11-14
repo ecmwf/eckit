@@ -14,7 +14,9 @@
 #ifndef SQLColumn_H
 #define SQLColumn_H
 
-namespace eckit { class PathName; }
+namespace eckit {
+class PathName;
+}
 
 #include "eckit/sql/SQLIterator.h"
 #include "eckit/sql/SQLTypedefs.h"
@@ -27,69 +29,70 @@ class SQLTable;
 
 class SQLColumn : public SQLIterator {
 public:
-    SQLColumn(const type::SQLType&, SQLTable&, const std::string&, size_t index, bool hasMissingValue, double missingValue, const BitfieldDef& d=BitfieldDef());
-	virtual ~SQLColumn();
+    SQLColumn(const type::SQLType&, SQLTable&, const std::string&, size_t index, bool hasMissingValue,
+              double missingValue, const BitfieldDef& d = BitfieldDef());
+    virtual ~SQLColumn() override;
 
-	void scan();
+    void scan();
 
-	unsigned long long noRows() const;
+    unsigned long long noRows() const;
 
-	const std::string& name() const { return name_; }
+    const std::string& name() const { return name_; }
     int index() const { return index_; }
-	void index(int i) { index_ = i; }
-	std::string fullName()    const;
-	SQLTable* table()    const;
+    void index(int i) { index_ = i; }
+    std::string fullName() const;
+    SQLTable* table() const;
 
 
-	bool hasMissingValue() const { return hasMissingValue_; }
-	double missingValue() const { return missingValue_; }
-	bool isBitfield() const { return isBitfield_; }
+    bool hasMissingValue() const { return hasMissingValue_; }
+    double missingValue() const { return missingValue_; }
+    bool isBitfield() const { return isBitfield_; }
     bool isMissingValue(const double* val) const {
-        //return hasMissingValue_ && (*val == missingValue_);
+        // return hasMissingValue_ && (*val == missingValue_);
         return (*reinterpret_cast<const uint64_t*>(val) == *(reinterpret_cast<const uint64_t*>(&missingValue_)));
     }
-	const BitfieldDef& bitfieldDef() const { return bitfieldDef_; }
-    size_t dataSizeDoubles() const { return sizeDoubles_; }
+    const BitfieldDef& bitfieldDef() const { return bitfieldDef_; }
+    size_t dataSizeDoubles() const override { return sizeDoubles_; }
 
-// -- Overridden methods
-	// From SQLIterator
+    // -- Overridden methods
+    // From SQLIterator
 
-	virtual void rewind();
-	virtual double next(bool& missing);
-	virtual void advance(unsigned long);
+    virtual void rewind() override;
+    virtual double next(bool& missing) override;
+    virtual void advance(unsigned long) override;
 
 protected:
-	unsigned long long noRows_;
+    unsigned long long noRows_;
 
-	virtual void print(std::ostream&) const;
-//private:
+    virtual void print(std::ostream&) const override;
+    // private:
 protected:
-	SQLColumn(const SQLColumn&);
-	SQLColumn& operator=(const SQLColumn&);
+    SQLColumn(const SQLColumn&);
+    SQLColumn& operator=(const SQLColumn&);
 
-	void setPool(int);
+    void setPool(int);
 
 
-	SQLTable& owner_;
-	std::string    name_;
-	int       index_;
+    SQLTable& owner_;
+    std::string name_;
+    int index_;
 
-	std::vector<int>          rows_;
-	std::vector<SQLIterator*> iterators_;
+    std::vector<int> rows_;
+    std::vector<SQLIterator*> iterators_;
 
-	long long current_;
-	long long last_;
-	long long position_;
-	SQLIterator* iterator_;
+    long long current_;
+    long long last_;
+    long long position_;
+    SQLIterator* iterator_;
 
     bool hasMissingValue_;
-	double missingValue_;
-	bool isBitfield_;
-	const BitfieldDef bitfieldDef_;
+    double missingValue_;
+    bool isBitfield_;
+    const BitfieldDef bitfieldDef_;
     size_t sizeDoubles_;
 };
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

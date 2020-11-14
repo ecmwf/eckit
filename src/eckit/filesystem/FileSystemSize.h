@@ -19,14 +19,14 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 struct FileSystemSize {
-	unsigned long long available;
-	unsigned long long total;
-	FileSystemSize() : available(0), total(0) {}
+    unsigned long long available;
+    unsigned long long total;
+    FileSystemSize() : available(0), total(0) {}
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
-#endif // eckit_FileSystemSize_H
+#endif  // eckit_FileSystemSize_H

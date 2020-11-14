@@ -53,12 +53,7 @@ public:
 };
 
 DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher) :
-    count_(count),
-    bufSize_(size),
-    error_(false),
-    restart_(false),
-    restartFrom_(0),
-    watcher_(watcher) {
+    count_(count), bufSize_(size), error_(false), restart_(false), restartFrom_(0), watcher_(watcher) {
     Log::info() << "Double buffering: " << count_ << " buffers of " << Bytes(size) << " is " << Bytes(count * size)
                 << std::endl;
 }
@@ -95,7 +90,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
     out.openForWrite(estimate);
     AutoClose c2(out);
 
-    Length total = estimate;
+    Length total  = estimate;
     Length copied = 0;
 
     bool more = true;
@@ -104,7 +99,8 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
         try {
             copied = copy(in, out, estimate);
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
-            if(estimate) ASSERT(copied == estimate);
+            if (estimate)
+                ASSERT(copied == estimate);
         }
         catch (RestartTransfer& retry) {
             Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
@@ -227,12 +223,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
 
 DblBufferTask::DblBufferTask(DataHandle& out, DblBuffer& owner, OneBuffer* buffers, const Length& estimate,
                              long parent) :
-    Thread(false),
-    owner_(owner),
-    out_(out),
-    estimate_(estimate),
-    buffers_(buffers),
-    parent_(parent) {}
+    Thread(false), owner_(owner), out_(out), estimate_(estimate), buffers_(buffers), parent_(parent) {}
 
 void DblBufferTask::run() {
     Monitor::instance().parent(parent_);

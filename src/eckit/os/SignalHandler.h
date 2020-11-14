@@ -11,8 +11,8 @@
 #ifndef eckit_SignalHandler_h
 #define eckit_SignalHandler_h
 
-#include <signal.h>
 #include <setjmp.h>
+#include <signal.h>
 
 #include "eckit/eckit.h"
 
@@ -28,41 +28,38 @@ namespace eckit {
 
 class SignalHandler : private NonCopyable {
 
-public: // methods
+public:  // methods
+    enum Signal
+    {
+        SigInt  = 2,
+        SigQuit = 3
+    };
 
-	enum Signal {
-			SigInt  = 2,
-			SigQuit = 3
-	};
+    // -- Contructors
 
-// -- Contructors
+    SignalHandler(void (*)(int) = interrupt, Signal = SigInt);
 
-	SignalHandler(void (*)(int) = interrupt, Signal = SigInt);
+    // -- Destructor
 
-// -- Destructor
+    ~SignalHandler();
 
-	~SignalHandler();
+    static void checkInterrupt();
 
-	static void checkInterrupt();
+private:  // methods
+    static void interrupt(int);
 
-private: // methods
+private:  // members
+    int signal_;
 
-	static void interrupt(int);
+    // unused // sigjmp_buf       buf_;
+    struct sigaction save_;
 
-private: // members
-
-	int         signal_;
-
-// unused // sigjmp_buf       buf_;
-	struct sigaction save_;
-
-	SignalHandler*        next_;
-	static SignalHandler* current_;
-
+    SignalHandler* next_;
+    static SignalHandler* current_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

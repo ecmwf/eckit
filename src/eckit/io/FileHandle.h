@@ -25,70 +25,70 @@ namespace eckit {
 class FileHandle : public DataHandle {
 
 public:
-  FileHandle(const std::string&, bool = false);
-  FileHandle(Stream&);
+    FileHandle(const std::string&, bool = false);
+    FileHandle(Stream&);
 
-  virtual ~FileHandle();
+    virtual ~FileHandle() override;
 
-  void advance(const Length&);
+    void advance(const Length&);
 
-  const std::string& path() const { return name_; }
+    const std::string& path() const { return name_; }
 
-  // -- Overridden methods
+    // -- Overridden methods
 
-  // From DataHandle
+    // From DataHandle
 
-  virtual Length openForRead();
-  virtual void openForWrite(const Length&);
-  virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-  virtual long read(void*, long);
-  virtual long write(const void*, long);
-  virtual void close();
-  virtual void flush();
-  virtual void rewind();
-  virtual void print(std::ostream&) const;
-  virtual Length size();
-  virtual Length estimate();
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
+    virtual Length size() override;
+    virtual Length estimate() override;
 
-  virtual Offset position();
-  virtual bool isEmpty() const;
-  virtual void restartReadFrom(const Offset& from);
-  virtual void restartWriteFrom(const Offset& from);
-  virtual void toRemote(Stream&) const;
-  virtual void cost(std::map<std::string, Length>&, bool) const;
-  virtual std::string title() const;
-  virtual bool moveable() const { return true; }
+    virtual Offset position() override;
+    virtual bool isEmpty() const override;
+    virtual void restartReadFrom(const Offset& from) override;
+    virtual void restartWriteFrom(const Offset& from) override;
+    virtual void toRemote(Stream&) const override;
+    virtual void cost(std::map<std::string, Length>&, bool) const override;
+    virtual std::string title() const override;
+    virtual bool moveable() const override { return true; }
 
-  virtual Offset seek(const Offset&);
-  virtual bool canSeek() const;
-  virtual void skip(const Length&);
+    virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override;
+    virtual void skip(const Length&) override;
 
-  virtual DataHandle* clone() const;
-  virtual void hash(MD5& md5) const;
+    virtual DataHandle* clone() const override;
+    virtual void hash(MD5& md5) const override;
 
-  // From Streamable
+    // From Streamable
 
-  virtual void encode(Stream&) const;
-  virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
-  // -- Class methods
+    // -- Class methods
 
-  static const ClassSpec& classSpec() { return classSpec_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:  // members
-  std::string name_;
-  bool overwrite_;
-  FILE* file_;
-  bool read_;
+    std::string name_;
+    bool overwrite_;
+    FILE* file_;
+    bool read_;
 
-  std::unique_ptr<Buffer> buffer_;
+    std::unique_ptr<Buffer> buffer_;
 
 private:  // methods
-  void open(const char*);
+    void open(const char*);
 
-  static ClassSpec classSpec_;
-  static Reanimator<FileHandle> reanimator_;
+    static ClassSpec classSpec_;
+    static Reanimator<FileHandle> reanimator_;
 };
 
 }  // namespace eckit

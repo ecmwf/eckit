@@ -18,32 +18,17 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 Timer::Timer() :
-    name_("unnamed timer"),
-    stopped_(true),
-    outputAtExit_(false),
-    cpuStart_(0),
-    cpuStop_(0),
-    out_(std::cout) {
+    name_("unnamed timer"), stopped_(true), outputAtExit_(false), cpuStart_(0), cpuStop_(0), out_(std::cout) {
     this->start();
 }
 
 Timer::Timer(const std::string& name, std::ostream& o) :
-    name_(name),
-    stopped_(true),
-    outputAtExit_(true),
-    cpuStart_(0),
-    cpuStop_(0),
-    out_(o) {
+    name_(name), stopped_(true), outputAtExit_(true), cpuStart_(0), cpuStop_(0), out_(o) {
     this->start();
 }
 
 Timer::Timer(const char* name, std::ostream& o) :
-    name_(name),
-    stopped_(true),
-    outputAtExit_(true),
-    cpuStart_(0),
-    cpuStop_(0),
-    out_(o) {
+    name_(name), stopped_(true), outputAtExit_(true), cpuStart_(0), cpuStop_(0), out_(o) {
     this->start();
 }
 

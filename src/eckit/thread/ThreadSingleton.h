@@ -20,110 +20,96 @@
 #include "eckit/memory/NonCopyable.h"
 
 
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template< typename TYPE >
+template <typename TYPE>
 struct NewAlloc0 {
-    TYPE* operator() () { return new TYPE(); }
+    TYPE* operator()() { return new TYPE(); }
 };
 
-template< typename TYPE, typename P1 >
+template <typename TYPE, typename P1>
 struct NewAlloc1 {
-    NewAlloc1( const P1& p1 ) : p1_(p1) {}
-    TYPE* operator() () { return new TYPE( p1_ ); }
+    NewAlloc1(const P1& p1) : p1_(p1) {}
+    TYPE* operator()() { return new TYPE(p1_); }
     P1 p1_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template< typename T, typename A = NewAlloc0<T> >
+template <typename T, typename A = NewAlloc0<T> >
 class ThreadSingleton : private NonCopyable {
 public:
-
     ThreadSingleton();
-    ThreadSingleton( const A& alloc );
+    ThreadSingleton(const A& alloc);
 
-	~ThreadSingleton();
+    ~ThreadSingleton();
 
     T& instance();
 
-private: // members
-
+private:  // members
     A alloc_;
 
-private: // class members
+private:  // class members
+    static pthread_once_t once_;
+    static pthread_key_t key_;
 
-	static pthread_once_t once_;
-	static pthread_key_t  key_;
-
-private: // class methods
-
-	static void init(void);
-	static void cleanUp(void*);
-
+private:  // class methods
+    static void init(void);
+    static void cleanUp(void*);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template< typename T, typename A> pthread_once_t ThreadSingleton<T,A>::once_ = PTHREAD_ONCE_INIT;
-template< typename T, typename A> pthread_key_t ThreadSingleton<T,A>::key_;
+template <typename T, typename A>
+pthread_once_t ThreadSingleton<T, A>::once_ = PTHREAD_ONCE_INIT;
+template <typename T, typename A>
+pthread_key_t ThreadSingleton<T, A>::key_;
 
-template< typename T, typename A>
-ThreadSingleton<T,A>::ThreadSingleton() : alloc_( A() )
-{
-}
+template <typename T, typename A>
+ThreadSingleton<T, A>::ThreadSingleton() : alloc_(A()) {}
 
-template< typename T, typename A>
-ThreadSingleton<T,A>::ThreadSingleton( const A& alloc ) : alloc_( alloc )
-{
+template <typename T, typename A>
+ThreadSingleton<T, A>::ThreadSingleton(const A& alloc) : alloc_(alloc) {}
 
-}
+template <typename T, typename A>
+ThreadSingleton<T, A>::~ThreadSingleton() {
+    ::pthread_once(&once_, init);
 
-template< typename T, typename A>
-ThreadSingleton<T,A>::~ThreadSingleton()
-{
-    ::pthread_once(&once_,init);
-
-    T* value = (T*) ::pthread_getspecific(key_);
-    if(value) {
+    T* value = (T*)::pthread_getspecific(key_);
+    if (value) {
         ::pthread_key_delete(key_);
         delete value;
     }
 }
 
-template< typename T, typename A>
-T& ThreadSingleton<T,A>::instance()
-{
-    ::pthread_once(&once_,init);
+template <typename T, typename A>
+T& ThreadSingleton<T, A>::instance() {
+    ::pthread_once(&once_, init);
 
-    T* value = (T*) ::pthread_getspecific(key_);
-	if(!value)
-	{
+    T* value = (T*)::pthread_getspecific(key_);
+    if (!value) {
         value = alloc_();
-        THRCALL(::pthread_setspecific(key_,value));
-	}
+        THRCALL(::pthread_setspecific(key_, value));
+    }
 
     return *value;
 }
 
-template< typename T, typename A>
-void ThreadSingleton<T,A>::cleanUp(void* data)
-{
-    delete (T*) data;
-    ::pthread_setspecific(key_,0);
+template <typename T, typename A>
+void ThreadSingleton<T, A>::cleanUp(void* data) {
+    delete (T*)data;
+    ::pthread_setspecific(key_, 0);
 }
 
-template< typename T, typename A>
-void ThreadSingleton<T,A>::init()
-{
-    ::pthread_key_create(&key_,cleanUp);
+template <typename T, typename A>
+void ThreadSingleton<T, A>::init() {
+    ::pthread_key_create(&key_, cleanUp);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

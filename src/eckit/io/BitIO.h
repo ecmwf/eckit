@@ -24,10 +24,9 @@ class DataHandle;
 
 //-----------------------------------------------------------------------------
 
-class BitIO  {
+class BitIO {
 
-public: // methods
-
+public:  // methods
     /// Contructor
 
     // padded: pad the last bits with zero at end-of-file
@@ -39,12 +38,12 @@ public: // methods
 
     //
 
-    size_t bitCount() const; // Bits written, read
-    size_t byteCount() const; // Bits written, read
+    size_t bitCount() const;   // Bits written, read
+    size_t byteCount() const;  // Bits written, read
 
     void write(size_t code, size_t nbits);
 
-//=============================
+    //=============================
 
     // EOF_MARKER = 0: Throw an exception on end of file
     // EOF_MARKER = N: return N on end of file
@@ -53,8 +52,7 @@ public: // methods
     size_t readAny(size_t& nbits);
 
 
-private: // members
-
+private:  // members
     DataHandle& handle_;
 
     unsigned long long buffer_;
@@ -67,18 +65,16 @@ private: // members
     bool padded_;
     bool opened_;
 
-//   ---
+    //   ---
 
     void flush();
 
-// -- Class members
-
-
+    // -- Class members
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

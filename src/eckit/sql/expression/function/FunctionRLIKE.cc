@@ -32,12 +32,10 @@ const type::SQLType* FunctionRLIKE::type() const {
 }
 
 FunctionRLIKE::FunctionRLIKE(const FunctionRLIKE& other) :
-    FunctionExpression(other.name_, other.args_),
-    re_(new eckit::Regex(*other.re_)) {}
+    FunctionExpression(other.name_, other.args_), re_(new eckit::Regex(*other.re_)) {}
 
 FunctionRLIKE::FunctionRLIKE(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    re_() {}
+    FunctionExpression(name, args), re_() {}
 
 std::shared_ptr<SQLExpression> FunctionRLIKE::clone() const {
     return std::make_shared<FunctionRLIKE>(*this);

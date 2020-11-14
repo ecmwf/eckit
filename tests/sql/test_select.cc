@@ -27,9 +27,9 @@ namespace {
 
 static const std::vector<long> INTEGER_DATA{9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111};
 static const std::vector<double> REAL_DATA{99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1};
-static const std::vector<std::string> STRING_DATA{
-    "cccc", "a-longer-string", "cccc", "cccc", "cccc", "hijklmno", "aaaabbbb",
-    "a-longer-string", "another-string", "another-string2"};
+static const std::vector<std::string> STRING_DATA{"cccc",           "a-longer-string", "cccc",     "cccc",
+                                                  "cccc",           "hijklmno",        "aaaabbbb", "a-longer-string",
+                                                  "another-string", "another-string2"};
 
 
 class TestTable : public eckit::sql::SQLTable {
@@ -48,10 +48,7 @@ private:
         TestTableIterator(const TestTable& owner,
                           const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
                           std::function<void(eckit::sql::SQLTableIterator&)> updateCallback) :
-            owner_(owner),
-            idx_(0),
-            data_(4),
-            updateCallback_(updateCallback) {
+            owner_(owner), idx_(0), data_(4), updateCallback_(updateCallback) {
             std::vector<size_t> offsets{0, 1, 2};
             std::vector<size_t> doublesSizes{1, 1, 1};
             for (const auto& col : columns) {

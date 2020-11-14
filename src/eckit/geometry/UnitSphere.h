@@ -29,21 +29,17 @@ struct DatumUnit {
     }
     */
 
-    static double radius() {
-        return 1.;
-    }
-
+    static double radius() { return 1.; }
 };
 
 //------------------------------------------------------------------------------------------------------
 
 /// Definition of a unit sphere
-typedef SphereT< DatumUnit > UnitSphere;
+typedef SphereT<DatumUnit> UnitSphere;
 
 //------------------------------------------------------------------------------------------------------
 
-} // namespace geometry
-} // namespace eckit
+}  // namespace geometry
+}  // namespace eckit
 
 #endif
-

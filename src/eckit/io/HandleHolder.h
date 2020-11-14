@@ -13,12 +13,11 @@
 #ifndef eckit_filesystem_HandleHolder_h
 #define eckit_filesystem_HandleHolder_h
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/types/Types.h"
 #include "eckit/log/Timer.h"
-
+#include "eckit/types/Types.h"
 
 
 namespace eckit {
@@ -27,7 +26,6 @@ namespace eckit {
 
 class HandleHolder {
 public:
-
     // -- Contructors
 
     HandleHolder(DataHandle& handle);
@@ -43,23 +41,19 @@ public:
 
 
 protected:
-
     DataHandle& handle() { return *handle_; }
     const DataHandle& handle() const { return *handle_; }
 
 private:
-
     // -- Members
 
     DataHandle* handle_;
     bool owned_;
-
-
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

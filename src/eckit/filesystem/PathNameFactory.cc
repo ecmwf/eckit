@@ -76,7 +76,7 @@ BasePathName* PathNameFactory::build(const std::string& type, const std::string&
         std::ostringstream ss;
         ss << "PathNameBuilder '" << type << "' not found";
         throw SeriousBug(ss.str(), Here());
-    } 
+    }
 
     return it->second->make(path, tildeIsUserHome);
 }

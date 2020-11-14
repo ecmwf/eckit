@@ -25,8 +25,7 @@ ParameterExpression::ParameterExpression(int which) : value_(0), which_(which) {
 }
 
 ParameterExpression::ParameterExpression(const ParameterExpression& other) :
-    value_(other.value_),
-    which_(other.which_) {}
+    value_(other.value_), which_(other.which_) {}
 
 
 std::shared_ptr<SQLExpression> ParameterExpression::ParameterExpression::clone() const {

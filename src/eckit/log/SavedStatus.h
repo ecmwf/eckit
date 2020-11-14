@@ -17,7 +17,6 @@
 #include <string>
 
 
-
 namespace eckit {
 
 //-----------------------------------------------------------------------------
@@ -25,6 +24,7 @@ namespace eckit {
 /// Saves and Restores Monitor status line
 class SavedStatus {
     std::string status_;
+
 public:
     SavedStatus();
     ~SavedStatus();
@@ -32,6 +32,6 @@ public:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

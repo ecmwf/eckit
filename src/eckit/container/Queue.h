@@ -15,11 +15,11 @@
 #ifndef eckit_container_Queue_h
 #define eckit_container_Queue_h
 
+#include <condition_variable>
+#include <exception>
+#include <mutex>
 #include <queue>
 #include <thread>
-#include <mutex>
-#include <exception>
-#include <condition_variable>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -30,7 +30,8 @@ namespace eckit {
 class QueueInterruptedError : public Exception {
 public:
     QueueInterruptedError(const std::string& msg, const CodeLocation& here) :
-        Exception(std::string("Threaded queue interrupted") + (msg.size() ? (std::string(": ") + msg): std::string()), here) {}
+        Exception(std::string("Threaded queue interrupted") + (msg.size() ? (std::string(": ") + msg) : std::string()),
+                  here) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -38,11 +39,8 @@ public:
 template <typename ELEM>
 class Queue {
 
-public: // public
-
-    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) {
-        ASSERT(max > 0);
-    }
+public:  // public
+    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
 
     Queue(const Queue&) = delete;
     Queue& operator=(const Queue&) = delete;
@@ -51,9 +49,7 @@ public: // public
     Queue(Queue&& rhs) = delete;
     Queue& operator=(Queue&& rhs) = delete;
 
-    size_t maxSize() const {
-        return max_;
-    }
+    size_t maxSize() const { return max_; }
 
     void resize(size_t size) {
         ASSERT(size > 0);
@@ -85,7 +81,8 @@ public: // public
     }
 
     bool checkInterrupt() {
-        if (interrupt_) std::rethrow_exception(interrupt_);
+        if (interrupt_)
+            std::rethrow_exception(interrupt_);
         return true;
     }
 
@@ -99,7 +96,8 @@ public: // public
     long pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.empty()) {
-            if (closed_) return -1;
+            if (closed_)
+                return -1;
             cv_.wait(locker);
         }
         std::swap(e, queue_.front());
@@ -113,7 +111,8 @@ public: // public
     long pop(std::vector<ELEM>& elems) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.empty()) {
-            if (closed_) return -1;
+            if (closed_)
+                return -1;
             cv_.wait(locker);
         }
 
@@ -140,7 +139,7 @@ public: // public
         return size;
     }
 
-    template<typename... Args>
+    template <typename... Args>
     size_t emplace(Args&&... args) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.size() >= max_) {
@@ -154,8 +153,7 @@ public: // public
         return size;
     }
 
-private: // members
-
+private:  // members
     std::queue<ELEM> queue_;
     std::mutex mutex_;
     std::condition_variable cv_;
@@ -167,6 +165,6 @@ private: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
-#endif // eckit_container_Queue_h
+#endif  // eckit_container_Queue_h

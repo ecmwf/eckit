@@ -25,37 +25,34 @@ namespace eckit {
 
 class MapAllocatorTooSmall : public Exception {
 public:
-	MapAllocatorTooSmall(size_t,size_t);
+    MapAllocatorTooSmall(size_t, size_t);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class MapAllocator : private eckit::NonCopyable {
 public:
+    MapAllocator(size_t);
 
-	MapAllocator(size_t);
+    ~MapAllocator();
 
-	~MapAllocator();
+    void* allocate(size_t);
+    void deallocate(void*);
 
-	void *allocate(size_t);
-	void deallocate(void*);
+private:  // members
+    int fd_;
+    void* addr_;
+    char* next_;
+    size_t length_;
+    size_t left_;
+    Ordinal count_;
 
-private: // members
-
-	int      fd_;
-    void*    addr_;
-    char*    next_;
-	size_t   length_;
-	size_t   left_;
-	Ordinal  count_;
-
-	MapAllocator* more_;
-
+    MapAllocator* more_;
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

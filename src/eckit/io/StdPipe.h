@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -27,7 +27,6 @@ namespace eckit {
 
 class StdPipe : private NonCopyable {
 public:
-
     StdPipe(const std::string& name, const std::string& mode = "r");
 
     /// @pre must have been closed
@@ -41,10 +40,8 @@ public:
     /// @throws on fclose failure
     void close() noexcept(false);
 
-private: // members
-
-	FILE *file_;
-
+private:  // members
+    FILE* file_;
 };
 
 
@@ -53,15 +50,11 @@ private: // members
 
 class AutoStdPipe : public StdPipe {
 public:
-    AutoStdPipe(const std::string& name, const std::string& mode = "r") : StdPipe(name, mode)
-    {}
-    ~AutoStdPipe() noexcept(false)
-    { close(); }
+    AutoStdPipe(const std::string& name, const std::string& mode = "r") : StdPipe(name, mode) {}
+    ~AutoStdPipe() noexcept(false) { close(); }
 };
 
 
-
-
-} // namespace eckit
+}  // namespace eckit
 
 #endif

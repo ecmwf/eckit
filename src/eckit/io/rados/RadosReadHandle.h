@@ -27,54 +27,50 @@ class MultiHandle;
 class RadosReadHandle : public eckit::DataHandle {
 
 public:  // methods
+    RadosReadHandle(const RadosObject&);
+    RadosReadHandle(const std::string&);
+    RadosReadHandle(Stream&);
 
-  RadosReadHandle(const RadosObject&);
-  RadosReadHandle(const std::string&);
-  RadosReadHandle(Stream&);
+    virtual ~RadosReadHandle() override;
 
-  virtual ~RadosReadHandle();
+    // -- Class methods
 
-  // -- Class methods
+    static const ClassSpec& classSpec() { return classSpec_; }
 
-  static const ClassSpec& classSpec() { return classSpec_; }
-
-  std::string title() const;
+    std::string title() const;
 
 public:  // methods
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-  virtual Length openForRead();
-  virtual void openForWrite(const Length&);
-  virtual void openForAppend(const Length&);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
 
-  virtual long read(void*, long);
-  virtual long write(const void*, long);
-  virtual void close();
-  virtual void flush();
-  virtual void rewind();
+    virtual Offset position() override;
+    virtual Length estimate() override;
 
-  virtual Offset position();
-  virtual Length estimate();
+    virtual void print(std::ostream&) const override;
 
-  virtual void print(std::ostream&) const;
+    // From Streamable
 
-  // From Streamable
-
-  virtual void encode(Stream&) const;
-  virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
+    RadosObject object_;
 
-  RadosObject object_;
+    Length length_;
+    size_t parts_;
 
-  Length length_;
-  size_t parts_;
-
-  std::unique_ptr<MultiHandle> handle_;
+    std::unique_ptr<MultiHandle> handle_;
 
 
-  static ClassSpec classSpec_;
-  static Reanimator<RadosReadHandle> reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<RadosReadHandle> reanimator_;
 };
 
 }  // namespace eckit

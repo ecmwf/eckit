@@ -10,4 +10,3 @@
 
 #warning "Header eckit/parser/Tokenizer.h is deprecated -- include eckit/utils/Tokenizer.h"
 #include "eckit/utils/Tokenizer.h"
-

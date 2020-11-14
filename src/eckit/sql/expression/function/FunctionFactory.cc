@@ -113,9 +113,7 @@ std::shared_ptr<FunctionExpression> FunctionFactory::build(const std::string& na
 }
 
 FunctionBuilderBase::FunctionBuilderBase(const std::string& name, int arity, const char* help) :
-    name_(name),
-    arity_(arity),
-    help_(help) {
+    name_(name), arity_(arity), help_(help) {
     FunctionFactory::instance().enregister(name_, arity_, this);
 }
 

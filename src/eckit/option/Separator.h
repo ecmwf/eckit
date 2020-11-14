@@ -26,93 +26,85 @@ namespace eckit {
 namespace option {
 
 class Separator : public Option {
-  public:
-
-// -- Exceptions
+public:
+    // -- Exceptions
     // None
 
-// -- Contructors
+    // -- Contructors
 
     Separator(const std::string& description);
 
-// -- Destructor
+    // -- Destructor
 
-    virtual ~Separator(); // Change to virtual if base class
+    virtual ~Separator() override;  // Change to virtual if base class
 
-// -- Convertors
+    // -- Convertors
     // None
 
-// -- Operators
+    // -- Operators
     // None
 
-// -- Methods
+    // -- Methods
     // None
 
 
-
-
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-  protected:
+protected:
+    // -- Members
 
-// -- Members
+    // -- Methods
 
-// -- Methods
+    virtual void print(std::ostream&) const override;  // Change to virtual if base class
 
-    virtual void print(std::ostream&) const; // Change to virtual if base class
-
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-  private:
-
-// No copy allowed
+private:
+    // No copy allowed
 
     Separator(const Separator&);
     Separator& operator=(const Separator&);
 
-// -- Members
+    // -- Members
     // None
 
-// -- Methods
+    // -- Methods
     // None
 
-// -- Overridden methods
+    // -- Overridden methods
 
     using Option::set;
-    virtual void set(const std::string& value, Configured&) const;
-    virtual bool active() const;
-    virtual void copy(const Configuration& from, Configured& to) const;
+    virtual void set(const std::string& value, Configured&) const override;
+    virtual bool active() const override;
+    virtual void copy(const Configuration& from, Configured& to) const override;
 
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-// -- Friends
-
-
+    // -- Friends
 };
 
 
-}
+}  // namespace option
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif
-

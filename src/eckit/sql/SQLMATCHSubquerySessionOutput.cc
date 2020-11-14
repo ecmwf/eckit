@@ -19,12 +19,10 @@ namespace eckit {
 namespace sql {
 
 SQLMATCHSubquerySessionOutput::SQLMATCHSubquerySessionOutput(const SQLMATCHSubquerySessionOutput& other) :
-    f_(other.f_),
-    count_(0) {}
+    f_(other.f_), count_(0) {}
 
 SQLMATCHSubquerySessionOutput::SQLMATCHSubquerySessionOutput(odb::sql::expression::function::FunctionMATCH& f) :
-    f_(f),
-    count_(0) {}
+    f_(f), count_(0) {}
 
 SQLMATCHSubquerySessionOutput& SQLMATCHSubquerySessionOutput::operator=(const SQLMATCHSubquerySessionOutput& other) {
     f_     = other.f_;

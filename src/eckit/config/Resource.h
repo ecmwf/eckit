@@ -35,13 +35,10 @@ public:  // methods
 
     // Part of a configurable
 
-    Resource(Configurable* owner, const std::string& str, const T& value) :
-        ResourceBase(owner, str),
-        value_(value) {}
+    Resource(Configurable* owner, const std::string& str, const T& value) : ResourceBase(owner, str), value_(value) {}
 
     Resource(const std::string& str, const std::string& value, bool) :
-        ResourceBase(nullptr, str),
-        value_(eckit::Translator<std::string, T>()(value)) {}
+        ResourceBase(nullptr, str), value_(eckit::Translator<std::string, T>()(value)) {}
 
     // -- Convertors
 
@@ -72,9 +69,7 @@ std::ostream& operator<<(std::ostream& os, const Resource<T>& r) {
 template <class T, class LIB>
 class LibResource : public ResourceBase {
 public:  // methods
-    LibResource(const std::string& str, const T& value) :
-        ResourceBase(nullptr, str),
-        value_(value) {}
+    LibResource(const std::string& str, const T& value) : ResourceBase(nullptr, str), value_(value) {}
 
     operator const T&() const {
         const_cast<LibResource<T, LIB>*>(this)->init();

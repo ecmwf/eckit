@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -31,10 +31,9 @@ namespace expression {
 //      needs to be copyable to be used by YACC
 typedef std::vector<std::shared_ptr<SQLExpression>> ExpressionsVector;
 
-class Expressions : public SQLExpression, public ExpressionsVector
-{
+class Expressions : public SQLExpression, public ExpressionsVector {
 public:
-	Expressions() : ExpressionsVector() {}
+    Expressions() : ExpressionsVector() {}
     Expressions(size_t i) : ExpressionsVector(i, 0) {}
 
     Expressions(const Expressions&) = default;
@@ -43,49 +42,55 @@ public:
     Expressions(Expressions&&) = default;
     Expressions& operator=(Expressions&&) = default;
 
-    virtual void print(std::ostream& s) const;
+    virtual void print(std::ostream& s) const override;
 
-	friend std::ostream& operator<<(std::ostream& o, const Expressions& e)
-		{ e.print(o); return o; }
+    friend std::ostream& operator<<(std::ostream& o, const Expressions& e) {
+        e.print(o);
+        return o;
+    }
 
-//////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
 
-	virtual void prepare(SQLSelect&)  {}
-	virtual void cleanup(SQLSelect&)  {}
+    virtual void prepare(SQLSelect&) override {}
+    virtual void cleanup(SQLSelect&) override {}
 
-	const type::SQLType* type() const;
+    const type::SQLType* type() const override;
 
-	// -- For WHERE
-	using SQLExpression::eval;
-	virtual double eval(bool& missing) const  { NOTIMP; }
+    // -- For WHERE
+    using SQLExpression::eval;
+    virtual double eval(bool& missing) const override { NOTIMP; }
 
-	virtual bool isConstant() const  { NOTIMP; }
-	virtual bool isNumber() const { return false; }
-	virtual bool isVector() const { return true; }
-	virtual Expressions& vector() { return *this; }
+    virtual bool isConstant() const override { NOTIMP; }
+    virtual bool isNumber() const override { return false; }
+    virtual bool isVector() const { return true; }
+    virtual Expressions& vector() { return *this; }
 
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) { return shared_from_this(); }
+    virtual std::shared_ptr<SQLExpression> simplify(bool&) override { return shared_from_this(); }
 
-    virtual std::shared_ptr<SQLExpression> clone() const;
-    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift_) const;
+    virtual std::shared_ptr<SQLExpression> clone() const override;
+    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift_) const override;
     virtual Expressions reshift_expressions(int minColumnShift_) const;
 
-	virtual bool isAggregate() const { return false; }
-	// For select expression
+    virtual bool isAggregate() const override { return false; }
+    // For select expression
 
-	virtual void output(SQLOutput&) const { return NOTIMP; }
-	virtual void partialResult() {}
-    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,expression::Expressions&) { NOTIMP; }
-//////////////////////////////////////////////////////////////////////////////////////
+    virtual void output(SQLOutput&) const override { return NOTIMP; }
+    virtual void partialResult() override {}
+    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,
+                             expression::Expressions&) override {
+        NOTIMP;
+    }
+    //////////////////////////////////////////////////////////////////////////////////////
 };
 
 typedef std::vector<Expressions> VectorOfExpressions;
-//class VectorOfExpressions : public vector<Expressions> { public: ~VectorOfExpressions() { for (size_t i=0; i < size(); ++i) ; } };
+// class VectorOfExpressions : public vector<Expressions> { public: ~VectorOfExpressions() { for (size_t i=0; i <
+// size(); ++i) ; } };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace expression
-} // namespace sql
-} // namespace eckit
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit
 
 #endif

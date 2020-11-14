@@ -21,15 +21,15 @@
 namespace eckit {
 namespace linalg {
 
-typedef double  Scalar;
-typedef int     Index;
-typedef size_t  Size;
+typedef double Scalar;
+typedef int Index;
+typedef size_t Size;
 
 class Vector;
 class Matrix;
 class SparseMatrix;
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit
 
 #endif

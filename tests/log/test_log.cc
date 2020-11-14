@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/config/LibEcKit.h"
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
@@ -29,12 +29,12 @@ CASE("test_debug") {
 }
 
 CASE("test_debug_library") {
-    Log::debug<LibEcKit>()  << "debug message 2" << std::endl;
+    Log::debug<LibEcKit>() << "debug message 2" << std::endl;
 }
 
 CASE("test_debug_macro") {
-  LOG_DEBUG(true, LibEcKit)  << "debug message 3" << std::endl;
-  LOG_DEBUG(false, LibEcKit)  << "debug message 4" << std::endl;
+    LOG_DEBUG(true, LibEcKit) << "debug message 3" << std::endl;
+    LOG_DEBUG(false, LibEcKit) << "debug message 4" << std::endl;
 }
 
 CASE("test_info") {

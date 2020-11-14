@@ -38,7 +38,7 @@ class Configuration : public Parametrisation {
 public:  // methods
     // -- Destructor
 
-    virtual ~Configuration();
+    virtual ~Configuration() override;
 
     // Fast access, will throw an exception
 
@@ -73,20 +73,16 @@ public:  // methods
     double getDouble(const std::string& name, const double& defaultValue) const;
     std::string getString(const std::string& name, const std::string& defaultValue) const;
 
-    std::vector<int> getIntVector(const std::string& name,
-                                  const std::vector<int>& defaultValue) const;
-    std::vector<long> getLongVector(const std::string& name,
-                                    const std::vector<long>& defaultValue) const;
+    std::vector<int> getIntVector(const std::string& name, const std::vector<int>& defaultValue) const;
+    std::vector<long> getLongVector(const std::string& name, const std::vector<long>& defaultValue) const;
     std::vector<std::size_t> getUnsignedVector(const std::string& name,
                                                const std::vector<std::size_t>& defaultValue) const;
     std::vector<std::int32_t> getInt32Vector(const std::string& name,
                                              const std::vector<std::int32_t>& defaultValue) const;
     std::vector<std::int64_t> getInt64Vector(const std::string& name,
                                              const std::vector<std::int64_t>& defaultValue) const;
-    std::vector<float> getFloatVector(const std::string& name,
-                                      const std::vector<float>& defaultValue) const;
-    std::vector<double> getDoubleVector(const std::string& name,
-                                        const std::vector<double>& defaultValue) const;
+    std::vector<float> getFloatVector(const std::string& name, const std::vector<float>& defaultValue) const;
+    std::vector<double> getDoubleVector(const std::string& name, const std::vector<double>& defaultValue) const;
     std::vector<std::string> getStringVector(const std::string& name,
                                              const std::vector<std::string>& defaultValue) const;
 
@@ -106,24 +102,24 @@ public:  // methods
 
     // -- Overridden methods
 
-    virtual bool has(const std::string& name) const;
+    virtual bool has(const std::string& name) const override;
 
-    virtual bool get(const std::string& name, std::string& value) const;
-    virtual bool get(const std::string& name, bool& value) const;
-    virtual bool get(const std::string& name, int& value) const;
-    virtual bool get(const std::string& name, long& value) const;
-    virtual bool get(const std::string& name, long long& value) const;
-    virtual bool get(const std::string& name, std::size_t& value) const;
-    virtual bool get(const std::string& name, float& value) const;
-    virtual bool get(const std::string& name, double& value) const;
+    virtual bool get(const std::string& name, std::string& value) const override;
+    virtual bool get(const std::string& name, bool& value) const override;
+    virtual bool get(const std::string& name, int& value) const override;
+    virtual bool get(const std::string& name, long& value) const override;
+    virtual bool get(const std::string& name, long long& value) const override;
+    virtual bool get(const std::string& name, std::size_t& value) const override;
+    virtual bool get(const std::string& name, float& value) const override;
+    virtual bool get(const std::string& name, double& value) const override;
 
-    virtual bool get(const std::string& name, std::vector<int>& value) const;
-    virtual bool get(const std::string& name, std::vector<long>& value) const;
-    virtual bool get(const std::string& name, std::vector<long long>& value) const;
-    virtual bool get(const std::string& name, std::vector<std::size_t>& value) const;
-    virtual bool get(const std::string& name, std::vector<float>& value) const;
-    virtual bool get(const std::string& name, std::vector<double>& value) const;
-    virtual bool get(const std::string& name, std::vector<std::string>& value) const;
+    virtual bool get(const std::string& name, std::vector<int>& value) const override;
+    virtual bool get(const std::string& name, std::vector<long>& value) const override;
+    virtual bool get(const std::string& name, std::vector<long long>& value) const override;
+    virtual bool get(const std::string& name, std::vector<std::size_t>& value) const override;
+    virtual bool get(const std::string& name, std::vector<float>& value) const override;
+    virtual bool get(const std::string& name, std::vector<double>& value) const override;
+    virtual bool get(const std::string& name, std::vector<std::string>& value) const override;
 
     bool get(const std::string& name, std::vector<LocalConfiguration>&) const;
     bool get(const std::string& name, LocalConfiguration&) const;

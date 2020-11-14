@@ -38,12 +38,16 @@ public:
 class UserBuffer;
 
 class UserChannel : public std::ostream, private NonCopyable {
-public: // types
+public:  // types
+    enum MsgType
+    {
+        NONE,
+        INFO,
+        ERROR,
+        WARN
+    };
 
-    enum MsgType { NONE, INFO, ERROR, WARN };
-
-public: // methods
-
+public:  // methods
     /// Constructor
     UserChannel();
 
@@ -51,18 +55,17 @@ public: // methods
     ~UserChannel();
 
     /// type for next message
-    void msgType( MsgType t );
+    void msgType(MsgType t);
 
-    void userMsg( UserMsg* );
+    void userMsg(UserMsg*);
     UserMsg* userMsg() const;
 
 protected:
-
     UserBuffer* buffer_;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

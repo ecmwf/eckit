@@ -28,53 +28,49 @@ namespace eckit {
 
 class Streamable : private NonCopyable {
 public:
+    friend Stream& operator<<(Stream&, const Streamable&);
 
-	friend Stream& operator<<(Stream&,const Streamable&);
+    // -- Contructors
 
-// -- Contructors
+    Streamable() {}
+    Streamable(Stream&);
 
-	Streamable() 			{}
-	Streamable(Stream&);
+    // -- Destructor
 
-// -- Destructor
+    virtual ~Streamable() {}
 
-	virtual ~Streamable()   {}
-
-// -- Methods
+    // -- Methods
 
     virtual std::string className() const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-    static  const ClassSpec&  classSpec()        { return classSpec_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
-// -- Operators
+    // -- Operators
 
-	// void *operator new(size_t s)          { return MemoryPool::fastAllocate(s);}
-	// void *operator new(size_t s,void *p)  { return p;                          }
-	// void operator delete(void* p)         { MemoryPool::fastDeallocate(p);     }
+    // void *operator new(size_t s)          { return MemoryPool::fastAllocate(s);}
+    // void *operator new(size_t s,void *p)  { return p;                          }
+    // void operator delete(void* p)         { MemoryPool::fastDeallocate(p);     }
 
 protected:
+    // -- Methods
 
-// -- Methods
+    virtual void encode(Stream&) const;
 
-	virtual void encode(Stream&) const;
-
-	bool sameClass(const Streamable&) const;
+    bool sameClass(const Streamable&) const;
 
 private:
+    // -- Class members
 
-// -- Class members
-
-	static  ClassSpec classSpec_;
-	static  Reanimator<Streamable> reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<Streamable> reanimator_;
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

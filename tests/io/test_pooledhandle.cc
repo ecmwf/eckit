@@ -20,10 +20,10 @@
 #include "eckit/io/PartFileHandle.h"
 #include "eckit/io/PooledHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/utils/StringTools.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
+#include "eckit/utils/StringTools.h"
 
 using namespace std;
 using namespace eckit;
@@ -36,14 +36,13 @@ namespace test {
 
 class Tester {
 public:
-
     Tester() {
 
         std::string base = Resource<std::string>("$TMPDIR", "/tmp");
         path1_           = PathName::unique(base + "/path1");
         path1_ += ".dat";
 
-        path2_           = PathName::unique(base + "/path2");
+        path2_ = PathName::unique(base + "/path2");
         path2_ += ".dat";
 
         FileHandle f1(path1_);
@@ -80,8 +79,8 @@ CASE("From one PooledHandle") {
         Buffer buffer(64);
         buffer.zero();
 
-        PooledHandle f1 (test.path1_);
-        PooledHandle f2 (test.path1_);
+        PooledHandle f1(test.path1_);
+        PooledHandle f2(test.path1_);
 
         EXPECT_NO_THROW(f1.openForRead());
         EXPECT_NO_THROW(f2.openForRead());
@@ -108,32 +107,32 @@ CASE("From one PooledHandle") {
 
     SECTION("Read interlaced") {
 
-        const size_t N = 4;
-        const size_t M = ::strlen(test.message);
-        const size_t bsize = N*M;
+        const size_t N     = 4;
+        const size_t M     = ::strlen(test.message);
+        const size_t bsize = N * M;
 
         std::vector<char> result(bsize, '\0');
         std::vector<char> buffer(bsize, '\0');
 
         std::vector<unique_ptr<PooledHandle>> files;
-        for(size_t i = 0; i < N ; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             files.emplace_back(new PooledHandle(test.path1_));
         }
 
-        for(auto& file: files)
+        for (auto& file : files)
             EXPECT_NO_THROW(file->openForRead());
 
         // read interlaced from N pooled files
         size_t p = 0;
-        for(size_t i = 0; i < M; ++i) {
-            for(size_t j = 0; j < N ; ++j)  {
+        for (size_t i = 0; i < M; ++i) {
+            for (size_t j = 0; j < N; ++j) {
                 char b[2];
                 long len = files[j]->read(b, 1);
                 EXPECT(len == 1);
                 p++;
 
-                buffer[i*N + j] = b[0];
-                result[i*N + j] = test.message[i];
+                buffer[i * N + j] = b[0];
+                result[i * N + j] = test.message[i];
             }
         }
 
@@ -143,9 +142,9 @@ CASE("From one PooledHandle") {
         EXPECT(result == buffer);
 
         EXPECT(files[0]->nbOpens() == 1);
-        EXPECT(files[0]->nbReads() == N*M);
+        EXPECT(files[0]->nbReads() == N * M);
 
-        for(auto& file: files)
+        for (auto& file : files)
             EXPECT_NO_THROW(file->close());
     }
 }
@@ -154,7 +153,7 @@ CASE("Error handling") {
 
     SECTION("Failed to open") {
         const char* randomName = "loiuytgbhytresdfgtr";
-        PooledHandle f (randomName);
+        PooledHandle f(randomName);
         EXPECT_THROWS_AS(f.openForRead(), CantOpenFile);
     }
 
@@ -174,10 +173,10 @@ CASE("Seeking to location") {
         Buffer b(32);
         b.zero();
 
-        PooledHandle f (test.path1_);
+        PooledHandle f(test.path1_);
         auto c = closer(f);
 
-        EXPECT_NO_THROW( f.openForRead() );
+        EXPECT_NO_THROW(f.openForRead());
 
 
         EXPECT(f.seek(10) == Offset(10));
@@ -201,32 +200,32 @@ CASE("Seeking to location") {
         EXPECT(b[0] == 'a');
 
         EXPECT(f.seek(60) == Offset(60));
-        EXPECT(f.read(b, 1) == 0); // read past end of file returns 0
+        EXPECT(f.read(b, 1) == 0);  // read past end of file returns 0
 
         EXPECT(f.seek(20) == Offset(20));
-        EXPECT(f.read(b, 10) == 6); // read until end of file
+        EXPECT(f.read(b, 10) == 6);  // read until end of file
     }
 
     SECTION("2") {
         Buffer b(32);
         b.zero();
 
-        PooledHandle f1 (test.path1_);
+        PooledHandle f1(test.path1_);
         auto c1 = closer(f1);
 
-        PooledHandle f2 (test.path2_);
+        PooledHandle f2(test.path2_);
         auto c2 = closer(f2);
 
-        PooledHandle f3 (test.path1_);
+        PooledHandle f3(test.path1_);
         auto c3 = closer(f3);
 
-        PooledHandle f4 (test.path2_);
+        PooledHandle f4(test.path2_);
         auto c4 = closer(f4);
 
-        EXPECT_NO_THROW( f1.openForRead() );
-        EXPECT_NO_THROW( f2.openForRead() );
-        EXPECT_NO_THROW( f3.openForRead() );
-        EXPECT_NO_THROW( f4.openForRead() );
+        EXPECT_NO_THROW(f1.openForRead());
+        EXPECT_NO_THROW(f2.openForRead());
+        EXPECT_NO_THROW(f3.openForRead());
+        EXPECT_NO_THROW(f4.openForRead());
 
         EXPECT(f1.seek(10) == Offset(10));
         EXPECT(f1.read(b, 1) == 1);

@@ -177,9 +177,9 @@ CASE("test great circles intersections") {
                     EXPECT(!gc.crossesPoles());
 
                     auto lons = gc.longitude(lat);
-                    size_t N  = is_approximately_equator(lat_gc)
-                                   ? 0.
-                                   : is_approximately_greater_or_equal(std::abs(lat_gc), std::abs(lat)) ? 2 : 0;
+                    size_t N  = is_approximately_equator(lat_gc)                                     ? 0.
+                                : is_approximately_greater_or_equal(std::abs(lat_gc), std::abs(lat)) ? 2
+                                                                                                     : 0;
                     EXPECT(lons.size() == N);
 
                     for (auto lon : lons) {

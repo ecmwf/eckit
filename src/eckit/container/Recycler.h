@@ -15,16 +15,16 @@
 #define eckit_Recycler_h
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include "eckit/eckit.h"
 
-#include "eckit/thread/AutoLock.h"
 #include "eckit/container/Recycler.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -32,29 +32,28 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class Recycler {
 public:
-
-// -- Exceptions
+    // -- Exceptions
     // None
 
-// -- Contructors
+    // -- Contructors
 
     Recycler(const PathName&);
 
 
-// -- Destructor
+    // -- Destructor
 
     ~Recycler();
 
-// -- Convertors
+    // -- Convertors
     // None
 
-// -- Operators
+    // -- Operators
     // None
 
-// -- Methods
+    // -- Methods
 
     void lock();
     void unlock();
@@ -62,104 +61,95 @@ public:
 
     void push(const T&);
 
-    template<class Iter>
+    template <class Iter>
     void push(Iter begin, Iter end);
 
     bool pop(T& value);
 
 
-    template<class Iter>
+    template <class Iter>
     Ordinal pop(Iter begin, Ordinal count);
 
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
 
 protected:
-
-// -- Members
+    // -- Members
     // None
 
-// -- Methods
+    // -- Methods
 
     void print(std::ostream&) const;
 
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
 private:
-
-// No copy allowed
+    // No copy allowed
 
     Recycler(const Recycler<T>&);
     Recycler<T>& operator=(const Recycler<T>&);
 
-// -- Members
+    // -- Members
     // None
 
 
     PathName path_;
     int fd_;
 
-// -- Methods
+    // -- Methods
 
 
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-// -- Friends
+    // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& s,const Recycler<T>& p)
-    {
+    friend std::ostream& operator<<(std::ostream& s, const Recycler<T>& p) {
         p.print(s);
         return s;
     }
-
 };
 
 //-----------------------------------------------------------------------------
 
-template<class T>
-Recycler<T>::Recycler(const PathName& path):
-        path_(path),
-        fd_(-1)
-{
+template <class T>
+Recycler<T>::Recycler(const PathName& path) : path_(path), fd_(-1) {
     path_.dirName().mkdir();
-    fd_ = ::open(path_.localPath(),O_RDWR|O_CREAT,0777);
-    if(fd_ < 0) {
+    fd_ = ::open(path_.localPath(), O_RDWR | O_CREAT, 0777);
+    if (fd_ < 0) {
         throw CantOpenFile(path_);
     }
 }
 
-template<class T>
-Recycler<T>::~Recycler()
-{
+template <class T>
+Recycler<T>::~Recycler() {
     if (fd_ >= 0)
         SYSCALL(::close(fd_));
 }
 
 
-template<class T>
-void Recycler<T>::lock()
-{
+template <class T>
+void Recycler<T>::lock() {
 
     struct flock lock;
 
@@ -169,12 +159,10 @@ void Recycler<T>::lock()
     lock.l_len    = 0;
 
     SYSCALL(::fcntl(fd_, F_SETLK, &lock));
-
 }
 
-template<class T>
-void Recycler<T>::unlock()
-{
+template <class T>
+void Recycler<T>::unlock() {
 
     struct flock lock;
 
@@ -184,46 +172,42 @@ void Recycler<T>::unlock()
     lock.l_len    = 0;
 
     SYSCALL(::fcntl(fd_, F_SETLK, &lock));
-
 }
 
 
-template<class T>
-template<class Iter>
-void Recycler<T>::push(Iter begin, Iter end)
-{
+template <class T>
+template <class Iter>
+void Recycler<T>::push(Iter begin, Iter end) {
 
     AutoLock<Recycler<T> > lock(this);
 
     off_t here;
-    SYSCALL(here = ::lseek(fd_,0,SEEK_END));
+    SYSCALL(here = ::lseek(fd_, 0, SEEK_END));
     ASSERT((here % sizeof(T)) == 0);
 
     for (Iter j = begin; j != end; ++j)
         ASSERT(::write(fd_, &(*j), sizeof(T)) == sizeof(T));
 }
 
-template<class T>
-template<class Iter>
-Ordinal Recycler<T>::pop(Iter begin, Ordinal count)
-{
+template <class T>
+template <class Iter>
+Ordinal Recycler<T>::pop(Iter begin, Ordinal count) {
 
     AutoLock<Recycler<T> > lock(this);
 
     off_t here, there;
-    SYSCALL(here = ::lseek(fd_,0,SEEK_END));
+    SYSCALL(here = ::lseek(fd_, 0, SEEK_END));
     ASSERT((here % sizeof(T)) == 0);
 
-    Ordinal cnt = std::min(Ordinal(here/sizeof(T)), count);
+    Ordinal cnt = std::min(Ordinal(here / sizeof(T)), count);
 
     here -= cnt * sizeof(T);
 
-    SYSCALL(there = ::lseek(fd_, here ,SEEK_SET));
+    SYSCALL(there = ::lseek(fd_, here, SEEK_SET));
     ASSERT(there == here);
 
 
-    for (Ordinal i = 0; i < cnt ; i++)
-    {
+    for (Ordinal i = 0; i < cnt; i++) {
         T value;
         ASSERT(::read(fd_, &value, sizeof(T)) == sizeof(T));
         *(begin++) = value;
@@ -234,21 +218,19 @@ Ordinal Recycler<T>::pop(Iter begin, Ordinal count)
     return cnt;
 }
 
-template<class T>
-bool Recycler<T>::pop(T& value)
-{
-    return pop(&value,1) == 1;
+template <class T>
+bool Recycler<T>::pop(T& value) {
+    return pop(&value, 1) == 1;
 }
 
-template<class T>
-void Recycler<T>::push(const T& value)
-{
+template <class T>
+void Recycler<T>::push(const T& value) {
     const T* p = &value;
-    push(p,p+1);
+    push(p, p + 1);
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

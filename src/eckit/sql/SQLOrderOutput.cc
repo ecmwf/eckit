@@ -28,8 +28,7 @@ namespace sql {
 //----------------------------------------------------------------------------------------------------------------------
 
 SQLOrderOutput::SQLOrderOutput(SQLOutput& output, const std::pair<Expressions, std::vector<bool>>& by) :
-    output_(output),
-    by_(by) {}
+    output_(output), by_(by) {}
 
 SQLOrderOutput::~SQLOrderOutput() {}
 

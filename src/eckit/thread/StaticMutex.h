@@ -29,28 +29,25 @@ namespace eckit {
 
 class StaticMutex : private NonCopyable {
 
-public: // methods
-
+public:  // methods
     StaticMutex();
 
-	~StaticMutex();
+    ~StaticMutex();
 
-	void lock();
-	void unlock();
+    void lock();
+    void unlock();
 
-protected: // members
-
+protected:  // members
     void init();
 
     /// since this will be static memory, it should be initialized to zero by the system
 
     pthread_mutex_t mutex_;
-    bool            exists_;
-
+    bool exists_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

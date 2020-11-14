@@ -15,51 +15,46 @@
 
 namespace eckit {
 
-template<class Traits, class Partition>
+template <class Traits, class Partition>
 class BSPNode : public SPNode<Traits, BSPNode<Traits, Partition> > {
 public:
-
-
     typedef SPNode<Traits, BSPNode<Traits, Partition> > SPNodeType;
-    typedef typename SPNodeType::Value     Value;
-    typedef typename SPNodeType::Alloc     Alloc;
-    typedef typename SPNodeType::Point     Point;
-    typedef typename SPNodeType::NodeList  NodeList;
+    typedef typename SPNodeType::Value Value;
+    typedef typename SPNodeType::Alloc Alloc;
+    typedef typename SPNodeType::Point Point;
+    typedef typename SPNodeType::NodeList NodeList;
     typedef typename SPNodeType::NodeQueue NodeQueue;
-    typedef typename SPNodeType::NodeInfo  NodeInfo;
+    typedef typename SPNodeType::NodeInfo NodeInfo;
 
-    typedef BSPHyperPlane<Point>        HyperPlane;
+    typedef BSPHyperPlane<Point> HyperPlane;
 
     typedef BSPNode<Traits, Partition> Node;
 
 private:
-
     HyperPlane plane_;
 
-    double dist_; // Distance to parent's hyperplane
+    double dist_;  // Distance to parent's hyperplane
 
 public:
-
     BSPNode(const Value& v, const HyperPlane& plane, double dist);
     virtual ~BSPNode() {}
 
-    template<typename Container>
+    template <typename Container>
     static BSPNode* build(Alloc& a, Partition& p, const Container& nodes, double dist, int depth = 0);
 
 
 private:
-    virtual void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);
-    virtual void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) ;
-    virtual void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) ;
+    virtual void nearestNeighbourX(Alloc& a, const Point& p, Node*& best, double& max, int depth);
+    virtual void findInSphereX(Alloc& a, const Point& p, double radius, NodeList& result, int depth);
+    virtual void kNearestNeighboursX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth);
 
     //==========================
 
-    template<typename Container>
+    template <typename Container>
     static double distanceToPlane(const Container& in, const HyperPlane& plane);
-
 };
 
-} // end namespace
+}  // namespace eckit
 
 #include "BSPNode.cc"
 

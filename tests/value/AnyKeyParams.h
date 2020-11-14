@@ -26,20 +26,21 @@ namespace eckit_test {
 
 struct AnyKeyParams {
     AnyKeyParams(const std::string& payload);
-    AnyKeyParams( eckit::Stream& s );
+    AnyKeyParams(eckit::Stream& s);
     static const char* className() { return "AnyKeyParams"; }
+
 private:
-    friend void encode( const AnyKeyParams&, eckit::Stream& );
+    friend void encode(const AnyKeyParams&, eckit::Stream&);
     std::string payload_;
 };
 
-eckit::Params::value_t getValue( const AnyKeyParams&, const eckit::Params::key_t& );
+eckit::Params::value_t getValue(const AnyKeyParams&, const eckit::Params::key_t&);
 
-void print( const AnyKeyParams&, std::ostream& );
-void encode( const AnyKeyParams& p, eckit::Stream& s );
+void print(const AnyKeyParams&, std::ostream&);
+void encode(const AnyKeyParams& p, eckit::Stream& s);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit_test
+}  // namespace eckit_test
 
 #endif

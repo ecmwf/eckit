@@ -38,9 +38,9 @@ linalg::Vector V(linalg::Size s, ...) {
 
 
 linalg::Matrix M(linalg::Size rows, linalg::Size cols, ...) {
+    using linalg::Matrix;
     using linalg::Scalar;
     using linalg::Size;
-    using linalg::Matrix;
 
     Matrix mat(rows, cols);
     va_list args;
@@ -57,6 +57,6 @@ linalg::Matrix M(linalg::Size rows, linalg::Size cols, ...) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test
-} // namespace eckit
+}  // namespace eckit
 
 #endif

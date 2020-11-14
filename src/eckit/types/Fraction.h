@@ -33,12 +33,9 @@ public:
 
     // typedef __int128 value_type;
 
-public: // methods
-
-
-// -- Contructors
-
-    Fraction(): top_(0), bottom_(1) {}
+public:  // methods
+         // -- Contructors
+    Fraction() : top_(0), bottom_(1) {}
 
     // template<class T>
     // explicit Fraction(T top): top_(top), bottom_(1) {}
@@ -47,15 +44,15 @@ public: // methods
 
     explicit Fraction(double n);
     explicit Fraction(double n, const Fraction& precision);
-    explicit Fraction(int n): top_(n), bottom_(1) {}
-    explicit Fraction(short n): top_(n), bottom_(1) {}
-    explicit Fraction(long n): top_(n), bottom_(1) {}
-    explicit Fraction(long long n): top_(n), bottom_(1) {}
+    explicit Fraction(int n) : top_(n), bottom_(1) {}
+    explicit Fraction(short n) : top_(n), bottom_(1) {}
+    explicit Fraction(long n) : top_(n), bottom_(1) {}
+    explicit Fraction(long long n) : top_(n), bottom_(1) {}
 
-    explicit Fraction(unsigned int n): top_(n), bottom_(1) {}
-    explicit Fraction(unsigned short n): top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long n): top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long long n): top_(n), bottom_(1) {}
+    explicit Fraction(unsigned int n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned short n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long long n) : top_(n), bottom_(1) {}
 
     // Fraction(const Fraction& other):
     //     top_(other.top_), bottom_(other.bottom_) {}
@@ -63,9 +60,7 @@ public: // methods
     explicit Fraction(const std::string&);
     explicit Fraction(const char*);
 
-    bool integer() const {
-        return bottom_ == 1;
-    }
+    bool integer() const { return bottom_ == 1; }
 
     static Fraction abs(const Fraction& f);
 
@@ -73,27 +68,18 @@ public: // methods
     // the decimal point: e.g. 14.5 in 145/10
     static Fraction fromString(const std::string&);
 
-public: // operators
-
+public:  // operators
     static Fraction::value_type max_denominator();
 
-    operator double() const {
-        return double(top_) / double(bottom_);
-    }
+    operator double() const { return double(top_) / double(bottom_); }
 
     operator value_type() const;
 
-    Fraction operator-()  const {
-        return Fraction(-top_, bottom_);
-    }
+    Fraction operator-() const { return Fraction(-top_, bottom_); }
 
-    value_type integralPart() const {
-        return top_ / bottom_;
-    }
+    value_type integralPart() const { return top_ / bottom_; }
 
-    Fraction decimalPart() const {
-        return *this - integralPart();
-    }
+    Fraction decimalPart() const { return *this - integralPart(); }
 
     Fraction inverse() const;
 
@@ -139,74 +125,74 @@ public: // operators
         return *this;
     }
 
-    template<class T>
+    template <class T>
     Fraction operator+(T other) const {
         return *this + Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     Fraction operator-(T other) const {
         return *this - Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     Fraction operator/(T other) const {
         return *this / Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     Fraction operator*(T other) const {
         return *this * Fraction(other);
     }
 
     //====================================
 
-    template<class T>
+    template <class T>
     bool operator==(T other) const {
         return *this == Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     bool operator<(T other) const {
         return *this < Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     bool operator<=(T other) const {
         return *this <= Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     bool operator!=(T other) const {
         return *this != Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     bool operator>(T other) const {
         return *this > Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     bool operator>=(T other) const {
         return *this >= Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     Fraction& operator+=(T other) {
         return (*this) += Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     Fraction& operator-=(T other) {
         return (*this) -= Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     Fraction& operator/=(T other) {
         return (*this) /= Fraction(other);
     }
 
-    template<class T>
+    template <class T>
     Fraction& operator*=(T other) {
         return (*this) *= Fraction(other);
     }
@@ -215,8 +201,7 @@ public: // operators
     // Return a version that can be converted to double and back
     Fraction stableVersion(size_t max = 1000000) const;
 
-private: // members
-
+private:  // members
     value_type top_;
     value_type bottom_;
 
@@ -239,79 +224,78 @@ private: // members
         x.decode(s);
         return s;
     }
-
 };
 
-template<>
+template <>
 bool Fraction::operator==(double) const;
 
-template<>
-bool Fraction::operator< (double) const;
+template <>
+bool Fraction::operator<(double) const;
 
-template<>
+template <>
 bool Fraction::operator<=(double) const;
 
-template<>
+template <>
 bool Fraction::operator!=(double) const;
 
-template<>
-bool Fraction::operator> (double) const;
+template <>
+bool Fraction::operator>(double) const;
 
-template<>
+template <>
 bool Fraction::operator>=(double) const;
 
-template<class T>
+template <class T>
 Fraction operator+(T n, const Fraction& f) {
     return f.operator+(n);
 }
 
-template<class T>
+template <class T>
 Fraction operator-(T n, const Fraction& f) {
     return (-f).operator+(n);
 }
 
-template<class T>
+template <class T>
 Fraction operator/(T n, const Fraction& f) {
     return f.inverse().operator*(n);
 }
 
-template<class T>
+template <class T>
 Fraction operator*(T n, const Fraction& f) {
     return f.operator*(n);
 }
 
-template<class T>
+template <class T>
 bool operator==(T n, const Fraction& f) {
     return f.operator==(n);
 }
 
-template<class T>
+template <class T>
 bool operator<(T n, const Fraction& f) {
     return f.operator>(n);
 }
 
-template<class T>
+template <class T>
 bool operator<=(T n, const Fraction& f) {
     return f.operator>=(n);
 }
 
-template<class T>
+template <class T>
 bool operator!=(T n, const Fraction& f) {
     return f.operator!=(n);
 }
 
-template<class T>
+template <class T>
 bool operator>(T n, const Fraction& f) {
     return f.operator<(n);
 }
 
-template<class T>
+template <class T>
 bool operator>=(T n, const Fraction& f) {
     return f.operator<=(n);
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

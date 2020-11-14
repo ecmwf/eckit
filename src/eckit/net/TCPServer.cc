@@ -25,8 +25,7 @@ namespace net {
 
 
 TCPServer::TCPServer(const SocketOptions& options) :
-    TCPSocket(), port_(0), listen_(-1), options_(options), closeExec_(true) {
-}
+    TCPSocket(), port_(0), listen_(-1), options_(options), closeExec_(true) {}
 
 TCPServer::TCPServer(int port, const SocketOptions& options) :
     TCPSocket(), port_(port), listen_(-1), options_(options), closeExec_(true) {}
@@ -50,7 +49,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
         Select select(listen_);
         Log::status() << message;
-        if(port_) { Log::status() << " (port " << port_ << ")";}
+        if (port_) {
+            Log::status() << " (port " << port_ << ")";
+        }
         Log::status() << std::endl;
 
         while (!select.ready(delay)) {
@@ -65,7 +66,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
             }
 
             Log::status() << message;
-            if(port_) { Log::status() << " (port " << port_ << ")";}
+            if (port_) {
+                Log::status() << " (port " << port_ << ")";
+            }
             Log::status() << std::endl;
         }
 
@@ -110,7 +113,7 @@ void TCPServer::bind() {
     AutoLock<Mutex> lock(mutex_);
 
     if (listen_ == -1) {
-        listen_ = createSocket(port_, options_);
+        listen_     = createSocket(port_, options_);
         int backlog = options_.listenBacklog();
         Log::info() << "Listening on socket " << listen_ << " port: " << port_ << " backlog: " << backlog << std::endl;
         SYSCALL(::listen(listen_, backlog));
@@ -135,11 +138,9 @@ void TCPServer::print(std::ostream& s) const {
 }
 
 
-EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) : TCPServer(0, opts) {
-}
+EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) : TCPServer(0, opts) {}
 
-EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) : TCPServer(port, opts) {
-}
+EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) : TCPServer(port, opts) {}
 
 
 }  // namespace net

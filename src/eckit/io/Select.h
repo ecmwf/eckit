@@ -24,48 +24,47 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-namespace net { class TCPSocket; };
+namespace net {
+class TCPSocket;
+};
 
 /// Wraps calls to select
 class Select : private NonCopyable {
 
 public:
+    // -- Contructors
 
-// -- Contructors
-
-	Select();
+    Select();
     explicit Select(int);
     explicit Select(net::TCPSocket&);
 
-// -- Destructor
+    // -- Destructor
 
-	~Select();
+    ~Select();
 
-// -- Methods
+    // -- Methods
 
-	bool ready(long sec = 20);
+    bool ready(long sec = 20);
 
     void add(net::TCPSocket&);
-	void add(int);
+    void add(int);
 
     void remove(net::TCPSocket&);
-	void remove(int);
+    void remove(int);
 
     bool set(net::TCPSocket&);
-	bool set(int);
+    bool set(int);
 
 private:
+    // -- Members
 
-// -- Members
-
-	fd_set files_;
-	fd_set set_;
-	int    last_;
-
+    fd_set files_;
+    fd_set set_;
+    int last_;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

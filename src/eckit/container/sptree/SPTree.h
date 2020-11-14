@@ -57,9 +57,7 @@ public:
         alloc_.setMetadata(meta_);
     }
 
-    NodeInfo nodeByID(ID id) {
-        return SPNodeInfo<Traits, NodeType>(alloc_.convert(id, (Node*)0), id, 0.0);
-    }
+    NodeInfo nodeByID(ID id) { return SPNodeInfo<Traits, NodeType>(alloc_.convert(id, (Node*)0), id, 0.0); }
 
     void getMetadata(Point& offset, Point& scale) {
         alloc_.getMetadata(meta_);
@@ -147,7 +145,7 @@ public:
     }
 
     iterator begin() {
-        if( empty() ) {
+        if (empty()) {
             return end();
         }
         if (!root_) {

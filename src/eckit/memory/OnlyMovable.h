@@ -18,7 +18,6 @@ namespace eckit {
 
 class OnlyMovable {
 protected:
-
     OnlyMovable() {}
     ~OnlyMovable() {}
 
@@ -33,6 +32,6 @@ protected:
     OnlyMovable& operator=(OnlyMovable&&) = default;
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

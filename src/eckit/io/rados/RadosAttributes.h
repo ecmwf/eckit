@@ -15,13 +15,13 @@
 #ifndef eckit_io_rados_RadosAttributes_h
 #define eckit_io_rados_RadosAttributes_h
 
+#include <map>
 #include <memory>
 #include <string>
-#include <map>
 
-#include "eckit/utils/Translator.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/utils/Translator.h"
 
 
 namespace eckit {
@@ -29,24 +29,19 @@ namespace eckit {
 class Stream;
 
 
-class RadosAttributes  {
+class RadosAttributes {
 public:
-
-    template<class T>
-    void set(const std::string& name,  T value) {
+    template <class T>
+    void set(const std::string& name, T value) {
         attrs_[name] = Translator<T, std::string>()(value);
     }
 
 
-    void set(const std::string& name,  const Length& value) {
-        set(name, static_cast<long long>(value));
-    }
+    void set(const std::string& name, const Length& value) { set(name, static_cast<long long>(value)); }
 
-    void set(const std::string& name,  const Offset& value) {
-        set(name, static_cast<long long>(value));
-    }
+    void set(const std::string& name, const Offset& value) { set(name, static_cast<long long>(value)); }
 
-    template<class T>
+    template <class T>
     bool get(const std::string& name, T& value) const {
         auto j = attrs_.find(name);
         if (j != attrs_.end()) {
@@ -56,7 +51,7 @@ public:
         return false;
     }
 
-    bool get(const std::string& name,  Length& value) {
+    bool get(const std::string& name, Length& value) {
         long long v;
         if (!get(name, v)) {
             return false;
@@ -65,7 +60,7 @@ public:
         return true;
     }
 
-    bool get(const std::string& name,  Offset& value) {
+    bool get(const std::string& name, Offset& value) {
         long long v;
         if (!get(name, v)) {
             return false;
@@ -77,7 +72,6 @@ public:
     const std::map<std::string, std::string>& attrs() const { return attrs_; }
 
 private:
-
     std::map<std::string, std::string> attrs_;
 
     void print(std::ostream&) const;
@@ -87,9 +81,7 @@ private:
         o.print(s);
         return s;
     }
-
 };
-
 
 
 }  // namespace eckit

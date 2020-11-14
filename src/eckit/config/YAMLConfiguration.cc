@@ -52,24 +52,19 @@ static Value root_from_string(const std::string& str) {
 }
 
 YAMLConfiguration::YAMLConfiguration(const PathName& path, char separator) :
-    Configuration(root(path), separator),
-    path_(path) {}
+    Configuration(root(path), separator), path_(path) {}
 
 YAMLConfiguration::YAMLConfiguration(std::istream& in, char separator) :
-    Configuration(root(in), separator),
-    path_("<istream>") {}
+    Configuration(root(in), separator), path_("<istream>") {}
 
 YAMLConfiguration::YAMLConfiguration(Stream& in, char separator) :
-    Configuration(root(in), separator),
-    path_("<Stream>") {}
+    Configuration(root(in), separator), path_("<Stream>") {}
 
 YAMLConfiguration::YAMLConfiguration(const std::string& str, char separator) :
-    Configuration(root_from_string(str), separator),
-    path_("<string>") {}
+    Configuration(root_from_string(str), separator), path_("<string>") {}
 
 YAMLConfiguration::YAMLConfiguration(const SharedBuffer& buffer, char separator) :
-    Configuration(root_from_string(buffer.str()), separator),
-    path_("<Buffer>") {}
+    Configuration(root_from_string(buffer.str()), separator), path_("<Buffer>") {}
 
 YAMLConfiguration::~YAMLConfiguration() {}
 

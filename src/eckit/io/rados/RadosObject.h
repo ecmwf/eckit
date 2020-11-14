@@ -19,15 +19,13 @@
 #include <string>
 
 
-
 namespace eckit {
 
 class Stream;
 
 
-class RadosObject  {
+class RadosObject {
 public:
-
     RadosObject(Stream&);
 
     RadosObject(const std::string& path);
@@ -40,7 +38,6 @@ public:
     std::string str() const;
 
 private:
-
     std::string pool_;
     std::string oid_;
 
@@ -58,7 +55,6 @@ private:
         return s;
     }
 };
-
 
 
 }  // namespace eckit

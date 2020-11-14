@@ -144,7 +144,7 @@ protected:
 
     // -- Destructor
 
-    virtual ~Content();
+    virtual ~Content() override;
 
     // -- Operators
 
@@ -169,7 +169,7 @@ protected:
 
     Content* operator+(const Content&) const;
     Content* operator-(const Content&) const;
-    Content* operator*(const Content&)const;
+    Content* operator*(const Content&) const;
     Content* operator/(const Content&) const;
 
 
@@ -208,8 +208,8 @@ protected:
 
     // From Streamble
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:
     // -- No copy allowed

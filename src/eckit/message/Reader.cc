@@ -16,27 +16,19 @@
 namespace eckit {
 namespace message {
 
-Reader::Reader(eckit::DataHandle* h, bool opened):
-    handle_(h),
-    opened_(opened) {
+Reader::Reader(eckit::DataHandle* h, bool opened) : handle_(h), opened_(opened) {
 
     init();
 }
 
-Reader::Reader(eckit::DataHandle& h, bool opened):
-    handle_(h),
-    opened_(opened) {
+Reader::Reader(eckit::DataHandle& h, bool opened) : handle_(h), opened_(opened) {
 
     init();
-
 }
 
-Reader::Reader(const eckit::PathName& path):
-    handle_(path.fileHandle()),
-    opened_(false) {
+Reader::Reader(const eckit::PathName& path) : handle_(path.fileHandle()), opened_(false) {
 
     init();
-
 }
 
 void Reader::init() {
@@ -46,7 +38,6 @@ void Reader::init() {
 
     splitter_.reset(SplitterFactory::lookup(handle_));
     // std::cout << "----- " << *splitter_ << std::endl;
-
 }
 
 Reader::~Reader() {
@@ -60,7 +51,7 @@ Message Reader::next() {
     return splitter_->next();
 }
 
-void Reader::print(std::ostream &s) const {
+void Reader::print(std::ostream& s) const {
     s << "Reader[" << handle_ << "," << *splitter_ << "]";
 }
 
@@ -71,4 +62,3 @@ eckit::Offset Reader::position() {
 
 }  // namespace message
 }  // namespace eckit
-

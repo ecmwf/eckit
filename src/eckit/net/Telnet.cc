@@ -14,7 +14,6 @@
 #include "eckit/runtime/Monitor.h"
 
 
-
 namespace eckit {
 namespace net {
 

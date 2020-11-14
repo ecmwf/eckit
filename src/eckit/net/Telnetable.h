@@ -23,26 +23,23 @@ namespace net {
 
 class Telnetable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    Telnetable(int port);
 
-	Telnetable(int port);
+    // -- Destructor
 
-// -- Destructor
-
-	~Telnetable();
+    ~Telnetable();
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    Telnetable(const Telnetable&);
+    Telnetable& operator=(const Telnetable&);
 
-	Telnetable(const Telnetable&);
-	Telnetable& operator=(const Telnetable&);
+    // -- Members
 
-// -- Members
-
-	ThreadControler telnet_;
-
+    ThreadControler telnet_;
 };
 
 }  // namespace net

@@ -28,11 +28,10 @@ class Stream;
 
 class PipeApplication : public Application {
 
-public: // methods
+public:  // methods
+    PipeApplication(int argc, char** argv, const char* homeenv);
 
-    PipeApplication(int argc, char **argv, const char* homeenv);
-
-    virtual ~PipeApplication();
+    virtual ~PipeApplication() override;
 
     virtual void process(Stream&) = 0;
     virtual void endBatch();
@@ -41,21 +40,19 @@ public: // methods
 
     static void launch(const std::string& name, int in, int out);
 
-private: // members
-
+private:  // members
     Resource<long> in_;
     Resource<long> out_;
 
     /// overridden from Application
-    virtual void run();
+    virtual void run() override;
 
-protected: // members
-
+protected:  // members
     bool terminate_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

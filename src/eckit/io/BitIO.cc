@@ -21,14 +21,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 BitIO::BitIO(DataHandle& handle, bool padded) :
-    handle_(handle),
-    buffer_(0),
-    used_(0),
-    bits_(0),
-    write_(false),
-    eof_(false),
-    padded_(padded),
-    opened_(false) {}
+    handle_(handle), buffer_(0), used_(0), bits_(0), write_(false), eof_(false), padded_(padded), opened_(false) {}
 
 BitIO::~BitIO() {
     if (write_) {

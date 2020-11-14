@@ -22,9 +22,7 @@ namespace eckit {
 namespace sql {
 
 SQLTable::SQLTable(SQLDatabase& owner, const std::string& path, const std::string& name) :
-    path_(path),
-    name_(name),
-    owner_(owner) {
+    path_(path), name_(name), owner_(owner) {
     Log::debug<LibEcKit>() << "new SQLTable[path=" << path_ << ",name=" << name << "]" << std::endl;
 }
 
@@ -167,11 +165,13 @@ const SQLColumn& SQLTable::column(const std::string& name) const {
 void SQLTable::updateColumnDoublesWidth(const std::string& name, size_t nDoubles) {
 
     std::map<std::string, SQLColumn*>::const_iterator j = columnsByName_.find(name);
-    if (j == columnsByName_.end()) throw eckit::UserError("Column not found", name);
+    if (j == columnsByName_.end())
+        throw eckit::UserError("Column not found", name);
 
     if (j->second->type().getKind() == type::SQLType::stringType) {
         j->second->updateType(type::SQLType::lookup("string", nDoubles));
-    } else {
+    }
+    else {
         ASSERT(nDoubles == 1);
     }
 }

@@ -22,15 +22,13 @@ namespace mpi {
 
 class RequestContent : public Counted {
 public:
-
-    virtual ~RequestContent();
+    virtual ~RequestContent() override;
 
     virtual void print(std::ostream&) const = 0;
 
     virtual int request() const = 0;
 
     virtual bool test() = 0;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -40,8 +38,7 @@ public:
 
 class Request {
 
-public: // methods
-
+public:  // methods
     /// Null request constructor
     Request();
     /// Request constructor from the Request() integer
@@ -67,16 +64,15 @@ public: // methods
 
     bool test();
 
-private: // methods
-
+private:  // methods
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Request& o) {
-        o.print(s); return s;
+        o.print(s);
+        return s;
     }
 
-private: // members
-
+private:  // members
     RequestContent* content_;
 };
 

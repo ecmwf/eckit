@@ -61,8 +61,7 @@ class TraceResourceUsage : public ResourceUsage {
 public:
     explicit TraceResourceUsage(const char* name) : ResourceUsage(name, eckit::Log::debug<T>()) {}
 
-    explicit TraceResourceUsage(const std::string& name) :
-        ResourceUsage(name, eckit::Log::debug<T>()) {}
+    explicit TraceResourceUsage(const std::string& name) : ResourceUsage(name, eckit::Log::debug<T>()) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------

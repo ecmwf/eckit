@@ -17,7 +17,6 @@
 #include "eckit/net/TCPSocket.h"
 
 
-
 namespace eckit {
 
 

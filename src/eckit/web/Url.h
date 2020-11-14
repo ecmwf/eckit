@@ -16,8 +16,8 @@
 #include <map>
 #include <memory>
 
-#include "eckit/value/Value.h"
 #include "eckit/net/HttpHeader.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
@@ -44,7 +44,6 @@ public:
 
 class Url : private eckit::NonCopyable {
 public:
-
     Url(std::istream&);
     Url(const std::string&);
 
@@ -86,7 +85,7 @@ public:
     void location(const std::string& s) { headerOut().forward(s); }
 
     void retryAfter(long s) { headerOut().retryAfter(s); }
-    
+
     void dontCache() { headerOut().dontCache(); }
 
     void cgiParam(std::ostream&, char sep = ' ') const;
@@ -97,10 +96,10 @@ public:
 
     const std::vector<std::string>& remaining() const { return remaining_; }
 
-    void streamFrom(DataHandle*, const std::string& type="application/octet-stream");
+    void streamFrom(DataHandle*, const std::string& type = "application/octet-stream");
 
-  	DataHandle* streamFrom();
-  	const std::string& streamType() const;
+    DataHandle* streamFrom();
+    const std::string& streamType() const;
 
 protected:  // methods
     void print(std::ostream&) const;
@@ -115,11 +114,10 @@ private:  // methods
     }
 
 private:  // members
-
-    typedef std::map<std::string,std::string>  dict_t;
+    typedef std::map<std::string, std::string> dict_t;
 
     std::unique_ptr<DataHandle> handle_;
-	std::string        type_;
+    std::string type_;
 
     dict_t dict_;
 

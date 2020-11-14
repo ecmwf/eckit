@@ -81,11 +81,11 @@ void test(const SparseMatrix& A, const Index* outer, const Index* inner, const S
 /// Test linear algebra interface
 
 CASE("test_eckit_la_sparse move constructor") {
-    SparseMatrix a{ S(3, 3, 4, 0, 0, 2., 0, 2, -3., 1, 1, 2., 2, 2, 2.) };
-    EXPECT( !a.empty() );
-    SparseMatrix b{ std::move(a) };
-    EXPECT( a.empty() );
-    EXPECT( !b.empty() );
+    SparseMatrix a{S(3, 3, 4, 0, 0, 2., 0, 2, -3., 1, 1, 2., 2, 2, 2.)};
+    EXPECT(!a.empty());
+    SparseMatrix b{std::move(a)};
+    EXPECT(a.empty());
+    EXPECT(!b.empty());
 }
 
 CASE("test_eckit_la_sparse") {

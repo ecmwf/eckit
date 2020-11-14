@@ -24,10 +24,7 @@ namespace eckit {
 static const std::vector<std::string> empty;
 
 EtcTable::EtcTable(const std::string& name, int size, const std::string& dir) :
-    last_(0),
-    dir_(dir),
-    name_(name),
-    size_(size) {}
+    last_(0), dir_(dir), name_(name), size_(size) {}
 
 EtcTable::~EtcTable() {}
 
@@ -73,7 +70,7 @@ std::vector<std::vector<std::string> > EtcTable::lines() {
 bool EtcTable::reload() {
     AutoLock<Mutex> lock(mutex_);
     LocalPathName path(std::string("~/") + dir_ + "/" + name_);
-    if(path.lastModified() > last_) {
+    if (path.lastModified() > last_) {
         load();
         return true;
     }

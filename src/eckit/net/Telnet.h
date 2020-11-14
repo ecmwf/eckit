@@ -23,29 +23,26 @@ namespace net {
 
 class Telnet : public NetService {
 public:
+    // -- Contructors
 
-// -- Contructors
+    Telnet(int);
 
-	Telnet(int);
+    // -- Destructor
 
-// -- Destructor
-
-	~Telnet();
+    ~Telnet();
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    Telnet(const Telnet&);
+    Telnet& operator=(const Telnet&);
 
-	Telnet(const Telnet&);
-	Telnet& operator=(const Telnet&);
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From NetService
 
-	// From NetService
-
-	virtual NetUser* newUser(net::TCPSocket&) const;
-	virtual std::string   name() const { return "telnet"; }
-
+    virtual NetUser* newUser(net::TCPSocket&) const;
+    virtual std::string name() const { return "telnet"; }
 };
 
 

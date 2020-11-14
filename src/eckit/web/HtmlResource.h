@@ -30,8 +30,7 @@ class HtmlResource : public HttpResource {
 public:  // methods
     HtmlResource(const std::string&);
 
-    virtual ~HtmlResource();
-
+    virtual ~HtmlResource() override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

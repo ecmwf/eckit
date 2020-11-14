@@ -14,8 +14,8 @@
 #ifndef eckit_runtime_Telemetry_h
 #define eckit_runtime_Telemetry_h
 
-#include <string>
 #include <functional>
+#include <string>
 
 #include "eckit/memory/NonCopyable.h"
 
@@ -64,7 +64,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace runtime
-} // namespace eckit
+}  // namespace runtime
+}  // namespace eckit
 
 #endif

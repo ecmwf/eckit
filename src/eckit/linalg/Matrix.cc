@@ -31,10 +31,7 @@ Matrix::Matrix(Size rows, Size cols) : array_(new Scalar[rows * cols]), rows_(ro
 
 
 Matrix::Matrix(const Scalar* array, Size rows, Size cols) :
-    array_(const_cast<Scalar*>(array)),
-    rows_(rows),
-    cols_(cols),
-    own_(false) {
+    array_(const_cast<Scalar*>(array)), rows_(rows), cols_(cols), own_(false) {
     ASSERT(size() > 0);
     ASSERT(array_);
 }
@@ -53,10 +50,7 @@ Matrix::Matrix(Stream& stream) : array_(0), rows_(0), cols_(0), own_(false) {
 
 
 Matrix::Matrix(const Matrix& other) :
-    array_(new Scalar[other.size()]),
-    rows_(other.rows_),
-    cols_(other.cols_),
-    own_(true) {
+    array_(new Scalar[other.size()]), rows_(other.rows_), cols_(other.cols_), own_(true) {
     ASSERT(size() > 0);
     ASSERT(array_);
     ::memcpy(array_, other.array_, size() * sizeof(Scalar));

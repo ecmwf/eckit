@@ -24,10 +24,7 @@ struct KDMappedHeader {
     size_t metadataSize_;
 
     KDMappedHeader(size_t itemCount, size_t itemSize, size_t metadataSize) :
-        headerSize_(sizeof(KDMappedHeader)),
-        itemCount_(itemCount),
-        itemSize_(itemSize),
-        metadataSize_(metadataSize) {}
+        headerSize_(sizeof(KDMappedHeader)), itemCount_(itemCount), itemSize_(itemSize), metadataSize_(metadataSize) {}
 };
 
 
@@ -66,7 +63,7 @@ public:
     template <class Node, class A>
     Node* newNode1(const A& a, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT( !readonly_ );
+        ASSERT(!readonly_);
         // ASSERT(count_ * sizeof(Node) < size_);
         return new (&r[++count_]) Node(a);
     }
@@ -74,7 +71,7 @@ public:
     template <class Node, class A, class B>
     Node* newNode2(const A& a, const B& b, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT( !readonly_ );
+        ASSERT(!readonly_);
         // ASSERT(count_ * sizeof(Node) < size_);
         return new (&r[++count_]) Node(a, b);
     }
@@ -82,7 +79,7 @@ public:
     template <class Node, class A, class B, class C>
     Node* newNode3(const A& a, const B& b, const C& c, const Node* dummy) {
         Node* r = base(dummy);
-        ASSERT( !readonly_ );
+        ASSERT(!readonly_);
         // ASSERT(count_ * sizeof(Node) < size_);
         return new (&r[++count_]) Node(a, b, c);
     }

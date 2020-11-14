@@ -20,12 +20,12 @@ namespace net {
 class TelnetUser : public NetUser {
 public:
     explicit TelnetUser(net::TCPSocket&);
-	virtual ~TelnetUser();
-static void terminate(TelnetUser& other)	{ other.stop(); }
+    virtual ~TelnetUser() override;
+    static void terminate(TelnetUser& other) { other.stop(); }
 
 private:
-    virtual void serve(Stream&, std::istream&, std::ostream&);
-	std::string from_;
+    virtual void serve(Stream&, std::istream&, std::ostream&) override;
+    std::string from_;
 };
 
 }  // namespace net

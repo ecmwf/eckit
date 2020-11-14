@@ -25,7 +25,6 @@ namespace eckit {
 
 class Colour {
 public:
-
     static std::ostream& on(std::ostream&);
     static std::ostream& off(std::ostream&);
 
@@ -54,11 +53,10 @@ public:
     static std::ostream& blueBackground(std::ostream&);
     static std::ostream& cyanBackground(std::ostream&);
     static std::ostream& whiteBackground(std::ostream&);
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

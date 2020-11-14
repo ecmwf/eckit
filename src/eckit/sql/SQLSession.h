@@ -15,8 +15,12 @@
 #ifndef odb_sql_SQLSession_H
 #define odb_sql_SQLSession_H
 
-namespace eckit { class PathName; }
-namespace eckit { class DataHandle; }
+namespace eckit {
+class PathName;
+}
+namespace eckit {
+class DataHandle;
+}
 
 #include <memory>
 
@@ -39,25 +43,25 @@ class SQLOutputConfig;
 
 class SQLSession : private eckit::OnlyMovable {
 public:
-
     // Constructors
 
-    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config=0, const std::string& csvDelimiter=",");
-    SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter=",");
+    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = 0,
+               const std::string& csvDelimiter = ",");
+    SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter = ",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);
-    SQLSession(const std::string& csvDelimiter=",");
+    SQLSession(const std::string& csvDelimiter = ",");
 
     virtual ~SQLSession();
 
     // For sqly.y (used parsing SQL strings)
 
     virtual SQLSelectFactory& selectFactory();
-//    virtual SQLInsertFactory& insertFactory();
+    //    virtual SQLInsertFactory& insertFactory();
 
     virtual SQLTable& findTable(const std::string& name);
 
-//    virtual SQLTable* openDataHandle(eckit::DataHandle &);
-//    virtual SQLTable* openDataStream(std::istream &, const std::string &);
+    //    virtual SQLTable* openDataHandle(eckit::DataHandle &);
+    //    virtual SQLTable* openDataStream(std::istream &, const std::string &);
 
     virtual void setStatement(SQLStatement*);
     virtual SQLStatement& statement();
@@ -73,7 +77,7 @@ public:
     unsigned long long lastExecuteResult() { return lastExecuteResult_; }
 
     std::string csvDelimiter() { return csvDelimiter_; }
-//    const SQLOutputConfig& outputConfig() { ASSERT(config_); return *config_; }
+    //    const SQLOutputConfig& outputConfig() { ASSERT(config_); return *config_; }
 
     std::unique_ptr<SQLOutput> newFileOutput(const eckit::PathName& path);
 
@@ -83,17 +87,16 @@ protected:
     void loadDefaultSchema();
 
 private:
-
     static std::string schemaFile();
     static std::vector<std::string> includePaths();
 
     SQLDatabase database_;
 
-    //std::map<int,double> params_;
-//    std::map<std::string,SQLDatabase*> databases_;
+    // std::map<int,double> params_;
+    //    std::map<std::string,SQLDatabase*> databases_;
 
     SQLSelectFactory selectFactory_;
-//    SQLInsertFactory insertFactory_;
+    //    SQLInsertFactory insertFactory_;
 
     unsigned long long lastExecuteResult_;
 
@@ -103,17 +106,15 @@ private:
     std::unique_ptr<SQLOutput> output_;
     const std::string csvDelimiter_;
 
-    friend std::ostream& operator<<(std::ostream& s, const SQLSession& p)
-    {
+    friend std::ostream& operator<<(std::ostream& s, const SQLSession& p) {
         s << "[session@" << &p << ", currentDatabase: " << p.currentDatabase() << " ]";
         return s;
     }
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

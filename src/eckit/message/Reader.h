@@ -18,8 +18,8 @@
 #include <iosfwd>
 #include <memory>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/io/PeekHandle.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/message/Message.h"
 
 
@@ -27,7 +27,7 @@ namespace eckit {
 class DataHandle;
 class PathName;
 class Offset;
-};
+};  // namespace eckit
 
 namespace eckit {
 namespace message {
@@ -37,9 +37,8 @@ class Splitter;
 
 class Reader : public eckit::NonCopyable {
 public:
-
-    Reader(eckit::DataHandle*, bool opened=false);
-    Reader(eckit::DataHandle&, bool opened=false);
+    Reader(eckit::DataHandle*, bool opened = false);
+    Reader(eckit::DataHandle&, bool opened = false);
 
     Reader(const eckit::PathName&);
 
@@ -49,20 +48,18 @@ public:
     eckit::Offset position();
 
 private:
-
     bool opened_;
     std::unique_ptr<Splitter> splitter_;
 
     eckit::PeekHandle handle_;
 
     void init();
-    void print(std::ostream &) const; // Change to virtual if base class
+    void print(std::ostream&) const;  // Change to virtual if base class
 
-    friend std::ostream &operator<<(std::ostream &s, const Reader &p) {
+    friend std::ostream& operator<<(std::ostream& s, const Reader& p) {
         p.print(s);
         return s;
     }
-
 };
 
 

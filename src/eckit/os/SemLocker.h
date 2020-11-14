@@ -15,8 +15,8 @@
 #ifndef eckit_os_SemLocker_h
 #define eckit_os_SemLocker_h
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
@@ -33,16 +33,14 @@ class SemLocker : private NonCopyable {
     eckit::PathName path_;
 
 public:
-
     SemLocker(int sem, const eckit::PathName& path, int maxWaitLock = 60);
 
     ~SemLocker();
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

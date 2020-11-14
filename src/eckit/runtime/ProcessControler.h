@@ -65,7 +65,6 @@ private:  // members
     bool forget_;
 
 private:  // methods
-
     void end(result&);
 
     // To override if needed

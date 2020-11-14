@@ -26,31 +26,26 @@ class ThreadPool;
 
 class ThreadPoolTask {
 public:
-
     virtual ~ThreadPoolTask();
     virtual void execute() = 0;
 
     friend class ThreadPoolThread;
 
 protected:
-
     ThreadPool& pool() { return *pool_; }
 
 private:
-
     ThreadPool* pool_;
-
 };
 
 //-----------------------------------------------------------------------------
 
 class ThreadPool : private NonCopyable {
 
-public: // methods
-
+public:  // methods
     ThreadPool(const std::string& name, size_t count, size_t stack = 0);
 
-	~ThreadPool();
+    ~ThreadPool();
 
     void push(ThreadPoolTask*);
     void push(std::list<ThreadPoolTask*>&);
@@ -67,27 +62,25 @@ public: // methods
     void startTask();
     void endTask();
 
-private: // members
-
+private:  // members
     MutexCond ready_;
     MutexCond done_;
     MutexCond active_;
 
-    size_t  count_;
-    size_t  stack_;
-    size_t  running_;
-    size_t  tasks_;
+    size_t count_;
+    size_t stack_;
+    size_t running_;
+    size_t tasks_;
 
     std::string errorMessage_;
     std::string name_;
     std::list<ThreadPoolTask*> queue_;
 
     bool error_;
-
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

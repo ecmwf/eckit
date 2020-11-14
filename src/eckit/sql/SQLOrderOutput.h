@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -18,9 +18,9 @@
 
 #include <queue>
 
-#include "eckit/sql/expression/SQLExpressions.h"
-#include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/SQLOutput.h"
+#include "eckit/sql/expression/OrderByExpressions.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 
 namespace eckit {
 namespace sql {
@@ -29,24 +29,23 @@ namespace sql {
 
 class SQLOrderOutput : public SQLOutput {
 public:
-    SQLOrderOutput(SQLOutput& output, const std::pair<expression::Expressions,std::vector<bool>>& by);
-	virtual ~SQLOrderOutput();
+    SQLOrderOutput(SQLOutput& output, const std::pair<expression::Expressions, std::vector<bool>>& by);
+    virtual ~SQLOrderOutput() override;
 
-private: // methods
+private:  // methods
+    virtual void print(std::ostream&) const override;
 
-	virtual void print(std::ostream&) const override;
-
-// -- Members
+    // -- Members
 
     SQLOutput& output_;
     std::pair<expression::Expressions, std::vector<bool>> by_;
-	
+
     typedef std::map<expression::OrderByExpressions, std::queue<Expressions>> SortedResults;
 
-	SortedResults sortedResults_;
+    SortedResults sortedResults_;
     std::vector<size_t> byIndices_;
 
-// -- Overridden methods
+    // -- Overridden methods
     virtual void reset() override;
     virtual void flush() override;
 
@@ -71,7 +70,7 @@ private: // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

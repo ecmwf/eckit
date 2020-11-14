@@ -54,7 +54,7 @@ int get_pagesize() {
 //                                  ^2G limit                        ^4Gb
 //                              ^--------^ mapped region
 
-#define SIZE_2G 2147483648      // 2^31
+#define SIZE_2G 2147483648  // 2^31
 #define TOTAL_SIZE 2 * SIZE_2G  // 4Gb file
 
 #define ELEMS_2G (SIZE_2G / sizeof(int))

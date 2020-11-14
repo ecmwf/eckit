@@ -10,13 +10,13 @@
 
 #include "eckit/message/Decoder.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/message/Message.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/message/Message.h"
 
-#include <vector>
-#include <string>
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace eckit {
 namespace message {
@@ -24,9 +24,9 @@ namespace message {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-eckit::Mutex* local_mutex                  = 0;
-std::vector<Decoder*>*     decoders = 0;
-pthread_once_t once                 = PTHREAD_ONCE_INIT;
+eckit::Mutex* local_mutex       = 0;
+std::vector<Decoder*>* decoders = 0;
+pthread_once_t once             = PTHREAD_ONCE_INIT;
 void init() {
     local_mutex = new eckit::Mutex();
     decoders    = new std::vector<Decoder*>();
@@ -54,10 +54,10 @@ Decoder& Decoder::lookup(const Message& msg) {
     size_t n = decoders->size();
     ASSERT(n);
 
-    for(size_t i = 0; i < n; ++i) {
-        Decoder* d = (*decoders)[(i + index)%n];
-        if(d->match(msg)) {
-            index = i; // Start with this index for next message
+    for (size_t i = 0; i < n; ++i) {
+        Decoder* d = (*decoders)[(i + index) % n];
+        if (d->match(msg)) {
+            index = i;  // Start with this index for next message
             return *d;
         }
     }

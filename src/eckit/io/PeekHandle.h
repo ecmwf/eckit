@@ -26,60 +26,56 @@ namespace eckit {
 
 class PeekHandle : public DataHandle, public HandleHolder {
 public:
-
-
     /// Contructor, taking ownership
 
-	PeekHandle(DataHandle*);
+    PeekHandle(DataHandle*);
 
     /// Contructor, not taking ownership
 
-	PeekHandle(DataHandle&);
+    PeekHandle(DataHandle&);
 
     /// Destructor
 
-	virtual ~PeekHandle();
+    virtual ~PeekHandle() override;
 
-// -- Operators
+    // -- Operators
 
-// -- Methods
+    // -- Methods
 
     unsigned char peek(size_t);
-    long peek(void* buffer, size_t size, size_t offset=0);
+    long peek(void* buffer, size_t size, size_t offset = 0);
 
     size_t peeked() const;
 
-// -- Overridden methods
+    // -- Overridden methods
 
     // From DataHandle
 
-    virtual Length openForRead();
+    virtual Length openForRead() override;
 
-    virtual long read(void*,long);
-    virtual void close();
+    virtual long read(void*, long) override;
+    virtual void close() override;
 
-    virtual void rewind();
-    virtual void print(std::ostream&) const;
-    virtual void skip(const Length&);
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
+    virtual void skip(const Length&) override;
 
-    virtual Offset seek(const Offset&);
-    virtual bool canSeek() const;
+    virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override;
 
-	virtual Length estimate();
-	virtual Offset position();
-    virtual Length size();
+    virtual Length estimate() override;
+    virtual Offset position() override;
+    virtual Length size() override;
 
-    virtual std::string title() const;
+    virtual std::string title() const override;
 
-private: // members
-
-	std::deque<unsigned char> peek_;
-
+private:  // members
+    std::deque<unsigned char> peek_;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

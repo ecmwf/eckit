@@ -63,9 +63,7 @@ public:
 };
 
 PipelineExecutor::PipelineExecutor(Pipeline& owner, DataHandle& in, DataHandle& out) :
-    owner_(owner),
-    in_(in),
-    out_(out) {}
+    owner_(owner), in_(in), out_(out) {}
 
 
 void PipelineExecutor::run() {
@@ -79,8 +77,7 @@ void PipelineExecutor::run() {
 
 Pipeline::Pipeline(TransferWatcher& watcher) :
 
-    error_(false),
-    watcher_(watcher) {}
+    error_(false), watcher_(watcher) {}
 
 Pipeline::~Pipeline() {}
 

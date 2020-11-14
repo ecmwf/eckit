@@ -27,21 +27,18 @@ class Parallel;
 
 class ParallelRequest : public RequestContent {
 
-private: // constructor
-
+private:  // constructor
     ParallelRequest();
     ParallelRequest(MPI_Request);
 
-private: // methods
-
-    virtual void print(std::ostream&) const;
+private:  // methods
+    virtual void print(std::ostream&) const override;
 
     virtual int request() const;
 
     virtual bool test();
 
-private: // members
-
+private:  // members
     friend class Parallel;
 
     MPI_Request request_;

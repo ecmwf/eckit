@@ -435,11 +435,11 @@ CASE("Test that the module operator is invalid for OrderedMap") {
 
 CASE("Can remove key from OrderedMap") {
 
-    Value om          = Value::makeOrderedMap();
+    Value om = Value::makeOrderedMap();
 
-    om[123]           = 1234;
-    om["abc"]         = "abcd";
-    om[Value(true)]   = Value("on");
+    om[123]         = 1234;
+    om["abc"]       = "abcd";
+    om[Value(true)] = Value("on");
 
     EXPECT(om.contains(123));
     EXPECT(om.contains("abc"));
@@ -448,11 +448,11 @@ CASE("Can remove key from OrderedMap") {
     EXPECT(om.remove(123) == Value(1234));
     EXPECT(om.remove("abc") == Value("abcd"));
 
-    EXPECT(om.remove("xxxx") == Value()); // remove non-existing values
+    EXPECT(om.remove("xxxx") == Value());  // remove non-existing values
 
     EXPECT(om.remove(true) == Value("on"));
 
-    EXPECT(om.remove("zzzz") == Value()); // remove non-existing values
+    EXPECT(om.remove("zzzz") == Value());  // remove non-existing values
 }
 
 CASE("Test head/tail functionality for OrderedMap") {

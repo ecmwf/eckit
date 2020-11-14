@@ -27,97 +27,89 @@ namespace eckit {
 namespace option {
 
 
-template<class T>
+template <class T>
 class VectorOption : public Option {
-  public:
-
-// -- Exceptions
+public:
+    // -- Exceptions
     // None
 
-// -- Contructors
+    // -- Contructors
 
-    VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator="/");
+    VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator = "/");
 
-// -- Destructor
+    // -- Destructor
 
-    virtual ~VectorOption(); // Change to virtual if base class
+    virtual ~VectorOption() override;  // Change to virtual if base class
 
-// -- Convertors
+    // -- Convertors
     // None
 
-// -- Operators
+    // -- Operators
     // None
 
-// -- Methods
+    // -- Methods
     // None
 
 
-
-
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-  protected:
+protected:
+    // -- Members
 
-// -- Members
+    // -- Methods
 
-// -- Methods
+    virtual void print(std::ostream&) const override;  // Change to virtual if base class
 
-    virtual void print(std::ostream&) const; // Change to virtual if base class
-
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-  private:
-
-// No copy allowed
+private:
+    // No copy allowed
 
     VectorOption(const VectorOption&);
     VectorOption& operator=(const VectorOption&);
 
-// -- Members
+    // -- Members
 
     size_t size_;
     const char* separator_;
 
-// -- Methods
+    // -- Methods
     // None
 
-// -- Overridden methods
+    // -- Overridden methods
 
-    virtual void set(Configured&) const;
-    virtual void set(const std::string& value, Configured&) const;
-    virtual void copy(const Configuration& from, Configured& to) const;
+    virtual void set(Configured&) const override;
+    virtual void set(const std::string& value, Configured&) const override;
+    virtual void copy(const Configuration& from, Configured& to) const override;
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-// -- Friends
-
-
+    // -- Friends
 };
 
 
-}
+}  // namespace option
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "eckit/option/VectorOption.cc"
 
 #endif
-

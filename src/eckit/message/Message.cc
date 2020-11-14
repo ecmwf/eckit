@@ -13,10 +13,10 @@
 
 #include <iostream>
 
-#include "eckit/message/Message.h"
-#include "eckit/message/MessageContent.h"
 #include "eckit/io/Offset.h"
 #include "eckit/message/Decoder.h"
+#include "eckit/message/Message.h"
+#include "eckit/message/MessageContent.h"
 
 
 namespace eckit {
@@ -27,13 +27,9 @@ namespace message {
 
 class NoContent : public MessageContent {
 
-    virtual operator bool() const {
-        return false;
-    }
+    virtual operator bool() const { return false; }
 
-    void print(std::ostream & s) const {
-        s << "NoContent[]";
-    }
+    void print(std::ostream& s) const { s << "NoContent[]"; }
 
     void* operator new(size_t);
 
@@ -46,18 +42,15 @@ static NoContent noContent;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Message::Message():
-    content_(&noContent) {
+Message::Message() : content_(&noContent) {
     content_->attach();
 }
 
-Message::Message(MessageContent* content):
-    content_(content ? content : &noContent) {
+Message::Message(MessageContent* content) : content_(content ? content : &noContent) {
     content_->attach();
 }
 
-Message::Message(const Message& other):
-    content_(other.content_) {
+Message::Message(const Message& other) : content_(other.content_) {
     content_->attach();
 }
 
@@ -74,7 +67,7 @@ Message::~Message() {
     content_->detach();
 }
 
-void Message::print(std::ostream &s) const {
+void Message::print(std::ostream& s) const {
     s << "Message[" << *content_ << "]";
 }
 
@@ -124,11 +117,9 @@ void Message::getMetadata(MetadataGatherer& gather) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MetadataGatherer::~MetadataGatherer() {
-}
+MetadataGatherer::~MetadataGatherer() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace message
 }  // namespace eckit
-

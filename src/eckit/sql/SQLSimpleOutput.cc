@@ -21,9 +21,7 @@ namespace sql {
 //----------------------------------------------------------------------------------------------------------------------
 
 SQLSimpleOutput::SQLSimpleOutput(const SQLOutputConfig& config, std::ostream& out) :
-    out_(out),
-    count_(0),
-    config_(config) {
+    out_(out), count_(0), config_(config) {
 
     out_ << std::fixed;
 }
@@ -134,8 +132,9 @@ void SQLSimpleOutput::updateTypes(SQLSelect& sql) {
         if (first) {
             columnWidths_.push_back(width);
             columnAlignments_.push_back(type->format());
-        } else {
-            columnWidths_[i] = std::max(width, columnWidths_[i]);
+        }
+        else {
+            columnWidths_[i]     = std::max(width, columnWidths_[i]);
             columnAlignments_[i] = type->format();
         }
     }

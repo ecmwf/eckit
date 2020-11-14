@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <limits>
 #include <cstring>
+#include <limits>
 
 #include "eckit/exception/Exceptions.h"
 

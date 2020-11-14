@@ -23,7 +23,7 @@
 
 using namespace eckit::testing;
 
-namespace eckit_test { // Not eckit namespace on purpose to test downstream usage of macros
+namespace eckit_test {  // Not eckit namespace on purpose to test downstream usage of macros
 
 typedef std::vector<Test> Tests;
 
@@ -55,7 +55,7 @@ EXPECT_NO_THROW({ bool b = true; });
 EXPECT_THROWS(throw std::exception());
 EXPECT_THROWS_AS(throw std::exception(), std::exception);
 EXPECT_MSG(1 == 1, [=]() { std::cerr << eckit::Colour::red << "1 != 1" << eckit::Colour::reset << std::endl; };);
-}  // namespace test
+}  // namespace eckit_test
 }  // namespace eckit
 ,
 

@@ -16,8 +16,8 @@
 
 #include <fstream>
 
-#include "eckit/serialisation/Stream.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/serialisation/Stream.h"
 
 
 //-----------------------------------------------------------------------------
@@ -31,44 +31,37 @@ namespace eckit {
 
 class IfstreamStream : public Stream {
 public:
+    // -- Contructors
 
-// -- Contructors
+    IfstreamStream(std::ifstream& f) : f_(f) {}
 
-	IfstreamStream(std::ifstream& f) : f_(f) {}
+    // -- Destructor
 
-// -- Destructor
-
-	~IfstreamStream() {}
+    ~IfstreamStream() {}
 
 private:
+    // -- Members
 
-// -- Members
+    std::ifstream& f_;
 
-	std::ifstream& f_;
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From Stream
 
-	// From Stream
+    virtual long write(const void* buf, long len) { NOTIMP; }
 
-	virtual long write(const void* buf, long len) {
-		NOTIMP;
-	}
+    virtual long read(void* buf, long len) {
+        f_.read(static_cast<char*>(buf), len);
+        ASSERT(!f_.eof() && !f_.bad());
+        return len;
+    }
 
-	virtual long read(void* buf, long len) {
-		f_.read(static_cast<char*>(buf), len);
-		ASSERT(!f_.eof() && !f_.bad());
-		return len;
-	}
-
-	virtual std::string name() const {
-		return "IfstreamStream";
-	}
-
+    virtual std::string name() const { return "IfstreamStream"; }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

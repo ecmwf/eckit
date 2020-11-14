@@ -15,8 +15,8 @@
 #define eckit_container_CacheLRU_h
 
 #include <iosfwd>
-#include <map>
 #include <list>
+#include <map>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CodeLocation.h"
@@ -26,22 +26,21 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template< typename K, typename V >
+template <typename K, typename V>
 class CacheLRU : private NonCopyable {
 
-public: // types
-
+public:  // types
     typedef K key_type;
     typedef V value_type;
 
     struct Entry {
 
-        key_type   key_;
+        key_type key_;
         value_type value_;
 
         Entry(const key_type& k, const value_type& v) : key_(k), value_(v) {}
 
-        friend std::ostream& operator<<(std::ostream& s,const Entry& e) {
+        friend std::ostream& operator<<(std::ostream& s, const Entry& e) {
             s << "key=" << e.key_;
             return s;
         }
@@ -51,12 +50,11 @@ public: // types
 
     typedef std::list<entry_type> storage_type;
     typedef typename storage_type::iterator storage_iterator;
-    typedef std::map<key_type,storage_iterator> map_type;
+    typedef std::map<key_type, storage_iterator> map_type;
 
     typedef void (*purge_handler_type)(key_type&, value_type&);
 
-public: // methods
-
+public:  // methods
     CacheLRU(size_t capacity, purge_handler_type purge = 0);
 
     ~CacheLRU();
@@ -93,14 +91,16 @@ public: // methods
     size_t size() const { return storage_.size(); }
 
     /// resizes the cache capacity
-    void capacity( size_t size );
+    void capacity(size_t size);
 
     void print(std::ostream& os) const;
 
-    friend std::ostream& operator<<(std::ostream& s,const CacheLRU& p) { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const CacheLRU& p) {
+        p.print(s);
+        return s;
+    }
 
-private: // methods
-
+private:  // methods
     void erase(typename map_type::iterator itr);
 
     void trim();
@@ -111,21 +111,19 @@ private: // methods
 
     void purge(key_type& key, value_type& value) const;
 
-private: // members
+private:  // members
+    storage_type storage_;
 
-    storage_type      storage_;
+    map_type map_;
 
-    map_type        map_;
-
-    size_t          capacity_;
+    size_t capacity_;
 
     purge_handler_type purge_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "CacheLRU.cc"
 

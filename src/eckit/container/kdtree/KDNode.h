@@ -16,32 +16,31 @@
 namespace eckit {
 
 
-template<class Traits>
+template <class Traits>
 class KDNode : public SPNode<Traits, KDNode<Traits> > {
 public:
+    typedef SPNode<Traits, KDNode<Traits> >
+        SPNodeType;  // cannot redefine as SPNode since some compilers in-class redefinitions
 
-    typedef SPNode<Traits, KDNode<Traits> >  SPNodeType; // cannot redefine as SPNode since some compilers in-class redefinitions
-
-    typedef typename SPNodeType::Value     Value;
-    typedef typename SPNodeType::Alloc     Alloc;
-    typedef typename SPNodeType::Point     Point;
-    typedef typename SPNodeType::NodeList  NodeList;
+    typedef typename SPNodeType::Value Value;
+    typedef typename SPNodeType::Alloc Alloc;
+    typedef typename SPNodeType::Point Point;
+    typedef typename SPNodeType::NodeList NodeList;
     typedef typename SPNodeType::NodeQueue NodeQueue;
-    typedef typename SPNodeType::NodeInfo  NodeInfo;
+    typedef typename SPNodeType::NodeInfo NodeInfo;
 
 
     typedef KDNode<Traits> Node;
 
 private:
-
-    size_t    axis_;
+    size_t axis_;
 
 public:
     KDNode(const Value& value, size_t axis);
     ~KDNode() {}
 
-    template<typename ITER>
-    static KDNode* build(Alloc& a,const ITER& begin, const ITER& end, int depth = 0);
+    template <typename ITER>
+    static KDNode* build(Alloc& a, const ITER& begin, const ITER& end, int depth = 0);
 
     static KDNode<Traits>* insert(Alloc& a, const Value& value, KDNode<Traits>* node, int depth = 0);
 
@@ -49,17 +48,15 @@ public:
     size_t axis() const { return axis_; }
 
 public:
-    void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth);
-    void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) ;
-    void kNearestNeighboursX(Alloc& a,const Point& p ,size_t k, NodeQueue& result, int depth) ;
+    void nearestNeighbourX(Alloc& a, const Point& p, Node*& best, double& max, int depth);
+    void findInSphereX(Alloc& a, const Point& p, double radius, NodeList& result, int depth);
+    void kNearestNeighboursX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth);
 
     //==========================
-
-
 };
 
 
-} // end namespace
+}  // namespace eckit
 
 #include "KDNode.cc"
 

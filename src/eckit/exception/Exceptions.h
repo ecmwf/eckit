@@ -32,22 +32,21 @@ void handle_panic_no_log(const char*, const CodeLocation&);
 
 class Exception : public std::exception {
 
-public: // methods
-
+public:  // methods
     /// Constructor with message
-    Exception(const std::string& what, const CodeLocation& location = CodeLocation() );
+    Exception(const std::string& what, const CodeLocation& location = CodeLocation());
 
     /// Destructor
     /// @throws nothing
-    virtual ~Exception() noexcept;
+    virtual ~Exception() noexcept override;
 
-    virtual const char *what() const noexcept {  return what_.c_str(); }
-    virtual bool retryOnServer() const        { return false; }
-    virtual bool retryOnClient() const        { return false; }
+    virtual const char* what() const noexcept override { return what_.c_str(); }
+    virtual bool retryOnServer() const { return false; }
+    virtual bool retryOnClient() const { return false; }
     virtual bool terminateApplication() const { return false; }
 
     static bool throwing();
-    static void exceptionStack(std::ostream&,bool callStack = false);
+    static void exceptionStack(std::ostream&, bool callStack = false);
 
     const std::string& callStack() const { return callStack_; }
 
@@ -55,25 +54,22 @@ public: // methods
 
     void dumpStackTrace(std::ostream& = std::cout);
 
-protected: // methods
-
+protected:  // methods
     void reason(const std::string&);
 
     Exception();
 
     virtual void print(std::ostream&) const;
 
-private: // members
+private:                     // members
+    std::string what_;       ///< description
+    std::string callStack_;  ///< call stack
+    SavedStatus save_;       ///< saved monitor status to recover after destruction
+    Exception* next_;
+    CodeLocation location_;  ///< where exception was first thrown
 
-    std::string       what_;      ///< description
-    std::string       callStack_; ///< call stack
-    SavedStatus       save_;      ///< saved monitor status to recover after destruction
-    Exception*        next_;
-    CodeLocation      location_;  ///< where exception was first thrown
 
-
-    friend std::ostream& operator<<(std::ostream& s,const Exception& p)
-    {
+    friend std::ostream& operator<<(std::ostream& s, const Exception& p) {
         p.print(s);
         return s;
     }
@@ -86,14 +82,14 @@ private: // members
 class SeriousBug : public Exception {
 public:
     SeriousBug(const std::string& w);
-    SeriousBug(const std::string&,const CodeLocation&);
-    SeriousBug(const char*,const CodeLocation&);
+    SeriousBug(const std::string&, const CodeLocation&);
+    SeriousBug(const char*, const CodeLocation&);
 };
 
 class TooManyRetries : public Exception {
 public:
     TooManyRetries(const int);
-    TooManyRetries(const int, const std::string &msg);
+    TooManyRetries(const int, const std::string& msg);
 };
 
 class TimeOut : public Exception {
@@ -109,16 +105,16 @@ public:
 class FailedSystemCall : public Exception {
 public:
     FailedSystemCall(const std::string&);
-    FailedSystemCall(const std::string&,const CodeLocation&);
-    FailedSystemCall(const char*,const CodeLocation&,int);
-    FailedSystemCall(const std::string&,const char*,const CodeLocation&,int);
+    FailedSystemCall(const std::string&, const CodeLocation&);
+    FailedSystemCall(const char*, const CodeLocation&, int);
+    FailedSystemCall(const std::string&, const char*, const CodeLocation&, int);
 };
 
 class AssertionFailed : public Exception {
 public:
     AssertionFailed(const std::string&);
-    AssertionFailed(const std::string&, const CodeLocation& );
-    AssertionFailed(const char*, const CodeLocation& );
+    AssertionFailed(const std::string&, const CodeLocation&);
+    AssertionFailed(const char*, const CodeLocation&);
 };
 
 class BadParameter : public Exception {
@@ -133,7 +129,7 @@ public:
     BadCast(const std::string&, const CodeLocation&);
 };
 
-class BadValue: public Exception {
+class BadValue : public Exception {
 public:
     BadValue(const std::string& s);
     BadValue(const std::string&, const CodeLocation&);
@@ -141,8 +137,8 @@ public:
 
 class NotImplemented : public Exception {
 public:
-	NotImplemented( const std::string& s, const CodeLocation& );
-	NotImplemented( const CodeLocation& );
+    NotImplemented(const std::string& s, const CodeLocation&);
+    NotImplemented(const CodeLocation&);
 };
 
 class Stop : public Exception {
@@ -152,8 +148,8 @@ public:
 
 class Abort : public Exception {
 public:
-    Abort( const std::string& );
-    Abort( const std::string&, const CodeLocation& );
+    Abort(const std::string&);
+    Abort(const std::string&, const CodeLocation&);
 };
 
 class Cancel : public Exception {
@@ -168,16 +164,16 @@ public:
 
 class UserError : public Exception {
 public:
-    UserError(const std::string&,const CodeLocation&);
+    UserError(const std::string&, const CodeLocation&);
     UserError(const std::string&);
-    UserError(const std::string&,const std::string&);
-    UserError(const std::string&,int);
+    UserError(const std::string&, const std::string&);
+    UserError(const std::string&, int);
 };
 
 class OutOfRange : public Exception {
 public:
-    OutOfRange(const std::string&,const CodeLocation&);
-    OutOfRange(unsigned long long, unsigned long long,const CodeLocation&);
+    OutOfRange(const std::string&, const CodeLocation&);
+    OutOfRange(unsigned long long, unsigned long long, const CodeLocation&);
     OutOfRange(unsigned long long, unsigned long long);
 };
 
@@ -190,29 +186,30 @@ public:
 
 class FileError : public Exception {
 protected:
-    FileError( const std::string& );
-    FileError( const std::string&, const CodeLocation& );
+    FileError(const std::string&);
+    FileError(const std::string&, const CodeLocation&);
     FileError();
 };
 
 class CantOpenFile : public FileError {
     bool retry_;
     virtual bool retryOnServer() const { return retry_; }
+
 public:
-    CantOpenFile(const std::string&,bool retry = false);
+    CantOpenFile(const std::string&, bool retry = false);
     CantOpenFile(const std::string&, const CodeLocation&, bool retry = false);
 };
 
 class WriteError : public FileError {
 public:
-  WriteError(const std::string& );
-  WriteError(const std::string&, const CodeLocation& );
+    WriteError(const std::string&);
+    WriteError(const std::string&, const CodeLocation&);
 };
 
 class ReadError : public FileError {
 public:
-  ReadError(const std::string&);
-  ReadError(const std::string&, const CodeLocation&);
+    ReadError(const std::string&);
+    ReadError(const std::string&, const CodeLocation&);
 };
 
 class ShortFile : public ReadError {
@@ -234,20 +231,17 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
-inline T SysCall(T code,const char *msg, const char* file, int line, const char* func)
-{
-    if(code<0)
+template <class T>
+inline T SysCall(T code, const char* msg, const char* file, int line, const char* func) {
+    if (code < 0)
         throw FailedSystemCall(msg, CodeLocation(file, line, func), errno);
     return code;
 }
 
 
-template<class T>
-inline void SysCall(long long code,const char *msg,const T& ctx, const char* file, int line, const char* func)
-{
-    if(code<0)
-    {
+template <class T>
+inline void SysCall(long long code, const char* msg, const T& ctx, const char* file, int line, const char* func) {
+    if (code < 0) {
         std::ostringstream os;
         os << ctx;
         throw FailedSystemCall(os.str(), msg, CodeLocation(file, line, func), errno);
@@ -255,29 +249,25 @@ inline void SysCall(long long code,const char *msg,const T& ctx, const char* fil
 }
 
 
-inline void ThrCall(int code,const char *msg, const char* file, int line, const char* func)
-{
-    if(code != 0) // Threads return errno in return code
+inline void ThrCall(int code, const char* msg, const char* file, int line, const char* func) {
+    if (code != 0)  // Threads return errno in return code
         handle_panic(msg, CodeLocation(file, line, func));
 }
 
-inline void Assert(int code,const std::string& msg, const char* file, int line, const char* func)
-{
-    if(code != 0) {
+inline void Assert(int code, const std::string& msg, const char* file, int line, const char* func) {
+    if (code != 0) {
         throw AssertionFailed(msg, CodeLocation(file, line, func));
     }
 }
 
-inline void Panic(int code,const char *msg, const CodeLocation& loc )
-{
-    if(code != 0) {
-        handle_panic(msg,loc);
+inline void Panic(int code, const char* msg, const CodeLocation& loc) {
+    if (code != 0) {
+        handle_panic(msg, loc);
     }
 }
 
-inline void PanicNoLog(int code, const char *msg, const CodeLocation& loc)
-{
-    if(code != 0) {
+inline void PanicNoLog(int code, const char* msg, const CodeLocation& loc) {
+    if (code != 0) {
         handle_panic_no_log(msg, loc);
     }
 }
@@ -287,26 +277,26 @@ inline void PanicNoLog(int code, const char *msg, const CodeLocation& loc)
 /// For compatibility
 class OutOfMemory : public Exception {
     virtual bool terminateApplication() const { return true; }
-    virtual const char *what() const noexcept {  return "OutOfMemory"; }
+    virtual const char* what() const noexcept { return "OutOfMemory"; }
+
 public:
     OutOfMemory();
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#define THRCALL(a)    ::eckit::ThrCall(a,#a, __FILE__, __LINE__, __func__)
-#define SYSCALL(a)    ::eckit::SysCall(a,#a, __FILE__, __LINE__, __func__)
-#define SYSCALL2(a,b) ::eckit::SysCall(a,#a,b, __FILE__, __LINE__, __func__)
-#define PANIC(a)      ::eckit::Panic((a),#a,Here())
-#define NOTIMP  throw ::eckit::NotImplemented(Here())
-#define ASSERT(a)     ::eckit::Assert(!(a),#a, __FILE__, __LINE__, __func__)
-#define ASSERT_MSG(a,m) ::eckit::Assert(!(a),m, __FILE__, __LINE__, __func__)
+#define THRCALL(a) ::eckit::ThrCall(a, #a, __FILE__, __LINE__, __func__)
+#define SYSCALL(a) ::eckit::SysCall(a, #a, __FILE__, __LINE__, __func__)
+#define SYSCALL2(a, b) ::eckit::SysCall(a, #a, b, __FILE__, __LINE__, __func__)
+#define PANIC(a) ::eckit::Panic((a), #a, Here())
+#define NOTIMP throw ::eckit::NotImplemented(Here())
+#define ASSERT(a) ::eckit::Assert(!(a), #a, __FILE__, __LINE__, __func__)
+#define ASSERT_MSG(a, m) ::eckit::Assert(!(a), m, __FILE__, __LINE__, __func__)
 
-#define CHECK_CALL_NOLOG(a) ::eckit::PanicNoLog(a,#a,Here())
+#define CHECK_CALL_NOLOG(a) ::eckit::PanicNoLog(a, #a, Here())
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

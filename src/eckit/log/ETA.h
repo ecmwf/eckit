@@ -24,31 +24,28 @@ namespace eckit {
 
 class ETA {
 public:
+    // -- Contructors
 
-// -- Contructors
+    ETA(double);
+    ETA(const struct ::timeval&);
 
-	ETA(double);
-	ETA(const struct ::timeval&);
+    // -- Operators
 
-// -- Operators
+    operator std::string() const;
 
-	operator std::string() const;
-
-	friend std::ostream& operator<<(std::ostream&,const ETA&);
+    friend std::ostream& operator<<(std::ostream&, const ETA&);
 
 private:
+    // There is no private copy constructor as this will confuse g++ 4.x.x
 
-// There is no private copy constructor as this will confuse g++ 4.x.x
+    // -- Members
 
-// -- Members
-
-	double ETA_;
-
+    double ETA_;
 };
 
 
 //--------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

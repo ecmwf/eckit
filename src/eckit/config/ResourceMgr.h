@@ -15,8 +15,8 @@
 #ifndef eckit_config_ResourceMgr_H
 #define eckit_config_ResourceMgr_H
 
-#include <string>
 #include <map>
+#include <string>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
@@ -32,12 +32,11 @@ class LocalPathName;
 
 class ResourceQualifier {
 
-    std::string kind_;  // Kind,  e.g. "Application"
-    std::string owner_; // Owner, e.g. "mars"
-    std::string name_;  // Name,  e.g. "debug"
+    std::string kind_;   // Kind,  e.g. "Application"
+    std::string owner_;  // Owner, e.g. "mars"
+    std::string name_;   // Name,  e.g. "debug"
 
 public:
-
     ResourceQualifier();
     ResourceQualifier(const std::string&, const std::string&, const std::string&);
 
@@ -45,7 +44,6 @@ public:
     ResourceQualifier& operator=(const ResourceQualifier&);
 
     int operator<(const ResourceQualifier&) const;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -53,8 +51,7 @@ public:
 
 class ResourceMgr : private eckit::NonCopyable {
 
-public: // class methods
-
+public:  // class methods
     static ResourceMgr& instance();
 
     static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
@@ -62,7 +59,6 @@ public: // class methods
     bool registCmdArgOptions(const std::string&);
 
 private:
-
     ResourceMgr();
 
     bool doLookUp(const std::string&, const std::string&, const std::string&, std::string&);
@@ -75,13 +71,11 @@ private:
     friend class ConfigCmd;
     friend class ResourceBase;
 
-private: // methods
-
+private:  // methods
     void readConfigFile(const LocalPathName&);
     bool parse(const char*);
 
-private: // members
-
+private:  // members
     typedef std::map<ResourceQualifier, std::string> ResMap;
 
     ResMap resmap_;
@@ -96,6 +90,6 @@ private: // members
 //----------------------------------------------------------------------------------------------------------------------
 
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

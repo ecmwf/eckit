@@ -25,95 +25,89 @@ namespace eckit {
 
 
 class Configured {
-  public:
-
-// -- Exceptions
+public:
+    // -- Exceptions
     // None
 
-// -- Contructors
+    // -- Contructors
 
     Configured();
 
-// -- Destructor
+    // -- Destructor
 
-    virtual ~Configured(); // Change to virtual if base class
+    virtual ~Configured();  // Change to virtual if base class
 
-// -- Convertors
+    // -- Convertors
     // None
 
-// -- Operators
+    // -- Operators
     // None
 
-// -- Methods
+    // -- Methods
 
-    virtual Configured& set(const std::string &name, const std::string &value) = 0;
-    virtual Configured& set(const std::string &name, const char *value) = 0;
-    virtual Configured& set(const std::string &name, float value) = 0;
-    virtual Configured& set(const std::string &name, double value) = 0;
-    virtual Configured& set(const std::string &name, int value) = 0;
-    virtual Configured& set(const std::string &name, long value) = 0;
+    virtual Configured& set(const std::string& name, const std::string& value) = 0;
+    virtual Configured& set(const std::string& name, const char* value)        = 0;
+    virtual Configured& set(const std::string& name, float value)              = 0;
+    virtual Configured& set(const std::string& name, double value)             = 0;
+    virtual Configured& set(const std::string& name, int value)                = 0;
+    virtual Configured& set(const std::string& name, long value)               = 0;
     // virtual Configured& set(const std::string &name, long long value) = 0;
-    virtual Configured& set(const std::string &name, bool value) = 0;
+    virtual Configured& set(const std::string& name, bool value)   = 0;
     virtual Configured& set(const std::string& name, size_t value) = 0;
 
-    virtual Configured& set(const std::string& name, const std::vector<int>& value) = 0;
+    virtual Configured& set(const std::string& name, const std::vector<int>& value)  = 0;
     virtual Configured& set(const std::string& name, const std::vector<long>& value) = 0;
     // virtual Configured& set(const std::string& name, const std::vector<long long>& value) = 0;
-    virtual Configured& set(const std::string& name, const std::vector<size_t>& value) = 0;
-    virtual Configured& set(const std::string& name, const std::vector<float>& value) = 0;
-    virtual Configured& set(const std::string& name, const std::vector<double>& value) = 0;
+    virtual Configured& set(const std::string& name, const std::vector<size_t>& value)      = 0;
+    virtual Configured& set(const std::string& name, const std::vector<float>& value)       = 0;
+    virtual Configured& set(const std::string& name, const std::vector<double>& value)      = 0;
     virtual Configured& set(const std::string& name, const std::vector<std::string>& value) = 0;
 
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-  protected:
+protected:
+    // -- Members
 
-// -- Members
-
-// -- Methods
+    // -- Methods
 
 
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-  private:
+private:
+    // No copy allowed
 
-// No copy allowed
 
-
-// -- Members
+    // -- Members
     // None
 
-// -- Methods
+    // -- Methods
     // None
 
-// -- Overridden methods
+    // -- Overridden methods
     // None
 
-// -- Class members
+    // -- Class members
     // None
 
-// -- Class methods
+    // -- Class methods
     // None
 
-// -- Friends
-
-
-
+    // -- Friends
 };
 
-} // namespace eckit
+}  // namespace eckit
 #endif

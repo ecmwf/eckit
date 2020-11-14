@@ -43,20 +43,20 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual long read(void*, long);
-    virtual long write(const void*, long);
-    virtual void close();
-    virtual void rewind();
-    virtual void print(std::ostream&) const;
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 
@@ -82,7 +82,6 @@ private:
     static ClassSpec classSpec_;
     static Reanimator<FTPHandle> reanimator_;
 };
-
 
 
 }  // namespace eckit

@@ -32,32 +32,31 @@ class LocalConfiguration : public Configuration, public Configured {
     ///       eckit::Value should remain an internal detail of configuration objects
 
 public:  // methods
-
     explicit LocalConfiguration(char separator = '.');
     explicit LocalConfiguration(Stream& s);
     explicit LocalConfiguration(const Configuration& other);
 
     LocalConfiguration(const Configuration& other, const std::string& path);
 
-    virtual ~LocalConfiguration();
+    virtual ~LocalConfiguration() override;
 
-    LocalConfiguration& set(const std::string& name, const std::string& value);
-    LocalConfiguration& set(const std::string& name, const char* value);
-    LocalConfiguration& set(const std::string& name, bool value);
-    LocalConfiguration& set(const std::string& name, int value);
-    LocalConfiguration& set(const std::string& name, long value);
+    LocalConfiguration& set(const std::string& name, const std::string& value) override;
+    LocalConfiguration& set(const std::string& name, const char* value) override;
+    LocalConfiguration& set(const std::string& name, bool value) override;
+    LocalConfiguration& set(const std::string& name, int value) override;
+    LocalConfiguration& set(const std::string& name, long value) override;
     LocalConfiguration& set(const std::string& name, long long value);
-    LocalConfiguration& set(const std::string& name, size_t value);
-    LocalConfiguration& set(const std::string& name, float value);
-    LocalConfiguration& set(const std::string& name, double value);
+    LocalConfiguration& set(const std::string& name, size_t value) override;
+    LocalConfiguration& set(const std::string& name, float value) override;
+    LocalConfiguration& set(const std::string& name, double value) override;
 
-    LocalConfiguration& set(const std::string& name, const std::vector<int>& value);
-    LocalConfiguration& set(const std::string& name, const std::vector<long>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<int>& value) override;
+    LocalConfiguration& set(const std::string& name, const std::vector<long>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<long long>& value);
-    LocalConfiguration& set(const std::string& name, const std::vector<size_t>& value);
-    LocalConfiguration& set(const std::string& name, const std::vector<float>& value);
-    LocalConfiguration& set(const std::string& name, const std::vector<double>& value);
-    LocalConfiguration& set(const std::string& name, const std::vector<std::string>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<size_t>& value) override;
+    LocalConfiguration& set(const std::string& name, const std::vector<float>& value) override;
+    LocalConfiguration& set(const std::string& name, const std::vector<double>& value) override;
+    LocalConfiguration& set(const std::string& name, const std::vector<std::string>& value) override;
 
     LocalConfiguration& set(const std::string& name, const LocalConfiguration& value);
     LocalConfiguration& set(const std::string& name, const std::vector<LocalConfiguration>& value);
@@ -68,7 +67,7 @@ protected:
     /// to be used only by class Configuration
     LocalConfiguration(const eckit::Value&, char separator = '.');
 
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
 private:
     void setValue(const std::vector<std::string>& path, size_t i, Value& root, const Value& value);

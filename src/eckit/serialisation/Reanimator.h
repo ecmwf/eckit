@@ -47,7 +47,7 @@ class Streamable;
 //
 // and the two public methods to access those members:
 //
-//	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+//	virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 //	static  const ClassSpec&  classSpec()        { return classSpec_; }
 //
 // -----------------------------------------------------------------------------

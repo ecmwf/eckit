@@ -29,43 +29,39 @@ struct memblk;
 
 struct MemPool {
 
-	int    pages_;     /* Number of pages to allocate */
-	bool   clear_;     /* clear newly allocated memory */
-	memblk *first_;
+    int pages_;  /* Number of pages to allocate */
+    bool clear_; /* clear newly allocated memory */
+    memblk* first_;
 
-	static MemPool transientPool;
-	static MemPool permanentPool;
+    static MemPool transientPool;
+    static MemPool permanentPool;
 };
 
 class MemoryPool : private NonCopyable {
 
-public: // class methods
+public:  // class methods
+    static void dump(std::ostream&);
+    static void handler();
+
+    static void* largeAllocate(size_t);
+    static void largeDeallocate(void*);
+
+    static void* fastAllocate(size_t, MemPool& = MemPool::transientPool);
+    static void fastDeallocate(void*, MemPool& = MemPool::transientPool);
+
+    static void info(std::ostream&);
+
+    static void info(size_t& used, size_t& free, MemPool&);
+    static void large(size_t& used, size_t& free);
 
 
-	static void dump(std::ostream&);
-	static void handler();
-
-	static void* largeAllocate(size_t);
-	static void  largeDeallocate(void*);
-
-	static void* fastAllocate(size_t, MemPool& = MemPool::transientPool);
-	static void  fastDeallocate(void*, MemPool& = MemPool::transientPool);
-
-	static void info(std::ostream&);
-
-	static void info(size_t& used, size_t& free, MemPool&);
-	static void large(size_t& used, size_t& free);
-
-
-private: // methods
-
-	MemoryPool();
-	~MemoryPool();
-
+private:  // methods
+    MemoryPool();
+    ~MemoryPool();
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -24,24 +24,10 @@ Reanimator<BufferedHandle> BufferedHandle::reanimator_;
 
 
 BufferedHandle::BufferedHandle(DataHandle* h, size_t size) :
-    HandleHolder(h),
-    buffer_(size),
-    pos_(0),
-    size_(size),
-    used_(0),
-    eof_(false),
-    read_(false),
-    position_(0) {}
+    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0) {}
 
 BufferedHandle::BufferedHandle(DataHandle& h, size_t size) :
-    HandleHolder(h),
-    buffer_(size),
-    pos_(0),
-    size_(size),
-    used_(0),
-    eof_(false),
-    read_(false),
-    position_(0) {}
+    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0) {}
 
 BufferedHandle::~BufferedHandle() {}
 

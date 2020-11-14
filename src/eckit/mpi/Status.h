@@ -22,30 +22,26 @@ namespace mpi {
 
 class StatusContent : public Counted {
 public:
-
-    virtual ~StatusContent();
+    virtual ~StatusContent() override;
 
     virtual int source() const = 0;
-    virtual int tag() const = 0;
-    virtual int error() const = 0;
+    virtual int tag() const    = 0;
+    virtual int error() const  = 0;
 
     virtual void print(std::ostream&) const = 0;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class NullStatus : public StatusContent {
 public:
-
     virtual ~NullStatus() {}
 
-    virtual int source() const { return -1; };
-    virtual int tag() const { return -1; };
-    virtual int error() const { return 1; };
+    virtual int source() const override { return -1; };
+    virtual int tag() const override { return -1; };
+    virtual int error() const override { return 1; };
 
-    virtual void print(std::ostream&) const;
-
+    virtual void print(std::ostream&) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -56,8 +52,7 @@ public:
 
 class Status {
 
-public: // methods
-
+public:  // methods
     /// Null Status constructor
     Status();
 
@@ -71,24 +66,23 @@ public: // methods
     Status& operator=(const Status&);
 
     int source() const { return content_->source(); }
-    int tag() const    { return content_->tag(); }
-    int error() const  { return content_->error(); }
+    int tag() const { return content_->tag(); }
+    int error() const { return content_->error(); }
 
     template <class T>
     T& as() {
         return dynamic_cast<T&>(*content_);
     }
 
-private: // methods
-
+private:  // methods
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Status& o) {
-        o.print(s); return s;
+        o.print(s);
+        return s;
     }
 
-private: // members
-
+private:  // members
     StatusContent* content_;
 };
 

@@ -17,102 +17,92 @@
 #include "eckit/types/Date.h"
 
 
-
 namespace eckit {
 
 //--------------------------------------------------------------------------------------------------
 
 class Month {
 public:
+    // -- Contructors
 
-// -- Contructors
-
-	Month(const Date& = Date(0));
-	Month(long,long);
-	Month(const std::string&);
+    Month(const Date& = Date(0));
+    Month(long, long);
+    Month(const std::string&);
 
 #include "eckit/types/Month.b"
 
-// -- Destructor
+    // -- Destructor
 
-	~Month() {}
+    ~Month() {}
 
-// -- Convertors
+    // -- Convertors
 
-	operator std::string() const;
+    operator std::string() const;
 
-// -- Operators
+    // -- Operators
 
-	bool operator==(const Month& other) const
-		{ return date_ == other.date_ ;}
+    bool operator==(const Month& other) const { return date_ == other.date_; }
 
-	bool operator!=(const Month& other) const
-		{ return date_ != other.date_ ;}
+    bool operator!=(const Month& other) const { return date_ != other.date_; }
 
-	bool operator<(const Month& other)  const
-		{ return date_ <  other.date_ ;}
+    bool operator<(const Month& other) const { return date_ < other.date_; }
 
-	bool operator>(const Month& other)  const
-		{ return date_ >  other.date_ ;}
+    bool operator>(const Month& other) const { return date_ > other.date_; }
 
-	bool operator<=(const Month& other)  const
-		{ return date_ <=  other.date_ ;}
+    bool operator<=(const Month& other) const { return date_ <= other.date_; }
 
-	bool operator>=(const Month& other)  const
-		{ return date_ >=  other.date_ ;}
+    bool operator>=(const Month& other) const { return date_ >= other.date_; }
 
 
-// -- Methods
+    // -- Methods
 
-	long year() const  { return date_.year(); }
-	long month() const { return date_.month(); }
+    long year() const { return date_.year(); }
+    long month() const { return date_.month(); }
 
-	void dump(DumpLoad&) const;
-	void load(DumpLoad&);
+    void dump(DumpLoad&) const;
+    void load(DumpLoad&);
 
-// -- Class methods
+    // -- Class methods
 
 
-// -- Friends
+    // -- Friends
 
-	friend std::ostream& operator<< (std::ostream& s, const Month& month)
-		{ month.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const Month& month) {
+        month.print(s);
+        return s;
+    }
 
 protected:
+    // -- Members
+    // None
 
+    // -- Methods
+    // None
 
-// -- Members
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Methods
-	// None
+    // -- Class members
+    // None
 
-// -- Overridden methods
-	// None
-
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // -- Members
 
-// -- Members
+    Date date_;
 
-	Date date_;
+    // -- Methods
 
-// -- Methods
+    void print(std::ostream&) const;
 
-	void print(std::ostream&) const;
-
-// -- Class methods
-
+    // -- Class methods
 };
 
 //--------------------------------------------------------------------------------------------------
 
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

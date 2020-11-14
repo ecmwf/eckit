@@ -35,12 +35,12 @@ class Value;
 
 typedef std::map<std::string, std::string> EasyCURLHeaders;
 class URLException : public Exception {
-        int code_;
-    public:
-        URLException(const std::string& what, int code):
-            Exception(what), code_(code) {}
-        int code() const { return code_; }
-    };
+    int code_;
+
+public:
+    URLException(const std::string& what, int code) : Exception(what), code_(code) {}
+    int code() const { return code_; }
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -68,33 +68,29 @@ public:
     eckit::DataHandle* dataHandle(const std::string& message = "") const;
 
 private:
-
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURLResponse& c) {
         c.print(s);
         return s;
     }
-
 };
 
 class EasyCURL {
 public:
+    // -- Exceptions
 
-
-// -- Exceptions
-
-// -- Contructors
+    // -- Contructors
 
     EasyCURL();
 
-// -- Destructor
+    // -- Destructor
 
     ~EasyCURL();
 
-// -- Methods
+    // -- Methods
 
-    EasyCURLResponse GET(const std::string& url, bool stream=false);
+    EasyCURLResponse GET(const std::string& url, bool stream = false);
     EasyCURLResponse HEAD(const std::string& url);
     EasyCURLResponse PUT(const std::string& url, const std::string& data);
     EasyCURLResponse POST(const std::string& url, const std::string& data);
@@ -112,42 +108,37 @@ public:
     void userAgent(const std::string&);
 
 public:
-
-// -- Overridden methods
+    // -- Overridden methods
 
     void print(std::ostream&) const;
 
-// -- Class methods
+    // -- Class methods
 
 
 private:
+    // -- Members
 
-// -- Members
-
-    CURLHandle *ch_;
+    CURLHandle* ch_;
 
     // CURLM *multi_;
 
-    EasyCURLResponse request(const std::string& url, bool stream=false);
+    EasyCURLResponse request(const std::string& url, bool stream = false);
 
-// -- Methods
+    // -- Methods
 
 
-// -- Class members
-
+    // -- Class members
 
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURL& c) {
         c.print(s);
         return s;
     }
-
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

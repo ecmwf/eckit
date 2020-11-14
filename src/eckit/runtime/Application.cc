@@ -57,7 +57,7 @@ static void catch_unexpected() {
     end("Unexpected was called");
 }
 
-[[ noreturn ]] static void catch_new_handler() {
+[[noreturn]] static void catch_new_handler() {
     delete[] reserve_;
     reserve_ = nullptr;
     throw eckit::OutOfMemory();

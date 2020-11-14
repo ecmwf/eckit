@@ -17,9 +17,9 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/TransferWatcher.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/io/TransferWatcher.h"
 
 
 namespace eckit {
@@ -27,52 +27,48 @@ namespace eckit {
 
 class DblBuffer : private NonCopyable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    DblBuffer(long count = 5, long size = 1024 * 1024, TransferWatcher& = TransferWatcher::dummy());
 
-	DblBuffer(long count = 5, long size = 1024*1024, TransferWatcher& = TransferWatcher::dummy());
+    // -- Destructor
 
-// -- Destructor
+    ~DblBuffer();
 
-	~DblBuffer();
+    // -- Methods
 
-// -- Methods
+    Length copy(DataHandle&, DataHandle&);
 
-	Length copy(DataHandle&,DataHandle&);
+    bool error();
+    void error(const std::string&);
+    void restart(RestartTransfer&);
 
-	bool   error();
-    void   error(const std::string&);
-	void   restart(RestartTransfer&);
+private:  // methods
+    Length copy(DataHandle&, DataHandle&, const Length&);
 
-private: // methods
+private:  // members
+    Mutex mutex_;
 
-	Length copy(DataHandle&,DataHandle&,const Length&);
+    long count_;
+    long bufSize_;
 
-private: // members
+    Length inBytes_;
+    Length outBytes_;
 
-	Mutex  mutex_;
-
-    long   count_;
-	long   bufSize_;
-
-	Length inBytes_;
-	Length outBytes_;
-
-	bool error_;
+    bool error_;
     std::string why_;
 
     bool restart_;
 
-	Offset restartFrom_;
-	TransferWatcher& watcher_;
+    Offset restartFrom_;
+    TransferWatcher& watcher_;
 
-// -- Friends
+    // -- Friends
 
-	friend class DblBufferTask;
-
+    friend class DblBufferTask;
 };
 
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

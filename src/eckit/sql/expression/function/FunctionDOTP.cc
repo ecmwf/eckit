@@ -26,14 +26,10 @@ const type::SQLType* FunctionDOTP::type() const {
 }
 
 FunctionDOTP::FunctionDOTP(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    value_(0),
-    resultNULL_(true) {}
+    FunctionExpression(name, args), value_(0), resultNULL_(true) {}
 
 FunctionDOTP::FunctionDOTP(const FunctionDOTP& other) :
-    FunctionExpression(other.name_, other.args_),
-    value_(other.value_),
-    resultNULL_(other.resultNULL_) {}
+    FunctionExpression(other.name_, other.args_), value_(other.value_), resultNULL_(other.resultNULL_) {}
 
 std::shared_ptr<SQLExpression> FunctionDOTP::clone() const {
     return std::make_shared<FunctionDOTP>(*this);

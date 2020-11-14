@@ -26,90 +26,86 @@ namespace eckit {
 
 class JavaResource : public HtmlResource {
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    JavaResource();
 
-	JavaResource();
+    // -- Destructor
 
-// -- Destructor
+    virtual ~JavaResource() override;
 
-	virtual ~JavaResource();
+    // -- Convertors
+    // None
 
-// -- Convertors
-	// None
+    // -- Operators
+    // None
 
-// -- Operators
-	// None
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    std::string name_;
 
-	std::string name_;
-
-// -- Methods
+    // -- Methods
 
     // void print(std::ostream&) const;
 
-// -- Overridden methods
+    // -- Overridden methods
 
-	virtual void GET(std::ostream&,Url&);
+    virtual void GET(std::ostream&, Url&) override;
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
+    // -- Class methods
 
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    JavaResource(const JavaResource&);
+    JavaResource& operator=(const JavaResource&);
 
-	JavaResource(const JavaResource&);
-	JavaResource& operator=(const JavaResource&);
-
-// -- Members
+    // -- Members
 
 
-// -- Methods
-	// None
+    // -- Methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
-// -- Friends
+    // -- Friends
 
-	//friend std::ostream& operator<<(std::ostream& s,const JavaResource& p)
-	//	{ p.print(s); return s; }
-
+    // friend std::ostream& operator<<(std::ostream& s,const JavaResource& p)
+    //	{ p.print(s); return s; }
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

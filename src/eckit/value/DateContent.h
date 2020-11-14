@@ -28,93 +28,91 @@ class Hash;
 class DateContent : public Content {
 
 protected:
+    // -- Constructor
 
-// -- Constructor
+    DateContent(const Date&);
+    DateContent(Stream&);
 
-	DateContent(const Date&);
-	DateContent(Stream&);
+    // -- Destructor
 
-// -- Destructor
+    virtual ~DateContent() override;
 
-	virtual ~DateContent();
+    // -- Overridden methods
 
-// -- Overridden methods
+    // -- From Content
 
-	// -- From Content
+    virtual int compare(const Content& other) const override;
 
-    virtual int compare(const Content& other) const;
+    virtual void value(bool& n) const override { Content::value(n); }
+    virtual void value(long long& n) const override { Content::value(n); }
+    virtual void value(double& n) const override { Content::value(n); }
+    virtual void value(std::string& n) const override { Content::value(n); }
+    virtual void value(Date& n) const override;
+    virtual void value(Time& n) const override { Content::value(n); }
+    virtual void value(DateTime& n) const override { Content::value(n); }
+    virtual void value(ValueList& n) const override { Content::value(n); }
+    virtual void value(ValueMap& n) const override { Content::value(n); }
 
-    virtual void value(bool& n)        const { Content::value(n); }
-    virtual void value(long long& n)   const { Content::value(n); }
-    virtual void value(double& n)      const { Content::value(n); }
-    virtual void value(std::string& n) const { Content::value(n); }
-    virtual void value(Date& n)        const;
-    virtual void value(Time& n)        const { Content::value(n); }
-    virtual void value(DateTime& n)    const { Content::value(n); }
-    virtual void value(ValueList& n)   const { Content::value(n); }
-    virtual void value(ValueMap& n)    const { Content::value(n); }
+    virtual int compareBool(const BoolContent&) const override { return -1; }
+    virtual int compareNumber(const NumberContent&) const override { return -1; }
+    virtual int compareDouble(const DoubleContent&) const override { return -1; }
+    virtual int compareString(const StringContent&) const override { return -1; }
+    virtual int compareNil(const NilContent&) const override { return -1; }
+    virtual int compareList(const ListContent&) const override { return -1; }
+    virtual int compareMap(const MapContent&) const override { return -1; }
+    virtual int compareDate(const DateContent&) const override;
+    virtual int compareTime(const TimeContent&) const override { return 1; }
+    virtual int compareDateTime(const DateTimeContent&) const override { return 1; }
+    virtual int compareOrderedMap(const OrderedMapContent&) const override { return 1; }
 
-    virtual int  compareBool(const BoolContent&)            const {return -1; }
-    virtual int  compareNumber(const NumberContent&)        const {return -1; }
-    virtual int  compareDouble(const DoubleContent&)        const {return -1; }
-    virtual int  compareString(const StringContent&)        const {return -1; }
-    virtual int  compareNil(const NilContent&)              const {return -1; }
-    virtual int  compareList(const ListContent&)            const {return -1; }
-    virtual int  compareMap(const MapContent&)              const {return -1; }
-    virtual int  compareDate(const DateContent&)            const;
-    virtual int  compareTime(const TimeContent&)            const {return 1; }
-    virtual int  compareDateTime(const DateTimeContent&)    const {return 1; }
-    virtual int  compareOrderedMap(const OrderedMapContent&) const { return 1; }
+    virtual Content* add(const Content&) const override;
+    virtual Content* sub(const Content&) const override;
+    virtual Content* mul(const Content&) const override;
+    virtual Content* div(const Content&) const override;
+    virtual Content* mod(const Content&) const override;
 
-	virtual Content* add(const Content&) const;
-	virtual Content* sub(const Content&) const;
-	virtual Content* mul(const Content&) const;
-	virtual Content* div(const Content&) const;
-    virtual Content* mod(const Content&) const;
+    virtual Content* subDate(const DateContent&) const override;
 
-	virtual Content* subDate(const DateContent&) const;
+    virtual void print(std::ostream&) const override;
+    virtual void json(JSON&) const override;
+    virtual std::string typeName() const override { return "Date"; }
+    virtual bool isDate() const override { return true; }
+    virtual Content* clone() const override;
+    virtual void dump(std::ostream& out, size_t depth, bool indent = true) const override;
 
-	virtual void    print(std::ostream&) const;
-    virtual void   json(JSON&)     const;
-	virtual std::string  typeName() const       { return "Date"; }
-	virtual bool    isDate() const         { return true; }
-    virtual Content* clone() const;
-    virtual void    dump(std::ostream& out, size_t depth, bool indent=true) const;
-
-    virtual void hash(Hash&) const;
+    virtual void hash(Hash&) const override;
 
     // -- From Streamable
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-    static  const ClassSpec&  classSpec()            { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+    DateContent(const DateContent&);
+    DateContent& operator=(const DateContent&);
 
-	DateContent(const DateContent&);
-	DateContent& operator=(const DateContent&);
-
-// -- Members
+    // -- Members
 
     Date value_;
 
-// -- Class Members
+    // -- Class Members
 
-	static  ClassSpec                classSpec_;
-    static  Reanimator<DateContent>  reanimator_;
+    static ClassSpec classSpec_;
+    static Reanimator<DateContent> reanimator_;
 
-// -- Friends
+    // -- Friends
 
-	friend class Reanimator<DateContent>;
-	friend class Value;
+    friend class Reanimator<DateContent>;
+    friend class Value;
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

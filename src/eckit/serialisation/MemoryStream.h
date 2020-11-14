@@ -25,34 +25,31 @@ class Buffer;
 
 class MemoryStream : public Stream {
 public:
-
-	MemoryStream(const Buffer&);
+    MemoryStream(const Buffer&);
     MemoryStream(Buffer&);
 
-	MemoryStream(const void* address,size_t size);
-    MemoryStream(void* address,size_t size);
+    MemoryStream(const void* address, size_t size);
+    MemoryStream(void* address, size_t size);
 
-	~MemoryStream();
+    ~MemoryStream();
 
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
-	virtual void rewind();
-	virtual std::string name() const;
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void rewind() override;
+    virtual std::string name() const override;
 
     size_t position() const;
 
-private: // members
+private:  // members
+    char* address_;
+    const size_t size_;
 
-	char*          address_;
-    const size_t   size_;
-
-    bool           read_;
-    size_t         position_;
+    size_t position_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

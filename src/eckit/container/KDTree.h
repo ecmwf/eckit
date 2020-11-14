@@ -24,8 +24,7 @@ template <class Traits>
 class KDTreeX : public SPTree<Traits, KDNode<Traits> > {
 public:
     typedef KDNode<Traits> Node;
-    typedef SPTree<Traits, Node>
-        SPTreeType;  // cannot redefine as SPTree since some compilers in-class redefinitions
+    typedef SPTree<Traits, Node> SPTreeType;  // cannot redefine as SPTree since some compilers in-class redefinitions
     typedef typename Traits::Alloc Alloc;
 
     typedef typename SPTreeType::Value Value;
@@ -93,8 +92,7 @@ public:
 
 public:
     KDTreeMapped(const eckit::PathName& path, size_t itemCount, size_t metadataSize) :
-        KDTree(alloc_),
-        alloc_(path, itemCount, sizeof(Node), metadataSize) {}
+        KDTree(alloc_), alloc_(path, itemCount, sizeof(Node), metadataSize) {}
 };
 
 }  // namespace eckit

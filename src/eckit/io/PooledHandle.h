@@ -15,9 +15,9 @@
 #ifndef eckit_io_PooledHandle_h
 #define eckit_io_PooledHandle_h
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
@@ -26,21 +26,20 @@ class PoolHandleEntry;
 
 class PooledHandle : public DataHandle {
 public:
-
     PooledHandle(const PathName& name);
 
     /// @pre must have been closed
     ~PooledHandle();
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual long read(void*,long);
-    virtual long write(const void*,long);
-    virtual void close();
-    virtual Offset seek(const Offset&);
-    virtual void hash(MD5& md5) const;
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual Offset seek(const Offset&) override;
+    virtual void hash(MD5& md5) const override;
 
     // for testing
 
@@ -49,14 +48,12 @@ public:
     size_t nbSeeks() const;
 
 private:
-
     PathName path_;
     PoolHandleEntry* entry_;
 
-    virtual void print(std::ostream& s) const;
-
+    virtual void print(std::ostream& s) const override;
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

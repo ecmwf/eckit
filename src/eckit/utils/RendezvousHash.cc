@@ -32,8 +32,7 @@ RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) : hash_
 
 RendezvousHash::RendezvousHash(const std::vector<RendezvousHash::Node>& nodes,
                                const RendezvousHash::hash_func_ptr hash) :
-    hash_(hash),
-    nodes_(nodes) {}
+    hash_(hash), nodes_(nodes) {}
 
 RendezvousHash::~RendezvousHash() {}
 

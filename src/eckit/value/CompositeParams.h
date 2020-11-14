@@ -25,33 +25,36 @@ namespace eckit {
 
 class CompositeParams {
 
-public: // methods
-
+public:  // methods
     CompositeParams();
-    CompositeParams( const Params::List& );
-    CompositeParams( Stream& );
+    CompositeParams(const Params::List&);
+    CompositeParams(Stream&);
 
-    CompositeParams& push_front( const Params& p );
-    CompositeParams& push_back( const Params& p );
+    CompositeParams& push_front(const Params& p);
+    CompositeParams& push_back(const Params& p);
 
-    CompositeParams& pop_front() { plist_.pop_front(); return *this; }
-    CompositeParams& pop_back()  { plist_.pop_back(); return *this; }
+    CompositeParams& pop_front() {
+        plist_.pop_front();
+        return *this;
+    }
+    CompositeParams& pop_back() {
+        plist_.pop_back();
+        return *this;
+    }
 
     static const char* className() { return "eckit::CompositeParams"; }
 
-private: // methods
+private:  // methods
+    friend Params::value_t getValue(const CompositeParams& p, const Params::key_t& key);
+    friend void print(const CompositeParams& p, std::ostream& s);
+    friend void encode(const CompositeParams& p, Stream& s);
 
-    friend Params::value_t getValue( const CompositeParams& p, const Params::key_t& key );
-    friend void print( const CompositeParams& p, std::ostream& s );
-    friend void encode( const CompositeParams& p, Stream& s );
-
-private: // members
-
+private:  // members
     Params::List plist_;
 };
 
 //----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

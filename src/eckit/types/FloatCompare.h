@@ -45,79 +45,69 @@ namespace types {
 
 /// Compares values equality within a range defined by an epsilon and a
 /// This function only has specializations for double and float
-template< typename T >
-bool is_approximately_equal( T a, T b, T epsilon = std::numeric_limits<T>::epsilon(), int maxUlpsDiff = 10);
+template <typename T>
+bool is_approximately_equal(T a, T b, T epsilon = std::numeric_limits<T>::epsilon(), int maxUlpsDiff = 10);
 
 /// Compare values equality
-template< typename T >
-bool is_equal(const T& a,  const T& b)  { return (a == b); }
+template <typename T>
+bool is_equal(const T& a, const T& b) {
+    return (a == b);
+}
 
 /// Compare values inequality: "is greater or equal to"
-template< typename T >
-bool is_greater_or_equal(const T& a,  const T& b) { return (a >= b); }
+template <typename T>
+bool is_greater_or_equal(const T& a, const T& b) {
+    return (a >= b);
+}
 
 /// Compare values inequality: "is greater or approximately equal to"
-template< typename T >
-bool is_approximately_greater_or_equal(const T& a,
-                                       const T& b,
-                                       T epsilon = std::numeric_limits<T>::epsilon(),
-                                       int maxUlpsDiff = 10)
-{
+template <typename T>
+bool is_approximately_greater_or_equal(const T& a, const T& b, T epsilon = std::numeric_limits<T>::epsilon(),
+                                       int maxUlpsDiff = 10) {
     return (a >= b) || eckit::types::is_approximately_equal(a, b, epsilon, maxUlpsDiff);
 }
 
 /// Compare values inequality: "is less or approximately equal to"
-template< typename T >
-bool is_approximately_lesser_or_equal(const T& a,
-                                      const T& b,
-                                      T epsilon = std::numeric_limits<T>::epsilon(),
-                                      int maxUlpsDiff = 10)
-{
+template <typename T>
+bool is_approximately_lesser_or_equal(const T& a, const T& b, T epsilon = std::numeric_limits<T>::epsilon(),
+                                      int maxUlpsDiff = 10) {
     return (a <= b) || eckit::types::is_approximately_equal(a, b, epsilon, maxUlpsDiff);
 }
 
 /// Compare values inequality: "is strictly greater than"
-template< typename T >
-bool is_strictly_greater(const T& a,
-                         const T& b,
-                         T epsilon = std::numeric_limits<T>::epsilon(),
-                         int maxUlpsDiff = 10)
-{
+template <typename T>
+bool is_strictly_greater(const T& a, const T& b, T epsilon = std::numeric_limits<T>::epsilon(), int maxUlpsDiff = 10) {
     return (a > b) && !eckit::types::is_approximately_equal(a, b, epsilon, maxUlpsDiff);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Helper class that memorizes the comparison setttings
-template < typename T >
+template <typename T>
 class CompareApproximatelyEqual {
 
-	T eps_;
-	int maxUlps_;
+    T eps_;
+    int maxUlps_;
 
 public:
-
     CompareApproximatelyEqual(T eps = std::numeric_limits<T>::epsilon(), int maxUlps = 10) :
-		eps_(eps),
-		maxUlps_(maxUlps)
-	{}
+        eps_(eps), maxUlps_(maxUlps) {}
 
-    bool operator() (const T& a, const T& b) { return eckit::types::is_approximately_equal(a, b, eps_, maxUlps_); }
-
+    bool operator()(const T& a, const T& b) { return eckit::types::is_approximately_equal(a, b, eps_, maxUlps_); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // Forward declaration of explicit template instatiations, to avoid warnings
-extern template bool is_approximately_equal( float a, float b, float epsilon, int maxUlpsDiff );
-extern template bool is_approximately_equal( double a, double b, double epsilon, int maxUlpsDiff );
+extern template bool is_approximately_equal(float a, float b, float epsilon, int maxUlpsDiff);
+extern template bool is_approximately_equal(double a, double b, double epsilon, int maxUlpsDiff);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace types
+}  // namespace types
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

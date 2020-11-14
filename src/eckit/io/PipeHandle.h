@@ -24,75 +24,72 @@ namespace eckit {
 
 class PipeHandle : public DataHandle {
 public:
+    // -- Contructors
 
-// -- Contructors
+    PipeHandle(const std::string&);
+    PipeHandle(Stream&);
 
-	PipeHandle(const std::string&);
-	PipeHandle(Stream&);
+    // -- Destructor
 
-// -- Destructor
+    ~PipeHandle();
 
-	~PipeHandle();
+    // --  Methods
 
-// --  Methods
+    void advance(const Length&);
 
-	void advance(const Length&);
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From DataHandle
 
-	// From DataHandle
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-	virtual Length openForRead();
-	virtual void   openForWrite(const Length&);
-	virtual void   openForAppend(const Length&);
-
-	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-	virtual void   close();
-	virtual void   rewind();
-	virtual void   print(std::ostream&) const;
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
     /*
-	virtual void restartReadFrom(const Offset& from);
-	virtual void restartWriteFrom(const Offset& from);
+    virtual void restartReadFrom(const Offset& from);
+    virtual void restartWriteFrom(const Offset& from);
     */
     /* virtual void toRemote(Stream&) const; */
     /* virtual void cost(std::map<std::string,Length>&, bool) const; */
-    /* virtual std::string title() const; */
-    virtual bool moveable() const { return false; }
+    /* virtual std::string title() const override; */
+    virtual bool moveable() const override { return false; }
 
-    virtual Offset seek(const Offset&);
+    virtual Offset seek(const Offset&) override;
 
-	// From Streamable
+    // From Streamable
 
-	virtual void encode(Stream&) const;
-	virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-	static  const ClassSpec&  classSpec()        { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+    // -- Members
 
-// -- Members
+    std::string name_;
+    FILE* file_;
+    bool read_;
 
-	std::string        name_;
-	FILE*         file_;
-	bool          read_;
+    // -- Methods
 
-// -- Methods
+    void open(const char*);
 
-	void open(const char*);
+    // -- Class members
 
-// -- Class members
-
-    static  ClassSpec               classSpec_;
-	static  Reanimator<PipeHandle>  reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<PipeHandle> reanimator_;
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

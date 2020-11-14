@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -14,8 +14,8 @@
 #ifndef eckit_sql_SQLTableFactory_H
 #define eckit_sql_SQLTableFactory_H
 
-#include <string>
 #include <mutex>
+#include <string>
 #include <vector>
 
 /// Depending on what is being used, we need to be able to open SQL tables of different
@@ -42,26 +42,23 @@ class SQLTableFactory {
     // typedef std::map<std::string, const SQLTableFactoryBase*> factory_map;
     typedef std::vector<const SQLTableFactoryBase*> factory_map;
 
-private: // methods
-
+private:  // methods
     // Can only be constructed by instance()
-    SQLTableFactory() = default;
+    SQLTableFactory()  = default;
     ~SQLTableFactory() = default;
 
-public: // methods
-
+public:  // methods
     static SQLTableFactory& instance();
-	
+
     /// Build an SQLTable from a give name. Location is optional - if it is not supplied
     /// then the name may be treated as a location at the discretion of the handler.
 
-    SQLTable* build(SQLDatabase& owner, const std::string& name, const std::string& location="");
+    SQLTable* build(SQLDatabase& owner, const std::string& name, const std::string& location = "");
 
     void enregister(SQLTableFactoryBase* f);
     void deregister(SQLTableFactoryBase* f);
 
-private: // methods
-
+private:  // methods
     factory_map factories_;
     std::mutex mutex_;
 };
@@ -70,8 +67,7 @@ private: // methods
 
 class SQLTableFactoryBase {
 
-public: // methods
-
+public:  // methods
     SQLTableFactoryBase();
     virtual ~SQLTableFactoryBase();
 
@@ -80,7 +76,7 @@ public: // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

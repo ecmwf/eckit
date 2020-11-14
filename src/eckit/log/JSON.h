@@ -37,7 +37,6 @@ class DateTime;
 class JSON : private NonCopyable {
 
 public:  // methods
-
     JSON(std::ostream&, bool null = true);
 
     ~JSON();

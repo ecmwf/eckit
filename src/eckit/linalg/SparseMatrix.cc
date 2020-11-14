@@ -553,9 +553,7 @@ bool SparseMatrix::const_iterator::operator==(const SparseMatrix::const_iterator
 
 
 SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
-    matrix_(const_cast<SparseMatrix*>(&matrix)),
-    index_(0),
-    row_(0) {
+    matrix_(const_cast<SparseMatrix*>(&matrix)), index_(0), row_(0) {
     const Index* outer = matrix_->outer();
     while (outer[row_ + 1] == 0) {
         ++row_;
@@ -563,8 +561,7 @@ SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
 }
 
 SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix, Size row) :
-    matrix_(const_cast<SparseMatrix*>(&matrix)),
-    row_(row) {
+    matrix_(const_cast<SparseMatrix*>(&matrix)), row_(row) {
     const Size rows = matrix_->rows();
     if (row_ > rows) {
         row_ = rows;

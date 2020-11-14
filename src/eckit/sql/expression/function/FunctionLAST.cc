@@ -24,12 +24,10 @@ namespace function {
 static FunctionBuilder<FunctionLAST> lastFunctionBuilder("last");
 
 FunctionLAST::FunctionLAST(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    value_(DBL_MAX) {}
+    FunctionExpression(name, args), value_(DBL_MAX) {}
 
 FunctionLAST::FunctionLAST(const FunctionLAST& other) :
-    FunctionExpression(other.name_, other.args_),
-    value_(other.value_) {}
+    FunctionExpression(other.name_, other.args_), value_(other.value_) {}
 
 std::shared_ptr<SQLExpression> FunctionLAST::clone() const {
     return std::make_shared<FunctionLAST>(*this);

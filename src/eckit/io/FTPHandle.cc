@@ -12,8 +12,8 @@
 
 #include "eckit/io/FTPHandle.h"
 #include "eckit/log/Log.h"
-#include "eckit/net/TCPServer.h"
 #include "eckit/net/IPAddress.h"
+#include "eckit/net/TCPServer.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -68,9 +68,7 @@ void FTPHandle::ftpCommand(const std::string& s) {
 }
 
 FTPHandle::FTPHandle(const std::string& host, const std::string& remote, int port) :
-    remote_(remote),
-    host_(host),
-    port_(port) {}
+    remote_(remote), host_(host), port_(port) {}
 
 void FTPHandle::open(const std::string& cmd) {
 

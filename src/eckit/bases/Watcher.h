@@ -22,20 +22,18 @@ namespace eckit {
 
 class Watcher {
 public:
+    // -- Methods
+    virtual ~Watcher() {}
 
-// -- Methods
-   virtual ~Watcher() {}
+    virtual void watch() = 0;
 
-	virtual void watch() = 0;
+    // -- Class methods
 
-// -- Class methods
-
-	static Watcher& dummy();
-
+    static Watcher& dummy();
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -24,9 +24,8 @@ class HttpBuf;
 
 class HttpStream : public std::ostream {
 public:
-
     HttpStream();
-	~HttpStream();
+    ~HttpStream();
 
     void reset();
     void write(std::ostream&, Url&, DataHandle&);
@@ -37,14 +36,12 @@ public:
     static std::ostream& doEncode(std::ostream&);
 
 private:
-
     HttpBuf* buf_;
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

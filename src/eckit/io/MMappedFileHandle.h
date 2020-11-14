@@ -23,65 +23,65 @@ namespace eckit {
 class MMappedFileHandle : public DataHandle {
 
 public:
-  MMappedFileHandle(const std::string&);
-  MMappedFileHandle(Stream&);
+    MMappedFileHandle(const std::string&);
+    MMappedFileHandle(Stream&);
 
-  virtual ~MMappedFileHandle();
+    virtual ~MMappedFileHandle() override;
 
-  const std::string& path() const { return path_; }
+    const std::string& path() const { return path_; }
 
-  // -- Overridden methods
+    // -- Overridden methods
 
-  // From DataHandle
+    // From DataHandle
 
-  virtual Length openForRead();
-  virtual void openForWrite(const Length&);
-  virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-  virtual long read(void*, long);
-  virtual long write(const void*, long);
-  virtual void close();
-  virtual void flush();
-  virtual void rewind();
-  virtual void print(std::ostream&) const;
-  virtual Length size();
-  virtual Length estimate();
-  virtual Offset position();
-  virtual bool isEmpty() const;
-  virtual void restartReadFrom(const Offset& from);
-  virtual void restartWriteFrom(const Offset& from);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
+    virtual Length size() override;
+    virtual Length estimate() override;
+    virtual Offset position() override;
+    virtual bool isEmpty() const override;
+    virtual void restartReadFrom(const Offset& from) override;
+    virtual void restartWriteFrom(const Offset& from) override;
 
-  virtual std::string title() const;
+    virtual std::string title() const override;
 
-  virtual Offset seek(const Offset&);
-  virtual void skip(const Length&);
+    virtual Offset seek(const Offset&) override;
+    virtual void skip(const Length&) override;
 
-  virtual DataHandle* clone() const;
-  virtual void hash(MD5& md5) const;
+    virtual DataHandle* clone() const override;
+    virtual void hash(MD5& md5) const override;
 
-  // From Streamable
+    // From Streamable
 
-  virtual void encode(Stream&) const;
-  virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
-  // -- Class methods
+    // -- Class methods
 
-  static const ClassSpec& classSpec() { return classSpec_; }
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:  // members
-  std::string path_;
+    std::string path_;
 
 
-  std::unique_ptr<DataHandle> handle_;
-  void *mmap_;
-  int fd_;
-  off_t length_;
+    std::unique_ptr<DataHandle> handle_;
+    void* mmap_;
+    int fd_;
+    off_t length_;
 
 private:  // methods
-  void open(const char*);
+    void open(const char*);
 
-  static ClassSpec classSpec_;
-  static Reanimator<MMappedFileHandle> reanimator_;
+    static ClassSpec classSpec_;
+    static Reanimator<MMappedFileHandle> reanimator_;
 };
 
 }  // namespace eckit

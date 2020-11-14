@@ -23,14 +23,10 @@ namespace function {
 static FunctionBuilder<FunctionRMS> rmsFunctionBuilder("rms");
 
 FunctionRMS::FunctionRMS(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    count_(0),
-    squares_(0) {}
+    FunctionExpression(name, args), count_(0), squares_(0) {}
 
 FunctionRMS::FunctionRMS(const FunctionRMS& other) :
-    FunctionExpression(other.name_, other.args_),
-    count_(other.count_),
-    squares_(other.squares_) {}
+    FunctionExpression(other.name_, other.args_), count_(other.count_), squares_(other.squares_) {}
 
 FunctionRMS::~FunctionRMS() {}
 

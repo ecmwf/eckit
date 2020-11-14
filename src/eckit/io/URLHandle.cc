@@ -36,12 +36,9 @@ URLHandle::URLHandle(Stream& s) : DataHandle(s) {
     s >> uri_;
 }
 
-URLHandle::URLHandle(const std::string& uri):
-    uri_(uri) {
-}
+URLHandle::URLHandle(const std::string& uri) : uri_(uri) {}
 
-URLHandle::~URLHandle() {
-}
+URLHandle::~URLHandle() {}
 
 Length URLHandle::estimate() {
     return handle().estimate();
@@ -72,7 +69,7 @@ void URLHandle::close() {
 }
 
 DataHandle& URLHandle::handle() {
-    if(!handle_) {
+    if (!handle_) {
         EasyCURL curl;
         handle_.reset(curl.GET(uri_, true).dataHandle());
     }

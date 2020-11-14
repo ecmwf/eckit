@@ -15,8 +15,8 @@
 #ifndef eckit_cmd_UserInput_H
 #define eckit_cmd_UserInput_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -24,7 +24,6 @@ namespace eckit {
 
 class UserInput {
 public:
-
     typedef bool (*completion_proc)(const char*, int pos, char* insert, int insertmax);
 
     static const char* getUserInput(const char* prompt, completion_proc callback = 0);
@@ -33,11 +32,10 @@ public:
     static void loadHistory(const char* path);
 
     static void printHistory(int max = 0);
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

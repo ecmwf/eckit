@@ -23,15 +23,13 @@ namespace eckit {
 
 class LineBasedTarget : public LogTarget {
 
-protected: // methods
-
+protected:  // methods
     LineBasedTarget();
     ~LineBasedTarget();
 
 private:
-
-    virtual void write(const char* start, const char* end);
-    virtual void flush();
+    virtual void write(const char* start, const char* end) override;
+    virtual void flush() override;
     virtual void line(const char* line) = 0;
 
     void reserve(size_t size);
@@ -44,6 +42,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

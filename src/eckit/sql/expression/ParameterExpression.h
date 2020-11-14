@@ -25,35 +25,35 @@ namespace expression {
 
 class ParameterExpression : public SQLExpression {
 public:
-	ParameterExpression(int);
-	ParameterExpression(const ParameterExpression&);
-	~ParameterExpression();
+    ParameterExpression(int);
+    ParameterExpression(const ParameterExpression&);
+    ~ParameterExpression();
 
     std::shared_ptr<SQLExpression> clone() const override;
     std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override { return clone(); }
 
 private:
-// No copy allowed
-	ParameterExpression& operator=(const ParameterExpression&);
+    // No copy allowed
+    ParameterExpression& operator=(const ParameterExpression&);
 
-// -- Members
-	// None
-	double value_;
-	int    which_;
+    // -- Members
+    // None
+    double value_;
+    int which_;
 
-	virtual void print(std::ostream& s) const override;
-	virtual void prepare(SQLSelect& sql) override;
-	virtual void cleanup(SQLSelect& sql) override;
+    virtual void print(std::ostream& s) const override;
+    virtual void prepare(SQLSelect& sql) override;
+    virtual void cleanup(SQLSelect& sql) override;
 
-	virtual double eval(bool& missing) const override;
-	virtual const type::SQLType* type() const override;
-	virtual bool isConstant() const override;
+    virtual double eval(bool& missing) const override;
+    virtual const type::SQLType* type() const override;
+    virtual bool isConstant() const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace expression
-} // namespace sql
-} // namespace eckit
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit
 
 #endif

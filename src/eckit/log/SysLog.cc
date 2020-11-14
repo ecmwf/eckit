@@ -23,11 +23,7 @@ namespace eckit {
 
 
 SysLog::SysLog(const std::string& msg, int msgid, Facility f, Severity s) :
-    facility_(f),
-    severity_(s),
-    appName_(Main::instance().name()),
-    msgid_(msgid),
-    msg_(msg) {
+    facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(msg) {
     timestamp_ = TimeStamp("%Y-%m-%dT%H:%M:%SZ");  ///< assumes we are in UTC
 }
 

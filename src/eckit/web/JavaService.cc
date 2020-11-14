@@ -13,7 +13,6 @@
 #include "eckit/web/JavaUser.h"
 
 
-
 namespace eckit {
 
 

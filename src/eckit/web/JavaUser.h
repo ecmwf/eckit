@@ -25,19 +25,16 @@ namespace eckit {
 
 class JavaUser : public eckit::net::NetUser {
 public:
-
-	JavaUser(eckit::net::TCPSocket&);
+    JavaUser(eckit::net::TCPSocket&);
 
     ~JavaUser();
 
 private:
-
     virtual void serve(eckit::Stream&, std::istream&, std::ostream&);
-
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

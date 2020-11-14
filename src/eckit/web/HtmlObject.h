@@ -27,7 +27,6 @@ class Bless;
 
 class HtmlObject {
 public:
-
     HtmlObject();
 
 #include "eckit/web/HtmlObject.b"
@@ -48,20 +47,19 @@ public:
     virtual void PATCH(std::ostream&, Url&);
 
 protected:
-
     virtual void html(std::ostream&, eckit::Url&);
 
     virtual void print(std::ostream&) const;
 
 private:
-
-    friend std::ostream& operator<<(std::ostream& s, const HtmlObject& p)
-    { p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const HtmlObject& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

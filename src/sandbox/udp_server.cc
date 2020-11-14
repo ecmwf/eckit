@@ -15,10 +15,10 @@
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/parser/JSONParser.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/Port.h"
 #include "eckit/net/UDPServer.h"
+#include "eckit/parser/JSONParser.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/utils/Translator.h"
 
@@ -54,14 +54,14 @@ void StatsServer::run() {
     Log::info() << Application::name() << " listening on port " << port_ << std::endl;
 
     // UDP real max size is (64*1024 - 1 - 8 - 20), but we round up to next 4K
-    size_t statsMaxMessageSize = eckit::Resource<size_t>("statsMaxMessageSize", 64*1024);
+    size_t statsMaxMessageSize = eckit::Resource<size_t>("statsMaxMessageSize", 64 * 1024);
     eckit::Buffer buffer(statsMaxMessageSize);
 
     for (;;) {
 
         try {
             buffer.zero();
-            size_t recv  = server.receive(buffer);
+            size_t recv = server.receive(buffer);
 
             Log::info() << "Received message " << Bytes(recv) << " : " << (const char*)buffer << std::endl;
 

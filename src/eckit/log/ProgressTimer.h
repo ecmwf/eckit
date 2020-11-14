@@ -25,27 +25,27 @@ namespace eckit {
 
 class ProgressTimer : public Timer {
 public:
-
     /// @param name of the timer, used for output
     /// @param limit counter maximum value
     /// @param unit counter unit (singular)
     /// @param countedProgress how often to output progress, based on count
     /// @param o output stream
-    ProgressTimer(const std::string& name, size_t limit, const std::string& unit, size_t progressCounted = 10000, std::ostream& o = Log::info());
+    ProgressTimer(const std::string& name, size_t limit, const std::string& unit, size_t progressCounted = 10000,
+                  std::ostream& o = Log::info());
 
     /// @param name of the timer, used for output
     /// @param limit counter maximum value
     /// @param unit counter unit (singular)
     /// @param timedProgress how often to output progress, based on elapsed time
     /// @param o output stream
-    ProgressTimer(const std::string& name, size_t limit, const std::string& unit, double progressTimed = 10., std::ostream& o = Log::info());
+    ProgressTimer(const std::string& name, size_t limit, const std::string& unit, double progressTimed = 10.,
+                  std::ostream& o = Log::info());
 
     ProgressTimer& operator++();
 
     operator bool() const;
 
-private: // members
-
+private:  // members
     const size_t limit_;
     const std::string unit_;
 
@@ -59,6 +59,6 @@ private: // members
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

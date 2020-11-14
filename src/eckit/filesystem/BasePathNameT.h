@@ -22,34 +22,28 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class BasePathNameT : public BasePathName {
 public:
+    // -- Contructors
 
-// -- Contructors
+    BasePathNameT(const T& path) : path_(path) {}
 
-	BasePathNameT(const T& path):
-		path_(path) {}
+    BasePathNameT(const char* path, bool tildeIsUserHome = false) : path_(path, tildeIsUserHome) {}
 
-	BasePathNameT(const char* path, bool tildeIsUserHome = false):
-		path_(path, tildeIsUserHome) {}
-
-	BasePathNameT(const std::string& path, bool tildeIsUserHome = false):
-		path_(path, tildeIsUserHome) {}
+    BasePathNameT(const std::string& path, bool tildeIsUserHome = false) : path_(path, tildeIsUserHome) {}
 
 protected:
+    // -- Methods
 
-// -- Methods
-
-	void print(std::ostream&) const;
+    void print(std::ostream&) const;
 
 private:
+    // -- Members
 
-// -- Members
+    T path_;
 
-	T path_;
-
-// -- Overridden methods
+    // -- Overridden methods
 
     virtual BasePathName* clone() const;
     virtual const char* localPath() const;
@@ -74,7 +68,7 @@ private:
     virtual void rmdir(bool verbose) const;
     virtual void touch() const;
     virtual void children(std::vector<BasePathName*>& files, std::vector<BasePathName*>& dirs) const;
-    virtual void match(std::vector<BasePathName*>&,bool) const;
+    virtual void match(std::vector<BasePathName*>&, bool) const;
     virtual void reserve(const Length&) const;
 
     virtual BasePathName* unique() const;
@@ -99,15 +93,17 @@ private:
     virtual const std::string& node() const;
     virtual const std::string& path() const;
 
-// -- Friends
+    // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& s,const BasePathNameT& p)	{ p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const BasePathNameT& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "eckit/filesystem/BasePathNameT.cc"
 

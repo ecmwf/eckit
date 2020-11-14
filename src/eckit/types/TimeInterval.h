@@ -25,49 +25,49 @@ namespace eckit {
 
 class TimeInterval {
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    TimeInterval(const DateTime& b = DateTime(), const DateTime& e = DateTime());
+    TimeInterval(const DateTime& b, const Second& interval);
 
-	TimeInterval(const DateTime& b=DateTime(), const DateTime& e=DateTime());
-	TimeInterval(const DateTime& b,const Second& interval);
+    // -- Convertors
 
-// -- Convertors
+    const DateTime& begin() const { return begin_; }
+    const DateTime& end() const { return end_; }
 
-	const DateTime&	begin() const { return begin_; }
-	const DateTime&	end() const { return end_; }
+    // -- Operators
+    bool operator<(const TimeInterval& other) const { return begin_ < other.begin_; }
 
-// -- Operators
-	bool operator<(const TimeInterval& other) const
-		{ return begin_ < other.begin_; }
-
-// -- Methods
-	TimeInterval intersect(const TimeInterval& other) const;
-	bool empty() const { return begin_>end_; }
+    // -- Methods
+    TimeInterval intersect(const TimeInterval& other) const;
+    bool empty() const { return begin_ > end_; }
 
 private:
+    // -- Members
 
-// -- Members
+    DateTime begin_;
+    DateTime end_;
 
-	DateTime begin_;
-	DateTime end_;
+    // -- Methods
+    void print(std::ostream&) const;
 
-// -- Methods
-	void print(std::ostream&) const;
+    // -- Friends
+    friend std::ostream& operator<<(std::ostream& s, const TimeInterval& p) {
+        p.print(s);
+        return s;
+    }
 
-// -- Friends
-	friend std::ostream& operator<<(std::ostream& s,const TimeInterval& p)
-		{ p.print(s); return s; }
-
-	friend bool operator==(const TimeInterval& p1, const TimeInterval& p2)
-		{ return p1.begin_ == p2.begin_ && p1.end_ == p2.end_; }
+    friend bool operator==(const TimeInterval& p1, const TimeInterval& p2) {
+        return p1.begin_ == p2.begin_ && p1.end_ == p2.end_;
+    }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

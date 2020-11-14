@@ -23,59 +23,53 @@ namespace eckit {
 
 //----------------------------------------------------------------------------
 
-template < class Derived >
+template <class Derived>
 class DispatchParams {
 
-public: // methods
-
+public:  // methods
     DispatchParams() {}
-    DispatchParams( Stream& s ) { NOTIMP; }
+    DispatchParams(Stream& s) { NOTIMP; }
 
     static const char* className() { return "eckit::DispatchParams"; }
 
-    template < typename T >
-    friend Params::value_t getValue( const DispatchParams<T>& p, const Params::key_t& key );
-    template < typename T >
-    friend void print( const DispatchParams<T>&, std::ostream& );
-    template < typename T >
-    friend void encode( const DispatchParams<T>&, Stream& );
+    template <typename T>
+    friend Params::value_t getValue(const DispatchParams<T>& p, const Params::key_t& key);
+    template <typename T>
+    friend void print(const DispatchParams<T>&, std::ostream&);
+    template <typename T>
+    friend void encode(const DispatchParams<T>&, Stream&);
 
-protected: // members
-
-    typedef Params::value_t ( Derived::* parametrizer_t ) ( const Params::key_t& ) const ;
-    typedef std::map< std::string, parametrizer_t > store_t;
+protected:  // members
+    typedef Params::value_t (Derived::*parametrizer_t)(const Params::key_t&) const;
+    typedef std::map<std::string, parametrizer_t> store_t;
 
     store_t dispatch_;
 };
 
-template < class Derived >
-Params::value_t getValue( const DispatchParams<Derived>& p, const Params::key_t& key )
-{
+template <class Derived>
+Params::value_t getValue(const DispatchParams<Derived>& p, const Params::key_t& key) {
     typename DispatchParams<Derived>::store_t::const_iterator i = p.dispatch_.find(key);
-    if( i != p.dispatch_.end() )
-    {
+    if (i != p.dispatch_.end()) {
         typename DispatchParams<Derived>::parametrizer_t fptr = i->second;
-        const Derived* pobj = static_cast<const Derived*>(&p);
-        return (pobj->*fptr)( key );
+        const Derived* pobj                                   = static_cast<const Derived*>(&p);
+        return (pobj->*fptr)(key);
     }
     else
         return Params::value_t();
 }
 
-template < class Derived >
-void print( const DispatchParams<Derived>&, std::ostream& )
-{
+template <class Derived>
+void print(const DispatchParams<Derived>&, std::ostream&) {
     NOTIMP;
 }
 
-template < class Derived >
-void encode( const DispatchParams<Derived>&, Stream& )
-{
+template <class Derived>
+void encode(const DispatchParams<Derived>&, Stream&) {
     NOTIMP;
 }
 
 //----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -22,19 +22,16 @@ namespace eckit {
 
 class HttpService : public eckit::net::NetService {
 public:
-
     explicit HttpService(int port, bool visible = false);
 
-    virtual ~HttpService();
+    virtual ~HttpService() override;
 
 private:
-
-    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket&) const;
-    virtual std::string name() const { return "http"; }
-
+    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket&) const override;
+    virtual std::string name() const override { return "http"; }
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

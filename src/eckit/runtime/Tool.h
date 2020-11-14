@@ -23,31 +23,27 @@ namespace eckit {
 
 class Tool : public Main {
 
-public: // methods
+public:  // methods
+    Tool(int argc, char** argv, const char* homeenv = nullptr);
 
-    Tool(int argc, char **argv, const char* homeenv = nullptr);
-
-	virtual ~Tool();
+    virtual ~Tool() override;
 
     int start();
 
-	virtual void run() = 0;
+    virtual void run() = 0;
 
-    virtual LogTarget* createWarningLogTarget() const;
-    virtual LogTarget* createErrorLogTarget() const;
+    virtual LogTarget* createWarningLogTarget() const override;
+    virtual LogTarget* createErrorLogTarget() const override;
 
-protected: // method
-
+protected:  // method
     void sendLogErrWarnToStdOut(bool send) { sendLogErrWarnToStdOut_ = send; }
 
-private: // members
-
+private:  // members
     bool sendLogErrWarnToStdOut_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

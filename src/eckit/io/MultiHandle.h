@@ -25,94 +25,91 @@ namespace eckit {
 
 class MultiHandle : public DataHandle {
 public:
+    typedef std::vector<DataHandle*> HandleList;
 
-	typedef std::vector<DataHandle*> HandleList;
+    // -- Contructors
 
-// -- Contructors
+    MultiHandle();
+    MultiHandle(const LengthList&);
+    MultiHandle(const HandleList&);
+    MultiHandle(const HandleList&, const LengthList&);
+    MultiHandle(Stream&);
 
-	MultiHandle();
-	MultiHandle(const LengthList&);
-	MultiHandle(const HandleList&);
-	MultiHandle(const HandleList&,const LengthList&);
-	MultiHandle(Stream&);
+    // -- Destructor
 
-// -- Destructor
+    virtual ~MultiHandle() override;
 
-	~MultiHandle();
+    // -- Operators
 
-// -- Operators
+    virtual void operator+=(DataHandle*);
+    virtual void operator+=(const Length&);
 
-	virtual void operator+=(DataHandle*);
-	virtual void operator+=(const Length&);
-
-// -- Overridden methods
+    // -- Overridden methods
 
     // From DataHandle
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual long read(void*,long);
-    virtual long write(const void*,long);
-    virtual void close();
-    virtual void flush();
-    virtual void rewind();
-    virtual void print(std::ostream&) const;
-    void restartReadFrom(const Offset& from);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
+    void restartReadFrom(const Offset& from) override;
 
-    virtual Offset position();
-    virtual Offset seek(const Offset&);
-    virtual bool canSeek() const;
+    virtual Offset position() override;
+    virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override;
 
-    virtual bool merge(DataHandle*);
-    virtual bool compress(bool = false);
+    virtual bool merge(DataHandle*) override;
+    virtual bool compress(bool = false) override;
 
-    virtual Length size();
-    virtual Length estimate();
-    virtual void toRemote(Stream&) const;
-    virtual void toLocal(Stream&) const;
-    virtual DataHandle* toLocal();
-    virtual void cost(std::map<std::string,Length>&, bool) const;
-    virtual std::string title() const;
-    virtual bool moveable() const;
-    virtual DataHandle* clone() const;
+    virtual Length size() override;
+    virtual Length estimate() override;
+    virtual void toRemote(Stream&) const override;
+    virtual void toLocal(Stream&) const override;
+    virtual DataHandle* toLocal() override;
+    virtual void cost(std::map<std::string, Length>&, bool) const override;
+    virtual std::string title() const override;
+    virtual bool moveable() const override;
+    virtual DataHandle* clone() const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+    // -- Members
 
-// -- Members
+    HandleList datahandles_;
+    HandleList::iterator current_;
+    LengthList::iterator curlen_;
+    LengthList length_;
+    Length written_;
+    bool read_;
 
-    HandleList              datahandles_;
-    HandleList::iterator    current_;
-    LengthList::iterator    curlen_;
-    LengthList              length_;
-    Length                  written_;
-    bool                    read_;
+    // -- Methods
 
-// -- Methods
+    void openCurrent();
+    void open();
+    long read1(char*, long);
 
-	void openCurrent();
-	void open();
-	long read1(char*,long);
+    // -- Class members
 
-// -- Class members
-
-	static  ClassSpec                 classSpec_;
-    static  Reanimator<MultiHandle>   reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<MultiHandle> reanimator_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

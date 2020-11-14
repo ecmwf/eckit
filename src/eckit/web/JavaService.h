@@ -22,20 +22,17 @@ namespace eckit {
 
 class JavaService : public eckit::net::NetService {
 public:
-
-	JavaService(int port);
+    JavaService(int port);
 
     ~JavaService();
 
 private:
-
-	virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& socket) const;
-	virtual std::string name() const { return "java"; }
-
+    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket& socket) const;
+    virtual std::string name() const { return "java"; }
 };
 
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

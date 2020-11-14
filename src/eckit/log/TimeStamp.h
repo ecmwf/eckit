@@ -17,32 +17,30 @@
 
 #include <time.h>
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 namespace eckit {
 
 
 class TimeStamp {
 
-public: // methods
+public:  // methods
+    TimeStamp(const std::string& = defaultFormat_);
+    TimeStamp(time_t, const std::string& = defaultFormat_);
 
-	TimeStamp(const std::string& = defaultFormat_);
-	TimeStamp(time_t,const std::string& = defaultFormat_);
+    operator std::string() const;
 
-	operator std::string() const;
+    friend std::ostream& operator<<(std::ostream&, const TimeStamp&);
 
-	friend std::ostream& operator<<(std::ostream&,const TimeStamp&);
+private:  // members
+    time_t time_;
+    const std::string& format_;
 
-private: // members
-
-	time_t        time_;
-	const std::string& format_;
-
-	static const char* defaultFormat_;
+    static const char* defaultFormat_;
 };
 
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

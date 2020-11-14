@@ -107,12 +107,12 @@ public:
 
 template <class T>
 class HashBuilder : public HashBuilderBase {
-    virtual Hash* make() { return new T(); }
-    virtual Hash* make(const std::string& param) { return new T(param); }
+    virtual Hash* make() override { return new T(); }
+    virtual Hash* make(const std::string& param) override { return new T(param); }
 
 public:
     HashBuilder(const std::string& name) : HashBuilderBase(name) {}
-    virtual ~HashBuilder() = default;
+    virtual ~HashBuilder() override = default;
 };
 
 class HashFactory {

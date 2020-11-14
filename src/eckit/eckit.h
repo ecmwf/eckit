@@ -27,10 +27,9 @@
 /* Usefull macros */
 
 #ifndef NUMBER
-#define NUMBER(x) (sizeof(x)/sizeof(x[0]))
+#define NUMBER(x) (sizeof(x) / sizeof(x[0]))
 #endif
 
 //--------------------------------------------------------------------------------------------------
 
 #endif
-

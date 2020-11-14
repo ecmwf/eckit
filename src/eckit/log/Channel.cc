@@ -18,8 +18,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 Channel::Channel(LogTarget* target) :
-    std::ostream(new ChannelBuffer()),
-    buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
+    std::ostream(new ChannelBuffer()), buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
     ASSERT(buffer_);
     if (target) {
         buffer_->setTarget(target);

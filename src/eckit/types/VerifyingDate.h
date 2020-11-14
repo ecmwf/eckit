@@ -23,65 +23,63 @@ namespace eckit {
 
 class VerifyingDate : public DateTime {
 public:
+    // -- Contructors
 
-// -- Contructors
-
-	VerifyingDate(time_t = ::time(0));
-	VerifyingDate(const Date&, const Time&);
-	VerifyingDate(const std::string&);
-	VerifyingDate(const DateTime&);
+    VerifyingDate(time_t = ::time(0));
+    VerifyingDate(const Date&, const Time&);
+    VerifyingDate(const std::string&);
+    VerifyingDate(const DateTime&);
 
 #include "eckit/types/VerifyingDate.b"
 
-// -- Destructor
+    // -- Destructor
 
-	~VerifyingDate() {}
+    ~VerifyingDate() {}
 
-// -- Operators
+    // -- Operators
 
-	operator std::string() const;
+    operator std::string() const;
 
-// -- Methods
+    // -- Methods
 
-	// -- Class methods
+    // -- Class methods
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // -- Members
 
-// -- Members
+    // -- Methods
 
-// -- Methods
+    void print(std::ostream&) const;
 
-	void print(std::ostream&) const;
+    // -- Class methods
 
-// -- Class methods
+    // -- Friends
 
-// -- Friends
-
-	friend std::ostream& operator<<(std::ostream& s,const VerifyingDate& p)
-		{ p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const VerifyingDate& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

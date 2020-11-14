@@ -14,8 +14,8 @@
 #ifndef eckit_Timer_h
 #define eckit_Timer_h
 
-#include <time.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
@@ -26,16 +26,15 @@ namespace eckit {
 
 class Timer : private NonCopyable {
 public:
-
     explicit Timer();
 
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
-    explicit Timer( const std::string& name, std::ostream& o = Log::info() );
+    explicit Timer(const std::string& name, std::ostream& o = Log::info());
 
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
-    explicit Timer( const char* name, std::ostream& o = Log::info() );
+    explicit Timer(const char* name, std::ostream& o = Log::info());
 
     ~Timer();
 
@@ -51,34 +50,32 @@ public:
 
     void report(const std::string& message = "");
 
-protected: // methods
-
+protected:  // methods
     void takeTime();
 
     std::ostream& output() { return out_ << name_ << ": "; }
 
-private: // members
+private:  // members
+    std::string name_;
 
-    std::string    name_;
-
-    bool           stopped_;
-    bool           outputAtExit_;
+    bool stopped_;
+    bool outputAtExit_;
 
     struct ::timeval timeStart_;
     struct ::timeval timeStop_;
 
-    clock_t        cpuStart_;
-    clock_t        cpuStop_;
+    clock_t cpuStart_;
+    clock_t cpuStop_;
 
-    std::ostream&  out_;
+    std::ostream& out_;
 };
 
 //-----------------------------------------------------------------------------
 
-::timeval operator-(const ::timeval&,const ::timeval&);
+::timeval operator-(const ::timeval&, const ::timeval&);
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

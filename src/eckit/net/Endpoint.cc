@@ -12,9 +12,9 @@
 
 #include <ostream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
@@ -28,14 +28,11 @@ Endpoint::Endpoint(const std::string& s) {
     tokenize(s, tokens);
     ASSERT(tokens.size() == 2);
     host_ = tokens[0];
-    port_     = Translator<std::string, int>()(tokens[1]);
+    port_ = Translator<std::string, int>()(tokens[1]);
     validate();
 }
 
-Endpoint::Endpoint(const std::string& host, int port) :
-    host_(host),
-    port_(port)
-{
+Endpoint::Endpoint(const std::string& host, int port) : host_(host), port_(port) {
     validate();
 }
 
@@ -57,13 +54,12 @@ void Endpoint::print(std::ostream& os) const {
     os << host_ << ":" << port_;
 }
 
-void Endpoint::encode(Stream &s) const {
+void Endpoint::encode(Stream& s) const {
     s << host_;
     s << port_;
 }
 
-void Endpoint::validate() const
-{
+void Endpoint::validate() const {
     // IP ranges are valid 1 - 65535
     if (port_ < 0 or port_ > 65535) {
         std::ostringstream msg;
@@ -74,6 +70,5 @@ void Endpoint::validate() const
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace net
-} // namespace eckit
-
+}  // namespace net
+}  // namespace eckit

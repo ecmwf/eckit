@@ -24,15 +24,13 @@ namespace eckit {
 
 class Password {
 public:
-
-	static bool check(const std::string&,const std::string&);
-	static std::string salt(const std::string&);
-
+    static bool check(const std::string&, const std::string&);
+    static std::string salt(const std::string&);
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

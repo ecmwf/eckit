@@ -9,9 +9,9 @@
  */
 
 #include <unistd.h>
-#include <string>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"

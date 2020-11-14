@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -23,30 +23,30 @@ namespace function {
 
 class FunctionIntegerExpression : public FunctionExpression {
 public:
-	static void registerIntegerFunctions();
+    static void registerIntegerFunctions();
 
-	FunctionIntegerExpression(const std::string&,const expression::Expressions&);
-	~FunctionIntegerExpression(); 
+    FunctionIntegerExpression(const std::string&, const expression::Expressions&);
+    ~FunctionIntegerExpression();
 
-// -- Overridden methods
-	virtual const eckit::sql::type::SQLType* type() const;
-	virtual void output(std::ostream& s) const;
+    // -- Overridden methods
+    virtual const eckit::sql::type::SQLType* type() const override;
+    virtual void output(std::ostream& s) const;
 
     static int arity() { return 1; }
 
 private:
-// No copy allowed
-	FunctionIntegerExpression(const FunctionIntegerExpression&);
-	FunctionIntegerExpression& operator=(const FunctionIntegerExpression&);
+    // No copy allowed
+    FunctionIntegerExpression(const FunctionIntegerExpression&);
+    FunctionIntegerExpression& operator=(const FunctionIntegerExpression&);
 
-// -- Friends
-	//friend std::ostream& operator<<(std::ostream& s,const FunctionIntegerExpression& p)
-	//	{ p.print(s); return s; }
+    // -- Friends
+    // friend std::ostream& operator<<(std::ostream& s,const FunctionIntegerExpression& p)
+    //	{ p.print(s); return s; }
 };
 
-} // namespace function
-} // namespace expression 
-} // namespace sql
-} // namespace eckit
+}  // namespace function
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit
 
 #endif

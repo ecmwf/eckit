@@ -18,7 +18,6 @@
 #include "eckit/web/HtmlResource.h"
 
 
-
 namespace eckit {
 
 //-----------------------------------------------------------------------------
@@ -28,31 +27,28 @@ class Url;
 
 class HttpServer : public HtmlResource {
 public:
+    // -- Contructors
 
-// -- Contructors
+    HttpServer(int port, bool visible = false);
 
-	HttpServer(int port, bool visible=false);
+    // -- Destructor
 
-// -- Destructor
-
-	~HttpServer();
+    ~HttpServer();
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    HttpServer(const HttpServer&);
+    HttpServer& operator=(const HttpServer&);
 
-	HttpServer(const HttpServer&);
-	HttpServer& operator=(const HttpServer&);
+    // -- Members
 
-// -- Members
-
-	eckit::ThreadControler http_;
-
+    eckit::ThreadControler http_;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

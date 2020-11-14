@@ -22,23 +22,23 @@ namespace eckit {
 
 // Use this class to pad an object to a given size
 
-template<class T,int size>
+template <class T, int size>
 class Padded : public T {
 private:
+    // Add the padding
 
-	// Add the padding
+    enum
+    {
+        align_ = size,
+        osize_ = sizeof(T)
+    };
 
-    enum {
-			align_ = size,
-			osize_ = sizeof(T)
-	};
-
-	char padding_[((size_t(osize_)+size_t(align_)-1)/align_)*align_ - osize_];
+    char padding_[((size_t(osize_) + size_t(align_) - 1) / align_) * align_ - osize_];
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

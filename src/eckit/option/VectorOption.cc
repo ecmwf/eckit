@@ -32,9 +32,7 @@ namespace option {
 template <class T>
 VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
                               const char* separator) :
-    Option(name, description),
-    size_(size),
-    separator_(separator) {}
+    Option(name, description), size_(size), separator_(separator) {}
 
 
 template <class T>

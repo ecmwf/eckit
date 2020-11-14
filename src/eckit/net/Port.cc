@@ -21,4 +21,3 @@ Port::Port(const std::string& name, int port) : port_(port) {
 
 }  // namespace net
 }  // namespace eckit
-

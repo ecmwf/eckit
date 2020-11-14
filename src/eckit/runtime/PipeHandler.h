@@ -46,7 +46,6 @@ protected:  // methods
     bool canPick();
 
 private:  // methods
-
     virtual void endBatch(Stream&);
 
     void send(Request*);

@@ -21,14 +21,10 @@ namespace function {
 static FunctionBuilder<FunctionSUM> sumFunctionBuilder("sum");
 
 FunctionSUM::FunctionSUM(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    value_(0),
-    resultNULL_(true) {}
+    FunctionExpression(name, args), value_(0), resultNULL_(true) {}
 
 FunctionSUM::FunctionSUM(const FunctionSUM& other) :
-    FunctionExpression(other.name_, other.args_),
-    value_(other.value_),
-    resultNULL_(other.resultNULL_) {}
+    FunctionExpression(other.name_, other.args_), value_(other.value_), resultNULL_(other.resultNULL_) {}
 
 FunctionSUM::~FunctionSUM() {}
 

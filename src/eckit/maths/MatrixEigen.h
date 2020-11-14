@@ -29,39 +29,31 @@ namespace maths {
 /// Eigen::ColMajor is also Eigen's default (recommended) storage ordering.
 /// Furthermore it is directly compatible with Fortran matrix manipulation routines
 template <typename scalar, typename index = std::ptrdiff_t>
-class Matrix : public Eigen::Matrix<scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor>
-{
-	typedef Eigen::Matrix<scalar,Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor> Base;
-public:
-	typedef typename Base::MapType Proxy;
-	typedef typename Base::ConstMapType ConstProxy;
+class Matrix : public Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> {
+    typedef Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> Base;
 
 public:
+    typedef typename Base::MapType Proxy;
+    typedef typename Base::ConstMapType ConstProxy;
 
-	// Default constructor
-	Matrix(void)
-		: Base()
-	{ }
+public:
+    // Default constructor
+    Matrix(void) : Base() {}
 
-	// Constructor that allocates matrix with sizes
-	template<typename T0, typename T1>
-	Matrix(const T0& x, const T1& y)
-		: Base(x,y)
-	{ }
+    // Constructor that allocates matrix with sizes
+    template <typename T0, typename T1>
+    Matrix(const T0& x, const T1& y) : Base(x, y) {}
 
-	// This constructor allows you to construct Matrix from Eigen expressions
-	template<typename OtherDerived>
-	Matrix(const Eigen::MatrixBase<OtherDerived>& other)
-		: Base(other)
-	{ }
+    // This constructor allows you to construct Matrix from Eigen expressions
+    template <typename OtherDerived>
+    Matrix(const Eigen::MatrixBase<OtherDerived>& other) : Base(other) {}
 
-	// This method allows you to assign Eigen expressions to Matrix
-	template<typename OtherDerived>
-	Matrix& operator= (const Eigen::MatrixBase <OtherDerived>& other)
-	{
-		this->Base::operator=(other);
-		return *this;
-	}
+    // This method allows you to assign Eigen expressions to Matrix
+    template <typename OtherDerived>
+    Matrix& operator=(const Eigen::MatrixBase<OtherDerived>& other) {
+        this->Base::operator=(other);
+        return *this;
+    }
 };
 
 //========================================================================================
@@ -70,37 +62,30 @@ public:
 ///
 /// This class is inherited from Eigen's matrix class
 template <typename scalar, typename index = std::ptrdiff_t>
-class RowVector : public Eigen::Matrix<scalar,1,Eigen::Dynamic>
-{
-	typedef Eigen::Matrix<scalar,1,Eigen::Dynamic> Base;
+class RowVector : public Eigen::Matrix<scalar, 1, Eigen::Dynamic> {
+    typedef Eigen::Matrix<scalar, 1, Eigen::Dynamic> Base;
+
 public:
-	typedef typename Base::MapType Proxy;
+    typedef typename Base::MapType Proxy;
+
 public:
+    // Default constructor
+    RowVector(void) : Base() {}
 
-	// Default constructor
-	RowVector(void)
-		: Base()
-	{ }
+    // Constructor that allocates matrix with sizes
+    template <typename T>
+    RowVector(const T& x) : Base(x) {}
 
-	// Constructor that allocates matrix with sizes
-	template<typename T>
-	RowVector(const T& x)
-		: Base(x)
-	{ }
+    // This constructor allows you to construct Matrix from Eigen expressions
+    template <typename OtherDerived>
+    RowVector(const Eigen::MatrixBase<OtherDerived>& other) : Base(other) {}
 
-	// This constructor allows you to construct Matrix from Eigen expressions
-	template<typename OtherDerived>
-	RowVector(const Eigen::MatrixBase<OtherDerived>& other)
-		: Base(other)
-	{ }
-
-	// This method allows you to assign Eigen expressions to Matrix
-	template<typename OtherDerived>
-	RowVector& operator= (const Eigen::MatrixBase <OtherDerived>& other)
-	{
-		this->Base::operator=(other);
-		return *this;
-	}
+    // This method allows you to assign Eigen expressions to Matrix
+    template <typename OtherDerived>
+    RowVector& operator=(const Eigen::MatrixBase<OtherDerived>& other) {
+        this->Base::operator=(other);
+        return *this;
+    }
 };
 
 //========================================================================================
@@ -109,43 +94,36 @@ public:
 ///
 /// This class is inherited from Eigen's matrix class
 template <typename scalar, typename index = std::ptrdiff_t>
-class ColVector : public Eigen::Matrix<scalar,Eigen::Dynamic,1>
-{
-	typedef Eigen::Matrix<scalar,Eigen::Dynamic,1> Base;
+class ColVector : public Eigen::Matrix<scalar, Eigen::Dynamic, 1> {
+    typedef Eigen::Matrix<scalar, Eigen::Dynamic, 1> Base;
+
 public:
-	typedef typename Base::MapType Proxy;
+    typedef typename Base::MapType Proxy;
+
 public:
+    // Default constructor
+    ColVector(void) : Base() {}
 
-	// Default constructor
-	ColVector(void)
-		: Base()
-	{ }
+    // Constructor that allocates matrix with sizes
+    template <typename T>
+    ColVector(const T& x) : Base(x) {}
 
-	// Constructor that allocates matrix with sizes
-	template<typename T>
-	ColVector(const T& x)
-		: Base(x)
-	{ }
+    // This constructor allows you to construct Matrix from Eigen expressions
+    template <typename OtherDerived>
+    ColVector(const Eigen::MatrixBase<OtherDerived>& other) : Base(other) {}
 
-	// This constructor allows you to construct Matrix from Eigen expressions
-	template<typename OtherDerived>
-	ColVector(const Eigen::MatrixBase<OtherDerived>& other)
-		: Base(other)
-	{ }
-
-	// This method allows you to assign Eigen expressions to Matrix
-	template<typename OtherDerived>
-	ColVector& operator= (const Eigen::MatrixBase <OtherDerived>& other)
-	{
-		this->Base::operator=(other);
-		return *this;
-	}
+    // This method allows you to assign Eigen expressions to Matrix
+    template <typename OtherDerived>
+    ColVector& operator=(const Eigen::MatrixBase<OtherDerived>& other) {
+        this->Base::operator=(other);
+        return *this;
+    }
 };
 
 //========================================================================================
 
-} // namespace maths
+}  // namespace maths
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -35,8 +35,7 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 Configuration::Configuration(const Configuration& other, const std::string& path) :
-    root_(new Value(*other.root_)),
-    separator_(other.separator_) {
+    root_(new Value(*other.root_)), separator_(other.separator_) {
     bool found = false;
     *root_     = lookUp(path, found);
     if (!found)
@@ -44,12 +43,10 @@ Configuration::Configuration(const Configuration& other, const std::string& path
 }
 
 Configuration::Configuration(const Configuration& other) :
-    root_(new Value(*other.root_)),
-    separator_(other.separator_) {}
+    root_(new Value(*other.root_)), separator_(other.separator_) {}
 
 Configuration::Configuration(const eckit::Value& root, char separator) :
-    root_(new Value(root)),
-    separator_(separator) {}
+    root_(new Value(root)), separator_(separator) {}
 
 Configuration& Configuration::operator=(const Configuration& other) {
     *root_     = *other.root_;
@@ -59,7 +56,9 @@ Configuration& Configuration::operator=(const Configuration& other) {
 
 Configuration::~Configuration() {}
 
-bool Configuration::empty() const {return root_->isNil() || root_->keys().size() == 0;}
+bool Configuration::empty() const {
+    return root_->isNil() || root_->keys().size() == 0;
+}
 
 char Configuration::separator() const {
     return separator_;

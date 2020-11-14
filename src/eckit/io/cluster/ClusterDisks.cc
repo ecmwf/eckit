@@ -23,11 +23,11 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/memory/Zero.h"
 #include "eckit/log/JSON.h"
+#include "eckit/memory/Zero.h"
+#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
 
@@ -43,9 +43,7 @@ class ClusterDisk {
 
 public:
     ClusterDisk(const std::string& node, const std::string& type, const std::string& path) :
-        active_(true),
-        offLine_(false),
-        lastSeen_(::time(0)) {
+        active_(true), offLine_(false), lastSeen_(::time(0)) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
         zero(type_);
@@ -64,7 +62,7 @@ public:
         int cmp = ::strcmp(path_, other.path_);
         // n.b. We do NOT compare the node. It is legitimate for a path to move to
         //      another node.
-        //if (cmp == 0) cmp = ::strcmp(node_, other.node_);
+        // if (cmp == 0) cmp = ::strcmp(node_, other.node_);
         return cmp;
     }
 
@@ -199,8 +197,7 @@ class SharedMemoryDiskArray : public DiskArray {
 
 public:
     SharedMemoryDiskArray(const PathName& path, const std::string& name, unsigned long size) :
-        DiskArray(),
-        map_(path, name, size) {}
+        DiskArray(), map_(path, name, size) {}
 };
 
 static DiskArray* clusterDisks = nullptr;
@@ -220,7 +217,7 @@ static void diskarray_init() {
 
     if (diskArrayType == "SharedMemory") {
         std::string shmpath = eckit::system::SystemInfo::instance().userName() + "-etc-cluster-disks";
-        clusterDisks = new SharedMemoryDiskArray(path, shmpath, disksArraySize);
+        clusterDisks        = new SharedMemoryDiskArray(path, shmpath, disksArraySize);
         return;
     }
 
@@ -460,7 +457,8 @@ void ClusterDisks::receive(Stream& s) {
     while (true) {
 
         s >> more;
-        if (!more) break;
+        if (!more)
+            break;
 
         ASSERT(k != clusterDisks->end());
         (*k).receive(s);

@@ -27,7 +27,7 @@ struct sembuf _lock[] = {
 
 struct sembuf _try_lock[] = {
     {0, 0, SEM_UNDO | IPC_NOWAIT}, /* test */
-    {0, 1, SEM_UNDO}, /* lock */
+    {0, 1, SEM_UNDO},              /* lock */
 };
 
 struct sembuf _unlock[] = {

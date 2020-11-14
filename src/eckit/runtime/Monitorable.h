@@ -26,38 +26,36 @@ class JSON;
 
 class Monitorable : public ClassExtent<Monitorable> {
 public:
+    Monitorable();
 
-	Monitorable();
+    // -- Destructor
 
-// -- Destructor
+    virtual ~Monitorable();
 
-	virtual ~Monitorable();
+    // -- Methods
 
-// -- Methods
+    virtual void json(JSON&) const = 0;
+    virtual void status(std::ostream&) const;
 
-	virtual void json(JSON&) const = 0;
-	virtual void status(std::ostream&) const;
+    // -- Class methods
 
-// -- Class methods
-
-	static void allStatuses(std::ostream&);
-	static void allJSON(JSON&);
+    static void allStatuses(std::ostream&);
+    static void allJSON(JSON&);
 
 protected:
+    // -- Methods
 
-// -- Methods
-
-	virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const;
 
 private:
-
-	friend std::ostream& operator<<(std::ostream& s,const Monitorable& p)
-		{ p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const Monitorable& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

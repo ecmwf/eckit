@@ -31,48 +31,43 @@ namespace eckit {
 
 class FstreamStream : public Stream {
 public:
+    // -- Contructors
 
-// -- Contructors
+    FstreamStream(std::fstream& f) : f_(f) {}
 
-	FstreamStream(std::fstream& f) : f_(f) {}
+    // -- Destructor
 
-// -- Destructor
-
-	~FstreamStream() {}
+    ~FstreamStream() {}
 
 private:
+    // -- Members
 
-// -- Members
+    std::fstream& f_;
 
-	std::fstream& f_;
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From Stream
 
-	// From Stream
+    virtual long write(const void* buf, long len) {
+        std::streampos here = f_.tellp();
+        f_.write(static_cast<const char*>(buf), len);
+        ASSERT(!f_.bad());
+        return f_.tellp() - here;
+    }
 
-	virtual long write(const void* buf, long len) {
-		std::streampos here = f_.tellp();
-		f_.write(static_cast<const char*>(buf), len);
-		ASSERT(!f_.bad());
-		return f_.tellp() - here;
-	}
+    virtual long read(void* buf, long len) {
+        std::streampos here = f_.tellp();
+        f_.read(static_cast<char*>(buf), len);
+        ASSERT(!f_.eof() && !f_.bad());
+        return f_.tellp() - here;
+    }
 
-	virtual long read(void* buf, long len) {
-		std::streampos here = f_.tellp();
-		f_.read(static_cast<char*>(buf), len);
-		ASSERT(!f_.eof() && !f_.bad());
-		return f_.tellp() - here;
-	}
-
-	virtual std::string name() const {
-		return "FstreamStream";
-	}
-
+    virtual std::string name() const { return "FstreamStream"; }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

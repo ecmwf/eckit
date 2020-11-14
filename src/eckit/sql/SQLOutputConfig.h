@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -33,15 +33,10 @@ class SQLOutput;
 
 class SQLOutputConfig {
 
-public: // methods
-
-    SQLOutputConfig(bool noColumnNames=false,
-                    bool noNULL=false,
-                    const std::string& delimiter=defaultDelimiter,
-                    const std::string& format=defaultOutputFormat,
-                    bool bitfieldsBinary=false,
-                    bool noColumnAlignment=false,
-                    bool fullPrecision=false);
+public:  // methods
+    SQLOutputConfig(bool noColumnNames = false, bool noNULL = false, const std::string& delimiter = defaultDelimiter,
+                    const std::string& format = defaultOutputFormat, bool bitfieldsBinary = false,
+                    bool noColumnAlignment = false, bool fullPrecision = false);
 
     virtual ~SQLOutputConfig();
 
@@ -57,17 +52,16 @@ public: // methods
     const std::string& outputFormat() const;
     bool doNotWriteNULL() const;
     bool fullPrecision() const;
-    bool displayBitfieldsBinary () const;
-    bool disableAlignmentOfColumns () const;
-    bool doNotWriteColumnNames () const;
+    bool displayBitfieldsBinary() const;
+    bool disableAlignmentOfColumns() const;
+    bool doNotWriteColumnNames() const;
 
     // Defaults!
 
     static const char* defaultDelimiter;
     static const char* defaultOutputFormat;
 
-protected: // members
-
+protected:  // members
     eckit::PathName outputFile_;
 
     bool doNotWriteColumnNames_;
@@ -136,7 +130,7 @@ protected: // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

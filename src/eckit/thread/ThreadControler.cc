@@ -26,11 +26,7 @@ namespace eckit {
 
 
 ThreadControler::ThreadControler(Thread* proc, bool detached, size_t stack) :
-    detached_(detached),
-    thread_(0),
-    proc_(proc),
-    stack_(stack),
-    running_(false) {
+    detached_(detached), thread_(0), proc_(proc), stack_(stack), running_(false) {
     // cout << "ThreadControler::ThreadControler(" << this << ")" << " " << hex << pthread_self() << std::endl;
 }
 

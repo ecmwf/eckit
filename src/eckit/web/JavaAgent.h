@@ -25,62 +25,67 @@ namespace eckit {
 
 class JavaAgent : public eckit::Streamable {
 public:
+    enum
+    {
+        none,
+        user,
+        oper,
+        admin,
+        root
+    };
 
-	enum { none, user, oper, admin, root };
+    // -- Contructors
 
-// -- Contructors
+    JavaAgent(eckit::Stream&);
 
-	JavaAgent(eckit::Stream&);
+    // -- Destructor
 
-// -- Destructor
+    virtual ~JavaAgent() override;
 
-	virtual ~JavaAgent();
+    // -- Methods
 
-// -- Methods
+    void startObject(const std::string&);
+    void endObject();
+    eckit::Stream& stream() { return stream_; }
 
-	void startObject(const std::string&);
-	void endObject();
-	eckit::Stream& stream()  { return stream_; }
+    virtual void execute(eckit::Stream&, std::istream&, std::ostream&) = 0;
+    virtual int clearance()                                            = 0;
 
-	virtual void execute(eckit::Stream&,std::istream&,std::ostream&) = 0;
-	virtual int  clearance() = 0;
+    // -- Overridden methods
 
-// -- Overridden methods
+    virtual void encode(eckit::Stream&) const override;
+    virtual const eckit::ReanimatorBase& reanimator() const override { return reanimator_; }
 
-    virtual void encode(eckit::Stream&) const;
-	virtual const eckit::ReanimatorBase& reanimator() const { return reanimator_; }
+    // -- Class methods
 
-// -- Class methods
+    static const eckit::ClassSpec& classSpec() { return classSpec_; }
+    static void serve(eckit::Stream&, std::istream&, std::ostream&);
 
-    static  const eckit::ClassSpec&  classSpec()        { return classSpec_;}
-	static void serve(eckit::Stream&,std::istream&,std::ostream&);
+protected:  // members
+    eckit::Stream& stream_;
+    std::string user_;
 
-protected: // members
+protected:  // methods
+    virtual void print(std::ostream&) const = 0;
 
-	eckit::Stream& stream_;
-	std::string  user_;
+private:  // members
+    static eckit::ClassSpec classSpec_;
+    static eckit::Reanimator<JavaAgent> reanimator_;
 
-protected: // methods
+private:  // methods
+    friend std::ostream& operator<<(std::ostream& s, const JavaAgent& p) {
+        p.print(s);
+        return s;
+    }
 
-	virtual void print(std::ostream&) const = 0;
-
-private: // members
-
-    static  eckit::ClassSpec               classSpec_;
-	static eckit::Reanimator<JavaAgent>  reanimator_;
-
-private: // methods
-
-	friend std::ostream& operator<<(std::ostream& s,const JavaAgent& p)
-		{ p.print(s); return s; }
-
-	friend class JavaUser;
+    friend class JavaUser;
 };
 
-template<> Streamable* Reanimator<JavaAgent>::ressucitate(Stream& s) const;
+template <>
+Streamable* Reanimator<JavaAgent>::ressucitate(Stream& s) const;
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

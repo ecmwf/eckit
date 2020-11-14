@@ -393,34 +393,34 @@ CASE("Parsing uri (authority)") {
         EXPECT(uri.asRawString() == "https://localhost:123/path");
         EXPECT(uri.asString() == "https://localhost:123/path");
     }
-/*    {
-        URI uri("marsfs://nodename/path");
-        EXPECT(uri.scheme() == "marsfs");
-        EXPECT(uri.authority().empty());
-        EXPECT(uri.user().empty());
-        EXPECT(uri.host().empty());
-        EXPECT(uri.port() == -1);
-        EXPECT(uri.name() == "//nodename/path");
-        EXPECT(uri.path() == "marsfs://nodename/path");
-        EXPECT(uri.query().empty());
-        EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "marsfs://nodename/path");
-        EXPECT(uri.asString() == "marsfs://nodename/path");
-    }
-    {
-        URI uri("marsfs://localhost:123/path");
-        EXPECT(uri.scheme() == "marsfs");
-        EXPECT(uri.authority().empty());
-        EXPECT(uri.user().empty());
-        EXPECT(uri.host().empty());
-        EXPECT(uri.port() == -1);
-        EXPECT(uri.name() == "//localhost:123/path");
-        EXPECT(uri.path() == "marsfs://localhost:123/path");
-        EXPECT(uri.query().empty());
-        EXPECT(uri.fragment().empty());
-        EXPECT(uri.asRawString() == "marsfs://localhost:123/path");
-        EXPECT(uri.asString() == "marsfs://localhost:123/path");
-    }*/
+    /*    {
+            URI uri("marsfs://nodename/path");
+            EXPECT(uri.scheme() == "marsfs");
+            EXPECT(uri.authority().empty());
+            EXPECT(uri.user().empty());
+            EXPECT(uri.host().empty());
+            EXPECT(uri.port() == -1);
+            EXPECT(uri.name() == "//nodename/path");
+            EXPECT(uri.path() == "marsfs://nodename/path");
+            EXPECT(uri.query().empty());
+            EXPECT(uri.fragment().empty());
+            EXPECT(uri.asRawString() == "marsfs://nodename/path");
+            EXPECT(uri.asString() == "marsfs://nodename/path");
+        }
+        {
+            URI uri("marsfs://localhost:123/path");
+            EXPECT(uri.scheme() == "marsfs");
+            EXPECT(uri.authority().empty());
+            EXPECT(uri.user().empty());
+            EXPECT(uri.host().empty());
+            EXPECT(uri.port() == -1);
+            EXPECT(uri.name() == "//localhost:123/path");
+            EXPECT(uri.path() == "marsfs://localhost:123/path");
+            EXPECT(uri.query().empty());
+            EXPECT(uri.fragment().empty());
+            EXPECT(uri.asRawString() == "marsfs://localhost:123/path");
+            EXPECT(uri.asString() == "marsfs://localhost:123/path");
+        }*/
 }
 
 CASE("Stream") {

@@ -24,11 +24,9 @@ namespace linalg {
 
 class LinearAlgebraLAPACK : public LinearAlgebra {
 public:
-
     LinearAlgebraLAPACK();
 
 private:
-
     // Overridden methods
 
     Scalar dot(const Vector&, const Vector&) const;
@@ -39,7 +37,6 @@ private:
     void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
 
     void print(std::ostream&) const;
-
 };
 
 //-----------------------------------------------------------------------------

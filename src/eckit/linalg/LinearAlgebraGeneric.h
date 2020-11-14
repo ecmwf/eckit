@@ -28,23 +28,21 @@ public:
     LinearAlgebraGeneric();
 
 private:
-
     // Overridden methods
 
-    virtual Scalar dot(const Vector&, const Vector&) const;
-    virtual void gemv(const Matrix&, const Vector&, Vector&) const;
-    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
-    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const;
-    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
-    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
+    virtual Scalar dot(const Vector&, const Vector&) const override;
+    virtual void gemv(const Matrix&, const Vector&, Vector&) const override;
+    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const override;
+    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
+    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
+    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
 
-    virtual void print(std::ostream&) const;
-
+    virtual void print(std::ostream&) const override;
 };
 
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
-} // namespace eckit
+}  // namespace eckit
 
 #endif

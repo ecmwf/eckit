@@ -29,39 +29,36 @@ namespace eckit {
 
 class MutexCond : private NonCopyable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    MutexCond(char tag = ' ');
 
-	MutexCond(char tag = ' ');
+    // -- Destructor
 
-// -- Destructor
+    ~MutexCond();
 
-	~MutexCond();
+    // -- Methods
 
-// -- Methods
-
-	void lock();
-	void unlock();
-	void wait();
-	void signal();
-	void broadcast();
-	bool wait(int);
-	char tag() const { return tag_; }
+    void lock();
+    void unlock();
+    void wait();
+    void signal();
+    void broadcast();
+    bool wait(int);
+    char tag() const { return tag_; }
 
 private:
+    // -- Members
 
-// -- Members
-
-	pthread_mutex_t mutex_;
-	pthread_cond_t  cond_;
-	char tag_;
-	bool inited_;
-
+    pthread_mutex_t mutex_;
+    pthread_cond_t cond_;
+    char tag_;
+    bool inited_;
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

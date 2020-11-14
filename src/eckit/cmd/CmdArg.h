@@ -11,9 +11,9 @@
 #ifndef eckit_cmd_CmdArg_H
 #define eckit_cmd_CmdArg_H
 
+#include "eckit/config/Resource.h"
 #include "eckit/serialisation/Streamable.h"
 #include "eckit/value/Value.h"
-#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 
@@ -111,6 +111,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -32,14 +32,14 @@ public:
 
     ColouringTarget(LogTarget* target, colourproc begin, colourproc end = &Colour::reset);
 
-    virtual ~ColouringTarget();
+    virtual ~ColouringTarget() override;
 
 protected:
-    void print(std::ostream& s) const;
+    void print(std::ostream& s) const override;
 
 private:
-    virtual void writePrefix();
-    virtual void writeSuffix();
+    virtual void writePrefix() override;
+    virtual void writeSuffix() override;
 
     std::string begin_;
     std::string end_;

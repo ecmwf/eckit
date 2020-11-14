@@ -47,14 +47,14 @@ private:
 
     // From CmdResource
 
-    virtual void execute(std::istream&, std::ostream&, CmdArg&);
+    virtual void execute(std::istream&, std::ostream&, CmdArg&) override;
 
-    virtual void help(std::ostream&) const;
-    virtual Arg usage(const std::string& cmd) const;
+    virtual void help(std::ostream&) const override;
+    virtual Arg usage(const std::string& cmd) const override;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

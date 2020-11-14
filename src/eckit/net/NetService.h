@@ -37,7 +37,7 @@ public:
     /// @returns port to which this server is answering
     int port() const;
 
-    virtual void run();
+    virtual void run() override;
 
 private:
     TCPServer server_;

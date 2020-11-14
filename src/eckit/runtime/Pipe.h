@@ -110,7 +110,7 @@ class PipeTask : public Thread {
 
 public:
     PipeTask(Proc&, Pipe<PAYLOAD>&, OnePayload<PAYLOAD>*);
-    virtual void run();
+    virtual void run() override;
 };
 
 

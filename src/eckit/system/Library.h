@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_system_Library_H
-#define eckit_system_Library_H
+#pragma once
 
 #include <iosfwd>
 #include <memory>
@@ -59,8 +58,6 @@ public:  // methods
     virtual Channel& debugChannel() const;
 
     virtual const Configuration& configuration() const;
-
-    virtual bool isPlugin() const { return false; }
 
 public:  // methods
 
@@ -123,5 +120,3 @@ struct LibraryRegistration {
 
 }  // namespace system
 }  // namespace eckit
-
-#endif

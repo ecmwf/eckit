@@ -57,33 +57,41 @@ public:  // methods
     void enregister(const std::string& name, Library* obj) {
         AutoLock<Mutex> lockme(mutex_);
         ASSERT(obj);
-        ASSERT(map_.find(name) == map_.end());
-        map_[name] = obj;
+        ASSERT(libs_.find(name) == libs_.end());
+        libs_[name] = obj;
     }
 
     /// Removes an entry from the registry
     /// @pre Must exist
     void deregister(const std::string& name) {
         AutoLock<Mutex> lockme(mutex_);
-        ASSERT(map_.find(name) != map_.end());
-        map_.erase(name);
+        ASSERT(libs_.find(name) != libs_.end());
+        libs_.erase(name);
     }
 
     /// List entries in library
     std::vector<std::string> list() const {
         AutoLock<Mutex> lockme(mutex_);
         std::vector<std::string> result;
-        for (LibraryMap::const_iterator j = map_.begin(); j != map_.end(); ++j) {
+        for (LibraryMap::const_iterator j = libs_.begin(); j != libs_.end(); ++j) {
             result.push_back(j->first);
         }
+        return result;
+    }
+
+    /// List loaded library plugins
+    std::vector<std::string> loadedPlugins() const {
+        AutoLock<Mutex> lockme(mutex_);
+        std::vector<std::string> result;
+        std::copy(plugins_.begin(), plugins_.end(), result.begin());
         return result;
     }
 
     /// Check entry exists in registry
     bool exists(const std::string& name) const {
         AutoLock<Mutex> lockme(mutex_);
-        LibraryMap::const_iterator j = map_.find(name);
-        return (j != map_.end());
+        LibraryMap::const_iterator j = libs_.find(name);
+        return (j != libs_.end());
     }
 
     /// Prints the entries in registry
@@ -101,9 +109,9 @@ public:  // methods
     Library& lookup(const std::string& name) const {
         AutoLock<Mutex> lockme(mutex_);
 
-        LibraryMap::const_iterator j = map_.find(name);
+        LibraryMap::const_iterator j = libs_.find(name);
 
-        if (j == map_.end()) {
+        if (j == libs_.end()) {
             eckit::Log::error() << "No Library found with name '" << name << "'" << std::endl;
             eckit::Log::error() << "Registered libraries are:";
             print(eckit::Log::error(), "\n");
@@ -158,8 +166,11 @@ public:  // methods
         }
     }
 
+    void registerPlugin(const std::string& name) { plugins_.insert(name); }
+
 private:  // members
-    LibraryMap map_;
+    LibraryMap libs_;
+    std::set<std::string> plugins_;
     mutable Mutex mutex_;
 };
 
@@ -171,6 +182,10 @@ void LibraryManager::enregister(const std::string& name, Library* obj) {
 
 std::vector<std::string> LibraryManager::list() {
     return LibraryRegistry::instance().list();
+}
+
+std::vector<std::string> LibraryManager::loadedPlugins() {
+    return LibraryRegistry::instance().loadedPlugins();
 }
 
 void LibraryManager::list(std::ostream& out) {
@@ -186,8 +201,12 @@ const Library& LibraryManager::lookup(const std::string& name) {
 }
 
 /* const Library& */ void LibraryManager::load(const std::string& name) {
-    // return 
+    // return
     LibraryRegistry::instance().load(name);
+}
+
+void LibraryManager::registerPlugin(const std::string& name) {
+    LibraryRegistry::instance().registerPlugin(name);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

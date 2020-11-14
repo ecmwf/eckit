@@ -35,6 +35,9 @@ public:  // class methods
     /// @brief List currently loaded libaries
     static std::vector<std::string> list();
 
+    /// @brief List currently loaded plugin libraries
+    static std::vector<std::string> loadedPlugins();
+
     /// @brief Print the list of currently loaded libaries to a std::ostream
     /// @param [in] s Write list to this stream
     static void list(std::ostream& s);
@@ -47,9 +50,14 @@ public:  // class methods
     /// @param [in] name Library name
     static const Library& lookup(const std::string& name);
 
-    /// @brief Loads a library plugin
+    /// @brief Loads a sahred library
     /// @param [in] name Name of the library plugin to load
     static void load(const std::string& name);
+
+    /// @brief Registers a library as a plugin
+    /// @param [in] name Name of the library plugin to register
+    static void registerPlugin(const std::string& name);
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

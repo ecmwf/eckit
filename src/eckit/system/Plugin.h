@@ -31,8 +31,6 @@ public:
     /// @brief Library name as will be used in file system
     const std::string& libraryName() const { return libname_; }
 
-    virtual bool isPlugin() const { return true; }
-
 private:
     std::string name_;
     std::string libname_;

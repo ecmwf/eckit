@@ -24,7 +24,7 @@ namespace eckit {
 class RotationTarget : public LogTarget {
 
 public:  // methods
-    RotationTarget();
+    RotationTarget(const std::string& name = std::string());
 
     virtual ~RotationTarget() override;
 
@@ -33,6 +33,11 @@ public:  // methods
 
 protected:
     void print(std::ostream& s) const override;
+
+private:
+
+    std::string name_;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -23,13 +23,23 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class RotationOutputStream;
+
 static StaticMutex local_mutex;
 
 class RotationOutputStream {
 public:
-    static RotationOutputStream& instance() {
-        static RotationOutputStream theinstance;
-        return theinstance;
+    static RotationOutputStream& instance(const std::string& name) {
+        AutoLock<StaticMutex> lock(local_mutex);
+
+        static std::map<std::string, RotationOutputStream*> instances;
+
+        auto j = instances.find(name);
+        if(j == instances.end()) {
+            instances[name] = new RotationOutputStream(name);
+            j = instances.find(name);
+        }
+        return *(*j).second;
     }
 
     void write(const char* start, const char* end) {
@@ -44,7 +54,7 @@ public:
     }
 
 private:
-    RotationOutputStream() : logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")) {}
+    RotationOutputStream(const std::string& name) : name_(name), logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")) {}
 
     std::ostream& rotout() {
 
@@ -57,7 +67,7 @@ private:
             path.mkdir(0777);
 
             std::ostringstream os;
-            os << path << "/" << Main::instance().name();
+            os << path << "/" << name_;
 
             delete last_;
 
@@ -75,20 +85,25 @@ private:  // members
     std::ofstream* last_ = nullptr;
     time_t lastTime_     = 0;
 
+    std::string name_;
     std::string logfileFormat_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RotationTarget::RotationTarget() {}
+RotationTarget::RotationTarget(const std::string& name): name_(name) {
+    if(name_.empty()) {
+        name_ = Main::instance().name();
+    }
+}
 
 RotationTarget::~RotationTarget() {}
 
 void RotationTarget::write(const char* start, const char* end) {
-    RotationOutputStream::instance().write(start, end);
+    RotationOutputStream::instance(name_).write(start, end);
 }
 void RotationTarget::flush() {
-    RotationOutputStream::instance().flush();
+    RotationOutputStream::instance(name_).flush();
 }
 
 void RotationTarget::print(std::ostream& s) const {

@@ -1,15 +1,62 @@
 #include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/thread/StaticMutex.h"
-#include "eckit/thread/AutoLock.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 
 static StaticMutex local_mutex;
 static Metrics* current_ = nullptr;
 
-Metrics::Metrics() : metrics_(eckit::Value::makeOrderedMap()) {
+class Metric {
+protected:
+    std::string name_;
+
+public:
+    virtual ~Metric() = default;
+    Metric(const std::string& name) : name_(name) {}
+
+    virtual void print(std::ostream& s) const = 0;
+    virtual void send(Stream& s) const        = 0;
+
+    friend std::ostream& operator<<(std::ostream& s, const Metric& m) {
+        s << m.name_ << "=";
+        m.print(s);
+        return s;
+    }
+};
+
+
+class DoubleMetric : public Metric {
+    double value_;
+
+public:
+    DoubleMetric(const std::string& name, double value) : Metric(name), value_(value){};
+    virtual void print(std::ostream& s) const { s << value_; }
+    virtual void send(Stream& s) const { s << 'd' << name_ << value_; }
+};
+
+class IntegerMetric : public Metric {
+    long long value_;
+
+public:
+    IntegerMetric(const std::string& name, long long value) : Metric(name), value_(value){};
+    virtual void print(std::ostream& s) const { s << value_; }
+    virtual void send(Stream& s) const { s << 'i' << name_ << value_; }
+};
+
+class StringMetric : public Metric {
+    std::string value_;
+
+public:
+    StringMetric(const std::string& name, const std::string& value) : Metric(name), value_(value){};
+    virtual void print(std::ostream& s) const { s << value_; }
+    virtual void send(Stream& s) const { s << 's' << name_ << value_; }
+};
+
+
+Metrics::Metrics() {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
@@ -20,8 +67,12 @@ Metrics::~Metrics() {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == this);
     current_ = nullptr;
-    if(!printed_) {
+    if (!printed_) {
         eckit::Log::metrics() << *this << std::endl;
+    }
+
+    for (auto m : metrics_) {
+        delete m;
     }
 }
 
@@ -36,77 +87,96 @@ void Metrics::error(const std::exception& e) {
 }
 
 void Metrics::set(const std::string& name, const char* value) {
-    metrics_[name] = value;
+    metrics_.push_back(new StringMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, const std::string& value) {
-    metrics_[name] = value;
+    metrics_.push_back(new StringMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, unsigned long value) {
-    metrics_[name] = value;
+    metrics_.push_back(new IntegerMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, unsigned long long value) {
-    metrics_[name] = value;
+    metrics_.push_back(new IntegerMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, long long value) {
-    metrics_[name] = value;
+    metrics_.push_back(new IntegerMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, long value) {
-    metrics_[name] = value;
+    metrics_.push_back(new IntegerMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, int value) {
-    metrics_[name] = value;
+    metrics_.push_back(new IntegerMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, unsigned int value) {
-    metrics_[name] = value;
+    metrics_.push_back(new IntegerMetric(name, value));
 }
 
 
 void Metrics::set(const std::string& name, double value) {
-    metrics_[name] = value;
+    metrics_.push_back(new DoubleMetric(name, value));
 }
 
-// void Metrics::set(const std::string& name, const std::vector<std::string>& value) {
-//     metrics_[name] = eckit::Value::makeList(value);
-// }
 
 void Metrics::print(std::ostream& s) const {
-    eckit::ValueList keys = metrics_.keys();
-    const char* sep       = "";
-    for (auto key : keys) {
-        eckit::Value value = metrics_[key];
-        if (value.isList()) {
-            s << sep << key << "=" << value;
-        }
-        else {
-            s << sep << key << "=" << value;
-        }
+    const char* sep = "";
+    for (auto m : metrics_) {
+        s << sep << (*m);
         sep = " ";
     }
     printed_ = true;
 }
 
 void Metrics::send(Stream& s) const {
-    s << metrics_;
+
+    s << metrics_.size();
+    for (auto m : metrics_) {
+        m->send(s);
+    }
 }
 
 void Metrics::receive(Stream& s) {
-    Value value(s);
-    ValueMap m(value);
-    Value process("process");
-    for (auto j = m.begin(); j != m.end(); ++j) {
-        if((*j).first != process) {
-            metrics_[(*j).first] = (*j).second;
+
+    size_t cnt;
+    s >> cnt;
+
+    for (size_t i = 0; i < cnt; ++i) {
+        char op;
+        std::string name;
+        s >> op;
+        s >> name;
+
+        long long intval;
+        double dblval;
+        std::string strval;
+
+        switch (op) {
+            case 'i':
+                s >> intval;
+                metrics_.push_back(new IntegerMetric(name, intval));
+                break;
+
+            case 'd':
+                s >> dblval;
+                metrics_.push_back(new DoubleMetric(name, dblval));
+                break;
+
+            case 's':
+                s >> strval;
+                metrics_.push_back(new StringMetric(name, strval));
+                break;
+
+            default:
+                throw SeriousBug("Invalid metric tag: " + op);
+                break;
         }
     }
-
 }
-
 
 }  // namespace eckit

@@ -22,6 +22,7 @@
 namespace eckit {
 
 class Stream;
+class Metric;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -60,7 +61,7 @@ private:  // members
     mutable bool printed_ = false;
     eckit::Timer timer_;
 
-    eckit::Value metrics_;
+    std::vector<Metric*> metrics_;
 
 private:  // methods
 

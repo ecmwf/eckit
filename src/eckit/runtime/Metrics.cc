@@ -241,7 +241,6 @@ void Metrics::print(std::ostream& s) const {
 
 void Metrics::send(Stream& s) const {
 
-    s << eckit::Main::instance().name();
     s << metrics_.size();
     for (auto m : metrics_) {
         m->send(s);

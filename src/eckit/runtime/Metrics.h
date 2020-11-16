@@ -16,26 +16,30 @@
 
 
 #include <ctime>
+#include <string>
+#include <vector>
+#include <set>
 
-#include "eckit/log/Timer.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/value/Value.h"
-
 
 namespace eckit {
 
 class Stream;
 class Metric;
+class ObjectMetric;
+class JSON;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Metrics : eckit::NonCopyable {
 public:  // methods
-    Metrics(bool main);
+    Metrics();
     ~Metrics();
 
     void set(const std::string& name, const char* value);
     void set(const std::string& name, const std::string& value);
+
+    void set(const std::string& name, bool value);
 
     void set(const std::string& name, int value);
     void set(const std::string& name, unsigned int value);
@@ -50,6 +54,7 @@ public:  // methods
 
     void set(const std::string& name, const std::vector<std::string>& value);
     void set(const std::string& name, const std::set<std::string>& value);
+    void set(const std::string& name, const std::vector<long long>& value);
 
     void timestamp(const std::string& name, time_t value);
 
@@ -60,27 +65,29 @@ public:  // methods
     void send(Stream&) const;
     void receive(Stream&);
 
-    void json(JSON&) const;
+
 
     static Metrics& current();
 
 
 private:  // members
-    mutable bool printed_;
-    eckit::Timer timer_;
 
     time_t created_;
-
     std::vector<Metric*> metrics_;
 
 private:  // methods
-    void print(std::ostream&) const;
 
+    Metrics(bool);
+
+    void print(std::ostream&) const;
+    void json(JSON&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Metrics& m) {
         m.print(s);
         return s;
     }
+
+    friend class ObjectMetric;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

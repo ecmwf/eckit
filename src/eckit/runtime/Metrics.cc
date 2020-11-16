@@ -2,11 +2,13 @@
 
 #include <ctime>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
+#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -33,6 +35,16 @@ static std::string iso(time_t t) {
     ::strftime(buf, sizeof(buf), "%FT%TZ", gmtime(&t));
     return std::string(buf);
 }
+
+
+class BoolMetric : public Metric {
+    bool value_;
+
+public:
+    BoolMetric(const std::string& name, bool value) : Metric(name), value_(value){};
+    virtual void json(JSON& s) const { s << name_ << value_; }
+    virtual void send(Stream& s) const { s << 'b' << name_ << value_; }
+};
 
 
 class DoubleMetric : public Metric {
@@ -83,27 +95,54 @@ public:
     virtual void send(Stream& s) const { s << 'S' << name_ << value_; }
 };
 
+class IntegerVectorMetric : public Metric {
+    std::vector<long long> value_;
 
-Metrics::Metrics(bool main) : printed_(!main), created_(::time(nullptr)) {
+public:
+    IntegerVectorMetric(const std::string& name, const std::vector<long long>& value) : Metric(name), value_(value){};
+    virtual void json(JSON& s) const { s << name_ << value_; }
+    virtual void send(Stream& s) const { s << 'I' << name_ << value_; }
+};
 
+
+
+class ObjectMetric : public Metric {
+    Metrics value_;
+
+public:
+    ObjectMetric(const std::string& name) : Metric(name), value_(true) {}
+    virtual void json(JSON& s) const {
+        s << name_;
+        s.startObject();
+        value_.json(s);
+        s.endObject();
+    }
+    virtual void send(Stream& s) const {
+        s << 'o' << name_;
+        value_.send(s);
+    }
+    Metrics& value() { return value_; }
+};
+
+
+Metrics::Metrics() : created_(::time(nullptr)) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
-    if (main) {
-        set("process", eckit::Main::instance().name());
-    }
+    set("process", eckit::Main::instance().name());
 }
 
-Metrics::~Metrics() {
-    AutoLock<StaticMutex> lock(local_mutex);
-    ASSERT(current_ == this);
-    current_ = nullptr;
-    if (!printed_) {
-        eckit::Log::metrics() << *this << std::endl;
-    }
+Metrics::Metrics(bool) : created_(::time(nullptr)) {}
 
+
+Metrics::~Metrics() {
     for (auto m : metrics_) {
         delete m;
+    }
+
+    AutoLock<StaticMutex> lock(local_mutex);
+    if (current_ == this) {
+        current_ = nullptr;
     }
 }
 
@@ -145,10 +184,13 @@ void Metrics::set(const std::string& name, int value) {
     metrics_.push_back(new IntegerMetric(name, value));
 }
 
+void Metrics::set(const std::string& name, bool value) {
+    metrics_.push_back(new BoolMetric(name, value));
+}
+
 void Metrics::set(const std::string& name, unsigned int value) {
     metrics_.push_back(new IntegerMetric(name, value));
 }
-
 
 void Metrics::set(const std::string& name, double value) {
     metrics_.push_back(new DoubleMetric(name, value));
@@ -156,6 +198,10 @@ void Metrics::set(const std::string& name, double value) {
 
 void Metrics::timestamp(const std::string& name, time_t value) {
     metrics_.push_back(new TimeMetric(name, value));
+}
+
+void Metrics::set(const std::string& name, const std::vector<long long>& value) {
+    metrics_.push_back(new IntegerVectorMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, const std::vector<std::string>& value) {
@@ -166,6 +212,13 @@ void Metrics::set(const std::string& name, const std::set<std::string>& value) {
     std::vector<std::string> v(value.begin(), value.end());
     set(name, v);
 }
+
+Metrics& Metrics::object(const std::string& name) {
+    ObjectMetric* o = new ObjectMetric(name);
+    metrics_.push_back(o);
+    return o->value();
+}
+
 
 void Metrics::json(JSON& json) const {
     for (auto m : metrics_) {
@@ -184,11 +237,11 @@ void Metrics::print(std::ostream& s) const {
         m->json(json);
     }
     json.endObject();
-    printed_ = true;
 }
 
 void Metrics::send(Stream& s) const {
 
+    s << eckit::Main::instance().name();
     s << metrics_.size();
     for (auto m : metrics_) {
         m->send(s);
@@ -210,8 +263,16 @@ void Metrics::receive(Stream& s) {
         double dblval;
         std::string strval;
         std::vector<std::string> svecval;
+        bool boolval;
+        std::vector<long long> ivecval;
 
         switch (op) {
+
+            case 'b':
+                s >> boolval;
+                metrics_.push_back(new BoolMetric(name, boolval));
+                break;
+
             case 'i':
                 s >> intval;
                 metrics_.push_back(new IntegerMetric(name, intval));
@@ -235,6 +296,11 @@ void Metrics::receive(Stream& s) {
             case 'S':
                 s >> svecval;
                 metrics_.push_back(new StringVectorMetric(name, svecval));
+                break;
+
+            case 'I':
+                s >> ivecval;
+                metrics_.push_back(new IntegerVectorMetric(name, ivecval));
                 break;
 
             default:

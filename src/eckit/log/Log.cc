@@ -113,6 +113,20 @@ struct CreateLogChannel {
     }
 };
 
+struct CreateMetricsChannel : public CreateLogChannel {
+    virtual Channel* createChannel() { return new Channel(Main::instance().createMetricsLogTarget()); }
+};
+
+Channel& Log::metrics() {
+    if (!Main::ready()) {
+        static Channel empty(new PrefixTarget("PRE-MAIN-METRICS", new OStreamTarget(std::cout)));
+        return empty;
+    }
+    static ThreadSingleton<Channel, CreateMetricsChannel> x;
+    return x.instance();
+}
+
+
 struct CreateInfoChannel : public CreateLogChannel {
     virtual Channel* createChannel() { return new Channel(Main::instance().createInfoLogTarget()); }
 };

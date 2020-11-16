@@ -215,6 +215,10 @@ LogTarget* Main::createDebugLogTarget() const {
     return createDefaultLogTarget();
 }
 
+LogTarget* Main::createMetricsLogTarget() const {
+    return createDefaultLogTarget();
+}
+
 LogTarget* Main::createDefaultLogTarget() const {
     return new OStreamTarget(std::cout);
 }

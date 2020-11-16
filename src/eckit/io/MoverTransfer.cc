@@ -21,6 +21,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+#include "eckit/runtime/Metrics.h"
 
 
 namespace eckit {
@@ -96,6 +97,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
     unsigned long long len;
     s >> len;
+    Metrics::current().receive(s);
 
     //    ASSERT(len == total);
 

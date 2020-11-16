@@ -28,6 +28,13 @@ public:
 };
 
 
+static std::string iso(time_t t) {
+    char buf[80];
+    ::strftime(buf, sizeof(buf), "%FT%TZ", gmtime(&t));
+    return std::string(buf);
+}
+
+
 class DoubleMetric : public Metric {
     double value_;
 
@@ -44,6 +51,18 @@ public:
     IntegerMetric(const std::string& name, long long value) : Metric(name), value_(value){};
     virtual void json(JSON& s) const { s << name_ << value_; }
     virtual void send(Stream& s) const { s << 'i' << name_ << value_; }
+};
+
+class TimeMetric : public Metric {
+    time_t value_;
+
+public:
+    TimeMetric(const std::string& name, time_t value) : Metric(name), value_(value){};
+    virtual void json(JSON& s) const {
+        s << name_;
+        s << iso(value_);
+    }
+    virtual void send(Stream& s) const { s << 't' << name_ << value_; }
 };
 
 class StringMetric : public Metric {
@@ -65,11 +84,14 @@ public:
 };
 
 
-Metrics::Metrics(bool print) : printed_(!print) {
+Metrics::Metrics(bool main) : printed_(!main), created_(::time(nullptr)) {
+
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
-    set("process", eckit::Main::instance().name());
+    if (main) {
+        set("process", eckit::Main::instance().name());
+    }
 }
 
 Metrics::~Metrics() {
@@ -133,9 +155,7 @@ void Metrics::set(const std::string& name, double value) {
 }
 
 void Metrics::timestamp(const std::string& name, time_t value) {
-    char buf[80];
-    ::strftime(buf, sizeof(buf), "%FT%TZ", gmtime(&value));
-    set(name, buf);
+    metrics_.push_back(new TimeMetric(name, value));
 }
 
 void Metrics::set(const std::string& name, const std::vector<std::string>& value) {
@@ -147,10 +167,19 @@ void Metrics::set(const std::string& name, const std::set<std::string>& value) {
     set(name, v);
 }
 
+void Metrics::json(JSON& json) const {
+    for (auto m : metrics_) {
+        m->json(json);
+    }
+}
 
 void Metrics::print(std::ostream& s) const {
+    time_t now = time(nullptr);
     JSON json(s);
     json.startObject();
+    json << "start_time" << iso(created_);
+    json << "end_time" << iso(now);
+    json << "duration" << (now - created_);
     for (auto m : metrics_) {
         m->json(json);
     }
@@ -160,13 +189,9 @@ void Metrics::print(std::ostream& s) const {
 
 void Metrics::send(Stream& s) const {
 
-    bool first = true;
-    s << metrics_.size() - 1;
+    s << metrics_.size();
     for (auto m : metrics_) {
-        if (!first) {  // skip remote "process"
-            m->send(s);
-        }
-        first = false;
+        m->send(s);
     }
 }
 
@@ -200,6 +225,11 @@ void Metrics::receive(Stream& s) {
             case 's':
                 s >> strval;
                 metrics_.push_back(new StringMetric(name, strval));
+                break;
+
+            case 't':
+                s >> intval;
+                metrics_.push_back(new TimeMetric(name, intval));
                 break;
 
             case 'S':

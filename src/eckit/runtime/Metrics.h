@@ -31,7 +31,7 @@ class Metric;
 
 class Metrics : eckit::NonCopyable {
 public:  // methods
-    Metrics(bool print = true);
+    Metrics(bool main);
     ~Metrics();
 
     void set(const std::string& name, const char* value);
@@ -53,11 +53,14 @@ public:  // methods
 
     void timestamp(const std::string& name, time_t value);
 
+    Metrics& object(const std::string& name);
+
     void error(const std::exception&);
 
     void send(Stream&) const;
     void receive(Stream&);
 
+    void json(JSON&) const;
 
     static Metrics& current();
 
@@ -66,10 +69,13 @@ private:  // members
     mutable bool printed_;
     eckit::Timer timer_;
 
+    time_t created_;
+
     std::vector<Metric*> metrics_;
 
 private:  // methods
     void print(std::ostream&) const;
+
 
     friend std::ostream& operator<<(std::ostream& s, const Metrics& m) {
         m.print(s);

@@ -1,4 +1,5 @@
 #include "eckit/runtime/Metrics.h"
+#include "eckit/log/JSON.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/thread/AutoLock.h"
@@ -17,14 +18,10 @@ public:
     virtual ~Metric() = default;
     Metric(const std::string& name) : name_(name) {}
 
-    virtual void print(std::ostream& s) const = 0;
-    virtual void send(Stream& s) const        = 0;
+    virtual void json(JSON& s) const   = 0;
+    virtual void send(Stream& s) const = 0;
 
-    friend std::ostream& operator<<(std::ostream& s, const Metric& m) {
-        s << m.name_ << "=";
-        m.print(s);
-        return s;
-    }
+    const std::string& name() const { return name_; }
 };
 
 
@@ -33,7 +30,7 @@ class DoubleMetric : public Metric {
 
 public:
     DoubleMetric(const std::string& name, double value) : Metric(name), value_(value){};
-    virtual void print(std::ostream& s) const { s << value_; }
+    virtual void json(JSON& s) const { s << name_ << value_; }
     virtual void send(Stream& s) const { s << 'd' << name_ << value_; }
 };
 
@@ -42,7 +39,7 @@ class IntegerMetric : public Metric {
 
 public:
     IntegerMetric(const std::string& name, long long value) : Metric(name), value_(value){};
-    virtual void print(std::ostream& s) const { s << value_; }
+    virtual void json(JSON& s) const { s << name_ << value_; }
     virtual void send(Stream& s) const { s << 'i' << name_ << value_; }
 };
 
@@ -51,7 +48,7 @@ class StringMetric : public Metric {
 
 public:
     StringMetric(const std::string& name, const std::string& value) : Metric(name), value_(value){};
-    virtual void print(std::ostream& s) const { s << value_; }
+    virtual void json(JSON& s) const { s << name_ << value_; }
     virtual void send(Stream& s) const { s << 's' << name_ << value_; }
 };
 
@@ -125,19 +122,24 @@ void Metrics::set(const std::string& name, double value) {
 
 
 void Metrics::print(std::ostream& s) const {
-    const char* sep = "";
+    JSON json(s);
+    json.startObject();
     for (auto m : metrics_) {
-        s << sep << (*m);
-        sep = " ";
+        m->json(json);
     }
+    json.endObject();
     printed_ = true;
 }
 
 void Metrics::send(Stream& s) const {
 
-    s << metrics_.size();
+    bool first = true;
+    s << metrics_.size() - 1;
     for (auto m : metrics_) {
-        m->send(s);
+        if (!first) {  // skip remote "process"
+            m->send(s);
+        }
+        first = false;
     }
 }
 

@@ -14,9 +14,12 @@
 #ifndef eckit_Metrics_h
 #define eckit_Metrics_h
 
+
+#include <ctime>
+
+#include "eckit/log/Timer.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
-#include "eckit/log/Timer.h"
 
 
 namespace eckit {
@@ -28,7 +31,7 @@ class Metric;
 
 class Metrics : eckit::NonCopyable {
 public:  // methods
-    Metrics();
+    Metrics(bool print = true);
     ~Metrics();
 
     void set(const std::string& name, const char* value);
@@ -46,6 +49,9 @@ public:  // methods
     void set(const std::string& name, double value);
 
     void set(const std::string& name, const std::vector<std::string>& value);
+    void set(const std::string& name, const std::set<std::string>& value);
+
+    void timestamp(const std::string& name, time_t value);
 
     void error(const std::exception&);
 
@@ -57,14 +63,12 @@ public:  // methods
 
 
 private:  // members
-
-    mutable bool printed_ = false;
+    mutable bool printed_;
     eckit::Timer timer_;
 
     std::vector<Metric*> metrics_;
 
 private:  // methods
-
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Metrics& m) {

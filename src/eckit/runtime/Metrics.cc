@@ -1,4 +1,7 @@
 #include "eckit/runtime/Metrics.h"
+
+#include <ctime>
+
 #include "eckit/log/JSON.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/serialisation/Stream.h"
@@ -52,8 +55,17 @@ public:
     virtual void send(Stream& s) const { s << 's' << name_ << value_; }
 };
 
+class StringVectorMetric : public Metric {
+    std::vector<std::string> value_;
 
-Metrics::Metrics() {
+public:
+    StringVectorMetric(const std::string& name, const std::vector<std::string>& value) : Metric(name), value_(value){};
+    virtual void json(JSON& s) const { s << name_ << value_; }
+    virtual void send(Stream& s) const { s << 'S' << name_ << value_; }
+};
+
+
+Metrics::Metrics(bool print) : printed_(!print) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
@@ -120,6 +132,21 @@ void Metrics::set(const std::string& name, double value) {
     metrics_.push_back(new DoubleMetric(name, value));
 }
 
+void Metrics::timestamp(const std::string& name, time_t value) {
+    char buf[80];
+    ::strftime(buf, sizeof(buf), "%FT%TZ", gmtime(&value));
+    set(name, buf);
+}
+
+void Metrics::set(const std::string& name, const std::vector<std::string>& value) {
+    metrics_.push_back(new StringVectorMetric(name, value));
+}
+
+void Metrics::set(const std::string& name, const std::set<std::string>& value) {
+    std::vector<std::string> v(value.begin(), value.end());
+    set(name, v);
+}
+
 
 void Metrics::print(std::ostream& s) const {
     JSON json(s);
@@ -157,6 +184,7 @@ void Metrics::receive(Stream& s) {
         long long intval;
         double dblval;
         std::string strval;
+        std::vector<std::string> svecval;
 
         switch (op) {
             case 'i':
@@ -174,8 +202,13 @@ void Metrics::receive(Stream& s) {
                 metrics_.push_back(new StringMetric(name, strval));
                 break;
 
+            case 'S':
+                s >> svecval;
+                metrics_.push_back(new StringVectorMetric(name, svecval));
+                break;
+
             default:
-                throw SeriousBug("Invalid metric tag: " + op);
+                throw SeriousBug(std::string("Invalid metric tag: ") + op);
                 break;
         }
     }

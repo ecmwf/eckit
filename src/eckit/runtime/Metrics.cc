@@ -129,7 +129,6 @@ Metrics::Metrics() : created_(::time(nullptr)) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
-    set("process", eckit::Main::instance().name());
 }
 
 Metrics::Metrics(bool) : created_(::time(nullptr)) {}
@@ -230,6 +229,7 @@ void Metrics::print(std::ostream& s) const {
     time_t now = time(nullptr);
     JSON json(s);
     json.startObject();
+    json << "process" << eckit::Main::instance().name();
     json << "start_time" << iso(created_);
     json << "end_time" << iso(now);
     json << "duration" << (now - created_);

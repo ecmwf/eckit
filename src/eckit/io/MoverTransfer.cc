@@ -97,7 +97,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
     unsigned long long len;
     s >> len;
-    Metrics::current().object("mover").receive(s);
+    Metrics::current().receive(s);
 
     //    ASSERT(len == total);
 

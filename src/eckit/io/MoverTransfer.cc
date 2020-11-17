@@ -17,6 +17,7 @@
 #include "eckit/net/Connector.h"
 #include "eckit/net/TCPServer.h"
 #include "eckit/net/TCPStream.h"
+#include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
@@ -96,6 +97,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
     unsigned long long len;
     s >> len;
+    Metrics::current().object("mover").receive(s);
 
     //    ASSERT(len == total);
 

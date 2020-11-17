@@ -98,14 +98,21 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     unsigned long long len;
     s >> len;
     Metrics::current().receive(s);
+    Metrics::current().set("mover_host", c.host());
+    auto& m = Metrics::current().object("mover_costs");
+    for (auto j = cost.begin(); j != cost.end(); ++j) {
+        std::string h        = (*j).first;
+        unsigned long long l = (*j).second;
+        m.set(h, l);
 
+    }  // namespace eckit
     //    ASSERT(len == total);
 
     Log::message() << " " << std::endl;
 
 
     return len;
-}
+}  // namespace eckit
 
 //----------------------------------------------------------------------------------------------------------------------
 

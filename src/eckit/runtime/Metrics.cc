@@ -15,6 +15,12 @@ namespace eckit {
 static StaticMutex local_mutex;
 static Metrics* current_ = nullptr;
 
+static std::string iso(time_t t) {
+    char buf[80];
+    ::strftime(buf, sizeof(buf), "%FT%TZ", gmtime(&t));
+    return std::string(buf);
+}
+
 
 Metrics::Metrics() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)) {
     AutoLock<StaticMutex> lock(local_mutex);
@@ -72,11 +78,21 @@ void Metrics::send(Stream& s) const {
 
 void Metrics::receive(Stream& s) {
     Value v(s);
+    ValueMap m = v;
+    for (auto j = m.begin(); j != m.end(); ++j) {
+        metrics_[(*j).first] = (*j).second;
+    }
 }
 
 void Metrics::print(std::ostream& s) const {
     JSON json(s);
     json << metrics_;
+
+    // json << "process" << eckit::Main::instance().name();
+    // json << "start_time" << iso(created_);
+    // json << "end_time" << iso(now);
+    // json << "duration" << (now - created_);
+
 }
 
 

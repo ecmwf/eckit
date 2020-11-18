@@ -16,18 +16,16 @@
 
 
 #include <ctime>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/value/Value.h"
 
 namespace eckit {
 
 class Stream;
-class Metric;
-class ObjectMetric;
-class JSON;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -36,29 +34,35 @@ public:  // methods
     Metrics();
     ~Metrics();
 
-    void set(const std::string& name, const char* value);
-    void set(const std::string& name, const std::string& value);
+    void set(const std::string& name, const Value& value);
+    void set(const std::string& name, const Value& value, const std::string& prefix);
 
-    void set(const std::string& name, bool value);
+    // void set(const std::string& name, const std::string& value);
 
-    void set(const std::string& name, int value);
-    void set(const std::string& name, unsigned int value);
+    // void set(const std::string& name, bool value);
 
-    void set(const std::string& name, long value);
-    void set(const std::string& name, unsigned long value);
+    // void set(const std::string& name, int value);
+    // void set(const std::string& name, unsigned int value);
 
-    void set(const std::string& name, long long value);
-    void set(const std::string& name, unsigned long long value);
+    // void set(const std::string& name, long value);
+    // void set(const std::string& name, unsigned long value);
 
-    void set(const std::string& name, double value);
+    // void set(const std::string& name, long long value);
+    // void set(const std::string& name, unsigned long long value);
+
+    // void set(const std::string& name, double value);
 
     void set(const std::string& name, const std::vector<std::string>& value);
     void set(const std::string& name, const std::set<std::string>& value);
-    void set(const std::string& name, const std::vector<long long>& value);
+
+    void set(const std::string& name, const std::vector<std::string>& value, const std::string& prefix);
+    void set(const std::string& name, const std::set<std::string>& value, const std::string& prefix);
+
+
+    // void set(const std::string& name, const std::vector<long long>& value);
 
     void timestamp(const std::string& name, time_t value);
 
-    Metrics& object(const std::string& name);
 
     void error(const std::exception&);
 
@@ -66,21 +70,16 @@ public:  // methods
     void receive(Stream&);
 
 
-
     static Metrics& current();
 
 
 private:  // members
-
     time_t created_;
-    std::vector<Metric*> metrics_;
+    Value metrics_;
 
 private:  // methods
 
-    Metrics(bool);
-
     void print(std::ostream&) const;
-    void json(JSON&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Metrics& m) {
         m.print(s);

@@ -61,6 +61,7 @@ void Metrics::set(const std::string& name, const Value& value, const std::string
 }
 
 void Metrics::timestamp(const std::string& name, time_t time) {
+    timestamps_[name] = time;
     set(name, time);
 }
 
@@ -86,13 +87,35 @@ void Metrics::receive(Stream& s) {
 
 void Metrics::print(std::ostream& s) const {
     JSON json(s);
-    json << metrics_;
+    time_t now = ::time(0);
 
-    // json << "process" << eckit::Main::instance().name();
-    // json << "start_time" << iso(created_);
-    // json << "end_time" << iso(now);
-    // json << "duration" << (now - created_);
+    json.startObject();
 
+
+    json << "process" << eckit::Main::instance().name();
+    json << "start_time" << iso(created_);
+    json << "end_time" << iso(now);
+    json << "run_time" << (now - created_);
+
+    auto j = timestamps_.find("received");
+    if (j != timestamps_.end()) {
+        json << "queue_time" << (created_ - (*j).second);
+    }
+
+
+    ValueList keys = metrics_.keys();
+    for (std::string key : keys) {
+        json << key;
+        auto j = timestamps_.find(key);
+        if (j != timestamps_.end()) {
+            json << iso(metrics_[key]);
+        }
+        else {
+            json << metrics_[key];
+        }
+    }
+
+    json.endObject();
 }
 
 

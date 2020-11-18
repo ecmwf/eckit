@@ -74,6 +74,9 @@ public:  // methods
 
 
 private:  // members
+
+    std::map<std::string, time_t> timestamps_;
+
     time_t created_;
     Value metrics_;
 

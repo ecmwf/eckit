@@ -379,6 +379,8 @@ CASE("test_eckit_yaml_comment_in_string") {
     EXPECT(v["test3"] == e);
     EXPECT(v["test4"][0] == e);
     EXPECT(v["test5"]["test6"] == e);
+
+    EXPECT(v["test6"] == "Quotes in 'strings' are special");
 }
 
 

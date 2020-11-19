@@ -30,7 +30,7 @@ public:  // methods
     virtual Value parse();
 
 protected:
-    ObjectParser(std::istream& in, bool comments);
+    ObjectParser(std::istream& in, bool comments, bool yaml);
 
 protected:  // methods
     virtual Value parseTrue();
@@ -50,6 +50,7 @@ protected:  // methods
 
 private:
     std::string unicode();
+    bool yaml_;
 };
 
 

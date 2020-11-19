@@ -22,7 +22,7 @@
 namespace eckit {
 
 
-JSONParser::JSONParser(std::istream& in) : ObjectParser(in, false) {}
+JSONParser::JSONParser(std::istream& in) : ObjectParser(in, false, false) {}
 
 Value JSONParser::decodeFile(const PathName& path) {
     std::ifstream in(std::string(path).c_str());

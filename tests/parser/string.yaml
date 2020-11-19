@@ -14,3 +14,5 @@ test5:
   test6: starts here
     and continues here
     and more
+
+test6: 'Quotes in ''strings'' are special'

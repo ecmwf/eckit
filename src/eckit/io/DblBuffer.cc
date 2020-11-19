@@ -99,8 +99,14 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
         try {
             copied = copy(in, out, estimate);
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
-            if (estimate)
+            if (estimate) {
+                if(copied != estimate) {
+                    std::ostringstream os;
+                    os << "DblBuffer::copy(), copied: " << copied << ", estimate: " << estimate;
+                    throw SeriousBug(os.str());
+                }
                 ASSERT(copied == estimate);
+            }
         }
         catch (RestartTransfer& retry) {
             Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"

@@ -93,7 +93,11 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
         static const long bufsize = Resource<long>("doubleBufferSize", 10 * 1024 * 1024 / 20);
         static const long count   = Resource<long>("doubleBufferCount", 20);
 
-        DblBuffer buf(count, bufsize, watcher);
+        if (!metrics.empty()) {
+            Metrics::current().set("double_buffering", true, "metrics");
+        }
+
+        DblBuffer buf(count, bufsize, watcher, metrics);
         return buf.copy(*this, other);
     }
     else {
@@ -185,6 +189,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
             Metrics::current().set("read_rate", total / readTime, metrics);
             Metrics::current().set("write_rate", total / writeTime, metrics);
             Metrics::current().set("rate", total / timer.elapsed(), metrics);
+            Metrics::current().set("double_buffering", false, metrics);
         }
 
         return total;

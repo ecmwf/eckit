@@ -340,6 +340,28 @@ std::string PathName::shorten(const std::string& s) {
     return s.substr(0, 10) + "...";
 }
 
+std::string PathName::metrics(const std::string& name) {
+    PathName path(name);
+
+    std::string s = shorten(name);
+    Tokenizer parse("/");
+    std::vector<std::string> v;
+    parse(s, v);
+
+    std::ostringstream oss;
+    oss << path.node() << ":";
+
+    if (v.size() == 3) {  // .../name/...
+        oss << v[1];
+    }
+    else {
+        oss << v[0];
+    }
+
+    return oss.str();
+}
+
+
 const std::string& PathName::node() const {
     return path_->node();
 }

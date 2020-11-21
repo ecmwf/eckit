@@ -60,7 +60,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     // This will close the connector on unlock
     c.autoclose(true);
 
-    Log::message() << c.host() << std::endl;
+    Log::message() << c.node() << std::endl;
     Stream& s = c;
 
     s << bool(false);  // New batch

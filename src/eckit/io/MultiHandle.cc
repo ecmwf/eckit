@@ -14,6 +14,7 @@
 #include "eckit/io/MultiHandle.h"
 #include "eckit/log/Timer.h"
 #include "eckit/types/Types.h"
+#include "eckit/runtime/Metrics.h"
 
 namespace eckit {
 
@@ -416,6 +417,19 @@ std::string MultiHandle::title() const {
         os << ",...{" << datahandles_.size() << "}";
     os << "]";
     return os.str();
+}
+
+void MultiHandle::metrics(Metrics& m, const std::string& what, const std::string& metric) const {
+    if (datahandles_.size() == 1) {
+        return datahandles_[0]->metrics(m, what, metric);
+    }
+
+    std::set<std::string> v;
+    for (size_t i = 0; i < datahandles_.size(); i++) {
+        v.insert(datahandles_[i]->metrics());
+    }
+
+    m.set(what, v, metric);
 }
 
 

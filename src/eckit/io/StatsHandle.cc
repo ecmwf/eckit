@@ -209,6 +209,10 @@ std::string StatsHandle::title() const {
     return handle().title();
 }
 
+void StatsHandle::metrics(Metrics& m, const std::string& what, const std::string& metric) const {
+    handle().metrics(m, what, metric);
+}
+
 Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metrics) {
     return handle().saveInto(other, watcher, metrics);
 }

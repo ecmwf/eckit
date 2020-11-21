@@ -272,6 +272,10 @@ std::string PartFileHandle::title() const {
     return os.str();
 }
 
+std::string PartFileHandle::metrics() const {
+    return PathName::metrics(path_);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -29,9 +29,9 @@ static void offLine(const std::string& host, int port) {
         ClusterNodes::offLine(host, port);
 }
 
-Connector::Connector(const std::string& host, int port) :
-    host_(host), port_(port), locked_(false), memoize_(false), sent_(false), life_(0), autoclose_(false) {
-    Log::info() << "Connector::Connector(" << host << "," << port << ")" << std::endl;
+Connector::Connector(const std::string& host, int port, const std::string& node) :
+    host_(host), port_(port), node_(node), locked_(false), memoize_(false), sent_(false), life_(0), autoclose_(false) {
+    Log::info() << "Connector::Connector(" << node << "," << host << ":" << port << ")" << std::endl;
 }
 
 Connector::~Connector() {
@@ -119,7 +119,7 @@ public:
         return cache.instance();
     }
 
-    Connector& find(const std::string& host, int port) {
+    Connector& find(const std::string& host, int port, const std::string& node) {
         std::pair<std::string, int> p(host, port);
 
         std::pair<Cache::iterator, Cache::iterator> r = cache_.equal_range(p);
@@ -130,7 +130,7 @@ public:
             }
         }
 
-        Connector* c = new Connector(host, port);
+        Connector* c = new Connector(host, port, node);
         cache_.insert(make_pair(p, c));
         return *c;
     }
@@ -203,19 +203,21 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Connector& Connector::get(const std::string& host, int port) {
+Connector& Connector::get(const std::string& host, int port, const std::string& name) {
     // Log::info() << "Connector::get(" << host << "," << port << ")" << std::endl;
-    return ConnectorCache::instance().find(host, port);
+    return ConnectorCache::instance().find(host, port, name);
 }
 
 Connector& Connector::service(const std::string& name, const std::string& node) {
     // Log::info() << "Connector::service(" << name << "," << node << ")" << std::endl;
     NodeInfo info = ClusterNodes::lookUp(name, node);
-    return get(info.host(), info.port());
+    return get(info.host(), info.port(), info.node());
 }
 
 Connector& Connector::service(const std::string& name, const std::map<std::string, Length>& cost) {
     std::string host;
+    std::string node;
+    
     int port    = 0;
     Length best = 0;
 
@@ -226,6 +228,7 @@ Connector& Connector::service(const std::string& name, const std::map<std::strin
                 NodeInfo info = ClusterNodes::lookUp(name, (*j).first);
                 host          = info.host();
                 port          = info.port();
+                node          = info.node();
             }
             else {
                 Log::warning() << "Service not available: " << name << "@" << (*j).first << std::endl;
@@ -237,12 +240,13 @@ Connector& Connector::service(const std::string& name, const std::map<std::strin
         NodeInfo info = ClusterNodes::any(name);
         host          = info.host();
         port          = info.port();
+        node          = info.node();
         Log::warning() << "Using node: " << info << std::endl;
     }
 
     ASSERT(port);
 
-    return get(host, port);
+    return get(host, port, node);
 }
 
 void Connector::lock() {
@@ -274,7 +278,7 @@ void Connector::reset() {
 
 std::string Connector::name() const {
     std::ostringstream os;
-    os << "Connector[" << host_ << ":" << port_ << "]";
+    os << "Connector[" << node_ << "," << host_ << ":" << port_ << "]";
     return os.str();
 }
 

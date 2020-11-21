@@ -94,6 +94,7 @@ private:  // members
     ThreadControler thread_;  // must be last
 
     virtual std::string title() const override;
+    virtual void metrics(Metrics& m, const std::string& what, const std::string& metric="") const override;
 
     // -- Class members
 

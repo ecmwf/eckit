@@ -94,7 +94,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
         static const long count   = Resource<long>("doubleBufferCount", 20);
 
         if (!metrics.empty()) {
-            Metrics::current().set("double_buffering", true, "metrics");
+            Metrics::current().set("double_buffering", true, metrics);
         }
 
         DblBuffer buf(count, bufsize, watcher, metrics);
@@ -181,15 +181,16 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
         }
 
         if (!metrics.empty()) {
-            Metrics::current().set("source", this->metrics(), metrics);
-            Metrics::current().set("target", other.metrics(), metrics);
-            Metrics::current().set("size", total, metrics);
-            Metrics::current().set("read_time", readTime, metrics);
-            Metrics::current().set("write_time", writeTime, metrics);
-            Metrics::current().set("read_rate", total / readTime, metrics);
-            Metrics::current().set("write_rate", total / writeTime, metrics);
-            Metrics::current().set("rate", total / timer.elapsed(), metrics);
-            Metrics::current().set("double_buffering", false, metrics);
+            Metrics& m = Metrics::current();
+            this->metrics(m, "source", metrics);
+            other.metrics(m, "target", metrics);
+            m.set("size", total, metrics);
+            m.set("read_time", readTime, metrics);
+            m.set("write_time", writeTime, metrics);
+            m.set("read_rate", total / readTime, metrics);
+            m.set("write_rate", total / writeTime, metrics);
+            m.set("rate", total / timer.elapsed(), metrics);
+            m.set("double_buffering", false, metrics);
         }
 
         return total;
@@ -262,6 +263,10 @@ std::string DataHandle::title() const {
 
 std::string DataHandle::metrics() const {
     return title();
+}
+
+void DataHandle::metrics(Metrics& m, const std::string& what, const std::string& metrics) const {
+    m.set(what, this->metrics(), metrics);
 }
 
 template <>

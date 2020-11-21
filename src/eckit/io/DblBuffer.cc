@@ -16,12 +16,12 @@
 #include "eckit/log/Log.h"
 #include "eckit/log/Progress.h"
 #include "eckit/log/Timer.h"
+#include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/runtime/Metrics.h"
 
 
 namespace eckit {
@@ -233,12 +233,13 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     PANIC(inBytes_ != outBytes_);
 
     if (!metrics_.empty()) {
-        Metrics::current().set("source", in.metrics(), metrics_);
-        Metrics::current().set("target", out.metrics(), metrics_);
-        Metrics::current().set("size", inBytes_, metrics_);
-        Metrics::current().set("read_time", rate, metrics_);
-        Metrics::current().set("read_rate", inBytes_ / rate, metrics_);
-        Metrics::current().set("rate", inBytes_ / reader.elapsed(), metrics_);
+        Metrics& m = Metrics::current();
+        in.metrics(m, "source", metrics_);
+        out.metrics(m, "target", metrics_);
+        m.set("size", inBytes_, metrics_);
+        m.set("read_time", rate, metrics_);
+        m.set("read_rate", inBytes_ / rate, metrics_);
+        m.set("rate", inBytes_ / reader.elapsed(), metrics_);
     }
 
     return inBytes_;
@@ -324,8 +325,9 @@ void DblBufferTask::run() {
         Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
 
     if (!owner_.metrics_.empty()) {
-        Metrics::current().set("write_time", rate, owner_.metrics_);
-        Metrics::current().set("write_rate", owner_.outBytes_ / rate, owner_.metrics_);
+        Metrics& m = Metrics::current();
+        m.set("write_time", rate, owner_.metrics_);
+        m.set("write_rate", owner_.outBytes_ / rate, owner_.metrics_);
     }
 }
 

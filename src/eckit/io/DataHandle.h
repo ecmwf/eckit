@@ -27,6 +27,7 @@
 namespace eckit {
 
 class MD5;
+class Metrics;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -135,7 +136,8 @@ public:
     virtual void toRemote(Stream& s) const;
     virtual void cost(std::map<std::string, Length>&, bool) const;
     virtual std::string title() const;
-    virtual std::string metrics() const; // Tag for metrics collection
+    virtual std::string metrics() const;
+    virtual void metrics(Metrics& m, const std::string& what, const std::string& metric="") const; // Tag for metrics collection
 
     // This is the MD5 of the Handle, not the data it points to
 

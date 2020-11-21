@@ -209,8 +209,8 @@ std::string StatsHandle::title() const {
     return handle().title();
 }
 
-Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
-    return handle().saveInto(other, watcher);
+Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metrics) {
+    return handle().saveInto(other, watcher, metrics);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

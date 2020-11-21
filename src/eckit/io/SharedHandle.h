@@ -65,7 +65,7 @@ public:
 
     virtual DataHandle* clone() const override;
 
-    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher) override;
+    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metrics) override;
 
     virtual std::string name() const override;
 

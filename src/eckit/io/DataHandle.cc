@@ -24,6 +24,8 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
 #include "eckit/log/Timer.h"
+#include "eckit/runtime/Metrics.h"
+
 
 namespace eckit {
 
@@ -70,7 +72,7 @@ void DataHandle::flush() {
     throw NotImplemented(os.str(), Here());
 }
 
-Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
+Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metrics) {
 
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
 
@@ -80,7 +82,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
 
     if (moverTransfer && moveable() && other.moveable()) {
         Log::debug<LibEcKit>() << "Using MoverTransfer" << std::endl;
-        MoverTransfer mover(watcher);
+        MoverTransfer mover(watcher, metrics);
         return mover.transfer(*this, other);
     }
 
@@ -174,16 +176,37 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
             throw ReadError(name() + " into " + other.name() + " " + os.str());
         }
 
+        if (!metrics.empty()) {
+            Metrics::current().set("source", this->metrics(), metrics);
+            Metrics::current().set("target", other.metrics(), metrics);
+            Metrics::current().set("size", total, metrics);
+            Metrics::current().set("read_time", readTime, metrics);
+            Metrics::current().set("write_time", writeTime, metrics);
+            Metrics::current().set("read_rate", total / readTime, metrics);
+            Metrics::current().set("write_rate", total / writeTime, metrics);
+            Metrics::current().set("rate", total / timer.elapsed(), metrics);
+        }
+
         return total;
     }
 }
 
-Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
-    std::unique_ptr<DataHandle> file{path.fileHandle()};
-    return saveInto(*file, w);
+Length DataHandle::saveInto(DataHandle& other, const std::string& metrics) {
+    return saveInto(other, TransferWatcher::dummy(), metrics);
 }
 
-Length DataHandle::copyTo(DataHandle& other, long bufsize) {
+Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, const std::string& metrics) {
+    std::unique_ptr<DataHandle> file{path.fileHandle()};
+    return saveInto(*file, w, metrics);
+}
+
+Length DataHandle::saveInto(const PathName& path, const std::string& metrics) {
+    return saveInto(path, TransferWatcher::dummy(), metrics);
+}
+
+Length DataHandle::copyTo(DataHandle& other, long bufsize, const std::string& metrics) {
+
+    ASSERT(metrics.empty());
 
     Buffer buffer(bufsize);
 
@@ -215,10 +238,10 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize) {
     return total;
 }
 
-Length DataHandle::copyTo(DataHandle& other) {
+Length DataHandle::copyTo(DataHandle& other, const std::string& metrics) {
 
     static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
-    return copyTo(other, bufsize);
+    return copyTo(other, bufsize, metrics);
 }
 
 
@@ -230,6 +253,10 @@ std::string DataHandle::name() const {
 
 std::string DataHandle::title() const {
     return className();
+}
+
+std::string DataHandle::metrics() const {
+    return title();
 }
 
 template <>

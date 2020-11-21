@@ -88,24 +88,26 @@ public:
     virtual DataHandle* clone() const;
 
     /// Save into an other datahandle
-    virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());
+    virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy(), const std::string& metrics="");
+    virtual Length saveInto(DataHandle&, const std::string& metrics);
 
     /// Save into a file
-    Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy());
+    virtual Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy(), const std::string& metrics="");
+    virtual Length saveInto(const PathName&, const std::string& metrics);
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    Length copyTo(DataHandle&);
+    virtual Length copyTo(DataHandle&, const std::string& metrics="");
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    Length copyTo(DataHandle&, long bufsize);
+    virtual Length copyTo(DataHandle&, long bufsize, const std::string& metrics="");
 
-    /// Append to an other datahandle
-    Length appendTo(DataHandle&);
+    // /// Append to an other datahandle
+    // virtual Length appendTo(DataHandle&, const std::string& metrics="");
 
-    /// Append to a file
-    Length appendTo(const PathName&);
+    // /// Append to a file
+    // virtual Length appendTo(const PathName&, const std::string& metrics="");
 
     virtual std::string name() const;
 
@@ -133,6 +135,7 @@ public:
     virtual void toRemote(Stream& s) const;
     virtual void cost(std::map<std::string, Length>&, bool) const;
     virtual std::string title() const;
+    virtual std::string metrics() const; // Tag for metrics collection
 
     // This is the MD5 of the Handle, not the data it points to
 

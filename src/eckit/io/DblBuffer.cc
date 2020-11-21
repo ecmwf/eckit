@@ -238,8 +238,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
         out.metrics(m, "target", metrics_);
         m.set("size", inBytes_, metrics_);
         m.set("read_time", rate, metrics_);
-        m.set("read_rate", inBytes_ / rate, metrics_);
-        m.set("rate", inBytes_ / reader.elapsed(), metrics_);
+        m.set("time", reader.elapsed(), metrics_);
     }
 
     return inBytes_;
@@ -327,7 +326,6 @@ void DblBufferTask::run() {
     if (!owner_.metrics_.empty()) {
         Metrics& m = Metrics::current();
         m.set("write_time", rate, owner_.metrics_);
-        m.set("write_rate", owner_.outBytes_ / rate, owner_.metrics_);
     }
 }
 

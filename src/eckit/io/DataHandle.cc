@@ -185,11 +185,9 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
             this->metrics(m, "source", metrics);
             other.metrics(m, "target", metrics);
             m.set("size", total, metrics);
+            m.set("time", timer.elapsed(), metrics);
             m.set("read_time", readTime, metrics);
             m.set("write_time", writeTime, metrics);
-            m.set("read_rate", total / readTime, metrics);
-            m.set("write_rate", total / writeTime, metrics);
-            m.set("rate", total / timer.elapsed(), metrics);
             m.set("double_buffering", false, metrics);
         }
 

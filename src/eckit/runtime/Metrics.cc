@@ -24,7 +24,6 @@ static std::string iso(time_t t) {
 
 Metrics::Metrics() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)), top_(current_) {
     AutoLock<StaticMutex> lock(local_mutex);
-    ASSERT(current_ == nullptr);
     current_ = this;
 }
 

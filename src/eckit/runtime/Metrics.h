@@ -97,11 +97,11 @@ private:  // methods
 };
 
 class AutoPushingMetrics {
-    const std::string& prefix_;
+    std::string prefix_;
 
 public:
-    AutoPushingMetrics(const std::string& prefix) : prefix_(prefix) { Metrics::current().push(prefix_); }
-    ~AutoPushingMetrics() { Metrics::current().pop(prefix_); }
+    AutoPushingMetrics(const std::string& prefix);
+    ~AutoPushingMetrics();
 };
 
 //----------------------------------------------------------------------------------------------------------------------

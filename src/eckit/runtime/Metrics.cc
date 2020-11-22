@@ -150,5 +150,13 @@ void Metrics::print(std::ostream& s) const {
     json.endObject();
 }
 
+AutoPushingMetrics::AutoPushingMetrics(const std::string& prefix) : prefix_(prefix) {
+    ASSERT(prefix_.size());
+    Metrics::current().push(prefix_);
+}
+
+AutoPushingMetrics::~AutoPushingMetrics() {
+    Metrics::current().pop(prefix_);
+}
 
 }  // namespace eckit

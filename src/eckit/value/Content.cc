@@ -92,6 +92,12 @@ Value Content::remove(const Value&) {
     throw BadOperator(s.str(), Here());
 }
 
+void Content::append(const Value&) {
+    std::ostringstream s;
+    s << *this << " (" << typeName() << ") method 'append' not implemented";
+    throw BadOperator(s.str(), Here());
+}
+
 Value& Content::element(const Value&) {
     std::ostringstream s;
     s << *this << " (" << typeName() << ") method 'element' not implemented";

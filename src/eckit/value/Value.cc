@@ -359,6 +359,11 @@ void Value::update() {
     }
 }
 
+void Value::append(const Value& value) {
+    update();
+    content_->append(value);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -22,7 +22,7 @@ static std::string iso(time_t t) {
 }
 
 
-Metrics::Metrics() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)) {
+Metrics::Metrics() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)), top_(current_) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
@@ -30,11 +30,13 @@ Metrics::Metrics() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)
 
 
 Metrics::~Metrics() {
-
     AutoLock<StaticMutex> lock(local_mutex);
-    if (current_ == this) {
-        current_ = nullptr;
+    while (!stack_.empty()) {
+        delete stack_.back();
+        stack_.pop_back();
     }
+    ASSERT(current_ == this);
+    current_ = top_;
 }
 
 Metrics& Metrics::current() {
@@ -48,6 +50,8 @@ void Metrics::error(const std::exception& e) {
 }
 
 void Metrics::set(const std::string& name, const Value& value) {
+    ASSERT(keys_.find(name) == keys_.end());
+    keys_.insert(name);
     metrics_[name] = value;
 }
 
@@ -57,8 +61,37 @@ void Metrics::set(const std::string& name, const Value& value, const std::string
         metrics_[prefix] = Value::makeOrderedMap();
     }
 
+    std::string key = prefix + "." + name;
+    ASSERT(keys_.find(key) == keys_.end());
+    keys_.insert(key);
+
+
     metrics_[prefix][name] = value;
 }
+
+void Metrics::push(const std::string& name) {
+    stack_.push_back(new Metrics());
+}
+
+void Metrics::_pop(const std::string& prefix) {
+    ASSERT(!stack_.empty());
+    if (!metrics_.contains(prefix)) {
+        metrics_[prefix] = Value::makeList();
+    }
+
+    Metrics* last = stack_.back();
+    stack_.pop_back();
+
+    metrics_[prefix].append(last->metrics_);
+
+    delete last;
+}
+
+void Metrics::pop(const std::string& name) {
+    ASSERT(top_);
+    top_->_pop(name);
+}
+
 
 void Metrics::timestamp(const std::string& name, time_t time) {
     timestamps_[name] = time;

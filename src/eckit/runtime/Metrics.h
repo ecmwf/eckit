@@ -68,28 +68,40 @@ public:  // methods
 
     void send(Stream&) const;
     void receive(Stream&);
-
+    void push(const std::string&);
+    void pop(const std::string&);
 
     static Metrics& current();
 
+private:
+
+    void _pop(const std::string&);
 
 private:  // members
-
     std::map<std::string, time_t> timestamps_;
+    std::set<std::string> keys_;
+    std::vector<Metrics*> stack_;
 
     time_t created_;
     Value metrics_;
 
-private:  // methods
+    Metrics* top_;
 
+private:  // methods
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Metrics& m) {
         m.print(s);
         return s;
     }
+};
 
-    friend class ObjectMetric;
+class AutoPushingMetrics {
+    const std::string& prefix_;
+
+public:
+    AutoPushingMetrics(const std::string& prefix) : prefix_(prefix) { Metrics::current().push(prefix_); }
+    ~AutoPushingMetrics() { Metrics::current().pop(prefix_); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

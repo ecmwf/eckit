@@ -105,6 +105,10 @@ void Metrics::set(const std::string& name, const std::vector<std::string>& value
     set(name, toValue(value), prefix);
 }
 
+void Metrics::set(const std::string& name, const std::map<std::string, unsigned long long>& value, const std::string& prefix) {
+    set(name, toValue(value), prefix);
+}
+
 void Metrics::send(Stream& s) const {
     s << metrics_;
 }

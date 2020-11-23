@@ -424,9 +424,9 @@ void MultiHandle::metrics(Metrics& m, const std::string& what, const std::string
         return datahandles_[0]->metrics(m, what, metric);
     }
 
-    std::set<std::string> v;
+    std::map<std::string, unsigned long long> v;
     for (size_t i = 0; i < datahandles_.size(); i++) {
-        v.insert(datahandles_[i]->metrics());
+        v[datahandles_[i]->metrics()] += datahandles_[i]->estimate();
     }
 
     m.set(what, v, metric);

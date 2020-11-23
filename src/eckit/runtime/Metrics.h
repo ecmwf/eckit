@@ -59,6 +59,10 @@ public:  // methods
     void set(const std::string& name, const std::set<std::string>& value, const std::string& prefix);
 
 
+    void set(const std::string& name, const std::map<std::string, unsigned long long>& value, const std::string& prefix);
+
+
+
     // void set(const std::string& name, const std::vector<long long>& value);
 
     void timestamp(const std::string& name, time_t value);

@@ -342,11 +342,11 @@ std::string PathName::metrics(const std::string& name) {
 
     size_t i = 0;
     while (NAMES[i]) {
-        int pos = name.find(NAMES[i]);
+        int pos = path.path().find(NAMES[i]);
         if (pos != std::string::npos) {
             std::ostringstream oss;
             oss << path.node() << ":";
-            oss << name.substr(0, pos + ::strlen(NAMES[i]));
+            oss << path.path().substr(0, pos + ::strlen(NAMES[i]) - 1);
             return oss.str();
         }
         i++;

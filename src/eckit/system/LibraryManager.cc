@@ -139,9 +139,9 @@ public:  // methods
 
             // Try the various paths in the way
 
-            for (const eckit::PathName& dir : libPaths) {
+            for (const std::string& dir : libPaths) {
 
-                eckit::PathName p = dir / libraryName;
+                eckit::PathName p = PathName(dir) / libraryName;
                 if (p.exists()) {
                     void* plib = ::dlopen(p.localPath(), RTLD_NOW | RTLD_GLOBAL);
                     if (plib == nullptr) {

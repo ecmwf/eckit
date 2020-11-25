@@ -114,6 +114,12 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         system::LibraryManager::load(library);
     }
 
+    // scan for plugins and load them
+    bool autoLoadPlugins = Resource<bool>("autoLoadPlugins;-autoLoadPlugins", false);
+    if (autoLoadPlugins) {
+        system::LibraryManager::autoLoadPlugins();
+    }
+
     Loader::callAll(&Loader::execute);
 }
 

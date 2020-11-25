@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "eckit/memory/NonCopyable.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
 namespace system {
@@ -50,11 +51,16 @@ public:  // class methods
     /// @param [in] name Library name
     static const Library& lookup(const std::string& name);
 
-    /// @brief Loads a sahred library
+    /// @brief Loads a shared library
     /// @param [in] name Name of the library plugin to load
     static void load(const std::string& name);
 
+    /// @brief Scansa and Auto loads Plugins
+    /// @param [in] dir path to scan for plugin manifests
+    static void autoLoadPlugins();
+
     /// @brief Registers a library as a plugin
+    ///        To be called from the Plugin constructor
     /// @param [in] name Name of the library plugin to register
     static void registerPlugin(const std::string& name);
 

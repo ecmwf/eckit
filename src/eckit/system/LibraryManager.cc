@@ -22,6 +22,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/OStreamTarget.h"
@@ -31,6 +32,8 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/config/YAMLConfiguration.h"
+#include "eckit/config/LocalConfiguration.h"
 
 namespace eckit {
 namespace system {
@@ -166,7 +169,42 @@ public:  // methods
         }
     }
 
-    void registerPlugin(const std::string& name) { plugins_.insert(name); }
+    void autoLoadPlugins() {
+
+        AutoLock<Mutex> lockme(mutex_);
+
+        LocalPathName dir("~/share/plugins");
+
+        std::vector<LocalConfiguration> plugins;
+
+        std::vector<LocalPathName> files;
+        std::vector<LocalPathName> dirs;
+        dir.children(files, dirs);
+        for (const auto& p : files) {
+            PathName path(p);
+            YAMLConfiguration conf(path);
+            if (conf.has("plugin")) {
+                LocalConfiguration plugin = conf.getSubConfiguration("plugin");
+                plugins.push_back(plugin);
+            }
+        }
+
+        for (const auto& p : plugins) {
+            Log::debug() << "Loading plugin library: " << p << std::endl;
+            std::vector<std::string> libs = p.getStringVector("libraries");
+            for (const auto& lib : libs) {
+                load(lib);
+            }
+
+        }
+
+    }
+
+
+    void registerPlugin(const std::string& name) {
+        AutoLock<Mutex> lockme(mutex_);
+        plugins_.insert(name);
+    }
 
 private:  // members
     LibraryMap libs_;
@@ -176,7 +214,7 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void LibraryManager::enregister(const std::string& name, Library* obj) { 
+void LibraryManager::enregister(const std::string& name, Library* obj) {
     LibraryRegistry::instance().enregister(name, obj);
 }
 
@@ -203,6 +241,10 @@ const Library& LibraryManager::lookup(const std::string& name) {
 /* const Library& */ void LibraryManager::load(const std::string& name) {
     // return
     LibraryRegistry::instance().load(name);
+}
+
+void LibraryManager::autoLoadPlugins() {
+    LibraryRegistry::instance().autoLoadPlugins();
 }
 
 void LibraryManager::registerPlugin(const std::string& name) {

@@ -85,8 +85,7 @@ public:  // methods
     /// List loaded library plugins
     std::vector<std::string> loadedPlugins() const {
         AutoLock<Mutex> lockme(mutex_);
-        std::vector<std::string> result;
-        std::copy(plugins_.begin(), plugins_.end(), result.begin());
+        std::vector<std::string> result(plugins_.begin(), plugins_.end());
         return result;
     }
 
@@ -174,6 +173,7 @@ public:  // methods
         AutoLock<Mutex> lockme(mutex_);
 
         LocalPathName dir("~/share/plugins");
+        Log::debug() << "Loading plugins listed in " << dir << std::endl;
 
         std::vector<LocalConfiguration> plugins;
 
@@ -182,6 +182,7 @@ public:  // methods
         dir.children(files, dirs);
         for (const auto& p : files) {
             PathName path(p);
+            Log::debug() << "Found plugin manifest " << path << std::endl;
             YAMLConfiguration conf(path);
             if (conf.has("plugin")) {
                 LocalConfiguration plugin = conf.getSubConfiguration("plugin");
@@ -203,6 +204,7 @@ public:  // methods
 
     void registerPlugin(const std::string& name) {
         AutoLock<Mutex> lockme(mutex_);
+        Log::debug() << "Registered plugin: " << name << std::endl;
         plugins_.insert(name);
     }
 

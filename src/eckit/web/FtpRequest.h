@@ -14,6 +14,8 @@
 #ifndef FtpRequest_H
 #define FtpRequest_H
 
+#include <string>
+
 #include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
@@ -21,8 +23,6 @@
 class Retrieve;
 
 namespace eckit {
-
-//-----------------------------------------------------------------------------
 
 class Length;
 class PathName;

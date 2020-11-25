@@ -31,7 +31,7 @@ public: // methods
         options_.push_back(new eckit::option::SimpleOption<bool>("json" , "Produce JSON output"));
 
         options_.push_back(new eckit::option::SimpleOption<bool>("libraries" , "Print loaded libraries"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("loaded-plugins" , "Print path to language.yaml file"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("loaded-plugins", "Print loaded plugins"));
         options_.push_back(new eckit::option::SimpleOption<bool>("available-plugins", "Discover available plugins"));
 
         options_.push_back(new eckit::option::SimpleOption<bool>("version" , "Print version number"));

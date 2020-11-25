@@ -48,7 +48,7 @@ AECCompressor::AECCompressor() {}
 
 AECCompressor::~AECCompressor() {}
 
-size_t AECCompressor::minInputSize(const size_t inputSize, const aec_stream& strm) {
+static size_t minInputSize(const size_t inputSize, const aec_stream& strm) {
     int blockSizeBytes = strm.bits_per_sample * strm.block_size / 8;
     int minSize        = (inputSize / blockSizeBytes);
     if (inputSize % blockSizeBytes > 0)

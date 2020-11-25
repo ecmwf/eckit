@@ -415,13 +415,13 @@ Value YAMLParser::parseNumber() {
 }
 
 
-static Value toValue(const std::string& s) {
 
-    static Regex real("^[-+]?[0-9]+\\.?[0-9]+([eE][-+]?[0-9]+)?$", false, true);
-    static Regex integer("^[-+]?[0-9]+$", false, true);
-    static Regex hex("^0x[0-9a-zA-Z]+$", false, true);
-    static Regex octal("^0[0-9]+$", false, true);
-    static Regex time("[0-9]+:[0-9]+:[0-9]+$", false, true);
+static Value toValue(const std::string& s) {
+    static Regex real("^[-+]?[0-9]+\\.?[0-9]+([eE][-+]?[0-9]+)?$", false);
+    static Regex integer("^[-+]?[0-9]+$", false);
+    static Regex hex("^0x[0-9a-zA-Z]+$", false);
+    static Regex octal("^0[0-7]+$", false);
+    static Regex time("[0-9]+:[0-9]+:[0-9]+$", false);
 
     /*
     if (time.match(s)) {
@@ -431,39 +431,101 @@ static Value toValue(const std::string& s) {
 
     // std::cout << "TO VALUE " << s << std::endl;
 
-    if (octal.match(s)) {
-        return Value(strtol(s.c_str(), 0, 0));
-    }
-
-    if (hex.match(s)) {
-        return Value(strtol(s.c_str(), 0, 0));
-    }
-
-    if (integer.match(s)) {
-        long long d = Translator<std::string, long long>()(s);
-        return Value(d);
-    }
-
-    if (real.match(s)) {
-        double d = Translator<std::string, double>()(s);
-        return Value(d);
-    }
-
-    if (s == "null") {
-        return Value();
-    }
-
-    if (s == "false") {
-        return Value(false);
-    }
-
-    if (s == "true") {
-        return Value(true);
-    }
-
     if (s.length()) {
-        ASSERT(s[0] != '"');
-        ASSERT(s[0] != '\'');
+        // This is because checking regex is very slow
+        switch (s[0]) {
+            case '0':
+
+                if (octal.match(s)) {
+                    return Value(strtol(s.c_str(), 0, 0));
+                }
+
+                if (s.length() > 2 && s[1] == 'x' && hex.match(s)) {
+                    return Value(strtol(s.c_str(), 0, 0));
+                }
+
+                if (integer.match(s)) {
+                    long long d = Translator<std::string, long long>()(s);
+                    return Value(d);
+                }
+
+                if (real.match(s)) {
+                    double d = Translator<std::string, double>()(s);
+                    return Value(d);
+                }
+                break;
+
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '-':
+            case '+':
+            case '.':
+                if (integer.match(s)) {
+                    long long d = Translator<std::string, long long>()(s);
+                    return Value(d);
+                }
+
+                if (real.match(s)) {
+                    double d = Translator<std::string, double>()(s);
+                    return Value(d);
+                }
+                break;
+
+            case 'o':
+                if (s == "on") {
+                    return Value(true);
+                }
+
+                if (s == "off") {
+                    return Value(false);
+                }
+
+                break;
+
+            case 'n':
+                if (s == "null") {
+                    return Value();
+                }
+
+                if (s == "no") {
+                    return Value(false);
+                }
+
+                break;
+
+            case 'f':
+                if (s == "false") {
+                    return Value(false);
+                }
+                break;
+
+            case 't':
+                if (s == "true") {
+                    return Value(true);
+                }
+                break;
+
+            case 'y':
+                if (s == "yes") {
+                    return Value(true);
+                }
+                break;
+
+            case '"':
+                ASSERT(s[0] != '"');
+                break;
+
+            case '\'':
+                ASSERT(s[0] != '\'');
+                break;
+        }
     }
 
 

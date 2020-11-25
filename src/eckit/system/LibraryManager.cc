@@ -172,7 +172,12 @@ public:  // methods
 
         AutoLock<Mutex> lockme(mutex_);
 
-        LocalPathName dir("~/share/plugins");
+        static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "~/share/plugins");
+
+        LocalPathName dir(pluginManifestPath);
+        if(not dir.exists() or not dir.isDir())
+            return;
+        
         Log::debug() << "Loading plugins listed in " << dir << std::endl;
 
         std::vector<LocalConfiguration> plugins;

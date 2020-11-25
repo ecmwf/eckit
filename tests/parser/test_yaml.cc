@@ -379,6 +379,17 @@ CASE("test_eckit_yaml_comment_in_string") {
     EXPECT(v["test3"] == e);
     EXPECT(v["test4"][0] == e);
     EXPECT(v["test5"]["test6"] == e);
+
+    EXPECT(v["test6"] == "Quotes in 'strings' are special");
+
+
+    EXPECT(bool(v["bool1"]) == true);
+    EXPECT(bool(v["bool2"]) == false);
+    EXPECT(bool(v["bool3"]) == true);
+    EXPECT(bool(v["bool4"]) == false);
+    EXPECT(bool(v["bool5"]) == true);
+    EXPECT(bool(v["bool6"]) == false);
+
 }
 
 

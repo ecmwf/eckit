@@ -17,6 +17,10 @@ set( ECKIT_LITTLE_ENDIAN ${ECKIT_LITTLE_ENDIAN} )
 
 check_include_files( dlfcn.h  eckit_HAVE_DLFCN_H )
 
+if(NOT eckit_HAVE_DLFCN_H)
+message(FATAL_ERROR "eckit requires dlfcn.h for supporting dlopen of shared libraries")
+endif()
+
 cmake_push_check_state(RESET)
     set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_DL_LIBS} )
     check_c_source_compiles( "#define _GNU_SOURCE\n#include <dlfcn.h>\nint main(){ void* addr; Dl_info info; dladdr(addr, &info); }\n"
@@ -775,8 +779,12 @@ maths/Functions.h
 
 
 list( APPEND eckit_system_srcs
+    system/Plugin.cc
+    system/Plugin.h
     system/Library.cc
     system/Library.h
+    system/LibraryManager.cc
+    system/LibraryManager.h
     system/MemoryInfo.cc
     system/MemoryInfo.h
     system/ResourceUsage.cc

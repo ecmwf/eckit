@@ -39,6 +39,7 @@
 #include "eckit/os/Stat.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
+#include "eckit/system/LibraryManager.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -395,8 +396,8 @@ static void expandTilde(std::string& path, bool tildeIsUserHome) {
 
             // 2. if it has the form ~libname/, then delegate to the matching library to expand the path
 
-            if (eckit::system::Library::exists(s)) {
-                path = eckit::system::Library::lookup(s).expandPath(path);
+            if (eckit::system::LibraryManager::exists(s)) {
+                path = eckit::system::LibraryManager::lookup(s).expandPath(path);
                 return;
             }
 

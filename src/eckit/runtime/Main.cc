@@ -21,7 +21,7 @@
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Library.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/system/Library.h"
+#include "eckit/system/LibraryManager.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -111,7 +111,13 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
     std::vector<std::string> libraries = Resource<std::vector<std::string>>("dynamicLibraries", {});
     for (const std::string& library : libraries) {
-        system::Library::load(library);
+        system::LibraryManager::load(library);
+    }
+
+    // scan for plugins and load them
+    bool autoLoadPlugins = Resource<bool>("autoLoadPlugins;-autoLoadPlugins", false);
+    if (autoLoadPlugins) {
+        system::LibraryManager::autoLoadPlugins();
     }
 
     Loader::callAll(&Loader::execute);

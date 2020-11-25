@@ -17,6 +17,8 @@ ecbuild_add_library( TARGET eckit_option TYPE SHARED
         VectorOption.h
         CmdArgs.cc
         CmdArgs.h
+        EckitTool.cc
+        EckitTool.h
 
     TEMPLATES
         FactoryOption.cc

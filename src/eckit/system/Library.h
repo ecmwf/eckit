@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_system_Library_H
-#define eckit_system_Library_H
+#pragma once
 
 #include <iosfwd>
 #include <memory>
@@ -60,18 +59,18 @@ public:  // methods
 
     virtual const Configuration& configuration() const;
 
-public:  // class methods
-    static std::vector<std::string> list();
-    static void list(std::ostream&);
+public:  // methods
 
-    static bool exists(const std::string& name);
-    static void load(const std::string& name);
-    static const Library& lookup(const std::string& name);
+    /* DEPRECATED("Use LibraryManager instead") */ static  std::vector<std::string> list();
+    /* DEPRECATED("Use LibraryManager instead") */ static  void list(std::ostream& s);
+    /* DEPRECATED("Use LibraryManager instead") */ static  bool exists(const std::string& name);
+    /* DEPRECATED("Use LibraryManager instead") */ static  const Library& lookup(const std::string& name);
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
 protected:  // methods
+
     virtual std::string home() const;
 
     virtual const void* addr() const = 0;
@@ -121,5 +120,3 @@ struct LibraryRegistration {
 
 }  // namespace system
 }  // namespace eckit
-
-#endif

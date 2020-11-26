@@ -120,8 +120,7 @@ private:
 // helper
 
 inline bool operator<(std::reference_wrapper<const SQLTable> lhs, std::reference_wrapper<const SQLTable> rhs) {
-    // FIXME: Infinit recursion
-    return lhs.get() < rhs.get();
+    return &lhs.get() < &rhs.get();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

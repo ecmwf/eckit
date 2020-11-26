@@ -16,6 +16,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/log/Progress.h"
 #include "eckit/log/Timer.h"
+#include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/MutexCond.h"
@@ -52,8 +53,14 @@ public:
     virtual void run();
 };
 
-DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher) :
-    count_(count), bufSize_(size), error_(false), restart_(false), restartFrom_(0), watcher_(watcher) {
+DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher, const std::string& metrics) :
+    count_(count),
+    bufSize_(size),
+    error_(false),
+    restart_(false),
+    restartFrom_(0),
+    watcher_(watcher),
+    metrics_(metrics) {
     Log::info() << "Double buffering: " << count_ << " buffers of " << Bytes(size) << " is " << Bytes(count * size)
                 << std::endl;
 }
@@ -99,8 +106,14 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
         try {
             copied = copy(in, out, estimate);
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
-            if (estimate)
+            if (estimate) {
+                if (copied != estimate) {
+                    std::ostringstream os;
+                    os << "DblBuffer::copy(), copied: " << copied << ", estimate: " << estimate;
+                    throw SeriousBug(os.str());
+                }
                 ASSERT(copied == estimate);
+            }
         }
         catch (RestartTransfer& retry) {
             Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
@@ -141,6 +154,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     Timer reader("Double buffer reader");
     double rate  = 0.;
     double first = 0.;
+
 
     watcher_.watch(nullptr, 0);
 
@@ -217,6 +231,15 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     }
 
     PANIC(inBytes_ != outBytes_);
+
+    if (!metrics_.empty()) {
+        Metrics& m = Metrics::current();
+        in.metrics(m, "source", metrics_);
+        out.metrics(m, "target", metrics_);
+        m.set("size", inBytes_, metrics_);
+        m.set("read_time", rate, metrics_);
+        m.set("time", reader.elapsed(), metrics_);
+    }
 
     return inBytes_;
 }
@@ -299,6 +322,11 @@ void DblBufferTask::run() {
     Log::info() << "Write rate " << Bytes(owner_.outBytes_ / rate) << "/s" << std::endl;
     if (rate != first)
         Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
+
+    if (!owner_.metrics_.empty()) {
+        Metrics& m = Metrics::current();
+        m.set("write_time", rate, owner_.metrics_);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

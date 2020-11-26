@@ -212,6 +212,10 @@ std::string AsyncHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
+void AsyncHandle::metrics(Metrics& m, const std::string& what, const std::string& metric) const {
+    handle().metrics(m, what, metric);
+}
+
 DataHandle* AsyncHandle::clone() const {
     return new AsyncHandle(handle().clone(), maxSize_, rounding_);
 }

@@ -233,6 +233,7 @@ public:
     static void rename(const PathName& from, const std::string& newBase);
 
     static std::string shorten(const std::string&);
+    static std::string metrics(const std::string&);
 
 private:
     PathName(BasePathName*);

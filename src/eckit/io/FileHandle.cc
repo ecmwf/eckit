@@ -279,6 +279,10 @@ std::string FileHandle::title() const {
     return PathName::shorten(name_);
 }
 
+std::string FileHandle::metrics() const {
+    return PathName::metrics(name_);
+}
+
 
 DataHandle* FileHandle::clone() const {
     return new FileHandle(name_, overwrite_);

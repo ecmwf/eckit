@@ -58,6 +58,8 @@ public:
     virtual void toRemote(Stream&) const override;
     virtual void cost(std::map<std::string, Length>&, bool) const override;
     virtual std::string title() const override;
+    virtual std::string metrics() const override;
+
     virtual bool moveable() const override { return true; }
 
     virtual Offset seek(const Offset&) override;

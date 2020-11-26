@@ -17,6 +17,7 @@
 #include "eckit/net/Connector.h"
 #include "eckit/net/TCPServer.h"
 #include "eckit/net/TCPStream.h"
+#include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
@@ -27,11 +28,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MoverTransfer::MoverTransfer(TransferWatcher& watcher) : watcher_(watcher) {}
+MoverTransfer::MoverTransfer(TransferWatcher& watcher, const std::string& metric) :
+    watcher_(watcher), metric_(metric) {}
 
 MoverTransfer::~MoverTransfer() {}
 
 Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
+
+    bool send_costs = true;
 
     if (!from.moveable())
         throw SeriousBug(from.title() + " is not moveable");
@@ -45,6 +49,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     if (cost.empty()) {
         NodeInfo info     = ClusterNodes::any("mover");
         cost[info.node()] = 0;
+        send_costs        = false;
         //        throw SeriousBug(std::string("No cost for ") + from.title() + " => " + to.title());
     }
 
@@ -59,10 +64,11 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     // This will close the connector on unlock
     c.autoclose(true);
 
-    Log::message() << c.host() << std::endl;
+    Log::message() << c.node() << std::endl;
     Stream& s = c;
 
     s << bool(false);  // New batch
+    s << metric_;
 
     // NodeInfo::sendLogin(s);
     // NodeInfo remote = NodeInfo::acceptLogin(s);
@@ -96,14 +102,23 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
     unsigned long long len;
     s >> len;
-
-    //    ASSERT(len == total);
+    Metrics::current().receive(s);
+    Metrics::current().set("mover", c.node());
+    if (send_costs) {
+        for (auto j = cost.begin(); j != cost.end(); ++j) {
+            std::string h        = (*j).first;
+            unsigned long long l = (*j).second;
+            Metrics::current().set(h, l, "mover_costs");
+        }
+    }
+    // Metrics::current().set("mover_metric", metric_);
+    // //    ASSERT(len == total);
 
     Log::message() << " " << std::endl;
 
 
     return len;
-}
+}  // namespace eckit
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -198,6 +198,7 @@ protected:
     virtual bool contains(const Value&) const;
     virtual Value& element(const Value&);
     virtual Value remove(const Value&);
+    virtual void append(const Value&);
 
     virtual Value keys() const;
     virtual Value negate() const;

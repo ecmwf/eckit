@@ -76,7 +76,7 @@ public:
     virtual std::string title() const override;
     virtual bool moveable() const override;
     virtual DataHandle* clone() const override;
-
+    virtual void metrics(Metrics& m, const std::string& what, const std::string& metric="") const override; 
     // From Streamable
 
     virtual void encode(Stream&) const override;

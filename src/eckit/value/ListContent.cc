@@ -122,6 +122,10 @@ Content* ListContent::addList(const ListContent& other) const {
     return new ListContent(tmp);
 }
 
+void ListContent::append(const Value& value) {
+    value_.push_back(value);
+}
+
 Content* ListContent::sub(const Content& other) const {
     return other.subList(*this);
 }

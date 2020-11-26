@@ -345,6 +345,8 @@ public:
     Value element(const Value&) const;
     Value remove(const Value&);
 
+    void append(const Value&); // List append
+
     // -- Methods
 
     int compare(const Value& v) const { return content_->compare(*(v.content_)); }

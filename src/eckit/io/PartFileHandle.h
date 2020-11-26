@@ -65,6 +65,9 @@ public:  // methods
 
     virtual void cost(std::map<std::string, Length>&, bool) const override;
     virtual std::string title() const override;
+    virtual std::string metrics() const;
+
+
     virtual bool moveable() const override { return true; }
     virtual DataHandle* clone() const override;
 

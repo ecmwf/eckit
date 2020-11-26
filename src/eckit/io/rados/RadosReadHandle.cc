@@ -10,10 +10,10 @@
 
 #include "eckit/io/rados/RadosReadHandle.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/MultiHandle.h"
+#include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosAttributes.h"
-#include "eckit/io/MultiHandle.h"
 
 namespace eckit {
 
@@ -33,20 +33,11 @@ void RadosReadHandle::encode(Stream& s) const {
     s << object_;
 }
 
-RadosReadHandle::RadosReadHandle(Stream& s):
-    DataHandle(s),
-    object_(s) {
+RadosReadHandle::RadosReadHandle(Stream& s) : DataHandle(s), object_(s) {}
 
-}
+RadosReadHandle::RadosReadHandle(const std::string& name) : object_(name) {}
 
-RadosReadHandle::RadosReadHandle(const std::string& name):
-    object_(name) {
-
-}
-
-RadosReadHandle::~RadosReadHandle() {
-
-}
+RadosReadHandle::~RadosReadHandle() {}
 
 Length RadosReadHandle::estimate() {
     if (length_ == Length(0)) {

@@ -211,10 +211,8 @@ private:
         }
     };
 
-    static const size_t maxNodeEntries_ =
-        _NodePage::SIZE;  // split at full page -- could be a percentage
-    static const size_t maxLeafEntries_ =
-        _LeafPage::SIZE;  // split at full page -- could be a percentage
+    static const size_t maxNodeEntries_ = _NodePage::SIZE;  // split at full page -- could be a percentage
+    static const size_t maxLeafEntries_ = _LeafPage::SIZE;  // split at full page -- could be a percentage
 
     PathName path_;
 

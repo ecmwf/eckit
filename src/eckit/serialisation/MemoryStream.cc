@@ -18,26 +18,17 @@
 namespace eckit {
 
 MemoryStream::MemoryStream(const Buffer& buffer) :
-    address_(const_cast<Buffer&>(buffer)),
-    size_(buffer.size()),
-    read_(false),
-    position_(0) {}
+    address_(const_cast<Buffer&>(buffer)), size_(buffer.size()), position_(0) {}
 
 
-MemoryStream::MemoryStream(Buffer& buffer) : address_(buffer), size_(buffer.size()), read_(false), position_(0) {}
+MemoryStream::MemoryStream(Buffer& buffer) : address_(buffer), size_(buffer.size()), position_(0) {}
 
 MemoryStream::MemoryStream(const void* address, size_t size) :
-    address_(const_cast<char*>(reinterpret_cast<const char*>(address))),
-    size_(size),
-    read_(false),
-    position_(0) {}
+    address_(const_cast<char*>(reinterpret_cast<const char*>(address))), size_(size), position_(0) {}
 
 
 MemoryStream::MemoryStream(void* address, size_t size) :
-    address_(reinterpret_cast<char*>(address)),
-    size_(size),
-    read_(false),
-    position_(0) {}
+    address_(reinterpret_cast<char*>(address)), size_(size), position_(0) {}
 
 MemoryStream::~MemoryStream() {}
 

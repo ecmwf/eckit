@@ -17,8 +17,8 @@
 #define eckit_serialisation_FileStream_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/serialisation/Stream.h"
 #include "eckit/io/StdFile.h"
+#include "eckit/serialisation/Stream.h"
 
 
 namespace eckit {
@@ -27,36 +27,31 @@ namespace eckit {
 
 class FileStream : public Stream {
 
-public: // methods
+public:  // methods
+    FileStream(const PathName& name, const char* mode);
 
-    FileStream(const PathName& name, const char *mode);
-
-    virtual ~FileStream();
+    virtual ~FileStream() override;
 
     // Overriden from Stream
 
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
-	virtual void rewind();
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void rewind() override;
 
     void close();
 
-protected: // members
+protected:  // members
+    StdFile file_;
+    bool read_;
+    PathName name_;
 
-    StdFile     file_;
-    bool        read_;
-    PathName    name_;
+protected:  // methods
+            // Overriden from Stream
+    virtual std::string name() const override;
 
-protected: // methods
-
-    // Overriden from Stream
-
-	virtual std::string name() const;
-
-    virtual void print(std::ostream& s) const;
-
+    virtual void print(std::ostream& s) const override;
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

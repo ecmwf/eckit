@@ -9,19 +9,19 @@
  */
 
 #include <cassert>
-#include <iostream>
-#include <fstream>
-#include <memory>
 #include <cstdio>
-#include <locale>
+#include <fstream>
 #include <iomanip>
+#include <iostream>
+#include <locale>
+#include <memory>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
 #include "eckit/io/rados/RadosReadHandle.h"
+#include "eckit/io/rados/RadosWriteHandle.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
@@ -43,7 +43,7 @@ CASE("Test rados performance") {
 
     eckit::Timer timer;
     size_t size;
-    DataHandle *dh;
+    DataHandle* dh;
 
     eckit::PathName path("t.grib");
     size = path.size();

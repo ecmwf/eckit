@@ -24,73 +24,69 @@ namespace eckit {
 
 class TeeHandle : public DataHandle {
 public:
+    typedef std::vector<DataHandle*> HandleList;
 
-	typedef std::vector<DataHandle*> HandleList;
+    // -- Contructors
 
-// -- Contructors
+    TeeHandle();
+    TeeHandle(DataHandle*, DataHandle*);
+    TeeHandle(const HandleList&);
+    TeeHandle(Stream&);
 
-	TeeHandle();
-	TeeHandle(DataHandle*, DataHandle*);
-	TeeHandle(const HandleList&);
-	TeeHandle(Stream&);
+    // -- Destructor
 
-// -- Destructor
+    ~TeeHandle();
 
-	~TeeHandle();
+    // -- Operators
 
-// -- Operators
+    virtual void operator+=(DataHandle*);
 
-	virtual void operator+=(DataHandle*);
-
-// -- Overridden methods
+    // -- Overridden methods
 
     // From DataHandle
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual long read(void*,long);
-    virtual long write(const void*,long);
-    virtual void close();
-    virtual void flush();
-    virtual void rewind();
-    virtual void print(std::ostream&) const;
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
 
 
-    virtual void toRemote(Stream&) const;
-    virtual void toLocal(Stream&) const;
-    virtual DataHandle* toLocal();
-    virtual void cost(std::map<std::string,Length>&, bool) const;
+    virtual void toRemote(Stream&) const override;
+    virtual void toLocal(Stream&) const override;
+    virtual DataHandle* toLocal() override;
+    virtual void cost(std::map<std::string, Length>&, bool) const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
-// -- Class methods
+    // -- Class methods
 
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+    // -- Members
 
-// -- Members
+    HandleList datahandles_;
 
-	HandleList			    datahandles_;
+    // -- Methods
 
-// -- Methods
+    // -- Class members
 
-// -- Class members
-
-	static  ClassSpec                 classSpec_;
-    static  Reanimator<TeeHandle>  reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<TeeHandle> reanimator_;
 };
-
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
 #include <algorithm>
+#include <cstring>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/PeekHandle.h"
@@ -18,16 +18,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PeekHandle::PeekHandle(DataHandle* h):
-    HandleHolder(h) {
-    }
+PeekHandle::PeekHandle(DataHandle* h) : HandleHolder(h) {}
 
-PeekHandle::PeekHandle(DataHandle& h):
-    HandleHolder(h) {
-    }
+PeekHandle::PeekHandle(DataHandle& h) : HandleHolder(h) {}
 
-PeekHandle::~PeekHandle() {
-}
+PeekHandle::~PeekHandle() {}
 
 Length PeekHandle::openForRead() {
     peek_.clear();
@@ -61,22 +56,16 @@ long PeekHandle::peek(void* buffer, size_t size, size_t pos) {
             break;
         }
 
-        std::copy(buf,
-                  buf + p,
-                  std::back_inserter(peek_));
-
+        std::copy(buf, buf + p, std::back_inserter(peek_));
     }
 
     int len = std::min(last, peek_.size());
     ASSERT(len >= pos);
     len -= pos;
 
-    std::copy(peek_.begin() + pos,
-              peek_.begin() + pos + len,
-              buf);
+    std::copy(peek_.begin() + pos, peek_.begin() + pos + len, buf);
 
     return len;
-
 }
 
 long PeekHandle::read(void* buffer, long length) {
@@ -86,13 +75,11 @@ long PeekHandle::read(void* buffer, long length) {
     }
 
     long len = 0;
-    char *p = static_cast<char*>(buffer);
+    char* p  = static_cast<char*>(buffer);
 
     size_t s = std::min(peek_.size(), size_t(length));
 
-    std::copy(peek_.begin(),
-              peek_.begin() + s,
-              p);
+    std::copy(peek_.begin(), peek_.begin() + s, p);
 
     p += s;
     len += s;
@@ -105,7 +92,7 @@ long PeekHandle::read(void* buffer, long length) {
     if (length) {
 
         int n = handle().read(p, length);
-        ASSERT (n >= 0);
+        ASSERT(n >= 0);
         len += n;
     }
 

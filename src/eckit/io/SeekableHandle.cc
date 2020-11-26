@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
 #include <algorithm>
+#include <cstring>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/SeekableHandle.h"
@@ -19,18 +19,11 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-SeekableHandle::SeekableHandle(PeekHandle* h):
-    handle_(*h),
-    position_(0) {
-}
+SeekableHandle::SeekableHandle(PeekHandle* h) : handle_(*h), position_(0) {}
 
-SeekableHandle::SeekableHandle(PeekHandle& h):
-    handle_(h),
-    position_(0) {
-}
+SeekableHandle::SeekableHandle(PeekHandle& h) : handle_(h), position_(0) {}
 
-SeekableHandle::~SeekableHandle() {
-}
+SeekableHandle::~SeekableHandle() {}
 
 Length SeekableHandle::openForRead() {
     position_ = 0;

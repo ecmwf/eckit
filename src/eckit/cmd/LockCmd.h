@@ -39,17 +39,16 @@ private:
 
     // From CmdResource
 
-    virtual void execute(std::istream&, std::ostream&, CmdArg&);
+    virtual void execute(std::istream&, std::ostream&, CmdArg&) override;
     virtual void man(std::ostream&) const;
-    virtual void help(std::ostream&) const;
-    virtual Arg usage(const std::string& cmd) const;
+    virtual void help(std::ostream&) const override;
+    virtual Arg usage(const std::string& cmd) const override;
 };
 
-inline void destroy(LockCmd**) {
-}
+inline void destroy(LockCmd**) {}
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif  // LockCmd_H

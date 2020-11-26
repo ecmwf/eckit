@@ -21,6 +21,6 @@ public:
     static time_t now() { return ::time(nullptr); }
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -16,11 +16,11 @@
 
 namespace eckit {
 
-    /// An fsync that retries when interrupted by system
-    int fsync(int fd);
+/// An fsync that retries when interrupted by system
+int fsync(int fd);
 
-    /// A platform independent fdatasync
-    int fdatasync(int fd);
+/// A platform independent fdatasync
+int fdatasync(int fd);
 
 }  // namespace eckit
 

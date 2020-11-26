@@ -38,7 +38,8 @@ public:
 
 static void usage(const std::string& tool) {
 
-    Log::info() << "Usage: " << tool << " [--recursive] [--statistics] --from=[PATH1] --to=[PATH2]" << std::endl << std::endl;
+    Log::info() << "Usage: " << tool << " [--recursive] [--statistics] --from=[PATH1] --to=[PATH2]" << std::endl
+                << std::endl;
 }
 
 
@@ -46,7 +47,7 @@ void RsyncTool::run() {
 
     eckit::option::CmdArgs args(&usage, options_, 0, 0);
 
-    bool recursive = args.getBool("recursive", false);
+    bool recursive  = args.getBool("recursive", false);
     bool statistics = args.getBool("statistics", false);
 
     PathName from(args.getString("from"));

@@ -22,92 +22,88 @@ namespace eckit {
 
 class FileLocker {
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    FileLocker(int fd);
 
-	FileLocker(int fd);
+    // -- Destructor
 
-// -- Destructor
+    ~FileLocker();
 
-	~FileLocker();
+    // -- Convertors
+    // None
 
-// -- Convertors
-	// None
+    // -- Operators
+    // None
 
-// -- Operators
-	// None
+    // -- Methods
 
-// -- Methods
+    void lockShared(off_t off = 0, off_t len = 0);
+    void lockExclusive(off_t off = 0, off_t len = 0);
+    void unlock(off_t off = 0, off_t len = 0);
 
-	void lockShared(off_t off = 0, off_t len = 0);
-	void lockExclusive(off_t off = 0, off_t len = 0);
-	void unlock(off_t off = 0, off_t len = 0);
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
 
-// -- Methods
+    // void print(std::ostream&) const;
 
-	// void print(std::ostream&) const;
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    FileLocker(const FileLocker&);
+    FileLocker& operator=(const FileLocker&);
 
-	FileLocker(const FileLocker&);
-	FileLocker& operator=(const FileLocker&);
+    // -- Members
 
-// -- Members
+    int fd_;
 
-	int fd_;
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
+    void lockRange(off_t, off_t, int cmd, int type);
 
-	void lockRange(off_t,off_t,int cmd,int type);
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
+    // -- Class methods
+    // None
 
-// -- Class methods
-	// None
+    // -- Friends
 
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const FileLocker& p)
-	//	{ p.print(s); return s; }
-
+    // friend std::ostream& operator<<(std::ostream& s,const FileLocker& p)
+    //	{ p.print(s); return s; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

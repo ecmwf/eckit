@@ -14,17 +14,17 @@
 
 namespace eckit {
 
-template<class Traits>
+template <class Traits>
 struct SPMetadata {
 
-    typedef typename Traits::Point   Point;
+    typedef typename Traits::Point Point;
 
-    Point  offset_;
-    Point  scale_;
+    Point offset_;
+    Point scale_;
 };
 
 
-} // end namespace
+}  // namespace eckit
 
 
 #endif

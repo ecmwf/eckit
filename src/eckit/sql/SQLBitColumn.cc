@@ -19,10 +19,7 @@ namespace eckit {
 namespace sql {
 
 SQLBitColumn::SQLBitColumn(const SQLColumn& column, const std::string& field) :
-    SQLColumn(column),
-    field_(field),
-    mask_(0),
-    shift_(0) {
+    SQLColumn(column), field_(field), mask_(0), shift_(0) {
     const type::SQLBitfield& t = dynamic_cast<const type::SQLBitfield&>(type());
     mask_                      = t.mask(field);
     shift_                     = t.shift(field);

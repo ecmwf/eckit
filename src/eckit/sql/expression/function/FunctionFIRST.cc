@@ -24,14 +24,10 @@ namespace function {
 static FunctionBuilder<FunctionFIRST> firstFunctionBuilder("first");
 
 FunctionFIRST::FunctionFIRST(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    value_(DBL_MAX),
-    notFirst_(false) {}
+    FunctionExpression(name, args), value_(DBL_MAX), notFirst_(false) {}
 
 FunctionFIRST::FunctionFIRST(const FunctionFIRST& other) :
-    FunctionExpression(other.name_, other.args_),
-    value_(other.value_),
-    notFirst_(other.notFirst_) {}
+    FunctionExpression(other.name_, other.args_), value_(other.value_), notFirst_(other.notFirst_) {}
 
 std::shared_ptr<SQLExpression> FunctionFIRST::clone() const {
     return std::make_shared<FunctionFIRST>(*this);

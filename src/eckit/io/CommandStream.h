@@ -25,37 +25,35 @@ namespace eckit {
 
 class CommandStream : public Stream {
 public:
+    // -- Contructors
 
-// -- Contructors
+    CommandStream(const std::string& name, const char* mode);
 
-    CommandStream(const std::string& name,const char *mode);
+    // -- Destructor
 
-// -- Destructor
+    ~CommandStream();
 
-	~CommandStream();
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From Stream
 
-	// From Stream
-
-	virtual long read(void*,long);
-	virtual long write(const void*,long);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
 
 private:
+    // -- Members
 
-// -- Members
+    FILE* file_;
 
-	FILE* file_;
+    // -- Overridden methods
 
-// -- Overridden methods
-
-	// From Stream
-    virtual std::string name() const;
+    // From Stream
+    virtual std::string name() const override;
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

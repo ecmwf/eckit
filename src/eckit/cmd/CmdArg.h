@@ -11,9 +11,9 @@
 #ifndef eckit_cmd_CmdArg_H
 #define eckit_cmd_CmdArg_H
 
+#include "eckit/config/Resource.h"
 #include "eckit/serialisation/Streamable.h"
 #include "eckit/value/Value.h"
-#include "eckit/config/Resource.h"
 
 //-----------------------------------------------------------------------------
 
@@ -64,8 +64,8 @@ public:
 
     // From Streamble
 
-    virtual void encode(eckit::Stream&) const;
-    virtual const eckit::ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(eckit::Stream&) const override;
+    virtual const eckit::ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // access the value or its default
     const eckit::Value& get(const std::string&, const eckit::Value&) const;
@@ -111,6 +111,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

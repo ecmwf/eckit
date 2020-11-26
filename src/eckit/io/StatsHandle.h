@@ -14,11 +14,11 @@
 #ifndef eckit_filesystem_StatsHandle_h
 #define eckit_filesystem_StatsHandle_h
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/HandleHolder.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/types/Types.h"
 #include "eckit/log/Timer.h"
+#include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------
 
@@ -28,7 +28,6 @@ namespace eckit {
 
 class StatsHandle : public DataHandle, public HandleHolder {
 public:
-
     // -- Contructors
 
     StatsHandle(DataHandle& handle);
@@ -45,56 +44,54 @@ public:
     // From DataHandle
 
 
-    virtual void print(std::ostream& s) const;
+    virtual void print(std::ostream& s) const override;
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual long read(void*,long);
-    virtual long write(const void*,long);
-    virtual void close();
-    virtual void flush();
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
 
-    virtual Length estimate();
-    virtual Offset position();
-    virtual Offset seek(const Offset&);
-    virtual void skip(const Length &);
+    virtual Length estimate() override;
+    virtual Offset position() override;
+    virtual Offset seek(const Offset&) override;
+    virtual void skip(const Length&) override;
 
-    virtual void rewind();
-    virtual void restartReadFrom(const Offset&);
-    virtual void restartWriteFrom(const Offset&);
+    virtual void rewind() override;
+    virtual void restartReadFrom(const Offset&) override;
+    virtual void restartWriteFrom(const Offset&) override;
 
-    virtual DataHandle* clone() const;
+    virtual DataHandle* clone() const override;
 
-    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher);
+    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher) override;
 
-    virtual std::string name() const;
-
-
-    virtual bool compress(bool);
-    virtual bool merge(DataHandle*);
-    virtual bool isEmpty() const;
+    virtual std::string name() const override;
 
 
-    virtual bool moveable() const;
-    virtual void toLocal(Stream& s) const;
+    virtual bool compress(bool) override;
+    virtual bool merge(DataHandle*) override;
+    virtual bool isEmpty() const override;
 
-    virtual DataHandle* toLocal();
 
-    virtual void toRemote(Stream& s) const;
-    virtual void cost(std::map<std::string,Length>&, bool) const;
-    virtual std::string title() const;
+    virtual bool moveable() const override;
+    virtual void toLocal(Stream& s) const override;
 
+    virtual DataHandle* toLocal() override;
+
+    virtual void toRemote(Stream& s) const override;
+    virtual void cost(std::map<std::string, Length>&, bool) const override;
+    virtual std::string title() const override;
 
 
 private:
-
     // -- Members
 
     size_t reads_;
     size_t seeks_;
-//    size_t positions_; // unused
+    //    size_t positions_; // unused
     size_t writes_;
 
     unsigned long long bytesRead_;
@@ -105,12 +102,11 @@ private:
     double readTime_;
     double writeTime_;
     double seekTime_;
-
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

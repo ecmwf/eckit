@@ -14,9 +14,7 @@
 #include "eckit/runtime/Monitor.h"
 
 
-
 namespace eckit {
-
 
 
 RemoteCommander::RemoteCommander(int p) : net::NetService(p) {
@@ -25,15 +23,12 @@ RemoteCommander::RemoteCommander(int p) : net::NetService(p) {
 }
 
 
-
 RemoteCommander::~RemoteCommander() {}
-
 
 
 net::NetUser* RemoteCommander::newUser(net::TCPSocket& protocol) const {
     return new RemoteCommandUser(protocol);
 }
-
 
 
 }  // namespace eckit

@@ -13,10 +13,10 @@
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/parser/JSONParser.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/value/Value.h"
-#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 

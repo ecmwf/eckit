@@ -15,14 +15,14 @@
 #ifndef eckit_io_FilePool_h
 #define eckit_io_FilePool_h
 
+#include "eckit/container/CacheLRU.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/MutexCond.h"
-#include "eckit/container/CacheLRU.h"
 
 namespace eckit {
-    class DataHandle;
-    class PathName;
-}
+class DataHandle;
+class PathName;
+}  // namespace eckit
 
 namespace eckit {
 
@@ -40,7 +40,6 @@ namespace eckit {
 class FilePool : private eckit::NonCopyable {
 
 public:
-
     FilePool(size_t capacity);
 
     ~FilePool();
@@ -49,7 +48,7 @@ public:
     /// Ownership is passed from FilePool to the client
     /// @post DataHandle is marked in use and should not be closed by client
     /// @invariant If handle is in use, it assumes is from another thread and it will wait() for a checkin()
-    DataHandle * checkout(const PathName& path);
+    DataHandle* checkout(const PathName& path);
 
     /// Return a DataHandle after use
     /// Ownership is passed back from the client to FilePool
@@ -64,7 +63,7 @@ public:
     size_t size() const;
 
     /// Resize pool capacity
-    void capacity( size_t size );
+    void capacity(size_t size);
 
     /// Returns max size of pool
     size_t capacity() const;
@@ -75,20 +74,21 @@ public:
     /// Lists the contents of the Pool both in use and cached DataHandle's
     void print(std::ostream& os) const;
 
-    friend std::ostream& operator<<(std::ostream& s, const FilePool& p) { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const FilePool& p) {
+        p.print(s);
+        return s;
+    }
 
 private:
+    std::map<PathName, DataHandle*> inUse_;
 
-    std::map< PathName, DataHandle* > inUse_;
-
-    eckit::CacheLRU< PathName, DataHandle* > cache_;
+    eckit::CacheLRU<PathName, DataHandle*> cache_;
 
     mutable eckit::MutexCond cond_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif
-

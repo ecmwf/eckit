@@ -15,8 +15,8 @@
 /// @author Tiago Quintino
 /// @date   Jan 2020
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 namespace eckit {
 namespace net {
@@ -83,7 +83,6 @@ struct SocketOptions {
     void print(std::ostream& s) const;
 
 private:
-
     SocketOptions();
 
     friend std::ostream& operator<<(std::ostream& s, const SocketOptions& socket);
@@ -117,9 +116,7 @@ private:
 
     /// bypass Nagle Delays by disabling Nagle's algorithm and send the data as soon as it's available
     bool tcpNoDelay_ = false;
-
 };
-
 
 
 }  // namespace net

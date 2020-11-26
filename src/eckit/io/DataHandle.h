@@ -65,13 +65,13 @@ public:
 
     virtual void print(std::ostream& s) const = 0;
 
-    virtual Length openForRead()             ;  //< Returns estimated length
-    virtual void openForWrite(const Length&) ;  //< Receive estimated length
+    virtual Length openForRead();               //< Returns estimated length
+    virtual void openForWrite(const Length&);   //< Receive estimated length
     virtual void openForAppend(const Length&);  //< Receive estimated length
 
-    virtual long read(void*, long)       ;
+    virtual long read(void*, long);
     virtual long write(const void*, long);
-    virtual void close()                 ;
+    virtual void close();
     virtual void flush();
 
     virtual Length size();
@@ -146,8 +146,8 @@ public:
 
     // From Streamble
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

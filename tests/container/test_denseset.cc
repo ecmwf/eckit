@@ -78,10 +78,10 @@ CASE("test_set_string") {
     EXPECT(s.find("one") == s.end());
 
     // iterate over the elements
-    std::vector<std::string> e = {"four", "nine", "two"};
-    DenseSet<std::string>::const_iterator set_it = s.begin();
+    std::vector<std::string> e                      = {"four", "nine", "two"};
+    DenseSet<std::string>::const_iterator set_it    = s.begin();
     std::vector<std::string>::const_iterator vec_it = e.begin();
-    for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
+    for (; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);
     }
 
@@ -165,10 +165,10 @@ CASE("test_set_int") {
     EXPECT(s.find(1) == s.end());
 
     // iterate over the elements
-    std::vector<int> e = {2, 4, 9};
-    DenseSet<int>::const_iterator set_it = s.begin();
+    std::vector<int> e                      = {2, 4, 9};
+    DenseSet<int>::const_iterator set_it    = s.begin();
     std::vector<int>::const_iterator vec_it = e.begin();
-    for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
+    for (; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);
     }
 
@@ -249,10 +249,10 @@ CASE("test_set_bool") {
     EXPECT(s.find(false) != s.end());
 
     // iterate over the elements
-    std::vector<bool> e = {false, true};
-    DenseSet<bool>::const_iterator set_it = s.begin();
+    std::vector<bool> e                      = {false, true};
+    DenseSet<bool>::const_iterator set_it    = s.begin();
     std::vector<bool>::const_iterator vec_it = e.begin();
-    for(; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
+    for (; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
         EXPECT(*set_it == *vec_it);
     }
 

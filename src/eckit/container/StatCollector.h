@@ -50,10 +50,9 @@ struct StatCollector {
     void statsReset() { crossOvers_ = calls_ = newCandidateOK_ = newCandidateMiss_ = nodes_ = 0; }
 
     void print(std::ostream& s) const {
-        s << "Stats calls: " << BigNum(calls_) << " avg candidates: "
-          << BigNum(double(newCandidateMiss_ + newCandidateOK_) / double(calls_) + 0.5)
-          << ", avg nodes: " << BigNum(double(nodes_) / double(calls_) + 0.5)
-          << ", depth: " << depth_;
+        s << "Stats calls: " << BigNum(calls_)
+          << " avg candidates: " << BigNum(double(newCandidateMiss_ + newCandidateOK_) / double(calls_) + 0.5)
+          << ", avg nodes: " << BigNum(double(nodes_) / double(calls_) + 0.5) << ", depth: " << depth_;
     }
 
     void statsPrint(std::ostream& s, bool fancy) const {

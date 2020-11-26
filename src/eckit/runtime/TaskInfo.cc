@@ -14,6 +14,7 @@
 
 #include <iterator>
 
+#include "eckit/log/JSON.h"
 #include "eckit/log/Timer.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/os/SignalHandler.h"
@@ -21,7 +22,6 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/TaskInfo.h"
-#include "eckit/log/JSON.h"
 
 
 namespace eckit {
@@ -149,14 +149,14 @@ void TaskInfo::progress(unsigned long long val) {
     ::timeval diff = now - progress_.last_;
 
     double elapsed = ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
-    if(elapsed > 0) {
+    if (elapsed > 0) {
         progress_.rate_ = (val - progress_.val_) / elapsed;
     }
 
     diff = now - progress_.start_;
 
     elapsed = ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
-    if(elapsed > 0) {
+    if (elapsed > 0) {
         progress_.speed_ = (val - progress_.min_) / elapsed;
     }
 
@@ -226,7 +226,9 @@ void TaskInfo::json(JSON& json) const {
     // char           buffer_[size_];
     // unsigned long  pos_;
 
-    char buffer[size_ + 1] = {0,};
+    char buffer[size_ + 1] = {
+        0,
+    };
     unsigned long pos = 0;
     unsigned long len = text(buffer, sizeof(buffer), pos);
 
@@ -267,7 +269,6 @@ void TaskInfo::json(JSON& json) const {
     json << "message" << message_;
 
     json.endObject();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

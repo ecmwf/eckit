@@ -17,8 +17,8 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/memory/NonCopyable.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
@@ -29,118 +29,111 @@ namespace eckit {
 
 class Monitor : private NonCopyable {
 
-public: // types
-
+public:  // types
     class TaskArray : private eckit::NonCopyable {
 
     public:
-
-        typedef TaskInfo*       iterator;
+        typedef TaskInfo* iterator;
         typedef const TaskInfo* const_iterator;
 
         virtual ~TaskArray();
 
-        virtual void sync() = 0;
-        virtual void lock() = 0;
+        virtual void sync()   = 0;
+        virtual void lock()   = 0;
         virtual void unlock() = 0;
 
-        virtual iterator begin() = 0;
-        virtual iterator end() = 0;
+        virtual iterator begin()             = 0;
+        virtual iterator end()               = 0;
         virtual const_iterator begin() const = 0;
         virtual const_iterator end() const   = 0;
         virtual const_iterator cbegin() const { return begin(); }
-        virtual const_iterator cend()   const { return end(); }
+        virtual const_iterator cend() const { return end(); }
 
-        virtual unsigned long size() = 0;
+        virtual unsigned long size()                  = 0;
         virtual TaskInfo& operator[](unsigned long n) = 0;
     };
 
-public: // methods
-
+public:  // methods
     static Monitor& instance();
 
     static bool active();
-    static void active( bool a );
+    static void active(bool a);
 
-    void reset(); //< use in forked processes only
+    void reset();  //< use in forked processes only
     void startup();
     void shutdown();
 
-	void out(char*,char*); // called from Log
+    void out(char*, char*);  // called from Log
 
     void name(const std::string&);
-	void kind(const std::string&);
+    void kind(const std::string&);
 
-	void progress(const std::string&,unsigned long long,unsigned long long);
-	void progress(unsigned long long);
-	void progress();
+    void progress(const std::string&, unsigned long long, unsigned long long);
+    void progress(unsigned long long);
+    void progress();
 
-	char state(char);
+    char state(char);
 
-	void message(const std::string&);
-	std::string message();
+    void message(const std::string&);
+    std::string message();
 
-	void status(const std::string&);
-	std::string status();
-	std::string statusTree();
-	void stoppable(bool);
-	bool stopTriggered();
-	void setStopped();
-	bool stopped();
+    void status(const std::string&);
+    std::string status();
+    std::string statusTree();
+    void stoppable(bool);
+    bool stopTriggered();
+    void setStopped();
+    bool stopped();
 
-	long       self();
-	void parent(long);
+    long self();
+    void parent(long);
 
-	void start(const std::string&);
-	int  kill(const std::string& , int = 15);
+    void start(const std::string&);
+    int kill(const std::string&, int = 15);
 
-	void port(int );
-	int  port();
+    void port(int);
+    int port();
 
-	void    host(const std::string& );
-	std::string  host();
+    void host(const std::string&);
+    std::string host();
 
-	TaskID taskID();
-	void taskID(const TaskID&);
+    TaskID taskID();
+    void taskID(const TaskID&);
 
-	void show(bool);
+    void show(bool);
 
-	void cancel(const std::string&);
-	std::string cancelMessage();
-	bool  canceled();
+    void cancel(const std::string&);
+    std::string cancelMessage();
+    bool canceled();
 
-	void abort();
-	void checkAbort();
+    void abort();
+    void checkAbort();
 
     TaskInfo& task(unsigned long slot);
     TaskArray& tasks();
 
 
-private: // members
+private:  // members
+    unsigned long slot_;
+    bool ready_;
+    bool check_;
 
-	unsigned long slot_;
-	bool ready_;
-	bool check_;
-
-private: // methods
-
-    /// Contructors
-
-	Monitor();
+private:  // methods
+          /// Contructors
+    Monitor();
 
     /// Destructor
 
-	~Monitor();
+    ~Monitor();
 
-	unsigned long hash();
+    unsigned long hash();
 
     TaskInfo& task();
 
-	void init();
+    void init();
 
     friend class ThreadSingleton<Monitor>;
     friend struct NewAlloc0<Monitor>;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -148,33 +141,30 @@ private: // methods
 // Wrap the setting of Monitor::instance().state
 
 class AutoState {
-	char old_;
+    char old_;
+
 public:
-	AutoState(char c):
-		old_(Monitor::instance().state(c)) {}
+    AutoState(char c) : old_(Monitor::instance().state(c)) {}
 
-	~AutoState()
-		{ Monitor::instance().state(old_); }
+    ~AutoState() { Monitor::instance().state(old_); }
 
-	void set(char c)
-		{ Monitor::instance().state(c); }
+    void set(char c) { Monitor::instance().state(c); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class AutoLockTag {
-	AutoState state_;
-	AutoLock<T> lock_;
+    AutoState state_;
+    AutoLock<T> lock_;
+
 public:
-    AutoLockTag(T& t): state_(t.tag()), lock_(t)
-		{ state_.set(t.tag() - 'a' + 'A'); }
-    AutoLockTag(T* t): state_(t->tag()), lock_(t)
-		{ state_.set(t->tag() - 'a' + 'A'); }
+    AutoLockTag(T& t) : state_(t.tag()), lock_(t) { state_.set(t.tag() - 'a' + 'A'); }
+    AutoLockTag(T* t) : state_(t->tag()), lock_(t) { state_.set(t->tag() - 'a' + 'A'); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

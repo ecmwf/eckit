@@ -24,34 +24,29 @@ namespace eckit {
 
 class WrapperTarget : public LogTarget {
 
-protected: // methods
-
+protected:  // methods
     WrapperTarget(LogTarget* target = 0);
 
-    virtual ~WrapperTarget();
+    virtual ~WrapperTarget() override;
 
-protected: // members
-
+protected:  // members
     LogTarget* target_;
 
 private:
-
-    virtual void write(const char* start, const char* end);
-    virtual void flush();
+    virtual void write(const char* start, const char* end) override;
+    virtual void flush() override;
 
     virtual void writePrefix() = 0;
     virtual void writeSuffix() = 0;
 
 protected:
-
     bool prefix_;
 
     friend class ChannelBuffer;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

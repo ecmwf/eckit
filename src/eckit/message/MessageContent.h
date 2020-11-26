@@ -12,7 +12,6 @@
 /// @date   Jun 2020
 
 
-
 #ifndef eckit_message_MessageContent_H
 #define eckit_message_MessageContent_H
 
@@ -26,7 +25,7 @@ namespace eckit {
 class DataHandle;
 class Offset;
 class PathName;
-};
+};  // namespace eckit
 
 namespace eckit {
 
@@ -41,18 +40,17 @@ class MetadataGatherer;
 class MessageContent : public eckit::Counted {
 
 public:
-
-    virtual operator bool() const ;
+    virtual operator bool() const;
 
     virtual void write(eckit::DataHandle&) const;
 
-    virtual size_t length() const ;
+    virtual size_t length() const;
 
     virtual std::string getString(const std::string& key) const;
 
     virtual long getLong(const std::string& key) const;
 
-    virtual double getDouble(const std::string& key) const ;
+    virtual double getDouble(const std::string& key) const;
 
     virtual void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
@@ -65,10 +63,9 @@ public:
     virtual void getMetadata(MetadataGatherer&) const;
 
 private:
+    virtual void print(std::ostream&) const = 0;
 
-    virtual void print(std::ostream &) const = 0;
-
-    friend std::ostream &operator<<(std::ostream &s, const MessageContent &p) {
+    friend std::ostream& operator<<(std::ostream& s, const MessageContent& p) {
         p.print(s);
         return s;
     }

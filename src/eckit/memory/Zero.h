@@ -21,9 +21,11 @@
 
 namespace eckit {
 
-template<class T>
-inline void zero(T& p) { ::memset(&p, 0, sizeof(T)); }
+template <class T>
+inline void zero(T& p) {
+    ::memset(&p, 0, sizeof(T));
+}
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

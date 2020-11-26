@@ -19,27 +19,24 @@ class PathName;
 class Rsync {
 
 public:  // methods
+    Rsync(bool statistics = false);
 
-  Rsync(bool statistics = false);
+    ~Rsync();
 
-  ~Rsync();
+    void syncData(const PathName& source, const PathName& target);
+    void syncRecursive(const PathName& source, const PathName& target);
 
-  void syncData(const PathName& source, const PathName& target);
-  void syncRecursive(const PathName& source, const PathName& target);
+    bool shouldUpdate(const PathName& source, const PathName& target);
 
-  bool shouldUpdate(const PathName& source, const PathName& target);
+    void computeSignature(DataHandle& input, DataHandle& output);
+    void computeDelta(DataHandle& signature, DataHandle& input, DataHandle& output);
+    void updateData(DataHandle& input, DataHandle& delta, DataHandle& output);
 
-  void computeSignature(DataHandle& input, DataHandle& output);
-  void computeDelta(DataHandle& signature, DataHandle& input, DataHandle& output);
-  void updateData(DataHandle& input, DataHandle& delta, DataHandle& output);
+private:  // members
+    size_t block_len_;
+    size_t strong_len_;
 
-private: // members
-
-  size_t block_len_;
-  size_t strong_len_;
-
-  bool statistics_;
-
+    bool statistics_;
 };
 
 }  // end namespace eckit

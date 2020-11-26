@@ -24,12 +24,10 @@ namespace function {
 static FunctionBuilder<FunctionMIN> minFunctionBuilder("min");
 
 FunctionMIN::FunctionMIN(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    value_(DBL_MAX) {}
+    FunctionExpression(name, args), value_(DBL_MAX) {}
 
 FunctionMIN::FunctionMIN(const FunctionMIN& other) :
-    FunctionExpression(other.name_, other.args_),
-    value_(other.value_) {}
+    FunctionExpression(other.name_, other.args_), value_(other.value_) {}
 
 std::shared_ptr<SQLExpression> FunctionMIN::clone() const {
     return std::make_shared<FunctionMIN>(*this);

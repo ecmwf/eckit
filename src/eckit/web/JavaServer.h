@@ -25,31 +25,28 @@ namespace eckit {
 
 class JavaServer {
 public:
+    // -- Contructors
 
-// -- Contructors
+    JavaServer(int port);
 
-	JavaServer(int port);
+    // -- Destructor
 
-// -- Destructor
-
-	~JavaServer();
+    ~JavaServer();
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    JavaServer(const JavaServer&);
+    JavaServer& operator=(const JavaServer&);
 
-	JavaServer(const JavaServer&);
-	JavaServer& operator=(const JavaServer&);
+    // -- Members
 
-// -- Members
-
-	eckit::ThreadControler java_;
-
+    eckit::ThreadControler java_;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

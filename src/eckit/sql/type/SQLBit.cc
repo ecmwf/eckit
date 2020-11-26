@@ -17,9 +17,7 @@ namespace sql {
 namespace type {
 
 SQLBit::SQLBit(const std::string& name, unsigned long mask, unsigned long shift) :
-    type::SQLType(name),
-    mask_(mask),
-    shift_(shift) {}
+    type::SQLType(name), mask_(mask), shift_(shift) {}
 
 SQLBit::~SQLBit() {}
 

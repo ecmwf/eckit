@@ -15,8 +15,8 @@
 #ifndef eckit_net_Endpoint_H
 #define eckit_net_Endpoint_H
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -28,9 +28,8 @@ namespace net {
 
 class Endpoint {
 
-public: // methods
-
-    Endpoint(const std::string&); // parses the std::string formated as hostname:port
+public:                            // methods
+    Endpoint(const std::string&);  // parses the std::string formated as hostname:port
     Endpoint(const std::string& host, int port);
     Endpoint(Stream& s);
     Endpoint();
@@ -44,7 +43,7 @@ public: // methods
     void print(std::ostream& os) const;
     void encode(Stream& s) const;
 
-private: // methods
+private:  // methods
     void validate() const;
 
     friend std::ostream& operator<<(std::ostream& os, const net::Endpoint& ep) {
@@ -57,16 +56,15 @@ private: // methods
         return s;
     }
 
-private: // members
-
+private:  // members
     std::string host_;
     int port_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace net
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
 
 
 #endif

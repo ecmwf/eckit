@@ -17,25 +17,24 @@
 
 #include <set>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StreamParser : private NonCopyable  {
+class StreamParser : private NonCopyable {
 
-public: // types
-
+public:  // types
     class Error : public Exception {
     public:
         Error(const std::string& what, size_t line = 0);
     };
 
-public: // methods
-
+public:  // methods
     StreamParser(std::istream& in, bool comments = false, const char* comment = "#");
+    virtual ~StreamParser() = default;
 
     char peek(bool spaces = false);
     char next(bool spaces = false);
@@ -46,14 +45,12 @@ public: // methods
     void expect(const char*);
     void putback(char);
 
-protected: // members
-
+protected:  // members
     bool comments_;
     size_t line_;
     size_t pos_;
 
-private: // members
-
+private:  // members
     std::istream& in_;
 
     std::set<char> comment_;
@@ -61,11 +58,10 @@ private: // members
     char _get();
     char _peek();
     bool _eof();
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

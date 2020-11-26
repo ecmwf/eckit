@@ -23,9 +23,7 @@ namespace eckit {
 
 template <class T>
 SharedMemArray<T>::SharedMemArray(const PathName& path, const std::string& shmName, size_t size) :
-    sem_(path),
-    size_(size),
-    shmName_(shmName) {
+    sem_(path), size_(size), shmName_(shmName) {
     eckit::Log::debug<LibEcKit>() << "SharedMemArray semaphore path=" << path << ", size=" << size
                                   << ", shmName=" << shmName << std::endl;
 

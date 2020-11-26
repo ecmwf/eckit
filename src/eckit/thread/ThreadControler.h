@@ -15,8 +15,8 @@
 #ifndef eckit_ThreadControler_h
 #define eckit_ThreadControler_h
 
-#include "eckit/thread/MutexCond.h"
 #include "eckit/runtime/Task.h"
+#include "eckit/thread/MutexCond.h"
 
 
 namespace eckit {
@@ -28,41 +28,36 @@ class Thread;
 /// @note Don't subclass from ThreadControler but from Thread
 class ThreadControler : public Task {
 public:
-
-	/// @note ThreadControler takes ownership of Thread
+    /// @note ThreadControler takes ownership of Thread
     explicit ThreadControler(Thread*, bool detached = true, size_t stack = 0);
 
-    virtual ~ThreadControler();
+    virtual ~ThreadControler() override;
 
-	virtual void start();
-	virtual void stop();
-	virtual void kill();
-	virtual void wait();
-	virtual bool active();
+    virtual void start() override;
+    virtual void stop() override;
+    virtual void kill() override;
+    virtual void wait() override;
+    virtual bool active() override;
 
-protected: // members
+protected:  // members
+    MutexCond cond_;
+    bool detached_;
 
-	MutexCond  cond_;
-	bool       detached_;
+private:  // members
+    pthread_t thread_;
+    Thread* proc_;
+    size_t stack_;
+    bool running_;
 
-private: // members
+private:  // methods
+    void execute();
 
-    pthread_t   thread_;
-    Thread*     proc_;
-    size_t      stack_;
-    bool        running_;
-
-private: // methods
-
-	void execute();
-
-    static void* startThread (void *data);
-
+    static void* startThread(void* data);
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -73,6 +73,7 @@ public:  // methods
     virtual LogTarget* createWarningLogTarget() const;
     virtual LogTarget* createErrorLogTarget() const;
     virtual LogTarget* createDebugLogTarget() const;
+    virtual LogTarget* createMetricsLogTarget() const;
 
 protected:
     std::string name_;

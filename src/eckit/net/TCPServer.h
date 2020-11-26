@@ -25,7 +25,6 @@ namespace net {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
-
     TCPServer(const SocketOptions& = SocketOptions::server());
     explicit TCPServer(int port, const SocketOptions& = SocketOptions::server());
 
@@ -34,34 +33,32 @@ public:
     void willFork(bool);
 
     // accept a client, more can be accepted
-    virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0, bool* connected = nullptr);
+    virtual TCPSocket& accept(const std::string& message = "Waiting for connection", int timeout = 0,
+                              bool* connected = nullptr);
 
     void closeExec(bool on) { closeExec_ = on; }
 
-    virtual int socket();
+    virtual int socket() override;
 
-    virtual void close();
+    virtual void close() override;
 
-protected: // members
-
+protected:  // members
     int port_;
     int listen_;
 
-    SocketOptions options_; //< options to build the socket
+    SocketOptions options_;  //< options to build the socket
 
-protected: // methods
+protected:  // methods
+    virtual void bind() override;
 
-    virtual void bind();
+    virtual void print(std::ostream& s) const override;
 
-    virtual void print(std::ostream& s) const;
-
-private: // methods
-
+private:  // methods
     // To be used by Select
 
-    virtual std::string bindingAddress() const;
+    virtual std::string bindingAddress() const override;
 
-private: // members
+private:  // members
     bool closeExec_;
     Mutex mutex_;
 };
@@ -75,7 +72,6 @@ public:
     EphemeralTCPServer(const SocketOptions& = SocketOptions::data());
     explicit EphemeralTCPServer(int port, const SocketOptions& = SocketOptions::data());
 };
-
 
 
 }  // namespace net

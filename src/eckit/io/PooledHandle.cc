@@ -27,8 +27,8 @@ namespace eckit {
 class PoolHandleEntry;
 
 /// @note in anonymous namespace to solve some compilers link issue (eg. xlc)
-namespace  {
-    static thread_local std::map<PathName, PoolHandleEntry*> pool_;
+namespace {
+static thread_local std::map<PathName, PoolHandleEntry*> pool_;
 }
 
 static size_t maxPooledHandles() {
@@ -60,22 +60,17 @@ public:
     size_t nbCloses_ = 0;
 
 public:
-
     explicit PoolHandleEntry(const PathName& path) : path_(path), handle_(nullptr), count_(0) {}
-    ~PoolHandleEntry() {
-        LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
+    ~PoolHandleEntry() { LOG_DEBUG_LIB(LibEcKit) << *this << std::endl; }
+
+    friend std::ostream& operator<<(std::ostream& s, const PoolHandleEntry& e) {
+        e.print(s);
+        return s;
     }
 
-    friend std::ostream& operator<<(std::ostream& s,const PoolHandleEntry& e)
-    { e.print(s); return s;}
-
     void print(std::ostream& s) const {
-        s << "PoolHandleEntry[" << path_
-          << ",opens=" << nbOpens_
-          << ",reads=" << nbReads_
-          << ",seeks=" << nbSeeks_
-          << ",closes=" << nbCloses_
-          << "]";
+        s << "PoolHandleEntry[" << path_ << ",opens=" << nbOpens_ << ",reads=" << nbReads_ << ",seeks=" << nbSeeks_
+          << ",closes=" << nbCloses_ << "]";
     }
 
     void doClose() {
@@ -172,7 +167,7 @@ public:
 
         ASSERT(handle_->seek(s->second.position_) == s->second.position_);
 
-        long n        = handle_->read(buffer, len);
+        long n = handle_->read(buffer, len);
 
         s->second.position_ = handle_->position();
         nbReads_++;

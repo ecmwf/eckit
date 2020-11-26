@@ -27,53 +27,45 @@ class DumpLoad;
 
 class Double {
 public:
-
-	Double(double = 0);
-	Double(const std::string&);
+    Double(double = 0);
+    Double(const std::string&);
 
 #include "eckit/types/Double.b"
 
-	~Double() {}
+    ~Double() {}
 
-public: // operators
+public:  // operators
+    operator std::string() const;
 
-	operator std::string() const;
+    bool operator==(const Double& other) const { return round() == other.round(); }
 
-	bool operator==(const Double& other) const
-		{ return round() == other.round(); }
+    bool operator!=(const Double& other) const { return round() != other.round(); }
 
-	bool operator!=(const Double& other) const
-		{ return round() != other.round(); }
+    bool operator<(const Double& other) const { return round() < other.round(); }
 
-	bool operator<(const Double& other) const
-		{ return round() < other.round(); }
+    bool operator>(const Double& other) const { return round() > other.round(); }
 
-	bool operator>(const Double& other) const
-		{ return round() > other.round(); }
+public:  // methods
+    void dump(DumpLoad&) const;
+    void load(DumpLoad&);
 
-public: // methods
+    double round() const;
 
-	void dump(DumpLoad&) const;
-	void load(DumpLoad&);
+protected:  // methods
+    void print(std::ostream& s) const;
 
-	double round() const;
+private:  // members
+    double value_;
 
-protected: // methods
-
-	void print(std::ostream& s) const;
-
-private: // members
-
-	double value_;
-
-	friend std::ostream& operator<<(std::ostream& s,const Double& p)
-		{ p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const Double& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

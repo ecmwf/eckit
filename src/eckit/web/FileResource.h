@@ -18,28 +18,23 @@
 #include "eckit/web/HtmlResource.h"
 
 
-
 namespace eckit {
-
 
 
 class FileResource : public HtmlResource {
 public:
+    FileResource();
 
-	FileResource();
-
-	virtual ~FileResource();
+    virtual ~FileResource() override;
 
 protected:
+    std::string name_;
 
-	std::string name_;
-
-	virtual void GET(std::ostream&,Url&);
-
+    virtual void GET(std::ostream&, Url&) override;
 };
 
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

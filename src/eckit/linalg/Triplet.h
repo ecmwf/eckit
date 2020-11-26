@@ -30,10 +30,7 @@ class Triplet {
 public:
     Triplet() : row_(0), col_(0), val_(0.) {}
 
-    Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0)) :
-        row_(i),
-        col_(j),
-        val_(v) {}
+    Triplet(const Size& i, const Size& j, const Scalar& v = Scalar(0)) : row_(i), col_(j), val_(v) {}
 
     const Size& row() const { return row_; }
 

@@ -9,22 +9,22 @@
  */
 
 
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <cstdio>
 #include <cstdlib>
-#include <sys/types.h>
-#include <sys/stat.h>
 
-#include <string>
 #include <iomanip>
 #include <memory>
+#include <string>
 
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/FileMode.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/filesystem/FileMode.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/os/AutoUmask.h"
-#include "eckit/config/Resource.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;
@@ -100,8 +100,7 @@ CASE("Handle bad strings") {
 
     FileMode m;
 
-    SECTION("Bad chars")
-    {
+    SECTION("Bad chars") {
         EXPECT_THROWS_AS(m = "Owx,rwx,rwx", BadValue);
         EXPECT_THROWS_AS(m = "rOx,rwx,rwx", BadValue);
         EXPECT_THROWS_AS(m = "rwO,rwx,rwx", BadValue);
@@ -136,7 +135,6 @@ CASE("Handle bad strings") {
         EXPECT_THROWS_AS(m = "---,---,--w", BadValue);
 
         EXPECT_THROWS_AS(m = "0228", BadValue);
-
     }
 }
 
@@ -145,10 +143,9 @@ CASE("Handle bad constructor") {
 }
 
 
-CASE("Create a file and set its permissions")
-{
+CASE("Create a file and set its permissions") {
     AutoUmask mask(0);
-    PathName p ("foo.txt");
+    PathName p("foo.txt");
     std::unique_ptr<DataHandle> dh(p.fileHandle());
     dh->openForAppend(0);
     FileMode m("rw-,r--,r--");
@@ -159,17 +156,20 @@ CASE("Create a file and set its permissions")
     p.unlink();
 }
 
-CASE("Octal mode")
-{
+CASE("Octal mode") {
     FileMode mode1("0666");
     FileMode mode2(0666);
     FileMode mode3("rw-,rw-,rw-");
     FileMode mode4 = std::string("rw-,rw-,rw-");
 
-    std::cout << "mode1 = " << mode1 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode1.mode() << std::dec << std::endl;
-    std::cout << "mode2 = " << mode2 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode2.mode() << std::dec << std::endl;
-    std::cout << "mode3 = " << mode3 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode3.mode() << std::dec << std::endl;
-    std::cout << "mode4 = " << mode4 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode4.mode() << std::dec << std::endl;
+    std::cout << "mode1 = " << mode1 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode1.mode()
+              << std::dec << std::endl;
+    std::cout << "mode2 = " << mode2 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode2.mode()
+              << std::dec << std::endl;
+    std::cout << "mode3 = " << mode3 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode3.mode()
+              << std::dec << std::endl;
+    std::cout << "mode4 = " << mode4 << " oct=" << std::oct << std::setw(4) << std::setfill('0') << mode4.mode()
+              << std::dec << std::endl;
 
     EXPECT(mode1 == mode2);
     EXPECT(mode1 == mode3);
@@ -177,8 +177,7 @@ CASE("Octal mode")
 }
 
 
-CASE("Use as umask")
-{
+CASE("Use as umask") {
     FileMode filemode(0644);
 
     EXPECT(filemode.mask() == 022);
@@ -186,34 +185,35 @@ CASE("Use as umask")
     AutoUmask mask(filemode.mask());
 
     SECTION("File creation") {
-        PathName p ("bar.txt");
+        PathName p("bar.txt");
         std::unique_ptr<DataHandle> dh(p.fileHandle());
         dh->openForAppend(0);
         dh->close();
 
         FileMode result = FileMode::fromPath(p);
 
-        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode()
+                  << std::dec << std::endl;
 
         EXPECT(result == filemode);
         p.unlink();
     }
 
     SECTION("Directory creation") {
-        PathName p ("mydir");
+        PathName p("mydir");
         p.mkdir();
 
         FileMode result = FileMode::fromPath(p);
 
-        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode()
+                  << std::dec << std::endl;
 
         EXPECT(result == FileMode(0755));  // directories get added --x,--x,--x (0111) by default
         p.rmdir();
     }
 }
 
-CASE("From resource use as mask")
-{
+CASE("From resource use as mask") {
     eckit::FileMode filemode(eckit::Resource<std::string>("testFileMode", std::string("0644")));
 
     EXPECT(filemode.mask() == 022);
@@ -221,26 +221,28 @@ CASE("From resource use as mask")
     AutoUmask mask(filemode.mask());
 
     SECTION("File creation") {
-        PathName p ("bar.txt");
+        PathName p("bar.txt");
         std::unique_ptr<DataHandle> dh(p.fileHandle());
         dh->openForAppend(0);
         dh->close();
 
         FileMode result = FileMode::fromPath(p);
 
-        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode()
+                  << std::dec << std::endl;
 
         EXPECT(result == filemode);
         p.unlink();
     }
 
     SECTION("Directory creation") {
-        PathName p ("mydir");
+        PathName p("mydir");
         p.mkdir();
 
         FileMode result = FileMode::fromPath(p);
 
-        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode() << std::dec << std::endl;
+        std::cout << "result = " << result << " oct=" << std::oct << std::setw(4) << std::setfill('0') << result.mode()
+                  << std::dec << std::endl;
 
         EXPECT(result == FileMode(0755));  // directories get added --x,--x,--x (0111) by default
         p.rmdir();

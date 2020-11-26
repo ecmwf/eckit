@@ -18,8 +18,7 @@ namespace function {
 //----------------------------------------------------------------------------------------------------------------------
 
 FunctionExpression::FunctionExpression(const std::string& name, const expression::Expressions& args) :
-    name_(name),
-    args_(args) {
+    name_(name), args_(args) {
     //  never use any logging here (Log::*)
     //	std::cout << "new FunctionExpression " << name << std::endl;
 }
@@ -49,10 +48,9 @@ void FunctionExpression::prepare(SQLSelect& sql) {
         (*j)->prepare(sql);
 }
 
-void FunctionExpression::updateType(SQLSelect &sql) {
+void FunctionExpression::updateType(SQLSelect& sql) {
     for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
         (*j)->updateType(sql);
-
 }
 
 void FunctionExpression::cleanup(SQLSelect& sql) {

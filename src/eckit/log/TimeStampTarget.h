@@ -24,27 +24,23 @@ namespace eckit {
 
 class TimeStampTarget : public WrapperTarget {
 public:
-
     TimeStampTarget(const char* tag = "", LogTarget* target = 0);
 
-    virtual ~TimeStampTarget();
+    virtual ~TimeStampTarget() override;
 
 protected:
-    void print(std::ostream& s) const;
+    void print(std::ostream& s) const override;
 
 private:
-
-    virtual void writePrefix();
-    virtual void writeSuffix();
+    virtual void writePrefix() override;
+    virtual void writeSuffix() override;
 
 private:
-
     const char* tag_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

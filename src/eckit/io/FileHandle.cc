@@ -14,9 +14,9 @@
 #include "eckit/eckit.h"
 
 #include "eckit/config/Resource.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/FDataSync.h"
 #include "eckit/io/FileHandle.h"
-#include "eckit/io/DataHandle.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
@@ -49,10 +49,7 @@ FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_(null
 }
 
 FileHandle::FileHandle(const std::string& name, bool overwrite) :
-    name_(name),
-    overwrite_(overwrite),
-    file_(nullptr),
-    read_(false) {}
+    name_(name), overwrite_(overwrite), file_(nullptr), read_(false) {}
 
 FileHandle::~FileHandle() {}
 

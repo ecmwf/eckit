@@ -146,14 +146,14 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh0.seek(0));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh0.read(buff, 10);
+            long r      = mh0.read(buff, 10);
             EXPECT(r == 0);
         }
 
-        EXPECT_THROWS_AS(mh0.seek(1), AssertionFailed); // seeking beoynd EOF asserts
+        EXPECT_THROWS_AS(mh0.seek(1), AssertionFailed);  // seeking beoynd EOF asserts
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh0.read(buff, 10);
+            long r      = mh0.read(buff, 10);
             EXPECT(r == 0);
         }
 
@@ -175,14 +175,14 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh1.seek(0));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh1.read(buff, 10);
+            long r      = mh1.read(buff, 10);
             EXPECT(r == 0);
         }
 
-        EXPECT_THROWS_AS(mh1.seek(1), AssertionFailed); // seeking beoynd EOF asserts
+        EXPECT_THROWS_AS(mh1.seek(1), AssertionFailed);  // seeking beoynd EOF asserts
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh1.read(buff, 10);
+            long r      = mh1.read(buff, 10);
             EXPECT(r == 0);
         }
 
@@ -203,7 +203,7 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh2.seek(21));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh2.read(buff, 10);
+            long r      = mh2.read(buff, 10);
             EXPECT(r == 0);
         }
     }
@@ -242,7 +242,7 @@ CASE("Multihandle") {
         //   c ef  ijkl    qrstuvwx        bcdefghijklmnopq                cdefghijklmnopqrstuvwxyz01234
 
         //                                                                                                                 1         1
-        //             0         1         2         3         4         5         6         7         8         9         0         1
+        //             0         1         2         3         4         5         6         7         8         9 0 1
         //             0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
 
         // Unused variable expect[]
@@ -258,7 +258,7 @@ CASE("Multihandle") {
         EXPECT(mh.position() == Offset(10));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 13);
+            long r      = mh.read(buff, 13);
             EXPECT(r == 13);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "qrsxyz01234CE");
@@ -272,7 +272,7 @@ CASE("Multihandle") {
         EXPECT(mh.position() == Offset(30));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 10);
+            long r      = mh.read(buff, 10);
             EXPECT(r == 10);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "STUVWXBCDE");
@@ -281,7 +281,7 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh.seek(0));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 7);
+            long r      = mh.read(buff, 7);
             EXPECT(r == 7);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "acdghij");
@@ -292,26 +292,26 @@ CASE("Multihandle") {
         EXPECT(mh.position() == Offset(106));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 10);
+            long r      = mh.read(buff, 10);
             EXPECT(r == 6);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "z01234");
         }
         EXPECT(mh.position() == Offset(112));
 
-        EXPECT_THROWS_AS(mh.seek(120), AssertionFailed); // seek beyond EOF throws
+        EXPECT_THROWS_AS(mh.seek(120), AssertionFailed);  // seek beyond EOF throws
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 10);
+            long r      = mh.read(buff, 10);
             EXPECT(r == 0);
         }
         EXPECT(mh.position() == Offset(112));
 
-        EXPECT_NO_THROW(mh.skip(-20)); // go back -20 from 112 => 92
+        EXPECT_NO_THROW(mh.skip(-20));  // go back -20 from 112 => 92
         EXPECT(mh.position() == Offset(92));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 30);
+            long r      = mh.read(buff, 30);
             EXPECT(r == 20);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "lmnopqrstuvwxyz01234");
@@ -331,7 +331,7 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh.seek(20));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 13);
+            long r      = mh.read(buff, 13);
             EXPECT(r == 13);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "uvwxyz01234AB");
@@ -340,7 +340,7 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh.seek(35));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 10);
+            long r      = mh.read(buff, 10);
             EXPECT(r == 10);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "EFGHIJKLMN");
@@ -349,7 +349,7 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh.seek(0));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 7);
+            long r      = mh.read(buff, 7);
             EXPECT(r == 7);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "abcdefg");
@@ -358,17 +358,17 @@ CASE("Multihandle") {
         EXPECT_NO_THROW(mh.seek(93 - 6));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 10);
+            long r      = mh.read(buff, 10);
             EXPECT(r == 6);
             std::cout << std::string(buff) << std::endl;
             EXPECT(std::string(buff) == "Z56789");
         }
 
-        EXPECT_THROWS_AS(mh.seek(100), AssertionFailed); // Seek beyond EOF throws
+        EXPECT_THROWS_AS(mh.seek(100), AssertionFailed);  // Seek beyond EOF throws
         EXPECT(mh.position() == Offset(31 * 3));
         {
             Buffer buff = Tester::makeBuffer();
-            long r = mh.read(buff, 10);
+            long r      = mh.read(buff, 10);
             EXPECT(r == 0);
         }
     }

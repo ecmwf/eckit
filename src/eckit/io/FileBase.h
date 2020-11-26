@@ -24,101 +24,97 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class FileBase {
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    FileBase(const PathName&);
 
-	FileBase(const PathName&);
+    // -- Destructor
 
-// -- Destructor
+    ~FileBase();
 
-	~FileBase();
+    // -- Convertors
+    // None
 
-// -- Convertors
-	// None
+    // -- Operators
+    // None
 
-// -- Operators
-	// None
+    // -- Methods
 
-// -- Methods
+    bool read(long, T&);
+    void write(long, const T&);
 
-	bool read(long,T&);
-	void write(long,const T&);
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
 
-// -- Methods
+    // void print(std::ostream&) const;
 
-	// void print(std::ostream&) const;
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    FileBase(const FileBase<T>&);
+    FileBase<T>& operator=(const FileBase<T>&);
 
-	FileBase(const FileBase<T>&);
-	FileBase<T>& operator=(const FileBase<T>&);
+    // -- Members
 
-// -- Members
+    struct Record {
+        T data_;
+        bool valid_;
+    };
 
-	struct Record {
-		T    data_;
-		bool valid_;
-	};
+    int fd_;
+    PathName path_;
+    Record buffer_;
+    off_t pos_;
 
-	int      fd_;
-	PathName path_;
-	Record   buffer_;
-	off_t  pos_;
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
+    // -- Class methods
+    // None
 
-// -- Class methods
-	// None
+    // -- Friends
 
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const FileBase& p)
-	//	{ p.print(s); return s; }
-
+    // friend std::ostream& operator<<(std::ostream& s,const FileBase& p)
+    //	{ p.print(s); return s; }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "eckit/io/FileBase.cc"
 

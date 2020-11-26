@@ -32,49 +32,31 @@ void ShiftedColumnExpression<T>::allocateCircularBuffer() {
 
 template <typename T>
 ShiftedColumnExpression<T>::ShiftedColumnExpression(const T& o, int shift, int nominalShift) :
-    T(o),
-    shift_(shift),
-    nominalShift_(nominalShift),
-    oldValues_() {}
+    T(o), shift_(shift), nominalShift_(nominalShift), oldValues_() {}
 
 template <typename T>
 ShiftedColumnExpression<T>::ShiftedColumnExpression(const std::string& name, SQLTable* table, int shift,
                                                     int nominalShift, int begin, int end) :
-    T(name, table, begin, end),
-    shift_(shift),
-    nominalShift_(nominalShift),
-    oldValues_() {}
+    T(name, table, begin, end), shift_(shift), nominalShift_(nominalShift), oldValues_() {}
 
 template <typename T>
 ShiftedColumnExpression<T>::ShiftedColumnExpression(const std::string& name, const std::string& tableReference,
                                                     int shift, int nominalShift, int begin, int end) :
-    T(name, tableReference, begin, end),
-    shift_(shift),
-    nominalShift_(nominalShift),
-    oldValues_() {}
+    T(name, tableReference, begin, end), shift_(shift), nominalShift_(nominalShift), oldValues_() {}
 
 template <typename T>
 ShiftedColumnExpression<T>::ShiftedColumnExpression(const std::string& name, const std::string& field, SQLTable* table,
                                                     int shift, int nominalShift) :
-    T(name, field, table),
-    shift_(shift),
-    nominalShift_(nominalShift),
-    oldValues_() {}
+    T(name, field, table), shift_(shift), nominalShift_(nominalShift), oldValues_() {}
 
 template <typename T>
 ShiftedColumnExpression<T>::ShiftedColumnExpression(const std::string& name, const std::string& field,
                                                     const std::string& tableReference, int shift, int nominalShift) :
-    T(name, field, tableReference),
-    shift_(shift),
-    nominalShift_(nominalShift),
-    oldValues_() {}
+    T(name, field, tableReference), shift_(shift), nominalShift_(nominalShift), oldValues_() {}
 
 template <typename T>
 ShiftedColumnExpression<T>::ShiftedColumnExpression(const ShiftedColumnExpression& e) :
-    T(e),
-    shift_(e.shift_),
-    nominalShift_(e.nominalShift_),
-    oldValues_(e.oldValues_) {}
+    T(e), shift_(e.shift_), nominalShift_(e.nominalShift_), oldValues_(e.oldValues_) {}
 
 template <typename T>
 std::shared_ptr<SQLExpression> ShiftedColumnExpression<T>::clone() const {

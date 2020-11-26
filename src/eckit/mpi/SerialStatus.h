@@ -28,11 +28,11 @@ class SerialStatus : public StatusContent {
 private:  // methods
     friend class Serial;
 
-    virtual int source() const { return source_; }
-    virtual int tag() const { return tag_; }
-    virtual int error() const { return error_; }
+    virtual int source() const override { return source_; }
+    virtual int tag() const override { return tag_; }
+    virtual int error() const override { return error_; }
 
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
 private:  // members
     int source_;

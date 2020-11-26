@@ -23,21 +23,25 @@ namespace eckit {
 
 class RotationTarget : public LogTarget {
 
-public: // methods
+public:  // methods
+    RotationTarget(const std::string& name = std::string());
 
-    RotationTarget();
+    virtual ~RotationTarget() override;
 
-    virtual ~RotationTarget();
-
-    virtual void write(const char* start, const char* end);
-    virtual void flush();
+    virtual void write(const char* start, const char* end) override;
+    virtual void flush() override;
 
 protected:
-    void print(std::ostream& s) const;
+    void print(std::ostream& s) const override;
+
+private:
+
+    std::string name_;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

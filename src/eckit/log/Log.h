@@ -55,6 +55,9 @@ public:  // methods
     /// Channel for error messages
     static Channel& error();
 
+    /// Channel for metrics messages
+    static Channel& metrics();
+
     /// Channel for panic messages
     static std::ostream& panic();
 

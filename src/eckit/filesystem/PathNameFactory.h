@@ -14,13 +14,13 @@
 #ifndef eckit_filesystem_PathNameFactory_h
 #define eckit_filesystem_PathNameFactory_h
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/memory/NonCopyable.h"
 
-#include <vector>
 #include <map>
-#include <string>
 #include <mutex>
+#include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -30,8 +30,7 @@ class PathNameBuilderBase;
 class BasePathName;
 
 class PathNameFactory : private eckit::NonCopyable {
-public: // methods
-
+public:  // methods
     static PathNameFactory& instance();
 
     void enregister(const std::string& name, const PathNameBuilderBase* builder);
@@ -40,8 +39,7 @@ public: // methods
     BasePathName* build(const std::string& path, bool tildeIsUserHome = false) const;
     BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false) const;
 
-private: // methods
-
+private:  // methods
     PathNameFactory();
 
     mutable std::mutex m_;
@@ -57,15 +55,17 @@ public:
     virtual BasePathName* make(const std::string& path, bool tildeIsUserHome) const = 0;
 };
 
-template<typename T>
+template <typename T>
 class PathNameBuilder : public PathNameBuilderBase {
 public:
     using PathNameBuilderBase::PathNameBuilderBase;
-    BasePathName* make(const std::string& path, bool tildeIsUserHome) const { return new BasePathNameT<T>(path, tildeIsUserHome); }
+    BasePathName* make(const std::string& path, bool tildeIsUserHome) const {
+        return new BasePathNameT<T>(path, tildeIsUserHome);
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

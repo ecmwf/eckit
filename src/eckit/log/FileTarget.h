@@ -27,19 +27,16 @@ namespace eckit {
 
 class FileTarget : public LogTarget {
 public:
-
-    FileTarget( const PathName& path );
+    FileTarget(const PathName& path);
     ~FileTarget();
 
 private:
+    virtual void write(const char* start, const char* end) override;
+    virtual void flush() override;
 
-    virtual void write(const char* start, const char* end);
-    virtual void flush();
-
-    virtual void print(std::ostream& s) const;
+    virtual void print(std::ostream& s) const override;
 
 private:
-
     std::ofstream out_;
 
     PathName path_;
@@ -47,6 +44,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

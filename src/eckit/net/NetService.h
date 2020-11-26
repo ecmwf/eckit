@@ -37,7 +37,7 @@ public:
     /// @returns port to which this server is answering
     int port() const;
 
-    virtual void run();
+    virtual void run() override;
 
 private:
     TCPServer server_;
@@ -45,11 +45,10 @@ private:
 
 private:
     virtual NetUser* newUser(net::TCPSocket&) const = 0;
-    virtual std::string name() const          = 0;
+    virtual std::string name() const                = 0;
 
     virtual bool preferToRunAsProcess() const;
     virtual bool runAsProcess() const;
-
 };
 
 

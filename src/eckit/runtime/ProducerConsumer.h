@@ -12,13 +12,12 @@
 #define eckit_ProducerConsumer_h
 
 #include "eckit/eckit.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/ThreadControler.h"
-#include "eckit/thread/Thread.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/MutexCond.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/thread/Thread.h"
+#include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
 
@@ -26,28 +25,27 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-template<class PAYLOAD>
+template <class PAYLOAD>
 class Producer {
 public:
     virtual ~Producer() {}
-    virtual bool done() = 0;
+    virtual bool done()            = 0;
     virtual void produce(PAYLOAD&) = 0;
 };
 
-template<class PAYLOAD>
+template <class PAYLOAD>
 class Consumer {
 public:
     virtual ~Consumer() {}
     virtual void consume(PAYLOAD&) = 0;
 };
 
-template<class PAYLOAD>
+template <class PAYLOAD>
 class ProducerConsumerTask;
 
-template<class PAYLOAD>
+template <class PAYLOAD>
 class ProducerConsumer {
 public:
-
     // -- Contructors
 
     ProducerConsumer(long count = 2);
@@ -61,11 +59,10 @@ public:
     void execute(Producer<PAYLOAD>&, Consumer<PAYLOAD>&);
 
 
-    bool   error();
-    void   error(const std::string&);
+    bool error();
+    void error(const std::string&);
 
 private:
-
     // No copy allowed
 
     ProducerConsumer(const ProducerConsumer&);
@@ -75,101 +72,89 @@ private:
 
     // -- Members
 
-    Mutex  mutex_;
+    Mutex mutex_;
 
-    long   count_;
+    long count_;
 
 
-    bool   error_;
+    bool error_;
     std::string why_;
 
 
     // -- Friends
 
     friend class ProducerConsumerTask<PAYLOAD>;
-
 };
 
 //-----------------------------------------------------------------------------
 
-template<class PAYLOAD>
+template <class PAYLOAD>
 struct OnePayload {
     MutexCond cond_;
-    bool      ready_;
-    bool       done_;
-    PAYLOAD   payload_;
-    OnePayload(): ready_(false), done_(false), payload_() {}
+    bool ready_;
+    bool done_;
+    PAYLOAD payload_;
+    OnePayload() : ready_(false), done_(false), payload_() {}
 };
 
-template<class PAYLOAD>
+template <class PAYLOAD>
 class ProducerConsumer;
 
-template<class PAYLOAD>
+template <class PAYLOAD>
 class ProducerConsumerTask : public Thread {
-    ProducerConsumer<PAYLOAD>&         owner_;
-    Consumer<PAYLOAD>&        consumer_;
-    OnePayload<PAYLOAD>*  payloads_;
+    ProducerConsumer<PAYLOAD>& owner_;
+    Consumer<PAYLOAD>& consumer_;
+    OnePayload<PAYLOAD>* payloads_;
+
 public:
-    ProducerConsumerTask(Consumer<PAYLOAD>&,ProducerConsumer<PAYLOAD>&,OnePayload<PAYLOAD>*);
-    virtual void run();
+    ProducerConsumerTask(Consumer<PAYLOAD>&, ProducerConsumer<PAYLOAD>&, OnePayload<PAYLOAD>*);
+    virtual void run() override;
 };
 
 
-template<class PAYLOAD>
-ProducerConsumer<PAYLOAD>::ProducerConsumer(long count):
-    count_(count),
-    error_(false)
-{
+template <class PAYLOAD>
+ProducerConsumer<PAYLOAD>::ProducerConsumer(long count) : count_(count), error_(false) {}
+template <class PAYLOAD>
+ProducerConsumer<PAYLOAD>::~ProducerConsumer() {}
 
-}
-template<class PAYLOAD>
-ProducerConsumer<PAYLOAD>::~ProducerConsumer()
-{
-}
-
-template<class PAYLOAD>
-inline void ProducerConsumer<PAYLOAD>::error(const std::string& why)
-{
+template <class PAYLOAD>
+inline void ProducerConsumer<PAYLOAD>::error(const std::string& why) {
     AutoLock<Mutex> lock(mutex_);
     error_ = true;
     why_   = why;
 }
 
-template<class PAYLOAD>
-inline bool ProducerConsumer<PAYLOAD>::error()
-{
+template <class PAYLOAD>
+inline bool ProducerConsumer<PAYLOAD>::error() {
     AutoLock<Mutex> lock(mutex_);
     return error_;
 }
 
 
-template<class PAYLOAD>
-void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer,Consumer<PAYLOAD>& consumer)
-{
+template <class PAYLOAD>
+void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer, Consumer<PAYLOAD>& consumer) {
 
     OnePayload<PAYLOAD>* payloads = new OnePayload<PAYLOAD>[count_];
 
-    error_   = false;
+    error_ = false;
 
-    ThreadControler thread(new ProducerConsumerTask<PAYLOAD>(consumer,*this,payloads),false);
+    ThreadControler thread(new ProducerConsumerTask<PAYLOAD>(consumer, *this, payloads), false);
 
     thread.start();
 
     int i = 0;
 
-    while(!error())
-    {
+    while (!error()) {
         AutoLock<MutexCond> lock(payloads[i].cond_);
 
-        while(payloads[i].ready_)
+        while (payloads[i].ready_)
             payloads[i].cond_.wait();
 
-        if(error())
+        if (error())
             break;
 
-        if(producer.done())
-        {
-            payloads[i].done_ = true;
+        if (producer.done()) {
+            payloads[i].done_  = true;
             payloads[i].ready_ = true;
             payloads[i].cond_.signal();
             break;
@@ -178,10 +163,8 @@ void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer,Consumer<PAY
         try {
             producer.produce(payloads[i].payload_);
         }
-        catch(std::exception& e)
-        {
-            Log::error() << "** " << e.what() << " Caught in " <<
-                            Here() << std::endl;
+        catch (std::exception& e) {
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             error(e.what());
         }
@@ -191,50 +174,38 @@ void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer,Consumer<PAY
 
         i++;
         i %= count_;
-
     }
-
 
 
     thread.wait();
     delete[] payloads;
 
-    if(error_) {
+    if (error_) {
         throw SeriousBug(why_);
     }
-
-
 }
 
-template<class PAYLOAD>
-ProducerConsumerTask<PAYLOAD>::ProducerConsumerTask(Consumer<PAYLOAD>& consumer,
-                                                    ProducerConsumer<PAYLOAD>& owner,
-                                                    OnePayload<PAYLOAD>* payloads):
-    Thread(),
-    owner_(owner),
-    consumer_(consumer),
-    payloads_(payloads)
-{
-}
+template <class PAYLOAD>
+ProducerConsumerTask<PAYLOAD>::ProducerConsumerTask(Consumer<PAYLOAD>& consumer, ProducerConsumer<PAYLOAD>& owner,
+                                                    OnePayload<PAYLOAD>* payloads) :
+    Thread(), owner_(owner), consumer_(consumer), payloads_(payloads) {}
 
-template<class PAYLOAD>
-void ProducerConsumerTask<PAYLOAD>::run()
-{
+template <class PAYLOAD>
+void ProducerConsumerTask<PAYLOAD>::run() {
 
     int i = 0;
 
-    while(!owner_.error())
-    {
+    while (!owner_.error()) {
 
         AutoLock<MutexCond> lock(payloads_[i].cond_);
 
-        while(!payloads_[i].ready_)
+        while (!payloads_[i].ready_)
             payloads_[i].cond_.wait();
 
-        if(owner_.error())
+        if (owner_.error())
             break;
 
-        if(payloads_[i].done_) {
+        if (payloads_[i].done_) {
             payloads_[i].ready_ = false;
             payloads_[i].cond_.signal();
             break;
@@ -245,10 +216,8 @@ void ProducerConsumerTask<PAYLOAD>::run()
         try {
             consumer_.consume(payloads_[i].payload_);
         }
-        catch(std::exception& e)
-        {
-            Log::error() << "** " << e.what() << " Caught in " <<
-                            Here() << std::endl;
+        catch (std::exception& e) {
+            Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is handled" << std::endl;
             owner_.error(e.what());
             error = true;
@@ -256,8 +225,7 @@ void ProducerConsumerTask<PAYLOAD>::run()
 
         payloads_[i].ready_ = false;
 
-        if(error)
-        {
+        if (error) {
             ASSERT(owner_.error());
             payloads_[i].cond_.signal();
             break;
@@ -269,11 +237,10 @@ void ProducerConsumerTask<PAYLOAD>::run()
         i++;
         i %= owner_.count_;
     }
-
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

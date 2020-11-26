@@ -307,7 +307,7 @@ public:
     Value operator-(const Value&) const;
     Value& operator-=(const Value&);
 
-    Value operator*(const Value&)const;
+    Value operator*(const Value&) const;
     Value& operator*=(const Value&);
 
     Value operator/(const Value&) const;
@@ -468,12 +468,14 @@ Value toValue(const std::map<K, V>& l) {
 }
 
 template <typename T>
-DEPRECATED("Use toValue() instead") Value makeVectorValue(const std::vector<T>& v) {
+DEPRECATED("Use toValue() instead")
+Value makeVectorValue(const std::vector<T>& v) {
     return toValue(v);
 }
 
 template <typename T>
-DEPRECATED("Use toValue instead") Value makeVectorValue(const std::list<T>& v) {
+DEPRECATED("Use toValue instead")
+Value makeVectorValue(const std::list<T>& v) {
     return toValue(v);
 }
 

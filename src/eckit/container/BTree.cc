@@ -55,12 +55,7 @@ void BTree<K, V, S, L>::_NodePage::print(std::ostream& s) const {
 
 template <class K, class V, int S, class L>
 BTree<K, V, S, L>::BTree(const PathName& path, bool readOnly, off_t offset) :
-    path_(path),
-    file_(path, readOnly),
-    cacheReads_(true),
-    cacheWrites_(true),
-    readOnly_(readOnly),
-    offset_(offset) {
+    path_(path), file_(path, readOnly), cacheReads_(true), cacheWrites_(true), readOnly_(readOnly), offset_(offset) {
     file_.open();
 
     AutoLock<BTree<K, V, S, L> > lock(this);
@@ -512,7 +507,7 @@ template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::_loadPage(unsigned long page, Page& p) const {
     // std::cout << "Load " << page << std::endl;
 
-    off_t o = pageOffset(page);
+    off_t o    = pageOffset(page);
     off_t here = file_.seek(o);
     ASSERT(here == o);
 

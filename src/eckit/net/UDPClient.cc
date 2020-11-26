@@ -20,35 +20,26 @@
 #include <cstring>
 #include <iostream>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/net/UDPClient.h"
 #include "eckit/utils/Translator.h"
-#include "eckit/config/Configuration.h"
 
 namespace eckit {
 namespace net {
 
-UDPClient::UDPClient(const Configuration &cfg) :
-    hostname_(cfg.getString("host")),
-    port_(cfg.getInt("port")),
-    socketfd_(0),
-    servinfo_(nullptr),
-    addr_(nullptr) {
+UDPClient::UDPClient(const Configuration& cfg) :
+    hostname_(cfg.getString("host")), port_(cfg.getInt("port")), socketfd_(0), servinfo_(nullptr), addr_(nullptr) {
     init();
 }
 
 UDPClient::UDPClient(const std::string& hostname, int port) :
-    hostname_(hostname),
-    port_(port),
-    socketfd_(0),
-    servinfo_(nullptr),
-    addr_(nullptr) {
+    hostname_(hostname), port_(port), socketfd_(0), servinfo_(nullptr), addr_(nullptr) {
     init();
 }
 
-void UDPClient::init()
-{
+void UDPClient::init() {
     struct addrinfo hints;
 
     ::memset(&hints, 0, sizeof(hints));
@@ -85,7 +76,7 @@ UDPClient::~UDPClient() {
     SYSCALL(::close(socketfd_));
 }
 
-void UDPClient::send(const void *buffer, size_t length) {
+void UDPClient::send(const void* buffer, size_t length) {
     ssize_t sent = ::sendto(socketfd_, buffer, length, 0, addr_->ai_addr, addr_->ai_addrlen);
     if (sent == -1) {
         std::ostringstream msg;
@@ -101,4 +92,3 @@ void UDPClient::print(std::ostream& s) const {
 
 }  // namespace net
 }  // namespace eckit
-

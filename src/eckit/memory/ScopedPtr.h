@@ -13,8 +13,8 @@
 
 #include "eckit/deprecated.h"
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -25,20 +25,18 @@ namespace eckit {
 /// so that once C++11 is suported overall compilers we can switch easily.
 /// However due to lack of C++11 support, it does not support move semantics.
 
-template < typename T >
+template <typename T>
 class DEPRECATED("Use C++11 std::unique_ptr instead") ScopedPtr : private NonCopyable {
 
-public: // types
-
-    typedef T  element_type;
+public:  // types
+    typedef T element_type;
     typedef T* pointer_type;
     typedef T& reference_type;
 
-public: // methods
-
+public:  // methods
     /// Constructor
     /// @throws nothing
-    explicit ScopedPtr( pointer_type ptr = 0 ) : ptr_(ptr) {}
+    explicit ScopedPtr(pointer_type ptr = 0) : ptr_(ptr) {}
 
     /// Destructor
     /// @throws nothing
@@ -46,33 +44,36 @@ public: // methods
 
     /// Resets the pointee
     /// @throws nothing
-    void reset( pointer_type ptr = 0 )
-    {
+    void reset(pointer_type ptr = 0) {
         destroy();
         ptr_ = ptr;
     }
 
     /// Releases the ownership of the pointee
     /// @throws nothing
-    pointer_type release()
-    {
+    pointer_type release() {
         pointer_type r = ptr_;
-        ptr_ = 0;
+        ptr_           = 0;
         return r;
     }
 
     /// Assignement operator transfers ownership to another ScopedPtr
-    const ScopedPtr& operator= (ScopedPtr& other)
-    {
-        reset( other.release() );
+    const ScopedPtr& operator=(ScopedPtr& other) {
+        reset(other.release());
         return *this;
     }
 
     /// Dereferences the pointee
-    reference_type operator*() const { ASSERT(ptr_); return *ptr_; }
+    reference_type operator*() const {
+        ASSERT(ptr_);
+        return *ptr_;
+    }
 
     /// Dereferences object member
-    pointer_type operator->() const { ASSERT(ptr_); return ptr_; }
+    pointer_type operator->() const {
+        ASSERT(ptr_);
+        return ptr_;
+    }
 
     /// @returns a pointer to the managed object or null if no object is owned.
     /// Should be used with caution, because of issues dealing with raw pointers.
@@ -89,32 +90,30 @@ public: // methods
 
     /// Swaps the pointee with another ScopedPtr
     /// @throws nothing
-    void swap( ScopedPtr<T>& other )
-    {
-        pointer_type tmp( ptr_ );
-        ptr_ = other.ptr_;
+    void swap(ScopedPtr<T>& other) {
+        pointer_type tmp(ptr_);
+        ptr_       = other.ptr_;
         other.ptr_ = tmp;
     }
 
-protected: // methods
+protected:  // methods
+    void destroy() {
+        delete ptr_;
+        ptr_ = 0;
+    }
 
-    void destroy() { delete ptr_; ptr_ = 0; }
-
-private: // members
-
+private:  // members
     pointer_type ptr_;
-
 };
 
 /// non-member function overload
-template< typename T >
-void swap( ScopedPtr<T>& a, ScopedPtr<T>& b )
-{
+template <typename T>
+void swap(ScopedPtr<T>& a, ScopedPtr<T>& b) {
     a.swap(b);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

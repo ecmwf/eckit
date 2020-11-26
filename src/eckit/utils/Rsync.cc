@@ -43,10 +43,10 @@ struct handle_with_buffer {
 static rs_result fillInputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* opaque) {
     try {
         handle_with_buffer* hwb = reinterpret_cast<handle_with_buffer*>(opaque);
-        DataHandle* h = hwb->handle;
-        Buffer& b = *hwb->buffer;
+        DataHandle* h           = hwb->handle;
+        Buffer& b               = *hwb->buffer;
 
-        char* w = static_cast<char*>(b);
+        char* w    = static_cast<char*>(b);
         size_t len = b.size();
         // *buffers is zeroed before entering this function for the first time
         if (buffers->next_in) {
@@ -56,7 +56,7 @@ static rs_result fillInputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* opa
             ASSERT(pos + buffers->avail_in <= b.size());
 
             if (pos < b.size()) {
-                w = buffers->next_in + buffers->avail_in;
+                w   = buffers->next_in + buffers->avail_in;
                 len = b.size() - buffers->avail_in - pos;
             }
         }
@@ -92,13 +92,13 @@ static rs_result fillInputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* opa
 static rs_result drainOutputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* opaque) {
     try {
         handle_with_buffer* hwb = reinterpret_cast<handle_with_buffer*>(opaque);
-        DataHandle* h = hwb->handle;
-        Buffer& b = *hwb->buffer;
+        DataHandle* h           = hwb->handle;
+        Buffer& b               = *hwb->buffer;
 
         // first call: initialise output buffer
         if (!buffers->next_out) {
             ASSERT(buffers->avail_out == 0);
-            buffers->next_out = static_cast<char*>(b);
+            buffers->next_out  = static_cast<char*>(b);
             buffers->avail_out = b.size();
             return RS_DONE;
         }
@@ -117,7 +117,7 @@ static rs_result drainOutputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* o
             return RS_IO_ERROR;
         }
 
-        buffers->next_out = static_cast<char*>(b);
+        buffers->next_out  = static_cast<char*>(b);
         buffers->avail_out = b.size();
     }
     catch (std::exception& e) {
@@ -132,8 +132,7 @@ static rs_result drainOutputBuffer(rs_job_t* job, rs_buffers_t* buffers, void* o
     return RS_DONE;
 }
 
-static void runStreamedJob(rs_job_t* job, DataHandle* input, size_t ibuf_size,
-        DataHandle* output, size_t obuf_size) {
+static void runStreamedJob(rs_job_t* job, DataHandle* input, size_t ibuf_size, DataHandle* output, size_t obuf_size) {
 
     Buffer ibuf(ibuf_size);
     handle_with_buffer ihwb = {input, &ibuf};
@@ -142,9 +141,8 @@ static void runStreamedJob(rs_job_t* job, DataHandle* input, size_t ibuf_size,
     handle_with_buffer ohwb = {output, &obuf};
 
     rs_buffers_t buf;
-    RSCALL(rs_job_drive(job, &buf,
-                input? fillInputBuffer : nullptr, input? static_cast<void*>(&ihwb) : nullptr,
-                output? drainOutputBuffer : nullptr, output? static_cast<void*>(&ohwb) : nullptr));
+    RSCALL(rs_job_drive(job, &buf, input ? fillInputBuffer : nullptr, input ? static_cast<void*>(&ihwb) : nullptr,
+                        output ? drainOutputBuffer : nullptr, output ? static_cast<void*>(&ohwb) : nullptr));
 }
 
 
@@ -173,10 +171,7 @@ private:
     rs_signature_t* signature_;
 };
 
-Rsync::Rsync(bool statistics) :
-    block_len_(RS_DEFAULT_BLOCK_LEN),
-    strong_len_(0),
-    statistics_(statistics) {}
+Rsync::Rsync(bool statistics) : block_len_(RS_DEFAULT_BLOCK_LEN), strong_len_(0), statistics_(statistics) {}
 
 Rsync::~Rsync() {}
 
@@ -188,11 +183,11 @@ void logStats(const rs_stats_t* stats, std::ostream& os) {
 
 void Rsync::syncData(const PathName& source, const PathName& target) {
     if (statistics_)
-        Log::info() << "Rsync::syncData(source=" << source.fullName()
-                    << ", target=" << target.fullName() << ")" << std::endl;
+        Log::info() << "Rsync::syncData(source=" << source.fullName() << ", target=" << target.fullName() << ")"
+                    << std::endl;
     else
-        Log::debug<LibEcKit>() << "Rsync::syncData(source=" << source.fullName()
-                               << ", target=" << target.fullName() << ")" << std::endl;
+        Log::debug<LibEcKit>() << "Rsync::syncData(source=" << source.fullName() << ", target=" << target.fullName()
+                               << ")" << std::endl;
 
     rs_stats_t stats;
 
@@ -204,7 +199,7 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
         AutoStdFile sig(signature, "w");
         RSCALL(rs_sig_file(tgt, sig, block_len_, strong_len_, RS_RK_BLAKE2_SIG_MAGIC, &stats));
     }
-    logStats(&stats, statistics_? Log::info() : Log::debug<LibEcKit>());
+    logStats(&stats, statistics_ ? Log::info() : Log::debug<LibEcKit>());
 
     TmpFile delta(false);
     Log::debug<LibEcKit>() << "Rsync::syncData using delta file " << delta << std::endl;
@@ -215,7 +210,7 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
         AutoStdFile dlt(delta, "w");
         RSCALL(rs_delta_file(sig, src, dlt, &stats));
     }
-    logStats(&stats, statistics_? Log::info() : Log::debug<LibEcKit>());
+    logStats(&stats, statistics_ ? Log::info() : Log::debug<LibEcKit>());
 
     PathName patched = PathName::unique(target);
     Log::debug<LibEcKit>() << "Rsync::syncData using temporary output file " << patched << std::endl;
@@ -225,7 +220,7 @@ void Rsync::syncData(const PathName& source, const PathName& target) {
         AutoStdFile patch(patched, "w");
         RSCALL(rs_patch_file(tgt, dlt, patch, &stats));
     }
-    logStats(&stats, statistics_? Log::info() : Log::debug<LibEcKit>());
+    logStats(&stats, statistics_ ? Log::info() : Log::debug<LibEcKit>());
     PathName::rename(patched, target);
 }
 
@@ -285,8 +280,7 @@ void Rsync::syncRecursive(const PathName& source, const PathName& target) {
         }
 
         if (!shouldUpdate(file, rebased)) {
-            Log::debug<LibEcKit>() << "eckit::Rsync: skipping " << file
-                                   << " due to file size / date" << std::endl;
+            Log::debug<LibEcKit>() << "eckit::Rsync: skipping " << file << " due to file size / date" << std::endl;
             continue;
         }
 
@@ -320,13 +314,13 @@ void Rsync::computeDelta(DataHandle& signature, DataHandle& input, DataHandle& o
 }
 
 
-static rs_result readDataHandle(void *opaque, rs_long_t pos, size_t* len, void** buf) {
+static rs_result readDataHandle(void* opaque, rs_long_t pos, size_t* len, void** buf) {
     try {
         DataHandle* dh = reinterpret_cast<DataHandle*>(opaque);
         dh->seek(pos);
 
         long rlen = dh->read(*buf, *len);
-        if(rlen == 0)
+        if (rlen == 0)
             return RS_INPUT_ENDED;
 
         *len = rlen;

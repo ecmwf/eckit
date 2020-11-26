@@ -24,66 +24,50 @@ namespace eckit {
 // The class AutoLock is used to AutoLock a mutex in a multi-threaded
 // environment. AutoLocks are exception safe.
 
-template<class T>
+template <class T>
 class AutoLock : private NonCopyable {
 
 public:
+    // -- Contructors
 
-// -- Contructors
+    AutoLock(T& resource) : resource_(resource) { resource_.lock(); }
 
-    AutoLock(T& resource) :
-        resource_(resource) {
-        resource_.lock();
-    }
+    AutoLock(T* resource) : resource_(*resource) { resource_.lock(); }
 
-    AutoLock(T* resource) :
-        resource_(*resource) {
-        resource_.lock();
-    }
-
-// -- Destructor
+    // -- Destructor
 
     ~AutoLock() { resource_.unlock(); }
 
-private: // members
-
+private:  // members
     T& resource_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class AutoSharedLock : private NonCopyable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    AutoSharedLock(T& resource) : resource_(resource) { resource_.lockShared(); }
+    AutoSharedLock(T* resource) : resource_(*resource) { resource_.lockShared(); }
 
-    AutoSharedLock(T& resource) : resource_(resource)
-							{ resource_.lockShared(); }
-    AutoSharedLock(T* resource) : resource_(*resource)
-							{ resource_.lockShared(); }
-
-// -- Destructor
+    // -- Destructor
 
     ~AutoSharedLock() { resource_.unlock(); }
 
-private: // members
-
+private:  // members
     T& resource_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class TimedAutoLock : private NonCopyable {
 public:
-
     // -- Constructors
 
-    TimedAutoLock(T& resource, const std::string& message)
-        : resource_(resource), timer_(message + " (release)") {
+    TimedAutoLock(T& resource, const std::string& message) : resource_(resource), timer_(message + " (release)") {
         resource_.lock();
         timer_.report(message + " (acquire)");
     }
@@ -92,22 +76,19 @@ public:
 
     ~TimedAutoLock() { resource_.unlock(); }
 
-private: // members
-
+private:  // members
     T& resource_;
     Timer timer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T, class U>
+template <class T, class U>
 class TraceAutoLock : private NonCopyable {
 public:
-
     // -- Constructors
 
-    TraceAutoLock(T& resource, const std::string& message)
-        : resource_(resource), timer_(message + " (release)") {
+    TraceAutoLock(T& resource, const std::string& message) : resource_(resource), timer_(message + " (release)") {
         resource_.lock();
         timer_.report(message + " (acquire)");
     }
@@ -116,14 +97,13 @@ public:
 
     ~TraceAutoLock() { resource_.unlock(); }
 
-private: // members
-
+private:  // members
     T& resource_;
     TraceTimer<U> timer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

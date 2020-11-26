@@ -42,7 +42,7 @@ MultiHandle::MultiHandle(Stream& s) : DataHandle(s), read_(false) {
         datahandles_.push_back(dh);
     }
     s >> length_;
-    current_  = datahandles_.end();
+    current_ = datahandles_.end();
 }
 
 void MultiHandle::encode(Stream& s) const {
@@ -91,7 +91,7 @@ Length MultiHandle::openForRead() {
 
     read_ = true;
 
-    current_  = datahandles_.begin();
+    current_ = datahandles_.begin();
     openCurrent();
 
     // compress();
@@ -108,8 +108,8 @@ void MultiHandle::openForWrite(const Length& length) {
     Log::info() << "MultiHandle::openForWrite " << length << std::endl;
     Log::info() << "MultiHandle::openForWrite " << datahandles_.size() << std::endl;
     Log::info() << "MultiHandle::openForWrite " << length_.size() << std::endl;
-    current_  = datahandles_.begin();
-    curlen_   = length_.begin();
+    current_ = datahandles_.begin();
+    curlen_  = length_.begin();
     openCurrent();
 
     written_ = 0;
@@ -204,7 +204,7 @@ long MultiHandle::write(const void* buffer, long length) {
             ASSERT(current_ != datahandles_.end());
 
             const void* pl = static_cast<const char*>(buffer) + l;
-            long m  = write(pl, length - l);
+            long m         = write(pl, length - l);
             return (m > 0 ? n + m : n);
         }
     }
@@ -299,7 +299,7 @@ DataHandle* MultiHandle::clone() const {
 
 bool MultiHandle::canSeek() const {
     for (size_t i = 0; i < datahandles_.size(); i++) {
-        if(!datahandles_[i]->canSeek()) {
+        if (!datahandles_[i]->canSeek()) {
             return false;
         }
     }

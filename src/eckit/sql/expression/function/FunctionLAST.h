@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2016 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -23,38 +23,38 @@ namespace function {
 
 class FunctionLAST : public FunctionExpression {
 public:
-	FunctionLAST(const std::string&,const expression::Expressions&);
-	FunctionLAST(const FunctionLAST&);
-	~FunctionLAST(); 
+    FunctionLAST(const std::string&, const expression::Expressions&);
+    FunctionLAST(const FunctionLAST&);
+    ~FunctionLAST();
 
-	std::shared_ptr<SQLExpression> clone() const;
+    std::shared_ptr<SQLExpression> clone() const override;
 
     static int arity() { return 1; }
     static const char* help() { return ""; }
 
 private:
-// No copy allowed
-	FunctionLAST& operator=(const FunctionLAST&);
+    // No copy allowed
+    FunctionLAST& operator=(const FunctionLAST&);
 
-	double value_;
+    double value_;
 
-// -- Overridden methods
-	virtual const eckit::sql::type::SQLType* type() const;
-	virtual void prepare(SQLSelect&);
-	virtual void cleanup(SQLSelect&);
-	virtual void partialResult();
-	virtual double eval(bool& missing) const;
-	bool isAggregate() const { return true; }
+    // -- Overridden methods
+    virtual const eckit::sql::type::SQLType* type() const override;
+    virtual void prepare(SQLSelect&) override;
+    virtual void cleanup(SQLSelect&) override;
+    virtual void partialResult() override;
+    virtual double eval(bool& missing) const override;
+    bool isAggregate() const override { return true; }
 
-	virtual void output(SQLOutput&) const;
-// -- Friends
-	//friend std::ostream& operator<<(std::ostream& s,const FunctionLAST& p)
-	//	{ p.print(s); return s; }
+    virtual void output(SQLOutput&) const override;
+    // -- Friends
+    // friend std::ostream& operator<<(std::ostream& s,const FunctionLAST& p)
+    //	{ p.print(s); return s; }
 };
 
-} // namespace function
-} // namespace expression 
-} // namespace sql
-} // namespace eckit 
+}  // namespace function
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit
 
 #endif

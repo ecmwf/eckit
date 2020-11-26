@@ -42,7 +42,6 @@ namespace eckit {
 namespace net {
 
 
-
 static in_addr none = {INADDR_NONE};
 
 static Once<Mutex> local_mutex;
@@ -783,11 +782,9 @@ void TCPSocket::debug(bool on) {
 }
 
 void TCPSocket::print(std::ostream& s) const {
-    s << "TCPSocket[fd=" << socket_
-    << ",remote[" << remoteHost() << ":" << remotePort()
-    << " (" << remoteAddr_ << ")]"
-    << ",local[" << localHost() << ":" << localPort()
-    << " (" << localAddr_ << ")]"
+    s << "TCPSocket[fd=" << socket_ << ",remote[" << remoteHost() << ":" << remotePort() << " (" << remoteAddr_ << ")]"
+      << ",local[" << localHost() << ":" << localPort() << " (" << localAddr_
+      << ")]"
       // << ",localPort=" << localPort_
       // << ",remotePort=" << remotePort_
       // << ",remoteHost=" << remoteHost_
@@ -801,7 +798,6 @@ std::ostream& operator<<(std::ostream& s, in_addr a) {
     s << IPAddress(a);
     return s;
 }
-
 
 
 }  // namespace net

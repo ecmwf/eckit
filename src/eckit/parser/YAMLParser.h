@@ -28,17 +28,14 @@ struct YAMLItem;
 class YAMLParser : public ObjectParser {
 
 
+public:  // methods
+    YAMLParser(std::istream& in);
+    virtual ~YAMLParser() override;
 
-public: // methods
-
-    YAMLParser(std::istream & in);
-    virtual ~YAMLParser();
-
-    static Value decodeFile(const PathName & path);
-    static Value decodeString(const std::string & str);
+    static Value decodeFile(const PathName& path);
+    static Value decodeString(const std::string& str);
 
 private:
-
     std::deque<YAMLItem*> items_;
     YAMLItem* last_;
 
@@ -49,7 +46,6 @@ private:
     std::map<Value, Value> anchors_;
 
 private:
-
     void loadItem();
     const YAMLItem& nextItem();
     const YAMLItem& peekItem();
@@ -63,14 +59,14 @@ private:
 
     bool endOfToken(char);
 
-    virtual Value parseValue();
+    virtual Value parseValue() override;
 
-    virtual Value parseString(char quote='"');
-    virtual Value parseNumber();
+    virtual Value parseString(char quote = '"') override;
+    virtual Value parseNumber() override;
 
     Value parseStringOrNumber(bool& isKey);
 
-    virtual std::string parserName() const;
+    virtual std::string parserName() const override;
 
 
     void anchor(const Value& key, const Value& value);
@@ -82,14 +78,11 @@ private:
     friend struct YAMLItemEndDocument;
     friend struct YAMLItemAnchor;
     friend struct YAMLItemReference;
-
-
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -24,14 +24,15 @@ namespace eckit {
 
 class HttpUser : public eckit::net::NetUser {
 public:
-	HttpUser(eckit::net::TCPSocket&);
-	virtual ~HttpUser();
+    HttpUser(eckit::net::TCPSocket&);
+    virtual ~HttpUser() override;
+
 private:
-    virtual void serve(eckit::Stream&, std::istream&, std::ostream&);
+    virtual void serve(eckit::Stream&, std::istream&, std::ostream&) override;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -25,87 +25,83 @@ namespace eckit {
 
 class Progress {
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    Progress(const std::string&, unsigned long long, unsigned long long);
 
-	Progress(const std::string&,unsigned long long,unsigned long long);
+    // -- Destructor
 
-// -- Destructor
+    ~Progress();
 
-	~Progress();
+    // -- Convertors
+    // None
 
-// -- Convertors
-	// None
+    // -- Operators
 
-// -- Operators
+    void operator()(unsigned long long);
 
-	void operator()(unsigned long long);
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
 
-// -- Methods
+    // void print(std::ostream&) const;
 
-	// void print(std::ostream&) const;
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
-
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    Progress(const Progress&);
+    Progress& operator=(const Progress&);
 
-	Progress(const Progress&);
-	Progress& operator=(const Progress&);
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Overridden methods
-	// None
+    // -- Class members
+    // None
 
-// -- Class members
-	// None
+    // -- Class methods
+    // None
 
-// -- Class methods
-	// None
+    // -- Friends
 
-// -- Friends
-
-	//friend std::ostream& operator<<(std::ostream& s,const Progress& p)
-	//	{ p.print(s); return s; }
-
+    // friend std::ostream& operator<<(std::ostream& s,const Progress& p)
+    //	{ p.print(s); return s; }
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

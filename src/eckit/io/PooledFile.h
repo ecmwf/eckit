@@ -15,9 +15,9 @@
 #ifndef eckit_io_PooledFile_h
 #define eckit_io_PooledFile_h
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
@@ -26,7 +26,6 @@ class PoolFileEntry;
 
 class PooledFile : private NonCopyable {
 public:
-
     PooledFile(const PathName& name);
 
     /// @pre must have been closed
@@ -53,7 +52,6 @@ public:
     size_t nbSeeks() const;
 
 private:
-
     PathName name_;
     PoolFileEntry* entry_;
 };
@@ -64,6 +62,6 @@ public:
     PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc);
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

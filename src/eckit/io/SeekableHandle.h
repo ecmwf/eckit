@@ -27,57 +27,52 @@ namespace eckit {
 
 class SeekableHandle : public DataHandle {
 public:
-
-
     /// Contructor, taking ownership
 
-	SeekableHandle(PeekHandle*);
+    SeekableHandle(PeekHandle*);
 
     /// Contructor, not taking ownership
 
-	SeekableHandle(PeekHandle&);
+    SeekableHandle(PeekHandle&);
 
     /// Destructor
 
-	virtual ~SeekableHandle();
+    virtual ~SeekableHandle() override;
 
-// -- Operators
+    // -- Operators
 
-// -- Methods
+    // -- Methods
 
-// -- Overridden methods
+    // -- Overridden methods
 
     // From DataHandle
 
-    virtual Length openForRead();
+    virtual Length openForRead() override;
 
-    virtual long read(void*,long);
-    virtual void close();
+    virtual long read(void*, long) override;
+    virtual void close() override;
 
-    virtual void rewind();
-    virtual void print(std::ostream&) const;
-    virtual void skip(const Length&);
+    virtual void rewind() override;
+    virtual void print(std::ostream&) const override;
+    virtual void skip(const Length&) override;
 
-    virtual Offset seek(const Offset&);
-    virtual bool canSeek() const;
+    virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override;
 
-	virtual Length estimate();
-	virtual Offset position();
+    virtual Length estimate() override;
+    virtual Offset position() override;
 
 
-private: // members
-
-	PeekHandle& handle_;
+private:  // members
+    PeekHandle& handle_;
     size_t position_;
-    bool owned_;
 
-    virtual std::string title() const;
-
+    virtual std::string title() const override;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #endif

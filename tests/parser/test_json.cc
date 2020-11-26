@@ -10,8 +10,8 @@
 
 #include "eckit/eckit_config.h"
 
-#include "eckit/log/Log.h"
 #include "eckit/log/JSON.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/JSONParser.h"
 
 #include "eckit/testing/Test.h"
@@ -154,7 +154,7 @@ CASE("test_eckit_parser_unicode") {
 
     EXPECT(v["test"] == "a");
 }
-#endif // eckit_HAVE_UNICODE
+#endif  // eckit_HAVE_UNICODE
 
 //----------------------------------------------------------------------------------------------------------------------
 

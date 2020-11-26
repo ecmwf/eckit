@@ -28,10 +28,7 @@ using namespace eckit;
 using namespace std;
 
 FunctionMATCH::FunctionMATCH(const std::string& name, const expression::Expressions& args, const SelectAST& selectAST) :
-    FunctionExpression(name, args),
-    size_(args.size()),
-    subquery_(selectAST),
-    subqueryResult_() {}
+    FunctionExpression(name, args), size_(args.size()), subquery_(selectAST), subqueryResult_() {}
 
 FunctionMATCH::FunctionMATCH(const FunctionMATCH& other) :
     FunctionExpression(other.name_, other.args_),

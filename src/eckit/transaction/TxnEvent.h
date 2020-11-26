@@ -26,64 +26,62 @@ typedef unsigned long long TxnID;
 
 class TxnEvent : public Streamable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    TxnEvent();
+    TxnEvent(Stream&);
 
-	TxnEvent();
-	TxnEvent(Stream&);
+    // -- Destructor
 
-// -- Destructor
+    virtual ~TxnEvent() override;
 
-	virtual ~TxnEvent();
+    // -- Methods
 
-// -- Methods
+    const TxnID& transactionID() const { return txnID_; }
+    void transactionID(const TxnID& id) { txnID_ = id; }
 
-	const TxnID& transactionID() const { return txnID_; }
-	void transactionID(const TxnID& id){ txnID_ = id; }
-
-// -- Overridden methods
+    // -- Overridden methods
 
     // From Streamble
 
-    virtual void encode(Stream&) const;
-    virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 
-// -- Class members
+    // -- Class members
 
-	static const ClassSpec&  classSpec()        { return classSpec_;}
+    static const ClassSpec& classSpec() { return classSpec_; }
 
 protected:
+    // -- Methods
 
-// -- Methods
-
-	virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const;
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    TxnEvent(const TxnEvent&);
+    TxnEvent& operator=(const TxnEvent&);
 
-	TxnEvent(const TxnEvent&);
-	TxnEvent& operator=(const TxnEvent&);
+    // -- Members
 
-// -- Members
+    TxnID txnID_;
 
-	TxnID txnID_;
+    // -- Class members
 
-// -- Class members
+    static ClassSpec classSpec_;
+    static Reanimator<TxnEvent> reanimator_;
 
-	static ClassSpec              classSpec_;
-	static Reanimator<TxnEvent>   reanimator_;
+    // -- Friends
 
-// -- Friends
-
-	friend std::ostream& operator<<(std::ostream& s,const TxnEvent& p)
-		{ p.print(s); return s; }
-
+    friend std::ostream& operator<<(std::ostream& s, const TxnEvent& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

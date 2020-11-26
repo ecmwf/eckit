@@ -29,10 +29,7 @@ namespace sql {
 //----------------------------------------------------------------------------------------------------------------------
 
 SQLSelectFactory::SQLSelectFactory(SQLSession& session) :
-    session_(session),
-    database_(session.currentDatabase()),
-    maxColumnShift_(0),
-    minColumnShift_(0) {}
+    session_(session), database_(session.currentDatabase()), maxColumnShift_(0), minColumnShift_(0) {}
 
 /*void SQLSelectFactory::reset()
 {

@@ -133,7 +133,7 @@ void ResourceMgr::set(const std::string& name, const std::string& value) {
 }
 
 bool ResourceMgr::doLookUp(const std::string& kind, const std::string& owner, const std::string& name,
-                          std::string& result) {
+                           std::string& result) {
     AutoLock<Mutex> lock(mutex_);
 
     if (!inited_) {
@@ -178,9 +178,7 @@ ResourceMgr::ResourceMgr() : resmap_(), resoptions_(), inited_(false) {}
 //----------------------------------------------------------------------------------------------------------------------
 
 ResourceQualifier::ResourceQualifier(const std::string& kind, const std::string& owner, const std::string& name) :
-    kind_(kind),
-    owner_(owner),
-    name_(name) {}
+    kind_(kind), owner_(owner), name_(name) {}
 
 ResourceQualifier::ResourceQualifier(const ResourceQualifier& other) {
     kind_  = other.kind_;

@@ -14,10 +14,10 @@
 #ifndef eckit_cmd_Arg_H
 #define eckit_cmd_Arg_H
 
-#include <vector>
+#include <iosfwd>
 #include <memory>
 #include <string>
-#include <iosfwd>
+#include <vector>
 
 
 namespace eckit {
@@ -28,7 +28,17 @@ class ArgContent;
 
 class Arg {
 public:
-    enum Type { number, text, path, tape, file, expression, boolean, ellipsis };
+    enum Type
+    {
+        number,
+        text,
+        path,
+        tape,
+        file,
+        expression,
+        boolean,
+        ellipsis
+    };
 
     // -- Contructors
 
@@ -77,6 +87,6 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

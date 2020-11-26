@@ -23,7 +23,7 @@ namespace eckit {
 class ChannelBuffer;
 class LogTarget;
 
-typedef void (*channel_callback_t) (void* data, const char* msg);
+typedef void (*channel_callback_t)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -31,13 +31,12 @@ typedef void (*channel_callback_t) (void* data, const char* msg);
 
 class Channel : public std::ostream, private NonCopyable {
 
-public: // methods
-
+public:  // methods
     Channel(LogTarget* = 0);
 
-    virtual ~Channel();
+    virtual ~Channel() override;
 
-    bool operator !() const;
+    bool operator!() const;
     operator bool() const;
 
     void indent(const char* prefix = "");
@@ -57,10 +56,10 @@ public: // methods
 
     void reset();
 
-private: // members
-
-    friend std::ostream& operator<< (std::ostream& os, const Channel& c) {
-        c.print(os); return os;
+private:  // members
+    friend std::ostream& operator<<(std::ostream& os, const Channel& c) {
+        c.print(os);
+        return os;
     }
 
     void print(std::ostream& s) const;
@@ -79,14 +78,12 @@ class AutoIndent {
     Channel& channel_;
 
 public:
-
     AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -19,13 +19,11 @@ namespace eckit {
 
 class System {
 public:
-
-    static std::string addrToPath(const void *addr);
-
+    static std::string addrToPath(const void* addr);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

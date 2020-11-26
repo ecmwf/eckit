@@ -22,47 +22,44 @@ namespace eckit {
 
 class AutoAlarm {
 public:
+    // -- Contructors
 
-// -- Contructors
+    AutoAlarm(int, bool = false);
 
-	AutoAlarm(int,bool = false);
+    // -- Destructor
 
-// -- Destructor
+    ~AutoAlarm();
 
-	~AutoAlarm();
+    // - Class methods
 
-// - Class methods
-
-	static bool caught()  { return caught_; }
+    static bool caught() { return caught_; }
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    AutoAlarm(const AutoAlarm&);
+    AutoAlarm& operator=(const AutoAlarm&);
 
-	AutoAlarm(const AutoAlarm&);
-	AutoAlarm& operator=(const AutoAlarm&);
+    // -- Members
 
-// -- Members
+    typedef void (*proc)(int);
+    proc old_;
+    bool saveThrow_;
+    int saveSec_;
 
-	typedef void (*proc)(int);
-	proc old_;
-	bool saveThrow_;
-	int  saveSec_;
+    // -- Class members
 
-// -- Class members
+    static bool caught_;
+    static bool throw_;
+    static int sec_;
 
-	static bool caught_;
-	static bool throw_;
-	static int  sec_;
+    // -- Class methods
 
-// -- Class methods
-
-	static void sigAlarm(int);
-
+    static void sigAlarm(int);
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

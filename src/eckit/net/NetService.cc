@@ -10,12 +10,12 @@
 
 
 #include "eckit/net/NetService.h"
+#include "eckit/config/Resource.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/NetUser.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/thread/ThreadControler.h"
-#include "eckit/config/Resource.h"
 #include "eckit/runtime/ProcessControler.h"
+#include "eckit/thread/ThreadControler.h"
 
 namespace eckit {
 namespace net {
@@ -24,14 +24,9 @@ namespace net {
 class NetServiceProcessControler : public ProcessControler {
 
 public:
-    NetServiceProcessControler(const std::string& name,
-                               NetUser *user,
-                               TCPServer& server,
-                               long parent,
-                               bool visible);
+    NetServiceProcessControler(const std::string& name, NetUser* user, TCPServer& server, long parent, bool visible);
 
 private:
-
     std::string name_;
     std::unique_ptr<NetUser> user_;
     TCPServer& server_;
@@ -45,9 +40,8 @@ private:
 };
 
 
-NetService::NetService(int port, bool visible, const SocketOptions& options):
-    server_(port, options),
-    visible_(visible) {}
+NetService::NetService(int port, bool visible, const SocketOptions& options) :
+    server_(port, options), visible_(visible) {}
 
 NetService::~NetService() {}
 
@@ -69,7 +63,8 @@ void NetService::run() {
     while (!stopped()) {
 
         if (runAsProcess()) {
-            NetServiceProcessControler t(name(), newUser(server_.accept()), server_, Monitor::instance().self(), visible_);
+            NetServiceProcessControler t(name(), newUser(server_.accept()), server_, Monitor::instance().self(),
+                                         visible_);
             t.start();
         }
         else {
@@ -89,24 +84,15 @@ bool NetService::preferToRunAsProcess() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-NetServiceProcessControler::NetServiceProcessControler(const std::string& name,
-        NetUser *user,
-        TCPServer& server,
-        long parent,
-        bool visible):
-    ProcessControler(true),
-    name_(name),
-    user_(user),
-    server_(server),
-    parent_(parent),
-    visible_(visible) {
+NetServiceProcessControler::NetServiceProcessControler(const std::string& name, NetUser* user, TCPServer& server,
+                                                       long parent, bool visible) :
+    ProcessControler(true), name_(name), user_(user), server_(server), parent_(parent), visible_(visible) {
     Log::info() << "NetServiceProcessControler::NetServiceProcessControler" << std::endl;
-
 }
 
 void NetServiceProcessControler::run() {
 
-    eckit::Monitor::instance().reset(); // needed to the monitor to work on forked (but not execed process)
+    eckit::Monitor::instance().reset();  // needed to the monitor to work on forked (but not execed process)
     Monitor::instance().parent(parent_);
     Monitor::instance().name(name_);
     // Monitor::instance().kind(name_);
@@ -123,7 +109,6 @@ void NetServiceProcessControler::run() {
     }
 
     Log::info() << "NetServiceProcessControler::run end" << std::endl;
-
 }
 
 void NetServiceProcessControler::afterForkInParent() {
@@ -138,5 +123,5 @@ void NetServiceProcessControler::afterForkInChild() {
     server_.close();
 }
 
-} // namespace net
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit

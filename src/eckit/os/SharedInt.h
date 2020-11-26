@@ -22,10 +22,9 @@ namespace eckit {
 
 class SharedInt : public Semaphore {
 public:
-
     SharedInt(const PathName&, int n = 1);
 
-	~SharedInt();
+    ~SharedInt();
 
     void use(int n = 0);
     void use(int n, short v);
@@ -33,18 +32,16 @@ public:
     void release(int n = 0);
     void release(int n, short v);
 
-	int  free(int n = 0) const;
-	int  limit(int n = 0)   const;
+    int free(int n = 0) const;
+    int limit(int n = 0) const;
 
-    void newLimit(short val,unsigned short n = 0);
+    void newLimit(short val, unsigned short n = 0);
 
 private:
-
     SharedInt(const SharedInt&) = delete;
     SharedInt& operator=(const SharedInt&) = delete;
-
 };
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

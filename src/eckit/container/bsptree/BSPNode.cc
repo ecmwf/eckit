@@ -32,9 +32,7 @@ namespace eckit {
 
 template <class Traits, class Partition>
 BSPNode<Traits, Partition>::BSPNode(const Value& v, const HyperPlane& plane, double dist) :
-    SPNodeType(v),
-    plane_(plane),
-    dist_(dist) {}
+    SPNodeType(v), plane_(plane), dist_(dist) {}
 
 template <class Traits, class Partition>
 void BSPNode<Traits, Partition>::nearestNeighbourX(Alloc& a, const Point& p, Node*& best, double& max, int depth) {

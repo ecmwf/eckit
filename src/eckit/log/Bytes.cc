@@ -26,11 +26,11 @@ namespace eckit {
 
 static const char magnitudes[] = {' ', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'};
 
-Bytes::Bytes(double bytes) : bytes_(bytes), scale_(0), rate_(false) {}
+Bytes::Bytes(double bytes) : bytes_(bytes), rate_(false) {}
 
-Bytes::Bytes(double bytes, Timer& timer) : bytes_(rate(bytes, timer.elapsed())), scale_(0), rate_(true) {}
+Bytes::Bytes(double bytes, Timer& timer) : bytes_(rate(bytes, timer.elapsed())), rate_(true) {}
 
-Bytes::Bytes(double bytes, double elapsed) : bytes_(rate(bytes, elapsed)), scale_(0), rate_(true) {}
+Bytes::Bytes(double bytes, double elapsed) : bytes_(rate(bytes, elapsed)), rate_(true) {}
 
 
 int Bytes::sign() const {

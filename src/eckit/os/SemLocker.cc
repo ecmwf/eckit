@@ -37,9 +37,7 @@ struct sembuf _unlock[] = {
 
 
 SemLocker::SemLocker(int sem, const PathName& path, int maxWaitLock) :
-    sem_(sem),
-    maxWaitLock_(maxWaitLock),
-    path_(path) {
+    sem_(sem), maxWaitLock_(maxWaitLock), path_(path) {
     int retry = 0;
     while (retry < maxWaitLock_) {
         if (semop(sem_, _lock, 2) < 0) {

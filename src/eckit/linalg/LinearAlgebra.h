@@ -18,8 +18,8 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/linalg/types.h"
+#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
@@ -30,7 +30,6 @@ namespace linalg {
 class LinearAlgebra : private NonCopyable {
 
 public:
-
     const std::string& name() const;
 
     // static methods
@@ -42,7 +41,7 @@ public:
     static void backend(const std::string& name);
 
     /// List all available backends
-    static void list(std::ostream &);
+    static void list(std::ostream&);
 
     /// Get a backend by name
     static const LinearAlgebra& getBackend(const std::string& name);
@@ -51,7 +50,6 @@ public:
     static bool hasBackend(const std::string& name);
 
 public:  // virtual methods
-
     /// Compute the inner product of vectors x and y
     virtual Scalar dot(const Vector&, const Vector&) const = 0;
 
@@ -77,20 +75,18 @@ public:  // virtual methods
     virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
 
 protected:
-
     LinearAlgebra(const std::string& name);
 
     virtual ~LinearAlgebra();
 
 private:
-
     std::string name_;
 
     virtual void print(std::ostream&) const = 0;
 
     // -- Friends
 
-    friend std::ostream &operator<<(std::ostream &s, const LinearAlgebra &p) {
+    friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra& p) {
         p.print(s);
         return s;
     }
@@ -98,7 +94,7 @@ private:
 
 //-----------------------------------------------------------------------------
 
-} // namespace linalg
-} // namespace eckit
+}  // namespace linalg
+}  // namespace eckit
 
 #endif

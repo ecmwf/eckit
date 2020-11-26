@@ -24,25 +24,20 @@ namespace eckit {
 
 class AgentResource : public HtmlResource {
 public:
+    AgentResource();
+
+    virtual ~AgentResource() override;
+
+protected:  // members
+    std::string name_;
 
 
-	AgentResource();
-
-	virtual ~AgentResource();
-
-protected: // members
-
-	std::string name_;
-
-
-protected: // overridden methods
-
-	virtual void GET(std::ostream&,Url&);
-
+protected:  // overridden methods
+    virtual void GET(std::ostream&, Url&) override;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

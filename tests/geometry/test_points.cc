@@ -80,7 +80,7 @@ CASE("Point2 scaling") {
 
     Point2 p3 = p2 * 2.0;
     Point2 p4 = p3 + p2;
-    Point2 p5 = p4-p2*3;
+    Point2 p5 = p4 - p2 * 3;
     EXPECT(p5 == oo);
 }
 
@@ -133,14 +133,14 @@ CASE("Point3 cross") {
     Point3 p2 = {0.0, 1.0, 0.0};
     Point3 p3 = {0.0, 0.0, 1.0};
 
-    EXPECT(p3 == Point3::cross(p1,p2));
-    EXPECT(p1 == Point3::cross(p2,p3));
+    EXPECT(p3 == Point3::cross(p1, p2));
+    EXPECT(p1 == Point3::cross(p2, p3));
 
     Point3 p4 = {1.0, 2.0, 3.0};
     Point3 p5 = {-1.0, -2.0, 4.0};
     Point3 p6 = {2.0, -1.0, 0.0};
 
-    Point3 p7 = Point3::normalize(Point3::cross(p4,p5));
+    Point3 p7 = Point3::normalize(Point3::cross(p4, p5));
     Point3 p8 = Point3::normalize(p6);
 
     EXPECT(types::is_approximately_equal(p7[XX], p8[XX]));

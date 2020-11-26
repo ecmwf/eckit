@@ -220,14 +220,20 @@ CASE("Directory sync") {
 
     SECTION("Sync full dirs") {
 
-        PathName f1d1  = d1 / "f1"; fill(f1d1, "F1D1");
-        PathName f2d1  = d1 / "f2"; fill(f2d1, "F2D1");
-        PathName f3d1  = d1 / "f3"; fill(f3d1, "F3D1");
-        PathName f1d2  = d2 / "f1"; fill(f1d2, "F1D2");
-        PathName f2d2  = d2 / "f2"; fill(f2d2, "F2D2");
-        PathName f1d23 = d23 / "f1"; fill(f1d23, "F1D23");
+        PathName f1d1 = d1 / "f1";
+        fill(f1d1, "F1D1");
+        PathName f2d1 = d1 / "f2";
+        fill(f2d1, "F2D1");
+        PathName f3d1 = d1 / "f3";
+        fill(f3d1, "F3D1");
+        PathName f1d2 = d2 / "f1";
+        fill(f1d2, "F1D2");
+        PathName f2d2 = d2 / "f2";
+        fill(f2d2, "F2D2");
+        PathName f1d23 = d23 / "f1";
+        fill(f1d23, "F1D23");
 
-        PathName d234  = d23 / "dir234";
+        PathName d234 = d23 / "dir234";
         d234.mkdir();
         PathName d12 = d1 / "dir12";
         d12.mkdir();
@@ -237,7 +243,8 @@ CASE("Directory sync") {
     }
 
     SECTION("Sync dirs with update") {
-        PathName f1d1  = d1 / "f1"; fill(f1d1, "F1D1bis");
+        PathName f1d1 = d1 / "f1";
+        fill(f1d1, "F1D1bis");
         EXPECT_NO_THROW(rsync.syncRecursive(source, target));
         EXPECT(same_dir(source, target));
     }
@@ -250,11 +257,11 @@ CASE("DataHandle operations") {
 
     Rsync rsync;
 
-    PathName source = PathName::unique(PathName(LocalPathName::cwd()) / "test");
-    PathName target = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName source    = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName target    = PathName::unique(PathName(LocalPathName::cwd()) / "test");
     PathName signature = PathName::unique(PathName(LocalPathName::cwd()) / "test");
-    PathName delta = PathName::unique(PathName(LocalPathName::cwd()) / "test");
-    PathName patched = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName delta     = PathName::unique(PathName(LocalPathName::cwd()) / "test");
+    PathName patched   = PathName::unique(PathName(LocalPathName::cwd()) / "test");
 
     fill(source,
          "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was "

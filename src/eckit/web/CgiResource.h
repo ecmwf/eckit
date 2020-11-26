@@ -24,23 +24,19 @@ namespace eckit {
 
 class CgiResource : public HtmlResource {
 public:
+    CgiResource();
 
-	CgiResource();
+    virtual ~CgiResource() override;
 
-	virtual ~CgiResource();
+protected:  // members
+    std::string name_;
 
-protected: // members
-
-	std::string name_;
-
-protected: // overridden methods
-
-	virtual void GET(std::ostream&,Url&);
-
+protected:  // overridden methods
+    virtual void GET(std::ostream&, Url&) override;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

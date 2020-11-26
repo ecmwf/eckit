@@ -26,12 +26,11 @@ namespace eckit {
 
 class Application : public Task, public Main {
 public:
-
     static Application& instance();
 
-    Application(int argc, char **argv, const char* homeenv = nullptr);
+    Application(int argc, char** argv, const char* homeenv = nullptr);
 
-    virtual ~Application();
+    virtual ~Application() override;
 
     // -- Methods
 
@@ -44,36 +43,34 @@ public:
 
     // From Task
 
-    virtual void start();
-    virtual void stop();
-    virtual void kill();
-    virtual void wait() {}
-    virtual bool active() { return true; }
+    virtual void start() override;
+    virtual void stop() override;
+    virtual void kill() override;
+    virtual void wait() override {}
+    virtual bool active() override { return true; }
 
     bool running() const { return running_; }
 
-    virtual void terminate();
+    virtual void terminate() override;
 
     time_t uptime();
 
-private: // methods
-
-    virtual LogTarget* createInfoLogTarget() const;
-    virtual LogTarget* createWarningLogTarget() const;
-    virtual LogTarget* createErrorLogTarget() const;
-    virtual LogTarget* createDebugLogTarget() const;
+private:  // methods
+    virtual LogTarget* createInfoLogTarget() const override;
+    virtual LogTarget* createWarningLogTarget() const override;
+    virtual LogTarget* createErrorLogTarget() const override;
+    virtual LogTarget* createDebugLogTarget() const override;
 
 
     /// overriden from Configurable
-    virtual std::string kind() const  { return "Application"; }
+    virtual std::string kind() const { return "Application"; }
 
-private: // members
-
-    bool   running_;
+private:  // members
+    bool running_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

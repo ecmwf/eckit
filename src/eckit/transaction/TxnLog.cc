@@ -12,13 +12,13 @@
 #include <iomanip>
 #include <memory>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/log/Log.h"
-#include "eckit/config/LibEcKit.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Monitor.h"
@@ -278,7 +278,8 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
                 auto c = closer(log);
                 std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 if (task) {
-                    LOG_DEBUG_LIB(LibEcKit) << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
+                    LOG_DEBUG_LIB(LibEcKit)
+                        << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
                     if (r.found(*task)) {
                         return;
                     }
@@ -318,7 +319,8 @@ void TxnLog<T>::find(TxnFinder<T>& r) {
                 auto c = closer(log);
                 std::unique_ptr<T> task(Reanimator<T>::reanimate(log));
                 while (task) {
-                    LOG_DEBUG_LIB(LibEcKit) << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
+                    LOG_DEBUG_LIB(LibEcKit)
+                        << "Task found - id: " << task->transactionID() << " task: " << *task << std::endl;
                     if (r.found(*task)) {
                         return;
                     }

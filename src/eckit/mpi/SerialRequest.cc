@@ -35,20 +35,14 @@ int SerialRequest::request() const {
 //----------------------------------------------------------------------------------------------------------------------
 
 SendRequest::SendRequest(const void* buffer, size_t count, Data::Code type, int tag) :
-    buffer_(static_cast<const char*>(buffer), count * dataSize[type]),
-    count_(count),
-    tag_(tag),
-    type_(type) {}
+    buffer_(static_cast<const char*>(buffer), count * dataSize[type]), count_(count), tag_(tag), type_(type) {}
 
 SendRequest::~SendRequest() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 ReceiveRequest::ReceiveRequest(void* buffer, size_t count, Data::Code type, int tag) :
-    buffer_(buffer),
-    count_(count),
-    tag_(tag),
-    type_(type) {}
+    buffer_(buffer), count_(count), tag_(tag), type_(type) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

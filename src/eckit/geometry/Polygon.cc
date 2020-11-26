@@ -16,7 +16,7 @@ bool Polygon::congruent(const Polygon& p) const {
         return true;
     int offset = -1;
 
-    for (int i=0; i<vertices.size(); i++) {
+    for (int i = 0; i < vertices.size(); i++) {
         if (vertices.at(i) == p.vertices.at(0)) {
             offset = i;
             break;
@@ -24,8 +24,8 @@ bool Polygon::congruent(const Polygon& p) const {
     }
     if (offset == -1)
         return false;
-    for (int i=1; i<vertices.size(); i++) {
-        if (vertices.at((i+offset) % vertices.size()) != p.vertices.at(i)) {
+    for (int i = 1; i < vertices.size(); i++) {
+        if (vertices.at((i + offset) % vertices.size()) != p.vertices.at(i)) {
             return false;
         }
     }
@@ -39,7 +39,7 @@ void Polygon::print(std::ostream& s) const {
     }
 
     char z = '[';
-    for (auto& v: vertices) {
+    for (auto& v : vertices) {
         s << z << v;
         z = ',';
     }
@@ -50,5 +50,3 @@ void Polygon::print(std::ostream& s) const {
 
 }  // namespace geometry
 }  // namespace eckit
-
-

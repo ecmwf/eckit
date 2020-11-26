@@ -26,29 +26,25 @@ namespace system {
 
 class SystemInfoMacOSX : public SystemInfo {
 
-public: // methods
+public:  // methods
+    virtual ~SystemInfoMacOSX() override;
 
-    virtual ~SystemInfoMacOSX();
-
-    virtual eckit::LocalPathName executablePath() const;
+    virtual eckit::LocalPathName executablePath() const override;
 
     virtual size_t memoryAllocated() const;
     virtual size_t arenaSize() const;
 
-    virtual MemoryInfo memoryUsage() const;
+    virtual MemoryInfo memoryUsage() const override;
 
-    virtual std::string dynamicLibraryName(const std::string& name) const;
+    virtual std::string dynamicLibraryName(const std::string& name) const override;
 
-protected: // methods
-
-private: // members
-
+protected:  // methods
+private:    // members
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace system
-} // namespace eckit
+}  // namespace system
+}  // namespace eckit
 
 #endif
-

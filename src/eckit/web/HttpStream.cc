@@ -10,11 +10,11 @@
 
 #include <cstring>
 
-#include "eckit/web/HttpStream.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/web/HttpStream.h"
 
 namespace eckit {
 
@@ -23,14 +23,13 @@ namespace eckit {
 class HttpBuf : public std::streambuf {
 
 
-    char    out_[4096];
+    char out_[4096];
     virtual int overflow(int c);
     virtual int sync();
 
     HttpStream& owner_;
 
 public:
-
     explicit HttpBuf(HttpStream& s);
     virtual ~HttpBuf();
 
@@ -40,8 +39,7 @@ public:
     void print(std::ostream&) const;
 
 private:
-
-    std::vector<char>  buffer_;
+    std::vector<char> buffer_;
 };
 
 

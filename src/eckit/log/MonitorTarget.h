@@ -27,15 +27,15 @@ class MonitorTarget : public WrapperTarget {
 public:
     MonitorTarget(LogTarget* target = 0);
 
-    virtual ~MonitorTarget();
+    virtual ~MonitorTarget() override;
 
 private:
-    virtual void write(const char* start, const char* end);
+    virtual void write(const char* start, const char* end) override;
 
-    virtual void writePrefix() {}
-    virtual void writeSuffix() {}
+    virtual void writePrefix() override {}
+    virtual void writeSuffix() override {}
 
-    void print(std::ostream& s) const;
+    void print(std::ostream& s) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

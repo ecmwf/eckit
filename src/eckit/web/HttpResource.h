@@ -30,7 +30,7 @@ class HttpResource : public HtmlObject, public eckit::NonCopyable {
 public:  // methods
     HttpResource(const std::string&);
 
-    virtual ~HttpResource();
+    virtual ~HttpResource() override;
 
     virtual bool restricted() { return false; }
 
@@ -40,7 +40,7 @@ public:  // methods
     const std::string& resourceUrl() const;
 
 protected:  // methods
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
 protected:  // members
     const std::string resourceUrl_;

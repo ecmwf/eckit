@@ -26,12 +26,12 @@ namespace eckit {
 class StrStream : public std::ostringstream {
 public:
     operator std::string() { return str(); }
-    static std::ostream&  ends(std::ostream& os)  { return os; }
+    static std::ostream& ends(std::ostream& os) { return os; }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

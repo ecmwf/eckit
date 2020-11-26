@@ -31,65 +31,56 @@ namespace eckit {
 /// @todo make an apply() method
 /// @todo implement the expire() and the different policies
 
-template< typename K, typename V >
+template <typename K, typename V>
 class Cache : private NonCopyable {
 
-public: // types
-
+public:  // types
     struct Entry {
-        Entry( const V& v ) :
-            v_(v),
-            expired_(false),
-            hits_(0)
-        {
-            gettimeofday(&age_,0);
+        Entry(const V& v) : v_(v), expired_(false), hits_(0) {
+            gettimeofday(&age_, 0);
             last_ = age_;
         }
 
-        void reset( const V& v )
-        {
-            v_ = v;
+        void reset(const V& v) {
+            v_       = v;
             expired_ = false;
-            hits_ = 0;
-            gettimeofday(&age_,0);
+            hits_    = 0;
+            gettimeofday(&age_, 0);
             last_ = age_;
         }
 
-        V& access()
-        {
-            gettimeofday(&last_,0);
+        V& access() {
+            gettimeofday(&last_, 0);
             ++hits_;
             return v_;
         }
 
-        V               v_;
-        bool            expired_;
-        uint64_t        hits_;
-        struct ::timeval  age_;
-        struct ::timeval  last_;
+        V v_;
+        bool expired_;
+        uint64_t hits_;
+        struct ::timeval age_;
+        struct ::timeval last_;
     };
 
     typedef K key_type;
     typedef V value_type;
     typedef Entry entry_type;
 
-    typedef std::map<key_type,entry_type> store_type;
+    typedef std::map<key_type, entry_type> store_type;
 
-    class Policy
-    {
+    class Policy {
         /// Expires the Least Recently Used (LRU) entries
         /// @returns true if any entries were expired
-        static bool expireLRU( store_type& c, const size_t& maxSize);
+        static bool expireLRU(store_type& c, const size_t& maxSize);
         /// Expires the Least Frequently Used (LFU) entries
         /// @returns true if any entries were expired
-        static bool expireLFU( store_type& c, const size_t& maxSize);
+        static bool expireLFU(store_type& c, const size_t& maxSize);
         /// Expires the entries older than a certain age
         /// @returns true if any entries were expired
-        static bool expireAge( store_type& c, struct ::timeval& maxAge);
+        static bool expireAge(store_type& c, struct ::timeval& maxAge);
     };
 
-public: // methods
-
+public:  // methods
     Cache();
 
     ~Cache();
@@ -97,20 +88,20 @@ public: // methods
     /// inserts an object in the cache
     /// @returns true if object was correctly inserted,
     ///          or false if key already existed and cannot be inserted
-    bool insert( const K&, const V& );
+    bool insert(const K&, const V&);
 
     /// updates an object in the cache (or inserts if does not exist)
     /// @returns true if object existed and was updated,
     ///          false if the object did not exist and was inserted
-    bool update( const K&, const V& );
+    bool update(const K&, const V&);
 
     /// accesses an object in the cache
     /// @param v returns the object
-    bool fetch( const K&, V&);
+    bool fetch(const K&, V&);
 
     /// marks an object as expired
     /// @returns true if object was present and is marked as expired
-    bool expire( const K& );
+    bool expire(const K&);
 
     /// evicts entries that are considered expired
     void purge();
@@ -119,89 +110,74 @@ public: // methods
     void clear();
 
     /// @returns true if entry exists and is not expired in cache
-    bool valid( const K& ) const;
+    bool valid(const K&) const;
 
     /// @returns the number of entries in the cache, expired or not
     size_t size() const;
 
     void print(std::ostream&) const;
 
-    friend std::ostream& operator<<(std::ostream& s,const Cache& p)
-    {
+    friend std::ostream& operator<<(std::ostream& s, const Cache& p) {
         p.print(s);
         return s;
     }
 
-private: // methods
-
+private:  // methods
     /// marks an object as expired
     /// @returns true if object was present and is marked as expired
-    void expire( typename store_type::iterator i );
+    void expire(typename store_type::iterator i);
 
-private: // members
-
-    store_type      storage_;
-
+private:  // members
+    store_type storage_;
 };
 
 //-----------------------------------------------------------------------------
 
-template< typename K, typename V>
-Cache<K,V>::Cache() :
-    storage_()
-{
-}
+template <typename K, typename V>
+Cache<K, V>::Cache() : storage_() {}
 
-template< typename K, typename V>
-Cache<K,V>::~Cache()
-{
+template <typename K, typename V>
+Cache<K, V>::~Cache() {
     clear();
 }
 
-template< typename K, typename V>
-bool Cache<K,V>::insert(const K& k, const V& v)
-{
+template <typename K, typename V>
+bool Cache<K, V>::insert(const K& k, const V& v) {
     typename store_type::iterator i = storage_.find(k);
-    if( i != storage_.end() )
-    {
+    if (i != storage_.end()) {
         Entry& e = i->second;
 
-        if( !e.expired_ ) return false;
+        if (!e.expired_)
+            return false;
 
         e.reset(v);
     }
     else
-        storage_.insert( std::make_pair(k,Entry(v)) );
+        storage_.insert(std::make_pair(k, Entry(v)));
 
     return true;
 }
 
-template< typename K, typename V>
-bool Cache<K,V>::update(const K& k, const V& v)
-{
+template <typename K, typename V>
+bool Cache<K, V>::update(const K& k, const V& v) {
     typename store_type::iterator i = storage_.find(k);
-    if( i != storage_.end() )
-    {
+    if (i != storage_.end()) {
         Entry& e = i->second;
         e.reset(v);
         return true;
     }
-    else
-    {
-        storage_.insert( std::make_pair(k,Entry(v)) );
+    else {
+        storage_.insert(std::make_pair(k, Entry(v)));
         return false;
     }
 }
 
-template< typename K, typename V>
-bool Cache<K,V>::fetch(const K& k, V& v)
-{
+template <typename K, typename V>
+bool Cache<K, V>::fetch(const K& k, V& v) {
     typename store_type::iterator i = storage_.find(k);
-    if( i != storage_.end() )
-    {
+    if (i != storage_.end()) {
         Entry& e = i->second;
-        if( !e.expired_ )
-        {
+        if (!e.expired_) {
             v = e.access();
             return true;
         }
@@ -209,94 +185,85 @@ bool Cache<K,V>::fetch(const K& k, V& v)
     return false;
 }
 
-template< typename K, typename V>
-bool Cache<K,V>::expire(const K& k)
-{
+template <typename K, typename V>
+bool Cache<K, V>::expire(const K& k) {
     typename store_type::iterator i = storage_.find(k);
-    if( i != storage_.end() )
-    {
+    if (i != storage_.end()) {
         this->expire(i);
         return true;
     }
     return false;
 }
 
-template< typename K, typename V>
-void Cache<K,V>::expire( typename store_type::iterator i )
-{
-    Entry& e = i->second;
+template <typename K, typename V>
+void Cache<K, V>::expire(typename store_type::iterator i) {
+    Entry& e   = i->second;
     e.expired_ = true;
 }
 
-template< typename K, typename V>
-void Cache<K,V>::purge()
-{
+template <typename K, typename V>
+void Cache<K, V>::purge() {
     // collect all expired
     typedef typename store_type::iterator siterator;
-    std::vector< siterator > expired;
-    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
-        if( i->second.expired_ )
+    std::vector<siterator> expired;
+    for (siterator i = storage_.begin(); i != storage_.end(); ++i)
+        if (i->second.expired_)
             expired.push_back(i);
     // remove them
-    for( typename std::vector< siterator >::iterator e = expired.begin(); e != expired.end(); ++e )
+    for (typename std::vector<siterator>::iterator e = expired.begin(); e != expired.end(); ++e)
         storage_.erase(*e);
 }
 
-template< typename K, typename V>
-void Cache<K,V>::clear()
-{
+template <typename K, typename V>
+void Cache<K, V>::clear() {
     storage_.clear();
 }
 
-template< typename K, typename V>
-bool Cache<K,V>::valid(const K& k) const
-{
+template <typename K, typename V>
+bool Cache<K, V>::valid(const K& k) const {
     typename store_type::const_iterator i = storage_.find(k);
-    if( i != storage_.end() && !i->second.expired_ )
+    if (i != storage_.end() && !i->second.expired_)
         return true;
     return false;
 }
 
-template< typename K, typename V>
-size_t Cache<K,V>::size() const
-{
+template <typename K, typename V>
+size_t Cache<K, V>::size() const {
     return storage_.size();
 }
 
-template< typename K, typename V>
-void Cache<K,V>::print(std::ostream& out) const
-{
+template <typename K, typename V>
+void Cache<K, V>::print(std::ostream& out) const {
     typedef typename store_type::const_iterator siterator;
-    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
+    for (siterator i = storage_.begin(); i != storage_.end(); ++i)
         out << i->second.v_ << std::endl;
 }
 
 //-----------------------------------------------------------------------------
 
-template< typename K, typename V>
-bool Cache<K,V>::Policy::expireLRU( typename Cache<K,V>::store_type& c, const size_t& maxSize )
-{
-//    typedef std::vector< std::pair<
-//    typedef typename store_type::iterator siterator;
-//    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
+template <typename K, typename V>
+bool Cache<K, V>::Policy::expireLRU(typename Cache<K, V>::store_type& c, const size_t& maxSize) {
+    //    typedef std::vector< std::pair<
+    //    typedef typename store_type::iterator siterator;
+    //    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
 
-//    bool found = false;
-//    typedef typename store_type::iterator siterator;
-//    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
-//    {
-//        if( !i->second.expired_ && policy_->toExpire( i->second ) )
-//        {
-//            Entry& e = i->second;
-//            e.expired_ = true;
-//            found = true;
-//        }
-//    }
-//    return found;
+    //    bool found = false;
+    //    typedef typename store_type::iterator siterator;
+    //    for( siterator i = storage_.begin(); i != storage_.end(); ++i )
+    //    {
+    //        if( !i->second.expired_ && policy_->toExpire( i->second ) )
+    //        {
+    //            Entry& e = i->second;
+    //            e.expired_ = true;
+    //            found = true;
+    //        }
+    //    }
+    //    return found;
     return false;
 }
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

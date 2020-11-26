@@ -27,12 +27,10 @@ const type::SQLType* FunctionCOUNT::type() const {
 }
 
 FunctionCOUNT::FunctionCOUNT(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args),
-    count_(0) {}
+    FunctionExpression(name, args), count_(0) {}
 
 FunctionCOUNT::FunctionCOUNT(const FunctionCOUNT& other) :
-    FunctionExpression(other.name_, other.args_),
-    count_(other.count_) {}
+    FunctionExpression(other.name_, other.args_), count_(other.count_) {}
 
 std::shared_ptr<SQLExpression> FunctionCOUNT::clone() const {
     return std::make_shared<FunctionCOUNT>(*this);

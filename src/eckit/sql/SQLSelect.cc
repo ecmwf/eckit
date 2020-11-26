@@ -91,7 +91,7 @@ void SQLSelect::ensureFetch(const SQLTable& table, const std::string& columnName
     auto& fetch(tablesToFetch_[&table].fetch_);
     if (std::find_if(fetch.begin(), fetch.end(), [&](const SQLColumn& c) { return &c == &column; }) == fetch.end()) {
         fetch.push_back(column);
-//        tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
+        //        tablesToFetch_[&table].fetchSizeDoubles_.push_back(column.dataSizeDoubles());
         // This will create the value if it doesn't exist
         ValueLookup& value(values_[fullname]);
         tablesToFetch_[&table].values_.push_back(&value);

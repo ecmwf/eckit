@@ -74,10 +74,7 @@ private:  // members
         uint32_t version_;
         uint32_t headerSize_;
         uint32_t elemSize_;
-        Header() :
-            version_(mapped_array_version()),
-            headerSize_(sizeof(Header)),
-            elemSize_(sizeof(T)) {}
+        Header() : version_(mapped_array_version()), headerSize_(sizeof(Header)), elemSize_(sizeof(T)) {}
         void validate() {
             ASSERT(version_ == mapped_array_version());
             ASSERT(headerSize_ == sizeof(Header));

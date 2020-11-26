@@ -10,16 +10,16 @@
 
 // #include <dirent.h>
 // #include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include <fcntl.h>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/MMappedFileHandle.h"
+#include "eckit/io/MemoryHandle.h"
+#include "eckit/memory/MMap.h"
 #include "eckit/os/Stat.h"
 #include "eckit/utils/MD5.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/memory/MMap.h"
 
 
 namespace eckit {
@@ -40,17 +40,11 @@ void MMappedFileHandle::encode(Stream& s) const {
     s << path_;
 }
 
-MMappedFileHandle::MMappedFileHandle(Stream& s):
-    DataHandle(s),
-    mmap_(nullptr),
-    fd_(-1) {
+MMappedFileHandle::MMappedFileHandle(Stream& s) : DataHandle(s), mmap_(nullptr), fd_(-1) {
     s >> path_;
 }
 
-MMappedFileHandle::MMappedFileHandle(const std::string& path) :
-    path_(path),
-    mmap_(nullptr),
-    fd_(-1) {}
+MMappedFileHandle::MMappedFileHandle(const std::string& path) : path_(path), mmap_(nullptr), fd_(-1) {}
 
 MMappedFileHandle::~MMappedFileHandle() {}
 
@@ -74,7 +68,6 @@ Length MMappedFileHandle::openForRead() {
     handle_.reset(new MemoryHandle(mmap_, length_));
 
     return handle_->openForRead();
-
 }
 
 void MMappedFileHandle::openForWrite(const Length& length) {
@@ -105,11 +98,11 @@ void MMappedFileHandle::close() {
         handle_->close();
         handle_.reset(0);
     }
-    if(mmap_) {
+    if (mmap_) {
         SYSCALL2(MMap::munmap(mmap_, length_), path_);
         mmap_ = nullptr;
     }
-    if(fd_ >= 0) {
+    if (fd_ >= 0) {
         SYSCALL2(::close(fd_), path_);
         fd_ = -1;
     }

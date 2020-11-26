@@ -63,8 +63,8 @@ void Url::parse(const std::string& url, bool param) {
             case '&':
                 if (param) {
                     dict_[Html::removeHex(p)] = Html::removeHex(s);
-                    s                        = "";
-                    p                        = "";
+                    s                         = "";
+                    p                         = "";
                 }
                 else {
                     s += url[index];

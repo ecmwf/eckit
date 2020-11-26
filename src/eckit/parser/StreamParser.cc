@@ -24,10 +24,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 StreamParser::StreamParser(std::istream& in, bool comments, const char* comment) :
-    line_(0),
-    pos_(0),
-    in_(in),
-    comments_(comments) {
+    line_(0), pos_(0), in_(in), comments_(comments) {
     while (*comment) {
         comment_.insert(*comment++);
     }

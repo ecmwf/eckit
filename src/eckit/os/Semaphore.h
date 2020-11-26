@@ -14,9 +14,9 @@
 #ifndef eckit_os_Semaphore_h
 #define eckit_os_Semaphore_h
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/filesystem/PathName.h"
 
 
 namespace eckit {
@@ -25,9 +25,8 @@ namespace eckit {
 
 class Semaphore : private NonCopyable {
 
-public: // methods
-
-    Semaphore(const PathName& name,int count = 1);
+public:  // methods
+    Semaphore(const PathName& name, int count = 1);
 
     ~Semaphore();
 
@@ -36,7 +35,7 @@ public: // methods
     bool tryLock(void);
     bool test(unsigned short n = 0);
 
-    int  get(int n = 0) const;
+    int get(int n = 0) const;
     void set(int, int n = 0);
 
     void raise(unsigned short n = 0);
@@ -44,21 +43,19 @@ public: // methods
     void lower(unsigned short n = 0);
     void lower(unsigned short n, short v);
 
-    pid_t getpid()  const;
+    pid_t getpid() const;
 
-protected: // members
-
+protected:  // members
     int semaphore_;
     int count_;
     int level_;
 
     Mutex mutex_;
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

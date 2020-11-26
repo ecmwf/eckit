@@ -26,10 +26,7 @@ public:
     typedef UserChannel::MsgType MsgType;
 
     UserBuffer(std::size_t size = 1024) :
-        std::streambuf(),
-        buffer_(size + 1),
-        msgType_(UserChannel::NONE),
-        user_(nullptr) {
+        std::streambuf(), buffer_(size + 1), msgType_(UserChannel::NONE), user_(nullptr) {
         ASSERT(size);
         char* base = &buffer_.front();
         setp(base, base + buffer_.size() - 1);  // don't consider the space for '\0'

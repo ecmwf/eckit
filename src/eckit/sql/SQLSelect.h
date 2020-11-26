@@ -19,24 +19,24 @@
 
 #include "eckit/filesystem/PathName.h"
 
-#include "eckit/sql/expression/OrderByExpressions.h"
-#include "eckit/sql/SelectOneTable.h"
+#include "eckit/sql/Environment.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLStatement.h"
-#include "eckit/sql/Environment.h"
+#include "eckit/sql/SelectOneTable.h"
+#include "eckit/sql/expression/OrderByExpressions.h"
 
 namespace eckit {
-    namespace sql {
-        class SQLTableIterator;
-        namespace expression {
-            namespace function {
-                class FunctionROWNUMBER;
-                class FunctionTHIN;
-            }
-        }
-    }
-}
+namespace sql {
+class SQLTableIterator;
+namespace expression {
+namespace function {
+class FunctionROWNUMBER;
+class FunctionTHIN;
+}  // namespace function
+}  // namespace expression
+}  // namespace sql
+}  // namespace eckit
 
 
 namespace eckit {
@@ -48,17 +48,14 @@ namespace sql {
 class SQLSelect : public SQLStatement {
 
 public:
-
     typedef std::pair<const double*, bool> ValueLookup;
 
-    SQLSelect(const Expressions& columns,
-              const std::vector<std::reference_wrapper<const SQLTable>>& tables,
-              std::shared_ptr<expression::SQLExpression> where,
-              SQLOutput& out,
-              std::vector<std::unique_ptr<SQLOutput>>&& ownedOutputs_=std::vector<std::unique_ptr<SQLOutput>>());
-	~SQLSelect();
+    SQLSelect(const Expressions& columns, const std::vector<std::reference_wrapper<const SQLTable>>& tables,
+              std::shared_ptr<expression::SQLExpression> where, SQLOutput& out,
+              std::vector<std::unique_ptr<SQLOutput>>&& ownedOutputs_ = std::vector<std::unique_ptr<SQLOutput>>());
+    ~SQLSelect();
 
-// -- Methods
+    // -- Methods
     void prepareExecute();
     unsigned long long process();
     bool processOneRow();
@@ -71,32 +68,32 @@ public:
     const SQLTable& findTable(const std::string& name) const;
     void ensureFetch(const SQLTable& table, const std::string& columnName);
 
-	virtual Expressions output() const;
+    virtual Expressions output() const override;
 
     std::vector<eckit::PathName> outputFiles() const;
     void outputFiles(const std::vector<eckit::PathName>& files);
     const std::vector<const SQLTable*>& tables() { return tables_; }
     expression::SQLExpression* where() { return where_.get(); }
 
-// -- Overridden methods
-    unsigned long long execute();
+    // -- Overridden methods
+    unsigned long long execute() override;
 
 protected:
-	virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
 private:
-// No copy allowed
-	SQLSelect(const SQLSelect&);
-	SQLSelect& operator=(const SQLSelect&);
+    // No copy allowed
+    SQLSelect(const SQLSelect&);
+    SQLSelect& operator=(const SQLSelect&);
 
     /// Retrive a data pointer and offsets from the cursor (SQLTableIterator) associated
     /// with the given SQL table.
     void refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor);
 
-// -- Members
-	Expressions select_;
+    // -- Members
+    Expressions select_;
     std::vector<const SQLTable*> tables_;
-	SortedTables sortedTables_;
+    SortedTables sortedTables_;
 
     std::shared_ptr<expression::SQLExpression> where_;
     std::shared_ptr<expression::SQLExpression> simplifiedWhere_;
@@ -109,12 +106,9 @@ private:
     std::vector<std::unique_ptr<SQLOutput>> ownedOutputs_;
     SQLOutput& output_;
 
-    typedef std::map<
-        expression::OrderByExpressions,
-        expression::Expressions
-    > AggregatedResults;
+    typedef std::map<expression::OrderByExpressions, expression::Expressions> AggregatedResults;
 
-	AggregatedResults aggregatedResults_;
+    AggregatedResults aggregatedResults_;
     AggregatedResults::iterator aggregatedResultsIterator_;
 
     // n.b. we don't use std::vector<bool> as you cannot take a reference to a single element.
@@ -123,40 +117,42 @@ private:
 
     std::set<const SQLTable*> allTables_;
 
-    typedef std::map<const SQLTable*,SelectOneTable> TableMap;
-	TableMap tablesToFetch_;
+    typedef std::map<const SQLTable*, SelectOneTable> TableMap;
+    TableMap tablesToFetch_;
 
-	unsigned long long count_;
-	unsigned long long total_;
-	unsigned long long skips_;
+    unsigned long long count_;
+    unsigned long long total_;
+    unsigned long long skips_;
 
-	bool aggregate_;
-	bool mixedAggregatedAndScalar_;
+    bool aggregate_;
+    bool mixedAggregatedAndScalar_;
     bool doOutputCached_;
     Expressions aggregated_;
-	Expressions nonAggregated_;
-	std::vector<bool> mixedResultColumnIsAggregated_;
+    Expressions nonAggregated_;
+    std::vector<bool> mixedResultColumnIsAggregated_;
     std::vector<eckit::PathName> outputFiles_;
 
-// -- Methods
+    // -- Methods
 
-	void reset();
+    void reset();
     bool resultsOut();
     bool writeOutput();
     std::shared_ptr<SQLExpression> findAliasedExpression(const std::string& alias);
 
     bool processNextTableRow(size_t tableIndex);
 
-    friend class expression::function::FunctionROWNUMBER; // needs access to count_
-    friend class expression::function::FunctionTHIN; // needs access to count_
+    friend class expression::function::FunctionROWNUMBER;  // needs access to count_
+    friend class expression::function::FunctionTHIN;       // needs access to count_
 
-	friend std::ostream& operator<<(std::ostream& s,const SQLSelect& p)
-		{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const SQLSelect& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

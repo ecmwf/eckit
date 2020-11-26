@@ -26,22 +26,19 @@ namespace eckit {
 
 class Loader : public ClassExtent<Loader> {
 
-public: // methods
+public:  // methods
+    Loader();
+    virtual ~Loader();
 
-	Loader();
-	virtual ~Loader();
+    virtual void execute() = 0;
 
-	virtual void execute() = 0;
-
-private: // methods
-
-// There is no private copy constructor as this will confuse g++ 4.x.x
-
+private:  // methods
+          // There is no private copy constructor as this will confuse g++ 4.x.x
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -42,11 +42,9 @@ enum LLCOORDS
 template <int SIZE = 2>
 class KPoint {
 protected:
-
     double x_[SIZE] = {0};
 
 public:
-
     static const size_t DIMS = SIZE;
 
     double x(size_t axis) const { return x_[axis]; }
@@ -94,9 +92,7 @@ public:
         return std::sqrt(d);
     }
 
-    double distance(const KPoint& p) const {
-        return distance(*this, p);
-    }
+    double distance(const KPoint& p) const { return distance(*this, p); }
 
     static double distance2(const KPoint& p1, const KPoint& p2) {
         double d = 0;
@@ -107,9 +103,7 @@ public:
         return d;
     }
 
-    double distance2(const KPoint& p) const {
-        return distance2(*this, p);
-    }
+    double distance2(const KPoint& p) const { return distance2(*this, p); }
 
     static bool equal(const KPoint& p1, const KPoint& p2) {
         for (size_t i = 0; i < dimensions(); i++) {
@@ -237,17 +231,11 @@ public:
     const double* begin() const { return x_; }
     const double* end() const { return x_ + dimensions(); }
 
-    KPoint operator+(const KPoint& other) const {
-        return add(*this, other);
-    }
+    KPoint operator+(const KPoint& other) const { return add(*this, other); }
 
-    KPoint operator-(const KPoint& other) const {
-        return sub(*this, other);
-    }
+    KPoint operator-(const KPoint& other) const { return sub(*this, other); }
 
-    KPoint operator*(const double s) const {
-        return mul(*this, s);
-    }
+    KPoint operator*(const double s) const { return mul(*this, s); }
 
     void normalize(const KPoint& offset, const KPoint& scale) {
         for (size_t i = 0; i < DIMS; ++i) {

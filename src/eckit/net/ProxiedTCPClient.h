@@ -25,7 +25,7 @@ class ProxiedTCPClient : public net::TCPClient {
 public:
     ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port = 0);
 
-    virtual ~ProxiedTCPClient();
+    virtual ~ProxiedTCPClient() override;
 
     using net::TCPClient::connect;
     virtual net::TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0) override;

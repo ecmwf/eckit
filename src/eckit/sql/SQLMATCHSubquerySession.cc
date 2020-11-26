@@ -16,9 +16,7 @@ namespace eckit {
 namespace sql {
 
 SQLMATCHSubquerySession::SQLMATCHSubquerySession(expression::function::FunctionMATCH& f) :
-    SQLSession(odb::sql::SQLOutputConfig::defaultConfig(), ","),
-    statement_(0),
-    f_(f) {
+    SQLSession(odb::sql::SQLOutputConfig::defaultConfig(), ","), statement_(0), f_(f) {
     loadDefaultSchema();
 }
 

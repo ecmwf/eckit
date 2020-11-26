@@ -21,9 +21,7 @@ namespace expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 SQLExpressionEvaluated::SQLExpressionEvaluated(SQLExpression& e) :
-    type_(e.type()),
-    missing_(false),
-    missingValue_(e.missingValue()) {
+    type_(e.type()), missing_(false), missingValue_(e.missingValue()) {
 
     size_t byteSize = type_->size();
     ASSERT(byteSize % sizeof(double) == 0);
@@ -73,7 +71,7 @@ void SQLExpressionEvaluated::prepare(SQLSelect&) {
     NOTIMP;
 }
 
-void SQLExpressionEvaluated::updateType(SQLSelect &) {
+void SQLExpressionEvaluated::updateType(SQLSelect&) {
     NOTIMP;
 }
 

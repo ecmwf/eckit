@@ -30,13 +30,7 @@ static void offLine(const std::string& host, int port) {
 }
 
 Connector::Connector(const std::string& host, int port) :
-    host_(host),
-    port_(port),
-    locked_(false),
-    memoize_(false),
-    sent_(false),
-    life_(0),
-    autoclose_(false) {
+    host_(host), port_(port), locked_(false), memoize_(false), sent_(false), life_(0), autoclose_(false) {
     Log::info() << "Connector::Connector(" << host << "," << port << ")" << std::endl;
 }
 
@@ -259,7 +253,7 @@ void Connector::lock() {
 void Connector::unlock() {
     ASSERT(locked_);
     locked_ = false;
-    if(autoclose_) {
+    if (autoclose_) {
         reset();
     }
 }
@@ -422,5 +416,5 @@ void Connector::memoize(bool on, unsigned long life) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace net
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit

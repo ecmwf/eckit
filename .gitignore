@@ -8,3 +8,4 @@ doc/latex
 .*un~
 .vscode
 .idea
+build/

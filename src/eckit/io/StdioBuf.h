@@ -23,44 +23,41 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class StdioBuf : public std::streambuf  {
+class StdioBuf : public std::streambuf {
 public:
+    // -- Contructors
 
-// -- Contructors
+    StdioBuf(FILE*);
 
-	StdioBuf(FILE*);
+    // -- Destructor
 
-// -- Destructor
-
-	~StdioBuf();
+    ~StdioBuf();
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    StdioBuf(const StdioBuf&);
+    StdioBuf& operator=(const StdioBuf&);
 
-	StdioBuf(const StdioBuf&);
-	StdioBuf& operator=(const StdioBuf&);
+    // -- Members
 
-// -- Members
+    char in_[1];
+    char out_[80];
+    FILE* file_;
 
-	char in_[1];
-	char out_[80];
-	FILE* file_;
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From streambuf
 
-	// From streambuf
-
-	virtual int overflow(int c);
-	virtual int underflow();
-	virtual int sync();
-//	virtual int uflow();
-
+    virtual int overflow(int c);
+    virtual int underflow();
+    virtual int sync();
+    //	virtual int uflow();
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

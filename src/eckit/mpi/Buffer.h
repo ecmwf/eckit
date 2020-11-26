@@ -11,8 +11,8 @@
 #ifndef eckit_mpi_Buffer_h
 #define eckit_mpi_Buffer_h
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 namespace eckit {
 namespace mpi {
@@ -22,26 +22,23 @@ namespace mpi {
 /// Buffer handles colleciton of vector pieces into a larger vector
 
 template <typename DATA_TYPE>
-struct Buffer
-{
+struct Buffer {
     typedef DATA_TYPE value_type;
     typedef typename std::vector<DATA_TYPE>::iterator iterator;
 
     int cnt;
 
-    std::vector<int>       counts;
-    std::vector<int>       displs;
+    std::vector<int> counts;
+    std::vector<int> displs;
     std::vector<DATA_TYPE> buffer;
 
-    Buffer(size_t size)
-    {
-        counts.resize( size );
-        displs.resize( size );
+    Buffer(size_t size) {
+        counts.resize(size);
+        displs.resize(size);
     }
 
     iterator begin() { return buffer.begin(); }
-    iterator end()   { return buffer.end();   }
-
+    iterator end() { return buffer.end(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

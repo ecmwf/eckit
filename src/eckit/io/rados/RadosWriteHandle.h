@@ -26,56 +26,52 @@ namespace eckit {
 class RadosWriteHandle : public eckit::DataHandle {
 
 public:  // methods
+    RadosWriteHandle(const RadosObject&, const Length& maxObjectSize = 0);
+    RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
+    RadosWriteHandle(Stream&);
 
-  RadosWriteHandle(const RadosObject&, const Length& maxObjectSize = 0);
-  RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
-  RadosWriteHandle(Stream&);
+    virtual ~RadosWriteHandle() override;
 
-  virtual ~RadosWriteHandle();
+    // -- Class methods
 
-  // -- Class methods
+    static const ClassSpec& classSpec() { return classSpec_; }
 
-  static const ClassSpec& classSpec() { return classSpec_; }
-
-  std::string title() const;
+    std::string title() const;
 
 public:  // methods
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-  virtual Length openForRead();
-  virtual void openForWrite(const Length&);
-  virtual void openForAppend(const Length&);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void flush() override;
+    virtual void rewind() override;
 
-  virtual long read(void*, long);
-  virtual long write(const void*, long);
-  virtual void close();
-  virtual void flush();
-  virtual void rewind();
+    virtual Offset position() override;
 
-  virtual Offset position();
+    virtual void print(std::ostream&) const override;
 
-  virtual void print(std::ostream&) const;
+    // From Streamable
 
-  // From Streamable
-
-  virtual void encode(Stream&) const;
-  virtual const ReanimatorBase& reanimator() const { return reanimator_; }
+    virtual void encode(Stream&) const override;
+    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
+    RadosObject object_;
 
-  RadosObject object_;
+    Length maxObjectSize_;
+    size_t written_;
+    Offset position_;
+    size_t part_;
+    bool opened_;
 
-  Length maxObjectSize_;
-  size_t written_;
-  Offset position_;
-  size_t part_;
-  bool opened_;
-
-  std::unique_ptr<DataHandle> handle_;
+    std::unique_ptr<DataHandle> handle_;
 
 
-  static ClassSpec classSpec_;
-  static Reanimator<RadosWriteHandle> reanimator_;
-
+    static ClassSpec classSpec_;
+    static Reanimator<RadosWriteHandle> reanimator_;
 };
 
 }  // namespace eckit

@@ -24,53 +24,50 @@ namespace eckit {
 
 class FileDescHandle : public DataHandle {
 public:
+    // -- Contructors
 
-// -- Contructors
+    FileDescHandle(int, bool close = false);
 
-	FileDescHandle(int, bool close = false);
+    // -- Destructor
 
-// -- Destructor
+    ~FileDescHandle();
 
-	~FileDescHandle();
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From DataHandle
 
-	// From DataHandle
+    virtual Length openForRead() override;
+    virtual void openForWrite(const Length&) override;
+    virtual void openForAppend(const Length&) override;
 
-    virtual Length openForRead();
-    virtual void openForWrite(const Length&);
-    virtual void openForAppend(const Length&);
+    virtual long read(void*, long) override;
+    virtual long write(const void*, long) override;
+    virtual void close() override;
+    virtual void print(std::ostream&) const override;
 
-	virtual long   read(void*,long);
-	virtual long   write(const void*,long);
-	virtual void   close();
-	virtual void   print(std::ostream&) const;
+    virtual Offset position() override;
+    virtual Offset seek(const Offset&) override;
+    virtual void skip(const Length&) override;
 
-    virtual Offset position();
-    virtual Offset seek(const Offset&);
-    virtual void skip(const Length &);
+    // From Streamable
 
-	// From Streamable
+    virtual void encode(Stream&) const override;
 
-	virtual void encode(Stream&) const;
-
-// -- Class methods
+    // -- Class methods
 
 
 private:
+    // -- Members
 
-// -- Members
-
-	int fd_;
+    int fd_;
     bool close_;
 
-// -- Class members
-
+    // -- Class members
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -14,9 +14,9 @@
 
 #include "SystemInfo.h"
 
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <memory>
 

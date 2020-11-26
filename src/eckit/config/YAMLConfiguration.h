@@ -25,31 +25,25 @@ class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class YAMLConfiguration :
-        public Configuration,
-        private eckit::NonCopyable {
+class YAMLConfiguration : public Configuration, private eckit::NonCopyable {
 
 public:
-
-    YAMLConfiguration(const PathName &path, char separator = '.');
-    YAMLConfiguration(std::istream &, char separator = '.');
+    YAMLConfiguration(const PathName& path, char separator = '.');
+    YAMLConfiguration(std::istream&, char separator = '.');
     YAMLConfiguration(Stream&, char separator = '.');
     YAMLConfiguration(const std::string&, char separator = '.');
     YAMLConfiguration(const SharedBuffer&, char separator = '.');
 
-    virtual ~YAMLConfiguration();
+    virtual ~YAMLConfiguration() override;
 
-private: // members
-
+private:  // members
     std::string path_;
 
-    virtual void print(std::ostream &) const;
-
+    virtual void print(std::ostream&) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif
-

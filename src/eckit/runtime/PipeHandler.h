@@ -39,20 +39,19 @@ public:
     void ready(bool&);
     void age(time_t&);
 
-    virtual void start();
-    virtual void stop();
+    virtual void start() override;
+    virtual void stop() override;
 
 protected:  // methods
     bool canPick();
 
 private:  // methods
-
     virtual void endBatch(Stream&);
 
     void send(Request*);
     void receive(Request*);
 
-    virtual void run();
+    virtual void run() override;
 
 private:  // members
     PipeStream* pipe_;

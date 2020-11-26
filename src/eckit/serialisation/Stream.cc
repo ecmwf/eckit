@@ -20,9 +20,9 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
-#include "eckit/serialisation/BadTag.h"
-#include "eckit/os/BackTrace.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/os/BackTrace.h"
+#include "eckit/serialisation/BadTag.h"
 
 namespace eckit {
 
@@ -627,7 +627,7 @@ Stream& Stream::operator>>(std::string& s) {
     readTag(tag_string);
     const long length = getLong();
 
-    const long sz = eckit::round(length + 1, 8); // some padding to avoid zero-length buffer
+    const long sz = eckit::round(length + 1, 8);  // some padding to avoid zero-length buffer
     char buf[sz];
     getBytes(buf, length);
 
@@ -682,7 +682,7 @@ bool Stream::next(int& x) {
 bool Stream::next(bool& b) {
 
     int x = 0;
-    if(!next(x)) {
+    if (!next(x)) {
         return false;
     }
 

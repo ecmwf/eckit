@@ -149,11 +149,10 @@ void FileSpace::load() const {
 
     std::vector<std::string> disks;
 
-    if(hasConfigFile) {
+    if (hasConfigFile) {
         std::ifstream in(config.localPath());
         if (!in)
             throw CantOpenFile(config);
-
 
 
         char line[1024] = {
@@ -175,7 +174,8 @@ void FileSpace::load() const {
     for (Ordinal i = 0; i < clusterDisks.size(); i++) {
         PathName path(clusterDisks[i]);
         if (path.node() == NodeInfo::thisNode().node()) {
-            if (std::find(disks.begin(), disks.end(), path.path()) != disks.end()) continue;
+            if (std::find(disks.begin(), disks.end(), path.path()) != disks.end())
+                continue;
         }
         disks.push_back(clusterDisks[i]);
     }
@@ -194,8 +194,8 @@ void FileSpace::load() const {
         }
     }
 
-    if(fileSystems_.empty()) {
-        if(!hasConfigFile) {
+    if (fileSystems_.empty()) {
+        if (!hasConfigFile) {
             // Having an empty file removes that warning
             Log::warning() << "FileSpace " + name_ + " is empty" << std::endl;
         }

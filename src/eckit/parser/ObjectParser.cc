@@ -57,25 +57,25 @@ Value ObjectParser::parseNumber() {
     }
 
     switch (c) {
-    case '0':
-        s += c;
-        break;
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-        s += c;
-        while (isdigit(peek())) {
-            s += next();
-        }
-        break;
-    default:
-        throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
+        case '0':
+            s += c;
+            break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            s += c;
+            while (isdigit(peek())) {
+                s += next();
+            }
+            break;
+        default:
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
     }
 
     if (peek() == '.') {
@@ -218,6 +218,14 @@ Value ObjectParser::parseString(char quote) {
         }
         else {
             if (c == quote) {
+                if (yaml_ && quote == '\'') {
+                    if (peek() == '\'') {
+                        consume('\'');
+                        s += c;
+                        continue;
+                    }
+                }
+
                 comments_ = save;
                 return Value(s);
             }
@@ -298,58 +306,58 @@ Value ObjectParser::parseJSON() {
     char c = peek();
     switch (c) {
 
-    case 't':
-        return parseTrue();
-    case 'f':
-        return parseFalse();
-    case 'n':
-        return parseNull();
-    case '{':
-        return parseObject();
-    case '[':
-        return parseArray();
-    case '\"':
-        return parseString();
+        case 't':
+            return parseTrue();
+        case 'f':
+            return parseFalse();
+        case 'n':
+            return parseNull();
+        case '{':
+            return parseObject();
+        case '[':
+            return parseArray();
+        case '\"':
+            return parseString();
 
-    case '-':
-        return parseNumber();
-    case '0':
-        return parseNumber();
-    case '1':
-        return parseNumber();
-    case '2':
-        return parseNumber();
-    case '3':
-        return parseNumber();
-    case '4':
-        return parseNumber();
-    case '5':
-        return parseNumber();
-    case '6':
-        return parseNumber();
-    case '7':
-        return parseNumber();
-    case '8':
-        return parseNumber();
-    case '9':
-        return parseNumber();
+        case '-':
+            return parseNumber();
+        case '0':
+            return parseNumber();
+        case '1':
+            return parseNumber();
+        case '2':
+            return parseNumber();
+        case '3':
+            return parseNumber();
+        case '4':
+            return parseNumber();
+        case '5':
+            return parseNumber();
+        case '6':
+            return parseNumber();
+        case '7':
+            return parseNumber();
+        case '8':
+            return parseNumber();
+        case '9':
+            return parseNumber();
 
-    default: {
-        std::ostringstream oss;
-        oss << parserName() << " ObjectParser::parseValue unexpected char ";
-        if (isprint(c) && !isspace(c)) {
-            oss << "'" << c << "'";
+        default: {
+            std::ostringstream oss;
+            oss << parserName() << " ObjectParser::parseValue unexpected char ";
+            if (isprint(c) && !isspace(c)) {
+                oss << "'" << c << "'";
+            }
+            else {
+                oss << int(c);
+            }
+            throw StreamParser::Error(oss.str());
         }
-        else {
-            oss << int(c);
-        }
-        throw StreamParser::Error(oss.str());
-    }
     }
 }
 
 
-ObjectParser::ObjectParser(std::istream& in, bool comments) : StreamParser(in, comments) {}
+ObjectParser::ObjectParser(std::istream& in, bool comments, bool yaml) : StreamParser(in, comments), yaml_(yaml) {}
 
 Value ObjectParser::parse() {
     Value v = parseValue();

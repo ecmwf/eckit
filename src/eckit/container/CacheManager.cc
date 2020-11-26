@@ -11,9 +11,9 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cstring>
 #include <deque>
 #include <fstream>
-#include <cstring>
 
 #include "eckit/container/BTree.h"
 #include "eckit/container/CacheManager.h"
@@ -26,9 +26,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 CacheManagerBase::CacheManagerBase(const std::string& loaderName, size_t maxCacheSize, const std::string& extension) :
-    loaderName_(loaderName),
-    maxCacheSize_(maxCacheSize),
-    extension_(extension) {}
+    loaderName_(loaderName), maxCacheSize_(maxCacheSize), extension_(extension) {}
 
 CacheManagerBase::~CacheManagerBase() {}
 
@@ -299,8 +297,7 @@ static eckit::PathName lockFile(const std::string& path) {
 }
 
 CacheManagerFileSemaphoreLock::CacheManagerFileSemaphoreLock(const std::string& path) :
-    path_(lockFile(path)),
-    lock_(path_) {}
+    path_(lockFile(path)), lock_(path_) {}
 
 void CacheManagerFileSemaphoreLock::lock() {
     eckit::AutoUmask umask(0);

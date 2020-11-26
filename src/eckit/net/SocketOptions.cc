@@ -10,8 +10,8 @@
 
 #include <ostream>
 
-#include "eckit/net/SocketOptions.h"
 #include "eckit/config/Resource.h"
+#include "eckit/net/SocketOptions.h"
 
 namespace eckit {
 namespace net {
@@ -26,10 +26,10 @@ static void init(SocketOptions& opts) {
 
     opts.listenBacklog(ListenBacklog);
 
-    static bool ReusePort  = eckit::Resource<bool>("socketOptionsReusePort",  false);
-    static bool ReuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr",  false);
-    static bool NoLinger   = eckit::Resource<bool>("socketOptionsNoLinger",   false);
-    static bool KeepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive",  true);
+    static bool ReusePort  = eckit::Resource<bool>("socketOptionsReusePort", false);
+    static bool ReuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr", false);
+    static bool NoLinger   = eckit::Resource<bool>("socketOptionsNoLinger", false);
+    static bool KeepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive", true);
     static bool IpLowDelay = eckit::Resource<bool>("socketOptionsIpLowDelay", true);
     static bool TcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", true);
 

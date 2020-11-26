@@ -28,62 +28,60 @@ namespace net {
 //----------------------------------------------------------------------------------------------------------------------
 
 class ConnectorException : public Exception {
-	virtual bool retryOnServer() const        { return true; }
-	virtual bool retryOnClient() const        { return true; }
+    virtual bool retryOnServer() const { return true; }
+    virtual bool retryOnClient() const { return true; }
+
 public:
-	ConnectorException(const std::string& what) : Exception(what) {}
+    ConnectorException(const std::string& what) : Exception(what) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Connector : public Stream {
 public:
+    Connector(const std::string& name, const std::string& node);
 
-	Connector(const std::string& name, const std::string& node);
+    ~Connector();
 
-	~Connector();
+    // -- Methods
 
-// -- Methods
-
-	void lock();
-	void unlock();
+    void lock();
+    void unlock();
     void reset();
     void check();
 
-	bool locked() const { return locked_; }
+    bool locked() const { return locked_; }
 
-	const std::string& host() const { return host_; }
+    const std::string& host() const { return host_; }
 
-    void autoclose(bool on) { autoclose_ = true; }
+    void autoclose(bool on) { autoclose_ = on; }
 
-	void memoize(bool on, unsigned long time);
+    void memoize(bool on, unsigned long time);
 
     static Connector& service(const std::string& name, const std::string& node);
-    static Connector& service(const std::string& name, const std::map<std::string,Length>& cost);
+    static Connector& service(const std::string& name, const std::map<std::string, Length>& cost);
 
     static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 
 protected:
+    // -- Members
+    // None
+    Connector(const std::string&, int);
 
-// -- Members
-	// None
-	Connector(const std::string&, int);
+    // -- Methods
 
-// -- Methods
+    void print(std::ostream&) const override;
 
-	void print(std::ostream&) const;
-
-// -- Class members
-	// None
+    // -- Class members
+    // None
     static Connector& get(const std::string& host, int port);
 
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
-
-// -- Members
+    // -- Members
 
     std::string host_;
     int port_;
@@ -91,44 +89,46 @@ private:
     bool locked_;
 
 
-	// Memoisation
+    // Memoisation
     bool memoize_;
     bool sent_;
-	unsigned long life_;
+    unsigned long life_;
 
-	BufferCache out_;
-	BufferCache in_;
+    BufferCache out_;
+    BufferCache in_;
     bool autoclose_;
 
     std::map<BufferCache, BufferCache> cache_;
 
-	struct {
-		const char *buffer_;
-		size_t pos_;
-		size_t size_;
-	} cached_;
+    struct {
+        const char* buffer_;
+        size_t pos_;
+        size_t size_;
+    } cached_;
 
-// -- Methods
-	// None
+    // -- Methods
+    // None
 
     TCPSocket& socket();
-    template<class T, class F> long socketIo(F proc, T buf, long len, const char*);
+    template <class T, class F>
+    long socketIo(F proc, T buf, long len, const char*);
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
     // From Stream
-	virtual long write(const void* buf,long len) ;
-	virtual long read(void* buf,long len);
-    virtual std::string name() const;
+    virtual long write(const void* buf, long len) override;
+    virtual long read(void* buf, long len) override;
+    virtual std::string name() const override;
 
-// -- Friends
+    // -- Friends
 
-	friend std::ostream& operator<<(std::ostream& s,const Connector& p)
-		{ p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const Connector& p) {
+        p.print(s);
+        return s;
+    }
 
     friend class ConnectorCache;
-
 };
 
 
@@ -136,17 +136,18 @@ private:
 
 
 class AutoMemoize {
-	Connector& c_;
-	unsigned long  t_;
+    Connector& c_;
+    unsigned long t_;
+
 public:
-	AutoMemoize(Connector& c,unsigned long t): c_(c), t_(t) { c_.memoize(true,t_); }
-	~AutoMemoize() { c_.memoize(false,t_); }
+    AutoMemoize(Connector& c, unsigned long t) : c_(c), t_(t) { c_.memoize(true, t_); }
+    ~AutoMemoize() { c_.memoize(false, t_); }
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace net
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit
 
 #endif

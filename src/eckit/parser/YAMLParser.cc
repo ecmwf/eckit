@@ -190,14 +190,14 @@ struct YAMLItemKey : public YAMLItem {
     }
 
 
-    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v, bool unique=false) const {
+    void set(ValueMap& m, ValueList& l, const Value& k, const Value& v, bool unique = false) const {
 
 
         if (m.find(k) == m.end()) {
             l.push_back(k);
         }
         else {
-            if(unique) {
+            if (unique) {
                 return;
             }
         }
@@ -375,7 +375,7 @@ struct YAMLItemEndDocument : public YAMLItem {
 };
 
 
-YAMLParser::YAMLParser(std::istream& in) : ObjectParser(in, true), last_(0) {
+YAMLParser::YAMLParser(std::istream& in) : ObjectParser(in, true, true), last_(0) {
     stop_.push_back(0);
     comma_.push_back(0);
     colon_.push_back(0);

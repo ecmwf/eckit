@@ -15,8 +15,8 @@
 #ifndef eckit_TxnLog_h
 #define eckit_TxnLog_h
 
-#include "eckit/runtime/Main.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/transaction/TxnEvent.h"
 
 
@@ -26,15 +26,15 @@ namespace eckit {
 
 // T should be a subclass of TxnEvent
 
-template<class T>
+template <class T>
 struct TxnRecoverer {
-   virtual ~TxnRecoverer() {}
-	virtual void push(T*) = 0;
+    virtual ~TxnRecoverer() {}
+    virtual void push(T*) = 0;
 };
 
-template<class T>
+template <class T>
 struct TxnFinder {
-   virtual ~TxnFinder() {}
+    virtual ~TxnFinder() {}
     virtual bool found(T&) = 0;
     virtual bool active() { return true; }
     virtual bool old() { return false; }
@@ -47,52 +47,49 @@ struct TxnFinder {
 class TxnArray;
 
 
-template<class T>
+template <class T>
 class TxnLog {
 public:
+    // -- Contructors
 
-// -- Contructors
+    TxnLog(const std::string& = Main::instance().name());
 
-	TxnLog(const std::string& = Main::instance().name());
+    // -- Destructor
 
-// -- Destructor
+    ~TxnLog();
 
-	~TxnLog();
+    // -- Methods
 
-// -- Methods
-
-	void begin(T&);
-	void end(T&,bool);
+    void begin(T&);
+    void end(T&, bool);
     void update(const T&);
-    void recover(TxnRecoverer<T>&,bool,long);
+    void recover(TxnRecoverer<T>&, bool, long);
     void find(TxnFinder<T>&);
     bool exists(T&);
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    TxnLog(const TxnLog<T>&);
+    TxnLog<T>& operator=(const TxnLog<T>&);
 
-	TxnLog(const TxnLog<T>&);
-	TxnLog<T>& operator=(const TxnLog<T>&);
+    // -- Methods
 
-// -- Methods
-
-	PathName name(const T& event);
+    PathName name(const T& event);
 
     static PathName buildPath(const std::string& name);
 
-// -- Members
+    // -- Members
 
-	PathName           path_;
-	PathName           next_;   // Should be declared after 'path_'
-    TxnArray*          nextID_; // Should be declared after 'next_'
-
+    PathName path_;
+    PathName next_;     // Should be declared after 'path_'
+    TxnArray* nextID_;  // Should be declared after 'next_'
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #include "TxnLog.cc"
 

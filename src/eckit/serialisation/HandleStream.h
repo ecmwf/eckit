@@ -28,39 +28,33 @@ namespace eckit {
 
 class HandleStream : public Stream {
 public:
+    // -- Contructors
 
-// -- Contructors
+    HandleStream(DataHandle& h) : handle_(h) {}
 
-	HandleStream(DataHandle& h) : handle_(h) {}
+    // -- Destructor
 
-// -- Destructor
-
-	~HandleStream() {}
+    ~HandleStream() {}
 
 private:
+    // -- Members
 
-// -- Members
+    DataHandle& handle_;
 
-	DataHandle& handle_;
+    // -- Overridden methods
 
-// -- Overridden methods
+    // From Stream
 
-	// From Stream
+    virtual long write(const void* buf, long len) { return handle_.write(buf, len); }
 
-    virtual long write(const void* buf,long len)
-		{ return handle_.write(buf,len); }
+    virtual long read(void* buf, long len) { return handle_.read(buf, len); }
 
-	virtual long read(void* buf,long len)
-		{ return handle_.read(buf,len); }
-
-	virtual std::string name() const
-		{ return "HandleStream"; }
-
+    virtual std::string name() const { return "HandleStream"; }
 };
 
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

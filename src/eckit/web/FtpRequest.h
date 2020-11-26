@@ -14,6 +14,8 @@
 #ifndef FtpRequest_H
 #define FtpRequest_H
 
+#include <string>
+
 #include "eckit/memory/NonCopyable.h"
 
 //-----------------------------------------------------------------------------
@@ -22,37 +24,33 @@ class Retrieve;
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
-
 class Length;
 class PathName;
 
 class FtpRequest : private eckit::NonCopyable {
 public:
+    // -- Contructors
 
-// -- Contructors
+    FtpRequest() {}
 
-	FtpRequest() {}
+    // -- Destructor
 
-// -- Destructor
+    virtual ~FtpRequest() {}
 
-	virtual ~FtpRequest() {}
+    // -- Methods
 
-// -- Methods
+    virtual std::string next() = 0;
 
-	virtual std::string next() = 0;
+    virtual bool here()   = 0;
+    virtual void cdDown() = 0;
+    virtual void cdUp()   = 0;
 
-	virtual bool here() = 0;
-	virtual void cdDown() = 0;
-	virtual void cdUp() = 0;
-
-	virtual void directory(const std::string&) = 0;
-	virtual void file(const std::string&,const eckit::Length&,Retrieve*) = 0;
-
+    virtual void directory(const std::string&)                             = 0;
+    virtual void file(const std::string&, const eckit::Length&, Retrieve*) = 0;
 };
 
 //-----------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

@@ -28,45 +28,44 @@ class SQLColumn;
 class SQLTableIterator;
 
 struct SelectOneTable {
-	SelectOneTable(const SQLTable* table = 0);
-	~SelectOneTable();
+    SelectOneTable(const SQLTable* table = 0);
+    ~SelectOneTable();
 
-	const SQLTable*               table_;
+    const SQLTable* table_;
 
     // Information about the data to be retrieved.
 
     std::vector<std::reference_wrapper<const SQLColumn>> fetch_;
     std::vector<std::pair<const double*, bool>*> values_;
-//    std::vector<std::pair<double*,bool&>>    values_;
+    //    std::vector<std::pair<double*,bool&>>    values_;
 
     // How do we find the data inside the allocated buffer in SQLSelect?
-//    std::vector<size_t> fetchSizeDoubles_;
+    //    std::vector<size_t> fetchSizeDoubles_;
 
-	Expressions check_;
-	Expressions index_;
+    Expressions check_;
+    Expressions index_;
 
 
-	// For links
-    std::pair<const double*,bool&>   offset_;
-    std::pair<const double*,bool&>   length_;
-    const SQLColumn*                 column_; // Reference column
+    // For links
+    std::pair<const double*, bool&> offset_;
+    std::pair<const double*, bool&> length_;
+    const SQLColumn* column_;  // Reference column
 
-	// For checking/debugging
-	const SQLTable*    table1_;
-	const SQLTable*    table2_;
+    // For checking/debugging
+    const SQLTable* table1_;
+    const SQLTable* table2_;
 
-	// For index
+    // For index
 
-	// For sorting
-	int order_;
-
+    // For sorting
+    int order_;
 };
 
 typedef std::vector<SelectOneTable*> SortedTables;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace sql
-} // namespace eckit
+}  // namespace sql
+}  // namespace eckit
 
 #endif

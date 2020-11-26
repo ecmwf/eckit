@@ -9,12 +9,12 @@
  */
 
 #include <cassert>
-#include <iostream>
-#include <fstream>
-#include <memory>
 #include <cstdio>
-#include <locale>
+#include <fstream>
 #include <iomanip>
+#include <iostream>
+#include <locale>
+#include <memory>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
@@ -38,11 +38,12 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct space_out : std::numpunct<char> {
-    char do_thousands_sep()   const { return ' '; }  // separate with spaces
+    char do_thousands_sep() const { return ' '; }  // separate with spaces
 };
 
 template <int N>
-size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::ResizableBuffer& outBuffer, eckit::Timer& timer) {
+size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::ResizableBuffer& outBuffer,
+                    eckit::Timer& timer) {
 
     timer.start();
 
@@ -53,14 +54,17 @@ size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Resi
 
     timer.stop();
 
-    std::cout << " - compress()   rate " << Bytes(N * inBuffer.size(), timer) << " factor " << std::fixed << std::setprecision(2) << ((100.0*out)/inBuffer.size()) << "% - ";
+    std::cout << " - compress()   rate " << Bytes(N * inBuffer.size(), timer) << " factor " << std::fixed
+              << std::setprecision(2) << ((100.0 * out) / inBuffer.size()) << "% - ";
     std::cout.imbue(std::locale(std::cout.getloc(), new space_out));
-    std::cout << std::fixed << std::setprecision(1) << (out/1024.0) << "/" << (inBuffer.size()/1024.0) << " KB" << std::endl;
+    std::cout << std::fixed << std::setprecision(1) << (out / 1024.0) << "/" << (inBuffer.size() / 1024.0) << " KB"
+              << std::endl;
     return out;
 }
 
 template <int N>
-void timeDecompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::ResizableBuffer& outBuffer, eckit::Timer& timer) {
+void timeDecompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::ResizableBuffer& outBuffer,
+                    eckit::Timer& timer) {
 
     timer.start();
 
@@ -81,7 +85,7 @@ CASE("Test compression performance") {
     eckit::Timer timer;
     size_t length;
     size_t compressedLenght;
-    DataHandle *dh;
+    DataHandle* dh;
 
     eckit::PathName path2T("2t_sfc.grib");
     length = path2T.size();
@@ -103,7 +107,7 @@ CASE("Test compression performance") {
 
     eckit::PathName pathVO_D("vo-d_6ml.grib");
     length = pathVO_D.size();
-    dh = pathVO_D.fileHandle();
+    dh     = pathVO_D.fileHandle();
     eckit::Buffer inVO_DGrib(length);
     eckit::ResizableBuffer outVO_DGrib(length);
     dh->openForRead();

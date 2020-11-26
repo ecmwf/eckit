@@ -13,16 +13,16 @@
 
 #include "eckit/memory/Counted.h"
 
-#include "eckit/message/MessageContent.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/message/Decoder.h"
+#include "eckit/message/MessageContent.h"
 
 namespace eckit {
 namespace message {
 
- MessageContent::operator bool() const {
+MessageContent::operator bool() const {
     return true;
 }
 
@@ -88,4 +88,3 @@ void MessageContent::getMetadata(MetadataGatherer&) const {
 
 }  // namespace message
 }  // namespace eckit
-

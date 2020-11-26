@@ -28,18 +28,18 @@ class SerialRequest : public RequestContent {
 public:  // methods
     SerialRequest();
 
-    virtual ~SerialRequest();
+    virtual ~SerialRequest() override;
 
-    virtual int request() const;
+    virtual int request() const override;
 
     virtual int tag() const = 0;
 
     virtual bool isReceive() const = 0;
 
-    virtual bool test() { return true; }
+    virtual bool test() override { return true; }
 
 private:  // methods
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
     bool handled() const { return handled_; }
     void handled(bool v) { handled_ = v; }
@@ -58,15 +58,15 @@ class SendRequest : public SerialRequest {
 public:  // methods
     SendRequest(const void* buffer, size_t count, Data::Code type, int tag);
 
-    virtual ~SendRequest();
+    virtual ~SendRequest() override;
 
-    virtual bool isReceive() const { return false; }
+    virtual bool isReceive() const override { return false; }
 
     const void* buffer() const { return buffer_; }
 
     size_t count() const { return count_; }
 
-    virtual int tag() const { return tag_; }
+    virtual int tag() const override { return tag_; }
 
     Data::Code type() const { return type_; }
 

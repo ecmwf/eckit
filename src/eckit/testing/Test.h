@@ -53,7 +53,7 @@ enum InitEckitMain
 
 class SetEnv {
 public:
-    SetEnv(const char * key, const char * val) : key_(key), value_(val) {
+    SetEnv(const char* key, const char* val) : key_(key), value_(val) {
         oldValue_ = ::getenv(key_);
         ::setenv(key_, value_, true);
     }
@@ -68,9 +68,9 @@ public:
     }
 
 private:
-    const char * key_;
-    const char * value_;
-    const char * oldValue_;
+    const char* key_;
+    const char* value_;
+    const char* oldValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

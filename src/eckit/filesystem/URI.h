@@ -20,8 +20,8 @@
 
 #include "eckit/eckit.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/Offset.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/net/Endpoint.h"
 
 
@@ -34,10 +34,12 @@ class DataHandle;
 
 class URI {
 
-public: // methods
-
-    friend Stream& operator<<(Stream& s,const URI& uri) { uri.encode(s); return s; }
-    friend void operator>>(Stream&,URI&);
+public:  // methods
+    friend Stream& operator<<(Stream& s, const URI& uri) {
+        uri.encode(s);
+        return s;
+    }
+    friend void operator>>(Stream&, URI&);
 
     // Contructors
     URI();
@@ -87,36 +89,25 @@ public: // methods
     std::string asRawString() const;
 
     bool operator!=(const URI& other) const {
-        return scheme_ != other.scheme_
-                || name_ != other.name_
-                || user_ != other.user_
-                || host_ != other.host_
-                || port_ != other.port_
-                || queryValues_ != other.queryValues_
-                || fragment_ != other.fragment_; }
+        return scheme_ != other.scheme_ || name_ != other.name_ || user_ != other.user_ || host_ != other.host_ ||
+               port_ != other.port_ || queryValues_ != other.queryValues_ || fragment_ != other.fragment_;
+    }
 
     bool operator==(const URI& other) const {
-        return scheme_ == other.scheme_
-                && name_ == other.name_
-                && user_ == other.user_
-                && host_ == other.host_
-                && port_ == other.port_
-                && queryValues_ == other.queryValues_
-                && fragment_ == other.fragment_; }
+        return scheme_ == other.scheme_ && name_ == other.name_ && user_ == other.user_ && host_ == other.host_ &&
+               port_ == other.port_ && queryValues_ == other.queryValues_ && fragment_ == other.fragment_;
+    }
 
-protected: // methods
-
-	void print(std::ostream&) const;
+protected:  // methods
+    void print(std::ostream&) const;
     void encode(Stream& s) const;
 
-private: // methods
-
-    size_t parseScheme(const std::string &uri);
+private:  // methods
+    size_t parseScheme(const std::string& uri);
     void parse(const std::string& uri, size_t first, bool authority, bool query, bool fragment);
     void parseQueryValues(const std::string& query);
 
-private: // members
-
+private:  // members
     std::string name_;
     std::string scheme_;
     std::string user_;
@@ -125,11 +116,14 @@ private: // members
     std::map<std::string, std::string> queryValues_;
     std::string fragment_;
 
-    friend std::ostream& operator<<(std::ostream& s,const URI& p) { p.print(s); return s; }
+    friend std::ostream& operator<<(std::ostream& s, const URI& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

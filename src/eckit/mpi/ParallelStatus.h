@@ -32,7 +32,7 @@ private:  // methods
     virtual int tag() const { return status_.MPI_TAG; }
     virtual int error() const { return status_.MPI_ERROR; }
 
-    virtual void print(std::ostream&) const;
+    virtual void print(std::ostream&) const override;
 
 private:  // members
     friend class Parallel;

@@ -10,15 +10,14 @@
 
 #include "eckit/net/NetMask.h"
 
-#include <ostream>
 #include <arpa/inet.h>
+#include <ostream>
 
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/net/IPAddress.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
-#include "eckit/net/IPAddress.h"
-#include "eckit/exception/Exceptions.h"
 
 // Cray C++ compiler should not try to optimize this code
 #if _CRAYC
@@ -41,9 +40,7 @@ static std::string parse(const std::string& cidr, size_t n) {
     return v[n];
 }
 
-NetMask::NetMask(const std::string& cidr):
-    network_(parse(cidr, 0)),
-    bits_(s2l(parse(cidr, 1))) {
+NetMask::NetMask(const std::string& cidr) : network_(parse(cidr, 0)), bits_(s2l(parse(cidr, 1))) {
 
     ASSERT(bits_ > 0);
     ASSERT(bits_ < 32);
@@ -58,5 +55,5 @@ void NetMask::print(std::ostream& s) const {
     s << network_ << '/' << bits_;
 }
 
-} // namespace net
-} // namespace eckit
+}  // namespace net
+}  // namespace eckit

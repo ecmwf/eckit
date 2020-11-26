@@ -29,21 +29,18 @@ class Value;
 
 class JSONResource : public HttpResource {
 public:
-
     JSONResource(const std::string&);
 
-    virtual ~JSONResource();
+    virtual ~JSONResource() override;
 
 private:
-
-    virtual void GET(std::ostream&, Url&);
-    virtual void POST(std::ostream&, Url&);
+    virtual void GET(std::ostream&, Url&) override;
+    virtual void POST(std::ostream&, Url&) override;
     virtual void json(eckit::JSON&, const eckit::Value&) = 0;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 #endif

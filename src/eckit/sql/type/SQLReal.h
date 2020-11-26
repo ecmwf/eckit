@@ -1,9 +1,9 @@
 /*
  * (C) Copyright 1996-2012 ECMWF.
- * 
+ *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -25,89 +25,85 @@ namespace type {
 
 class SQLReal : public SQLType {
 public:
+    // -- Exceptions
+    // None
 
-// -- Exceptions
-	// None
+    // -- Contructors
 
-// -- Contructors
+    SQLReal(const std::string&);
 
-	SQLReal(const std::string& );
+    // -- Destructor
 
-// -- Destructor
+    ~SQLReal();
 
-	~SQLReal(); 
+    // -- Convertors
+    // None
 
-// -- Convertors
-	// None
+    // -- Operators
+    // None
 
-// -- Operators
-	// None
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
-
-// -- Overridden methods
+    // -- Overridden methods
     virtual void output(SQLOutput&, double, bool) const override;
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 protected:
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
 
-// -- Methods
-	
-	// void print(std::ostream&) const; 	
+    // void print(std::ostream&) const;
 
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
 private:
+    // No copy allowed
 
-// No copy allowed
+    SQLReal(const SQLReal&);
+    SQLReal& operator=(const SQLReal&);
 
-	SQLReal(const SQLReal&);
-	SQLReal& operator=(const SQLReal&);
+    // -- Members
+    // None
 
-// -- Members
-	// None
+    // -- Methods
+    // None
 
-// -- Methods
-	// None
-
-// -- Overridden methods
-	// None
+    // -- Overridden methods
+    // None
 
     virtual size_t size() const override;
     virtual int getKind() const override { return realType; }
     virtual std::string asString(const double* val) const override;
 
-// -- Class members
-	// None
+    // -- Class members
+    // None
 
-// -- Class methods
-	// None
+    // -- Class methods
+    // None
 
-// -- Friends
+    // -- Friends
 
-	//friend std::ostream& operator<<(std::ostream& s,const SQLReal& p)
-	//	{ p.print(s); return s; }
-
+    // friend std::ostream& operator<<(std::ostream& s,const SQLReal& p)
+    //	{ p.print(s); return s; }
 };
 
-} // namespace type 
-} // namespace sql
-} // namespace eckit
+}  // namespace type
+}  // namespace sql
+}  // namespace eckit
 
 #endif

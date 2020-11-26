@@ -19,19 +19,18 @@
 
 #include "eckit/memory/NonCopyable.h"
 
-#include <vector>
 #include <ostream>
+#include <vector>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template<class T>
+template <class T>
 class Trie : private NonCopyable {
 
-public: // methods
-
+public:  // methods
     Trie();
     ~Trie();
 
@@ -40,21 +39,18 @@ public: // methods
     void insert(const std::string& key, T value);
     void remove(const std::string& key);
     bool contains(const std::string& key) const;
-    T*   find(const std::string& key) const;
+    T* find(const std::string& key) const;
 
-protected: // methods
+protected:  // methods
+    void print(std::ostream&) const;
 
-	void print(std::ostream&) const;
-
-private: // members
-
+private:  // members
     Trie<T>* find(const unsigned char*, bool);
 
     bool remove(const unsigned char* key);
 
-private: // members
-
-	unsigned short   from_;
+private:  // members
+    unsigned short from_;
 
     /// Do we have a value in the value_ (or is just uninintialised POD/default constructed).
     bool set_;
@@ -62,18 +58,18 @@ private: // members
     std::vector<Trie<T>*> kids_;
     T value_;
 
-private: // friends
-
+private:  // friends
     friend std::ostream& operator<<(std::ostream& s, const Trie<T>& p) {
-        p.print(s); return s;
+        p.print(s);
+        return s;
     }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit
 
 
 #include "Trie.cc"
 
-#endif // eckit_containers_Trie_H
+#endif  // eckit_containers_Trie_H

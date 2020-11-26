@@ -26,8 +26,8 @@ class Comm;
 class Data {
 
 public:
-
-    enum Code {
+    enum Code
+    {
         CHAR = 0,
         WCHAR,
         SHORT,
@@ -41,10 +41,10 @@ public:
         FLOAT,
         DOUBLE,
         LONG_DOUBLE,
-//        BOOL,
+        //        BOOL,
         COMPLEX,
         DOUBLE_COMPLEX,
-//        LONG_DOUBLE_COMPLEX,
+        //        LONG_DOUBLE_COMPLEX,
         BYTE,
         PACKED,
         SHORT_INT,

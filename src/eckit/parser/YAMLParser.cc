@@ -417,7 +417,7 @@ Value YAMLParser::parseNumber() {
 
 
 static Value toValue(const std::string& s) {
-    static Regex real("^[-+]?[0-9]+\\.?[0-9]+([eE][-+]?[0-9]+)?$", false);
+    static Regex real("^[-+]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][-+]?[0-9]+)?$", false);
     static Regex integer("^[-+]?[0-9]+$", false);
     static Regex hex("^0x[0-9a-zA-Z]+$", false);
     static Regex octal("^0[0-7]+$", false);

@@ -15,10 +15,13 @@
 #include <cctype>
 #include <map>
 
+#include <limits.h> // for PATH_MAX
 #include <dlfcn.h> // for dlopen
 
 #include "eckit/system/LibraryManager.h"
 
+
+#include "eckit/eckit_config.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
@@ -29,14 +32,33 @@
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
 #include "eckit/system/SystemInfo.h"
+#include "eckit/system/Library.h"
+#include "eckit/system/Plugin.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/config/LocalConfiguration.h"
 
 namespace eckit {
 namespace system {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static std::string path_from_libhandle(const std::string& libname, void* handle) {
+#ifdef eckit_HAVE_DLINFO
+    char path[PATH_MAX];
+    if(::dlinfo(handle, RTLD_DI_ORIGIN, path) < 0) {
+        std::ostringstream ss;
+        ss << "dlinfo(" << libname << ", ...) " << ::dlerror();
+        throw FailedSystemCall(ss.str().c_str(), Here());
+    }
+    return std::string(path) + "/" + libname;
+#else
+    return libname;
+#endif
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -61,6 +83,7 @@ public:  // methods
         AutoLock<Mutex> lockme(mutex_);
         ASSERT(obj);
         ASSERT(libs_.find(name) == libs_.end());
+        Log::debug() << "Registering library [" << name << "] with address [" << obj << "]" << std::endl;
         libs_[name] = obj;
     }
 
@@ -85,7 +108,10 @@ public:  // methods
     /// List loaded library plugins
     std::vector<std::string> loadedPlugins() const {
         AutoLock<Mutex> lockme(mutex_);
-        std::vector<std::string> result(plugins_.begin(), plugins_.end());
+        std::vector<std::string> result;
+        for (const auto& p : plugins_) {
+            result.push_back(p.first);
+        }
         return result;
     }
 
@@ -124,98 +150,204 @@ public:  // methods
         return *(j->second);
     }
 
-    void load(const std::string& name) {
-        AutoLock<Mutex> lockme(mutex_);
+    void* loadDynamicLibrary(const std::string& libname) {
 
         static std::vector<std::string> libPaths(Resource<std::vector<std::string>>(
             "dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib64", "~/lib", "~eckit/lib64", "~eckit/lib"}));
 
-        if (!exists(name)) {
+        // Get the (system specific) library name for the given library instance
+        std::string dynamicLibraryName = SystemInfo::instance().dynamicLibraryName(libname);
 
-            // Get the (system specific) library name for the given library instance
+        // Try the various paths in the way
+        for (const std::string& dir : libPaths) {
 
-            std::string libraryName = SystemInfo::instance().dynamicLibraryName(name);
+            LocalPathName path = dir + "/" + dynamicLibraryName;
+            
+            if (path.exists()) {
+                
+                ::dlerror(); // clear error
 
-            // Try the various paths in the way
+                Log::debug() << "Loading library " << path.realName() << std::endl;
 
-            for (const std::string& dir : libPaths) {
-
-                eckit::PathName p = PathName(dir) / libraryName;
-                if (p.exists()) {
-                    void* plib = ::dlopen(p.localPath(), RTLD_NOW | RTLD_GLOBAL);
-                    if (plib == nullptr) {
-                        std::ostringstream ss;
-                        ss << "dlopen(" << p << ", ...)";
-                        throw FailedSystemCall(ss.str().c_str(), Here(), errno);
-                    }
-
-                    // If the library still doesn't exist after a successful call of dlopen, then
-                    // we have managed to load something other than a (self-registering) eckit library
-                    if (!exists(name)) {
-                        std::ostringstream ss;
-                        ss << "Shared library " << p << " loaded but Library " << name << " not registered";
-                        throw UnexpectedState(ss.str(), Here());
-                    }
-
-                    return;
+                void* plib = ::dlopen(path.localPath(), RTLD_NOW | RTLD_GLOBAL);
+                
+                if (plib == nullptr) {
+                    std::ostringstream ss;
+                    ss << "dlopen(" << path.realName() << ", ...) " << ::dlerror();
+                    throw FailedSystemCall(ss.str().c_str(), Here());
                 }
-            }
 
-            // Not found!!!
-            std::ostringstream ss;
-            ss << "Library " << name << " not found";
-            throw SeriousBug(ss.str(), Here());
+                Log::debug() << "Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
+                return plib;
+            }
+        }
+
+        // now we try with the system LD_LIBRARY_PATH environment variable
+        Log::debug() << "Loading library " << dynamicLibraryName <<  " from LD_LIBRARY_PATH or system paths" << std::endl;
+        void* plib = ::dlopen(dynamicLibraryName.c_str(), RTLD_NOW | RTLD_GLOBAL);
+        if (plib) {
+            Log::debug() << "Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
+            return plib;
+        }
+
+        Log::warning() << "Failed to load library " << dynamicLibraryName << std::endl;
+        return nullptr;
+    }
+
+    Plugin* lookupPlugin(const std::string& name) const {
+        auto it = plugins_.find(name);
+        if (it != plugins_.end()) {
+            std::string libname = it->second;
+            return dynamic_cast<Plugin*>(&lookup(libname));
+        }
+        else { 
+            return nullptr;
         }
     }
 
-    void autoLoadPlugins() {
+    Plugin& loadPlugin(const std::string& name, const std::string& libname = std::string()) {
 
         AutoLock<Mutex> lockme(mutex_);
 
-        static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "~/share/plugins");
+        std::string lib = libname.empty() ? name : libname;
 
-        LocalPathName dir(pluginManifestPath);
-        if(not dir.exists() or not dir.isDir())
-            return;
+        // check if respective library is already loaded
+        if (!exists(lib)) { 
+            
+            // lets load since the associated library isn't registered
+            void* libhandle = loadDynamicLibrary(lib);
+
+            // the plugin should self-register when the library loads 
+            Plugin* plugin = lookupPlugin(name);
+            if(plugin) {
+                Log::debug() << "Loaded plugin [" << name << "] from library [" << lib << "]" << std::endl;
+                plugin->handle(libhandle);
+                plugin->init();
+                return *plugin;
+            }
+            else {
+                // If the plugin library still doesn't exist after a successful call of dlopen, then
+                // we have managed to load something other than a (self-registering) eckit Plugin library
+                std::ostringstream ss;
+                ss << "Plugin library " << lib << " loaded but Plugin object " << name << " not registered";
+                throw UnexpectedState(ss.str(), Here());
+            }
+        }
+
+        Plugin* plugin = lookupPlugin(name);
+        if(plugin) {
+            Log::warning() << "Plugin " << name << " already loaded" << std::endl;
+            return *plugin;
+        }
+
+        std::ostringstream ss;
+        ss << "A library " << name << " is loaded but it is not a Plugin library";
+        throw UnexpectedState(ss.str(), Here());
+    }
+
+    std::map<std::string, LocalConfiguration> scanManifestPaths() {
+        std::map<std::string, LocalConfiguration> manifests;
+
+        static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "");
+
+        eckit::Tokenizer tokenize(":");
+        std::vector<std::string> scanPaths;
+        tokenize(pluginManifestPath, scanPaths);
+
+        // always scan ~eckit/share/plugins and ~/share/plugins as a last resort
+        scanPaths.push_back("~eckit/share/plugins");
+        scanPaths.push_back("~/share/plugins");
         
-        Log::debug() << "Loading plugins listed in " << dir << std::endl;
+        Log::debug() << "Plugins manifest candidate paths " << scanPaths << std::endl;
 
-        std::vector<LocalConfiguration> plugins;
+        std::set<LocalPathName> visited; //< we dont visit same path twice
 
-        std::vector<LocalPathName> files;
-        std::vector<LocalPathName> dirs;
-        dir.children(files, dirs);
-        for (const auto& p : files) {
-            PathName path(p);
-            Log::debug() << "Found plugin manifest " << path << std::endl;
-            YAMLConfiguration conf(path);
-            if (conf.has("plugin")) {
-                LocalConfiguration plugin = conf.getSubConfiguration("plugin");
-                plugins.push_back(plugin);
+        for(auto& path : scanPaths) {
+
+            LocalPathName dir(path);
+            if(not dir.exists() or not dir.isDir())
+                continue;
+
+            LocalPathName realdir(dir.realName());
+            if(visited.count(realdir)) {
+                Log::debug() << "Skipping plugins manifest dir already visited: " << realdir << std::endl;
+                continue;
             }
+            
+            visited.insert(realdir);
+
+            Log::debug() << "Scanning for plugins manifest path " << path << " resolved to " << realdir << std::endl;
+
+            // scan the manifests to discover the plugins and their respective libraries
+
+            std::vector<LocalPathName> files;
+            std::vector<LocalPathName> dirs;
+            realdir.children(files, dirs);
+            for (const auto& p : files) {
+                PathName path(p);
+                Log::debug() << "Found plugin manifest " << path << std::endl;
+                YAMLConfiguration conf(path);
+                if (conf.has("plugin")) {
+                    LocalConfiguration manifest = conf.getSubConfiguration("plugin");
+                    Log::debug() << "Loaded plugin manifest " << manifest << std::endl;
+                    std::string name = manifest.getString("name");
+                    ASSERT(manifests.find(name) == manifests.end()); // no duplicate manifests
+                    manifests[name] = manifest;
+                }
+            }            
         }
-
-        for (const auto& p : plugins) {
-            Log::debug() << "Loading plugin library: " << p << std::endl;
-            std::vector<std::string> libs = p.getStringVector("libraries");
-            for (const auto& lib : libs) {
-                load(lib);
-            }
-
-        }
-
+        return manifests;
     }
 
 
-    void registerPlugin(const std::string& name) {
+    void autoLoadPlugins(const std::vector<std::string>& inlist) {
+
+        std::vector<std::string> plugins = inlist;
+
         AutoLock<Mutex> lockme(mutex_);
-        Log::debug() << "Registered plugin: " << name << std::endl;
-        plugins_.insert(name);
+
+        std::map<std::string, LocalConfiguration> manifests = scanManifestPaths();
+
+        // if no plugins configured we load all what was found in the manifests
+        if(plugins.empty()) {
+            for(const auto& kv: manifests) {
+                plugins.push_back(kv.first);
+            }
+        }
+
+        Log::debug() << "Going to load following plugins " << plugins << std::endl;
+
+        for (const auto& pname : plugins) {
+            if (manifests.find(pname) != manifests.end()) {
+                LocalConfiguration manifest = manifests[pname];
+                std::string name = manifest.getString("name");
+                ASSERT(pname == name);
+                std::string lib  = manifest.getString("library");
+                Plugin& plugin   = loadPlugin(name, lib);
+            }
+            else {
+                Log::warning() << "Could not find manifest file for plugin " << pname << std::endl;
+            }
+        }
+    }
+
+
+    void enregisterPlugin(const std::string& name, const std::string& libname) {
+        AutoLock<Mutex> lockme(mutex_);
+        Log::debug() << "Registered plugin [" << name << "] with library [" << libname << "]" << std::endl;
+        ASSERT(plugins_.find(name) == plugins_.end());
+        plugins_[name] = libname;
+    }
+
+    void deregisterPlugin(const std::string& name) {
+        AutoLock<Mutex> lockme(mutex_);
+        Log::debug() << "Deregistered plugin [" << name << "]" << std::endl;
+        plugins_.erase(name);
     }
 
 private:  // members
     LibraryMap libs_;
-    std::set<std::string> plugins_;
+    std::map<std::string, std::string> plugins_; //< map plugin name to library
     mutable Mutex mutex_;
 };
 
@@ -245,17 +377,24 @@ const Library& LibraryManager::lookup(const std::string& name) {
     return LibraryRegistry::instance().lookup(name);
 }
 
-/* const Library& */ void LibraryManager::load(const std::string& name) {
-    // return
-    LibraryRegistry::instance().load(name);
+void* LibraryManager::loadLibrary(const std::string& libname) {
+    return LibraryRegistry::instance().loadDynamicLibrary(libname);
 }
 
-void LibraryManager::autoLoadPlugins() {
-    LibraryRegistry::instance().autoLoadPlugins();
+Plugin& LibraryManager::loadPlugin(const std::string& name, const std::string& lib) {
+    return LibraryRegistry::instance().loadPlugin(name, lib);
 }
 
-void LibraryManager::registerPlugin(const std::string& name) {
-    LibraryRegistry::instance().registerPlugin(name);
+void LibraryManager::autoLoadPlugins(const std::vector<std::string>& plugins) {
+    LibraryRegistry::instance().autoLoadPlugins(plugins);
+}
+
+void LibraryManager::enregisterPlugin(const std::string& name, const std::string& libname) {
+    LibraryRegistry::instance().enregisterPlugin(name, libname);
+}
+
+void LibraryManager::deregisterPlugin(const std::string& name) {
+    LibraryRegistry::instance().deregisterPlugin(name);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

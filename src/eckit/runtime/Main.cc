@@ -107,18 +107,29 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
     instance_ = this;
 
-    // If we are runtime configured to (dynamically) load any libraries, do it here.
-
+    // Load the libraries configured to be dynamically loaded at runtime
+    // This may include eckit::Plugin libraries, but they must be identified by the filename (libname) not Plugin name
+    // Note this also works for non eckit::Plugin libraries
     std::vector<std::string> libraries = Resource<std::vector<std::string>>("dynamicLibraries", {});
     for (const std::string& library : libraries) {
-        system::LibraryManager::load(library);
+        void* h = system::LibraryManager::loadLibrary(library);
+        if(not h) {
+            std::ostringstream ss;
+            ss << "Library " << library << " not found";
+            Log::error() << ss.str() << std::endl;
+            throw SeriousBug(ss.str(), Here());
+        }
     }
 
-    // scan for plugins and load them
-    bool autoLoadPlugins = Resource<bool>("autoLoadPlugins;-autoLoadPlugins", false);
-    if (autoLoadPlugins) {
-        system::LibraryManager::autoLoadPlugins();
+    // Load eckit::Plugin libraries
+    std::vector<std::string> plugins = Resource<std::vector<std::string>>("$LOAD_PLUGINS;loadPlugins", {});
+    bool autoLoadPlugins             = Resource<bool>("$AUTO_LOAD_PLUGINS;autoLoadPlugins;-autoLoadPlugins", true);
+    if (autoLoadPlugins or plugins.size()) {
+        Log::debug() << "Configured to load plugins " << plugins << std::endl;
+        system::LibraryManager::autoLoadPlugins(plugins);
     }
+
+    Log::debug() << "Application " << name_ << " loaded libraries: " << system::LibraryManager::list() << std::endl;
 
     Loader::callAll(&Loader::execute);
 }

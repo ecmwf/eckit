@@ -24,6 +24,7 @@ namespace eckit {
 namespace system {
 
 class Library;
+class Plugin;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -45,6 +46,7 @@ public:  // class methods
 
     /// @brief Check if the process is linked to this library
     /// @param [in] name Library name
+    /// @returns true if library is registered as linked
     static bool exists(const std::string& name);
     
     /// @brief Lookup a library reference in the manager
@@ -52,17 +54,32 @@ public:  // class methods
     static const Library& lookup(const std::string& name);
 
     /// @brief Loads a shared library
-    /// @param [in] name Name of the library plugin to load
-    static void load(const std::string& name);
+    /// @param [in] name Name of the dynamic library to load (may not be a plugin).
+    ///             Name does not contain prefix 'lib' nor system dependent extension (eg. .so or .dylib)
+    /// @returns handle to the loaded library, to pass to dlclose
+    static void* loadLibrary(const std::string& libname);
+
+    /// @brief Loads a Plugin library
+    /// @param [in] name Name of the Plugin to load.
+    /// @param [in] library containing the Plugin to load.
+    ///             Name does not contain prefix 'lib' nor system dependent extension (eg. .so or .dylib)
+    ///             If not passed, then assumed to equal to the name
+    /// @returns Plugin object loaded
+    static Plugin& loadPlugin(const std::string& name, const std::string& library = std::string());
 
     /// @brief Scansa and Auto loads Plugins
     /// @param [in] dir path to scan for plugin manifests
-    static void autoLoadPlugins();
+    static void autoLoadPlugins(const std::vector<std::string>& plugins);
 
     /// @brief Registers a library as a plugin
     ///        To be called from the Plugin constructor
     /// @param [in] name Name of the library plugin to register
-    static void registerPlugin(const std::string& name);
+    static void enregisterPlugin(const std::string& name, const std::string& libname);
+
+    /// @brief Deregisters a library as a plugin
+    ///        To be called from the Plugin destructor
+    /// @param [in] name Name of the library plugin to deregister
+    static void deregisterPlugin(const std::string& name);
 
 };
 

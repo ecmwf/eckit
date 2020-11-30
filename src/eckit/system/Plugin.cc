@@ -21,7 +21,14 @@ Plugin::Plugin( const std::string& name, const std::string& libname ) :
     eckit::system::Library( libname.size() ? libname : name ),
     name_( name ),
     libname_( libname.size() ? libname : name ) {
-    LibraryManager::registerPlugin(name_);
+    LibraryManager::enregisterPlugin(name_, libname_);
+}
+
+Plugin::~Plugin() {
+    LibraryManager::deregisterPlugin(name_);
+}
+
+void Plugin::init() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------

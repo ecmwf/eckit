@@ -15,6 +15,8 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
+#include <cstdlib> // for setenv
+
 #include <functional>
 #include <sstream>
 #include <string>
@@ -361,10 +363,16 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 }
 
 int run_tests_main(std::vector<Test>& tests, int argc, char* argv[], bool initEckitMain = true) {
+    
+    // deactivate loading of plugins not to influence some tests
+    ::setenv("AUTO_LOAD_PLUGINS", "false", true);
+    
     if (initEckitMain)
         eckit::Main::initialise(argc, argv);
+    
     eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
     int failures = run(tests);
+    
     eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
     return failures;
 }

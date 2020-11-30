@@ -36,6 +36,7 @@ check_symbol_exists( fsync         "unistd.h"    eckit_HAVE_FSYNC)
 check_symbol_exists( fdatasync     "unistd.h"    eckit_HAVE_FDATASYNC)
 check_symbol_exists( F_FULLFSYNC   "fcntl.h"     eckit_HAVE_F_FULLFSYNC)
 check_symbol_exists( fmemopen      "stdio.h"     eckit_HAVE_FMEMOPEN )
+check_symbol_exists( dlinfo        "dlfcn.h"     eckit_HAVE_DLINFO)
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
     eckit_HAVE_FOPENCOOKIE )

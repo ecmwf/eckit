@@ -129,6 +129,8 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         system::LibraryManager::autoLoadPlugins(plugins);
     }
 
+    Log::debug() << "Application " << name_ << " loaded libraries: " << system::LibraryManager::list() << std::endl;
+
     Loader::callAll(&Loader::execute);
 }
 

@@ -61,10 +61,14 @@ public:  // methods
 
 public:  // methods
 
-    /* DEPRECATED("Use LibraryManager instead") */ static  std::vector<std::string> list();
-    /* DEPRECATED("Use LibraryManager instead") */ static  void list(std::ostream& s);
-    /* DEPRECATED("Use LibraryManager instead") */ static  bool exists(const std::string& name);
-    /* DEPRECATED("Use LibraryManager instead") */ static  const Library& lookup(const std::string& name);
+    /// @deprecated Use LibraryManager instead
+    static std::vector<std::string> list();
+    /// @deprecated Use LibraryManager instead
+    static  void list(std::ostream& s);
+    /// @deprecated Use LibraryManager instead
+    static  bool exists(const std::string& name);
+    /// @deprecated Use LibraryManager instead
+    static  const Library& lookup(const std::string& name);
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
@@ -73,7 +77,7 @@ protected:  // methods
 
     virtual std::string home() const;
 
-    virtual const void* addr() const = 0;
+    virtual const void* addr() const;
 
     void print(std::ostream&) const;
 

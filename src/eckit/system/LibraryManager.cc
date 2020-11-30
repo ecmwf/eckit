@@ -15,6 +15,7 @@
 #include <cctype>
 #include <map>
 
+#include <limits.h> // for PATH_MAX
 #include <dlfcn.h> // for dlopen
 
 #include "eckit/system/LibraryManager.h"
@@ -39,6 +40,18 @@
 
 namespace eckit {
 namespace system {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static std::string path_from_libhandle(const std::string& libname, void* handle) {
+    char path[PATH_MAX];
+    if(::dlinfo(handle, RTLD_DI_ORIGIN, path) < 0) {
+        std::ostringstream ss;
+        ss << "dlinfo(" << libname << ", ...) " << ::dlerror();
+        throw FailedSystemCall(ss.str().c_str(), Here());
+    }
+    return std::string(path) + "/" + libname;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -147,28 +160,30 @@ public:  // methods
                 
                 ::dlerror(); // clear error
 
+                Log::debug() << "Loading library " << path.realName() << std::endl;
+
                 void* plib = ::dlopen(path.localPath(), RTLD_NOW | RTLD_GLOBAL);
                 
                 if (plib == nullptr) {
                     std::ostringstream ss;
-                    ss << "dlopen(" << path.realName() << ", ...)" << ::dlerror();
+                    ss << "dlopen(" << path.realName() << ", ...) " << ::dlerror();
                     throw FailedSystemCall(ss.str().c_str(), Here());
                 }
 
-                Log::debug() << "Loaded library " << path.realName() << std::endl;
-
+                Log::debug() << "Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
                 return plib;
             }
         }
 
         // now we try with the system LD_LIBRARY_PATH environment variable
+        Log::debug() << "Loading library " << dynamicLibraryName <<  " from LD_LIBRARY_PATH or system paths" << std::endl;
         void* plib = ::dlopen(dynamicLibraryName.c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (plib) {
-            Log::debug() << "Loaded library from LD_LIBRARY_PATH or system: " << dynamicLibraryName.c_str() << std::endl;
+            Log::debug() << "Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
             return plib;
         }
 
-
+        Log::warning() << "Failed to load library " << dynamicLibraryName << std::endl;
         return nullptr;
     }
 

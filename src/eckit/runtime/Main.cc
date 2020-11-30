@@ -123,7 +123,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
     // Load eckit::Plugin libraries
     std::vector<std::string> plugins = Resource<std::vector<std::string>>("$LOAD_PLUGINS;loadPlugins", {});
-    bool autoLoadPlugins = Resource<bool>("autoLoadPlugins;-autoLoadPlugins", true);
+    bool autoLoadPlugins             = Resource<bool>("$AUTO_LOAD_PLUGINS;autoLoadPlugins;-autoLoadPlugins", true);
     if (autoLoadPlugins or plugins.size()) {
         Log::debug() << "Configured to load plugins " << plugins << std::endl;
         system::LibraryManager::autoLoadPlugins(plugins);

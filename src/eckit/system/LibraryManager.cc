@@ -20,6 +20,8 @@
 
 #include "eckit/system/LibraryManager.h"
 
+
+#include "eckit/eckit_config.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
@@ -45,6 +47,7 @@ namespace system {
 //----------------------------------------------------------------------------------------------------------------------
 
 static std::string path_from_libhandle(const std::string& libname, void* handle) {
+#ifdef eckit_HAVE_DLINFO
     char path[PATH_MAX];
     if(::dlinfo(handle, RTLD_DI_ORIGIN, path) < 0) {
         std::ostringstream ss;
@@ -52,6 +55,9 @@ static std::string path_from_libhandle(const std::string& libname, void* handle)
         throw FailedSystemCall(ss.str().c_str(), Here());
     }
     return std::string(path) + "/" + libname;
+#else
+    return libname;
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------

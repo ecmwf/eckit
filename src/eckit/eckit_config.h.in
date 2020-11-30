@@ -53,5 +53,6 @@
 
 #cmakedefine eckit_HAVE_ECKIT_CMD
 #cmakedefine eckit_HAVE_ECKIT_SQL
+#cmakedefine eckit_HAVE_ECKIT_MPI
 
 #endif // eckit_config_h

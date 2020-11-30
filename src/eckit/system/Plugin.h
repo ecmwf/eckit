@@ -25,11 +25,21 @@ public:
     /// @param [in] libname Library name as will be used in file system
     explicit Plugin( const std::string& name, const std::string& libname = "" );
 
+    virtual ~Plugin();
+
     /// @brief Plugin name
     const std::string& name() const { return name_; }
 
     /// @brief Library name as will be used in file system
     const std::string& libraryName() const { return libname_; }
+
+    /// @brief Initialisation function called on loading the plugin dynamically
+    virtual void init();
+
+    void handle(void* h) { handle_ = h; }
+
+protected:
+    void* handle_ = nullptr; //< handle returned by dlopen
 
 private:
     std::string name_;

@@ -44,6 +44,7 @@ public:  // methods
     /// @param obj pointer must be valid
     void enregister(const std::string& name, HttpResource* obj) {
         AutoLock<Mutex> lockme(mutex_);
+        Log::debug() << "Registering http resource [" << name << "] to registry with address [" << obj <<"]" << std::endl;
         ASSERT(obj);
         ASSERT(map_.find(name) == map_.end());
         map_[name] = obj;

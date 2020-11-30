@@ -23,6 +23,7 @@
 #cmakedefine eckit_HAVE_FDATASYNC
 #cmakedefine eckit_HAVE_F_FULLFSYNC
 #cmakedefine eckit_HAVE_FMEMOPEN
+#cmakedefine eckit_HAVE_DLINFO
 #cmakedefine eckit_HAVE_FOPENCOOKIE
 #cmakedefine eckit_HAVE_EXECINFO_BACKTRACE
 #cmakedefine eckit_HAVE_CXXABI_H
@@ -53,5 +54,6 @@
 
 #cmakedefine eckit_HAVE_ECKIT_CMD
 #cmakedefine eckit_HAVE_ECKIT_SQL
+#cmakedefine eckit_HAVE_ECKIT_MPI
 
 #endif // eckit_config_h

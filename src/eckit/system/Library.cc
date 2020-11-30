@@ -212,6 +212,10 @@ const Library& Library::lookup(const std::string& name) {
     return LibraryManager::lookup(name);
 }
 
+const void * Library::addr() const {
+    return this;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace system

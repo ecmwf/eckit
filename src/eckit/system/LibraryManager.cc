@@ -35,6 +35,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/utils/Tokenizer.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/config/LocalConfiguration.h"
 
@@ -238,39 +239,70 @@ public:  // methods
         throw UnexpectedState(ss.str(), Here());
     }
 
+    std::map<std::string, LocalConfiguration> scanManifestPaths() {
+        std::map<std::string, LocalConfiguration> manifests;
+
+        static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "");
+
+        eckit::Tokenizer tokenize(":");
+        std::vector<std::string> scanPaths;
+        tokenize(pluginManifestPath, scanPaths);
+
+        // always scan ~eckit/share/plugins and ~/share/plugins as a last resort
+        scanPaths.push_back("~eckit/share/plugins");
+        scanPaths.push_back("~/share/plugins");
+        
+        Log::debug() << "Plugins manifest candidate paths " << scanPaths << std::endl;
+
+        std::set<LocalPathName> visited; //< we dont visit same path twice
+
+        for(auto& path : scanPaths) {
+
+            LocalPathName dir(path);
+            if(not dir.exists() or not dir.isDir())
+                continue;
+
+            LocalPathName realdir(dir.realName());
+            if(visited.count(realdir)) {
+                Log::debug() << "Skipping plugins manifest dir already visited: " << realdir << std::endl;
+                continue;
+            }
+            
+            visited.insert(realdir);
+
+            Log::debug() << "Scanning for plugins manifest path " << path << " resolved to " << realdir << std::endl;
+
+            // scan the manifests to discover the plugins and their respective libraries
+
+            std::vector<LocalPathName> files;
+            std::vector<LocalPathName> dirs;
+            realdir.children(files, dirs);
+            for (const auto& p : files) {
+                PathName path(p);
+                Log::debug() << "Found plugin manifest " << path << std::endl;
+                YAMLConfiguration conf(path);
+                if (conf.has("plugin")) {
+                    LocalConfiguration manifest = conf.getSubConfiguration("plugin");
+                    Log::debug() << "Loaded plugin manifest " << manifest << std::endl;
+                    std::string name = manifest.getString("name");
+                    ASSERT(manifests.find(name) == manifests.end()); // no duplicate manifests
+                    manifests[name] = manifest;
+                }
+            }            
+        }
+        return manifests;
+    }
+
+
     void autoLoadPlugins(const std::vector<std::string>& inlist) {
 
         std::vector<std::string> plugins = inlist;
 
         AutoLock<Mutex> lockme(mutex_);
 
-        static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "~/share/plugins");
+        std::map<std::string, LocalConfiguration> manifests = scanManifestPaths();
 
-        LocalPathName dir(pluginManifestPath);
-        if(not dir.exists() or not dir.isDir())
-            return;
-        
-        Log::debug() << "Scanning for plugins manifest files in " << dir << std::endl;
-
-        // scan the manifests to discover the plugins and their respective libraries
-        std::map<std::string, LocalConfiguration> manifests;
-
-        std::vector<LocalPathName> files;
-        std::vector<LocalPathName> dirs;
-        dir.children(files, dirs);
-        for (const auto& p : files) {
-            PathName path(p);
-            Log::debug() << "Found plugin manifest " << path << std::endl;
-            YAMLConfiguration conf(path);
-            if (conf.has("plugin")) {
-                LocalConfiguration manifest = conf.getSubConfiguration("plugin");
-                Log::debug() << "Loaded plugin manifest " << manifest << std::endl;
-                std::string name = manifest.getString("name");
-                ASSERT(manifests.find(name) == manifests.end()); // no duplicate manifests
-                manifests[name] = manifest;
-            }
-        }
-
+        // if no plugins configured we load all what was found in the manifests
         if(plugins.empty()) {
             for(const auto& kv: manifests) {
                 plugins.push_back(kv.first);

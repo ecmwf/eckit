@@ -20,6 +20,7 @@
 #include "eckit/system/ResourceUsage.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/system/LibraryManager.h"
+#include "eckit/system/Plugin.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;
@@ -27,9 +28,33 @@ using namespace eckit;
 using namespace eckit::testing;
 using eckit::system::Library;
 using eckit::system::LibraryManager;
+using eckit::system::Plugin;
 
 namespace eckit {
 namespace test {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// Issue ECKIT-520
+// Just adding this plugin and registering it should trigger the registration and deregistration.
+// before ISSUE-520 is fixed, the deregistration may cause a segfault as the debug log channel is
+// destroyed before the Plugin.
+
+class TestPlugin : Plugin {
+public:
+    TestPlugin() : Plugin("test-plugin") {}
+    ~TestPlugin() {
+        std::cout << "~TestPlugin()" << std::endl;
+    }
+    static const TestPlugin& instance() {
+        static TestPlugin instance;
+        return instance;
+    }
+    std::string version() const override { return "0.0.0"; }
+    std::string gitsha1( unsigned int count ) const override { return "undefined"; }
+};
+
+REGISTER_LIBRARY( TestPlugin );
 
 //----------------------------------------------------------------------------------------------------------------------
 

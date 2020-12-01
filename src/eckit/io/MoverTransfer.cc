@@ -118,7 +118,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
 
     return len;
-}  // namespace eckit
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

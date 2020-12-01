@@ -370,8 +370,6 @@ runtime/Library.cc
 runtime/Library.h
 runtime/Main.cc
 runtime/Main.h
-runtime/Main.cc
-runtime/Main.h
 runtime/Metrics.cc
 runtime/Metrics.h
 runtime/Monitor.cc

@@ -17,8 +17,6 @@ project( eckit LANGUAGES CXX )
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-reorder -Wno-sign-compare")
-
 ########################################################################################################################
 ### dependencies and options
 
@@ -33,6 +31,25 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
 ecbuild_add_option( FEATURE SANDBOX
                     DEFAULT OFF
                     DESCRIPTION "Sandbox playground for prototyping code that may never see the light of day" )
+
+ecbuild_add_option( FEATURE WARNINGS
+                    DEFAULT ON
+                    DESCRIPTION "Add warnings to compiler" )
+
+# activate warnings, ecbuild macros check the compiler recognises the options
+if(HAVE_WARNINGS) 
+  ecbuild_add_cxx_flags("-Wextra")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    ecbuild_add_cxx_flags("-Wno-unused-parameter")
+    ecbuild_add_cxx_flags("-Wno-unused-variable")
+    ecbuild_add_cxx_flags("-Wno-unused-sign-compare")
+  endif()
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    ecbuild_add_cxx_flags("-Wno-unused-parameter")
+    # ecbuild_add_cxx_flags("-Wno-unused-variable")
+    ecbuild_add_cxx_flags("-Wno-sign-compare")
+  endif()
+endif()
 
 ### thread library ( preferably pthreads ) --- Must be called before FindCUDA!
 

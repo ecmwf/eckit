@@ -28,9 +28,9 @@ class Parallel;
 
 class ParallelStatus : public StatusContent {
 private:  // methods
-    virtual int source() const { return status_.MPI_SOURCE; }
-    virtual int tag() const { return status_.MPI_TAG; }
-    virtual int error() const { return status_.MPI_ERROR; }
+    virtual int source() const override { return status_.MPI_SOURCE; }
+    virtual int tag() const override { return status_.MPI_TAG; }
+    virtual int error() const override { return status_.MPI_ERROR; }
 
     virtual void print(std::ostream&) const override;
 

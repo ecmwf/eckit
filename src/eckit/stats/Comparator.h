@@ -43,7 +43,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Comparator();
+    virtual ~Comparator() override;
 
     // -- Convertors
     // None
@@ -118,7 +118,7 @@ class ComparatorFactory {
 
 protected:
     ComparatorFactory(const std::string&);
-    virtual ~ComparatorFactory();
+    virtual ~ComparatorFactory() override;
 
 public:
     static void list(std::ostream&);

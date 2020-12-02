@@ -20,8 +20,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ########################################################################################################################
 ### dependencies and options
 
-include(cmake/compiler_warnings.cmake) # optionally handle compiler specific warnings
-
 ecbuild_add_option( FEATURE BUILD_TOOLS
                     DEFAULT ON
                     DESCRIPTION "Build the command line tools" )
@@ -253,6 +251,8 @@ endif()
 
 ############################################################################################
 # sources
+
+include(cmake/compiler_warnings.cmake) # optionally handle compiler specific warnings
 
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 

@@ -10,11 +10,13 @@ if(HAVE_WARNINGS)
 
   if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     ecbuild_add_cxx_flags("-Wno-unused-parameter")
-    ecbuild_add_cxx_flags("-Wno-unused-sign-compare")
+    ecbuild_add_cxx_flags("-Wno-unused-variable")
+    ecbuild_add_cxx_flags("-Wno-sign-compare")
   endif()
 
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     ecbuild_add_cxx_flags("-Wno-unused-parameter")
+    ecbuild_add_cxx_flags("-Wno-unused-variable")
     ecbuild_add_cxx_flags("-Wno-sign-compare")
   endif()
 

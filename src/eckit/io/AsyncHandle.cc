@@ -212,8 +212,8 @@ std::string AsyncHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
-void AsyncHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
-    handle().collectMetrics(what, prefix);
+void AsyncHandle::collectMetrics(const std::string& what) const {
+    handle().collectMetrics(what);
 }
 
 DataHandle* AsyncHandle::clone() const {

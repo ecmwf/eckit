@@ -29,8 +29,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MoverTransfer::MoverTransfer(TransferWatcher& watcher, const std::string& metric) :
-    watcher_(watcher), metric_(metric) {}
+MoverTransfer::MoverTransfer(TransferWatcher& watcher) :
+    watcher_(watcher) {}
 
 MoverTransfer::~MoverTransfer() {}
 
@@ -69,7 +69,6 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     Stream& s = c;
 
     s << bool(false);  // New batch
-    s << metric_;
 
     // NodeInfo::sendLogin(s);
     // NodeInfo remote = NodeInfo::acceptLogin(s);
@@ -104,15 +103,17 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     unsigned long long len;
     s >> len;
     Metrics::receive(s);
-    Metrics::set("mover", c.node());
+
+
+    Metrics::set("mover_node", c.node());
     if (send_costs) {
         for (auto j = cost.begin(); j != cost.end(); ++j) {
             std::string h        = (*j).first;
             unsigned long long l = (*j).second;
-            Metrics::set(h, l, "mover_costs");
+            Metrics::set(h, l);
         }
     }
-    // Metrics::set("mover_metric", metric_);
+    // Metrics::set("mover_metric", prefix_);
     // //    ASSERT(len == total);
 
     Log::message() << " " << std::endl;

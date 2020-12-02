@@ -72,7 +72,7 @@ void DataHandle::flush() {
     throw NotImplemented(os.str(), Here());
 }
 
-Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metricsPrefix) {
+Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
 
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
 
@@ -82,7 +82,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
 
     if (moverTransfer && moveable() && other.moveable()) {
         Log::debug<LibEcKit>() << "Using MoverTransfer" << std::endl;
-        MoverTransfer mover(watcher, metricsPrefix);
+        MoverTransfer mover(watcher);
         return mover.transfer(*this, other);
     }
 
@@ -93,11 +93,9 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
         static const long bufsize = Resource<long>("doubleBufferSize", 10 * 1024 * 1024 / 20);
         static const long count   = Resource<long>("doubleBufferCount", 20);
 
-        if (!metricsPrefix.empty()) {
-            Metrics::set("double_buffering", true, metricsPrefix);
-        }
+        Metrics::set("double_buffering", true);
 
-        DblBuffer buf(count, bufsize, watcher, metricsPrefix);
+        DblBuffer buf(count, bufsize, watcher);
         return buf.copy(*this, other);
     }
     else {
@@ -180,36 +178,25 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
             throw ReadError(name() + " into " + other.name() + " " + os.str());
         }
 
-        if (!metricsPrefix.empty()) {
-            this->collectMetrics("source", metricsPrefix);
-            other.collectMetrics("target", metricsPrefix);
-            Metrics::set("size", total, metricsPrefix);
-            Metrics::set("time", timer.elapsed(), metricsPrefix);
-            Metrics::set("read_time", readTime, metricsPrefix);
-            Metrics::set("write_time", writeTime, metricsPrefix);
-            Metrics::set("double_buffering", false, metricsPrefix);
-        }
+        this->collectMetrics("source");
+        other.collectMetrics("target");
+        Metrics::set("size", total);
+        Metrics::set("time", timer.elapsed());
+        Metrics::set("read_time", readTime);
+        Metrics::set("write_time", writeTime);
+        Metrics::set("double_buffering", false);
+
 
         return total;
     }
 }
 
-Length DataHandle::saveInto(DataHandle& other, const std::string& metricsPrefix) {
-    return saveInto(other, TransferWatcher::dummy(), metricsPrefix);
-}
-
-Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, const std::string& metricsPrefix) {
+Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
     std::unique_ptr<DataHandle> file{path.fileHandle()};
-    return saveInto(*file, w, metricsPrefix);
+    return saveInto(*file, w);
 }
 
-Length DataHandle::saveInto(const PathName& path, const std::string& metricsPrefix) {
-    return saveInto(path, TransferWatcher::dummy(), metricsPrefix);
-}
-
-Length DataHandle::copyTo(DataHandle& other, long bufsize, const std::string& metricsPrefix) {
-
-    ASSERT(metricsPrefix.empty());
+Length DataHandle::copyTo(DataHandle& other, long bufsize) {
 
     Buffer buffer(bufsize);
 
@@ -241,10 +228,10 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, const std::string& me
     return total;
 }
 
-Length DataHandle::copyTo(DataHandle& other, const std::string& metricsPrefix) {
+Length DataHandle::copyTo(DataHandle& other) {
 
     static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
-    return copyTo(other, bufsize, metricsPrefix);
+    return copyTo(other, bufsize);
 }
 
 
@@ -262,8 +249,8 @@ std::string DataHandle::metricsTag() const {
     return title();
 }
 
-void DataHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
-    Metrics::set(what, this->metricsTag(), prefix);
+void DataHandle::collectMetrics(const std::string& what) const {
+    Metrics::set(what, this->metricsTag());
 }
 
 template <>

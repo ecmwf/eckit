@@ -54,14 +54,8 @@ public:
     virtual void run();
 };
 
-DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher, const std::string& metricsPrefix) :
-    count_(count),
-    bufSize_(size),
-    error_(false),
-    restart_(false),
-    restartFrom_(0),
-    watcher_(watcher),
-    metricsPrefix_(metricsPrefix) {
+DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher) :
+    count_(count), bufSize_(size), error_(false), restart_(false), restartFrom_(0), watcher_(watcher) {
     Log::info() << "Double buffering: " << count_ << " buffers of " << Bytes(size) << " is " << Bytes(count * size)
                 << std::endl;
 }
@@ -233,13 +227,11 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
 
     PANIC(inBytes_ != outBytes_);
 
-    if (!metricsPrefix_.empty()) {
-        in.collectMetrics("source", metricsPrefix_);
-        out.collectMetrics("target", metricsPrefix_);
-        Metrics::set("size", inBytes_, metricsPrefix_);
-        Metrics::set("read_time", rate, metricsPrefix_);
-        Metrics::set("time", reader.elapsed(), metricsPrefix_);
-    }
+    in.collectMetrics("source");
+    out.collectMetrics("target");
+    Metrics::set("size", inBytes_);
+    Metrics::set("read_time", rate);
+    Metrics::set("time", reader.elapsed());
 
     return inBytes_;
 }
@@ -323,9 +315,7 @@ void DblBufferTask::run() {
     if (rate != first)
         Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
 
-    if (!owner_.metricsPrefix_.empty()) {
-        Metrics::set("write_time", rate, owner_.metricsPrefix_);
-    }
+    Metrics::set("write_time", rate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

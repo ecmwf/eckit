@@ -12,6 +12,7 @@
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
 
+#include "eckit/utils/Tokenizer.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
@@ -63,6 +64,9 @@ private:  // members
 
 private:  // methods
     void print(std::ostream&) const;
+
+    void add(Value& top, const std::vector<std::string>& v, size_t n, const Value& value) const;
+
 
     friend std::ostream& operator<<(std::ostream& s, const MetricsCollector& m) {
         m.print(s);
@@ -142,51 +146,57 @@ void MetricsCollector::receive(Stream& s) {
     Value v(s);
     ValueMap m = v;
     for (auto j = m.begin(); j != m.end(); ++j) {
-        metrics_[(*j).first] = (*j).second;
+        std::string key = (*j).first;
+        set(key, (*j).second);
     }
+}
+
+void MetricsCollector::add(Value& top, const std::vector<std::string>& path, size_t n, const Value& value) const {
+
+
+    size_t size = path.size();
+    if (n + 1 == size) {
+        top[path[n]] = value;
+        return;
+    }
+
+    if (!top.contains(path[n])) {
+        top[path[n]] = Value::makeOrderedMap();
+    }
+
+    add(top[path[n]], path, n + 1, value);
 }
 
 void MetricsCollector::print(std::ostream& s) const {
     JSON json(s);
     time_t now = ::time(0);
 
-    json.startObject();
+    Value top = Value::makeOrderedMap();
 
-
-    json << "process" << eckit::Main::instance().name();
-    json << "start_time" << iso(created_);
-    json << "end_time" << iso(now);
-    json << "run_time" << (now - created_);
+    top["process"]    = eckit::Main::instance().name();
+    top["start_time"] = iso(created_);
+    top["end_time"]   = iso(now);
+    top["run_time"]   = (now - created_);
 
     auto j = timestamps_.find("received");
     if (j != timestamps_.end()) {
-        json << "queue_time" << (created_ - (*j).second);
+        top["queue_time"] = (created_ - (*j).second);
     }
 
 
-    ValueList keys = metrics_.keys();
-    for (std::string key : keys) {
-        json << key;
-        auto j = timestamps_.find(key);
-        if (j != timestamps_.end()) {
-            json << iso(metrics_[key]);
-        }
-        else {
-            json << metrics_[key];
-        }
+    std::vector<std::string> path;
+    ValueMap metrics = metrics_;
+    Tokenizer parse(".");
+
+    for (auto j = metrics.begin(); j != metrics.end(); ++j) {
+        path.clear();
+        parse((*j).first, path);
+        add(top, path, 0, (*j).second);
     }
 
-    json.endObject();
+    json << top;
 }
 
-// AutoPushingMetrics::AutoPushingMetrics(const std::string& prefix) : prefix_(prefix) {
-//     ASSERT(prefix_.size());
-//     Metrics::push(prefix_);
-// }
-
-// AutoPushingMetrics::~AutoPushingMetrics() {
-//     Metrics::pop(prefix_);
-// }
 
 //=============================================================================
 

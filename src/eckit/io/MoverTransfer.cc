@@ -22,6 +22,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+#include "eckit/value/Value.h"
 
 
 namespace eckit {
@@ -102,16 +103,16 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
     unsigned long long len;
     s >> len;
-    Metrics::current().receive(s);
-    Metrics::current().set("mover", c.node());
+    Metrics::receive(s);
+    Metrics::set("mover", c.node());
     if (send_costs) {
         for (auto j = cost.begin(); j != cost.end(); ++j) {
             std::string h        = (*j).first;
             unsigned long long l = (*j).second;
-            Metrics::current().set(h, l, "mover_costs");
+            Metrics::set(h, l, "mover_costs");
         }
     }
-    // Metrics::current().set("mover_metric", metric_);
+    // Metrics::set("mover_metric", metric_);
     // //    ASSERT(len == total);
 
     Log::message() << " " << std::endl;

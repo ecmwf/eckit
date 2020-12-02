@@ -72,7 +72,7 @@ void DataHandle::flush() {
     throw NotImplemented(os.str(), Here());
 }
 
-Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metrics) {
+Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metricsPrefix) {
 
     static const bool moverTransfer = Resource<bool>("-mover;moverTransfer", 0);
 
@@ -82,7 +82,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
 
     if (moverTransfer && moveable() && other.moveable()) {
         Log::debug<LibEcKit>() << "Using MoverTransfer" << std::endl;
-        MoverTransfer mover(watcher, metrics);
+        MoverTransfer mover(watcher, metricsPrefix);
         return mover.transfer(*this, other);
     }
 
@@ -93,11 +93,11 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
         static const long bufsize = Resource<long>("doubleBufferSize", 10 * 1024 * 1024 / 20);
         static const long count   = Resource<long>("doubleBufferCount", 20);
 
-        if (!metrics.empty()) {
-            Metrics::current().set("double_buffering", true, metrics);
+        if (!metricsPrefix.empty()) {
+            Metrics::set("double_buffering", true, metricsPrefix);
         }
 
-        DblBuffer buf(count, bufsize, watcher, metrics);
+        DblBuffer buf(count, bufsize, watcher, metricsPrefix);
         return buf.copy(*this, other);
     }
     else {
@@ -180,37 +180,36 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const s
             throw ReadError(name() + " into " + other.name() + " " + os.str());
         }
 
-        if (!metrics.empty()) {
-            Metrics& m = Metrics::current();
-            this->metrics(m, "source", metrics);
-            other.metrics(m, "target", metrics);
-            m.set("size", total, metrics);
-            m.set("time", timer.elapsed(), metrics);
-            m.set("read_time", readTime, metrics);
-            m.set("write_time", writeTime, metrics);
-            m.set("double_buffering", false, metrics);
+        if (!metricsPrefix.empty()) {
+            this->collectMetrics("source", metricsPrefix);
+            other.collectMetrics("target", metricsPrefix);
+            Metrics::set("size", total, metricsPrefix);
+            Metrics::set("time", timer.elapsed(), metricsPrefix);
+            Metrics::set("read_time", readTime, metricsPrefix);
+            Metrics::set("write_time", writeTime, metricsPrefix);
+            Metrics::set("double_buffering", false, metricsPrefix);
         }
 
         return total;
     }
 }
 
-Length DataHandle::saveInto(DataHandle& other, const std::string& metrics) {
-    return saveInto(other, TransferWatcher::dummy(), metrics);
+Length DataHandle::saveInto(DataHandle& other, const std::string& metricsPrefix) {
+    return saveInto(other, TransferWatcher::dummy(), metricsPrefix);
 }
 
-Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, const std::string& metrics) {
+Length DataHandle::saveInto(const PathName& path, TransferWatcher& w, const std::string& metricsPrefix) {
     std::unique_ptr<DataHandle> file{path.fileHandle()};
-    return saveInto(*file, w, metrics);
+    return saveInto(*file, w, metricsPrefix);
 }
 
-Length DataHandle::saveInto(const PathName& path, const std::string& metrics) {
-    return saveInto(path, TransferWatcher::dummy(), metrics);
+Length DataHandle::saveInto(const PathName& path, const std::string& metricsPrefix) {
+    return saveInto(path, TransferWatcher::dummy(), metricsPrefix);
 }
 
-Length DataHandle::copyTo(DataHandle& other, long bufsize, const std::string& metrics) {
+Length DataHandle::copyTo(DataHandle& other, long bufsize, const std::string& metricsPrefix) {
 
-    ASSERT(metrics.empty());
+    ASSERT(metricsPrefix.empty());
 
     Buffer buffer(bufsize);
 
@@ -242,10 +241,10 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, const std::string& me
     return total;
 }
 
-Length DataHandle::copyTo(DataHandle& other, const std::string& metrics) {
+Length DataHandle::copyTo(DataHandle& other, const std::string& metricsPrefix) {
 
     static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
-    return copyTo(other, bufsize, metrics);
+    return copyTo(other, bufsize, metricsPrefix);
 }
 
 
@@ -259,12 +258,12 @@ std::string DataHandle::title() const {
     return className();
 }
 
-std::string DataHandle::metrics() const {
+std::string DataHandle::metricsTag() const {
     return title();
 }
 
-void DataHandle::metrics(Metrics& m, const std::string& what, const std::string& metrics) const {
-    m.set(what, this->metrics(), metrics);
+void DataHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
+    Metrics::set(what, this->metricsTag(), prefix);
 }
 
 template <>

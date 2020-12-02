@@ -76,8 +76,8 @@ std::string SeekableHandle::title() const {
     return std::string("{") + handle_.title() + "}";
 }
 
-void SeekableHandle::metrics(Metrics& m, const std::string& what, const std::string& metric) const {
-    handle_.metrics(m, what, metric);
+void SeekableHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
+    handle_.collectMetrics(what, prefix);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

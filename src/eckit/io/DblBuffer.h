@@ -29,7 +29,7 @@ class DblBuffer : private NonCopyable {
 public:
     // -- Contructors
 
-    DblBuffer(long count = 5, long size = 1024 * 1024, TransferWatcher& = TransferWatcher::dummy(), const std::string& metrics="");
+    DblBuffer(long count = 5, long size = 1024 * 1024, TransferWatcher& = TransferWatcher::dummy(), const std::string& metricsPrefix="");
 
     // -- Destructor
 
@@ -62,7 +62,7 @@ private:  // members
 
     Offset restartFrom_;
     TransferWatcher& watcher_;
-    std::string metrics_;
+    std::string metricsPrefix_;
 
     // -- Friends
 

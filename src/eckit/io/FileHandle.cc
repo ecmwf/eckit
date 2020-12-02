@@ -279,8 +279,8 @@ std::string FileHandle::title() const {
     return PathName::shorten(name_);
 }
 
-std::string FileHandle::metrics() const {
-    return PathName::metrics(name_);
+std::string FileHandle::metricsTag() const {
+    return PathName::metricsTag(name_);
 }
 
 

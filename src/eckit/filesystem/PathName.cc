@@ -336,7 +336,7 @@ std::string PathName::shorten(const std::string& s) {
     return s.substr(0, 10) + "...";
 }
 
-std::string PathName::metrics(const std::string& name) {
+std::string PathName::metricsTag(const std::string& name) {
     PathName path(name);
 
 

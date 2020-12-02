@@ -22,6 +22,7 @@
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+#include "eckit/value/Value.h"
 
 
 namespace eckit {
@@ -53,14 +54,14 @@ public:
     virtual void run();
 };
 
-DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher, const std::string& metrics) :
+DblBuffer::DblBuffer(long count, long size, TransferWatcher& watcher, const std::string& metricsPrefix) :
     count_(count),
     bufSize_(size),
     error_(false),
     restart_(false),
     restartFrom_(0),
     watcher_(watcher),
-    metrics_(metrics) {
+    metricsPrefix_(metricsPrefix) {
     Log::info() << "Double buffering: " << count_ << " buffers of " << Bytes(size) << " is " << Bytes(count * size)
                 << std::endl;
 }
@@ -232,13 +233,12 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
 
     PANIC(inBytes_ != outBytes_);
 
-    if (!metrics_.empty()) {
-        Metrics& m = Metrics::current();
-        in.metrics(m, "source", metrics_);
-        out.metrics(m, "target", metrics_);
-        m.set("size", inBytes_, metrics_);
-        m.set("read_time", rate, metrics_);
-        m.set("time", reader.elapsed(), metrics_);
+    if (!metricsPrefix_.empty()) {
+        in.collectMetrics("source", metricsPrefix_);
+        out.collectMetrics("target", metricsPrefix_);
+        Metrics::set("size", inBytes_, metricsPrefix_);
+        Metrics::set("read_time", rate, metricsPrefix_);
+        Metrics::set("time", reader.elapsed(), metricsPrefix_);
     }
 
     return inBytes_;
@@ -323,9 +323,8 @@ void DblBufferTask::run() {
     if (rate != first)
         Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
 
-    if (!owner_.metrics_.empty()) {
-        Metrics& m = Metrics::current();
-        m.set("write_time", rate, owner_.metrics_);
+    if (!owner_.metricsPrefix_.empty()) {
+        Metrics::set("write_time", rate, owner_.metricsPrefix_);
     }
 }
 

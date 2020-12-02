@@ -89,26 +89,26 @@ public:
     virtual DataHandle* clone() const;
 
     /// Save into an other datahandle
-    virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy(), const std::string& metrics="");
-    virtual Length saveInto(DataHandle&, const std::string& metrics);
+    virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy(), const std::string& metricsPrefix="");
+    virtual Length saveInto(DataHandle&, const std::string& metricsPrefix);
 
     /// Save into a file
-    virtual Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy(), const std::string& metrics="");
-    virtual Length saveInto(const PathName&, const std::string& metrics);
+    virtual Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy(), const std::string& metricsPrefix="");
+    virtual Length saveInto(const PathName&, const std::string& metricsPrefix);
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&, const std::string& metrics="");
+    virtual Length copyTo(DataHandle&, const std::string& metricsPrefix="");
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&, long bufsize, const std::string& metrics="");
+    virtual Length copyTo(DataHandle&, long bufsize, const std::string& metricsPrefix="");
 
     // /// Append to an other datahandle
-    // virtual Length appendTo(DataHandle&, const std::string& metrics="");
+    // virtual Length appendTo(DataHandle&, const std::string& metricsPrefix="");
 
     // /// Append to a file
-    // virtual Length appendTo(const PathName&, const std::string& metrics="");
+    // virtual Length appendTo(const PathName&, const std::string& metricsPrefix="");
 
     virtual std::string name() const;
 
@@ -136,8 +136,8 @@ public:
     virtual void toRemote(Stream& s) const;
     virtual void cost(std::map<std::string, Length>&, bool) const;
     virtual std::string title() const;
-    virtual std::string metrics() const;
-    virtual void metrics(Metrics& m, const std::string& what, const std::string& metric="") const; // Tag for metrics collection
+    virtual std::string metricsTag() const;
+    virtual void collectMetrics(const std::string& what, const std::string& prefix="") const; // Tag for metrics collection
 
     // This is the MD5 of the Handle, not the data it points to
 

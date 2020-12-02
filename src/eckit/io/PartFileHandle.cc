@@ -272,8 +272,8 @@ std::string PartFileHandle::title() const {
     return os.str();
 }
 
-std::string PartFileHandle::metrics() const {
-    return PathName::metrics(path_);
+std::string PartFileHandle::metricsTag() const {
+    return PathName::metricsTag(path_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

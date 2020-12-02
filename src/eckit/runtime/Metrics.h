@@ -16,89 +16,65 @@
 
 
 #include <ctime>
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
+
 
 namespace eckit {
 
 class Stream;
-
+class MetricsCollector;
 //----------------------------------------------------------------------------------------------------------------------
 
-class Metrics : eckit::NonCopyable {
+class Metrics {
 public:  // methods
-    Metrics();
-    ~Metrics();
+    static void set(const std::string& name, const Value& value);
+    static void set(const std::string& name, const Value& value, const std::string& prefix);
 
-    void set(const std::string& name, const Value& value);
-    void set(const std::string& name, const Value& value, const std::string& prefix);
+    static void set(const std::string& name, const std::vector<std::string>& value);
+    static void set(const std::string& name, const std::set<std::string>& value);
 
-    // void set(const std::string& name, const std::string& value);
+    static void set(const std::string& name, const std::vector<std::string>& value, const std::string& prefix);
+    static void set(const std::string& name, const std::set<std::string>& value, const std::string& prefix);
 
-    // void set(const std::string& name, bool value);
+    static void set(const std::string& name, const std::map<std::string, unsigned long long>& value,
+                    const std::string& prefix);
 
-    // void set(const std::string& name, int value);
-    // void set(const std::string& name, unsigned int value);
+    static void timestamp(const std::string& name, time_t value);
 
-    // void set(const std::string& name, long value);
-    // void set(const std::string& name, unsigned long value);
+    static void error(const std::exception&);
 
-    // void set(const std::string& name, long long value);
-    // void set(const std::string& name, unsigned long long value);
-
-    // void set(const std::string& name, double value);
-
-    void set(const std::string& name, const std::vector<std::string>& value);
-    void set(const std::string& name, const std::set<std::string>& value);
-
-    void set(const std::string& name, const std::vector<std::string>& value, const std::string& prefix);
-    void set(const std::string& name, const std::set<std::string>& value, const std::string& prefix);
-
-
-    void set(const std::string& name, const std::map<std::string, unsigned long long>& value, const std::string& prefix);
-
-
-
-    // void set(const std::string& name, const std::vector<long long>& value);
-
-    void timestamp(const std::string& name, time_t value);
-
-
-    void error(const std::exception&);
-
-    void send(Stream&) const;
-    void receive(Stream&);
-    void push(const std::string&);
-    void pop(const std::string&);
-
-    static Metrics& current();
+    static void send(Stream&);
+    static void receive(Stream&);
+    static void push(const std::string& prefix);
+    static void pop(const std::string& prefix);
 
 private:
+    Metrics();
+    ~Metrics();
+};
 
-    void _pop(const std::string&);
+class AutoCollectMetrics {
 
-private:  // members
-    std::map<std::string, time_t> timestamps_;
-    std::set<std::string> keys_;
-    std::vector<Metrics*> stack_;
+    MetricsCollector *collector_;
 
-    time_t created_;
-    Value metrics_;
+    void print(std::ostream& s) const;
 
-    Metrics* top_;
+public:
+    AutoCollectMetrics();
+    ~AutoCollectMetrics();
 
-private:  // methods
-    void print(std::ostream&) const;
 
-    friend std::ostream& operator<<(std::ostream& s, const Metrics& m) {
+    friend std::ostream& operator<<(std::ostream& s, const AutoCollectMetrics& m) {
         m.print(s);
         return s;
     }
 };
+
 
 class AutoPushingMetrics {
     std::string prefix_;

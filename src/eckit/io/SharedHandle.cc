@@ -143,12 +143,12 @@ std::string SharedHandle::title() const {
     return handle_.title();
 }
 
-void SharedHandle::metrics(Metrics& m, const std::string& what, const std::string& metric) const {
-    handle_.metrics(m, what, metric);
+void SharedHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
+    handle_.collectMetrics(what, prefix);
 }
 
-Length SharedHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metrics) {
-    return handle_.saveInto(other, watcher, metrics);
+Length SharedHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metricsPrefix) {
+    return handle_.saveInto(other, watcher, metricsPrefix);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

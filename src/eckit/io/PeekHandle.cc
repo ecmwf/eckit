@@ -141,8 +141,8 @@ std::string PeekHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
-void PeekHandle::metrics(Metrics& m, const std::string& what, const std::string& metric) const {
-    handle().metrics(m, what, metric);
+void PeekHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
+    handle().collectMetrics(what, prefix);
 }
 
 size_t PeekHandle::peeked() const {

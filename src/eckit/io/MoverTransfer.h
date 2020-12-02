@@ -32,7 +32,7 @@ public:
 
     // -- Contructors
 
-    MoverTransfer(TransferWatcher& = TransferWatcher::dummy(), const std::string& metrics="");
+    MoverTransfer(TransferWatcher& = TransferWatcher::dummy(), const std::string& metricsPrefix="");
 
     // -- Destructor
 

@@ -89,7 +89,7 @@ private:  // members
     Offset position_;
 
     virtual std::string title() const override;
-    virtual void metrics(Metrics& m, const std::string& what, const std::string& metric="") const override;
+    virtual void collectMetrics(const std::string& what, const std::string& prefix="") const override;
 
     // -- Class members
 

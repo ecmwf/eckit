@@ -192,8 +192,8 @@ std::string BufferedHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
-void BufferedHandle::metrics(Metrics& m, const std::string& what, const std::string& metric) const {
-    handle().metrics(m, what, metric);
+void BufferedHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
+    handle().collectMetrics(what, prefix);
 }
 
 DataHandle* BufferedHandle::clone() const {

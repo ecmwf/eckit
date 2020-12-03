@@ -142,14 +142,14 @@ public:  // methods
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
 
-    virtual ~ConcreteBuilderT0() {
+    virtual ~ConcreteBuilderT0() override {
         DEBUG_BUILDER("~ConcreteBuilderT0() -- " << T::className());
         Factory<product_t>::instance().unregist(k_);
     }
 
-    virtual typename base_t::key_t name() const { return T::className(); }
+    virtual typename base_t::key_t name() const override { return T::className(); }
 
-    virtual product_ptr create() const { return new T(); }
+    virtual product_ptr create() const override { return new T(); }
 
 private:
     key_t k_;
@@ -187,14 +187,14 @@ public:  // methods
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
 
-    virtual ~ConcreteBuilderT1() {
+    virtual ~ConcreteBuilderT1() override {
         DEBUG_BUILDER("~ConcreteBuilderT1() -- " << T::className());
         Factory<product_t>::instance().unregist(k_);
     }
 
-    virtual typename base_t::key_t name() const { return T::className(); }
+    virtual typename base_t::key_t name() const override { return T::className(); }
 
-    virtual product_ptr create(ARG1 p1) const { return new T(p1); }
+    virtual product_ptr create(ARG1 p1) const override { return new T(p1); }
 
 private:
     key_t k_;
@@ -234,14 +234,14 @@ public:  // methods
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
 
-    virtual ~ConcreteBuilderT2() {
+    virtual ~ConcreteBuilderT2() override {
         DEBUG_BUILDER("~ConcreteBuilderT2() -- " << T::className());
         Factory<product_t>::instance().unregist(k_);
     }
 
-    virtual typename base_t::key_t name() const { return T::className(); }
+    virtual typename base_t::key_t name() const override { return T::className(); }
 
-    virtual product_ptr create(ARG1 p1, ARG2 p2) const { return new T(p1, p2); }
+    virtual product_ptr create(ARG1 p1, ARG2 p2) const override { return new T(p1, p2); }
 
 private:
     key_t k_;

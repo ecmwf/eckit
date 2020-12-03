@@ -36,7 +36,7 @@ public:
 protected:
     // -- Methods
 
-    void print(std::ostream&) const;
+    void print(std::ostream&) const override;
 
 private:
     // -- Members
@@ -45,53 +45,53 @@ private:
 
     // -- Overridden methods
 
-    virtual BasePathName* clone() const;
-    virtual const char* localPath() const;
-    virtual Length size() const;
-    virtual time_t lastAccess() const;
-    virtual time_t lastModified() const;
-    virtual time_t created() const;
+    virtual BasePathName* clone() const override;
+    virtual const char* localPath() const override;
+    virtual Length size() const override;
+    virtual time_t lastAccess() const override;
+    virtual time_t lastModified() const override;
+    virtual time_t created() const override;
 
-    virtual bool isDir() const;
-    virtual bool isLink() const;
+    virtual bool isDir() const override;
+    virtual bool isLink() const override;
 
-    virtual void rename(const BasePathName&) const;
-    virtual void link(const BasePathName&) const;
-    virtual bool sameAs(const BasePathName&) const;
-    virtual BasePathName* mountPoint() const;
-    virtual BasePathName* realName() const;
-    virtual bool exists() const;
-    virtual bool available() const;
-    virtual void mkdir(short) const;
-    virtual void chmod(const FileMode& mode) const;
-    virtual void unlink(bool verbose) const;
-    virtual void rmdir(bool verbose) const;
-    virtual void touch() const;
-    virtual void children(std::vector<BasePathName*>& files, std::vector<BasePathName*>& dirs) const;
-    virtual void match(std::vector<BasePathName*>&, bool) const;
-    virtual void reserve(const Length&) const;
+    virtual void rename(const BasePathName&) const override;
+    virtual void link(const BasePathName&) const override;
+    virtual bool sameAs(const BasePathName&) const override;
+    virtual BasePathName* mountPoint() const override;
+    virtual BasePathName* realName() const override;
+    virtual bool exists() const override;
+    virtual bool available() const override;
+    virtual void mkdir(short) const override;
+    virtual void chmod(const FileMode& mode) const override;
+    virtual void unlink(bool verbose) const override;
+    virtual void rmdir(bool verbose) const override;
+    virtual void touch() const override;
+    virtual void children(std::vector<BasePathName*>& files, std::vector<BasePathName*>& dirs) const override;
+    virtual void match(std::vector<BasePathName*>&, bool) const override;
+    virtual void reserve(const Length&) const override;
 
-    virtual BasePathName* unique() const;
-    virtual const char* type() const;
-    virtual BasePathName* dirName() const;
-    virtual BasePathName* fullName() const;
-    virtual BasePathName* orphanName() const;
-    virtual BasePathName* checkClusterNode() const;
-    virtual BasePathName* baseName(bool) const;
-    virtual std::string extension() const;
+    virtual BasePathName* unique() const override;
+    virtual const char* type() const override;
+    virtual BasePathName* dirName() const override;
+    virtual BasePathName* fullName() const override;
+    virtual BasePathName* orphanName() const override;
+    virtual BasePathName* checkClusterNode() const override;
+    virtual BasePathName* baseName(bool) const override;
+    virtual std::string extension() const override;
 
-    virtual std::string clusterName() const;
-    virtual void syncParentDirectory() const;
+    virtual std::string clusterName() const override;
+    virtual void syncParentDirectory() const override;
 
-    virtual std::string asString() const;
-    virtual void fileSystemSize(FileSystemSize&) const;
+    virtual std::string asString() const override;
+    virtual void fileSystemSize(FileSystemSize&) const override;
 
-    virtual DataHandle* fileHandle(bool overwrite) const;
-    virtual DataHandle* partHandle(const OffsetList&, const LengthList&) const;
-    virtual DataHandle* partHandle(const Offset&, const Length&) const;
+    virtual DataHandle* fileHandle(bool overwrite) const override;
+    virtual DataHandle* partHandle(const OffsetList&, const LengthList&) const override;
+    virtual DataHandle* partHandle(const Offset&, const Length&) const override;
 
-    virtual const std::string& node() const;
-    virtual const std::string& path() const;
+    virtual const std::string& node() const override;
+    virtual const std::string& path() const override;
 
     // -- Friends
 

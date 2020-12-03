@@ -426,8 +426,8 @@ protected:
 
 template <class T>
 class CommBuilder : public CommFactory {
-    virtual Comm* make(const std::string& name) { return new T(name); }
-    virtual Comm* make(const std::string& name, int comm) { return new T(name, comm); }
+    virtual Comm* make(const std::string& name) override { return new T(name); }
+    virtual Comm* make(const std::string& name, int comm) override { return new T(name, comm); }
 
 public:
     CommBuilder(const std::string& builder) : CommFactory(builder) {}

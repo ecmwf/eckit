@@ -59,7 +59,7 @@ template <typename T>
 class PathNameBuilder : public PathNameBuilderBase {
 public:
     using PathNameBuilderBase::PathNameBuilderBase;
-    BasePathName* make(const std::string& path, bool tildeIsUserHome) const {
+    BasePathName* make(const std::string& path, bool tildeIsUserHome) const override {
         return new BasePathNameT<T>(path, tildeIsUserHome);
     }
 };

@@ -126,14 +126,14 @@ class FunctionFactory : public FunctionFactoryBase {
 public:
 	static FunctionFactory& instance();
 	FunctionFactory(); // : FunctionFactoryBase("FunctionFactory", -1) {}
-    virtual ~FunctionFactory() {}
+    virtual ~FunctionFactory() override {}
 
     typedef std::vector<std::pair<std::pair<std::string, int>, std::string> > FunctionInfo;
 
 	FunctionInfo& functionsInfo();
 
 private:
-    std::shared_ptr<FunctionExpression> make(const std::string&,const expression::Expressions&) { NOTIMP; return 0; }
+    std::shared_ptr<FunctionExpression> make(const std::string&,const expression::Expressions&) override { NOTIMP; return 0; }
 
 
     std::map<std::pair<std::string,int>, FunctionFactoryBase*> map_;
@@ -142,7 +142,7 @@ private:
 
 template<class T>
 class FunctionMaker : public FunctionFactoryBase {
-    std::shared_ptr<FunctionExpression> make(const std::string& name, const expression::Expressions& args) {
+    std::shared_ptr<FunctionExpression> make(const std::string& name, const expression::Expressions& args) override {
         return std::make_shared<T>(name, args);
     }
 public:

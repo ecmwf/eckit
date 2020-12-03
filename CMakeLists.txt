@@ -16,6 +16,7 @@ project( eckit LANGUAGES CXX )
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-reorder -Wno-sign-compare")
 
 ########################################################################################################################
 ### dependencies and options

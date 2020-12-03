@@ -130,7 +130,7 @@ public:
 template <class T>
 class StatisticsBuilder : public StatisticsFactory {
 private:
-    Statistics* make(const param::MIRParametrisation& param) { return new T(param); }
+    Statistics* make(const param::MIRParametrisation& param) override { return new T(param); }
 
 public:
     StatisticsBuilder(const std::string& name) : StatisticsFactory(name) {}

@@ -135,7 +135,7 @@ public:
 template <class T>
 class MethodBuilder : public MethodFactory {
 private:
-    Method* make(const param::MIRParametrisation& param) { return new T(param); }
+    Method* make(const param::MIRParametrisation& param) override { return new T(param); }
 
 public:
     MethodBuilder(const std::string& name) : MethodFactory(name) {}

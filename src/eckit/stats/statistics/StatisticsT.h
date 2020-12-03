@@ -53,7 +53,7 @@ public:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField& field) {
+    void execute(const data::MIRField& field) override {
         Counter::reset(field);
         STATS::reset();
 

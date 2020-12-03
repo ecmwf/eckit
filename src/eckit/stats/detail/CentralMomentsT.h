@@ -101,7 +101,7 @@ public:
         count_ += other.count_;
     }
 
-    virtual void print(std::ostream& out) const {
+    virtual void print(std::ostream& out) const override {
         out << "CentralMoments["
                "mean="
             << mean() << ",stddev=" << standardDeviation() << ",skewness=" << skewness() << ",kurtosis=" << kurtosis()

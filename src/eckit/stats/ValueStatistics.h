@@ -121,7 +121,7 @@ public:
 template <class T>
 class ValueStatisticsBuilder : public ValueStatisticsFactory {
 private:
-    ValueStatistics* make() { return new T(); }
+    ValueStatistics* make() override { return new T(); }
 
 public:
     ValueStatisticsBuilder(const std::string& name) : ValueStatisticsFactory(name) {}

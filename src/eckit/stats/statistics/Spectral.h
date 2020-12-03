@@ -35,7 +35,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Spectral();
+    virtual ~Spectral() override;
 
     // -- Convertors
     // None

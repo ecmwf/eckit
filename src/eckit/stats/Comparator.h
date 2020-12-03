@@ -128,7 +128,7 @@ public:
 
 template <class T>
 class ComparatorBuilder : public ComparatorFactory {
-    virtual Comparator* make(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) {
+    virtual Comparator* make(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) override {
         return new T(param1, param2);
     }
 

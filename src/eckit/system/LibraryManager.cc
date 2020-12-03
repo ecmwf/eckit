@@ -340,8 +340,8 @@ public:  // methods
     }
 
     void deregisterPlugin(const std::string& name) {
+        // dont add logging here, since order of destruction of plugins not guaranteed to be reversed from Log singletons
         AutoLock<Mutex> lockme(mutex_);
-        Log::debug() << "Deregistered plugin [" << name << "]" << std::endl;
         plugins_.erase(name);
     }
 

@@ -34,9 +34,9 @@ private:  // constructor
 private:  // methods
     virtual void print(std::ostream&) const override;
 
-    virtual int request() const;
+    virtual int request() const override;
 
-    virtual bool test();
+    virtual bool test() override;
 
 private:  // members
     friend class Parallel;

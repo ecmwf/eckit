@@ -158,6 +158,9 @@ std::string MMappedFileHandle::title() const {
     return "mmap(" + PathName::shorten(path_) + ")";
 }
 
+std::string  MMappedFileHandle::metricsTag() const {
+    return "mmap(" + PathName::metricsTag(path_) + ")";
+}
 
 DataHandle* MMappedFileHandle::clone() const {
     return new MMappedFileHandle(path_);

@@ -27,6 +27,7 @@
 namespace eckit {
 
 class MD5;
+class Metrics;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -91,21 +92,21 @@ public:
     virtual Length saveInto(DataHandle&, TransferWatcher& = TransferWatcher::dummy());
 
     /// Save into a file
-    Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy());
+    virtual Length saveInto(const PathName&, TransferWatcher& = TransferWatcher::dummy());
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    Length copyTo(DataHandle&);
+    virtual Length copyTo(DataHandle&);
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    Length copyTo(DataHandle&, long bufsize);
+    virtual Length copyTo(DataHandle&, long bufsize);
 
-    /// Append to an other datahandle
-    Length appendTo(DataHandle&);
+    // /// Append to an other datahandle
+    // virtual Length appendTo(DataHandle&, const std::string& metricsPrefix="");
 
-    /// Append to a file
-    Length appendTo(const PathName&);
+    // /// Append to a file
+    // virtual Length appendTo(const PathName&, const std::string& metricsPrefix="");
 
     virtual std::string name() const;
 
@@ -133,6 +134,8 @@ public:
     virtual void toRemote(Stream& s) const;
     virtual void cost(std::map<std::string, Length>&, bool) const;
     virtual std::string title() const;
+    virtual std::string metricsTag() const;
+    virtual void collectMetrics(const std::string& what) const; // Tag for metrics collection
 
     // This is the MD5 of the Handle, not the data it points to
 

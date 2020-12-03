@@ -35,9 +35,9 @@ public:
         static std::map<std::string, RotationOutputStream*> instances;
 
         auto j = instances.find(name);
-        if(j == instances.end()) {
+        if (j == instances.end()) {
             instances[name] = new RotationOutputStream(name);
-            j = instances.find(name);
+            j               = instances.find(name);
         }
         return *(*j).second;
     }
@@ -54,7 +54,8 @@ public:
     }
 
 private:
-    RotationOutputStream(const std::string& name) : name_(name), logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")) {}
+    RotationOutputStream(const std::string& name) :
+        name_(name), logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")) {}
 
     std::ostream& rotout() {
 
@@ -91,8 +92,8 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RotationTarget::RotationTarget(const std::string& name): name_(name) {
-    if(name_.empty()) {
+RotationTarget::RotationTarget(const std::string& name) : name_(name) {
+    if (name_.empty()) {
         name_ = Main::instance().name();
     }
 }

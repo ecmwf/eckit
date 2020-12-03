@@ -53,6 +53,7 @@ public:
     bool locked() const { return locked_; }
 
     const std::string& host() const { return host_; }
+    const std::string& node() const { return node_; }
 
     void autoclose(bool on) { autoclose_ = on; }
 
@@ -66,7 +67,7 @@ public:
 protected:
     // -- Members
     // None
-    Connector(const std::string&, int);
+    Connector(const std::string&, int, const std::string&);
 
     // -- Methods
 
@@ -74,7 +75,7 @@ protected:
 
     // -- Class members
     // None
-    static Connector& get(const std::string& host, int port);
+    static Connector& get(const std::string& host, int port, const std::string&);
 
 
     // -- Class methods
@@ -84,6 +85,8 @@ private:
     // -- Members
 
     std::string host_;
+    std::string node_;
+
     int port_;
     TCPSocket socket_;
     bool locked_;

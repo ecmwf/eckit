@@ -16,3 +16,10 @@ test5:
     and more
 
 test6: 'Quotes in ''strings'' are special'
+
+bool1: on
+bool2: off
+bool3: true
+bool4: false
+bool5: yes
+bool6: no

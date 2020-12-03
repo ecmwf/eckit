@@ -68,6 +68,8 @@ private:  // members
     size_t position_;
 
     virtual std::string title() const override;
+    virtual void collectMetrics( const std::string& what) const override; // Tag for metrics collection
+
 };
 
 //-----------------------------------------------------------------------------

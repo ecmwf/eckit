@@ -80,6 +80,8 @@ protected:
     virtual bool isList() const override { return true; }
     virtual Value& element(const Value&) override;
     virtual bool contains(const Value& key) const override;
+    virtual void append(const Value&) override;
+
     virtual Content* clone() const override;
     virtual size_t size() const override;
     virtual void dump(std::ostream& out, size_t depth, bool indent = true) const override;

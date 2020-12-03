@@ -143,6 +143,10 @@ std::string SharedHandle::title() const {
     return handle_.title();
 }
 
+void SharedHandle::collectMetrics(const std::string& what) const {
+    handle_.collectMetrics(what);
+}
+
 Length SharedHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
     return handle_.saveInto(other, watcher);
 }

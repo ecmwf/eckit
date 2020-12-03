@@ -16,11 +16,13 @@
 #include "eckit/log/Log.h"
 #include "eckit/log/Progress.h"
 #include "eckit/log/Timer.h"
+#include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+#include "eckit/value/Value.h"
 
 
 namespace eckit {
@@ -99,8 +101,14 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
         try {
             copied = copy(in, out, estimate);
             Log::info() << "Copied: " << copied << ", estimate: " << estimate << std::endl;
-            if (estimate)
+            if (estimate) {
+                if (copied != estimate) {
+                    std::ostringstream os;
+                    os << "DblBuffer::copy(), copied: " << copied << ", estimate: " << estimate;
+                    throw SeriousBug(os.str());
+                }
                 ASSERT(copied == estimate);
+            }
         }
         catch (RestartTransfer& retry) {
             Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
@@ -141,6 +149,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     Timer reader("Double buffer reader");
     double rate  = 0.;
     double first = 0.;
+
 
     watcher_.watch(nullptr, 0);
 
@@ -217,6 +226,12 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     }
 
     PANIC(inBytes_ != outBytes_);
+
+    in.collectMetrics("source");
+    out.collectMetrics("target");
+    Metrics::set("size", inBytes_);
+    Metrics::set("read_time", rate);
+    Metrics::set("time", reader.elapsed());
 
     return inBytes_;
 }
@@ -299,6 +314,8 @@ void DblBufferTask::run() {
     Log::info() << "Write rate " << Bytes(owner_.outBytes_ / rate) << "/s" << std::endl;
     if (rate != first)
         Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
+
+    Metrics::set("write_time", rate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

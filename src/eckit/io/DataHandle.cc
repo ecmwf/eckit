@@ -24,6 +24,8 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
 #include "eckit/log/Timer.h"
+#include "eckit/runtime/Metrics.h"
+
 
 namespace eckit {
 
@@ -90,6 +92,8 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
     if (doubleBuffer && doubleBufferOK() && other.doubleBufferOK()) {
         static const long bufsize = Resource<long>("doubleBufferSize", 10 * 1024 * 1024 / 20);
         static const long count   = Resource<long>("doubleBufferCount", 20);
+
+        Metrics::set("double_buffering", true);
 
         DblBuffer buf(count, bufsize, watcher);
         return buf.copy(*this, other);
@@ -174,6 +178,15 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
             throw ReadError(name() + " into " + other.name() + " " + os.str());
         }
 
+        this->collectMetrics("source");
+        other.collectMetrics("target");
+        Metrics::set("size", total);
+        Metrics::set("time", timer.elapsed());
+        Metrics::set("read_time", readTime);
+        Metrics::set("write_time", writeTime);
+        Metrics::set("double_buffering", false);
+
+
         return total;
     }
 }
@@ -230,6 +243,14 @@ std::string DataHandle::name() const {
 
 std::string DataHandle::title() const {
     return className();
+}
+
+std::string DataHandle::metricsTag() const {
+    return title();
+}
+
+void DataHandle::collectMetrics(const std::string& what) const {
+    Metrics::set(what, this->metricsTag());
 }
 
 template <>

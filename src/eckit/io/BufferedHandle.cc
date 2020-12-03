@@ -192,6 +192,10 @@ std::string BufferedHandle::title() const {
     return std::string("{") + handle().title() + "}";
 }
 
+void BufferedHandle::collectMetrics(const std::string& what) const {
+    handle().collectMetrics(what);
+}
+
 DataHandle* BufferedHandle::clone() const {
     return new BufferedHandle(handle().clone(), buffer_.size());
 }

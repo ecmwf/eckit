@@ -209,6 +209,10 @@ std::string StatsHandle::title() const {
     return handle().title();
 }
 
+void StatsHandle::collectMetrics(const std::string& what) const {
+    handle().collectMetrics(what);
+}
+
 Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
     return handle().saveInto(other, watcher);
 }

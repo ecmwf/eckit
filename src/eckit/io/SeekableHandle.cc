@@ -76,6 +76,9 @@ std::string SeekableHandle::title() const {
     return std::string("{") + handle_.title() + "}";
 }
 
+void SeekableHandle::collectMetrics(const std::string& what) const {
+    handle_.collectMetrics(what);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 }  // namespace eckit

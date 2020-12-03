@@ -52,6 +52,7 @@ public:
     virtual void restartWriteFrom(const Offset& from) override;
 
     virtual std::string title() const override;
+    virtual std::string metricsTag() const;
 
     virtual Offset seek(const Offset&) override;
     virtual void skip(const Length&) override;

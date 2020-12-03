@@ -47,9 +47,6 @@ SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& para
 }
 
 
-SimplePackingEntropy::~SimplePackingEntropy() = default;
-
-
 void SimplePackingEntropy::reset() {
     entropy_     = std::numeric_limits<double>::quiet_NaN();
     scale_       = std::numeric_limits<double>::quiet_NaN();

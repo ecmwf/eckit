@@ -120,7 +120,7 @@ public:
 
 template <class T>
 class DistributionBuilder : public DistributionFactory {
-    virtual Distribution* make(const param::MIRParametrisation& param) override { return new T(param); }
+    Distribution* make(const param::MIRParametrisation& param) override { return new T(param); }
 
 public:
     DistributionBuilder(const std::string& name) : DistributionFactory(name) {}

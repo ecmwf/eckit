@@ -26,7 +26,7 @@ namespace detail {
 /// Scalar statistics (composition)
 template <typename T>
 struct ScalarT : public CentralMomentsT<T> {
-    void print(std::ostream& out) const {
+    void print(std::ostream& out) const override {
         using t = CentralMomentsT<T>;
         out << "Scalar["
                "mean="

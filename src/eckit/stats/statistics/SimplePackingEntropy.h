@@ -14,7 +14,6 @@
 #define mir_stats_statistics_SimplePackingEntropy_h
 
 #include "mir/stats/Statistics.h"
-
 #include "mir/stats/detail/Counter.h"
 
 
@@ -36,8 +35,7 @@ public:
     SimplePackingEntropy(const param::MIRParametrisation&);
 
     // -- Destructor
-
-    ~SimplePackingEntropy();
+    // None
 
     // -- Convertors
     // None
@@ -73,8 +71,8 @@ private:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&);
-    void print(std::ostream&) const;
+    void execute(const data::MIRField&) override;
+    void print(std::ostream&) const override;
 
     // -- Class members
     // None

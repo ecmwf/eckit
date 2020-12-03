@@ -62,11 +62,11 @@ public:
 
     // -- Overridden methods
 
-    void resize(size_t);
-    void execute(const data::MIRField&);
-    void mean(data::MIRField&) const;
-    void variance(data::MIRField&) const;
-    void stddev(data::MIRField&) const;
+    void resize(size_t) override;
+    void execute(const data::MIRField&) override;
+    void mean(data::MIRField&) const override;
+    void variance(data::MIRField&) const override;
+    void stddev(data::MIRField&) const override;
 
     // -- Class members
     // None
@@ -85,7 +85,7 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream& out) const {
+    void print(std::ostream& out) const override {
         out << "Method[";
         Counter::print(out);
         out << "]";

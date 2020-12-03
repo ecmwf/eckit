@@ -14,7 +14,6 @@
 #define mir_stats_statistics_GridBoxIntegral_h
 
 #include "mir/stats/Statistics.h"
-
 #include "mir/stats/detail/Counter.h"
 
 
@@ -66,8 +65,8 @@ private:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&);
-    void print(std::ostream&) const;
+    void execute(const data::MIRField&) override;
+    void print(std::ostream&) const override;
 
     // -- Class members
     // None

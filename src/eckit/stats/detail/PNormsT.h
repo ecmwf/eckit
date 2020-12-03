@@ -52,7 +52,7 @@ public:
 
     T difference(const T& a, const T& b) const { return std::abs(a - b); }
 
-    void operator()(const T& v) {
+    void operator()(const T& v) override {
         normL1_ += std::abs(v);
         sumSquares_ += v * v;
         normLinfinity_ = std::max(normLinfinity_, std::abs(v));
@@ -64,7 +64,7 @@ public:
         normLinfinity_ = std::max(normLinfinity_, other.normLinfinity_);
     }
 
-    void print(std::ostream& out) const {
+    void print(std::ostream& out) const override {
         out << "PNorms["
                "L1="
             << normL1() << ",L2=" << normL2() << ",Li=" << normLinfinity() << "]";

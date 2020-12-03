@@ -88,9 +88,9 @@ private:
     // -- Overridden methods
 
     // From Distribution
-    void reset();
-    double operator()() const;
-    void print(std::ostream&) const;
+    void reset() override;
+    double operator()() const override;
+    void print(std::ostream&) const override;
 
     // -- Class members
     // None

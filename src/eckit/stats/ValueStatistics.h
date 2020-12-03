@@ -110,7 +110,7 @@ private:
 
 protected:
     ValueStatisticsFactory(const std::string&);
-    virtual ~ValueStatisticsFactory() override;
+    virtual ~ValueStatisticsFactory();
 
 public:
     static void list(std::ostream&);

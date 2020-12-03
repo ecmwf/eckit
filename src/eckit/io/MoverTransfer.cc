@@ -110,7 +110,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         for (auto j = cost.begin(); j != cost.end(); ++j) {
             std::string h        = (*j).first;
             unsigned long long l = (*j).second;
-            Metrics::set(h, l);
+            Metrics::set("mover_costs." + h, l);
         }
     }
     // Metrics::set("mover_metric", prefix_);

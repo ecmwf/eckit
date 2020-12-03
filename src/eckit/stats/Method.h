@@ -44,7 +44,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Method();
+    virtual ~Method() override;
 
     // -- Convertors
     // None
@@ -124,7 +124,7 @@ private:
 
 protected:
     MethodFactory(const std::string&);
-    virtual ~MethodFactory();
+    virtual ~MethodFactory() override;
 
 public:
     static void list(std::ostream&);

@@ -18,6 +18,7 @@
 
 #include "eckit/container/sptree/SPValue.h"
 #include "eckit/geometry/Point3.h"
+
 #include "mir/util/Types.h"
 
 
@@ -93,7 +94,7 @@ public:
 
 template <class T>
 class TreeBuilder : public TreeFactory {
-    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation& param) override {
+    Tree* make(const repres::Representation& r, const param::MIRParametrisation& param) override {
         return new T(r, param);
     }
 

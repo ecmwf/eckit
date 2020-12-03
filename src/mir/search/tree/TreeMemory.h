@@ -14,6 +14,7 @@
 #define mir_search_tree_TreeMemory_h
 
 #include "eckit/container/KDTree.h"
+
 #include "mir/search/Tree.h"
 
 
@@ -41,11 +42,11 @@ protected:
 
     std::vector<PointValueType> findInSphere(const Point&, double radius) override;
 
-    virtual bool ready() const override;
+    bool ready() const override;
 
-    virtual void commit() override;
+    void commit() override;
 
-    virtual void print(std::ostream& out) const override;
+    void print(std::ostream&) const override;
 
 public:
     TreeMemory(const repres::Representation&, const param::MIRParametrisation&);

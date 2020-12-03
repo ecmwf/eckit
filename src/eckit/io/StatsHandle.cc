@@ -209,12 +209,12 @@ std::string StatsHandle::title() const {
     return handle().title();
 }
 
-void StatsHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
-    handle().collectMetrics(what, prefix);
+void StatsHandle::collectMetrics(const std::string& what) const {
+    handle().collectMetrics(what);
 }
 
-Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher, const std::string& metricsPrefix) {
-    return handle().saveInto(other, watcher, metricsPrefix);
+Length StatsHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
+    return handle().saveInto(other, watcher);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

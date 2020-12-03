@@ -33,55 +33,46 @@ class MetricsCollector;
 class Metrics {
 public:  // methods
     static void set(const std::string& name, const Value& value);
-    static void set(const std::string& name, const Value& value, const std::string& prefix);
 
     static void set(const std::string& name, const std::vector<std::string>& value);
     static void set(const std::string& name, const std::set<std::string>& value);
 
-    static void set(const std::string& name, const std::vector<std::string>& value, const std::string& prefix);
-    static void set(const std::string& name, const std::set<std::string>& value, const std::string& prefix);
-
-    static void set(const std::string& name, const std::map<std::string, unsigned long long>& value,
-                    const std::string& prefix);
-
+    static void set(const std::string& name, const std::map<std::string, unsigned long long>& value);
     static void timestamp(const std::string& name, time_t value);
 
     static void error(const std::exception&);
 
     static void send(Stream&);
     static void receive(Stream&);
-    static void push(const std::string& prefix);
-    static void pop(const std::string& prefix);
+
 
 private:
     Metrics();
     ~Metrics();
 };
 
-class AutoCollectMetrics {
+class CollectMetrics {
 
     MetricsCollector *collector_;
 
     void print(std::ostream& s) const;
 
 public:
-    AutoCollectMetrics();
-    ~AutoCollectMetrics();
+    CollectMetrics();
+    ~CollectMetrics();
 
 
-    friend std::ostream& operator<<(std::ostream& s, const AutoCollectMetrics& m) {
+    friend std::ostream& operator<<(std::ostream& s, const CollectMetrics& m) {
         m.print(s);
         return s;
     }
 };
 
 
-class AutoPushingMetrics {
-    std::string prefix_;
-
+class MetricsPrefix {
 public:
-    AutoPushingMetrics(const std::string& prefix);
-    ~AutoPushingMetrics();
+    MetricsPrefix(const std::string& prefix);
+    ~MetricsPrefix();
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -12,6 +12,7 @@
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
 
+#include "eckit/utils/Tokenizer.h"
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
@@ -36,16 +37,12 @@ public:  // methods
     ~MetricsCollector();
 
     void set(const std::string& name, const Value& value);
-    void set(const std::string& name, const Value& value, const std::string& prefix);
 
-    void set(const std::string& name, const std::vector<std::string>& value);
     void set(const std::string& name, const std::set<std::string>& value);
 
-    void set(const std::string& name, const std::vector<std::string>& value, const std::string& prefix);
-    void set(const std::string& name, const std::set<std::string>& value, const std::string& prefix);
+    void set(const std::string& name, const std::vector<std::string>& value);
 
-    void set(const std::string& name, const std::map<std::string, unsigned long long>& value,
-             const std::string& prefix);
+    void set(const std::string& name, const std::map<std::string, unsigned long long>& value);
 
     void timestamp(const std::string& name, time_t value);
 
@@ -54,24 +51,22 @@ public:  // methods
     void send(Stream&) const;
     void receive(Stream&);
     void push(const std::string&);
-    void pop(const std::string&);
+    void pop();
 
-
-private:
-    void _pop(const std::string&);
 
 private:  // members
     std::map<std::string, time_t> timestamps_;
     std::set<std::string> keys_;
-    std::vector<MetricsCollector*> stack_;
+    std::vector<std::string> stack_;
 
     time_t created_;
     Value metrics_;
 
-    MetricsCollector* top_;
-
 private:  // methods
     void print(std::ostream&) const;
+
+    void add(Value& top, const std::vector<std::string>& v, size_t n, const Value& value) const;
+
 
     friend std::ostream& operator<<(std::ostream& s, const MetricsCollector& m) {
         m.print(s);
@@ -79,21 +74,17 @@ private:  // methods
     }
 };
 
-MetricsCollector::MetricsCollector() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)), top_(nullptr) {
+MetricsCollector::MetricsCollector() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)) {
     AutoLock<StaticMutex> lock(local_mutex);
-    top_     = current_;
+    ASSERT(current_ == nullptr);
     current_ = this;
 }
 
 
 MetricsCollector::~MetricsCollector() {
     AutoLock<StaticMutex> lock(local_mutex);
-    while (!stack_.empty()) {
-        delete stack_.back();
-        stack_.pop_back();
-    }
     ASSERT(current_ == this);
-    current_ = top_;
+    current_ = nullptr;
 }
 
 void MetricsCollector::error(const std::exception& e) {
@@ -101,57 +92,32 @@ void MetricsCollector::error(const std::exception& e) {
 }
 
 void MetricsCollector::set(const std::string& name, const Value& value) {
-    if (keys_.find(name) != keys_.end()) {
+
+    std::stringstream oss;
+    const char* sep = "";
+    for (const std::string& s : stack_) {
+        oss << sep << s;
+        sep = ".";
+    }
+    oss << sep << name;
+    std::string full = oss.str();
+
+    if (keys_.find(full) != keys_.end()) {
         std::stringstream oss;
-        oss << "MetricsCollector::set(" << name << ") duplicate key, new=" << value << ", old=" << metrics_[name];
+        oss << "MetricsCollector::set(" << full << ") duplicate key, new=" << value << ", old=" << metrics_[full];
         throw SeriousBug(oss.str());
     }
-    keys_.insert(name);
-    metrics_[name] = value;
-}
-
-void MetricsCollector::set(const std::string& name, const Value& value, const std::string& prefix) {
-
-    if (!metrics_.contains(prefix)) {
-        metrics_[prefix] = Value::makeOrderedMap();
-    }
-
-    std::string key = prefix + "." + name;
-    ASSERT(keys_.find(key) == keys_.end());
-
-    if (keys_.find(key) != keys_.end()) {
-        std::stringstream oss;
-        oss << "MetricsCollector::set(" << key << ") duplicate key, new=" << value << ", old=" << metrics_[key];
-        throw SeriousBug(oss.str());
-    }
-
-
-    keys_.insert(key);
-
-    metrics_[prefix][name] = value;
+    keys_.insert(full);
+    metrics_[full] = value;
 }
 
 void MetricsCollector::push(const std::string& name) {
-    stack_.push_back(new MetricsCollector());
+    stack_.push_back(name);
 }
 
-void MetricsCollector::_pop(const std::string& prefix) {
-    ASSERT(!stack_.empty());
-    if (!metrics_.contains(prefix)) {
-        metrics_[prefix] = Value::makeList();
-    }
 
-    MetricsCollector* last = stack_.back();
+void MetricsCollector::pop() {
     stack_.pop_back();
-
-    metrics_[prefix].append(last->metrics_);
-
-    delete last;
-}
-
-void MetricsCollector::pop(const std::string& name) {
-    ASSERT(top_);
-    top_->_pop(name);
 }
 
 
@@ -160,17 +126,16 @@ void MetricsCollector::timestamp(const std::string& name, time_t time) {
     set(name, time);
 }
 
-void MetricsCollector::set(const std::string& name, const std::set<std::string>& value, const std::string& prefix) {
-    set(name, toValue(value), prefix);
+void MetricsCollector::set(const std::string& name, const std::vector<std::string>& value) {
+    set(name, toValue(value));
 }
 
-void MetricsCollector::set(const std::string& name, const std::vector<std::string>& value, const std::string& prefix) {
-    set(name, toValue(value), prefix);
+void MetricsCollector::set(const std::string& name, const std::set<std::string>& value) {
+    set(name, toValue(value));
 }
 
-void MetricsCollector::set(const std::string& name, const std::map<std::string, unsigned long long>& value,
-                           const std::string& prefix) {
-    set(name, toValue(value), prefix);
+void MetricsCollector::set(const std::string& name, const std::map<std::string, unsigned long long>& value) {
+    set(name, toValue(value));
 }
 
 void MetricsCollector::send(Stream& s) const {
@@ -181,84 +146,82 @@ void MetricsCollector::receive(Stream& s) {
     Value v(s);
     ValueMap m = v;
     for (auto j = m.begin(); j != m.end(); ++j) {
-        metrics_[(*j).first] = (*j).second;
+        std::string key = (*j).first;
+        set(key, (*j).second);
     }
+}
+
+void MetricsCollector::add(Value& top, const std::vector<std::string>& path, size_t n, const Value& value) const {
+
+
+    size_t size = path.size();
+    if (n + 1 == size) {
+        top[path[n]] = value;
+        return;
+    }
+
+    if (!top.contains(path[n])) {
+        top[path[n]] = Value::makeOrderedMap();
+    }
+
+    add(top[path[n]], path, n + 1, value);
 }
 
 void MetricsCollector::print(std::ostream& s) const {
     JSON json(s);
     time_t now = ::time(0);
 
-    json.startObject();
+    Value top = Value::makeOrderedMap();
 
-
-    json << "process" << eckit::Main::instance().name();
-    json << "start_time" << iso(created_);
-    json << "end_time" << iso(now);
-    json << "run_time" << (now - created_);
+    top["process"]    = eckit::Main::instance().name();
+    top["start_time"] = iso(created_);
+    top["end_time"]   = iso(now);
+    top["run_time"]   = (now - created_);
 
     auto j = timestamps_.find("received");
     if (j != timestamps_.end()) {
-        json << "queue_time" << (created_ - (*j).second);
+        top["queue_time"] = (created_ - (*j).second);
     }
 
 
-    ValueList keys = metrics_.keys();
-    for (std::string key : keys) {
-        json << key;
-        auto j = timestamps_.find(key);
-        if (j != timestamps_.end()) {
-            json << iso(metrics_[key]);
-        }
-        else {
-            json << metrics_[key];
-        }
+    std::vector<std::string> path;
+    ValueMap metrics = metrics_;
+    Tokenizer parse(".");
+
+    for (auto j = metrics.begin(); j != metrics.end(); ++j) {
+        path.clear();
+        parse((*j).first, path);
+        add(top, path, 0, (*j).second);
     }
 
-    json.endObject();
+    json << top;
 }
 
-AutoPushingMetrics::AutoPushingMetrics(const std::string& prefix) : prefix_(prefix) {
-    ASSERT(prefix_.size());
-    Metrics::push(prefix_);
-}
-
-AutoPushingMetrics::~AutoPushingMetrics() {
-    Metrics::pop(prefix_);
-}
 
 //=============================================================================
 
 
-void Metrics::set(const std::string& name, const std::map<std::string, unsigned long long>& value,
-                  const std::string& prefix) {
+void Metrics::set(const std::string& name, const std::map<std::string, unsigned long long>& value) {
     AutoLock<StaticMutex> lock(local_mutex);
     if (current_) {
-        current_->set(name, value, prefix);
+        current_->set(name, value);
     }
 }
 
-void Metrics::set(const std::string& name, const std::set<std::string>& value, const std::string& prefix) {
+void Metrics::set(const std::string& name, const std::set<std::string>& value) {
     AutoLock<StaticMutex> lock(local_mutex);
     if (current_) {
-        current_->set(name, value, prefix);
+        current_->set(name, value);
     }
 }
 
-void Metrics::set(const std::string& name, const std::vector<std::string>& value, const std::string& prefix) {
+void Metrics::set(const std::string& name, const std::vector<std::string>& value) {
     AutoLock<StaticMutex> lock(local_mutex);
     if (current_) {
-        current_->set(name, value, prefix);
+        current_->set(name, value);
     }
 }
 
-
-void Metrics::set(const std::string& name, const eckit::Value& value, const std::string& prefix) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    if (current_) {
-        current_->set(name, value, prefix);
-    }
-}
 
 void Metrics::set(const std::string& name, const eckit::Value& value) {
     AutoLock<StaticMutex> lock(local_mutex);
@@ -281,18 +244,17 @@ void Metrics::send(eckit::Stream& s) {
     }
 }
 
-
-void Metrics::push(const std::string& prefix) {
+MetricsPrefix::MetricsPrefix(const std::string& prefix) {
     AutoLock<StaticMutex> lock(local_mutex);
     if (current_) {
         current_->push(prefix);
     }
 }
 
-void Metrics::pop(const std::string& prefix) {
+MetricsPrefix::~MetricsPrefix() {
     AutoLock<StaticMutex> lock(local_mutex);
     if (current_) {
-        current_->pop(prefix);
+        current_->pop();
     }
 }
 
@@ -311,13 +273,13 @@ void Metrics::timestamp(const std::string& name, time_t time) {
     }
 }
 
-AutoCollectMetrics::AutoCollectMetrics() : collector_(new MetricsCollector()) {}
+CollectMetrics::CollectMetrics() : collector_(new MetricsCollector()) {}
 
-AutoCollectMetrics::~AutoCollectMetrics() {
+CollectMetrics::~CollectMetrics() {
     delete collector_;
 }
 
-void AutoCollectMetrics::print(std::ostream& s) const {
+void CollectMetrics::print(std::ostream& s) const {
     s << *collector_;
 }
 

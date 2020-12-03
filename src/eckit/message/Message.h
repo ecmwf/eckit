@@ -98,9 +98,9 @@ class StringSetter : public MetadataGatherer {
 
     virtual void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, long value) override {}
+    virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
 
-    virtual void setValue(const std::string& key, double value) override {}
+    virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
 
 public:
     StringSetter(T& object) : object_(object) {}

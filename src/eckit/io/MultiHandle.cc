@@ -419,9 +419,9 @@ std::string MultiHandle::title() const {
     return os.str();
 }
 
-void MultiHandle::collectMetrics(const std::string& what, const std::string& prefix) const {
+void MultiHandle::collectMetrics(const std::string& what) const {
     if (datahandles_.size() == 1) {
-        return datahandles_[0]->collectMetrics(what, prefix);
+        return datahandles_[0]->collectMetrics(what);
     }
 
     std::map<std::string, unsigned long long> v;
@@ -429,7 +429,7 @@ void MultiHandle::collectMetrics(const std::string& what, const std::string& pre
         v[datahandles_[i]->metricsTag()] += datahandles_[i]->estimate();
     }
 
-    Metrics::set(what, v, prefix);
+    Metrics::set(what, v);
 }
 
 

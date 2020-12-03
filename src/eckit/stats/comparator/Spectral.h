@@ -73,8 +73,8 @@ private:
 
     // -- Overridden methods
 
-    std::string execute(const data::MIRField&, const data::MIRField&);
-    void print(std::ostream&) const;
+    std::string execute(const data::MIRField&, const data::MIRField&) override;
+    void print(std::ostream&) const override;
 
     // -- Class members
     // None

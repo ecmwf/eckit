@@ -53,7 +53,7 @@ public:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&);
+    void execute(const data::MIRField&) override;
 
     // -- Class members
     // None
@@ -74,7 +74,7 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream&) const;
+    void print(std::ostream&) const override;
 
     // -- Class members
     // None

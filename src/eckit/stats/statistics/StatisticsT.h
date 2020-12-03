@@ -80,7 +80,7 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream& out) const {
+    void print(std::ostream& out) const override {
         out << "Statistics[";
         Counter::print(out);
         out << ",";

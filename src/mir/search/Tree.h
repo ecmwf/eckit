@@ -84,7 +84,7 @@ protected:
     std::string name_;
     virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation&) = 0;
     TreeFactory(const std::string&);
-    virtual ~TreeFactory() override;
+    virtual ~TreeFactory();
 
 public:
     static Tree* build(const std::string&, const repres::Representation& r, const param::MIRParametrisation&);

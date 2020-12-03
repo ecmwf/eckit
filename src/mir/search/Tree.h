@@ -93,7 +93,7 @@ public:
 
 template <class T>
 class TreeBuilder : public TreeFactory {
-    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation& param) {
+    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation& param) override {
         return new T(r, param);
     }
 

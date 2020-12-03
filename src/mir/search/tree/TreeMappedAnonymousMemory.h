@@ -27,7 +27,7 @@ class TreeMappedAnonymousMemory : public TreeMapped {
 
     virtual void commit() {}
 
-    virtual void print(std::ostream& out) const { out << "TreeMappedAnonymousMemory[]"; }
+    virtual void print(std::ostream& out) const override { out << "TreeMappedAnonymousMemory[]"; }
 
 public:
     TreeMappedAnonymousMemory(const repres::Representation&, const param::MIRParametrisation&);

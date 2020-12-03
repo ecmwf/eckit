@@ -45,7 +45,7 @@ protected:
 
     virtual void commit();
 
-    virtual void print(std::ostream& out) const;
+    virtual void print(std::ostream& out) const override;
 
 public:
     TreeMemory(const repres::Representation&, const param::MIRParametrisation&);

@@ -41,7 +41,7 @@ protected:
 
     virtual void commit() { eckit::PathName::rename(path_, real_); }
 
-    virtual void print(std::ostream& out) const {
+    virtual void print(std::ostream& out) const override {
         out << "TreeMappedFile["
                "path="
             << path_ << ",ready?" << ready() << "]";

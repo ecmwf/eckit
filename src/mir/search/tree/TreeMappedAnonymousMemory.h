@@ -23,9 +23,9 @@ namespace tree {
 
 class TreeMappedAnonymousMemory : public TreeMapped {
 
-    virtual bool ready() const { return false; }
+    virtual bool ready() const override { return false; }
 
-    virtual void commit() {}
+    virtual void commit() override {}
 
     virtual void print(std::ostream& out) const override { out << "TreeMappedAnonymousMemory[]"; }
 

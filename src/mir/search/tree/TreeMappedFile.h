@@ -37,9 +37,9 @@ protected:
     eckit::PathName real_;
     eckit::Semaphore lock_;  // Must be after real
 
-    virtual bool ready() const { return path_ == real_; }
+    virtual bool ready() const override { return path_ == real_; }
 
-    virtual void commit() { eckit::PathName::rename(path_, real_); }
+    virtual void commit() override { eckit::PathName::rename(path_, real_); }
 
     virtual void print(std::ostream& out) const override {
         out << "TreeMappedFile["
@@ -47,7 +47,7 @@ protected:
             << path_ << ",ready?" << ready() << "]";
     }
 
-    virtual void lock() {
+    virtual void lock() override {
         eckit::AutoUmask umask(0);
 
         eckit::PathName path = lockFile(real_);
@@ -63,7 +63,7 @@ protected:
         os << hostname << " " << ::getpid() << std::endl;
     }
 
-    virtual void unlock() {
+    virtual void unlock() override {
         eckit::PathName path = lockFile(real_);
 
         eckit::Log::debug<LibMir>() << "Unlock " << path << std::endl;

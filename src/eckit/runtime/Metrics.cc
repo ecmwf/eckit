@@ -280,7 +280,10 @@ CollectMetrics::~CollectMetrics() {
 }
 
 void CollectMetrics::print(std::ostream& s) const {
-    s << *collector_;
+    // Avoid that long lines are truncated and mixed up
+    std::ostringstream oss;
+    oss << *collector_;
+    s << oss.str();
 }
 
 

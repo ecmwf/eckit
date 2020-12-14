@@ -92,11 +92,11 @@ class CondUnary : public Expression<U> {
 
     std::unique_ptr<Expression<U> > cond_;
 
-    virtual void print(std::ostream& s) const { s << opname(T()) << '(' << *cond_ << ')'; }
+    virtual void print(std::ostream& s) const override { s << opname(T()) << '(' << *cond_ << ')'; }
 
 public:
     CondUnary(Expression<U>* cond) : cond_(cond) {}
-    virtual ~CondUnary() {}
+    virtual ~CondUnary() override {}
     virtual eckit::Value eval(U& task) const { return T()(cond_->eval(task)); }
 };
 
@@ -106,12 +106,12 @@ class CondBinary : public Expression<U> {
     std::unique_ptr<Expression<U> > left_;
     std::unique_ptr<Expression<U> > right_;
 
-    virtual void print(std::ostream& s) const { s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
+    virtual void print(std::ostream& s) const override { s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
 
 public:
     CondBinary(Expression<U>* left, Expression<U>* right) : left_(left), right_(right) {}
 
-    virtual ~CondBinary() {}
+    virtual ~CondBinary() override {}
     eckit::Value eval(U& task) const;
 };
 
@@ -123,25 +123,25 @@ inline eckit::Value CondBinary<T, U>::eval(U& task) const {
 template <class T>
 class StringExpression : public Expression<T> {
     std::string str_;
-    virtual void print(std::ostream& s) const { s << str_; }
+    virtual void print(std::ostream& s) const override { s << str_; }
 
 public:
     StringExpression(const std::string& s) : str_(s) {}
-    virtual ~StringExpression() {}
+    virtual ~StringExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(str_); }
 };
 
 template <class T>
 class NumberExpression : public Expression<T> {
     long long value_;
-    virtual void print(std::ostream& s) const { s << value_; }
+    virtual void print(std::ostream& s) const override { s << value_; }
 
 protected:
     long long value() const { return value_; }
 
 public:
     NumberExpression(long long n) : value_(n) {}
-    virtual ~NumberExpression() {}
+    virtual ~NumberExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(value_); }
 };
 

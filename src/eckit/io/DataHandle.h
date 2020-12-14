@@ -60,7 +60,7 @@ public:
 
     // -- Destructor
 
-    virtual ~DataHandle() {}
+    virtual ~DataHandle() override {}
 
     // -- Methods
 

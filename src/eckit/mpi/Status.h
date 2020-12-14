@@ -35,7 +35,7 @@ public:
 
 class NullStatus : public StatusContent {
 public:
-    virtual ~NullStatus() {}
+    virtual ~NullStatus() override {}
 
     virtual int source() const override { return -1; };
     virtual int tag() const override { return -1; };

@@ -32,13 +32,13 @@ class MetricsCollector;
 
 class Metrics {
 public:  // methods
-    static void set(const std::string& name, const Value& value);
+    static void set(const std::string& name, const Value& value, bool overrideOk = false);
 
-    static void set(const std::string& name, const std::vector<std::string>& value);
-    static void set(const std::string& name, const std::set<std::string>& value);
+    static void set(const std::string& name, const std::vector<std::string>& value, bool overrideOk = false);
+    static void set(const std::string& name, const std::set<std::string>& value, bool overrideOk = false);
 
-    static void set(const std::string& name, const std::map<std::string, unsigned long long>& value);
-    static void timestamp(const std::string& name, time_t value);
+    static void set(const std::string& name, const std::map<std::string, unsigned long long>& value, bool overrideOk = false);
+    static void timestamp(const std::string& name, time_t value, bool overrideOk = false);
 
     static void error(const std::exception&);
 

@@ -42,7 +42,7 @@ public:
 
     class RawTag : public Tag {
         std::string tag_;
-        virtual void print(std::ostream& s) const { s << tag_; }
+        virtual void print(std::ostream& s) const override { s << tag_; }
 
     protected:
         RawTag(const std::string& s) : tag_(s) {}

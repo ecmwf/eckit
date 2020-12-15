@@ -33,10 +33,14 @@ public:
     /// @brief Library name as will be used in file system
     const std::string& libraryName() const { return libname_; }
 
-    /// @brief Initialisation function called on loading the plugin dynamically
+    /// @brief Initialisation function called after loading the plugin dynamically with dlopen()
     virtual void init();
 
+    /// @brief Finalisation function called before unloading the plugin dynamically with dlclose()
+    virtual void finalise();
+
     void handle(void* h) { handle_ = h; }
+    void* handle() const { return handle_; }
 
 protected:
     void* handle_ = nullptr; //< handle returned by dlopen

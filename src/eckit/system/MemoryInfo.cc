@@ -30,8 +30,6 @@ namespace system {
 MemoryInfo::MemoryInfo() {
     ::memset(this, 0, sizeof(*this));
 
-    MemoryPool::info(transientUsed_, transientFree_, MemPool::transientPool);
-    MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
     MemoryPool::large(largeUsed_, largeFree_);
 
     MMap::info(mmap_count_, mmap_size_);
@@ -80,10 +78,6 @@ void MemoryInfo::print(std::ostream& out) const {
     // eckit allocators
     put(out, "large used", largeUsed_, printed);
     put(out, "large free", largeFree_, printed);
-    put(out, "transient used", transientUsed_, printed);
-    put(out, "transient free", transientFree_, printed);
-    put(out, "permanent used", permanentUsed_, printed);
-    put(out, "permanent Free", permanentFree_, printed);
 
     // mallino
     put(out, "malloc arena", arena_, printed);
@@ -170,12 +164,8 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     // eckit allocators
     diff(out, "large used", largeUsed_, other.largeUsed_, printed);
     diff(out, "large free", largeFree_, other.largeFree_, printed);
-    diff(out, "transient used", transientUsed_, other.transientUsed_, printed);
-    diff(out, "transient free", transientFree_, other.transientFree_, printed);
-    diff(out, "permanent used", permanentUsed_, other.permanentUsed_, printed);
-    diff(out, "permanent free", permanentFree_, other.permanentFree_, printed);
 
-    // mallino
+    // mallinfo
     diff(out, "malloc arena", arena_, other.arena_, printed);
     // diff(out, "ordblks", ordblks_, other.ordblks_, printed);
     // diff(out, "smblks", smblks_, other.smblks_, printed);

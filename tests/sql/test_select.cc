@@ -48,7 +48,7 @@ private:
         TestTableIterator(const TestTable& owner,
                           const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
                           std::function<void(eckit::sql::SQLTableIterator&)> updateCallback) :
-            owner_(owner), idx_(0), data_(4), updateCallback_(updateCallback) {
+            /* owner_(owner), */ idx_(0), data_(4), updateCallback_(updateCallback) {
             std::vector<size_t> offsets{0, 1, 2};
             std::vector<size_t> doublesSizes{1, 1, 1};
             for (const auto& col : columns) {
@@ -94,7 +94,7 @@ private:
         virtual std::vector<size_t> doublesDataSizes() const { return doublesSizes_; }
         virtual const double* data() const { return &data_[0]; }
 
-        const TestTable& owner_;
+        // const TestTable& owner_; // unused
         size_t idx_;
         std::vector<size_t> offsets_;
         std::vector<size_t> doublesSizes_;

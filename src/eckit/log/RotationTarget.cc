@@ -14,6 +14,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/ResizableBuffer.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
@@ -55,7 +56,10 @@ public:
 
 private:
     RotationOutputStream(const std::string& name) :
-        name_(name), logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")) {}
+        name_(name),
+        logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")),
+        buffer_(0),
+        logFilesBufferSize_(Resource<size_t>("logFilesBufferSize", 4 * 1024)) {}
 
     std::ostream& rotout() {
 
@@ -72,8 +76,24 @@ private:
 
             delete last_;
 
-            /// @todo Find a way to set the close on exec flags
-            last_ = new std::ofstream(os.str().c_str(), std::ios::app);
+            last_ = new std::ofstream();
+
+            if (logFilesBufferSize_) {
+                buffer_.resize(logFilesBufferSize_);
+                buffer_.zero();
+                last_->rdbuf()->pubsetbuf(buffer_, buffer_.size());
+            }
+
+            last_->open(os.str().c_str(), std::ofstream::out | std::ofstream::app);
+            if (last_->fail()) {
+                throw eckit::CantOpenFile(os.str());
+            }
+
+            /// @todo Find a way to set the close on exec flags, 
+            ///       or to get the file descriptor from ofstream so we can do:
+            ///       flags = fcntl(fd, F_GETFD);
+            ///       flags |= FD_CLOEXEC;
+            ///       fcntl(fd, F_SETFD, flags)
 
             lastTime_ = now;
         }
@@ -88,6 +108,8 @@ private:  // members
 
     std::string name_;
     std::string logfileFormat_;
+    ResizableBuffer buffer_;
+    size_t logFilesBufferSize_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

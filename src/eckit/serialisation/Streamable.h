@@ -8,19 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-// File Streamable.h
-// B.Raoult - ECMWF May-1996
+/// @author Baudouin Raoult
+/// @date May 1996
 
 #ifndef eckit_Streamable_h
 #define eckit_Streamable_h
 
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/serialisation/Reanimator.h"
 #include "eckit/serialisation/Stream.h"
-
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 

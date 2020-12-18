@@ -46,9 +46,9 @@ public:  // methods
     void putback(char);
 
 protected:  // members
-    bool comments_;
     size_t line_;
     size_t pos_;
+    bool comments_;
 
 private:  // members
     std::istream& in_;

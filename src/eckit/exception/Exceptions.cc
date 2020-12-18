@@ -366,6 +366,9 @@ ReadError::ReadError(const std::string& file, const CodeLocation& loc) :
 
 ReadError::ReadError(const std::string& file) : FileError(std::string("Read error on ") + file) {}
 
+CloseError::CloseError(const std::string& file, const CodeLocation& loc) :
+    FileError(std::string("Close error on ") + file, loc) {}
+
 ShortFile::ShortFile(const std::string& file) : ReadError(std::string("Short file while reading ") + file) {}
 
 ShortFile::ShortFile(const std::string& file, const CodeLocation& loc) :

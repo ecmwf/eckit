@@ -13,7 +13,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/CircularBuffer.h"
 #include "eckit/maths/Functions.h"
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/thread/AutoLock.h"
 
 namespace eckit {

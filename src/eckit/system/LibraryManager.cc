@@ -15,31 +15,30 @@
 #include <cctype>
 #include <map>
 
-#include <limits.h> // for PATH_MAX
-#include <dlfcn.h> // for dlopen
+#include <dlfcn.h>   // for dlopen
+#include <limits.h>  // for PATH_MAX
 
 #include "eckit/system/LibraryManager.h"
 
 
-#include "eckit/eckit_config.h"
+#include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/Plugin.h"
+#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/utils/Translator.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/config/YAMLConfiguration.h"
-#include "eckit/config/LocalConfiguration.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit {
 namespace system {
@@ -49,7 +48,7 @@ namespace system {
 static std::string path_from_libhandle(const std::string& libname, void* handle) {
 #ifdef eckit_HAVE_DLINFO
     char path[PATH_MAX];
-    if(::dlinfo(handle, RTLD_DI_ORIGIN, path) < 0) {
+    if (::dlinfo(handle, RTLD_DI_ORIGIN, path) < 0) {
         std::ostringstream ss;
         ss << "dlinfo(" << libname << ", ...) " << ::dlerror();
         throw FailedSystemCall(ss.str().c_str(), Here());
@@ -74,6 +73,12 @@ public:  // methods
     static LibraryRegistry& instance() {
         static LibraryRegistry reg;
         return reg;
+    }
+
+    ~LibraryRegistry() {
+        for (auto p : loadedPlugins()) {
+            unloadPlugin(p);
+        }
     }
 
     /// Registers an entry to the registry
@@ -162,15 +167,15 @@ public:  // methods
         for (const std::string& dir : libPaths) {
 
             LocalPathName path = dir + "/" + dynamicLibraryName;
-            
+
             if (path.exists()) {
-                
-                ::dlerror(); // clear error
+
+                ::dlerror();  // clear error
 
                 Log::debug() << "Loading library " << path.realName() << std::endl;
 
                 void* plib = ::dlopen(path.localPath(), RTLD_NOW | RTLD_GLOBAL);
-                
+
                 if (plib == nullptr) {
                     std::ostringstream ss;
                     ss << "dlopen(" << path.realName() << ", ...) " << ::dlerror();
@@ -183,7 +188,8 @@ public:  // methods
         }
 
         // now we try with the system LD_LIBRARY_PATH environment variable
-        Log::debug() << "Loading library " << dynamicLibraryName <<  " from LD_LIBRARY_PATH or system paths" << std::endl;
+        Log::debug() << "Loading library " << dynamicLibraryName << " from LD_LIBRARY_PATH or system paths"
+                     << std::endl;
         void* plib = ::dlopen(dynamicLibraryName.c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (plib) {
             Log::debug() << "Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
@@ -200,7 +206,7 @@ public:  // methods
             std::string libname = it->second;
             return dynamic_cast<Plugin*>(&lookup(libname));
         }
-        else { 
+        else {
             return nullptr;
         }
     }
@@ -212,14 +218,14 @@ public:  // methods
         std::string lib = libname.empty() ? name : libname;
 
         // check if respective library is already loaded
-        if (!exists(lib)) { 
-            
+        if (!exists(lib)) {
+
             // lets load since the associated library isn't registered
             void* libhandle = loadDynamicLibrary(lib);
 
-            // the plugin should self-register when the library loads 
+            // the plugin should self-register when the library loads
             Plugin* plugin = lookupPlugin(name);
-            if(plugin) {
+            if (plugin) {
                 Log::debug() << "Loaded plugin [" << name << "] from library [" << lib << "]" << std::endl;
                 plugin->handle(libhandle);
                 plugin->init();
@@ -235,7 +241,7 @@ public:  // methods
         }
 
         Plugin* plugin = lookupPlugin(name);
-        if(plugin) {
+        if (plugin) {
             Log::warning() << "Plugin " << name << " already loaded" << std::endl;
             return *plugin;
         }
@@ -244,6 +250,26 @@ public:  // methods
         ss << "A library " << name << " is loaded but it is not a Plugin library";
         throw UnexpectedState(ss.str(), Here());
     }
+
+    bool unloadPlugin(const std::string& name) { 
+            Plugin* plugin = lookupPlugin(name); 
+            if(plugin) {
+                plugin->finalise();
+                void* handle = plugin->handle();
+                if(handle) {
+                    ::dlerror();  // clear error
+                    int err = ::dlclose(handle);
+                    if (err) {
+                        std::ostringstream ss;
+                        ss << "Failed system call to ::dlclose() for plugin " << name << " - " << ::dlerror();
+                        throw FailedSystemCall(ss.str().c_str(), Here());
+                    }
+                    return true;
+                }
+            }
+            return false;
+    }
+
 
     std::map<std::string, LocalConfiguration> scanManifestPaths() {
         std::map<std::string, LocalConfiguration> manifests;
@@ -257,23 +283,23 @@ public:  // methods
         // always scan ~eckit/share/plugins and ~/share/plugins as a last resort
         scanPaths.push_back("~eckit/share/plugins");
         scanPaths.push_back("~/share/plugins");
-        
+
         Log::debug() << "Plugins manifest candidate paths " << scanPaths << std::endl;
 
-        std::set<LocalPathName> visited; //< we dont visit same path twice
+        std::set<LocalPathName> visited;  //< we dont visit same path twice
 
-        for(auto& path : scanPaths) {
+        for (auto& path : scanPaths) {
 
             LocalPathName dir(path);
-            if(not dir.exists() or not dir.isDir())
+            if (not dir.exists() or not dir.isDir())
                 continue;
 
             LocalPathName realdir(dir.realName());
-            if(visited.count(realdir)) {
+            if (visited.count(realdir)) {
                 Log::debug() << "Skipping plugins manifest dir already visited: " << realdir << std::endl;
                 continue;
             }
-            
+
             visited.insert(realdir);
 
             Log::debug() << "Scanning for plugins manifest path " << path << " resolved to " << realdir << std::endl;
@@ -291,10 +317,10 @@ public:  // methods
                     LocalConfiguration manifest = conf.getSubConfiguration("plugin");
                     Log::debug() << "Loaded plugin manifest " << manifest << std::endl;
                     std::string name = manifest.getString("name");
-                    ASSERT(manifests.find(name) == manifests.end()); // no duplicate manifests
+                    ASSERT(manifests.find(name) == manifests.end());  // no duplicate manifests
                     manifests[name] = manifest;
                 }
-            }            
+            }
         }
         return manifests;
     }
@@ -309,8 +335,8 @@ public:  // methods
         std::map<std::string, LocalConfiguration> manifests = scanManifestPaths();
 
         // if no plugins configured we load all what was found in the manifests
-        if(plugins.empty()) {
-            for(const auto& kv: manifests) {
+        if (plugins.empty()) {
+            for (const auto& kv : manifests) {
                 plugins.push_back(kv.first);
             }
         }
@@ -320,10 +346,10 @@ public:  // methods
         for (const auto& pname : plugins) {
             if (manifests.find(pname) != manifests.end()) {
                 LocalConfiguration manifest = manifests[pname];
-                std::string name = manifest.getString("name");
+                std::string name            = manifest.getString("name");
                 ASSERT(pname == name);
-                std::string lib  = manifest.getString("library");
-                Plugin& plugin   = loadPlugin(name, lib);
+                std::string lib = manifest.getString("library");
+                Plugin& plugin  = loadPlugin(name, lib);
             }
             else {
                 Log::warning() << "Could not find manifest file for plugin " << pname << std::endl;
@@ -340,14 +366,15 @@ public:  // methods
     }
 
     void deregisterPlugin(const std::string& name) {
-        // dont add logging here, since order of destruction of plugins not guaranteed to be reversed from Log singletons
+        // dont add logging here, since order of destruction of plugins not guaranteed to be reversed from Log
+        // singletons
         AutoLock<Mutex> lockme(mutex_);
         plugins_.erase(name);
     }
 
 private:  // members
     LibraryMap libs_;
-    std::map<std::string, std::string> plugins_; //< map plugin name to library
+    std::map<std::string, std::string> plugins_;  //< map plugin name to library
     mutable Mutex mutex_;
 };
 

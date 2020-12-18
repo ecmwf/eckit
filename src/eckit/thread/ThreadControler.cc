@@ -11,7 +11,6 @@
 #include <signal.h>
 
 #include "eckit/log/Log.h"
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"

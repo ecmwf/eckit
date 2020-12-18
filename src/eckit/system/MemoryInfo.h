@@ -12,11 +12,9 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_systemMemoryInfo_H
-#define eckit_systemMemoryInfo_H
+#pragma once
 
 #include <iosfwd>
-
 
 namespace eckit {
 namespace system {
@@ -27,7 +25,7 @@ struct MemoryInfo {
 
     MemoryInfo();
 
-    // mallino
+    // mallinfo
     size_t arena_;
     // size_t ordblks_;
     // size_t smblks_;
@@ -49,10 +47,6 @@ struct MemoryInfo {
     size_t mapped_write_;   
     size_t mapped_execute_;
     size_t mapped_private_;
-
-    // eckit allocators
-    size_t largeUsed_;
-    size_t largeFree_;
 
     // mmap, smgget
 
@@ -77,5 +71,3 @@ struct MemoryInfo {
 
 }  // namespace system
 }  // namespace eckit
-
-#endif

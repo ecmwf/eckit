@@ -16,7 +16,6 @@
 #include "eckit/log/Seconds.h"
 
 #include "eckit/memory/MMap.h"
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"

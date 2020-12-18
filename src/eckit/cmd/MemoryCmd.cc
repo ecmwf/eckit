@@ -9,9 +9,9 @@
  */
 
 #include "eckit/cmd/MemoryCmd.h"
-#include "eckit/memory/MemoryPool.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include "eckit/system/SystemInfo.h"
+#include "eckit/system/MemoryInfo.h"
 
 namespace eckit {
 
@@ -22,7 +22,7 @@ MemoryCmd::MemoryCmd() : CmdResource("memory") {}
 MemoryCmd::~MemoryCmd() {}
 
 void MemoryCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
-    MemoryPool::info(out);
+    out << eckit::system::SystemInfo::instance().memoryUsage() << std::endl;
 }
 
 void MemoryCmd::help(std::ostream&) const {}
@@ -31,7 +31,7 @@ Arg MemoryCmd::usage(const std::string& cmd) const {
     return Arg();
 }
 
-static MemoryCmd MemoryCmd;
+static MemoryCmd memoryCmd;
 
 //----------------------------------------------------------------------------------------------------------------------
 

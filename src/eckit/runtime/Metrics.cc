@@ -126,7 +126,7 @@ void MetricsCollector::pop() {
 
 void MetricsCollector::timestamp(const std::string& name, time_t time, bool overrideOk) {
     timestamps_[name] = time;
-    set(name, time, overrideOk);
+    set(name, iso(time), overrideOk);
 }
 
 void MetricsCollector::set(const std::string& name, const std::vector<std::string>& value, bool overrideOk) {
@@ -274,6 +274,26 @@ void Metrics::timestamp(const std::string& name, time_t time, bool overrideOk) {
     if (current_) {
         current_->timestamp(name, time, overrideOk);
     }
+}
+
+void Metrics::set(const std::string& name, bool value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, double value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, unsigned long value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, unsigned long long value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, const Length& value, bool overrideOk) {
+    set(name, static_cast<unsigned long long>(value), overrideOk);
 }
 
 CollectMetrics::CollectMetrics() : collector_(new MetricsCollector()) {}

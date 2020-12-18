@@ -16,14 +16,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileTarget::FileTarget(const PathName& path) : buffer_(4 * 1024), path_(path) {
-
-    size_t logFileBufferSize = eckit::Resource<size_t>("logFileBufferSize", buffer_.size());  // deactivate with 0
-
-    if (logFileBufferSize) {
-        buffer_.resize(logFileBufferSize);
+FileTarget::FileTarget(const PathName& path, size_t bufferSize) : buffer_(bufferSize), path_(path) {
+    if (bufferSize) {
+        buffer_.resize(bufferSize);
         buffer_.zero();
-        out_.rdbuf()->pubsetbuf(buffer_, logFileBufferSize);
+        out_.rdbuf()->pubsetbuf(buffer_, buffer_.size());
     }
 
     out_.open(path_.asString().c_str(), std::ofstream::out | std::ofstream::app);

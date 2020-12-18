@@ -25,8 +25,8 @@ namespace eckit {
 
 class FileTarget : public LogTarget {
 public:
-    FileTarget(const PathName& path);
-    ~FileTarget();
+    explicit FileTarget(const PathName& path, size_t bufferSize = 4 * 1024);
+    virtual ~FileTarget();
 
 private:
     virtual void write(const char* start, const char* end) override;

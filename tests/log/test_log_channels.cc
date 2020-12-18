@@ -139,7 +139,6 @@ CASE("test_multi_targets") {
 }
 
 CASE("test_multi_colouring") {
-
 #if 0
     Log::info().setLogTarget(    new ColouringTarget(new OStreamTarget(std::cout), &Colour::green));
     Log::warning().setLogTarget( new ColouringTarget(new OStreamTarget(std::cerr), &Colour::yellow));

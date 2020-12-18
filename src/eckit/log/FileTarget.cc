@@ -16,7 +16,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileTarget::FileTarget(const PathName& path) : buffer_(8 * 1024), path_(path) {
+FileTarget::FileTarget(const PathName& path) : buffer_(4 * 1024), path_(path) {
 
     size_t logFileBufferSize = eckit::Resource<size_t>("logFileBufferSize", buffer_.size());  // deactivate with 0
 
@@ -33,7 +33,7 @@ FileTarget::FileTarget(const PathName& path) : buffer_(8 * 1024), path_(path) {
 }
 
 FileTarget::~FileTarget() {
-    //    std::cerr << "FileTarget::~FileTarget() -- " << path_ << std::endl;
+    // std::cerr << "FileTarget::~FileTarget() -- " << path_ << std::endl;
     // out_.close();
     // if (out_) {
     //     throw eckit::CloseError(path_.asString(), Here());

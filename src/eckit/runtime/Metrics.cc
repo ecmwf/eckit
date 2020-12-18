@@ -19,6 +19,8 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class MetricsCollector;
 
 static StaticMutex local_mutex;
@@ -74,7 +76,7 @@ private:  // methods
     }
 };
 
-MetricsCollector::MetricsCollector() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)) {
+MetricsCollector::MetricsCollector() : created_(::time(nullptr)), metrics_(Value::makeOrderedMap()) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
@@ -200,9 +202,7 @@ void MetricsCollector::print(std::ostream& s) const {
     json << top;
 }
 
-
-//=============================================================================
-
+//----------------------------------------------------------------------------------------------------------------------
 
 void Metrics::set(const std::string& name, const std::map<std::string, unsigned long long>& value, bool overrideOk) {
     AutoLock<StaticMutex> lock(local_mutex);
@@ -280,6 +280,14 @@ void Metrics::set(const std::string& name, bool value, bool overrideOk) {
     set(name, Value(value), overrideOk);
 }
 
+void Metrics::set(const std::string& name, int value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, long long value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
 void Metrics::set(const std::string& name, double value, bool overrideOk) {
     set(name, Value(value), overrideOk);
 }
@@ -309,5 +317,6 @@ void CollectMetrics::print(std::ostream& s) const {
     s << oss.str();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

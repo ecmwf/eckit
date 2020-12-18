@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Nov 2020
 
-#ifndef eckit_Metrics_h
-#define eckit_Metrics_h
-
+#pragma once
 
 #include <ctime>
 #include <map>
@@ -22,7 +20,6 @@
 #include <vector>
 
 #include "eckit/value/Value.h"
-
 
 namespace eckit {
 
@@ -65,6 +62,8 @@ private:
     ~Metrics();
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class CollectMetrics {
 
     MetricsCollector *collector_;
@@ -82,6 +81,7 @@ public:
     }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class MetricsPrefix {
 public:
@@ -92,5 +92,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -147,7 +147,10 @@ LocalPathName LocalPathName::baseName(bool ext) const {
         if (n >= 0)
             s.resize(n);
     }
-    return s;
+
+    bool tildeIsUserHome = false;
+    bool skipTidy = true;
+    return LocalPathName(s, tildeIsUserHome, skipTidy);
 }
 
 std::string LocalPathName::extension() const {
@@ -492,11 +495,13 @@ static void rebuild_path(const std::vector<std::string>& v, std::string& path, b
     }
 }
 
-LocalPathName& LocalPathName::tidy(bool tildeIsUserHome) {
+LocalPathName& LocalPathName::tidy(bool tildeIsUserHome, bool skipTildeExpansion) {
     if (path_.length() == 0)
         return *this;
 
-    expandTilde(path_, tildeIsUserHome);
+    if (!skipTildeExpansion) {
+        expandTilde(path_, tildeIsUserHome);
+    }
 
     bool trail = (path_[path_.length() - 1] == '/');  // remember to put back ending '/' if there is one
 

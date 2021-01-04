@@ -267,6 +267,14 @@ CASE("Check link") {
     linkpath.unlink();
 }
 
+CASE("Special characters not expanded in baseName") {
+
+    LocalPathName p = "/base/path/~filename";
+
+    EXPECT(p.dirName() == "/base/path");
+    EXPECT(std::string(p.baseName()) == "~filename");
+}
+
 std::string tidy(const std::string& p) {
     return LocalPathName(p).path();
 }

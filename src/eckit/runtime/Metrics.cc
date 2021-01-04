@@ -19,6 +19,8 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class MetricsCollector;
 
 static StaticMutex local_mutex;
@@ -36,15 +38,15 @@ public:  // methods
     MetricsCollector();
     ~MetricsCollector();
 
-    void set(const std::string& name, const Value& value);
+    void set(const std::string& name, const Value& value, bool overrideOk);
 
-    void set(const std::string& name, const std::set<std::string>& value);
+    void set(const std::string& name, const std::set<std::string>& value, bool overrideOk);
 
-    void set(const std::string& name, const std::vector<std::string>& value);
+    void set(const std::string& name, const std::vector<std::string>& value, bool overrideOk);
 
-    void set(const std::string& name, const std::map<std::string, unsigned long long>& value);
+    void set(const std::string& name, const std::map<std::string, unsigned long long>& value, bool overrideOk);
 
-    void timestamp(const std::string& name, time_t value);
+    void timestamp(const std::string& name, time_t value, bool overrideOk);
 
     void error(const std::exception&);
 
@@ -74,7 +76,7 @@ private:  // methods
     }
 };
 
-MetricsCollector::MetricsCollector() : metrics_(Value::makeOrderedMap()), created_(::time(nullptr)) {
+MetricsCollector::MetricsCollector() : created_(::time(nullptr)), metrics_(Value::makeOrderedMap()) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
@@ -88,10 +90,10 @@ MetricsCollector::~MetricsCollector() {
 }
 
 void MetricsCollector::error(const std::exception& e) {
-    set("error", e.what());
+    set("error", e.what(), true);
 }
 
-void MetricsCollector::set(const std::string& name, const Value& value) {
+void MetricsCollector::set(const std::string& name, const Value& value, bool overrideOk) {
 
     std::stringstream oss;
     const char* sep = "";
@@ -102,11 +104,14 @@ void MetricsCollector::set(const std::string& name, const Value& value) {
     oss << sep << name;
     std::string full = oss.str();
 
-    if (keys_.find(full) != keys_.end()) {
-        std::stringstream oss;
-        oss << "MetricsCollector::set(" << full << ") duplicate key, new=" << value << ", old=" << metrics_[full];
-        throw SeriousBug(oss.str());
+    if (!overrideOk) {
+        if (keys_.find(full) != keys_.end()) {
+            std::stringstream oss;
+            oss << "MetricsCollector::set(" << full << ") duplicate key, new=" << value << ", old=" << metrics_[full];
+            throw SeriousBug(oss.str());
+        }
     }
+
     keys_.insert(full);
     metrics_[full] = value;
 }
@@ -121,21 +126,21 @@ void MetricsCollector::pop() {
 }
 
 
-void MetricsCollector::timestamp(const std::string& name, time_t time) {
+void MetricsCollector::timestamp(const std::string& name, time_t time, bool overrideOk) {
     timestamps_[name] = time;
-    set(name, time);
+    set(name, iso(time), overrideOk);
 }
 
-void MetricsCollector::set(const std::string& name, const std::vector<std::string>& value) {
-    set(name, toValue(value));
+void MetricsCollector::set(const std::string& name, const std::vector<std::string>& value, bool overrideOk) {
+    set(name, toValue(value), overrideOk);
 }
 
-void MetricsCollector::set(const std::string& name, const std::set<std::string>& value) {
-    set(name, toValue(value));
+void MetricsCollector::set(const std::string& name, const std::set<std::string>& value, bool overrideOk) {
+    set(name, toValue(value), overrideOk);
 }
 
-void MetricsCollector::set(const std::string& name, const std::map<std::string, unsigned long long>& value) {
-    set(name, toValue(value));
+void MetricsCollector::set(const std::string& name, const std::map<std::string, unsigned long long>& value, bool overrideOk) {
+    set(name, toValue(value), overrideOk);
 }
 
 void MetricsCollector::send(Stream& s) const {
@@ -147,7 +152,7 @@ void MetricsCollector::receive(Stream& s) {
     ValueMap m = v;
     for (auto j = m.begin(); j != m.end(); ++j) {
         std::string key = (*j).first;
-        set(key, (*j).second);
+        set(key, (*j).second, false);
     }
 }
 
@@ -197,38 +202,7 @@ void MetricsCollector::print(std::ostream& s) const {
     json << top;
 }
 
-
-//=============================================================================
-
-
-void Metrics::set(const std::string& name, const std::map<std::string, unsigned long long>& value) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    if (current_) {
-        current_->set(name, value);
-    }
-}
-
-void Metrics::set(const std::string& name, const std::set<std::string>& value) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    if (current_) {
-        current_->set(name, value);
-    }
-}
-
-void Metrics::set(const std::string& name, const std::vector<std::string>& value) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    if (current_) {
-        current_->set(name, value);
-    }
-}
-
-
-void Metrics::set(const std::string& name, const eckit::Value& value) {
-    AutoLock<StaticMutex> lock(local_mutex);
-    if (current_) {
-        current_->set(name, value);
-    }
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 void Metrics::receive(eckit::Stream& s) {
     AutoLock<StaticMutex> lock(local_mutex);
@@ -265,13 +239,84 @@ void Metrics::error(const std::exception& message) {
     }
 }
 
-
-void Metrics::timestamp(const std::string& name, time_t time) {
+void Metrics::timestamp(const std::string& name, time_t time, bool overrideOk) {
     AutoLock<StaticMutex> lock(local_mutex);
     if (current_) {
-        current_->timestamp(name, time);
+        current_->timestamp(name, time, overrideOk);
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Metrics::set(const std::string& name, const eckit::Value& value, bool overrideOk) {
+    AutoLock<StaticMutex> lock(local_mutex);
+    if (current_) {
+        current_->set(name, value, overrideOk);
+    }
+}
+
+void Metrics::set(const std::string& name, const std::vector<std::string>& value, bool overrideOk) {
+    AutoLock<StaticMutex> lock(local_mutex);
+    if (current_) {
+        current_->set(name, value, overrideOk);
+    }
+}
+
+void Metrics::set(const std::string& name, const std::set<std::string>& value, bool overrideOk) {
+    AutoLock<StaticMutex> lock(local_mutex);
+    if (current_) {
+        current_->set(name, value, overrideOk);
+    }
+}
+
+void Metrics::set(const std::string& name, const std::map<std::string, unsigned long long>& value, bool overrideOk) {
+    AutoLock<StaticMutex> lock(local_mutex);
+    if (current_) {
+        current_->set(name, value, overrideOk);
+    }
+}
+
+void Metrics::set(const std::string& name, bool value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, int value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, unsigned int value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, long value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, unsigned long value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, long long value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, unsigned long long value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, double value, bool overrideOk) {
+    set(name, Value(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, const Length& value, bool overrideOk) {
+    set(name, static_cast<unsigned long long>(value), overrideOk);
+}
+
+void Metrics::set(const std::string& name, const Offset& value, bool overrideOk) {
+    set(name, static_cast<long long>(value), overrideOk);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 CollectMetrics::CollectMetrics() : collector_(new MetricsCollector()) {}
 
@@ -280,8 +325,12 @@ CollectMetrics::~CollectMetrics() {
 }
 
 void CollectMetrics::print(std::ostream& s) const {
-    s << *collector_;
+    // Avoid that long lines are truncated and mixed up
+    std::ostringstream oss;
+    oss << *collector_;
+    s << oss.str();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-/// @file FileTarget.h
 /// @author Tiago Quintino
 
 #ifndef eckit_log_FileTarget_h
@@ -18,17 +17,16 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/LogTarget.h"
-
+#include "eckit/io/ResizableBuffer.h"
 
 namespace eckit {
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class FileTarget : public LogTarget {
 public:
-    FileTarget(const PathName& path);
-    ~FileTarget();
+    explicit FileTarget(const PathName& path, size_t bufferSize = 4 * 1024);
+    virtual ~FileTarget();
 
 private:
     virtual void write(const char* start, const char* end) override;
@@ -38,7 +36,7 @@ private:
 
 private:
     std::ofstream out_;
-
+    ResizableBuffer buffer_;  //< configurable buffer for ofstream
     PathName path_;
 };
 

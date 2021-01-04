@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Nov 2020
 
-#ifndef eckit_Metrics_h
-#define eckit_Metrics_h
-
+#pragma once
 
 #include <ctime>
 #include <map>
@@ -23,22 +21,36 @@
 
 #include "eckit/value/Value.h"
 
-
 namespace eckit {
 
 class Stream;
 class MetricsCollector;
+class Offset;
+class Length;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class Metrics {
 public:  // methods
-    static void set(const std::string& name, const Value& value);
+    static void set(const std::string& name, const Value& value, bool overrideOk = false);
 
-    static void set(const std::string& name, const std::vector<std::string>& value);
-    static void set(const std::string& name, const std::set<std::string>& value);
+    static void set(const std::string& name, const std::vector<std::string>& value, bool overrideOk = false);
+    static void set(const std::string& name, const std::set<std::string>& value, bool overrideOk = false);
+    static void set(const std::string& name, const std::map<std::string, unsigned long long>& value,
+                    bool overrideOk = false);
 
-    static void set(const std::string& name, const std::map<std::string, unsigned long long>& value);
-    static void timestamp(const std::string& name, time_t value);
+    static void set(const std::string& name, bool value, bool overrideOk = false);
+    static void set(const std::string& name, int value, bool overrideOk = false);
+    static void set(const std::string& name, unsigned int value, bool overrideOk = false);
+    static void set(const std::string& name, long value, bool overrideOk = false);
+    static void set(const std::string& name, unsigned long value, bool overrideOk = false);
+    static void set(const std::string& name, long long value, bool overrideOk = false);
+    static void set(const std::string& name, unsigned long long value, bool overrideOk = false);
+    static void set(const std::string& name, double value, bool overrideOk = false);
+    static void set(const std::string& name, const Offset& value, bool overrideOk = false);
+    static void set(const std::string& name, const Length& value, bool overrideOk = false);
+
+    static void timestamp(const std::string& name, time_t value, bool overrideOk = false);
 
     static void error(const std::exception&);
 
@@ -50,6 +62,8 @@ private:
     Metrics();
     ~Metrics();
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class CollectMetrics {
 
@@ -68,6 +82,7 @@ public:
     }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class MetricsPrefix {
 public:
@@ -78,5 +93,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

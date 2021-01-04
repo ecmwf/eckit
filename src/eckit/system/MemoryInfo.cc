@@ -18,7 +18,6 @@
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/memory/MMap.h"
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
 #include "eckit/system/MemoryInfo.h"
 
@@ -29,11 +28,6 @@ namespace system {
 
 MemoryInfo::MemoryInfo() {
     ::memset(this, 0, sizeof(*this));
-
-    MemoryPool::info(transientUsed_, transientFree_, MemPool::transientPool);
-    MemoryPool::info(permanentUsed_, permanentFree_, MemPool::permanentPool);
-    MemoryPool::large(largeUsed_, largeFree_);
-
     MMap::info(mmap_count_, mmap_size_);
     Shmget::info(shm_count_, shm_size_);
 }
@@ -76,14 +70,6 @@ void MemoryInfo::print(std::ostream& out) const {
     put(out, "mapped write", mapped_write_, printed);
     put(out, "mapped execute", mapped_execute_, printed);
     put(out, "mapped private", mapped_private_, printed);
-
-    // eckit allocators
-    put(out, "large used", largeUsed_, printed);
-    put(out, "large free", largeFree_, printed);
-    put(out, "transient used", transientUsed_, printed);
-    put(out, "transient free", transientFree_, printed);
-    put(out, "permanent used", permanentUsed_, printed);
-    put(out, "permanent Free", permanentFree_, printed);
 
     // mallino
     put(out, "malloc arena", arena_, printed);
@@ -167,15 +153,7 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     diff(out, "mapped execute", mapped_execute_, other.mapped_execute_, printed);
     diff(out, "mapped private", mapped_private_, other.mapped_private_, printed);
 
-    // eckit allocators
-    diff(out, "large used", largeUsed_, other.largeUsed_, printed);
-    diff(out, "large free", largeFree_, other.largeFree_, printed);
-    diff(out, "transient used", transientUsed_, other.transientUsed_, printed);
-    diff(out, "transient free", transientFree_, other.transientFree_, printed);
-    diff(out, "permanent used", permanentUsed_, other.permanentUsed_, printed);
-    diff(out, "permanent free", permanentFree_, other.permanentFree_, printed);
-
-    // mallino
+    // mallinfo
     diff(out, "malloc arena", arena_, other.arena_, printed);
     // diff(out, "ordblks", ordblks_, other.ordblks_, printed);
     // diff(out, "smblks", smblks_, other.smblks_, printed);

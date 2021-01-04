@@ -671,7 +671,7 @@ void EasyCURLResponseStream::print(std::ostream& s) const {
 
 
 EasyCURLResponseImp::EasyCURLResponseImp(const std::string& url, CURLHandle* curl) :
-    url_(url), ch_(curl), body_(false), code_(0) {
+    url_(url), ch_(curl), code_(0), body_(false) {
     ch_->attach();
 }
 
@@ -737,7 +737,7 @@ private:
 
 
 EasyCURLHandle::EasyCURLHandle(EasyCURLResponseImp* imp, const std::string& message) :
-    read_(0), message_(message), imp_(imp) {
+    imp_(imp), read_(0), message_(message) {
     imp_->attach();
 }
 

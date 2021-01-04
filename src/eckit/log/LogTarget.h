@@ -26,7 +26,6 @@ class LogTarget : public Counted {
 public:  // methods
     LogTarget();
 
-
     virtual void write(const char* start, const char* end) = 0;
     virtual void flush()                                   = 0;
 

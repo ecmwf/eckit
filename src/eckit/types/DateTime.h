@@ -34,6 +34,7 @@ public:
     DateTime(const Date&, const Time&);
     DateTime(const std::string&);
     DateTime(double);
+    DateTime(const DateTime& other);
 
 #include "eckit/types/DateTime.b"
 

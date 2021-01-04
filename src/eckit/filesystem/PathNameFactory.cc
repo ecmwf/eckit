@@ -24,7 +24,7 @@ PathNameFactory::PathNameFactory() {}
 
 void PathNameFactory::enregister(const std::string& name, const PathNameBuilderBase* builder) {
 
-    std::lock_guard<std::mutex> lock_(m_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
 
     if (builders_.find(name) != builders_.end()) {
         std::ostringstream ss;
@@ -38,7 +38,7 @@ void PathNameFactory::enregister(const std::string& name, const PathNameBuilderB
 
 void PathNameFactory::deregister(const PathNameBuilderBase* builder) {
 
-    std::lock_guard<std::mutex> lock_(m_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
 
     for (auto it = builders_.begin(); it != builders_.end(); ++it) {
         if (it->second == builder) {
@@ -54,6 +54,7 @@ void PathNameFactory::deregister(const PathNameBuilderBase* builder) {
     ss << "Cannot deregister PathNameBuilder " << (void*)builder << ". Not found";
     throw SeriousBug(ss.str(), Here());
 }
+
 BasePathName* PathNameFactory::build(const std::string& path, bool tildeIsUserHome) const {
 
     std::string type = "local";
@@ -69,7 +70,7 @@ BasePathName* PathNameFactory::build(const std::string& path, bool tildeIsUserHo
 
 BasePathName* PathNameFactory::build(const std::string& type, const std::string& path, bool tildeIsUserHome) const {
 
-    std::lock_guard<std::mutex> lock_(m_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
 
     auto it = builders_.find(type);
     if (it == builders_.end()) {

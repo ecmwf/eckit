@@ -67,7 +67,7 @@ public:  // public
         std::unique_lock<std::mutex> locker(mutex_);
         closed_ = true;
         locker.unlock();
-        cv_.notify_one();
+        cv_.notify_all();
     }
 
     bool closed() {

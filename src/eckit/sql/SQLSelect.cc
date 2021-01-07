@@ -212,14 +212,13 @@ void SQLSelect::prepareExecute() {
 
         if (aggregated_.size() != select_.size()) {
             mixedAggregatedAndScalar_ = true;
-            Log::info() << "SELECT has aggregated and non-aggregated results" << std::endl;
+            Log::debug<LibEcKit>() << "SELECT has aggregated and non-aggregated results" << std::endl;
         }
     }
 
 
     std::shared_ptr<SQLExpression> where(where_);
     if (where) {
-        Log::info() << "WHERE: " << *where << std::endl;
         where->prepare(*this);
 
         bool more = true;
@@ -235,11 +234,11 @@ void SQLSelect::prepareExecute() {
         if (where->isConstant()) {
             bool missing = false;
             if (where->eval(missing)) {
-                Log::info() << "WHERE condition always true, ignoring" << std::endl;
+                Log::debug<LibEcKit>() << "WHERE condition always true" << std::endl;
                 where = 0;
             }
             else {
-                Log::info() << "WHERE condition always false" << std::endl;
+                Log::debug<LibEcKit>() << "WHERE condition always false" << std::endl;
                 return;
             }
         }
@@ -264,7 +263,7 @@ void SQLSelect::prepareExecute() {
                                    << "->" << x.table2_->fullName() << std::endl;
                     continue;
                 }
-                Log::info() << "Using link " << table1->fullName() << "->" << table2->fullName() << std::endl;
+                Log::debug<LibEcKit>() << "Using link " << table1->fullName() << "->" << table2->fullName() << std::endl;
 
                 //
                 std::string o      = name2 + ".offset";
@@ -365,8 +364,8 @@ void SQLSelect::prepareExecute() {
 
                         if (ok) {
                             (*k)->check_.push_back(e[i]);
-                            Log::info() << "WHERE multi-table quick check for " << table->fullName() << " " << (*e[i])
-                                        << std::endl;
+                            Log::debug<LibEcKit>() << "WHERE multi-table quick check for " << table->fullName() << " " << (*e[i])
+                                                   << std::endl;
 
                             e[i] = 0;
                         }

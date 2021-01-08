@@ -31,6 +31,9 @@ public:  // methods
     ResizableBuffer(size_t size);
     ResizableBuffer(const char*, size_t size);
 
+    ResizableBuffer(ResizableBuffer&& rhs) noexcept;
+    ResizableBuffer& operator=(ResizableBuffer&& rsh) noexcept;
+
     ~ResizableBuffer();
 
     operator char*() { return buffer_; }

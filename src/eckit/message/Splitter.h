@@ -66,7 +66,7 @@ template <class T>
 class SplitterBuilder : public SplitterFactory {
     virtual Splitter* make(eckit::PeekHandle& handle) const override { return new T(handle); }
 
-    virtual bool match(eckit::PeekHandle& handle) const;
+    virtual bool match(eckit::PeekHandle& handle) const override;
     //     return M(handle);
     // }
 };

@@ -14,7 +14,6 @@
 #ifndef SQLIterator_H
 #define SQLIterator_H
 
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/sql/type/SQLType.h"
 
 #include <functional>
@@ -25,9 +24,9 @@ namespace sql {
 // Forward declarations
 class SQLIterator {
 public:
-    void* operator new(size_t s) { return eckit::MemoryPool::fastAllocate(s); }
+    // void* operator new(size_t s) { return eckit::MemoryPool::fastAllocate(s); }
     // void *operator new(size_t s,void *p)  { return p;                          }
-    void operator delete(void* p) { eckit::MemoryPool::fastDeallocate(p); }
+    // void operator delete(void* p) { eckit::MemoryPool::fastDeallocate(p); }
 
     SQLIterator(const type::SQLType& type) : type_(type) {}
 

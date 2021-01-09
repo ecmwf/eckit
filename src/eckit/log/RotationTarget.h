@@ -14,7 +14,6 @@
 #ifndef eckit_log_RotationTarget_h
 #define eckit_log_RotationTarget_h
 
-
 #include "eckit/log/LogTarget.h"
 
 namespace eckit {

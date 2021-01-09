@@ -30,7 +30,7 @@ static void offLine(const std::string& host, int port) {
 }
 
 Connector::Connector(const std::string& host, int port, const std::string& node) :
-    host_(host), port_(port), node_(node), locked_(false), memoize_(false), sent_(false), life_(0), autoclose_(false) {
+    host_(host), node_(node), port_(port), locked_(false), memoize_(false), sent_(false), life_(0), autoclose_(false) {
     Log::info() << "Connector::Connector(" << node << "," << host << ":" << port << ")" << std::endl;
 }
 

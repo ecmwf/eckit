@@ -212,6 +212,11 @@ public:
     ReadError(const std::string&, const CodeLocation&);
 };
 
+class CloseError : public FileError {
+public:
+    CloseError(const std::string&, const CodeLocation&);
+};
+
 class ShortFile : public ReadError {
 public:
     ShortFile(const std::string&);

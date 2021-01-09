@@ -42,7 +42,7 @@ public:  // methods
 private:  // methods
     PathNameFactory();
 
-    mutable std::mutex m_;
+    mutable std::recursive_mutex mutex_;
     std::vector<std::string> names_;
     std::map<std::string, const PathNameBuilderBase*> builders_;
 };

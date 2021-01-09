@@ -104,12 +104,12 @@ void ChannelBuffer::setStream(std::ostream& out) {
     setTarget(new OStreamTarget(out));
 }
 
-void ChannelBuffer::addFile(const std::string& path) {
-    setTarget(new TeeTarget(target_, new FileTarget(path)));
+void ChannelBuffer::addFile(const std::string& path, size_t bufferSize) {
+    setTarget(new TeeTarget(target_, new FileTarget(path, bufferSize)));
 }
 
-void ChannelBuffer::setFile(const std::string& path) {
-    setTarget(new FileTarget(path));
+void ChannelBuffer::setFile(const std::string& path, size_t bufferSize) {
+    setTarget(new FileTarget(path, bufferSize));
 }
 
 std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch) {

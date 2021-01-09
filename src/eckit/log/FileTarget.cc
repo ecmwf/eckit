@@ -10,19 +10,31 @@
 
 #include "eckit/log/FileTarget.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/config/Resource.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileTarget::FileTarget(const PathName& path) : out_(path.asString().c_str()), path_(path) {
-    if (!out_)
-        throw eckit::CantOpenFile(path.asString());
-    //    std::cerr << "FileTarget created : " << path_ << std::endl;
+FileTarget::FileTarget(const PathName& path, size_t bufferSize) : buffer_(bufferSize), path_(path) {
+    if (bufferSize) {
+        buffer_.resize(bufferSize);
+        buffer_.zero();
+        out_.rdbuf()->pubsetbuf(buffer_, buffer_.size());
+    }
+
+    out_.open(path_.asString().c_str(), std::ofstream::out | std::ofstream::app);
+    if (!out_) {
+        throw eckit::CantOpenFile(path_.asString());
+    }
 }
 
 FileTarget::~FileTarget() {
-    //    std::cerr << "FileTarget::~FileTarget() -- " << path_ << std::endl;
+    // std::cerr << "FileTarget::~FileTarget() -- " << path_ << std::endl;
+    // out_.close();
+    // if (out_) {
+    //     throw eckit::CloseError(path_.asString(), Here());
+    // }
 }
 
 void FileTarget::write(const char* start, const char* end) {

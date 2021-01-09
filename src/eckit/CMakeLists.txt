@@ -751,8 +751,6 @@ memory/MapAllocator.cc
 memory/MapAllocator.h
 memory/MemoryBuffer.cc
 memory/MemoryBuffer.h
-memory/MemoryPool.cc
-memory/MemoryPool.h
 memory/NonCopyable.cc
 memory/NonCopyable.h
 memory/OnlyMovable.h

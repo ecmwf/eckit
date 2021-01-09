@@ -26,7 +26,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/memory/MMap.h"
-#include "eckit/memory/MemoryPool.h"
 #include "eckit/memory/Shmget.h"
 
 #if defined(__APPLE__) && defined(__MACH__)

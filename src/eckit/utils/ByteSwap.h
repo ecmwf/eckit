@@ -28,17 +28,17 @@ namespace eckit {
 
 // Low Level bitswap functions
 
-uint16_t bitswap16(uint16_t a) {
+inline uint16_t bitswap16(uint16_t a) {
     a = ((a & 0x00FF) << 8) | ((a & 0xFF00) >> 8);
     return a;
 }
 
-uint32_t bitswap32(uint32_t a) {
+inline uint32_t bitswap32(uint32_t a) {
     a = ((a & 0x000000FF) << 24) | ((a & 0x0000FF00) << 8) | ((a & 0x00FF0000) >> 8) | ((a & 0xFF000000) >> 24);
     return a;
 }
 
-uint64_t bitswap64(uint64_t a) {
+inline uint64_t bitswap64(uint64_t a) {
     a = ((a & 0x00000000000000FFULL) << 56) | ((a & 0x000000000000FF00ULL) << 40) |
         ((a & 0x0000000000FF0000ULL) << 24) | ((a & 0x00000000FF000000ULL) << 8) | ((a & 0x000000FF00000000ULL) >> 8) |
         ((a & 0x0000FF0000000000ULL) >> 24) | ((a & 0x00FF000000000000ULL) >> 40) | ((a & 0xFF00000000000000ULL) >> 56);

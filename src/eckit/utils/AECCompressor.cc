@@ -19,21 +19,25 @@
 // compression parameters heve been tuned for maximum compression ratio with GRIB2 3D fields.
 // Performance on GRIB 1 sfc fields is bad with any parameter values
 // https://sourceware.org/bzip2/manual/manual.html#bzcompress-init
-// bits_per_sample   range [1..32]  Storage size from sample size. If a sample requires less bits than the storage size
-// provides, then you have to make sure that unused bits are not set.
-//                                  Libaec does not check this for performance reasons and will produce undefined output
-//                                  if unused bits are set.
-//                                   1 -  8 bits 	1 byte
-//                                   9 - 16 bits 	2 bytes
-//                                  17 - 24 bits 	3 bytes (only if AEC_DATA_3BYTE is set)
-//                                  25 - 32 bits 	4 bytes (if AEC_DATA_3BYTE is set)
-//                                  17 - 32 bits 	4 bytes (if AEC_DATA_3BYTE is not set)
-// block_size       range [8..64]   Smaller blocks allow the compression to adapt more rapidly to changing source
+//
+// bits_per_sample: range [1..32] Storage size from sample size. If a sample requires less bits than the storage size
+// provides, then you have to make sure that unused bits are not set. Libaec does not check this for performance reasons
+// and will produce undefined output if unused bits are set.
+// 1 -  8 bits 	1 byte
+// 9 - 16 bits 	2 bytes
+// 17 - 24 bits 	3 bytes (only if AEC_DATA_3BYTE is set)
+// 25 - 32 bits 	4 bytes (if AEC_DATA_3BYTE is set)
+// 17 - 32 bits 	4 bytes (if AEC_DATA_3BYTE is not set)
+// 
+// block_size: range [8..64] Smaller blocks allow the compression to adapt more rapidly to changing source
 // statistics. Larger blocks create less overhead but can be less efficient if source statistics change across the
-// block. rsi                              Sets the reference sample interval. A large RSI will improve performance and
-// efficiency. It will also increase memory requirements since internal buffering is based on RSI size.
-//                                  A smaller RSI may be desirable in situations where each RSI will be packetized and
-//                                  possible error propagation has to be minimized.
+// block.
+//
+// rsi: sets the reference sample interval. A large RSI will improve performance and efficiency. It will also increase 
+// memory requirements since internal buffering is based on RSI size. A smaller RSI may be desirable in situations where
+// each RSI will be packetized and possible error propagation has to be minimized.
+
+
 #define AEC_bits_per_sample 16
 #define AEC_block_size 64
 #define AEC_rsi 129

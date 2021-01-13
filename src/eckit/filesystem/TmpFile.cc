@@ -28,7 +28,7 @@ static PathName tmp() {
 
     sprintf(path, "%s/eckitXXXXXXXXXXX", tmpdir);
     int fd;
-    SYSCALL(fd = ::mkstemp(path));
+    SYSCALL2(fd = ::mkstemp(path), path);
 
     PathName result(path);
     result.touch();

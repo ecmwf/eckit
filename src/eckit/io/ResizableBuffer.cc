@@ -26,6 +26,28 @@ ResizableBuffer::ResizableBuffer(const char* p, size_t size) : buffer_(allocate(
     ::memcpy(buffer_, p, size);
 }
 
+ResizableBuffer::ResizableBuffer(ResizableBuffer&& rhs) noexcept : buffer_{rhs.buffer_}, size_{rhs.size_} {
+    rhs.buffer_ = nullptr;
+    rhs.size_   = 0;
+}
+
+ResizableBuffer& ResizableBuffer::operator=(ResizableBuffer&& rhs) noexcept {
+    if (this == &rhs) {
+        return *this;
+    }
+
+    deallocate(buffer_);
+
+    buffer_ = rhs.buffer_;
+    size_   = rhs.size_;
+
+    rhs.buffer_ = nullptr;
+    rhs.size_   = 0;
+
+
+    return *this;
+}
+
 ResizableBuffer::~ResizableBuffer() {
     deallocate(buffer_);
 }

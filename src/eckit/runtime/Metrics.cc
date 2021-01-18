@@ -106,9 +106,9 @@ void MetricsCollector::set(const std::string& name, const Value& value, bool ove
 
     if (!overrideOk) {
         if (keys_.find(full) != keys_.end()) {
-            std::stringstream oss;
-            oss << "MetricsCollector::set(" << full << ") duplicate key, new=" << value << ", old=" << metrics_[full];
-            throw SeriousBug(oss.str());
+            // std::stringstream oss;
+            Log::warning() << "MetricsCollector::set(" << full << ") duplicate key, new=" << value << ", old=" << metrics_[full] << std::endl;
+            // throw SeriousBug(oss.str());
         }
     }
 

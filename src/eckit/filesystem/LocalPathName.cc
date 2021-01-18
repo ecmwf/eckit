@@ -18,6 +18,7 @@
 #include <sys/statvfs.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <utime.h>
 
 #include <cstring>  // for strlen
 #include <deque>
@@ -699,7 +700,16 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 
 void LocalPathName::touch() const {
     dirName().mkdir();
-    AutoStdFile f(*this, "a");  // This should touch the file
+
+    if(exists()) {
+        struct utimbuf times;
+        times.actime = times.modtime = ::time(nullptr);
+        SYSCALL(utime(path_.c_str(), &times));
+    }
+    else {
+        AutoStdFile f(*this, "a");  // This should create the file
+    }
+
 }
 
 // This method is used by TxnLog. It is important that

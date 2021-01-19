@@ -509,6 +509,8 @@ types/Types.cc
 types/Types.h
 types/UUID.cc
 types/UUID.h
+types/SemanticVersion.cc
+types/SemanticVersion.h
 types/VerifyingDate.cc
 types/VerifyingDate.h
 )

@@ -148,9 +148,11 @@ LocalPathName LocalPathName::baseName(bool ext) const {
             s.resize(n);
     }
 
+    // Don't perform tilde expansion on paths that have already been expanded
+    
     bool tildeIsUserHome = false;
-    bool skipTidy = true;
-    return LocalPathName(s, tildeIsUserHome, skipTidy);
+    bool skipTildeExpansion = true;
+    return LocalPathName(s, tildeIsUserHome, skipTildeExpansion);
 }
 
 std::string LocalPathName::extension() const {

@@ -9,7 +9,12 @@
 			"*.make": "makefile",
 			"iosfwd": "cpp",
 			"bitset": "cpp",
-			"set": "cpp"
+			"set": "cpp",
+			"__split_buffer": "cpp",
+			"deque": "cpp",
+			"list": "cpp",
+			"string": "cpp",
+			"vector": "cpp"
 		}
 	}
 }

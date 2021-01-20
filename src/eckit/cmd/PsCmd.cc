@@ -41,6 +41,10 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
         out << Colour::green;
     }
 
+    if (st == 'M' || st == 'S') {
+        out << Colour::green;
+    }
+
     if (st == 'T' || st == 'V' || st == 'P' || st == 'X') {
         out << Colour::cyan;
     }

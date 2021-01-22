@@ -3,7 +3,7 @@ ecbuild_add_option( FEATURE WARNINGS
                     DESCRIPTION "Add warnings to compiler" )
 
 # activate warnings, ecbuild macros check the compiler recognises the options
-if(HAVE_WARNINGS) 
+if(HAVE_WARNINGS)
 
   ecbuild_add_cxx_flags("-Wall")
   ecbuild_add_cxx_flags("-Wextra")
@@ -20,5 +20,4 @@ if(HAVE_WARNINGS)
     ecbuild_add_cxx_flags("-Wno-sign-compare")
   endif()
 
-  endif()
-
+endif()

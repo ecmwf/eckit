@@ -103,11 +103,7 @@ long PeekHandle::read(void* buffer, long length) {
         int n = handle().read(p, length);
         if (n < 0) {
            std::ostringstream s;
-<<<<<<< HEAD
            s << handle() << ": failed to read "<< Bytes(length);
-=======
-           s << handle() << ": failed to read " << length << (length>1?" bytes":" byte");
->>>>>>> eb9abbb8 (FDB-253 improved error messages)
            throw ReadError(s.str(), Here());
         }
         len += n;

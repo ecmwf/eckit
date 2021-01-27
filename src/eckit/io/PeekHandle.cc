@@ -13,6 +13,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/PeekHandle.h"
+#include "eckit/log/Bytes.h"
 
 namespace eckit {
 
@@ -57,7 +58,7 @@ long PeekHandle::peek(void* buffer, size_t size, size_t pos) {
 
         if (p < 0) {
             std::ostringstream s;
-            s << handle() << ": failed to read " << n << (n>1?" bytes":" byte");
+            s << handle() << ": failed to read " << Bytes(n);
             throw ReadError(s.str(), Here());
         }
         if (p == 0) {
@@ -102,7 +103,7 @@ long PeekHandle::read(void* buffer, long length) {
         int n = handle().read(p, length);
         if (n < 0) {
            std::ostringstream s;
-           s << handle() << ": failed to read " << length << (length>1?" bytes":" byte");
+           s << handle() << ": failed to read "<< Bytes(length);
            throw ReadError(s.str(), Here());
         }
         len += n;

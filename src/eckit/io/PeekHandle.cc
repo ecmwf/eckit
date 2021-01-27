@@ -38,8 +38,8 @@ unsigned char PeekHandle::peek(size_t n) {
         unsigned char c;
         if (handle().read(&c, 1) != 1) {
             std::ostringstream s;
-            s << handle() << ": cannot peek";
-            throw ReadError(s.str());
+            s << handle() << ": failed to read 1 byte";
+            throw ReadError(s.str(), Here());
         }
         peek_.push_back(c);
     }
@@ -55,7 +55,11 @@ long PeekHandle::peek(void* buffer, size_t size, size_t pos) {
         long n = std::min(last - peek_.size(), size);
         long p = handle().read(buf, n);
 
-        ASSERT(p >= 0);
+        if (p < 0) {
+            std::ostringstream s;
+            s << handle() << ": failed to read " << n << (n>1?" bytes":" byte");
+            throw ReadError(s.str(), Here());
+        }
         if (p == 0) {
             break;
         }
@@ -96,7 +100,11 @@ long PeekHandle::read(void* buffer, long length) {
     if (length) {
 
         int n = handle().read(p, length);
-        ASSERT(n >= 0);
+        if (n < 0) {
+           std::ostringstream s;
+           s << handle() << ": failed to read " << length << (length>1?" bytes":" byte");
+           throw ReadError(s.str(), Here());
+        }
         len += n;
     }
 

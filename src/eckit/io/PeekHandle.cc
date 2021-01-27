@@ -29,14 +29,18 @@ Length PeekHandle::openForRead() {
     return handle().openForRead();
 }
 
-void PeekHandle::skip(const Length& len) {
+void PeekHandle::skip(const Length&) {
     NOTIMP;
 }
 
 unsigned char PeekHandle::peek(size_t n) {
     while (n >= peek_.size()) {
         unsigned char c;
-        ASSERT(handle().read(&c, 1) == 1);
+        if (handle().read(&c, 1) != 1) {
+            std::ostringstream s;
+            s << handle() << ": cannot peek";
+            throw ReadError(s.str());
+        }
         peek_.push_back(c);
     }
     return peek_[n];

@@ -13,6 +13,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/PeekHandle.h"
+#include "eckit/log/Bytes.h"
 
 namespace eckit {
 
@@ -29,14 +30,18 @@ Length PeekHandle::openForRead() {
     return handle().openForRead();
 }
 
-void PeekHandle::skip(const Length& len) {
+void PeekHandle::skip(const Length&) {
     NOTIMP;
 }
 
 unsigned char PeekHandle::peek(size_t n) {
     while (n >= peek_.size()) {
         unsigned char c;
-        ASSERT(handle().read(&c, 1) == 1);
+        if (handle().read(&c, 1) != 1) {
+            std::ostringstream s;
+            s << handle() << ": failed to read 1 byte";
+            throw ReadError(s.str(), Here());
+        }
         peek_.push_back(c);
     }
     return peek_[n];
@@ -51,7 +56,11 @@ long PeekHandle::peek(void* buffer, size_t size, size_t pos) {
         long n = std::min(last - peek_.size(), size);
         long p = handle().read(buf, n);
 
-        ASSERT(p >= 0);
+        if (p < 0) {
+            std::ostringstream s;
+            s << handle() << ": failed to read " << Bytes(n);
+            throw ReadError(s.str(), Here());
+        }
         if (p == 0) {
             break;
         }
@@ -92,7 +101,11 @@ long PeekHandle::read(void* buffer, long length) {
     if (length) {
 
         int n = handle().read(p, length);
-        ASSERT(n >= 0);
+        if (n < 0) {
+           std::ostringstream s;
+           s << handle() << ": failed to read "<< Bytes(length);
+           throw ReadError(s.str(), Here());
+        }
         len += n;
     }
 

@@ -15,7 +15,10 @@
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/utils/Tokenizer.h"
 
+#include "mir/config/LibMir.h"
 #include "mir/repres/Representation.h"
+#include "mir/util/Exceptions.h"
+#include "mir/util/Log.h"
 
 
 namespace mir {
@@ -52,7 +55,7 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
         }
 
         if (not writable(path)) {
-            eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path << "' isn't writable" << std::endl;
+            Log::debug() << "TreeMappedFile: path '" << path << "' isn't writable" << std::endl;
             continue;
         }
 
@@ -61,12 +64,11 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             path = eckit::PathName::unique(path);
         }
 
-        eckit::Log::debug<LibMir>() << "TreeMappedFile: path '" << path << "'" << (makeUnique ? " (unique)" : "")
-                                    << std::endl;
+        Log::debug() << "TreeMappedFile: path '" << path << "'" << (makeUnique ? " (unique)" : "") << std::endl;
         return path;
     }
 
-    throw eckit::SeriousBug("TreeMappedFile: no paths are viable for caching");
+    throw exception::SeriousBug("TreeMappedFile: no paths are viable for caching");
 }
 
 

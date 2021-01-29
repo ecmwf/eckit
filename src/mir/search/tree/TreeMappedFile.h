@@ -17,12 +17,11 @@
 
 #include <fstream>
 
-#include "eckit/log/Log.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Main.h"
 
-#include "mir/config/LibMir.h"
 #include "mir/search/tree/TreeMapped.h"
+#include "mir/util/Log.h"
 
 
 namespace mir {
@@ -52,9 +51,9 @@ protected:
 
         eckit::PathName path = lockFile(real_);
 
-        eckit::Log::debug<LibMir>() << "Wait for lock " << path << std::endl;
+        Log::debug() << "Wait for lock " << path << std::endl;
         lock_.lock();
-        eckit::Log::debug<LibMir>() << "Got lock " << path << std::endl;
+        Log::debug() << "Got lock " << path << std::endl;
 
 
         std::string hostname = eckit::Main::hostname();
@@ -66,7 +65,7 @@ protected:
     void unlock() override {
         eckit::PathName path = lockFile(real_);
 
-        eckit::Log::debug<LibMir>() << "Unlock " << path << std::endl;
+        Log::debug() << "Unlock " << path << std::endl;
         std::ofstream os(path.asString().c_str());
         os << std::endl;
         lock_.unlock();
@@ -84,7 +83,7 @@ public:
         lockFile(real_).touch();
 
         if (ready()) {
-            eckit::Log::debug<LibMir>() << "Loading " << *this << std::endl;
+            Log::debug() << "Loading " << *this << std::endl;
         }
     }
 };

@@ -15,12 +15,11 @@
 #include <map>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-#include "mir/config/LibMir.h"
+#include "mir/util/Exceptions.h"
+#include "mir/util/Log.h"
 
 
 namespace mir {
@@ -48,7 +47,7 @@ StatisticsFactory::StatisticsFactory(const std::string& name) : name_(name) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw eckit::SeriousBug("StatisticsFactory: duplicate '" + name + "'");
+        throw exception::SeriousBug("StatisticsFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -79,12 +78,12 @@ Statistics* StatisticsFactory::build(const std::string& name, const param::MIRPa
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    eckit::Log::debug<LibMir>() << "StatisticsFactory: looking for '" << name << "'" << std::endl;
+    Log::debug() << "StatisticsFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(eckit::Log::error() << "No StatisticsFactory '" << name << "', choices are:\n");
-        throw eckit::SeriousBug("No StatisticsFactory '" + name + "'");
+        list(Log::error() << "No StatisticsFactory '" << name << "', choices are:\n");
+        throw exception::SeriousBug("No StatisticsFactory '" + name + "'");
     }
 
     return j->second->make(params);

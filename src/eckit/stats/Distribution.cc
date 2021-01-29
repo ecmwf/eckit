@@ -14,13 +14,13 @@
 
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Once.h"
 
-#include "mir/config/LibMir.h"
 #include "mir/param/SimpleParametrisation.h"
+#include "mir/util/Exceptions.h"
+#include "mir/util/Log.h"
 
 
 namespace mir {
@@ -49,7 +49,7 @@ DistributionFactory::DistributionFactory(const std::string& name) : name_(name) 
     if (m->find(name) != m->end()) {
         std::ostringstream oss;
         oss << "DistributionFactory: duplicate '" << name << "'";
-        throw eckit::SeriousBug(oss.str());
+        throw exception::SeriousBug(oss.str());
     }
 
     (*m)[name] = this;
@@ -83,12 +83,12 @@ Distribution* DistributionFactory::build(const std::string& name) {
         }
     }
 
-    eckit::Log::debug<LibMir>() << "DistributionFactory: looking for '" << key << "'" << std::endl;
+    Log::debug() << "DistributionFactory: looking for '" << key << "'" << std::endl;
 
     auto j = m->find(key);
     if (j == m->end()) {
-        list(eckit::Log::error() << "DistributionFactory: unknown '" << key << "', choices are: ");
-        eckit::Log::warning() << std::endl;
+        list(Log::error() << "DistributionFactory: unknown '" << key << "', choices are: ");
+        Log::warning() << std::endl;
     }
 
     return j->second->make(args);

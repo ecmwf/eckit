@@ -19,10 +19,10 @@
 #include <ostream>
 #include <sstream>
 
-#include "mir/param/SameParametrisation.h"
-
-#include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
+
+#include "mir/param/SameParametrisation.h"
+#include "mir/util/Exceptions.h"
 
 
 namespace mir {

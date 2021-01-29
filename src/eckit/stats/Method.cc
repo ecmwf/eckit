@@ -15,12 +15,11 @@
 #include <map>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-#include "mir/config/LibMir.h"
+#include "mir/util/Exceptions.h"
+#include "mir/util/Log.h"
 
 
 namespace mir {
@@ -48,7 +47,7 @@ MethodFactory::MethodFactory(const std::string& name) : name_(name) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw eckit::SeriousBug("MethodFactory: duplicate '" + name + "'");
+        throw exception::SeriousBug("MethodFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -79,12 +78,12 @@ Method* MethodFactory::build(const std::string& name, const param::MIRParametris
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    eckit::Log::debug<LibMir>() << "MethodFactory: looking for '" << name << "'" << std::endl;
+    Log::debug() << "MethodFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(eckit::Log::error() << "No MethodFactory '" << name << "', choices are:\n");
-        throw eckit::SeriousBug("No MethodFactory '" + name + "'");
+        list(Log::error() << "No MethodFactory '" << name << "', choices are:\n");
+        throw exception::SeriousBug("No MethodFactory '" + name + "'");
     }
 
     return j->second->make(params);

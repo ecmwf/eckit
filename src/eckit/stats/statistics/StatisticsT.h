@@ -15,11 +15,10 @@
 
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-
 #include "mir/data/MIRField.h"
 #include "mir/stats/Statistics.h"
 #include "mir/stats/detail/Counter.h"
+#include "mir/util/Exceptions.h"
 
 
 namespace mir {

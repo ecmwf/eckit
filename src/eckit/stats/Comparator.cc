@@ -15,12 +15,11 @@
 #include <map>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-#include "mir/config/LibMir.h"
+#include "mir/util/Exceptions.h"
+#include "mir/util/Log.h"
 
 
 namespace mir {
@@ -49,7 +48,7 @@ ComparatorFactory::ComparatorFactory(const std::string& name) : name_(name) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw eckit::SeriousBug("ComparatorFactory: duplicate '" + name + "'");
+        throw exception::SeriousBug("ComparatorFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -81,12 +80,12 @@ Comparator* ComparatorFactory::build(const std::string& name, const param::MIRPa
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    eckit::Log::debug<LibMir>() << "ComparatorFactory: looking for '" << name << "'" << std::endl;
+    Log::debug() << "ComparatorFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(eckit::Log::error() << "No ComparatorFactory '" << name << "', choices are:");
-        throw eckit::SeriousBug("No ComparatorFactory '" + name + "'");
+        list(Log::error() << "No ComparatorFactory '" << name << "', choices are:");
+        throw exception::SeriousBug("No ComparatorFactory '" + name + "'");
     }
 
     return j->second->make(param1, param2);

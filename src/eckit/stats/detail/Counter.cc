@@ -17,8 +17,7 @@
 
 #include "mir/data/MIRField.h"
 #include "mir/param/MIRParametrisation.h"
-
-#include "eckit/exception/Exceptions.h"
+#include "mir/util/Exceptions.h"
 
 
 namespace mir {

@@ -16,10 +16,9 @@
 #include <limits>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-
 #include "mir/data/MIRField.h"
 #include "mir/repres/sh/SphericalHarmonics.h"
+#include "mir/util/Exceptions.h"
 
 
 namespace mir {

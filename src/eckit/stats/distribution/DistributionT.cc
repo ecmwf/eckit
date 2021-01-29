@@ -15,9 +15,8 @@
 #include <iostream>
 #include <random>
 
-#include "eckit/exception/Exceptions.h"
-
 #include "mir/param/MIRParametrisation.h"
+#include "mir/util/Exceptions.h"
 
 
 namespace mir {

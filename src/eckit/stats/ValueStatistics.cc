@@ -15,12 +15,11 @@
 #include <map>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-#include "mir/config/LibMir.h"
+#include "mir/util/Exceptions.h"
+#include "mir/util/Log.h"
 
 
 namespace mir {
@@ -51,7 +50,7 @@ ValueStatisticsFactory::ValueStatisticsFactory(const std::string& name) : name_(
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw eckit::SeriousBug("ValueStatisticsFactory: duplicate '" + name + "'");
+        throw exception::SeriousBug("ValueStatisticsFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -82,12 +81,12 @@ ValueStatistics* ValueStatisticsFactory::build(const std::string& name) {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
-    eckit::Log::debug<LibMir>() << "ValueStatisticsFactory: looking for '" << name << "'" << std::endl;
+    Log::debug() << "ValueStatisticsFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(eckit::Log::error() << "No ValueStatisticsFactory '" << name << "', choices are:\n");
-        throw eckit::SeriousBug("No ValueStatisticsFactory '" + name + "'");
+        list(Log::error() << "No ValueStatisticsFactory '" << name << "', choices are:\n");
+        throw exception::SeriousBug("No ValueStatisticsFactory '" + name + "'");
     }
 
     return j->second->make();

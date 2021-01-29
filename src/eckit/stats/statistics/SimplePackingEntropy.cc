@@ -16,10 +16,9 @@
 #include <cmath>
 #include <limits>
 
-#include "eckit/exception/Exceptions.h"
-
 #include "mir/data/MIRField.h"
 #include "mir/param/MIRParametrisation.h"
+#include "mir/util/Exceptions.h"
 
 
 namespace mir {

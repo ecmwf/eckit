@@ -69,7 +69,7 @@ public:
 
     // -- Overridden methods
 
-    std::string execute(const data::MIRField& field1, const data::MIRField& field2);
+    std::string execute(const data::MIRField& field1, const data::MIRField& field2) override;
 
     // -- Class members
     // None
@@ -89,7 +89,7 @@ private:
     // -- Overridden methods
 
     // From Comparator
-    void print(std::ostream&) const;
+    void print(std::ostream&) const override;
 
     // -- Class members
     // None

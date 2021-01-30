@@ -86,8 +86,10 @@ void Spectral::execute(const data::MIRField& field) {
     for (size_t i = 2; i < 2 * J; i += 2) {
         var += values[i] * values[i];
     }
+
+    constexpr double TWO = 2.;
     for (size_t i = 2 * J; i < values.size(); i += 2) {
-        var += 2. * values[i] * values[i] + 2. * values[i + 1] * values[i + 1];
+        var += TWO * values[i] * values[i] + TWO * values[i + 1] * values[i + 1];
     }
 
     variance_ = var;

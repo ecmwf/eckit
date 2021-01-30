@@ -85,9 +85,8 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     ASSERT(count() != missing());
 
     // set/fill buckets and compute entropy
-    std::vector<size_t> buckets(bucketCount_);
-    scale_ = (bucketCount_ - 1) / (_max - _min);
-    buckets.assign(bucketCount_, 0);
+    scale_ = double(bucketCount_ - 1) / (_max - _min);
+    std::vector<size_t> buckets(bucketCount_, 0);
 
     const auto N               = double(count());
     const double one_over_log2 = 1. / M_LN2;

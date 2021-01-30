@@ -13,13 +13,13 @@
 #include "mir/search/PointSearch.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/log/Timer.h"
 #include "eckit/thread/AutoLock.h"
 
 #include "mir/param/MIRParametrisation.h"
 #include "mir/repres/Iterator.h"
 #include "mir/repres/Representation.h"
 #include "mir/util/Pretty.h"
+#include "mir/util/Trace.h"
 #include "mir/util/Types.h"
 
 
@@ -67,7 +67,7 @@ void PointSearch::build(const repres::Representation& r) {
     const size_t npts = tree_->itemCount();
     ASSERT(npts > 0);
 
-    eckit::Timer timer("PointSearch: building k-d tree");
+    trace::Timer timer("PointSearch: building k-d tree");
     Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << Pretty(npts, {"point"}) << ")"
                 << std::endl;
 

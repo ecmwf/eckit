@@ -13,10 +13,8 @@
 #include "mir/stats/Comparator.h"
 
 #include <map>
+#include <mutex>
 #include <ostream>
-
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 
 #include "mir/util/Exceptions.h"
 #include "mir/util/Log.h"
@@ -26,11 +24,11 @@ namespace mir {
 namespace stats {
 
 
-static eckit::Mutex* local_mutex                    = nullptr;
+static std::recursive_mutex* local_mutex            = nullptr;
 static std::map<std::string, ComparatorFactory*>* m = nullptr;
-static pthread_once_t once                          = PTHREAD_ONCE_INIT;
+static std::once_flag once;
 static void init() {
-    local_mutex = new eckit::Mutex();
+    local_mutex = new std::recursive_mutex();
     m           = new std::map<std::string, ComparatorFactory*>();
 }
 
@@ -43,9 +41,8 @@ Comparator::~Comparator() = default;
 
 
 ComparatorFactory::ComparatorFactory(const std::string& name) : name_(name) {
-    pthread_once(&once, init);
-
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::call_once(once, init);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
         throw exception::SeriousBug("ComparatorFactory: duplicate '" + name + "'");
@@ -57,14 +54,15 @@ ComparatorFactory::ComparatorFactory(const std::string& name) : name_(name) {
 
 
 ComparatorFactory::~ComparatorFactory() {
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+
     m->erase(name_);
 }
 
 
 void ComparatorFactory::list(std::ostream& out) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::call_once(once, init);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
 
     const char* sep = "";
     for (auto& j : *m) {
@@ -77,15 +75,15 @@ void ComparatorFactory::list(std::ostream& out) {
 
 Comparator* ComparatorFactory::build(const std::string& name, const param::MIRParametrisation& param1,
                                      const param::MIRParametrisation& param2) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::call_once(once, init);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
 
     Log::debug() << "ComparatorFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(Log::error() << "No ComparatorFactory '" << name << "', choices are:");
-        throw exception::SeriousBug("No ComparatorFactory '" + name + "'");
+        list(Log::error() << "ComparatorFactory: unknown '" << name << "', choices are:");
+        throw exception::SeriousBug("ComparatorFactory: unknown '" + name + "'");
     }
 
     return j->second->make(param1, param2);

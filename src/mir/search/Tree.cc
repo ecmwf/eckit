@@ -14,9 +14,7 @@
 
 #include <iostream>
 #include <map>
-
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+#include <mutex>
 
 #include "mir/repres/Representation.h"
 #include "mir/util/Exceptions.h"
@@ -113,18 +111,18 @@ void Tree::unlock() {
 }
 
 
-static pthread_once_t once                    = PTHREAD_ONCE_INIT;
-static eckit::Mutex* local_mutex              = nullptr;
+static std::once_flag once;
+static std::recursive_mutex* local_mutex      = nullptr;
 static std::map<std::string, TreeFactory*>* m = nullptr;
 static void init() {
-    local_mutex = new eckit::Mutex();
+    local_mutex = new std::recursive_mutex();
     m           = new std::map<std::string, TreeFactory*>();
 }
 
 
 TreeFactory::TreeFactory(const std::string& name) : name_(name) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::call_once(once, init);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
 
     auto j = m->find(name);
     if (j == m->end()) {
@@ -137,15 +135,16 @@ TreeFactory::TreeFactory(const std::string& name) : name_(name) {
 
 
 TreeFactory::~TreeFactory() {
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+
     m->erase(name_);
 }
 
 
 Tree* TreeFactory::build(const std::string& name, const repres::Representation& r,
                          const param::MIRParametrisation& params) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::call_once(once, init);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
 
     Log::debug() << "TreeFactory: looking for '" << name << "'" << std::endl;
 
@@ -160,8 +159,8 @@ Tree* TreeFactory::build(const std::string& name, const repres::Representation& 
 
 
 void TreeFactory::list(std::ostream& out) {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::call_once(once, init);
+    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
 
     const char* sep = "";
     for (const auto& j : *m) {

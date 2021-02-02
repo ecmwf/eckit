@@ -51,6 +51,7 @@ protected:
     virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,
                              expression::Expressions&) override;
     virtual const eckit::sql::type::SQLType* type() const override;
+    virtual std::string tableColumnToFullname(const SQLColumn& column) const override;
 
     // friend std::ostream& operator<<(std::ostream& s,const BitColumnExpression& p)
     //	{ p.print(s); return s; }

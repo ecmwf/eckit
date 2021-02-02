@@ -92,7 +92,7 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
 
     // Get the details into the ColumnExpression
     const SQLColumn& column(table_->column(columnName_));
-    fullName_        = column.fullName();
+    fullName_        = tableColumnToFullname(column);
     hasMissingValue_ = column.hasMissingValue();
     missingValue_    = column.missingValue();
     isBitfield_      = column.isBitfield();
@@ -104,6 +104,10 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
         Log::debug() << "ColumnExpression::preprepare: columnName_=" << columnName_ << ", title[PATCHED]=" << title()
                      << std::endl;
     }
+}
+
+std::string ColumnExpression::tableColumnToFullname(const SQLColumn& column) const {
+    return column.fullName();
 }
 
 void ColumnExpression::prepare(SQLSelect& sql) {

@@ -420,15 +420,16 @@ CASE("Test with implicit tables") {
 
     SECTION("Test selection of bitfield bit columns") {
 
-        std::string sql = "select bfcolumn.bf1, bfcolumn.bf3, bfcolumn.bf2";
+        std::string sql = "select bfcolumn.bf1, bgcolumn.bf3@tbl1, bfcolumn.bf2, bgcolumn.bf1@tbl2";
         eckit::sql::SQLParser().parseString(session, sql);
         session.statement().execute();
 
-        EXPECT(o.columnNames == std::vector<std::string>({"bfcolumn.bf1", "bfcolumn.bf3", "bfcolumn.bf2"}));
+        EXPECT(o.columnNames == std::vector<std::string>({"bfcolumn.bf1", "bgcolumn.bf3@tbl1", "bfcolumn.bf2", "bgcolumn.bf1@tbl2"}));
         for (int row = 0; row < INTEGER_DATA.size(); ++row) {
-            EXPECT(o.intOutput[3 * row] == BF1_DATA[row]);
-            EXPECT(o.intOutput[3 * row + 1] == BF3_DATA[row]);
-            EXPECT(o.intOutput[3 * row + 2] == BF2_DATA[row]);
+            EXPECT(o.intOutput[4 * row] == BF1_DATA[row]);
+            EXPECT(o.intOutput[4 * row + 1] == BF3_DATA[row]);
+            EXPECT(o.intOutput[4 * row + 2] == BF2_DATA[row]);
+            EXPECT(o.intOutput[4 * row + 3] == BF1_DATA[row]);
         }
     }
 }

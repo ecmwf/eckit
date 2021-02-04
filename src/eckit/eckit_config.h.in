@@ -7,8 +7,11 @@
 
 // endiness
 
-#define ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
-#define ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
+#define eckit_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
+#define ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@ /* backward compatibility */
+
+#define eckit_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
+#define ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@ /* backward compatibility */
 
 // system
 

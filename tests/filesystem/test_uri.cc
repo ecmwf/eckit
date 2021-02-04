@@ -127,7 +127,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.asRawString() == "unix:!");
         EXPECT(uri.asString() == "!");
     }
-    {
+    {  
         URI uri("file:!");
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.authority().empty());
@@ -141,6 +141,21 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "file:!");
         EXPECT(uri.asString() == "!");
+    }
+    {  // relative path
+        URI uri("file:path");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "path");
+        EXPECT(uri.path() == "local://path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "file:path");
+        EXPECT(uri.asString() == "path");
     }
     {
         URI uri(":http://nodename/path");

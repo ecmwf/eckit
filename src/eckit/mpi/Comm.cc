@@ -24,7 +24,7 @@ namespace eckit {
 namespace mpi {
 
 constexpr bool have_parallel() {
-#if ECKIT_HAVE_MPI
+#if eckit_HAVE_MPI
     return true;
 #else
     return false;

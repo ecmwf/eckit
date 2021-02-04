@@ -94,7 +94,8 @@ void SQLTable::addColumn(const std::string& name, int index, const type::SQLType
 
     for (FieldNames::const_iterator j = bitmap.begin(); j != bitmap.end(); ++j) {
         std::string fieldName = *j;
-        std::string n         = columnName + "." + fieldName + "@" + tableName;
+        std::string n         = columnName + "." + fieldName;
+        if (!tableName.empty()) n += "@" + tableName;
         columnsByName_[n]     = col.get();
 
         // Log::info() << "SQLTable::addColumn: columnsByName_[" << n << "] = " << *col << std::endl;

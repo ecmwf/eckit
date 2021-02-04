@@ -17,7 +17,7 @@
 
 #include "eckit/eckit.h"
 
-#if ECKIT_HAVE_MKL
+#if eckit_HAVE_MKL
 
 #include "eckit/linalg/LinearAlgebra.h"
 
@@ -49,6 +49,6 @@ private:
 }  // namespace linalg
 }  // namespace eckit
 
-#endif  // ECKIT_HAVE_MKL
+#endif  // eckit_HAVE_MKL
 
 #endif

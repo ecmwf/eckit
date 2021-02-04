@@ -22,6 +22,7 @@ namespace sql {
 
 class SQLOutput;
 class SQLTable;
+class SQLColumn;
 
 namespace expression {
 
@@ -66,6 +67,12 @@ protected:
     virtual std::string evalAsString(bool& missing) const override;
     virtual bool isConstant() const override { return false; }
     virtual void output(SQLOutput& s) const override;
+
+    // We want to be able to construct a fully qualified column name, given a shortened one
+    // (e.g. varno --> varno@body). But this needs to be overridable for BitExpressions
+    // (e.g. datum_state.active --> datum_state.active@body even though the table column
+    //       might only be datum_state@body. i.e. we extract the bit subcolumns)
+    virtual std::string tableColumnToFullname(const SQLColumn& column) const;
 
 private:
     ColumnExpression& operator=(const ColumnExpression&);

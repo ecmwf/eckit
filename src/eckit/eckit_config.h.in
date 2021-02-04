@@ -7,8 +7,11 @@
 
 // endiness
 
-#define ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
-#define ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
+#define eckit_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
+#define ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@ /* backward compatibility */
+
+#define eckit_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
+#define ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@ /* backward compatibility */
 
 // system
 
@@ -47,8 +50,11 @@
 #cmakedefine eckit_HAVE_CURL
 #cmakedefine eckit_HAVE_JEMALLOC
 
-#define ECKIT_HAVE_MKL @eckit_HAVE_MKL@
-#define ECKIT_HAVE_MPI @eckit_HAVE_MPI@
+#define eckit_HAVE_MKL @eckit_HAVE_MKL@
+#define ECKIT_HAVE_MKL @eckit_HAVE_MKL@ /* backward compatibility */
+
+#define eckit_HAVE_MPI @eckit_HAVE_MPI@
+#define ECKIT_HAVE_MPI @eckit_HAVE_MPI@ /* backward compatibility */
 
 // Have we built certain libraries
 

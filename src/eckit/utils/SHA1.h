@@ -39,13 +39,13 @@ public:  // types
 
     virtual ~SHA1() override;
 
-    virtual void reset() const;
+    virtual void reset() const override;
 
-    virtual digest_t compute(const void*, long);
+    virtual digest_t compute(const void*, long) override;
 
-    virtual void update(const void*, long);
+    virtual void update(const void*, long) override;
 
-    virtual digest_t digest() const;
+    virtual digest_t digest() const override;
 
     template <class T>
     SHA1& operator<<(const T& x) {

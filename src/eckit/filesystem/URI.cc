@@ -43,26 +43,26 @@ URI::URI(const std::string& uri) {
 }
 
 URI::URI(const std::string& scheme, const PathName& path) :
-    scheme_(scheme), user_(""), host_(""), port_(-1), name_(path.path()), fragment_(""), queryValues_({}) {}
+    port_(-1), name_(path.path()), scheme_(scheme), user_(""), host_(""), fragment_(""), queryValues_({}) {}
 
 URI::URI(const std::string& scheme, const URI& uri) :
+    port_(uri.port_),
+    name_(uri.name_),
     scheme_(scheme),
     user_(uri.user_),
     host_(uri.host_),
-    port_(uri.port_),
-    name_(uri.name_),
     fragment_(uri.fragment_),
     queryValues_(uri.queryValues_) {}
 
 URI::URI(const std::string& scheme, const std::string& hostname, const int port) :
-    scheme_(scheme), user_(""), host_(hostname), port_(port), name_(""), fragment_(""), queryValues_({}) {}
+    port_(port), name_(""), scheme_(scheme), user_(""), host_(hostname), fragment_(""), queryValues_({}) {}
 
 URI::URI(const std::string& scheme, const URI& uri, const std::string& hostname, const int port) :
+    port_(port),
+    name_(uri.name_),
     scheme_(scheme),
     user_(uri.user_),
     host_(hostname),
-    port_(port),
-    name_(uri.name_),
     fragment_(uri.fragment_),
     queryValues_(uri.queryValues_) {}
 

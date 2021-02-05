@@ -231,7 +231,7 @@ public:  // methods
     // Class methods
 
     static LocalPathName unique(const LocalPathName&);
-    static void match(const LocalPathName&, std::vector<LocalPathName>&, bool = false);
+    static void match(const LocalPathName&, std::vector<LocalPathName>&, bool recursive = false);
     static void link(const LocalPathName& from, const LocalPathName& to);
     static void rename(const LocalPathName& from, const LocalPathName& to);
     static void rename(const LocalPathName& from, const std::string& newBase);

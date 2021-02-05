@@ -309,6 +309,8 @@ filesystem/TempFile.cc
 filesystem/TempFile.h
 filesystem/TmpDir.cc
 filesystem/TmpDir.h
+filesystem/StdDir.cc
+filesystem/StdDir.h
 filesystem/TmpFile.cc
 filesystem/TmpFile.h
 filesystem/URI.cc

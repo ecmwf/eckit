@@ -8,33 +8,39 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_SnappyCompressor_H
-#define eckit_utils_SnappyCompressor_H
+/// @author Tiago Quintino
+/// @date   Feb 2021
 
-#include "eckit/utils/Compressor.h"
+#pragma once
+
+#include <dirent.h>
+#include <sys/types.h>
+
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
-class Buffer;
-class ResizableBuffer;
+class LocalPathName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SnappyCompressor : public eckit::Compressor {
+class StdDir : private NonCopyable {
 
-public:  // methods
-    SnappyCompressor();
+private:  // members
+    DIR* d_;
+    struct dirent buf;
+    
+public :  // methods
+    StdDir(const char* d);
+    StdDir(const eckit::LocalPathName& p);
 
-    virtual ~SnappyCompressor() override;
+    ~StdDir(); /* noexcept(false) */
 
-    virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const override;
-    virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const override;
+    operator DIR*() { return d_; }
 
-protected:  // methods
+    struct dirent* dirent();
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // end namespace eckit
-
-#endif
+}  // namespace eckit

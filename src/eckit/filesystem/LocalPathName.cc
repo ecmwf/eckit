@@ -29,6 +29,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/PathNameFactory.h"
+#include "eckit/filesystem/StdDir.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/PartFileHandle.h"
@@ -519,19 +520,7 @@ LocalPathName& LocalPathName::tidy(bool tildeIsUserHome, bool skipTildeExpansion
     return *this;
 }
 
-class StdDir {
-    DIR* d_;
-
-public:
-    StdDir(const LocalPathName& p) { d_ = opendir(p.localPath()); }
-    ~StdDir() {
-        if (d_)
-            closedir(d_);
-    }
-    operator DIR*() { return d_; }
-};
-
-void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>& result, bool rec) {
+void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>& result, bool recursive) {
     // Note that pattern matching will only be done
     // on the base name.
 
@@ -554,41 +543,24 @@ void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>&
         throw FailedSystemCall(std::string("opendir(") + std::string(dir) + ")");
     }
 
-    struct dirent buf;
-
-
     for (;;) {
-        struct dirent* e;
-#ifdef eckit_HAVE_READDIR_R
-        errno = 0;
-        if (readdir_r(d, &buf, &e) != 0) {
-            if (errno)
-                throw FailedSystemCall("readdir_r");
-            else
-                e = 0;
-        }
-#else
-        e = readdir(d);
-#endif
-
-        if (e == 0)
+        struct dirent* e = d.dirent();
+        if (e == nullptr)
             break;
 
         //        Log::info() << "e->d_name = " << e->d_name << std::endl;
 
         if (re.match(e->d_name)) {
             //            Log::info() << "match !!! ---> " << e->d_name << std::endl;
-
             LocalPathName path = std::string(dir) + std::string("/") + std::string(e->d_name);
             result.push_back(path);
         }
 
-        if (rec && e->d_name[0] != '.') {
+        if (recursive && e->d_name[0] != '.') {
             LocalPathName full = dir + "/" + e->d_name;
-            Stat::Struct info;
-            SYSCALL(Stat::lstat(full.c_str(), &info));
-            if (S_ISDIR(info.st_mode))
+            if(full.isDir()) {
                 match(full + "/" + base, result, true);
+            }
         }
     }
 }
@@ -649,25 +621,11 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
         throw FailedSystemCall("opendir");
     }
 
-    struct dirent buf;
-
-
     for (;;) {
-        struct dirent* e;
-#ifdef eckit_HAVE_READDIR_R
-        errno = 0;
-        if (readdir_r(d, &buf, &e) != 0) {
-            if (errno)
-                throw FailedSystemCall("readdir_r");
-            else
-                e = 0;
+        struct dirent* e = d.dirent();
+        if (e == nullptr) {
+                break;
         }
-#else
-        e = readdir(d);
-#endif
-
-        if (e == 0)
-            break;
 
         if (e->d_name[0] == '.')
             if (e->d_name[1] == 0 || (e->d_name[1] == '.' && e->d_name[2] == 0))

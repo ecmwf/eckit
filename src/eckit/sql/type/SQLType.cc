@@ -122,7 +122,7 @@ const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles) {
     const SQLType* typ = TypeRegistry::instance().lookup(lookupName);
 
     if (!typ && name == "string") {
-        SQLType::registerType(new SQLString(lookupName, sizeof(double) * sizeDoubles));
+        typ = SQLType::registerType(new SQLString(lookupName, sizeof(double) * sizeDoubles));
     }
 
     if (!typ) throw eckit::SeriousBug(name + ": type not defined");

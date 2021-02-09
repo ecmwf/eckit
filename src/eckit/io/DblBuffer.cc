@@ -89,8 +89,10 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
 
     Length estimate = in.openForRead();
     AutoClose c1(in);
+    watcher_.fromHandleOpened();
     out.openForWrite(estimate);
     AutoClose c2(out);
+    watcher_.toHandleOpened();
 
     Length total  = estimate;
     Length copied = 0;

@@ -110,8 +110,10 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
 
         Length estimate = openForRead();
         AutoClose closer1(*this);
+        watcher.fromHandleOpened();
         other.openForWrite(estimate);
         AutoClose closer2(other);
+        watcher.toHandleOpened();
 
         Progress progress("Moving data", 0, estimate);
 

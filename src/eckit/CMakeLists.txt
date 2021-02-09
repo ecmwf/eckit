@@ -690,6 +690,9 @@ list( APPEND eckit_utils_srcs
   utils/Clock.h
   utils/Translator.cc
   utils/Translator.h
+  utils/xxHashing.cc
+  utils/xxHashing.h
+  contrib/xxhash/xxhash.h
 )
 
 if(eckit_HAVE_BZIP2)
@@ -726,13 +729,6 @@ if(eckit_HAVE_SSL)
       utils/MD4.h
       utils/SHA1.cc
       utils/SHA1.h
-    )
-endif()
-
-if(eckit_HAVE_XXHASH)
-    list( APPEND eckit_utils_srcs
-      utils/xxHashing.cc
-      utils/xxHashing.h
     )
 endif()
 

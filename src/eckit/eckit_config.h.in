@@ -46,7 +46,6 @@
 #cmakedefine eckit_HAVE_LAPACK
 #cmakedefine eckit_HAVE_VIENNACL
 #cmakedefine eckit_HAVE_SSL
-#cmakedefine eckit_HAVE_XXHASH
 #cmakedefine eckit_HAVE_CURL
 #cmakedefine eckit_HAVE_JEMALLOC
 

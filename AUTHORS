@@ -23,3 +23,11 @@ Piotr Kuchta
 
 Thanks for contributions from:
 ==============================
+
+List of software packages which are contributed inside eckit:
+=============================================================
+
+- xxHash (www.xxhash.com)
+    Copyright (c) 2012-2020 Yann Collet
+    BSD 2-Clause License (https://www.opensource.org/licenses/bsd-license.php)
+    See `src/eckit/contrib/xxhash` for more information

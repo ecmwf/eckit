@@ -136,6 +136,16 @@ CASE("Construct relative paths") {
     EXPECT(root.relativePath(foobar) == LocalPathName("../../../.."));
 }
 
+CASE("We can touch directories to update the timestamp") {
+    LocalPathName foo = "testdir/foo-sdjnifb";
+    LocalPathName bar = "testdir/bar-slknrsn";
+
+    foo.mkdir();
+
+    EXPECT_NO_THROW(foo.touch()); // updates the timestamp
+    EXPECT_NO_THROW(bar.touch()); // doesnt exist, so creates a file
+}
+
 CASE("Find children files and dirs") {
     std::set<LocalPathName> ref_dirs;
     ref_dirs.insert("testdir/foo");

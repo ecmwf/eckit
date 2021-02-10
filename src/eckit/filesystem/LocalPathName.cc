@@ -709,7 +709,6 @@ void LocalPathName::touch() const {
     else {
         AutoStdFile f(*this, "a");  // This should create the file
     }
-
 }
 
 // This method is used by TxnLog. It is important that

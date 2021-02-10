@@ -16,6 +16,7 @@
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/TmpDir.h"
 
 #include "eckit/testing/Test.h"
 
@@ -137,8 +138,11 @@ CASE("Construct relative paths") {
 }
 
 CASE("We can touch directories to update the timestamp") {
-    LocalPathName foo = "testdir/foo-sdjnifb";
-    LocalPathName bar = "testdir/bar-slknrsn";
+
+    TmpDir d;
+
+    PathName foo = d / "foo";
+    PathName bar = d / "bar";
 
     foo.mkdir();
 

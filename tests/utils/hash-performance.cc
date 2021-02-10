@@ -80,10 +80,7 @@ CASE("Test hash performance") {
 
             std::unique_ptr<eckit::Hash> hash(eckit::HashFactory::instance().build(name));
 
-            try {
-                timeAdd<20, 1>(*hash, buffer, timer);
-            }
-            catch( const eckit::NotImplemented& ) {}
+            timeAdd<20, 1>(*hash, buffer, timer);
             timeCompute<5>(*hash, buffer2, timer);
         }
     }

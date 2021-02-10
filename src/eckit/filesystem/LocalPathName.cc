@@ -189,7 +189,7 @@ BasePathName* LocalPathName::checkClusterNode() const {
     std::string n = ClusterDisks::node(path_);
     if (n != "local") {
         //        Log::warning() << *this << " is now on node [" << n << "]" << std::endl;
-        return PathNameFactory::instance().build(std::string("marsfs://") + n + path_);
+        return PathNameFactory::build(std::string("marsfs://") + n + path_);
     }
     return new BasePathNameT<LocalPathName>(LocalPathName(path_));
 }
@@ -709,7 +709,6 @@ void LocalPathName::touch() const {
     else {
         AutoStdFile f(*this, "a");  // This should create the file
     }
-
 }
 
 // This method is used by TxnLog. It is important that

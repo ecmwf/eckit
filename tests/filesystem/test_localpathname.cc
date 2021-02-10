@@ -16,6 +16,7 @@
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/TmpDir.h"
 
 #include "eckit/testing/Test.h"
 
@@ -134,6 +135,19 @@ CASE("Construct relative paths") {
     // root relative to path
 
     EXPECT(root.relativePath(foobar) == LocalPathName("../../../.."));
+}
+
+CASE("We can touch directories to update the timestamp") {
+
+    TmpDir d;
+
+    PathName foo = d / "foo";
+    PathName bar = d / "bar";
+
+    foo.mkdir();
+
+    EXPECT_NO_THROW(foo.touch()); // updates the timestamp
+    EXPECT_NO_THROW(bar.touch()); // doesnt exist, so creates a file
 }
 
 CASE("Find children files and dirs") {

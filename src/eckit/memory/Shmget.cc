@@ -22,7 +22,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static eckit::StaticMutex mutex_;
+static eckit::StaticMutex local_mutex;
 
 static long count_;
 static long maxCount_;
@@ -38,7 +38,7 @@ static std::map<const void*, int> ids_;
 int Shmget::shmget(key_t key, size_t size, int shmflg) {
     int shmid = ::shmget(key, size, shmflg);
     if (shmid >= 0) {
-        AutoLock<StaticMutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(local_mutex);
         sizes_[shmid] = size;
     }
     return shmid;
@@ -47,7 +47,7 @@ int Shmget::shmget(key_t key, size_t size, int shmflg) {
 void* Shmget::shmat(int shmid, const void* shmaddr, int shmflg) {
     void* addr = ::shmat(shmid, shmaddr, shmflg);
     if (addr) {
-        AutoLock<StaticMutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(local_mutex);
         count_++;
         maxCount_ = std::max(count_, maxCount_);
 
@@ -62,7 +62,7 @@ void* Shmget::shmat(int shmid, const void* shmaddr, int shmflg) {
 int Shmget::shmdt(const void* shmaddr) {
     int code = ::shmdt(shmaddr);
     if (code == 0) {
-        AutoLock<StaticMutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(local_mutex);
 
         count_--;
         length_ -= sizes_[ids_[shmaddr]];
@@ -75,7 +75,7 @@ int Shmget::shmdt(const void* shmaddr) {
 
 
 void Shmget::info(size_t& count, size_t& size) {
-    AutoLock<StaticMutex> lock(mutex_);
+    AutoLock<StaticMutex> lock(local_mutex);
     count = count_;
     size  = length_;
 }

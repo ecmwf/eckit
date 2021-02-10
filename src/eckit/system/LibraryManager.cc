@@ -316,9 +316,16 @@ public:  // methods
                 if (conf.has("plugin")) {
                     LocalConfiguration manifest = conf.getSubConfiguration("plugin");
                     Log::debug() << "Loaded plugin manifest " << manifest << std::endl;
-                    std::string name = manifest.getString("name");
-                    ASSERT(manifests.find(name) == manifests.end());  // no duplicate manifests
-                    manifests[name] = manifest;
+                    std::string name              = manifest.getString("name");
+                    std::string namespce         = manifest.getString("namespace");
+                    std::string fullQualifiedName = namespce + "." + name;
+                    if (manifests.find(fullQualifiedName) == manifests.end()) {
+                        manifests[fullQualifiedName] = manifest;
+                    }
+                    else {
+                        Log::debug() << "The plugin " << fullQualifiedName
+                                     << " was already found before, skipping plugin defined in " << path << std::endl;
+                    }
                 }
             }
         }
@@ -343,16 +350,19 @@ public:  // methods
 
         Log::debug() << "Going to load following plugins " << plugins << std::endl;
 
-        for (const auto& pname : plugins) {
-            if (manifests.find(pname) != manifests.end()) {
-                LocalConfiguration manifest = manifests[pname];
-                std::string name            = manifest.getString("name");
-                ASSERT(pname == name);
+        // loop over full qualified plugin names
+        for (const auto& fqname : plugins) {
+            if (manifests.find(fqname) != manifests.end()) {
+                LocalConfiguration manifest   = manifests[fqname];
+                std::string name              = manifest.getString("name");
+                std::string namespce          = manifest.getString("namespace");
+                std::string fullQualifiedName = namespce + "." + name;
+                ASSERT(fqname == fullQualifiedName);
                 std::string lib = manifest.getString("library");
                 Plugin& plugin  = loadPlugin(name, lib);
             }
             else {
-                Log::warning() << "Could not find manifest file for plugin " << pname << std::endl;
+                Log::warning() << "Could not find manifest file for plugin " << fqname << std::endl;
             }
         }
     }

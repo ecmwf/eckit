@@ -109,25 +109,7 @@ xxHash::digest_t xxHash::digest() const {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-class DeprecatedBuilder_xxHash : public HashBuilder<xxHash> {
-public:
-    using HashBuilder<xxHash>::HashBuilder;
-    virtual Hash* make() override {
-        Log::warning() << "ECKIT_DEPRECATION: "
-                       << "Replace \"xxHash\" with \"xxh64\" in "
-                       << "eckit::HashFactory::instance().build(\"xxHash\")"
-                       << std::endl;
-        return new xxHash();
-    }
-    virtual Hash* make(const std::string& param) override {
-        Log::warning() << "ECKIT_DEPRECATION: "
-                       << "Replace \"xxHash\" with \"xxh64\" in "
-                       << "eckit::HashFactory::instance().build(\"xxHash\",param)"
-                       << std::endl;
-        return new xxHash(param);
-    }
-};
-DeprecatedBuilder_xxHash deprecated_builder("xxHash");
+HashBuilder<xxHash> deprecated_builder("xxHash");
 HashBuilder<xxHash> builder("xxh64");
 }
 

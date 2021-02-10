@@ -14,8 +14,8 @@
 ///       for case insensitive file systems
 
 #include <memory>
-#include "eckit/eckit.h"
 
+#include "eckit/eckit.h"
 #include "eckit/utils/Hash.h"
 
 namespace eckit {

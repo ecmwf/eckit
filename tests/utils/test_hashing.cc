@@ -150,8 +150,8 @@ void testHash(Hash& hash, std::string hashName) {
         EXPECT(testResults == hashInitialized->digest());
     }
 
-    // test add
-    try {
+    // test incremental add
+    {
         std::string testResults = hashResults->second[tests.size()];
         hash.reset();
         hash.add(tests[tests.size() - 1].c_str(), tests[tests.size() - 1].size());
@@ -165,7 +165,6 @@ void testHash(Hash& hash, std::string hashName) {
         combined += tests[tests.size() - 1];
         EXPECT(hash.compute(combined.c_str(),combined.size()) == testResults);
     }
-    catch( const eckit::NotImplemented& ) {}
 }
 
 

@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include <cstring>
 #include <iostream>
 
@@ -16,7 +15,6 @@
 #include "eckit/contrib/xxhash/xxhash.h"
 
 #include "eckit/exception/Exceptions.h"
-
 #include "eckit/utils/xxHashing.h"
 
 namespace eckit {
@@ -108,6 +106,8 @@ xxHash::digest_t xxHash::digest() const {
     return digest_;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace {
 class DeprecatedBuilder_xxHash : public HashBuilder<xxHash> {
 public:
@@ -131,4 +131,5 @@ DeprecatedBuilder_xxHash deprecated_builder("xxHash");
 HashBuilder<xxHash> builder("xxh64");
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 }  // namespace eckit

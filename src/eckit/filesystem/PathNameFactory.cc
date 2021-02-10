@@ -9,22 +9,40 @@
  */
 
 #include "eckit/filesystem/PathNameFactory.h"
+
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/thread/StaticMutex.h"
+#include "eckit/thread/AutoLock.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PathNameFactory& PathNameFactory::instance() {
-    static PathNameFactory theInstance;
+class PathNameFactoryImpl : private eckit::NonCopyable {
+public:  // methods
+    static PathNameFactoryImpl& instance();
+
+    void enregister(const std::string& name, const PathNameBuilderBase* builder);
+    void deregister(const PathNameBuilderBase* builder);
+
+    BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false);
+
+private:  // methods
+    StaticMutex static_mutex_; //< must be StaticMutex, so it is registered to be clean on fork
+    std::vector<std::string> names_;
+    std::map<std::string, const PathNameBuilderBase*> builders_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+PathNameFactoryImpl& PathNameFactoryImpl::instance() {
+    static PathNameFactoryImpl theInstance;
     return theInstance;
 }
 
-PathNameFactory::PathNameFactory() {}
+void PathNameFactoryImpl::enregister(const std::string& name, const PathNameBuilderBase* builder) {
 
-void PathNameFactory::enregister(const std::string& name, const PathNameBuilderBase* builder) {
-
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    AutoLock<StaticMutex> lock(static_mutex_);
 
     if (builders_.find(name) != builders_.end()) {
         std::ostringstream ss;
@@ -36,9 +54,9 @@ void PathNameFactory::enregister(const std::string& name, const PathNameBuilderB
     builders_.emplace(name, builder);
 }
 
-void PathNameFactory::deregister(const PathNameBuilderBase* builder) {
+void PathNameFactoryImpl::deregister(const PathNameBuilderBase* builder) {
 
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    AutoLock<StaticMutex> lock(static_mutex_);
 
     for (auto it = builders_.begin(); it != builders_.end(); ++it) {
         if (it->second == builder) {
@@ -55,22 +73,9 @@ void PathNameFactory::deregister(const PathNameBuilderBase* builder) {
     throw SeriousBug(ss.str(), Here());
 }
 
-BasePathName* PathNameFactory::build(const std::string& path, bool tildeIsUserHome) const {
+BasePathName* PathNameFactoryImpl::build(const std::string& type, const std::string& path, bool tildeIsUserHome) {
 
-    std::string type = "local";
-
-    // Restrict search for identifier to the start of the path
-    size_t pos = path.rfind("://", 10);
-    if (pos != std::string::npos) {
-        type = path.substr(0, pos);
-    }
-
-    return build(type, path, tildeIsUserHome);
-}
-
-BasePathName* PathNameFactory::build(const std::string& type, const std::string& path, bool tildeIsUserHome) const {
-
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    AutoLock<StaticMutex> lock(static_mutex_);
 
     auto it = builders_.find(type);
     if (it == builders_.end()) {
@@ -82,12 +87,32 @@ BasePathName* PathNameFactory::build(const std::string& type, const std::string&
     return it->second->make(path, tildeIsUserHome);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 PathNameBuilderBase::PathNameBuilderBase(const std::string& name) {
-    PathNameFactory::instance().enregister(name, this);
+    PathNameFactoryImpl::instance().enregister(name, this);
 }
 
 PathNameBuilderBase::~PathNameBuilderBase() {
-    PathNameFactory::instance().deregister(this);
+    PathNameFactoryImpl::instance().deregister(this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+BasePathName* PathNameFactory::build(const std::string& path, bool tildeIsUserHome) {
+    std::string type = "local";
+
+    // Restrict search for identifier to the start of the path
+    size_t pos = path.rfind("://", 10);
+    if (pos != std::string::npos) {
+        type = path.substr(0, pos);
+    }
+
+    return PathNameFactoryImpl::instance().build(type, path, tildeIsUserHome);
+}
+
+BasePathName* PathNameFactory::build(const std::string& type, const std::string& path, bool tildeIsUserHome) {
+    return PathNameFactoryImpl::instance().build(type, path, tildeIsUserHome);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

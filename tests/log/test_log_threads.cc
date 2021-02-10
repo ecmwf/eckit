@@ -36,10 +36,10 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static StaticMutex static_mutex;
+static StaticMutex local_mutex;
 
 static void callback_logger(void* ctxt, const char* msg) {
-    AutoLock<StaticMutex> lock(static_mutex);  ///< usually global resources like this need to be protected by mutex
+    AutoLock<StaticMutex> lock(local_mutex);  ///< usually global resources like this need to be protected by mutex
 
     std::cout << "[TEST] -- " << msg;
 }

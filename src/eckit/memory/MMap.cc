@@ -23,7 +23,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static eckit::StaticMutex mutex_;
+static eckit::StaticMutex local_mutex;
 
 static long count_;
 static long maxCount_;
@@ -36,7 +36,7 @@ static size_t maxLength_;
 void* MMap::mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
     void* r = ::mmap(addr, length, prot, flags, fd, offset);
     if (r != MAP_FAILED) {
-        AutoLock<StaticMutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(local_mutex);
 
         count_++;
         maxCount_ = std::max(count_, maxCount_);
@@ -50,7 +50,7 @@ void* MMap::mmap(void* addr, size_t length, int prot, int flags, int fd, off_t o
 int MMap::munmap(void* addr, size_t length) {
     int r = ::munmap(addr, length);
     if (r == 0) {
-        AutoLock<StaticMutex> lock(mutex_);
+        AutoLock<StaticMutex> lock(local_mutex);
 
         count_--;
         length_ -= length;
@@ -60,7 +60,7 @@ int MMap::munmap(void* addr, size_t length) {
 
 
 void MMap::info(size_t& count, size_t& size) {
-    AutoLock<StaticMutex> lock(mutex_);
+    AutoLock<StaticMutex> lock(local_mutex);
     count = count_;
     size  = length_;
 }

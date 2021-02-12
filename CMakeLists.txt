@@ -126,6 +126,11 @@ ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
                     REQUIRED_PACKAGES AEC )
 
+### Hashing options
+
+ecbuild_add_option( FEATURE XXHASH
+                    DESCRIPTION "xxHash support for hashing" )
+
 ### LAPACK
 
 if( eckit_HAVE_MKL )

@@ -690,9 +690,6 @@ list( APPEND eckit_utils_srcs
   utils/Clock.h
   utils/Translator.cc
   utils/Translator.h
-  utils/xxHashing.cc
-  utils/xxHashing.h
-  contrib/xxhash/xxhash.h
 )
 
 if(eckit_HAVE_BZIP2)
@@ -738,6 +735,15 @@ if(eckit_HAVE_RSYNC)
     utils/Rsync.h
   )
 endif()
+
+if(eckit_HAVE_XXHASH)
+    list( APPEND eckit_utils_srcs
+        utils/xxHashing.cc
+        utils/xxHashing.h
+        contrib/xxhash/xxhash.h
+    )
+endif()
+
 
 list( APPEND eckit_memory_srcs
 memory/Builder.cc
@@ -914,7 +920,6 @@ ecbuild_add_library(
 
           PRIVATE_INCLUDES
               "${CURL_INCLUDE_DIRS}"
-              "${XXHASH_INCLUDE_DIRS}"
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
@@ -931,7 +936,6 @@ ecbuild_add_library(
               "${AEC_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
-              "${XXHASH_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
 

@@ -46,6 +46,10 @@ public:
 
     bool hasMissingValue() const { return hasMissingValue_; }
     double missingValue() const { return missingValue_; }
+
+    void hasMissingValue(bool flag) { hasMissingValue_ = flag; }
+    void missingValue(double val) { missingValue_ = val; }
+
     bool isBitfield() const { return isBitfield_; }
     bool isMissingValue(const double* val) const {
         // return hasMissingValue_ && (*val == missingValue_);

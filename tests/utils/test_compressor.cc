@@ -15,6 +15,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/ResizableBuffer.h"
 #include "eckit/utils/Compressor.h"
+#include "eckit/utils/MD5.h"
 
 #include "eckit/testing/Test.h"
 
@@ -48,6 +49,38 @@ size_t compress_uncompress(Compressor& c, const Buffer& in, ResizableBuffer& out
     return ulen;
 }
 
+void EXPECT_reproducible_compression(Compressor& c, size_t times) {
+    std::vector<size_t> reproduce_lengths;
+    std::vector<std::string> reproduce_checksum;
+
+    for( size_t i=0; i<times+1; ++i ) {
+        Buffer uncompressed(msg.data(),msg.size());
+        ResizableBuffer compressed;
+        size_t compressed_size = c.compress(uncompressed,compressed);
+        reproduce_lengths.emplace_back( compressed_size );
+        reproduce_checksum.emplace_back( eckit::MD5(compressed.data(),compressed_size) );
+    }
+
+    const auto& ref_length = reproduce_lengths.front();
+    bool reproducible_length{true};
+    for( auto& length: reproduce_lengths ) {
+        if( length != ref_length ) {
+            reproducible_length = false;
+        }
+    }
+    EXPECT( reproducible_length );
+
+    const auto& ref_checksum = reproduce_checksum.front();
+    bool reproducible_checksum{true};
+    for( auto& checksum: reproduce_checksum ) {
+        if( checksum != ref_checksum ) {
+            reproducible_checksum = false;
+        }
+    }
+    EXPECT( reproducible_checksum );
+}
+
+
 
 CASE("Compression") {
 
@@ -73,14 +106,15 @@ CASE("Compression") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("none")));
         size_t ulen = compress_uncompress(*c, in, out);
         EXPECT(tostr(out, ulen) == msg);
+        EXPECT_reproducible_compression(*c,10);
     }
 
     SECTION("CASE Snappy Compression") {
-
         if (CompressorFactory::instance().has("snappy")) {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("snappy")));
             size_t ulen = compress_uncompress(*c, in, out);
             EXPECT(tostr(out, ulen) == msg);
+            EXPECT_reproducible_compression(*c,10);
         }
     }
 
@@ -89,6 +123,7 @@ CASE("Compression") {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("lz4")));
             size_t ulen = compress_uncompress(*c, in, out);
             EXPECT(tostr(out, ulen) == msg);
+            EXPECT_reproducible_compression(*c,10);
         }
     }
 
@@ -97,6 +132,7 @@ CASE("Compression") {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
             size_t ulen = compress_uncompress(*c, in, out);
             EXPECT(tostr(out, ulen) == msg);
+            EXPECT_reproducible_compression(*c,10);
         }
     }
 
@@ -105,6 +141,7 @@ CASE("Compression") {
             EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("aec")));
             size_t ulen = compress_uncompress(*c, in, out);
             EXPECT(tostr(out, ulen) == msg);
+            EXPECT_reproducible_compression(*c,10);
         }
     }
 }

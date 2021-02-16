@@ -55,7 +55,7 @@ void EXPECT_reproducible_compression(Compressor& c, size_t times) {
 
     for( size_t i=0; i<times+1; ++i ) {
         Buffer uncompressed(msg.data(),msg.size());
-        ResizableBuffer compressed;
+        ResizableBuffer compressed(0);
         size_t compressed_size = c.compress(uncompressed,compressed);
         reproduce_lengths.emplace_back( compressed_size );
         reproduce_checksum.emplace_back( eckit::MD5(compressed.data(),compressed_size) );

@@ -109,13 +109,12 @@ namespace sql {
 void SQLParser::parseString(SQLSession& session, const std::string& s) {
 
     SQLYacc::eckit_sql_scan_t scanner;
-    SQLYacc::eckit_sql_lex_init(&scanner);
-
     SQLYacc::include_stack stack;
     SQLYacc::eckit_sql_lex_init_extra(&stack, &scanner);
 
     stack.push(cleanUpSQLText(s), "", (SQLYacc::YY_BUFFER_STATE)scanner, (SQLYacc::eckit_sql_scan_t)scanner);
     SQLYacc::eckit_sql_parse(scanner, &session);
+    SQLYacc::eckit_sql_lex_destroy(scanner);
 }
 
 std::string SQLParser::cleanUpSQLText(const std::string& sql) {

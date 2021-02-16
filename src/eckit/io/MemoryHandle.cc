@@ -195,6 +195,7 @@ DataHandle* MemoryHandle::clone() const {
     if (owned_) {
         MemoryHandle* h = new MemoryHandle(size_, grow_);
         ::memcpy(h->address_, address_, size_);
+        h->size_ = size_;
         return h;
     }
     else {

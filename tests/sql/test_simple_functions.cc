@@ -58,13 +58,15 @@ private:
             for (const auto& col : columns) {
                 offsets_.push_back(offsets[col.get().index()]);
                 doublesSizes_.push_back(doublesSizes[col.get().index()]);
+                hasMissing_.push_back(false);
+                missingVals_.push_back(0);
             }
         }
 
     private:
-        virtual ~TestTableIterator() {}
-        virtual void rewind() { idx_ = 0; }
-        virtual bool next() {
+        ~TestTableIterator() override {}
+        void rewind() override { idx_ = 0; }
+        bool next() override {
             if (idx_ < INTEGER_DATA.size()) {
                 copyRow();
                 idx_++;
@@ -78,20 +80,24 @@ private:
             data_[3] = REAL_DATA[idx_];
             data_[4] = REAL_DATA2[idx_];
         }
-        virtual std::vector<size_t> columnOffsets() const { return offsets_; }
-        virtual std::vector<size_t> doublesDataSizes() const { return doublesSizes_; }
-        virtual const double* data() const { return &data_[0]; }
+        std::vector<size_t> columnOffsets() const override { return offsets_; }
+        std::vector<size_t> doublesDataSizes() const override { return doublesSizes_; }
+        std::vector<char> columnsHaveMissing() const override { return hasMissing_; }
+        std::vector<double> missingValues() const override { return missingVals_; }
+        const double* data() const override { return &data_[0]; }
 
         // const TestTable& owner_; // unused
         size_t idx_;
         std::vector<size_t> offsets_;
         std::vector<size_t> doublesSizes_;
         std::vector<double> data_;
+        std::vector<char> hasMissing_;
+        std::vector<double> missingVals_;
     };
 
-    virtual eckit::sql::SQLTableIterator* iterator(
+    eckit::sql::SQLTableIterator* iterator(
         const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
-        std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
+        std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const override {
         // TODO: Test callback
         return new TestTableIterator(*this, columns);
     }

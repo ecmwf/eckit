@@ -19,6 +19,9 @@ ecbuild_add_test( TARGET      eckit_test_log_colour
                   SOURCES     test_colour.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_log_json
+                  SOURCES     test_log_json.cc
+                  LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_log_user_channels
                   ENABLED     OFF

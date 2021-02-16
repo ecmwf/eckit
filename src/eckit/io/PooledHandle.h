@@ -40,6 +40,7 @@ public:
     virtual void close() override;
     virtual Offset seek(const Offset&) override;
     virtual void hash(MD5& md5) const override;
+    virtual Offset position() override;
 
     // for testing
 

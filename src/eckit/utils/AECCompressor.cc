@@ -72,6 +72,9 @@ size_t AECCompressor::compress(const eckit::Buffer& inTmp, ResizableBuffer& out)
     strm.flags           = AEC_flags;
 
     Buffer in(inTmp, minInputSize(inTmp.size(), strm));
+    if( in.size() > inTmp.size() ) {
+        ::memset(static_cast<char*>(in.data())+inTmp.size(), 0, in.size() - inTmp.size());
+    }
 
     unsigned int maxcompressed = (size_t)(1.2 * in.size());
     if (out.size() < maxcompressed)

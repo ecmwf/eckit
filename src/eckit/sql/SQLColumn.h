@@ -46,10 +46,18 @@ public:
 
     bool hasMissingValue() const { return hasMissingValue_; }
     double missingValue() const { return missingValue_; }
+
+    void hasMissingValue(bool flag) { hasMissingValue_ = flag; }
+    void missingValue(double val) { missingValue_ = val; }
+
     bool isBitfield() const { return isBitfield_; }
     bool isMissingValue(const double* val) const {
         // return hasMissingValue_ && (*val == missingValue_);
-        return (*reinterpret_cast<const uint64_t*>(val) == *(reinterpret_cast<const uint64_t*>(&missingValue_)));
+        const char* punnable_val = reinterpret_cast<const char*>(val);
+        const char* punnable_missing = reinterpret_cast<const char*>(&missingValue_);
+        const uint64_t* punned_val = reinterpret_cast<const uint64_t*>(punnable_val);
+        const uint64_t* punned_missing = reinterpret_cast<const uint64_t*>(punnable_missing);
+        return hasMissingValue_ && (*punned_val == *punned_missing);
     }
     const BitfieldDef& bitfieldDef() const { return bitfieldDef_; }
     size_t dataSizeDoubles() const override { return sizeDoubles_; }

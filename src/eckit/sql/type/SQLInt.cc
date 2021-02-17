@@ -17,6 +17,8 @@ namespace eckit {
 namespace sql {
 namespace type {
 
+//--------------------------------------------------------------------------------------------------------
+
 SQLInt::SQLInt(const std::string& name) : SQLType(name) {}
 
 SQLInt::~SQLInt() {}
@@ -32,6 +34,8 @@ void SQLInt::output(SQLOutput& o, double d, bool missing) const {
 std::string SQLInt::asString(const double* val) const {
     return eckit::Translator<long, std::string>()(*val);
 }
+
+//--------------------------------------------------------------------------------------------------------
 
 }  // namespace type
 }  // namespace sql

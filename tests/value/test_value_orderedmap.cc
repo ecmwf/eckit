@@ -475,20 +475,33 @@ CASE("Test head/tail functionality for OrderedMap") {
 }
 
 CASE("Hash of a value") {
-    std::unique_ptr<Hash> h(make_hash());
 
-    Value om  = Value::makeOrderedMap();
-    om[123]   = 1234;
-    om[234]   = 2345;
-    om[777]   = 7777;
-    om["abc"] = "def";
-    om[true]  = false;
+    auto create = [](Value& m) {
+      m[123]   = 1234;
+      m[234]   = 2345;
+      m[777]   = 7777;
+      m["abc"] = "def";
+      m[true]  = false;
+    };
 
-    om.hash(*h);
+    auto hash = [](Value& m) -> std::string {
+      std::unique_ptr<Hash> h(make_hash());
+      m.hash(*h);
+      return h->digest();
+    };
 
-    //    std::cout << "MD5 " << h->digest() << std::endl;
+    Value orderedMap  = Value::makeOrderedMap();
+    Value sortedMap   = Value::makeMap();
+    create(orderedMap);
+    create(sortedMap);
+    std::string orderedHash = hash(orderedMap);
+    std::string sortedHash  = hash(sortedMap);
 
-    EXPECT(h->digest() == "d88d5bd6eb0a9d56d9132e0aca7f903f");
+    // std::cout << "MD5 ordered " << orderedHash << std::endl;
+    // std::cout << "MD5 sorted  " << sortedHash << std::endl;
+
+    EXPECT( orderedHash == sortedHash );
+    EXPECT( orderedHash == "4259b7e50da09908c9fba2584b71db79" );
 }
 
 //----------------------------------------------------------------------------------------------------------------------

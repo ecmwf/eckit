@@ -175,10 +175,9 @@ Content* OrderedMapContent::clone() const {
 
     OrderedMapContent* m = new OrderedMapContent();
 
-    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
-        m->element((*j).first.clone()) = (*j).second.clone();
+    for( const auto& key: keys_ ) {
+        m->element(key.clone()) = value(key).clone();
     }
-
     return m;
 }
 

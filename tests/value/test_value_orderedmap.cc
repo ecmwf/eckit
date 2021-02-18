@@ -199,6 +199,16 @@ CASE("Test comparisons using OrderedMap") {
     }
 }
 
+CASE("Check order is preserved when cloning") {
+    Value om1 = Value::makeOrderedMap();
+    om1["c"] = 1;
+    om1["b"] = 2;
+    om1["a"] = 3;
+    Value om2 = om1.clone();
+    EXPECT(om2.compare(om1) == 0);  // Keys are equal and inserted in same order
+    EXPECT(om1.compare(om2) == 0);  // Keys are equal and inserted in same order
+}
+
 CASE("Check comparisons with other types of data.") {
     Value om1          = Value::makeOrderedMap();
     om1[123]           = 1234;

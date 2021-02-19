@@ -14,7 +14,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
@@ -108,7 +108,7 @@ private:  // members
 
     std::string name_;
     std::string logfileFormat_;
-    ResizableBuffer buffer_;
+    Buffer buffer_;
     size_t logFilesBufferSize_;
 };
 

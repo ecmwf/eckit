@@ -11,21 +11,21 @@
 
 #include <cstring>
 
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
 
 
 namespace eckit {
 
-ResizableMemoryStream::ResizableMemoryStream(ResizableBuffer& buffer) : buffer_(buffer), position_(0) {}
+ResizableMemoryStream::ResizableMemoryStream(Buffer& buffer) : buffer_(buffer), position_(0) {}
 
 ResizableMemoryStream::~ResizableMemoryStream() {}
 
 long ResizableMemoryStream::read(void* buffer, long length) {
     size_t left = buffer_.size() - position_;
     size_t size = std::min(left, size_t(length));
-    ::memcpy(buffer, buffer_.data() + position_, size);
+    ::memcpy(buffer, static_cast<const char*>(buffer_.data()) + position_, size);
     position_ += size;
     return long(size);
 }
@@ -43,7 +43,7 @@ long ResizableMemoryStream::write(const void* buffer, long length) {
     }
 
     size_t written = std::min(left, size_t(length));
-    ::memcpy(buffer_.data() + position_, buffer, written);
+    ::memcpy(static_cast<char*>(buffer_.data()) + position_, buffer, written);
     position_ += written;
 
     return long(written);

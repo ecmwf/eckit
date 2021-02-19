@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/mpi/Comm.h"
@@ -157,7 +157,7 @@ public:
     ~ObjSend() {}
 
 private:
-    eckit::ResizableBuffer sendBuffer_;
+    eckit::Buffer sendBuffer_;
 
     ObjSend(const ObjSend&) = delete;
     ObjSend& operator=(const ObjSend&) = delete;
@@ -189,7 +189,7 @@ private:
         eckit::Log::info() << "[" << me << "] "
                            << "receiving from " << from << " --- size " << size << std::endl;
 
-        eckit::ResizableBuffer b(size);  // must be enough
+        eckit::Buffer b(size);  // must be enough
         b.zero();
 
         eckit::mpi::comm().receive(static_cast<char*>(b.data()), b.size(), int(from), 0);

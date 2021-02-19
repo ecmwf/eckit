@@ -26,13 +26,14 @@ namespace eckit {
 
 class Buffer : private NonCopyable {
 public:  // methods
+    Buffer() = default;
     explicit Buffer(size_t size);
     explicit Buffer(const std::string& s);
 
     Buffer(const char*, size_t size);
 
-    Buffer(Buffer&& rhs);
-    Buffer& operator=(Buffer&& rhs);
+    Buffer(Buffer&& rhs) noexcept;
+    Buffer& operator=(Buffer&& rhs) noexcept;
 
     ~Buffer();
 
@@ -49,16 +50,25 @@ public:  // methods
 
     void zero();
 
+    /// @post Invalidates contents of buffer
+    void resize(size_t, bool preserveData = false);
+
+    /// Deallocate memory
+    void clear();
+
+    /// Copy data of given size (bytes) into buffer at given position
+    /// @pre Buffer must have sufficient size
+    void copy(const void*, size_t size, size_t pos = 0);
+
 protected:  // methods
     void create();
     void destroy();
 
     void copy(const std::string& s);
-    void copy(const char*, size_t size);
 
 private:  // members
-    void* buffer_;
-    size_t size_;
+    void* buffer_{nullptr};
+    size_t size_{0};
 };
 
 }  // namespace eckit

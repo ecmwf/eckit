@@ -17,6 +17,18 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace {
+static void* allocate(size_t size) {
+    return static_cast<void*>(new char[size]);
+}
+
+static void deallocate(void* buffer) {
+    delete[] static_cast<char*>(buffer);
+}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 Buffer::Buffer(size_t size) : buffer_(nullptr), size_(size) {
     create();
 }
@@ -26,12 +38,12 @@ Buffer::Buffer(const char* p, size_t size) : buffer_(nullptr), size_(size) {
     copy(p, size);
 }
 
-Buffer::Buffer(Buffer&& rhs) : buffer_(rhs.buffer_), size_(rhs.size_) {
+Buffer::Buffer(Buffer&& rhs) noexcept : buffer_(rhs.buffer_), size_(rhs.size_) {
     rhs.buffer_ = nullptr;
     rhs.size_   = 0;
 }
 
-Buffer& Buffer::operator=(Buffer&& rhs) {
+Buffer& Buffer::operator=(Buffer&& rhs) noexcept {
     std::swap(buffer_, rhs.buffer_);
     std::swap(size_, rhs.size_);
     return *this;
@@ -54,12 +66,12 @@ void Buffer::zero() {
 }
 
 void Buffer::create() {
-    buffer_ = static_cast<void*>(new char[size_]);
+    buffer_ = allocate(size_);
 }
 
 void Buffer::destroy() {
     if (buffer_) {
-        delete[] static_cast<char*>(buffer_);
+        deallocate(buffer_);
         buffer_ = nullptr;
         size_   = 0;
     }
@@ -70,12 +82,34 @@ void Buffer::copy(const std::string& s) {
     ::strncpy(static_cast<char*>(buffer_), s.c_str(), std::min(size_, s.size()));
 }
 
-void Buffer::copy(const char* p, size_t size) {
-    ASSERT(buffer_ && size_ >= size);
+void Buffer::copy(const void* p, size_t size, size_t pos) {
+    ASSERT(buffer_ && size_ >= pos+size);
     if (size) {
-        ::memcpy(buffer_, p, size);
+        ::memcpy(static_cast<char*>(buffer_)+pos, p, size);
     }
 }
+
+void Buffer::resize(size_t size, bool preserveData) {
+    if (size != size_) {
+        if (preserveData) {
+            void* newbuffer = allocate(size);
+            ::memcpy(newbuffer, buffer_, std::min(size_, size));
+            deallocate(buffer_);
+            size_   = size;
+            buffer_ = newbuffer;
+        }
+        else {
+            deallocate(buffer_);
+            size_   = size;
+            buffer_ = allocate(size);
+        }
+    }
+}
+
+void Buffer::clear() {
+    destroy();
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

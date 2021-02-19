@@ -104,7 +104,6 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
             Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
 
         Buffer buffer(bufsize);
-        // ResizableBuffer buffer(bufsize);
 
         watcher.watch(0, 0);
 

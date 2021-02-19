@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "eckit/io/Buffer.h"
-#include "eckit/io/ResizableBuffer.h"
 #include "eckit/utils/Compressor.h"
 #include "eckit/utils/MD5.h"
 
@@ -31,18 +30,18 @@ static std::string msg("THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG'S BACK 1234
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::string tostr(const ResizableBuffer& b, size_t len) {
+std::string tostr(const Buffer& b, size_t len) {
     return std::string(b, len);
 }
 
-size_t compress_uncompress(Compressor& c, const Buffer& in, ResizableBuffer& out) {
+size_t compress_uncompress(Compressor& c, const Buffer& in, Buffer& out) {
 
-    size_t compressedLenght = c.compress(in, out);
+    size_t compressedLenght = c.compress(in.data(), in.size(), out);
 
     Buffer compressed(out, compressedLenght);
 
     out.resize(in.size());
-    size_t ulen = c.uncompress(compressed, out);
+    size_t ulen = c.uncompress(compressed.data(),compressed.size(), out);
 
     std::cout << tostr(out, ulen) << std::endl;
 
@@ -55,8 +54,8 @@ void EXPECT_reproducible_compression(Compressor& c, size_t times) {
 
     for( size_t i=0; i<times+1; ++i ) {
         Buffer uncompressed(msg.data(),msg.size());
-        ResizableBuffer compressed(0);
-        size_t compressed_size = c.compress(uncompressed,compressed);
+        Buffer compressed(0);
+        size_t compressed_size = c.compress(uncompressed.data(),uncompressed.size(),compressed);
         reproduce_lengths.emplace_back( compressed_size );
         reproduce_checksum.emplace_back( eckit::MD5(compressed.data(),compressed_size) );
     }
@@ -85,7 +84,7 @@ void EXPECT_reproducible_compression(Compressor& c, size_t times) {
 CASE("Compression") {
 
     Buffer in(msg.c_str(), msg.size());
-    ResizableBuffer out(msg.size());
+    Buffer out(msg.size());
     out.zero();
 
     std::unique_ptr<Compressor> c;

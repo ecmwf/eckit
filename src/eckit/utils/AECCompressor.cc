@@ -8,12 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
+
 #include "eckit/utils/AECCompressor.h"
 #include "libaec.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/ResizableBuffer.h"
 
 
 // compression parameters heve been tuned for maximum compression ratio with GRIB2 3D fields.
@@ -61,7 +62,7 @@ static size_t minInputSize(const size_t inputSize, const aec_stream& strm) {
     return minSize * blockSizeBytes;
 }
 
-size_t AECCompressor::compress(const eckit::Buffer& inTmp, ResizableBuffer& out) const {
+size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const {
     std::ostringstream msg;
 
     struct aec_stream strm;
@@ -71,12 +72,12 @@ size_t AECCompressor::compress(const eckit::Buffer& inTmp, ResizableBuffer& out)
     strm.rsi             = AEC_rsi;
     strm.flags           = AEC_flags;
 
-    Buffer in(minInputSize(inTmp.size(), strm));
-    if( inTmp.size() > 0 ) {
-        ::memcpy(in.data(),inTmp.data(),inTmp.size());
+    Buffer in(minInputSize(len, strm));
+    if( len > 0 ) {
+        in.copy(inTmp, len);
     }
-    if( in.size() > inTmp.size() ) {
-        ::memset(static_cast<char*>(in.data())+inTmp.size(), 0, in.size() - inTmp.size());
+    if( in.size() > len ) {
+        ::memset(static_cast<char*>(in.data())+len, 0, in.size() - len);
     }
 
     unsigned int maxcompressed = (size_t)(1.2 * in.size());
@@ -114,7 +115,7 @@ size_t AECCompressor::compress(const eckit::Buffer& inTmp, ResizableBuffer& out)
     throw FailedLibraryCall("AEC", "aec_encode_end", msg.str(), Here());
 }
 
-size_t AECCompressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) const {
+size_t AECCompressor::uncompress(const void* in, size_t len, Buffer& out) const {
     std::ostringstream msg;
 
     // AEC assumes you have transmitted the original size separately
@@ -127,8 +128,8 @@ size_t AECCompressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) 
     strm.rsi             = AEC_rsi;
     strm.flags           = AEC_flags;
 
-    strm.next_in  = (unsigned char*)in.data();
-    strm.avail_in = in.size();
+    strm.next_in  = (unsigned char*)in;
+    strm.avail_in = len;
 
     Buffer outTmp(minInputSize(out.size(), strm));
 
@@ -146,7 +147,6 @@ size_t AECCompressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) 
         msg << "returned " << ret;
         throw FailedLibraryCall("AEC", "aec_decode", msg.str(), Here());
     }
-    size_t outSize = strm.total_out;
 
     // free all resources used by decoder
     ret = aec_decode_end(&strm);

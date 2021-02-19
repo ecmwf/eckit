@@ -19,7 +19,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/ResizableBuffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
@@ -42,14 +41,14 @@ struct space_out : std::numpunct<char> {
 };
 
 template <int N>
-size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::ResizableBuffer& outBuffer,
+size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Buffer& outBuffer,
                     eckit::Timer& timer) {
 
     timer.start();
 
     size_t out;
     for (int i = 0; i < N; ++i) {
-        out = compressor.compress(inBuffer, outBuffer);
+        out = compressor.compress(inBuffer.data(), inBuffer.size(), outBuffer);
     }
 
     timer.stop();
@@ -63,14 +62,14 @@ size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Resi
 }
 
 template <int N>
-void timeDecompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::ResizableBuffer& outBuffer,
+void timeDecompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Buffer& outBuffer,
                     eckit::Timer& timer) {
 
     timer.start();
 
     size_t out;
     for (int i = 0; i < N; ++i) {
-        out = compressor.uncompress(inBuffer, outBuffer);
+        out = compressor.uncompress(inBuffer.data(), inBuffer.size(), outBuffer);
     }
 
     timer.stop();
@@ -90,7 +89,7 @@ CASE("Test compression performance") {
     eckit::PathName path2T("2t_sfc.grib");
     length = path2T.size();
     eckit::Buffer in2TGrib(length);
-    eckit::ResizableBuffer out2TGrib(length);
+    eckit::Buffer out2TGrib(length);
     dh = path2T.fileHandle();
     dh->openForRead();
     dh->read(in2TGrib, length);
@@ -99,7 +98,7 @@ CASE("Test compression performance") {
     eckit::PathName path2Tregrid("2t_sfc_regrid.grib");
     length = path2Tregrid.size();
     eckit::Buffer in2TgGrib(length);
-    eckit::ResizableBuffer out2TgGrib(length);
+    eckit::Buffer out2TgGrib(length);
     dh = path2Tregrid.fileHandle();
     dh->openForRead();
     dh->read(in2TgGrib, length);
@@ -109,7 +108,7 @@ CASE("Test compression performance") {
     length = pathVO_D.size();
     dh     = pathVO_D.fileHandle();
     eckit::Buffer inVO_DGrib(length);
-    eckit::ResizableBuffer outVO_DGrib(length);
+    eckit::Buffer outVO_DGrib(length);
     dh->openForRead();
     dh->read(inVO_DGrib, length);
     dh->close();
@@ -117,7 +116,7 @@ CASE("Test compression performance") {
     eckit::PathName pathU_V("u-v_6ml.grib");
     length = pathU_V.size();
     eckit::Buffer inU_VGrib(length);
-    eckit::ResizableBuffer outU_VGrib(length);
+    eckit::Buffer outU_VGrib(length);
     dh = pathU_V.fileHandle();
     dh->openForRead();
     dh->read(inU_VGrib, length);
@@ -126,7 +125,7 @@ CASE("Test compression performance") {
     eckit::PathName pathQ("q_6ml_regrid.grib");
     length = pathQ.size();
     eckit::Buffer inQgGrib(length);
-    eckit::ResizableBuffer outQgGrib(length);
+    eckit::Buffer outQgGrib(length);
     dh = pathQ.fileHandle();
     dh->openForRead();
     dh->read(inQgGrib, length);

@@ -16,7 +16,6 @@
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/ResizableBuffer.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/StringTools.h"
 
@@ -117,16 +116,20 @@ Compressor::~Compressor() {}
 
 NoCompressor::NoCompressor() {}
 
-size_t NoCompressor::compress(const Buffer& in, ResizableBuffer& out) const {
-    out.resize(in.size());
-    ::memcpy(out, in, in.size());
+size_t NoCompressor::compress(const void* in, size_t len, Buffer& out) const {
+    if( out.size() < len ) {
+        out.resize(len);
+    }
+    out.copy(in,len);
     return out.size();
 }
 
-size_t NoCompressor::uncompress(const Buffer& in, ResizableBuffer& out) const {
-    out.resize(in.size());
-    ::memcpy(out, in, in.size());
-    return in.size();
+size_t NoCompressor::uncompress(const void* in, size_t len, Buffer& out) const {
+    if( out.size() < len ) {
+        out.resize(len);
+    }
+    out.copy(in,len);
+    return len;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

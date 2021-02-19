@@ -13,7 +13,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/ResizableBuffer.h"
 
 namespace eckit {
 
@@ -23,24 +22,24 @@ BZip2Compressor::BZip2Compressor() {}
 
 BZip2Compressor::~BZip2Compressor() {}
 
-size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const {
+size_t BZip2Compressor::compress(const void* in, size_t len, Buffer& out) const {
     std::ostringstream msg;
 
     // https://sourceware.org/bzip2/manual/manual.html#bzbufftobuffcompress
     // To guarantee that the compressed data will fit in its buffer, allocate an output buffer of size 1% larger than
     // the uncompressed data, plus six hundred extra bytes.
-    unsigned int maxcompressed = (size_t)(1.01 * in.size() + 600);
+    unsigned int maxcompressed = (size_t)(1.01 * len + 600);
     if (out.size() < maxcompressed)
         out.resize(maxcompressed);
     unsigned int bufferSize = out.size();
 
     bz_stream strm;
     strm.avail_in = 0UL;
-    strm.next_in  = NULL;
-    strm.next_out = NULL;
-    strm.bzalloc  = NULL;
-    strm.bzfree   = NULL;
-    strm.opaque   = NULL;
+    strm.next_in  = nullptr;
+    strm.next_out = nullptr;
+    strm.bzalloc  = nullptr;
+    strm.bzfree   = nullptr;
+    strm.opaque   = nullptr;
 
     // https://sourceware.org/bzip2/manual/manual.html#bzcompress-init
     // int BZ2_bzCompressInit ( bz_stream *strm,
@@ -73,9 +72,9 @@ size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) 
         throw FailedLibraryCall("BZlib2", "BZ2_bzCompressInit", msg.str(), Here());
     }
 
-    strm.next_in   = (char*)in.data();
-    strm.avail_in  = in.size();
-    strm.next_out  = out.data();
+    strm.next_in   = (char*)in;
+    strm.avail_in  = len;
+    strm.next_out  = (char*)out.data();
     strm.avail_out = bufferSize;
 
     ret = BZ2_bzCompress(&strm, BZ_FINISH);
@@ -87,7 +86,7 @@ size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) 
     size_t outSize = bufferSize - strm.avail_out;
 
     strm.avail_in = 0;
-    strm.next_in  = NULL;
+    strm.next_in  = nullptr;
 
     ret = BZ2_bzCompressEnd(&strm);
     if (ret == BZ_OK)
@@ -97,7 +96,7 @@ size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) 
     throw FailedLibraryCall("BZlib2", "BZ2_bzCompressEnd", msg.str(), Here());
 }
 
-size_t BZip2Compressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) const {
+size_t BZip2Compressor::uncompress(const void* in, size_t len, Buffer& out) const {
     std::ostringstream msg;
 
     // BZip2 assumes you have transmitted the original size separately
@@ -105,11 +104,11 @@ size_t BZip2Compressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out
 
     bz_stream strm;
     strm.avail_in = 0UL;
-    strm.next_in  = NULL;
-    strm.next_out = NULL;
-    strm.bzalloc  = NULL;
-    strm.bzfree   = NULL;
-    strm.opaque   = NULL;
+    strm.next_in  = nullptr;
+    strm.next_out = nullptr;
+    strm.bzalloc  = nullptr;
+    strm.bzfree   = nullptr;
+    strm.opaque   = nullptr;
 
     int ret = BZ2_bzDecompressInit(&strm, 0, 0);
     if (ret != BZ_OK) {
@@ -117,9 +116,9 @@ size_t BZip2Compressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out
         throw FailedLibraryCall("BZlib2", "BZ2_bzDecompressInit", msg.str(), Here());
     }
 
-    strm.next_in            = (char*)in.data();
-    strm.avail_in           = in.size();
-    strm.next_out           = out.data();
+    strm.next_in            = (char*)in;
+    strm.avail_in           = len;
+    strm.next_out           = (char*)out.data();
     strm.avail_out          = out.size();
     unsigned int bufferSize = out.size();
 
@@ -131,7 +130,7 @@ size_t BZip2Compressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out
 
     size_t outSize = bufferSize - strm.avail_out;
 
-    strm.next_out = NULL;
+    strm.next_out = nullptr;
     ret           = BZ2_bzDecompressEnd(&strm);
     if (ret == BZ_OK)
         return outSize;

@@ -30,15 +30,28 @@ public:  // methods
 
     virtual ~Compressor();
 
-    /// @note may resize out buffer. Do not rely on out.size()
-    /// @returns the size of the compressed bytestream inside buffer, which may differ from the out.size()
+    /// Compresses the bytestream within the in buffer
+    /// @param in input buffer that holds the uncompressed bytesteam.
+    /// @param len input buffer size.
+    /// @param out output buffer to hold the compressed bytesteam. Buffer may be oversized, in which case 
+    ///            resizing is implementation specific. Nevertheless, it is expected that implementations
+    ///            will take this as oppurtunity for optimising and avoid resizing.
+    /// @note if needed, it will resize or replace the internal buffer of out to match the compressed bytestream size
+    /// @returns the size of the compressed bytestream inside out buffer, it is less or equal than out.size()
     virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const = 0;
 
-    /// @note may resize out buffer
-    /// @returns the size of the compressed bytestream inside buffer, which may differ from the out.size()
-    virtual size_t uncompress(const void* in, size_t len, eckit::Buffer& out) const = 0;
+    /// Uncompresses the bytestream within the in buffer
+    /// Since some compression algorithms dont record uncompressed size in the bytestream, client code is 
+    /// required to record and handle the uncompressed size separately and pass it in via parameter outlen.
+    /// @param in input buffer that holds the compressed bytesteam.
+    /// @param len input buffer size.
+    /// @param out output buffer to hold the uncompressed bytesteam.
+    /// @param outlen the expected size of the uncompressed bytestream. Buffer may be resized or if large enough
+    ///        implementations will try to used what is passed in. This could be a way to reuse the same memory
+    ///        buffer in a tight loop.
+    /// @note may resize or replace the internal buffer of out
+    virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const = 0;
 
-protected:  // methods
 };
 
 //----------------------------------------------------------------------------------------------------------------------

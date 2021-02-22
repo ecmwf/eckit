@@ -48,18 +48,14 @@ size_t SnappyCompressor::compress(const void* in, size_t len, Buffer& out) const
 void SnappyCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
     snappy_status status;
 
-    size_t uncompressed;
-    status = snappy_uncompressed_length(static_cast<const char*>(in), len, &uncompressed);
-    if (status != SNAPPY_OK) {
-        throw FailedLibraryCall("snappy", "snappy_uncompressed_lengths", "returned != SNAPPY_OK", Here());
-    }
+    if (out.size() < outlen)
+        out.resize(outlen);
 
-    ASSERT( uncompressed == outlen );
-
-    if (out.size() < uncompressed)
-        out.resize(uncompressed);
+    size_t uncompressed = out.size();
 
     status = snappy_uncompress(static_cast<const char*>(in), len, out, &uncompressed);
+
+    ASSERT( uncompressed == outlen );
 
     if (status != SNAPPY_OK) {
         std::ostringstream msg;

@@ -46,8 +46,8 @@ public:  // methods
     operator void*() { return buffer_; }
     operator const void*() const { return buffer_; }
 
-    char* data() { return buffer_; }
-    const char* data() const { return buffer_; }
+    void* data() { return buffer_; }
+    const void* data() const { return buffer_; }
 
     /// @return allocated size
     size_t size() const { return size_; }

@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <limits>
+
 #include "lz4.h"
 
 #include "eckit/utils/LZ4Compressor.h"
@@ -24,37 +26,44 @@ LZ4Compressor::LZ4Compressor() {}
 LZ4Compressor::~LZ4Compressor() {}
 
 size_t LZ4Compressor::compress(const void* in, size_t len, Buffer& out) const {
+    ASSERT( len <= std::numeric_limits<int>::max() );
+    ASSERT( out.size() <= std::numeric_limits<int>::max() );
 
-    size_t maxcompressed = LZ4_compressBound(len);
-    if (out.size() < maxcompressed)
-        out.resize(maxcompressed);
+    const int maxcompressed = LZ4_compressBound(int(len));
 
-    const auto compressed = LZ4_compress_default(static_cast<const char*>(in), out, len, maxcompressed);
-
-    if (compressed > 0)
-        return compressed;
-
-    std::ostringstream msg;
-    msg << "returned " << compressed;
-    throw FailedLibraryCall("LZ4", "LZ4_compress_default", msg.str(), Here());
-}
-
-size_t LZ4Compressor::uncompress(const void* in, size_t len, Buffer& out) const {
-
-    // LZ4 assumes you have transmitted the original size separately
-    // We assume here that out is correctly sized
-    if( out.size() == 0 ) {
-        throw UnexpectedState("LZ4 decompression expects sufficiently large allocated out buffer", Here());
+    if (int(out.size()) < maxcompressed) {
+        out.resize(size_t(maxcompressed));
     }
 
-    const int uncompressed = LZ4_decompress_safe(static_cast<const char*>(in), out, len, out.size());
+    const int compressed = LZ4_compress_default(static_cast<const char*>(in), out, int(len), maxcompressed);
 
-    if (uncompressed >= 0)
-        return uncompressed;
+    if (compressed <= 0) {
+        std::ostringstream msg;
+        msg << "returned " << compressed;
+        throw FailedLibraryCall("LZ4", "LZ4_compress_default", msg.str(), Here());
+    }
 
-    std::ostringstream msg;
-    msg << "returned " << uncompressed;
-    throw FailedLibraryCall("LZa", "LZ4_decompress_safe", msg.str(), Here());
+    return size_t(compressed);
+}
+
+void LZ4Compressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
+
+    if( out.size() < outlen ) {
+        out.resize(outlen);
+    }
+
+    ASSERT( len <= std::numeric_limits<int>::max() );
+    ASSERT( out.size() <= std::numeric_limits<int>::max() );
+
+    const auto uncompressed = LZ4_decompress_safe(static_cast<const char*>(in), out, int(len), int(out.size()));
+
+    ASSERT( uncompressed == outlen );
+
+    if (uncompressed < 0) {
+        std::ostringstream msg;
+        msg << "returned " << uncompressed;
+        throw FailedLibraryCall("LZa", "LZ4_decompress_safe", msg.str(), Here());
+    }
 }
 
 CompressorBuilder<LZ4Compressor> lz4("lz4");

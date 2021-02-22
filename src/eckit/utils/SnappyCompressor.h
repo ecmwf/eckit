@@ -27,7 +27,7 @@ public:  // methods
     virtual ~SnappyCompressor() override;
 
     virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
-    virtual size_t uncompress(const void* in, size_t len, eckit::Buffer& out) const override;
+    virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
 
 protected:  // methods
 };

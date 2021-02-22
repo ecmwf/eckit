@@ -45,7 +45,7 @@ size_t SnappyCompressor::compress(const void* in, size_t len, Buffer& out) const
     throw FailedLibraryCall("snappy", "compress", msg.str(), Here());
 }
 
-size_t SnappyCompressor::uncompress(const void* in, size_t len, Buffer& out) const {
+void SnappyCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
     snappy_status status;
 
     size_t uncompressed;
@@ -54,21 +54,22 @@ size_t SnappyCompressor::uncompress(const void* in, size_t len, Buffer& out) con
         throw FailedLibraryCall("snappy", "snappy_uncompressed_lengths", "returned != SNAPPY_OK", Here());
     }
 
+    ASSERT( uncompressed == outlen );
+
     if (out.size() < uncompressed)
         out.resize(uncompressed);
 
     status = snappy_uncompress(static_cast<const char*>(in), len, out, &uncompressed);
 
-    if (status == SNAPPY_OK)
-        return uncompressed;
+    if (status != SNAPPY_OK) {
+        std::ostringstream msg;
+        if (status == SNAPPY_INVALID_INPUT)
+            msg << "invalid input to compress";
+        if (status == SNAPPY_BUFFER_TOO_SMALL)
+            msg << "output buffer too small, size " << out.size();
 
-    std::ostringstream msg;
-    if (status == SNAPPY_INVALID_INPUT)
-        msg << "invalid input to compress";
-    if (status == SNAPPY_BUFFER_TOO_SMALL)
-        msg << "output buffer too small, size " << out.size();
-
-    throw FailedLibraryCall("snappy", "compress", msg.str(), Here());
+        throw FailedLibraryCall("snappy", "compress", msg.str(), Here());
+    }
 }
 
 CompressorBuilder<SnappyCompressor> snappy("snappy");

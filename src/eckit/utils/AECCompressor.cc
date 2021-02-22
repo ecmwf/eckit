@@ -49,13 +49,42 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+inline void AECCall(int code, const char* aec_func, const eckit::CodeLocation& loc) {
+    if (code != AEC_OK) {
+        std::ostringstream msg;
+        msg << "returned " << code;
+
+        switch( code ) {
+        case AEC_CONF_ERROR:
+            msg << " (AEC_CONF_ERROR)";
+            break;
+        case AEC_STREAM_ERROR:
+            msg << " (AEC_STREAM_ERROR)";
+            break;
+        case AEC_DATA_ERROR:
+            msg << " (AEC_DATA_ERROR)";
+            break;
+        case AEC_MEM_ERROR:
+            msg << " (AEC_MEM_ERROR)";
+            break;
+        default:
+            msg << " (UNRECOGNIZED ERROR)";
+        }
+        throw FailedLibraryCall("AEC", aec_func, msg.str(), loc);
+    }
+}
+
+#define AEC_CALL(a) AECCall(a, #a, Here())
+
+//----------------------------------------------------------------------------------------------------------------------
+
 AECCompressor::AECCompressor() {}
 
 AECCompressor::~AECCompressor() {}
 
 static size_t minInputSize(const size_t inputSize, const aec_stream& strm) {
-    int blockSizeBytes = strm.bits_per_sample * strm.block_size / 8;
-    int minSize        = (inputSize / blockSizeBytes);
+    size_t blockSizeBytes = strm.bits_per_sample * strm.block_size / 8;
+    size_t minSize        = (inputSize / blockSizeBytes);
     if (inputSize % blockSizeBytes > 0)
         minSize++;
 
@@ -63,7 +92,6 @@ static size_t minInputSize(const size_t inputSize, const aec_stream& strm) {
 }
 
 size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const {
-    std::ostringstream msg;
 
     struct aec_stream strm;
 
@@ -80,46 +108,32 @@ size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const
         ::memset(in+len, 0, in.size() - len);
     }
 
-    unsigned int maxcompressed = (size_t)(1.2 * in.size());
-    if (out.size() < maxcompressed)
+    size_t maxcompressed = size_t(1.2 * in.size());
+    if (out.size() < maxcompressed) {
         out.resize(maxcompressed);
-    unsigned int bufferSize = out.size();
+    }
 
     strm.next_in  = (unsigned char*)in.data();
     strm.avail_in = in.size();
 
     strm.next_out  = (unsigned char*)out.data();
-    strm.avail_out = bufferSize;
+    strm.avail_out = out.size();
 
-    int ret = aec_encode_init(&strm);
-    if (ret != AEC_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("AEC", "aec_encode_init", msg.str(), Here());
-    }
+    AEC_CALL( aec_encode_init(&strm) );
 
     // Perform encoding in one call and flush output.
     // you must be sure that the output buffer is large enough for all compressed output
-    ret = aec_encode(&strm, AEC_FLUSH);
-    if (ret != AEC_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("AEC", "aec_encode", msg.str(), Here());
-    }
+    AEC_CALL( aec_encode(&strm, AEC_FLUSH) );
+
     size_t outSize = strm.total_out;
 
     // free all resources used by encoder
-    ret = aec_encode_end(&strm);
-    if (ret == AEC_OK)
-        return outSize;
+    AEC_CALL( aec_encode_end(&strm) );
 
-    msg << "returned " << ret;
-    throw FailedLibraryCall("AEC", "aec_encode_end", msg.str(), Here());
+    return outSize;
 }
 
-size_t AECCompressor::uncompress(const void* in, size_t len, Buffer& out) const {
-    std::ostringstream msg;
-
-    // AEC assumes you have transmitted the original size separately
-    // We assume here that out is correctly sized
+void AECCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
 
     struct aec_stream strm;
 
@@ -128,34 +142,36 @@ size_t AECCompressor::uncompress(const void* in, size_t len, Buffer& out) const 
     strm.rsi             = AEC_rsi;
     strm.flags           = AEC_flags;
 
-    strm.next_in  = (unsigned char*)in;
+    strm.next_in  = (const unsigned char*)(in);
     strm.avail_in = len;
 
-    Buffer outTmp(minInputSize(out.size(), strm));
+    size_t outSize = minInputSize(outlen, strm);
 
-    strm.next_out  = (unsigned char*)outTmp.data();
-    strm.avail_out = outTmp.size();
+    // If out is sized large enough, we can use its extra capacity.
+    // Otherwise we allocate a temporary outTmp and at end we move outTmp into out.
 
-    int ret = aec_decode_init(&strm);
-    if (ret != AEC_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("AEC", "aec_decode_init", msg.str(), Here());
+    Buffer outTmp;
+    if( out.size() >= outSize ) {
+        strm.next_out  = (unsigned char*)out.data();
+    }
+    else {
+        outTmp.resize(outSize);
+        strm.next_out  = (unsigned char*)outTmp.data();
+    }
+    strm.avail_out = outSize;
+
+    AEC_CALL( aec_decode_init(&strm) );
+
+    AEC_CALL( aec_decode(&strm, AEC_FLUSH) );
+
+    ASSERT( strm.total_out == outSize );
+
+    AEC_CALL( aec_decode_end(&strm) );
+
+    if( out.size() < outSize ) {
+        out = std::move(outTmp);
     }
 
-    ret = aec_decode(&strm, AEC_FLUSH);
-    if (ret != AEC_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("AEC", "aec_decode", msg.str(), Here());
-    }
-
-    // free all resources used by decoder
-    ret = aec_decode_end(&strm);
-    if (ret == AEC_OK) {
-        ::memcpy(out, outTmp, out.size());
-        return out.size();
-    }
-    msg << "returned " << ret;
-    throw FailedLibraryCall("AEC", "aec_decode_end", msg.str(), Here());
 }
 
 CompressorBuilder<AECCompressor> aec("aec");

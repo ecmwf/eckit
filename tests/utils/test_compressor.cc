@@ -41,11 +41,11 @@ size_t compress_uncompress(Compressor& c, const Buffer& in, Buffer& out) {
     Buffer compressed(out, compressedLenght);
 
     out.resize(in.size());
-    size_t ulen = c.uncompress(compressed.data(),compressed.size(), out);
+    c.uncompress(compressed.data(),compressed.size(), out, in.size());
 
-    std::cout << tostr(out, ulen) << std::endl;
+    std::cout << tostr(out, in.size()) << std::endl;
 
-    return ulen;
+    return in.size();
 }
 
 void EXPECT_reproducible_compression(Compressor& c, size_t times) {

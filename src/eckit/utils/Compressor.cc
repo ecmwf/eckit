@@ -121,15 +121,15 @@ size_t NoCompressor::compress(const void* in, size_t len, Buffer& out) const {
         out.resize(len);
     }
     out.copy(in,len);
-    return out.size();
+    return len;
 }
 
-size_t NoCompressor::uncompress(const void* in, size_t len, Buffer& out) const {
-    if( out.size() < len ) {
-        out.resize(len);
+void NoCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
+    ASSERT( outlen == len );
+    if( out.size() < outlen ) {
+        out.resize(outlen);
     }
     out.copy(in,len);
-    return len;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

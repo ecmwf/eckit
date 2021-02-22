@@ -18,6 +18,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
+
 static void* allocate(size_t size) {
     return static_cast<void*>(new char[size]);
 }
@@ -25,6 +26,7 @@ static void* allocate(size_t size) {
 static void deallocate(void* buffer) {
     delete[] static_cast<char*>(buffer);
 }
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

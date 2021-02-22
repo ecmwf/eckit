@@ -25,7 +25,7 @@ ResizableMemoryStream::~ResizableMemoryStream() {}
 long ResizableMemoryStream::read(void* buffer, long length) {
     size_t left = buffer_.size() - position_;
     size_t size = std::min(left, size_t(length));
-    ::memcpy(buffer, static_cast<const char*>(buffer_.data()) + position_, size);
+    ::memcpy(buffer, buffer_ + position_, size);
     position_ += size;
     return long(size);
 }
@@ -43,7 +43,7 @@ long ResizableMemoryStream::write(const void* buffer, long length) {
     }
 
     size_t written = std::min(left, size_t(length));
-    ::memcpy(static_cast<char*>(buffer_.data()) + position_, buffer, written);
+    ::memcpy(buffer_ + position_, buffer, written);
     position_ += written;
 
     return long(written);

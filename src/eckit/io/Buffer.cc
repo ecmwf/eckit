@@ -19,12 +19,12 @@ namespace eckit {
 
 namespace {
 
-static void* allocate(size_t size) {
-    return static_cast<void*>(new char[size]);
+static char* allocate(size_t size) {
+    return new char[size];
 }
 
-static void deallocate(void* buffer) {
-    delete[] static_cast<char*>(buffer);
+static void deallocate(char* buffer) {
+    delete[] buffer;
 }
 
 }
@@ -35,9 +35,9 @@ Buffer::Buffer(size_t size) : buffer_(nullptr), size_(size) {
     create();
 }
 
-Buffer::Buffer(const char* p, size_t size) : buffer_(nullptr), size_(size) {
+Buffer::Buffer(const void *p, size_t len) : buffer_(nullptr), size_(len) {
     create();
-    copy(p, size);
+    copy(p, len);
 }
 
 Buffer::Buffer(Buffer&& rhs) noexcept : buffer_(rhs.buffer_), size_(rhs.size_) {
@@ -81,20 +81,20 @@ void Buffer::destroy() {
 
 void Buffer::copy(const std::string& s) {
     ASSERT(buffer_);
-    ::strncpy(static_cast<char*>(buffer_), s.c_str(), std::min(size_, s.size()));
+    ::strncpy(buffer_, s.c_str(), std::min(size_, s.size()));
 }
 
 void Buffer::copy(const void* p, size_t size, size_t pos) {
     ASSERT(buffer_ && size_ >= pos+size);
     if (size) {
-        ::memcpy(static_cast<char*>(buffer_)+pos, p, size);
+        ::memcpy(buffer_+pos, p, size);
     }
 }
 
 void Buffer::resize(size_t size, bool preserveData) {
     if (size != size_) {
         if (preserveData) {
-            void* newbuffer = allocate(size);
+            char* newbuffer = allocate(size);
             ::memcpy(newbuffer, buffer_, std::min(size_, size));
             deallocate(buffer_);
             size_   = size;

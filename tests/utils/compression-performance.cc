@@ -48,7 +48,7 @@ size_t timeCompress(Compressor& compressor, eckit::Buffer& inBuffer, eckit::Buff
 
     size_t out;
     for (int i = 0; i < N; ++i) {
-        out = compressor.compress(inBuffer.data(), inBuffer.size(), outBuffer);
+        out = compressor.compress(inBuffer, inBuffer.size(), outBuffer);
     }
 
     timer.stop();

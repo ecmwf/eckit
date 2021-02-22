@@ -77,7 +77,7 @@ size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const
         in.copy(inTmp, len);
     }
     if( in.size() > len ) {
-        ::memset(static_cast<char*>(in.data())+len, 0, in.size() - len);
+        ::memset(in+len, 0, in.size() - len);
     }
 
     unsigned int maxcompressed = (size_t)(1.2 * in.size());

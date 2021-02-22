@@ -28,25 +28,32 @@ namespace test {
 
 static std::string msg("THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG'S BACK 1234567890");
 
+static std::vector<std::string> compressions{"none","snappy","lz4","bzip2","aec"};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 std::string tostr(const Buffer& b, size_t len) {
     return std::string(b, len);
 }
 
-size_t compress_uncompress(Compressor& c, const Buffer& in, Buffer& out) {
-
-    size_t compressedLenght = c.compress(in.data(), in.size(), out);
-
-    Buffer compressed(out, compressedLenght);
-
-    out.resize(in.size());
-    c.uncompress(compressed.data(),compressed.size(), out, in.size());
-
-    std::cout << tostr(out, in.size()) << std::endl;
-
-    return in.size();
+void EXPECT_compress_uncompress_1(Compressor& c, const Buffer& in, size_t ulen) {
+    // Buffers are not allocated. The compress/uncompress will do so as required
+    Buffer compressed;
+    Buffer uncompressed;
+    size_t clen = c.compress(in, ulen, compressed);
+    c.uncompress(compressed, clen, uncompressed, ulen);
+    EXPECT(tostr(uncompressed,ulen) == tostr(in,ulen));
 }
+
+void EXPECT_compress_uncompress_2(Compressor& c, const Buffer& in, size_t ulen) {
+    // Buffers are pre-allocated. This may allow implementation dependent optimizations
+    Buffer compressed( size_t(1.2*ulen) );
+    Buffer uncompressed( size_t(1.2*ulen) );
+    size_t clen = c.compress(in, ulen, compressed);
+    c.uncompress(compressed, clen, uncompressed, ulen);
+    EXPECT(tostr(uncompressed,ulen) == tostr(in,ulen));
+}
+
 
 void EXPECT_reproducible_compression(Compressor& c, size_t times) {
     std::vector<size_t> reproduce_lengths;
@@ -54,10 +61,10 @@ void EXPECT_reproducible_compression(Compressor& c, size_t times) {
 
     for( size_t i=0; i<times+1; ++i ) {
         Buffer uncompressed(msg.data(),msg.size());
-        Buffer compressed(0);
-        size_t compressed_size = c.compress(uncompressed.data(),uncompressed.size(),compressed);
+        Buffer compressed;
+        size_t compressed_size = c.compress(uncompressed,uncompressed.size(),compressed);
         reproduce_lengths.emplace_back( compressed_size );
-        reproduce_checksum.emplace_back( eckit::MD5(compressed.data(),compressed_size) );
+        reproduce_checksum.emplace_back( eckit::MD5(compressed,compressed_size) );
     }
 
     const auto& ref_length = reproduce_lengths.front();
@@ -79,70 +86,42 @@ void EXPECT_reproducible_compression(Compressor& c, size_t times) {
     EXPECT( reproducible_checksum );
 }
 
-
-
-CASE("Compression") {
-
-    Buffer in(msg.c_str(), msg.size());
-    Buffer out(msg.size());
-    out.zero();
-
+CASE("Builders") {
     std::unique_ptr<Compressor> c;
-
-    SECTION("CASE Default Compression") {
-        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build()));
-        size_t ulen = compress_uncompress(*c, in, out);
-        EXPECT(tostr(out, ulen) == msg);
-    }
 
     SECTION("CASE No Compression - case insensitive") {
         EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("nOnE")));
     }
 
-    SECTION("Not Existing Compression") { EXPECT_THROWS(c.reset(CompressorFactory::instance().build("dummy name"))); }
+    SECTION("Not Existing Compression") {
+        EXPECT_THROWS(c.reset(CompressorFactory::instance().build("dummy name")));
+    }
+}
 
-    SECTION("CASE No Compression") {
-        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("none")));
-        size_t ulen = compress_uncompress(*c, in, out);
-        EXPECT(tostr(out, ulen) == msg);
-        EXPECT_reproducible_compression(*c,10);
+CASE("Compression") {
+
+    const Buffer in(msg.c_str(), 2*msg.size()); // oversized on purpose
+    const size_t len = msg.size(); // valid size
+
+    std::unique_ptr<Compressor> c;
+
+    SECTION("CASE Default Compression") {
+        EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build()));
+        EXPECT_compress_uncompress_1(*c, in, len);
+        EXPECT_compress_uncompress_2(*c, in, len);
     }
 
-    SECTION("CASE Snappy Compression") {
-        if (CompressorFactory::instance().has("snappy")) {
-            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("snappy")));
-            size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
-            EXPECT_reproducible_compression(*c,10);
+    for(const auto& compression: compressions ) {
+        SECTION("CASE "+compression) {
+            if (CompressorFactory::instance().has(compression)) {
+                EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build(compression)));
+                EXPECT_compress_uncompress_1(*c, in, len);
+                EXPECT_compress_uncompress_2(*c, in, len);
+                EXPECT_reproducible_compression(*c,10);
+            }
         }
     }
 
-    SECTION("CASE LZ4 Compression") {
-        if (CompressorFactory::instance().has("lz4")) {
-            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("lz4")));
-            size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
-            EXPECT_reproducible_compression(*c,10);
-        }
-    }
-
-    SECTION("CASE BZip2 Compression") {
-        if (CompressorFactory::instance().has("bzip2")) {
-            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("bzip2")));
-            size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
-            EXPECT_reproducible_compression(*c,10);
-        }
-    }
-
-    SECTION("CASE AEC Compression") {
-        if (CompressorFactory::instance().has("aec")) {
-            EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build("aec")));
-            size_t ulen = compress_uncompress(*c, in, out);
-            EXPECT(tostr(out, ulen) == msg);
-            EXPECT_reproducible_compression(*c,10);
-        }
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

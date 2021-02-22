@@ -108,11 +108,6 @@ void Buffer::resize(size_t size, bool preserveData) {
     }
 }
 
-void Buffer::clear() {
-    destroy();
-}
-
-
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

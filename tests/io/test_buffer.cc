@@ -1,5 +1,9 @@
 
 #include <cstring>
+#include <ctime>
+#include <cstdlib>
+
+#include <algorithm>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/testing/Test.h"
@@ -9,24 +13,49 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static const char msg[] = "Once upon a midnight dreary";
+unsigned char* random_bytestream(size_t sz) {
+    ::srand((unsigned int) ::time(0));
+    unsigned char* stream = static_cast<unsigned char*>(::malloc(sz));
+    auto rnd              = []() -> unsigned char { return ::rand(); };
+    std::generate(stream, stream + sz, rnd);
+    // std::for_each(stream, stream + sz, [](unsigned char c) { std::cout << c ; });
+    return stream;
+}
 
-CASE("test_eckit_buffer_constructor_1") {
+const char* msg = "Once upon a midnight dreary";
+
+CASE("Test eckit Buffer default constructor") {
+    Buffer buf;
+    EXPECT(buf.size() == 0);
+    EXPECT(buf.data() != nullptr);
+}
+
+CASE("Test eckit Buffer constructor 1") {
     const size_t sz = 4096;
     Buffer buf{sz};
-
-    EXPECT(sz == buf.size());
+    EXPECT(buf.size() == sz);
+    EXPECT(buf.data() != nullptr);
 }
 
-CASE("test_eckit_buffer_constructor_2") {
-    const size_t sz = std::strlen(msg) + 1;
-    Buffer buf{msg, sz};
+CASE("Test eckit Buffer constructor 2") {
 
-    const char* out = buf;
-    EXPECT(std::memcmp(msg, buf, sz) == 0);
+    SECTION("String") {
+        const size_t sz = std::strlen(msg) + 1;
+        Buffer buf{msg, sz};
+        const char* out = buf;
+        EXPECT(std::memcmp(msg, buf, sz) == 0);
+    }
+
+    SECTION("Random bytestream") {
+        const size_t sz     = 733;
+        unsigned char* data = random_bytestream(sz);
+        Buffer buf{data, sz};
+        EXPECT(std::memcmp(data, buf, sz) == 0);
+        free(data);
+    }
 }
 
-CASE("test_eckit_buffer_move_constructor") {
+CASE("Test eckit Buffer move constructor") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf1{msg, sz};
     Buffer buf2{std::move(buf1)};
@@ -37,7 +66,7 @@ CASE("test_eckit_buffer_move_constructor") {
     EXPECT(static_cast<const char*>(buf1) == nullptr && buf1.size() == 0);
 }
 
-CASE("test_eckit_buffer_move_assignment") {
+CASE("Test eckit Buffer move assignment") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf1{msg, sz};
     Buffer buf2{0};
@@ -52,7 +81,7 @@ CASE("test_eckit_buffer_move_assignment") {
 }
 
 // This is legitimate, if pointless, so it should be supported
-CASE("test_eckit_buffer_self_move") {
+CASE("Test eckit Buffer self move") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf{msg, sz};
 
@@ -62,29 +91,30 @@ CASE("test_eckit_buffer_self_move") {
     EXPECT(std::strcmp(msg, out) == 0);
 }
 
-CASE("test_eckit_buffer_zero_out") {
+CASE("Test eckit Buffer Zero") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf{msg, sz};
 
     const char* out = buf;
     EXPECT(std::memcmp(msg, buf, sz) == 0);
 
-    buf.zero();
+    EXPECT_NO_THROW(buf.zero());
 
     const void* expected = std::calloc(sz, 1);
-    EXPECT(buf.size() == sz && std::memcmp(buf, expected, sz) == 0);
+    EXPECT(buf.size() == sz);
+    EXPECT(std::memcmp(buf, expected, sz) == 0);
 }
 
 // NOTE: resize allocates a new buffer whenever the new size is different -- this is inefficient
-CASE("test_eckit_buffer_resize") {
+CASE("Test eckit Buffer resize") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf;
     EXPECT(buf.size() == 0);
 
     EXPECT_THROWS( buf.copy(msg,sz) );
 
-    buf.resize(sz);
-    buf.copy(msg,sz);
+    EXPECT_NO_THROW(buf.resize(sz));
+    EXPECT_NO_THROW(buf.copy(msg,sz));
 
     size_t newSize = 41;
     buf.resize(newSize, true);
@@ -102,7 +132,6 @@ CASE("test_eckit_buffer_resize") {
     newSize = 41;
     buf.resize(newSize, false);
     EXPECT(buf.size() == newSize);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

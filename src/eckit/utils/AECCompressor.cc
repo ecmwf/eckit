@@ -102,7 +102,7 @@ size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const
 
     Buffer in(minInputSize(len, strm));
     in.copy(inTmp, len);
-    
+
     if( in.size() > len ) {
         ::memset(in+len, 0, in.size() - len);
     }
@@ -167,10 +167,9 @@ void AECCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t o
 
     AEC_CALL( aec_decode_end(&strm) );
 
-    if( out.size() < outSize ) {
+    if (outTmp.size()) {
         out = std::move(outTmp);
     }
-
 }
 
 CompressorBuilder<AECCompressor> aec("aec");

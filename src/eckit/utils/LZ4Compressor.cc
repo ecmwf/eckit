@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/utils/LZ4Compressor.h"
+
 #include <limits>
 
 #include "lz4.h"  // header includes extern c linkage
-
-#include "eckit/utils/LZ4Compressor.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"

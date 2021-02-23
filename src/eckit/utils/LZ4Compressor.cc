@@ -60,7 +60,7 @@ void LZ4Compressor::uncompress(const void* in, size_t len, Buffer& out, size_t o
     if (uncompressed < 0) {
         std::ostringstream msg;
         msg << "returned " << uncompressed;
-        throw FailedLibraryCall("LZa", "LZ4_decompress_safe", msg.str(), Here());
+        throw FailedLibraryCall("LZ4", "LZ4_decompress_safe", msg.str(), Here());
     }
 
     ASSERT( uncompressed == outlen );

@@ -20,11 +20,10 @@ CASE("test_eckit_buffer_constructor_1") {
 
 CASE("test_eckit_buffer_constructor_2") {
     const size_t sz = std::strlen(msg) + 1;
-    std::cout << " *** Size = " << sz << std::endl;
     Buffer buf{msg, sz};
 
     const char* out = buf;
-    EXPECT(std::strcmp(msg, out) == 0);
+    EXPECT(std::memcmp(msg, buf, sz) == 0);
 }
 
 CASE("test_eckit_buffer_move_constructor") {
@@ -53,7 +52,7 @@ CASE("test_eckit_buffer_move_assignment") {
 }
 
 // This is legitimate, if pointless, so it should be supported
-CASE("test_eckit_buffer_self_assignment") {
+CASE("test_eckit_buffer_self_move") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf{msg, sz};
 
@@ -68,12 +67,12 @@ CASE("test_eckit_buffer_zero_out") {
     Buffer buf{msg, sz};
 
     const char* out = buf;
-    EXPECT(std::strcmp(msg, out) == 0);
+    EXPECT(std::memcmp(msg, buf, sz) == 0);
 
     buf.zero();
 
-    const void* expBuf = std::calloc(sz, 1);
-    EXPECT(buf.size() == sz && std::memcmp(buf, expBuf, sz) == 0);
+    const void* expected = std::calloc(sz, 1);
+    EXPECT(buf.size() == sz && std::memcmp(buf, expected, sz) == 0);
 }
 
 // NOTE: resize allocates a new buffer whenever the new size is different -- this is inefficient

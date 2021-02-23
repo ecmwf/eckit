@@ -101,9 +101,8 @@ size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const
     strm.flags           = AEC_flags;
 
     Buffer in(minInputSize(len, strm));
-    if( len > 0 ) {
-        in.copy(inTmp, len);
-    }
+    in.copy(inTmp, len);
+    
     if( in.size() > len ) {
         ::memset(in+len, 0, in.size() - len);
     }

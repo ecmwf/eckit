@@ -57,13 +57,13 @@ void LZ4Compressor::uncompress(const void* in, size_t len, Buffer& out, size_t o
 
     const auto uncompressed = LZ4_decompress_safe(static_cast<const char*>(in), out, int(len), int(out.size()));
 
-    ASSERT( uncompressed == outlen );
-
     if (uncompressed < 0) {
         std::ostringstream msg;
         msg << "returned " << uncompressed;
         throw FailedLibraryCall("LZa", "LZ4_decompress_safe", msg.str(), Here());
     }
+
+    ASSERT( uncompressed == outlen );
 }
 
 CompressorBuilder<LZ4Compressor> lz4("lz4");

@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-// #include "snappy.h"
-#include "snappy-c.h"
-
 #include "eckit/utils/SnappyCompressor.h"
+
+// #include "snappy.h"
+#include "snappy-c.h"  // header includes extern c linkage
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"

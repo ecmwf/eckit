@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/utils/AECCompressor.h"
+
 #include <cstring>
 
-#include "eckit/utils/AECCompressor.h"
+extern "C" {  // libaec.h has c linkage
 #include "libaec.h"
+}
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-
 
 // compression parameters heve been tuned for maximum compression ratio with GRIB2 3D fields.
 // Performance on GRIB 1 sfc fields is bad with any parameter values

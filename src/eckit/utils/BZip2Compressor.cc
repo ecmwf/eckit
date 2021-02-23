@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/utils/BZip2Compressor.h"
+
 #include <limits>
 
-#include "bzlib.h"
-#include "eckit/utils/BZip2Compressor.h"
+#include "bzlib.h" // header includes extern c linkage
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"

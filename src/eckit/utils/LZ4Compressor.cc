@@ -10,7 +10,7 @@
 
 #include <limits>
 
-#include "lz4.h"
+#include "lz4.h"  // header includes extern c linkage
 
 #include "eckit/utils/LZ4Compressor.h"
 
@@ -50,7 +50,7 @@ void LZ4Compressor::uncompress(const void* in, size_t len, Buffer& out, size_t o
 
     if( out.size() < outlen ) {
         out.resize(outlen);
-    }
+    }   
 
     ASSERT( len <= std::numeric_limits<int>::max() );
     ASSERT( out.size() <= std::numeric_limits<int>::max() );

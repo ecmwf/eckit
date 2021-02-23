@@ -24,18 +24,18 @@ static void print_indent(std::ostream& out, int indent) {
 }
 
 static bool check(const JSON::Formatting& formatting, int flag) {
-    if( flag == JSON::Formatting::BitFlags::compact ) {
-        return formatting.flags() == JSON::Formatting::BitFlags::compact;
+    if( flag == JSON::Formatting::COMPACT ) {
+        return formatting.flags() == JSON::Formatting::COMPACT;
     }
     return ( formatting.flags() & flag ) == flag;
 }
 
 JSON::Formatting JSON::Formatting::compact() {
-    return Formatting(BitFlags::compact);
+    return Formatting(COMPACT);
 }
 
 JSON::Formatting JSON::Formatting::indent(int indentation) {
-    return Formatting(BitFlags::indent_dict,indentation);
+    return Formatting(INDENT_DICT,indentation);
 }
 
 JSON::Formatting::Formatting(int formatting, int indentation) :
@@ -67,17 +67,17 @@ void JSON::sep() {
     out_ << sep_.back();
     if( sep_.back() == "," ) {
         bool indent=false;
-        if( check( formatting_, Formatting::BitFlags::indent_dict ) && indict() ) {
+        if( check( formatting_, Formatting::INDENT_DICT ) && indict() ) {
             indent = true;
         }
-        if( check( formatting_, Formatting::BitFlags::indent_list ) && inlist() ) {
+        if( check( formatting_, Formatting::INDENT_LIST ) && inlist() ) {
             indent = true;
         }
         if( indent ) {
             print_indent(out_, indentation_);
         }
     }
-    std::string colon = check( formatting_, Formatting::BitFlags::compact ) ? ":" : " : ";
+    std::string colon = check( formatting_, Formatting::COMPACT ) ? ":" : " : ";
     if (indict() && sep_.back() != colon) {
         sep_.back() = colon;
     }
@@ -137,7 +137,7 @@ JSON& JSON::startObject() {
     sep_.push_back("");
     state_.push_back(true);
     out_ << "{";
-    if( check( formatting_, Formatting::BitFlags::indent_dict) ) {
+    if( check( formatting_, Formatting::INDENT_DICT) ) {
         indentation_ += formatting_.indentation();
         print_indent(out_, indentation_);
     }
@@ -157,7 +157,7 @@ JSON& JSON::startList() {
     sep_.push_back("");
     state_.push_back(false);
     out_ << "[";
-    if( check( formatting_, Formatting::BitFlags::indent_list) ) {
+    if( check( formatting_, Formatting::INDENT_LIST) ) {
         indentation_ += formatting_.indentation();
         print_indent( out_, indentation_);
     }
@@ -167,7 +167,7 @@ JSON& JSON::startList() {
 JSON& JSON::endObject() {
     sep_.pop_back();
     state_.pop_back();
-    if( check( formatting_, Formatting::BitFlags::indent_dict) ) {
+    if( check( formatting_, Formatting::INDENT_DICT) ) {
         indentation_ -= formatting_.indentation();
         print_indent( out_, indentation_);
     }
@@ -178,7 +178,7 @@ JSON& JSON::endObject() {
 JSON& JSON::endList() {
     sep_.pop_back();
     state_.pop_back();
-    if( check( formatting_, Formatting::BitFlags::indent_list) ) {
+    if( check( formatting_, Formatting::INDENT_LIST) ) {
         indentation_ -= formatting_.indentation();
         print_indent( out_, indentation_);
     }

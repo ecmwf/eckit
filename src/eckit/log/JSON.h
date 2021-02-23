@@ -40,11 +40,11 @@ public:
     class Formatting {
     public: // types
 
-        struct BitFlags {
-            static constexpr int compact     = 0;
-            static constexpr int indent_dict = (1 << 1);
-            static constexpr int indent_list = (1 << 2);
-            static constexpr int indent_all  = (indent_dict | indent_list);
+        enum BitFlags {
+            COMPACT     = 0,
+            INDENT_DICT = (1 << 1),
+            INDENT_LIST = (1 << 2),
+            INDENT_ALL  = (INDENT_DICT | INDENT_LIST)
         };
 
     public: // constructors
@@ -72,7 +72,7 @@ public:
         int flags() const;
 
     private: // data
-        int flags_{BitFlags::compact};
+        int flags_{COMPACT};
         int indentation_{2};
     };
 

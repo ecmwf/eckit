@@ -8,14 +8,59 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/utils/BZip2Compressor.h"
+#include <limits>
+
 #include "bzlib.h"
+#include "eckit/utils/BZip2Compressor.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/ResizableBuffer.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+inline void BZip2Call(int code, const char* bzip2_func, const eckit::CodeLocation& loc) {
+    if (code < 0) {
+        std::ostringstream msg;
+        msg << "returned " << code;
+
+        switch (code) {
+            case BZ_SEQUENCE_ERROR:
+                msg << " (BZ_SEQUENCE_ERROR)";
+                break;
+            case BZ_PARAM_ERROR:
+                msg << " (BZ_PARAM_ERROR)";
+                break;
+            case BZ_MEM_ERROR:
+                msg << " (BZ_MEM_ERROR)";
+                break;
+            case BZ_DATA_ERROR:
+                msg << " (BZ_DATA_ERROR)";
+                break;
+            case BZ_DATA_ERROR_MAGIC:
+                msg << " (BZ_DATA_ERROR_MAGIC)";
+                break;
+            case BZ_IO_ERROR:
+                msg << " (BZ_IO_ERROR)";
+                break;
+            case BZ_UNEXPECTED_EOF:
+                msg << " (BZ_UNEXPECTED_EOF)";
+                break;
+            case BZ_OUTBUFF_FULL:
+                msg << " (BZ_OUTBUFF_FULL)";
+                break;
+            case BZ_CONFIG_ERROR:
+                msg << " (BZ_CONFIG_ERROR)";
+                break;
+            default:
+                msg << " (UNRECOGNIZED ERROR)";
+        }
+        throw FailedLibraryCall("BZlib2", bzip2_func, msg.str(), loc);
+    }
+}
+
+#define BZ2_CALL(a) BZip2Call(a, #a, Here())
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -23,121 +68,80 @@ BZip2Compressor::BZip2Compressor() {}
 
 BZip2Compressor::~BZip2Compressor() {}
 
-size_t BZip2Compressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const {
+size_t BZip2Compressor::compress(const void* in, size_t len, Buffer& out) const {
     std::ostringstream msg;
 
     // https://sourceware.org/bzip2/manual/manual.html#bzbufftobuffcompress
     // To guarantee that the compressed data will fit in its buffer, allocate an output buffer of size 1% larger than
     // the uncompressed data, plus six hundred extra bytes.
-    unsigned int maxcompressed = (size_t)(1.01 * in.size() + 600);
+    size_t maxcompressed = (size_t)(1.01 * len + 600);
     if (out.size() < maxcompressed)
         out.resize(maxcompressed);
-    unsigned int bufferSize = out.size();
+    size_t bufferSize = out.size();
+
+    ASSERT(len < std::numeric_limits<int>::max());
+    ASSERT(maxcompressed < std::numeric_limits<int>::max());
+    ASSERT(bufferSize < std::numeric_limits<int>::max());
 
     bz_stream strm;
     strm.avail_in = 0UL;
-    strm.next_in  = NULL;
-    strm.next_out = NULL;
-    strm.bzalloc  = NULL;
-    strm.bzfree   = NULL;
-    strm.opaque   = NULL;
+    strm.next_in  = nullptr;
+    strm.next_out = nullptr;
+    strm.bzalloc  = nullptr;
+    strm.bzfree   = nullptr;
+    strm.opaque   = nullptr;
 
-    // https://sourceware.org/bzip2/manual/manual.html#bzcompress-init
-    // int BZ2_bzCompressInit ( bz_stream *strm,
-    //                         int blockSize100k,   - block size used for compression   range [1..9]    block size used
-    //                         is 100000 x this figure. 9 gives the best compression but takes most memory. int
-    //                         verbosity,       - verbosity                         range [0..4]    0 is silent, greater
-    //                         numbers give increasingly verbose monitoring/debugging output. int workFactor );    -
-    //                         threshold, fallback sorting algo  range [0..250]  controls how the compression phase
-    //                         behaves when presented with worst case, highly repetitive, input data
-    //                                                                                                  in case of
-    //                                                                                                  repetitive data,
-    //                                                                                                  the library
-    //                                                                                                  switches to a
-    //                                                                                                  fallback
-    //                                                                                                  algorithm. 3X
-    //                                                                                                  slower. more
-    //                                                                                                  stable. Lower
-    //                                                                                                  values reduce
-    //                                                                                                  the effort the
-    //                                                                                                  standard
-    //                                                                                                  algorithm will
-    //                                                                                                  expend before
-    //                                                                                                  resorting to the
-    //                                                                                                  fallback.
-    //                                                                                                  default value of
-    //                                                                                                  30
-    int ret = BZ2_bzCompressInit(&strm, 9, 0, 30);
-    if (ret != BZ_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("BZlib2", "BZ2_bzCompressInit", msg.str(), Here());
-    }
+    /// @note see https://sourceware.org/bzip2/manual/manual.tml#bzcompress-init
+    BZ2_CALL(BZ2_bzCompressInit(&strm, 9, 0, 30));
 
-    strm.next_in   = (char*)in.data();
-    strm.avail_in  = in.size();
-    strm.next_out  = out.data();
+    strm.next_in   = (char*)in;
+    strm.avail_in  = len;
+    strm.next_out  = (char*)out.data();
     strm.avail_out = bufferSize;
 
-    ret = BZ2_bzCompress(&strm, BZ_FINISH);
-    if (ret != BZ_STREAM_END && ret != BZ_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("BZlib2", "BZ2_bzCompress", msg.str(), Here());
-    }
+    BZ2_CALL(BZ2_bzCompress(&strm, BZ_FINISH));
 
     size_t outSize = bufferSize - strm.avail_out;
 
     strm.avail_in = 0;
-    strm.next_in  = NULL;
+    strm.next_in  = nullptr;
 
-    ret = BZ2_bzCompressEnd(&strm);
-    if (ret == BZ_OK)
-        return outSize;
+    BZ2_CALL(BZ2_bzCompressEnd(&strm));
 
-    msg << "returned " << ret;
-    throw FailedLibraryCall("BZlib2", "BZ2_bzCompressEnd", msg.str(), Here());
+    return outSize;
 }
 
-size_t BZip2Compressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) const {
-    std::ostringstream msg;
+void BZip2Compressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
+    ASSERT(len < std::numeric_limits<int>::max());
 
-    // BZip2 assumes you have transmitted the original size separately
-    // We assume here that out is correctly sized
+    if (out.size() < outlen) {
+        out.resize(outlen);
+    }
 
     bz_stream strm;
     strm.avail_in = 0UL;
-    strm.next_in  = NULL;
-    strm.next_out = NULL;
-    strm.bzalloc  = NULL;
-    strm.bzfree   = NULL;
-    strm.opaque   = NULL;
+    strm.next_in  = nullptr;
+    strm.next_out = nullptr;
+    strm.bzalloc  = nullptr;
+    strm.bzfree   = nullptr;
+    strm.opaque   = nullptr;
 
-    int ret = BZ2_bzDecompressInit(&strm, 0, 0);
-    if (ret != BZ_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("BZlib2", "BZ2_bzDecompressInit", msg.str(), Here());
-    }
+    BZ2_CALL(BZ2_bzDecompressInit(&strm, 0, 0));
 
-    strm.next_in            = (char*)in.data();
-    strm.avail_in           = in.size();
-    strm.next_out           = out.data();
-    strm.avail_out          = out.size();
-    unsigned int bufferSize = out.size();
+    strm.next_in            = (char*)in;
+    strm.avail_in           = len;
+    strm.next_out           = (char*)out.data();
+    strm.avail_out          = outlen;
+    unsigned int bufferSize = outlen;
 
-    ret = BZ2_bzDecompress(&strm);
-    if (ret != BZ_STREAM_END && ret != BZ_OK) {
-        msg << "returned " << ret;
-        throw FailedLibraryCall("BZlib2", "BZ2_bzDecompress", msg.str(), Here());
-    }
+    BZ2_CALL(BZ2_bzDecompress(&strm));
 
     size_t outSize = bufferSize - strm.avail_out;
 
-    strm.next_out = NULL;
-    ret           = BZ2_bzDecompressEnd(&strm);
-    if (ret == BZ_OK)
-        return outSize;
+    ASSERT(outSize == outlen);
 
-    msg << "returned " << ret;
-    throw FailedLibraryCall("BZlib2", "BZ2_bzDecompressEnd", msg.str(), Here());
+    strm.next_out = nullptr;
+    BZ2_CALL(BZ2_bzDecompressEnd(&strm));
 }
 
 CompressorBuilder<BZip2Compressor> bzip2("bzip2");

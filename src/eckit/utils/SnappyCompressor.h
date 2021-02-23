@@ -16,7 +16,6 @@
 namespace eckit {
 
 class Buffer;
-class ResizableBuffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -27,8 +26,8 @@ public:  // methods
 
     virtual ~SnappyCompressor() override;
 
-    virtual size_t compress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const override;
-    virtual size_t uncompress(const eckit::Buffer& in, eckit::ResizableBuffer& out) const override;
+    virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
+    virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
 
 protected:  // methods
 };

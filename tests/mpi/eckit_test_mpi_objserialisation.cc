@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/mpi/Comm.h"
@@ -180,7 +180,7 @@ public:
     size_t me_    = 0;
     size_t total_ = 0;
 
-    eckit::ResizableBuffer sendBuffer_;
+    eckit::Buffer sendBuffer_;
 
     Fixture(const Fixture&) = delete;
     Fixture& operator=(const Fixture&) = delete;
@@ -212,7 +212,7 @@ public:
         eckit::Log::info() << "[" << me_ << "] "
                            << "receiving from " << from << " --- size " << size << std::endl;
 
-        eckit::ResizableBuffer b(size);  // must be enough
+        eckit::Buffer b(size);  // must be enough
         b.zero();
 
         eckit::mpi::comm().receive(static_cast<char*>(b.data()), b.size(), int(from), 0);

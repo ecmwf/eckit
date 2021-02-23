@@ -207,7 +207,6 @@ io/PooledFileDescriptor.cc
 io/PooledFileDescriptor.h
 io/RawFileHandle.cc
 io/RawFileHandle.h
-io/ResizableBuffer.cc
 io/ResizableBuffer.h
 io/Select.cc
 io/Select.h

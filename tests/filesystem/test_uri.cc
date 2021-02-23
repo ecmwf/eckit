@@ -11,7 +11,7 @@
 #include <string>
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
@@ -442,7 +442,7 @@ CASE("Stream") {
     {
         URI uriOrig("http://username:password@host:123/path");
 
-        eckit::ResizableBuffer b(1000);  // should be enough
+        eckit::Buffer b(1000);  // should be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
 
@@ -466,7 +466,7 @@ CASE("Stream") {
     {
         URI uriOrig("http://username:password@host:123/path");
 
-        eckit::ResizableBuffer b(1000);  // should be enough
+        eckit::Buffer b(1000);  // should be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
 
@@ -490,7 +490,7 @@ CASE("Stream") {
     }
     {
         URI uriOrig("http:///path?length=123&foo=bar#fragment");
-        eckit::ResizableBuffer b(1000);  // must be enough
+        eckit::Buffer b(1000);  // must be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
 

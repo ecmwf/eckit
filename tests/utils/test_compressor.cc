@@ -32,17 +32,13 @@ static std::vector<std::string> compressions{"none","snappy","lz4","bzip2","aec"
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::string tostr(const Buffer& b, size_t len) {
-    return std::string(b, len);
-}
-
 void EXPECT_compress_uncompress_1(Compressor& c, const Buffer& in, size_t ulen) {
     // Buffers are not allocated. The compress/uncompress will do so as required
     Buffer compressed;
     Buffer uncompressed;
     size_t clen = c.compress(in, ulen, compressed);
     c.uncompress(compressed, clen, uncompressed, ulen);
-    EXPECT(tostr(uncompressed,ulen) == tostr(in,ulen));
+    EXPECT( std::memcmp(uncompressed,in,ulen) == 0 );
 }
 
 void EXPECT_compress_uncompress_2(Compressor& c, const Buffer& in, size_t ulen) {
@@ -51,7 +47,7 @@ void EXPECT_compress_uncompress_2(Compressor& c, const Buffer& in, size_t ulen) 
     Buffer uncompressed( size_t(1.2*ulen) );
     size_t clen = c.compress(in, ulen, compressed);
     c.uncompress(compressed, clen, uncompressed, ulen);
-    EXPECT(tostr(uncompressed,ulen) == tostr(in,ulen));
+    EXPECT( std::memcmp(uncompressed,in,ulen) == 0 );
 }
 
 

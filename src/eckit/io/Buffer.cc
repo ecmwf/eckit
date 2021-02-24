@@ -40,14 +40,24 @@ Buffer::Buffer(const void *p, size_t len) : buffer_(nullptr), size_(len) {
     copy(p, len);
 }
 
-Buffer::Buffer(Buffer&& rhs) noexcept : buffer_(rhs.buffer_), size_(rhs.size_) {
+Buffer::Buffer(Buffer&& rhs) noexcept : buffer_{rhs.buffer_}, size_{rhs.size_} {
     rhs.buffer_ = nullptr;
     rhs.size_   = 0;
 }
 
 Buffer& Buffer::operator=(Buffer&& rhs) noexcept {
-    std::swap(buffer_, rhs.buffer_);
-    std::swap(size_, rhs.size_);
+    if (this == &rhs) {
+        return *this;
+    }
+
+    deallocate(buffer_);
+
+    buffer_ = rhs.buffer_;
+    size_   = rhs.size_;
+
+    rhs.buffer_ = nullptr;
+    rhs.size_   = 0;
+
     return *this;
 }
 

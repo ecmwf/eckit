@@ -31,13 +31,18 @@ static void deallocate(char* buffer) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Buffer::Buffer(size_t size) : buffer_(nullptr), size_(size) {
+Buffer::Buffer(size_t size) : buffer_{nullptr}, size_{size} {
     create();
 }
 
-Buffer::Buffer(const void *p, size_t len) : buffer_(nullptr), size_(len) {
+Buffer::Buffer(const void *p, size_t len) : buffer_{nullptr}, size_{len} {
     create();
     copy(p, len);
+}
+
+Buffer::Buffer(const std::string& s) : buffer_{nullptr}, size_{s.length() + 1} {
+    create();
+    copy(s);
 }
 
 Buffer::Buffer(Buffer&& rhs) noexcept : buffer_{rhs.buffer_}, size_{rhs.size_} {
@@ -60,12 +65,6 @@ Buffer& Buffer::operator=(Buffer&& rhs) noexcept {
 
     return *this;
 }
-
-Buffer::Buffer(const std::string& s) : buffer_(nullptr), size_(s.length() + 1) {
-    create();
-    copy(s);
-}
-
 
 Buffer::~Buffer() {
     destroy();

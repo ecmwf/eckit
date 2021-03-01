@@ -57,6 +57,7 @@ public:
     virtual Length estimate() override;
     virtual Offset position() override;
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override;
     virtual void skip(const Length&) override;
 
     virtual void rewind() override;

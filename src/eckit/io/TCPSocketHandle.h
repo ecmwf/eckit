@@ -51,6 +51,7 @@ public:
     virtual void rewind() override;
     virtual void print(std::ostream&) const override;
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override { return true; }
 
     // From Streamable
 

@@ -44,7 +44,7 @@ public:
     virtual long write(const void*, long n) override { return n; }
     virtual void close() override {}
     virtual void flush() override {}
-    virtual Offset seek(const Offset&) override {}
+    virtual Offset seek(const Offset&) override { return 0; }
     virtual Offset position() override { return 0; }
     virtual void rewind() override {}
     virtual void print(std::ostream& s) const override { s << "Empty Handle"; }

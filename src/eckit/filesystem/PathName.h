@@ -33,7 +33,6 @@ class Length;
 class BasePathName;
 class DataHandle;
 class LocalPathName;
-class MarsFSPath;
 class FileMode;
 
 // The class PathName represent a unix path name.

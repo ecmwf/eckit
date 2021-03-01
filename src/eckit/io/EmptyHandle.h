@@ -48,6 +48,7 @@ public:
     virtual void rewind() override {}
     virtual void print(std::ostream& s) const override { s << "Empty Handle"; }
     virtual bool isEmpty() const override { return true; }
+    virtual bool canSeek() const override { return false; }
 
     // From Streamable
 

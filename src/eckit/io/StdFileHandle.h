@@ -36,6 +36,7 @@ public:
     virtual long write(const void*, long) override;
     virtual void close() override;
     virtual void print(std::ostream&) const override;
+    virtual bool canSeek() const override { return false; }
 
     virtual void encode(Stream&) const override;
 

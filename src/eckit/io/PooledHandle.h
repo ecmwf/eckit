@@ -39,6 +39,7 @@ public:
     virtual long write(const void*, long) override;
     virtual void close() override;
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override { return true; }
     virtual void hash(MD5& md5) const override;
 
     // for testing

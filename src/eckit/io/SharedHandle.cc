@@ -81,6 +81,10 @@ Offset SharedHandle::seek(const Offset& o) {
     return handle_.seek(o);
 }
 
+bool SharedHandle::canSeek() const {
+    return handle_.canSeek();
+}
+
 void SharedHandle::skip(const Length& n) {
     return handle_.skip(n);
 }

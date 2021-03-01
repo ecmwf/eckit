@@ -16,6 +16,8 @@
 
 #include <string>
 
+#include "eckit/memory/NonCopyable.h"
+
 namespace eckit {
 namespace sql {
 
@@ -25,7 +27,7 @@ class SQLOutput;
 
 namespace type {
 
-class SQLType {
+class SQLType : private eckit::NonCopyable {
 public:
     enum
     {
@@ -38,9 +40,6 @@ public:
     };
 
     SQLType(const std::string&);
-
-    /// Constructor used when defining a bitfield.
-    SQLType(const std::string&, const std::string&);
 
     virtual ~SQLType();
 
@@ -61,6 +60,8 @@ public:
 
     static const SQLType& lookup(const std::string&, size_t sizeDoubles = 1);
     static void createAlias(const std::string&, const std::string&);
+
+    // n.b. takes ownership
     static SQLType* registerType(SQLType*);
 
 protected:
@@ -68,9 +69,6 @@ protected:
     static bool exists(const std::string&);
 
 private:
-    // No copy allowed
-    SQLType(const SQLType&);
-    SQLType& operator=(const SQLType&);
 
     std::string name_;
 

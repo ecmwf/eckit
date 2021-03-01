@@ -207,7 +207,6 @@ io/PooledFileDescriptor.cc
 io/PooledFileDescriptor.h
 io/RawFileHandle.cc
 io/RawFileHandle.h
-io/ResizableBuffer.cc
 io/ResizableBuffer.h
 io/Select.cc
 io/Select.h
@@ -729,19 +728,21 @@ if(eckit_HAVE_SSL)
     )
 endif()
 
-if(eckit_HAVE_XXHASH)
-    list( APPEND eckit_utils_srcs
-      utils/xxHashing.cc
-      utils/xxHashing.h
-    )
-endif()
-
 if(eckit_HAVE_RSYNC)
   list( APPEND eckit_utils_srcs
     utils/Rsync.cc
     utils/Rsync.h
   )
 endif()
+
+if(eckit_HAVE_XXHASH)
+    list( APPEND eckit_utils_srcs
+        utils/xxHashing.cc
+        utils/xxHashing.h
+        contrib/xxhash/xxhash.h
+    )
+endif()
+
 
 list( APPEND eckit_memory_srcs
 memory/Builder.cc
@@ -918,7 +919,6 @@ ecbuild_add_library(
 
           PRIVATE_INCLUDES
               "${CURL_INCLUDE_DIRS}"
-              "${XXHASH_INCLUDE_DIRS}"
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
@@ -935,7 +935,6 @@ ecbuild_add_library(
               "${AEC_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
-              "${XXHASH_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
 

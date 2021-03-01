@@ -108,11 +108,11 @@ private:  // methods
     void parseQueryValues(const std::string& query);
 
 private:  // members
-    int port_ = -1;
     std::string name_;
     std::string scheme_;
     std::string user_;
     std::string host_;
+    int port_ = -1;
     std::string fragment_;
     std::map<std::string, std::string> queryValues_;
 

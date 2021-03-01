@@ -266,4 +266,8 @@ void PooledHandle::hash(MD5& md5) const {
     md5 << std::string(entry_->path_);
 }
 
+Offset PooledHandle::position() {
+    return entry_->handle_->position();
+}
+
 }  // namespace eckit

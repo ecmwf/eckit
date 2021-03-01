@@ -17,7 +17,7 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/LogTarget.h"
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 
 namespace eckit {
 
@@ -36,7 +36,7 @@ private:
 
 private:
     std::ofstream out_;
-    ResizableBuffer buffer_;  //< configurable buffer for ofstream
+    Buffer buffer_;  //< configurable buffer for ofstream
     PathName path_;
 };
 

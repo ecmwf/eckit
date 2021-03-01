@@ -9,10 +9,9 @@
  */
 
 #include <fstream>
-
+#include <cstring>
 
 #include "eckit/io/Buffer.h"
-#include "eckit/io/ResizableBuffer.h"
 #include "eckit/web/AgentResource.h"
 #include "eckit/web/JavaAgent.h"
 #include "eckit/web/Url.h"
@@ -26,7 +25,7 @@ namespace eckit {
 class MemStream : public eckit::Stream {
 
     Buffer in_;
-    ResizableBuffer out_;
+    Buffer out_;
     long pos_;
     long length_;
 

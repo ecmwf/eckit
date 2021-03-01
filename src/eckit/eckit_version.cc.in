@@ -1,13 +1,11 @@
 #include "eckit/eckit_version.h"
 
-#define eckit_VERSION_STR "@eckit_VERSION_STR@"
-#define eckit_VERSION     "@eckit_VERSION@"
-
-#define eckit_VERSION_MAJOR @eckit_VERSION_MAJOR@
-#define eckit_VERSION_MINOR @eckit_VERSION_MINOR@
-#define eckit_VERSION_PATCH @eckit_VERSION_PATCH@
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 const char * eckit_version()     { return eckit_VERSION; }
+
 const char * eckit_version_str() { return eckit_VERSION_STR; }
 
 unsigned int eckit_version_int()
@@ -16,3 +14,7 @@ unsigned int eckit_version_int()
 }
 
 const char * eckit_git_sha1() { return "@eckit_GIT_SHA1@"; }
+
+#ifdef __cplusplus
+}
+#endif

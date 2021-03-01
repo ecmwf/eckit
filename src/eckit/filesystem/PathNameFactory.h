@@ -18,7 +18,6 @@
 #include "eckit/memory/NonCopyable.h"
 
 #include <map>
-#include <mutex>
 #include <string>
 #include <vector>
 
@@ -29,24 +28,11 @@ namespace eckit {
 class PathNameBuilderBase;
 class BasePathName;
 
-class PathNameFactory : private eckit::NonCopyable {
+class PathNameFactory {
 public:  // methods
-    static PathNameFactory& instance();
-
-    void enregister(const std::string& name, const PathNameBuilderBase* builder);
-    void deregister(const PathNameBuilderBase* builder);
-
-    BasePathName* build(const std::string& path, bool tildeIsUserHome = false) const;
-    BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false) const;
-
-private:  // methods
-    PathNameFactory();
-
-    mutable std::recursive_mutex mutex_;
-    std::vector<std::string> names_;
-    std::map<std::string, const PathNameBuilderBase*> builders_;
+    static BasePathName* build(const std::string& path, bool tildeIsUserHome = false);
+    static BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false);
 };
-
 
 class PathNameBuilderBase {
 public:

@@ -41,6 +41,8 @@ public:  // methods
     virtual Length estimate() override;
     virtual Offset position() override;
 
+    virtual bool canSeek() const override { return false; }
+
 private:  // methods
     size_t getFreeSlot();
 

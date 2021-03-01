@@ -35,8 +35,50 @@ class DateTime;
 
 class JSON : private NonCopyable {
 
+public:
+
+    class Formatting {
+    public: // types
+
+        enum BitFlags {
+            COMPACT     = 0,
+            INDENT_DICT = (1 << 1),
+            INDENT_LIST = (1 << 2),
+            INDENT_ALL  = (INDENT_DICT | INDENT_LIST)
+        };
+
+    public: // constructors
+
+        /// Create compact formatting
+        static Formatting compact();
+
+        /// Create formatting that indents dictionaries
+        static Formatting indent(int indentation = 2);
+
+        /// Default constructor, creates compact formatting
+        Formatting() = default;
+
+        /// Construct formatting with given indentation
+        /// @param flags        BitFlags that describe formatting
+        /// @param indentation  Number of spaces used for indentation
+        Formatting(int flags, int indentation = 2);
+
+    public: // methods
+
+        /// @return Number of spaces used for indentation
+        int indentation() const;
+
+        /// @return BitFlags that describe formatting
+        int flags() const;
+
+    private: // data
+        int flags_{COMPACT};
+        int indentation_{2};
+    };
+
 public:  // methods
     JSON(std::ostream&, bool null = true);
+    JSON(std::ostream&, Formatting );
 
     ~JSON();
 
@@ -89,6 +131,9 @@ private:  // members
     std::vector<std::string> sep_;
     std::vector<bool> state_;
     bool null_;
+
+    int indentation_{0};
+    Formatting formatting_;
 
 private:  // methods
     void sep();

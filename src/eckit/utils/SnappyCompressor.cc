@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-// #include "snappy.h"
-#include "snappy-c.h"
-
 #include "eckit/utils/SnappyCompressor.h"
+
+// #include "snappy.h"
+#include "snappy-c.h"  // header includes extern c linkage
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/ResizableBuffer.h"
 
 namespace eckit {
 
@@ -25,17 +24,17 @@ SnappyCompressor::SnappyCompressor() {}
 
 SnappyCompressor::~SnappyCompressor() {}
 
-size_t SnappyCompressor::compress(const eckit::Buffer& in, ResizableBuffer& out) const {
+size_t SnappyCompressor::compress(const void* in, size_t len, Buffer& out) const {
 
-    size_t maxcompressed = snappy_max_compressed_length(in.size());
+    size_t maxcompressed = snappy_max_compressed_length(len);
     if (out.size() < maxcompressed)
         out.resize(maxcompressed);
 
-    size_t len           = out.size();
-    snappy_status status = snappy_compress(in, in.size(), out, &len);
+    size_t outlen           = out.size();
+    snappy_status status = snappy_compress(static_cast<const char*>(in), len, out, &outlen);
 
     if (status == SNAPPY_OK)
-        return len;
+        return outlen;
 
     std::ostringstream msg;
     if (status == SNAPPY_INVALID_INPUT)
@@ -46,30 +45,27 @@ size_t SnappyCompressor::compress(const eckit::Buffer& in, ResizableBuffer& out)
     throw FailedLibraryCall("snappy", "compress", msg.str(), Here());
 }
 
-size_t SnappyCompressor::uncompress(const eckit::Buffer& in, ResizableBuffer& out) const {
+void SnappyCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
     snappy_status status;
 
-    size_t uncompressed;
-    status = snappy_uncompressed_length(in, in.size(), &uncompressed);
+    if (out.size() < outlen)
+        out.resize(outlen);
+
+    size_t uncompressed = out.size();
+
+    status = snappy_uncompress(static_cast<const char*>(in), len, out, &uncompressed);
+
+    ASSERT( uncompressed == outlen );
+
     if (status != SNAPPY_OK) {
-        throw FailedLibraryCall("snappy", "snappy_uncompressed_lengths", "returned != SNAPPY_OK", Here());
+        std::ostringstream msg;
+        if (status == SNAPPY_INVALID_INPUT)
+            msg << "invalid input to compress";
+        if (status == SNAPPY_BUFFER_TOO_SMALL)
+            msg << "output buffer too small, size " << out.size();
+
+        throw FailedLibraryCall("snappy", "compress", msg.str(), Here());
     }
-
-    if (out.size() < uncompressed)
-        out.resize(uncompressed);
-
-    status = snappy_uncompress(in, in.size(), out, &uncompressed);
-
-    if (status == SNAPPY_OK)
-        return uncompressed;
-
-    std::ostringstream msg;
-    if (status == SNAPPY_INVALID_INPUT)
-        msg << "invalid input to compress";
-    if (status == SNAPPY_BUFFER_TOO_SMALL)
-        msg << "output buffer too small, size " << out.size();
-
-    throw FailedLibraryCall("snappy", "compress", msg.str(), Here());
 }
 
 CompressorBuilder<SnappyCompressor> snappy("snappy");

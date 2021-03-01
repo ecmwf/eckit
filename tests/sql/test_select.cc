@@ -69,13 +69,15 @@ private:
                 columnIndexes_.push_back(col.get().index());
                 offsets_.push_back(offsets[col.get().index()]);
                 doublesSizes_.push_back(doublesSizes[col.get().index()]);
+                hasMissing_.push_back(false);
+                missingVals_.push_back(0);
             }
         }
 
     private:
-        virtual ~TestTableIterator() {}
-        virtual void rewind() { idx_ = 0; }
-        virtual bool next() {
+        ~TestTableIterator() override {}
+        void rewind() override { idx_ = 0; }
+        bool next() override {
 
             // After the first element, we resize things, so we can test the callback and type resizing
             // functionality
@@ -107,22 +109,26 @@ private:
             data_[5] = BITFIELD_DATA[idx_];
             data_[6] = BITFIELD_DATA[idx_];
         }
-        virtual std::vector<size_t> columnOffsets() const { return offsets_; }
-        virtual std::vector<size_t> doublesDataSizes() const { return doublesSizes_; }
-        virtual const double* data() const { return &data_[0]; }
+        std::vector<size_t> columnOffsets() const override { return offsets_; }
+        std::vector<size_t> doublesDataSizes() const override { return doublesSizes_; }
+        std::vector<char> columnsHaveMissing() const override { return hasMissing_; }
+        std::vector<double> missingValues() const override { return missingVals_; }
+        const double* data() const override { return &data_[0]; }
 
         // const TestTable& owner_; // unused
         size_t idx_;
         std::vector<size_t> offsets_;
         std::vector<size_t> doublesSizes_;
         std::vector<size_t> columnIndexes_;
+        std::vector<char> hasMissing_;
+        std::vector<double> missingVals_;
         std::vector<double> data_;
         std::function<void(eckit::sql::SQLTableIterator&)> updateCallback_;
     };
 
-    virtual eckit::sql::SQLTableIterator* iterator(
+    eckit::sql::SQLTableIterator* iterator(
         const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
-        std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const {
+        std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const override {
         return new TestTableIterator(*this, columns, metadataUpdateCallback);
     }
 };
@@ -131,19 +137,19 @@ private:
 
 class TestOutput : public eckit::sql::SQLOutput {
 
-    virtual void cleanup(eckit::sql::SQLSelect&) {}
-    virtual void reset() {
+    void cleanup(eckit::sql::SQLSelect&) override {}
+    void reset() override {
         intOutput_.clear();
         floatOutput_.clear();
         strOutput_.clear();
     }
-    virtual void flush() {
+    void flush() override {
         std::swap(intOutput_, intOutput);
         std::swap(floatOutput_, floatOutput);
         std::swap(strOutput_, strOutput);
     }
 
-    virtual bool output(const eckit::sql::expression::Expressions& results) {
+    bool output(const eckit::sql::expression::Expressions& results) override {
         for (const auto& r : results) {
             r->output(*this);
         }
@@ -151,7 +157,7 @@ class TestOutput : public eckit::sql::SQLOutput {
         return true;
     }
 
-    virtual void prepare(eckit::sql::SQLSelect& sql) {
+    void prepare(eckit::sql::SQLSelect& sql) override {
         columnNames.clear();
         const eckit::sql::expression::Expressions& columns(sql.output());
         for (const auto& col : columns) {
@@ -159,11 +165,11 @@ class TestOutput : public eckit::sql::SQLOutput {
         }
     }
 
-    virtual void outputReal(double d, bool) { floatOutput_.push_back(d); }
-    virtual void outputDouble(double d, bool) { floatOutput_.push_back(d); }
-    virtual void outputInt(double d, bool) { intOutput_.push_back(d); }
-    virtual void outputUnsignedInt(double d, bool) { intOutput_.push_back(d); }
-    virtual void outputString(const char* s, size_t l, bool missing) {
+    void outputReal(double d, bool) override { floatOutput_.push_back(d); }
+    void outputDouble(double d, bool) override { floatOutput_.push_back(d); }
+    void outputInt(double d, bool) override { intOutput_.push_back(d); }
+    void outputUnsignedInt(double d, bool) override { intOutput_.push_back(d); }
+    void outputString(const char* s, size_t l, bool missing) override {
         if (missing) {
             strOutput_.push_back(std::string());
         }
@@ -172,9 +178,9 @@ class TestOutput : public eckit::sql::SQLOutput {
             strOutput_.push_back(std::string(s, l));
         }
     }
-    virtual void outputBitfield(double d, bool) { intOutput_.push_back(d); }
+    void outputBitfield(double d, bool) override { intOutput_.push_back(d); }
 
-    virtual unsigned long long count() {
+    unsigned long long count() override {
         return std::max(intOutput.size(), std::max(floatOutput_.size(), strOutput_.size()));
     }
 

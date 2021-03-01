@@ -17,8 +17,6 @@
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/EasyCURL.h"
-
 
 namespace eckit {
 
@@ -52,6 +50,8 @@ public:
     // virtual void rewind() override;
     virtual void print(std::ostream&) const override;
     virtual Length estimate() override;
+
+    virtual bool canSeek() const override { return false; }
 
     // From Streamable
 

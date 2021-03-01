@@ -36,7 +36,8 @@ public:
             throw eckit::UserError("Includes nested too deeply");
 
         stack_.push_back(state);
-        eckit_sql__switch_to_buffer(eckit_sql__scan_bytes(sql.c_str(), sql.size(), scanner), scanner);
+        currentBuffer_ = eckit_sql__scan_bytes(sql.c_str(), sql.size(), scanner);
+        eckit_sql__switch_to_buffer(currentBuffer_, scanner);
     }
 
     int pop(eckit_sql_scan_t scanner)
@@ -47,11 +48,13 @@ public:
         YY_BUFFER_STATE currentState (stack_.back());
         stack_.pop_back();
 
+        eckit_sql__delete_buffer(currentBuffer_, scanner);
         eckit_sql__switch_to_buffer(currentState, scanner);
         return 0;
     }
 
 private:
+    YY_BUFFER_STATE currentBuffer_;
     std::vector<YY_BUFFER_STATE> stack_;
 };
 

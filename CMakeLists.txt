@@ -126,6 +126,11 @@ ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
                     REQUIRED_PACKAGES AEC )
 
+### Hashing options
+
+ecbuild_add_option( FEATURE XXHASH
+                    DESCRIPTION "xxHash support for hashing" )
+
 ### LAPACK
 
 if( eckit_HAVE_MKL )
@@ -145,16 +150,6 @@ ecbuild_add_option( FEATURE SSL
 
 if( OPENSSL_FOUND )
   ecbuild_info("OpenSSL version ${OPENSSL_VERSION} -- libs [${OPENSSL_LIBRARIES}] incs [${OPENSSL_INCLUDE_DIR}]")
-endif()
-
-### xxHash
-
-ecbuild_add_option( FEATURE XXHASH
-                    DESCRIPTION "Use xxHash for non-crypto hashing in data integrity checks"
-                    REQUIRED_PACKAGES "xxHash QUIET" )
-
-if( XXHASH_FOUND )
-  ecbuild_info("xxHash -- libs [${XXHASH_LIBRARIES}] incs [${XXHASH_INCLUDE_DIRS}]")
 endif()
 
 #### Curl

@@ -429,6 +429,8 @@ void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor)
     const double* data(cursor.data());
     const std::vector<size_t> offsets(cursor.columnOffsets());
     const std::vector<size_t> doublesSizes(cursor.doublesDataSizes());
+    const std::vector<char> hasMissing(cursor.columnsHaveMissing());
+    const std::vector<double> missingValues(cursor.missingValues());
 
     for (size_t i = 0; i < tbl.fetch_.size(); i++) {
         std::string fullname(tbl.fetch_[i].get().fullName());
@@ -443,6 +445,10 @@ void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor)
         // This is a function of the table. Aaaarg. Makes this horribly not parallelisable.
         // eckit::sql needs a rewrite. Will enable us to work around this shit.
         table->updateColumnDoublesWidth(fullname, doublesSizes[i]);
+
+        // Aaaargh, we need to know when we are looking at missing values. But these can change
+        // down the column. As can 'hasMissing'
+        table->updateColumnMissingValues(fullname, hasMissing[i], missingValues[i]);
 
         // This will create the value if it does not exist.
         std::pair<const double*, bool>& value(values_[fullname]);

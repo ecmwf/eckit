@@ -99,7 +99,19 @@ std::map<string, std::vector<string>> results = {
          "de9f2c7fd25e1b3afad3e85a0bd17d9b100db4b3",  //"The quick brown fox jumps over the lazy cog"
          "6f020371ced46a2989a2161a113f34ccd35e0729",  //"The quick brown fox jumps over the lazy cog" x 2
      }},
-    {"xxHash",
+    {"xxh64",
+     {
+         "ef46db3751d8e999",  //""
+         "d24ec4f1a98c6e5b",  //"a"
+         "44bc2cf5ad770999",  //"abc"
+         "066ed728fceeb3be",  //"message digest"
+         "cfe1f278fa89835c",  //"abcdefghijklmnopqrstuvwxyz"
+         "aaa46907d3047814",  //"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+         "e04a477f19ee145d",  //"12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+         "2dcf47703493b6ca",  //"The quick brown fox jumps over the lazy cog"
+         "e32a7da747f1bd6e",  //"The quick brown fox jumps over the lazy cog" x 2
+     }},
+    {"xxhash", // Deprecated alias of xxh64
      {
          "ef46db3751d8e999",  //""
          "d24ec4f1a98c6e5b",  //"a"
@@ -128,24 +140,31 @@ void testHash(Hash& hash, std::string hashName) {
         EXPECT(testResults == hash.digest());
 
         // constructor-based initialization
-        Hash* hashInitialized = HashFactory::instance().build(hashName, tests[i]);
+        std::unique_ptr<Hash> hashInitialized{ HashFactory::instance().build(hashName, tests[i]) };
         EXPECT(testResults == hashInitialized->digest());
 
         // initialize with dummy data and test reset
-        hashInitialized = HashFactory::instance().build(hashName, "dummy data");
+        hashInitialized.reset( HashFactory::instance().build(hashName, "dummy data") );
         hashInitialized->reset();
         hashInitialized->add(tests[i].c_str(), tests[i].size());
         EXPECT(testResults == hashInitialized->digest());
     }
 
-    // test add
-    std::string testResults = hashResults->second[tests.size()];
-    //    if (!testResults.empty()) {
-    hash.reset();
-    hash.add(tests[tests.size() - 1].c_str(), tests[tests.size() - 1].size());
-    hash.add(tests[tests.size() - 1].c_str(), tests[tests.size() - 1].size());
-    EXPECT(testResults == hash.digest());
-    //    }
+    // test incremental add
+    {
+        std::string testResults = hashResults->second[tests.size()];
+        hash.reset();
+        hash.add(tests[tests.size() - 1].c_str(), tests[tests.size() - 1].size());
+        hash.add(tests[tests.size() - 1].c_str(), tests[tests.size() - 1].size());
+
+        EXPECT(testResults == hash.digest());
+
+        // test two adds (as before) is same as a combination of one compute
+        std::string combined;
+        combined += tests[tests.size() - 1];
+        combined += tests[tests.size() - 1];
+        EXPECT(hash.compute(combined.c_str(),combined.size()) == testResults);
+    }
 }
 
 

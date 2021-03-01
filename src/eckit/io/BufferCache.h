@@ -19,7 +19,7 @@
 #include <ctime>
 #include <iosfwd>
 
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 
 
 namespace eckit {
@@ -93,7 +93,7 @@ private:
     // -- Members
 
     size_t count_;
-    ResizableBuffer buffer_;
+    Buffer buffer_;
     time_t updated_;
 
     // -- Methods

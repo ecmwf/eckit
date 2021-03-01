@@ -18,13 +18,13 @@
 
 namespace eckit {
 
-class ResizableBuffer;
+class Buffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class ResizableMemoryStream : public Stream {
 public:
-    ResizableMemoryStream(ResizableBuffer&);
+    ResizableMemoryStream(Buffer&);
 
     ~ResizableMemoryStream();
 
@@ -37,7 +37,7 @@ public:
     size_t position() const;
 
 private:  // members
-    ResizableBuffer& buffer_;
+    Buffer& buffer_;
 
     size_t position_;
 };

@@ -45,7 +45,7 @@ void timeAdd(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.stop();
 
-    std::cout << " - add()     rate " << Bytes(N * M * buffer.size(), timer) << std::endl;
+    std::cout << " - " << N << " x " << M << " x add(" << Bytes(buffer.size()) << ") rate " << Bytes(N * M * buffer.size(), timer) << std::endl;
 }
 
 template <int N>
@@ -60,7 +60,7 @@ void timeCompute(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.stop();
 
-    std::cout << " - compute() rate " << Bytes(N * buffer.size(), timer) << std::endl;
+    std::cout << " - " << N << " x compute(" << Bytes(buffer.size()) << ") rate " << Bytes(N * buffer.size(), timer) << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -71,11 +71,8 @@ CASE("Test hash performance") {
     eckit::Buffer buffer2(64 * 1024 * 1024);
     eckit::Timer timer;
 
-    const char* hashes[4] = {"xxHash", "MD4", "MD5", "SHA1"};
-
-    for (int i = 0; i < 4; ++i) {
-
-        std::string name = hashes[i];
+    std::vector<std::string> hashes{"xxh64", "MD4", "MD5", "SHA1"};
+    for( auto& name : hashes ) {
 
         if (eckit::HashFactory::instance().has(name)) {
 

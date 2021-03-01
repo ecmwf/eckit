@@ -19,11 +19,11 @@ namespace eckit {
 
 namespace {
 
-char* allocate(size_t size) {
+static char* allocate(size_t size) {
     return new char[size];
 }
 
-void deallocate(char* buffer) {
+static void deallocate(char* buffer) {
     delete[] buffer;
 }
 

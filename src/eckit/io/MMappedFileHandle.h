@@ -55,6 +55,7 @@ public:
     virtual std::string metricsTag() const override;
 
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override { return true; }
     virtual void skip(const Length&) override;
 
     virtual DataHandle* clone() const override;

@@ -47,6 +47,7 @@ public:
 
     virtual Offset position() override;
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override { return true; }
     virtual void skip(const Length&) override;
 
     // From Streamable

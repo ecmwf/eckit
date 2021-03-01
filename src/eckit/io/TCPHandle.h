@@ -51,6 +51,8 @@ public:
     virtual std::string title() const override;
     virtual bool moveable() const override { return true; }
 
+    virtual bool canSeek() const override { return false; }
+
     // From Streamable
 
     virtual void encode(Stream&) const override;

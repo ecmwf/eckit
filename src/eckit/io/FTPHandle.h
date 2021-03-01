@@ -52,6 +52,7 @@ public:
     virtual void close() override;
     virtual void rewind() override;
     virtual void print(std::ostream&) const override;
+    virtual bool canSeek() const override { return false; }
 
     // From Streamable
 

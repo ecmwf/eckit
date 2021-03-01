@@ -60,6 +60,7 @@ public:
     virtual bool moveable() const override { return false; }
 
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override { return false; }
 
     // From Streamable
 

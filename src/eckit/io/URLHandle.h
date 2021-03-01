@@ -51,6 +51,8 @@ public:
     virtual void print(std::ostream&) const override;
     virtual Length estimate() override;
 
+    virtual bool canSeek() const override { return false; }
+
     // From Streamable
 
     virtual void encode(Stream&) const override;

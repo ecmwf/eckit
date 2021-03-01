@@ -45,6 +45,10 @@ long StdFileHandle::read(void* buffer, long length) {
     return n;
 }
 
+Offset StdFileHandle::seek(const Offset& offset) {
+    return ::fseek(f_, offset, SEEK_SET);
+}
+
 long StdFileHandle::write(const void* buffer, long length) {
     return ::fwrite(buffer, 1, length, f_);
 }

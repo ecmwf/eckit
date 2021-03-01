@@ -222,8 +222,6 @@ io/StatsHandle.cc
 io/StatsHandle.h
 io/StdFile.cc
 io/StdFile.h
-io/StdFileHandle.cc
-io/StdFileHandle.h
 io/StdPipe.cc
 io/StdPipe.h
 io/StdioBuf.cc

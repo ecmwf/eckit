@@ -37,7 +37,7 @@ public:
     virtual void close() override;
     virtual void print(std::ostream&) const override;
     virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return false; }
+    virtual bool canSeek() const override { return true; }
 
     virtual void encode(Stream&) const override;
 

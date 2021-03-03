@@ -36,7 +36,7 @@ TaskInfo::TaskInfo() {
     pid_    = getpid();
     thread_ = pthread_self();
     pos_    = 0;
-    start_  = ::time(0);
+    start_  = ::time(nullptr);
     if (Main::ready()) {
         ::strncpy(name_, Main::instance().displayName().c_str(), sizeof(name_) - 1);
         ::strncpy(kind_, Main::instance().name().c_str(), sizeof(kind_) - 1);
@@ -110,7 +110,7 @@ bool TaskInfo::busy(bool check) {
     if (!busy_)
         return false;
 
-    time_t now = ::time(0);
+    time_t now = ::time(nullptr);
 
     // After 2 minutes, force the check
     if ((now - check_) > 120)
@@ -148,14 +148,14 @@ void TaskInfo::progress(unsigned long long val) {
 
     ::timeval diff = now - progress_.last_;
 
-    double elapsed = ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
+    double elapsed = (static_cast<double>(diff.tv_sec) + (static_cast<double>(diff.tv_usec) / 1000000.));
     if (elapsed > 0) {
         progress_.rate_ = (val - progress_.val_) / elapsed;
     }
 
     diff = now - progress_.start_;
 
-    elapsed = ((double)diff.tv_sec + ((double)diff.tv_usec / 1000000.));
+    elapsed = (static_cast<double>(diff.tv_sec) + (static_cast<double>(diff.tv_usec) / 1000000.));
     if (elapsed > 0) {
         progress_.speed_ = (val - progress_.min_) / elapsed;
     }
@@ -174,7 +174,7 @@ void TaskInfo::touch() {
     checkAbort();
 
     // FIXME: potential race condition (reported by Clang ThreadSanitizer)
-    check_ = last_ = ::time(0);
+    check_ = last_ = ::time(nullptr);
     busy_          = true;
 
     SignalHandler::checkInterrupt();
@@ -196,8 +196,8 @@ void TaskInfo::checkAbort() {
 void TaskInfo::parent(long p) {
     parent_ = p;
     depth_  = 0;
-    if (p != -1) {
-        depth_ = Monitor::instance().task(p).depth() + 1;
+    if (p >= 0) {
+        depth_ = Monitor::instance().task(static_cast<unsigned long>(p)).depth() + 1;
     }
 }
 
@@ -206,7 +206,7 @@ void TaskInfo::parent(long p) {
 void TaskInfo::json(JSON& json) const {
 
     Monitor& monitor = Monitor::instance();
-    size_t n         = std::distance(monitor.tasks().cbegin(), this);
+    auto n         = std::distance(monitor.tasks().cbegin(), this);
 
     json.startObject();
 
@@ -229,8 +229,6 @@ void TaskInfo::json(JSON& json) const {
     char buffer[size_ + 1] = {
         0,
     };
-    unsigned long pos = 0;
-    unsigned long len = text(buffer, sizeof(buffer), pos);
 
     json << "log" << buffer;
 

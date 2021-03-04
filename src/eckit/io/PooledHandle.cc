@@ -195,7 +195,7 @@ public:
 PooledHandle::PooledHandle(const PathName& path) : path_(path), entry_(nullptr) {
     auto j = pool_.find(path);
     if (j == pool_.end()) {
-        pool_.emplace(std::make_pair(path, new PoolHandleEntry(path)));
+        pool_.emplace(std::make_pair(path, std::unique_ptr<PoolHandleEntry>(new PoolHandleEntry(path))));
         j           = pool_.find(path);
     }
 

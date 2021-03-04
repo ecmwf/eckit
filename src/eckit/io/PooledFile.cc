@@ -195,7 +195,7 @@ public:
 PooledFile::PooledFile(const PathName& name) : name_(name), entry_(nullptr) {
     auto j = pool_.find(name);
     if (j == pool_.end()) {
-        pool_.emplace(std::make_pair(name, new PoolFileEntry(name)));
+        pool_.emplace(std::make_pair(name, std::unique_ptr<PoolFileEntry>(new PoolFileEntry(name))));
         j           = pool_.find(name);
     }
 

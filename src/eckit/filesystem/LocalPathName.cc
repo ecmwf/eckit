@@ -667,9 +667,7 @@ void LocalPathName::touch() const {
     dirName().mkdir();
 
     if(exists()) {
-        struct utimbuf times;
-        times.actime = times.modtime = ::time(nullptr);
-        SYSCALL(utime(path_.c_str(), &times));
+        SYSCALL(utime(path_.c_str(), NULL));
     }
     else {
         AutoStdFile f(*this, "a");  // This should create the file

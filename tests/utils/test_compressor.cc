@@ -96,7 +96,8 @@ CASE("Builders") {
 
 CASE("Compression") {
 
-    const Buffer in(msg.c_str(), 2*msg.size()); // oversized on purpose
+    Buffer in(2*msg.size()); // oversized on purpose
+    in.copy(msg.c_str(), msg.size());
     const size_t len = msg.size(); // valid size
 
     std::unique_ptr<Compressor> c;

@@ -151,7 +151,7 @@ LocalPathName LocalPathName::baseName(bool ext) const {
     }
 
     // Don't perform tilde expansion on paths that have already been expanded
-    
+
     bool tildeIsUserHome = false;
     bool skipTildeExpansion = true;
     return LocalPathName(s, tildeIsUserHome, skipTildeExpansion);
@@ -667,10 +667,10 @@ void LocalPathName::touch() const {
     dirName().mkdir();
 
     if(exists()) {
-        SYSCALL(utime(path_.c_str(), NULL));
+        SYSCALL(::utime(path_.c_str(), nullptr)); // set to current time
     }
     else {
-        AutoStdFile f(*this, "a");  // This should create the file
+        AutoStdFile f(*this, "a");  // this creates the file, ther may be a race but is unimportant in this context
     }
 }
 

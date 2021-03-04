@@ -9,6 +9,7 @@
  */
 
 #include <cstdio>
+#include <memory>
 #include <string>
 #include <thread>
 
@@ -25,7 +26,7 @@ namespace eckit {
 
 class PoolFileEntry;
 
-static thread_local std::map<PathName, PoolFileEntry*> pool_;
+static thread_local std::map<PathName, std::unique_ptr<PoolFileEntry>> pool_;
 
 struct PoolFileEntryStatus {
 
@@ -194,11 +195,11 @@ public:
 PooledFile::PooledFile(const PathName& name) : name_(name), entry_(nullptr) {
     auto j = pool_.find(name);
     if (j == pool_.end()) {
-        pool_[name] = new PoolFileEntry(name);
+        pool_.emplace(std::make_pair(name, new PoolFileEntry(name)));
         j           = pool_.find(name);
     }
 
-    entry_ = (*j).second;
+    entry_ = (*j).second.get();
     entry_->add(this);
 }
 

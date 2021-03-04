@@ -38,6 +38,7 @@ struct AIOBuffer : private eckit::NonCopyable {
 
 public:  // methods
     explicit AIOBuffer() { eckit::zero(aio_); }
+    ~AIOBuffer() { delete buff_; }
 
     void resize(size_t sz) {
         if (buff_ == nullptr || buff_->size() < sz) {
@@ -264,7 +265,6 @@ void AIOHandle::flush() {
 //----------------------------------------------------------------------------------------------------------------------
 
 AIOHandle::~AIOHandle() {
-    close();
     for (size_t i = 0; i < count_; i++) {
         delete buffers_[i];
     }

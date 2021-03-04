@@ -100,9 +100,10 @@ CASE("Test eckit Buffer Zero") {
 
     EXPECT_NO_THROW(buf.zero());
 
-    const void* expected = std::calloc(sz, 1);
+    void* expected = std::calloc(sz, 1);
     EXPECT(buf.size() == sz);
     EXPECT(std::memcmp(buf, expected, sz) == 0);
+    free(expected);
 }
 
 // NOTE: resize allocates a new buffer whenever the new size is different -- this is inefficient

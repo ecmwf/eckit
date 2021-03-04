@@ -70,7 +70,7 @@ inline Scalar det(Scalar m[16]);
 }  // namespace detail
 
 template <typename Scalar, typename Index = std::ptrdiff_t>
-class Matrix {
+class Matrix : private eckit::NonCopyable {
 
 protected:
     Scalar* data_;
@@ -114,6 +114,12 @@ public:
         data_     = NULL;
         resize(other.nr_, other.nc_);
         memcpy(data_, other.data(), sizeof(Scalar) * nr_ * nc_);
+    }
+
+    ~Matrix() {
+        if (!is_proxy_) {
+            delete[] data_;
+        }
     }
 
     Matrix& noalias() { return *this; }

@@ -9,8 +9,8 @@
  */
 
 #include <cstdio>
+#include <memory>
 #include <string>
-#include <thread>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
@@ -18,7 +18,6 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/PooledHandle.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -28,7 +27,7 @@ class PoolHandleEntry;
 
 /// @note in anonymous namespace to solve some compilers link issue (eg. xlc)
 namespace {
-static thread_local std::map<PathName, PoolHandleEntry*> pool_;
+static thread_local std::map<PathName, std::unique_ptr<PoolHandleEntry>> pool_;
 }
 
 static size_t maxPooledHandles() {
@@ -47,7 +46,7 @@ struct PoolHandleEntryStatus {
 class PoolHandleEntry {
 public:
     PathName path_;
-    DataHandle* handle_;
+    std::unique_ptr<DataHandle> handle_;
     Length estimate_;
 
     size_t count_;
@@ -77,7 +76,7 @@ public:
         if (handle_) {
             LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::close(" << *handle_ << ")" << std::endl;
             handle_->close();
-            handle_ = nullptr;
+            handle_.reset();
         }
     }
 
@@ -109,7 +108,7 @@ public:
             checkMaxPooledHandles();
 
             nbOpens_++;
-            handle_ = path_.fileHandle();
+            handle_.reset(path_.fileHandle());
             ASSERT(handle_);
             LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::openForRead(" << *handle_ << ")" << std::endl;
             estimate_ = handle_->openForRead();
@@ -196,11 +195,11 @@ public:
 PooledHandle::PooledHandle(const PathName& path) : path_(path), entry_(nullptr) {
     auto j = pool_.find(path);
     if (j == pool_.end()) {
-        pool_[path] = new PoolHandleEntry(path);
+        pool_.emplace(std::make_pair(path, new PoolHandleEntry(path)));
         j           = pool_.find(path);
     }
 
-    entry_ = (*j).second;
+    entry_ = (*j).second.get();
     entry_->add(this);
 }
 

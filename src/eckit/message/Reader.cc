@@ -9,25 +9,36 @@
  */
 
 #include "eckit/message/Reader.h"
+
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/BufferedHandle.h"
 #include "eckit/message/Message.h"
 #include "eckit/message/Splitter.h"
+
+namespace {
+
+static size_t readerBufferSize() {
+    static size_t readerBuffer = eckit::Resource<size_t>("readerBuffer;$READER_BUFFER", 4 * 1024 * 1024);
+    return readerBuffer;
+}
+}  // namespace
 
 namespace eckit {
 namespace message {
 
-Reader::Reader(eckit::DataHandle* h, bool opened) : handle_(h), opened_(opened) {
-
+Reader::Reader(eckit::DataHandle* h, bool opened) :
+    handle_(new BufferedHandle(h, readerBufferSize())), opened_(opened) {
     init();
 }
 
-Reader::Reader(eckit::DataHandle& h, bool opened) : handle_(h), opened_(opened) {
-
+Reader::Reader(eckit::DataHandle& h, bool opened) :
+    handle_(new BufferedHandle(h, readerBufferSize())), opened_(opened) {
     init();
 }
 
-Reader::Reader(const eckit::PathName& path) : handle_(path.fileHandle()), opened_(false) {
-
+Reader::Reader(const eckit::PathName& path) :
+    handle_(new BufferedHandle(path.fileHandle(), readerBufferSize())), opened_(false) {
     init();
 }
 
@@ -35,9 +46,7 @@ void Reader::init() {
     if (!opened_) {
         handle_.openForRead();
     }
-
     splitter_.reset(SplitterFactory::lookup(handle_));
-    // std::cout << "----- " << *splitter_ << std::endl;
 }
 
 Reader::~Reader() {

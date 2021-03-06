@@ -99,10 +99,6 @@ void Message::getDoubleArray(const std::string& key, std::vector<double>& v) con
     return content_->getDoubleArray(key, v);
 }
 
-void Message::setString(const std::string& key, const std::string& value) {
-    content_->setString(key, value);
-}
-
 eckit::DataHandle* Message::readHandle() const {
     return content_->readHandle();
 }

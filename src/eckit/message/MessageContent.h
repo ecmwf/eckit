@@ -51,8 +51,6 @@ public:
 
     virtual void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
-    virtual void setString(const std::string& key, const std::string& value);
-
     virtual eckit::DataHandle* readHandle() const;
 
     virtual eckit::Offset offset() const;

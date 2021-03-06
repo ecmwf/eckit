@@ -46,6 +46,8 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Message represents an immutable data object with metadata attached
+/// Modifications to messages create new messages via transformation actions
 class Message {
 public:
     Message();
@@ -71,10 +73,7 @@ public:
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
-    void setString(const std::string& key, const std::string& value);
-
     void getMetadata(MetadataGatherer&) const;
-
 
     eckit::DataHandle* readHandle() const;
 

@@ -19,15 +19,12 @@
 #include <vector>
 
 #include "eckit/memory/Counted.h"
-typedef struct grib_handle codes_handle;
 
 namespace eckit {
+
 class DataHandle;
 class Offset;
 class PathName;
-};  // namespace eckit
-
-namespace eckit {
 
 namespace mars {
 class MarsRequest;
@@ -53,6 +50,8 @@ public:
     virtual double getDouble(const std::string& key) const;
 
     virtual void getDoubleArray(const std::string& key, std::vector<double>&) const;
+
+    virtual void setString(const std::string& key, const std::string& value);
 
     virtual eckit::DataHandle* readHandle() const;
 

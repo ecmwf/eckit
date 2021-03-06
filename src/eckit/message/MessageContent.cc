@@ -62,6 +62,12 @@ void MessageContent::getDoubleArray(const std::string& key, std::vector<double>&
     throw eckit::SeriousBug(oss.str());
 }
 
+void MessageContent::setString(const std::string& key, const std::string& value) {
+    std::ostringstream oss;
+    oss << "Not implemented " << *this << " setString()";
+    throw eckit::SeriousBug(oss.str());
+}
+
 eckit::DataHandle* MessageContent::readHandle() const {
     std::ostringstream oss;
     oss << "Not implemented " << *this << " readHandle()";

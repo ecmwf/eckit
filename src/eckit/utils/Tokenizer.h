@@ -8,8 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-// File Tokenizer.h
-// Manuel Fuentes - ECMWF Jan 97
+/// @author Baudouin Raoult
+/// @author Manuel Fuentes
+/// @author Tiago Quintino
 
 #ifndef eckit_Tokenizer_h
 #define eckit_Tokenizer_h
@@ -22,7 +23,7 @@
 
 namespace eckit {
 
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 class Tokenizer : private NonCopyable {
 
@@ -42,6 +43,9 @@ public:  // methods
     void operator()(const std::string&, std::set<std::string>&) const;
     void operator()(std::istream&, std::set<std::string>&) const;
 
+    std::vector<std::string> tokenize(const std::string&) const;
+    std::vector<std::string> tokenize(std::istream&) const;
+
 private:                                          // members
     std::set<char, std::less<char> > separator_;  // To make searching faster
 
@@ -56,10 +60,22 @@ private:  // methods
     }
 };
 
+//---------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+inline std::vector<std::string> Tokenizer::tokenize(const std::string& s) const {
+    std::vector<std::string> r;
+    this->operator()(s, r);
+    return r;
+}
+
+inline std::vector<std::string> Tokenizer::tokenize(std::istream& s) const {
+    std::vector<std::string> r;
+    this->operator()(s, r);
+    return r;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
 
 #endif

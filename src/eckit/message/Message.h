@@ -71,6 +71,7 @@ public:
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
+    void setString(const std::string& key, const std::string& value);
 
     void getMetadata(MetadataGatherer&) const;
 

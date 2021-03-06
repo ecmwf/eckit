@@ -9,7 +9,10 @@
  */
 
 #include "eckit/utils/AECCompressor.h"
+
+extern "C" {  // libaec.h has c linkage
 #include "libaec.h"
+}
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"

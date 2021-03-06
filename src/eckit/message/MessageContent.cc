@@ -86,5 +86,17 @@ void MessageContent::getMetadata(MetadataGatherer&) const {
     throw eckit::SeriousBug(oss.str());
 }
 
+MessageContent* MessageContent::transform(const Transformer&) const {
+    std::ostringstream oss;
+    oss << "Not implemented " << *this << " tranform(Transformer)";
+    throw eckit::SeriousBug(oss.str());
+}
+
+MessageContent* MessageContent::transform(const StringDict&) const {
+    std::ostringstream oss;
+    oss << "Not implemented " << *this << " tranform(StringDict)";
+    throw eckit::SeriousBug(oss.str());
+}
+
 }  // namespace message
 }  // namespace eckit

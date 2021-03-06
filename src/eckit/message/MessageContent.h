@@ -18,6 +18,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include "eckit/types/Types.h"
 #include "eckit/memory/Counted.h"
 
 namespace eckit {
@@ -33,6 +34,15 @@ class MarsRequest;
 namespace message {
 
 class MetadataGatherer;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class Transformer {
+public:
+    // virtual MessageContent* tranform(CodesContent*) const = 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class MessageContent : public eckit::Counted {
 
@@ -58,6 +68,9 @@ public:
     virtual const void* data() const;
 
     virtual void getMetadata(MetadataGatherer&) const;
+
+    virtual MessageContent* transform(const Transformer&) const;
+    virtual MessageContent* transform(const eckit::StringDict&) const;
 
 private:
     virtual void print(std::ostream&) const = 0;

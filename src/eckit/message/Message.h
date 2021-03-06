@@ -17,6 +17,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include "eckit/types/Types.h"
 
 namespace eckit {
 class DataHandle;
@@ -33,6 +34,7 @@ class MarsRequest;
 namespace message {
 
 class MessageContent;
+class CodesContent;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -46,6 +48,8 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Message represents an immutable data object with metadata attached
+/// Modifications to messages create new messages via transformation actions
 class Message {
 public:
     Message();
@@ -71,39 +75,41 @@ public:
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
-
     void getMetadata(MetadataGatherer&) const;
-
 
     eckit::DataHandle* readHandle() const;
 
     mars::MarsRequest request() const;
 
+    Message transform(const eckit::StringDict& modifiers) const;
+
 private:
-    mutable MessageContent* content_;
+    MessageContent* content_;
 
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Message& p) {
         p.print(s);
         return s;
-    }
+        }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template <class T>
-class StringSetter : public MetadataGatherer {
-    T& object_;
+    template <class T>
+    class StringSetter : public MetadataGatherer {
+        T& object_;
 
-    virtual void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
+        virtual void setValue(const std::string& key, const std::string& value) override {
+            object_.setValue(key, value);
+        }
 
-    virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
+        virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
 
-    virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
+        virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
 
-public:
-    StringSetter(T& object) : object_(object) {}
+    public:
+        StringSetter(T& object) : object_(object) {}
 };
 
 template <class T>

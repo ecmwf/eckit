@@ -13,6 +13,7 @@
 
 #include <iostream>
 
+#include "eckit/types/Types.h"
 #include "eckit/io/Offset.h"
 #include "eckit/message/Decoder.h"
 #include "eckit/message/Message.h"
@@ -97,6 +98,10 @@ double Message::getDouble(const std::string& key) const {
 
 void Message::getDoubleArray(const std::string& key, std::vector<double>& v) const {
     return content_->getDoubleArray(key, v);
+}
+
+Message Message::transform(const eckit::StringDict& dict) const {
+    return Message(content_->transform(dict));
 }
 
 eckit::DataHandle* Message::readHandle() const {

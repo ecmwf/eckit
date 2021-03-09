@@ -37,7 +37,7 @@ int main() {
 
     std::vector<std::thread> consumers;
     for (int id = 0; id < ncons; ++id) {
-        consumers.emplace_back(std::thread([&q, id, nprod] {
+        consumers.emplace_back(std::thread([&q, nprod] {
             for (int j = 0; j < nprod; ++j) {
                 int e;
                 ASSERT(q.pop(e) >= 0);

@@ -175,10 +175,9 @@ Content* OrderedMapContent::clone() const {
 
     OrderedMapContent* m = new OrderedMapContent();
 
-    for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
-        m->element((*j).first.clone()) = (*j).second.clone();
+    for( const auto& key: keys_ ) {
+        m->element(key.clone()) = value(key).clone();
     }
-
     return m;
 }
 
@@ -236,18 +235,10 @@ void OrderedMapContent::dump(std::ostream& out, size_t depth, bool indent) const
 
 
 void OrderedMapContent::hash(Hash& h) const {
-
-    ValueMap::const_iterator v   = value_.begin();
-    ValueMap::const_iterator end = value_.end();
-    for (; v != end; ++v) {
-        v->first.hash(h);
-        v->second.hash(h);
-    }
-
-    ValueList::const_iterator k    = keys_.begin();
-    ValueList::const_iterator kend = keys_.end();
-    for (; k != kend; ++k) {
-        k->hash(h);
+    // Same as for MapContent. This is on purpose.
+    for (auto v : value_) {
+        v.first.hash(h);
+        v.second.hash(h);
     }
 }
 

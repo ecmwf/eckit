@@ -37,11 +37,6 @@ public:
 
     virtual ~BufferedHandle() override;
 
-    // -- Operators
-
-
-    // -- Overridden methods
-
     // From DataHandle
 
     virtual Length openForRead() override;
@@ -63,19 +58,6 @@ public:
 
     virtual DataHandle* clone() const override;
 
-    // From Streamable
-
-#if 0
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
-#endif
-
-    // -- Class methods
-
-#if 0
-    static  const ClassSpec&  classSpec()        { return classSpec_;}
-#endif
-
 private:  // methods
     void bufferFlush();
 
@@ -91,12 +73,6 @@ private:  // members
     virtual std::string title() const override;
     virtual void collectMetrics(const std::string& what) const override;
 
-    // -- Class members
-
-#if 0
-	static  ClassSpec                 classSpec_;
-    static  Reanimator<BufferedHandle>  reanimator_;
-#endif
 };
 
 //-----------------------------------------------------------------------------

@@ -17,12 +17,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if 0
-ClassSpec BufferedHandle::classSpec_ = {&DataHandle::classSpec(), "BufferedHandle",};
-Reanimator<BufferedHandle> BufferedHandle::reanimator_;
-#endif
-
-
 BufferedHandle::BufferedHandle(DataHandle* h, size_t size) :
     HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0) {}
 

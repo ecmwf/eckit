@@ -230,6 +230,9 @@ void TaskInfo::json(JSON& json) const {
         0,
     };
 
+    unsigned long pos{0};
+    text(buffer, sizeof(buffer), pos);
+
     json << "log" << buffer;
 
     json << "name" << name_;

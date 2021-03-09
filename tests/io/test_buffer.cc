@@ -81,6 +81,8 @@ CASE("Test eckit Buffer move assignment") {
 }
 
 // This is legitimate, if pointless, so it should be supported
+#pragma clang diagnostic push 
+#pragma clang diagnostic ignored "-Wself-move"
 CASE("Test eckit Buffer self move") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf{msg, sz};
@@ -90,6 +92,7 @@ CASE("Test eckit Buffer self move") {
     const char* out = buf;
     EXPECT(std::strcmp(msg, out) == 0);
 }
+#pragma clang diagnostic pop
 
 CASE("Test eckit Buffer Zero") {
     const size_t sz = std::strlen(msg) + 1;

@@ -52,6 +52,8 @@ public:
     virtual void skip(const Length&) override;
 
     virtual Offset seek(const Offset&) override;
+    virtual bool canSeek() const override { return handle().canSeek(); }
+
 
     virtual Length estimate() override;
     virtual Offset position() override;

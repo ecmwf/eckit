@@ -138,6 +138,8 @@ io/Buffer.cc
 io/Buffer.h
 io/BufferCache.cc
 io/BufferCache.h
+io/BufferList.cc
+io/BufferList.h
 io/BufferedHandle.cc
 io/BufferedHandle.h
 io/PeekHandle.cc

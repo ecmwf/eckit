@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/io/BufferList.h"
 
-#include "eckit/io/Offset.h"
-
-#include <utility>
 #include <numeric>
+#include <utility>
 
+#include "eckit/io/Offset.h"
 
 namespace eckit {
 

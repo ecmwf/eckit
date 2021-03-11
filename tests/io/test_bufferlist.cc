@@ -19,12 +19,15 @@ CASE("Test Buffer Aggregation") {
     std::string expected_combined2 = s1 + '\0' + s2 + '\0' + s3;
 
     BufferList bl;
+    EXPECT(bl.count() == 0);
 
     // n.b. +n in length comparisons for '\0' in strings
 
     bl.append(Buffer(s1));
+    EXPECT(bl.count() == 1);
     EXPECT(bl.size() == Length(s1.size() + 1));
     bl.append(Buffer(s2));
+    EXPECT(bl.count() == 2);
     EXPECT(bl.size() == Length(s1.size() + s2.size() + 2));
     EXPECT(bl.size() == Length(expected_combined1.size() + 1));
 
@@ -36,6 +39,9 @@ CASE("Test Buffer Aggregation") {
     // We can continue appending even once consolidated
 
     bl.append(Buffer(s3));
+
+    EXPECT(bl.count() == 3);
+
     EXPECT(bl.size() == Length(s1.size() + s2.size() + s3.size() + 3));
     EXPECT(bl.size() == Length(expected_combined2.size() + 1));
 
@@ -71,6 +77,8 @@ CASE("Test ownership of aggregated buffers") {
             bl.append(std::move(b1));
             bl.append(std::move(b2));
             bl.append(std::move(b3));
+
+            EXPECT(bl.count() == 3);
 
             // Check that the Buffers really have been moved out...
             EXPECT(b1.size() == 0);

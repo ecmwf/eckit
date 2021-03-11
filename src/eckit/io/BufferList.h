@@ -9,16 +9,16 @@
  */
 
 /// @author Simon Smart
+/// @author Tiago Quintino
 /// @date   March 2021
 
 #pragma once
 
-#include "eckit/memory/OnlyMovable.h"
-#include "eckit/io/Length.h"
-#include "eckit/io/Buffer.h"
-
 #include <list>
 
+#include "eckit/io/Buffer.h"
+#include "eckit/io/Length.h"
+#include "eckit/memory/OnlyMovable.h"
 
 namespace eckit {
 
@@ -26,13 +26,13 @@ namespace eckit {
 
 /// A class to aggregate buffers into a single object that can be read as a whole
 
-
 class BufferList : public OnlyMovable {
 
 public: // methods
 
     void append(Buffer&& buf);
 
+    size_t count() const { return buffers_.size(); }
     Length size() const;
 
     Buffer consolidate() const;

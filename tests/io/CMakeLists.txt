@@ -54,6 +54,10 @@ ecbuild_add_test( TARGET      eckit_test_buffer
                   SOURCES     test_buffer.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_bufferlist
+                  SOURCES     test_bufferlist.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   HAVE_RADOS

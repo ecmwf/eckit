@@ -35,7 +35,9 @@ public: // methods
     size_t count() const { return buffers_.size(); }
     Length size() const;
 
-    Buffer consolidate() const;
+    /// @note After consolidation the internal list is cleared and memory is deallocated
+    /// @post count() == 0 and size() == 0
+    Buffer consolidate();
 
 private: // members
 

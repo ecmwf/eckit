@@ -29,15 +29,28 @@ Length BufferList::size() const {
                            [](const Length& lhs, const Buffer& rhs) { return lhs + Length(rhs.size()); });
 }
 
-Buffer BufferList::consolidate() const {
-    Buffer result(size());
+Buffer BufferList::consolidate() {
+    const size_t nbuffs = count();
 
+    if(nbuffs == 0)
+        return Buffer();
+    
+    // optimize for count() = 1
+    // we can do this optimisation because consolidate() clears the contents of the list
+    if (nbuffs == 1) {
+        Buffer b = std::move(buffers_.front());
+        buffers_.clear();
+        return b;
+    }
+
+    Buffer result(size());
     Offset offset = 0;
     for (const auto& buffer : buffers_) {
         result.copy(buffer, buffer.size(), offset);
         offset += buffer.size();
     }
 
+    buffers_.clear(); // deallocate all buffers
     return result;
 }
 

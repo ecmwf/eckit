@@ -90,7 +90,7 @@ void Buffer::destroy() {
 
 void Buffer::copy(const std::string& s) {
     ASSERT(buffer_);
-    ::strncpy(buffer_, s.c_str(), std::min(size_, s.size()));
+    ::strncpy(buffer_, s.c_str(), std::min(size_, s.size()+1));
 }
 
 void Buffer::copy(const void* p, size_t size, size_t pos) {

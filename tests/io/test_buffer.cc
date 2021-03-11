@@ -138,6 +138,42 @@ CASE("Test eckit Buffer resize") {
     EXPECT(buf.size() == newSize);
 }
 
+CASE("Test copying and construction from of std::string") {
+
+    class TestProtectedBuffer : public Buffer {
+    public:
+        using Buffer::Buffer;
+        using Buffer::copy;
+    };
+
+    std::string test_str = "this is a test string";
+
+    Buffer b1(test_str);
+
+    EXPECT(b1.size() == test_str.size()+1);
+    EXPECT(::memcmp(b1, test_str.c_str(), b1.size()) == 0);
+
+    // Check explicitly that the copy() function is copying the null terminating character if possible
+
+    TestProtectedBuffer b2(test_str.size()+1);
+
+    ::memset(b2, 'X', b2.size());
+    b2.copy(test_str);
+
+    EXPECT(b2.size() == test_str.size()+1);
+    EXPECT(::memcmp(b2, test_str.c_str(), b2.size()) == 0);
+
+    // Check that we only partially copy strings that are too small;
+
+    TestProtectedBuffer b3(4);
+
+    ::memset(b3, 'X', b3.size());
+    b3.copy(test_str);
+
+    EXPECT(b3.size() == 4);
+    EXPECT(::memcmp(b3, test_str.c_str(), b3.size()) == 0);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

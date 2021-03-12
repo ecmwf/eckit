@@ -77,9 +77,9 @@ Distribution* DistributionFactory::build(const std::string& name) {
     if (!yaml.empty()) {
         eckit::ValueMap map = eckit::YAMLParser::decodeString(yaml);
         for (const auto& kv : map) {
-            kv.second.isDouble() ? args.set(kv.first, kv.second.as<double>())
-                                 : kv.second.isNumber() ? args.set(kv.first, kv.second.as<long long>())
-                                                        : args.set(kv.first, kv.second.as<std::string>());
+            kv.second.isDouble()   ? args.set(kv.first, kv.second.as<double>())
+            : kv.second.isNumber() ? args.set(kv.first, kv.second.as<long long>())
+                                   : args.set(kv.first, kv.second.as<std::string>());
         }
     }
 

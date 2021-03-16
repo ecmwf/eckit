@@ -25,42 +25,57 @@ namespace stats {
 namespace detail {
 
 
-Counter::Counter(const param::MIRParametrisation& parametrisation) :
+static double get_param(const param::MIRParametrisation& param, const std::string& key, double def) {
+    double value(def);
+    param.get(key, value);
+    return value;
+}
+
+
+Counter::Counter(double missingValue, bool hasMissing, double lowerLimit, double upperLimit) :
     count_(0),
     missing_(0),
     countBelowLowerLimit_(0),
     countAboveUpperLimit_(0),
     minIndex_(0),
     maxIndex_(0),
-    lowerLimit_(std::numeric_limits<double>::quiet_NaN()),
-    upperLimit_(std::numeric_limits<double>::quiet_NaN()),
+    missingValue_(missingValue),
+    lowerLimit_(lowerLimit),
+    upperLimit_(upperLimit),
     min_(std::numeric_limits<double>::quiet_NaN()),
     max_(std::numeric_limits<double>::quiet_NaN()),
-    first_(true) {
-
-    parametrisation.get("counter-lower-limit", lowerLimit_);
-    parametrisation.get("counter-upper-limit", upperLimit_);
-    hasLowerLimit_ = lowerLimit_ == lowerLimit_;
-    hasUpperLimit_ = upperLimit_ == upperLimit_;
-}
+    hasMissing_(hasMissing),
+    hasLowerLimit_(lowerLimit_ == lowerLimit_),
+    hasUpperLimit_(upperLimit_ == upperLimit_),
+    first_(true) {}
 
 
-void Counter::reset(const data::MIRField& field) {
-    ASSERT(field.dimensions() == 1);
+Counter::Counter(const param::MIRParametrisation& parametrisation) :
+    Counter(std::numeric_limits<double>::quiet_NaN(), false,
+            get_param(parametrisation, "counter-lower-limit", std::numeric_limits<double>::quiet_NaN()),
+            get_param(parametrisation, "counter-upper-limit", std::numeric_limits<double>::quiet_NaN())) {}
 
+
+void Counter::reset(double missingValue, bool hasMissing) {
     count_                = 0;
     missing_              = 0;
     countBelowLowerLimit_ = 0;
     countAboveUpperLimit_ = 0;
 
-    missingValue_ = field.missingValue();
-    hasMissing_   = field.hasMissing();
+    missingValue_ = missingValue;
+    hasMissing_   = hasMissing;
 
     minIndex_ = 0;
     maxIndex_ = 0;
     min_      = std::numeric_limits<double>::quiet_NaN();
     max_      = std::numeric_limits<double>::quiet_NaN();
     first_    = true;
+}
+
+
+void Counter::reset(const data::MIRField& field) {
+    ASSERT(field.dimensions() == 1);
+    reset(field.missingValue(), field.hasMissing());
 }
 
 

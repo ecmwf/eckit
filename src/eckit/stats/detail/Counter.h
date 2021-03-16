@@ -15,6 +15,7 @@
 
 #include <cstddef>
 #include <iosfwd>
+#include <limits>
 
 
 namespace mir {
@@ -32,7 +33,7 @@ namespace stats {
 namespace detail {
 
 
-/// Counter accounting for missing values, for a single MIRFIeld
+/// Counter accounting for missing values
 class Counter {
 private:
     size_t count_;
@@ -59,9 +60,13 @@ private:
     }
 
 public:
+    Counter(double missingValue, bool hasMissing, double lowerLimit = std::numeric_limits<double>::quiet_NaN(),
+            double upperLimit = std::numeric_limits<double>::quiet_NaN());
     Counter(const param::MIRParametrisation&);
 
+    void reset(double missingValue, bool hasMissing);
     void reset(const data::MIRField&);
+
     void print(std::ostream&) const;
     bool count(const double&);
 

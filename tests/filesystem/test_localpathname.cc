@@ -137,17 +137,40 @@ CASE("Construct relative paths") {
     EXPECT(root.relativePath(foobar) == LocalPathName("../../../.."));
 }
 
-CASE("We can touch directories to update the timestamp") {
-
+CASE("We can touch files/directories to update the timestamp") {
     TmpDir d;
 
     PathName foo = d / "foo";
     PathName bar = d / "bar";
+    PathName baz = d / "baz";
 
     foo.mkdir();
+    EXPECT(foo.exists());
 
-    EXPECT_NO_THROW(foo.touch()); // updates the timestamp
-    EXPECT_NO_THROW(bar.touch()); // doesnt exist, so creates a file
+
+    EXPECT_NO_THROW(foo.touch());  // updates the timestamp
+
+    EXPECT(!bar.exists());
+    EXPECT_NO_THROW(bar.touch());  // doesn't exist, so creates a file
+    EXPECT(bar.exists());
+
+    // time resolution is 1 second, so wait slightly longer
+    ::usleep(1000001);
+
+    EXPECT(!baz.exists());
+    EXPECT_NO_THROW(baz.touch());  // doesn't exist, so creates a file
+    EXPECT(baz.exists());
+
+    EXPECT(bar.lastAccess() < baz.lastAccess());
+    EXPECT(bar.lastModified() < baz.lastModified());
+
+    // update timestamp of older file
+    ::usleep(1000001);
+
+    EXPECT_NO_THROW(bar.touch());  // exists, so updates last accessed time
+
+    EXPECT(bar.lastAccess() > baz.lastAccess());
+    EXPECT(bar.lastModified() > baz.lastModified());
 }
 
 CASE("Find children files and dirs") {
@@ -279,6 +302,14 @@ CASE("Check link") {
 
     unique.rmdir();
     linkpath.unlink();
+}
+
+CASE("Special characters not expanded in baseName") {
+
+    LocalPathName p = "/base/path/~filename";
+
+    EXPECT(p.dirName() == "/base/path");
+    EXPECT(std::string(p.baseName()) == "~filename");
 }
 
 std::string tidy(const std::string& p) {

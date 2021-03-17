@@ -191,6 +191,7 @@ ClassSpec TestItem<string>::classSpec_ = {
             Log::info() << "orginal: " << t.payload_ << std::endl;                                   \
             Log::info() << "streamed: " << t2->payload_ << std::endl;                                \
             EXPECT(t.payload_ == t2->payload_);                                                      \
+            delete t2;                                                                               \
         }                                                                                            \
         if (filename.exists())                                                                       \
             filename.unlink();                                                                       \

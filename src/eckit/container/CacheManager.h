@@ -167,11 +167,11 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::str
     std::vector<std::string> v;
     parse(roots, v);
 
-    for (std::vector<std::string>::const_iterator i = v.begin(); i != v.end(); ++i) {
+    for (auto& root : v) {
 
         // entries with e.g. {CWDFS}/cache will be expanded with PathExpander factory CWDFS
 
-        PathName p = PathExpander::expand(*i);
+        PathName p = PathExpander::expand(root);
 
         if (not p.exists()) {
             Log::warning() << "CACHE-MANAGER " << Traits::name() << ", " << p << " does not exist" << std::endl;
@@ -202,9 +202,8 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::str
 template <class Traits>
 bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 
-    for (std::vector<PathName>::const_iterator root = roots_.begin(); root != roots_.end(); ++root) {
-
-        PathName p = entry(key, *root);
+    for (auto& root : roots_) {
+        PathName p = entry(key, root);
 
         if (p.exists()) {
 
@@ -212,7 +211,7 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
 
             Log::debug<LibEcKit>() << "CACHE-MANAGER found path " << p << std::endl;
 
-            touch(base(*root), p);
+            touch(base(root), p);
 
             return true;
         }
@@ -223,8 +222,8 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
         oss << "CacheManager cache miss: key=" << key << ", tried:";
 
         const char* sep = " ";
-        for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
-            PathName p = entry(key, *j);
+        for (auto& root : roots_) {
+            PathName p = entry(key, root);
             oss << sep << p;
             sep = ", ";
         }
@@ -281,61 +280,56 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key, CacheContentCreator
     PathName path;
 
     if (get(key, path)) {
-        eckit::Log::debug() << "Loading cache file " << path << std::endl;
+        Log::debug() << "Loading cache file " << path << std::endl;
 
         Traits::load(*this, value, path);
         return path;
     }
-    else {
 
-        for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
+    for (const PathName& root : roots_) {
 
-            const PathName& root = *j;
+        if (not writable(root)) {
+            Log::debug() << "CACHE-MANAGER root " << root << " isn't writable, skipping... " << std::endl;
+            continue;
+        }
 
-            if (not writable(root)) {
-                Log::debug() << "CACHE-MANAGER root " << root << " isn't writable, skipping... " << std::endl;
-                continue;
-            }
+        auto file = entry(key, root);
+        Log::info() << "Cache file " << file << " does not exist" << std::endl;
 
-            eckit::Log::info() << "Cache file " << entry(key, root) << " does not exist" << std::endl;
+        try {
+            typename Traits::Locker locker(file);
+            AutoLock<typename Traits::Locker> lock(locker);
 
-            try {
+            if (!get(key, path)) {
 
-                typename Traits::Locker locker(entry(key, root));
-                eckit::AutoLock<typename Traits::Locker> lock(locker);
+                Log::info() << "Creating cache file " << file << std::endl;
 
-                if (!get(key, path)) {
+                PathName tmp = stage(key, root);
+                bool saved   = false;  // The creator may decide to save
 
-                    eckit::Log::info() << "Creating cache file " << entry(key, root) << std::endl;
-
-                    eckit::PathName tmp = stage(key, root);
-                    bool saved          = false;  // The creator may decide to save
-
-                    creator.create(tmp, value, saved);
-                    if (!saved) {
-                        Traits::save(*this, value, tmp);
-                    }
-                    ASSERT(commit(key, tmp, root));
-
-                    ASSERT(get(key, path));  // this includes the call to touch(path)
-
-                    // We reload from cache so we use the proper loader, e.g. mmap of shared-mem...
-                    Traits::load(*this, value, path);
+                creator.create(tmp, value, saved);
+                if (!saved) {
+                    Traits::save(*this, value, tmp);
                 }
-                else {
-                    eckit::Log::debug() << "Loading cache file " << entry(key, root) << " (created by another process)"
-                                        << std::endl;
+                ASSERT(commit(key, tmp, root));
 
-                    // touch() is done in the (successful) get() above
-                    Traits::load(*this, value, path);
-                }
+                ASSERT(get(key, path));  // this includes the call to touch(path)
 
-                return path;
+                // We reload from cache so we use the proper loader, e.g. mmap of shared-mem...
+                Traits::load(*this, value, path);
             }
-            catch (FailedSystemCall& e) {
-                eckit::Log::error() << "Error creating cache file: " << entry(key, root) << " (" << e.what() << ")"
-                                    << std::endl;
+            else {
+                Log::debug() << "Loading cache file " << file << " (created by another process)"
+                             << std::endl;
+
+                // touch() is done in the (successful) get() above
+                Traits::load(*this, value, path);
             }
+
+            return path;
+        }
+        catch (FailedSystemCall& e) {
+            Log::error() << "Error creating cache file: " << file << " (" << e.what() << ")" << std::endl;
         }
     }
 
@@ -343,8 +337,8 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key, CacheContentCreator
     oss << "CacheManager cannot create key=" << key << ", tried:";
 
     const char* sep = " ";
-    for (std::vector<PathName>::const_iterator j = roots_.begin(); j != roots_.end(); ++j) {
-        PathName p = entry(key, *j);
+    for (const PathName& root : roots_) {
+        PathName p = entry(key, root);
         oss << sep << p;
         sep = ", ";
     }

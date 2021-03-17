@@ -30,6 +30,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#pragma clang diagnostic ignored "-Wunused-function"
 
 /// Test the options parser
 /// @note The options parser normall calls ::exit(1) if an error occurs. All the constructors accept an additional

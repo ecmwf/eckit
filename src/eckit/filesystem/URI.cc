@@ -43,7 +43,7 @@ URI::URI(const std::string& uri) {
 }
 
 URI::URI(const std::string& scheme, const PathName& path) :
-    name_(path.path()), scheme_(scheme), user_(""), host_(""), port_(-1), queryValues_({}), fragment_("") {}
+    name_(path.path()), scheme_(scheme), user_(""), host_(""), port_(-1), fragment_(""), queryValues_({}) {}
 
 URI::URI(const std::string& scheme, const URI& uri) :
     name_(uri.name_),
@@ -51,11 +51,11 @@ URI::URI(const std::string& scheme, const URI& uri) :
     user_(uri.user_),
     host_(uri.host_),
     port_(uri.port_),
-    queryValues_(uri.queryValues_),
-    fragment_(uri.fragment_) {}
+    fragment_(uri.fragment_),
+    queryValues_(uri.queryValues_) {}
 
 URI::URI(const std::string& scheme, const std::string& hostname, const int port) :
-    name_(""), scheme_(scheme), user_(""), host_(hostname), port_(port), queryValues_({}), fragment_("") {}
+    name_(""), scheme_(scheme), user_(""), host_(hostname), port_(port), fragment_(""), queryValues_({}) {}
 
 URI::URI(const std::string& scheme, const URI& uri, const std::string& hostname, const int port) :
     name_(uri.name_),
@@ -63,8 +63,8 @@ URI::URI(const std::string& scheme, const URI& uri, const std::string& hostname,
     user_(uri.user_),
     host_(hostname),
     port_(port),
-    queryValues_(uri.queryValues_),
-    fragment_(uri.fragment_) {}
+    fragment_(uri.fragment_),
+    queryValues_(uri.queryValues_) {}
 
 URI::URI(Stream& s) {
     s >> scheme_;

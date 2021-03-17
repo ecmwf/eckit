@@ -177,6 +177,15 @@ void SQLTable::updateColumnDoublesWidth(const std::string& name, size_t nDoubles
     }
 }
 
+void SQLTable::updateColumnMissingValues(const std::string& name, bool hasMissing, double missingValue) {
+    std::map<std::string, SQLColumn*>::const_iterator j = columnsByName_.find(name);
+    if (j == columnsByName_.end())
+        throw eckit::UserError("Column not found", name);
+
+    j->second->hasMissingValue(hasMissing);
+    j->second->missingValue(missingValue);
+}
+
 void SQLTable::addLinkFrom(const SQLTable& from) {
     linksFrom_.insert(from);
 }

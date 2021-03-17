@@ -113,8 +113,8 @@ private:  // members
     std::string user_;
     std::string host_;
     int port_ = -1;
-    std::map<std::string, std::string> queryValues_;
     std::string fragment_;
+    std::map<std::string, std::string> queryValues_;
 
     friend std::ostream& operator<<(std::ostream& s, const URI& p) {
         p.print(s);

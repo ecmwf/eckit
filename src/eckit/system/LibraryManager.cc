@@ -228,7 +228,7 @@ public:  // methods
             if (plugin) {
                 Log::debug() << "Loaded plugin [" << name << "] from library [" << lib << "]" << std::endl;
                 plugin->handle(libhandle);
-                plugin->init();
+                initPlugin(plugin);
                 return *plugin;
             }
             else {
@@ -242,7 +242,9 @@ public:  // methods
 
         Plugin* plugin = lookupPlugin(name);
         if (plugin) {
-            Log::warning() << "Plugin " << name << " already loaded" << std::endl;
+            // Plugin is already loaded, likely because it is explicitly linked into the executable
+            Log::debug() << "Plugin [" << name << "] already loaded" << std::endl;
+            initPlugin(plugin);
             return *plugin;
         }
 
@@ -251,8 +253,8 @@ public:  // methods
         throw UnexpectedState(ss.str(), Here());
     }
 
-    bool unloadPlugin(const std::string& name) { 
-            Plugin* plugin = lookupPlugin(name); 
+    bool unloadPlugin(const std::string& name) {
+            Plugin* plugin = lookupPlugin(name);
             if(plugin) {
                 plugin->finalise();
                 void* handle = plugin->handle();
@@ -270,6 +272,13 @@ public:  // methods
             return false;
     }
 
+    void initPlugin(Plugin* plugin) {
+        if( ! is_plugin_initialized_[plugin->name()] ) {
+            Log::debug() << "Initializing plugin [" << plugin->name() << "]" << std::endl;
+            plugin->init();
+            is_plugin_initialized_[plugin->name()] = true;
+        }
+    }
 
     std::map<std::string, LocalConfiguration> scanManifestPaths() {
         std::map<std::string, LocalConfiguration> manifests;
@@ -373,6 +382,7 @@ public:  // methods
         Log::debug() << "Registered plugin [" << name << "] with library [" << libname << "]" << std::endl;
         ASSERT(plugins_.find(name) == plugins_.end());
         plugins_[name] = libname;
+        is_plugin_initialized_[name] = false;
     }
 
     void deregisterPlugin(const std::string& name) {
@@ -380,11 +390,13 @@ public:  // methods
         // singletons
         AutoLock<Mutex> lockme(mutex_);
         plugins_.erase(name);
+        is_plugin_initialized_.erase(name);
     }
 
 private:  // members
     LibraryMap libs_;
     std::map<std::string, std::string> plugins_;  //< map plugin name to library
+    std::map<std::string, bool> is_plugin_initialized_;
     mutable Mutex mutex_;
 };
 

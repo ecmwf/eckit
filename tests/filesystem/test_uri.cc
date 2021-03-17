@@ -11,7 +11,7 @@
 #include <string>
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/ResizableBuffer.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
@@ -127,7 +127,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.asRawString() == "unix:!");
         EXPECT(uri.asString() == "!");
     }
-    {
+    {  
         URI uri("file:!");
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.authority().empty());
@@ -141,6 +141,21 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.fragment().empty());
         EXPECT(uri.asRawString() == "file:!");
         EXPECT(uri.asString() == "!");
+    }
+    {  // relative path
+        URI uri("file:path");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.authority().empty());
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "path");
+        EXPECT(uri.path() == "local://path");
+        EXPECT(uri.query().empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "file:path");
+        EXPECT(uri.asString() == "path");
     }
     {
         URI uri(":http://nodename/path");
@@ -427,7 +442,7 @@ CASE("Stream") {
     {
         URI uriOrig("http://username:password@host:123/path");
 
-        eckit::ResizableBuffer b(1000);  // should be enough
+        eckit::Buffer b(1000);  // should be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
 
@@ -451,7 +466,7 @@ CASE("Stream") {
     {
         URI uriOrig("http://username:password@host:123/path");
 
-        eckit::ResizableBuffer b(1000);  // should be enough
+        eckit::Buffer b(1000);  // should be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
 
@@ -475,7 +490,7 @@ CASE("Stream") {
     }
     {
         URI uriOrig("http:///path?length=123&foo=bar#fragment");
-        eckit::ResizableBuffer b(1000);  // must be enough
+        eckit::Buffer b(1000);  // must be enough
         b.zero();
         eckit::ResizableMemoryStream s(b);
 

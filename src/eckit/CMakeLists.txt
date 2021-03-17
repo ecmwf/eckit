@@ -138,6 +138,8 @@ io/Buffer.cc
 io/Buffer.h
 io/BufferCache.cc
 io/BufferCache.h
+io/BufferList.cc
+io/BufferList.h
 io/BufferedHandle.cc
 io/BufferedHandle.h
 io/PeekHandle.cc
@@ -207,7 +209,6 @@ io/PooledFileDescriptor.cc
 io/PooledFileDescriptor.h
 io/RawFileHandle.cc
 io/RawFileHandle.h
-io/ResizableBuffer.cc
 io/ResizableBuffer.h
 io/Select.cc
 io/Select.h
@@ -309,6 +310,8 @@ filesystem/TempFile.cc
 filesystem/TempFile.h
 filesystem/TmpDir.cc
 filesystem/TmpDir.h
+filesystem/StdDir.cc
+filesystem/StdDir.h
 filesystem/TmpFile.cc
 filesystem/TmpFile.h
 filesystem/URI.cc
@@ -509,6 +512,8 @@ types/Types.cc
 types/Types.h
 types/UUID.cc
 types/UUID.h
+types/SemanticVersion.cc
+types/SemanticVersion.h
 types/VerifyingDate.cc
 types/VerifyingDate.h
 )
@@ -725,19 +730,21 @@ if(eckit_HAVE_SSL)
     )
 endif()
 
-if(eckit_HAVE_XXHASH)
-    list( APPEND eckit_utils_srcs
-      utils/xxHashing.cc
-      utils/xxHashing.h
-    )
-endif()
-
 if(eckit_HAVE_RSYNC)
   list( APPEND eckit_utils_srcs
     utils/Rsync.cc
     utils/Rsync.h
   )
 endif()
+
+if(eckit_HAVE_XXHASH)
+    list( APPEND eckit_utils_srcs
+        utils/xxHashing.cc
+        utils/xxHashing.h
+        contrib/xxhash/xxhash.h
+    )
+endif()
+
 
 list( APPEND eckit_memory_srcs
 memory/Builder.cc
@@ -914,7 +921,6 @@ ecbuild_add_library(
 
           PRIVATE_INCLUDES
               "${CURL_INCLUDE_DIRS}"
-              "${XXHASH_INCLUDE_DIRS}"
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
@@ -931,7 +937,6 @@ ecbuild_add_library(
               "${AEC_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
-              "${XXHASH_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
 

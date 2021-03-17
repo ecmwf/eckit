@@ -41,6 +41,7 @@ public:
     virtual Offset seek(const Offset&) override;
     virtual bool canSeek() const override { return true; }
     virtual void hash(MD5& md5) const override;
+    virtual Offset position() override;
 
     // for testing
 

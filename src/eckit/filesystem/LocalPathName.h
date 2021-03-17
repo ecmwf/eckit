@@ -42,8 +42,10 @@ public:  // methods
 
     friend std::ostream& operator<<(std::ostream& s, const LocalPathName& p) { return s << p.path_; }
 
-    LocalPathName(const char* p = "/", bool tildeIsUserHome = false) : path_(parsePath(p)) { tidy(tildeIsUserHome); }
-    LocalPathName(const std::string& p, bool tildeIsUserHome = false) : path_(parsePath(p)) { tidy(tildeIsUserHome); }
+    LocalPathName(const char* p = "/", bool tildeIsUserHome = false, bool skipTildeExpansion = false) : path_(parsePath(p))
+        { if (!skipTildeExpansion) tidy(tildeIsUserHome, skipTildeExpansion); }
+    LocalPathName(const std::string& p, bool tildeIsUserHome = false, bool skipTildeExpansion = false) : path_(parsePath(p))
+        { if (!skipTildeExpansion) tidy(tildeIsUserHome, skipTildeExpansion); }
     LocalPathName(const LocalPathName& p) : path_(p.path_) {}
 
     // Assignment
@@ -229,7 +231,7 @@ public:  // methods
     // Class methods
 
     static LocalPathName unique(const LocalPathName&);
-    static void match(const LocalPathName&, std::vector<LocalPathName>&, bool = false);
+    static void match(const LocalPathName&, std::vector<LocalPathName>&, bool recursive = false);
     static void link(const LocalPathName& from, const LocalPathName& to);
     static void rename(const LocalPathName& from, const LocalPathName& to);
     static void rename(const LocalPathName& from, const std::string& newBase);
@@ -243,7 +245,7 @@ private:
 
     // Methods
 
-    LocalPathName& tidy(bool tildeIsUserHome = false);
+    LocalPathName& tidy(bool tildeIsUserHome = false, bool skipTildeExpansion = false);
 
     std::string parsePath(const std::string& p) {
         if (p.compare(0, 8, "local://") == 0) {

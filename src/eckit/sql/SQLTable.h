@@ -40,6 +40,8 @@ public:
     virtual std::vector<size_t> columnOffsets() const    = 0;
     virtual const double* data() const                   = 0;
     virtual std::vector<size_t> doublesDataSizes() const = 0;
+    virtual std::vector<char> columnsHaveMissing() const = 0; // n.b. don't use std::vector<bool> ...
+    virtual std::vector<double> missingValues() const    = 0;
 };
 
 typedef std::vector<std::string> ColumnNames;
@@ -63,6 +65,7 @@ public:
 
     virtual const SQLColumn& column(const std::string&) const;
     void updateColumnDoublesWidth(const std::string& name, size_t nDoubles);
+    void updateColumnMissingValues(const std::string& name, bool hasMissing, double missingValue);
     //    virtual SQLColumn& column(const std::string&);
 
     virtual bool hasColumn(const std::string& name) const;

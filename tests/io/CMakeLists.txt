@@ -50,8 +50,12 @@ ecbuild_add_test( TARGET      eckit_test_pooledhandle
                   SOURCES     test_pooledhandle.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_resizablebuffer
-                  SOURCES     test_resizablebuffer.cc
+ecbuild_add_test( TARGET      eckit_test_buffer
+                  SOURCES     test_buffer.cc
+                  LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_bufferlist
+                  SOURCES     test_bufferlist.cc
                   LIBS        eckit )
 
 ecbuild_add_test( TARGET      eckit_test_radoshandle

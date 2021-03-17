@@ -67,7 +67,7 @@ public:  // class methods
     /// @returns Plugin object loaded
     static Plugin& loadPlugin(const std::string& name, const std::string& library = std::string());
 
-    /// @brief Scansa and Auto loads Plugins
+    /// @brief Scans and Auto loads Plugins
     /// @param [in] dir path to scan for plugin manifests
     static void autoLoadPlugins(const std::vector<std::string>& plugins);
 

@@ -1,0 +1,5 @@
+date:            Downloaded on Feb 9, 2021
+git url:         https://github.com/Cyan4973/xxHash
+git commit sha1: f2c52f1236a50d754b07f584ce4592de1df8c0f7
+git branch:      dev
+version:         further developments after 0.8.0 (July 27, 2020)

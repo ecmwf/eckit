@@ -87,6 +87,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     Log::status() << from.title() << " => " << to.title() << std::endl;
 
     Progress progress("mover", 0, estimate);
+    watcher_.watch(nullptr, 0);
     unsigned long long total = 0;
     bool more;
     s >> more;
@@ -94,9 +95,16 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         long pos;
         std::string msg;
         s >> pos;
-        s >> msg;
-        total += pos;
-        progress(total);
+        if (pos >= 0) {
+            s >> msg;
+            total += pos;
+            progress(total);
+            watcher_.watch(nullptr, total);
+        } else if (pos == -1) {
+            watcher_.fromHandleOpened();
+        } else if (pos == -2) {
+            watcher_.toHandleOpened();
+        }
         s >> more;
     }
 

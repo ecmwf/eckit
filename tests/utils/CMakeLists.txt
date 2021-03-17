@@ -29,6 +29,10 @@ ecbuild_add_test( TARGET      eckit_test_utils_tokenizer
                   SOURCES     test_tokenizer.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_utils_semanticversion
+                  SOURCES     test_semanticversion.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_utils_rendezvoushash
                   SOURCES     test_rendezvoushash.cc
                   LIBS        eckit )

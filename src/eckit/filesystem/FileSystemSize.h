@@ -9,10 +9,6 @@
  */
 
 #pragma once
-#ifndef eckit_filesystem_FileSystemSize_h
-#define eckit_filesystem_FileSystemSize_h
-
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
@@ -24,9 +20,6 @@ struct FileSystemSize {
     FileSystemSize() : available(0), total(0) {}
 };
 
-
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_FileSystemSize_H

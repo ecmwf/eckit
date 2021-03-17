@@ -8,89 +8,110 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include <cstring>
 #include <iostream>
 
-#include "eckit/exception/Exceptions.h"
+#define XXH_INLINE_ALL
+#include "eckit/contrib/xxhash/xxhash.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/utils/xxHashing.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static const char* hex = "0123456789abcdef";
-static std::string toString(XXH64_hash_t hash) {
+struct xxHash::Context {
+    XXH64_state_t* state_;
 
-    char buffer[2 * 8];
-
-    for (int i = 2 * 8; i--;) {
-        buffer[i] = hex[hash & 15];
-        hash >>= 4;
+    Context() {
+        state_ = XXH64_createState();
+        reset();
     }
 
-    return std::string(buffer, buffer + 2 * 8);
-}
+    ~Context() {
+        XXH64_freeState(state_);
+    }
+
+    void reset() {
+        XXH64_reset(state_, 0);
+    }
+
+    void update(const void* buffer, long length) {
+        XXH64_update(state_, buffer, size_t(length) );
+    }
+
+    std::string digest() {
+        return toString( XXH64_digest(state_) );
+    }
+
+    static std::string compute( const void* buffer, long length ) {
+        return toString( XXH64(buffer, size_t(length), 0) );
+    }
+
+    static std::string toString(XXH64_hash_t hash) {
+        static const char* hex = "0123456789abcdef";
+        char buffer[16];
+        for (int i = 16; i--;) {
+            buffer[i] = hex[hash & 15];
+            hash >>= 4;
+        }
+        return std::string(buffer, buffer + 16);
+    }
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 xxHash::xxHash() {
-    ctx_ = XXH64_createState();
-    XXH64_reset(ctx_, 0);
+    ctx_.reset( new Context() );
 }
 
 xxHash::xxHash(const char* s) {
-    ctx_ = XXH64_createState();
-    XXH64_reset(ctx_, 0);
+    ctx_.reset( new Context() );
     add(s, strlen(s));
 }
 
 xxHash::xxHash(const std::string& s) {
-    ctx_ = XXH64_createState();
-    XXH64_reset(ctx_, 0);
+    ctx_.reset( new Context() );
     add(s.c_str(), s.size());
 }
 
 xxHash::xxHash(const void* data, size_t len) {
-    ctx_ = XXH64_createState();
-    XXH64_reset(ctx_, 0);
+    ctx_.reset( new Context() );
     add(data, len);
 }
 
 xxHash::~xxHash() {}
 
 void xxHash::reset() const {
-    XXH64_reset(ctx_, 0);
+    ctx_->reset();
 }
 
 Hash::digest_t xxHash::compute(const void* buffer, long size) {
-    XXH64_hash_t hash = XXH64(buffer, size, 0);
-    return toString(hash);
+    return Context::compute(buffer,size);
 }
 
 void xxHash::update(const void* buffer, long length) {
     if (length > 0) {
-        XXH64_update(ctx_, static_cast<const unsigned char*>(buffer), length);
+        ctx_->update(buffer,length);
         if (!digest_.empty())
             digest_ = digest_t();  // reset the digest
     }
 }
 
 xxHash::digest_t xxHash::digest() const {
-
     if (digest_.empty()) {  // recompute the digest
-
-        XXH64_hash_t hash = XXH64_digest(ctx_);
-
-        digest_ = toString(hash);
+        digest_ = ctx_->digest();
     }
-
     return digest_;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace {
-HashBuilder<xxHash> builder("xxHash");
+HashBuilder<xxHash> deprecated_builder("xxHash");
+HashBuilder<xxHash> builder("xxh64");
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 }  // namespace eckit

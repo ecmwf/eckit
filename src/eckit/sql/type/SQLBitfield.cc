@@ -26,9 +26,9 @@ namespace eckit {
 namespace sql {
 namespace type {
 
-SQLBitfield::SQLBitfield(const std::string& name, const FieldNames& fields, const Sizes& sizes,
-                         const std::string& ddlName) :
-    SQLType(name, ddlName), bitfieldDef_(make_pair(fields, sizes)) {
+SQLBitfield::SQLBitfield(const std::string& name, const FieldNames& fields, const Sizes& sizes) :
+    SQLType(name),
+    bitfieldDef_(make_pair(fields, sizes)) {
     int shift = 0;
     for (size_t i = 0; i < fields.size(); i++) {
         shift_[fields[i]] = shift;
@@ -68,10 +68,11 @@ std::string SQLBitfield::make(const std::string& name, const FieldNames& fields,
     s << "]";
     std::string typeName = s.str();
 
-    if (!exists(typeName))
-        SQLType::registerType(new SQLBitfield(typeName, fields, sizes, ddlName));
-    else
-        SQLType::createAlias(typeName, ddlName);
+    if (!exists(typeName)) {
+        // Ownership of SQLBitfield assumed by TypeRegistry
+        SQLType::registerType(new SQLBitfield(typeName, fields, sizes));
+        if (ddlName) SQLType::createAlias(typeName, ddlName);
+    }
 
     return typeName;
 }

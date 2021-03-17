@@ -17,8 +17,6 @@
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/EasyCURL.h"
-
 
 namespace eckit {
 

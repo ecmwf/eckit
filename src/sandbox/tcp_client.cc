@@ -15,7 +15,6 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/MemoryHandle.h"
-#include "eckit/io/ResizableBuffer.h"
 #include "eckit/io/TCPHandle.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"

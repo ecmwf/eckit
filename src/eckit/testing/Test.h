@@ -155,6 +155,10 @@ public:  // methods
         }
     }
 
+    const std::string& descriptionNoSection() const {
+        return description_;
+    }
+
 private:  // members
     std::string description_;
     std::string subsection_;
@@ -350,7 +354,7 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
         test.run(v, failures);
 
-        eckit::Log::info() << "Completed case \"" << test.description() << "\"" << std::endl;
+        eckit::Log::info() << "Completed case \"" << test.descriptionNoSection() << "\"" << std::endl;
     }
 
     if (v >= AllFailures) {
@@ -491,8 +495,8 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 #define SECTION(name)                                                                            \
     _num_subsections += 1;                                                                       \
-    _test_subsection = (name);                                                                   \
     if ((_num_subsections - 1) == _subsection) {                                                 \
+        _test_subsection = (name);                                                               \
         eckit::Log::info() << "Running section \"" << _test_subsection << "\" ..." << std::endl; \
     }                                                                                            \
     if ((_num_subsections - 1) == _subsection)

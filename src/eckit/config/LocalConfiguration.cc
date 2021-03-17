@@ -22,7 +22,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LocalConfiguration::LocalConfiguration(char separator) : Configuration(Value::makeMap(), separator) {}
+LocalConfiguration::LocalConfiguration(char separator) : Configuration(Value::makeOrderedMap(), separator) {}
 
 LocalConfiguration::LocalConfiguration(Stream& s) : Configuration(Value(s)) {}
 
@@ -56,7 +56,7 @@ void LocalConfiguration::setValue(const std::vector<std::string>& path, size_t i
 
     if (!root.contains(path[i])) {
         // std::cout << i << " NEW " << path[i]  << std::endl;
-        root[path[i]] = eckit::Value::makeMap();
+        root[path[i]] = eckit::Value::makeOrderedMap();
     }
 
     eckit::Value& r = root.element(path[i]);

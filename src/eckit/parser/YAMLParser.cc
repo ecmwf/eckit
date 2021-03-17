@@ -152,7 +152,9 @@ struct YAMLItemAnchor : public YAMLItem {
     }
 
     virtual Value value(YAMLParser& parser) const {
-        Value v = parser.nextItem().value(parser);
+        const YAMLItem& next(parser.nextItem());
+        YAMLItemLock lock(&next);
+        Value v = next.value(parser);
         parser.anchor(value_, v);
         return v;
     }
@@ -215,6 +217,7 @@ struct YAMLItemKey : public YAMLItem {
 
 
         const YAMLItem* key = this;
+        YAMLItemLock keyLock(this);
 
         bool more = true;
         while (more) {
@@ -231,7 +234,7 @@ struct YAMLItemKey : public YAMLItem {
 
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
-                lock.set(key);
+                keyLock.set(key);
                 continue;
             }
 
@@ -251,8 +254,8 @@ struct YAMLItemKey : public YAMLItem {
                 if (k == import) {
                     Value keys = v.keys();
                     for (size_t i = 0; i < keys.size(); ++i) {
-                        Value k = keys[i];
-                        set(_m, _l, k, v[k]);
+                        Value k2 = keys[i];
+                        set(_m, _l, k2, v[k2]);
                     }
                 }
                 else {
@@ -270,7 +273,7 @@ struct YAMLItemKey : public YAMLItem {
             if (peek.indent_ == key->indent_) {
                 key = &parser.nextItem();
                 ASSERT(dynamic_cast<const YAMLItemKey*>(key));
-                lock.set(key);
+                keyLock.set(key);
                 continue;
             }
 
@@ -417,7 +420,7 @@ Value YAMLParser::parseNumber() {
 
 
 static Value toValue(const std::string& s) {
-    static Regex real("^[-+]?[0-9]+\\.?[0-9]+([eE][-+]?[0-9]+)?$", false);
+    static Regex real("^[-+]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][-+]?[0-9]+)?$", false);
     static Regex integer("^[-+]?[0-9]+$", false);
     static Regex hex("^0x[0-9a-zA-Z]+$", false);
     static Regex octal("^0[0-7]+$", false);
@@ -833,6 +836,7 @@ const YAMLItem& YAMLParser::nextItem() {
     }
 
     last_ = items_.front();
+    // We don't need to attach here. attach() is called on all items inside loadItem()
     // last_->attach();
 
     items_.pop_front();

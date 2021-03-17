@@ -217,7 +217,8 @@ CASE("test_eckit_io_filepool_0") {
 
     // checking in a never checked out DataHandle throws
 
-    EXPECT_THROWS_AS(pool.checkin(new FileHandle("foo.data")), eckit::SeriousBug);
+    std::unique_ptr<FileHandle> fhp(new FileHandle("foo.data"));
+    EXPECT_THROWS_AS(pool.checkin(fhp.get()), eckit::SeriousBug);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -26,6 +26,10 @@ ecbuild_add_test( TARGET   eckit_test_container_cache_lru
                   SOURCES  test_cache_lru.cc
                   LIBS     eckit )
 
+ecbuild_add_test( TARGET   eckit_test_container_cachemanager
+                  SOURCES  test_cachemanager.cc
+                  LIBS     eckit )
+
 ecbuild_add_test( TARGET   eckit_test_container_benchmark_densemap
                   SOURCES  benchmark_densemap.cc
                   LIBS     eckit )

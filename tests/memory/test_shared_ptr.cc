@@ -25,6 +25,8 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
+#pragma clang diagnostic ignored "-Wself-assign-overloaded"
+
 namespace eckit {
 namespace test {
 

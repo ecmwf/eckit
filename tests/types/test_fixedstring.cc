@@ -235,6 +235,9 @@ CASE("test_eckit_types_fixedstring_assignment_string") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-assign-overloaded"
+
 CASE("test_eckit_types_fixedstring_assignment_fixedstring") {
     // Construct with a string of the correct length
 
@@ -283,7 +286,7 @@ CASE("test_eckit_types_fixedstring_assignment_fixedstring") {
     /// EXPECT( fs4a.asString() == "" );
     /// EXPECT( std::string(fs4a) == "" );
 
-    // What happens if we assign to ourself?
+    // self-assignment is ok
 
     fs1a = fs1a;
 
@@ -292,6 +295,8 @@ CASE("test_eckit_types_fixedstring_assignment_fixedstring") {
     EXPECT(fs1a.asString() == "12345678");
     EXPECT(std::string(fs1a) == "12345678");
 }
+
+#pragma clang diagnostic pop
 
 //----------------------------------------------------------------------------------------------------------------------
 //

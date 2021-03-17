@@ -116,6 +116,9 @@ public:  // methods
     /// @brief Probe for incoming messages (blocking)
     virtual Status probe(int source, int tag) const = 0;
 
+    /// @brief Probe for incoming messages (non-blocking)
+    virtual Status iProbe(int source, int tag) const = 0;
+
     virtual int undefined() const = 0;
 
     virtual int anySource() const = 0;

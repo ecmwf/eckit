@@ -226,6 +226,11 @@ Status Serial::probe(int source, int) const {
     return status();
 }
 
+Status Serial::iProbe(int source, int) const {
+    ASSERT(source == 0);
+    return status();
+}
+
 int Serial::anySource() const {
     return Serial::Constants::anySource();
 }

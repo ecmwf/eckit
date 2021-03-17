@@ -28,10 +28,9 @@
 #include "atlas/io/Session.h"
 #include "atlas/io/Stream.h"
 
-#include "atlas/io/types/array/ArrayReference.h"
-#include "atlas/io/types/array/adaptors/ArrayAdaptor.h"
-#include "atlas/io/types/array/adaptors/StdVectorAdaptor.h"
-#include "atlas/io/types/array/adaptors/VectorAdaptor.h"
+#include "atlas/io/types/array.h"
+#include "atlas/io/types/scalar.h"
+#include "atlas/io/types/string.h"
 
 
 namespace atlas {
@@ -57,8 +56,8 @@ Reference<T> ref( const T& x, tag::enable_static_assert = tag::enable_static_ass
                    "\n"
                    "\n     Implement the functions"
                    "\n"
-                   "\n         void encode_data(const Value& in, atlas::io::Buffer& out);"
-                   "\n         void encode_metadata(const Value& value, atlas::io::Metadata& metadata);"
+                   "\n         void encode_data(const Value& in, atlas::io::Data& out);"
+                   "\n         size_t encode_metadata(const Value& value, atlas::io::Metadata& metadata);"
                    "\n"
                    "\n     or alternatively a conversion function to atlas::io::types::ArrayView"
                    "\n"

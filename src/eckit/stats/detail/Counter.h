@@ -62,7 +62,10 @@ private:
 public:
     Counter(double missingValue, bool hasMissing, double lowerLimit = std::numeric_limits<double>::quiet_NaN(),
             double upperLimit = std::numeric_limits<double>::quiet_NaN());
+
     Counter(const param::MIRParametrisation&);
+
+    virtual ~Counter() = default;
 
     void reset(double missingValue, bool hasMissing);
     void reset(const data::MIRField&);

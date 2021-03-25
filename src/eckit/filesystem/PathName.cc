@@ -17,7 +17,9 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/cluster/ClusterDisks.h"
+#include "eckit/utils/Hash.h"
 
 namespace eckit {
 
@@ -146,6 +148,22 @@ void PathName::rename(const PathName& from, const PathName& to) {
 
 void PathName::link(const PathName& from, const PathName& to) {
     from.path_->link(*to.path_);
+}
+
+void PathName::hash(eckit::Hash& hash) const {
+    ASSERT(not isDir());
+    std::unique_ptr<DataHandle> dh(fileHandle());
+    dh->openForRead();
+    eckit::AutoClose closer(*dh);
+    Length size = this->size();
+    eckit::Buffer buffer(64 * 1024 * 1024);
+    Length len = 0;
+    while (len < size) {
+        Length chunk = dh->read(buffer, buffer.size());
+        len += chunk;
+        hash.add(buffer, chunk);
+    }
+    ASSERT(len == size);
 }
 
 void PathName::children(std::vector<PathName>& files, std::vector<PathName>& dirs) const {

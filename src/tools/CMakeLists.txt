@@ -39,3 +39,10 @@ ecbuild_add_executable( TARGET      eckit_rsync
                         NOINSTALL
                         SOURCES     rsync.cc
                         LIBS        eckit_option eckit )
+
+ecbuild_add_executable( TARGET      eckit_hash
+                        OUTPUT_NAME eckit-hash
+                        CONDITION   HAVE_BUILD_TOOLS
+                        NOINSTALL
+                        SOURCES     eckit-hash.cc
+                        LIBS        eckit_option eckit )

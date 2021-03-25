@@ -73,7 +73,7 @@ public:
 
 static void usage(const std::string& tool){
     Log::info() << "Usage:\n"
-                << "  As scanner:   " << tool << " <path> [paths...]\n"
+                << "  As scanner:   " << tool << "                        <path> [paths...]\n"
                 << "  As generator: " << tool << " --check=0 --generate=1 <path> [paths...]\n"
                 << "  As both:      " << tool << " --check=1 --generate=1 <path> [paths...]\n"
                 << std::endl;
@@ -102,9 +102,9 @@ void HashTool::hash(PathName& path) {
         if (clean_) {  // remove hash file if original file was removed
             std::string s = path.asString();
             PathName origin = s.substr(0, s.find_last_of('.'));
-            // Log::info() << "original " << origin << std::endl;
             if (not origin.exists()) {
-                path.unlink();
+                LOG_DEBUG_LIB(LibEcKit) << "origin file missing " << origin << std::endl;
+                path.unlink(!quiet_);
             }
         }
         return;
@@ -112,6 +112,7 @@ void HashTool::hash(PathName& path) {
 
     PathName file = path.realName();
     PathName hashpath = file + extension_;
+    Hash::digest_t outdigest;
 
     LOG_DEBUG_LIB(LibEcKit) << "hash file " << hashpath << std::endl;
 
@@ -119,6 +120,7 @@ void HashTool::hash(PathName& path) {
         LOG_DEBUG_LIB(LibEcKit) << "generating " << file << std::endl;
         if (not hashpath.exists()) {
             Hash::digest_t digest = computeHash(file);
+            outdigest             = digest;
             std::ofstream out;
             out.open(hashpath.asString().c_str(), std::ios::out | std::ios::trunc);
             if (not out) {
@@ -126,15 +128,14 @@ void HashTool::hash(PathName& path) {
             }
             out << digest;
             out.close();
-            if (not quiet_)
-                Log::info() << digest << " : " << file << std::endl;
         }
     }
 
     if (check_) {
         LOG_DEBUG_LIB(LibEcKit) << "checking " << file << std::endl;
+        Hash::digest_t digest = computeHash(file);
+        outdigest             = digest;
         if (hashpath.exists()) {
-            Hash::digest_t digest = computeHash(file);
             std::ifstream in;
             in.open(hashpath.asString().c_str(), std::ios::in);
             if (not in) {
@@ -153,12 +154,11 @@ void HashTool::hash(PathName& path) {
                     throw eckit::Stop("Hash check failed on " + file.asString());
                 }
             }
-            else {
-                if(not quiet_)
-                    Log::info() << digest << " : " << file << std::endl;
-            }
         }
     }
+
+    if (not quiet_)
+        Log::info() << outdigest << " : " << file << std::endl;
 }
 
 void HashTool::scan(PathName& path) {
@@ -226,7 +226,7 @@ void HashTool::run() {
     }
 
     if(failures_.size()) {
-        Log::info() << eckit::Plural(failures_.size(), "hash check") << " failed" << std::endl;
+        Log::info() << eckit::Plural(failures_.size(), "hash check") << " failed:" << std::endl;
         for (auto& f : failures_) {
             Log::info() << f << std::endl;
         }

@@ -83,6 +83,8 @@ public:
 
     double max() const;
     size_t maxIndex() const;
+
+    double missingValue() const { return hasMissing_ ? missingValue_ : std::numeric_limits<double>::quiet_NaN(); }
 };
 
 

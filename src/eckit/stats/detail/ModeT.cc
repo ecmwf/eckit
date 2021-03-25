@@ -14,6 +14,8 @@
 
 #include <ostream>
 
+#include "mir/param/MIRParametrisation.h"
+
 
 namespace mir {
 namespace stats {
@@ -34,19 +36,34 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 }
 
 
-}  // namespace
-
-
-ModeReal::ModeReal(const std::vector<double>& values, const std::vector<double>& mins, bool disambiguateMax) :
-    Mode(disambiguateMax), values_(values), mins_(mins) {
+void check_values_and_mins(const std::vector<double>& values, const std::vector<double>& mins) {
     ASSERT(mins.size() + 1 == values.size());
 
     // Check sorting: {values[0], mins[0], values[1], mins[1], values[2], mins[2], ...}
     for (auto i = values.begin(), j = mins.begin(); j != mins.end(); ++j) {
         ASSERT(*i < *j);
-        ASSERT(++i != values_.end());
+        ASSERT(++i != values.end());
         ASSERT(*j < *i);
     }
+}
+
+
+}  // namespace
+
+
+ModeReal::ModeReal(const std::vector<double>& values, const std::vector<double>& mins, bool disambiguateMax) :
+    Mode(disambiguateMax) {
+    check_values_and_mins(values, mins);
+    values_ = values;
+    mins_   = mins;
+}
+
+
+void ModeReal::setup(const param::MIRParametrisation& param) {
+    param.get("mode-disambiguate-max", disambiguateMax_);
+    param.get("mode-real-values", values_);
+    param.get("mode-real-min", mins_);
+    check_values_and_mins(values_, mins_);
 }
 
 
@@ -54,8 +71,20 @@ void ModeReal::print(std::ostream& out) const {
     out << "Mode[mode=" << mode() << ",values=" << values_ << ",mins=" << mins_ << "]";
 }
 
+
+void ModeBoolean::setup(const param::MIRParametrisation& param) {
+    param.get("mode-disambiguate-max", disambiguateMax_);
+    param.get("mode-boolean-min", min_);
+}
+
+
 void ModeBoolean::print(std::ostream& out) const {
     out << "Mode[mode=" << mode() << ",majority=" << majority_ << "]";
+}
+
+
+void ModeIntegral::setup(const param::MIRParametrisation& param) {
+    param.get("mode-disambiguate-max", disambiguateMax_);
 }
 
 

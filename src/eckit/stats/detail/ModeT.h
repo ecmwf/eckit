@@ -23,6 +23,13 @@
 
 
 namespace mir {
+namespace param {
+class MIRParametrisation;
+}
+}  // namespace mir
+
+
+namespace mir {
 namespace stats {
 namespace detail {
 
@@ -61,7 +68,7 @@ protected:
 };
 
 
-struct ModeIntegral  : Mode<int> {
+struct ModeIntegral : Mode<int> {
     using Mode::Mode;
 
     void operator()(const double& value) override { binCount_[static_cast<int>(std::lround(value))]++; }
@@ -78,11 +85,13 @@ struct ModeIntegral  : Mode<int> {
         return binCount_.empty() ? std::numeric_limits<double>::quiet_NaN() : static_cast<double>(bin());
     }
 
+    void setup(const param::MIRParametrisation&);
+
     void print(std::ostream&) const override;
 };
 
 
-struct ModeReal  : Mode<size_t> {
+struct ModeReal : Mode<size_t> {
     ModeReal(const std::vector<double>& values = {0, 1}, const std::vector<double>& mins = {0.5},
              bool disambiguateMax = true);
 
@@ -114,10 +123,12 @@ struct ModeReal  : Mode<size_t> {
         return values_[bin];
     }
 
+    void setup(const param::MIRParametrisation&);
+
     void print(std::ostream&) const override;
 
-    const std::vector<double> values_;
-    const std::vector<double> mins_;
+    std::vector<double> values_;
+    std::vector<double> mins_;
 };
 
 
@@ -149,6 +160,8 @@ struct ModeBoolean : ValueStatistics {
         set_      = false;
         majority_ = 0;
     }
+
+    void setup(const param::MIRParametrisation&);
 
     void print(std::ostream&) const override;
 

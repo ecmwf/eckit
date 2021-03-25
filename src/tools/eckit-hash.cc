@@ -37,12 +37,12 @@ class HashTool : public eckit::Tool {
 public:
     HashTool(int argc, char** argv) : Tool(argc, argv) {
         options_.push_back(new eckit::option::SimpleOption<std::string>("type", "hash type, default=" + std::string(defaultHashType)));
-        options_.push_back(new eckit::option::SimpleOption<bool>("quiet", "silent mode with less output, only errors on check"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("continue", "continues on failed comparisons"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("recurse", "recurse into sub-dirs"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("check", "compare hash of all files found"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("generate", "generate a hash for all files found"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("clean", "cleans hash files for original files that no longer exist"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("quiet", "silent mode with less output, only errors on check, default false"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("continue", "continues on failed comparisons, default true"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("recurse", "recurse into sub-dirs, default true"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("check", "compare hash of all files found, default true"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("generate", "generate a hash for all files found, default false"));
+        options_.push_back(new eckit::option::SimpleOption<bool>("clean", "cleans hash files for original files that no longer exist, default false"));
     }
 
     virtual void run();
@@ -71,14 +71,19 @@ public:
     PathName last_;
 };
 
-static void usage(const std::string& tool) {
-    Log::info() << "Usage: " << tool << " --check --recurse --generate --continue <root paths>" << std::endl << std::endl;
+static void usage(const std::string& tool){
+    Log::info() << "Usage:\n"
+                << "  As scanner:   " << tool << " <path> [paths...]\n"
+                << "  As generator: " << tool << " --check=0 --generate=1 <path> [paths...]\n"
+                << "  As both:      " << tool << " --check=1 --generate=1 <path> [paths...]\n"
+                << std::endl;
 }
 
 Hash::digest_t HashTool::computeHash(PathName& file) {
     if(last_ == file) // avoid 2 hashes in check following a generate
         return hash_->digest();
-            
+
+    LOG_DEBUG_LIB(LibEcKit) << "Calculating hash for " << file << std::endl;
     hash_->reset();  // zero hash
     file.hash(*hash_);
     last_ = file;
@@ -111,9 +116,9 @@ void HashTool::hash(PathName& path) {
     LOG_DEBUG_LIB(LibEcKit) << "hash file " << hashpath << std::endl;
 
     if (generate_) {
+        LOG_DEBUG_LIB(LibEcKit) << "generating " << file << std::endl;
         if (not hashpath.exists()) {
             Hash::digest_t digest = computeHash(file);
-            Log::info() << digest << std::endl;
             std::ofstream out;
             out.open(hashpath.asString().c_str(), std::ios::out | std::ios::trunc);
             if (not out) {
@@ -121,6 +126,8 @@ void HashTool::hash(PathName& path) {
             }
             out << digest;
             out.close();
+            if (not quiet_)
+                Log::info() << digest << " : " << file << std::endl;
         }
     }
 

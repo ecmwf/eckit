@@ -10,6 +10,8 @@
 
 #include <string.h>
 
+#include <memory>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/BasePathName.h"
 #include "eckit/filesystem/BasePathNameT.h"

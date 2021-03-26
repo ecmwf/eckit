@@ -28,12 +28,12 @@
 
 namespace eckit {
 
-
-class Length;
 class BasePathName;
 class DataHandle;
-class LocalPathName;
 class FileMode;
+class Hash;
+class Length;
+class LocalPathName;
 
 // The class PathName represent a unix path name.
 
@@ -206,6 +206,9 @@ public:
     /// String representation
     /// @return string representation of path
     const std::string& path() const;
+
+    /// Hash the contents of this pathname (only valid for files)
+    void hash(eckit::Hash&) const;
 
     /// Get child files and directories
     /// @param files vector to be filled with child files of path

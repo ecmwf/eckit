@@ -36,10 +36,10 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 }
 
 
-void check_values_and_mins(const std::vector<double>& values, const std::vector<double>& mins) {
+void mode_values_and_mins_check(const std::vector<double>& values, const std::vector<double>& mins) {
     ASSERT(mins.size() + 1 == values.size());
 
-    // Check sorting: {values[0], mins[0], values[1], mins[1], values[2], mins[2], ...}
+    // Check sorting: {values[0], mins[0], values[1], mins[1], values[2], mins[3], values[3], ..., mins[N], values[N+1]}
     for (auto i = values.begin(), j = mins.begin(); j != mins.end(); ++j) {
         ASSERT(*i < *j);
         ASSERT(++i != values.end());
@@ -48,22 +48,39 @@ void check_values_and_mins(const std::vector<double>& values, const std::vector<
 }
 
 
+bool mode_disambiguate_max(const param::MIRParametrisation& param) {
+    bool disambiguateMax = true;
+    param.get("mode-disambiguate-max", disambiguateMax);
+    return disambiguateMax;
+}
+
+
 }  // namespace
 
 
-ModeReal::ModeReal(const std::vector<double>& values, const std::vector<double>& mins, bool disambiguateMax) :
+ModeIntegral::ModeIntegral(bool disambiguateMax) : Mode(disambiguateMax) {}
+
+
+ModeIntegral::ModeIntegral(const param::MIRParametrisation& param) : Mode<int>(mode_disambiguate_max(param)) {}
+
+
+void ModeIntegral::print(std::ostream& out) const {
+    out << "Mode[mode=" << mode() << "]";
+}
+
+
+ModeReal::ModeReal(bool disambiguateMax, const std::vector<double>& values, const std::vector<double>& mins) :
     Mode(disambiguateMax) {
-    check_values_and_mins(values, mins);
+    mode_values_and_mins_check(values, mins);
     values_ = values;
     mins_   = mins;
 }
 
 
-void ModeReal::setup(const param::MIRParametrisation& param) {
-    param.get("mode-disambiguate-max", disambiguateMax_);
+ModeReal::ModeReal(const param::MIRParametrisation& param) : Mode<size_t>(mode_disambiguate_max(param)) {
     param.get("mode-real-values", values_);
     param.get("mode-real-min", mins_);
-    check_values_and_mins(values_, mins_);
+    mode_values_and_mins_check(values_, mins_);
 }
 
 
@@ -72,7 +89,12 @@ void ModeReal::print(std::ostream& out) const {
 }
 
 
-void ModeBoolean::setup(const param::MIRParametrisation& param) {
+ModeBoolean::ModeBoolean(bool disambiguateMax, double min) : min_(min), disambiguateMax_(disambiguateMax) {
+    reset();
+}
+
+
+ModeBoolean::ModeBoolean(const param::MIRParametrisation& param) {
     param.get("mode-disambiguate-max", disambiguateMax_);
     param.get("mode-boolean-min", min_);
 }
@@ -81,21 +103,6 @@ void ModeBoolean::setup(const param::MIRParametrisation& param) {
 void ModeBoolean::print(std::ostream& out) const {
     out << "Mode[mode=" << mode() << ",majority=" << majority_ << "]";
 }
-
-
-void ModeIntegral::setup(const param::MIRParametrisation& param) {
-    param.get("mode-disambiguate-max", disambiguateMax_);
-}
-
-
-void ModeIntegral::print(std::ostream& out) const {
-    out << "Mode[mode=" << mode() << "]";
-}
-
-
-static ValueStatisticsBuilder<ModeIntegral> __stats_1("mode-integral");
-// static ValueStatisticsBuilder<ModeReal> __stats_2("mode-real");  // (no default constructor)
-static ValueStatisticsBuilder<ModeBoolean> __stats_3("mode-boolean");
 
 
 }  // namespace detail

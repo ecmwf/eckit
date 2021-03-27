@@ -25,7 +25,7 @@ namespace field {
 /// Mode statistics on values
 template <typename STATS>
 struct ModeStatsT : detail::Counter, Field, STATS {
-    ModeStatsT(const param::MIRParametrisation& param) : Counter(param), Field(param) {}
+    ModeStatsT(const param::MIRParametrisation& param) : Counter(param), Field(param), STATS(param) {}
     ~ModeStatsT() override = default;
 
     virtual double value() const override = 0;

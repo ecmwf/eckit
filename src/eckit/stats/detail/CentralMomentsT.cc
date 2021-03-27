@@ -37,9 +37,6 @@ std::complex<float> CentralMomentsT<std::complex<float>>::mean() const {
 }
 
 
-static ValueStatisticsBuilder<CentralMomentsT<double>> __stats("central-moments");
-
-
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir

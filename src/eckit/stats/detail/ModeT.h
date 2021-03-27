@@ -37,11 +37,11 @@ namespace detail {
 /**
  * Mode statistics
  * @note: Multi-modal results are resolved with either maximum/minimum bin
- * @note: Boolean specialisation (eg. masks) is implemented as a Misra-Gries summary 2-bin case (degenerate)
+ * @note: Boolean specialisation (eg. masks) is implemented as a Boyer-moore majority vote algorithm (2-bin)
  */
 template <typename T>
 struct Mode : ValueStatistics {
-    Mode(bool disambiguateMax = true) : disambiguateMax_(disambiguateMax) {}
+    Mode(bool disambiguateMax) : disambiguateMax_(disambiguateMax) {}
 
     virtual void operator()(const double&) = 0;
     virtual void operator()(const float&)  = 0;
@@ -69,7 +69,8 @@ protected:
 
 
 struct ModeIntegral : Mode<int> {
-    using Mode::Mode;
+    ModeIntegral(bool disambiguateMax);
+    ModeIntegral(const param::MIRParametrisation&);
 
     void operator()(const double& value) override { binCount_[static_cast<int>(std::lround(value))]++; }
     void operator()(const float& value) override { binCount_[static_cast<int>(std::lround(value))]++; }
@@ -85,15 +86,13 @@ struct ModeIntegral : Mode<int> {
         return binCount_.empty() ? std::numeric_limits<double>::quiet_NaN() : static_cast<double>(bin());
     }
 
-    void setup(const param::MIRParametrisation&);
-
     void print(std::ostream&) const override;
 };
 
 
 struct ModeReal : Mode<size_t> {
-    ModeReal(const std::vector<double>& values = {0, 1}, const std::vector<double>& mins = {0.5},
-             bool disambiguateMax = true);
+    ModeReal(bool disambiguateMax, const std::vector<double>& values = {0, 1}, const std::vector<double>& mins = {0.5});
+    ModeReal(const param::MIRParametrisation&);
 
     void operator()(const double& value) override {
         size_t bin = 0;
@@ -123,8 +122,6 @@ struct ModeReal : Mode<size_t> {
         return values_[bin];
     }
 
-    void setup(const param::MIRParametrisation&);
-
     void print(std::ostream&) const override;
 
     std::vector<double> values_;
@@ -133,9 +130,8 @@ struct ModeReal : Mode<size_t> {
 
 
 struct ModeBoolean : ValueStatistics {
-    ModeBoolean(bool disambiguateMax = true, double min = 0.5) : min_(min), disambiguateMax_(disambiguateMax) {
-        reset();
-    }
+    ModeBoolean(bool disambiguateMax, double min = 0.5);
+    ModeBoolean(const param::MIRParametrisation&);
 
     void operator()(const double& value) override {
         set_ = true;
@@ -160,8 +156,6 @@ struct ModeBoolean : ValueStatistics {
         set_      = false;
         majority_ = 0;
     }
-
-    void setup(const param::MIRParametrisation&);
 
     void print(std::ostream&) const override;
 

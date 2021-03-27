@@ -100,34 +100,6 @@ private:
 };
 
 
-class ValueStatisticsFactory {
-private:
-    std::string name_;
-    virtual ValueStatistics* make() = 0;
-
-    ValueStatisticsFactory(const ValueStatisticsFactory&) = delete;
-    ValueStatisticsFactory& operator=(const ValueStatisticsFactory&) = delete;
-
-protected:
-    ValueStatisticsFactory(const std::string&);
-    virtual ~ValueStatisticsFactory();
-
-public:
-    static void list(std::ostream&);
-    static ValueStatistics* build(const std::string&);
-};
-
-
-template <class T>
-class ValueStatisticsBuilder : public ValueStatisticsFactory {
-private:
-    ValueStatistics* make() override { return new T(); }
-
-public:
-    ValueStatisticsBuilder(const std::string& name) : ValueStatisticsFactory(name) {}
-};
-
-
 }  // namespace stats
 }  // namespace mir
 

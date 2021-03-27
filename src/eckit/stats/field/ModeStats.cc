@@ -14,7 +14,6 @@
 
 #include <ostream>
 
-#include "mir/param/MIRParametrisation.h"
 #include "mir/stats/detail/ModeT.h"
 
 
@@ -24,10 +23,7 @@ namespace field {
 
 
 struct ModeReal final : ModeStatsT<detail::ModeReal> {
-    ModeReal(const param::MIRParametrisation& param) : ModeStatsT(param) {
-        // TODO
-    }
-
+    using ModeStatsT::ModeStatsT;
     double value() const override { return mode(); }
     void print(std::ostream& out) const override { out << "ModeReal[]"; }
 };
@@ -41,17 +37,14 @@ struct ModeIntegral final : ModeStatsT<detail::ModeIntegral> {
 
 
 struct ModeBoolean final : ModeStatsT<detail::ModeBoolean> {
-    ModeBoolean(const param::MIRParametrisation& param) : ModeStatsT(param) {
-        // TODO
-    }
-
+    using ModeStatsT::ModeStatsT;
     double value() const override { return mode(); }
     void print(std::ostream& out) const override { out << "ModeBoolean[]"; }
 };
 
 
-static FieldBuilder<ModeIntegral> __builder_1("mode-integral");
-static FieldBuilder<ModeReal> __builder_2("mode-real");
+static FieldBuilder<ModeReal> __builder_1("mode-real");
+static FieldBuilder<ModeIntegral> __builder_2("mode-integral");
 static FieldBuilder<ModeBoolean> __builder_3("mode-boolean");
 
 

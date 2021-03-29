@@ -80,7 +80,7 @@ Field* FieldFactory::build(const std::string& name, const param::MIRParametrisat
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(Log::error() << "FieldFactory: unknown '" << name << "', choices are:");
+        list(Log::error() << "FieldFactory: unknown '" << name << "', choices are: ");
         throw exception::SeriousBug("FieldFactory: unknown '" + name + "'");
     }
 

@@ -82,7 +82,7 @@ Comparator* ComparatorFactory::build(const std::string& name, const param::MIRPa
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(Log::error() << "ComparatorFactory: unknown '" << name << "', choices are:");
+        list(Log::error() << "ComparatorFactory: unknown '" << name << "', choices are: ");
         throw exception::SeriousBug("ComparatorFactory: unknown '" + name + "'");
     }
 

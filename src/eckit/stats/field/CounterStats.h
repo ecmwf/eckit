@@ -13,61 +13,29 @@
 #ifndef mir_method_detail_CounterStats_h
 #define mir_method_detail_CounterStats_h
 
+#include "mir/stats/Field.h"
 #include "mir/stats/detail/Counter.h"
 
 
 namespace mir {
-namespace method {
-namespace detail {
+namespace stats {
+namespace field {
 
 
 /// Counting statistics on values (min, max, etc.)
-struct CounterStats : stats::detail::Counter {
-    using Counter::Counter;
-    ~CounterStats() override = default;
+struct CounterStats : detail::Counter, Field {
+    CounterStats(const param::MIRParametrisation& param) : Counter(param), Field(param) {}
 
-    virtual double value() const     = 0;
-    virtual const char* name() const = 0;
+    virtual double value() const override            = 0;
+    virtual void print(std::ostream&) const override = 0;
+
+    void count(const double& value) override { Counter::count(value); }
+    void reset(double missingValue, bool hasMissing) override { Counter::reset(missingValue, hasMissing); }
 };
 
 
-struct Maximum final : CounterStats {
-    using CounterStats::CounterStats;
-    double value() const override { return max(); }
-    const char* name() const override { return "maximum"; }
-};
-
-
-struct Minimum final : CounterStats {
-    using CounterStats::CounterStats;
-    double value() const override { return min(); }
-    const char* name() const override { return "minimum"; }
-};
-
-
-struct CountAboveUpperLimit final : CounterStats {
-    using CounterStats::CounterStats;
-    double value() const override { return double(countAboveUpperLimit()); }
-    const char* name() const override { return "count-above-upper-limit"; }
-};
-
-
-struct CountBelowLowerLimit final : CounterStats {
-    using CounterStats::CounterStats;
-    double value() const override { return double(countBelowLowerLimit()); }
-    const char* name() const override { return "count-below-lower-limit"; }
-};
-
-
-struct Count final : CounterStats {
-    using CounterStats::CounterStats;
-    double value() const override { return double(count() - missing()); }
-    const char* name() const override { return "count"; }
-};
-
-
-}  // namespace detail
-}  // namespace method
+}  // namespace field
+}  // namespace stats
 }  // namespace mir
 
 

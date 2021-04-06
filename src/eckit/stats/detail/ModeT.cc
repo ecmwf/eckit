@@ -64,6 +64,11 @@ ModeIntegral::ModeIntegral(bool disambiguateMax) : Mode(disambiguateMax) {}
 ModeIntegral::ModeIntegral(const param::MIRParametrisation& param) : Mode<int>(mode_disambiguate_max(param)) {}
 
 
+double ModeIntegral::mode() const {
+    return binCount_.empty() ? std::numeric_limits<double>::quiet_NaN() : static_cast<double>(bin());
+}
+
+
 void ModeIntegral::print(std::ostream& out) const {
     out << "Mode[mode=" << mode() << "]";
 }
@@ -84,6 +89,15 @@ ModeReal::ModeReal(const param::MIRParametrisation& param) : Mode<size_t>(mode_d
 }
 
 
+double ModeReal::mode() const {
+    if (binCount_.empty()) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+
+    return values_.at(bin());
+}
+
+
 void ModeReal::print(std::ostream& out) const {
     out << "Mode[mode=" << mode() << ",values=" << values_ << ",mins=" << mins_ << "]";
 }
@@ -100,8 +114,54 @@ ModeBoolean::ModeBoolean(const param::MIRParametrisation& param) {
 }
 
 
+double ModeBoolean::mode() const {
+    if (!set_) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+    return majority_ > 0 || (majority_ == 0 && disambiguateMax_) ? 1 : 0;
+}
+
+
 void ModeBoolean::print(std::ostream& out) const {
     out << "Mode[mode=" << mode() << ",majority=" << majority_ << "]";
+}
+
+
+double MedianIntegral::median() const {
+    if (binCount_.empty()) {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+
+    auto a  = binCount_.cbegin();
+    auto at = a->second;
+
+    auto b  = binCount_.crbegin();
+    auto bt = b->second;
+
+    size_t n = binCount_.size();
+    while (n > 2) {
+        if (at < bt) {
+            at += (++a)->second;
+            --n;
+        }
+        else if (bt < at) {
+            bt += (++b)->second;
+            --n;
+        }
+        else {
+            at += (++a)->second;
+            bt += (++b)->second;
+            n -= 2;
+        }
+    }
+
+    ASSERT(n == 1 || n == 2);
+    return at < bt || (at == bt && disambiguateMax_) ? b->first : a->first;
+}
+
+
+void MedianIntegral::print(std::ostream& out) const {
+    out << "Median[median=" << median() << "]";
 }
 
 

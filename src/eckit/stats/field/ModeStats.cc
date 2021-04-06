@@ -43,9 +43,19 @@ struct ModeBoolean final : ModeStatsT<detail::ModeBoolean> {
 };
 
 
+struct MedianIntegral final : ModeStatsT<detail::MedianIntegral> {
+    using ModeStatsT::ModeStatsT;
+    double value() const override { return median(); }
+    void print(std::ostream& out) const override { out << "MedianIntegral[]"; }
+};
+
+
 static FieldBuilder<ModeReal> __builder_1("mode-real");
 static FieldBuilder<ModeIntegral> __builder_2("mode-integral");
 static FieldBuilder<ModeBoolean> __builder_3("mode-boolean");
+
+static FieldBuilder<MedianIntegral> __builder_4("median-integral");
+static FieldBuilder<ModeBoolean> __builder_5("median-boolean");  // (alias)
 
 
 }  // namespace field

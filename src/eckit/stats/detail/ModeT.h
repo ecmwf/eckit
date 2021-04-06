@@ -82,11 +82,9 @@ struct ModeIntegral : Mode<int> {
         }
     }
 
-    double mode() const override {
-        return binCount_.empty() ? std::numeric_limits<double>::quiet_NaN() : static_cast<double>(bin());
-    }
+    double mode() const override;
 
-    void print(std::ostream&) const override;
+    virtual void print(std::ostream&) const override;
 };
 
 
@@ -112,13 +110,7 @@ struct ModeReal : Mode<size_t> {
         }
     }
 
-    double mode() const override {
-        if (binCount_.empty()) {
-            return std::numeric_limits<double>::quiet_NaN();
-        }
-
-        return values_.at(bin());
-    }
+    double mode() const override;
 
     void print(std::ostream&) const override;
 
@@ -143,12 +135,7 @@ struct ModeBoolean : ValueStatistics {
 
     void operator+=(const ModeBoolean& other) { majority_ += other.majority_; }
 
-    double mode() const {
-        if (!set_) {
-            return std::numeric_limits<double>::quiet_NaN();
-        }
-        return majority_ > 0 || (majority_ == 0 && disambiguateMax_) ? 1 : 0;
-    }
+    double mode() const;
 
     void reset() {
         set_      = false;
@@ -161,6 +148,20 @@ struct ModeBoolean : ValueStatistics {
     double min_;
     bool disambiguateMax_;
     bool set_;
+};
+
+
+/// Median statistics
+/// Note: This is supported by Mode (same underlying structure) with a specialised median method
+struct MedianIntegral : ModeIntegral {
+    using ModeIntegral::ModeIntegral;
+
+    using ModeIntegral::operator();
+    using ModeIntegral::operator+=;
+
+    double median() const;
+
+    void print(std::ostream&) const override;
 };
 
 

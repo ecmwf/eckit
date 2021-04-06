@@ -117,9 +117,7 @@ struct ModeReal : Mode<size_t> {
             return std::numeric_limits<double>::quiet_NaN();
         }
 
-        auto bin = mode();
-        ASSERT(bin < values_.size());
-        return values_[bin];
+        return values_.at(bin());
     }
 
     void print(std::ostream&) const override;

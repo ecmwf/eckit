@@ -25,28 +25,28 @@ namespace field {
 struct ModeReal final : ModeStatsT<detail::ModeReal> {
     using ModeStatsT::ModeStatsT;
     double value() const override { return mode(); }
-    void print(std::ostream& out) const override { out << "ModeReal[]"; }
+    void print(std::ostream& out) const override { out << "ModeReal[" << value() << "]"; }
 };
 
 
 struct ModeIntegral final : ModeStatsT<detail::ModeIntegral> {
     using ModeStatsT::ModeStatsT;
     double value() const override { return mode(); }
-    void print(std::ostream& out) const override { out << "ModeIntegral[]"; }
+    void print(std::ostream& out) const override { out << "ModeIntegral[" << value() << "]"; }
 };
 
 
 struct ModeBoolean final : ModeStatsT<detail::ModeBoolean> {
     using ModeStatsT::ModeStatsT;
     double value() const override { return mode(); }
-    void print(std::ostream& out) const override { out << "ModeBoolean[]"; }
+    void print(std::ostream& out) const override { out << "ModeBoolean[" << value() << "]"; }
 };
 
 
 struct MedianIntegral final : ModeStatsT<detail::MedianIntegral> {
     using ModeStatsT::ModeStatsT;
     double value() const override { return median(); }
-    void print(std::ostream& out) const override { out << "MedianIntegral[]"; }
+    void print(std::ostream& out) const override { out << "MedianIntegral[" << value() << "]"; }
 };
 
 

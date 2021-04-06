@@ -23,35 +23,35 @@ namespace field {
 struct Count final : CounterStats {
     using CounterStats::CounterStats;
     double value() const override { return double(Counter::count() - Counter::missing()); }
-    void print(std::ostream& out) const override { out << "Count[]"; }
+    void print(std::ostream& out) const override { out << "Count[" << value() << "]"; }
 };
 
 
 struct CountAboveUpperLimit final : CounterStats {
     using CounterStats::CounterStats;
     double value() const override { return double(countAboveUpperLimit()); }
-    void print(std::ostream& out) const override { out << "CountAboveUpperLimit[]"; }
+    void print(std::ostream& out) const override { out << "CountAboveUpperLimit[" << value() << "]"; }
 };
 
 
 struct CountBelowLowerLimit final : CounterStats {
     using CounterStats::CounterStats;
     double value() const override { return double(countBelowLowerLimit()); }
-    void print(std::ostream& out) const override { out << "CountBelowLowerLimit[]"; }
+    void print(std::ostream& out) const override { out << "CountBelowLowerLimit[" << value() << "]"; }
 };
 
 
 struct Maximum final : CounterStats {
     using CounterStats::CounterStats;
     double value() const override { return max(); }
-    void print(std::ostream& out) const override { out << "Maximum[]"; }
+    void print(std::ostream& out) const override { out << "Maximum[" << value() << "]"; }
 };
 
 
 struct Minimum final : CounterStats {
     using CounterStats::CounterStats;
     double value() const override { return min(); }
-    void print(std::ostream& out) const override { out << "Minimum[]"; }
+    void print(std::ostream& out) const override { out << "Minimum[" << value() << "]"; }
 };
 
 

@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_search_tree_TreeMemory_h
-#define mir_search_tree_TreeMemory_h
+#pragma once
 
 #include "eckit/container/KDTree.h"
 
@@ -56,6 +55,3 @@ public:
 }  // namespace tree
 }  // namespace search
 }  // namespace mir
-
-
-#endif

@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_search_tree_TreeMappedAnonymousMemory_h
-#define mir_search_tree_TreeMappedAnonymousMemory_h
+#pragma once
 
 #include "mir/search/tree/TreeMapped.h"
 
@@ -37,6 +36,3 @@ public:
 }  // namespace tree
 }  // namespace search
 }  // namespace mir
-
-
-#endif

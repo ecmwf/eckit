@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_search_PointSearch_h
-#define mir_search_PointSearch_h
+#pragma once
 
 #include <memory>
 
@@ -117,6 +116,3 @@ private:
 
 }  // namespace search
 }  // namespace mir
-
-
-#endif

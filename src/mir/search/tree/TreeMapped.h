@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_search_tree_TreeMapped_h
-#define mir_search_tree_TreeMapped_h
+#pragma once
 
 #include "eckit/container/KDTree.h"
 #include "eckit/os/AutoUmask.h"
@@ -59,6 +58,3 @@ public:
 }  // namespace tree
 }  // namespace search
 }  // namespace mir
-
-
-#endif

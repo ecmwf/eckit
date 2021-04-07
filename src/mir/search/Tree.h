@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_search_Tree_h
-#define mir_search_Tree_h
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -105,6 +104,3 @@ public:
 
 }  // namespace search
 }  // namespace mir
-
-
-#endif

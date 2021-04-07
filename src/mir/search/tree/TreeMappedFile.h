@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_search_tree_TreeMappedFile_h
-#define mir_search_tree_TreeMappedFile_h
+#pragma once
 
 #include <unistd.h>
 
@@ -92,6 +91,3 @@ public:
 }  // namespace tree
 }  // namespace search
 }  // namespace mir
-
-
-#endif

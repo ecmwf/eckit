@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_detail_AngleT_h
-#define mir_stats_detail_AngleT_h
+#pragma once
 
 #include <cmath>
 #include <complex>
@@ -114,6 +113,3 @@ AngleT<double, AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT::AngleT();
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

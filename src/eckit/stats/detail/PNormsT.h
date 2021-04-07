@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_detail_PNorms_h
-#define mir_stats_detail_PNorms_h
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -73,6 +72,3 @@ public:
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

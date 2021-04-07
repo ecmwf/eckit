@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_detail_CounterBinary_h
-#define mir_stats_detail_CounterBinary_h
+#pragma once
 
 #include "mir/stats/detail/Counter.h"
 
@@ -88,6 +87,3 @@ public:
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

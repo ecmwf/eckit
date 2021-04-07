@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_detail_CentralMomentsT_h
-#define mir_stats_detail_CentralMomentsT_h
+#pragma once
 
 #include <cmath>
 #include <complex>
@@ -112,6 +111,3 @@ public:
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

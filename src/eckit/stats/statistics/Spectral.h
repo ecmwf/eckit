@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_statistics_Spectral_h
-#define mir_stats_statistics_Spectral_h
+#pragma once
 
 #include "mir/stats/Statistics.h"
 
@@ -90,6 +89,3 @@ private:
 }  // namespace statistics
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

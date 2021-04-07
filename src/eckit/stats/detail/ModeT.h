@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_detail_ModeT_h
-#define mir_stats_detail_ModeT_h
+#pragma once
 
 #include <cmath>
 #include <limits>
@@ -167,6 +166,3 @@ struct MedianIntegral : ModeIntegral {
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

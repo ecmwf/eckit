@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_comparator_ComparatorT_h
-#define mir_stats_comparator_ComparatorT_h
+#pragma once
 
 #include <iosfwd>
 #include <limits>
@@ -105,6 +104,3 @@ private:
 }  // namespace comparator
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_statistics_MethodT_h
-#define mir_stats_statistics_MethodT_h
+#pragma once
 
 #include <ostream>
 #include <vector>
@@ -105,6 +104,3 @@ private:
 }  // namespace method
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

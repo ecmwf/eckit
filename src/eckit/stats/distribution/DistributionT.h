@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_distribution_DistributionT_h
-#define mir_stats_distribution_DistributionT_h
+#pragma once
 
 #include "mir/stats/Distribution.h"
 
@@ -106,6 +105,3 @@ private:
 }  // namespace distribution
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

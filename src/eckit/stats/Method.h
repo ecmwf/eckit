@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_Method_h
-#define mir_stats_Method_h
+#pragma once
 
 #include <cstddef>
 #include <iosfwd>
@@ -144,6 +143,3 @@ public:
 
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

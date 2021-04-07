@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_field_CentralMomentStatsT_h
-#define mir_stats_field_CentralMomentStatsT_h
+#pragma once
 
 #include "mir/stats/Field.h"
 #include "mir/stats/detail/Counter.h"
@@ -46,6 +45,3 @@ struct CentralMomentStatsT : detail::Counter, Field, STATS {
 }  // namespace field
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

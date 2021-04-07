@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_detail_Counter_h
-#define mir_stats_detail_Counter_h
+#pragma once
 
 #include <cstddef>
 #include <iosfwd>
@@ -91,6 +90,3 @@ public:
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

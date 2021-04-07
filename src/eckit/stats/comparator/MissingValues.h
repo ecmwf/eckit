@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_comparator_MissingValues_h
-#define mir_stats_comparator_MissingValues_h
+#pragma once
 
 #include "mir/stats/Comparator.h"
 
@@ -79,6 +78,3 @@ private:
 }  // namespace comparator
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

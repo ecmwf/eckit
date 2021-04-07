@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_method_detail_CounterStats_h
-#define mir_method_detail_CounterStats_h
+#pragma once
 
 #include "mir/stats/Field.h"
 #include "mir/stats/detail/Counter.h"
@@ -37,6 +36,3 @@ struct CounterStats : detail::Counter, Field {
 }  // namespace field
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

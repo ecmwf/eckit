@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_statistics_GridBoxIntegral_h
-#define mir_stats_statistics_GridBoxIntegral_h
+#pragma once
 
 #include "mir/stats/Statistics.h"
 #include "mir/stats/detail/Counter.h"
@@ -82,6 +81,3 @@ private:
 }  // namespace statistics
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

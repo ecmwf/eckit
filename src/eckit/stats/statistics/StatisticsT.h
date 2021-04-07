@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_statistics_StatisticsT_h
-#define mir_stats_statistics_StatisticsT_h
+#pragma once
 
 #include <ostream>
 
@@ -101,6 +100,3 @@ private:
 }  // namespace statistics
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

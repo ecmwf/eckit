@@ -10,8 +10,7 @@
  */
 
 
-#ifndef mir_stats_detail_Scalar_h
-#define mir_stats_detail_Scalar_h
+#pragma once
 
 #include <ostream>
 
@@ -39,6 +38,3 @@ struct ScalarT : public CentralMomentsT<T> {
 }  // namespace detail
 }  // namespace stats
 }  // namespace mir
-
-
-#endif

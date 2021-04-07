@@ -18,7 +18,6 @@
 #include <map>
 #include <vector>
 
-#include "mir/stats/ValueStatistics.h"
 #include "mir/util/Exceptions.h"
 
 
@@ -40,7 +39,7 @@ namespace detail {
  * @note: Boolean specialisation (eg. masks) is implemented as a Boyer-moore majority vote algorithm (2-bin)
  */
 template <typename T>
-struct Mode : ValueStatistics {
+struct Mode {
     Mode(bool disambiguateMax) : disambiguateMax_(disambiguateMax) {}
 
     virtual void operator()(const double&) = 0;
@@ -84,7 +83,7 @@ struct ModeIntegral : Mode<int> {
 
     double mode() const override;
 
-    virtual void print(std::ostream&) const override;
+    virtual void print(std::ostream&) const;
 };
 
 
@@ -112,18 +111,18 @@ struct ModeReal : Mode<size_t> {
 
     double mode() const override;
 
-    void print(std::ostream&) const override;
+    void print(std::ostream&) const;
 
     std::vector<double> values_;
     std::vector<double> mins_;
 };
 
 
-struct ModeBoolean : ValueStatistics {
+struct ModeBoolean {
     ModeBoolean(bool disambiguateMax, double min = 0.5);
     ModeBoolean(const param::MIRParametrisation&);
 
-    void operator()(const double& value) override {
+    void operator()(const double& value) {
         set_ = true;
         if (min_ <= value) {
             majority_++;
@@ -142,7 +141,7 @@ struct ModeBoolean : ValueStatistics {
         majority_ = 0;
     }
 
-    void print(std::ostream&) const override;
+    void print(std::ostream&) const;
 
     long long majority_;
     double min_;

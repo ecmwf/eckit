@@ -19,8 +19,6 @@
 #include <limits>
 #include <ostream>
 
-#include "mir/stats/ValueStatistics.h"
-
 
 namespace mir {
 namespace stats {
@@ -39,7 +37,7 @@ namespace detail {
  * http://mathworld.wolfram.com/Kurtosis.html
  */
 template <typename T>
-struct CentralMomentsT : ValueStatistics {
+struct CentralMomentsT {
 private:
     T M1_;
     T M2_;
@@ -101,7 +99,7 @@ public:
         count_ += other.count_;
     }
 
-    void print(std::ostream& out) const override {
+    virtual void print(std::ostream& out) const {
         out << "CentralMoments["
                "mean="
             << mean() << ",stddev=" << standardDeviation() << ",skewness=" << skewness() << ",kurtosis=" << kurtosis()

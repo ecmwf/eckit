@@ -17,8 +17,6 @@
 #include <cmath>
 #include <ostream>
 
-#include "mir/stats/ValueStatistics.h"
-
 
 namespace mir {
 namespace stats {
@@ -31,7 +29,7 @@ namespace detail {
  * @see https://en.wikipedia.org/wiki/Minkowski_distance
  */
 template <typename T>
-struct PNormsT : ValueStatistics {
+struct PNormsT {
 private:
     T normL1_;
     T sumSquares_;
@@ -52,7 +50,7 @@ public:
 
     T difference(const T& a, const T& b) const { return std::abs(a - b); }
 
-    void operator()(const T& v) override {
+    void operator()(const T& v) {
         normL1_ += std::abs(v);
         sumSquares_ += v * v;
         normLinfinity_ = std::max(normLinfinity_, std::abs(v));
@@ -64,7 +62,7 @@ public:
         normLinfinity_ = std::max(normLinfinity_, other.normLinfinity_);
     }
 
-    void print(std::ostream& out) const override {
+    void print(std::ostream& out) const {
         out << "PNorms["
                "L1="
             << normL1() << ",L2=" << normL2() << ",Li=" << normLinfinity() << "]";

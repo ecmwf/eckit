@@ -58,7 +58,7 @@ bool mode_disambiguate_max(const param::MIRParametrisation& param) {
 }  // namespace
 
 
-ModeIntegral::ModeIntegral(bool disambiguateMax) : Mode(disambiguateMax) {}
+ModeIntegral::ModeIntegral(bool disambiguateMax) : Mode<int>(disambiguateMax) {}
 
 
 ModeIntegral::ModeIntegral(const param::MIRParametrisation& param) : Mode<int>(mode_disambiguate_max(param)) {}
@@ -75,7 +75,7 @@ void ModeIntegral::print(std::ostream& out) const {
 
 
 ModeReal::ModeReal(bool disambiguateMax, const std::vector<double>& values, const std::vector<double>& mins) :
-    Mode(disambiguateMax) {
+    Mode<size_t>(disambiguateMax) {
     mode_values_and_mins_check(values, mins);
     values_ = values;
     mins_   = mins;

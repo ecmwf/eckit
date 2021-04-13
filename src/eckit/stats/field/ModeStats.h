@@ -29,13 +29,13 @@ struct ModeStatsT : detail::Counter, Field, STATS {
     virtual double value() const override            = 0;
     virtual void print(std::ostream&) const override = 0;
 
-    void count(const double& value) {
+    void count(const double& value) override {
         if (Counter::count(value)) {
             STATS::operator()(value);
         }
     }
 
-    void reset(double missingValue, bool hasMissing) {
+    void reset(double missingValue, bool hasMissing) override {
         Counter::reset(missingValue, hasMissing);
         STATS::reset();
     }

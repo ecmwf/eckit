@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <iostream>
+#include <ostream>
 #include <vector>
 
 #include "eckit/container/sptree/SPValue.h"

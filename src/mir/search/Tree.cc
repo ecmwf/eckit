@@ -12,9 +12,10 @@
 
 #include "mir/search/Tree.h"
 
-#include <iostream>
 #include <map>
 #include <mutex>
+#include <ostream>
+#include <sstream>
 
 #include "mir/repres/Representation.h"
 #include "mir/util/Exceptions.h"

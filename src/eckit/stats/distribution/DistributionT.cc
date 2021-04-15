@@ -12,7 +12,7 @@
 
 #include "mir/stats/distribution/DistributionT.h"
 
-#include <iostream>
+#include <ostream>
 #include <random>
 
 #include "mir/param/MIRParametrisation.h"

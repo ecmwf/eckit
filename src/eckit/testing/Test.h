@@ -21,12 +21,14 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <set>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Colour.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/utils/Translator.h"
 
 
 namespace eckit {
@@ -346,15 +348,23 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
         ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
     }
 
+    bool run_all = true;
+    std::set<long> runTests;
+    if (::getenv("ECKIT_TESTING_TESTS")) {
+        std::vector<long> tsts = eckit::Translator<std::string, std::vector<long>>()(::getenv("ECKIT_TESTING_TESTS"));
+        runTests.insert(tsts.begin(), tsts.end());
+        run_all = false;
+    }
+
     for (size_t i = 0; i < num_tests; i++) {
 
         Test& test(tests[i]);
 
-        eckit::Log::info() << "Running case \"" << test.description() << "\" ..." << std::endl;
-
-        test.run(v, failures);
-
-        eckit::Log::info() << "Completed case \"" << test.descriptionNoSection() << "\"" << std::endl;
+        if (run_all || runTests.find(i) != runTests.end()) {
+            eckit::Log::info() << "Running case " << i << ": " << test.description() << " ..." << std::endl;
+            test.run(v, failures);
+            eckit::Log::info() << "Completed case " << i << ": " << test.descriptionNoSection() << std::endl;
+        }
     }
 
     if (v >= AllFailures) {

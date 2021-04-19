@@ -37,6 +37,8 @@ CASE("Get URL without conten-lenght") {
     out.unlink();
 }
 
+// TODO Not working. Downloads zero length file
+//
 // CASE("test_urlhandle_redirect") {
 //     PathName out("/tmp/test_urlhandle_get.html");
 //     {

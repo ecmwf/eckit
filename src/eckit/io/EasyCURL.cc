@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-// #include <arpa/inet.h>
-#include <curl/curl.h>
+#include "eckit/io/EasyCURL.h"
+
 #include <unistd.h>
 #include <memory>
 
-#include "eckit/eckit.h"
+#include <curl/curl.h>
 
-#include "eckit/io/EasyCURL.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
@@ -469,7 +468,7 @@ public:
     }
 
     virtual std::string body() const            = 0;
-    virtual unsigned long long contentLength()  = 0;
+    virtual unsigned long long contentLength(bool& present) = 0;
     virtual size_t read(void* ptr, size_t size) = 0;
     virtual void ensureHeaders()                = 0;
 
@@ -542,7 +541,7 @@ public:
         return handle_->write(ptr, size);
     }
 
-    virtual unsigned long long contentLength() override { NOTIMP; }
+    virtual unsigned long long contentLength(bool& present) override { NOTIMP; }
 
     virtual size_t read(void* ptr, size_t size) override { NOTIMP; }
 
@@ -583,13 +582,15 @@ public:
 
     virtual std::string body() const override { NOTIMP; }
 
-    virtual unsigned long long contentLength() override {
+    virtual unsigned long long contentLength(bool& present) override {
         ensureHeaders();
-        auto j = headers_.find("content-length");
+        present = true;
+        auto j  = headers_.find("content-length");
         if (j != headers_.end()) {
             return Translator<std::string, unsigned long long>()((*j).second);
         }
-        throw eckit::SeriousBug("EasyCURLResponseStream: cannot establish contentLength");
+        present = false;
+        return 0;
     }
 
     int waitForData() {
@@ -754,11 +755,17 @@ Length EasyCURLHandle::openForRead() {
 }
 
 Length EasyCURLHandle::size() {
-    return imp_->contentLength();
+    bool present = false;
+    Length len = imp_->contentLength(present);
+    if(not present) {
+        throw eckit::BadValue("EasyCURLResponseStream: cannot establish contentLength");
+    }
+    return len;
 }
 
 Length EasyCURLHandle::estimate() {
-    return imp_->contentLength();
+    bool present = false;
+    return imp_->contentLength(present);
 }
 
 long EasyCURLHandle::read(void* ptr, long size) {
@@ -778,7 +785,7 @@ void EasyCURLHandle::close() {
     }
 }
 
-// ===========================================================
+//---------------------------------------------------------------------------------------------------------------------
 
 EasyCURLResponse::EasyCURLResponse(EasyCURLResponseImp* imp) : imp_(imp) {
     imp_->attach();
@@ -815,7 +822,8 @@ const EasyCURLHeaders& EasyCURLResponse::headers() const {
 }
 
 unsigned long long EasyCURLResponse::contentLength() const {
-    return imp_->contentLength();
+    bool present = false;
+    return imp_->contentLength(present);
 }
 
 size_t EasyCURLResponse::read(void* ptr, size_t size) const {

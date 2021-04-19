@@ -16,36 +16,17 @@
 
 #include <map>
 
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/io/MemoryHandle.h"
-
-
-// #ifdef eckit_HAVE_CURL
-// #include <curl/curl.h>
-// #else
-// typedef int CURL;
-// typedef int CURLM;
-// #endif
-
 
 namespace eckit {
 
 class Value;
-
-typedef std::map<std::string, std::string> EasyCURLHeaders;
-class URLException : public Exception {
-    int code_;
-
-public:
-    URLException(const std::string& what, int code) : Exception(what), code_(code) {}
-    int code() const { return code_; }
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 class EasyCURLResponseImp;
 class CURLHandle;
+
+typedef std::map<std::string, std::string> EasyCURLHeaders;
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class EasyCURLResponse {
     mutable EasyCURLResponseImp* imp_;
@@ -76,19 +57,13 @@ private:
     }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class EasyCURL {
 public:
-    // -- Exceptions
-
-    // -- Contructors
-
     EasyCURL();
 
-    // -- Destructor
-
     ~EasyCURL();
-
-    // -- Methods
 
     EasyCURLResponse GET(const std::string& url, bool stream = false);
     EasyCURLResponse HEAD(const std::string& url);
@@ -108,27 +83,12 @@ public:
     void userAgent(const std::string&);
 
 public:
-    // -- Overridden methods
-
     void print(std::ostream&) const;
 
-    // -- Class methods
-
-
 private:
-    // -- Members
-
     CURLHandle* ch_;
 
-    // CURLM *multi_;
-
     EasyCURLResponse request(const std::string& url, bool stream = false);
-
-    // -- Methods
-
-
-    // -- Class members
-
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURL& c) {
         c.print(s);

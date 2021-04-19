@@ -26,26 +26,60 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#ifdef eckit_HAVE_CURL
-
-CASE("test_urlhandle_get") {
-    URLHandle h("https://www.ecmwf.int/");
-    h.saveInto("/tmp/test_urlhandle_get.html");
+CASE("Get URL without conten-lenght") {
+    PathName out("/tmp/test_urlhandle_get.html");
+    {
+        URLHandle h("https://www.ecmwf.int");
+        h.saveInto(out);
+    }
+    Log::info() << out << " size " << out.size() << std::endl;
+    EXPECT(out.size() > Length(0));
+    out.unlink();
 }
 
-CASE("test_urlhandle_redirect") {
-    URLHandle h("http://www.ecmwf.int");
-    h.saveInto("/tmp/test_urlhandle_get.html");
+// CASE("test_urlhandle_redirect") {
+//     PathName out("/tmp/test_urlhandle_get.html");
+//     {
+//         URLHandle h("http://www.ecmwf.int");
+//         h.saveInto(out);
+//     }
+//     Log::info() << out << " size " << out.size() << std::endl;
+//     EXPECT(out.size() > Length(0));
+//     out.unlink();
+// }
+
+CASE("Get URL small file 41 bytes") {
+    PathName out("/tmp/t.grib.md5");
+    {
+        URLHandle h("http://download.ecmwf.org/test-data/eckit/tests/io/t.grib.md5");
+        h.saveInto(out);
+    }
+    Log::info() << out << " size " << out.size() << std::endl;
+    EXPECT(out.size() == Length(41));
+    out.unlink();
 }
 
-CASE("test_urlhandle_404") {
-    // TODO: catch URLHandle::URLException and check code
-    // URLHandle h("http://download.ecmwf.org/foobar");
-    // h.saveInto("/tmp/test_urlhandle_get.html");
+CASE("Get URL 800K file") {
+    PathName out("/tmp/t.grib.md5");
+    {
+        URLHandle h("http://download.ecmwf.org/test-data/multio/tests/server/single-field.grib");
+        h.saveInto(out);
+    }
+    Log::info() << out << " size " << out.size() << std::endl;
+    EXPECT(out.size() == Length(822360));
+    out.unlink();
 }
-#else
-CASE("test_urlhandle") {}
-#endif
+
+CASE("Handle URLException 404") {
+    PathName out("/tmp/foobar");
+    URLHandle h("http://download.ecmwf.org/test-data/eckit/tests/io/foobar");
+    try {
+        h.saveInto(out);
+    }
+    catch (eckit::URLException& e) {
+        EXPECT(e.code() == 404);
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -16,9 +16,20 @@
 
 #include <memory>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class URLException : public Exception {
+    int code_;
+
+public:
+    URLException(const std::string& what, int code) : Exception(what), code_(code) {}
+    int code() const { return code_; }
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

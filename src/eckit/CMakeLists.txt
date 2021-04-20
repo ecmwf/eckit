@@ -621,6 +621,8 @@ net/TCPServer.cc
 net/TCPServer.h
 net/TCPSocket.cc
 net/TCPSocket.h
+net/MultiSocket.cc
+net/MultiSocket.h
 net/TCPStream.cc
 net/TCPStream.h
 net/Telnet.cc

@@ -877,8 +877,9 @@ void EasyCURL::failOnError(bool on) {
 EasyCURLResponse EasyCURL::request(const std::string& url, bool stream) {
 
     std::string location(url);
+    const size_t max_redirects = 10;
 
-    for (;;) {
+    for (size_t i = 0; i < max_redirects; ++i) {
         std::unique_ptr<EasyCURLResponseImp> r(nullptr);
 
         if (stream) {
@@ -894,6 +895,8 @@ EasyCURLResponse EasyCURL::request(const std::string& url, bool stream) {
             return EasyCURLResponse(r.release());
         }
     }
+
+    throw SeriousBug("EasyCURL too many redirects for:" + url);
 }
 
 EasyCURLResponse EasyCURL::GET(const std::string& url, bool stream) {

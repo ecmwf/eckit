@@ -14,6 +14,8 @@
 
 #include "eckit/eckit_config.h"
 #include "eckit/io/URLHandle.h"
+#include "eckit/io/EasyCURL.h"
+#include "eckit/value/Value.h"
 
 #include "eckit/testing/Test.h"
 
@@ -39,7 +41,7 @@ CASE("Get URL without conten-lenght") {
 
 // TODO Not working. Downloads zero length file
 //
-CASE("test_urlhandle_redirect") {
+CASE("Get URL 301 and follow Location redirect") {
     PathName out("/tmp/test_urlhandle_get.html");
     {
         URLHandle h("https://get.ecmwf.int/atlas/grids/orca/v0/ORCA2_T.atlas");
@@ -82,6 +84,12 @@ CASE("Handle URLException 404") {
     catch (eckit::URLException& e) {
         EXPECT(e.code() == 404);
     }
+}
+
+CASE("EasyCURL GET") {
+    auto r = EasyCURL().GET("http://download.ecmwf.org/test-data/eckit/tests/io/t.grib.md5");
+    // Log::info() << "[" << r.body() << "]" << std::endl;
+    EXPECT(r.body() == "f59fdc6a09c1d11b0e567309ef541bef  t.grib\n");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

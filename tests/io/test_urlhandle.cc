@@ -43,6 +43,7 @@ CASE("test_urlhandle_redirect") {
     PathName out("/tmp/test_urlhandle_get.html");
     {
         URLHandle h("https://get.ecmwf.int/atlas/grids/orca/v0/ORCA2_T.atlas");
+        Log::info() << "Size " << h.size() << ", estimate " << h.estimate() << std::endl;
         h.saveInto(out);
     }
     Log::info() << out << " size " << out.size() << std::endl;

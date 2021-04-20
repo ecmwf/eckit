@@ -46,6 +46,10 @@ Length URLHandle::estimate() {
     return handle().estimate();
 }
 
+Length URLHandle::size() {
+    return handle().size();
+}
+
 Length URLHandle::openForRead() {
     return handle().estimate();
 }
@@ -73,7 +77,7 @@ void URLHandle::close() {
 DataHandle& URLHandle::handle() {
     if (!handle_) {
         EasyCURL curl;
-        curl.followLocation(true);
+        // curl.followLocation(true);
         handle_.reset(curl.GET(uri_, true).dataHandle());
     }
     return *handle_.get();

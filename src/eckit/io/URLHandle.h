@@ -53,6 +53,7 @@ public:
     // virtual void rewind() override;
     virtual void print(std::ostream&) const override;
     virtual Length estimate() override;
+    virtual Length size() override;
 
     virtual bool canSeek() const override { return false; }
 

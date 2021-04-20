@@ -73,6 +73,7 @@ void URLHandle::close() {
 DataHandle& URLHandle::handle() {
     if (!handle_) {
         EasyCURL curl;
+        curl.followLocation(true);
         handle_.reset(curl.GET(uri_, true).dataHandle());
     }
     return *handle_.get();

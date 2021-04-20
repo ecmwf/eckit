@@ -584,12 +584,14 @@ public:
 
     virtual unsigned long long contentLength(bool& present) override {
         ensureHeaders();
-        present = true;
+        present = false;
+
         auto j  = headers_.find("content-length");
         if (j != headers_.end()) {
+            present = true;
             return Translator<std::string, unsigned long long>()((*j).second);
         }
-        present = false;
+
         return 0;
     }
 
@@ -757,7 +759,7 @@ Length EasyCURLHandle::openForRead() {
 Length EasyCURLHandle::size() {
     bool present = false;
     Length len = imp_->contentLength(present);
-    if(not present) {
+    if(!present) {
         throw eckit::BadValue("EasyCURLResponseStream: cannot establish contentLength");
     }
     return len;

@@ -35,21 +35,13 @@ public:
 
 class URLHandle : public DataHandle {
 public:
-    // -- Exceptions
-
-    // -- Contructors
-
     URLHandle(const std::string& uri);
 
     URLHandle(Stream&);
 
-    // -- Destructor
-
     ~URLHandle();
 
-    // -- Overridden methods
-
-    // From DataHandle
+    // Overridden methods
 
     virtual Length openForRead() override;
     virtual void openForWrite(const Length&) override;
@@ -74,18 +66,11 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
-    // -- Members
 
     std::string uri_;
     std::unique_ptr<DataHandle> handle_;
 
-
-    // -- Methods
-
     DataHandle& handle();
-
-
-    // -- Class members
 
     static ClassSpec classSpec_;
     static Reanimator<URLHandle> reanimator_;

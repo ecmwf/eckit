@@ -39,16 +39,16 @@ CASE("Get URL without conten-lenght") {
 
 // TODO Not working. Downloads zero length file
 //
-// CASE("test_urlhandle_redirect") {
-//     PathName out("/tmp/test_urlhandle_get.html");
-//     {
-//         URLHandle h("http://www.ecmwf.int");
-//         h.saveInto(out);
-//     }
-//     Log::info() << out << " size " << out.size() << std::endl;
-//     EXPECT(out.size() > Length(0));
-//     out.unlink();
-// }
+CASE("test_urlhandle_redirect") {
+    PathName out("/tmp/test_urlhandle_get.html");
+    {
+        URLHandle h("https://get.ecmwf.int/atlas/grids/orca/v0/ORCA2_T.atlas");
+        h.saveInto(out);
+    }
+    Log::info() << out << " size " << out.size() << std::endl;
+    EXPECT(out.size() > Length(0));
+    out.unlink();
+}
 
 CASE("Get URL small file 41 bytes") {
     PathName out("/tmp/t.grib.md5");

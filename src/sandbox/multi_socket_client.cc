@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
+#include <string.h>
 #include <unistd.h>
 #include <sstream>
-#include <string.h>
+#include <fstream>
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/MultiSocketHandle.h"
 #include "eckit/io/PartFileHandle.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Timer.h"
 #include "eckit/net/MultiSocket.h"
 #include "eckit/runtime/Application.h"
 
@@ -26,6 +28,8 @@ class Client : public Application {
 
     virtual void run();
     void test(const std::string& host, int port);
+    void send(const std::string& host, int port);
+    void grid(const std::string& host, int port);
 
 public:
     Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
@@ -51,19 +55,10 @@ void Client::test(const std::string& host, int port) {
     }
 }
 
-void Client::run() {
 
-    std::string host = Resource<std::string>("--host", "localhost");
-    int port         = Resource<int>("--port", 9013);
-    bool test        = Resource<bool>("--test", false);
-
-    if (test) {
-        Client::test(host, port);
-        return;
-    }
-
+void Client::send(const std::string& host, int port) {
     int streams     = Resource<int>("--streams", 10);
-    int messageSize = Resource<int>("--messageSize", 64 * 1024);
+    int messageSize = Resource<int>("--message-size", 64 * 1024);
     long long size  = Resource<long long>("--size", 1024 * 1024 * 1024);
     PathName file   = Resource<PathName>("--file", "/dev/zero");
 
@@ -75,6 +70,68 @@ void Client::run() {
     PartFileHandle in(file, 0, size);
     MultiSocketHandle out(host, port, streams, messageSize);
     in.saveInto(out);
+}
+
+void Client::grid(const std::string& host, int port) {
+    int streams_start     = Resource<int>("--streams-start", 1);
+    int streams_end       = Resource<int>("--streams-end", 20);
+    int streams_step      = Resource<int>("--streams-step", 1);
+    int messageSize_start = Resource<int>("--message-size-start", 1024);
+    int messageSize_end   = Resource<int>("--message-size-start", 1024 * 1024);
+    int messageSize_step  = Resource<int>("--message-size-step", 2);
+    long long size        = Resource<long long>("--size", 1024 * 1024 * 1024);
+    PathName file         = Resource<PathName>("--file", "/dev/zero");
+
+    std::string csv_file = Resource<std::string>("--csv", "sandbox_multi_socket_client.csv");
+
+    std::ofstream csv(csv_file);
+    csv << "size" << "," << "streams" << "," << "messageSize" << "," << "elapsed" << std::endl;
+
+    if (file.size() > 0) {
+        size = std::min(Length(size), file.size());
+    }
+
+    for (int streams = streams_start; streams <= streams_end; streams += streams_step) {
+        int messageSize = messageSize_start;
+        while (messageSize <= messageSize_end) {
+            Log::info() << "Sending " << Bytes(size) << " from " << file << std::endl;
+
+            PartFileHandle in(file, 0, size);
+            MultiSocketHandle out(host, port, streams, messageSize);
+
+            Timer timer;
+            in.saveInto(out);
+
+            csv << size << "," << streams << "," << messageSize << "," << timer.elapsed() << std::endl;
+
+            if (messageSize_step < 1024) {
+                messageSize *= messageSize_step;
+            }
+            else {
+                messageSize += messageSize_step;
+            }
+        }
+    }
+}
+
+void Client::run() {
+
+    std::string host = Resource<std::string>("--host", "localhost");
+    int port         = Resource<int>("--port", 9013);
+    bool test        = Resource<bool>("--test", false);
+    bool grid        = Resource<bool>("--grid", false);
+
+    if (test) {
+        Client::test(host, port);
+        return;
+    }
+
+    if (grid) {
+        Client::grid(host, port);
+        return;
+    }
+
+    Client::send(host, port);
 }
 
 

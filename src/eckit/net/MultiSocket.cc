@@ -15,6 +15,7 @@
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPServer.h"
 #include "eckit/net/TCPStream.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit {
@@ -123,17 +124,28 @@ long MultiSocket::read(void* buf, long length) {
     return read;
 }
 
-MultiSocket& MultiSocket::connect(const std::string& host, int port) {
+MultiSocket& MultiSocket::connect(const std::string& host, int port, int retries, int timeout) {
     ASSERT(!accept_);
     ASSERT(messageSize_);
     ASSERT(streams_);
 
-    id_ = (::time(0) << 16) + ::getpid();
-    ASSERT(id_);
+    MD5 md5;
+
+     char hostname[256] = {
+            0,
+        };
+        SYSCALL(::gethostname(hostname, sizeof(hostname) - 1));
+
+    md5.add(std::string(hostname));
+    md5.add(::time(0));
+    md5.add(::getpid());
+    md5.add(reinterpret_cast<long long>(this));
+
+    id_ = md5.digest();
 
     for (size_t i = 0; i < streams_; ++i) {
         std::unique_ptr<TCPClient> p(new TCPClient());
-        p->connect(host, port);
+        p->connect(host, port, retries, timeout);
 
         InstantTCPStream s(*p);
         s << VERSION;
@@ -154,7 +166,7 @@ MultiSocket& MultiSocket::accept() {
 
     // Reset
     messageSize_ = 0;
-    id_          = 0;
+    id_          = "";
     streams_     = 0;
 
     size_t count = 0;
@@ -167,16 +179,16 @@ MultiSocket& MultiSocket::accept() {
         s >> version;
         ASSERT(version == VERSION);
 
-        size_t streams        = 0;
-        size_t messageSize    = 0;
-        unsigned long long id = 0;
+        size_t streams     = 0;
+        size_t messageSize = 0;
+        std::string id;
 
         s >> id;
         s >> i;
         s >> streams;
         s >> messageSize;
 
-        if (id_) {
+        if (id_.size()) {
             ASSERT(id_ == id);
         }
         else {

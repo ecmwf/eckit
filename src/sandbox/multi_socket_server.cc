@@ -57,14 +57,21 @@ void Server::run() {
     Buffer buffer(readBuffer);
 
     for (;;) {
-        net::MultiSocket s(server.accept());
-        Timer timer("Receive");
-        long long total = 0;
-        size_t len;
-        while ((len = s.read(buffer, readBuffer)) > 0) {
-            total += len;
+        Log::info() << "Ready" << std::endl;
+        try {
+            net::MultiSocket s(server.accept());
+
+            Timer timer("Receive");
+            long long total = 0;
+            size_t len;
+            while ((len = s.read(buffer, readBuffer)) > 0) {
+                total += len;
+            }
+            Log::info() << "Received " << Bytes(total) << " at " << Bytes(total, timer) << std::endl;
         }
-        Log::info() << "Received " << Bytes(total) << " at " << Bytes(total, timer) << std::endl;
+        catch (std::exception& e) {
+            Log::error() << e.what() << std::endl;
+        }
     }
 }
 

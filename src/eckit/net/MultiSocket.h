@@ -26,13 +26,13 @@ class TCPSocket;
 class MultiSocket {
 public:
     MultiSocket(size_t streams, size_t messageSize);  // Client
-    MultiSocket(int port);                                                               // Server
+    MultiSocket(int port);                            // Server
     ~MultiSocket();
 
     MultiSocket& accept();
-    MultiSocket& connect(const std::string& host, int port);
+    MultiSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
 
-    MultiSocket(MultiSocket&); // Take ownership
+    MultiSocket(MultiSocket&);  // Take ownership
 
     long write(const void* buf, long length);
     long read(void* buf, long length);
@@ -58,7 +58,6 @@ public:
     void debug(bool on);
 
 private:  // methods
-
     MultiSocket(const MultiSocket&);
     MultiSocket& operator=(const MultiSocket&);
 
@@ -79,8 +78,8 @@ private:  // methods
     int writeSocket_     = 0;
     size_t bytesWritten_ = 0;
 
-    size_t messageSize_    = 0;
-    unsigned long long id_ = 0;
+    size_t messageSize_ = 0;
+    std::string id_;
 
     friend std::ostream& operator<<(std::ostream& s, const MultiSocket& socket) {
         socket.print(s);

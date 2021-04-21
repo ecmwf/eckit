@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 #include <sstream>
-
+#include <string.h>
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/MultiSocketHandle.h"

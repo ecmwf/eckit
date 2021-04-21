@@ -28,7 +28,7 @@ public:
     // -- Contructors
 
     MultiSocketHandle(Stream&);
-    MultiSocketHandle(const std::string& host, int port, size_t streams, size_t messageSize);
+    MultiSocketHandle(const std::string& host, int port, size_t streams, size_t messageSize, size_t bufferSize = 0);
 
     // -- Destructor
 
@@ -70,6 +70,7 @@ protected:
     std::unique_ptr<net::MultiSocket> connection_;
     size_t streams_     = 0;
     size_t messageSize_ = 0;
+    size_t bufferSize_  = 0;
 
 private:
     static ClassSpec classSpec_;

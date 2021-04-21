@@ -10,8 +10,8 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/MultiSocketHandle.h"
@@ -79,13 +79,20 @@ void Client::grid(const std::string& host, int port) {
     int messageSize_start = Resource<int>("--message-size-start", 1024);
     int messageSize_end   = Resource<int>("--message-size-end", 1024 * 1024);
     int messageSize_step  = Resource<int>("--message-size-step", 2);
+    int bufferSize        = Resource<int>("--buffer-size", 0);
     long long size        = Resource<long long>("--size", 1024 * 1024 * 1024);
     PathName file         = Resource<PathName>("--file", "/dev/zero");
 
     std::string csv_file = Resource<std::string>("--csv", "sandbox_multi_socket_client.csv");
 
     std::ofstream csv(csv_file);
-    csv << "size" << "," << "streams" << "," << "messageSize" << "," << "elapsed" << std::endl;
+    csv << "size"
+        << ","
+        << "streams"
+        << ","
+        << "messageSize"
+        << ","
+        << "elapsed" << std::endl;
 
     if (file.size() > 0) {
         size = std::min(Length(size), file.size());
@@ -97,7 +104,7 @@ void Client::grid(const std::string& host, int port) {
             Log::info() << "Sending " << Bytes(size) << " from " << file << std::endl;
 
             PartFileHandle in(file, 0, size);
-            MultiSocketHandle out(host, port, streams, messageSize);
+            MultiSocketHandle out(host, port, streams, messageSize, bufferSize);
 
             Timer timer;
             in.saveInto(out);

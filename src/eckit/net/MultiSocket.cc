@@ -145,6 +145,7 @@ MultiSocket& MultiSocket::connect(const std::string& host, int port, int retries
 
     for (size_t i = 0; i < streams_; ++i) {
         std::unique_ptr<TCPClient> p(new TCPClient());
+        p->bufferSize(bufferSize_);
         p->connect(host, port, retries, timeout);
 
         InstantTCPStream s(*p);

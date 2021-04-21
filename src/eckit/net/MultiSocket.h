@@ -50,7 +50,7 @@ public:
     const std::string& localHost() const;
     int localPort() const;
 
-    void bufferSize(int n);
+    void bufferSize(int n) { bufferSize_ = n; }
 
     void closeOutput();
     void closeInput();
@@ -80,6 +80,8 @@ private:  // methods
 
     size_t messageSize_ = 0;
     std::string id_;
+
+    int bufferSize_ = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const MultiSocket& socket) {
         socket.print(s);

@@ -35,6 +35,7 @@ void MultiSocketHandle::encode(Stream& s) const {
     s << port_;
     s << streams_;
     s << messageSize_;
+    s << bufferSize_;
 }
 
 MultiSocketHandle::MultiSocketHandle(Stream& s) : DataHandle(s), port_(0) {
@@ -42,22 +43,26 @@ MultiSocketHandle::MultiSocketHandle(Stream& s) : DataHandle(s), port_(0) {
     s >> port_;
     s >> streams_;
     s >> messageSize_;
+    s >> bufferSize_;
 }
 
 
-MultiSocketHandle::MultiSocketHandle(const std::string& host, int port, size_t streams, size_t messageSize) :
-    host_(host), port_(port), streams_(streams), messageSize_(messageSize) {}
+MultiSocketHandle::MultiSocketHandle(const std::string& host, int port, size_t streams, size_t messageSize,
+                                     size_t bufferSize) :
+    host_(host), port_(port), streams_(streams), messageSize_(messageSize), bufferSize_(bufferSize) {}
 
 MultiSocketHandle::~MultiSocketHandle() {}
 
 Length MultiSocketHandle::openForRead() {
     connection_.reset(new net::MultiSocket(streams_, messageSize_));
+    connection_->bufferSize(bufferSize_);
     connection_->connect(host_, port_);
     return 0;
 }
 
 void MultiSocketHandle::openForWrite(const Length&) {
     connection_.reset(new net::MultiSocket(streams_, messageSize_));
+    connection_->bufferSize(bufferSize_);
     connection_->connect(host_, port_);
 }
 

@@ -27,7 +27,7 @@ namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
-
+#if 0
 CASE("Get URL without conten-lenght") {
     PathName out("/tmp/test_urlhandle_get.html");
     {
@@ -50,6 +50,7 @@ CASE("Get URL 301 and follow Location redirect") {
     EXPECT(out.size() > Length(0));
     out.unlink();
 }
+#endif
 
 CASE("Get URL small file 41 bytes") {
     PathName out("/tmp/t.grib.md5");

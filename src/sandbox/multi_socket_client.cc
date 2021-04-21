@@ -77,7 +77,7 @@ void Client::grid(const std::string& host, int port) {
     int streams_end       = Resource<int>("--streams-end", 20);
     int streams_step      = Resource<int>("--streams-step", 1);
     int messageSize_start = Resource<int>("--message-size-start", 1024);
-    int messageSize_end   = Resource<int>("--message-size-start", 1024 * 1024);
+    int messageSize_end   = Resource<int>("--message-size-end", 1024 * 1024);
     int messageSize_step  = Resource<int>("--message-size-step", 2);
     long long size        = Resource<long long>("--size", 1024 * 1024 * 1024);
     PathName file         = Resource<PathName>("--file", "/dev/zero");

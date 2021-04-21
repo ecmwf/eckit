@@ -230,6 +230,8 @@ io/StdioBuf.cc
 io/StdioBuf.h
 io/TCPHandle.cc
 io/TCPHandle.h
+io/MultiSocketHandle.cc
+io/MultiSocketHandle.h
 io/TCPSocketHandle.cc
 io/TCPSocketHandle.h
 io/TeeHandle.cc

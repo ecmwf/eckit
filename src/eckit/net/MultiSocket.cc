@@ -30,7 +30,8 @@ MultiSocket::MultiSocket(int port) {
 
 
 MultiSocket::MultiSocket(size_t streams, size_t messageSize) : streams_(streams), messageSize_(messageSize) {
-    ASSERT(streams > 1);
+    ASSERT(streams > 0);
+    ASSERT(messageSize > 0);
 }
 
 
@@ -61,7 +62,7 @@ void MultiSocket::close() {
 }
 
 long MultiSocket::write(const void* buf, long length) {
-        Log::info() << "MultiSocket::write length=" << length << std::endl;
+    // Log::info() << "MultiSocket::write length=" << length << std::endl;
 
     ASSERT(messageSize_);
     ASSERT(bytesWritten_ < messageSize_);
@@ -69,8 +70,8 @@ long MultiSocket::write(const void* buf, long length) {
     const char* p = reinterpret_cast<const char*>(buf);
     while (length > 0) {
         long len = std::min(long(messageSize_ - bytesWritten_), length);
-         Log::info() << "MultiSocket::write socket=" << writeSocket_ << " len=" << len << std::endl;
-        len      = sockets_[writeSocket_]->write(p, len);
+        // Log::info() << "MultiSocket::write socket=" << writeSocket_ << " len=" << len << std::endl;
+        len = sockets_[writeSocket_]->write(p, len);
         if (len > 0) {
             written += len;
             bytesWritten_ += len;
@@ -91,17 +92,19 @@ long MultiSocket::write(const void* buf, long length) {
 
 long MultiSocket::read(void* buf, long length) {
 
-    Log::info() << "MultiSocket::read length=" << length << std::endl;
+    // Log::info() << "MultiSocket::read length=" << length << std::endl;
 
     ASSERT(messageSize_);
     ASSERT(bytesRead_ < messageSize_);
+
     long read = 0;
     char* p   = reinterpret_cast<char*>(buf);
+
     while (length > 0) {
         long len = std::min(long(messageSize_ - bytesRead_), length);
-        Log::info() << "MultiSocket::read socket=" << readSocket_ << " len=" << len << std::endl;
+        // Log::info() << "MultiSocket::read socket=" << readSocket_ << " len=" << len << std::endl;
 
-        len      = sockets_[readSocket_]->read(p, len);
+        len = sockets_[readSocket_]->read(p, len);
         if (len > 0) {
             read += len;
             bytesRead_ += len;

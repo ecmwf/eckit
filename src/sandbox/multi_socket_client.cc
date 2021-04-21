@@ -11,16 +11,13 @@
 #include <unistd.h>
 #include <sstream>
 
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/io/DataHandle.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/io/TCPHandle.h"
+
+#include "eckit/config/Resource.h"
+#include "eckit/io/MultiSocketHandle.h"
+#include "eckit/io/PartFileHandle.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/net/MultiSocket.h"
-#include "eckit/net/TCPClient.h"
-#include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Application.h"
-#include "eckit/runtime/Tool.h"
 
 
 using namespace eckit;
@@ -28,32 +25,56 @@ using namespace eckit;
 class Client : public Application {
 
     virtual void run();
+    void test(const std::string& host, int port);
 
 public:
     Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
-
-void Client::run() {
-    std::string remoteHost = "localhost";
-
+void Client::test(const std::string& host, int port) {
 
     for (int i = 10; i <= 20; i += 10) {
 
         net::MultiSocket client(i, 4096);
-        net::MultiSocket s(client.connect(remoteHost, 9013));
+        net::MultiSocket s(client.connect(host, port));
 
         const char p[] = "abcdefghijklmnopqrstuvwxyz";
         for (size_t i = 0; i < 4096; ++i) {
             ASSERT(s.write(p, 26) == 26);
         }
 
-        char q[26] ;
+        char q[26];
         for (size_t i = 0; i < 4096; ++i) {
             ASSERT(s.read(q, 26) == 26);
-            ASSERT(::memcmp(p, q, 26)==0);
+            ASSERT(::memcmp(p, q, 26) == 0);
         }
     }
+}
+
+void Client::run() {
+
+    std::string host = Resource<std::string>("--host", "localhost");
+    int port         = Resource<int>("--port", 9013);
+    bool test        = Resource<bool>("--test", false);
+
+    if (test) {
+        Client::test(host, port);
+        return;
+    }
+
+    int streams     = Resource<int>("--streams", 10);
+    int messageSize = Resource<int>("--messageSize", 64 * 1024);
+    long long size  = Resource<long long>("--size", 1024 * 1024 * 1024);
+    PathName file   = Resource<PathName>("--file", "/dev/zero");
+
+    if (file.size() > 0) {
+        size = std::min(Length(size), file.size());
+    }
+    Log::info() << "Sending " << Bytes(size) << " from " << file << std::endl;
+
+    PartFileHandle in(file, 0, size);
+    MultiSocketHandle out(host, port, streams, messageSize);
+    in.saveInto(out);
 }
 
 

@@ -28,7 +28,7 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("Get URL without conten-lenght") {
+CASE("Get URL without content-lenght") {
     PathName out("/tmp/test_urlhandle_get.html");
     {
         URLHandle h("https://www.ecmwf.int");
@@ -42,7 +42,7 @@ CASE("Get URL without conten-lenght") {
 CASE("Get URL 301 and follow Location redirect") {
     PathName out("/tmp/test_urlhandle_get.html");
     {
-        URLHandle h("https://get.ecmwf.int/atlas/grids/orca/v0/ORCA2_T.atlas");
+        URLHandle h("https://www.wikipedia.net");  // redirects to https://www.wikipedia.org
         Log::info() << "Size " << h.size() << ", estimate " << h.estimate() << std::endl;
         h.saveInto(out);
     }

@@ -12,9 +12,7 @@
 /// @date Jul 2015
 
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/parser/JSONParser.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/value/Value.h"
 
@@ -196,11 +194,6 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
     setValue(s, values);
     return *this;
 }
-
-template <>
-struct VectorPrintSelector<LocalConfiguration> {
-    typedef VectorPrintSimple selector;
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 

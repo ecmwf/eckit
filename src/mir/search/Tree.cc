@@ -13,13 +13,13 @@
 #include "mir/search/Tree.h"
 
 #include <map>
-#include <mutex>
 #include <ostream>
 #include <sstream>
 
 #include "mir/repres/Representation.h"
 #include "mir/util/Exceptions.h"
 #include "mir/util/Log.h"
+#include "mir/util/Mutex.h"
 
 
 namespace mir {
@@ -112,18 +112,18 @@ void Tree::unlock() {
 }
 
 
-static std::once_flag once;
-static std::recursive_mutex* local_mutex      = nullptr;
+static util::once_flag once;
+static util::recursive_mutex* local_mutex     = nullptr;
 static std::map<std::string, TreeFactory*>* m = nullptr;
 static void init() {
-    local_mutex = new std::recursive_mutex();
+    local_mutex = new util::recursive_mutex();
     m           = new std::map<std::string, TreeFactory*>();
 }
 
 
 TreeFactory::TreeFactory(const std::string& name) : name_(name) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     auto j = m->find(name);
     if (j == m->end()) {
@@ -136,7 +136,7 @@ TreeFactory::TreeFactory(const std::string& name) : name_(name) {
 
 
 TreeFactory::~TreeFactory() {
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     m->erase(name_);
 }
@@ -144,8 +144,8 @@ TreeFactory::~TreeFactory() {
 
 Tree* TreeFactory::build(const std::string& name, const repres::Representation& r,
                          const param::MIRParametrisation& params) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     Log::debug() << "TreeFactory: looking for '" << name << "'" << std::endl;
 
@@ -160,8 +160,8 @@ Tree* TreeFactory::build(const std::string& name, const repres::Representation& 
 
 
 void TreeFactory::list(std::ostream& out) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     const char* sep = "";
     for (const auto& j : *m) {

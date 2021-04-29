@@ -55,15 +55,15 @@ public:
         count_ = 0;
     }
 
-    T centralMoment1() const { return count_ < 1 ? 0 : M1_ / T(count_); }
-    T centralMoment2() const { return count_ < 1 ? 0 : M2_ / T(count_); }
-    T centralMoment3() const { return count_ < 1 ? 0 : M3_ / T(count_); }
-    T centralMoment4() const { return count_ < 1 ? 0 : M4_ / T(count_); }
+    T centralMoment1() const { return count_ < 1 ? T(0) : T(M1_) / T(count_); }
+    T centralMoment2() const { return count_ < 1 ? T(0) : T(M2_) / T(count_); }
+    T centralMoment3() const { return count_ < 1 ? T(0) : T(M3_) / T(count_); }
+    T centralMoment4() const { return count_ < 1 ? T(0) : T(M4_) / T(count_); }
 
     T mean() const { return count_ < 1 ? std::numeric_limits<T>::quiet_NaN() : M1_; }
-    T variance() const { return count_ < 2 ? 0 : (M2_ / T(count_ - 1)); }
-    T skewness() const { return count_ < 2 ? 0 : (M3_ * std::sqrt(T(count_))) / std::pow(M2_, 1.5); }
-    T kurtosis() const { return count_ < 2 ? 0 : (M4_ * T(count_)) / (M2_ * M2_) - 3.; }
+    T variance() const { return count_ < 2 ? T(0) : T(M2_) / T(count_ - 1); }
+    T skewness() const { return count_ < 2 ? T(0) : T(M3_) * std::sqrt(T(count_)) / std::pow(M2_, 1.5); }
+    T kurtosis() const { return count_ < 2 ? T(0) : T(M4_) * T(count_) / T(M2_ * M2_) - 3.; }
     T standardDeviation() const { return std::sqrt(variance()); }
 
     T difference(const T& a, const T& b) const { return std::abs(a - b); }

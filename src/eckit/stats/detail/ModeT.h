@@ -41,6 +41,8 @@ template <typename T>
 struct Mode {
     Mode(bool disambiguateMax) : disambiguateMax_(disambiguateMax) {}
 
+    virtual ~Mode() = default;
+
     virtual void operator()(const double&) = 0;
     virtual void operator()(const float&)  = 0;
     virtual void operator()(const int&)    = 0;
@@ -70,6 +72,8 @@ struct ModeIntegral : Mode<int> {
     ModeIntegral(bool disambiguateMax);
     ModeIntegral(const param::MIRParametrisation&);
 
+    virtual ~ModeIntegral() override = default;
+
     void operator()(const double& value) override { binCount_[static_cast<int>(std::lround(value))]++; }
     void operator()(const float& value) override { binCount_[static_cast<int>(std::lround(value))]++; }
     void operator()(const int& value) override { binCount_[value]++; }
@@ -89,6 +93,8 @@ struct ModeIntegral : Mode<int> {
 struct ModeReal : Mode<size_t> {
     ModeReal(bool disambiguateMax, const std::vector<double>& values = {0, 1}, const std::vector<double>& mins = {0.5});
     ModeReal(const param::MIRParametrisation&);
+
+    virtual ~ModeReal() override = default;
 
     void operator()(const double& value) override {
         size_t bin = 0;
@@ -110,7 +116,7 @@ struct ModeReal : Mode<size_t> {
 
     double mode() const override;
 
-    void print(std::ostream&) const;
+    virtual void print(std::ostream&) const;
 
     std::vector<double> values_;
     std::vector<double> mins_;

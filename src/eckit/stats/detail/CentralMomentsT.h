@@ -47,6 +47,8 @@ private:
 public:
     CentralMomentsT() : count_(0) { reset(); }
 
+    virtual ~CentralMomentsT() = default;
+
     void reset() {
         M1_    = 0;
         M2_    = 0;

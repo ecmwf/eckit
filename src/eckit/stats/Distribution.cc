@@ -20,6 +20,7 @@
 #include "mir/param/SimpleParametrisation.h"
 #include "mir/util/Exceptions.h"
 #include "mir/util/Log.h"
+#include "mir/util/ValueMap.h"
 
 
 namespace mir {
@@ -70,18 +71,8 @@ Distribution* DistributionFactory::build(const std::string& name) {
     auto braces = name.find('{');
     ASSERT(braces == std::string::npos || name.back() == '}');
 
-    std::string key  = name.substr(0, braces);
-    std::string yaml = name.substr(braces);
-
-    param::SimpleParametrisation args;
-    if (!yaml.empty()) {
-        eckit::ValueMap map = eckit::YAMLParser::decodeString(yaml);
-        for (const auto& kv : map) {
-            kv.second.isDouble()   ? args.set(kv.first, kv.second.as<double>())
-            : kv.second.isNumber() ? args.set(kv.first, kv.second.as<long long>())
-                                   : args.set(kv.first, kv.second.as<std::string>());
-        }
-    }
+    auto key  = name.substr(0, braces);
+    auto yaml = name.substr(braces);
 
     Log::debug() << "DistributionFactory: looking for '" << key << "'" << std::endl;
 
@@ -89,6 +80,12 @@ Distribution* DistributionFactory::build(const std::string& name) {
     if (j == m->end()) {
         list(Log::error() << "DistributionFactory: unknown '" << key << "', choices are: ");
         Log::warning() << std::endl;
+    }
+
+    param::SimpleParametrisation args;
+    if (!yaml.empty()) {
+        util::ValueMap map(eckit::YAMLParser::decodeString(yaml));
+        map.set(args);
     }
 
     return j->second->make(args);

@@ -502,8 +502,8 @@ types/Fraction.cc
 types/Fraction.h
 types/Grid.cc
 types/Grid.h
-# types/Metadata.cc
-# types/Metadata.h
+types/Hour.cc
+types/Hour.h
 types/Month.cc
 types/Month.h
 types/Time.cc

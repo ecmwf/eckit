@@ -30,6 +30,8 @@ CASE("Basic test") {
     EXPECT(Hour(12.5) == Hour("12:30"));
     EXPECT(Hour(1.0 / 3.0) == Hour("0:20"));
     EXPECT(Hour(2.0 / 3.0) == Hour("0:40"));
+    EXPECT(Hour(1.0 / 60.0) == Hour("0:01"));
+    EXPECT(Hour(1.0 / 3600.0) == Hour("0:00:01"));
 }
 
 CASE("Test minutes") {

@@ -90,7 +90,8 @@
 			"concepts": "cpp",
 			"memory_resource": "cpp",
 			"cfenv": "cpp",
-			"cinttypes": "cpp"
+			"cinttypes": "cpp",
+			"semaphore": "cpp"
 		}
 	}
 }

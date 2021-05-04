@@ -16,6 +16,7 @@
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Date.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/utils/Hash.h"
 
 namespace eckit {
 
@@ -311,7 +312,9 @@ void Date::load(DumpLoad& a) {
     a.load(julian_);
 }
 
-void Date::hash(Hash&) const {}
+void Date::hash(Hash& h) const {
+    h.add(julian_);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

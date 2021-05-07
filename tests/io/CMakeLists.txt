@@ -15,7 +15,7 @@ ecbuild_add_test( TARGET   eckit_test_filepool
 
 ecbuild_add_test( TARGET  eckit_test_urlhandle
                   SOURCES test_urlhandle.cc
-                  CONDITION eckit_HAVE_CURL
+                  CONDITION HAVE_EXTRA_TESTS AND eckit_HAVE_CURL
                   LIBS    eckit )
 
 ecbuild_add_test( TARGET  eckit_test_circularbuffer

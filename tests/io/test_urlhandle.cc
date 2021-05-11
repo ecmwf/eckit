@@ -84,6 +84,19 @@ CASE("Handle URLException 404") {
     }
 }
 
+CASE("No use of SSL") {
+    bool useSSL = false;
+    PathName out("/tmp/foobar");
+    URLHandle h("https://get.ecmwf.int/atlas/grids/orca/v0/ORCA2_T.atlas", useSSL);
+    {
+        h.saveInto(out);
+    }
+    Log::info() << out << " size " << out.size() << std::endl;
+    EXPECT(out.size() == Length(102309));
+    out.unlink();
+}
+
+
 CASE("EasyCURL GET") {
     auto r = EasyCURL().GET("http://download.ecmwf.org/test-data/eckit/tests/io/t.grib.md5");
     // Log::info() << "[" << r.body() << "]" << std::endl;

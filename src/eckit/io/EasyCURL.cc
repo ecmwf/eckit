@@ -31,6 +31,8 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace {
 
 struct http_code {
@@ -397,8 +399,8 @@ std::vector<http_code> http_codes = {
 };
 
 }  // namespace
-//----------------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------------
 
 #define _(a) call(#a, a)
 
@@ -449,7 +451,7 @@ public:
     }
 };
 
-// ===========================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 class EasyCURLResponseImp : public eckit::Counted {
 public:
@@ -708,7 +710,7 @@ size_t EasyCURLResponseImp::headersCallback(const void* ptr, size_t size) {
     return size;
 }
 
-// ===========================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 class EasyCURLHandle : public DataHandle {
 public:
@@ -841,7 +843,7 @@ void EasyCURLResponse::print(std::ostream& out) const {
     imp_->print(out);
 }
 
-// ===========================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 EasyCURL::EasyCURL() : ch_(new CURLHandle()) {
     ch_->attach();
@@ -851,7 +853,7 @@ EasyCURL::~EasyCURL() {
     ch_->detach();
 }
 
-// ============================
+//----------------------------------------------------------------------------------------------------------------------
 
 void EasyCURL::verbose(bool on) {
     _(curl_easy_setopt(ch_->curl_, CURLOPT_VERBOSE, on ? 1L : 0L));
@@ -869,10 +871,17 @@ void EasyCURL::sslVerifyHost(bool on) {
     _(curl_easy_setopt(ch_->curl_, CURLOPT_SSL_VERIFYHOST, on ? 1L : 0L));
 }
 
+void EasyCURL::useSSL(bool use) {
+    if(!use) {
+        _(curl_easy_setopt(ch_->curl_, CURLOPT_USE_SSL, CURLUSESSL_NONE));
+    }
+}
+
 void EasyCURL::failOnError(bool on) {
     _(curl_easy_setopt(ch_->curl_, CURLOPT_FAILONERROR, on ? 1L : 0L));
 }
-// ============================
+
+//----------------------------------------------------------------------------------------------------------------------
 
 EasyCURLResponse EasyCURL::request(const std::string& url, bool stream) {
 

@@ -35,13 +35,14 @@ public:
 
 class URLHandle : public DataHandle {
 public:
-    URLHandle(const std::string& uri);
+
+    URLHandle(const std::string& uri, bool useSSL = true);
 
     URLHandle(Stream&);
 
     ~URLHandle();
 
-    // Overridden methods
+    // From DataHandle
 
     virtual Length openForRead() override;
     virtual void openForWrite(const Length&) override;
@@ -70,6 +71,8 @@ private:
 
     std::string uri_;
     std::unique_ptr<DataHandle> handle_;
+
+    bool useSSL_;
 
     DataHandle& handle();
 

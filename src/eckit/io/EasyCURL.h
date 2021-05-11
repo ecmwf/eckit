@@ -76,6 +76,7 @@ public:
     void sslVerifyPeer(bool on);
     void sslVerifyHost(bool on);
     void failOnError(bool on);
+    void useSSL(bool use);
 
 
     void customRequest(const std::string&);

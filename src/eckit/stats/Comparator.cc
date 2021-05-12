@@ -13,22 +13,22 @@
 #include "mir/stats/Comparator.h"
 
 #include <map>
-#include <mutex>
 #include <ostream>
 
 #include "mir/util/Exceptions.h"
 #include "mir/util/Log.h"
+#include "mir/util/Mutex.h"
 
 
 namespace mir {
 namespace stats {
 
 
-static std::recursive_mutex* local_mutex            = nullptr;
+static util::recursive_mutex* local_mutex           = nullptr;
 static std::map<std::string, ComparatorFactory*>* m = nullptr;
-static std::once_flag once;
+static util::once_flag once;
 static void init() {
-    local_mutex = new std::recursive_mutex();
+    local_mutex = new util::recursive_mutex();
     m           = new std::map<std::string, ComparatorFactory*>();
 }
 
@@ -41,8 +41,8 @@ Comparator::~Comparator() = default;
 
 
 ComparatorFactory::ComparatorFactory(const std::string& name) : name_(name) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
         throw exception::SeriousBug("ComparatorFactory: duplicate '" + name + "'");
@@ -54,15 +54,15 @@ ComparatorFactory::ComparatorFactory(const std::string& name) : name_(name) {
 
 
 ComparatorFactory::~ComparatorFactory() {
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     m->erase(name_);
 }
 
 
 void ComparatorFactory::list(std::ostream& out) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     const char* sep = "";
     for (auto& j : *m) {
@@ -75,8 +75,8 @@ void ComparatorFactory::list(std::ostream& out) {
 
 Comparator* ComparatorFactory::build(const std::string& name, const param::MIRParametrisation& param1,
                                      const param::MIRParametrisation& param2) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     Log::debug() << "ComparatorFactory: looking for '" << name << "'" << std::endl;
 

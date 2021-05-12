@@ -13,22 +13,22 @@
 #include "mir/stats/Statistics.h"
 
 #include <map>
-#include <mutex>
 #include <ostream>
 
 #include "mir/util/Exceptions.h"
 #include "mir/util/Log.h"
+#include "mir/util/Mutex.h"
 
 
 namespace mir {
 namespace stats {
 
 
-static std::recursive_mutex* local_mutex            = nullptr;
+static util::recursive_mutex* local_mutex           = nullptr;
 static std::map<std::string, StatisticsFactory*>* m = nullptr;
-static std::once_flag once;
+static util::once_flag once;
 static void init() {
-    local_mutex = new std::recursive_mutex();
+    local_mutex = new util::recursive_mutex();
     m           = new std::map<std::string, StatisticsFactory*>();
 }
 
@@ -40,8 +40,8 @@ Statistics::~Statistics() = default;
 
 
 StatisticsFactory::StatisticsFactory(const std::string& name) : name_(name) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
         throw exception::SeriousBug("StatisticsFactory: duplicate '" + name + "'");
@@ -53,15 +53,15 @@ StatisticsFactory::StatisticsFactory(const std::string& name) : name_(name) {
 
 
 StatisticsFactory::~StatisticsFactory() {
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     m->erase(name_);
 }
 
 
 void StatisticsFactory::list(std::ostream& out) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     const char* sep = "";
     for (auto& j : *m) {
@@ -73,8 +73,8 @@ void StatisticsFactory::list(std::ostream& out) {
 
 
 Statistics* StatisticsFactory::build(const std::string& name, const param::MIRParametrisation& params) {
-    std::call_once(once, init);
-    std::lock_guard<std::recursive_mutex> lock(*local_mutex);
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     Log::debug() << "StatisticsFactory: looking for '" << name << "'" << std::endl;
 

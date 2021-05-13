@@ -55,8 +55,33 @@ CASE("Tensor [2, 3, 4]") {
 }
 
 
+CASE("Tensor [2, 3, 4, 5]") {
+    std::vector<Size> shape {2, 2, 3, 5};
+    std::vector<double> v(Tensor::flatten(shape));
+
+    for (size_t i = 0; i < v.size(); ++i) {
+        v[i] = double(i+1);
+    }
+
+    Tensor A(v.data(), shape);
+
+    // Tensor access is column-major
+    EXPECT(A(0, 0, 0, 0) == 1.);
+    EXPECT(A(1, 0, 0, 0) == 2.);
+    EXPECT(A(0, 1, 0, 0) == 3.);
+    EXPECT(A(1, 1, 0, 0) == 4.);
+
+    EXPECT(A(1, 1, 2, 0) == 12.);
+
+    EXPECT(A(0, 0, 2, 4) == 57.);
+    EXPECT(A(1, 0, 2, 4) == 58.);
+    EXPECT(A(0, 1, 2, 4) == 59.);
+    EXPECT(A(1, 1, 2, 4) == 60.);
+}
+
+
 CASE("Tensor serialization") {
-    
+
     Tensor A = T({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
     PathName path("tensorA");

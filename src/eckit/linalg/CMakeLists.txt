@@ -18,6 +18,8 @@ LinearAlgebraViennaCL.cc
 LinearAlgebraViennaCL.h
 Matrix.cc
 Matrix.h
+Tensor.cc
+Tensor.h
 SparseMatrix.cc
 SparseMatrix.h
 Triplet.cc

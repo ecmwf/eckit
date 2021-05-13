@@ -15,6 +15,7 @@
 
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
+#include "eckit/linalg/Tensor.h"
 
 namespace eckit {
 namespace test {
@@ -52,6 +53,22 @@ linalg::Matrix M(linalg::Size rows, linalg::Size cols, ...) {
     }
     va_end(args);
     return mat;
+}
+
+linalg::Tensor T(std::vector<linalg::Size> shape, ...) {
+    using linalg::Tensor;
+    using linalg::Scalar;
+    using linalg::Size;
+
+    Size size = eckit::linalg::flatten_shape(shape);
+    Tensor tns(shape);
+    va_list args;
+    va_start(args, shape);
+    for (Size i = 0; i < size; ++i) {
+        tns[i] = va_arg(args, Scalar);
+    }
+    va_end(args);
+    return tns;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

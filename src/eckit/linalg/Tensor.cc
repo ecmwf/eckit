@@ -33,7 +33,7 @@ Tensor::Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape),
 Tensor::Tensor(const Scalar* array, const std::vector<Size>& shape) :
     array_(const_cast<Scalar*>(array)), own_(false) {
     shape_ = shape;
-    size_  = flatten(shape);
+    size_  = flatten(shape_);
     ASSERT(size() > 0);
     ASSERT(array_);
 }
@@ -93,11 +93,12 @@ void Tensor::swap(Tensor& other) {
 
 
 void Tensor::resize(const std::vector<Size>& shape) {
-    // avoid reallocation if memory is the same size
-    Size newsize = flatten(shape);
-    if (this->size() != newsize) {
+    if (this->size() != flatten(shape)) {  // avoid reallocation if same size
         Tensor m(shape);
         swap(m);
+    }
+    else {
+        shape_ = shape;
     }
 }
 

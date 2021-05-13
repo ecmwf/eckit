@@ -185,18 +185,27 @@ public:  // methods
     /// @returns const iterator to end of the data
     const S* end() const { return array_ + size(); }
 
-protected:  // member variables
-    /// Container
-    S* array_;
+    void print(std::ostream& s) const {
+        const char sep = ',';
+        s << "Tensor(shape=[";
+        for (int i = 0; i < shape_.size(); ++i) {
+            s << shape_[i] << sep;
+        }
+        s << "],array=[";
+        for (int i = 0; i < size(); ++i) {
+            s << array_[i] << sep;
+        }
+        s << "])";
+    }
 
-    /// flattened size
-    Size size_;
+protected : // member variables
+    S* array_;  ///< data
 
-    /// tensor shape is a vector of sizes per dimension
-    std::vector<Size> shape_;
+    Size size_;  ///< flattened size
 
-    /// Indicate ownership
-    bool own_;
+    std::vector<Size> shape_;  ///< tensor shape is a vector of sizes per dimension
+
+    bool own_;  ///< ownership
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -209,6 +218,12 @@ typedef Tensor<float>  TensorFloat;
 template <typename S>
 Stream& operator<<(Stream& s, const Tensor<S>& t) {
     t.encode(s);
+    return s;
+}
+
+template <typename S>
+std::ostream& operator<<(std::ostream& s, const Tensor<S>& t) {
+    t.print(s);
     return s;
 }
 

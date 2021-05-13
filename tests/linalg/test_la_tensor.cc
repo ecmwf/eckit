@@ -32,10 +32,13 @@ namespace eckit {
 namespace test {
 
 
-CASE("Tensor [2, 2]") {
-    Tensor A = T({2, 2}, 1., -2., -4., 3.);
+//----------------------------------------------------------------------------------------------------------------------
 
-    // Tensor access is column-major
+
+CASE("TensorDouble [2, 2]") {
+    TensorDouble A = TD({2, 2}, 1., -2., -4., 3.);
+
+    // column-major order
     EXPECT(A(0, 0) == 1.);
     EXPECT(A(1, 0) == -2.);
     EXPECT(A(0, 1) == -4.);
@@ -43,10 +46,10 @@ CASE("Tensor [2, 2]") {
 }
 
 
-CASE("Tensor [2, 3, 4]") {
-    Tensor A = T({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+CASE("TensorDouble [2, 3, 4]") {
+    TensorDouble A = TD({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
-    // Tensor access is column-major
+    // column-major order
     EXPECT(A(0, 0, 0) == 1.);
     EXPECT(A(1, 0, 0) == -2.);
     EXPECT(A(0, 1, 0) == 3.);
@@ -55,17 +58,17 @@ CASE("Tensor [2, 3, 4]") {
 }
 
 
-CASE("Tensor [2, 3, 4, 5]") {
+CASE("TensorDouble [2, 3, 4, 5]") {
     std::vector<Size> shape {2, 2, 3, 5};
-    std::vector<double> v(Tensor::flatten(shape));
+    std::vector<double> v(TensorDouble::flatten(shape));
 
     for (size_t i = 0; i < v.size(); ++i) {
         v[i] = double(i+1);
     }
 
-    Tensor A(v.data(), shape);
+    TensorDouble A(v.data(), shape);
 
-    // Tensor access is column-major
+    // column-major order
     EXPECT(A(0, 0, 0, 0) == 1.);
     EXPECT(A(1, 0, 0, 0) == 2.);
     EXPECT(A(0, 1, 0, 0) == 3.);
@@ -80,9 +83,9 @@ CASE("Tensor [2, 3, 4, 5]") {
 }
 
 
-CASE("Tensor serialization") {
+CASE("TensorDouble serialization") {
 
-    Tensor A = T({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+    TensorDouble A = TD({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
     PathName path("tensorA");
     {
@@ -93,9 +96,9 @@ CASE("Tensor serialization") {
 
     FileStream s(path, "r");
     auto c = closer(s);
-    Tensor B(s);
+    TensorDouble B(s);
 
-    // Tensor access is column-major
+    // column-major order
     EXPECT(B(0, 0, 0) == 1.);
     EXPECT(B(1, 0, 0) == -2.);
     EXPECT(B(0, 1, 0) == 3.);
@@ -105,10 +108,10 @@ CASE("Tensor serialization") {
     path.unlink();
 }
 
-CASE("Tensor zero") {
-    Tensor A = T({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+CASE("TensorDouble zero") {
+    TensorDouble A = TD({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
-    // Tensor access is column-major
+    // column-major order
     EXPECT(A(0, 0, 0) == 1.);
     EXPECT(A(1, 0, 0) == -2.);
     EXPECT(A(0, 1, 0) == 3.);
@@ -124,10 +127,10 @@ CASE("Tensor zero") {
 }
 
 
-CASE("Fill Tensor with scalar") {
-    Tensor A = T({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+CASE("Fill TensorDouble with scalar") {
+    TensorDouble A = TD({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
-    // Tensor access is column-major
+    // column-major order
     EXPECT(A(0, 0, 0) == 1.);
     EXPECT(A(1, 0, 0) == -2.);
     EXPECT(A(0, 1, 0) == 3.);
@@ -144,32 +147,163 @@ CASE("Fill Tensor with scalar") {
 }
 
 
-CASE("Fill Tensor with scalar") {
-    Tensor A = T({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+CASE("Fill TensorDouble with scalar") {
+    TensorDouble A = TD({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
-    // Tensor access is column-major
+    // column-major order
     EXPECT(A(0, 0, 0) == 1.);
     EXPECT(A(1, 0, 0) == -2.);
     EXPECT(A(0, 1, 0) == 3.);
     EXPECT(A(1, 1, 0) == -4.);
     EXPECT(A(1, 1, 2) == -12.);
 
-    A.fill(-7.42);
+    double v = -7.42;
+    A.fill(v);
 
-    EXPECT(A(1, 0, 0) == -7.42);
-    EXPECT(A(0, 1, 0) == -7.42);
-    EXPECT(A(1, 1, 0) == -7.42);
-    EXPECT(A(0, 1, 2) == -7.42);
-    EXPECT(A(1, 1, 2) == -7.42);
+    EXPECT(A(1, 0, 0) == v);
+    EXPECT(A(0, 1, 0) == v);
+    EXPECT(A(1, 1, 0) == v);
+    EXPECT(A(0, 1, 2) == v);
+    EXPECT(A(1, 1, 2) == v);
 }
 
 
-CASE("Wrap const data") {
+CASE("TensorDouble wrapping const data") {
     std::vector<double> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
     const double* data = array.data();
-    Tensor A{data, {2, 2, 3}};
+    TensorDouble A {data, {2, 2, 3}};
 
-    // // Tensor access is column-major
+    // // column-major order
+    EXPECT(A(0, 0, 0) == 1.);
+    EXPECT(A(1, 0, 0) == 2.);
+    EXPECT(A(0, 1, 0) == 3.);
+    EXPECT(A(1, 1, 0) == 4.);
+    EXPECT(A(1, 1, 1) == 8.);
+    EXPECT(A(0, 0, 2) == 9.);
+    EXPECT(A(1, 1, 2) == 12.);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("TensorFloat [2, 2]") {
+    TensorFloat A = TF({2, 2}, 1., -2., -4., 3.);
+
+    // column-major order
+    EXPECT(A(0, 0) == 1.);
+    EXPECT(A(1, 0) == -2.);
+    EXPECT(A(0, 1) == -4.);
+    EXPECT(A(1, 1) == 3.);
+}
+
+
+CASE("TensorFloat [2, 3, 4]") {
+    TensorFloat A = TF({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+
+    // column-major order
+    EXPECT(A(0, 0, 0) == 1.);
+    EXPECT(A(1, 0, 0) == -2.);
+    EXPECT(A(0, 1, 0) == 3.);
+    EXPECT(A(1, 1, 0) == -4.);
+    EXPECT(A(1, 1, 2) == -12.);
+}
+
+
+CASE("TensorFloat [2, 3, 4, 5]") {
+    std::vector<Size> shape{2, 2, 3, 5};
+    std::vector<float> v(TensorFloat::flatten(shape));
+
+    for (size_t i = 0; i < v.size(); ++i) {
+        v[i] = float(i + 1);
+    }
+
+    TensorFloat A(v.data(), shape);
+
+    // column-major order
+    EXPECT(A(0, 0, 0, 0) == 1.);
+    EXPECT(A(1, 0, 0, 0) == 2.);
+    EXPECT(A(0, 1, 0, 0) == 3.);
+    EXPECT(A(1, 1, 0, 0) == 4.);
+
+    EXPECT(A(1, 1, 2, 0) == 12.);
+
+    EXPECT(A(0, 0, 2, 4) == 57.);
+    EXPECT(A(1, 0, 2, 4) == 58.);
+    EXPECT(A(0, 1, 2, 4) == 59.);
+    EXPECT(A(1, 1, 2, 4) == 60.);
+}
+
+
+CASE("TensorFloat serialization") {
+
+    TensorFloat A = TF({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+
+    PathName path("tensorA");
+    {
+        FileStream s(path, "w");
+        auto c = closer(s);
+        s << A;
+    }
+
+    FileStream s(path, "r");
+    auto c = closer(s);
+    TensorFloat B(s);
+
+    // column-major order
+    EXPECT(B(0, 0, 0) == 1.);
+    EXPECT(B(1, 0, 0) == -2.);
+    EXPECT(B(0, 1, 0) == 3.);
+    EXPECT(B(1, 1, 0) == -4.);
+    EXPECT(B(1, 1, 2) == -12.);
+
+    path.unlink();
+}
+
+CASE("TensorFloat zero") {
+    TensorFloat A = TF({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+
+    // column-major order
+    EXPECT(A(0, 0, 0) == 1.);
+    EXPECT(A(1, 0, 0) == -2.);
+    EXPECT(A(0, 1, 0) == 3.);
+    EXPECT(A(1, 1, 0) == -4.);
+    EXPECT(A(1, 1, 2) == -12.);
+
+    A.zero();
+
+    EXPECT(A(1, 0, 0) == 0.);
+    EXPECT(A(0, 1, 0) == 0.);
+    EXPECT(A(1, 1, 0) == 0.);
+    EXPECT(A(1, 1, 2) == 0.);
+}
+
+
+CASE("Fill TensorFloat with scalar") {
+    TensorFloat A = TF({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
+
+    // column-major order
+    EXPECT(A(0, 0, 0) == 1.);
+    EXPECT(A(1, 0, 0) == -2.);
+    EXPECT(A(0, 1, 0) == 3.);
+    EXPECT(A(1, 1, 0) == -4.);
+    EXPECT(A(1, 1, 2) == -12.);
+
+    float v = -7.42;
+    A.fill(v);
+
+    EXPECT(A(1, 0, 0) == v);
+    EXPECT(A(0, 1, 0) == v);
+    EXPECT(A(1, 1, 0) == v);
+    EXPECT(A(0, 1, 2) == v);
+    EXPECT(A(1, 1, 2) == v);
+}
+
+
+CASE("TensorFloat wrapping const data") {
+    std::vector<float> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
+    const float* data = array.data();
+    TensorFloat A{data, {2, 2, 3}};
+
+    // // column-major order
     EXPECT(A(0, 0, 0) == 1.);
     EXPECT(A(1, 0, 0) == 2.);
     EXPECT(A(0, 1, 0) == 3.);

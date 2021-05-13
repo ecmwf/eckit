@@ -12,7 +12,6 @@
 
 #include <cstring>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
@@ -24,7 +23,7 @@ namespace linalg {
 Tensor::Tensor() : array_(0), size_(0), shape_(0), own_(false) {}
 
 Tensor::Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape), own_(true) {
-    size_ = flatten_shape(shape_);
+    size_ = flatten(shape_);
     ASSERT(size() > 0);
     array_ = new Scalar[size_];
     ASSERT(array_);
@@ -33,13 +32,14 @@ Tensor::Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape),
 
 Tensor::Tensor(const Scalar* array, const std::vector<Size>& shape) :
     array_(const_cast<Scalar*>(array)), own_(false) {
-    size_ = flatten_shape(shape);
+    shape_ = shape;
+    size_  = flatten(shape);
     ASSERT(size() > 0);
     ASSERT(array_);
 }
 
 
-Tensor::Tensor(Stream& stream) : array_(0), size_(0), shape_(0), own_(false) {
+Tensor::Tensor(Stream& stream) : array_(0), size_(0), shape_(0), own_(true) {
     Size shape_size;
     stream >> shape_size;
     shape_.resize(shape_size);
@@ -93,17 +93,16 @@ void Tensor::swap(Tensor& other) {
 
 
 void Tensor::resize(const std::vector<Size>& shape) {
-    // avoid reallocation if memory is the same
-    Size newsize = std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
+    // avoid reallocation if memory is the same size
+    Size newsize = flatten(shape);
     if (this->size() != newsize) {
         Tensor m(shape);
         swap(m);
     }
-    shape_ = shape;
 }
 
 
-void Tensor::setZero() {
+void Tensor::zero() {
     ASSERT(size() > 0);
     ASSERT(array_);
     ::memset(array_, 0, size() * sizeof(Scalar));
@@ -116,8 +115,8 @@ void Tensor::fill(Scalar value) {
     }
 }
 
-Stream& operator<<(Stream& stream, const Tensor& matrix) {
-    matrix.encode(stream);
+Stream& operator<<(Stream& stream, const Tensor& t) {
+    t.encode(stream);
     return stream;
 }
 

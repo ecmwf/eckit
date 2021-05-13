@@ -20,6 +20,9 @@
 
 #include "eckit/linalg/types.h"
 
+#include "eckit/exception/Exceptions.h"
+
+
 namespace eckit {
 class Stream;
 }
@@ -29,16 +32,16 @@ namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-Size flatten_shape(const std::vector<Size>& shape) {
-    return std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
-}
-
-//-----------------------------------------------------------------------------
-
 /// Dense Tensor in column major storage order
 class Tensor {
 public:  // types
     typedef eckit::linalg::Size Size;
+
+public: // class methods
+    
+    static Size flatten(const std::vector<Size>& shape) {
+        return std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
+    }
 
 public:  // methods
     /// Default constructor (empty tensor)
@@ -58,18 +61,18 @@ public:  // methods
 
     ~Tensor();
 
-    // -- Mutators
-
+    // Assignment
     Tensor& operator=(const Tensor&);
 
     /// Swap this tensor with another
     void swap(Tensor&);
 
-    /// Resize tensor to given a shape (invalidates data)
+    /// Resize tensor to given a shape
+    /// Invalidates data if shapes don't match, otherwise keeps data and simply reshapes
     void resize(const std::vector<Size>& shape);
 
     /// Set data to zero
-    void setZero();
+    void zero();
 
     /// Fill vector with given scalar
     void fill(Scalar);
@@ -84,10 +87,27 @@ public:  // methods
     /// @returns flatten size (= product of shape vector)
     Size size() const { return size_; }
 
-    /// Access by row and column
+    /// Generic accessor
+    /// Not very efficient, please refrain from using it in tight loops
     /// @note implements column-major (Fortran-style) ordering
-    // Scalar& operator()(Size row, Size col) { return array_[col * rows_ + row]; }
-    // const Scalar& operator()(Size row, Size col) const { return array_[col * rows_ + row]; }
+    Scalar& operator()(Size dim, ...) {
+        ASSERT(shape_.size());
+        Size idx  = dim;
+        Size prod = shape_[0];
+        int nargs = 1;
+        va_list args;
+        va_start(args, dim);
+        for (Size i = 1; i < shape_.size(); ++i) {
+            ++nargs;
+            Size d = va_arg(args, Size);
+            idx += d * prod;
+            prod *= shape_[i];
+        }
+        va_end(args);
+        ASSERT(nargs == shape_.size());
+        ASSERT(idx < size());
+        return array_[idx];
+    }
 
     /// Access to linearised storage
     Scalar& operator[](Size i) { return array_[i]; }

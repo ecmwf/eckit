@@ -91,7 +91,8 @@
 			"memory_resource": "cpp",
 			"cfenv": "cpp",
 			"cinttypes": "cpp",
-			"semaphore": "cpp"
+			"semaphore": "cpp",
+			"__functional_03": "cpp"
 		}
 	}
 }

@@ -60,15 +60,15 @@ linalg::Tensor T(std::vector<linalg::Size> shape, ...) {
     using linalg::Scalar;
     using linalg::Size;
 
-    Size size = eckit::linalg::flatten_shape(shape);
-    Tensor tns(shape);
+    Size size = eckit::linalg::Tensor::flatten(shape);
+    Tensor t(shape);
     va_list args;
     va_start(args, shape);
     for (Size i = 0; i < size; ++i) {
-        tns[i] = va_arg(args, Scalar);
+        t[i] = va_arg(args, Scalar);
     }
     va_end(args);
-    return tns;
+    return t;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

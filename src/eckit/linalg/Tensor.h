@@ -14,15 +14,16 @@
 
 #pragma once
 
+#include <cstdarg>
 #include <cstring>
 #include <functional>
 #include <numeric>
 #include <vector>
 
-#include "eckit/io/Buffer.h"
-#include "eckit/serialisation/Stream.h"
-#include "eckit/linalg/types.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/linalg/types.h"
+#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 namespace linalg {
@@ -30,6 +31,10 @@ namespace linalg {
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Dense Tensor in column major storage order
+/// This class is not meant to be accessed 1 element at a time, as its access isn't efficient enough in tight loops.
+/// It is meant to be passed as a contiguous piece of data into linear algebra packages.
+/// The operator() is only provided for inspection and testing.
+
 template<typename S>
 class Tensor {
 public:  // types

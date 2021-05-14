@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -30,46 +31,73 @@ public:
 
 const size_t SIZE = 1024;
 const char* PATH  = "/eckit-shmem-ipc";
+const char* FULL  = "/eckit-shmem-ipc-full";
+const char* EMPTY = "/eckit-shmem-ipc-empty";
+
 
 void writer() {
-    int fd = SYSCALL(shm_open(PATH, O_RDWR | O_CREAT | O_EXCL, 0644));
 
-    SYSCALL(ftruncate(fd, SIZE));
+    // shm_unlink(PATH);
+
+
+    int fd = SYSCALL(shm_open(PATH, O_RDWR | O_CREAT, 0644));
+
+    struct stat s;
+    SYSCALL(fstat(fd, &s));
+    std::cout << "SIZE " << s.st_size << std::endl;
+
+    if (s.st_size == 0) {
+        SYSCALL(ftruncate(fd, SIZE));
+    }
 
     void* memptr = mmap(NULL, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     ASSERT(memptr != MAP_FAILED);
 
-    sem_t* semptr = sem_open(PATH, O_CREAT, 0644, 0);
-    ASSERT(semptr != SEM_FAILED);
+    sem_t* full = sem_open(FULL, O_CREAT, 0644, 0);
+    ASSERT(full != SEM_FAILED);
+    sem_t* empty = sem_open(EMPTY, O_CREAT, 0644, 1);
+    ASSERT(empty != SEM_FAILED);
 
-    ::memcpy(memptr, "hello\0", 6);
-    SYSCALL(sem_post(semptr));
+    for (size_t i = 0; i < 10; i++) {
+        SYSCALL(sem_wait(empty));
+        ::memcpy(memptr, "hello\0", 6);
+        SYSCALL(sem_post(full));
+    }
 
-    sleep(12);
+
     SYSCALL(munmap(memptr, SIZE));
     SYSCALL(close(fd));
-    SYSCALL(sem_close(semptr));
-    SYSCALL(shm_unlink(PATH));
-    SYSCALL(sem_unlink(PATH));
+    SYSCALL(sem_close(full));
+    SYSCALL(sem_close(empty));
+
+    // SYSCALL(shm_unlink(PATH));
+    // SYSCALL(sem_unlink(FULL));
+    // SYSCALL(sem_unlink(EMPTY));
 }
 
 void reader() {
-    int fd = SYSCALL(shm_open(PATH, O_RDWR, 0644));
+    int fd = SYSCALL2(shm_open(PATH, O_RDWR, 0644), PATH);
 
     // SYSCALL(ftruncate(fd, SIZE));
 
     void* memptr = mmap(NULL, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     ASSERT(memptr != MAP_FAILED);
 
-    sem_t* semptr = sem_open(PATH, O_CREAT, 0644, 0);
-    ASSERT(semptr != SEM_FAILED);
+    sem_t* full = sem_open(FULL, O_CREAT, 0644, 0);
+    ASSERT(full != SEM_FAILED);
+    sem_t* empty = sem_open(EMPTY, O_CREAT, 0644, 1);
+    ASSERT(empty != SEM_FAILED);
 
-    SYSCALL(sem_wait(semptr));
-    std::cout << (char*)memptr << std::endl;
+    for (;;) {
+        SYSCALL(sem_wait(full));
+        std::cout << (char*)memptr << std::endl;
+        SYSCALL(sem_post(empty));
+    }
 
     SYSCALL(munmap(memptr, SIZE));
     SYSCALL(close(fd));
-    SYSCALL(sem_close(semptr));
+    SYSCALL(sem_close(empty));
+    SYSCALL(sem_close(full));
 }
 
 

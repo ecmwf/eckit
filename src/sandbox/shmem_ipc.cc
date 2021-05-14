@@ -15,6 +15,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <string>
+
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/runtime/Application.h"
@@ -35,6 +37,44 @@ const char* FULL  = "/eckit-shmem-ipc-full";
 const char* EMPTY = "/eckit-shmem-ipc-empty";
 
 
+class NamedSemaphore {
+public:
+    NamedSemaphore(const std::string& name, int value, bool create = true, bool unlink = false, int mode = 0664);
+    ~NamedSemaphore();
+
+    void wait();
+    void post();
+
+private:
+    std::string name_;
+    bool unlink_;
+    sem_t* semaphore_ = SEM_FAILED;
+};
+
+NamedSemaphore::NamedSemaphore(const std::string& name, int value, bool create, bool unlink, int mode) :
+    name_(name), unlink_(unlink) {
+    semaphore_ = sem_open(name_.c_str(), create ? O_CREAT : 0, mode, value);
+    if (semaphore_ == SEM_FAILED) {
+        throw FailedSystemCall("sem_open(" + name_ + ")");
+    }
+}
+
+NamedSemaphore::~NamedSemaphore() {
+    if (semaphore_ != SEM_FAILED) {
+        SYSCALL(::sem_close(semaphore_));
+    }
+    if (unlink_) {
+        SYSCALL(::sem_unlink(name_.c_str()));
+    }
+}
+
+void NamedSemaphore::wait() {
+    SYSCALL(::sem_wait(semaphore_));
+}
+void NamedSemaphore::post() {
+    SYSCALL(::sem_post(semaphore_));
+}
+
 void writer() {
 
     // shm_unlink(PATH);
@@ -53,22 +93,19 @@ void writer() {
     void* memptr = mmap(NULL, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     ASSERT(memptr != MAP_FAILED);
 
-    sem_t* full = sem_open(FULL, O_CREAT, 0644, 0);
-    ASSERT(full != SEM_FAILED);
-    sem_t* empty = sem_open(EMPTY, O_CREAT, 0644, 1);
-    ASSERT(empty != SEM_FAILED);
+    NamedSemaphore full(FULL, 0);
+    NamedSemaphore empty(EMPTY, 1);
+
 
     for (size_t i = 0; i < 10; i++) {
-        SYSCALL(sem_wait(empty));
+        empty.wait();
         ::memcpy(memptr, "hello\0", 6);
-        SYSCALL(sem_post(full));
+        full.post();
     }
 
 
     SYSCALL(munmap(memptr, SIZE));
     SYSCALL(close(fd));
-    SYSCALL(sem_close(full));
-    SYSCALL(sem_close(empty));
 
     // SYSCALL(shm_unlink(PATH));
     // SYSCALL(sem_unlink(FULL));
@@ -83,21 +120,17 @@ void reader() {
     void* memptr = mmap(NULL, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     ASSERT(memptr != MAP_FAILED);
 
-    sem_t* full = sem_open(FULL, O_CREAT, 0644, 0);
-    ASSERT(full != SEM_FAILED);
-    sem_t* empty = sem_open(EMPTY, O_CREAT, 0644, 1);
-    ASSERT(empty != SEM_FAILED);
+    NamedSemaphore full(FULL, 0);
+    NamedSemaphore empty(EMPTY, 1);
 
     for (;;) {
-        SYSCALL(sem_wait(full));
+        full.wait();
         std::cout << (char*)memptr << std::endl;
-        SYSCALL(sem_post(empty));
+        empty.post();
     }
 
     SYSCALL(munmap(memptr, SIZE));
     SYSCALL(close(fd));
-    SYSCALL(sem_close(empty));
-    SYSCALL(sem_close(full));
 }
 
 

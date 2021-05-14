@@ -92,7 +92,9 @@
 			"cfenv": "cpp",
 			"cinttypes": "cpp",
 			"semaphore": "cpp",
-			"__functional_03": "cpp"
+			"__functional_03": "cpp",
+			"numbers": "cpp",
+			"filesystem": "cpp"
 		}
 	}
 }

@@ -202,8 +202,8 @@ void Time::load(DumpLoad& a) {
     a.load(seconds_);
 }
 
-void Time::hash(Hash&) const {
-    NOTIMP;
+void Time::hash(Hash& h) const {
+    h.add(seconds_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

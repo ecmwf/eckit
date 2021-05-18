@@ -34,6 +34,10 @@ namespace linalg {
 /// This class is not meant to be accessed 1 element at a time, as its access isn't efficient enough in tight loops.
 /// It is meant to be passed as a contiguous piece of data into linear algebra packages.
 /// The operator() is only provided for inspection and testing.
+///
+/// Supports 2 memory layouts:
+///   * Right layout equivalent to matrix column-major (as in Fortran)
+///   * Left layout equivalent to matrix row-major (as in C)
 
 template<typename S>
 class Tensor {
@@ -211,6 +215,7 @@ protected : // member variables
     std::vector<Size> shape_;  ///< tensor shape is a vector of sizes per dimension
 
     bool own_;  ///< ownership
+    bool left_; ///< memory layout
 };
 
 //----------------------------------------------------------------------------------------------------------------------

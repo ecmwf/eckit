@@ -20,6 +20,7 @@
 #include <numeric>
 #include <vector>
 
+#include "eckit/types/Types.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/linalg/types.h"
@@ -50,13 +51,25 @@ public: // class methods
         return std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
     }
 
+    static std::vector<Size> strides(const std::vector<Size>& shape) {
+        std::vector<Size> s(shape.size());
+        Size prod  = 1;
+        s[0] = prod;
+        for (int i = 1; i < s.size(); ++i) {
+            prod *= shape[i-1];
+            s[i] = prod;
+        }
+        // std::cout << "shape : " << shape << "\nstrides : " << s << std::endl;
+        return s;
+    }
+
 public:  // methods
     
     /// Default constructor (empty tensor)
-    Tensor() : array_(0), size_(0), shape_(0), own_(false) {}
+    Tensor() : array_(0), size_(0), shape_(0), strides_(0), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
-    Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape), own_(true) {
+    Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape), strides_(strides(shape)), own_(true) {
         size_ = flatten(shape_);
         ASSERT(size() > 0);
         array_ = new S[size_];
@@ -64,7 +77,8 @@ public:  // methods
     }
 
     /// Construct tensor from existing data (does NOT take ownership)
-    Tensor(const S* array, const std::vector<Size>& shape) : array_(const_cast<S*>(array)), own_(false) {
+    Tensor(const S* array, const std::vector<Size>& shape) :
+        array_(const_cast<S*>(array)), strides_(strides(shape)), own_(false) {
         shape_ = shape;
         size_  = flatten(shape_);
         ASSERT(size() > 0);
@@ -82,10 +96,11 @@ public:  // methods
         ASSERT(size() > 0);
         ASSERT(array_);
         s.readBlob(array_, size() * sizeof(S));
+        strides_ = strides(shape_);
     }
 
     /// Copy constructor
-    Tensor(const Tensor& other) : array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), own_(true) {
+    Tensor(const Tensor& other) : array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), strides_(other.strides_), own_(true) {
         ASSERT(size() > 0);
         ASSERT(array_);
         ::memcpy(array_, other.array_, size() * sizeof(S));
@@ -112,6 +127,7 @@ public:  // methods
         std::swap(array_, other.array_);
         std::swap(size_, other.size_);
         std::swap(shape_, other.shape_);
+        std::swap(strides_, other.strides_);
         std::swap(own_, other.own_);
     }
 
@@ -124,9 +140,9 @@ public:  // methods
         }
         else {
             shape_ = shape;
+            strides_ = strides(shape_);
         }
     }
-
 
     /// Set data to zero
     void zero() {
@@ -153,28 +169,6 @@ public:  // methods
 
     /// @returns flatten size (= product of shape vector)
     Size size() const { return size_; }
-
-    /// Generic accessor
-    /// Not very efficient, please refrain from using it in tight loops
-    /// @note implements column-major (Fortran-style) ordering
-    S& operator()(Size dim, ...) {
-        ASSERT(shape_.size());
-        Size idx  = dim;
-        Size prod = shape_[0];
-        int nargs = 1;
-        va_list args;
-        va_start(args, dim);
-        for (Size i = 1; i < shape_.size(); ++i) {
-            ++nargs;
-            Size d = va_arg(args, Size);
-            idx += d * prod;
-            prod *= shape_[i];
-        }
-        va_end(args);
-        ASSERT(nargs == shape_.size());
-        ASSERT(idx < size());
-        return array_[idx];
-    }
 
     /// Access to linearised storage
     S& operator[](Size i) { return array_[i]; }
@@ -207,15 +201,44 @@ public:  // methods
         s << "])";
     }
 
+    /// @brief Multidimensional index operator A(i,j,k,...)
+    template <typename... Idx>
+    S& operator()(Idx... idx) {
+        return array_[index(idx...)];
+    }
+
+    /// @brief Multidimensional index operator A(i,j,k,...)
+    template <typename... Idx>
+    const S& operator()(Idx... idx) const {
+        return array_[index(idx...)];
+    }
+
+private: // methods
+    template <int Dim, typename Int, typename... Ints>
+    constexpr Size index_part(Int idx, Ints... next_idx) const {
+        return idx * strides_[Dim] + index_part<Dim + 1>(next_idx...);
+    }
+
+    template <int Dim, typename Int>
+    constexpr Size index_part(Int last_idx) const {
+        return last_idx * strides_[Dim];
+    }
+
+    template <typename... Ints>
+    constexpr Size index(Ints... idx) const {
+        return index_part<0>(idx...);
+    }
+
 protected : // member variables
     S* array_;  ///< data
 
     Size size_;  ///< flattened size
 
     std::vector<Size> shape_;  ///< tensor shape is a vector of sizes per dimension
+    std::vector<Size> strides_;  ///< tensor strides precomputed at construction
 
     bool own_;  ///< ownership
-    bool left_; ///< memory layout
+    // bool left_; ///< memory layout
 };
 
 //----------------------------------------------------------------------------------------------------------------------

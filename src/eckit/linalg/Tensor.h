@@ -37,8 +37,8 @@ namespace linalg {
 /// The operator() is only provided for inspection and testing.
 ///
 /// Supports 2 memory layouts:
-///   * Right layout equivalent to matrix column-major (as in Fortran)
-///   * Left layout equivalent to matrix row-major (as in C)
+///   * Right layout equivalent to matrix column-major (as in Fortran) where [fast idx] .... [slow idx]
+///   * Left layout equivalent to matrix row-major (as in C) where [slow idx] .... [fast idx]
 
 template<typename S>
 class Tensor {
@@ -122,6 +122,18 @@ public:  // methods
         return *this;
     }
 
+    void toLeftLayout() {
+        if (not right_)
+            return;
+        swap(transformRigthToLeftLayout());
+    }
+
+    void toRightLayout()  {
+        if (right_) 
+            return;
+        swap(transformLeftToRightLayout();
+    }
+
     /// Swap this tensor with another
     void swap(Tensor& other) {
         std::swap(array_, other.array_);
@@ -146,7 +158,7 @@ public:  // methods
 
     /// Set data to zero
     void zero() {
-        ASSERT(size() > 0);
+        ASSERT(size() > 0); 
         ASSERT(array_);
         ::memset(array_, 0, size() * sizeof(S));
     }
@@ -201,35 +213,61 @@ public:  // methods
         s << "])";
     }
 
+    
+
     /// @brief Multidimensional index operator A(i,j,k,...)
+    /// @pre  number of parameter must match shape size
     template <typename... Idx>
     S& operator()(Idx... idx) {
         return array_[index(idx...)];
     }
 
     /// @brief Multidimensional index operator A(i,j,k,...)
+    /// @pre  number of parameter must match shape size
     template <typename... Idx>
     const S& operator()(Idx... idx) const {
         return array_[index(idx...)];
     }
 
 private: // methods
+
+    /// compile time variadic template indexing calculation
     template <int Dim, typename Int, typename... Ints>
     constexpr Size index_part(Int idx, Ints... next_idx) const {
         return idx * strides_[Dim] + index_part<Dim + 1>(next_idx...);
     }
 
+    /// compile time variadic template indexing calculation
     template <int Dim, typename Int>
     constexpr Size index_part(Int last_idx) const {
         return last_idx * strides_[Dim];
     }
 
+    /// compile time variadic template indexing calculation
     template <typename... Ints>
     constexpr Size index(Ints... idx) const {
         return index_part<0>(idx...);
     }
 
-protected : // member variables
+    Tensor transformRigthToLeftLayout() const { 
+        Tensor r(shape_);
+
+        // implement here ....
+        NOTIMP;
+
+        return r;
+    }
+
+    Tensor transformLeftToRightLayout() const {
+        Tensor r(shape_);
+
+        // implement here ....
+        NOTIMP;
+
+        return r;
+    }
+
+protected:      // member variables
     S* array_;  ///< data
 
     Size size_;  ///< flattened size
@@ -237,8 +275,8 @@ protected : // member variables
     std::vector<Size> shape_;  ///< tensor shape is a vector of sizes per dimension
     std::vector<Size> strides_;  ///< tensor strides precomputed at construction
 
-    bool own_;  ///< ownership
-    // bool left_; ///< memory layout
+    bool own_;   ///< ownership
+    bool right_; ///< right memory layout? (as in Fortran)
 };
 
 //----------------------------------------------------------------------------------------------------------------------

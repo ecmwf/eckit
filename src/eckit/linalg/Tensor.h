@@ -125,13 +125,13 @@ public:  // methods
     void toLeftLayout() {
         if (not right_)
             return;
-        swap(transformRigthToLeftLayout());
+        move(transformRigthToLeftLayout());
     }
 
-    void toRightLayout()  {
-        if (right_) 
+    void toRightLayout() {
+        if (right_)
             return;
-        swap(transformLeftToRightLayout();
+        move(transformLeftToRightLayout());
     }
 
     /// Swap this tensor with another
@@ -158,7 +158,7 @@ public:  // methods
 
     /// Set data to zero
     void zero() {
-        ASSERT(size() > 0); 
+        ASSERT(size() > 0);
         ASSERT(array_);
         ::memset(array_, 0, size() * sizeof(S));
     }
@@ -213,8 +213,6 @@ public:  // methods
         s << "])";
     }
 
-    
-
     /// @brief Multidimensional index operator A(i,j,k,...)
     /// @pre  number of parameter must match shape size
     template <typename... Idx>
@@ -249,7 +247,9 @@ private: // methods
         return index_part<0>(idx...);
     }
 
-    Tensor transformRigthToLeftLayout() const { 
+    void move(Tensor&& other) { swap(other); }
+
+    Tensor transformRigthToLeftLayout() const {
         Tensor r(shape_);
 
         // implement here ....

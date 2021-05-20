@@ -262,7 +262,7 @@ private: // methods
     /// compile time variadic template indexing calculation
     template <int Dim, typename Int, typename... Ints>
     constexpr Size index_part(Int idx, Ints... next_idx) const {
-        size_t strd = (right_)? strides_[Dim] : strides_rev_[Dim];
+        Size strd = (right_)? strides_[Dim] : strides_rev_[Dim];
         return idx * strd + index_part<Dim + 1>(next_idx...);
 
     }
@@ -270,7 +270,7 @@ private: // methods
     /// compile time variadic template indexing calculation
     template <int Dim, typename Int>
     constexpr Size index_part(Int last_idx) const {
-        size_t strd = (right_)? strides_[Dim] : strides_rev_[Dim];
+        Size strd = (right_)? strides_[Dim] : strides_rev_[Dim];
         return last_idx * strd;
 
     }
@@ -289,9 +289,9 @@ private: // methods
         // COL-MAJOR to ROW-MAJOR
 
         // main loop
-        size_t shape_size = shape_.size();
-        std::vector<int> col_major_indexes(shape_size);
-        int gidx_rm;
+        Size shape_size = shape_.size();
+        std::vector<Size> col_major_indexes(shape_size);
+        Size gidx_rm;
         for (int gidx_cm=0; gidx_cm<size_; gidx_cm++){
 
             // find the tensor indexes from the global index for a CM order
@@ -321,9 +321,9 @@ private: // methods
 
         // ROW-MAJOR to COL-MAJOR
 
-        size_t shape_size = shape_.size();
-        std::vector<int> row_major_indexes(shape_size);
-        int gidx_cm;
+        Size shape_size = shape_.size();
+        std::vector<Size> row_major_indexes(shape_size);
+        Size gidx_cm;
         for (int gidx_rm=0; gidx_rm<size_; gidx_rm++){
 
             // find the tensor indexes from the global index for a RM order

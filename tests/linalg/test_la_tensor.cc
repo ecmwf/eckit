@@ -326,28 +326,29 @@ CASE("TensorFloat [2, 3] right layout") {
     EXPECT(A(0, 2) == 5.);
     EXPECT(A(1, 2) == 6.);
 
-    // implement this ...
-    // A.toRightLayout();
+    // to right layout -> A order should not change
+    A.toRightLayout();
 
-    TensorFloat B = A;
+    // still column-major order!
+    EXPECT(A(0, 0) == 1.);
+    EXPECT(A(1, 0) == 2.);
+    EXPECT(A(0, 1) == 3.);
+    EXPECT(A(1, 1) == 4.);
+    EXPECT(A(0, 2) == 5.);
+    EXPECT(A(1, 2) == 6.);
 
-    // ... and remove this
-    B(0, 0) = A(0, 0);
-    B(0, 1) = A(1, 0);
-    B(0, 2) = A(0, 1);
-    B(1, 0) = A(1, 1);
-    B(1, 1) = A(0, 2);
-    B(1, 2) = A(1, 2);
+    // to left layout
+    A.toLeftLayout();
 
     // row-major order
-    EXPECT(B(0, 0) == 1.);
-    EXPECT(B(0, 1) == 2.);
-    EXPECT(B(0, 2) == 3.);
-    EXPECT(B(1, 0) == 4.);
-    EXPECT(B(1, 1) == 5.);
-    EXPECT(B(1, 2) == 6.);
+    // TODO (just for now! - operator() still only for CM order)
+    EXPECT(A(0, 0) == 1.);
+    EXPECT(A(1, 0) == 3.);
+    EXPECT(A(0, 1) == 5.);
+    EXPECT(A(1, 1) == 2.);
+    EXPECT(A(0, 2) == 4.);
+    EXPECT(A(1, 2) == 6.);
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -63,13 +63,27 @@ public: // class methods
         return s;
     }
 
+    static std::vector<Size> strides_rev(const std::vector<Size>& shape) {
+
+        // shape cumulative reverse
+        std::vector<Size> shape_cumul_reverse(shape.size());
+        Size tmp=1;
+        for (int i=shape.size()-1; i>=1; i--){
+            tmp *= shape[i];
+            shape_cumul_reverse[i-1] = tmp;
+        }
+        shape_cumul_reverse[shape.size()-1] = 1;
+
+        return shape_cumul_reverse;
+    }
+
 public:  // methods
     
     /// Default constructor (empty tensor)
-    Tensor() : array_(0), size_(0), shape_(0), strides_(0), own_(false) {}
+    Tensor() : array_(0), size_(0), shape_(0), strides_(0), right_(true), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
-    Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape), strides_(strides(shape)), own_(true) {
+    Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape), strides_(strides(shape)), right_(true), own_(true) {
         size_ = flatten(shape_);
         ASSERT(size() > 0);
         array_ = new S[size_];
@@ -78,7 +92,7 @@ public:  // methods
 
     /// Construct tensor from existing data (does NOT take ownership)
     Tensor(const S* array, const std::vector<Size>& shape) :
-        array_(const_cast<S*>(array)), strides_(strides(shape)), own_(false) {
+        array_(const_cast<S*>(array)), strides_(strides(shape)), right_(true), own_(false) {
         shape_ = shape;
         size_  = flatten(shape_);
         ASSERT(size() > 0);
@@ -86,7 +100,7 @@ public:  // methods
     }
 
     /// Constructor from Stream
-    Tensor(Stream& s) : array_(0), size_(0), shape_(0), own_(true) {
+    Tensor(Stream& s) : array_(0), size_(0), shape_(0), right_(true), own_(true) {
         Size shape_size;
         s >> shape_size;
         shape_.resize(shape_size);
@@ -100,7 +114,7 @@ public:  // methods
     }
 
     /// Copy constructor
-    Tensor(const Tensor& other) : array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), strides_(other.strides_), own_(true) {
+    Tensor(const Tensor& other) : array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), strides_(other.strides_), right_(true), own_(true) {
         ASSERT(size() > 0);
         ASSERT(array_);
         ::memcpy(array_, other.array_, size() * sizeof(S));
@@ -182,6 +196,9 @@ public:  // methods
     /// @returns flatten size (= product of shape vector)
     Size size() const { return size_; }
 
+    /// @returns shape
+    std::vector<Size> shape() const { return shape_; }
+
     /// Access to linearised storage
     S& operator[](Size i) { return array_[i]; }
     const S& operator[](Size i) const { return array_[i]; }
@@ -252,8 +269,32 @@ private: // methods
     Tensor transformRigthToLeftLayout() const {
         Tensor r(shape_);
 
-        // implement here ....
-        NOTIMP;
+        // COL-MAJOR to ROW-MAJOR
+
+        std::vector<Size> shape_cumul = strides(shape_);
+        std::vector<Size> shape_cumul_reverse = strides_rev(shape_);
+
+        // main loop
+        size_t shape_size = shape_.size();
+        std::vector<int> col_major_indexes(shape_size);
+        int gidx_rm;
+        for (int gidx_cm=0; gidx_cm<size_; gidx_cm++){
+
+            // find the tensor indexes from the global index for a CM order
+            for (int idx=0; idx<shape_size-1; idx++){
+                col_major_indexes[idx] = (gidx_cm % shape_cumul[idx+1])/shape_cumul[idx];
+            }
+            col_major_indexes[shape_size-1] = gidx_cm / shape_cumul[shape_size-1];
+
+            // from the tensor indexes, work out the RM global index
+            gidx_rm = 0;
+            for(int idx=0; idx<shape_size; idx++){
+                gidx_rm += col_major_indexes[idx] * shape_cumul_reverse[idx];
+            }
+
+            // assign the corresponding tensor value
+            *(r.data()+gidx_rm) = *(data()+gidx_cm);
+        }
 
         return r;
     }
@@ -261,8 +302,31 @@ private: // methods
     Tensor transformLeftToRightLayout() const {
         Tensor r(shape_);
 
-        // implement here ....
-        NOTIMP;
+        // ROW-MAJOR to COL-MAJOR
+
+        std::vector<Size> shape_cumul = strides(shape_);
+        std::vector<Size> shape_cumul_reverse = strides_rev(shape_);
+
+        size_t shape_size = shape_.size();
+        std::vector<int> row_major_indexes(shape_size);
+        int gidx_cm;
+        for (int gidx_rm=0; gidx_rm<size_; gidx_rm++){
+
+            // find the tensor indexes from the global index for a RM order
+            row_major_indexes[0] = gidx_rm / shape_cumul_reverse[0];
+            for (int idx=1; idx<shape_size; idx++){
+                row_major_indexes[idx] = gidx_rm % shape_cumul_reverse[idx-1] / shape_cumul_reverse[idx];
+            }
+
+            // from the tensor indexes, work out the CM global index
+            gidx_cm = 0;
+            for (int idx=0; idx<row_major_indexes.size(); idx++){
+                gidx_cm += row_major_indexes[idx] * shape_cumul[idx];
+            }
+
+            // assign the corresponding tensor value
+            *(r.data()+gidx_cm) = *(data()+gidx_rm);
+        }
 
         return r;
     }
@@ -275,8 +339,8 @@ protected:      // member variables
     std::vector<Size> shape_;  ///< tensor shape is a vector of sizes per dimension
     std::vector<Size> strides_;  ///< tensor strides precomputed at construction
 
-    bool own_;   ///< ownership
     bool right_; ///< right memory layout? (as in Fortran)
+    bool own_;   ///< ownership    
 };
 
 //----------------------------------------------------------------------------------------------------------------------

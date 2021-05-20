@@ -92,6 +92,7 @@ public:  // methods
         shape_.resize(shape_size);
         for (auto& v : shape_)
             s >> v;
+        // s >> right_; 
         resize(shape_);
         ASSERT(size() > 0);
         ASSERT(array_);

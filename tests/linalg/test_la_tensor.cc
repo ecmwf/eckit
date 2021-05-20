@@ -391,7 +391,15 @@ CASE("TensorFloat [2, 3] right->left->right layout") {
         EXPECT( *(A.data()+i) == expected_rowmajor_values[i]);
     }
 
+    // indexes still OK
+    EXPECT(A(0, 0) == 1.);
+    EXPECT(A(1, 0) == 2.);
+    EXPECT(A(0, 1) == 3.);
+    EXPECT(A(1, 1) == 4.);
+    EXPECT(A(0, 2) == 5.);
+    EXPECT(A(1, 2) == 6.);
 
+    // ** back to right layout **
     A.toRightLayout();
 
     // check that the internal order is back to initial order
@@ -407,6 +415,99 @@ CASE("TensorFloat [2, 3] right->left->right layout") {
     EXPECT(A(1, 1) == 4.);
     EXPECT(A(0, 2) == 5.);
     EXPECT(A(1, 2) == 6.);
+
+}
+
+
+CASE("TensorFloat [2, 3, 4] right->left->right layout") {
+
+    std::vector<float> array(24);
+    for (int i=0; i<24; i++){
+        array[i] = i;
+    }
+
+    TensorFloat A{array.data(), {2, 3, 4}};
+
+    // A internal order
+    for (int i=0; i<A.size(); i++){
+        EXPECT( *(A.data()+i) == array[i]);
+    }
+
+    // indexes
+    EXPECT(A(0, 0, 0) == 0.);
+    EXPECT(A(1, 0, 0) == 1.);
+    EXPECT(A(0, 1, 0) == 2.);
+    EXPECT(A(1, 1, 0) == 3.);
+    EXPECT(A(0, 2, 0) == 4.);
+    EXPECT(A(1, 2, 0) == 5.);
+
+    EXPECT(A(0, 0, 1) == 6.);
+    EXPECT(A(1, 0, 1) == 7.);
+    EXPECT(A(0, 1, 1) == 8.);
+    EXPECT(A(1, 1, 1) == 9.);
+    EXPECT(A(0, 2, 1) == 10.);
+    EXPECT(A(1, 2, 1) == 11.);
+
+    EXPECT(A(0, 0, 2) == 12.);
+    EXPECT(A(1, 0, 2) == 13.);
+    EXPECT(A(0, 1, 2) == 14.);
+    EXPECT(A(1, 1, 2) == 15.);
+    EXPECT(A(0, 2, 2) == 16.);
+    EXPECT(A(1, 2, 2) == 17.);
+
+    EXPECT(A(0, 0, 3) == 18.);
+    EXPECT(A(1, 0, 3) == 19.);
+    EXPECT(A(0, 1, 3) == 20.);
+    EXPECT(A(1, 1, 3) == 21.);
+    EXPECT(A(0, 2, 3) == 22.);
+    EXPECT(A(1, 2, 3) == 23.);
+
+    // ** to left layout **
+    A.toLeftLayout();
+
+    // internal order is now changed!
+    std::vector<float> expected_rowmajor_values{0,6,12,18,2,8,14,20,4,10,16,22,
+                                                1,7,13,19,3,9,15,21,5,11,17,23};
+    for (int i=0; i<A.size(); i++){
+        EXPECT( *(A.data()+i) == expected_rowmajor_values[i]);
+    }
+
+    // indexes still OK
+    EXPECT(A(0, 0, 0) == 0.);
+    EXPECT(A(1, 0, 0) == 1.);
+    EXPECT(A(0, 1, 0) == 2.);
+    EXPECT(A(1, 1, 0) == 3.);
+    EXPECT(A(0, 2, 0) == 4.);
+    EXPECT(A(1, 2, 0) == 5.);
+
+    EXPECT(A(0, 0, 1) == 6.);
+    EXPECT(A(1, 0, 1) == 7.);
+    EXPECT(A(0, 1, 1) == 8.);
+    EXPECT(A(1, 1, 1) == 9.);
+    EXPECT(A(0, 2, 1) == 10.);
+    EXPECT(A(1, 2, 1) == 11.);
+
+    EXPECT(A(0, 0, 2) == 12.);
+    EXPECT(A(1, 0, 2) == 13.);
+    EXPECT(A(0, 1, 2) == 14.);
+    EXPECT(A(1, 1, 2) == 15.);
+    EXPECT(A(0, 2, 2) == 16.);
+    EXPECT(A(1, 2, 2) == 17.);
+
+    EXPECT(A(0, 0, 3) == 18.);
+    EXPECT(A(1, 0, 3) == 19.);
+    EXPECT(A(0, 1, 3) == 20.);
+    EXPECT(A(1, 1, 3) == 21.);
+    EXPECT(A(0, 2, 3) == 22.);
+    EXPECT(A(1, 2, 3) == 23.);
+
+    // ** back to right layout **
+    A.toRightLayout();
+
+    // check that the internal order is back to initial order
+    for (int i=0; i<A.size(); i++){
+        EXPECT( *(A.data()+i) == array[i]);
+    }
 
 }
 

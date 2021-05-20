@@ -314,7 +314,7 @@ CASE("TensorFloat wrapping const data") {
 }
 
 
-CASE("TensorFloat [2, 3] right layout") {
+CASE("TensorFloat [2, 3] right to left layout") {
 
     std::vector<float> array{1., 2., 3., 4., 5., 6.};
     TensorFloat A{array.data(), {2, 3}};
@@ -353,6 +353,54 @@ CASE("TensorFloat [2, 3] right layout") {
 
     // the outside indexes should still
     // give back the correct values..
+    EXPECT(A(0, 0) == 1.);
+    EXPECT(A(1, 0) == 2.);
+    EXPECT(A(0, 1) == 3.);
+    EXPECT(A(1, 1) == 4.);
+    EXPECT(A(0, 2) == 5.);
+    EXPECT(A(1, 2) == 6.);
+
+}
+
+CASE("TensorFloat [2, 3] right->left->right layout") {
+
+    std::vector<float> array{1., 2., 3., 4., 5., 6.};
+    TensorFloat A{array.data(), {2, 3}};
+
+    // A internal order
+    for (int i=0; i<A.size(); i++){
+//        std::cout << "*(A.data()+i) " << *(A.data()+i) << std::endl;
+        EXPECT( *(A.data()+i) == array[i]);
+    }
+
+    // column-major order
+    EXPECT(A(0, 0) == 1.);
+    EXPECT(A(1, 0) == 2.);
+    EXPECT(A(0, 1) == 3.);
+    EXPECT(A(1, 1) == 4.);
+    EXPECT(A(0, 2) == 5.);
+    EXPECT(A(1, 2) == 6.);
+
+    // ** to left layout **
+    A.toLeftLayout();
+
+    // internal order is now changed!
+    std::vector<float> expected_rowmajor_values{1., 3., 5., 2., 4., 6.};
+    for (int i=0; i<A.size(); i++){
+//        std::cout << "--- *(A.data()+i) " << *(A.data()+i) << std::endl;
+        EXPECT( *(A.data()+i) == expected_rowmajor_values[i]);
+    }
+
+
+    A.toRightLayout();
+
+    // check that the internal order is back to initial order
+    for (int i=0; i<A.size(); i++){
+//        std::cout << "*(A.data()+i) " << *(A.data()+i) << std::endl;
+        EXPECT( *(A.data()+i) == array[i]);
+    }
+
+    // indexes still OK
     EXPECT(A(0, 0) == 1.);
     EXPECT(A(1, 0) == 2.);
     EXPECT(A(0, 1) == 3.);

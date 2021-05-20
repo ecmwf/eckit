@@ -80,10 +80,14 @@ public: // class methods
 public:  // methods
     
     /// Default constructor (empty tensor)
-    Tensor() : array_(0), size_(0), shape_(0), strides_(0), right_(true), own_(false) {}
+    Tensor() : array_(0), size_(0), shape_(0),
+               strides_(0), strides_rev_(0),
+               right_(true), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
-    Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape), strides_(strides(shape)), right_(true), own_(true) {
+    Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape),
+                                             strides_(strides(shape)), strides_rev_(strides_rev(shape)),
+                                             right_(true), own_(true) {
         size_ = flatten(shape_);
         ASSERT(size() > 0);
         array_ = new S[size_];
@@ -92,7 +96,10 @@ public:  // methods
 
     /// Construct tensor from existing data (does NOT take ownership)
     Tensor(const S* array, const std::vector<Size>& shape) :
-        array_(const_cast<S*>(array)), strides_(strides(shape)), right_(true), own_(false) {
+        array_(const_cast<S*>(array)),
+        strides_(strides(shape)), strides_rev_(strides_rev(shape)),
+        right_(true), own_(false) {
+
         shape_ = shape;
         size_  = flatten(shape_);
         ASSERT(size() > 0);
@@ -111,10 +118,13 @@ public:  // methods
         ASSERT(array_);
         s.readBlob(array_, size() * sizeof(S));
         strides_ = strides(shape_);
+        strides_rev_ = strides_rev(shape_);
     }
 
     /// Copy constructor
-    Tensor(const Tensor& other) : array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), strides_(other.strides_), right_(true), own_(true) {
+    Tensor(const Tensor& other) : array_(new S[other.size()]), size_(other.size_), shape_(other.shape_),
+                                  strides_(other.strides_), strides_rev_(other.strides_rev_),
+                                  right_(true), own_(true) {
         ASSERT(size() > 0);
         ASSERT(array_);
         ::memcpy(array_, other.array_, size() * sizeof(S));
@@ -154,6 +164,7 @@ public:  // methods
         std::swap(size_, other.size_);
         std::swap(shape_, other.shape_);
         std::swap(strides_, other.strides_);
+        std::swap(right_, other.right_);
         std::swap(own_, other.own_);
     }
 
@@ -230,6 +241,8 @@ public:  // methods
         s << "])";
     }
 
+    bool isRight() const {return right_;}
+
     /// @brief Multidimensional index operator A(i,j,k,...)
     /// @pre  number of parameter must match shape size
     template <typename... Idx>
@@ -249,13 +262,17 @@ private: // methods
     /// compile time variadic template indexing calculation
     template <int Dim, typename Int, typename... Ints>
     constexpr Size index_part(Int idx, Ints... next_idx) const {
-        return idx * strides_[Dim] + index_part<Dim + 1>(next_idx...);
+        size_t strd = (right_)? strides_[Dim] : strides_rev_[Dim];
+        return idx * strd + index_part<Dim + 1>(next_idx...);
+
     }
 
     /// compile time variadic template indexing calculation
     template <int Dim, typename Int>
     constexpr Size index_part(Int last_idx) const {
-        return last_idx * strides_[Dim];
+        size_t strd = (right_)? strides_[Dim] : strides_rev_[Dim];
+        return last_idx * strd;
+
     }
 
     /// compile time variadic template indexing calculation
@@ -271,9 +288,6 @@ private: // methods
 
         // COL-MAJOR to ROW-MAJOR
 
-        std::vector<Size> shape_cumul = strides(shape_);
-        std::vector<Size> shape_cumul_reverse = strides_rev(shape_);
-
         // main loop
         size_t shape_size = shape_.size();
         std::vector<int> col_major_indexes(shape_size);
@@ -282,19 +296,22 @@ private: // methods
 
             // find the tensor indexes from the global index for a CM order
             for (int idx=0; idx<shape_size-1; idx++){
-                col_major_indexes[idx] = (gidx_cm % shape_cumul[idx+1])/shape_cumul[idx];
+                col_major_indexes[idx] = (gidx_cm % strides_[idx+1])/strides_[idx];
             }
-            col_major_indexes[shape_size-1] = gidx_cm / shape_cumul[shape_size-1];
+            col_major_indexes[shape_size-1] = gidx_cm / strides_[shape_size-1];
 
             // from the tensor indexes, work out the RM global index
             gidx_rm = 0;
             for(int idx=0; idx<shape_size; idx++){
-                gidx_rm += col_major_indexes[idx] * shape_cumul_reverse[idx];
+                gidx_rm += col_major_indexes[idx] * strides_rev_[idx];
             }
 
             // assign the corresponding tensor value
             *(r.data()+gidx_rm) = *(data()+gidx_cm);
         }
+
+        // set the right flag to false
+        r.right_ = false;
 
         return r;
     }
@@ -304,40 +321,42 @@ private: // methods
 
         // ROW-MAJOR to COL-MAJOR
 
-        std::vector<Size> shape_cumul = strides(shape_);
-        std::vector<Size> shape_cumul_reverse = strides_rev(shape_);
-
         size_t shape_size = shape_.size();
         std::vector<int> row_major_indexes(shape_size);
         int gidx_cm;
         for (int gidx_rm=0; gidx_rm<size_; gidx_rm++){
 
             // find the tensor indexes from the global index for a RM order
-            row_major_indexes[0] = gidx_rm / shape_cumul_reverse[0];
+            row_major_indexes[0] = gidx_rm / strides_rev_[0];
             for (int idx=1; idx<shape_size; idx++){
-                row_major_indexes[idx] = gidx_rm % shape_cumul_reverse[idx-1] / shape_cumul_reverse[idx];
+                row_major_indexes[idx] = gidx_rm % strides_rev_[idx-1] / strides_rev_[idx];
             }
 
             // from the tensor indexes, work out the CM global index
             gidx_cm = 0;
             for (int idx=0; idx<row_major_indexes.size(); idx++){
-                gidx_cm += row_major_indexes[idx] * shape_cumul[idx];
+                gidx_cm += row_major_indexes[idx] * strides_[idx];
             }
 
             // assign the corresponding tensor value
             *(r.data()+gidx_cm) = *(data()+gidx_rm);
         }
 
+        // set the right flag to false
+        r.right_ = true;
+
         return r;
     }
 
 protected:      // member variables
+
     S* array_;  ///< data
 
     Size size_;  ///< flattened size
 
     std::vector<Size> shape_;  ///< tensor shape is a vector of sizes per dimension
     std::vector<Size> strides_;  ///< tensor strides precomputed at construction
+    std::vector<Size> strides_rev_;  ///< tensor of reversed strides precomputed at construction
 
     bool right_; ///< right memory layout? (as in Fortran)
     bool own_;   ///< ownership    

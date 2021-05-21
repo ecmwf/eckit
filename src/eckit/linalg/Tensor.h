@@ -247,14 +247,22 @@ public:  // methods
     /// @pre  number of parameter must match shape size
     template <typename... Idx>
     S& operator()(Idx... idx) {
-        return array_[index(idx...)];
+        if(right_){
+            return array_[index(idx...)];
+        } else {
+            return array_[index_left(idx...)];
+        }
     }
 
     /// @brief Multidimensional index operator A(i,j,k,...)
     /// @pre  number of parameter must match shape size
     template <typename... Idx>
     const S& operator()(Idx... idx) const {
-        return array_[index(idx...)];
+        if(right_){
+            return array_[index(idx...)];
+        } else {
+            return array_[index_left(idx...)];
+        }
     }
 
 private: // methods
@@ -262,16 +270,13 @@ private: // methods
     /// compile time variadic template indexing calculation
     template <int Dim, typename Int, typename... Ints>
     constexpr Size index_part(Int idx, Ints... next_idx) const {
-        Size strd = (right_)? strides_[Dim] : strides_rev_[Dim];
-        return idx * strd + index_part<Dim + 1>(next_idx...);
-
+        return idx * strides_[Dim] + index_part<Dim + 1>(next_idx...);
     }
 
     /// compile time variadic template indexing calculation
     template <int Dim, typename Int>
     constexpr Size index_part(Int last_idx) const {
-        Size strd = (right_)? strides_[Dim] : strides_rev_[Dim];
-        return last_idx * strd;
+        return last_idx * strides_[Dim];
 
     }
 
@@ -279,6 +284,25 @@ private: // methods
     template <typename... Ints>
     constexpr Size index(Ints... idx) const {
         return index_part<0>(idx...);
+    }
+
+    /// compile time variadic template indexing calculation
+    template <int Dim, typename Int, typename... Ints>
+    constexpr Size index_part_left(Int idx, Ints... next_idx) const {
+        return idx * strides_rev_[Dim] + index_part_left<Dim + 1>(next_idx...);
+    }
+
+    /// compile time variadic template indexing calculation
+    template <int Dim, typename Int>
+    constexpr Size index_part_left(Int last_idx) const {
+        return last_idx * strides_rev_[Dim];
+
+    }
+
+    /// compile time variadic template indexing calculation
+    template <typename... Ints>
+    constexpr Size index_left(Ints... idx) const {
+        return index_part_left<0>(idx...);
     }
 
     void move(Tensor&& other) { swap(other); }

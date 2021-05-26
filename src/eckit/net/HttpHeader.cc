@@ -202,8 +202,8 @@ bool HttpHeader::authenticated() const {
         for (unsigned char c = '0'; c <= '9'; c++)
             b64[c] = c - '0' + 52;
 
-        b64['+'] = 62;
-        b64['/'] = 63;
+        b64[int('+')] = 62;
+        b64[int('/')] = 63;
 
         const unsigned char* p = (const unsigned char*)s;
 

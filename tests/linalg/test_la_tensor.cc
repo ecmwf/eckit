@@ -511,6 +511,55 @@ CASE("TensorFloat [2, 3, 4] right->left->right layout") {
 
 }
 
+
+CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
+
+    std::vector<float> array(6*3*2*5);
+    for (int i=0; i<array.size(); i++){
+        array[i] = i;
+    }
+
+    // tensor A (right-layout by default)
+    TensorFloat A{array.data(), {6,3,2,5}};
+
+    // check A internal order
+    for (int i=0; i<A.size(); i++){
+        EXPECT( *(A.data()+i) == array[i]);
+    }
+
+    // ** to left layout **
+    A.toLeftLayout();
+
+    // internal order is now changed!
+    std::vector<float> expected_rowmajor_values{0,36,72,108,144,18,54,90,126,162,6,42,78,
+                                                114,150,24,60,96,132,168,12,48,84,120,156,
+                                                30,66,102,138,174,1,37,73,109,145,19,55,91,
+                                                127,163,7,43,79,115,151,25,61,97,133,169,13,
+                                                49,85,121,157,31,67,103,139,175,2,38,74,110,
+                                                146,20,56,92,128,164,8,44,80,116,152,26,62,98,
+                                                134,170,14,50,86,122,158,32,68,104,140,176,3,39,
+                                                75,111,147,21,57,93,129,165,9,45,81,117,153,27,
+                                                63,99,135,171,15,51,87,123,159,33,69,105,141,
+                                                177,4,40,76,112,148,22,58,94,130,166,10,46,82,
+                                                118,154,28,64,100,136,172,16,52,88,124,160,34,
+                                                70,106,142,178,5,41,77,113,149,23,59,95,131,167,
+                                                11,47,83,119,155,29,65,101,137,173,17,53,89,125,
+                                                161,35,71,107,143,179};
+    for (int i=0; i<A.size(); i++){
+        EXPECT( *(A.data()+i) == expected_rowmajor_values[i]);
+    }
+
+    // ** back to right layout **
+    A.toRightLayout();
+
+    // check that the internal order is back to initial order
+    for (int i=0; i<A.size(); i++){
+        EXPECT( *(A.data()+i) == array[i]);
+    }
+
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

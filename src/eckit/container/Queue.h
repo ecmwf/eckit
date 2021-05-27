@@ -59,14 +59,12 @@ public:  // public
         }
         ASSERT(!closed_);
         max_ = size;
-        locker.unlock();
         cv_.notify_one();
     }
 
     void close() {
         std::unique_lock<std::mutex> locker(mutex_);
         closed_ = true;
-        locker.unlock();
         cv_.notify_all();
     }
 
@@ -89,7 +87,6 @@ public:  // public
     void interrupt(std::exception_ptr expn) {
         std::unique_lock<std::mutex> locker(mutex_);
         interrupt_ = expn;
-        locker.unlock();
         cv_.notify_all();
     }
 
@@ -103,7 +100,6 @@ public:  // public
         std::swap(e, queue_.front());
         queue_.pop();
         size_t size = queue_.size();
-        locker.unlock();
         cv_.notify_one();
         return long(size);
     }
@@ -121,7 +117,6 @@ public:  // public
             std::swap(elems[i], queue_.front());
             queue_.pop();
         }
-        locker.unlock();
         cv_.notify_one();
         return count;
     }
@@ -134,7 +129,6 @@ public:  // public
         ASSERT(!closed_);
         queue_.push(e);
         size_t size = queue_.size();
-        locker.unlock();
         cv_.notify_one();
         return size;
     }
@@ -148,7 +142,6 @@ public:  // public
         ASSERT(!closed_);
         queue_.emplace(std::forward<Args>(args)...);
         size_t size = queue_.size();
-        locker.unlock();
         cv_.notify_one();
         return size;
     }

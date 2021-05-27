@@ -17,16 +17,18 @@ void clog(int e) {
     mlog(" <- ", e);
 }
 
-int main() {
-    size_t nprod = 19;
-    size_t ncons = 23;
+#define MULT 100
 
-    eckit::Queue<int> q(8);
+int main() {
+    size_t nprod = 93;
+    size_t ncons = 77;
+
+    eckit::Queue<int> q(1);
 
     std::vector<std::thread> producers;
     for (int id = 0; id < nprod; ++id) {
         producers.emplace_back(std::thread([&q, id, ncons] {
-            for (int j = 0; j < ncons; ++j) {
+            for (int j = 0; j < MULT * ncons; ++j) {
                 int e = 1000 * id + j;
                 q.push(e);
                 plog(e);
@@ -38,7 +40,7 @@ int main() {
     std::vector<std::thread> consumers;
     for (int id = 0; id < ncons; ++id) {
         consumers.emplace_back(std::thread([&q, nprod] {
-            for (int j = 0; j < nprod; ++j) {
+            for (int j = 0; j < MULT * nprod; ++j) {
                 int e;
                 ASSERT(q.pop(e) >= 0);
                 clog(e);

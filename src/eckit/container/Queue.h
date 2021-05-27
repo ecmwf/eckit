@@ -59,7 +59,7 @@ public:  // public
         }
         ASSERT(!closed_);
         max_ = size;
-        cv_.notify_one();
+        cv_.notify_all();
     }
 
     void close() {
@@ -100,7 +100,7 @@ public:  // public
         std::swap(e, queue_.front());
         queue_.pop();
         size_t size = queue_.size();
-        cv_.notify_one();
+        cv_.notify_all();
         return long(size);
     }
 
@@ -117,7 +117,7 @@ public:  // public
             std::swap(elems[i], queue_.front());
             queue_.pop();
         }
-        cv_.notify_one();
+        cv_.notify_all();
         return count;
     }
 
@@ -129,7 +129,7 @@ public:  // public
         ASSERT(!closed_);
         queue_.push(e);
         size_t size = queue_.size();
-        cv_.notify_one();
+        cv_.notify_all();
         return size;
     }
 
@@ -142,7 +142,7 @@ public:  // public
         ASSERT(!closed_);
         queue_.emplace(std::forward<Args>(args)...);
         size_t size = queue_.size();
-        cv_.notify_one();
+        cv_.notify_all();
         return size;
     }
 

@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstring>
 #include <fcntl.h>
 #include <semaphore.h>
 #include <sys/mman.h>

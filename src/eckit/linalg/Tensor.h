@@ -80,12 +80,13 @@ public: // class methods
 public:  // methods
     
     /// Default constructor (empty tensor)
-    Tensor() : array_(0), size_(0), shape_(0), strides_(0),
-               right_(true), own_(false) {}
+    Tensor(bool isRight = true) : array_(0), size_(0), shape_(0), strides_(0), right_(isRight),
+        own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
-    Tensor(const std::vector<Size>& shape) : array_(nullptr), shape_(shape),
-                                             strides_(strides(shape)), right_(true), own_(true) {
+    Tensor(const std::vector<Size>& shape, bool isRight = true) : array_(nullptr), shape_(shape),
+        strides_(isRight? strides(shape) : strides_rev(shape)), right_(isRight), own_(true) {
+
         size_ = flatten(shape_);
         ASSERT(size() > 0);
         array_ = new S[size_];
@@ -93,9 +94,8 @@ public:  // methods
     }
 
     /// Construct tensor from existing data (does NOT take ownership)
-    Tensor(const S* array, const std::vector<Size>& shape) :
-        array_(const_cast<S*>(array)), strides_(strides(shape)),
-        right_(true), own_(false) {
+    Tensor(const S* array, const std::vector<Size>& shape, bool isRight = true) : array_(const_cast<S*>(array)),
+        strides_(isRight? strides(shape) : strides_rev(shape)), right_(isRight), own_(false) {
 
         shape_ = shape;
         size_  = flatten(shape_);
@@ -104,8 +104,9 @@ public:  // methods
     }
 
     /// Constructor from Stream
-    Tensor(Stream& s) : array_(0), size_(0), shape_(0), right_(true), own_(true) {
+    Tensor(Stream& s) : array_(0), size_(0), shape_(0), own_(true) {
         Size shape_size;
+        s >> right_;
         s >> shape_size;
         shape_.resize(shape_size);
         for (auto& v : shape_)
@@ -119,7 +120,7 @@ public:  // methods
 
     /// Copy constructor
     Tensor(const Tensor& other) : array_(new S[other.size()]), size_(other.size_), shape_(other.shape_),
-                                  strides_(other.strides_), right_(true), own_(true) {
+        strides_(other.strides_), right_(other.right_), own_(true) {
         ASSERT(size() > 0);
         ASSERT(array_);
         ::memcpy(array_, other.array_, size() * sizeof(S));
@@ -192,7 +193,8 @@ public:  // methods
 
     /// Serialise to a Stream
     /// This serialisation is not cross-platform
-    void encode(Stream& s) const {
+    void encode(Stream& s) const {        
+        s << right_;
         s << shape_.size();
         for (auto v : shape_)
             s << v;
@@ -225,7 +227,8 @@ public:  // methods
 
     void print(std::ostream& s) const {
         const char sep = ',';
-        s << "Tensor(shape=[";
+        s << "Tensor(right=" << right_ << sep;
+        s << "shape=[";
         for (int i = 0; i < shape_.size(); ++i) {
             s << shape_[i] << sep;
         }

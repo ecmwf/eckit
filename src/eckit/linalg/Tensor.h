@@ -51,29 +51,25 @@ public: // class methods
         return std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
     }
 
-    static std::vector<Size> strides(const std::vector<Size>& shape) {
+    static std::vector<Size> strides(bool right, const std::vector<Size>& shape) {
         std::vector<Size> s(shape.size());
-        Size prod  = 1;
-        s[0] = prod;
-        for (int i = 1; i < s.size(); ++i) {
-            prod *= shape[i-1];
-            s[i] = prod;
+        if(right) {
+            Size prod = 1;
+            s[0]      = prod;
+            for (int i = 1; i < s.size(); ++i) {
+                prod *= shape[i - 1];
+                s[i] = prod;
+            }
+        }
+        else {
+            Size tmp = 1;
+            for (int i = shape.size() - 1; i >= 1; i--) {
+                tmp *= shape[i];
+                s[i - 1] = tmp;
+            }
+            s[shape.size() - 1] = 1;
         }
         // std::cout << "shape : " << shape << "\nstrides : " << s << std::endl;
-        return s;
-    }
-
-    static std::vector<Size> strides_rev(const std::vector<Size>& shape) {
-
-        // shape cumulative reverse
-        std::vector<Size> s(shape.size());
-        Size tmp=1;
-        for (int i=shape.size()-1; i>=1; i--){
-            tmp *= shape[i];
-            s[i-1] = tmp;
-        }
-        s[shape.size()-1] = 1;
-
         return s;
     }
 
@@ -84,8 +80,12 @@ public:  // methods
         own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
-    Tensor(const std::vector<Size>& shape, bool isRight = true) : array_(nullptr), shape_(shape),
-        strides_(isRight? strides(shape) : strides_rev(shape)), right_(isRight), own_(true) {
+    Tensor(const std::vector<Size>& shape, bool isRight = true) :
+        array_(nullptr),
+        shape_(shape),
+        strides_(strides(isRight, shape)),
+        right_(isRight),
+        own_(true) {
 
         size_ = flatten(shape_);
         ASSERT(size() > 0);
@@ -95,7 +95,7 @@ public:  // methods
 
     /// Construct tensor from existing data (does NOT take ownership)
     Tensor(const S* array, const std::vector<Size>& shape, bool isRight = true) : array_(const_cast<S*>(array)),
-        strides_(isRight? strides(shape) : strides_rev(shape)), right_(isRight), own_(false) {
+        strides_(strides(isRight, shape)), right_(isRight), own_(false) {
 
         shape_ = shape;
         size_  = flatten(shape_);
@@ -116,7 +116,7 @@ public:  // methods
         ASSERT(size() > 0);
         ASSERT(array_);
         s.readBlob(array_, size() * sizeof(S));
-        strides_ = strides(shape_);
+        strides_ = strides(right_, shape_);
     }
 
     /// Copy constructor
@@ -135,11 +135,14 @@ public:  // methods
     }
 
     /// Assignment
-    /// Not optimized for if size() == other.size(), as using copy constructor
-    /// consistently retains ownership to avoid surprises in ownership behaviour.
+    /// Consistently retains ownership to avoid surprises in ownership behaviour.
+    /// However, if a resize() triggers reallocation of memory, ownership will be reset.
     Tensor& operator=(const Tensor& other) {
-        Tensor copy(other);
-        swap(copy);
+        right_ = other.right_;
+        resize(other.shape());
+        // shape & strides already correct
+        // ownership remains same
+        ::memcpy(array_, other.array_, size() * sizeof(S));
         return *this;
     }
 
@@ -169,12 +172,12 @@ public:  // methods
     /// Invalidates data if shapes don't match, otherwise keeps data and simply reshapes
     void resize(const std::vector<Size>& shape) {
         if (this->size() != flatten(shape)) {  // avoid reallocation if same size
-            Tensor m(shape);
+            Tensor m(shape, right_);
             swap(m);
         }
-        else {
+        else { // optimise when we dont need to reallocate
             shape_ = shape;
-            strides_ = strides(shape_);
+            strides_ = strides(right_, shape);
         }
     }
 
@@ -283,8 +286,8 @@ private: // methods
         Tensor r(shape_);
 
         // COL-MAJOR to ROW-MAJOR
-        std::vector<Size> strd_rev = strides_rev(shape_);
-        std::vector<Size> strd = strides(shape_);
+        std::vector<Size> strd_rev = strides(/*left*/ false, shape_);
+        std::vector<Size> strd = strides(/*right*/true, shape_);
 
         // main loop
         Size shape_size = shape_.size();
@@ -321,8 +324,8 @@ private: // methods
         Tensor r(shape_);
 
         // ROW-MAJOR to COL-MAJOR
-        std::vector<Size> strd_rev = strides_rev(shape_);
-        std::vector<Size> strd = strides(shape_);
+        std::vector<Size> strd_rev = strides(/*left*/ false, shape_);
+        std::vector<Size> strd     = strides(/*right*/ true, shape_);
 
         Size shape_size = shape_.size();
         std::vector<Size> row_major_indexes(shape_size);
@@ -349,7 +352,7 @@ private: // methods
         r.right_ = true;
 
         // strides are now left-to-right
-        r.strides_ = strides(shape_);
+        r.strides_ = strd;
 
         return r;
     }

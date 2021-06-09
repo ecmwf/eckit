@@ -14,6 +14,10 @@ ecbuild_add_test( TARGET   eckit_test_container_trie
                   SOURCES  test_trie.cc
                   LIBS     eckit )
 
+ecbuild_add_test( TARGET   eckit_test_container_queue
+                  SOURCES  test_queue.cc
+                  LIBS     eckit )
+
 ecbuild_add_test( TARGET   eckit_test_container_densemap
                   SOURCES  test_densemap.cc
                   LIBS     eckit )

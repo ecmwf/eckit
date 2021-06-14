@@ -259,29 +259,7 @@ public:  // methods
         return array_[index(idx...)];
     }
 
-private: // methods
-
-    /// compile time variadic template indexing calculation
-    template <int Dim, typename Int, typename... Ints>
-    constexpr Size index_part(Int idx, Ints... next_idx) const {
-        return idx * strides_[Dim] + index_part<Dim + 1>(next_idx...);
-    }
-
-    /// compile time variadic template indexing calculation
-    template <int Dim, typename Int>
-    constexpr Size index_part(Int last_idx) const {
-        return last_idx * strides_[Dim];
-
-    }
-
-    /// compile time variadic template indexing calculation
-    template <typename... Ints>
-    constexpr Size index(Ints... idx) const {
-        return index_part<0>(idx...);
-    }
-
-    void move(Tensor&& other) { swap(other); }
-
+    /// Transform a right-layout tensor to left-layout
     Tensor transformRigthToLeftLayout() const {
         Tensor r(shape_);
 
@@ -320,6 +298,7 @@ private: // methods
         return r;
     }
 
+    /// Transform a left-layout tensor to right-layout
     Tensor transformLeftToRightLayout() const {
         Tensor r(shape_);
 
@@ -356,6 +335,29 @@ private: // methods
 
         return r;
     }
+
+private: // methods
+
+    /// compile time variadic template indexing calculation
+    template <int Dim, typename Int, typename... Ints>
+    constexpr Size index_part(Int idx, Ints... next_idx) const {
+        return idx * strides_[Dim] + index_part<Dim + 1>(next_idx...);
+    }
+
+    /// compile time variadic template indexing calculation
+    template <int Dim, typename Int>
+    constexpr Size index_part(Int last_idx) const {
+        return last_idx * strides_[Dim];
+
+    }
+
+    /// compile time variadic template indexing calculation
+    template <typename... Ints>
+    constexpr Size index(Ints... idx) const {
+        return index_part<0>(idx...);
+    }
+
+    void move(Tensor&& other) { swap(other); }
 
 protected:      // member variables
 

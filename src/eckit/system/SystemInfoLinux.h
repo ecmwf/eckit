@@ -27,16 +27,16 @@ namespace system {
 class SystemInfoLinux : public SystemInfo {
 
 public:  // methods
-    virtual ~SystemInfoLinux() override;
+    ~SystemInfoLinux() override;
 
-    virtual eckit::LocalPathName executablePath() const;
+    eckit::LocalPathName executablePath() const override;
 
-    virtual MemoryInfo memoryUsage() const;
+    MemoryInfo memoryUsage() const override;
 
-    virtual void dumpProcMemInfo(std::ostream&, const char* prepend = "") const;
-    virtual void dumpSysMemInfo(std::ostream&, const char* prepend = "") const;
+    void dumpProcMemInfo(std::ostream&, const char* prepend = "") const override;
+    void dumpSysMemInfo(std::ostream&, const char* prepend = "") const override;
 
-    virtual std::string dynamicLibraryName(const std::string& name) const;
+    std::string dynamicLibraryName(const std::string& name) const override;
 
 protected:  // methods
 private:    // members

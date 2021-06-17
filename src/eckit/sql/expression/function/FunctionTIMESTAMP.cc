@@ -39,7 +39,7 @@ double FunctionTIMESTAMP::eval(bool& missing) const {
     double intime = args_[1]->eval(missing);
     // Merge "YYYYMMDD" and "HHMMSS" into "YYYYMMDDHHMMSS"
     double outstamp = 0;
-    if (indate >= 0 && indate <= INT_MAX && intime >= 0 && intime <= 240000) {
+    if (indate >= 0 && indate <= 99991231 && intime >= 0 && intime <= 240000) {
         long long int lldate = (long long int)indate;
         long long int lltime = (long long int)intime;
         long long int tstamp = lldate * 1000000ll + lltime;

@@ -36,6 +36,9 @@ static const std::vector<std::string> STRING_DATA{
     "aaaabbbb", "cccc", "dddd", "eeffg", "hijklmno", "a-string", "a-longer-string", "another-string", ""};
 static const std::vector<double> REAL_DATA2{3.0, 4.0, -12.3, 93.7, 11.11, 3.1415, -5.4321, 1.0, -2.0};
 
+static const std::vector<long> DATE_DATA{20210616, 0, 99991231, 100000000, 20210615, 20210614, 20210613, 20210612, 20210611};
+static const std::vector<long> TIME_DATA{123456, 123456, 123456, 123456, 0, 654321, 6543, 1000000, 114335};
+
 class TestTable : public eckit::sql::SQLTable {
 
 public:
@@ -45,6 +48,8 @@ public:
         addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 2), false, 0);
         addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
         addColumn("rcol2", 3, eckit::sql::type::SQLType::lookup("real"), false, 0);
+        addColumn("dates", 4, eckit::sql::type::SQLType::lookup("integer"), false, 0);
+        addColumn("times", 5, eckit::sql::type::SQLType::lookup("integer"), false, 0);
     }
 
 private:
@@ -52,9 +57,9 @@ private:
     public:
         TestTableIterator(const TestTable& owner,
                           const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns) :
-            /* owner_(owner), */ idx_(0), data_(5) {
-            std::vector<size_t> offsets{0, 1, 3, 4};
-            std::vector<size_t> doublesSizes{1, 2, 1, 1};
+            /* owner_(owner), */ idx_(0), data_(7) {
+            std::vector<size_t> offsets{0, 1, 3, 4, 5, 6};
+            std::vector<size_t> doublesSizes{1, 2, 1, 1, 1, 1};
             for (const auto& col : columns) {
                 offsets_.push_back(offsets[col.get().index()]);
                 doublesSizes_.push_back(doublesSizes[col.get().index()]);
@@ -79,6 +84,8 @@ private:
             ::strncpy(reinterpret_cast<char*>(&data_[1]), STRING_DATA[idx_].c_str(), 16);
             data_[3] = REAL_DATA[idx_];
             data_[4] = REAL_DATA2[idx_];
+            data_[5] = DATE_DATA[idx_];
+            data_[6] = TIME_DATA[idx_];
         }
         std::vector<size_t> columnOffsets() const override { return offsets_; }
         std::vector<size_t> doublesDataSizes() const override { return doublesSizes_; }
@@ -121,7 +128,13 @@ class TestOutput : public eckit::sql::SQLOutput {
 
     virtual void outputReal(double d, bool) { floatOutput.push_back(d); }
     virtual void outputDouble(double d, bool) { floatOutput.push_back(d); }
-    virtual void outputInt(double d, bool) { intOutput.push_back(d); }
+    virtual void outputInt(double d, bool missing) {
+        if (missing) {
+            intOutput.push_back(-1);
+        } else {
+            intOutput.push_back(d);
+        }
+    }
     virtual void outputUnsignedInt(double d, bool) { intOutput.push_back(d); }
     virtual void outputString(const char* s, size_t l, bool) { strOutput.push_back(std::string(s, l)); }
     virtual void outputBitfield(double d, bool) { intOutput.push_back(d); }
@@ -493,6 +506,31 @@ CASE("Functions using test data") {
         EXPECT(o.strOutput.size() == 0);
 
         EXPECT(is_approximately_equal(o.floatOutput[0], 6514.80867, 1e-7));
+    }
+
+    SECTION("Test TIMESTAMP()") {
+        std::string sql = "select timestamp(dates, times) from table1";
+        eckit::sql::SQLParser().parseString(session, sql);
+
+        session.statement().execute();
+        TestOutput& o(static_cast<TestOutput&>(session.output()));
+
+        Log::info() << "intOutput(): " << o.intOutput << std::endl;
+        EXPECT(o.intOutput.size() == 9);
+        EXPECT(o.floatOutput.size() == 0);
+        EXPECT(o.strOutput.size() == 0);
+
+        std::vector<long> expectedInt{
+            20210616123456,
+            123456,
+            99991231123456,
+            -1,
+            20210615000000,
+            -1,
+            20210613006543,
+            -1,
+            20210611114335};
+        EXPECT(o.intOutput == expectedInt);
     }
 }
 

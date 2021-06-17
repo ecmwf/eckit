@@ -38,16 +38,25 @@ double FunctionTDIFF::eval(bool& missing) const {
     int andate = (int)args_[2]->eval(missing);
     int antime = (int)args_[3]->eval(missing);
 
-    eckit::Date d1(indate);
-    eckit::Date d2(andate);
+    if (missing) return 0;
 
-    eckit::Time t1(intime / 10000, (intime % 10000) / 100, intime % 100);
-    eckit::Time t2(antime / 10000, (antime % 10000) / 100, antime % 100);
+    // Check for invalid values
+    
+    try {
+        eckit::Date d1(indate);
+        eckit::Date d2(andate);
 
-    eckit::DateTime dt1(d1, t1);
-    eckit::DateTime dt2(d2, t2);
+        eckit::Time t1(intime / 10000, (intime % 10000) / 100, intime % 100);
+        eckit::Time t2(antime / 10000, (antime % 10000) / 100, antime % 100);
 
-    return dt1 - dt2;
+        eckit::DateTime dt1(d1, t1);
+        eckit::DateTime dt2(d2, t2);
+
+        return dt1 - dt2;
+    } catch (BadValue& e) {
+        missing = true;
+        return 0;
+    }
 }
 
 const eckit::sql::type::SQLType* FunctionTDIFF::type() const {

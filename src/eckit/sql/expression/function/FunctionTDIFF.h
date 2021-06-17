@@ -14,7 +14,7 @@
 #ifndef FunctionTDIFF_H
 #define FunctionTDIFF_H
 
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit {
@@ -24,14 +24,11 @@ namespace function {
 
 /* Static self-registration */
 
-class FunctionTDIFF : public FunctionExpression {
+class FunctionTDIFF : public FunctionIntegerExpression {
 public:
     FunctionTDIFF(const std::string&, const expression::Expressions&);
     FunctionTDIFF(const FunctionTDIFF&);
     ~FunctionTDIFF();
-
-    // -- Overridden methods
-    virtual void output(std::ostream& s) const;
 
     std::shared_ptr<SQLExpression> clone() const override;
 

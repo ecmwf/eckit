@@ -9,6 +9,7 @@
  */
 
 #include "eckit/sql/expression/function/FunctionTDIFF.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/types/DateTime.h"
 
 namespace eckit {
@@ -21,9 +22,9 @@ namespace function {
 static FunctionBuilder<FunctionTDIFF> tdiffFunctionBuilder("tdiff");
 
 FunctionTDIFF::FunctionTDIFF(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args) {}
+    FunctionIntegerExpression(name, args) {}
 
-FunctionTDIFF::FunctionTDIFF(const FunctionTDIFF& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionTDIFF::FunctionTDIFF(const FunctionTDIFF& other) : FunctionIntegerExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionTDIFF::clone() const {
     return std::make_shared<FunctionTDIFF>(*this);
@@ -51,11 +52,6 @@ double FunctionTDIFF::eval(bool& missing) const {
 
 const eckit::sql::type::SQLType* FunctionTDIFF::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
-}
-
-void FunctionTDIFF::output(std::ostream& s) const {
-    bool missing = false;
-    s << static_cast<long long int>(eval(missing));
 }
 
 }  // namespace function

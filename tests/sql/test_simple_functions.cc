@@ -450,13 +450,17 @@ CASE("Functions using test data") {
         session.statement().execute();
         TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-        EXPECT(o.intOutput.size() == 9);
-        EXPECT(o.floatOutput.size() == 9);
+        EXPECT(o.intOutput.size() == 18);
+        EXPECT(o.floatOutput.size() == 0);
         EXPECT(o.strOutput.size() == 0);
 
-        std::vector<double> expectedDoub{1, 2, 3, 4, 5, 6, 7, 8, 9};
-        EXPECT(o.floatOutput == expectedDoub);
-        EXPECT(o.intOutput == INTEGER_DATA);
+        ASSERT(INTEGER_DATA.size() == 9);
+        std::vector<long> expectedInt;
+        for (int i = 0; i < 9; ++i) {
+            expectedInt.push_back(INTEGER_DATA[i]);
+            expectedInt.push_back(i+1);
+        }
+        EXPECT(o.intOutput == expectedInt);
     }
 
     SECTION("Test SQL rownumber() alone") {
@@ -467,12 +471,13 @@ CASE("Functions using test data") {
         session.statement().execute();
         TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-        EXPECT(o.intOutput.size() == 0);
-        EXPECT(o.floatOutput.size() == 9);
+        Log::info() << "intOutput size: " << o.intOutput.size() << std::endl;
+        EXPECT(o.intOutput.size() == 9);
+        EXPECT(o.floatOutput.size() == 0);
         EXPECT(o.strOutput.size() == 0);
 
-        std::vector<double> expectedDoub{1, 2, 3, 4, 5, 6, 7, 8, 9};
-        EXPECT(o.floatOutput == expectedDoub);
+        std::vector<long> expectedInt{1, 2, 3, 4, 5, 6, 7, 8, 9};
+        EXPECT(o.intOutput == expectedInt);
     }
 
     SECTION("Test dotp()") {

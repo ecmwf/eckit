@@ -24,9 +24,9 @@ namespace function {
 static FunctionBuilder<FunctionTIMESTAMP> timestampFunctionBuilder("timestamp");
 
 FunctionTIMESTAMP::FunctionTIMESTAMP(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args) {}
+    FunctionIntegerExpression(name, args) {}
 
-FunctionTIMESTAMP::FunctionTIMESTAMP(const FunctionTIMESTAMP& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionTIMESTAMP::FunctionTIMESTAMP(const FunctionTIMESTAMP& other) : FunctionIntegerExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionTIMESTAMP::clone() const {
     return std::make_shared<FunctionTIMESTAMP>(*this);
@@ -55,11 +55,6 @@ double FunctionTIMESTAMP::eval(bool& missing) const {
 
 const eckit::sql::type::SQLType* FunctionTIMESTAMP::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
-}
-
-void FunctionTIMESTAMP::output(std::ostream& s) const {
-    bool missing = false;
-    s << static_cast<long long int>(eval(missing));
 }
 
 

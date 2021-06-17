@@ -14,14 +14,14 @@
 #ifndef FunctionROWNUMBER_H
 #define FunctionROWNUMBER_H
 
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
 
-class FunctionROWNUMBER : public FunctionExpression {
+class FunctionROWNUMBER : public FunctionIntegerExpression {
 public:
     FunctionROWNUMBER(const std::string&, const expression::Expressions&);
     FunctionROWNUMBER(const FunctionROWNUMBER&);
@@ -29,7 +29,6 @@ public:
 
     // -- Overridden methods
     virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void output(std::ostream& s) const;
 
     std::shared_ptr<SQLExpression> clone() const override;
 

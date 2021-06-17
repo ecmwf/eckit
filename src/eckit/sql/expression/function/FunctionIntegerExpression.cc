@@ -12,6 +12,7 @@
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/utils/Translator.h"
 
 #define ftrunc(x) ((x)-fmod((x), 1))
@@ -31,13 +32,11 @@ const eckit::sql::type::SQLType* FunctionIntegerExpression::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
 }
 
-void FunctionIntegerExpression::output(std::ostream& s) const {
+void FunctionIntegerExpression::output(SQLOutput& s) const {
     bool missing = false;
     double v     = eval(missing);
-
+    s.outputInt(v, missing);
     // Log::info() << "FunctionIntegerExpression::output: v=" << v << ", missing=" << missing << std::endl;
-
-    s << static_cast<long long int>(v);
 }
 
 //===============================

@@ -9,11 +9,12 @@
  */
 
 #include "eckit/sql/expression/SQLExpression.h"
+
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/NumberExpression.h"
-//#include "eckit/sql/type/SQLType.h"
-#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/SQLOutput.h"
 
 using namespace eckit;
 
@@ -43,7 +44,7 @@ std::shared_ptr<SQLExpression> SQLExpression::simplify(bool& changed) {
     if (isConstant() && !isNumber()) {
         changed      = true;
         bool missing = false;
-        Log::info() << "SIMPLIFY " << *this << " to " << eval(missing) << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "SIMPLIFY " << *this << " to " << eval(missing) << std::endl;
         return std::make_shared<NumberExpression>(eval(missing));
     }
     return nullptr;

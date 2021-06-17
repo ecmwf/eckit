@@ -138,9 +138,13 @@ std::string BitColumnExpression::tableColumnToFullname(const SQLColumn& column) 
     ASSERT(bits.size() > 0);
     ASSERT(bits.size() < 3);
 
-    std::string colname = bits[0] + "." + field_;
-    if (bits.size() == 2) colname += "@" + bits[1];
-    return colname;
+    if (bits[0] != name_ + "." + field_) {
+        bits[0] += "." + field_;
+    }
+    if (bits.size() == 2) {
+        return bits[0] + "@" + bits[1];
+    }
+    return bits[0];
 }
 
 //----------------------------------------------------------------------------------------------------------------------

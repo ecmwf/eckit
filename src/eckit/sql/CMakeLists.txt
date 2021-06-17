@@ -127,6 +127,8 @@ expression/function/FunctionSUM.cc
 expression/function/FunctionSUM.h
 expression/function/FunctionTDIFF.cc
 expression/function/FunctionTDIFF.h
+expression/function/FunctionTHIN.cc
+expression/function/FunctionTHIN.h
 expression/function/FunctionTIMESTAMP.cc
 expression/function/FunctionTIMESTAMP.h
 expression/function/FunctionVAR.cc

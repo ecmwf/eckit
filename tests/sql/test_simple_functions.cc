@@ -547,7 +547,6 @@ CASE("Functions using test data") {
         session.statement().execute();
         TestOutput& o(static_cast<TestOutput&>(session.output()));
 
-        Log::info() << "intOutput: " << o.intOutput << std::endl;
         EXPECT(o.intOutput.size() == 9);
         EXPECT(o.floatOutput.size() == 0);
         EXPECT(o.strOutput.size() == 0);

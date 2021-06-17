@@ -49,9 +49,6 @@ public:
         return value_;
     }
 
-    virtual bool andSplit(expression::Expressions&) override { return false; }
-    virtual void tables(std::set<SQLTable*>&) {}
-
     virtual bool isConstant() const override { return true; }
     virtual bool isNumber() const override { NOTIMP; }
 

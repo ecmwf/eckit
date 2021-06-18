@@ -8,6 +8,12 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/testing/Test.h"
 
+
+// disable self-move warning here as we are testing it
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wself-move"
+#endif
+
 namespace eckit {
 namespace test {
 
@@ -80,9 +86,8 @@ CASE("Test eckit Buffer move assignment") {
     EXPECT(buf1.size() == 0);
 }
 
-// This is legitimate, if pointless, so it should be supported
-#pragma clang diagnostic push 
-#pragma clang diagnostic ignored "-Wself-move"
+// This includes a self-move but is legitimate, if pointless, so it should be tested 
+
 CASE("Test eckit Buffer self move") {
     const size_t sz = std::strlen(msg) + 1;
     Buffer buf{msg, sz};
@@ -92,7 +97,6 @@ CASE("Test eckit Buffer self move") {
     const char* out = buf;
     EXPECT(std::strcmp(msg, out) == 0);
 }
-#pragma clang diagnostic pop
 
 CASE("Test eckit Buffer Zero") {
     const size_t sz = std::strlen(msg) + 1;

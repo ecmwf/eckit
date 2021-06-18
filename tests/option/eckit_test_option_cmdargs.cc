@@ -19,6 +19,11 @@
 
 #include "eckit/testing/Test.h"
 
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
+
 using namespace std;
 using namespace eckit;
 using namespace eckit::option;
@@ -29,8 +34,6 @@ namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-#pragma clang diagnostic ignored "-Wunused-function"
 
 /// Test the options parser
 /// @note The options parser normall calls ::exit(1) if an error occurs. All the constructors accept an additional

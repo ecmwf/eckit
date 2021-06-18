@@ -14,7 +14,6 @@
 
 #include "eckit/types/DateTime.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/memory/Zero.h"
 
 namespace eckit {
 
@@ -52,8 +51,7 @@ static std::locale& getLocale() {
 std::string DateTime::format(const std::string& fmt) {
     std::ostringstream out;
 
-    struct tm convert;
-    eckit::zero(convert);
+    struct tm convert = {};
     convert.tm_mday   = date().day();
     convert.tm_mon    = date().month() - 1;
     convert.tm_year   = date().year() - 1900;

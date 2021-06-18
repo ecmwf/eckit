@@ -52,7 +52,7 @@ static std::locale& getLocale() {
 std::string DateTime::format(const std::string& fmt) {
     std::ostringstream out;
 
-    struct tm convert = {0, 0, 0, 0, 0, 0, 0, 0};
+    struct tm convert = {};
     convert.tm_mday   = date().day();
     convert.tm_mon    = date().month() - 1;
     convert.tm_year   = date().year() - 1900;

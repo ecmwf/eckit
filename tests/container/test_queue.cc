@@ -28,13 +28,13 @@ void mlog(const char* s, int e) {
     std::cout << s << e << std::endl;
 }
 
-static void plog(int e) {
-    mlog(" -> ", e);
-}
+// static void plog(int e) {
+//     mlog(" -> ", e);
+// }
 
-static void clog(int e) {
-    mlog(" <- ", e);
-}
+// static void clog(int e) {
+//     mlog(" <- ", e);
+// }
 
 //----------------------------------------------------------------------------------------------------------------------
 

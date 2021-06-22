@@ -66,7 +66,7 @@ ecbuild_add_test( TARGET      eckit_test_radoshandle
 
 ecbuild_add_test( TARGET      eckit_rados-performance
                   SOURCES     rados-performance.cc
-                  CONDITION   (HAVE_EXTRA_TESTS AND HAVE_RADOS)
+                  CONDITION   HAVE_EXTRA_TESTS AND HAVE_RADOS
                   INCLUDES    ${RADOS_INCLUDE_DIRS}
                   TEST_DEPENDS get_eckit_io_test_data
                   LIBS        eckit )

@@ -42,10 +42,10 @@ void mlog(const char* s, int e) {
 
 CASE("Multi Producer Multi Consumer Queue access size = 1") {
 
-    eckit::Queue<int> q(1); // this is to create high-contention -- found a bug this way
+    eckit::Queue<int> q(1);  // queue depth 1 to create high-contention, bug found with nprod = 93 and ncons = 77
     {
-        size_t nprod = 93;
-        size_t ncons = 77;
+        size_t nprod = 13; // = 93
+        size_t ncons = 7;  // = 77
 
         std::vector<std::thread> producers;
         for (int id = 0; id < nprod; ++id) {

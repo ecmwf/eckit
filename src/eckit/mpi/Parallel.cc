@@ -376,7 +376,7 @@ Status Parallel::iProbe(int source, int tag) const {
 
     MPI_CALL(MPI_Iprobe(source, tag, comm_, &flag, toStatus(st)));
 
-    return flag ? st : Status{new NullStatus{}};
+    return flag ? st : Status{};
 }
 
 int Parallel::anySource() const {

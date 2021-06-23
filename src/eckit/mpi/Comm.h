@@ -117,6 +117,8 @@ public:  // methods
     virtual Status probe(int source, int tag) const = 0;
 
     /// @brief Probe for incoming messages (non-blocking)
+    /// Use status.error() to check if there is an incoming message
+    /// status.error() == 0 if there is an incoming message
     virtual Status iProbe(int source, int tag) const = 0;
 
     virtual int undefined() const = 0;

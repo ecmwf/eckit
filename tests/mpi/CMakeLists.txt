@@ -13,7 +13,7 @@ ecbuild_add_test(
     ENVIRONMENT ECKIT_MPI_FORCE=serial
 )
 
- ecbuild_add_test(
+ecbuild_add_test(
     TARGET      eckit_test_mpi_addcomm
     SOURCES     eckit_test_mpi_addcomm.cc
     CONDITION   HAVE_MPI

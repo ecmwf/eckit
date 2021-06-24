@@ -22,7 +22,7 @@ class Serial : public eckit::mpi::Comm {
 public:
     struct Constants {
         static constexpr int anyTag() { return -1; }
-        static constexpr int anySource() { return 0; }
+        static constexpr int anySource() { return -1; }
         static constexpr int undefined() { return -32766; }
     };
 

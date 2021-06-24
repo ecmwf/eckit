@@ -667,6 +667,80 @@ CASE("test_waitAny") {
     }
 }
 
+CASE("test_probe") {
+
+    auto& comm = mpi::comm("world");
+    int nproc  = comm.size();
+    int irank  = comm.rank();
+
+    std::vector<mpi::Request> requests;
+
+    std::vector<int> data(nproc, -1);
+
+    for (int i = 0; i < nproc; i++) {
+        requests.push_back(comm.iSend(&irank, 1, i, 100));
+    }
+
+    comm.barrier();
+
+    auto count = nproc;
+    while (count > 0) {
+        auto status = comm.probe(comm.anySource(), comm.anyTag());
+        comm.receive(&data[status.source()], 1, status.source(), 100);
+        EXPECT(status.error() == 0);
+        --count;
+    }
+
+    for (int i = 0; i < nproc; i++) {
+        EXPECT(i == data[i]);
+    }
+
+    std::vector<mpi::Status> sts = comm.waitAll(requests);
+
+    for (auto& st : sts) {
+        EXPECT(st.error() == 0);
+    }
+}
+
+CASE("test_iProbe") {
+
+    auto& comm = mpi::comm("world");
+    int nproc  = comm.size();
+    int irank  = comm.rank();
+
+    std::vector<mpi::Request> requests;
+
+    std::vector<int> data(nproc, -1);
+
+    for (int i = 0; i < nproc; i++) {
+        requests.push_back(comm.iSend(&irank, 1, i, 100));
+    }
+
+    comm.barrier();
+
+    auto count = nproc;
+    while (count > 0) {
+        auto status = comm.iProbe(comm.anySource(), comm.anyTag());
+        if (status.error()) {
+            continue;
+        }
+        comm.receive(&data[status.source()], 1, status.source(), 100);
+        EXPECT(status.error() == 0);
+
+        --count;
+    }
+
+    for (int i = 0; i < nproc; i++) {
+        EXPECT(i == data[i]);
+    }
+
+    std::vector<mpi::Status> sts = comm.waitAll(requests);
+
+    for (auto& st : sts) {
+        EXPECT(st.error() == 0);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

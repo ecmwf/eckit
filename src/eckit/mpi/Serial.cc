@@ -222,7 +222,12 @@ Status Serial::waitAny(std::vector<Request>& requests, int& index) const {
 }
 
 Status Serial::probe(int source, int) const {
-    ASSERT(source == 0);
+    ASSERT(source == 0 || source == Serial::Constants::anySource());
+    return status();
+}
+
+Status Serial::iProbe(int source, int) const {
+    ASSERT(source == 0 || source == Serial::Constants::anySource());
     return status();
 }
 

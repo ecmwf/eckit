@@ -53,6 +53,8 @@ protected:  // methods
 
     virtual Status probe(int source, int tag) const override;
 
+    virtual Status iProbe(int source, int tag) const override;
+
     virtual int anySource() const override;
 
     virtual int anyTag() const override;

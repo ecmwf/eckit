@@ -79,7 +79,30 @@ public:
         }
     }
 
-    void lock() { mutex_.lock(); }
+    SendRequest* matchNextSendRequest(int tag) {
+        Request send;
+        if (tag == anyTag()) {
+            for (const auto& item : send_) {
+                const auto& sends = item.second;
+                if (sends.size()) {
+                    send = sends.front();
+                    return &send.as<SendRequest>();
+                }
+            }
+            return nullptr;
+        }
+
+        ASSERT(send_.count(tag) > 0);
+        ASSERT(send_[tag].size());
+        if (send_.find(tag) != end(send_)) {
+            send = send_.at(tag).front();
+            return &send.as<SendRequest>();
+        }
+
+        return nullptr;
+    }
+
+        void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
     static constexpr int anyTag() { return Serial::Constants::anyTag(); }
@@ -221,14 +244,39 @@ Status Serial::waitAny(std::vector<Request>& requests, int& index) const {
     return new SerialStatus{};
 }
 
-Status Serial::probe(int source, int) const {
+Status Serial::probe(int source, int tag) const {
     ASSERT(source == 0 || source == Serial::Constants::anySource());
-    return status();
+
+    SerialStatus* st = new SerialStatus();
+
+    SendRequest* req = nullptr;
+    while( not req) {
+       req = SerialRequestPool::instance().matchNextSendRequest(tag);
+    }
+    (*st).count_  = req->count();
+    (*st).tag_    = req->tag();
+    (*st).source_ = 0;
+    (*st).error_  = 0;
+
+    return Status(st);
 }
 
-Status Serial::iProbe(int source, int) const {
+Status Serial::iProbe(int source, int tag) const {
     ASSERT(source == 0 || source == Serial::Constants::anySource());
-    return status();
+
+    SerialStatus* st = new SerialStatus();
+
+    SendRequest* req = SerialRequestPool::instance().matchNextSendRequest(tag);
+    if (not req) {
+        return Status{}; // Null status
+    }
+
+    (*st).count_  = req->count();
+    (*st).tag_    = req->tag();
+    (*st).source_ = 0;
+    (*st).error_  = 0;
+
+    return Status(st);
 }
 
 int Serial::anySource() const {

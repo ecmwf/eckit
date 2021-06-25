@@ -686,8 +686,13 @@ CASE("test_probe") {
     auto count = nproc;
     while (count > 0) {
         auto status = comm.probe(comm.anySource(), comm.anyTag());
-        comm.receive(&data[status.source()], 1, status.source(), 100);
+        auto sz = comm.getCount<int>(status);
+
         EXPECT(status.error() == 0);
+        EXPECT(status.tag() == 100);
+        EXPECT(sz == 1);
+
+        comm.receive(&data[status.source()], sz, status.source(), status.tag());
         --count;
     }
 
@@ -721,11 +726,17 @@ CASE("test_iProbe") {
     auto count = nproc;
     while (count > 0) {
         auto status = comm.iProbe(comm.anySource(), comm.anyTag());
-        if (status.error()) {
+        if (not status) {
             continue;
         }
-        comm.receive(&data[status.source()], 1, status.source(), 100);
+
+        auto sz = comm.getCount<int>(status);
+
         EXPECT(status.error() == 0);
+        EXPECT(status.tag() == 100);
+        EXPECT(sz == 1);
+
+        comm.receive(&data[status.source()], sz, status.source(), status.tag());
 
         --count;
     }

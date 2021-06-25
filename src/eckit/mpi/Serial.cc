@@ -264,12 +264,12 @@ Status Serial::probe(int source, int tag) const {
 Status Serial::iProbe(int source, int tag) const {
     ASSERT(source == 0 || source == Serial::Constants::anySource());
 
-    SerialStatus* st = new SerialStatus();
-
     SendRequest* req = SerialRequestPool::instance().matchNextSendRequest(tag);
     if (not req) {
         return Status{}; // Null status
     }
+
+    SerialStatus* st = new SerialStatus{};
 
     (*st).count_  = req->count();
     (*st).tag_    = req->tag();

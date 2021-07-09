@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdarg>
 #include <cstring>
 #include <functional>
@@ -389,6 +390,14 @@ template <typename S>
 std::ostream& operator<<(std::ostream& s, const Tensor<S>& t) {
     t.print(s);
     return s;
+}
+
+inline std::vector<size_t> shapify(int rank, int shape[]) {
+    std::vector<size_t> result(rank);
+    for (int i = 0; i < rank; ++i) {
+        result[i] = shape[i];
+    }
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

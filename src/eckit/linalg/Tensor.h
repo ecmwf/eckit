@@ -392,7 +392,7 @@ std::ostream& operator<<(std::ostream& s, const Tensor<S>& t) {
     return s;
 }
 
-std::vector<size_t> shapify(int rank, int shape[]) {
+inline std::vector<size_t> shapify(int rank, int shape[]) {
     std::vector<size_t> result(rank);
     for (int i = 0; i < rank; ++i) {
         result[i] = shape[i];

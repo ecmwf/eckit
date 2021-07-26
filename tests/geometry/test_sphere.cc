@@ -24,7 +24,8 @@ namespace test {
 using namespace geometry;
 
 struct PointLonLat : Point2 {
-    PointLonLat(double x, double y) : Point2(x, y) {}
+    PointLonLat(double x, double y) :
+        Point2(x, y) {}
     const double& lon() const { return x_[0]; }
     const double& lat() const { return x_[1]; }
 };

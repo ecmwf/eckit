@@ -26,7 +26,8 @@ inline void printTime(std::ostream& s, long n) {
     s << n;
 }
 
-Time::Time(long seconds) : seconds_(seconds) {
+Time::Time(long seconds) :
+    seconds_(seconds) {
     if (seconds >= 86400 || seconds < 0) {
         std::string msg = "Time in seconds must be positive and cannot exceed 86400, seconds: ";
         Translator<long, std::string> t;
@@ -116,14 +117,16 @@ Time::operator std::string() const {
     return os.str();
 }
 
-Time::Time(const Time& other) : seconds_(other.seconds_) {}
+Time::Time(const Time& other) :
+    seconds_(other.seconds_) {}
 
 Time& Time::operator=(const Time& other) {
     seconds_ = other.seconds_;
     return *this;
 }
 
-Time::Time(long hh, long mm, long ss) : seconds_(hh * 3600 + mm * 60 + ss) {
+Time::Time(long hh, long mm, long ss) :
+    seconds_(hh * 3600 + mm * 60 + ss) {
     if (hh >= 24 || mm >= 60 || ss >= 60 || hh < 0 || mm < 0 || ss < 0) {
         std::string msg = "Wrong input for time: ";
         Translator<long, std::string> t;
@@ -192,7 +195,8 @@ Time Time::now() {
     return Time(pt->tm_hour, pt->tm_min, pt->tm_sec);
 }
 
-BadTime::BadTime(const std::string& s) : BadValue(s) {}
+BadTime::BadTime(const std::string& s) :
+    BadValue(s) {}
 
 void Time::dump(DumpLoad& a) const {
     a.dump(seconds_);

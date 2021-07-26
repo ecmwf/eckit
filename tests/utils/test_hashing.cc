@@ -111,7 +111,7 @@ std::map<string, std::vector<string>> results = {
          "2dcf47703493b6ca",  //"The quick brown fox jumps over the lazy cog"
          "e32a7da747f1bd6e",  //"The quick brown fox jumps over the lazy cog" x 2
      }},
-    {"xxhash", // Deprecated alias of xxh64
+    {"xxhash",  // Deprecated alias of xxh64
      {
          "ef46db3751d8e999",  //""
          "d24ec4f1a98c6e5b",  //"a"
@@ -140,11 +140,11 @@ void testHash(Hash& hash, std::string hashName) {
         EXPECT(testResults == hash.digest());
 
         // constructor-based initialization
-        std::unique_ptr<Hash> hashInitialized{ HashFactory::instance().build(hashName, tests[i]) };
+        std::unique_ptr<Hash> hashInitialized{HashFactory::instance().build(hashName, tests[i])};
         EXPECT(testResults == hashInitialized->digest());
 
         // initialize with dummy data and test reset
-        hashInitialized.reset( HashFactory::instance().build(hashName, "dummy data") );
+        hashInitialized.reset(HashFactory::instance().build(hashName, "dummy data"));
         hashInitialized->reset();
         hashInitialized->add(tests[i].c_str(), tests[i].size());
         EXPECT(testResults == hashInitialized->digest());
@@ -163,7 +163,7 @@ void testHash(Hash& hash, std::string hashName) {
         std::string combined;
         combined += tests[tests.size() - 1];
         combined += tests[tests.size() - 1];
-        EXPECT(hash.compute(combined.c_str(),combined.size()) == testResults);
+        EXPECT(hash.compute(combined.c_str(), combined.size()) == testResults);
     }
 }
 

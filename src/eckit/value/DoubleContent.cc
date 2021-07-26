@@ -10,10 +10,10 @@
 
 #include <limits>
 
-#include "eckit/value/DoubleContent.h"
 #include "eckit/log/JSON.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/DoubleContent.h"
 #include "eckit/value/NumberContent.h"
 
 #include "eckit/utils/Hash.h"
@@ -29,9 +29,11 @@ ClassSpec DoubleContent::classSpec_ = {
 };
 Reanimator<DoubleContent> DoubleContent::reanimator_;
 
-DoubleContent::DoubleContent(double l) : value_(l) {}
+DoubleContent::DoubleContent(double l) :
+    value_(l) {}
 
-DoubleContent::DoubleContent(Stream& s) : Content(s), value_(0) {
+DoubleContent::DoubleContent(Stream& s) :
+    Content(s), value_(0) {
     s >> value_;
 }
 
@@ -79,14 +81,14 @@ void DoubleContent::value(long long& l) const {
     // Avoid FE_INVALID by checking if value_ is within valid range of long long
     constexpr double min = double(std::numeric_limits<long long>::min());
     constexpr double max = double(std::numeric_limits<long long>::max());
-    if( value_ <= min || value_ >= max ) {
-        Content::value(l); // throws BadConversion
+    if (value_ <= min || value_ >= max) {
+        Content::value(l);  // throws BadConversion
         return;
     }
     // Now safe to assign without FE_INVALID
     l = value_;
-    if(l != value_) {
-        Content::value(l); // throws BadConversion
+    if (l != value_) {
+        Content::value(l);  // throws BadConversion
     }
 }
 

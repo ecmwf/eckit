@@ -24,7 +24,8 @@ namespace eckit {
 
 template <class Traits, class NodeType>
 template <class V>
-SPNode<Traits, NodeType>::SPNode(const V& value) : value_(value), left_(0), right_(0), next_(0) {}
+SPNode<Traits, NodeType>::SPNode(const V& value) :
+    value_(value), left_(0), right_(0), next_(0) {}
 
 template <class Traits, class NodeType>
 SPNodeInfo<Traits, NodeType> SPNode<Traits, NodeType>::nearestNeighbour(Alloc& a, const Point& p) {
@@ -59,7 +60,7 @@ void SPNode<Traits, NodeType>::nearestNeighbourBruteForceX(Alloc& a, const Point
         right(a)->nearestNeighbourBruteForceX(a, p, best, max, depth + 1);
 }
 
-//===
+//----------------------------------------------------------------------------------------------------------------------
 
 
 template <class Traits, class NodeType>
@@ -117,7 +118,7 @@ typename SPNode<Traits, NodeType>::NodeList SPNode<Traits, NodeType>::kNearestNe
     queue.fill(result);
     return result;
 }
-//===
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class Traits, class NodeType>
 typename SPNode<Traits, NodeType>::NodeList SPNode<Traits, NodeType>::findInSphere(Alloc& a, const Point& p,

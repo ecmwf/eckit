@@ -18,8 +18,10 @@ namespace eckit {
 namespace net {
 
 
-TCPClient::TCPClient(const SocketOptions& options) : TCPSocket(), port_(0), options_(options) {}
-TCPClient::TCPClient(int port, const SocketOptions& options) : TCPSocket(), port_(port), options_(options) {}
+TCPClient::TCPClient(const SocketOptions& options) :
+    TCPSocket(), port_(0), options_(options) {}
+TCPClient::TCPClient(int port, const SocketOptions& options) :
+    TCPSocket(), port_(port), options_(options) {}
 
 TCPClient::~TCPClient() {}
 

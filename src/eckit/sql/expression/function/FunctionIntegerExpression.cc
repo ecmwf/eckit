@@ -10,9 +10,9 @@
 
 #include <cmath>
 
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
-#include "eckit/sql/SQLOutput.h"
 #include "eckit/utils/Translator.h"
 
 #define ftrunc(x) ((x)-fmod((x), 1))
@@ -39,7 +39,7 @@ void FunctionIntegerExpression::output(SQLOutput& s) const {
     // Log::info() << "FunctionIntegerExpression::output: v=" << v << ", missing=" << missing << std::endl;
 }
 
-//===============================
+//----------------------------------------------------------------------------------------------------------------------
 
 // TODO: This is REALLY the wrong place for this to be.
 constexpr double DEFAULT_MDI = 2147483647;

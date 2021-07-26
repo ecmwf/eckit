@@ -521,9 +521,11 @@ unsigned long long Exporter::getUnsignedMember(const std::string& name) {
     return 0;
 }
 
-Evolve::Evolve(eckit::Exporter& e) : e_(e), parent_(nullptr) {}
+Evolve::Evolve(eckit::Exporter& e) :
+    e_(e), parent_(nullptr) {}
 
-Evolve::Evolve(Evolve* e, char const* klass, char const* name) : e_(e->e_), path_(e->path()), parent_(e) {
+Evolve::Evolve(Evolve* e, char const* klass, char const* name) :
+    e_(e->e_), path_(e->path()), parent_(e) {
     if (path_.length())
         path_ += ".";
     path_ += klass;
@@ -579,11 +581,14 @@ Evolve::operator long() {
     return e_.getSignedMember(path_);
 }
 
-Exporter::Datatype::Datatype() : type_(0), used_(false), double_(0), signed_(0), unsigned_(0) {}
+Exporter::Datatype::Datatype() :
+    type_(0), used_(false), double_(0), signed_(0), unsigned_(0) {}
 
-Exporter::Datatype::Datatype(double d) : type_(TAG_DOUBLE), used_(false), double_(d), signed_(0), unsigned_(0) {}
+Exporter::Datatype::Datatype(double d) :
+    type_(TAG_DOUBLE), used_(false), double_(d), signed_(0), unsigned_(0) {}
 
-Exporter::Datatype::Datatype(long long d) : type_(TAG_SIGNED), used_(false), double_(0), signed_(d), unsigned_(0) {}
+Exporter::Datatype::Datatype(long long d) :
+    type_(TAG_SIGNED), used_(false), double_(0), signed_(d), unsigned_(0) {}
 
 Exporter::Datatype::Datatype(unsigned long long d) :
     type_(TAG_UNSIGNED), used_(false), double_(0), signed_(0), unsigned_(d) {}

@@ -28,7 +28,8 @@ ColumnDef::ColumnDef() {}
 
 ColumnDef::~ColumnDef() {}
 
-TableDef::TableDef(const std::string& name, const ColumnDefs& columns) : name_(name), columns_(columns) {}
+TableDef::TableDef(const std::string& name, const ColumnDefs& columns) :
+    name_(name), columns_(columns) {}
 
 TableDef::~TableDef() {}
 

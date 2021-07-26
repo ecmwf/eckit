@@ -174,9 +174,7 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
         std::vector<std::string> names = table.columnNames();
 
         for (size_t i = 0; i < names.size(); i++) {
-            if ((tableReference_.size()) &&
-                ((names[i].rfind(tableReference_) == std::string::npos) ||
-                 (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size()))) {
+            if ((tableReference_.size()) && ((names[i].rfind(tableReference_) == std::string::npos) || (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size()))) {
                 L << "ColumnExpression::expandStars: skip '" << names[i] << "'" << std::endl;
                 continue;
             }

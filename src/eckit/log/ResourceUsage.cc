@@ -24,15 +24,18 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ResourceUsage::ResourceUsage() : name_("unnamed"), out_(std::cout) {
+ResourceUsage::ResourceUsage() :
+    name_("unnamed"), out_(std::cout) {
     init();
 }
 
-ResourceUsage::ResourceUsage(const std::string& name, std::ostream& o) : name_(name), out_(o) {
+ResourceUsage::ResourceUsage(const std::string& name, std::ostream& o) :
+    name_(name), out_(o) {
     init();
 }
 
-ResourceUsage::ResourceUsage(const char* name, std::ostream& o) : name_(name), out_(o) {
+ResourceUsage::ResourceUsage(const char* name, std::ostream& o) :
+    name_(name), out_(o) {
     init();
 }
 

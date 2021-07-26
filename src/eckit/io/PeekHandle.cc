@@ -19,9 +19,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PeekHandle::PeekHandle(DataHandle* h) : HandleHolder(h) {}
+PeekHandle::PeekHandle(DataHandle* h) :
+    HandleHolder(h) {}
 
-PeekHandle::PeekHandle(DataHandle& h) : HandleHolder(h) {}
+PeekHandle::PeekHandle(DataHandle& h) :
+    HandleHolder(h) {}
 
 PeekHandle::~PeekHandle() {}
 
@@ -102,9 +104,9 @@ long PeekHandle::read(void* buffer, long length) {
 
         int n = handle().read(p, length);
         if (n < 0) {
-           std::ostringstream s;
-           s << handle() << ": failed to read "<< Bytes(length);
-           throw ReadError(s.str(), Here());
+            std::ostringstream s;
+            s << handle() << ": failed to read " << Bytes(length);
+            throw ReadError(s.str(), Here());
         }
         len += n;
     }

@@ -16,9 +16,10 @@ namespace eckit {
 namespace sql {
 namespace type {
 
-//--------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-SQLReal::SQLReal(const std::string& name) : SQLType(name) {}
+SQLReal::SQLReal(const std::string& name) :
+    SQLType(name) {}
 
 SQLReal::~SQLReal() {}
 
@@ -34,7 +35,7 @@ std::string SQLReal::asString(const double* val) const {
     return eckit::Translator<double, std::string>()(*val);
 }
 
-//--------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace type
 }  // namespace sql

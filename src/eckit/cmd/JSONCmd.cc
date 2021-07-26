@@ -18,7 +18,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSONCmd::JSONCmd() : CmdResource("json") {}
+JSONCmd::JSONCmd() :
+    CmdResource("json") {}
 
 JSONCmd::~JSONCmd() {}
 

@@ -27,13 +27,15 @@ Reanimator<OrderedMapContent> OrderedMapContent::reanimator_;
 
 OrderedMapContent::OrderedMapContent() {}
 
-OrderedMapContent::OrderedMapContent(const ValueMap& v, const ValueList& keys) : value_(v) {
+OrderedMapContent::OrderedMapContent(const ValueMap& v, const ValueList& keys) :
+    value_(v) {
     ASSERT(keys.size() == value_.size());
     keys_ = keys;
 }
 
 
-OrderedMapContent::OrderedMapContent(Stream& s) : Content(s) {
+OrderedMapContent::OrderedMapContent(Stream& s) :
+    Content(s) {
     bool more;
     s >> more;
     while (more) {
@@ -175,7 +177,7 @@ Content* OrderedMapContent::clone() const {
 
     OrderedMapContent* m = new OrderedMapContent();
 
-    for( const auto& key: keys_ ) {
+    for (const auto& key : keys_) {
         m->element(key.clone()) = value(key).clone();
     }
     return m;

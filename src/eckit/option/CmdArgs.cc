@@ -123,9 +123,11 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
         if (options_.size()) {
             Log::info() << std::endl;
             Log::info() << "Options are:" << std::endl;
-            Log::info() << "===========:" << std::endl << std::endl;
+            Log::info() << "===========:" << std::endl
+                        << std::endl;
             for (std::vector<option::Option*>::const_iterator j = options_.begin(); j != options_.end(); ++j) {
-                Log::info() << *(*j) << std::endl << std::endl;
+                Log::info() << *(*j) << std::endl
+                            << std::endl;
             }
             Log::info() << std::endl;
         }

@@ -17,7 +17,8 @@ namespace sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SQLDistinctOutput::SQLDistinctOutput(SQLOutput& output) : output_(output) {}
+SQLDistinctOutput::SQLDistinctOutput(SQLOutput& output) :
+    output_(output) {}
 
 SQLDistinctOutput::~SQLDistinctOutput() {}
 

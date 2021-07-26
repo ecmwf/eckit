@@ -9,14 +9,15 @@
  */
 
 #include "eckit/log/FileTarget.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileTarget::FileTarget(const PathName& path, size_t bufferSize) : buffer_(bufferSize), path_(path) {
+FileTarget::FileTarget(const PathName& path, size_t bufferSize) :
+    buffer_(bufferSize), path_(path) {
     if (bufferSize) {
         buffer_.resize(bufferSize);
         buffer_.zero();

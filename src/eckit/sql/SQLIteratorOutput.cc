@@ -14,7 +14,8 @@ namespace eckit {
 namespace sql {
 
 template <typename T>
-SQLIteratorOutput<T>::SQLIteratorOutput(T& it) : iterator_(it), count_(0) {}
+SQLIteratorOutput<T>::SQLIteratorOutput(T& it) :
+    iterator_(it), count_(0) {}
 
 template <typename T>
 SQLIteratorOutput<T>::~SQLIteratorOutput() {}

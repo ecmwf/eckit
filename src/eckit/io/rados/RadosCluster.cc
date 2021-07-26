@@ -40,7 +40,8 @@ const RadosCluster& RadosCluster::instance() {
     return instance_;
 }
 
-RadosCluster::RadosCluster() : cluster_(0) {
+RadosCluster::RadosCluster() :
+    cluster_(0) {
 
     static const std::string radosClusterName = Resource<std::string>("radosClusterName", "mars");
     static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.mars");

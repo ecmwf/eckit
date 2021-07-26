@@ -439,7 +439,8 @@ public:
     CURL* curl_;
     curl_slist* chunks_;
 
-    CURLHandle() : curl_(nullptr), chunks_(nullptr) {
+    CURLHandle() :
+        curl_(nullptr), chunks_(nullptr) {
         pthread_once(&once, init);
         curl_ = curl_easy_init();
         ASSERT(curl_);
@@ -513,7 +514,8 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
 class EasyCURLResponseDirect : public EasyCURLResponseImp {
 public:
     std::unique_ptr<MemoryHandle> handle_;
-    EasyCURLResponseDirect(const std::string& url, CURLHandle* curl) : EasyCURLResponseImp(url, curl){};
+    EasyCURLResponseDirect(const std::string& url, CURLHandle* curl) :
+        EasyCURLResponseImp(url, curl){};
 
     virtual void perform() override {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
@@ -785,9 +787,10 @@ void EasyCURLHandle::close() {
     }
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-EasyCURLResponse::EasyCURLResponse(EasyCURLResponseImp* imp) : imp_(imp) {
+EasyCURLResponse::EasyCURLResponse(EasyCURLResponseImp* imp) :
+    imp_(imp) {
     imp_->attach();
 }
 
@@ -795,7 +798,8 @@ EasyCURLResponse::~EasyCURLResponse() {
     imp_->detach();
 }
 
-EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other) : imp_(other.imp_) {
+EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other) :
+    imp_(other.imp_) {
     imp_->attach();
 }
 
@@ -845,7 +849,8 @@ void EasyCURLResponse::print(std::ostream& out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-EasyCURL::EasyCURL() : ch_(new CURLHandle()) {
+EasyCURL::EasyCURL() :
+    ch_(new CURLHandle()) {
     ch_->attach();
 }
 
@@ -872,7 +877,7 @@ void EasyCURL::sslVerifyHost(bool on) {
 }
 
 void EasyCURL::useSSL(bool use) {
-    if(!use) {
+    if (!use) {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_USE_SSL, CURLUSESSL_NONE));
     }
 }

@@ -13,11 +13,11 @@
 
 #include <iostream>
 
-#include "eckit/types/Types.h"
 #include "eckit/io/Offset.h"
 #include "eckit/message/Decoder.h"
 #include "eckit/message/Message.h"
 #include "eckit/message/MessageContent.h"
+#include "eckit/types/Types.h"
 
 
 namespace eckit {
@@ -43,15 +43,18 @@ static NoContent noContent;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Message::Message() : content_(&noContent) {
+Message::Message() :
+    content_(&noContent) {
     content_->attach();
 }
 
-Message::Message(MessageContent* content) : content_(content ? content : &noContent) {
+Message::Message(MessageContent* content) :
+    content_(content ? content : &noContent) {
     content_->attach();
 }
 
-Message::Message(const Message& other) : content_(other.content_) {
+Message::Message(const Message& other) :
+    content_(other.content_) {
     content_->attach();
 }
 

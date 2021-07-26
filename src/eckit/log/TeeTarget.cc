@@ -17,7 +17,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TeeTarget::TeeTarget(LogTarget* left, LogTarget* right) : left_(left), right_(right) {
+TeeTarget::TeeTarget(LogTarget* left, LogTarget* right) :
+    left_(left), right_(right) {
 
     if (left_) {
         left_->attach();

@@ -52,7 +52,8 @@ SQLSession::SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::strin
 SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter) :
     SQLSession(std::move(out), 0, csvDelimiter) {}
 
-SQLSession::SQLSession(const std::string& csvDelimiter) : SQLSession(0, 0, csvDelimiter) {}
+SQLSession::SQLSession(const std::string& csvDelimiter) :
+    SQLSession(0, 0, csvDelimiter) {}
 
 SQLSession::~SQLSession() {}
 

@@ -8,17 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
+#include <fstream>
 #include <memory>
 #include <string>
-#include <fstream>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/log/Plural.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/Plural.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/runtime/Tool.h"
@@ -27,15 +27,16 @@
 using eckit::DataHandle;
 using eckit::Hash;
 using eckit::Length;
+using eckit::LibEcKit;
 using eckit::Log;
 using eckit::PathName;
-using eckit::LibEcKit;
 
 const char* defaultHashType = "xxh64";
 
 class HashTool : public eckit::Tool {
 public:
-    HashTool(int argc, char** argv) : Tool(argc, argv) {
+    HashTool(int argc, char** argv) :
+        Tool(argc, argv) {
         options_.push_back(new eckit::option::SimpleOption<std::string>("type", "hash type, default=" + std::string(defaultHashType)));
         options_.push_back(new eckit::option::SimpleOption<bool>("quiet", "silent mode with less output, only errors on check, default false"));
         options_.push_back(new eckit::option::SimpleOption<bool>("continue", "continues on failed comparisons, default true"));
@@ -71,7 +72,7 @@ public:
     PathName last_;
 };
 
-static void usage(const std::string& tool){
+static void usage(const std::string& tool) {
     Log::info() << "Usage:\n"
                 << "  As scanner:   " << tool << "                        <path> [paths...]\n"
                 << "  As generator: " << tool << " --check=0 --generate=1 <path> [paths...]\n"
@@ -80,7 +81,7 @@ static void usage(const std::string& tool){
 }
 
 Hash::digest_t HashTool::computeHash(PathName& file) {
-    if(last_ == file) // avoid 2 hashes in check following a generate
+    if (last_ == file)  // avoid 2 hashes in check following a generate
         return hash_->digest();
 
     LOG_DEBUG_LIB(LibEcKit) << "Calculating hash for " << file << std::endl;
@@ -94,13 +95,13 @@ void HashTool::hash(PathName& path) {
 
     LOG_DEBUG_LIB(LibEcKit) << "scanning path " << path << std::endl;
 
-    if(not check_ and not generate_)
+    if (not check_ and not generate_)
         return;
 
     // skip if this is a hash file
-    if(path.extension() == extension_) {
+    if (path.extension() == extension_) {
         if (clean_) {  // remove hash file if original file was removed
-            std::string s = path.asString();
+            std::string s   = path.asString();
             PathName origin = s.substr(0, s.find_last_of('.'));
             if (not origin.exists()) {
                 LOG_DEBUG_LIB(LibEcKit) << "origin file missing " << origin << std::endl;
@@ -110,7 +111,7 @@ void HashTool::hash(PathName& path) {
         return;
     }
 
-    PathName file = path.realName();
+    PathName file     = path.realName();
     PathName hashpath = file + extension_;
     Hash::digest_t outdigest;
 
@@ -163,7 +164,7 @@ void HashTool::hash(PathName& path) {
 
 void HashTool::scan(PathName& path) {
 
-    if(path.isLink()) {
+    if (path.isLink()) {
         return;
     }
 
@@ -203,7 +204,7 @@ void HashTool::run() {
 
     eckit::option::CmdArgs args(&usage, options_, -1, 1);
 
-    type_ = args.getString("type", defaultHashType);
+    type_      = args.getString("type", defaultHashType);
     extension_ = "." + type_;
 
     hash_.reset(eckit::HashFactory::instance().build(type_));
@@ -215,17 +216,17 @@ void HashTool::run() {
     generate_ = args.getBool("generate", false);
     clean_    = args.getBool("clean", false);
 
-    try {    
+    try {
         for (size_t i = 0; i < args.count(); ++i) {
             PathName path(args(i));
             scan(path);
         }
     }
-    catch(eckit::Stop& e) {
+    catch (eckit::Stop& e) {
         Log::info() << e.what() << std::endl;
     }
 
-    if(failures_.size()) {
+    if (failures_.size()) {
         Log::info() << eckit::Plural(failures_.size(), "hash check") << " failed:" << std::endl;
         for (auto& f : failures_) {
             Log::info() << f << std::endl;

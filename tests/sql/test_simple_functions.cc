@@ -138,7 +138,8 @@ class TestOutput : public eckit::sql::SQLOutput {
     virtual void outputInt(double d, bool missing) {
         if (missing) {
             intOutput.push_back(-1);
-        } else {
+        }
+        else {
             intOutput.push_back(d);
         }
     }
@@ -329,8 +330,7 @@ CASE("Functions using test data") {
 
     SECTION("Test simple arithmetic -- addition/subtraction") {
 
-        std::string sql =
-            "select icol + 15.3, rcol + 13.5, icol + rcol, icol - 15.3, rcol - 13.5, icol - rcol from table1";
+        std::string sql = "select icol + 15.3, rcol + 13.5, icol + rcol, icol - 15.3, rcol - 13.5, icol - rcol from table1";
         eckit::sql::SQLParser().parseString(session, sql);
 
         session.statement().execute();
@@ -346,11 +346,60 @@ CASE("Functions using test data") {
         //    print ", ".join("{:7.1f}".format(v) for v in (ii+15.3, rr+13.5, ii+rr, ii-15.3, rr-13.5, ii-rr))
 
         std::vector<double> expected{
-            10014.3, 113.4,  10098.9, 9983.7, 86.4,   9899.1, 8903.3, 102.3,  8976.8, 8872.7, 75.3,
-            8799.2,  7792.3, 91.2,    7854.7, 7761.7, 64.2,   7699.3, 6681.3, 80.1,   6732.6, 6650.7,
-            53.1,    6599.4, 5570.3,  69.0,   5610.5, 5539.7, 42.0,   5499.5, 4459.3, 57.9,   4488.4,
-            4428.7,  30.9,   4399.6,  3348.3, 46.8,   3366.3, 3317.7, 19.8,   3299.7, 2237.3, 35.7,
-            2244.2,  2206.7, 8.7,     2199.8, 1126.3, 24.6,   1122.1, 1095.7, -2.4,   1099.9,
+            10014.3,
+            113.4,
+            10098.9,
+            9983.7,
+            86.4,
+            9899.1,
+            8903.3,
+            102.3,
+            8976.8,
+            8872.7,
+            75.3,
+            8799.2,
+            7792.3,
+            91.2,
+            7854.7,
+            7761.7,
+            64.2,
+            7699.3,
+            6681.3,
+            80.1,
+            6732.6,
+            6650.7,
+            53.1,
+            6599.4,
+            5570.3,
+            69.0,
+            5610.5,
+            5539.7,
+            42.0,
+            5499.5,
+            4459.3,
+            57.9,
+            4488.4,
+            4428.7,
+            30.9,
+            4399.6,
+            3348.3,
+            46.8,
+            3366.3,
+            3317.7,
+            19.8,
+            3299.7,
+            2237.3,
+            35.7,
+            2244.2,
+            2206.7,
+            8.7,
+            2199.8,
+            1126.3,
+            24.6,
+            1122.1,
+            1095.7,
+            -2.4,
+            1099.9,
         };
 
         EXPECT(is_approximately_equal(o.floatOutput, expected, 0.000001));
@@ -358,8 +407,7 @@ CASE("Functions using test data") {
 
     SECTION("Test simple arithmetic -- multiplication/division") {
 
-        std::string sql =
-            "select icol * 15.3, rcol * 13.5, icol * rcol, icol / 15.3, rcol / 13.5, icol / rcol from table1";
+        std::string sql = "select icol * 15.3, rcol * 13.5, icol * rcol, icol / 15.3, rcol / 13.5, icol / rcol from table1";
         eckit::sql::SQLParser().parseString(session, sql);
 
         session.statement().execute();
@@ -375,13 +423,13 @@ CASE("Functions using test data") {
         //     print ", ".join("{:7.4f}".format(v) for v in (ii*15.3, rr*13.5, ii*rr, ii/15.3, rr/13.5, ii/rr))
 
         std::vector<double> expected{
-            152984.7000, 1348.6500, 998900.1000, 653.5294, 7.4000,      100.0901,  135986.4000, 1198.8000,
-            789254.4000, 580.9150,  6.5778,      100.0901, 118988.1000, 1048.9500, 604272.9000, 508.3007,
-            5.7556,      100.0901,  101989.8000, 899.1000, 443955.6000, 435.6863,  4.9333,      100.0901,
-            84991.5000,  749.2500,  308302.5000, 363.0719, 4.1111,      100.0901,  67993.2000,  599.4000,
-            197313.6000, 290.4575,  3.2889,      100.0901, 50994.9000,  449.5500,  110988.9000, 217.8431,
-            2.4667,      100.0901,  33996.6000,  299.7000, 49328.4000,  145.2288,  1.6444,      100.0901,
-            16998.3000,  149.8500,  12332.1000,  72.6144,  0.8222,      100.0901};
+            152984.7000, 1348.6500, 998900.1000, 653.5294, 7.4000, 100.0901, 135986.4000, 1198.8000,
+            789254.4000, 580.9150, 6.5778, 100.0901, 118988.1000, 1048.9500, 604272.9000, 508.3007,
+            5.7556, 100.0901, 101989.8000, 899.1000, 443955.6000, 435.6863, 4.9333, 100.0901,
+            84991.5000, 749.2500, 308302.5000, 363.0719, 4.1111, 100.0901, 67993.2000, 599.4000,
+            197313.6000, 290.4575, 3.2889, 100.0901, 50994.9000, 449.5500, 110988.9000, 217.8431,
+            2.4667, 100.0901, 33996.6000, 299.7000, 49328.4000, 145.2288, 1.6444, 100.0901,
+            16998.3000, 149.8500, 12332.1000, 72.6144, 0.8222, 100.0901};
 
         EXPECT(is_approximately_equal(o.floatOutput, expected, 0.0001));
     }
@@ -478,7 +526,7 @@ CASE("Functions using test data") {
         std::vector<long> expectedInt;
         for (int i = 0; i < 9; ++i) {
             expectedInt.push_back(INTEGER_DATA[i]);
-            expectedInt.push_back(i+1);
+            expectedInt.push_back(i + 1);
         }
         EXPECT(o.intOutput == expectedInt);
     }

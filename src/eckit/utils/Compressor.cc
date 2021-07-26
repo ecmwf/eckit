@@ -98,7 +98,8 @@ Compressor* CompressorFactory::build(const std::string& name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompressorBuilderBase::CompressorBuilderBase(const std::string& name) : name_(name) {
+CompressorBuilderBase::CompressorBuilderBase(const std::string& name) :
+    name_(name) {
     CompressorFactory::instance().add(name_, this);
 }
 
@@ -117,19 +118,19 @@ Compressor::~Compressor() {}
 NoCompressor::NoCompressor() {}
 
 size_t NoCompressor::compress(const void* in, size_t len, Buffer& out) const {
-    if( out.size() < len ) {
+    if (out.size() < len) {
         out.resize(len);
     }
-    out.copy(in,len);
+    out.copy(in, len);
     return len;
 }
 
 void NoCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
-    ASSERT( outlen == len );
-    if( out.size() < outlen ) {
+    ASSERT(outlen == len);
+    if (out.size() < outlen) {
         out.resize(outlen);
     }
-    out.copy(in,len);
+    out.copy(in, len);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

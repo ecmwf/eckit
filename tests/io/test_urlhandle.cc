@@ -13,8 +13,8 @@
 #include <string>
 
 #include "eckit/eckit_config.h"
-#include "eckit/io/URLHandle.h"
 #include "eckit/io/EasyCURL.h"
+#include "eckit/io/URLHandle.h"
 #include "eckit/value/Value.h"
 
 #include "eckit/testing/Test.h"

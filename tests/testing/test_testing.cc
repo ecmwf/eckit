@@ -366,8 +366,7 @@ int main(int argc, char* argv[]) {
 
     int retval1 = 0;
 
-    if (global_counters.size() != 5 ||
-        std::any_of(global_counters.begin(), global_counters.end(), [](int a) { return a != 0; })) {
+    if (global_counters.size() != 5 || std::any_of(global_counters.begin(), global_counters.end(), [](int a) { return a != 0; })) {
         eckit::Log::info() << "Global counters incorrectly configured" << std::endl;
         retval1 = 1;
     }
@@ -376,8 +375,7 @@ int main(int argc, char* argv[]) {
     int retval2 = eckit::testing::run_tests(eckit_test::tests, argc, argv);
 
     int retval3 = 0;
-    if (global_counters[0] != 3 || global_counters[1] != 1 || global_counters[2] != 1 || global_counters[3] != 11 ||
-        global_counters[4] != 10) {
+    if (global_counters[0] != 3 || global_counters[1] != 1 || global_counters[2] != 1 || global_counters[3] != 11 || global_counters[4] != 10) {
 
         eckit::Log::info() << "Global counters incorrect. Relevant tests FAILED" << std::endl;
         eckit::Log::info() << "Global counters: " << global_counters << std::endl;

@@ -24,7 +24,8 @@ static FunctionBuilder<FunctionTDIFF> tdiffFunctionBuilder("tdiff");
 FunctionTDIFF::FunctionTDIFF(const std::string& name, const expression::Expressions& args) :
     FunctionIntegerExpression(name, args) {}
 
-FunctionTDIFF::FunctionTDIFF(const FunctionTDIFF& other) : FunctionIntegerExpression(other.name_, other.args_) {}
+FunctionTDIFF::FunctionTDIFF(const FunctionTDIFF& other) :
+    FunctionIntegerExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionTDIFF::clone() const {
     return std::make_shared<FunctionTDIFF>(*this);
@@ -38,10 +39,11 @@ double FunctionTDIFF::eval(bool& missing) const {
     int andate = (int)args_[2]->eval(missing);
     int antime = (int)args_[3]->eval(missing);
 
-    if (missing) return 0;
+    if (missing)
+        return 0;
 
     // Check for invalid values
-    
+
     try {
         eckit::Date d1(indate);
         eckit::Date d2(andate);
@@ -53,7 +55,8 @@ double FunctionTDIFF::eval(bool& missing) const {
         eckit::DateTime dt2(d2, t2);
 
         return dt1 - dt2;
-    } catch (BadValue& e) {
+    }
+    catch (BadValue& e) {
         missing = true;
         return 0;
     }

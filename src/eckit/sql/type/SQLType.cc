@@ -11,8 +11,8 @@
 #include "eckit/sql/type/SQLType.h"
 
 #include <map>
-#include <mutex>
 #include <memory>
+#include <mutex>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
@@ -29,11 +29,10 @@ namespace eckit {
 namespace sql {
 namespace type {
 
-//--------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class TypeRegistry {
 public:
-
     TypeRegistry();
     ~TypeRegistry() = default;
 
@@ -51,7 +50,7 @@ private:
     std::map<std::string, const SQLType*> aliases_;
 };
 
-//--------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 TypeRegistry::TypeRegistry() {
     enregisterInternal(new SQLInt("integer"));
@@ -84,15 +83,18 @@ const SQLType* TypeRegistry::lookup(const std::string& name) {
     std::lock_guard<std::mutex> lock(m_);
 
     auto it = map_.find(name);
-    if (it != map_.end()) return it->second.get();
+    if (it != map_.end())
+        return it->second.get();
 
     auto it2 = aliases_.find(name);
-    if (it2 != aliases_.end()) return it2->second;
+    if (it2 != aliases_.end())
+        return it2->second;
 
     return nullptr;
 }
 
-SQLType::SQLType(const std::string& name) : name_(name) {}
+SQLType::SQLType(const std::string& name) :
+    name_(name) {}
 
 SQLType::~SQLType() {}
 
@@ -115,7 +117,8 @@ const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles) {
     std::string lookupName = name;
     if (name == "string") {
         lookupName += Translator<size_t, std::string>()(sizeof(double) * sizeDoubles);
-    } else {
+    }
+    else {
         ASSERT(sizeDoubles == 1);
     }
 
@@ -125,7 +128,8 @@ const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles) {
         typ = SQLType::registerType(new SQLString(lookupName, sizeof(double) * sizeDoubles));
     }
 
-    if (!typ) throw eckit::SeriousBug(name + ": type not defined");
+    if (!typ)
+        throw eckit::SeriousBug(name + ": type not defined");
     return *typ;
 }
 

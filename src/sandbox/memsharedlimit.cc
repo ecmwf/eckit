@@ -49,7 +49,8 @@ public:  // types
 
     struct Token : private eckit::NonCopyable {
 
-        Token(MemorySharedLimit& limit, parts_t parts) : limit_(limit), parts_(parts) {}
+        Token(MemorySharedLimit& limit, parts_t parts) :
+            limit_(limit), parts_(parts) {}
 
         ~Token() { limit_.release(parts_); }
 
@@ -59,7 +60,8 @@ public:  // types
     };
 
 public:  // methods
-    MemorySharedLimit(const PathName& path, size_t managed) : shint_(path, 1), managed_(managed) {
+    MemorySharedLimit(const PathName& path, size_t managed) :
+        shint_(path, 1), managed_(managed) {
         ASSERT(short(nlimit()) == nlimit());  // "SEM_MAX_VALUE must fit short in this architecture
 
         std::cout << "nlimit() " << nlimit() << std::endl;
@@ -166,7 +168,8 @@ class Forker : public ProcessControler {
     }
 
 public:
-    Forker() : ProcessControler(true) {}
+    Forker() :
+        ProcessControler(true) {}
 };
 
 
@@ -176,7 +179,8 @@ const short nprocs = 8;
 
 class MemApp : public Tool {
 public:
-    MemApp(int argc, char** argv) : Tool(argc, argv, "HOME") {}
+    MemApp(int argc, char** argv) :
+        Tool(argc, argv, "HOME") {}
 
     ~MemApp() {}
 

@@ -26,8 +26,8 @@ LZ4Compressor::LZ4Compressor() {}
 LZ4Compressor::~LZ4Compressor() {}
 
 size_t LZ4Compressor::compress(const void* in, size_t len, Buffer& out) const {
-    ASSERT( len <= std::numeric_limits<int>::max() );
-    ASSERT( out.size() <= std::numeric_limits<int>::max() );
+    ASSERT(len <= std::numeric_limits<int>::max());
+    ASSERT(out.size() <= std::numeric_limits<int>::max());
 
     const int maxcompressed = LZ4_compressBound(int(len));
 
@@ -48,12 +48,12 @@ size_t LZ4Compressor::compress(const void* in, size_t len, Buffer& out) const {
 
 void LZ4Compressor::uncompress(const void* in, size_t len, Buffer& out, size_t outlen) const {
 
-    if( out.size() < outlen ) {
+    if (out.size() < outlen) {
         out.resize(outlen);
-    }   
+    }
 
-    ASSERT( len <= std::numeric_limits<int>::max() );
-    ASSERT( out.size() <= std::numeric_limits<int>::max() );
+    ASSERT(len <= std::numeric_limits<int>::max());
+    ASSERT(out.size() <= std::numeric_limits<int>::max());
 
     const auto uncompressed = LZ4_decompress_safe(static_cast<const char*>(in), out, int(len), int(out.size()));
 
@@ -63,7 +63,7 @@ void LZ4Compressor::uncompress(const void* in, size_t len, Buffer& out, size_t o
         throw FailedLibraryCall("LZ4", "LZ4_decompress_safe", msg.str(), Here());
     }
 
-    ASSERT( uncompressed == outlen );
+    ASSERT(uncompressed == outlen);
 }
 
 CompressorBuilder<LZ4Compressor> lz4("lz4");

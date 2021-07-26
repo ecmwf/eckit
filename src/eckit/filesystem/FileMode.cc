@@ -35,7 +35,8 @@ bool invalidMode(Mode m) {
 
 }  // namespace
 
-FileMode::FileMode(mode_t m) : mode_(m) {
+FileMode::FileMode(mode_t m) :
+    mode_(m) {
     if (invalidMode(m)) {
         std::ostringstream oss;
         oss << "FileMode: invalid mode 0" << std::setw(3) << std::setfill('0') << std::oct << m;
@@ -172,9 +173,9 @@ std::string FileMode::toString() const {
 FileMode FileMode::fromPath(const PathName& path) {
     struct stat s;
     SYSCALL(::stat(path.asString().c_str(), &s));
-    return FileMode((s.st_mode & S_IRUSR) | (s.st_mode & S_IWUSR) | (s.st_mode & S_IXUSR) | (s.st_mode & S_IRGRP) |
-                    (s.st_mode & S_IWGRP) | (s.st_mode & S_IXGRP) | (s.st_mode & S_IROTH) | (s.st_mode & S_IWOTH) |
-                    (s.st_mode & S_IXOTH));
+    return FileMode((s.st_mode & S_IRUSR)
+                    | (s.st_mode & S_IWUSR)
+                    | (s.st_mode & S_IXUSR) | (s.st_mode & S_IRGRP) | (s.st_mode & S_IWGRP) | (s.st_mode & S_IXGRP) | (s.st_mode & S_IROTH) | (s.st_mode & S_IWOTH) | (s.st_mode & S_IXOTH));
 }
 
 void FileMode::print(std::ostream& os) const {

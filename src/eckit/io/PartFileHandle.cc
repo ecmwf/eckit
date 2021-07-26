@@ -43,7 +43,8 @@ void PartFileHandle::encode(Stream& s) const {
     s << length_;
 }
 
-PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
+PartFileHandle::PartFileHandle(Stream& s) :
+    DataHandle(s), pos_(0), index_(0) {
     s >> path_;
     s >> offset_;
     s >> length_;

@@ -24,9 +24,11 @@ ClassSpec BoolContent::classSpec_ = {
 };
 Reanimator<BoolContent> BoolContent::reanimator_;
 
-BoolContent::BoolContent(bool l) : value_(l) {}
+BoolContent::BoolContent(bool l) :
+    value_(l) {}
 
-BoolContent::BoolContent(Stream& s) : Content(s), value_(false) {
+BoolContent::BoolContent(Stream& s) :
+    Content(s), value_(false) {
     s >> value_;
 }
 

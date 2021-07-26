@@ -28,7 +28,8 @@ std::string RendezvousHash::md5(const std::string& str) {
     return md5.digest();
 }
 
-RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) : hash_(hash) {}
+RendezvousHash::RendezvousHash(const RendezvousHash::hash_func_ptr hash) :
+    hash_(hash) {}
 
 RendezvousHash::RendezvousHash(const std::vector<RendezvousHash::Node>& nodes,
                                const RendezvousHash::hash_func_ptr hash) :

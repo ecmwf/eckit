@@ -47,73 +47,90 @@ static Nil* nill() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Value::Value() : content_(nill()) {
+Value::Value() :
+    content_(nill()) {
     content_->attach();
 }
 
-Value::Value(int l) : content_(new NumberContent(l)) {
+Value::Value(int l) :
+    content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(long long l) : content_(new NumberContent(l)) {
+Value::Value(long long l) :
+    content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(unsigned long long l) : content_(new NumberContent(l)) {
+Value::Value(unsigned long long l) :
+    content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(unsigned long l) : content_(new NumberContent(l)) {
-    content_->attach();
-}
-
-
-Value::Value(unsigned int l) : content_(new NumberContent(l)) {
-    content_->attach();
-}
-
-Value::Value(long l) : content_(new NumberContent(l)) {
+Value::Value(unsigned long l) :
+    content_(new NumberContent(l)) {
     content_->attach();
 }
 
 
-Value::Value(bool l) : content_(new BoolContent(l)) {
+Value::Value(unsigned int l) :
+    content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(double l) : content_(new DoubleContent(l)) {
+Value::Value(long l) :
+    content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(const std::string& s) : content_(new StringContent(s)) {
+
+Value::Value(bool l) :
+    content_(new BoolContent(l)) {
     content_->attach();
 }
 
-Value::Value(const char* s) : content_(new StringContent(s)) {
+Value::Value(double l) :
+    content_(new DoubleContent(l)) {
     content_->attach();
 }
 
-Value::Value(const Length& l) : content_(new NumberContent(l)) {
+Value::Value(const std::string& s) :
+    content_(new StringContent(s)) {
     content_->attach();
 }
 
-Value::Value(const PathName& p) : content_(new StringContent(p.asString())) {
+Value::Value(const char* s) :
+    content_(new StringContent(s)) {
     content_->attach();
 }
 
-Value::Value(const Date& d) : content_(new DateContent(d)) {
+Value::Value(const Length& l) :
+    content_(new NumberContent(l)) {
     content_->attach();
 }
 
-Value::Value(const Time& d) : content_(new TimeContent(d)) {
+Value::Value(const PathName& p) :
+    content_(new StringContent(p.asString())) {
     content_->attach();
 }
 
-Value::Value(const DateTime& d) : content_(new DateTimeContent(d)) {
+Value::Value(const Date& d) :
+    content_(new DateContent(d)) {
     content_->attach();
 }
 
-Value::Value(Stream& s) : content_(Reanimator<Content>::reanimate(s)) {
+Value::Value(const Time& d) :
+    content_(new TimeContent(d)) {
+    content_->attach();
+}
+
+Value::Value(const DateTime& d) :
+    content_(new DateTimeContent(d)) {
+    content_->attach();
+}
+
+Value::Value(Stream& s) :
+    content_(Reanimator<Content>::reanimate(s)) {
     ASSERT(content_);
     content_->attach();
 }
@@ -122,7 +139,8 @@ Value::~Value() {
     content_->detach();
 }
 
-Value::Value(const Value& other) : content_(other.content_) {
+Value::Value(const Value& other) :
+    content_(other.content_) {
     content_->attach();
 }
 
@@ -218,15 +236,18 @@ Value Value::makeList(const ValueList& v) {
     return Value(new ListContent(v));
 }
 
-Value::Value(const ValueList& v) : content_(new ListContent(v)) {
+Value::Value(const ValueList& v) :
+    content_(new ListContent(v)) {
     content_->attach();
 }
 
-Value::Value(const ValueMap& m) : content_(new MapContent(m)) {
+Value::Value(const ValueMap& m) :
+    content_(new MapContent(m)) {
     content_->attach();
 }
 
-Value::Value(Content* c) : content_(c) {
+Value::Value(Content* c) :
+    content_(c) {
     content_->attach();
 }
 

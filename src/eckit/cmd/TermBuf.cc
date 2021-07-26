@@ -35,7 +35,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TermBuf::TermBuf(std::ostream& o) : out_(o) {
+TermBuf::TermBuf(std::ostream& o) :
+    out_(o) {
     setp(buffer_, buffer_ + sizeof(buffer_));
 }
 

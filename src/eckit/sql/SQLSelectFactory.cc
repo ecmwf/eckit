@@ -72,10 +72,10 @@ std::shared_ptr<SQLExpression> SQLSelectFactory::createColumn(const std::string&
     return bitfieldName.size()
                ? (shift == 0 ? std::make_shared<BitColumnExpression>(expandedColumnName, bitfieldName, tableReference)
                              : std::make_shared<ShiftedColumnExpression<BitColumnExpression>>(
-                                   expandedColumnName, bitfieldName, tableReference, shift, -shift))
+                                 expandedColumnName, bitfieldName, tableReference, shift, -shift))
                : (shift == 0 ? std::make_shared<ColumnExpression>(expandedColumnName + tableReference, tableReference)
                              : std::make_shared<ShiftedColumnExpression<ColumnExpression>>(
-                                   expandedColumnName + tableReference, tableReference, shift, -shift));
+                                 expandedColumnName + tableReference, tableReference, shift, -shift));
 }
 
 /*
@@ -129,14 +129,18 @@ SQLSelect* SQLSelectFactory::create(bool distinct, const Expressions& select_lis
     ASSERT(minColumnShift_ <= 0);
     if (minColumnShift_ < 0) {
 
-        L << std::endl << "SELECT_LIST before reshifting:" << select << std::endl;
+        L << std::endl
+          << "SELECT_LIST before reshifting:" << select << std::endl;
         select = select.reshift_expressions(minColumnShift_);
-        L << std::endl << "SELECT_LIST after reshifting:" << select << std::endl;
+        L << std::endl
+          << "SELECT_LIST after reshifting:" << select << std::endl;
 
         if (where) {
-            L << std::endl << "WHERE before reshifting:" << *where << std::endl;
+            L << std::endl
+              << "WHERE before reshifting:" << *where << std::endl;
             where = where->reshift(minColumnShift_);
-            L << std::endl << "WHERE after reshifting:" << *where << std::endl;
+            L << std::endl
+              << "WHERE after reshifting:" << *where << std::endl;
         }
 
         if (!order_by.first.empty()) {

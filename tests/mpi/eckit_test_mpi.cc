@@ -686,7 +686,7 @@ CASE("test_probe") {
     auto count = nproc;
     while (count > 0) {
         auto status = comm.probe(comm.anySource(), comm.anyTag());
-        auto sz = comm.getCount<int>(status);
+        auto sz     = comm.getCount<int>(status);
 
         EXPECT(status.error() == 0);
         EXPECT(status.tag() == 100);

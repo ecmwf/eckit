@@ -17,10 +17,10 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/system/Library.h"
-#include "eckit/system/ResourceUsage.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/system/LibraryManager.h"
 #include "eckit/system/Plugin.h"
+#include "eckit/system/ResourceUsage.h"
+#include "eckit/system/SystemInfo.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;
@@ -42,7 +42,8 @@ namespace test {
 
 class TestPlugin : Plugin {
 public:
-    TestPlugin() : Plugin("test-plugin") {}
+    TestPlugin() :
+        Plugin("test-plugin") {}
     ~TestPlugin() {
         std::cout << "~TestPlugin()" << std::endl;
     }
@@ -51,10 +52,10 @@ public:
         return instance;
     }
     std::string version() const override { return "0.0.0"; }
-    std::string gitsha1( unsigned int count ) const override { return "undefined"; }
+    std::string gitsha1(unsigned int count) const override { return "undefined"; }
 };
 
-REGISTER_LIBRARY( TestPlugin );
+REGISTER_LIBRARY(TestPlugin);
 
 //----------------------------------------------------------------------------------------------------------------------
 

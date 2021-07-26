@@ -75,11 +75,11 @@ void timeDecompress(const Compressor& compressor, eckit::Buffer& inBuffer, size_
 struct BinaryData {
     eckit::Buffer in;
     std::string description;
-    BinaryData( const eckit::PathName& path, const std::string& desc ) :
-        in( path.size() ), description(desc) {
-        std::unique_ptr<DataHandle> dh( path.fileHandle() );
+    BinaryData(const eckit::PathName& path, const std::string& desc) :
+        in(path.size()), description(desc) {
+        std::unique_ptr<DataHandle> dh(path.fileHandle());
         dh->openForRead();
-        dh->read(in,in.size());
+        dh->read(in, in.size());
         dh->close();
     }
 };
@@ -92,25 +92,24 @@ CASE("Test compression performance") {
 
     std::vector<BinaryData> data;
 
-    data.emplace_back( "2t_sfc.grib",        "GRIB t2 surface layer" );
-    data.emplace_back( "2t_sfc_regrid.grib", "GRIB t2 surface layer re-gridded");
-    data.emplace_back( "vo-d_6ml.grib",      "GRIB vo/d layers (10-15 spherical harmonics)" );
-    data.emplace_back( "u-v_6ml.grib",       "GRIB u/v layers (10-15)" );
-    data.emplace_back( "q_6ml_regrid.grib",  "GRIB q 6 layers (10-15) re-gridded" );
+    data.emplace_back("2t_sfc.grib", "GRIB t2 surface layer");
+    data.emplace_back("2t_sfc_regrid.grib", "GRIB t2 surface layer re-gridded");
+    data.emplace_back("vo-d_6ml.grib", "GRIB vo/d layers (10-15 spherical harmonics)");
+    data.emplace_back("u-v_6ml.grib", "GRIB u/v layers (10-15)");
+    data.emplace_back("q_6ml_regrid.grib", "GRIB q 6 layers (10-15) re-gridded");
 
     std::vector<std::string> compressors{"none", "lz4", "snappy", "aec", "bzip2"};
 
-    constexpr int N = 5; // Number of iterations to use for each case
+    constexpr int N = 5;  // Number of iterations to use for each case
 
-    auto test_case = [&](const Compressor& compressor, BinaryData& data ) {
-
+    auto test_case = [&](const Compressor& compressor, BinaryData& data) {
         // Allocations here to prevent them from being timed in timings during first iteration
         // Allocation with more than required can prevent internal buffers and memcopies, depending on implementation
 
-        auto ulen = data.in.size();
-        size_t oversize = size_t(1.2*ulen); // used in AEC
-        Buffer compressed{ oversize };
-        Buffer uncompressed{ oversize };
+        auto ulen       = data.in.size();
+        size_t oversize = size_t(1.2 * ulen);  // used in AEC
+        Buffer compressed{oversize};
+        Buffer uncompressed{oversize};
 
         // touch memory
         compressed.zero();
@@ -124,7 +123,7 @@ CASE("Test compression performance") {
     };
 
 
-    for( const auto& name : compressors ) {
+    for (const auto& name : compressors) {
 
         if (eckit::CompressorFactory::instance().has(name)) {
 
@@ -132,9 +131,9 @@ CASE("Test compression performance") {
 
             std::unique_ptr<eckit::Compressor> compressor(eckit::CompressorFactory::instance().build(name));
 
-            for( auto& d: data ) {
+            for (auto& d : data) {
                 std::cout << "    " << d.description << std::endl;
-                test_case( *compressor, d );
+                test_case(*compressor, d);
             }
         }
     }

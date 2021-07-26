@@ -18,7 +18,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Thread::Thread(bool autodel) : stop_(false), autodel_(autodel) {}
+Thread::Thread(bool autodel) :
+    stop_(false), autodel_(autodel) {}
 
 Thread::~Thread() {}
 

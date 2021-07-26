@@ -19,7 +19,8 @@ namespace eckit {
 
 class BadHour : public BadValue {
 public:
-    BadHour(const std::string& s) : BadValue(s) {}
+    BadHour(const std::string& s) :
+        BadValue(s) {}
 };
 
 Hour::Hour(double hour) {

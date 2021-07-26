@@ -40,7 +40,8 @@ static std::string parse(const std::string& cidr, size_t n) {
     return v[n];
 }
 
-NetMask::NetMask(const std::string& cidr) : network_(parse(cidr, 0)), bits_(s2l(parse(cidr, 1))) {
+NetMask::NetMask(const std::string& cidr) :
+    network_(parse(cidr, 0)), bits_(s2l(parse(cidr, 1))) {
 
     ASSERT(bits_ > 0);
     ASSERT(bits_ < 32);

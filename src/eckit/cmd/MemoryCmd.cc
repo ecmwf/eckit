@@ -10,14 +10,15 @@
 
 #include "eckit/cmd/MemoryCmd.h"
 
-#include "eckit/system/SystemInfo.h"
 #include "eckit/system/MemoryInfo.h"
+#include "eckit/system/SystemInfo.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MemoryCmd::MemoryCmd() : CmdResource("memory") {}
+MemoryCmd::MemoryCmd() :
+    CmdResource("memory") {}
 
 MemoryCmd::~MemoryCmd() {}
 

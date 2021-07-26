@@ -19,7 +19,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Configurable::Configurable() : ClassExtent<Configurable>(this) {}
+Configurable::Configurable() :
+    ClassExtent<Configurable>(this) {}
 
 Configurable::~Configurable() {}
 

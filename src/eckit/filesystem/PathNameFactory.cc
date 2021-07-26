@@ -11,8 +11,8 @@
 #include "eckit/filesystem/PathNameFactory.h"
 
 #include "eckit/filesystem/BasePathNameT.h"
-#include "eckit/thread/StaticMutex.h"
 #include "eckit/thread/AutoLock.h"
+#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 
@@ -27,8 +27,8 @@ public:  // methods
 
     BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false);
 
-private:  // methods
-    StaticMutex static_mutex_; //< must be StaticMutex, so it is registered to be clean on fork
+private:                        // methods
+    StaticMutex static_mutex_;  //< must be StaticMutex, so it is registered to be clean on fork
     std::vector<std::string> names_;
     std::map<std::string, const PathNameBuilderBase*> builders_;
 };

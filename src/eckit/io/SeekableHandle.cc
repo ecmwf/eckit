@@ -19,9 +19,11 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-SeekableHandle::SeekableHandle(PeekHandle* h) : handle_(*h), position_(0) {}
+SeekableHandle::SeekableHandle(PeekHandle* h) :
+    handle_(*h), position_(0) {}
 
-SeekableHandle::SeekableHandle(PeekHandle& h) : handle_(h), position_(0) {}
+SeekableHandle::SeekableHandle(PeekHandle& h) :
+    handle_(h), position_(0) {}
 
 SeekableHandle::~SeekableHandle() {}
 

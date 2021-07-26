@@ -46,7 +46,8 @@ static in_addr none = {INADDR_NONE};
 
 static Once<Mutex> local_mutex;
 
-TCPSocket::UnknownHost::UnknownHost(const std::string& host) : Exception(std::string("Unknown host ") + host) {}
+TCPSocket::UnknownHost::UnknownHost(const std::string& host) :
+    Exception(std::string("Unknown host ") + host) {}
 
 
 TCPSocket::TCPSocket() :
@@ -127,7 +128,8 @@ long TCPSocket::write(const void* buf, long length) {
 
         if (mode_ != 'w') {
             newline_ = true;
-            std::cout << std::endl << std::endl;
+            std::cout << std::endl
+                      << std::endl;
             mode_ = 'w';
         }
 
@@ -142,7 +144,8 @@ long TCPSocket::write(const void* buf, long length) {
                 std::cout << "\\r";
             }
             else if (p[i] == '\n') {
-                std::cout << "\\n" << std::endl;
+                std::cout << "\\n"
+                          << std::endl;
                 newline_ = true;
             }
             else {
@@ -268,7 +271,8 @@ long TCPSocket::read(void* buf, long length) {
 
             if (mode_ != 'r') {
                 newline_ = true;
-                std::cout << std::endl << std::endl;
+                std::cout << std::endl
+                          << std::endl;
                 mode_ = 'r';
             }
 
@@ -282,7 +286,8 @@ long TCPSocket::read(void* buf, long length) {
                     std::cout << "\\r";
                 }
                 else if (p[i] == '\n') {
-                    std::cout << "\\n" << std::endl;
+                    std::cout << "\\n"
+                              << std::endl;
                     newline_ = true;
                 }
                 else {

@@ -24,7 +24,8 @@ static FunctionBuilder<FunctionJOIN> joinFunctionBuilder("join");
 FunctionJOIN::FunctionJOIN(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
-FunctionJOIN::FunctionJOIN(const FunctionJOIN& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionJOIN::FunctionJOIN(const FunctionJOIN& other) :
+    FunctionExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionJOIN::clone() const {
     return std::make_shared<FunctionJOIN>(*this);

@@ -45,7 +45,8 @@ namespace detail {
 
 class StandardAllocator : public SparseMatrix::Allocator {
 public:
-    StandardAllocator() : membuff_(0) {}
+    StandardAllocator() :
+        membuff_(0) {}
 
     virtual SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) {
 
@@ -75,7 +76,8 @@ public:
 
 class BufferAllocator : public SparseMatrix::Allocator {
 public:
-    BufferAllocator(const MemoryBuffer& buffer) : buffer_(buffer, buffer.size()) {}
+    BufferAllocator(const MemoryBuffer& buffer) :
+        buffer_(buffer, buffer.size()) {}
 
     virtual eckit::linalg::SparseMatrix::Layout allocate(eckit::linalg::SparseMatrix::Shape& shape) {
 
@@ -183,7 +185,8 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) {
     }
 }
 
-SparseMatrix::SparseMatrix(SparseMatrix&& other) : SparseMatrix() {
+SparseMatrix::SparseMatrix(SparseMatrix&& other) :
+    SparseMatrix() {
     swap(other);
 }
 

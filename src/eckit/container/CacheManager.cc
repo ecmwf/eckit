@@ -324,7 +324,8 @@ void CacheManagerFileSemaphoreLock::unlock() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path) : lock_(lockFile(path)) {}
+CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path) :
+    lock_(lockFile(path)) {}
 
 void CacheManagerFileFlock::lock() {
     lock_.lock();

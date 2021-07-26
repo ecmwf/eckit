@@ -18,7 +18,8 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SerialStatus::SerialStatus() : source_(Serial::Constants::anySource()), tag_(Serial::Constants::anyTag()), error_(0) {}
+SerialStatus::SerialStatus() :
+    source_(Serial::Constants::anySource()), tag_(Serial::Constants::anyTag()), error_(0) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

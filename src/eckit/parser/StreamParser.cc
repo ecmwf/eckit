@@ -125,7 +125,8 @@ void StreamParser::consume(const char* p) {
 }
 
 
-StreamParser::Error::Error(const std::string& what, size_t line) : Exception(what) {
+StreamParser::Error::Error(const std::string& what, size_t line) :
+    Exception(what) {
     if (line) {
         std::ostringstream oss;
         oss << "Line: " << line << " " << what;

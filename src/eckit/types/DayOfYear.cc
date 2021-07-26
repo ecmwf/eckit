@@ -33,9 +33,11 @@ static long date2Value(const Date& date) {
     return value;
 }
 
-DayOfYear::DayOfYear(const Date& date) : value_(date2Value(date)) {}
+DayOfYear::DayOfYear(const Date& date) :
+    value_(date2Value(date)) {}
 
-DayOfYear::DayOfYear(const std::string& s) : value_(date2Value(Date(s))) {}
+DayOfYear::DayOfYear(const std::string& s) :
+    value_(date2Value(Date(s))) {}
 
 DayOfYear::operator std::string() const {
     std::ostringstream os;

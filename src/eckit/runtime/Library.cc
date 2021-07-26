@@ -19,7 +19,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Library::Library(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv) {}
+Library::Library(int argc, char** argv, const char* homeenv) :
+    Main(argc, argv, homeenv) {}
 
 Library::~Library() {}
 

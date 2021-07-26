@@ -95,9 +95,8 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
     const double cos_lambda = cos(lambda);
     const double sin_lambda = sin(lambda);
 
-    const double angle =
-        atan2(sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
-              sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
+    const double angle = atan2(sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
+                               sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
     if (types::is_approximately_equal(angle, 0.)) {
         return 0.;

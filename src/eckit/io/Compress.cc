@@ -109,7 +109,8 @@ public:
     void output(eckit::BitIO& out, size_t nbits) const;
 };
 
-Entry::Entry(size_t code) : code_(code) {
+Entry::Entry(size_t code) :
+    code_(code) {
     if (code < 256) {
         chars_.push_back(code);
     }
@@ -170,7 +171,8 @@ static void init_table(std::set<Entry>& table) {
 }
 }  // namespace
 
-Compress::Compress(size_t maxBits) : maxBits_(maxBits) {}
+Compress::Compress(size_t maxBits) :
+    maxBits_(maxBits) {}
 
 
 size_t Compress::encode(DataHandle& in, DataHandle& out) {

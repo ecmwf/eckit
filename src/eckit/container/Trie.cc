@@ -18,7 +18,8 @@ namespace eckit {
 
 
 template <class T>
-Trie<T>::Trie() : from_(0), set_(0), kids_(0) {}
+Trie<T>::Trie() :
+    from_(0), set_(0), kids_(0) {}
 
 
 template <class T>

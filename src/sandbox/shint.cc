@@ -52,7 +52,8 @@ class SemForker : public ProcessControler {
     }
 
 public:
-    SemForker(short want) : ProcessControler(true), want_(want * 500) {}
+    SemForker(short want) :
+        ProcessControler(true), want_(want * 500) {}
 
     short want_;
 };
@@ -64,7 +65,8 @@ const short nprocs = 16;
 
 class SemApp : public Tool {
 public:
-    SemApp(int argc, char** argv) : Tool(argc, argv, "HOME") {}
+    SemApp(int argc, char** argv) :
+        Tool(argc, argv, "HOME") {}
 
     ~SemApp() {}
 

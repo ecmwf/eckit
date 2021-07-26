@@ -71,7 +71,8 @@ std::string SQLBitfield::make(const std::string& name, const FieldNames& fields,
     if (!exists(typeName)) {
         // Ownership of SQLBitfield assumed by TypeRegistry
         SQLType::registerType(new SQLBitfield(typeName, fields, sizes));
-        if (ddlName) SQLType::createAlias(typeName, ddlName);
+        if (ddlName)
+            SQLType::createAlias(typeName, ddlName);
     }
 
     return typeName;

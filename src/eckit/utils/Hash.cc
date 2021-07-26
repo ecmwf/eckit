@@ -113,7 +113,8 @@ Hash* HashFactory::build(const std::string& name, const std::string& param) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HashBuilderBase::HashBuilderBase(const std::string& name) : name_(name) {
+HashBuilderBase::HashBuilderBase(const std::string& name) :
+    name_(name) {
     HashFactory::instance().add(name_, this);
 }
 

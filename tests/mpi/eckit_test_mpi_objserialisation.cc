@@ -62,7 +62,8 @@ protected:
 
 class Obj : protected SerializeObject {
 public:
-    Obj(const std::string& s, int i, double d, bool b, size_t sz = 2) : s_(s), i_(i), d_(d), b_(b), data_(i * sz) {
+    Obj(const std::string& s, int i, double d, bool b, size_t sz = 2) :
+        s_(s), i_(i), d_(d), b_(b), data_(i * sz) {
         for (auto& value : data_) {
             value = 2 * i;
         }
@@ -123,8 +124,7 @@ public:
             return false;
         };
 
-        return s_ == rhs.s_ && i_ == rhs.i_ && d_ == rhs.d_ && b_ == rhs.b_ && data_.size() == rhs.data_.size() &&
-               compvec() && compnext();
+        return s_ == rhs.s_ && i_ == rhs.i_ && d_ == rhs.d_ && b_ == rhs.b_ && data_.size() == rhs.data_.size() && compvec() && compnext();
     }
 
     void print(std::ostream& os) const {
@@ -168,7 +168,8 @@ size_t circler(size_t i, size_t total) {
 
 struct Fixture {
 public:
-    Fixture() : sendBuffer_(32) {
+    Fixture() :
+        sendBuffer_(32) {
         me_    = eckit::mpi::comm().rank();
         total_ = eckit::mpi::comm().size();
 

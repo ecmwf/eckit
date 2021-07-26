@@ -20,14 +20,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Longitude::Longitude(double l) : Coord(l) {
+Longitude::Longitude(double l) :
+    Coord(l) {
     while (value_ < 0.0)
         value_ += 360.0;
     while (value_ >= 360.0)
         value_ -= 360.0;
 }
 
-Latitude::Latitude(double l) : Coord(l) {
+Latitude::Latitude(double l) :
+    Coord(l) {
     ASSERT(l <= 90.0 && l >= -90.0);
 }
 

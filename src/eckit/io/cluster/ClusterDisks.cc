@@ -175,7 +175,8 @@ class MemoryMappedDiskArray : public DiskArray {
     MappedArray<ClusterDisk> map_;
 
 public:
-    MemoryMappedDiskArray(const PathName& path, unsigned long size) : DiskArray(), map_(path, size) {}
+    MemoryMappedDiskArray(const PathName& path, unsigned long size) :
+        DiskArray(), map_(path, size) {}
 };
 
 class SharedMemoryDiskArray : public DiskArray {

@@ -128,7 +128,8 @@ void EtcTable::load() {
 EtcStartWithTable::EtcStartWithTable(const std::string& name, int size, const std::string& dir) :
     EtcTable(name, size, dir) {}
 
-EtcKeyTable::EtcKeyTable(const std::string& name, int size, const std::string& dir) : EtcTable(name, size, dir) {}
+EtcKeyTable::EtcKeyTable(const std::string& name, int size, const std::string& dir) :
+    EtcTable(name, size, dir) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

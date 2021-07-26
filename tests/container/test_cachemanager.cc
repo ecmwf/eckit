@@ -47,7 +47,8 @@ struct CacheTraits {
 
 
 struct Manager : eckit::CacheManager<CacheTraits> {
-    Manager() : eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ false, /*maxCacheSize*/ 0) {}
+    Manager() :
+        eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ false, /*maxCacheSize*/ 0) {}
 
 private:
     friend CacheTraits;

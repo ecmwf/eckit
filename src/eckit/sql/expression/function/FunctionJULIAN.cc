@@ -28,7 +28,8 @@ static FunctionBuilder<FunctionJULIAN> julian_dateFunctionBuilder("julian_date")
 FunctionJULIAN::FunctionJULIAN(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
-FunctionJULIAN::FunctionJULIAN(const FunctionJULIAN& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionJULIAN::FunctionJULIAN(const FunctionJULIAN& other) :
+    FunctionExpression(other.name_, other.args_) {}
 
 
 std::shared_ptr<SQLExpression> FunctionJULIAN::clone() const {

@@ -356,7 +356,7 @@ CASE("test_eckit_yaml_27") {
 // }
 
 // Verify that numeric literals are detected correctly
-CASE( "test_eckit_yaml_29" ) {
+CASE("test_eckit_yaml_29") {
     EXPECT_EQUAL(YAMLParser::decodeString("1").typeName(), "Number");
     EXPECT_EQUAL(YAMLParser::decodeString("12").typeName(), "Number");
     EXPECT_EQUAL(YAMLParser::decodeString("1.").typeName(), "Double");
@@ -514,7 +514,6 @@ CASE("test_eckit_yaml_comment_in_string") {
     EXPECT(bool(v["bool4"]) == false);
     EXPECT(bool(v["bool5"]) == true);
     EXPECT(bool(v["bool6"]) == false);
-
 }
 
 

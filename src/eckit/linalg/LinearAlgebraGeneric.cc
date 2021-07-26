@@ -24,7 +24,8 @@ namespace linalg {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-LinearAlgebraGeneric::LinearAlgebraGeneric() : LinearAlgebra("generic") {}
+LinearAlgebraGeneric::LinearAlgebraGeneric() :
+    LinearAlgebra("generic") {}
 
 
 void LinearAlgebraGeneric::print(std::ostream& out) const {

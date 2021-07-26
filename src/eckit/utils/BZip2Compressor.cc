@@ -12,7 +12,7 @@
 
 #include <limits>
 
-#include "bzlib.h" // header includes extern c linkage
+#include "bzlib.h"  // header includes extern c linkage
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"

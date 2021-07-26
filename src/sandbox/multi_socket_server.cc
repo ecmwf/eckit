@@ -26,7 +26,8 @@ class Server : public Application {
     void test(int port);
 
 public:
-    Server(int argc, char** argv) : Application(argc, argv, "HOME") {}
+    Server(int argc, char** argv) :
+        Application(argc, argv, "HOME") {}
 };
 
 void Server::test(int port) {

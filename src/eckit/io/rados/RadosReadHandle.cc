@@ -33,9 +33,11 @@ void RadosReadHandle::encode(Stream& s) const {
     s << object_;
 }
 
-RadosReadHandle::RadosReadHandle(Stream& s) : DataHandle(s), object_(s) {}
+RadosReadHandle::RadosReadHandle(Stream& s) :
+    DataHandle(s), object_(s) {}
 
-RadosReadHandle::RadosReadHandle(const std::string& name) : object_(name) {}
+RadosReadHandle::RadosReadHandle(const std::string& name) :
+    object_(name) {}
 
 RadosReadHandle::~RadosReadHandle() {}
 

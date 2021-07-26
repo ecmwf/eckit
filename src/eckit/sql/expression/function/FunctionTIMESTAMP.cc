@@ -26,7 +26,8 @@ static FunctionBuilder<FunctionTIMESTAMP> timestampFunctionBuilder("timestamp");
 FunctionTIMESTAMP::FunctionTIMESTAMP(const std::string& name, const expression::Expressions& args) :
     FunctionIntegerExpression(name, args) {}
 
-FunctionTIMESTAMP::FunctionTIMESTAMP(const FunctionTIMESTAMP& other) : FunctionIntegerExpression(other.name_, other.args_) {}
+FunctionTIMESTAMP::FunctionTIMESTAMP(const FunctionTIMESTAMP& other) :
+    FunctionIntegerExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionTIMESTAMP::clone() const {
     return std::make_shared<FunctionTIMESTAMP>(*this);

@@ -17,11 +17,13 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Status::Status() : content_(new NullStatus()) {
+Status::Status() :
+    content_(new NullStatus()) {
     content_->attach();
 }
 
-Status::Status(StatusContent* p) : content_(p) {
+Status::Status(StatusContent* p) :
+    content_(p) {
     ASSERT(p);
     content_->attach();
 }
@@ -30,7 +32,8 @@ Status::~Status() {
     content_->detach();
 }
 
-Status::Status(const Status& s) : content_(s.content_) {
+Status::Status(const Status& s) :
+    content_(s.content_) {
     content_->attach();
 }
 

@@ -24,7 +24,8 @@ namespace eckit {
 namespace message {
 
 
-Splitter::Splitter(eckit::PeekHandle& handle) : handle_(handle) {}
+Splitter::Splitter(eckit::PeekHandle& handle) :
+    handle_(handle) {}
 
 Splitter::~Splitter() {}
 

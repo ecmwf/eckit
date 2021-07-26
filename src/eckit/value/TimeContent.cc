@@ -25,9 +25,11 @@ ClassSpec TimeContent::classSpec_ = {
 };
 Reanimator<TimeContent> TimeContent::reanimator_;
 
-TimeContent::TimeContent(const Time& d) : value_(d) {}
+TimeContent::TimeContent(const Time& d) :
+    value_(d) {}
 
-TimeContent::TimeContent(Stream& s) : Content(s) {
+TimeContent::TimeContent(Stream& s) :
+    Content(s) {
     std::string dd;
     s >> dd;
     value_ = Time(dd);

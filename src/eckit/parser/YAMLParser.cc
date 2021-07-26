@@ -43,7 +43,8 @@ struct YAMLItem : public Counted {
         return v;
     }
 
-    YAMLItem(long indent = 0, const Value& value = Value()) : indent_(indent), value_(value) {}
+    YAMLItem(long indent = 0, const Value& value = Value()) :
+        indent_(indent), value_(value) {}
 
     virtual ~YAMLItem() {
         // std::cout << "~YAMLItem " << value_ << std::endl;
@@ -65,7 +66,8 @@ class YAMLItemLock {
     const YAMLItem* item_;
 
 public:
-    YAMLItemLock(const YAMLItem* item) : item_(0) { set(item); }
+    YAMLItemLock(const YAMLItem* item) :
+        item_(0) { set(item); }
     ~YAMLItemLock() { set(0); }
 
     void set(const YAMLItem* item) {
@@ -86,7 +88,8 @@ struct YAMLItemEOF : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return Value(); }
 
-    YAMLItemEOF() : YAMLItem(-1) {}
+    YAMLItemEOF() :
+        YAMLItem(-1) {}
     virtual bool isEOF() const { return true; }
 };
 
@@ -127,7 +130,8 @@ struct YAMLItemStartDocument : public YAMLItem {
     }
 
 
-    YAMLItemStartDocument() : YAMLItem(-1) {}
+    YAMLItemStartDocument() :
+        YAMLItem(-1) {}
 
 
     virtual bool isStartDocument() const { return true; }
@@ -142,7 +146,8 @@ struct YAMLItemValue : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return value_; }
 
-    YAMLItemValue(size_t indent, const Value& value) : YAMLItem(indent, value) {}
+    YAMLItemValue(size_t indent, const Value& value) :
+        YAMLItem(indent, value) {}
 };
 
 struct YAMLItemAnchor : public YAMLItem {
@@ -159,7 +164,8 @@ struct YAMLItemAnchor : public YAMLItem {
         return v;
     }
 
-    YAMLItemAnchor(size_t indent, const Value& value) : YAMLItem(indent, value) {}
+    YAMLItemAnchor(size_t indent, const Value& value) :
+        YAMLItem(indent, value) {}
 };
 
 struct YAMLItemReference : public YAMLItem {
@@ -170,7 +176,8 @@ struct YAMLItemReference : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return parser.anchor(value_); }
 
-    YAMLItemReference(size_t indent, const Value& value) : YAMLItem(indent, value) {}
+    YAMLItemReference(size_t indent, const Value& value) :
+        YAMLItem(indent, value) {}
 };
 
 struct YAMLItemKey : public YAMLItem {
@@ -182,7 +189,8 @@ struct YAMLItemKey : public YAMLItem {
         s << "YAMLItemKey[value=" << value_ << ", indent=" << indent_ << "]";
     }
 
-    YAMLItemKey(YAMLItem* item) : YAMLItem(item->indent_, item->value_) {
+    YAMLItemKey(YAMLItem* item) :
+        YAMLItem(item->indent_, item->value_) {
 
         YAMLItemLock lock(item);  // Trigger deletion
 
@@ -310,7 +318,8 @@ struct YAMLItemEntry : public YAMLItem {
 
     virtual void print(std::ostream& s) const { s << "YAMLItemEntry[indent=" << indent_ << "]"; }
 
-    YAMLItemEntry(size_t indent) : YAMLItem(indent) {}
+    YAMLItemEntry(size_t indent) :
+        YAMLItem(indent) {}
 
     Value value(YAMLParser& parser) const {
         std::vector<Value> l;
@@ -371,14 +380,16 @@ struct YAMLItemEndDocument : public YAMLItem {
 
     virtual Value value(YAMLParser& parser) const { return Value(); }
 
-    YAMLItemEndDocument() : YAMLItem(-1) {}
+    YAMLItemEndDocument() :
+        YAMLItem(-1) {}
 
 
     virtual bool isEndDocument() const { return true; }
 };
 
 
-YAMLParser::YAMLParser(std::istream& in) : ObjectParser(in, true, true), last_(0) {
+YAMLParser::YAMLParser(std::istream& in) :
+    ObjectParser(in, true, true), last_(0) {
     stop_.push_back(0);
     comma_.push_back(0);
     colon_.push_back(0);
@@ -416,7 +427,6 @@ Value YAMLParser::parseNumber() {
     bool ignore;
     return parseStringOrNumber(ignore);
 }
-
 
 
 static Value toValue(const std::string& s) {

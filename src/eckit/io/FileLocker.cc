@@ -18,7 +18,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileLocker::FileLocker(int fd) : fd_(fd) {}
+FileLocker::FileLocker(int fd) :
+    fd_(fd) {}
 
 FileLocker::~FileLocker() {}
 

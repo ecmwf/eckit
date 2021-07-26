@@ -39,8 +39,7 @@ ProgressTimer::ProgressTimer(const std::string& name, size_t limit, const std::s
     lastTime_(0.) {}
 
 ProgressTimer& ProgressTimer::operator++() {
-    hasOutput_ = counter_ && ((progressCounted_ > 0 && counter_ % progressCounted_ == 0) ||
-                              (progressTimed_ > 0. && lastTime_ + progressTimed_ < elapsed()));
+    hasOutput_ = counter_ && ((progressCounted_ > 0 && counter_ % progressCounted_ == 0) || (progressTimed_ > 0. && lastTime_ + progressTimed_ < elapsed()));
 
     if (hasOutput_) {
         lastTime_   = elapsed();

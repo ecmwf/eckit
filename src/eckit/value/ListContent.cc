@@ -36,7 +36,8 @@ ListContent::ListContent(const Value& v) {
     value_.push_back(v);
 }
 
-ListContent::ListContent(Stream& s) : Content(s) {
+ListContent::ListContent(Stream& s) :
+    Content(s) {
     long count;
     s >> count;
     for (int i = 0; i < count; i++) {

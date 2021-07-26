@@ -39,7 +39,8 @@ struct OneBuffer {
     bool full_;
     long length_;
     char* buffer_;
-    OneBuffer() : full_(false), length_(0), buffer_(0) {}
+    OneBuffer() :
+        full_(false), length_(0), buffer_(0) {}
 };
 
 class DblBufferTask : public Thread {

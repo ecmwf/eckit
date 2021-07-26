@@ -113,7 +113,7 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     std::vector<std::string> libraries = Resource<std::vector<std::string>>("dynamicLibraries", {});
     for (const std::string& library : libraries) {
         void* h = system::LibraryManager::loadLibrary(library);
-        if(not h) {
+        if (not h) {
             std::ostringstream ss;
             ss << "Library " << library << " not found";
             Log::error() << ss.str() << std::endl;

@@ -210,8 +210,7 @@ Value ObjectParser::parseString(char quote) {
                     }
                     else {
                         comments_ = save;
-                        throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c +
-                                                  "'");
+                        throw StreamParser::Error(std::string("ObjectParser::parseString invalid escaped char '") + c + "'");
                     }
                     break;
             }
@@ -357,7 +356,8 @@ Value ObjectParser::parseJSON() {
 }
 
 
-ObjectParser::ObjectParser(std::istream& in, bool comments, bool yaml) : StreamParser(in, comments), yaml_(yaml) {}
+ObjectParser::ObjectParser(std::istream& in, bool comments, bool yaml) :
+    StreamParser(in, comments), yaml_(yaml) {}
 
 Value ObjectParser::parse() {
     Value v = parseValue();

@@ -15,7 +15,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HtmlResource::HtmlResource(const std::string& s) : HttpResource(s) {}
+HtmlResource::HtmlResource(const std::string& s) :
+    HttpResource(s) {}
 
 HtmlResource::~HtmlResource() {}
 

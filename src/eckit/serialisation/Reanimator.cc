@@ -17,7 +17,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-Reanimator<T>::Reanimator() : ReanimatorBase(T::classSpec()) {}
+Reanimator<T>::Reanimator() :
+    ReanimatorBase(T::classSpec()) {}
 
 template <class T>
 Streamable* Reanimator<T>::ressucitate(Stream& s) const {

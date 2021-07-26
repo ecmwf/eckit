@@ -29,7 +29,8 @@ namespace linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraArmadillo::LinearAlgebraArmadillo() : LinearAlgebra("armadillo") {}
+LinearAlgebraArmadillo::LinearAlgebraArmadillo() :
+    LinearAlgebra("armadillo") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

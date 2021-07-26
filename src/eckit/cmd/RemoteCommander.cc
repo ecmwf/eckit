@@ -17,7 +17,8 @@
 namespace eckit {
 
 
-RemoteCommander::RemoteCommander(int p) : net::NetService(p) {
+RemoteCommander::RemoteCommander(int p) :
+    net::NetService(p) {
     Monitor::instance().port(port());
     Monitor::instance().host("localhost");
 }

@@ -1,7 +1,7 @@
 
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <cstdlib>
 
 #include <algorithm>
 
@@ -20,7 +20,7 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 unsigned char* random_bytestream(size_t sz) {
-    ::srand((unsigned int) ::time(0));
+    ::srand((unsigned int)::time(0));
     unsigned char* stream = static_cast<unsigned char*>(::malloc(sz));
     auto rnd              = []() -> unsigned char { return ::rand(); };
     std::generate(stream, stream + sz, rnd);
@@ -86,7 +86,7 @@ CASE("Test eckit Buffer move assignment") {
     EXPECT(buf1.size() == 0);
 }
 
-// This includes a self-move but is legitimate, if pointless, so it should be tested 
+// This includes a self-move but is legitimate, if pointless, so it should be tested
 
 CASE("Test eckit Buffer self move") {
     const size_t sz = std::strlen(msg) + 1;
@@ -119,17 +119,17 @@ CASE("Test eckit Buffer resize") {
     Buffer buf;
     EXPECT(buf.size() == 0);
 
-    EXPECT_THROWS( buf.copy(msg,sz) );
+    EXPECT_THROWS(buf.copy(msg, sz));
 
     EXPECT_NO_THROW(buf.resize(sz));
-    EXPECT_NO_THROW(buf.copy(msg,sz));
+    EXPECT_NO_THROW(buf.copy(msg, sz));
 
     size_t newSize = 41;
     buf.resize(newSize, true);
     EXPECT(buf.size() == newSize);
     EXPECT(std::strncmp(msg, static_cast<const char*>(buf), sz) == 0);
 
-    buf.copy(msg,5,10);
+    buf.copy(msg, 5, 10);
     EXPECT(std::strncmp("Once upon Once", static_cast<const char*>(buf), 14) == 0);
 
     newSize = 7;
@@ -154,17 +154,17 @@ CASE("Test copying and construction from of std::string") {
 
     Buffer b1(test_str);
 
-    EXPECT(b1.size() == test_str.size()+1);
+    EXPECT(b1.size() == test_str.size() + 1);
     EXPECT(::memcmp(b1, test_str.c_str(), b1.size()) == 0);
 
     // Check explicitly that the copy() function is copying the null terminating character if possible
 
-    TestProtectedBuffer b2(test_str.size()+1);
+    TestProtectedBuffer b2(test_str.size() + 1);
 
     ::memset(b2, 'X', b2.size());
     b2.copy(test_str);
 
-    EXPECT(b2.size() == test_str.size()+1);
+    EXPECT(b2.size() == test_str.size() + 1);
     EXPECT(::memcmp(b2, test_str.c_str(), b2.size()) == 0);
 
     // Check that we only partially copy strings that are too small;

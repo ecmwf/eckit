@@ -72,7 +72,7 @@ CASE("Test hash performance") {
     eckit::Timer timer;
 
     std::vector<std::string> hashes{"xxh64", "MD4", "MD5", "SHA1"};
-    for( auto& name : hashes ) {
+    for (auto& name : hashes) {
 
         if (eckit::HashFactory::instance().has(name)) {
 

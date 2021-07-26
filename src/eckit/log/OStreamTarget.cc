@@ -16,7 +16,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-OStreamTarget::OStreamTarget(std::ostream& out) : out_(out) {}
+OStreamTarget::OStreamTarget(std::ostream& out) :
+    out_(out) {}
 
 OStreamTarget::~OStreamTarget() {}
 

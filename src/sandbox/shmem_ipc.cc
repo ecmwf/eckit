@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
 #include <fcntl.h>
 #include <semaphore.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cstring>
 
 #include <string>
 
@@ -29,7 +29,8 @@ class Test : public Application {
     virtual void run();
 
 public:
-    Test(int argc, char** argv) : Application(argc, argv, "HOME") {}
+    Test(int argc, char** argv) :
+        Application(argc, argv, "HOME") {}
 };
 
 const size_t SIZE = 1024;
@@ -144,7 +145,7 @@ void Test::run() {
     }
 }
 
-//=============================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
     Test app(argc, argv);

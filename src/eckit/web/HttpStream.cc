@@ -58,7 +58,8 @@ class back_encoder_iterator : public std::iterator<std::output_iterator_tag, cha
     }
 
 public:
-    back_encoder_iterator(VC& v) : container(v) {}
+    back_encoder_iterator(VC& v) :
+        container(v) {}
     back_encoder_iterator& operator=(char);
     back_encoder_iterator& operator*() { return *this; }
     back_encoder_iterator& operator++() { return *this; }
@@ -94,7 +95,8 @@ inline back_encoder_iterator back_encoder(VC& x) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpBuf::HttpBuf(HttpStream& s) : owner_(s) {
+HttpBuf::HttpBuf(HttpStream& s) :
+    owner_(s) {
     setp(out_, out_ + sizeof(out_));
 }
 
@@ -180,7 +182,8 @@ void HttpBuf::print(std::ostream& os) const {
     os << "HttpBuf[buffer=" << buffer_ << "]";
 }
 
-HttpStream::HttpStream() : std::ostream(new HttpBuf(*this)) {
+HttpStream::HttpStream() :
+    std::ostream(new HttpBuf(*this)) {
     buf_          = (HttpBuf*)rdbuf();
     iword(xindex) = 1;  // encode
 }

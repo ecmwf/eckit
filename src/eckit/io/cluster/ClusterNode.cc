@@ -32,7 +32,8 @@ class ClusterHeartBeat : public Thread {
     virtual void run();
 
 public:
-    ClusterHeartBeat(ClusterNode& owner) : owner_(owner) {}
+    ClusterHeartBeat(ClusterNode& owner) :
+        owner_(owner) {}
 };
 
 void ClusterHeartBeat::run() {

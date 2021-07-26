@@ -29,8 +29,8 @@ namespace {
 
 static const std::vector<long> INTEGER_DATA{9999, 8888, 7777, 6666, 6666, 6666, 4444, 3333, 2222, 1111};
 static const std::vector<double> REAL_DATA{99.9, 88.8, 77.7, 66.6, 66.6, 88.8, 44.4, 33.3, 22.2, 11.1};
-static const std::vector<std::string> STRING_DATA{"cccc",           "a-longer-string", "cccc",     "cccc",
-                                                  "cccc",           "hijklmno",        "aaaabbbb", "a-longer-string",
+static const std::vector<std::string> STRING_DATA{"cccc", "a-longer-string", "cccc", "cccc",
+                                                  "cccc", "hijklmno", "aaaabbbb", "a-longer-string",
                                                   "another-string", "another-string2"};
 
 static const std::vector<long> BITFIELD_DATA{0, 1, 2, 4, 8, 9, 10, 12, 13, 15};
@@ -49,12 +49,12 @@ public:
         addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
 
         std::vector<std::string> bfNames = {"bf1", "bf2", "bf3"};
-        std::vector<int32_t> bfSizes = {1, 2, 1};
-        std::string bfType = eckit::sql::type::SQLBitfield::make("Bitfield", bfNames, bfSizes, "dummy");
-        addColumn( "bfcolumn", 3, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
-        addColumn( "bgcolumn@tbl1", 4, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
-        addColumn( "bgcolumn@tbl2", 5, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
-        addColumn( "preselected.bfcolumn", 6, eckit::sql::type::SQLType::lookup("integer"), false, 0);
+        std::vector<int32_t> bfSizes     = {1, 2, 1};
+        std::string bfType               = eckit::sql::type::SQLBitfield::make("Bitfield", bfNames, bfSizes, "dummy");
+        addColumn("bfcolumn", 3, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
+        addColumn("bgcolumn@tbl1", 4, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
+        addColumn("bgcolumn@tbl2", 5, eckit::sql::type::SQLType::lookup(bfType), false, 0, true, std::make_pair(bfNames, bfSizes));
+        addColumn("preselected.bfcolumn", 6, eckit::sql::type::SQLType::lookup("integer"), false, 0);
     }
 
 private:
@@ -245,11 +245,11 @@ CASE("Select from constructed table") {
         session.statement().execute();
 
         for (int row = 0; row < INTEGER_DATA.size(); ++row) {
-            EXPECT(o.intOutput[5*row] == INTEGER_DATA[row]);
+            EXPECT(o.intOutput[5 * row] == INTEGER_DATA[row]);
             for (int j = 0; j < 3; ++j) {
                 EXPECT(o.intOutput[5 * row + 1 + j] == BITFIELD_DATA[row]);
             }
-            EXPECT(o.intOutput[5*row+4] == INTEGER_DATA[row]);
+            EXPECT(o.intOutput[5 * row + 4] == INTEGER_DATA[row]);
         }
         EXPECT(o.floatOutput == REAL_DATA);
         EXPECT(o.strOutput == STRING_DATA);
@@ -309,8 +309,7 @@ CASE("Select from constructed table") {
                 EXPECT(o.columnNames == std::vector<std::string>({"rcol"}));
             }
             else if (i == 2) {
-                EXPECT(o.strOutput == std::vector<std::string>({"cccc", "a-longer-string", "hijklmno", "aaaabbbb",
-                                                                "another-string", "another-string2"}));
+                EXPECT(o.strOutput == std::vector<std::string>({"cccc", "a-longer-string", "hijklmno", "aaaabbbb", "another-string", "another-string2"}));
                 EXPECT(o.intOutput.empty() && o.floatOutput.empty());
                 EXPECT(o.columnNames == std::vector<std::string>({"scol"}));
             }
@@ -353,9 +352,7 @@ CASE("Select from constructed table") {
             else {
                 EXPECT(o.intOutput.empty());
                 EXPECT(o.floatOutput == std::vector<double>({88.8, 66.6, 77.7, 99.9, 11.1, 22.2, 44.4, 33.3, 88.8}));
-                EXPECT(o.strOutput ==
-                       std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2",
-                                                 "another-string", "aaaabbbb", "a-longer-string", "a-longer-string"}));
+                EXPECT(o.strOutput == std::vector<std::string>({"hijklmno", "cccc", "cccc", "cccc", "another-string2", "another-string", "aaaabbbb", "a-longer-string", "a-longer-string"}));
                 EXPECT(o.columnNames == std::vector<std::string>({"rcol", "scol"}));
             }
         }
@@ -391,7 +388,6 @@ CASE("Select from constructed table") {
         for (int row = 0; row < INTEGER_DATA.size(); ++row) {
             EXPECT(o.intOutput[row] == INTEGER_DATA[row]);
         }
-
     }
 
 }  // Testing SQL select from standard table
@@ -430,11 +426,11 @@ CASE("Test with implicit tables") {
         session.statement().execute();
 
         for (int row = 0; row < INTEGER_DATA.size(); ++row) {
-            EXPECT(o.intOutput[5*row] == INTEGER_DATA[row]);
+            EXPECT(o.intOutput[5 * row] == INTEGER_DATA[row]);
             for (int j = 0; j < 3; ++j) {
                 EXPECT(o.intOutput[5 * row + 1 + j] == BITFIELD_DATA[row]);
             }
-            EXPECT(o.intOutput[5*row+4] == INTEGER_DATA[row]);
+            EXPECT(o.intOutput[5 * row + 4] == INTEGER_DATA[row]);
         }
         EXPECT(o.floatOutput == REAL_DATA);
         EXPECT(o.strOutput == STRING_DATA);
@@ -466,7 +462,6 @@ CASE("Test with implicit tables") {
         for (int row = 0; row < INTEGER_DATA.size(); ++row) {
             EXPECT(o.intOutput[row] == INTEGER_DATA[row]);
         }
-
     }
 }
 

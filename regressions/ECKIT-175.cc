@@ -48,7 +48,8 @@ void myrun() {
 
 class MyTool : public Tool {
 public:
-    MyTool(int argc, char** argv) : Tool(argc, argv) {}
+    MyTool(int argc, char** argv) :
+        Tool(argc, argv) {}
     virtual ~MyTool() {}
     virtual void run() { myrun(); }
 };

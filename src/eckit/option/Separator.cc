@@ -24,7 +24,8 @@ namespace eckit {
 namespace option {
 
 
-Separator::Separator(const std::string& description) : Option("", description) {}
+Separator::Separator(const std::string& description) :
+    Option("", description) {}
 
 
 Separator::~Separator() {}
@@ -43,7 +44,8 @@ bool Separator::active() const {
 }
 
 void Separator::print(std::ostream& out) const {
-    out << std::endl << description_ << ":" << std::endl;
+    out << std::endl
+        << description_ << ":" << std::endl;
 }
 
 }  // namespace option

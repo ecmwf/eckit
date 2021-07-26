@@ -43,7 +43,8 @@ class ObjectFactory {
     }
 
 protected:
-    ObjectFactory(const std::string& nm) : name_(nm) { factory()[nm] = this; }
+    ObjectFactory(const std::string& nm) :
+        name_(nm) { factory()[nm] = this; }
     virtual ~ObjectFactory() { factory().erase(name_); }
 
 public:
@@ -67,7 +68,8 @@ class ObjectBuilder : public ObjectFactory {
     virtual ObjectBase* make() const { return new T; }
 
 public:
-    ObjectBuilder(const std::string& name) : ObjectFactory(name) {}
+    ObjectBuilder(const std::string& name) :
+        ObjectFactory(name) {}
 };
 
 

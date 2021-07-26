@@ -152,7 +152,7 @@ LocalPathName LocalPathName::baseName(bool ext) const {
 
     // Don't perform tilde expansion on paths that have already been expanded
 
-    bool tildeIsUserHome = false;
+    bool tildeIsUserHome    = false;
     bool skipTildeExpansion = true;
     return LocalPathName(s, tildeIsUserHome, skipTildeExpansion);
 }
@@ -558,7 +558,7 @@ void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>&
 
         if (recursive && e->d_name[0] != '.') {
             LocalPathName full = dir + "/" + e->d_name;
-            if(full.isDir()) {
+            if (full.isDir()) {
                 match(full + "/" + base, result, true);
             }
         }
@@ -624,7 +624,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
     for (;;) {
         struct dirent* e = d.dirent();
         if (e == nullptr) {
-                break;
+            break;
         }
 
         if (e->d_name[0] == '.')
@@ -666,8 +666,8 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 void LocalPathName::touch() const {
     dirName().mkdir();
 
-    if(exists()) {
-        SYSCALL(::utime(path_.c_str(), nullptr)); // set to current time
+    if (exists()) {
+        SYSCALL(::utime(path_.c_str(), nullptr));  // set to current time
     }
     else {
         AutoStdFile f(*this, "a");  // this creates the file, ther may be a race but is unimportant in this context

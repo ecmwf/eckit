@@ -26,7 +26,8 @@ namespace option {
 
 
 template <class T>
-FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description) : Option(name, description) {}
+FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description) :
+    Option(name, description) {}
 
 template <class T>
 FactoryOption<T>::~FactoryOption() {}
@@ -48,7 +49,8 @@ template <class T>
 void FactoryOption<T>::print(std::ostream& out) const {
     out << "   --" << name_ << "=name"
         << " (" << description_ << ")";
-    out << std::endl << "     Values are: ";
+    out << std::endl
+        << "     Values are: ";
     T::list(out);
 }
 

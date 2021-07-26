@@ -38,7 +38,8 @@ static bool inUse(const std::map<PathName, DataHandle*>& store, const PathName& 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FilePool::FilePool(size_t size) : cache_(size, &closeDataHandle) {}
+FilePool::FilePool(size_t size) :
+    cache_(size, &closeDataHandle) {}
 
 FilePool::~FilePool() {}
 

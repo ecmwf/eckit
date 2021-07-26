@@ -50,7 +50,8 @@ class A0 : public Base0 {
 public:
     static std::string className() { return "eckit_test.A0"; }
 
-    A0() : s1_("A.0") {}
+    A0() :
+        s1_("A.0") {}
 
     virtual std::string foo() const { return className() + "." + s1_; }
 
@@ -62,7 +63,8 @@ class B0 : public Base0 {
 public:
     static std::string className() { return "eckit_test.B0"; }
 
-    B0() : s2_("B.0") {}
+    B0() :
+        s2_("B.0") {}
 
     virtual std::string foo() const { return className() + "." + s2_; }
 
@@ -92,7 +94,8 @@ class A1 : public Base1 {
 public:
     static std::string className() { return "eckit_test.A1"; }
 
-    A1(const Params& p) : s1_(p["mystr"].as<string>() + ".1") {}
+    A1(const Params& p) :
+        s1_(p["mystr"].as<string>() + ".1") {}
 
     virtual std::string foo() const { return className() + "." + s1_; }
 
@@ -104,7 +107,8 @@ class B1 : public Base1 {
 public:
     static std::string className() { return "eckit_test.B1"; }
 
-    B1(const Params& p) : s2_(p["mystr"].as<string>() + ".2") {}
+    B1(const Params& p) :
+        s2_(p["mystr"].as<string>() + ".2") {}
 
     virtual std::string foo() const { return className() + "." + s2_; }
 
@@ -135,7 +139,8 @@ class A2 : public Base2 {
 public:
     static std::string className() { return "eckit_test.A2"; }
 
-    A2(std::string s, int i) : s1_(s + "." + Translator<int, string>()(i)) {}
+    A2(std::string s, int i) :
+        s1_(s + "." + Translator<int, string>()(i)) {}
 
     virtual std::string foo() const { return className() + "." + s1_; }
 
@@ -147,7 +152,8 @@ class B2 : public Base2 {
 public:
     static std::string className() { return "eckit_test.B2"; }
 
-    B2(std::string s, int i) : s2_(s + "." + Translator<int, string>()(i)) {}
+    B2(std::string s, int i) :
+        s2_(s + "." + Translator<int, string>()(i)) {}
 
     virtual std::string foo() const { return className() + "." + s2_; }
 

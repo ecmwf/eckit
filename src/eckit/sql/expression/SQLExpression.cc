@@ -12,9 +12,9 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/NumberExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
-#include "eckit/sql/SQLOutput.h"
 
 using namespace eckit;
 
@@ -25,7 +25,8 @@ namespace expression {
 double const MISSING_VALUE_REAL = -2147483647.0;
 // long const MISSING_VALUE_INT =  2147483647;
 
-SQLExpression::SQLExpression() : isBitfield_(false), hasMissingValue_(false), missingValue_(MISSING_VALUE_REAL) {}
+SQLExpression::SQLExpression() :
+    isBitfield_(false), hasMissingValue_(false), missingValue_(MISSING_VALUE_REAL) {}
 
 SQLExpression::~SQLExpression() {}
 

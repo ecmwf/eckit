@@ -100,9 +100,11 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
             total += pos;
             progress(total);
             watcher_.watch(nullptr, total);
-        } else if (pos == -1) {
+        }
+        else if (pos == -1) {
             watcher_.fromHandleOpened();
-        } else if (pos == -2) {
+        }
+        else if (pos == -2) {
             watcher_.toHandleOpened();
         }
         s >> more;

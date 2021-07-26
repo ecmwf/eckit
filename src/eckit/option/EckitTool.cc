@@ -19,13 +19,13 @@ namespace eckit {
 
 static EckitTool* instance_ = 0;
 
-EckitTool::EckitTool(int argc, char **argv) :
+EckitTool::EckitTool(int argc, char** argv) :
     eckit::Tool(argc, argv, "ECKIT_HOME") {
     ASSERT(instance_ == 0);
     instance_ = this;
 }
 
-static void usage(const std::string &tool) {
+static void usage(const std::string& tool) {
     ASSERT(instance_);
     instance_->usage(tool);
 }
@@ -42,7 +42,7 @@ void EckitTool::run() {
     finish(args);
 }
 
-void EckitTool::usage(const std::string &tool) const {
+void EckitTool::usage(const std::string& tool) const {
 }
 
 void EckitTool::init(const eckit::option::CmdArgs& args) {

@@ -264,9 +264,7 @@ inline double km(double lat1, double lon1, double lat2, double lon2) {
 
 /// in kilometers
 inline double dist(double reflat, double reflon, double refdist_km, double obslat, double obslon) {
-    return (double)(R_Earth_km * acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) +
-                                      Func_sin(reflat) * Func_sin(obslat)) <=
-                    (refdist_km));
+    return (double)(R_Earth_km * acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) + Func_sin(reflat) * Func_sin(obslat)) <= (refdist_km));
 }
 
 inline double circle(double x, double x0, double y, double y0, double r) {
@@ -280,8 +278,7 @@ inline double rad(double reflat, double reflon, double refdeg, double obslat, do
 
     //    int digs ( 3 + DBL_MANT_DIG - DBL_MIN_EXP );
 
-    return (acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) +
-                 Func_sin(reflat) * Func_sin(obslat)) <= D2R * refdeg)
+    return (acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) + Func_sin(reflat) * Func_sin(obslat)) <= D2R * refdeg)
                ? 1.0
                : 0.0;
 }

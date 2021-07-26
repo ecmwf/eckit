@@ -63,7 +63,8 @@ class ArgContentOption : public ArgContent {
     }
 
 public:
-    ArgContentOption(const std::string& name, Arg::Type type) : name_(name), type_(type) {}
+    ArgContentOption(const std::string& name, Arg::Type type) :
+        name_(name), type_(type) {}
 };
 
 class ArgContentParam : public ArgContent {
@@ -78,7 +79,8 @@ class ArgContentParam : public ArgContent {
     virtual void consume(std::vector<std::string>&) {}
 
 public:
-    ArgContentParam(const std::string& name, Arg::Type type) : name_(name), type_(type) {}
+    ArgContentParam(const std::string& name, Arg::Type type) :
+        name_(name), type_(type) {}
 };
 
 class ArgContentOptional : public ArgContent {
@@ -99,7 +101,8 @@ class ArgContentOptional : public ArgContent {
     virtual void consume(std::vector<std::string>& s) { content_->consume(s); }
 
 public:
-    ArgContentOptional(ArgContent* c) : content_(c->clone()) {}
+    ArgContentOptional(ArgContent* c) :
+        content_(c->clone()) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -147,7 +150,8 @@ ArgContentList<T>::~ArgContentList() {
 }
 
 template <class T>
-ArgContentList<T>::ArgContentList(const std::vector<ArgContent*>& list) : list_(list) {
+ArgContentList<T>::ArgContentList(const std::vector<ArgContent*>& list) :
+    list_(list) {
     for (size_t i = 0; i < list_.size(); i++)
         list_[i] = list_[i]->clone();
 }
@@ -169,7 +173,7 @@ void ArgContentList<T>::consume(std::vector<std::string>& s) {
         list_[i]->consume(s);
 }
 
-//=================================
+//----------------------------------------------------------------------------------------------------------------------
 
 class ArgContentExclusive : public ArgContentList<ArgContentExclusive> {
 
@@ -187,11 +191,13 @@ class ArgContentExclusive : public ArgContentList<ArgContentExclusive> {
     }
 
 public:
-    ArgContentExclusive(ArgContent* a1, ArgContent* a2) : ArgContentList<ArgContentExclusive>(a1, a2) {}
-    ArgContentExclusive(const std::vector<ArgContent*>& a) : ArgContentList<ArgContentExclusive>(a) {}
+    ArgContentExclusive(ArgContent* a1, ArgContent* a2) :
+        ArgContentList<ArgContentExclusive>(a1, a2) {}
+    ArgContentExclusive(const std::vector<ArgContent*>& a) :
+        ArgContentList<ArgContentExclusive>(a) {}
 };
 
-//==============================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 class ArgContentInclusive : public ArgContentList<ArgContentInclusive> {
 
@@ -205,21 +211,26 @@ class ArgContentInclusive : public ArgContentList<ArgContentInclusive> {
     }
 
 public:
-    ArgContentInclusive(ArgContent* a1, ArgContent* a2) : ArgContentList<ArgContentInclusive>(a1, a2) {}
-    ArgContentInclusive(const std::vector<ArgContent*>& a) : ArgContentList<ArgContentInclusive>(a) {}
+    ArgContentInclusive(ArgContent* a1, ArgContent* a2) :
+        ArgContentList<ArgContentInclusive>(a1, a2) {}
+    ArgContentInclusive(const std::vector<ArgContent*>& a) :
+        ArgContentList<ArgContentInclusive>(a) {}
 };
 
-//=============================================================================
+//----------------------------------------------------------------------------------------------------------------------
 
-Arg::Arg() : content_(new ArgContentEmpty()) {}
+Arg::Arg() :
+    content_(new ArgContentEmpty()) {}
 
-Arg::Arg(ArgContent* c) : content_(c) {}
+Arg::Arg(ArgContent* c) :
+    content_(c) {}
 
 Arg::Arg(const std::string& name, Type type) :
     content_(name[0] == '-' ? (ArgContent*)new ArgContentOption(name, type)
                             : (ArgContent*)new ArgContentParam(name, type)) {}
 
-Arg::Arg(const Arg& other) : content_(other.content_->clone()) {}
+Arg::Arg(const Arg& other) :
+    content_(other.content_->clone()) {}
 
 Arg::~Arg() {}
 

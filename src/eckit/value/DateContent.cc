@@ -25,9 +25,11 @@ ClassSpec DateContent::classSpec_ = {
 };
 Reanimator<DateContent> DateContent::reanimator_;
 
-DateContent::DateContent(const Date& d) : value_(d) {}
+DateContent::DateContent(const Date& d) :
+    value_(d) {}
 
-DateContent::DateContent(Stream& s) : Content(s) {
+DateContent::DateContent(Stream& s) :
+    Content(s) {
     std::string dd;
     s >> dd;
     value_ = Date(dd);

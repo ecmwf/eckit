@@ -40,7 +40,8 @@ class Restart : public DataHandle, public HandleHolder {
 public:
     static size_t increment() { return 77773; }  // a prime larger than 4 KiB
 
-    Restart(DataHandle* h) : HandleHolder(h), total_(0) { nextStop_ = increment(); }
+    Restart(DataHandle* h) :
+        HandleHolder(h), total_(0) { nextStop_ = increment(); }
 
     virtual Length openForRead() { NOTIMP; }
 

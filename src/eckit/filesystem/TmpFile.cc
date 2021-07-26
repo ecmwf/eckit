@@ -41,7 +41,8 @@ static PathName tmp() {
 }
 
 
-TmpFile::TmpFile(bool verbose) : PathName(tmp()), verbose_(verbose) {}
+TmpFile::TmpFile(bool verbose) :
+    PathName(tmp()), verbose_(verbose) {}
 
 TmpFile::~TmpFile() {
     unlink(verbose_);

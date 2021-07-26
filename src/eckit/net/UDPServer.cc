@@ -39,7 +39,8 @@ static void* get_sockaddr(struct sockaddr* sa) {
 }
 
 
-UDPServer::UDPServer(int port) : port_(port), socketfd_(0) {
+UDPServer::UDPServer(int port) :
+    port_(port), socketfd_(0) {
 
     struct addrinfo hints;
     struct addrinfo* servinfo;
@@ -118,8 +119,7 @@ void UDPServer::print(std::ostream& s) const {
 
 std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const {
     char inet6[INET6_ADDRSTRLEN];
-    std::string r =
-        ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
+    std::string r = ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
     return r;
 }
 

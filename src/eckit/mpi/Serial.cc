@@ -102,7 +102,7 @@ public:
         return nullptr;
     }
 
-        void lock() { mutex_.lock(); }
+    void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
     static constexpr int anyTag() { return Serial::Constants::anyTag(); }
@@ -136,12 +136,14 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Serial::Serial(const std::string& name) : Comm(name) {
+Serial::Serial(const std::string& name) :
+    Comm(name) {
     rank_ = 0;
     size_ = 1;
 }
 
-Serial::Serial(const std::string& name, int) : Comm(name) {
+Serial::Serial(const std::string& name, int) :
+    Comm(name) {
     rank_ = 0;
     size_ = 1;
 }
@@ -250,8 +252,8 @@ Status Serial::probe(int source, int tag) const {
     SerialStatus* st = new SerialStatus();
 
     SendRequest* req = nullptr;
-    while( not req) {
-       req = SerialRequestPool::instance().matchNextSendRequest(tag);
+    while (not req) {
+        req = SerialRequestPool::instance().matchNextSendRequest(tag);
     }
     (*st).count_  = req->count();
     (*st).tag_    = req->tag();
@@ -266,7 +268,7 @@ Status Serial::iProbe(int source, int tag) const {
 
     SendRequest* req = SerialRequestPool::instance().matchNextSendRequest(tag);
     if (not req) {
-        return Status{}; // Null status
+        return Status{};  // Null status
     }
 
     SerialStatus* st = new SerialStatus{};

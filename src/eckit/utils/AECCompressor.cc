@@ -31,12 +31,12 @@ extern "C" {  // libaec.h has c linkage
 // 17 - 24 bits 	3 bytes (only if AEC_DATA_3BYTE is set)
 // 25 - 32 bits 	4 bytes (if AEC_DATA_3BYTE is set)
 // 17 - 32 bits 	4 bytes (if AEC_DATA_3BYTE is not set)
-// 
+//
 // block_size: range [8..64] Smaller blocks allow the compression to adapt more rapidly to changing source
 // statistics. Larger blocks create less overhead but can be less efficient if source statistics change across the
 // block.
 //
-// rsi: sets the reference sample interval. A large RSI will improve performance and efficiency. It will also increase 
+// rsi: sets the reference sample interval. A large RSI will improve performance and efficiency. It will also increase
 // memory requirements since internal buffering is based on RSI size. A smaller RSI may be desirable in situations where
 // each RSI will be packetized and possible error propagation has to be minimized.
 
@@ -56,21 +56,21 @@ inline void AECCall(int code, const char* aec_func, const eckit::CodeLocation& l
         std::ostringstream msg;
         msg << "returned " << code;
 
-        switch( code ) {
-        case AEC_CONF_ERROR:
-            msg << " (AEC_CONF_ERROR)";
-            break;
-        case AEC_STREAM_ERROR:
-            msg << " (AEC_STREAM_ERROR)";
-            break;
-        case AEC_DATA_ERROR:
-            msg << " (AEC_DATA_ERROR)";
-            break;
-        case AEC_MEM_ERROR:
-            msg << " (AEC_MEM_ERROR)";
-            break;
-        default:
-            msg << " (UNRECOGNIZED ERROR)";
+        switch (code) {
+            case AEC_CONF_ERROR:
+                msg << " (AEC_CONF_ERROR)";
+                break;
+            case AEC_STREAM_ERROR:
+                msg << " (AEC_STREAM_ERROR)";
+                break;
+            case AEC_DATA_ERROR:
+                msg << " (AEC_DATA_ERROR)";
+                break;
+            case AEC_MEM_ERROR:
+                msg << " (AEC_MEM_ERROR)";
+                break;
+            default:
+                msg << " (UNRECOGNIZED ERROR)";
         }
         throw FailedLibraryCall("AEC", aec_func, msg.str(), loc);
     }
@@ -105,8 +105,8 @@ size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const
     Buffer in(minInputSize(len, strm));
     in.copy(inTmp, len);
 
-    if( in.size() > len ) {
-        ::memset(in+len, 0, in.size() - len);
+    if (in.size() > len) {
+        ::memset(in + len, 0, in.size() - len);
     }
 
     size_t maxcompressed = size_t(1.2 * in.size());
@@ -120,16 +120,16 @@ size_t AECCompressor::compress(const void* inTmp, size_t len, Buffer& out) const
     strm.next_out  = (unsigned char*)out.data();
     strm.avail_out = out.size();
 
-    AEC_CALL( aec_encode_init(&strm) );
+    AEC_CALL(aec_encode_init(&strm));
 
     // Perform encoding in one call and flush output.
     // you must be sure that the output buffer is large enough for all compressed output
-    AEC_CALL( aec_encode(&strm, AEC_FLUSH) );
+    AEC_CALL(aec_encode(&strm, AEC_FLUSH));
 
     size_t outSize = strm.total_out;
 
     // free all resources used by encoder
-    AEC_CALL( aec_encode_end(&strm) );
+    AEC_CALL(aec_encode_end(&strm));
 
     return outSize;
 }
@@ -152,22 +152,22 @@ void AECCompressor::uncompress(const void* in, size_t len, Buffer& out, size_t o
     // Otherwise we allocate a temporary outTmp and at end we move outTmp into out.
 
     Buffer outTmp;
-    if( out.size() >= outSize ) {
-        strm.next_out  = (unsigned char*)out.data();
+    if (out.size() >= outSize) {
+        strm.next_out = (unsigned char*)out.data();
     }
     else {
         outTmp.resize(outSize);
-        strm.next_out  = (unsigned char*)outTmp.data();
+        strm.next_out = (unsigned char*)outTmp.data();
     }
     strm.avail_out = outSize;
 
-    AEC_CALL( aec_decode_init(&strm) );
+    AEC_CALL(aec_decode_init(&strm));
 
-    AEC_CALL( aec_decode(&strm, AEC_FLUSH) );
+    AEC_CALL(aec_decode(&strm, AEC_FLUSH));
 
-    ASSERT( strm.total_out == outSize );
+    ASSERT(strm.total_out == outSize);
 
-    AEC_CALL( aec_decode_end(&strm) );
+    AEC_CALL(aec_decode_end(&strm));
 
     if (outTmp.size()) {
         out = std::move(outTmp);

@@ -173,7 +173,8 @@ bool ResourceMgr::registCmdArgOptions(const std::string&) {
     NOTIMP;
 }
 
-ResourceMgr::ResourceMgr() : resmap_(), resoptions_(), inited_(false) {}
+ResourceMgr::ResourceMgr() :
+    resmap_(), resoptions_(), inited_(false) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

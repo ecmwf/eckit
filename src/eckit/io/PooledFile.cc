@@ -33,7 +33,8 @@ struct PoolFileEntryStatus {
     off_t position_;
     bool opened_;
 
-    PoolFileEntryStatus() : position_(0), opened_(false) {}
+    PoolFileEntryStatus() :
+        position_(0), opened_(false) {}
 };
 
 class PoolFileEntry {
@@ -51,7 +52,8 @@ public:
     size_t nbSeeks_ = 0;
 
 public:
-    PoolFileEntry(const std::string& name) : name_(name), file_(nullptr), count_(0) {}
+    PoolFileEntry(const std::string& name) :
+        name_(name), file_(nullptr), count_(0) {}
 
     void doClose() {
         if (file_) {
@@ -96,8 +98,7 @@ public:
 
             Log::debug<LibEcKit>() << "PooledFile::openForRead " << name_ << std::endl;
 
-            static size_t bufferSize =
-                Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+            static size_t bufferSize = Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
 
             if (bufferSize) {
                 Log::debug<LibEcKit>() << "PooledFile using " << Bytes(bufferSize) << std::endl;
@@ -192,11 +193,12 @@ public:
 };
 
 
-PooledFile::PooledFile(const PathName& name) : name_(name), entry_(nullptr) {
+PooledFile::PooledFile(const PathName& name) :
+    name_(name), entry_(nullptr) {
     auto j = pool_.find(name);
     if (j == pool_.end()) {
         pool_.emplace(std::make_pair(name, std::unique_ptr<PoolFileEntry>(new PoolFileEntry(name))));
-        j           = pool_.find(name);
+        j = pool_.find(name);
     }
 
     entry_ = (*j).second.get();

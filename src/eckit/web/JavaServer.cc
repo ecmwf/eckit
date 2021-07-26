@@ -19,7 +19,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-JavaServer::JavaServer(int port) : java_(new JavaService(port)) {
+JavaServer::JavaServer(int port) :
+    java_(new JavaService(port)) {
     java_.start();
 }
 

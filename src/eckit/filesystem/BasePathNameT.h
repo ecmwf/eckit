@@ -79,6 +79,7 @@ private:
     virtual BasePathName* checkClusterNode() const override;
     virtual BasePathName* baseName(bool) const override;
     virtual std::string extension() const override;
+    virtual std::string hash(const std::string& method) const override;
 
     virtual std::string clusterName() const override;
     virtual void syncParentDirectory() const override;

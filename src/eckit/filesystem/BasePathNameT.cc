@@ -207,6 +207,11 @@ std::string BasePathNameT<T>::extension() const {
 }
 
 template <class T>
+std::string BasePathNameT<T>::hash(const std::string& method) const {
+    return path_.hash(method);
+}
+
+template <class T>
 std::string BasePathNameT<T>::asString() const {
     return std::string(path_);
 }

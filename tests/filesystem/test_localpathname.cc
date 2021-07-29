@@ -10,6 +10,7 @@
 
 #include <unistd.h>
 #include <string>
+#include <memory>
 
 #include "eckit/types/Types.h"
 
@@ -17,6 +18,10 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpDir.h"
+#include "eckit/filesystem/TmpFile.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/utils/Hash.h"
 
 #include "eckit/testing/Test.h"
 
@@ -398,6 +403,41 @@ CASE("Tidy a path") {
         EXPECT(tidy("../a/b/../../../c/foo.bar") == "../../c/foo.bar");
         EXPECT(tidy("/a/../.././../../.") == "/");
     }
+}
+
+CASE("Test PathName hashing") {
+
+    // Create and hash some random data. Note that the buffer is bigger than and a non-integer
+    // multiple of the buffer size used in hash generation
+
+#ifdef eckit_HAVE_XXHASH
+    const char* hash_method = "xxh64";
+#else
+    const char* hash_method = "MD5";
+#endif
+
+    Buffer tmp(131 * 1024 * 1024);
+
+    for (int i = 0; i < tmp.size(); ++i) {
+        tmp[i] = static_cast<char>(random() % 255);
+    }
+
+    std::unique_ptr<Hash> h(HashFactory::instance().build(hash_method));
+    h->add(tmp, tmp.size());
+
+    // Write the data to a file
+
+    TmpFile file;
+    {
+        std::unique_ptr<DataHandle> dh(file.fileHandle());
+        dh->openForWrite(0);
+        AutoClose closer(*dh);
+        dh->write(tmp, tmp.size());
+    }
+
+    // Check that the hash matches
+
+    EXPECT(h->digest() == file.hash(hash_method));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

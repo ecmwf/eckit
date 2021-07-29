@@ -47,6 +47,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
+#include "eckit/utils/Hash.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Tokenizer.h"
 
@@ -164,6 +165,25 @@ std::string LocalPathName::extension() const {
     if (lastDot == std::string::npos)
         return "";
     return base.substr(lastDot);
+}
+
+std::string LocalPathName::hash(const std::string& method) const {
+    std::unique_ptr<Hash> h(HashFactory::instance().build(method));
+
+    FileHandle fh(path_, /* overwrite */ false);
+    fh.openForRead();
+    AutoClose closer(fh);
+    Length size = this->size();
+    Buffer buffer(64 * 1024 * 1024);
+    Length len = 0;
+    while (len < size) {
+        Length chunk = fh.read(buffer, buffer.size());
+        len += chunk;
+        h->add(buffer, chunk);
+    }
+    ASSERT(len == size);
+
+    return h->digest();
 }
 
 LocalPathName LocalPathName::dirName() const {

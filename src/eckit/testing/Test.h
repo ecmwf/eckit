@@ -350,8 +350,8 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     bool run_all = true;
     std::set<long> runTests;
-    if (::getenv("ECKIT_TESTING_TESTS")) {
-        std::vector<long> tsts = eckit::Translator<std::string, std::vector<long>>()(::getenv("ECKIT_TESTING_TESTS"));
+    if (::getenv("ECKIT_TEST_TESTS")) {
+        auto tsts = eckit::Translator<std::string, std::vector<long>>()(::getenv("ECKIT_TEST_TESTS"));
         runTests.insert(tsts.begin(), tsts.end());
         run_all = false;
     }
@@ -364,6 +364,8 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
             eckit::Log::info() << "Running case " << i << ": " << test.description() << " ..." << std::endl;
             test.run(v, failures);
             eckit::Log::info() << "Completed case " << i << ": " << test.descriptionNoSection() << std::endl;
+        } else {
+            eckit::Log::info() << "Skipping case " << i << ": " << test.description() << "..." << std::endl;
         }
     }
 

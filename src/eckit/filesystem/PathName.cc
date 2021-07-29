@@ -171,6 +171,10 @@ void PathName::hash(eckit::Hash& hash) const {
     ASSERT(len == size);
 }
 
+std::string PathName::hash(const std::string& method) const {
+    return path_->hash(method);
+}
+
 void PathName::children(std::vector<PathName>& files, std::vector<PathName>& dirs) const {
     std::vector<BasePathName*> f;
     std::vector<BasePathName*> d;

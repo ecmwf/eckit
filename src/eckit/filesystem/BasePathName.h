@@ -66,6 +66,7 @@ public:
     virtual BasePathName* checkClusterNode() const = 0;
     virtual BasePathName* baseName(bool) const     = 0;
     virtual std::string extension() const          = 0;
+    virtual std::string hash(const std::string& method) const = 0;
 
     virtual std::string clusterName() const = 0;
 

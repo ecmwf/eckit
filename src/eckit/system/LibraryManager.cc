@@ -426,6 +426,13 @@ const Library& LibraryManager::lookup(const std::string& name) {
     return LibraryRegistry::instance().lookup(name);
 }
 
+const Plugin& LibraryManager::lookupPlugin(const std::string& name) {
+    Plugin * plugin = LibraryRegistry::instance().lookupPlugin(name);
+    if(plugin)
+        return *plugin;
+    throw eckit::BadValue("Plugin " + name + " not loaded");
+}
+
 void* LibraryManager::loadLibrary(const std::string& libname) {
     return LibraryRegistry::instance().loadDynamicLibrary(libname);
 }

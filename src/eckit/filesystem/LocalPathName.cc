@@ -23,6 +23,7 @@
 #include <cstring>  // for strlen
 #include <deque>
 #include <fstream>
+#include <sstream>
 #include <vector>
 
 #include "eckit/config/LibEcKit.h"

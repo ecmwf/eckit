@@ -138,6 +138,19 @@ size_t Data::Type<std::pair<int, int> >::size() {
 }
 
 template <>
+const char* Data::Type<std::pair<long, long> >::name() {
+    return "<long,long>";
+}
+template <>
+Data::Code Data::Type<std::pair<long, long> >::code() {
+    return Data::LONG_LONG;
+}
+template <>
+size_t Data::Type<std::pair<long, long> >::size() {
+    return sizeof(std::pair<long, long>);
+}
+
+template <>
 const char* Data::Type<std::pair<long, int> >::name() {
     return "<long,int>";
 }

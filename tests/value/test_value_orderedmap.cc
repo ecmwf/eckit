@@ -201,9 +201,9 @@ CASE("Test comparisons using OrderedMap") {
 
 CASE("Check order is preserved when cloning") {
     Value om1 = Value::makeOrderedMap();
-    om1["c"] = 1;
-    om1["b"] = 2;
-    om1["a"] = 3;
+    om1["c"]  = 1;
+    om1["b"]  = 2;
+    om1["a"]  = 3;
     Value om2 = om1.clone();
     EXPECT(om2.compare(om1) == 0);  // Keys are equal and inserted in same order
     EXPECT(om1.compare(om2) == 0);  // Keys are equal and inserted in same order
@@ -477,21 +477,21 @@ CASE("Test head/tail functionality for OrderedMap") {
 CASE("Hash of a value") {
 
     auto create = [](Value& m) {
-      m[123]   = 1234;
-      m[234]   = 2345;
-      m[777]   = 7777;
-      m["abc"] = "def";
-      m[true]  = false;
+        m[123]   = 1234;
+        m[234]   = 2345;
+        m[777]   = 7777;
+        m["abc"] = "def";
+        m[true]  = false;
     };
 
     auto hash = [](Value& m) -> std::string {
-      std::unique_ptr<Hash> h(make_hash());
-      m.hash(*h);
-      return h->digest();
+        std::unique_ptr<Hash> h(make_hash());
+        m.hash(*h);
+        return h->digest();
     };
 
-    Value orderedMap  = Value::makeOrderedMap();
-    Value sortedMap   = Value::makeMap();
+    Value orderedMap = Value::makeOrderedMap();
+    Value sortedMap  = Value::makeMap();
     create(orderedMap);
     create(sortedMap);
     std::string orderedHash = hash(orderedMap);
@@ -500,8 +500,8 @@ CASE("Hash of a value") {
     // std::cout << "MD5 ordered " << orderedHash << std::endl;
     // std::cout << "MD5 sorted  " << sortedHash << std::endl;
 
-    EXPECT( orderedHash == sortedHash );
-    EXPECT( orderedHash == "4259b7e50da09908c9fba2584b71db79" );
+    EXPECT(orderedHash == sortedHash);
+    EXPECT(orderedHash == "4259b7e50da09908c9fba2584b71db79");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

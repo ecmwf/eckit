@@ -18,7 +18,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RemoteCmd::RemoteCmd() : CmdResource("remote") {}
+RemoteCmd::RemoteCmd() :
+    CmdResource("remote") {}
 
 RemoteCmd::~RemoteCmd() {}
 

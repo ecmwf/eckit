@@ -15,9 +15,9 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/os/Stat.h"
-#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/os/Stat.h"
 
 namespace eckit {
 
@@ -38,10 +38,10 @@ StdDir::~StdDir() /* noexcept(false) */ {
 }
 
 struct dirent* StdDir::dirent() {
-    
+
     struct dirent* e = nullptr;
-    errno = 0;
-    
+    errno            = 0;
+
     /// @todo Note that readdir_r() has been deprecated by POSIX standard
     ///       however readdir() isn't thread-safe yet, not even in glic implementation
     ///       until then we prefer to use readdir_r

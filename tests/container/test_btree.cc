@@ -29,12 +29,14 @@ struct UDF {
 
     FixedString<SZ> s_;
 
-    UDF(char c) : s_() {
+    UDF(char c) :
+        s_() {
         std::string s;
         s += c;
         s_ = s;
     }
-    UDF(const std::string& s = std::string()) : s_(s) {}
+    UDF(const std::string& s = std::string()) :
+        s_(s) {}
 
     operator std::string() const { return s_.asString(); }
 

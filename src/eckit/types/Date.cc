@@ -15,6 +15,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Date.h"
+#include "eckit/utils/Hash.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
@@ -40,12 +41,14 @@ static void check(const Date& date, long value) {
 }
 
 
-Date::Date(long date) : julian_(dateToJulian(date)) {
+Date::Date(long date) :
+    julian_(dateToJulian(date)) {
     if (date > 0)
         check(*this, date);
 }
 
-Date::Date(long year, long month, long day) : julian_(dateToJulian(year * 10000 + month * 100 + day)) {
+Date::Date(long year, long month, long day) :
+    julian_(dateToJulian(year * 10000 + month * 100 + day)) {
     check(*this, year * 10000 + month * 100 + day);
 }
 
@@ -301,7 +304,8 @@ std::string Date::monthName() const {
     return months[n - 1];
 }
 
-BadDate::BadDate(const std::string& s) : BadValue(s) {}
+BadDate::BadDate(const std::string& s) :
+    BadValue(s) {}
 
 void Date::dump(DumpLoad& a) const {
     a.dump(julian_);
@@ -311,7 +315,9 @@ void Date::load(DumpLoad& a) {
     a.load(julian_);
 }
 
-void Date::hash(Hash&) const {}
+void Date::hash(Hash& h) const {
+    h.add(julian_);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

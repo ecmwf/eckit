@@ -31,12 +31,15 @@ void RadosHandle::encode(Stream& s) const {
     s << object_;
 }
 
-RadosHandle::RadosHandle(Stream& s) : DataHandle(s), object_(s), offset_(0), opened_(false), write_(false) {}
+RadosHandle::RadosHandle(Stream& s) :
+    DataHandle(s), object_(s), offset_(0), opened_(false), write_(false) {}
 
-RadosHandle::RadosHandle(const RadosObject& object) : object_(object), offset_(0), opened_(false), write_(false) {}
+RadosHandle::RadosHandle(const RadosObject& object) :
+    object_(object), offset_(0), opened_(false), write_(false) {}
 
 
-RadosHandle::RadosHandle(const std::string& object) : object_(object), offset_(0), opened_(false), write_(false) {}
+RadosHandle::RadosHandle(const std::string& object) :
+    object_(object), offset_(0), opened_(false), write_(false) {}
 
 RadosHandle::~RadosHandle() {
     // std::cout << "RadosHandle::~RadosHandle " << object_ << std::endl;

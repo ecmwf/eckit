@@ -20,7 +20,8 @@ void InstantTCPSocketHandle::print(std::ostream& s) const {
 }
 
 
-InstantTCPSocketHandle::InstantTCPSocketHandle(net::TCPSocket& s) : connection_(s), read_(true), position_(0) {}
+InstantTCPSocketHandle::InstantTCPSocketHandle(net::TCPSocket& s) :
+    connection_(s), read_(true), position_(0) {}
 
 InstantTCPSocketHandle::~InstantTCPSocketHandle() {}
 

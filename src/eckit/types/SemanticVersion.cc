@@ -11,23 +11,24 @@
 #include "eckit/types/SemanticVersion.h"
 
 #include <algorithm>
-#include <cstdlib>
-#include <vector>
 #include <cctype>
 #include <climits>
+#include <cstdlib>
+#include <vector>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
-SemanticVersion::SemanticVersion() : major_(0), minor_(0), patch_(0) {}
+SemanticVersion::SemanticVersion() :
+    major_(0), minor_(0), patch_(0) {}
 
 SemanticVersion::SemanticVersion(unsigned long major, unsigned long minor, unsigned long patch) :
     major_(major), minor_(minor), patch_(patch) {}
 
 static unsigned long s2int(const std::string& s) {
-    if(s.size() == std::count_if(s.begin(), s.end(), [](unsigned char c) { return std::isdigit(c); }) ) {
+    if (s.size() == std::count_if(s.begin(), s.end(), [](unsigned char c) { return std::isdigit(c); })) {
         unsigned long r = ::strtoul(s.data(), NULL, 0);
         if (r != ULONG_MAX) {
             return r;
@@ -45,8 +46,8 @@ SemanticVersion::SemanticVersion(const std::string& v) {
 
     std::vector<std::string> tokens;
     eckit::Tokenizer('.', true)(v, tokens);
-    
-    if(tokens.size() != 3) {
+
+    if (tokens.size() != 3) {
         std::ostringstream msg;
         msg << "Bad version string '" << v << "' not in format x.y.z";
         throw BadValue(msg.str(), Here());
@@ -64,7 +65,7 @@ SemanticVersion::operator std::string() const {
 }
 
 bool SemanticVersion::operator<(const SemanticVersion& o) const {
-    if (major_ == o.major_) {        
+    if (major_ == o.major_) {
         if (minor_ == o.minor_) {
             return (patch_ < o.patch_);
         }

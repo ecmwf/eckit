@@ -23,7 +23,8 @@ static FunctionBuilder<FunctionNOT_NULL> not_nullFunctionBuilder("not_null");
 FunctionNOT_NULL::FunctionNOT_NULL(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
-FunctionNOT_NULL::FunctionNOT_NULL(const FunctionNOT_NULL& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionNOT_NULL::FunctionNOT_NULL(const FunctionNOT_NULL& other) :
+    FunctionExpression(other.name_, other.args_) {}
 
 FunctionNOT_NULL::~FunctionNOT_NULL() {}
 

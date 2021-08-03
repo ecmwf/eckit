@@ -37,7 +37,8 @@ bool HttpHeader::compare::operator()(const std::string& a, const std::string& b)
 }
 
 
-HttpHeader::HttpHeader() : version_("HTTP/1.0"), statusCode_(HttpError::OK), contentLength_(0), received_(false) {
+HttpHeader::HttpHeader() :
+    version_("HTTP/1.0"), statusCode_(HttpError::OK), contentLength_(0), received_(false) {
     header_[Content_Type]    = "text/html";
     header_["Cache-Control"] = "no-cache";
     header_["MIME-Version"]  = "1.0";
@@ -202,8 +203,8 @@ bool HttpHeader::authenticated() const {
         for (unsigned char c = '0'; c <= '9'; c++)
             b64[c] = c - '0' + 52;
 
-        b64['+'] = 62;
-        b64['/'] = 63;
+        b64[int('+')] = 62;
+        b64[int('/')] = 63;
 
         const unsigned char* p = (const unsigned char*)s;
 
@@ -275,7 +276,8 @@ static std::string nextLine(net::TCPSocket& socket) {
     }
 }
 
-HttpHeader::HttpHeader(net::TCPSocket& socket) : received_(true) {
+HttpHeader::HttpHeader(net::TCPSocket& socket) :
+    received_(true) {
     std::string line = nextLine(socket);
 
     size_t i = line.find_first_of(' ');

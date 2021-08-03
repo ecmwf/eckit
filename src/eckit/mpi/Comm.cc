@@ -190,7 +190,8 @@ public:
     }
 
 
-    Environment() : default_(nullptr) {}
+    Environment() :
+        default_(nullptr) {}
 
     ~Environment() {
         AutoLock<Mutex> lock(mutex_);
@@ -250,7 +251,8 @@ private:
     eckit::Mutex mutex_;
 };
 
-CommFactory::CommFactory(const std::string& builder) : builder_(builder) {
+CommFactory::CommFactory(const std::string& builder) :
+    builder_(builder) {
     CommFactories::instance().registFactory(builder, this);
 }
 
@@ -268,7 +270,8 @@ Comm* CommFactory::build(const std::string& name, const std::string& builder, in
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm::Comm(const std::string& name) : name_(name) {}
+Comm::Comm(const std::string& name) :
+    name_(name) {}
 
 Comm::~Comm() {}
 

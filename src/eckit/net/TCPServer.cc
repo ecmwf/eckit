@@ -138,9 +138,11 @@ void TCPServer::print(std::ostream& s) const {
 }
 
 
-EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) : TCPServer(0, opts) {}
+EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) :
+    TCPServer(0, opts) {}
 
-EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) : TCPServer(port, opts) {}
+EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) :
+    TCPServer(port, opts) {}
 
 
 }  // namespace net

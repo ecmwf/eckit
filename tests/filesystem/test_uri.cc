@@ -127,7 +127,7 @@ CASE("Parsing uri (path)") {
         EXPECT(uri.asRawString() == "unix:!");
         EXPECT(uri.asString() == "!");
     }
-    {  
+    {
         URI uri("file:!");
         EXPECT(uri.scheme() == "file");
         EXPECT(uri.authority().empty());

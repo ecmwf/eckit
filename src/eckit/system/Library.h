@@ -51,6 +51,10 @@ public:  // methods
 
     virtual std::string version() const = 0;
 
+    virtual std::string versionExtended() const {
+        return version();
+    }
+
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
 
     virtual bool debug() const { return debug_; }

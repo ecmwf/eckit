@@ -17,7 +17,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LineBasedTarget::LineBasedTarget() : size_(4096), buffer_(new char[size_]), position_(0) {
+LineBasedTarget::LineBasedTarget() :
+    size_(4096), buffer_(new char[size_]), position_(0) {
     ASSERT(buffer_);
 }
 

@@ -84,7 +84,8 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-UserChannel::UserChannel() : std::ostream(new UserBuffer()), buffer_(dynamic_cast<UserBuffer*>(rdbuf())) {
+UserChannel::UserChannel() :
+    std::ostream(new UserBuffer()), buffer_(dynamic_cast<UserBuffer*>(rdbuf())) {
     ASSERT(buffer_);
 }
 

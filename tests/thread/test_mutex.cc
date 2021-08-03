@@ -24,7 +24,8 @@ namespace test {
 
 class Locker : public eckit::Thread {
 public:
-    Locker(Mutex* m, bool& v) : m_(m), v_(v) {}
+    Locker(Mutex* m, bool& v) :
+        m_(m), v_(v) {}
     Mutex* m_;
     bool& v_;
     void run() { v_ = m_->tryLock(); }

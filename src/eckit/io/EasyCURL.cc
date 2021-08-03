@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-// #include <arpa/inet.h>
-#include <curl/curl.h>
+#include "eckit/io/EasyCURL.h"
+
 #include <unistd.h>
 #include <memory>
 
-#include "eckit/eckit.h"
+#include <curl/curl.h>
 
-#include "eckit/io/EasyCURL.h"
 #include "eckit/log/Log.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
@@ -31,6 +30,8 @@
 
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace {
 
@@ -398,8 +399,8 @@ std::vector<http_code> http_codes = {
 };
 
 }  // namespace
-//----------------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------------
 
 #define _(a) call(#a, a)
 
@@ -438,7 +439,8 @@ public:
     CURL* curl_;
     curl_slist* chunks_;
 
-    CURLHandle() : curl_(nullptr), chunks_(nullptr) {
+    CURLHandle() :
+        curl_(nullptr), chunks_(nullptr) {
         pthread_once(&once, init);
         curl_ = curl_easy_init();
         ASSERT(curl_);
@@ -450,7 +452,7 @@ public:
     }
 };
 
-// ===========================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 class EasyCURLResponseImp : public eckit::Counted {
 public:
@@ -458,6 +460,7 @@ public:
     ~EasyCURLResponseImp();
 
     virtual void perform() = 0;
+    virtual bool redirect(std::string& location);
 
     virtual size_t writeCallback(const void* ptr, size_t size) = 0;
 
@@ -468,10 +471,10 @@ public:
         return headers_;
     }
 
-    virtual std::string body() const            = 0;
-    virtual unsigned long long contentLength()  = 0;
-    virtual size_t read(void* ptr, size_t size) = 0;
-    virtual void ensureHeaders()                = 0;
+    virtual std::string body() const                        = 0;
+    virtual unsigned long long contentLength(bool& present) = 0;
+    virtual size_t read(void* ptr, size_t size)             = 0;
+    virtual void ensureHeaders()                            = 0;
 
     std::string url_;
     CURLHandle* ch_;
@@ -491,11 +494,28 @@ public:
     static size_t _headersCallback(void* ptr, size_t size, size_t nmemb, void* userdata);
 };
 
+bool EasyCURLResponseImp::redirect(std::string& location) {
+    ensureHeaders();
+    ASSERT(code_);
+    for (auto c : http_codes) {
+        if (c.code_ == code_)
+            if (c.redirect_) {
+                char* url = NULL;
+                _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
+                ASSERT(url);
+                location = url;
+                return true;
+            }
+    }
+    return false;
+}
+
 
 class EasyCURLResponseDirect : public EasyCURLResponseImp {
 public:
     std::unique_ptr<MemoryHandle> handle_;
-    EasyCURLResponseDirect(const std::string& url, CURLHandle* curl) : EasyCURLResponseImp(url, curl){};
+    EasyCURLResponseDirect(const std::string& url, CURLHandle* curl) :
+        EasyCURLResponseImp(url, curl){};
 
     virtual void perform() override {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
@@ -504,23 +524,6 @@ public:
         _(curl_easy_setopt(ch_->curl_, CURLOPT_WRITEFUNCTION, &_writeCallback));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_WRITEDATA, this));
         _(curl_easy_perform(ch_->curl_));
-        _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
-
-
-        if (code_ == 301) {  // Move permanently
-            // CURL's built-in redirect is not what we want
-            char* url = NULL;
-            _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
-            _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
-
-            if (url) {
-                body_ = false;
-                handle_.reset(0);
-                _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url));
-                _(curl_easy_perform(ch_->curl_));
-                _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
-            }
-        }
     }
 
     virtual std::string body() const override {
@@ -542,7 +545,7 @@ public:
         return handle_->write(ptr, size);
     }
 
-    virtual unsigned long long contentLength() override { NOTIMP; }
+    virtual unsigned long long contentLength(bool& present) override { NOTIMP; }
 
     virtual size_t read(void* ptr, size_t size) override { NOTIMP; }
 
@@ -562,7 +565,9 @@ public:
     CircularBuffer buffer_;
 
     EasyCURLResponseStream(const std::string& url, CURLHandle* curl) :
-        EasyCURLResponseImp(url, curl), buffer_(1024 * 1024) {}
+        EasyCURLResponseImp(url, curl), buffer_(1024 * 1024) {
+        _(curl_multi_add_handle(multi, ch_->curl_));
+    }
 
     ~EasyCURLResponseStream() { _(curl_multi_remove_handle(multi, ch_->curl_)); }
 
@@ -572,24 +577,22 @@ public:
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERDATA, this));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_WRITEFUNCTION, &_writeCallback));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_WRITEDATA, this));
-
-        _(curl_multi_add_handle(multi, ch_->curl_));
-        int active = 0;
-        _(curl_multi_perform(multi, &active));
-        _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
     }
 
     size_t writeCallback(const void* ptr, size_t size) override { return buffer_.write(ptr, size); }
 
     virtual std::string body() const override { NOTIMP; }
 
-    virtual unsigned long long contentLength() override {
+    virtual unsigned long long contentLength(bool& present) override {
         ensureHeaders();
-        auto j = headers_.find("content-length");
+        present = false;
+        auto j  = headers_.find("content-length");
         if (j != headers_.end()) {
+            present = true;
             return Translator<std::string, unsigned long long>()((*j).second);
         }
-        throw eckit::SeriousBug("EasyCURLResponseStream: cannot establish contentLength");
+
+        return 0;
     }
 
     int waitForData() {
@@ -709,7 +712,7 @@ size_t EasyCURLResponseImp::headersCallback(const void* ptr, size_t size) {
     return size;
 }
 
-// ===========================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 class EasyCURLHandle : public DataHandle {
 public:
@@ -754,11 +757,17 @@ Length EasyCURLHandle::openForRead() {
 }
 
 Length EasyCURLHandle::size() {
-    return imp_->contentLength();
+    bool present = false;
+    Length len   = imp_->contentLength(present);
+    if (!present) {
+        throw eckit::BadValue("EasyCURLResponseStream: cannot establish contentLength");
+    }
+    return len;
 }
 
 Length EasyCURLHandle::estimate() {
-    return imp_->contentLength();
+    bool present = false;
+    return imp_->contentLength(present);
 }
 
 long EasyCURLHandle::read(void* ptr, long size) {
@@ -778,9 +787,10 @@ void EasyCURLHandle::close() {
     }
 }
 
-// ===========================================================
+//----------------------------------------------------------------------------------------------------------------------
 
-EasyCURLResponse::EasyCURLResponse(EasyCURLResponseImp* imp) : imp_(imp) {
+EasyCURLResponse::EasyCURLResponse(EasyCURLResponseImp* imp) :
+    imp_(imp) {
     imp_->attach();
 }
 
@@ -788,7 +798,8 @@ EasyCURLResponse::~EasyCURLResponse() {
     imp_->detach();
 }
 
-EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other) : imp_(other.imp_) {
+EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other) :
+    imp_(other.imp_) {
     imp_->attach();
 }
 
@@ -815,7 +826,8 @@ const EasyCURLHeaders& EasyCURLResponse::headers() const {
 }
 
 unsigned long long EasyCURLResponse::contentLength() const {
-    return imp_->contentLength();
+    bool present = false;
+    return imp_->contentLength(present);
 }
 
 size_t EasyCURLResponse::read(void* ptr, size_t size) const {
@@ -835,9 +847,10 @@ void EasyCURLResponse::print(std::ostream& out) const {
     imp_->print(out);
 }
 
-// ===========================================================
+//----------------------------------------------------------------------------------------------------------------------
 
-EasyCURL::EasyCURL() : ch_(new CURLHandle()) {
+EasyCURL::EasyCURL() :
+    ch_(new CURLHandle()) {
     ch_->attach();
 }
 
@@ -845,7 +858,7 @@ EasyCURL::~EasyCURL() {
     ch_->detach();
 }
 
-// ============================
+//----------------------------------------------------------------------------------------------------------------------
 
 void EasyCURL::verbose(bool on) {
     _(curl_easy_setopt(ch_->curl_, CURLOPT_VERBOSE, on ? 1L : 0L));
@@ -863,32 +876,41 @@ void EasyCURL::sslVerifyHost(bool on) {
     _(curl_easy_setopt(ch_->curl_, CURLOPT_SSL_VERIFYHOST, on ? 1L : 0L));
 }
 
+void EasyCURL::useSSL(bool use) {
+    if (!use) {
+        _(curl_easy_setopt(ch_->curl_, CURLOPT_USE_SSL, CURLUSESSL_NONE));
+    }
+}
+
 void EasyCURL::failOnError(bool on) {
     _(curl_easy_setopt(ch_->curl_, CURLOPT_FAILONERROR, on ? 1L : 0L));
 }
-// ============================
+
+//----------------------------------------------------------------------------------------------------------------------
 
 EasyCURLResponse EasyCURL::request(const std::string& url, bool stream) {
 
+    std::string location(url);
+    const size_t max_redirects = 10;
 
-    EasyCURLResponseImp* r = 0;
+    for (size_t i = 0; i < max_redirects; ++i) {
+        std::unique_ptr<EasyCURLResponseImp> r(nullptr);
 
-    if (stream) {
-        r = new EasyCURLResponseStream(url, ch_);
-    }
-    else {
-        r = new EasyCURLResponseDirect(url, ch_);
-    }
+        if (stream) {
+            r.reset(new EasyCURLResponseStream(location, ch_));
+        }
+        else {
+            r.reset(new EasyCURLResponseDirect(url, ch_));
+        }
 
-    try {
         r->perform();
-    }
-    catch (...) {
-        delete r;
-        throw;
+
+        if (!r->redirect(location)) {
+            return EasyCURLResponse(r.release());
+        }
     }
 
-    return EasyCURLResponse(r);
+    throw SeriousBug("EasyCURL too many redirects for:" + url);
 }
 
 EasyCURLResponse EasyCURL::GET(const std::string& url, bool stream) {

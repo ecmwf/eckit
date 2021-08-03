@@ -12,9 +12,7 @@
 /// @date Jul 2015
 
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/parser/JSONParser.h"
 #include "eckit/serialisation/Stream.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/value/Value.h"
 
@@ -22,13 +20,17 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LocalConfiguration::LocalConfiguration(char separator) : Configuration(Value::makeOrderedMap(), separator) {}
+LocalConfiguration::LocalConfiguration(char separator) :
+    Configuration(Value::makeOrderedMap(), separator) {}
 
-LocalConfiguration::LocalConfiguration(Stream& s) : Configuration(Value(s)) {}
+LocalConfiguration::LocalConfiguration(Stream& s) :
+    Configuration(Value(s)) {}
 
-LocalConfiguration::LocalConfiguration(const Value& root, char separator) : Configuration(root, separator) {}
+LocalConfiguration::LocalConfiguration(const Value& root, char separator) :
+    Configuration(root, separator) {}
 
-LocalConfiguration::LocalConfiguration(const Configuration& other) : Configuration(other) {}
+LocalConfiguration::LocalConfiguration(const Configuration& other) :
+    Configuration(other) {}
 
 LocalConfiguration::LocalConfiguration(const Configuration& other, const std::string& path) :
     Configuration(other, path) {}
@@ -196,11 +198,6 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
     setValue(s, values);
     return *this;
 }
-
-template <>
-struct VectorPrintSelector<LocalConfiguration> {
-    typedef VectorPrintSimple selector;
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 

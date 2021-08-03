@@ -95,7 +95,7 @@ void BSPNode<Traits, Partition>::nearestNeighbourX(Alloc& a, const Point& p, Nod
     }
 }
 
-//===
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class Traits, class Partition>
 void BSPNode<Traits, Partition>::kNearestNeighboursX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth) {

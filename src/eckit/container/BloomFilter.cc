@@ -21,7 +21,8 @@ namespace eckit {
 
 
 template <typename T>
-BloomFilter<T>::BloomFilter(size_t size) : size_(size), entries_(0), data_(elementCount(size), 0) {}
+BloomFilter<T>::BloomFilter(size_t size) :
+    size_(size), entries_(0), data_(elementCount(size), 0) {}
 
 
 template <typename T>

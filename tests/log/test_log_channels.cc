@@ -56,7 +56,8 @@ namespace test {
 
 class CapitalizerTarget : public WrapperTarget {
 public:
-    CapitalizerTarget(LogTarget* target) : WrapperTarget(target) {}
+    CapitalizerTarget(LogTarget* target) :
+        WrapperTarget(target) {}
 
 private:
     virtual void write(const char* start, const char* end) {

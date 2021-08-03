@@ -208,7 +208,10 @@ public:
     const std::string& path() const;
 
     /// Hash the contents of this pathname (only valid for files)
-    void hash(eckit::Hash&) const;
+    void hash(Hash&) const;
+
+    /// Hash a path as in-place as possible. Returns the hash digest
+    std::string hash(const std::string& method="xxh64") const;
 
     /// Get child files and directories
     /// @param files vector to be filled with child files of path

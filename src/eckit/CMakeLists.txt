@@ -222,14 +222,14 @@ io/StatsHandle.cc
 io/StatsHandle.h
 io/StdFile.cc
 io/StdFile.h
-io/StdFileHandle.cc
-io/StdFileHandle.h
 io/StdPipe.cc
 io/StdPipe.h
 io/StdioBuf.cc
 io/StdioBuf.h
 io/TCPHandle.cc
 io/TCPHandle.h
+io/MultiSocketHandle.cc
+io/MultiSocketHandle.h
 io/TCPSocketHandle.cc
 io/TCPSocketHandle.h
 io/TeeHandle.cc
@@ -500,8 +500,8 @@ types/Fraction.cc
 types/Fraction.h
 types/Grid.cc
 types/Grid.h
-# types/Metadata.cc
-# types/Metadata.h
+types/Hour.cc
+types/Hour.h
 types/Month.cc
 types/Month.h
 types/Time.cc
@@ -621,6 +621,8 @@ net/TCPServer.cc
 net/TCPServer.h
 net/TCPSocket.cc
 net/TCPSocket.h
+net/MultiSocket.cc
+net/MultiSocket.h
 net/TCPStream.cc
 net/TCPStream.h
 net/Telnet.cc

@@ -25,7 +25,8 @@ Reanimator<TeeHandle> TeeHandle::reanimator_;
 
 TeeHandle::TeeHandle() {}
 
-TeeHandle::TeeHandle(const std::vector<DataHandle*>& v) : datahandles_(v) {}
+TeeHandle::TeeHandle(const std::vector<DataHandle*>& v) :
+    datahandles_(v) {}
 
 TeeHandle::TeeHandle(DataHandle* a, DataHandle* b) {
     datahandles_.push_back(a);
@@ -33,7 +34,8 @@ TeeHandle::TeeHandle(DataHandle* a, DataHandle* b) {
 }
 
 
-TeeHandle::TeeHandle(Stream& s) : DataHandle(s) {
+TeeHandle::TeeHandle(Stream& s) :
+    DataHandle(s) {
     unsigned long size;
     s >> size;
 

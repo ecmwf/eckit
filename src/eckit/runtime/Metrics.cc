@@ -76,7 +76,8 @@ private:  // methods
     }
 };
 
-MetricsCollector::MetricsCollector() : created_(::time(nullptr)), metrics_(Value::makeOrderedMap()) {
+MetricsCollector::MetricsCollector() :
+    created_(::time(nullptr)), metrics_(Value::makeOrderedMap()) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
@@ -318,7 +319,8 @@ void Metrics::set(const std::string& name, const Offset& value, bool overrideOk)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CollectMetrics::CollectMetrics() : collector_(new MetricsCollector()) {}
+CollectMetrics::CollectMetrics() :
+    collector_(new MetricsCollector()) {}
 
 CollectMetrics::~CollectMetrics() {
     delete collector_;

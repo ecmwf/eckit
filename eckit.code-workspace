@@ -90,7 +90,11 @@
 			"concepts": "cpp",
 			"memory_resource": "cpp",
 			"cfenv": "cpp",
-			"cinttypes": "cpp"
+			"cinttypes": "cpp",
+			"semaphore": "cpp",
+			"__functional_03": "cpp",
+			"numbers": "cpp",
+			"filesystem": "cpp"
 		}
 	}
 }

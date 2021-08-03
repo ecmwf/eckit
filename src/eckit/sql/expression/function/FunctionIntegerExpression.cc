@@ -10,6 +10,7 @@
 
 #include <cmath>
 
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/utils/Translator.h"
@@ -31,16 +32,14 @@ const eckit::sql::type::SQLType* FunctionIntegerExpression::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
 }
 
-void FunctionIntegerExpression::output(std::ostream& s) const {
+void FunctionIntegerExpression::output(SQLOutput& s) const {
     bool missing = false;
     double v     = eval(missing);
-
+    s.outputInt(v, missing);
     // Log::info() << "FunctionIntegerExpression::output: v=" << v << ", missing=" << missing << std::endl;
-
-    s << static_cast<long long int>(v);
 }
 
-//===============================
+//----------------------------------------------------------------------------------------------------------------------
 
 // TODO: This is REALLY the wrong place for this to be.
 constexpr double DEFAULT_MDI = 2147483647;

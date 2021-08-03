@@ -21,7 +21,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-FileBase<T>::FileBase(const PathName& path) : fd_(-1), path_(path), pos_(0) {
+FileBase<T>::FileBase(const PathName& path) :
+    fd_(-1), path_(path), pos_(0) {
     SYSCALL2(fd_ = ::open(path.localPath(), O_RDWR | O_CREAT, 0777), path.localPath());
 }
 

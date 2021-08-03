@@ -39,7 +39,8 @@ class BackendRegistry {
 public:
     typedef std::map<std::string, const LinearAlgebra*> Map;
 
-    BackendRegistry() : default_(defaultBackend) {
+    BackendRegistry() :
+        default_(defaultBackend) {
         char* envBackend = ::getenv("ECKIT_LINEAR_ALGEBRA_BACKEND");
         if (envBackend) {
             default_ = envBackend;
@@ -151,7 +152,8 @@ void LinearAlgebra::dsptd(const Vector&, const SparseMatrix&, const Vector&, Spa
     NOTIMP;
 }
 
-LinearAlgebra::LinearAlgebra(const std::string& name) : name_(name) {
+LinearAlgebra::LinearAlgebra(const std::string& name) :
+    name_(name) {
     pthread_once(&once, init);
     backends->add(name, this);
 }

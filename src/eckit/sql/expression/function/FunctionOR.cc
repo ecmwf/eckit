@@ -20,9 +20,11 @@ namespace function {
 
 static FunctionBuilder<FunctionOR> orFunctionBuilder("or");
 
-FunctionOR::FunctionOR(const std::string& name, const expression::Expressions& args) : FunctionExpression(name, args) {}
+FunctionOR::FunctionOR(const std::string& name, const expression::Expressions& args) :
+    FunctionExpression(name, args) {}
 
-FunctionOR::FunctionOR(const FunctionOR& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionOR::FunctionOR(const FunctionOR& other) :
+    FunctionExpression(other.name_, other.args_) {}
 
 FunctionOR::~FunctionOR() {}
 

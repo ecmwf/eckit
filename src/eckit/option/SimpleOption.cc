@@ -50,7 +50,8 @@ template <>
 const char* Title<eckit::PathName>::operator()() const;
 
 template <class T>
-SimpleOption<T>::SimpleOption(const std::string& name, const std::string& description) : Option(name, description) {}
+SimpleOption<T>::SimpleOption(const std::string& name, const std::string& description) :
+    Option(name, description) {}
 
 template <class T>
 SimpleOption<T>::~SimpleOption() {}

@@ -41,7 +41,8 @@ private:  // members
     eckit::net::Port port_;
 };
 
-StatsServer::StatsServer(int argc, char** argv) : Application(argc, argv), port_("statssvr", 7788) {}
+StatsServer::StatsServer(int argc, char** argv) :
+    Application(argc, argv), port_("statssvr", 7788) {}
 
 StatsServer::~StatsServer() {}
 

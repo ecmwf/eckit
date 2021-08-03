@@ -40,7 +40,8 @@ struct PoolHandleEntryStatus {
     Offset position_;
     bool opened_;
 
-    PoolHandleEntryStatus() : position_(0), opened_(false) {}
+    PoolHandleEntryStatus() :
+        position_(0), opened_(false) {}
 };
 
 class PoolHandleEntry {
@@ -59,7 +60,8 @@ public:
     size_t nbCloses_ = 0;
 
 public:
-    explicit PoolHandleEntry(const PathName& path) : path_(path), handle_(nullptr), count_(0) {}
+    explicit PoolHandleEntry(const PathName& path) :
+        path_(path), handle_(nullptr), count_(0) {}
     ~PoolHandleEntry() { LOG_DEBUG_LIB(LibEcKit) << *this << std::endl; }
 
     friend std::ostream& operator<<(std::ostream& s, const PoolHandleEntry& e) {
@@ -192,11 +194,12 @@ public:
 };
 
 
-PooledHandle::PooledHandle(const PathName& path) : path_(path), entry_(nullptr) {
+PooledHandle::PooledHandle(const PathName& path) :
+    path_(path), entry_(nullptr) {
     auto j = pool_.find(path);
     if (j == pool_.end()) {
         pool_.emplace(std::make_pair(path, std::unique_ptr<PoolHandleEntry>(new PoolHandleEntry(path))));
-        j           = pool_.find(path);
+        j = pool_.find(path);
     }
 
     entry_ = (*j).second.get();

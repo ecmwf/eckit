@@ -17,9 +17,10 @@ namespace sql {
 namespace type {
 
 
-//--------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-SQLDouble::SQLDouble(const std::string& name) : SQLType(name) {}
+SQLDouble::SQLDouble(const std::string& name) :
+    SQLType(name) {}
 
 SQLDouble::~SQLDouble() {}
 
@@ -35,7 +36,7 @@ std::string SQLDouble::asString(const double* val) const {
     return eckit::Translator<double, std::string>()(*val);
 }
 
-//--------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace type
 }  // namespace sql

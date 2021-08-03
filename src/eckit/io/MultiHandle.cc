@@ -13,8 +13,8 @@
 #include "eckit/config/Resource.h"
 #include "eckit/io/MultiHandle.h"
 #include "eckit/log/Timer.h"
-#include "eckit/types/Types.h"
 #include "eckit/runtime/Metrics.h"
+#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -26,12 +26,14 @@ ClassSpec MultiHandle::classSpec_ = {
 };
 Reanimator<MultiHandle> MultiHandle::reanimator_;
 
-MultiHandle::MultiHandle() : current_(datahandles_.end()), read_(false) {}
+MultiHandle::MultiHandle() :
+    current_(datahandles_.end()), read_(false) {}
 
 MultiHandle::MultiHandle(const std::vector<DataHandle*>& v) :
     datahandles_(v), current_(datahandles_.end()), read_(false) {}
 
-MultiHandle::MultiHandle(Stream& s) : DataHandle(s), read_(false) {
+MultiHandle::MultiHandle(Stream& s) :
+    DataHandle(s), read_(false) {
     unsigned long size;
     s >> size;
 

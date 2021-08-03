@@ -245,12 +245,13 @@ inline T SysCall(T code, const char* msg, const char* file, int line, const char
 
 
 template <class T>
-inline void SysCall(long long code, const char* msg, const T& ctx, const char* file, int line, const char* func) {
+inline long long SysCall(long long code, const char* msg, const T& ctx, const char* file, int line, const char* func) {
     if (code < 0) {
         std::ostringstream os;
         os << ctx;
         throw FailedSystemCall(os.str(), msg, CodeLocation(file, line, func), errno);
     }
+    return code;
 }
 
 

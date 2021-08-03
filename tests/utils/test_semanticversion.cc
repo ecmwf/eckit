@@ -10,8 +10,8 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/types/Types.h"
 #include "eckit/types/SemanticVersion.h"
+#include "eckit/types/Types.h"
 
 #include "eckit/testing/Test.h"
 

@@ -46,8 +46,12 @@ std::string report_type_to_name(Report::Type t) {
     ASSERT(t < Report::ENDTAG);  // ensure client code sticks to enum Report
 
     static const std::map<int, std::string> type_to_name = {
-        {Report::APPSTART, "appstart"}, {Report::APPSTOP, "appstop"}, {Report::INFO, "info"},
-        {Report::METER, "meter"},       {Report::COUNTER, "counter"}, {Report::KEEPALIVE, "keepalive"},
+        {Report::APPSTART, "appstart"},
+        {Report::APPSTOP, "appstop"},
+        {Report::INFO, "info"},
+        {Report::METER, "meter"},
+        {Report::COUNTER, "counter"},
+        {Report::KEEPALIVE, "keepalive"},
     };
 
     size_t count = type_to_name.size();
@@ -108,8 +112,7 @@ static YAMLConfiguration* loadConfig() {
         return new YAMLConfiguration(s);
     }
 
-    PathName telemetryConfigFile =
-        Resource<PathName>("$TELEMETRY_CONFIG_FILE,telemetryConfigFile", "~/etc/config/telemetry.yaml");
+    PathName telemetryConfigFile = Resource<PathName>("$TELEMETRY_CONFIG_FILE,telemetryConfigFile", "~/etc/config/telemetry.yaml");
 
     if (telemetryConfigFile.exists())
         return new YAMLConfiguration(telemetryConfigFile);
@@ -197,7 +200,8 @@ public:
 
 class WraperReport : public Report {
 public:
-    WraperReport(std::function<void(JSON&)>& f) : callable_(f) {}
+    WraperReport(std::function<void(JSON&)>& f) :
+        callable_(f) {}
     ~WraperReport() override {}
     virtual void json(JSON& j) const override { callable_(j); }
     std::function<void(JSON&)>& callable_;

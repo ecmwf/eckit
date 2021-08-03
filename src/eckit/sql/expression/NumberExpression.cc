@@ -18,9 +18,11 @@ namespace expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-NumberExpression::NumberExpression(double value) : value_(value) {}
+NumberExpression::NumberExpression(double value) :
+    value_(value) {}
 
-NumberExpression::NumberExpression(const NumberExpression& other) : value_(other.value_) {}
+NumberExpression::NumberExpression(const NumberExpression& other) :
+    value_(other.value_) {}
 
 std::shared_ptr<SQLExpression> NumberExpression::clone() const {
     return std::make_shared<NumberExpression>(*this);

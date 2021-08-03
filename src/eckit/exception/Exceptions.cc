@@ -28,7 +28,8 @@ static Exception*& first() {
     return p.instance();
 }
 
-Exception::Exception() : next_(first()) {
+Exception::Exception() :
+    next_(first()) {
     first() = this;
 
     callStack_ = BackTrace::dump();
@@ -53,7 +54,8 @@ void Exception::exceptionStack(std::ostream& out, bool callStack) {
         out << e->what() << std::endl;
 
         if (callStack)
-            out << e->callStack() << std::endl << std::endl;
+            out << e->callStack() << std::endl
+                << std::endl;
 
         e = e->next_;
     }
@@ -131,7 +133,8 @@ FailedSystemCall::FailedSystemCall(const std::string& w) {
     Log::status() << what() << std::endl;
 }
 
-FailedSystemCall::FailedSystemCall(const std::string& msg, const CodeLocation& loc) : Exception("", loc) {
+FailedSystemCall::FailedSystemCall(const std::string& msg, const CodeLocation& loc) :
+    Exception("", loc) {
     std::ostringstream s;
     s << "Failed system call: " << msg << " "
       << " in " << loc << " " << Log::syserr;
@@ -159,7 +162,8 @@ FailedSystemCall::FailedSystemCall(const std::string& ctx, const char* msg, cons
     Log::status() << what() << std::endl;
 }
 
-SeriousBug::SeriousBug(const std::string& w) : Exception(std::string("Serious Bug: ") + w) {
+SeriousBug::SeriousBug(const std::string& w) :
+    Exception(std::string("Serious Bug: ") + w) {
     if (!::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
         std::cout << what() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
@@ -189,7 +193,8 @@ SeriousBug::SeriousBug(const char* msg, const CodeLocation& loc) {
 }
 
 
-AssertionFailed::AssertionFailed(const std::string& w) : Exception(std::string("Assertion failed: ") + w) {
+AssertionFailed::AssertionFailed(const std::string& w) :
+    Exception(std::string("Assertion failed: ") + w) {
     if (!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
 
         Log::status() << what() << std::endl;
@@ -248,18 +253,23 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc) {
     }
 }
 
-BadParameter::BadParameter(const std::string& w) : Exception(std::string("Bad parameter: ") + w) {}
+BadParameter::BadParameter(const std::string& w) :
+    Exception(std::string("Bad parameter: ") + w) {}
 
 BadParameter::BadParameter(const std::string& w, const CodeLocation& loc) :
     Exception(std::string("Bad parameter: ") + w, loc) {}
 
-BadCast::BadCast(const std::string& w) : Exception(std::string("Bad cast: ") + w) {}
+BadCast::BadCast(const std::string& w) :
+    Exception(std::string("Bad cast: ") + w) {}
 
-BadCast::BadCast(const std::string& w, const CodeLocation& loc) : Exception(std::string("Bad cast: ") + w, loc) {}
+BadCast::BadCast(const std::string& w, const CodeLocation& loc) :
+    Exception(std::string("Bad cast: ") + w, loc) {}
 
-BadValue::BadValue(const std::string& s) : Exception(std::string("BadValue: ") + s) {}
+BadValue::BadValue(const std::string& s) :
+    Exception(std::string("BadValue: ") + s) {}
 
-BadValue::BadValue(const std::string& s, const CodeLocation& loc) : Exception(std::string("BadValue: ") + s, loc) {}
+BadValue::BadValue(const std::string& s, const CodeLocation& loc) :
+    Exception(std::string("BadValue: ") + s, loc) {}
 
 NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc) {
     std::ostringstream ss;
@@ -285,22 +295,29 @@ NotImplemented::NotImplemented(const CodeLocation& loc) {
     std::cout << BackTrace::dump() << std::endl;
 }
 
-UserError::UserError(const std::string& r, const CodeLocation& loc) : Exception(std::string("UserError: ") + r, loc) {}
+UserError::UserError(const std::string& r, const CodeLocation& loc) :
+    Exception(std::string("UserError: ") + r, loc) {}
 
-UserError::UserError(const std::string& r) : Exception(std::string("UserError: ") + r) {}
+UserError::UserError(const std::string& r) :
+    Exception(std::string("UserError: ") + r) {}
 
 UserError::UserError(const std::string& r, const std::string& x) :
     Exception(std::string("UserError: ") + r + " : " + x) {}
 
-Stop::Stop(const std::string& r) : Exception(std::string("Stop: ") + r) {}
+Stop::Stop(const std::string& r) :
+    Exception(std::string("Stop: ") + r) {}
 
-Abort::Abort(const std::string& r) : Exception(std::string("Abort: ") + r) {}
+Abort::Abort(const std::string& r) :
+    Exception(std::string("Abort: ") + r) {}
 
-Abort::Abort(const std::string& r, const CodeLocation& loc) : Exception(std::string("Abort: ") + r, loc) {}
+Abort::Abort(const std::string& r, const CodeLocation& loc) :
+    Exception(std::string("Abort: ") + r, loc) {}
 
-Retry::Retry(const std::string& r) : Exception(std::string("Retry: ") + r) {}
+Retry::Retry(const std::string& r) :
+    Exception(std::string("Retry: ") + r) {}
 
-Cancel::Cancel(const std::string& r) : Exception(std::string("Cancel: ") + r) {}
+Cancel::Cancel(const std::string& r) :
+    Exception(std::string("Cancel: ") + r) {}
 
 OutOfRange::OutOfRange(unsigned long long index, unsigned long long max) {
     std::ostringstream s;
@@ -334,7 +351,8 @@ FileError::FileError(const std::string& msg, const CodeLocation& here) {
 
 FileError::FileError() {}
 
-CantOpenFile::CantOpenFile(const std::string& file, bool retry) : retry_(retry) {
+CantOpenFile::CantOpenFile(const std::string& file, bool retry) :
+    retry_(retry) {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if (retry)
@@ -343,7 +361,8 @@ CantOpenFile::CantOpenFile(const std::string& file, bool retry) : retry_(retry) 
     Log::status() << what() << std::endl;
 }
 
-CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, bool retry) : retry_(retry) {
+CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, bool retry) :
+    retry_(retry) {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
     if (retry)
@@ -359,17 +378,20 @@ MethodNotYetImplemented::MethodNotYetImplemented(const std::string& msg) :
 WriteError::WriteError(const std::string& file, const CodeLocation& loc) :
     FileError(std::string("Write error on ") + file, loc) {}
 
-WriteError::WriteError(const std::string& file) : FileError(std::string("Write error on ") + file) {}
+WriteError::WriteError(const std::string& file) :
+    FileError(std::string("Write error on ") + file) {}
 
 ReadError::ReadError(const std::string& file, const CodeLocation& loc) :
     FileError(std::string("Read error on ") + file, loc) {}
 
-ReadError::ReadError(const std::string& file) : FileError(std::string("Read error on ") + file) {}
+ReadError::ReadError(const std::string& file) :
+    FileError(std::string("Read error on ") + file) {}
 
 CloseError::CloseError(const std::string& file, const CodeLocation& loc) :
     FileError(std::string("Close error on ") + file, loc) {}
 
-ShortFile::ShortFile(const std::string& file) : ReadError(std::string("Short file while reading ") + file) {}
+ShortFile::ShortFile(const std::string& file) :
+    ReadError(std::string("Short file while reading ") + file) {}
 
 ShortFile::ShortFile(const std::string& file, const CodeLocation& loc) :
     ReadError(std::string("Short file while reading ") + file, loc) {}
@@ -377,9 +399,11 @@ ShortFile::ShortFile(const std::string& file, const CodeLocation& loc) :
 RemoteException::RemoteException(const std::string& msg, const std::string& from) :
     Exception(msg + "(RemoteException from " + from + ")") {}
 
-UnexpectedState::UnexpectedState(const std::string& msg) : Exception(msg) {}
+UnexpectedState::UnexpectedState(const std::string& msg) :
+    Exception(msg) {}
 
-UnexpectedState::UnexpectedState(const std::string& msg, const CodeLocation& loc) : Exception(msg, loc) {}
+UnexpectedState::UnexpectedState(const std::string& msg, const CodeLocation& loc) :
+    Exception(msg, loc) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -426,7 +450,8 @@ void handle_panic_no_log(const char* msg, const CodeLocation& location) {
     ::pause();
 }
 
-OutOfMemory::OutOfMemory() : Exception("out of memory") {}
+OutOfMemory::OutOfMemory() :
+    Exception("out of memory") {}
 
 FailedLibraryCall::FailedLibraryCall(const std::string& lib, const std::string& func, const std::string& msg,
                                      const CodeLocation& loc) :

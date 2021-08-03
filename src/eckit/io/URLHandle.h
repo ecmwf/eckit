@@ -16,27 +16,31 @@
 
 #include <memory>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class URLException : public Exception {
+    int code_;
+
+public:
+    URLException(const std::string& what, int code) : Exception(what), code_(code) {}
+    int code() const { return code_; }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 class URLHandle : public DataHandle {
 public:
-    // -- Exceptions
 
-    // -- Contructors
-
-    URLHandle(const std::string& uri);
+    URLHandle(const std::string& uri, bool useSSL = true);
 
     URLHandle(Stream&);
 
-    // -- Destructor
-
     ~URLHandle();
-
-    // -- Overridden methods
 
     // From DataHandle
 
@@ -50,6 +54,7 @@ public:
     // virtual void rewind() override;
     virtual void print(std::ostream&) const override;
     virtual Length estimate() override;
+    virtual Length size() override;
 
     virtual bool canSeek() const override { return false; }
 
@@ -63,18 +68,13 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
-    // -- Members
 
     std::string uri_;
     std::unique_ptr<DataHandle> handle_;
 
-
-    // -- Methods
+    bool useSSL_;
 
     DataHandle& handle();
-
-
-    // -- Class members
 
     static ClassSpec classSpec_;
     static Reanimator<URLHandle> reanimator_;

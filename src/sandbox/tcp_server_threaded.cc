@@ -34,7 +34,8 @@ using namespace eckit;
 
 class FDBUser : public eckit::net::NetUser {
 public:
-    FDBUser(eckit::net::TCPSocket& protocol) : net::NetUser(protocol) {}
+    FDBUser(eckit::net::TCPSocket& protocol) :
+        net::NetUser(protocol) {}
 
     ~FDBUser() {}
 
@@ -100,7 +101,8 @@ private:
 
 class FDBService : public eckit::net::NetService {
 public:
-    FDBService(int port) : net::NetService(port) {}
+    FDBService(int port) :
+        net::NetService(port) {}
 
     ~FDBService() {}
 
@@ -114,7 +116,8 @@ private:
 
 class FDBSvrApp : public Application {
 public:
-    FDBSvrApp(int argc, char** argv) : Application(argc, argv, "HOME") {}
+    FDBSvrApp(int argc, char** argv) :
+        Application(argc, argv, "HOME") {}
 
     ~FDBSvrApp() {}
 

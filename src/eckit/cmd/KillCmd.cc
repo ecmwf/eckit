@@ -19,7 +19,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-KillCmd::KillCmd() : CmdResource("kill") {}
+KillCmd::KillCmd() :
+    CmdResource("kill") {}
 
 
 KillCmd::~KillCmd() {}

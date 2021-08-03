@@ -25,7 +25,8 @@ using eckit::URI;
 
 class DHCopy : public eckit::Tool {
 public:
-    DHCopy(int argc, char** argv) : Tool(argc, argv, "DHSHOME") {
+    DHCopy(int argc, char** argv) :
+        Tool(argc, argv, "DHSHOME") {
         options_.push_back(new eckit::option::SimpleOption<std::string>("from", "copy from this URI"));
         options_.push_back(new eckit::option::SimpleOption<std::string>("to", "copy to this URI"));
         options_.push_back(new eckit::option::SimpleOption<bool>("compare", "compare output"));
@@ -38,7 +39,8 @@ public:
 
 static void usage(const std::string& tool) {
 
-    Log::info() << "Usage: " << tool << " -from [URI1] -to [URI2]" << std::endl << std::endl;
+    Log::info() << "Usage: " << tool << " -from [URI1] -to [URI2]" << std::endl
+                << std::endl;
 }
 
 

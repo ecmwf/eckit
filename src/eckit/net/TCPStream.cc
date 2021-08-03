@@ -14,14 +14,15 @@ namespace eckit {
 namespace net {
 
 
-TCPStream::TCPStream(net::TCPSocket& socket) : socket_(socket) {}
+TCPStream::TCPStream(net::TCPSocket& socket) :
+    socket_(socket) {}
 
 TCPStream::~TCPStream() {}
 
 void TCPStream::closeOutput() {
     socket_.closeOutput();
 }
-//======================
+//----------------------------------------------------------------------------------------------------------------------
 // Tricky solution to be removed when 'mutable' is available
 //
 std::string TCPStreamBase::nonConstName() {
@@ -34,7 +35,8 @@ std::string TCPStreamBase::name() const {
     return ((TCPStreamBase*)this)->nonConstName();
 }
 
-SharedTCPStream::SharedTCPStream(net::TCPSocket& s) : TCPStream(s) {}
+SharedTCPStream::SharedTCPStream(net::TCPSocket& s) :
+    TCPStream(s) {}
 
 SharedTCPStream::~SharedTCPStream() {}
 

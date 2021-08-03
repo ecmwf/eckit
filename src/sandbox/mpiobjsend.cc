@@ -43,7 +43,8 @@ protected:
 
 class Obj : protected SerializeObject {
 public:
-    Obj(const std::string& s, int i, double d, bool b, size_t sz = 2) : s_(s), i_(i), d_(d), b_(b), data_(i * sz) {
+    Obj(const std::string& s, int i, double d, bool b, size_t sz = 2) :
+        s_(s), i_(i), d_(d), b_(b), data_(i * sz) {
         for (auto& value : data_) {
             value = 2 * i;
         }
@@ -104,8 +105,7 @@ public:
             return false;
         };
 
-        return s_ == rhs.s_ && i_ == rhs.i_ && d_ == rhs.d_ && b_ == rhs.b_ && data_.size() == rhs.data_.size() &&
-               compvec() && compnext();
+        return s_ == rhs.s_ && i_ == rhs.i_ && d_ == rhs.d_ && b_ == rhs.b_ && data_.size() == rhs.data_.size() && compvec() && compnext();
     }
 
     void print(std::ostream& os) const {
@@ -152,7 +152,8 @@ static size_t me = 0;
 
 class ObjSend : public eckit::Tool {
 public:
-    ObjSend(int argc, char** argv) : Tool(argc, argv, "HOME"), sendBuffer_(32) { sendBuffer_.zero(); }
+    ObjSend(int argc, char** argv) :
+        Tool(argc, argv, "HOME"), sendBuffer_(32) { sendBuffer_.zero(); }
 
     ~ObjSend() {}
 

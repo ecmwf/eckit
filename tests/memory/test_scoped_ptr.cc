@@ -50,7 +50,8 @@ class UDT {
     long value_;
 
 public:
-    explicit UDT(long value = 0) : value_(value) { ++UDT_use_count; }
+    explicit UDT(long value = 0) :
+        value_(value) { ++UDT_use_count; }
     ~UDT() {
         --UDT_use_count;
         //      std::cout << "   UDT with value " << value_ << " being destroyed\n";

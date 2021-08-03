@@ -34,14 +34,16 @@ namespace test {
 struct FooLock : public OwnedLock {
     typedef SharedPtr<FooLock> ptype;
 
-    FooLock(int in) : i(in) {}
+    FooLock(int in) :
+        i(in) {}
     int i;
 };
 
 struct FooNoLock : public OwnedNoLock {
     typedef SharedPtr<FooNoLock> ptype;
 
-    FooNoLock(int in) : i(in) {}
+    FooNoLock(int in) :
+        i(in) {}
     int i;
 };
 

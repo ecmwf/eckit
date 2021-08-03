@@ -33,13 +33,15 @@ void TCPHandle::encode(Stream& s) const {
     s << port_;
 }
 
-TCPHandle::TCPHandle(Stream& s) : DataHandle(s), port_(0) {
+TCPHandle::TCPHandle(Stream& s) :
+    DataHandle(s), port_(0) {
     s >> host_;
     s >> port_;
 }
 
 
-TCPHandle::TCPHandle(const std::string& host, int port) : host_(host), port_(port) {}
+TCPHandle::TCPHandle(const std::string& host, int port) :
+    host_(host), port_(port) {}
 
 TCPHandle::~TCPHandle() {}
 

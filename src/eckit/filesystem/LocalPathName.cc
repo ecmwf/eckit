@@ -23,6 +23,7 @@
 #include <cstring>  // for strlen
 #include <deque>
 #include <fstream>
+#include <sstream>
 #include <vector>
 
 #include "eckit/config/LibEcKit.h"
@@ -47,6 +48,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
+#include "eckit/utils/Hash.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Tokenizer.h"
 
@@ -152,7 +154,7 @@ LocalPathName LocalPathName::baseName(bool ext) const {
 
     // Don't perform tilde expansion on paths that have already been expanded
 
-    bool tildeIsUserHome = false;
+    bool tildeIsUserHome    = false;
     bool skipTildeExpansion = true;
     return LocalPathName(s, tildeIsUserHome, skipTildeExpansion);
 }
@@ -164,6 +166,25 @@ std::string LocalPathName::extension() const {
     if (lastDot == std::string::npos)
         return "";
     return base.substr(lastDot);
+}
+
+std::string LocalPathName::hash(const std::string& method) const {
+    std::unique_ptr<Hash> h(HashFactory::instance().build(method));
+
+    FileHandle fh(path_, /* overwrite */ false);
+    fh.openForRead();
+    AutoClose closer(fh);
+    Length size = this->size();
+    Buffer buffer(64 * 1024 * 1024);
+    Length len = 0;
+    while (len < size) {
+        Length chunk = fh.read(buffer, buffer.size());
+        len += chunk;
+        h->add(buffer, chunk);
+    }
+    ASSERT(len == size);
+
+    return h->digest();
 }
 
 LocalPathName LocalPathName::dirName() const {
@@ -558,7 +579,7 @@ void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>&
 
         if (recursive && e->d_name[0] != '.') {
             LocalPathName full = dir + "/" + e->d_name;
-            if(full.isDir()) {
+            if (full.isDir()) {
                 match(full + "/" + base, result, true);
             }
         }
@@ -624,7 +645,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
     for (;;) {
         struct dirent* e = d.dirent();
         if (e == nullptr) {
-                break;
+            break;
         }
 
         if (e->d_name[0] == '.')
@@ -666,8 +687,8 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 void LocalPathName::touch() const {
     dirName().mkdir();
 
-    if(exists()) {
-        SYSCALL(::utime(path_.c_str(), nullptr)); // set to current time
+    if (exists()) {
+        SYSCALL(::utime(path_.c_str(), nullptr));  // set to current time
     }
     else {
         AutoStdFile f(*this, "a");  // this creates the file, ther may be a race but is unimportant in this context

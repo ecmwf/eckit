@@ -17,7 +17,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-SockBuf::SockBuf(net::TCPSocket& proto) : protocol_(proto) {
+SockBuf::SockBuf(net::TCPSocket& proto) :
+    protocol_(proto) {
 #ifndef OLD_STREAMBUF
     /* setg(in_,  in_,  in_  + sizeof(in_) );  */
     setg(in_, in_, in_);

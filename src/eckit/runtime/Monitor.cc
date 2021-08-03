@@ -47,7 +47,8 @@ class MemoryMappedTaskArray : public Monitor::TaskArray {
     MappedArray<TaskInfo> map_;
 
 public:
-    MemoryMappedTaskArray(const PathName& path, unsigned long size) : TaskArray(), map_(path, size) {}
+    MemoryMappedTaskArray(const PathName& path, unsigned long size) :
+        TaskArray(), map_(path, size) {}
 };
 
 class SharedMemoryTaskArray : public Monitor::TaskArray {
@@ -125,7 +126,8 @@ Monitor& Monitor::instance() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Monitor::Monitor() : slot_(0), ready_(false), check_(false) {}
+Monitor::Monitor() :
+    slot_(0), ready_(false), check_(false) {}
 
 void Monitor::init() {
     if (ready_)

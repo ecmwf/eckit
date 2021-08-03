@@ -27,7 +27,8 @@ void FileDescHandle::encode(Stream& s) const {
     NOTIMP;
 }
 
-FileDescHandle::FileDescHandle(int fd, bool close) : fd_(fd), close_(close) {}
+FileDescHandle::FileDescHandle(int fd, bool close) :
+    fd_(fd), close_(close) {}
 
 FileDescHandle::~FileDescHandle() {
     if (fd_ != -1) {

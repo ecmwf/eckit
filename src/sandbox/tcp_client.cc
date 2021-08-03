@@ -29,7 +29,8 @@ class Client : public Application {
     virtual void run();
 
 public:
-    Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
+    Client(int argc, char** argv) :
+        Application(argc, argv, "HOME") {}
 };
 
 

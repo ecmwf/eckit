@@ -20,7 +20,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Regex::Regex(const std::string& s, bool shell, bool extended) : str_(s), extended_(extended) {
+Regex::Regex(const std::string& s, bool shell, bool extended) :
+    str_(s), extended_(extended) {
     // Log::debug() << "Regex " << str_ << std::endl;
     if (shell) {
         long len = s.length() * 3 + 1;
@@ -99,7 +100,8 @@ void Regex::compile(const char* p) {
     }
 }
 
-Regex::Regex(const Regex& other) : str_(other.str_), extended_(other.extended_) {
+Regex::Regex(const Regex& other) :
+    str_(other.str_), extended_(other.extended_) {
     compile(str_.c_str());
 }
 

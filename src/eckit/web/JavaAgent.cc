@@ -30,7 +30,8 @@ void JavaAgent::encode(eckit::Stream& s) const {
     Streamable::encode(s);
 }
 
-JavaAgent::JavaAgent(eckit::Stream& s) : Streamable(s), stream_(s) {}
+JavaAgent::JavaAgent(eckit::Stream& s) :
+    Streamable(s), stream_(s) {}
 
 JavaAgent::~JavaAgent() {}
 

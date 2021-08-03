@@ -43,7 +43,8 @@ void FileHandle::encode(Stream& s) const {
     s << overwrite_;
 }
 
-FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_(nullptr), read_(false) {
+FileHandle::FileHandle(Stream& s) :
+    DataHandle(s), overwrite_(false), file_(nullptr), read_(false) {
     s >> name_;
     s >> overwrite_;
 }
@@ -66,9 +67,8 @@ void FileHandle::open(const char* mode) {
     if (!(::strcmp(mode, "r") == 0))
         setbuf(file_, 0);
     else {
-        static long bufSize =
-            Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
-        long size = bufSize;
+        static long bufSize = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+        long size           = bufSize;
         if (size) {
             Log::debug() << "FileHandle using " << Bytes(size) << std::endl;
             buffer_.reset(new Buffer(size));

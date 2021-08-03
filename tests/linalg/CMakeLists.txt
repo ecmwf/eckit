@@ -16,6 +16,11 @@ ecbuild_add_test( TARGET   eckit_test_linalg_linalg
                   SOURCES  test_la_linalg.cc util.h
                   LIBS     eckit_linalg )
 
+ecbuild_add_test( TARGET   eckit_test_linalg_tensor
+                  ARGS     --log_level=message
+                  SOURCES  test_la_tensor.cc util.h
+                  LIBS     eckit_linalg )
+
 ecbuild_add_test( TARGET     eckit_test_linalg_linalg_armadillo
                   COMMAND    eckit_test_linalg_linalg
                   CONDITION  eckit_HAVE_ARMADILLO

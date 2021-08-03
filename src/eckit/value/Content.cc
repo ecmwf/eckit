@@ -64,7 +64,8 @@ void Content::encode(Stream& s) const {
     Streamable::encode(s);
 }
 
-Content::Content(Stream& s) : Streamable(s) {}
+Content::Content(Stream& s) :
+    Streamable(s) {}
 
 Content::~Content() {}
 

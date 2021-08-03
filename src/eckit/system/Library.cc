@@ -37,7 +37,8 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Library::Library(const std::string& name) : name_(name), prefix_(name), debug_(false) {
+Library::Library(const std::string& name) :
+    name_(name), prefix_(name), debug_(false) {
 
     LibraryManager::enregister(name, this);
 
@@ -140,8 +141,7 @@ const Configuration& Library::configuration() const {
 
     Log::debug() << "Parsing Lib " << name_ << " config file " << cfgpath << std::endl;
 
-    eckit::Configuration* cfg =
-        cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
+    eckit::Configuration* cfg = cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
 
     Log::debug() << "Lib " << name_ << " configuration: " << *cfg << std::endl;
 
@@ -212,7 +212,7 @@ const Library& Library::lookup(const std::string& name) {
     return LibraryManager::lookup(name);
 }
 
-const void * Library::addr() const {
+const void* Library::addr() const {
     return this;
 }
 

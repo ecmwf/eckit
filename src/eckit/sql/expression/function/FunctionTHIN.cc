@@ -26,10 +26,10 @@ namespace function {
 static FunctionBuilder<FunctionTHIN> thinFunctionBuilder("thin");
 
 FunctionTHIN::FunctionTHIN(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args), count_(0) {}
+    FunctionIntegerExpression(name, args), count_(0) {}
 
 FunctionTHIN::FunctionTHIN(const FunctionTHIN& other) :
-    FunctionExpression(other.name_, other.args_), count_(other.count_) {}
+    FunctionIntegerExpression(other.name_, other.args_), count_(other.count_) {}
 
 FunctionTHIN::~FunctionTHIN() {}
 
@@ -39,11 +39,6 @@ std::shared_ptr<SQLExpression> FunctionTHIN::clone() const {
 
 const eckit::sql::type::SQLType* FunctionTHIN::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
-}
-
-void FunctionTHIN::output(std::ostream& s) const {
-    bool missing = false;
-    s << static_cast<unsigned long>(eval(missing));
 }
 
 void FunctionTHIN::print(std::ostream& s) const {

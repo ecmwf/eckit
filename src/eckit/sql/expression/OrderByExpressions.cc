@@ -19,11 +19,14 @@ namespace expression {
 
 const static std::vector<bool> nullAscending;
 
-OrderByExpressions::OrderByExpressions(const OrderByExpressions& o) : Expressions(o), ascending_(o.ascending_) {}
+OrderByExpressions::OrderByExpressions(const OrderByExpressions& o) :
+    Expressions(o), ascending_(o.ascending_) {}
 
-OrderByExpressions::OrderByExpressions(const std::vector<bool>& ascending) : ascending_(ascending) {}
+OrderByExpressions::OrderByExpressions(const std::vector<bool>& ascending) :
+    ascending_(ascending) {}
 
-OrderByExpressions::OrderByExpressions() : ascending_(nullAscending) {}
+OrderByExpressions::OrderByExpressions() :
+    ascending_(nullAscending) {}
 
 OrderByExpressions::~OrderByExpressions() {}
 

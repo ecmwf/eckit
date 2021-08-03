@@ -17,7 +17,8 @@
 namespace eckit {
 namespace net {
 
-TelnetUser::TelnetUser(TCPSocket& protocol) : NetUser(protocol), from_(protocol_.remoteHost()) {}
+TelnetUser::TelnetUser(TCPSocket& protocol) :
+    NetUser(protocol), from_(protocol_.remoteHost()) {}
 
 TelnetUser::~TelnetUser() {}
 

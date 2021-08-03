@@ -14,14 +14,14 @@
 #ifndef FunctionTIMESTAMP_H
 #define FunctionTIMESTAMP_H
 
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
 
-class FunctionTIMESTAMP : public FunctionExpression {
+class FunctionTIMESTAMP : public FunctionIntegerExpression {
 public:
     FunctionTIMESTAMP(const std::string&, const expression::Expressions&);
     FunctionTIMESTAMP(const FunctionTIMESTAMP&);
@@ -31,7 +31,6 @@ public:
 
     // -- Overridden methods
     virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void output(std::ostream& s) const;
 
     static int arity() { return 2; }
 

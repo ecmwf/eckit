@@ -53,6 +53,10 @@ public:  // class methods
     /// @param [in] name Library name
     static const Library& lookup(const std::string& name);
 
+    /// @brief Lookup a Plugin reference in the manager
+    /// @param [in] name Plugin name
+    static const Plugin& lookupPlugin(const std::string& name);
+
     /// @brief Loads a shared library
     /// @param [in] name Name of the dynamic library to load (may not be a plugin).
     ///             Name does not contain prefix 'lib' nor system dependent extension (eg. .so or .dylib)

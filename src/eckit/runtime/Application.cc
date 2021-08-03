@@ -69,7 +69,8 @@ Application& Application::instance() {
     return static_cast<Application&>(Main::instance());
 }
 
-Application::Application(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv), running_(false) {
+Application::Application(int argc, char** argv, const char* homeenv) :
+    Main(argc, argv, homeenv), running_(false) {
     reserve_ = new char[20 * 1024];  // reserve in case we runout of memory
 
     std::set_new_handler(&catch_new_handler);

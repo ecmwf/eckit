@@ -24,9 +24,10 @@ namespace function {
 static FunctionBuilder<FunctionTIMESTAMP> timestampFunctionBuilder("timestamp");
 
 FunctionTIMESTAMP::FunctionTIMESTAMP(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args) {}
+    FunctionIntegerExpression(name, args) {}
 
-FunctionTIMESTAMP::FunctionTIMESTAMP(const FunctionTIMESTAMP& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionTIMESTAMP::FunctionTIMESTAMP(const FunctionTIMESTAMP& other) :
+    FunctionIntegerExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionTIMESTAMP::clone() const {
     return std::make_shared<FunctionTIMESTAMP>(*this);
@@ -39,7 +40,7 @@ double FunctionTIMESTAMP::eval(bool& missing) const {
     double intime = args_[1]->eval(missing);
     // Merge "YYYYMMDD" and "HHMMSS" into "YYYYMMDDHHMMSS"
     double outstamp = 0;
-    if (indate >= 0 && indate <= INT_MAX && intime >= 0 && intime <= 240000) {
+    if (indate >= 0 && indate <= 99991231 && intime >= 0 && intime <= 240000) {
         long long int lldate = (long long int)indate;
         long long int lltime = (long long int)intime;
         long long int tstamp = lldate * 1000000ll + lltime;
@@ -55,11 +56,6 @@ double FunctionTIMESTAMP::eval(bool& missing) const {
 
 const eckit::sql::type::SQLType* FunctionTIMESTAMP::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
-}
-
-void FunctionTIMESTAMP::output(std::ostream& s) const {
-    bool missing = false;
-    s << static_cast<long long int>(eval(missing));
 }
 
 

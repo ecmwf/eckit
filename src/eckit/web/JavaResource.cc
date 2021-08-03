@@ -23,7 +23,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-JavaResource::JavaResource() : HtmlResource("/java") {}
+JavaResource::JavaResource() :
+    HtmlResource("/java") {}
 
 JavaResource::~JavaResource() {}
 

@@ -34,16 +34,22 @@ void URLHandle::encode(Stream& s) const {
     s << uri_;
 }
 
-URLHandle::URLHandle(Stream& s) : DataHandle(s) {
+URLHandle::URLHandle(Stream& s) :
+    DataHandle(s) {
     s >> uri_;
 }
 
-URLHandle::URLHandle(const std::string& uri) : uri_(uri) {}
+URLHandle::URLHandle(const std::string& uri, bool useSSL) :
+    uri_(uri), useSSL_(useSSL) {}
 
 URLHandle::~URLHandle() {}
 
 Length URLHandle::estimate() {
     return handle().estimate();
+}
+
+Length URLHandle::size() {
+    return handle().size();
 }
 
 Length URLHandle::openForRead() {
@@ -73,6 +79,9 @@ void URLHandle::close() {
 DataHandle& URLHandle::handle() {
     if (!handle_) {
         EasyCURL curl;
+        /// IDEA: make the options more generic, eg. EasyCURL curl(opts)
+        // curl.followLocation(true);
+        curl.useSSL(useSSL_);
         handle_.reset(curl.GET(uri_, true).dataHandle());
     }
     return *handle_.get();

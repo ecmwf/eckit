@@ -15,7 +15,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Mutex::Mutex(char tag) : exists_(false), tag_(tag) {
+Mutex::Mutex(char tag) :
+    exists_(false), tag_(tag) {
     pthread_mutexattr_t attr;
     THRCALL(::pthread_mutexattr_init(&attr));
     THRCALL(::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE));

@@ -37,6 +37,7 @@
 #cmakedefine eckit_HAVE_CXX_INT_128
 #cmakedefine eckit_HAVE_AIO
 #cmakedefine eckit_HAVE_UNICODE
+#cmakedefine eckit_HAVE_XXHASH
 
 // external packages
 

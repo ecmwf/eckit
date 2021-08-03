@@ -58,7 +58,8 @@ RadosObject::RadosObject(const std::string& path) {
     }
 }
 
-RadosObject::RadosObject(const std::string& pool, const std::string& oid) : pool_(pool), oid_(oid) {}
+RadosObject::RadosObject(const std::string& pool, const std::string& oid) :
+    pool_(pool), oid_(oid) {}
 
 std::string RadosObject::str() const {
     return pool_ + ':' + oid_;

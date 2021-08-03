@@ -19,15 +19,16 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 static void print_indent(std::ostream& out, int indent) {
-    indent = std::max(0,indent);
-    out << "\n" << std::string(size_t(indent),' ');
+    indent = std::max(0, indent);
+    out << "\n"
+        << std::string(size_t(indent), ' ');
 }
 
 static bool check(const JSON::Formatting& formatting, int flag) {
-    if( flag == JSON::Formatting::COMPACT ) {
+    if (flag == JSON::Formatting::COMPACT) {
         return formatting.flags() == JSON::Formatting::COMPACT;
     }
-    return ( formatting.flags() & flag ) == flag;
+    return (formatting.flags() & flag) == flag;
 }
 
 JSON::Formatting JSON::Formatting::compact() {
@@ -35,25 +36,30 @@ JSON::Formatting JSON::Formatting::compact() {
 }
 
 JSON::Formatting JSON::Formatting::indent(int indentation) {
-    return Formatting(INDENT_DICT,indentation);
+    return Formatting(INDENT_DICT, indentation);
 }
 
 JSON::Formatting::Formatting(int formatting, int indentation) :
     flags_{formatting}, indentation_{indentation} {}
 
-int JSON::Formatting::indentation() const { return indentation_; }
+int JSON::Formatting::indentation() const {
+    return indentation_;
+}
 
-int JSON::Formatting::flags() const { return flags_; }
+int JSON::Formatting::flags() const {
+    return flags_;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSON::JSON(std::ostream& out, bool null) : out_(out), null_(null) {
+JSON::JSON(std::ostream& out, bool null) :
+    out_(out), null_(null) {
     sep_.push_back("");
     state_.push_back(true);
 }
 
 JSON::JSON(std::ostream& out, JSON::Formatting formatting) :
-    JSON(out,true) {
+    JSON(out, true) {
     formatting_ = formatting;
 }
 
@@ -65,19 +71,19 @@ JSON::~JSON() {
 void JSON::sep() {
     null_ = false;
     out_ << sep_.back();
-    if( sep_.back() == "," ) {
-        bool indent=false;
-        if( check( formatting_, Formatting::INDENT_DICT ) && indict() ) {
+    if (sep_.back() == ",") {
+        bool indent = false;
+        if (check(formatting_, Formatting::INDENT_DICT) && indict()) {
             indent = true;
         }
-        if( check( formatting_, Formatting::INDENT_LIST ) && inlist() ) {
+        if (check(formatting_, Formatting::INDENT_LIST) && inlist()) {
             indent = true;
         }
-        if( indent ) {
+        if (indent) {
             print_indent(out_, indentation_);
         }
     }
-    std::string colon = check( formatting_, Formatting::COMPACT ) ? ":" : " : ";
+    std::string colon = check(formatting_, Formatting::COMPACT) ? ":" : " : ";
     if (indict() && sep_.back() != colon) {
         sep_.back() = colon;
     }
@@ -137,7 +143,7 @@ JSON& JSON::startObject() {
     sep_.push_back("");
     state_.push_back(true);
     out_ << "{";
-    if( check( formatting_, Formatting::INDENT_DICT) ) {
+    if (check(formatting_, Formatting::INDENT_DICT)) {
         indentation_ += formatting_.indentation();
         print_indent(out_, indentation_);
     }
@@ -157,9 +163,9 @@ JSON& JSON::startList() {
     sep_.push_back("");
     state_.push_back(false);
     out_ << "[";
-    if( check( formatting_, Formatting::INDENT_LIST) ) {
+    if (check(formatting_, Formatting::INDENT_LIST)) {
         indentation_ += formatting_.indentation();
-        print_indent( out_, indentation_);
+        print_indent(out_, indentation_);
     }
     return *this;
 }
@@ -167,9 +173,9 @@ JSON& JSON::startList() {
 JSON& JSON::endObject() {
     sep_.pop_back();
     state_.pop_back();
-    if( check( formatting_, Formatting::INDENT_DICT) ) {
+    if (check(formatting_, Formatting::INDENT_DICT)) {
         indentation_ -= formatting_.indentation();
-        print_indent( out_, indentation_);
+        print_indent(out_, indentation_);
     }
     out_ << "}";
     return *this;
@@ -178,9 +184,9 @@ JSON& JSON::endObject() {
 JSON& JSON::endList() {
     sep_.pop_back();
     state_.pop_back();
-    if( check( formatting_, Formatting::INDENT_LIST) ) {
+    if (check(formatting_, Formatting::INDENT_LIST)) {
         indentation_ -= formatting_.indentation();
-        print_indent( out_, indentation_);
+        print_indent(out_, indentation_);
     }
     out_ << "]";
     return *this;

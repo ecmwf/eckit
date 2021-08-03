@@ -23,7 +23,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ProxiedTCPServer::ProxiedTCPServer(int port, const net::SocketOptions& options) : net::TCPServer(port, options) {}
+ProxiedTCPServer::ProxiedTCPServer(int port, const net::SocketOptions& options) :
+    net::TCPServer(port, options) {}
 
 ProxiedTCPServer::~ProxiedTCPServer() {}
 
@@ -36,7 +37,9 @@ net::TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout
 
     char c;
     unsigned long x   = 0;
-    unsigned long end = ('\r' << 24L) | ('\n' << 16L) | ('\r' << 8L) | '\n';
+    unsigned long end = ('\r' << 24L) | ('\n'
+                                         << 16L)
+                        | ('\r' << 8L) | '\n';
 
     while (socket.read(&c, 1) == 1) {
 

@@ -24,7 +24,8 @@ static FunctionBuilder<FunctionNULL> isnullFunctionBuilder("isnull");
 FunctionNULL::FunctionNULL(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
-FunctionNULL::FunctionNULL(const FunctionNULL& other) : FunctionExpression(other.name_, other.args_) {}
+FunctionNULL::FunctionNULL(const FunctionNULL& other) :
+    FunctionExpression(other.name_, other.args_) {}
 
 FunctionNULL::~FunctionNULL() {}
 

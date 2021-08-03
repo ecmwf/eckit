@@ -31,7 +31,8 @@ namespace linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraMKL::LinearAlgebraMKL() : LinearAlgebra("mkl") {}
+LinearAlgebraMKL::LinearAlgebraMKL() :
+    LinearAlgebra("mkl") {}
 
 Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());

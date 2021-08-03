@@ -29,7 +29,8 @@ struct Candidate {
 
     double probability_;
 
-    Candidate(const PathName* path) : path_(path) {}
+    Candidate(const PathName* path) :
+        path_(path) {}
 
     void print(std::ostream& s) const {
         s << "Candidate(path=" << path_->asString() << ",total=" << total() << ",available=" << available()

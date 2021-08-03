@@ -191,7 +191,8 @@ void Url::parse(std::istream& in) {
     Log::debug() << *this << std::endl;
 }
 
-Url::Url(const std::string& url) : method_("GET") {
+Url::Url(const std::string& url) :
+    method_("GET") {
     parse(url, false);
     Log::debug() << "Incomming url-> " << *this << std::endl;
 }

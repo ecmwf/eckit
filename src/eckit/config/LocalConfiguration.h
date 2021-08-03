@@ -19,6 +19,8 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
+#include "eckit/types/Types.h"
+
 
 namespace eckit {
 
@@ -75,6 +77,11 @@ private:
 };
 
 //----------------------------------------------------------------------------------------------------------------------
+
+template <>
+struct VectorPrintSelector<LocalConfiguration> {
+    typedef VectorPrintSimple selector;
+};
 
 }  // namespace eckit
 

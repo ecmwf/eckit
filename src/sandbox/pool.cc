@@ -21,7 +21,8 @@ class Test : public Application {
     virtual void run();
 
 public:
-    Test(int argc, char** argv) : Application(argc, argv, "HOME") {}
+    Test(int argc, char** argv) :
+        Application(argc, argv, "HOME") {}
 };
 
 class X : public ThreadPoolTask {
@@ -34,7 +35,8 @@ class X : public ThreadPoolTask {
     }
 
 public:
-    X(int n) : n_(n) {}
+    X(int n) :
+        n_(n) {}
 };
 
 void Test::run() {
@@ -45,7 +47,7 @@ void Test::run() {
     // pool.waitForThreads();
 }
 
-//=============================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
     Test app(argc, argv);

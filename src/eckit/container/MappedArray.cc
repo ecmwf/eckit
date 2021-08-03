@@ -29,7 +29,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-MappedArray<T>::MappedArray(const PathName& path, unsigned long size) : sem_(path), size_(size) {
+MappedArray<T>::MappedArray(const PathName& path, unsigned long size) :
+    sem_(path), size_(size) {
 
     AutoLock<Semaphore> lock(sem_);
 

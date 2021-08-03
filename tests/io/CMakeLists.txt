@@ -15,7 +15,7 @@ ecbuild_add_test( TARGET   eckit_test_filepool
 
 ecbuild_add_test( TARGET  eckit_test_urlhandle
                   SOURCES test_urlhandle.cc
-                  CONDITION eckit_HAVE_CURL AND OFF
+                  CONDITION HAVE_EXTRA_TESTS AND eckit_HAVE_CURL
                   LIBS    eckit )
 
 ecbuild_add_test( TARGET  eckit_test_circularbuffer
@@ -66,7 +66,7 @@ ecbuild_add_test( TARGET      eckit_test_radoshandle
 
 ecbuild_add_test( TARGET      eckit_rados-performance
                   SOURCES     rados-performance.cc
-                  CONDITION   (HAVE_EXTRA_TESTS AND HAVE_RADOS)
+                  CONDITION   HAVE_EXTRA_TESTS AND HAVE_RADOS
                   INCLUDES    ${RADOS_INCLUDE_DIRS}
                   TEST_DEPENDS get_eckit_io_test_data
                   LIBS        eckit )

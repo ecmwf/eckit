@@ -45,7 +45,8 @@ static void deldir(eckit::PathName& p) {
 }
 
 
-TmpDir::TmpDir() : PathName(tmp()) {}
+TmpDir::TmpDir() :
+    PathName(tmp()) {}
 
 TmpDir::~TmpDir() noexcept(false) {
     deldir(*this);

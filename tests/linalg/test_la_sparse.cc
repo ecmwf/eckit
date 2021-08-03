@@ -53,7 +53,8 @@ SparseMatrix S(Size rows, Size cols, Size nnz, ...) {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct Fixture {
-    Fixture(Vector _x, SparseMatrix _A, Vector _y) : A(_A), x(_x), y(_y), linalg(LinearAlgebra::backend()) {}
+    Fixture(Vector _x, SparseMatrix _A, Vector _y) :
+        A(_A), x(_x), y(_y), linalg(LinearAlgebra::backend()) {}
     const SparseMatrix A;
     const Vector x;
     const Vector y;

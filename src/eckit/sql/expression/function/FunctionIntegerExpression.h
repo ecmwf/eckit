@@ -18,6 +18,9 @@
 
 namespace eckit {
 namespace sql {
+
+class SQLOutput;
+
 namespace expression {
 namespace function {
 
@@ -30,7 +33,7 @@ public:
 
     // -- Overridden methods
     virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void output(std::ostream& s) const;
+    virtual void output(SQLOutput& s) const override;
 
     static int arity() { return 1; }
 

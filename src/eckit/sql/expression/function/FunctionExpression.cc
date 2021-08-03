@@ -23,7 +23,8 @@ FunctionExpression::FunctionExpression(const std::string& name, const expression
     //	std::cout << "new FunctionExpression " << name << std::endl;
 }
 
-FunctionExpression::FunctionExpression(const FunctionExpression& other) : name_(other.name_), args_(other.args_) {}
+FunctionExpression::FunctionExpression(const FunctionExpression& other) :
+    name_(other.name_), args_(other.args_) {}
 
 
 const type::SQLType* FunctionExpression::type() const {

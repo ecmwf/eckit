@@ -27,9 +27,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HandleHolder::HandleHolder(DataHandle& handle) : handle_(&handle), owned_(false) {}
+HandleHolder::HandleHolder(DataHandle& handle) :
+    handle_(&handle), owned_(false) {}
 
-HandleHolder::HandleHolder(DataHandle* handle) : handle_(handle), owned_(true) {}
+HandleHolder::HandleHolder(DataHandle* handle) :
+    handle_(handle), owned_(true) {}
 
 HandleHolder::~HandleHolder() {
     if (owned_)

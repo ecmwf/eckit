@@ -18,7 +18,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MonitorTarget::MonitorTarget(LogTarget* target) : WrapperTarget(target) {}
+MonitorTarget::MonitorTarget(LogTarget* target) :
+    WrapperTarget(target) {}
 
 MonitorTarget::~MonitorTarget() {}
 

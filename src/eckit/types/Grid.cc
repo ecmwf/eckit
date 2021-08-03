@@ -207,7 +207,8 @@ void Grid::load(DumpLoad& a) {
     a.load(eastWest_);
 }
 
-Grid::InvalidGrid::InvalidGrid(const std::string& s) : Exception("Invalid Mars Grid '" + s + "'") {}
+Grid::InvalidGrid::InvalidGrid(const std::string& s) :
+    Exception("Invalid Mars Grid '" + s + "'") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

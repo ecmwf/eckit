@@ -74,6 +74,8 @@ public:  // methods
         return dynamic_cast<T&>(*content_);
     }
 
+    operator bool() const { return not dynamic_cast<const NullStatus*>(content_); }
+
 private:  // methods
     void print(std::ostream&) const;
 

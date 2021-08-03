@@ -16,7 +16,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileSystem::FileSystem(const PathName& name) : name_(name), offLine_(false) {
+FileSystem::FileSystem(const PathName& name) :
+    name_(name), offLine_(false) {
     update();
 }
 

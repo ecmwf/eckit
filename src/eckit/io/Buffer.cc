@@ -31,21 +31,25 @@ static void deallocate(char* buffer) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Buffer::Buffer(size_t size) : buffer_{nullptr}, size_{size} {
+Buffer::Buffer(size_t size) :
+    buffer_{nullptr}, size_{size} {
     create();
 }
 
-Buffer::Buffer(const void *p, size_t len) : buffer_{nullptr}, size_{len} {
+Buffer::Buffer(const void* p, size_t len) :
+    buffer_{nullptr}, size_{len} {
     create();
     copy(p, len);
 }
 
-Buffer::Buffer(const std::string& s) : buffer_{nullptr}, size_{s.length() + 1} {
+Buffer::Buffer(const std::string& s) :
+    buffer_{nullptr}, size_{s.length() + 1} {
     create();
     copy(s);
 }
 
-Buffer::Buffer(Buffer&& rhs) noexcept : buffer_{rhs.buffer_}, size_{rhs.size_} {
+Buffer::Buffer(Buffer&& rhs) noexcept :
+    buffer_{rhs.buffer_}, size_{rhs.size_} {
     rhs.buffer_ = nullptr;
     rhs.size_   = 0;
 }
@@ -90,13 +94,13 @@ void Buffer::destroy() {
 
 void Buffer::copy(const std::string& s) {
     ASSERT(buffer_);
-    ::strncpy(buffer_, s.c_str(), std::min(size_, s.size()+1));
+    ::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1));
 }
 
 void Buffer::copy(const void* p, size_t size, size_t pos) {
-    ASSERT(buffer_ && size_ >= pos+size);
+    ASSERT(buffer_ && size_ >= pos + size);
     if (size) {
-        ::memcpy(buffer_+pos, p, size);
+        ::memcpy(buffer_ + pos, p, size);
     }
 }
 

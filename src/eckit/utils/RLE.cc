@@ -160,7 +160,7 @@ void RLEprint(std::ostream& out, T first, T last) {
     }
 }
 
-//=======================================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class InputIterator, class OutputIterator>
 bool DIFFencode(InputIterator first, InputIterator last, OutputIterator result) {
@@ -217,7 +217,7 @@ void DIFFdecode(InputIterator first, InputIterator last, OutputIterator result) 
     );
 }
 
-//==========================================================================
+//----------------------------------------------------------------------------------------------------------------------
 
 template <class InputIterator, class T>
 Stream& RLEwrite(Stream& s, InputIterator first, InputIterator last, long long maxLoop, T*) {

@@ -72,3 +72,18 @@ ecbuild_add_executable( TARGET sandbox_udp_client NOINSTALL
                         CONDITION HAVE_SANDBOX
                         SOURCES udp_client.cc
                         LIBS eckit )
+
+ecbuild_add_executable( TARGET  sandbox_multi_socket_server NOINSTALL
+                        CONDITION HAVE_SANDBOX
+                        SOURCES multi_socket_server.cc
+                        LIBS eckit )
+
+ecbuild_add_executable( TARGET  sandbox_multi_socket_client NOINSTALL
+                        CONDITION HAVE_SANDBOX
+                        SOURCES multi_socket_client.cc
+                        LIBS eckit )
+
+ecbuild_add_executable( TARGET  sandbox_shmem_ipc NOINSTALL
+                        CONDITION HAVE_SANDBOX
+                        SOURCES shmem_ipc.cc
+                        LIBS eckit )

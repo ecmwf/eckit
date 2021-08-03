@@ -23,7 +23,8 @@ void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc);
 
 ParallelRequest::ParallelRequest() {}
 
-ParallelRequest::ParallelRequest(MPI_Request request) : request_(request) {}
+ParallelRequest::ParallelRequest(MPI_Request request) :
+    request_(request) {}
 
 void ParallelRequest::print(std::ostream& os) const {
     os << "ParallelRequest("

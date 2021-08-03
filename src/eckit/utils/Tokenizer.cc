@@ -47,11 +47,13 @@ void tokenizeInsert(const std::set<char, std::less<char> >& separator, const std
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Tokenizer::Tokenizer(char c, bool keepEmpty) : keepEmpty_(keepEmpty) {
+Tokenizer::Tokenizer(char c, bool keepEmpty) :
+    keepEmpty_(keepEmpty) {
     separator_.insert(c);
 }
 
-Tokenizer::Tokenizer(const std::string& separators, bool keepEmpty) : keepEmpty_(keepEmpty) {
+Tokenizer::Tokenizer(const std::string& separators, bool keepEmpty) :
+    keepEmpty_(keepEmpty) {
     for (std::string::size_type i = 0; i < separators.length(); i++)
         separator_.insert(separators[i]);
 }

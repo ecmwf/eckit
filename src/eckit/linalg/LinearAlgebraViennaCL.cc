@@ -38,7 +38,8 @@ typedef viennacl::compressed_matrix<Scalar> spmat;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraViennaCL::LinearAlgebraViennaCL() : LinearAlgebra("viennacl") {}
+LinearAlgebraViennaCL::LinearAlgebraViennaCL() :
+    LinearAlgebra("viennacl") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

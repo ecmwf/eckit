@@ -43,7 +43,8 @@ private:  // members
     eckit::net::Port port_;
 };
 
-SysLogServer::SysLogServer(int argc, char** argv) : Application(argc, argv), port_("syslog", 6512) {}
+SysLogServer::SysLogServer(int argc, char** argv) :
+    Application(argc, argv), port_("syslog", 6512) {}
 
 SysLogServer::~SysLogServer() {}
 

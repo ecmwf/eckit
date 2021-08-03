@@ -56,7 +56,8 @@ class UDT : public OwnedNoLock {
 public:
     typedef SharedPtr<UDT> ptype;
 
-    UDT(long in) : value_(in) { ++UDT_use_count; }
+    UDT(long in) :
+        value_(in) { ++UDT_use_count; }
     ~UDT() {
         --UDT_use_count;
         //       std::cout << "   UDT with value " << value_ << " being destroyed\n";

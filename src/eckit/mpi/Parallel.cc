@@ -44,7 +44,8 @@ static void init() {
 
 class MPIError : public eckit::Exception {
 public:
-    MPIError(const std::string& msg, const eckit::CodeLocation& loc) : eckit::Exception(msg, loc) {
+    MPIError(const std::string& msg, const eckit::CodeLocation& loc) :
+        eckit::Exception(msg, loc) {
         std::ostringstream s;
         s << "MPI Error: " << msg << " in " << loc;
         reason(s.str());
@@ -142,7 +143,8 @@ size_t getSize(MPI_Comm comm) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Parallel::Parallel(const std::string& name) : Comm(name) /* don't use member initialisation list */ {
+Parallel::Parallel(const std::string& name) :
+    Comm(name) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
@@ -173,7 +175,8 @@ Parallel::Parallel(const std::string& name, MPI_Comm comm, bool) :
     size_ = getSize(comm_);
 }
 
-Parallel::Parallel(const std::string& name, int comm) : Comm(name) {
+Parallel::Parallel(const std::string& name, int comm) :
+    Comm(name) {
 
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(localMutex);
@@ -368,6 +371,15 @@ Status Parallel::probe(int source, int tag) const {
     MPI_CALL(MPI_Probe(source, tag, comm_, toStatus(st)));
 
     return st;
+}
+
+Status Parallel::iProbe(int source, int tag) const {
+    Status st = createStatus();
+    int flag  = 0;
+
+    MPI_CALL(MPI_Iprobe(source, tag, comm_, &flag, toStatus(st)));
+
+    return flag ? st : Status{};
 }
 
 int Parallel::anySource() const {

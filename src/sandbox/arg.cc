@@ -20,13 +20,13 @@ class Test : public Application {
     virtual void run();
 
 public:
-    Test(int argc, char** argv) : Application(argc, argv, "HOME") {}
+    Test(int argc, char** argv) :
+        Application(argc, argv, "HOME") {}
 };
 
 
 void Test::run() {
-    Arg a(((Arg("-abc", Arg::text) | Arg("-cde", Arg::number) | Arg("-def", Arg::tape)) |
-           (Arg("-abc", Arg::text), Arg("-cde", Arg::number), Arg("-def", Arg::tape))));
+    Arg a(((Arg("-abc", Arg::text) | Arg("-cde", Arg::number) | Arg("-def", Arg::tape)) | (Arg("-abc", Arg::text), Arg("-cde", Arg::number), Arg("-def", Arg::tape))));
 
     Log::info() << a << std::endl;
 }

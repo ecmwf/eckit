@@ -60,7 +60,8 @@ Reanimator<DataHandle> DataHandle::reanimator_;
 
 DataHandle::DataHandle() {}
 
-DataHandle::DataHandle(Stream& s) : Streamable(s) {}
+DataHandle::DataHandle(Stream& s) :
+    Streamable(s) {}
 
 void DataHandle::encode(Stream& s) const {
     Streamable::encode(s);
@@ -100,8 +101,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
     }
     else {
 
-        static const long bufsize =
-            Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
+        static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
 
         Buffer buffer(bufsize);
 

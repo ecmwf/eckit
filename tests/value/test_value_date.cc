@@ -273,9 +273,9 @@ CASE("Hash of a value") {
 
     Value(Date(2016, 3, 31)).hash(*h);
 
-    //    std::cout << "MD5 " << h->digest() << std::endl;
+    std::cout << "MD5 " << h->digest() << std::endl;
 
-    EXPECT(h->digest() == "d41d8cd98f00b204e9800998ecf8427e");
+    EXPECT(h->digest() == "5c1ac3fbefc85d51e354f78897253cd2");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

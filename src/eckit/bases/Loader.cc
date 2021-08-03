@@ -16,7 +16,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Loader::Loader() : ClassExtent<Loader>(this) {}
+Loader::Loader() :
+    ClassExtent<Loader>(this) {}
 
 Loader::~Loader() {}
 

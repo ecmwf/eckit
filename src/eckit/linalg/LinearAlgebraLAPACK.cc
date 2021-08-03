@@ -43,7 +43,8 @@ namespace linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraLAPACK::LinearAlgebraLAPACK() : LinearAlgebra("lapack") {}
+LinearAlgebraLAPACK::LinearAlgebraLAPACK() :
+    LinearAlgebra("lapack") {}
 
 Scalar LinearAlgebraLAPACK::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());

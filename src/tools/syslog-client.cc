@@ -23,7 +23,8 @@ namespace eckit {
 
 class SysLogClient : public eckit::Tool {
 public:
-    SysLogClient(int argc, char** argv) : Tool(argc, argv) {}
+    SysLogClient(int argc, char** argv) :
+        Tool(argc, argv) {}
 
     ~SysLogClient() {}
 

@@ -32,7 +32,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct EventNotFound : public Exception {
-    EventNotFound(const std::string& s) : Exception(s + ": Event not found") {}
+    EventNotFound(const std::string& s) :
+        Exception(s + ": Event not found") {}
 };
 
 typedef std::stack<CmdParser*, std::vector<CmdParser*> > ParserStack;
@@ -367,7 +368,8 @@ void CmdParser::substitute() {
 //----------------------------------------------------------------------------------------------------------------------
 
 void CmdParser::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::ostream&)) {
-    Log::debug() << "Executing " << std::endl << arg_ << std::endl;
+    Log::debug() << "Executing " << std::endl
+                 << arg_ << std::endl;
 
     if (flags_['x'])
         Log::info() << command_ << std::flush;

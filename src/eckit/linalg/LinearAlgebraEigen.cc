@@ -29,7 +29,8 @@ namespace linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraEigen::LinearAlgebraEigen() : LinearAlgebra("eigen") {}
+LinearAlgebraEigen::LinearAlgebraEigen() :
+    LinearAlgebra("eigen") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

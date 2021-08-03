@@ -18,8 +18,8 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
-#include "eckit/io/Length.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/Length.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/utils/Hash.h"
 
@@ -37,11 +37,14 @@ PathName::PathName(const std::string& type, const std::string& p, bool tildeIsUs
     path_ = PathNameFactory::build(type, p, tildeIsUserHome);
 }
 
-PathName::PathName(const PathName& other) : path_(other.path_->clone()) {}
+PathName::PathName(const PathName& other) :
+    path_(other.path_->clone()) {}
 
-PathName::PathName(const LocalPathName& other) : path_(new BasePathNameT<LocalPathName>(other)) {}
+PathName::PathName(const LocalPathName& other) :
+    path_(new BasePathNameT<LocalPathName>(other)) {}
 
-PathName::PathName(BasePathName* path) : path_(path) {
+PathName::PathName(BasePathName* path) :
+    path_(path) {
     ASSERT(path);
 }
 
@@ -166,6 +169,10 @@ void PathName::hash(eckit::Hash& hash) const {
         hash.add(buffer, chunk);
     }
     ASSERT(len == size);
+}
+
+std::string PathName::hash(const std::string& method) const {
+    return path_->hash(method);
 }
 
 void PathName::children(std::vector<PathName>& files, std::vector<PathName>& dirs) const {
@@ -340,8 +347,8 @@ void operator>>(Stream& s, PathName& path) {
 
 // TODO: Read from ~etc/disk/...
 
-static const char* NAMES[] = {"/locked/",     "/transfer/", "/defrag/", "/temp/", "/obstmp/",
-                              "/infrequent/", "/prearc/",   "/cache/",  nullptr};
+static const char* NAMES[] = {"/locked/", "/transfer/", "/defrag/", "/temp/", "/obstmp/",
+                              "/infrequent/", "/prearc/", "/cache/", nullptr};
 
 std::string PathName::shorten(const std::string& s) {
 

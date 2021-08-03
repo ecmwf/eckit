@@ -132,6 +132,11 @@ public:  // methods
     /// @return file extension (empty string if there is none)
     std::string extension() const;
 
+    /// Return the hash digest of the file
+    /// @param method - specifies the hash method to use (default xxHash)
+    /// @return the hash digest
+    std::string hash(const std::string& method="xxh64") const;
+
     /// Check if path exists
     /// @return true if the path exists
     bool exists() const;

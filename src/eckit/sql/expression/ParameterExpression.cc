@@ -19,7 +19,8 @@ namespace expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ParameterExpression::ParameterExpression(int which) : value_(0), which_(which) {
+ParameterExpression::ParameterExpression(int which) :
+    value_(0), which_(which) {
     // don't use any Log::* here
     //	std::cout << "new ParameterExpression " << name << std::endl;
 }

@@ -14,14 +14,14 @@
 #ifndef FunctionTHIN_H
 #define FunctionTHIN_H
 
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
 
-class FunctionTHIN : public FunctionExpression {
+class FunctionTHIN : public FunctionIntegerExpression {
 public:
     FunctionTHIN(const std::string&, const expression::Expressions&);
     FunctionTHIN(const FunctionTHIN&);
@@ -31,7 +31,6 @@ public:
 
     // -- Overridden methods
     virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void output(std::ostream& s) const;
 
     static int arity() { return 2; }
 

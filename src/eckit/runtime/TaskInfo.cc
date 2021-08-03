@@ -206,7 +206,7 @@ void TaskInfo::parent(long p) {
 void TaskInfo::json(JSON& json) const {
 
     Monitor& monitor = Monitor::instance();
-    auto n         = std::distance(monitor.tasks().cbegin(), this);
+    auto n           = std::distance(monitor.tasks().cbegin(), this);
 
     json.startObject();
 

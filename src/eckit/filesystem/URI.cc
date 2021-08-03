@@ -85,9 +85,8 @@ bool URI::operator<(const URI& other) const {
 size_t URI::parseScheme(const std::string& uri) {
     std::size_t schemeEnd = uri.find(":");
     if (schemeEnd != std::string::npos) {
-        std::string schemeLowercase = StringTools::lower(uri.substr(0, schemeEnd));
-        std::size_t acceptableProtocolEnd =
-            schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
+        std::string schemeLowercase       = StringTools::lower(uri.substr(0, schemeEnd));
+        std::size_t acceptableProtocolEnd = schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
         if (acceptableProtocolEnd == std::string::npos) {
             scheme_ = schemeEnd == 0 ? "unix" : uri.substr(0, schemeEnd);
             return schemeEnd + 1;

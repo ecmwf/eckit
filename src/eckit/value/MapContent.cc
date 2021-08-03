@@ -29,10 +29,12 @@ Reanimator<MapContent> MapContent::reanimator_;
 
 MapContent::MapContent() {}
 
-MapContent::MapContent(const ValueMap& v) : value_(v) {}
+MapContent::MapContent(const ValueMap& v) :
+    value_(v) {}
 
 
-MapContent::MapContent(Stream& s) : Content(s) {
+MapContent::MapContent(Stream& s) :
+    Content(s) {
     bool more;
     s >> more;
     while (more) {

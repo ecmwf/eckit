@@ -28,7 +28,8 @@ namespace eckit {
 
 REGISTER_LIBRARY(LibEcKit);
 
-LibEcKit::LibEcKit() : Library("eckit"), abort_handler_(&(::abort)) {}
+LibEcKit::LibEcKit() :
+    Library("eckit"), abort_handler_(&(::abort)) {}
 
 LibEcKit& LibEcKit::instance() {
     static LibEcKit libeckit;

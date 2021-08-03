@@ -60,7 +60,8 @@ class MemoryMappedTxnArray : public TxnArray {
     MappedArray<TxnID> map_;
 
 public:
-    MemoryMappedTxnArray(const PathName& path, unsigned long size) : TxnArray(), map_(path, size) {}
+    MemoryMappedTxnArray(const PathName& path, unsigned long size) :
+        TxnArray(), map_(path, size) {}
 };
 
 class SharedMemoryTxnArray : public TxnArray {
@@ -89,7 +90,8 @@ PathName TxnLog<T>::buildPath(const std::string& name) {
 }
 
 template <class T>
-TxnLog<T>::TxnLog(const std::string& name) : path_(buildPath(name)), next_(path_ + "/next") {
+TxnLog<T>::TxnLog(const std::string& name) :
+    path_(buildPath(name)), next_(path_ + "/next") {
     std::string txnArrayType = Resource<std::string>("txnArrayType", "MemoryMapped");
 
     if (txnArrayType == "MemoryMapped") {

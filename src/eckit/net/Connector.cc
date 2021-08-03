@@ -217,7 +217,7 @@ Connector& Connector::service(const std::string& name, const std::string& node) 
 Connector& Connector::service(const std::string& name, const std::map<std::string, Length>& cost) {
     std::string host;
     std::string node;
-    
+
     int port    = 0;
     Length best = 0;
 

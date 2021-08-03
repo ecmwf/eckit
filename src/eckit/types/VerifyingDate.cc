@@ -16,20 +16,24 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-VerifyingDate::VerifyingDate(const Date& d, const Time& t) : DateTime(d, t) {
+VerifyingDate::VerifyingDate(const Date& d, const Time& t) :
+    DateTime(d, t) {
     ASSERT(Second(time_) == 0);
 }
 
-VerifyingDate::VerifyingDate(const std::string& s) : DateTime(s) {
+VerifyingDate::VerifyingDate(const std::string& s) :
+    DateTime(s) {
     ASSERT(Second(time_) == 0);
 }
 
 
-VerifyingDate::VerifyingDate(time_t thetime) : DateTime(thetime) {
+VerifyingDate::VerifyingDate(time_t thetime) :
+    DateTime(thetime) {
     ASSERT(Second(time_) == 0);
 }
 
-VerifyingDate::VerifyingDate(const DateTime& thetime) : DateTime(thetime) {
+VerifyingDate::VerifyingDate(const DateTime& thetime) :
+    DateTime(thetime) {
     ASSERT(Second(time_) == 0);
 }
 

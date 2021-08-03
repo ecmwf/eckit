@@ -89,7 +89,7 @@ private:
                 throw eckit::CantOpenFile(os.str());
             }
 
-            /// @todo Find a way to set the close on exec flags, 
+            /// @todo Find a way to set the close on exec flags,
             ///       or to get the file descriptor from ofstream so we can do:
             ///       flags = fcntl(fd, F_GETFD);
             ///       flags |= FD_CLOEXEC;
@@ -114,7 +114,8 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RotationTarget::RotationTarget(const std::string& name) : name_(name) {
+RotationTarget::RotationTarget(const std::string& name) :
+    name_(name) {
     if (name_.empty()) {
         name_ = Main::instance().name();
     }

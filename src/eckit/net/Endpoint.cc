@@ -32,7 +32,8 @@ Endpoint::Endpoint(const std::string& s) {
     validate();
 }
 
-Endpoint::Endpoint(const std::string& host, int port) : host_(host), port_(port) {
+Endpoint::Endpoint(const std::string& host, int port) :
+    host_(host), port_(port) {
     validate();
 }
 
@@ -42,7 +43,8 @@ Endpoint::Endpoint(Stream& s) {
     validate();
 }
 
-Endpoint::Endpoint() : port_(0) {
+Endpoint::Endpoint() :
+    port_(0) {
     validate();
 }
 

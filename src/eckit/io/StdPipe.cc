@@ -16,7 +16,8 @@
 
 namespace eckit {
 
-StdPipe::StdPipe(const std::string& name, const std::string& mode) : file_(0) {
+StdPipe::StdPipe(const std::string& name, const std::string& mode) :
+    file_(0) {
     file_ = ::popen(name.c_str(), mode.c_str());
 
     if (file_ == 0)

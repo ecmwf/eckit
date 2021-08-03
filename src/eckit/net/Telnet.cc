@@ -17,7 +17,8 @@
 namespace eckit {
 namespace net {
 
-Telnet::Telnet(int port) : NetService(port) {}
+Telnet::Telnet(int port) :
+    NetService(port) {}
 
 Telnet::~Telnet() {}
 

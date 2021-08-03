@@ -31,9 +31,12 @@ ecbuild_add_test( TARGET      eckit_test_types_fraction
                   SOURCES     test_fraction.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_types_hour
+                  SOURCES     test_hour.cc
+                  LIBS        eckit )
+
 # performance test
 
 ecbuild_add_test( TARGET      eckit_test_types_double_compare_speed
                   SOURCES     test-double-compare-speed.cc
                   LIBS        eckit )
-

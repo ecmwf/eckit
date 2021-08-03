@@ -254,26 +254,26 @@ public:  // methods
     }
 
     bool unloadPlugin(const std::string& name) {
-            Plugin* plugin = lookupPlugin(name);
-            if(plugin) {
-                plugin->finalise();
-                void* handle = plugin->handle();
-                if(handle) {
-                    ::dlerror();  // clear error
-                    int err = ::dlclose(handle);
-                    if (err) {
-                        std::ostringstream ss;
-                        ss << "Failed system call to ::dlclose() for plugin " << name << " - " << ::dlerror();
-                        throw FailedSystemCall(ss.str().c_str(), Here());
-                    }
-                    return true;
+        Plugin* plugin = lookupPlugin(name);
+        if (plugin) {
+            plugin->finalise();
+            void* handle = plugin->handle();
+            if (handle) {
+                ::dlerror();  // clear error
+                int err = ::dlclose(handle);
+                if (err) {
+                    std::ostringstream ss;
+                    ss << "Failed system call to ::dlclose() for plugin " << name << " - " << ::dlerror();
+                    throw FailedSystemCall(ss.str().c_str(), Here());
                 }
+                return true;
             }
-            return false;
+        }
+        return false;
     }
 
     void initPlugin(Plugin* plugin) {
-        if( ! is_plugin_initialized_[plugin->name()] ) {
+        if (!is_plugin_initialized_[plugin->name()]) {
             Log::debug() << "Initializing plugin [" << plugin->name() << "]" << std::endl;
             plugin->init();
             is_plugin_initialized_[plugin->name()] = true;
@@ -326,7 +326,7 @@ public:  // methods
                     LocalConfiguration manifest = conf.getSubConfiguration("plugin");
                     Log::debug() << "Loaded plugin manifest " << manifest << std::endl;
                     std::string name              = manifest.getString("name");
-                    std::string namespce         = manifest.getString("namespace");
+                    std::string namespce          = manifest.getString("namespace");
                     std::string fullQualifiedName = namespce + "." + name;
                     if (manifests.find(fullQualifiedName) == manifests.end()) {
                         manifests[fullQualifiedName] = manifest;
@@ -381,7 +381,7 @@ public:  // methods
         AutoLock<Mutex> lockme(mutex_);
         Log::debug() << "Registered plugin [" << name << "] with library [" << libname << "]" << std::endl;
         ASSERT(plugins_.find(name) == plugins_.end());
-        plugins_[name] = libname;
+        plugins_[name]               = libname;
         is_plugin_initialized_[name] = false;
     }
 
@@ -424,6 +424,13 @@ bool LibraryManager::exists(const std::string& name) {
 
 const Library& LibraryManager::lookup(const std::string& name) {
     return LibraryRegistry::instance().lookup(name);
+}
+
+const Plugin& LibraryManager::lookupPlugin(const std::string& name) {
+    Plugin * plugin = LibraryRegistry::instance().lookupPlugin(name);
+    if(plugin)
+        return *plugin;
+    throw eckit::BadValue("Plugin " + name + " not loaded");
 }
 
 void* LibraryManager::loadLibrary(const std::string& libname) {

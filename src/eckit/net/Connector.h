@@ -60,7 +60,8 @@ public:
     void memoize(bool on, unsigned long time);
 
     static Connector& service(const std::string& name, const std::string& node);
-    static Connector& service(const std::string& name, const std::map<std::string, Length>& cost);
+    static Connector& service(const std::string& name, const std::map<std::string, Length>& cost,
+                              const std::set<std::string>& attributes={});
 
     static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 

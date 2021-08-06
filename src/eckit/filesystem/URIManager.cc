@@ -45,6 +45,7 @@ public:  // methods
     /// Removes an entry from the registry
     /// @pre Must exist
     void deregister(const std::string& name) {
+        if(LibEcKit::instance().dontDeregisterFactories()) return;
         AutoLock<Mutex> lockme(mutex_);
         ASSERT(map_.find(name) != map_.end());
         map_.erase(name);

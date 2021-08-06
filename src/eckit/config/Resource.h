@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date May 1996
 
-#ifndef eckit_config_Resource_h
-#define eckit_config_Resource_h
+#pragma once
 
 #include <string>
 
@@ -104,5 +103,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

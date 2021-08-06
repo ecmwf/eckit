@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_system_LibEcKit_H
-#define eckit_system_LibEcKit_H
+#pragma once
 
 #include "eckit/system/Library.h"
 
@@ -34,6 +33,8 @@ public:  // methods
 
     void abort();
 
+    bool dontDeregisterFactories() const;
+
 protected:  // methods
     const void* addr() const;
 
@@ -43,10 +44,9 @@ protected:  // methods
 
 private:  // members
     abort_handler_t abort_handler_;
+    bool dontDeregisterFactories_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

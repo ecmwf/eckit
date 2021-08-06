@@ -42,6 +42,9 @@ static size_t dataSize[Data::MAX_DATA_CODE] = {
     /*[Data::FLOAT_INT]            = */ sizeof(std::pair<float, int>),
     /*[Data::DOUBLE_INT]           = */ sizeof(std::pair<double, int>),
     /*[Data::LONG_DOUBLE_INT]      = */ sizeof(std::pair<long double, int>),
+    /*[Data::LONG_LONG]            = */ sizeof(long long),
+    /*[Data::TWO_LONG]             = */ 2*sizeof(long),
+    /*[Data::TWO_LONG_LONG]        = */ 2*sizeof(long long),
 };
 
 }  // namespace mpi

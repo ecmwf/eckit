@@ -72,43 +72,68 @@ void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace {
+
+static MPI_Datatype PARALLEL_TWO_LONG() {
+    static MPI_Datatype mpi_datatype = [] {
+        MPI_Datatype mpi_datatype;
+        MPI_Type_contiguous(2, MPI_LONG, &mpi_datatype);
+        MPI_Type_commit(&mpi_datatype);
+        return mpi_datatype;
+    }();
+    return mpi_datatype;
+}
+
+static MPI_Datatype PARALLEL_TWO_LONG_LONG() {
+    static MPI_Datatype mpi_datatype = [] {
+        MPI_Datatype mpi_datatype;
+        MPI_Type_contiguous(2, MPI_LONG_LONG, &mpi_datatype);
+        MPI_Type_commit(&mpi_datatype);
+        return mpi_datatype;
+    }();
+    return mpi_datatype;
+}
+
+}
+
+
 // define MPI_LONG_LONG if not existing to avoid compilation errors
 #ifndef MPI_LONG_LONG
 #define MPI_LONG_LONG MPI_LONG
 #endif
 
-static MPI_Datatype mpi_datacode[Data::MAX_DATA_CODE] = {
-    /*[Data::CHAR]                 = */ MPI_CHAR,
-    /*[Data::WCHAR]                = */ MPI_WCHAR,
-    /*[Data::SHORT]                = */ MPI_SHORT,
-    /*[Data::INT]                  = */ MPI_INT,
-    /*[Data::LONG]                 = */ MPI_LONG,
-    /*[Data::SIGNED_CHAR]          = */ MPI_SIGNED_CHAR,
-    /*[Data::SIGNED_CHAR]          = */ MPI_UNSIGNED_CHAR,
-    /*[Data::UNSIGNED_SHORT]       = */ MPI_UNSIGNED_SHORT,
-    /*[Data::UNSIGNED]             = */ MPI_UNSIGNED,
-    /*[Data::UNSIGNED_LONG]        = */ MPI_UNSIGNED_LONG,
-    /*[Data::FLOAT]                = */ MPI_FLOAT,
-    /*[Data::DOUBLE]               = */ MPI_DOUBLE,
-    /*[Data::LONG_DOUBLE]          = */ MPI_LONG_DOUBLE,
-    //    /*[Data::BOOL]                 = */ MPI_BOOL,
-    /*[Data::COMPLEX]              = */ MPI_COMPLEX,
-    /*[Data::DOUBLE_COMPLEX]       = */ MPI_DOUBLE_COMPLEX,
-    //    /*[Data::LONG_DOUBLE_COMPLEX]  = */ MPI_LONG_DOUBLE_COMPLEX,
-    /*[Data::BYTE]                 = */ MPI_BYTE,
-    /*[Data::PACKED]               = */ MPI_PACKED,
-    /*[Data::SHORT_INT]            = */ MPI_SHORT_INT,
-    /*[Data::INT_INT]              = */ MPI_2INT,
-    /*[Data::LONG_INT]             = */ MPI_LONG_INT,
-    /*[Data::FLOAT_INT]            = */ MPI_FLOAT_INT,
-    /*[Data::DOUBLE_INT]           = */ MPI_DOUBLE_INT,
-    /*[Data::LONG_DOUBLE_INT]      = */ MPI_LONG_DOUBLE_INT,
-    /*[Data::LONG_LONG]            = */ MPI_LONG_LONG,
-};
-
 static MPI_Datatype toType(Data::Code code) {
-    MPI_Datatype datatype = mpi_datacode[code];
-    return datatype;
+    static MPI_Datatype mpi_datatype_[Data::MAX_DATA_CODE] = {
+        /*[Data::CHAR]                 = */ MPI_CHAR,
+        /*[Data::WCHAR]                = */ MPI_WCHAR,
+        /*[Data::SHORT]                = */ MPI_SHORT,
+        /*[Data::INT]                  = */ MPI_INT,
+        /*[Data::LONG]                 = */ MPI_LONG,
+        /*[Data::SIGNED_CHAR]          = */ MPI_SIGNED_CHAR,
+        /*[Data::SIGNED_CHAR]          = */ MPI_UNSIGNED_CHAR,
+        /*[Data::UNSIGNED_SHORT]       = */ MPI_UNSIGNED_SHORT,
+        /*[Data::UNSIGNED]             = */ MPI_UNSIGNED,
+        /*[Data::UNSIGNED_LONG]        = */ MPI_UNSIGNED_LONG,
+        /*[Data::FLOAT]                = */ MPI_FLOAT,
+        /*[Data::DOUBLE]               = */ MPI_DOUBLE,
+        /*[Data::LONG_DOUBLE]          = */ MPI_LONG_DOUBLE,
+        //    /*[Data::BOOL]                 = */ MPI_BOOL,
+        /*[Data::COMPLEX]              = */ MPI_COMPLEX,
+        /*[Data::DOUBLE_COMPLEX]       = */ MPI_DOUBLE_COMPLEX,
+        //    /*[Data::LONG_DOUBLE_COMPLEX]  = */ MPI_LONG_DOUBLE_COMPLEX,
+        /*[Data::BYTE]                 = */ MPI_BYTE,
+        /*[Data::PACKED]               = */ MPI_PACKED,
+        /*[Data::SHORT_INT]            = */ MPI_SHORT_INT,
+        /*[Data::INT_INT]              = */ MPI_2INT,
+        /*[Data::LONG_INT]             = */ MPI_LONG_INT,
+        /*[Data::FLOAT_INT]            = */ MPI_FLOAT_INT,
+        /*[Data::DOUBLE_INT]           = */ MPI_DOUBLE_INT,
+        /*[Data::LONG_DOUBLE_INT]      = */ MPI_LONG_DOUBLE_INT,
+        /*[Data::LONG_LONG]            = */ MPI_LONG_LONG,
+        /*[Data::TWO_LONG]             = */ PARALLEL_TWO_LONG(),
+        /*[Data::TWO_LONG_LONG]        = */ PARALLEL_TWO_LONG_LONG(),
+        };
+    return mpi_datatype_[code];
 }
 
 //----------------------------------------------------------------------------------------------------------------------

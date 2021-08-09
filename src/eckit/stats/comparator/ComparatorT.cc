@@ -31,7 +31,7 @@ namespace comparator {
 
 
 template <typename STATS>
-std::string ComparatorT<STATS>::execute(const mir::data::MIRField& field1, const mir::data::MIRField& field2) {
+std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data::MIRField& field2) {
     CounterBinary::reset(field1, field2);
     STATS::reset();
 

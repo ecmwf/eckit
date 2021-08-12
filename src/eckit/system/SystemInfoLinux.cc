@@ -47,9 +47,7 @@ void SystemInfoLinux::dumpProcMemInfo(std::ostream& os, const char* prepend) con
     std::ostringstream oss;
     oss << "/proc/" << ::getpid() << "/smaps";
     std::ifstream in(oss.str().c_str());
-    char line[10240] = {
-        0,
-    };
+    char line[10240] = {};
     while (in.getline(line, sizeof(line) - 1)) {
         os << prepend << ' ' << line << std::endl;
     }
@@ -59,9 +57,7 @@ void SystemInfoLinux::dumpSysMemInfo(std::ostream& os, const char* prepend) cons
     std::ostringstream oss;
     oss << "/proc/meminfo";
     std::ifstream in(oss.str().c_str());
-    char line[10240] = {
-        0,
-    };
+    char line[10240] = {};
     while (in.getline(line, sizeof(line) - 1)) {
         os << prepend << ' ' << line << std::endl;
     }
@@ -87,9 +83,7 @@ MemoryInfo SystemInfoLinux::memoryUsage() const {
     oss << "/proc/" << ::getpid() << "/maps";
 
     std::ifstream in(oss.str().c_str());
-    char line[10240] = {
-        0,
-    };
+    char line[10240] = {};
 
     size_t shared  = 0;
     size_t read    = 0;

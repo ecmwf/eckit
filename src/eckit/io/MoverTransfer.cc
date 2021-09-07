@@ -49,7 +49,7 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     {
         auto&& f = from.requiredMoverAttributes();
         moverAttributes.insert(f.begin(), f.end());
-        auto&& t = from.requiredMoverAttributes();
+        auto&& t = to.requiredMoverAttributes();
         moverAttributes.insert(t.begin(), t.end());
     }
 

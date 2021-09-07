@@ -118,9 +118,9 @@ void ComparatorT<MinMax>::print(std::ostream& out) const {
 
 
 static ComparatorBuilder<ComparatorT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
-    __comp1("angle.degree");
+    __comp1("angle-degree");
 static ComparatorBuilder<ComparatorT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
-    __comp2("angle.radian");
+    __comp2("angle-radian");
 static ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>> __comp3("central-moments");
 static ComparatorBuilder<ComparatorT<detail::PNormsT<double>>> __comp4("p-norms");
 static ComparatorBuilder<ComparatorT<detail::ScalarT<double>>> __comp5("scalar");

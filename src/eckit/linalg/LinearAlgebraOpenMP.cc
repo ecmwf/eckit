@@ -37,7 +37,24 @@ void LinearAlgebraOpenMP::gemv(const Matrix& A, const Vector& x, Vector& y) cons
 }
 
 void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    LinearAlgebra::getBackend("generic").gemm(A, B, C);
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
+
+    ASSERT(C.rows() == Ni);
+    ASSERT(B.rows() == Nj);
+
+#pragma omp parallel for
+    for (Size i = 0; i < Ni; ++i) {
+        for (Size j = 0; j < Nj; ++j) {
+            Scalar sum = 0.;  // private
+
+            for (Size k = 0; k < Nj; ++k) {
+                sum += A[i * Nj + k] * B[k * Nj + j];
+            }
+
+            C[i * Nj + j] = sum;
+        }
+    }
 }
 
 void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {

@@ -11,6 +11,11 @@
 #include "eckit/linalg/LinearAlgebraOpenMP.h"
 
 #include <ostream>
+#include <vector>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/SparseMatrix.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -39,7 +44,34 @@ void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y
 }
 
 void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    LinearAlgebra::getBackend("generic").spmm(A, B, C);
+    const auto outer = A.outer();
+    const auto inner = A.inner();
+    const auto val   = A.data();
+
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
+    const auto Nk = B.cols();
+
+    ASSERT(C.rows() == Ni);
+    ASSERT(B.rows() == Nj);
+    ASSERT(C.cols() == Nk);
+
+#pragma omp parallel for
+    for (Size i = 0; i < Ni; ++i) {
+        std::vector<Scalar> sum(Nk, 0);  // private (hopefully not reallocated!)
+
+        for (auto c = outer[i]; c < outer[i + 1]; ++c) {
+            auto j = static_cast<Size>(inner[c]);
+            auto v = val[c];
+            for (Size k = 0; k < Nk; ++k) {
+                sum[k] += v * B(j, k);
+            }
+        }
+
+        for (Size k = 0; k < Nk; ++k) {
+            C(i, k) = sum[k];
+        }
+    }
 }
 
 void LinearAlgebraOpenMP::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {

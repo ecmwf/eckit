@@ -16,6 +16,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Vector.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,7 +41,26 @@ void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
 }
 
 void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    LinearAlgebra::getBackend("generic").spmv(A, x, y);
+    const auto outer = A.outer();
+    const auto inner = A.inner();
+    const auto val   = A.data();
+
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
+
+    ASSERT(y.rows() == Ni);
+    ASSERT(x.rows() == Nj);
+
+#pragma omp parallel for
+    for (Size i = 0; i < Ni; ++i) {
+        Scalar sum = 0.;  // private
+
+        for (auto c = outer[i]; c < outer[i + 1]; ++c) {
+            sum += val[c] * x[static_cast<Size>(inner[c])];
+        }
+
+        y[i] = sum;
+    }
 }
 
 void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {

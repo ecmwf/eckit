@@ -46,7 +46,13 @@ ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
                                         "${LAPACK_LIBRARIES}"
                                         "${MKL_LIBRARIES}" )
 
-if (CUDA_FOUND)
-set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
-cuda_add_cublas_to_target( eckit_linalg )
+if( CUDA_FOUND )
+  set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
+  cuda_add_cublas_to_target( eckit_linalg )
 endif()
+
+if( eckit_HAVE_OMP )
+  target_sources( eckit_linalg PRIVATE LinearAlgebraOpenMP.cc LinearAlgebraOpenMP.h )
+  target_link_libraries( eckit_linalg PUBLIC OpenMP::OpenMP_CXX )
+endif()
+

@@ -53,6 +53,6 @@ endif()
 
 if( eckit_HAVE_OMP )
   target_sources( eckit_linalg PRIVATE LinearAlgebraOpenMP.cc LinearAlgebraOpenMP.h )
-  target_link_libraries( eckit_linalg PUBLIC OpenMP::OpenMP_CXX )
+  target_link_libraries( eckit_linalg PRIVATE OpenMP::OpenMP_CXX )
 endif()
 

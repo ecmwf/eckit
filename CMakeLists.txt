@@ -89,12 +89,9 @@ set_package_properties( Eigen3 PROPERTIES
 ecbuild_add_option( FEATURE OMP
                     DEFAULT OFF
                     DESCRIPTION "OpenMP matrix multiplication linear algebra backend"
-                    REQUIRED_PACKAGES OpenMP )
+                    REQUIRED_PACKAGES "OpenMP COMPONENTS CXX" )
 
-if( eckit_HAVE_OMP AND TARGET OpenMP::OpenMP_CXX )
-  ecbuild_enable_omp()
-else()
-    # ecbuild_enable_ompstubs()
+if( NOT TARGET OpenMP::OpenMP_CXX )
     unset( eckit_HAVE_OMP )
 endif()
 

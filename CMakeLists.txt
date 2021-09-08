@@ -92,7 +92,7 @@ ecbuild_add_option( FEATURE OMP
                     REQUIRED_PACKAGES "OpenMP COMPONENTS CXX" )
 
 if( NOT TARGET OpenMP::OpenMP_CXX )
-    unset( eckit_HAVE_OMP )
+    set( eckit_HAVE_OMP 0 )
 endif()
 
 ### RADOS

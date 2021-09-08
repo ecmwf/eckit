@@ -29,7 +29,18 @@ LinearAlgebraOpenMP::LinearAlgebraOpenMP() :
     LinearAlgebra("openmp") {}
 
 Scalar LinearAlgebraOpenMP::dot(const Vector& x, const Vector& y) const {
-    return LinearAlgebra::getBackend("generic").dot(x, y);
+    const auto Ni = x.size();
+    ASSERT(y.size() == Ni);
+
+    Scalar sum = 0.;
+
+#pragma omp parallel for reduction(+: sum)
+    for (Size i = 0; i < Ni; ++i) {
+        auto p = x[i] * y[i];
+        sum += p;
+    }
+
+    return sum;
 }
 
 void LinearAlgebraOpenMP::gemv(const Matrix& A, const Vector& x, Vector& y) const {

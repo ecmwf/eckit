@@ -20,6 +20,13 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
+// For testing
+#if 0
+extern "C" {
+int omp_get_num_threads();
+}
+#endif
+
 namespace eckit {
 namespace linalg {
 
@@ -34,7 +41,8 @@ Scalar LinearAlgebraOpenMP::dot(const Vector& x, const Vector& y) const {
 
     Scalar sum = 0.;
 
-#pragma omp parallel for reduction(+: sum)
+#pragma omp parallel for reduction(+ \
+                                   : sum)
     for (Size i = 0; i < Ni; ++i) {
         auto p = x[i] * y[i];
         sum += p;
@@ -52,15 +60,13 @@ void LinearAlgebraOpenMP::gemv(const Matrix& A, const Vector& x, Vector& y) cons
 
 #pragma omp parallel for
     for (Size i = 0; i < Ni; ++i) {
+        Scalar sum = 0.;
+
         for (Size j = 0; j < Nj; ++j) {
-            Scalar sum = 0.;  // private
-
-            for (Size k = 0; k < Nj; ++k) {
-                sum += A[i * Nj + k] * x[k * Nj + j];
-            }
-
-            y[i * Nj + j] = sum;
+            sum += A(i, j) * x[j];
         }
+
+        y[i] = sum;
     }
 }
 
@@ -74,13 +80,13 @@ void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
 #pragma omp parallel for
     for (Size i = 0; i < Ni; ++i) {
         for (Size j = 0; j < Nj; ++j) {
-            Scalar sum = 0.;  // private
+            Scalar sum = 0.;
 
             for (Size k = 0; k < Nj; ++k) {
-                sum += A[i * Nj + k] * B[k * Nj + j];
+                sum += A(i, k) * B(k, j);
             }
 
-            C[i * Nj + j] = sum;
+            C(i, j) = sum;
         }
     }
 }
@@ -98,7 +104,7 @@ void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y
 
 #pragma omp parallel for
     for (Size i = 0; i < Ni; ++i) {
-        Scalar sum = 0.;  // private
+        Scalar sum = 0.;
 
         for (auto c = outer[i]; c < outer[i + 1]; ++c) {
             sum += val[c] * x[static_cast<Size>(inner[c])];
@@ -121,9 +127,11 @@ void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C
     ASSERT(B.rows() == Nj);
     ASSERT(C.cols() == Nk);
 
-#pragma omp parallel for
+    std::vector<Scalar> sum;
+
+#pragma omp parallel for private(sum)
     for (Size i = 0; i < Ni; ++i) {
-        std::vector<Scalar> sum(Nk, 0);  // private (hopefully not reallocated!)
+        sum.assign(Nk, 0);
 
         for (auto c = outer[i]; c < outer[i + 1]; ++c) {
             auto j = static_cast<Size>(inner[c]);

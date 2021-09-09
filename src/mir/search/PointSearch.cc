@@ -15,6 +15,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/thread/AutoLock.h"
 
+#include "mir/config/LibMir.h"
 #include "mir/param/MIRParametrisation.h"
 #include "mir/repres/Iterator.h"
 #include "mir/repres/Representation.h"
@@ -27,8 +28,10 @@ namespace mir {
 namespace search {
 
 PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const repres::Representation& r) {
+    bool caching = LibMir::caching();
+    parametrisation.get("caching", caching);
 
-    std::string name = "mapped-cache-file";
+    std::string name = caching ? "mapped-cache-file" : "memory";
     parametrisation.get("point-search-trees", name);
 
     tree_.reset(TreeFactory::build(name, r, parametrisation));

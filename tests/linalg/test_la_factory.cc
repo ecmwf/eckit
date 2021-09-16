@@ -45,6 +45,9 @@ CASE("test_list") {
 #if eckit_HAVE_MKL
     EXPECT(oss.str().find("mkl") != std::string::npos);
 #endif
+#ifdef eckit_HAVE_OMP
+    EXPECT(oss.str().find("openmp") != std::string::npos);
+#endif
 }
 
 CASE("test_backend") {
@@ -65,6 +68,10 @@ CASE("test_backend") {
 #endif
 #if eckit_HAVE_MKL
     LinearAlgebra::backend("mkl");
+    LinearAlgebra::backend();
+#endif
+#ifdef eckit_HAVE_OMP
+    LinearAlgebra::backend("openmp");
     LinearAlgebra::backend();
 #endif
     EXPECT_THROWS_AS(LinearAlgebra::backend("foo"), BadParameter);

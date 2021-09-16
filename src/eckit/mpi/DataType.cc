@@ -143,11 +143,24 @@ const char* Data::Type<std::pair<long, long> >::name() {
 }
 template <>
 Data::Code Data::Type<std::pair<long, long> >::code() {
-    return Data::LONG_LONG;
+    return Data::TWO_LONG;
 }
 template <>
 size_t Data::Type<std::pair<long, long> >::size() {
     return sizeof(std::pair<long, long>);
+}
+
+template <>
+const char* Data::Type<std::pair<long long, long long> >::name() {
+    return "<long,long>";
+}
+template <>
+Data::Code Data::Type<std::pair<long long, long long> >::code() {
+    return Data::TWO_LONG_LONG;
+}
+template <>
+size_t Data::Type<std::pair<long long, long long> >::size() {
+    return sizeof(std::pair<long long, long long>);
 }
 
 template <>

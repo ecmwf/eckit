@@ -79,7 +79,7 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 
 ### eckit sources
 
-list( APPEND eckit_srcs eckit.h deprecated.h eckit_version.cc )
+list( APPEND eckit_srcs eckit.h deprecated.h ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.cc )
 
 list( APPEND eckit_container_srcs
 
@@ -907,9 +907,6 @@ ecbuild_add_library(
 
           SOURCES
 						  ${eckit_srcs}
-
-          GENERATED
-						  eckit_version.cc
 
           TEMPLATES
 						  ${eckit_templates}

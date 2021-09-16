@@ -53,6 +53,11 @@ ecbuild_add_test( TARGET     eckit_test_linalg_linalg_viennacl
                   CONDITION  eckit_HAVE_VIENNACL
                   ARGS       --log_level=message -linearAlgebraBackend viennacl )
 
+ecbuild_add_test( TARGET     eckit_test_linalg_linalg_openmp
+                  COMMAND    eckit_test_linalg_linalg
+                  CONDITION  eckit_HAVE_OMP
+                  ARGS       --log_level=message -linearAlgebraBackend openmp )
+
 ecbuild_add_test( TARGET   eckit_test_linalg_sparse
                   ARGS     --log_level=message
                   SOURCES  test_la_sparse.cc util.h
@@ -89,6 +94,11 @@ ecbuild_add_test( TARGET     eckit_test_linalg_sparse_viennacl
                   COMMAND    eckit_test_linalg_sparse
                   CONDITION  eckit_HAVE_VIENNACL
                   ARGS       --log_level=message -linearAlgebraBackend viennacl )
+
+ecbuild_add_test( TARGET     eckit_test_linalg_sparse_openmp
+                  COMMAND    eckit_test_linalg_sparse
+                  CONDITION  eckit_HAVE_OMP
+                  ARGS       --log_level=message -linearAlgebraBackend openmp )
 
 ecbuild_add_test( TARGET   eckit_test_linalg_streaming
                   ARGS     --log_level=message

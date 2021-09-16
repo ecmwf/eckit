@@ -77,6 +77,82 @@ CASE("test_broadcast") {
         // check results
         EXPECT(data == expect);
     }
+
+    Log::info() << "Test vector<pair<int,int>>" << std::endl;
+    {
+        std::vector< std::pair<int,int> > data(5);
+        if (mpi::comm().rank() == root) {
+            size_t j=0;
+            for(size_t i=0; i<5; ++i) {
+                data[i].first=d[j++];
+                data[i].second=d[j++];
+            }
+        }
+
+        EXPECT_NO_THROW(mpi::comm().broadcast(data, root));
+
+        // check results
+        std::vector<int> unpacked(10);
+        {
+            size_t j=0;
+            for(size_t i=0; i<5; ++i) {
+                unpacked[j++] = data[i].first;
+                unpacked[j++] = data[i].second;
+            }
+        }
+        EXPECT(unpacked == expect);
+    }
+
+    Log::info() << "Test vector<pair<long,long>>" << std::endl;
+    {
+        std::vector< std::pair<long,long> > data(5);
+        if (mpi::comm().rank() == root) {
+            size_t j=0;
+            for(size_t i=0; i<5; ++i) {
+                data[i].first=d[j++];
+                data[i].second=d[j++];
+            }
+        }
+
+        EXPECT_NO_THROW(mpi::comm().broadcast(data, root));
+
+        // check results
+        std::vector<int> unpacked(10);
+        {
+            size_t j=0;
+            for(size_t i=0; i<5; ++i) {
+                unpacked[j++] = data[i].first;
+                unpacked[j++] = data[i].second;
+            }
+        }
+        EXPECT(unpacked == expect);
+    }
+
+    Log::info() << "Test vector<pair<long long,long long>>" << std::endl;
+    {
+        std::vector< std::pair<long long,long long> > data(5);
+        if (mpi::comm().rank() == root) {
+            size_t j=0;
+            for(size_t i=0; i<5; ++i) {
+                data[i].first=d[j++];
+                data[i].second=d[j++];
+            }
+        }
+
+        EXPECT_NO_THROW(mpi::comm().broadcast(data, root));
+
+        // check results
+        std::vector<int> unpacked(10);
+        {
+            size_t j=0;
+            for(size_t i=0; i<5; ++i) {
+                unpacked[j++] = data[i].first;
+                unpacked[j++] = data[i].second;
+            }
+        }
+        EXPECT(unpacked == expect);
+    }
+
 }
 
 CASE("test_gather_scalar") {

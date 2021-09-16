@@ -226,9 +226,7 @@ void TaskInfo::json(JSON& json) const {
     // char           buffer_[size_];
     // unsigned long  pos_;
 
-    char buffer[size_ + 1] = {
-        0,
-    };
+    char buffer[size_ + 1] = {};
 
     unsigned long pos{0};
     text(buffer, sizeof(buffer), pos);

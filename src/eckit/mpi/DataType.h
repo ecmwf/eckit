@@ -54,6 +54,8 @@ public:
         DOUBLE_INT,
         LONG_DOUBLE_INT,
         LONG_LONG,
+        TWO_LONG,
+        TWO_LONG_LONG,
         MAX_DATA_CODE
     };
 

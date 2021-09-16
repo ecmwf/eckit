@@ -156,9 +156,7 @@ void FileSpace::load() const {
             throw CantOpenFile(config);
 
 
-        char line[1024] = {
-            0,
-        };
+        char line[1024] = {};
         while (in >> line) {
             if (line[0] != 0 && line[0] != '#') {
                 disks.push_back(line);

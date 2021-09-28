@@ -161,10 +161,6 @@ NodeInfo NodeInfo::sendLogin(Stream& s) {
 }
 
 bool NodeInfo::supportsAttributes(const std::set<std::string>& attrs) const {
-
-    // As a fallback, if a node doesn't specify _any_ attributes, we assume it supports everything
-    if (attributes_.empty()) return true;
-
     for (const auto& a : attrs) {
         if (attributes_.find(a) == attributes_.end()) return false;
     }

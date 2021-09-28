@@ -314,7 +314,7 @@ NodeInfo ClusterNodes::any(const std::string& type, const std::set<std::string>&
 
     for (const ClusterNodeEntry& k : *nodeArray) {
         if (k.active() && k.available() && type == k.type()) {
-            if (k.attributesCount() == 0 || k.hasAttributes(attributes)) {
+            if (k.hasAttributes(attributes)) {
                 permitted.push_back(&k);
             }
         }

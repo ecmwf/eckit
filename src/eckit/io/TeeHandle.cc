@@ -158,6 +158,24 @@ void TeeHandle::cost(std::map<std::string, Length>& c, bool read) const {
         datahandles_[i]->cost(c, read);
 }
 
+bool TeeHandle::moveable() const {
+    for (const auto& dh : datahandles_) {
+        if (!dh->moveable()) return false;
+    }
+    return true;
+}
+
+const std::set<std::string>& TeeHandle::requiredMoverAttributes() const {
+    if (requiredAttributes_.empty()) {
+        for (const auto& dh : datahandles_) {
+            auto&& attrs = dh->requiredMoverAttributes();
+            requiredAttributes_.insert(attrs.begin(), attrs.end());
+        }
+    }
+    return requiredAttributes_;
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -62,6 +62,8 @@ public:
     virtual void toLocal(Stream&) const override;
     virtual DataHandle* toLocal() override;
     virtual void cost(std::map<std::string, Length>&, bool) const override;
+    virtual bool moveable() const override;
+    virtual const std::set<std::string>& requiredMoverAttributes() const override;
 
     // From Streamable
 
@@ -83,6 +85,8 @@ private:
 
     static ClassSpec classSpec_;
     static Reanimator<TeeHandle> reanimator_;
+
+    mutable std::set<std::string> requiredAttributes_;
 };
 
 

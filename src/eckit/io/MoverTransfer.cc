@@ -43,12 +43,35 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     if (!to.moveable())
         throw SeriousBug(to.title() + " is not moveable");
 
+    // Attributes that are required from the mover
+
+    std::set<std::string> moverAttributes;
+    {
+        auto&& f = from.requiredMoverAttributes();
+        moverAttributes.insert(f.begin(), f.end());
+        auto&& t = to.requiredMoverAttributes();
+        moverAttributes.insert(t.begin(), t.end());
+    }
+
+    // Using node-specific info, determine beneficial nodes to use
+
     std::map<std::string, Length> cost;
     from.cost(cost, true);
     to.cost(cost, false);
 
+    // Should any of the nodes be removed from the cost matrix, because they don't support
+    // the required attributes?
+
+    for (auto it = cost.begin(); it != cost.end(); /* no increment */) {
+        if (!ClusterNodes::lookUp("mover", it->first).supportsAttributes(moverAttributes)) {
+            cost.erase(it++);
+        } else {
+            ++it;
+        }
+    }
+
     if (cost.empty()) {
-        NodeInfo info     = ClusterNodes::any("mover");
+        NodeInfo info     = ClusterNodes::any("mover", moverAttributes);
         cost[info.node()] = 0;
         send_costs        = false;
         //        throw SeriousBug(std::string("No cost for ") + from.title() + " => " + to.title());

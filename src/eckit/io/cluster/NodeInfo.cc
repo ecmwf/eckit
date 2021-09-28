@@ -89,6 +89,7 @@ void operator<<(Stream& s, const NodeInfo& info) {
     s << info.port();
     s << info.id();
     s << info.task();
+    s << info.attributes();
 }
 
 void operator>>(Stream& s, NodeInfo& info) {
@@ -112,6 +113,10 @@ void operator>>(Stream& s, NodeInfo& info) {
     long task;
     s >> task;
     info.task(task);
+
+    std::set<std::string> a;
+    s >> a;
+    info.attributes(a);
 }
 
 void NodeInfo::print(std::ostream& s) const {
@@ -153,6 +158,13 @@ NodeInfo NodeInfo::sendLogin(Stream& s) {
     Log::info() << "Connection established " << here << " <=> " << remote << std::endl;
 
     return remote;
+}
+
+bool NodeInfo::supportsAttributes(const std::set<std::string>& attrs) const {
+    for (const auto& a : attrs) {
+        if (attributes_.find(a) == attributes_.end()) return false;
+    }
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

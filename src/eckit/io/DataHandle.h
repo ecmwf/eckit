@@ -127,6 +127,7 @@ public:
     // For remote data movers
 
     virtual bool moveable() const { return false; }
+    virtual const std::set<std::string>& requiredMoverAttributes() const;
     virtual void toLocal(Stream& s) const;
 
     virtual DataHandle* toLocal();

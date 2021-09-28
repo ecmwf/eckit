@@ -52,6 +52,7 @@ void ClusterHeartBeat::run() {
             Log::status() << "Connected to " << host << ":" << port << std::endl;
 
             NodeInfo::thisNode().port(owner_.port());
+            NodeInfo::thisNode().attributes(owner_.attributes());
 
             remote = NodeInfo::sendLogin(s);
 
@@ -68,10 +69,13 @@ void ClusterHeartBeat::run() {
                 s << "heartbeat";
                 s >> reply;
 
-
                 if (reply == "sync") {
                     ClusterNodes::receive(s);
-                    ClusterDisks::receive(s);
+                    bool syncDisks;
+                    s >> syncDisks;
+                    if (syncDisks) {
+                        ClusterDisks::receive(s);
+                    }
                 }
 
                 if (reply == "exit") {
@@ -99,6 +103,12 @@ ClusterNode::~ClusterNode() {}
 void ClusterNode::heartbeat() {
     ThreadControler t(new ClusterHeartBeat(*this));
     t.start();
+}
+
+// By default, there are no specified attributes
+const std::set<std::string>& ClusterNode::attributes() const {
+    static std::set<std::string> nullAttrs;
+    return nullAttrs;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

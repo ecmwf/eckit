@@ -45,6 +45,10 @@ public:  // methods
     void node(const std::string& h) { node_ = h; }
     const std::string& node() const { return node_; }
 
+    void attribute(const std::string& a)            { attributes_.insert(a); }
+    void attributes(const std::set<std::string>& a) { attributes_ = a; }
+    const std::set<std::string>& attributes() const { return attributes_; }
+    bool supportsAttributes(const std::set<std::string>& attrs) const;
 
     void id(TaskID p) { id_ = p; }
     TaskID id() const { return id_; }
@@ -64,6 +68,7 @@ private:  // members
     std::string node_;
     std::string user_;
     std::string host_;
+    std::set<std::string> attributes_;
 
     int port_;
     bool active_;

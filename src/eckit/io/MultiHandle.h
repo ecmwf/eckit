@@ -75,6 +75,7 @@ public:
     virtual void cost(std::map<std::string, Length>&, bool) const override;
     virtual std::string title() const override;
     virtual bool moveable() const override;
+    virtual const std::set<std::string>& requiredMoverAttributes() const override;
     virtual DataHandle* clone() const override;
     virtual void collectMetrics(const std::string& what) const override;
     // From Streamable
@@ -94,6 +95,7 @@ private:
     LengthList::iterator curlen_;
     LengthList length_;
     Length written_;
+    mutable std::set<std::string> requiredAttributes_;
     bool read_;
 
     // -- Methods

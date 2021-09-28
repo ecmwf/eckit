@@ -189,6 +189,11 @@ bool StatsHandle::moveable() const {
     return false;
 }
 
+const std::set<std::string>& StatsHandle::requiredMoverAttributes() const {
+    // Requires moveable();
+    NOTIMP;
+}
+
 void StatsHandle::toLocal(Stream& s) const {
     NOTIMP;
 }

@@ -78,6 +78,7 @@ public:
 
 
     virtual bool moveable() const override;
+    virtual const std::set<std::string>& requiredMoverAttributes() const override;
     virtual void toLocal(Stream& s) const override;
 
     virtual DataHandle* toLocal() override;

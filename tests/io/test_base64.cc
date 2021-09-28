@@ -25,12 +25,8 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 static std::string test(const char* text, const char* expect) {
-    char base64ed[10240] = {
-        0,
-    };
-    char unbase64ed[10240] = {
-        0,
-    };
+    char base64ed[10240] = {};
+    char unbase64ed[10240] = {};
 
     Base64 base64;
 

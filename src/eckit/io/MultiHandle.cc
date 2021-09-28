@@ -410,6 +410,16 @@ bool MultiHandle::moveable() const {
     return datahandles_.size() > 0;
 }
 
+const std::set<std::string>& MultiHandle::requiredMoverAttributes() const {
+    if (requiredAttributes_.empty()) {
+        for (const auto& dh : datahandles_) {
+            auto&& attrs = dh->requiredMoverAttributes();
+            requiredAttributes_.insert(attrs.begin(), attrs.end());
+        }
+    }
+    return requiredAttributes_;
+}
+
 std::string MultiHandle::title() const {
     std::ostringstream os;
     os << "[";

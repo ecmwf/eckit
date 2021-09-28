@@ -132,9 +132,7 @@ MultiSocket& MultiSocket::connect(const std::string& host, int port, int retries
 
     MD5 md5;
 
-    char hostname[256] = {
-        0,
-    };
+    char hostname[256] = {};
     SYSCALL(::gethostname(hostname, sizeof(hostname) - 1));
 
     md5.add(std::string(hostname));

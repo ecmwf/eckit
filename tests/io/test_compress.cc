@@ -24,12 +24,8 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 static std::string test(const char* text) {
-    char compressed[10240] = {
-        0,
-    };
-    char uncompressed[10240] = {
-        0,
-    };
+    char compressed[10240] = {};
+    char uncompressed[10240] = {};
 
     Compress compress(16);
 

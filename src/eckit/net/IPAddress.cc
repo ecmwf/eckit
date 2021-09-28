@@ -54,9 +54,7 @@ IPAddress IPAddress::myIPAddress() {
     static IPAddress mine("255.255.255.255");
 
     if (!done) {
-        char hostname[256] = {
-            0,
-        };
+        char hostname[256] = {};
         SYSCALL(::gethostname(hostname, sizeof(hostname) - 1));
 
         struct hostent* entry = gethostbyname(hostname);

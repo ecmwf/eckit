@@ -42,7 +42,7 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
     auto& values2 = field2.values(0);
     ASSERT(values1.size() == values2.size());
 
-    if (!std::isnan(ignoreAboveLatitude_) || !std::isnan(ignoreBelowLatitude_)) {
+    if (std::isnan(ignoreAboveLatitude_) == 0 || std::isnan(ignoreBelowLatitude_) == 0) {
         repres::RepresentationHandle rep1(field1.representation());
         repres::RepresentationHandle rep2(field2.representation());
 
@@ -52,13 +52,15 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
         }
         ASSERT(rep1->numberOfPoints() == values1.size());
 
-        std::unique_ptr<repres::Iterator> it(rep1->iterator());
-        for (size_t i = 0; i < values1.size() && it->next(); ++i) {
-            auto& p  = it->pointUnrotated();
-            bool bad = ignoreAboveLatitude_ < p.lat() || p.lat() < ignoreBelowLatitude_;
+        for (const std::unique_ptr<repres::Iterator> it(rep1->iterator()); it->next();) {
+            auto& p = it->pointUnrotated();
+            auto v1 = values1.at(it->index());
+            auto v2 = values2.at(it->index());
 
-            auto diff = bad ? 0. : STATS::difference(values1[i], values2[i]);
-            if (CounterBinary::count(values1[i], values2[i], diff)) {
+            bool bad  = ignoreAboveLatitude_ < p.lat() || p.lat() < ignoreBelowLatitude_;
+            auto diff = bad ? 0. : STATS::difference(v1, v2);
+
+            if (CounterBinary::count(v1, v2, diff)) {
                 STATS::operator()(diff);
             }
         }

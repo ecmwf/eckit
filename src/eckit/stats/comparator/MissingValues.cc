@@ -57,10 +57,11 @@ std::string MissingValues::execute(const data::MIRField& field1, const data::MIR
         const auto& values2 = field2.values(d);
         ASSERT(values1.size() == values2.size());
 
-        size_t i = 0;
-        for (std::unique_ptr<repres::Iterator> it(rep1->iterator()); it->next(); ++i) {
-            bool miss1 = values1[i] == missingValue1;
-            bool miss2 = values2[i] == missingValue2;
+        for (const std::unique_ptr<repres::Iterator> it(rep1->iterator()); it->next();) {
+            auto i     = it->index();
+            bool miss1 = values1.at(i) == missingValue1;
+            bool miss2 = values2.at(i) == missingValue2;
+
             if (miss1 != miss2) {
                 reasons << "\n* " << i << '\t' << it->pointRotated() << '\t'
                         << (miss1 ? "missing" : std::to_string(values1[i])) << '\t'

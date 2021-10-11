@@ -75,9 +75,6 @@ void TreeMemory::print(std::ostream& out) const {
 }
 
 
-TreeMemory::TreeMemory(const repres::Representation& r, const param::MIRParametrisation&) : Tree(r) {}
-
-
 static TreeBuilder<TreeMemory> builder("memory");
 
 

@@ -22,9 +22,6 @@
 
 
 namespace mir {
-namespace param {
-class MIRParametrisation;
-};
 namespace repres {
 class Representation;
 }
@@ -82,20 +79,18 @@ class TreeFactory {
 
 protected:
     std::string name_;
-    virtual Tree* make(const repres::Representation& r, const param::MIRParametrisation&) = 0;
+    virtual Tree* make(const repres::Representation&) = 0;
     TreeFactory(const std::string&);
     virtual ~TreeFactory();
 
 public:
-    static Tree* build(const std::string&, const repres::Representation& r, const param::MIRParametrisation&);
+    static Tree* build(const std::string&, const repres::Representation&);
     static void list(std::ostream&);
 };
 
 template <class T>
 class TreeBuilder : public TreeFactory {
-    Tree* make(const repres::Representation& r, const param::MIRParametrisation& param) override {
-        return new T(r, param);
-    }
+    Tree* make(const repres::Representation& r) override { return new T(r); }
 
 public:
     TreeBuilder(const std::string& name) : TreeFactory(name) {}

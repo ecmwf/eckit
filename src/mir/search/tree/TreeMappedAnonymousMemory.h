@@ -29,7 +29,7 @@ class TreeMappedAnonymousMemory : public TreeMapped {
     void print(std::ostream& out) const override { out << "TreeMappedAnonymousMemory[]"; }
 
 public:
-    TreeMappedAnonymousMemory(const repres::Representation&, const param::MIRParametrisation&);
+    TreeMappedAnonymousMemory(const repres::Representation&);
 };
 
 

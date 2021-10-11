@@ -18,9 +18,7 @@ namespace search {
 namespace tree {
 
 
-TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representation& r,
-                                                     const param::MIRParametrisation&) :
-    TreeMapped(r, "/dev/zero") {}
+TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representation& r) : TreeMapped(r, "/dev/zero") {}
 
 
 static TreeBuilder<TreeMappedAnonymousMemory> builder("mapped-anonymous-memory");

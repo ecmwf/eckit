@@ -34,7 +34,7 @@ PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const
     std::string name = caching ? "mapped-cache-file" : "memory";
     parametrisation.get("point-search-trees", name);
 
-    tree_.reset(TreeFactory::build(name, r, parametrisation));
+    tree_.reset(TreeFactory::build(name, r));
 
     eckit::AutoLock<Tree> lock(*tree_);
 

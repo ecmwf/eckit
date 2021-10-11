@@ -142,8 +142,7 @@ TreeFactory::~TreeFactory() {
 }
 
 
-Tree* TreeFactory::build(const std::string& name, const repres::Representation& r,
-                         const param::MIRParametrisation& params) {
+Tree* TreeFactory::build(const std::string& name, const repres::Representation& r) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
@@ -155,7 +154,7 @@ Tree* TreeFactory::build(const std::string& name, const repres::Representation& 
         throw exception::SeriousBug("TreeFactory: unknown '" + name + "'");
     }
 
-    return j->second->make(r, params);
+    return j->second->make(r);
 }
 
 

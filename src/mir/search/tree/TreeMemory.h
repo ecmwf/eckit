@@ -48,7 +48,7 @@ protected:
     void print(std::ostream&) const override;
 
 public:
-    TreeMemory(const repres::Representation&, const param::MIRParametrisation&);
+    using Tree::Tree;
 };
 
 

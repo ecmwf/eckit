@@ -81,27 +81,20 @@ void PointSearch::build(const repres::Representation& r) {
         std::vector<PointValueType> points;
         points.reserve(npts);
 
-        const std::unique_ptr<repres::Iterator> it(r.iterator());
-        size_t i = 0;
-        while (it->next()) {
-            ASSERT(i < npts);
-            points.emplace_back(PointValueType(it->point3D(), i));
-            ++i;
+        for (const std::unique_ptr<repres::Iterator> it(r.iterator()); it->next();) {
+            points.emplace_back(PointValueType(it->point3D(), it->index()));
         }
 
-        ASSERT(npts == i);
         tree_->build(points);
+
+        if (points.size() < npts) {
+            Log::info() << "PointSearch: built tree for " << Log::Pretty(points.size(), {"valid point"}) << std::endl;
+        }
     }
     else {
-        const std::unique_ptr<repres::Iterator> it(r.iterator());
-        size_t i = 0;
-        while (it->next()) {
-            ASSERT(i < npts);
-            tree_->insert(PointValueType(it->point3D(), i));
-            ++i;
+        for (const std::unique_ptr<repres::Iterator> it(r.iterator()); it->next();) {
+            tree_->insert(PointValueType(it->point3D(), it->index()));
         }
-
-        ASSERT(npts == i);
     }
 }
 

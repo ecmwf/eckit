@@ -328,6 +328,11 @@ void SparseMatrix::swap(SparseMatrix& other) {
     owner_.swap(other.owner_);
 }
 
+void SparseMatrix::cols(Size cols) {
+    ASSERT(cols > 0);
+    shape_.cols_ = cols;
+}
+
 size_t SparseMatrix::footprint() const {
     return sizeof(*this) + shape_.allocSize();
 }

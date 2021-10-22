@@ -81,7 +81,19 @@ public:  // methods
     const std::string& localHost() const;
     int localPort() const;
 
-    void bufferSize(int n) { bufSize_ = n; }
+    void bufferSize(int n) {
+        receiveBufferSize(n);
+        sendBufferSize(n);
+    }
+
+    void receiveBufferSize(int n) {
+        receiveBufferSize_ = n;
+    }
+
+    void sendBufferSize(int n) {
+        sendBufferSize_ = n;
+    }
+
     virtual int socket();
 
     void closeOutput();
@@ -105,7 +117,9 @@ protected:                    // members
     in_addr remoteAddr_;      // remote ip adress
     std::string localHost_;   // local host
     in_addr localAddr_;       // local ip adress
-    int bufSize_;
+
+    int receiveBufferSize_ = 0;
+    int sendBufferSize_ = 0;
 
     // Debug
     bool debug_;

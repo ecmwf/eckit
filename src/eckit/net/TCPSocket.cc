@@ -56,7 +56,6 @@ TCPSocket::TCPSocket() :
     remotePort_(-1),
     remoteAddr_(none),
     localAddr_(none),
-    bufSize_(0),
     debug_(false),
     newline_(true),
     mode_(0) {}
@@ -70,7 +69,6 @@ TCPSocket::TCPSocket(net::TCPSocket& other) :
     remoteAddr_(other.remoteAddr_),
     localHost_(other.localHost_),
     localAddr_(other.localAddr_),
-    bufSize_(0),
     debug_(false),
     newline_(true),
     mode_(0) {
@@ -533,9 +531,6 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
         int tos = IPTOS_LOWDELAY;
         if (::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)) < 0)
             Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
-
-        /* #endif */
-        /* #endif */
     }
 
     if (opts.tcpNoDelay()) {
@@ -544,9 +539,27 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
             Log::warning() << "setsockopt TCP_NODELAY" << Log::syserr << std::endl;
     }
 
-    if (bufSize_) {
+    receiveBufferSize_ = receiveBufferSize_ ? receiveBufferSize_ : opts.receiveBufferSize();
+    if (receiveBufferSize_) {
 
-        Log::info() << "SOCKET SIZE " << bufSize_ << std::endl;
+        Log::debug() << "RECEIVE SOCKET BUFFER SIZE " << receiveBufferSize_ << std::endl;
+
+        int flg           = 0;
+        socklen_t flgsize = sizeof(flg);
+
+        if (getsockopt(s, SOL_SOCKET, SO_RCVBUF, &flg, &flgsize) < 0)
+            Log::warning() << "getsockopt SO_RCVBUF " << Log::syserr << std::endl;
+
+        if (flg != receiveBufferSize_) {
+            if (setsockopt(s, SOL_SOCKET, SO_RCVBUF, &receiveBufferSize_, sizeof(receiveBufferSize_)) < 0)
+                Log::warning() << "setsockopt SO_RCVBUF " << Log::syserr << std::endl;
+        }
+    }
+
+    sendBufferSize_ = sendBufferSize_ ? sendBufferSize_ : opts.sendBufferSize();
+    if (sendBufferSize_) {
+
+        Log::debug() << "SEND SOCKET BUFFER SIZE " << sendBufferSize_ << std::endl;
 
         int flg           = 0;
         socklen_t flgsize = sizeof(flg);
@@ -554,20 +567,11 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
         if (getsockopt(s, SOL_SOCKET, SO_SNDBUF, &flg, &flgsize) < 0)
             Log::warning() << "getsockopt SO_SNDBUF " << Log::syserr << std::endl;
 
-        if (flg != bufSize_) {
-            if (setsockopt(s, SOL_SOCKET, SO_SNDBUF, &bufSize_, sizeof(bufSize_)) < 0)
+        if (flg != sendBufferSize_) {
+            if (setsockopt(s, SOL_SOCKET, SO_SNDBUF, &sendBufferSize_, sizeof(sendBufferSize_)) < 0)
                 Log::warning() << "setsockopt SO_SNDBUF " << Log::syserr << std::endl;
         }
-
-        if (getsockopt(s, SOL_SOCKET, SO_RCVBUF, &flg, &flgsize) < 0)
-            Log::warning() << "getsockopt SO_RCVBUF " << Log::syserr << std::endl;
-
-        if (flg != bufSize_) {
-            if (setsockopt(s, SOL_SOCKET, SO_RCVBUF, &bufSize_, sizeof(bufSize_)) < 0)
-                Log::warning() << "setsockopt SO_RCVBUF " << Log::syserr << std::endl;
-        }
     }
-
 
     sockaddr_in sin;
     ::memset(&sin, 0, sizeof(struct sockaddr_in));

@@ -482,6 +482,37 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
     return *this;
 }
 
+int set_socket_buffer_size(int& socket, const char* ssock, const int& stype, const int size ) {
+    Log::debug() << "Setting " << ssock << " buffer size " << size << std::endl;
+
+    int flg           = 0;
+    socklen_t flgsize = sizeof(flg);
+
+    if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
+            Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
+
+        if (flg != size) {
+            if (setsockopt(socket, SOL_SOCKET, stype, &size, sizeof(size)) < 0)
+                Log::warning() << "setsockopt " << ssock << " " << Log::syserr << std::endl;
+
+            if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
+                Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
+
+            bool warn = (flg != size);
+#if defined(__linux__)
+            // For Linux we ignore if the effective size is 2x what is set
+            // see Linux 'man 7 socket'
+            // when set using setsockopt() the Linux kernel doubles the socket buffer size 
+            // to allow space for bookkeeping overhead and  this  doubled  value  is
+            // returned  by  getsockopt(). The minimum (doubled) value for this option is 2048.
+            warn &= !(flg == 2 * size);  
+#endif
+            if(warn)
+                Log::warning() << "Attempt to set " << stype << " buffer size to " << size << " but kernel set size to " << flg << std::endl;
+        }
+
+}
+
 
 int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
@@ -541,36 +572,12 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
     receiveBufferSize_ = receiveBufferSize_ ? receiveBufferSize_ : opts.receiveBufferSize();
     if (receiveBufferSize_) {
-
-        Log::debug() << "RECEIVE SOCKET BUFFER SIZE " << receiveBufferSize_ << std::endl;
-
-        int flg           = 0;
-        socklen_t flgsize = sizeof(flg);
-
-        if (getsockopt(s, SOL_SOCKET, SO_RCVBUF, &flg, &flgsize) < 0)
-            Log::warning() << "getsockopt SO_RCVBUF " << Log::syserr << std::endl;
-
-        if (flg != receiveBufferSize_) {
-            if (setsockopt(s, SOL_SOCKET, SO_RCVBUF, &receiveBufferSize_, sizeof(receiveBufferSize_)) < 0)
-                Log::warning() << "setsockopt SO_RCVBUF " << Log::syserr << std::endl;
-        }
+        set_socket_buffer_size(s, "SO_RCVBUF", SO_RCVBUF, receiveBufferSize_);
     }
 
     sendBufferSize_ = sendBufferSize_ ? sendBufferSize_ : opts.sendBufferSize();
     if (sendBufferSize_) {
-
-        Log::debug() << "SEND SOCKET BUFFER SIZE " << sendBufferSize_ << std::endl;
-
-        int flg           = 0;
-        socklen_t flgsize = sizeof(flg);
-
-        if (getsockopt(s, SOL_SOCKET, SO_SNDBUF, &flg, &flgsize) < 0)
-            Log::warning() << "getsockopt SO_SNDBUF " << Log::syserr << std::endl;
-
-        if (flg != sendBufferSize_) {
-            if (setsockopt(s, SOL_SOCKET, SO_SNDBUF, &sendBufferSize_, sizeof(sendBufferSize_)) < 0)
-                Log::warning() << "setsockopt SO_SNDBUF " << Log::syserr << std::endl;
-        }
+        set_socket_buffer_size(s, "SO_SNDBUF", SO_SNDBUF, sendBufferSize_);
     }
 
     sockaddr_in sin;

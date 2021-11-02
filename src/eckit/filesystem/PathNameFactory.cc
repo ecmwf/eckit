@@ -15,8 +15,11 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/config/LibEcKit.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
+
+static PathNameBuilder<LocalPathName> localBuilder("local");
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -79,27 +82,32 @@ void PathNameFactoryImpl::deregister(const PathNameBuilderBase* builder) {
 
 BasePathName* PathNameFactoryImpl::build(const std::string& type, const std::string& path, bool tildeIsUserHome) {
 
-//    AutoLock<StaticMutex> lock(static_mutex_);
-//
-//    auto it = builders_.find(type);
-//    if (it == builders_.end()) {
-//        std::ostringstream ss;
-//        ss << "PathNameBuilder '" << type << "' not found";
-//        throw SeriousBug(ss.str(), Here());
-//    }
-//
-//    return it->second->make(path, tildeIsUserHome);
-    return new BasePathNameT<LocalPathName>(LocalPathName(path));
+    // allow creation of local paths even after de-registration
+    // useful for out-of-order destructors and _at_exit() exceptions
+    if (type == "local") {
+        return localBuilder.make(path, tildeIsUserHome);
+    }
+
+    AutoLock<StaticMutex> lock(static_mutex_);
+
+    auto it = builders_.find(type);
+    if (it == builders_.end()) {
+        std::ostringstream ss;
+        ss << "PathNameBuilder '" << type << "' not found";
+        throw SeriousBug(ss.str(), Here());
+    }
+
+    return it->second->make(path, tildeIsUserHome);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 PathNameBuilderBase::PathNameBuilderBase(const std::string& name) {
-//    PathNameFactoryImpl::instance().enregister(name, this);
+    PathNameFactoryImpl::instance().enregister(name, this);
 }
 
 PathNameBuilderBase::~PathNameBuilderBase() {
-//    PathNameFactoryImpl::instance().deregister(this);
+    PathNameFactoryImpl::instance().deregister(this);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

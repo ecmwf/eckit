@@ -56,8 +56,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static PathNameBuilder<LocalPathName> localBuilder("local");
-
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
 

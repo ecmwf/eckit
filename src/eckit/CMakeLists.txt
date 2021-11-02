@@ -79,7 +79,7 @@ configure_file( eckit_version.cc.in  eckit_version.cc )
 
 ### eckit sources
 
-list( APPEND eckit_srcs eckit.h deprecated.h eckit_version.cc )
+list( APPEND eckit_srcs eckit.h deprecated.h ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.cc )
 
 list( APPEND eckit_container_srcs
 
@@ -745,6 +745,11 @@ if(eckit_HAVE_XXHASH)
         utils/xxHashing.h
         contrib/xxhash/xxhash.h
     )
+    if( CMAKE_CXX_COMPILER_ID MATCHES PGI|NVHPC AND
+        CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 21.9 )
+        # ECKIT-574: work around missing reference to "__builtin_rotateleft64"
+        set_source_files_properties(utils/xxHashing.cc PROPERTIES COMPILE_FLAGS -DNO_CLANG_BUILTIN)
+    endif()
 endif()
 
 
@@ -907,9 +912,6 @@ ecbuild_add_library(
 
           SOURCES
 						  ${eckit_srcs}
-
-          GENERATED
-						  eckit_version.cc
 
           TEMPLATES
 						  ${eckit_templates}

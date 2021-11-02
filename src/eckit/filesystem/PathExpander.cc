@@ -170,8 +170,7 @@ public:
             return;
         }
 
-        char line[4 * 1024];
-        zero(line);
+        char line[4 * 1024] = {};
         in.getline(line, sizeof(line));
 
         std::string value(line);

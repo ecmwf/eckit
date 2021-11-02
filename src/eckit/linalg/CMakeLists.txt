@@ -28,6 +28,14 @@ Vector.cc
 Vector.h
 )
 
+if( eckit_HAVE_OMP )
+    list( APPEND eckit_la_srcs
+        LinearAlgebraOpenMP.cc
+        LinearAlgebraOpenMP.h
+        )
+    set( eckit_linalg_OMP_LIBRARIES OpenMP::OpenMP_CXX )
+endif()
+
 ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
                      INSTALL_HEADERS    ALL
                      HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/linalg
@@ -44,9 +52,11 @@ ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
                                         "${ARMADILLO_LIBRARIES}"
                                         "${CUDA_LIBRARIES}" "${CUDA_cusparse_LIBRARY}"
                                         "${LAPACK_LIBRARIES}"
-                                        "${MKL_LIBRARIES}" )
+                                        "${MKL_LIBRARIES}"
+                                        "${eckit_linalg_OMP_LIBRARIES}" )
 
-if (CUDA_FOUND)
-set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
-cuda_add_cublas_to_target( eckit_linalg )
+if( CUDA_FOUND )
+  set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
+  cuda_add_cublas_to_target( eckit_linalg )
 endif()
+

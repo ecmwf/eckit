@@ -214,7 +214,8 @@ Connector& Connector::service(const std::string& name, const std::string& node) 
     return get(info.host(), info.port(), info.node());
 }
 
-Connector& Connector::service(const std::string& name, const std::map<std::string, Length>& cost) {
+Connector& Connector::service(const std::string& name, const std::map<std::string, Length>& cost,
+                              const std::set<std::string>& attributes) {
     std::string host;
     std::string node;
 
@@ -237,7 +238,7 @@ Connector& Connector::service(const std::string& name, const std::map<std::strin
     }
 
     if (!port) {
-        NodeInfo info = ClusterNodes::any(name);
+        NodeInfo info = ClusterNodes::any(name, attributes);
         host          = info.host();
         port          = info.port();
         node          = info.node();

@@ -26,6 +26,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+static const constexpr int MAX_NODE_ATTRIBUTES = 16;
+
 class ClusterNodeEntry {
     bool active_;
     time_t lastSeen_;
@@ -33,10 +35,11 @@ class ClusterNodeEntry {
     char node_[256];
     char type_[256];
     char host_[256];
+    int nattrs_;
+    char attributes_[MAX_NODE_ATTRIBUTES][256];
     int port_;
 
-public:
-    ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port) :
+    ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port, const std::set<std::string>& attributes) :
         active_(true), lastSeen_(Clock::now()), offLine_(false), port_(port) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
@@ -44,6 +47,28 @@ public:
         strncpy(type_, type.c_str(), sizeof(type_) - 1);
         zero(host_);
         strncpy(host_, host.c_str(), sizeof(host_) - 1);
+        ASSERT(attributes.size() <= MAX_NODE_ATTRIBUTES);
+        zero(attributes_);
+        nattrs_ = 0;
+        for (const auto& a : attributes) {
+            strncpy(attributes_[nattrs_++], a.c_str(), sizeof(attributes_[0])-1);
+        }
+    }
+
+public:
+
+    ClusterNodeEntry(const NodeInfo& info) :
+        ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
+
+    NodeInfo asNodeInfo() const {
+        NodeInfo info;
+        info.name(type());
+        info.node(node());
+        info.host(host());
+        info.port(port());
+        info.active(!offLine());
+        info.attributes(attributes());
+        return info;
     }
 
     bool operator<(const ClusterNodeEntry& other) const {
@@ -61,6 +86,10 @@ public:
         s << node_;
         s << type_;
         s << host_;
+        s << nattrs_;
+        for (int i = 0; i < nattrs_; ++i) {
+            s << attributes_[i];
+        }
         s << port_;
     }
 
@@ -72,6 +101,12 @@ public:
         s << "node" << node_;
         s << "type" << type_;
         s << "host" << host_;
+        s << "attributes";
+        s.startList();
+        for (int i = 0; i < nattrs_; ++i) {
+            s << attributes_[i];
+        }
+        s.endList();
         s << "port" << port_;
         s.endObject();
     }
@@ -96,6 +131,14 @@ public:
         s >> x;
         zero(host_);
         strncpy(host_, x.c_str(), sizeof(host_) - 1);
+
+        s >> nattrs_;
+        ASSERT(nattrs_ >= 0 && nattrs_ <= MAX_NODE_ATTRIBUTES);
+        zero(attributes_);
+        for (int i = 0; i < nattrs_; ++i) {
+            s >> x;
+            strncpy(attributes_[i], x.c_str(), sizeof(attributes_[0]) - 1);
+        }
 
         s >> port_;
 
@@ -124,6 +167,39 @@ public:
 
     const char* host() const { return host_; }
 
+    void attributes(const std::set<std::string>& attrs) {
+        ASSERT(attrs.size() >= 0 && attrs.size() <= MAX_NODE_ATTRIBUTES);
+        zero(attributes_);
+        nattrs_ = 0;
+        for (const auto& a : attrs) {
+            strncpy(attributes_[nattrs_++], a.c_str(), sizeof(attributes_[0])-1);
+        }
+    }
+
+    std::set<std::string> attributes() const {
+        std::set<std::string> ret;
+        for (int i = 0; i < nattrs_; ++i) {
+            ret.insert(attributes_[i]);
+        }
+        return ret;
+    }
+
+    int attributesCount() const { return nattrs_; }
+
+    bool hasAttributes(const std::set<std::string>& attributes) const {
+        for (const auto& a : attributes) {
+            bool found = false;
+            for (int i = 0; i < nattrs_; ++i) {
+                if (a == attributes_[i]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
+    }
+
     void host(const std::string& h) {
         zero(host_);
         strncpy(host_, h.c_str(), sizeof(host_) - 1);
@@ -138,8 +214,13 @@ public:
 std::ostream& operator<<(std::ostream& s, const ClusterNodeEntry& d) {
     s << "ClusterNodeEntry[" << d.node_ << "," << d.type_ << "," << d.host_ << ":" << d.port_ << ","
       << (Clock::now() - d.lastSeen_) << "," << (d.available() ? "available" : "not-available") << ","
-      << (d.offLine_ ? "off" : "on") << "-line"
-      << "]";
+      << (d.offLine_ ? "off" : "on") << "-line,{";
+    bool first = true;
+    for (int i = 0; i < d.nattrs_; ++i) {
+        s << (first ? "" : ",") << d.attributes_[i];
+        first = false;
+    }
+    s << "}]";
     return s;
 }
 
@@ -200,15 +281,15 @@ void ClusterNodes::refresh(const NodeInfo& info) {
                 (*k).host(info.host());
                 (*k).port(info.port());
                 (*k).offLine(false);
+                (*k).attributes(info.attributes());
                 return;
             }
         }
     }
 
     std::sort(nodeArray->begin(), nodeArray->end());
-    ClusterNodeEntry c(info.node(), info.name(), info.host(), info.port());
     ASSERT(!(*nodeArray)[0].active());
-    (*nodeArray)[0] = c;
+    (*nodeArray)[0] = ClusterNodeEntry(info);
     std::sort(nodeArray->begin(), nodeArray->end());
 }
 
@@ -216,38 +297,35 @@ NodeInfo ClusterNodes::lookUp(const std::string& type, const std::string& node) 
     pthread_once(&once, init);
     AutoLock<NodeArray> lock(*nodeArray);
 
-    for (NodeArray::const_iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
-        if ((*k).active() && type == (*k).type() && node == (*k).node()) {
-            NodeInfo info;
-            info.name((*k).type());
-            info.node((*k).node());
-            info.host((*k).host());
-            info.port((*k).port());
-            info.active(!(*k).offLine());
-            return info;
+    for (const auto& k : *nodeArray) {
+        if (k.active() && type == k.type() && node == k.node()) {
+            return k.asNodeInfo();
         }
     }
 
     throw SeriousBug(std::string("Cannot find info for ") + type + "@" + node);
 }
 
-NodeInfo ClusterNodes::any(const std::string& type) {
+NodeInfo ClusterNodes::any(const std::string& type, const std::set<std::string>& attributes) {
     pthread_once(&once, init);
     AutoLock<NodeArray> lock(*nodeArray);
 
-    for (NodeArray::const_iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
-        if ((*k).active() && (*k).available() && type == (*k).type()) {
-            NodeInfo info;
-            info.name((*k).type());
-            info.node((*k).node());
-            info.host((*k).host());
-            info.port((*k).port());
-            info.active(!(*k).offLine());
-            return info;
+    std::vector<const ClusterNodeEntry*> permitted;
+
+    for (const ClusterNodeEntry& k : *nodeArray) {
+        if (k.active() && k.available() && type == k.type()) {
+            if (k.hasAttributes(attributes)) {
+                permitted.push_back(&k);
+            }
         }
     }
 
-    throw Retry(std::string("Cannot find any node for ") + type);
+    if (permitted.empty()) {
+        throw Retry(std::string("Cannot find any node for ") + type);
+    }
+
+    int choice = random() % permitted.size();
+    return permitted[choice]->asNodeInfo();
 }
 
 bool ClusterNodes::available(const std::string& type, const std::string& node) {
@@ -312,13 +390,7 @@ std::vector<NodeInfo> ClusterNodes::all() {
     AutoLock<NodeArray> lock(*nodeArray);
     for (NodeArray::const_iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
         if ((*k).active()) {
-            NodeInfo info;
-            info.name((*k).type());
-            info.node((*k).node());
-            info.host((*k).host());
-            info.port((*k).port());
-            info.active(!(*k).offLine());
-            result.push_back(info);
+            result.push_back(k->asNodeInfo());
         }
     }
 

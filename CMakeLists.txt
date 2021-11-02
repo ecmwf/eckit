@@ -84,6 +84,17 @@ set_package_properties( Eigen3 PROPERTIES
                         DESCRIPTION "C++ template library for linear algebra"
                       )
 
+### OpenMP
+
+ecbuild_add_option( FEATURE OMP
+                    DEFAULT OFF
+                    DESCRIPTION "OpenMP matrix multiplication linear algebra backend"
+                    REQUIRED_PACKAGES "OpenMP COMPONENTS CXX" )
+
+if( NOT TARGET OpenMP::OpenMP_CXX )
+    set( eckit_HAVE_OMP 0 )
+endif()
+
 ### RADOS
 
 ecbuild_add_option( FEATURE RADOS

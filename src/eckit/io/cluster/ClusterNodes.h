@@ -43,8 +43,10 @@ public:
     static void send(Stream& s);
     static void receive(Stream& s);
 
-    static NodeInfo lookUp(const std::string&, const std::string&);
-    static NodeInfo any(const std::string&);
+    static NodeInfo lookUp(const std::string& type, const std::string& node);
+
+    // Attributes argument is optional. Determines a labelled subset of a given type of node
+    static NodeInfo any(const std::string& type, const std::set<std::string>& attributes={});
 
     static bool available(const std::string&, const std::string&);
 

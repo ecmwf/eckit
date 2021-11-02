@@ -11,6 +11,7 @@
 #include "eckit/filesystem/PathNameFactory.h"
 
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/config/LibEcKit.h"

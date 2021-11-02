@@ -16,6 +16,9 @@
 
 #include "eckit/memory/NonCopyable.h"
 
+#include <set>
+#include <string>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -31,6 +34,7 @@ public:
 
     void heartbeat();
 
+    virtual const std::set<std::string>& attributes() const;
     virtual int port() const         = 0;
     virtual void initialise(Stream&) = 0;
     virtual void refresh(Stream&)    = 0;

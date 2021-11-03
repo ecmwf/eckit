@@ -32,8 +32,9 @@ static void init(SocketOptions& opts) {
     static bool KeepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive", true);
     static bool IpLowDelay = eckit::Resource<bool>("socketOptionsIpLowDelay", true);
     static bool TcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", true);
-    static bool ReceiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
-    static bool SendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
+
+    static int ReceiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
+    static int SendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
 
     opts.reusePort(ReusePort);
     opts.reuseAddr(ReuseAddr);

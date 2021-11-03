@@ -491,26 +491,25 @@ void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, co
     if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
             Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
 
-        if (flg != size) {
-            if (setsockopt(socket, SOL_SOCKET, stype, &size, sizeof(size)) < 0)
-                Log::warning() << "setsockopt " << ssock << " " << Log::syserr << std::endl;
+    if (flg != size) {
+        if (setsockopt(socket, SOL_SOCKET, stype, &size, sizeof(size)) < 0)
+            Log::warning() << "setsockopt " << ssock << " " << Log::syserr << std::endl;
 
-            if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
-                Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
+        if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
+            Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
 
-            bool warn = (flg != size);
+        bool warn = (flg != size);
 #if defined(__linux__)
-            // For Linux we ignore if the effective size is 2x what is set
-            // see Linux 'man 7 socket'
-            // when set using setsockopt() the Linux kernel doubles the socket buffer size 
-            // to allow space for bookkeeping overhead and  this  doubled  value  is
-            // returned  by  getsockopt(). The minimum (doubled) value for this option is 2048.
-            warn &= !(flg == 2 * size);  
+        // For Linux we ignore if the effective size is 2x what is set
+        // see Linux 'man 7 socket'
+        // when set using setsockopt() the Linux kernel doubles the socket buffer size 
+        // to allow space for bookkeeping overhead and  this  doubled  value  is
+        // returned  by  getsockopt(). The minimum (doubled) value for this option is 2048.
+        warn &= !(flg == 2 * size);  
 #endif
-            if(warn)
-                Log::warning() << "Attempt to set " << stype << " buffer size to " << size << " but kernel set size to " << flg << std::endl;
-        }
-
+        if(warn)
+            Log::warning() << "Attempt to set " << stype << " buffer size to " << size << " but kernel set size to " << flg << std::endl;
+    }
 }
 
 

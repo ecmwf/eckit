@@ -482,7 +482,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
     return *this;
 }
 
-int set_socket_buffer_size(int& socket, const char* ssock, const int& stype, const int size ) {
+void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, const int size ) {
     Log::debug() << "Setting " << ssock << " buffer size " << size << std::endl;
 
     int flg           = 0;

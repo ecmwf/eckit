@@ -35,6 +35,9 @@ static void init(SocketOptions& opts) {
     static bool ReceiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
     static bool SendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
 
+    static int ReceiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
+    static int SendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
+
     opts.reusePort(ReusePort);
     opts.reuseAddr(ReuseAddr);
     opts.noLinger(NoLinger);

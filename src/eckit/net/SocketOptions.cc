@@ -26,26 +26,24 @@ static void init(SocketOptions& opts) {
 
     opts.listenBacklog(ListenBacklog);
 
-    static bool ReusePort  = eckit::Resource<bool>("socketOptionsReusePort", false);
-    static bool ReuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr", false);
-    static bool NoLinger   = eckit::Resource<bool>("socketOptionsNoLinger", false);
-    static bool KeepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive", true);
-    static bool IpLowDelay = eckit::Resource<bool>("socketOptionsIpLowDelay", true);
-    static bool TcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", true);
-    static bool ReceiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
-    static bool SendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
+    static bool reusePort  = eckit::Resource<bool>("socketOptionsReusePort", false);
+    static bool reuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr", false);
+    static bool noLinger   = eckit::Resource<bool>("socketOptionsNoLinger", false);
+    static bool keepAlive  = eckit::Resource<bool>("socketOptionsKeepAlive", true);
+    static bool ipLowDelay = eckit::Resource<bool>("socketOptionsIpLowDelay", true);
+    static bool tcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", true);
 
-    static int ReceiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
-    static int SendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
+    static int receiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
+    static int sendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
 
-    opts.reusePort(ReusePort);
-    opts.reuseAddr(ReuseAddr);
-    opts.noLinger(NoLinger);
-    opts.keepAlive(KeepAlive);
-    opts.ipLowDelay(IpLowDelay);
-    opts.tcpNoDelay(TcpNoDelay);
-    opts.receiveBufferSize(ReceiveBufferSize);
-    opts.sendBufferSize(SendBufferSize);
+    opts.reusePort(reusePort);
+    opts.reuseAddr(reuseAddr);
+    opts.noLinger(noLinger);
+    opts.keepAlive(keepAlive);
+    opts.ipLowDelay(ipLowDelay);
+    opts.tcpNoDelay(tcpNoDelay);
+    opts.receiveBufferSize(receiveBufferSize);
+    opts.sendBufferSize(sendBufferSize);
 }
 
 

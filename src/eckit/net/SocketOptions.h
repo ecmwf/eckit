@@ -39,6 +39,16 @@ struct SocketOptions {
         return *this;
     }
 
+    SocketOptions& receiveBufferSize(int size) {
+        receiveBufferSize_ = size;
+        return *this;
+    }
+
+    SocketOptions& sendBufferSize(int size) {
+        sendBufferSize_ = size;
+        return *this;
+    }
+
     SocketOptions& reusePort(bool v) {
         reusePort_ = v;
         return *this;
@@ -77,6 +87,8 @@ struct SocketOptions {
     bool tcpNoDelay() const { return tcpNoDelay_; }
 
     int listenBacklog() const { return listenBacklog_; }
+    int receiveBufferSize() const { return receiveBufferSize_; }
+    int sendBufferSize() const { return sendBufferSize_; }
 
     std::string bindAddress() const { return bindAddr_; }
 
@@ -93,6 +105,12 @@ private:
 
     /// Value to pass as backlog to ::listen() sockets
     int listenBacklog_ = 5;
+
+    /// size in bytes of the receive buffer
+    int receiveBufferSize_ = 0;
+
+    /// size in bytes of the send buffer
+    int sendBufferSize_ = 0;
 
     /// SO_REUSEPORT is useful if multiple threads want to bind to the same port and OS handles load balancing
     /// otherwise better not to set it.

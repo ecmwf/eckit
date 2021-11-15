@@ -16,9 +16,11 @@
 #include "eckit/eckit_config.h"
 
 #include "eckit/config/LibEcKit.h"
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 namespace mpi {
@@ -41,16 +43,22 @@ public:
             return forcedComm;
             // Use parallel communicator if in an MPI environment
         }
-        else if (have_parallel() && (::getenv("OMPI_COMM_WORLD_SIZE") ||  // OpenMPI
-                                     ::getenv("ALPS_APP_PE") ||           // Cray PE
-                                     ::getenv("PMI_SIZE") ||              // Intel
-                                     ::getenv("SLURM_NTASKS"))) {         // slurm srun
-            return "parallel";
-            // Use serial communicator otherwise
+        if (have_parallel()) {
+            const std::string defaultMPIDetectionVars =
+                "OMPI_COMM_WORLD_SIZE"   // OpenMPI
+                ",ALPS_APP_PE"           // Cray aprun
+                ",PMI_SIZE"              // Intel MPI
+                ",SLURM_STEP_NUM_TASKS"; // slurm srun
+            std::string eckitMPIDetectionVars = eckit::LibResource<std::string,LibEcKit>("$ECKIT_MPI_DETECTION_VARS;eckitMPIDetectionVars",defaultMPIDetectionVars);
+            std::vector<std::string> envVars;
+            Tokenizer{','}(eckitMPIDetectionVars,envVars);
+            for( const auto& env : envVars ) {
+                if( ::getenv(env.c_str()) ) {
+                    return "parallel";
+                }
+            }
         }
-        else {
-            return "serial";
-        }
+        return "serial";
     }
 
     static Environment& instance() {

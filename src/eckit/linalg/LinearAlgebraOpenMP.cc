@@ -20,13 +20,6 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// For testing
-#if 0
-extern "C" {
-int omp_get_num_threads();
-}
-#endif
-
 namespace eckit {
 namespace linalg {
 
@@ -41,8 +34,9 @@ Scalar LinearAlgebraOpenMP::dot(const Vector& x, const Vector& y) const {
 
     Scalar sum = 0.;
 
-#pragma omp parallel for reduction(+ \
-                                   : sum)
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for reduction(+ : sum)
+#endif
     for (Size i = 0; i < Ni; ++i) {
         auto p = x[i] * y[i];
         sum += p;
@@ -58,7 +52,9 @@ void LinearAlgebraOpenMP::gemv(const Matrix& A, const Vector& x, Vector& y) cons
     ASSERT(y.rows() == Ni);
     ASSERT(x.rows() == Nj);
 
+#ifdef eckit_HAVE_OMP
 #pragma omp parallel for
+#endif
     for (Size i = 0; i < Ni; ++i) {
         Scalar sum = 0.;
 
@@ -77,7 +73,9 @@ void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
     ASSERT(C.rows() == Ni);
     ASSERT(B.rows() == Nj);
 
+#ifdef eckit_HAVE_OMP
 #pragma omp parallel for
+#endif
     for (Size i = 0; i < Ni; ++i) {
         for (Size j = 0; j < Nj; ++j) {
             Scalar sum = 0.;
@@ -102,7 +100,9 @@ void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y
     ASSERT(y.rows() == Ni);
     ASSERT(x.rows() == Nj);
 
+#ifdef eckit_HAVE_OMP
 #pragma omp parallel for
+#endif
     for (Size i = 0; i < Ni; ++i) {
         Scalar sum = 0.;
 
@@ -129,7 +129,9 @@ void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C
 
     std::vector<Scalar> sum;
 
+#ifdef eckit_HAVE_OMP
 #pragma omp parallel for private(sum)
+#endif
     for (Size i = 0; i < Ni; ++i) {
         sum.assign(Nk, 0);
 

@@ -21,6 +21,10 @@ ecbuild_add_test( TARGET   eckit_test_linalg_tensor
                   SOURCES  test_la_tensor.cc util.h
                   LIBS     eckit_linalg )
 
+ecbuild_add_test( TARGET     eckit_test_linalg_linalg_generic
+                  COMMAND    eckit_test_linalg_linalg
+                  ARGS       --log_level=message -linearAlgebraBackend generic )
+
 ecbuild_add_test( TARGET     eckit_test_linalg_linalg_armadillo
                   COMMAND    eckit_test_linalg_linalg
                   CONDITION  eckit_HAVE_ARMADILLO
@@ -55,7 +59,6 @@ ecbuild_add_test( TARGET     eckit_test_linalg_linalg_viennacl
 
 ecbuild_add_test( TARGET     eckit_test_linalg_linalg_openmp
                   COMMAND    eckit_test_linalg_linalg
-                  CONDITION  eckit_HAVE_OMP
                   ARGS       --log_level=message -linearAlgebraBackend openmp )
 
 ecbuild_add_test( TARGET   eckit_test_linalg_sparse

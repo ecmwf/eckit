@@ -68,19 +68,21 @@ void LinearAlgebraOpenMP::gemv(const Matrix& A, const Vector& x, Vector& y) cons
 
 void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
     const auto Ni = A.rows();
-    const auto Nj = A.cols();
+    const auto Nj = B.cols();
+    const auto Nk = A.cols();
 
     ASSERT(C.rows() == Ni);
-    ASSERT(B.rows() == Nj);
+    ASSERT(C.cols() == Nj);
+    ASSERT(B.rows() == Nk);
 
 #ifdef eckit_HAVE_OMP
-#pragma omp parallel for
+#pragma omp parallel for collapse(2)
 #endif
-    for (Size i = 0; i < Ni; ++i) {
-        for (Size j = 0; j < Nj; ++j) {
+    for (Size j = 0; j < Nj; ++j) {
+        for (Size i = 0; i < Ni; ++i) {
             Scalar sum = 0.;
 
-            for (Size k = 0; k < Nj; ++k) {
+            for (Size k = 0; k < Nk; ++k) {
                 sum += A(i, k) * B(k, j);
             }
 

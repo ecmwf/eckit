@@ -65,7 +65,7 @@ void MethodT<STATS>::mean(data::MIRField& field) const {
         value       = stat == stat ? stat : missingValue;
     }
 
-    field.update(statistics, 0);
+    field.update(statistics, 0, true);
 }
 
 
@@ -84,7 +84,7 @@ void MethodT<STATS>::variance(data::MIRField& field) const {
         *v        = stat == stat ? stat : missingValue;
     }
 
-    field.update(statistics, 0);
+    field.update(statistics, 0, true);
 }
 
 
@@ -103,7 +103,7 @@ void MethodT<STATS>::stddev(data::MIRField& field) const {
         *v        = stat == stat ? stat : missingValue;
     }
 
-    field.update(statistics, 0);
+    field.update(statistics, 0, true);
 }
 
 

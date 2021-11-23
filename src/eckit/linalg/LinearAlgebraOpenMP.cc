@@ -35,7 +35,8 @@ Scalar LinearAlgebraOpenMP::dot(const Vector& x, const Vector& y) const {
     Scalar sum = 0.;
 
 #ifdef eckit_HAVE_OMP
-#pragma omp parallel for reduction(+ : sum)
+#pragma omp parallel for reduction(+ \
+                                   : sum)
 #endif
     for (Size i = 0; i < Ni; ++i) {
         auto p = x[i] * y[i];
@@ -152,7 +153,23 @@ void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C
 }
 
 void LinearAlgebraOpenMP::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
+    ASSERT(x.size() == A.rows() && A.cols() == y.size());
+
+    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
+
+    B = A;
+
+    const Index* outer = B.outer();
+    const Index* inner = B.inner();
+    Scalar* val        = const_cast<Scalar*>(B.data());
+
+    for (Size r = 0, k = 0; r < B.rows(); ++r) {
+        for (Index j = outer[r]; j < outer[r + 1]; ++j, ++k) {
+            auto c = static_cast<Size>(inner[j]);
+            ASSERT(c < B.cols());
+            val[k] *= x[r] * y[c];
+        }
+    }
 }
 
 void LinearAlgebraOpenMP::print(std::ostream& out) const {

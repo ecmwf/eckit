@@ -93,13 +93,14 @@ void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
 }
 
 void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    const auto outer = A.outer();
-    const auto inner = A.inner();
-    const auto val   = A.data();
+    const auto* const outer = A.outer();
+    const auto* const inner = A.inner();
+    const auto* const val   = A.data();
 
     const auto Ni = A.rows();
     const auto Nj = A.cols();
 
+    ASSERT(A.empty() || outer[0] == 0);  // expect indices to be 0-based
     ASSERT(y.rows() == Ni);
     ASSERT(x.rows() == Nj);
 
@@ -118,14 +119,15 @@ void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y
 }
 
 void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    const auto outer = A.outer();
-    const auto inner = A.inner();
-    const auto val   = A.data();
+    const auto* const outer = A.outer();
+    const auto* const inner = A.inner();
+    const auto* const val   = A.data();
 
     const auto Ni = A.rows();
     const auto Nj = A.cols();
     const auto Nk = B.cols();
 
+    ASSERT(A.empty() || outer[0] == 0);  // expect indices to be 0-based
     ASSERT(C.rows() == Ni);
     ASSERT(B.rows() == Nj);
     ASSERT(C.cols() == Nk);
@@ -153,21 +155,27 @@ void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C
 }
 
 void LinearAlgebraOpenMP::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    ASSERT(x.size() == A.rows() && A.cols() == y.size());
+    const auto Ni = B.rows();
+    const auto Nj = B.cols();
 
-    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
+    ASSERT(A.empty() || A.outer()[0] == 0);  // expect indices to be 0-based
+    ASSERT(x.size() == Ni);
+    ASSERT(y.size() == Nj);
 
     B = A;
 
-    const Index* outer = B.outer();
-    const Index* inner = B.inner();
-    Scalar* val        = const_cast<Scalar*>(B.data());
+    const auto* outer = B.outer();
+    const auto* inner = B.inner();
+    auto* val         = const_cast<Scalar*>(B.data());
 
-    for (Size r = 0, k = 0; r < B.rows(); ++r) {
-        for (Index j = outer[r]; j < outer[r + 1]; ++j, ++k) {
-            auto c = static_cast<Size>(inner[j]);
-            ASSERT(c < B.cols());
-            val[k] *= x[r] * y[c];
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for private(k)
+#endif
+    for (Size i = 0; i < Ni; ++i) {
+        for (auto k = outer[i]; k < outer[i + 1]; ++k) {
+            auto j = static_cast<Size>(inner[k]);
+            ASSERT(j < Nj);
+            val[k] *= x[i] * y[j];
         }
     }
 }

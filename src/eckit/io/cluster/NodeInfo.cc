@@ -37,7 +37,7 @@ NodeInfo& NodeInfo::init() {
     if (!name_.length()) {
         static std::string myNode = Resource<std::string>("node", "<missing-node-name>");
         static std::string myHost = Resource<std::string>("host", "");
-        static std::string myUser;
+        static std::string myUser = Resource<std::string>("user", "");
 
         name_ = Main::instance().name();
 

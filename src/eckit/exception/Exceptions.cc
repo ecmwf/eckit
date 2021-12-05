@@ -204,24 +204,18 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc) {
     reason(msg);
 }
 
-std::string create_assert_msg(const std::string& msg, const CodeLocation& loc)
-{
-    std::ostringstream s;
-    s << "Assertion failed: " << msg << " in " << loc.func() << ", line " << loc.line() << " of " << loc.file();
-    return s.str();
-}
-
 
 void handle_assert(const std::string& msg, const CodeLocation& loc)
 {
-    std::string s = create_assert_msg(msg, loc);
+    std::ostringstream s;
+    s << "Assertion failed: " << msg << " in " << loc.func() << ", line " << loc.line() << " of " << loc.file();
 
     if (!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
 
-        Log::status() << s << std::endl;
+        Log::status() << s.str() << std::endl;
         Log::status() << std::flush;
 
-        std::cout << s << std::endl;
+        std::cout << s.str() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
         std::cout << std::flush;
     }
@@ -230,7 +224,7 @@ void handle_assert(const std::string& msg, const CodeLocation& loc)
         LibEcKit::instance().abort();
     }
     else {
-        throw AssertionFailed(s, loc);
+        throw AssertionFailed(s.str(), loc);
     }
 }
 

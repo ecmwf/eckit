@@ -61,12 +61,17 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
     // Should any of the nodes be removed from the cost matrix, because they don't support
     // the required attributes?
+    // Also remove any movers that are not up
 
     for (auto it = cost.begin(); it != cost.end(); /* no increment */) {
-        if (!ClusterNodes::lookUp("mover", it->first).supportsAttributes(moverAttributes)) {
-            cost.erase(it++);
+        if (!ClusterNodes::available("mover", it->first)) {
+            if (!ClusterNodes::lookUp("mover", it->first).supportsAttributes(moverAttributes)) {
+                cost.erase(it++);
+            } else {
+                ++it;
+            }
         } else {
-            ++it;
+            cost.erase(it++);
         }
     }
 

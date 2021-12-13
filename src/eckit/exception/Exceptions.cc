@@ -192,58 +192,30 @@ SeriousBug::SeriousBug(const char* msg, const CodeLocation& loc) {
     }
 }
 
-
-AssertionFailed::AssertionFailed(const std::string& w) :
-    Exception(std::string("Assertion failed: ") + w) {
-    if (!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
-
-        Log::status() << what() << std::endl;
-        Log::status() << std::flush;
-
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-        std::cout << std::flush;
-    }
-
-    if (::getenv("ECKIT_ASSERT_ABORTS")) {
-        LibEcKit::instance().abort();
-    }
+AssertionFailed::AssertionFailed(const std::string& msg) {
+    reason(msg);
 }
 
 AssertionFailed::AssertionFailed(const std::string& msg, const CodeLocation& loc) {
-    std::ostringstream s;
-    s << "Assertion failed: " << msg << " in " << loc.func() << ", line " << loc.line() << " of " << loc.file();
-
-    reason(s.str());
-
-    if (!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
-
-        Log::status() << what() << std::endl;
-        Log::status() << std::flush;
-
-        std::cout << what() << std::endl;
-        std::cout << BackTrace::dump() << std::endl;
-        std::cout << std::flush;
-    }
-
-    if (::getenv("ECKIT_ASSERT_ABORTS")) {
-        LibEcKit::instance().abort();
-    }
+    reason(msg);
 }
 
 AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc) {
+    reason(msg);
+}
+
+
+void handle_assert(const std::string& msg, const CodeLocation& loc)
+{
     std::ostringstream s;
-
     s << "Assertion failed: " << msg << " in " << loc.func() << ", line " << loc.line() << " of " << loc.file();
-
-    reason(s.str());
 
     if (!::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
 
-        Log::status() << what() << std::endl;
+        Log::status() << s.str() << std::endl;
         Log::status() << std::flush;
 
-        std::cout << what() << std::endl;
+        std::cout << s.str() << std::endl;
         std::cout << BackTrace::dump() << std::endl;
         std::cout << std::flush;
     }
@@ -251,7 +223,11 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc) {
     if (::getenv("ECKIT_ASSERT_ABORTS")) {
         LibEcKit::instance().abort();
     }
+    else {
+        throw AssertionFailed(s.str(), loc);
+    }
 }
+
 
 BadParameter::BadParameter(const std::string& w) :
     Exception(std::string("Bad parameter: ") + w) {}

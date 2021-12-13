@@ -204,6 +204,9 @@ public:
     /// @returns read-only view of the inner index vector
     const Index* inner() const { return spm_.inner_; }
 
+    /// Set a new number of columns (may invalidate data)
+    void cols(Size cols);
+
     /// Reserve memory for given number of non-zeros (invalidates all data arrays)
     /// @note variables into this method must be by value
     void reserve(Size rows, Size cols, Size nnz);
@@ -263,19 +266,19 @@ public:  // iterators
         Scalar& operator*();
     };
 
-    /// const iterators to being/end of row
+    /// const iterators to begin/end of row
     const_iterator begin(Size row) const { return const_iterator(*this, row); }
     const_iterator end(Size row) const { return const_iterator(*this, row + 1); }
 
-    /// const iterators to being/end of matrix
+    /// const iterators to begin/end of matrix
     const_iterator begin() const { return const_iterator(*this); }
     const_iterator end() const { return const_iterator(*this, rows()); }
 
-    /// iterators to being/end of row
+    /// iterators to begin/end of row
     iterator begin(Size row) { return iterator(*this, row); }
     iterator end(Size row) { return iterator(*this, row + 1); }
 
-    /// const iterators to being/end of matrix
+    /// const iterators to begin/end of matrix
     iterator begin() { return iterator(*this); }
     iterator end() { return iterator(*this, rows()); }
 
@@ -288,9 +291,6 @@ private:  // methods
 
     /// Deserialise from a Stream
     void decode(Stream& s);
-
-    /// Resize sparse matrix (invalidates all data arrays)
-    void resize(Size rows, Size cols);
 
 private:  // members
     Layout spm_;

@@ -1,6 +1,6 @@
 ecbuild_add_test( TARGET   eckit_test_container_sharedmemarray
                   SOURCES  test_sharedmemarray.cc
-                  LIBS     eckit )
+                  LIBS     eckit ${RT_LIBRARIES} )
 
 ecbuild_add_test( TARGET   eckit_test_container_btree
                   SOURCES  test_btree.cc

@@ -27,6 +27,8 @@ void handle_panic(const char*);
 void handle_panic(const char*, const CodeLocation&);
 void handle_panic_no_log(const char*, const CodeLocation&);
 
+void handle_assert(const std::string&, const CodeLocation&);
+
 /// @brief General purpose exception
 /// Derive other exceptions from this class and implement then in the class that throws them.
 
@@ -260,15 +262,25 @@ inline void ThrCall(int code, const char* msg, const char* file, int line, const
         handle_panic(msg, CodeLocation(file, line, func));
 }
 
+/// This functions hides that assertions may be handled by a throw of AssertionFailed
+/// which is incompatible with using ASSERT inside destructors that are marked as no-throw,
+/// which is the default behavior in C++11.
+/// If env var ECKIT_ASSERT_ABORTS is set the assertion will abort instead of throwing.
+/// In the future this will become the default behavior.
 inline void Assert(int code, const char* msg, const char* file, int line, const char* func) {
     if (code != 0) {
-        throw AssertionFailed(msg, CodeLocation(file, line, func));
+        handle_assert(msg, eckit::CodeLocation(file, line, func));
     }
 }
 
+/// This functions hides that assertions may be handled by a throw of AssertionFailed
+/// which is incompatible with using ASSERT inside destructors that are marked as no-throw,
+/// which is the default behavior in C++11.
+/// If env var ECKIT_ASSERT_ABORTS is set the assertion will abort instead of throwing.
+/// In the future this will become the default behavior.
 inline void Assert(int code, const std::string& msg, const char* file, int line, const char* func) {
     if (code != 0) {
-        throw AssertionFailed(msg, CodeLocation(file, line, func));
+        handle_assert(msg, eckit::CodeLocation(file, line, func));
     }
 }
 
@@ -302,8 +314,9 @@ public:
 #define SYSCALL2(a, b) ::eckit::SysCall(a, #a, b, __FILE__, __LINE__, __func__)
 #define PANIC(a) ::eckit::Panic((a), #a, Here())
 #define NOTIMP throw ::eckit::NotImplemented(Here())
-#define ASSERT(a) ::eckit::Assert(!(a), #a, __FILE__, __LINE__, __func__)
-#define ASSERT_MSG(a, m) ::eckit::Assert(!(a), m, __FILE__, __LINE__, __func__)
+
+#define ASSERT(a)        static_cast<void>(0), (a) ? (void)0 : ::eckit::Assert(!(a), #a, __FILE__, __LINE__, __func__)
+#define ASSERT_MSG(a, m) static_cast<void>(0), (a) ? (void)0 : ::eckit::Assert(!(a), m, __FILE__, __LINE__, __func__)
 
 #define CHECK_CALL_NOLOG(a) ::eckit::PanicNoLog(a, #a, Here())
 

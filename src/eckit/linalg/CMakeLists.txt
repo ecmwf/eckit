@@ -14,6 +14,8 @@ LinearAlgebraLAPACK.cc
 LinearAlgebraLAPACK.h
 LinearAlgebraMKL.cc
 LinearAlgebraMKL.h
+LinearAlgebraOpenMP.cc
+LinearAlgebraOpenMP.h
 LinearAlgebraViennaCL.cc
 LinearAlgebraViennaCL.h
 Matrix.cc
@@ -29,10 +31,6 @@ Vector.h
 )
 
 if( eckit_HAVE_OMP )
-    list( APPEND eckit_la_srcs
-        LinearAlgebraOpenMP.cc
-        LinearAlgebraOpenMP.h
-        )
     set( eckit_linalg_OMP_LIBRARIES OpenMP::OpenMP_CXX )
 endif()
 

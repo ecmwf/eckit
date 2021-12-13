@@ -491,7 +491,7 @@ void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, co
     if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
             Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
 
-    if (flg != size) {
+   if (flg != size) {
         if (setsockopt(socket, SOL_SOCKET, stype, &size, sizeof(size)) < 0)
             Log::warning() << "setsockopt " << ssock << " " << Log::syserr << std::endl;
 

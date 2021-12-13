@@ -1,5 +1,6 @@
 add_subdirectory( config   )
 add_subdirectory( container )
+add_subdirectory( exception )
 add_subdirectory( filesystem )
 add_subdirectory( geometry )
 add_subdirectory( io )

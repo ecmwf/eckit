@@ -11,11 +11,15 @@
 #include "eckit/filesystem/PathNameFactory.h"
 
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/config/LibEcKit.h"
+#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
+
+static PathNameBuilder<LocalPathName> localBuilder("local");
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -77,6 +81,12 @@ void PathNameFactoryImpl::deregister(const PathNameBuilderBase* builder) {
 }
 
 BasePathName* PathNameFactoryImpl::build(const std::string& type, const std::string& path, bool tildeIsUserHome) {
+
+    // allow creation of local paths even after de-registration
+    // useful for out-of-order destructors and _at_exit() exceptions
+    if (type == "local") {
+        return localBuilder.make(path, tildeIsUserHome);
+    }
 
     AutoLock<StaticMutex> lock(static_mutex_);
 

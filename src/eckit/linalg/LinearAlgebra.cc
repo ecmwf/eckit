@@ -140,7 +140,7 @@ bool LinearAlgebra::hasBackend(const std::string& name) {
 void LinearAlgebra::backend(const std::string& name) {
     pthread_once(&once, init);
     backends->backend(name);
-   Log::debug<LibEcKit>() << "Setting LinearAlgebra backend to " << name << std::endl;
+    Log::debug<LibEcKit>() << "Setting LinearAlgebra backend to " << name << std::endl;
 }
 
 void LinearAlgebra::list(std::ostream& out) {

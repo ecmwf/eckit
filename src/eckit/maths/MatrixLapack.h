@@ -391,7 +391,6 @@ public:
         Matrix dot(const Matrix& m) const {
         // Very naive implementation. We should use BLAS later
         Matrix result(rows(), m.cols());
-        result *= 0.;
         for (Index i = 0; i < rows(); ++i) {
             for (Index j = 0; j < m.cols(); ++j) {
                 result(i, j) = 0.;

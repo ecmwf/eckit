@@ -93,16 +93,21 @@ void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
 }
 
 void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
+
+    ASSERT(y.rows() == Ni);
+    ASSERT(x.rows() == Nj);
+
+    if (A.empty()) {
+        return;
+    }
+
     const auto* const outer = A.outer();
     const auto* const inner = A.inner();
     const auto* const val   = A.data();
 
-    const auto Ni = A.rows();
-    const auto Nj = A.cols();
-
-    ASSERT(A.empty() || outer[0] == 0);  // expect indices to be 0-based
-    ASSERT(y.rows() == Ni);
-    ASSERT(x.rows() == Nj);
+    ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
 #ifdef eckit_HAVE_OMP
 #pragma omp parallel for
@@ -119,18 +124,23 @@ void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y
 }
 
 void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    const auto* const outer = A.outer();
-    const auto* const inner = A.inner();
-    const auto* const val   = A.data();
-
     const auto Ni = A.rows();
     const auto Nj = A.cols();
     const auto Nk = B.cols();
 
-    ASSERT(A.empty() || outer[0] == 0);  // expect indices to be 0-based
     ASSERT(C.rows() == Ni);
     ASSERT(B.rows() == Nj);
     ASSERT(C.cols() == Nk);
+
+    if (A.empty()) {
+        return;
+    }
+
+    const auto* const outer = A.outer();
+    const auto* const inner = A.inner();
+    const auto* const val   = A.data();
+
+    ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
     std::vector<Scalar> sum;
 
@@ -155,18 +165,22 @@ void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C
 }
 
 void LinearAlgebraOpenMP::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    const auto Ni = B.rows();
-    const auto Nj = B.cols();
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
 
-    ASSERT(A.empty() || A.outer()[0] == 0);  // expect indices to be 0-based
     ASSERT(x.size() == Ni);
     ASSERT(y.size() == Nj);
 
     B = A;
+    if (A.empty()) {
+        return;
+    }
 
-    const auto* outer = B.outer();
-    const auto* inner = B.inner();
-    auto* val         = const_cast<Scalar*>(B.data());
+    const auto* const outer = B.outer();
+    const auto* const inner = B.inner();
+    auto* const val         = const_cast<Scalar*>(B.data());
+
+    ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
 #ifdef eckit_HAVE_OMP
 #pragma omp parallel for

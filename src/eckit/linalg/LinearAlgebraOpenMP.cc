@@ -169,7 +169,7 @@ void LinearAlgebraOpenMP::dsptd(const Vector& x, const SparseMatrix& A, const Ve
     auto* val         = const_cast<Scalar*>(B.data());
 
 #ifdef eckit_HAVE_OMP
-#pragma omp parallel for private(k)
+#pragma omp parallel for
 #endif
     for (Size i = 0; i < Ni; ++i) {
         for (auto k = outer[i]; k < outer[i + 1]; ++k) {

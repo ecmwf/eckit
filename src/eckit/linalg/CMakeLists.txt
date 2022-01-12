@@ -1,5 +1,4 @@
 list( APPEND eckit_la_srcs
-types.h
 LinearAlgebra.cc
 LinearAlgebra.h
 LinearAlgebraArmadillo.cc
@@ -20,14 +19,15 @@ LinearAlgebraViennaCL.cc
 LinearAlgebraViennaCL.h
 Matrix.cc
 Matrix.h
-Tensor.cc
-Tensor.h
 SparseMatrix.cc
 SparseMatrix.h
+Tensor.cc
+Tensor.h
 Triplet.cc
 Triplet.h
 Vector.cc
 Vector.h
+types.h
 )
 
 if( eckit_HAVE_OMP )

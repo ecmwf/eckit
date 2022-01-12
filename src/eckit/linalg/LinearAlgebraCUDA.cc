@@ -8,17 +8,17 @@
  * nor does it submit to any jurisdiction.
  */
 
+
 #include "eckit/eckit.h"
 
 #ifdef eckit_HAVE_CUDA
 
 #include "eckit/linalg/LinearAlgebraCUDA.h"
+#include "eckit/linalg/LinearAlgebraGeneric.h"
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 #include <cusparse.h>
-
-//----------------------------------------------------------------------------------------------------------------------
 
 #define CALL_CUDA(e)                                                                                              \
     {                                                                                                             \
@@ -41,28 +41,40 @@
             printf("%s failed with error code %d @ %s +%d\n", #e, error, __FILE__, __LINE__), exit(EXIT_FAILURE); \
     }
 
-//----------------------------------------------------------------------------------------------------------------------
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace linalg {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraCUDA::LinearAlgebraCUDA() :
-    LinearAlgebra("cuda") {}
+namespace {
+static const std::string __name{"cuda"};
 
-//----------------------------------------------------------------------------------------------------------------------
+static const dense::LinearAlgebraCUDA __lad(__name);
+static const sparse::LinearAlgebraCUDA __las(__name);
+static const deprecated::LinearAlgebraCUDA __la(__name);
+}  // anonymous namespace
+
+
+namespace dense {
+
+
+//-----------------------------------------------------------------------------
+
+
+void LinearAlgebraCUDA::print(std::ostream& out) const {
+    out << "LinearAlgebraCUDA[]";
+}
+
 
 Scalar LinearAlgebraCUDA::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
-    const Size size = x.size() * sizeof(Scalar);
+
+    const auto size = Size(x.size() * sizeof(Scalar));
     Scalar r;
 
     Scalar* d_x;  ///< device memory vector x
@@ -91,13 +103,14 @@ Scalar LinearAlgebraCUDA::dot(const Vector& x, const Vector& y) const {
     return r;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
-    const Size sizeA = A.rows() * A.cols() * sizeof(Scalar);
-    const Size sizex = A.cols() * sizeof(Scalar);
-    const Size sizey = A.rows() * sizeof(Scalar);
+    ASSERT(x.size() == A.cols());
+    ASSERT(y.size() == A.rows());
+
+    const auto sizeA = Size(A.rows() * A.cols() * sizeof(Scalar));
+    const auto sizex = Size(A.cols() * sizeof(Scalar));
+    const auto sizey = Size(A.rows() * sizeof(Scalar));
 
     Scalar* d_A;  ///< device memory matrix A
     Scalar* d_x;  ///< device memory vector x
@@ -115,6 +128,7 @@ void LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x, Vector& y) const 
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
+
     // cublasStatus_t cublasDgemv(cublasHandle_t handle, cublasOperation_t trans,
     //                            int m, int n,
     //                            const double *alpha, const double *A, int lda, const double *x, int incx,
@@ -130,13 +144,15 @@ void LinearAlgebraCUDA::gemv(const Matrix& A, const Vector& x, Vector& y) const 
     CALL_CUDA(cudaFree(d_y));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
-    const Size sizeA = A.rows() * A.cols() * sizeof(Scalar);
-    const Size sizeB = B.rows() * B.cols() * sizeof(Scalar);
-    const Size sizeC = A.rows() * B.cols() * sizeof(Scalar);
+    ASSERT(A.cols() == B.rows());
+    ASSERT(A.rows() == C.rows());
+    ASSERT(B.cols() == C.cols());
+
+    const auto sizeA = Size(A.rows() * A.cols() * sizeof(Scalar));
+    const auto sizeB = Size(B.rows() * B.cols() * sizeof(Scalar));
+    const auto sizeC = Size(A.rows() * B.cols() * sizeof(Scalar));
 
     Scalar* d_A;  ///< device memory matrix A
     Scalar* d_B;  ///< device memory matrix B
@@ -154,6 +170,7 @@ void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const 
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
+
     // cublasStatus_t cublasDgemm(cublasHandle_t handle, cublasOperation_t transa, cublasOperation_t transb,
     //                            int m, int n, int k,
     //                            const double *alpha, const double *A, int lda, const double *B, int ldb,
@@ -170,7 +187,26 @@ void LinearAlgebraCUDA::gemm(const Matrix& A, const Matrix& B, Matrix& C) const 
     CALL_CUDA(cudaFree(d_C));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+
+
+}  // namespace dense
+
+
+//-----------------------------------------------------------------------------
+
+
+namespace sparse {
+
+
+//-----------------------------------------------------------------------------
+
+
+void LinearAlgebraCUDA::print(std::ostream& out) const {
+    out << "LinearAlgebraCUDA[]";
+}
+
 
 void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     ASSERT(x.size() == A.cols() && y.size() == A.rows());
@@ -229,7 +265,6 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
     CALL_CUDA(cudaFree(d_y));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
@@ -291,25 +326,19 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     CALL_CUDA(cudaFree(d_C));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraCUDA::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
+    static const sparse::LinearAlgebraGeneric generic;
+    generic.dsptd(x, A, y, B);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
-void LinearAlgebraCUDA::print(std::ostream& out) const {
-    out << "LinearAlgebraCUDA[]";
-}
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
 
-static LinearAlgebraCUDA linearAlgebraCUDA;
-
-//----------------------------------------------------------------------------------------------------------------------
-
+}  // namespace sparse
 }  // namespace linalg
 }  // namespace eckit
+
 
 #endif  // eckit_HAVE_CUDA

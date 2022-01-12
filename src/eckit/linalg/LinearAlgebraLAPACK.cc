@@ -8,16 +8,17 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "eckit/linalg/LinearAlgebraLAPACK.h"
+
+#include "eckit/eckit.h"
 
 #ifdef eckit_HAVE_LAPACK
 
+#include "eckit/linalg/LinearAlgebraLAPACK.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
-#include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
 
@@ -36,66 +37,69 @@ static const int inc      = 1;
 static const double alpha = 1.;
 static const double beta  = 0.;
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace linalg {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraLAPACK::LinearAlgebraLAPACK() :
-    LinearAlgebra("lapack") {}
+namespace {
+static const std::string __name{"lapack"};
 
-Scalar LinearAlgebraLAPACK::dot(const Vector& x, const Vector& y) const {
-    ASSERT(x.size() == y.size());
+static const dense::LinearAlgebraLAPACK __lad(__name);
+static const deprecated::LinearAlgebraLAPACK __la(__name);
+}  // anonymous namespace
 
-    const int n = int(x.size());
 
-    return ddot_(&n, x.data(), &inc, y.data(), &inc);
-}
+namespace dense {
 
-void LinearAlgebraLAPACK::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
 
-    const int m = int(A.rows());
-    const int n = int(A.cols());
+//-----------------------------------------------------------------------------
 
-    dgemv_(trans, &m, &n, &alpha, A.data(), &m, x.data(), &inc, &beta, y.data(), &inc);
-}
-
-void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
-
-    const int m = int(A.rows());
-    const int n = int(B.cols());
-    const int k = int(A.cols());
-
-    dgemm_(trans, trans, &m, &n, &k, &alpha, A.data(), &m, B.data(), &k, &beta, C.data(), &m);
-}
-
-void LinearAlgebraLAPACK::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    LinearAlgebra::getBackend("generic").spmv(A, x, y);
-}
-
-void LinearAlgebraLAPACK::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    LinearAlgebra::getBackend("generic").spmm(A, B, C);
-}
-
-void LinearAlgebraLAPACK::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
-}
 
 void LinearAlgebraLAPACK::print(std::ostream& out) const {
     out << "LinearAlgebraLAPACK[]";
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
-static LinearAlgebraLAPACK __la;
+Scalar LinearAlgebraLAPACK::dot(const Vector& x, const Vector& y) const {
+    ASSERT(x.size() == y.size());
 
-//----------------------------------------------------------------------------------------------------------------------
+    const auto n = int(x.size());
 
+    return ddot_(&n, x.data(), &inc, y.data(), &inc);
+}
+
+
+void LinearAlgebraLAPACK::gemv(const Matrix& A, const Vector& x, Vector& y) const {
+    ASSERT(x.size() == A.cols());
+    ASSERT(y.size() == A.rows());
+
+    const auto m = int(A.rows());
+    const auto n = int(A.cols());
+
+    dgemv_(trans, &m, &n, &alpha, A.data(), &m, x.data(), &inc, &beta, y.data(), &inc);
+}
+
+
+void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT(A.cols() == B.rows());
+    ASSERT(A.rows() == C.rows());
+    ASSERT(B.cols() == C.cols());
+
+    const auto m = int(A.rows());
+    const auto n = int(B.cols());
+    const auto k = int(A.cols());
+
+    dgemm_(trans, trans, &m, &n, &k, &alpha, A.data(), &m, B.data(), &k, &beta, C.data(), &m);
+}
+
+
+//-----------------------------------------------------------------------------
+
+
+}  // namespace dense
 }  // namespace linalg
 }  // namespace eckit
+
 
 #endif  // eckit_HAVE_LAPACK

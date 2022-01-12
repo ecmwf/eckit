@@ -8,25 +8,42 @@
  * nor does it submit to any jurisdiction.
  */
 
+
 #include "eckit/linalg/LinearAlgebraOpenMP.h"
 
 #include <ostream>
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/linalg/LinearAlgebraGeneric.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace linalg {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraOpenMP::LinearAlgebraOpenMP() :
-    LinearAlgebra("openmp") {}
+namespace {
+static const std::string __name{"openmp"};
+
+static const dense::LinearAlgebraOpenMP __lad(__name);
+static const sparse::LinearAlgebraOpenMP __las(__name);
+static const deprecated::LinearAlgebraOpenMP __la(__name);
+}  // anonymous namespace
+
+
+namespace dense {
+
+
+//-----------------------------------------------------------------------------
+
+
+void LinearAlgebraOpenMP::print(std::ostream& out) const {
+    out << "LinearAlgebraOpenMP[]";
+}
+
 
 Scalar LinearAlgebraOpenMP::dot(const Vector& x, const Vector& y) const {
     const auto Ni = x.size();
@@ -45,6 +62,7 @@ Scalar LinearAlgebraOpenMP::dot(const Vector& x, const Vector& y) const {
 
     return sum;
 }
+
 
 void LinearAlgebraOpenMP::gemv(const Matrix& A, const Vector& x, Vector& y) const {
     const auto Ni = A.rows();
@@ -66,6 +84,7 @@ void LinearAlgebraOpenMP::gemv(const Matrix& A, const Vector& x, Vector& y) cons
         y[i] = sum;
     }
 }
+
 
 void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
     const auto Ni = A.rows();
@@ -91,6 +110,27 @@ void LinearAlgebraOpenMP::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
         }
     }
 }
+
+
+//-----------------------------------------------------------------------------
+
+
+}  // namespace dense
+
+
+//-----------------------------------------------------------------------------
+
+
+namespace sparse {
+
+
+//-----------------------------------------------------------------------------
+
+
+void LinearAlgebraOpenMP::print(std::ostream& out) const {
+    out << "LinearAlgebraOpenMP[]";
+}
+
 
 void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
     const auto Ni = A.rows();
@@ -122,6 +162,7 @@ void LinearAlgebraOpenMP::spmv(const SparseMatrix& A, const Vector& x, Vector& y
         y[i] = sum;
     }
 }
+
 
 void LinearAlgebraOpenMP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
     const auto Ni = A.rows();
@@ -194,15 +235,10 @@ void LinearAlgebraOpenMP::dsptd(const Vector& x, const SparseMatrix& A, const Ve
     }
 }
 
-void LinearAlgebraOpenMP::print(std::ostream& out) const {
-    out << "LinearAlgebraOpenMP[]";
-}
 
-//----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-static LinearAlgebraOpenMP __la;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+}  // namespace sparse
 }  // namespace linalg
 }  // namespace eckit

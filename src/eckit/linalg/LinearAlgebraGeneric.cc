@@ -21,11 +21,19 @@ namespace eckit {
 namespace linalg {
 
 
-//----------------------------------------------------------------------------------------------------------------------
+namespace {
+static const std::string __name{"generic"};
+
+static const dense::LinearAlgebraGeneric __lad(__name);
+static const sparse::LinearAlgebraGeneric __las(__name);
+static const deprecated::LinearAlgebraGeneric __la(__name);
+}  // anonymous namespace
 
 
-LinearAlgebraGeneric::LinearAlgebraGeneric() :
-    LinearAlgebra("generic") {}
+namespace dense {
+
+
+//-----------------------------------------------------------------------------
 
 
 void LinearAlgebraGeneric::print(std::ostream& out) const {
@@ -34,8 +42,8 @@ void LinearAlgebraGeneric::print(std::ostream& out) const {
 
 
 Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
-
     ASSERT(x.size() == y.size());
+
     Scalar r = 0;
     for (Size i = 0; i < x.size(); ++i) {
         r += x[i] * y[i];
@@ -45,8 +53,8 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
 
 
 void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
+    ASSERT(x.size() == A.cols());
+    ASSERT(y.size() == A.rows());
 
     for (Size r = 0; r < A.rows(); ++r) {
         double sum = 0.;
@@ -59,8 +67,9 @@ void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) con
 
 
 void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-
-    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
+    ASSERT(A.cols() == B.rows());
+    ASSERT(A.rows() == C.rows());
+    ASSERT(B.cols() == C.cols());
 
     C.setZero();
     for (Size c = 0; c < B.cols(); ++c) {
@@ -73,15 +82,35 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
 }
 
 
-void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
+//-----------------------------------------------------------------------------
 
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
+
+}  // namespace dense
+
+
+//-----------------------------------------------------------------------------
+
+
+namespace sparse {
+
+
+//-----------------------------------------------------------------------------
+
+
+void LinearAlgebraGeneric::print(std::ostream& out) const {
+    out << "LinearAlgebraGeneric[]";
+}
+
+
+void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
+    ASSERT(x.size() == A.cols());
+    ASSERT(y.size() == A.rows());
 
     ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
 
-    const Index* outer = A.outer();
-    const Index* inner = A.inner();
-    const Scalar* val  = A.data();
+    const auto* outer = A.outer();
+    const auto* inner = A.inner();
+    const auto* val   = A.data();
 
     for (Size r = 0; r < A.rows(); ++r) {
         double sum = 0.;
@@ -94,14 +123,15 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
 
 void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-
-    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
+    ASSERT(A.cols() == B.rows());
+    ASSERT(A.rows() == C.rows());
+    ASSERT(B.cols() == C.cols());
 
     ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
 
-    const Index* outer = A.outer();
-    const Index* inner = A.inner();
-    const Scalar* val  = A.data();
+    const auto* outer = A.outer();
+    const auto* inner = A.inner();
+    const auto* val   = A.data();
 
     C.setZero();
     for (Size r = 0; r < A.rows(); ++r) {
@@ -115,16 +145,16 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
 
 void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-
-    ASSERT(x.size() == A.rows() && A.cols() == y.size());
+    ASSERT(x.size() == A.rows());
+    ASSERT(A.cols() == y.size());
 
     ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
 
     B = A;
 
-    const Index* outer = B.outer();
-    const Index* inner = B.inner();
-    Scalar* val        = const_cast<Scalar*>(B.data());
+    const auto* outer = B.outer();
+    const auto* inner = B.inner();
+    auto* val         = const_cast<Scalar*>(B.data());
 
     for (Size r = 0, k = 0; r < B.rows(); ++r) {
         for (Index j = outer[r]; j < outer[r + 1]; ++j, ++k) {
@@ -136,11 +166,9 @@ void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const V
 }
 
 
-static LinearAlgebraGeneric linearAlgebraGeneric;
+//-----------------------------------------------------------------------------
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
+}  // namespace sparse
 }  // namespace linalg
 }  // namespace eckit

@@ -9,35 +9,92 @@
  */
 
 /// @author Florian Rathgeber
+/// @author Pedro Maciel
+
 
 #pragma once
 
+#include <ostream>
+
 #include "eckit/linalg/LinearAlgebra.h"
+
 
 namespace eckit {
 namespace linalg {
 
+
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraGeneric final : public LinearAlgebra {
 
-public:
-    LinearAlgebraGeneric();
+namespace dense {
 
-private:
-    // Overridden methods
+
+struct LinearAlgebraGeneric final : public LinearAlgebraDense {
+    LinearAlgebraGeneric() {}
+    LinearAlgebraGeneric(const std::string& name) :
+        LinearAlgebraDense(name) {}
 
     Scalar dot(const Vector&, const Vector&) const override;
     void gemv(const Matrix&, const Vector&, Vector&) const override;
     void gemm(const Matrix&, const Matrix&, Matrix&) const override;
-    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
-    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
-    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
-
     void print(std::ostream&) const override;
 };
 
+
+}  // namespace dense
+
+
 //-----------------------------------------------------------------------------
 
+
+namespace sparse {
+
+
+struct LinearAlgebraGeneric final : public LinearAlgebraSparse {
+    LinearAlgebraGeneric() {}
+    LinearAlgebraGeneric(const std::string& name) :
+        LinearAlgebraSparse(name) {}
+
+    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
+    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
+    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
+    void print(std::ostream&) const override;
+};
+
+
+}  // namespace sparse
+
+
+//-----------------------------------------------------------------------------
+
+
+namespace deprecated {
+
+
+//-----------------------------------------------------------------------------
+
+
+class LinearAlgebraGeneric final : public LinearAlgebra {
+public:
+    LinearAlgebraGeneric(const std::string& name) :
+        LinearAlgebra(name) {}
+
+private:
+    const dense::LinearAlgebraGeneric lad_;
+    const sparse::LinearAlgebraGeneric las_;
+
+    const LinearAlgebraDense& laDense() const override { return lad_; }
+    const LinearAlgebraSparse& laSparse() const override { return las_; }
+
+    void print(std::ostream& out) const override {
+        out << "LinearAlgebraGeneric[]";
+    }
+};
+
+
+//-----------------------------------------------------------------------------
+
+
+}  // namespace deprecated
 }  // namespace linalg
 }  // namespace eckit

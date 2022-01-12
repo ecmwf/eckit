@@ -9,41 +9,98 @@
  */
 
 /// @author Florian Rathgeber
+/// @author Pedro Maciel
+
 
 #pragma once
 
 #include "eckit/eckit.h"
 
-#if eckit_HAVE_MKL
+#ifdef eckit_HAVE_MKL
+
+#include <ostream>
 
 #include "eckit/linalg/LinearAlgebra.h"
+
 
 namespace eckit {
 namespace linalg {
 
+
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraMKL final : public LinearAlgebra {
 
-public:
-    LinearAlgebraMKL();
+namespace dense {
 
-private:
-    // Overridden methods
+
+struct LinearAlgebraMKL final : public LinearAlgebraDense {
+    LinearAlgebraMKL() {}
+    LinearAlgebraMKL(const std::string& name) :
+        LinearAlgebraDense(name) {}
 
     Scalar dot(const Vector&, const Vector&) const override;
     void gemv(const Matrix&, const Vector&, Vector&) const override;
     void gemm(const Matrix&, const Matrix&, Matrix&) const override;
-    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
-    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
-    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
-
     void print(std::ostream&) const override;
 };
 
+
+}  // namespace dense
+
+
 //-----------------------------------------------------------------------------
+
+
+namespace sparse {
+
+
+struct LinearAlgebraMKL final : public LinearAlgebraSparse {
+    LinearAlgebraMKL() {}
+    LinearAlgebraMKL(const std::string& name) :
+        LinearAlgebraSparse(name) {}
+
+    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
+    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
+    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
+    void print(std::ostream&) const override;
+};
+
+
+}  // namespace sparse
+
+
+//-----------------------------------------------------------------------------
+
+
+namespace deprecated {
+
+
+class LinearAlgebraMKL final : public LinearAlgebra {
+public:
+    LinearAlgebraMKL(const std::string& name) :
+        LinearAlgebra(name) {}
+
+private:
+    const dense::LinearAlgebraMKL lad_;
+    const sparse::LinearAlgebraMKL las_;
+
+    const LinearAlgebraDense& laDense() const override { return lad_; }
+    const LinearAlgebraSparse& laSparse() const override { return las_; }
+
+    void print(std::ostream& out) const override {
+        out << "LinearAlgebraMKL[]";
+    }
+};
+
+
+}  // namespace deprecated
+
+
+//-----------------------------------------------------------------------------
+
 
 }  // namespace linalg
 }  // namespace eckit
+
 
 #endif  // eckit_HAVE_MKL

@@ -9,6 +9,8 @@
  */
 
 /// @author Florian Rathgeber
+/// @author Pedro Maciel
+
 
 #pragma once
 
@@ -16,34 +18,89 @@
 
 #ifdef eckit_HAVE_CUDA
 
+#include <ostream>
+
 #include "eckit/linalg/LinearAlgebra.h"
+
 
 namespace eckit {
 namespace linalg {
 
+
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraCUDA final : public LinearAlgebra {
 
-public:
-    LinearAlgebraCUDA();
+namespace dense {
 
-private:
-    // Overridden methods
+
+struct LinearAlgebraCUDA final : public LinearAlgebraDense {
+    LinearAlgebraCUDA() {}
+    LinearAlgebraCUDA(const std::string& name) :
+        LinearAlgebraDense(name) {}
 
     Scalar dot(const Vector&, const Vector&) const override;
     void gemv(const Matrix&, const Vector&, Vector&) const override;
     void gemm(const Matrix&, const Matrix&, Matrix&) const override;
-    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
-    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
-    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
-
     void print(std::ostream&) const override;
 };
 
+
+}  // namespace dense
+
+
 //-----------------------------------------------------------------------------
+
+
+namespace sparse {
+
+
+struct LinearAlgebraCUDA final : public LinearAlgebraSparse {
+    LinearAlgebraCUDA() {}
+    LinearAlgebraCUDA(const std::string& name) :
+        LinearAlgebraSparse(name) {}
+
+    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
+    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
+    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
+    void print(std::ostream&) const override;
+};
+
+
+}  // namespace sparse
+
+
+//-----------------------------------------------------------------------------
+
+
+namespace deprecated {
+
+
+class LinearAlgebraCUDA final : public LinearAlgebra {
+public:
+    LinearAlgebraCUDA(const std::string& name) :
+        LinearAlgebra(name) {}
+
+private:
+    const dense::LinearAlgebraCUDA lad_;
+    const sparse::LinearAlgebraCUDA las_;
+
+    const LinearAlgebraDense& laDense() const override { return lad_; }
+    const LinearAlgebraSparse& laSparse() const override { return las_; }
+
+    void print(std::ostream& out) const override {
+        out << "LinearAlgebraCUDA[]";
+    }
+};
+
+
+}  // namespace deprecated
+
+
+//-----------------------------------------------------------------------------
+
 
 }  // namespace linalg
 }  // namespace eckit
+
 
 #endif  // eckit_HAVE_CUDA

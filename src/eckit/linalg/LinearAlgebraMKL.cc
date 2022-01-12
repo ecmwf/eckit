@@ -8,42 +8,59 @@
  * nor does it submit to any jurisdiction.
  */
 
+
 #include "eckit/eckit.h"
 
 #if eckit_HAVE_MKL
 
+#include "eckit/linalg/LinearAlgebraMKL.h"
+
 #include "mkl.h"
 #include "mkl_cblas.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-
-#include "eckit/linalg/LinearAlgebraMKL.h"
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/linalg/LinearAlgebraGeneric.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
 namespace linalg {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-LinearAlgebraMKL::LinearAlgebraMKL() :
-    LinearAlgebra("mkl") {}
+namespace {
+static const std::string __name{"mkl"};
+
+static const dense::LinearAlgebraMKL __lad(__name);
+static const sparse::LinearAlgebraMKL __las(__name);
+static const deprecated::LinearAlgebraMKL __la(__name);
+}  // anonymous namespace
+
+
+namespace dense {
+
+
+//-----------------------------------------------------------------------------
+
+
+void LinearAlgebraMKL::print(std::ostream& out) const {
+    out << "LinearAlgebraMKL[]";
+}
+
 
 Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
+
     // double cblas_ddot (const MKL_INT n, const double *x, const MKL_INT incx, const double *y, const MKL_INT incy);
     return cblas_ddot(x.size(), x.data(), 1, y.data(), 1);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraMKL::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
+    ASSERT(x.size() == A.cols());
+    ASSERT(y.size() == A.rows());
+
     // void cblas_dgemv (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE trans,
     //                   const MKL_INT m, const MKL_INT n,
     //                   const double alpha, const double a, const MKL_INT lda, const double *x, const MKL_INT incx,
@@ -52,10 +69,12 @@ void LinearAlgebraMKL::gemv(const Matrix& A, const Vector& x, Vector& y) const {
                 1);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
+    ASSERT(A.cols() == B.rows());
+    ASSERT(A.rows() == C.rows());
+    ASSERT(B.cols() == C.cols());
+
     // void cblas_dgemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb,
     //                   const MKL_INT m, const MKL_INT n, const MKL_INT k,
     //                   const double alpha, const double a, const MKL_INT lda, const double *b, const MKL_INT ldb,
@@ -64,35 +83,62 @@ void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
                 B.data(), B.rows(), 0.0, C.data(), A.rows());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+
+
+}  // namespace dense
+
+
+//-----------------------------------------------------------------------------
+
+
+namespace sparse {
+
+
+//-----------------------------------------------------------------------------
+
+
+void LinearAlgebraMKL::print(std::ostream& out) const {
+    out << "LinearAlgebraMKL[]";
+}
+
 
 void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols() && y.size() == A.rows());
+    ASSERT(x.size() == A.cols());
+    ASSERT(y.size() == A.rows());
+
     // We expect indices to be 0-based
     ASSERT(A.outer()[0] == 0);
-    MKL_INT m    = A.rows();
-    MKL_INT k    = A.cols();
+
+    MKL_INT m = A.rows();
+    MKL_INT k = A.cols();
+
     double alpha = 1.;
     double beta  = 0.;
+
     // void mkl_dcsrmv (char *transa, MKL_INT *m, MKL_INT *k,
     //                  double *alpha, char *matdescra,
     //                  double *val, MKL_INT *indx, MKL_INT *pntrb, MKL_INT *pntre,
     //                  double *x, double *beta, double *y);
     // std::cout << "Calling MKL::spmv()" << std::endl;
-    double* matrix = const_cast<double*>(A.data());
-    MKL_INT* inner = const_cast<MKL_INT*>(A.inner());
-    MKL_INT* outer = const_cast<MKL_INT*>(A.outer());
-    double* vector = const_cast<double*>(x.data());
+    auto* matrix = const_cast<double*>(A.data());
+    auto* inner  = const_cast<MKL_INT*>(A.inner());
+    auto* outer  = const_cast<MKL_INT*>(A.outer());
+    auto* vector = const_cast<double*>(x.data());
+
     mkl_dcsrmv("N", &m, &k, &alpha, "G__C", matrix, inner, outer, outer + 1, vector, &beta, y.data());
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
+    ASSERT(A.cols() == B.rows());
+    ASSERT(A.rows() == C.rows());
+    ASSERT(B.cols() == C.cols());
 
-    ASSERT(A.cols() == B.rows() && A.rows() == C.rows() && B.cols() == C.cols());
     // We expect indices to be 0-based
     ASSERT(A.outer()[0] == 0);
+
     MKL_INT m = A.rows();
     MKL_INT n = C.cols();
     MKL_INT k = A.cols();
@@ -123,25 +169,19 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
                &beta, C.data(), &m);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 void LinearAlgebraMKL::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    LinearAlgebra::getBackend("generic").dsptd(x, A, y, B);
+    static const sparse::LinearAlgebraGeneric generic;
+    generic.dsptd(x, A, y, B);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
-void LinearAlgebraMKL::print(std::ostream& out) const {
-    out << "LinearAlgebraMKL[]";
-}
+//-----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------------------------------
 
-static LinearAlgebraMKL linearAlgebraMKL;
-
-//----------------------------------------------------------------------------------------------------------------------
-
+}  // namespace sparse
 }  // namespace linalg
 }  // namespace eckit
+
 
 #endif  // eckit_HAVE_MKL

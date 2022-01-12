@@ -19,25 +19,24 @@ namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraOpenMP : public LinearAlgebra {
+class LinearAlgebraOpenMP final : public LinearAlgebra {
 public:
     LinearAlgebraOpenMP();
 
 private:
     // Overridden methods
 
-    Scalar dot(const Vector&, const Vector&) const;
-    void gemv(const Matrix&, const Vector&, Vector&) const;
-    void gemm(const Matrix&, const Matrix&, Matrix&) const;
-    void spmv(const SparseMatrix&, const Vector&, Vector&) const;
-    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
-    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
+    Scalar dot(const Vector&, const Vector&) const override;
+    void gemv(const Matrix&, const Vector&, Vector&) const override;
+    void gemm(const Matrix&, const Matrix&, Matrix&) const override;
+    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
+    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
+    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
 
-    void print(std::ostream&) const;
+    void print(std::ostream&) const override;
 };
 
 //-----------------------------------------------------------------------------
 
 }  // namespace linalg
 }  // namespace eckit
-

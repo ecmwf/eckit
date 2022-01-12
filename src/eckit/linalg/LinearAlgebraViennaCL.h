@@ -8,12 +8,9 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebraViennaCL.h
 /// @author Florian Rathgeber
-/// @date   July 2015
 
-#ifndef eckit_la_LinearAlgebraViennaCL_h
-#define eckit_la_LinearAlgebraViennaCL_h
+#pragma once
 
 #include "eckit/eckit.h"
 
@@ -26,7 +23,7 @@ namespace linalg {
 
 //-----------------------------------------------------------------------------
 
-class LinearAlgebraViennaCL : public LinearAlgebra {
+class LinearAlgebraViennaCL final : public LinearAlgebra {
 
 public:
     LinearAlgebraViennaCL();
@@ -34,14 +31,14 @@ public:
 private:
     // Overridden methods
 
-    virtual Scalar dot(const Vector&, const Vector&) const;
-    virtual void gemv(const Matrix&, const Vector&, Vector&) const;
-    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const;
-    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const;
-    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const;
-    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
+    Scalar dot(const Vector&, const Vector&) const override;
+    void gemv(const Matrix&, const Vector&, Vector&) const override;
+    void gemm(const Matrix&, const Matrix&, Matrix&) const override;
+    void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
+    void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;
+    void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const override;
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 };
 
 //-----------------------------------------------------------------------------
@@ -50,5 +47,3 @@ private:
 }  // namespace eckit
 
 #endif  // eckit_HAVE_VIENNACL
-
-#endif

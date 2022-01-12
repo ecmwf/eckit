@@ -8,19 +8,16 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebra.h
 /// @author Florian Rathgeber
 /// @author Tiago Quintino
-/// @date   June 2015
+/// @author Pedro Maciel
 
-#ifndef eckit_la_LinearAlgebra_h
-#define eckit_la_LinearAlgebra_h
+#pragma once
 
 #include <string>
 
 #include "eckit/linalg/types.h"
 #include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 namespace linalg {
@@ -72,7 +69,7 @@ public:  // virtual methods
     /// Compute the product x A' y with x and y diagonal matrices stored as
     /// vectors and A a sparse matrix. The caller does NOT need to initialise
     /// the sparse output matrix C
-    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
+    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const = 0;
 
 protected:
     LinearAlgebra(const std::string& name);
@@ -96,5 +93,3 @@ private:
 
 }  // namespace linalg
 }  // namespace eckit
-
-#endif

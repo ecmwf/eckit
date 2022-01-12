@@ -28,36 +28,35 @@ namespace linalg {
 namespace {
 
 #ifdef eckit_HAVE_EIGEN
-static const char* defaultBackend = "eigen";
+static const auto* defaultBackend = "eigen";
 #else
-static const char* defaultBackend = "generic";
+static const auto* defaultBackend = "generic";
 #endif
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 class BackendRegistry {
 public:
-    typedef std::map<std::string, const LinearAlgebra*> Map;
+    using Map = std::map<std::string, const LinearAlgebra*>;
 
     BackendRegistry() :
         default_(defaultBackend) {
-        char* envBackend = ::getenv("ECKIT_LINEAR_ALGEBRA_BACKEND");
+        auto* envBackend = ::getenv("ECKIT_LINEAR_ALGEBRA_BACKEND");
         if (envBackend) {
             default_ = envBackend;
         }
-        // std::cout << "Default Linear Algebra backend: " << default_ << std::endl;
     }
 
-    void backend(const std::string& name);
+    void backend(const std::string&);
 
-    bool has(const std::string& name) const;
+    bool has(const std::string&) const;
 
     const LinearAlgebra& find() const;
-    const LinearAlgebra& find(const std::string& name) const;
+    const LinearAlgebra& find(const std::string&) const;
 
-    void list(std::ostream& out) const;
+    std::ostream& list(std::ostream&) const;
 
-    void add(const std::string& name, LinearAlgebra* backend);
+    void add(const std::string&, LinearAlgebra* backend);
 
 private:  // members
     Map map_;
@@ -73,6 +72,7 @@ static void init() {
 
 void BackendRegistry::backend(const std::string& name) {
     AutoLock<Mutex> lock(mutex_);
+
     if (map_.find(name) == map_.end()) {
         throw BadParameter("Invalid backend " + name, Here());
     }
@@ -86,34 +86,38 @@ const LinearAlgebra& BackendRegistry::find() const {
 const LinearAlgebra& BackendRegistry::find(const std::string& name) const {
     AutoLock<Mutex> lock(mutex_);
 
-    BackendRegistry::Map::const_iterator it = map_.find(name);
+    auto it = map_.find(name);
     if (it == map_.end()) {
-        eckit::Log::error() << "No Linear algebra backend named [" << name << "]" << std::endl;
-        eckit::Log::error() << "Linear algebra backends are:" << std::endl;
-        for (it = map_.begin(); it != map_.end(); ++it)
-            eckit::Log::error() << "   " << (*it).first << std::endl;
-        throw BadParameter("Linear algebra backend " + name + " not available.", Here());
+        auto msg = "No Linear algebra backend named [" + name + "].";
+        list(Log::error() << msg + "\n Linear algebra backends are: ") << std::endl;
+        throw BadParameter(msg, Here());
     }
+
     Log::debug<LibEcKit>() << "Using LinearAlgebra backend " << it->first << std::endl;
     return *(it->second);
 }
 
 bool BackendRegistry::has(const std::string& name) const {
     AutoLock<Mutex> lock(mutex_);
-    return (map_.find(name) != map_.end());
+
+    return map_.find(name) != map_.end();
 }
 
-void BackendRegistry::list(std::ostream& out) const {
+std::ostream& BackendRegistry::list(std::ostream& out) const {
     AutoLock<Mutex> lock(mutex_);
-    const char* sep = "";
-    for (Map::const_iterator it = map_.begin(); it != map_.end(); ++it) {
-        out << sep << it->first;
+
+    const auto* sep = "";
+    for (auto backend : map_) {
+        out << sep << backend.first;
         sep = ", ";
     }
+
+    return out;
 }
 
 void BackendRegistry::add(const std::string& name, LinearAlgebra* backend) {
     AutoLock<Mutex> lock(mutex_);
+
     ASSERT(map_.find(name) == map_.end());
     map_[name] = backend;
 }
@@ -146,10 +150,6 @@ void LinearAlgebra::backend(const std::string& name) {
 void LinearAlgebra::list(std::ostream& out) {
     pthread_once(&once, init);
     backends->list(out);
-}
-
-void LinearAlgebra::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
-    NOTIMP;
 }
 
 LinearAlgebra::LinearAlgebra(const std::string& name) :

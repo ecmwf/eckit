@@ -19,9 +19,7 @@
 
 #include "eckit/testing/Test.h"
 
-using namespace eckit;
-using namespace eckit::testing;
-using namespace eckit::linalg;
+using eckit::linalg::LinearAlgebra;
 
 namespace eckit {
 namespace test {
@@ -83,5 +81,5 @@ CASE("test_backend") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

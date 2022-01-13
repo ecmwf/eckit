@@ -154,6 +154,7 @@ private:
 //-----------------------------------------------------------------------------
 
 
+/// @deprecated Use LinearAlgebraDense/LinearAlgebraSparse instead
 class LinearAlgebra {
 public:
     // - Static methods

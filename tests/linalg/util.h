@@ -8,14 +8,14 @@
  * nor does it submit to any jurisdiction.
  */
 
-#ifndef eckit_test_la_util_h
-#define eckit_test_la_util_h
+#pragma once
 
 #include <cstdarg>
 
 #include "eckit/linalg/Matrix.h"
-#include "eckit/linalg/Vector.h"
 #include "eckit/linalg/Tensor.h"
+#include "eckit/linalg/Vector.h"
+#include "eckit/testing/Test.h"
 
 namespace eckit {
 namespace test {
@@ -89,7 +89,12 @@ linalg::TensorFloat TF(std::vector<linalg::Size> shape, ...) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+template <class T>
+bool equal_dense_matrix(const T& a, const T& b) {
+    return testing::make_view(a.data(), a.data() + a.size()) == testing::make_view(b.data(), b.data() + b.size());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace test
 }  // namespace eckit
-
-#endif

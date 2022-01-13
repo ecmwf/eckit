@@ -8,18 +8,10 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <string>
-
-#include "eckit/config/Resource.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/runtime/Main.h"
-
 #include "./util.h"
+#include "eckit/config/Resource.h"
 #include "eckit/linalg/LinearAlgebra.h"
-#include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
-#include "eckit/linalg/Vector.h"
-#include "eckit/log/Log.h"
 
 namespace eckit {
 namespace test {

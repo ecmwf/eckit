@@ -8,13 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/runtime/Main.h"
-
-#include "eckit/linalg/Matrix.h"
-#include "eckit/linalg/Vector.h"
-#include "eckit/log/Log.h"
-#include "eckit/testing/Test.h"
+#include "./util.h"
 
 namespace eckit {
 namespace test {

@@ -76,6 +76,7 @@ ecbuild_add_test( TARGET     eckit_test_linalg_mixed_backend_viennacl
 
 ecbuild_add_test( TARGET     eckit_test_linalg_mixed_backend_openmp
                   COMMAND    eckit_test_linalg_mixed_backend
+                  CONDITION  eckit_HAVE_OMP
                   ARGS       --log_level=message -linearAlgebraBackend openmp )
 
 # LinearAlgebraDense
@@ -118,6 +119,7 @@ ecbuild_add_test( TARGET     eckit_test_linalg_dense_backend_viennacl
 
 ecbuild_add_test( TARGET     eckit_test_linalg_dense_backend_openmp
                   COMMAND    eckit_test_linalg_dense_backend
+                  CONDITION  eckit_HAVE_OMP
                   ARGS       --log_level=message -linearAlgebraDenseBackend openmp )
 
 # LinearAlgebraSparse
@@ -150,6 +152,7 @@ ecbuild_add_test( TARGET     eckit_test_linalg_sparse_backend_viennacl
 
 ecbuild_add_test( TARGET     eckit_test_linalg_sparse_backend_openmp
                   COMMAND    eckit_test_linalg_sparse_backend
+                  CONDITION  eckit_HAVE_OMP
                   ARGS       --log_level=message -linearAlgebraSparseBackend openmp )
 
 #

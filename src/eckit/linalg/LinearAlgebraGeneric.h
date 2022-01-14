@@ -71,9 +71,6 @@ struct LinearAlgebraGeneric final : public LinearAlgebraSparse {
 namespace deprecated {
 
 
-//-----------------------------------------------------------------------------
-
-
 class LinearAlgebraGeneric final : public LinearAlgebra {
 public:
     LinearAlgebraGeneric(const std::string& name) :
@@ -92,9 +89,11 @@ private:
 };
 
 
+}  // namespace deprecated
+
+
 //-----------------------------------------------------------------------------
 
 
-}  // namespace deprecated
 }  // namespace linalg
 }  // namespace eckit

@@ -13,8 +13,6 @@ LinearAlgebraLAPACK.cc
 LinearAlgebraLAPACK.h
 LinearAlgebraMKL.cc
 LinearAlgebraMKL.h
-LinearAlgebraOpenMP.cc
-LinearAlgebraOpenMP.h
 LinearAlgebraViennaCL.cc
 LinearAlgebraViennaCL.h
 Matrix.cc

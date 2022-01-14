@@ -11,6 +11,8 @@
 
 #include "eckit/linalg/LinearAlgebraGeneric.h"
 
+#include <vector>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
@@ -24,9 +26,17 @@ namespace linalg {
 namespace {
 static const std::string __name{"generic"};
 
-static const dense::LinearAlgebraGeneric __lad(__name);
-static const sparse::LinearAlgebraGeneric __las(__name);
-static const deprecated::LinearAlgebraGeneric __la(__name);
+static const dense::LinearAlgebraGeneric __lad_generic(__name);
+static const sparse::LinearAlgebraGeneric __las_generic(__name);
+static const deprecated::LinearAlgebraGeneric __la_generic(__name);
+
+#ifdef eckit_HAVE_OMP
+static const std::string __name_openmp{"openmp"};
+
+static const dense::LinearAlgebraGeneric __lad_openmp(__name_openmp);
+static const sparse::LinearAlgebraGeneric __las_openmp(__name_openmp);
+static const deprecated::LinearAlgebraGeneric __la_openmp(__name_openmp);
+#endif
 }  // anonymous namespace
 
 
@@ -42,41 +52,67 @@ void LinearAlgebraGeneric::print(std::ostream& out) const {
 
 
 Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
-    ASSERT(x.size() == y.size());
+    const auto Ni = x.size();
+    ASSERT(y.size() == Ni);
 
-    Scalar r = 0;
-    for (Size i = 0; i < x.size(); ++i) {
-        r += x[i] * y[i];
+    Scalar sum = 0.;
+
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for reduction(+ \
+                                   : sum)
+#endif
+    for (Size i = 0; i < Ni; ++i) {
+        const auto p = x[i] * y[i];
+        sum += p;
     }
-    return r;
+
+    return sum;
 }
 
 
 void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols());
-    ASSERT(y.size() == A.rows());
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
 
-    for (Size r = 0; r < A.rows(); ++r) {
-        double sum = 0.;
-        for (Size c = 0; c < A.cols(); ++c) {
-            sum += A(r, c) * x[c];
+    ASSERT(y.rows() == Ni);
+    ASSERT(x.rows() == Nj);
+
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for
+#endif
+    for (Size i = 0; i < Ni; ++i) {
+        Scalar sum = 0.;
+
+        for (Size j = 0; j < Nj; ++j) {
+            sum += A(i, j) * x[j];
         }
-        y[r] = sum;
+
+        y[i] = sum;
     }
 }
 
 
 void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows());
-    ASSERT(A.rows() == C.rows());
-    ASSERT(B.cols() == C.cols());
+    const auto Ni = A.rows();
+    const auto Nj = B.cols();
+    const auto Nk = A.cols();
 
-    C.setZero();
-    for (Size c = 0; c < B.cols(); ++c) {
-        for (Size r = 0; r < A.rows(); ++r) {
-            for (Size k = 0; k < A.cols(); ++k) {
-                C(r, c) += A(r, k) * B(k, c);
+    ASSERT(C.rows() == Ni);
+    ASSERT(C.cols() == Nj);
+    ASSERT(B.rows() == Nk);
+
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for collapse(2)
+#endif
+    for (Size j = 0; j < Nj; ++j) {
+        for (Size i = 0; i < Ni; ++i) {
+            Scalar sum = 0.;
+
+            for (Size k = 0; k < Nk; ++k) {
+                sum += A(i, k) * B(k, j);
             }
+
+            C(i, j) = sum;
         }
     }
 }
@@ -103,64 +139,93 @@ void LinearAlgebraGeneric::print(std::ostream& out) const {
 
 
 void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols());
-    ASSERT(y.size() == A.rows());
+    const auto outer = A.outer();
+    const auto inner = A.inner();
+    const auto val   = A.data();
 
-    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
 
-    const auto* outer = A.outer();
-    const auto* inner = A.inner();
-    const auto* val   = A.data();
+    ASSERT(y.rows() == Ni);
+    ASSERT(x.rows() == Nj);
 
-    for (Size r = 0; r < A.rows(); ++r) {
-        double sum = 0.;
-        for (Index oi = outer[r]; oi < outer[r + 1]; ++oi) {
-            sum += val[oi] * x[static_cast<Size>(inner[oi])];
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for
+#endif
+    for (Size i = 0; i < Ni; ++i) {
+        Scalar sum = 0.;
+
+        for (auto c = outer[i]; c < outer[i + 1]; ++c) {
+            sum += val[c] * x[static_cast<Size>(inner[c])];
         }
-        y[r] = sum;
+
+        y[i] = sum;
     }
 }
 
 
 void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows());
-    ASSERT(A.rows() == C.rows());
-    ASSERT(B.cols() == C.cols());
+    const auto outer = A.outer();
+    const auto inner = A.inner();
+    const auto val   = A.data();
 
-    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
+    const auto Nk = B.cols();
 
-    const auto* outer = A.outer();
-    const auto* inner = A.inner();
-    const auto* val   = A.data();
+    ASSERT(C.rows() == Ni);
+    ASSERT(B.rows() == Nj);
+    ASSERT(C.cols() == Nk);
 
-    C.setZero();
-    for (Size r = 0; r < A.rows(); ++r) {
-        for (Index oi = outer[r]; oi < outer[r + 1]; ++oi) {
-            for (Size c = 0; c < B.cols(); ++c) {
-                C(r, c) += val[oi] * B(static_cast<Size>(inner[oi]), c);
+    std::vector<Scalar> sum;
+
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for private(sum)
+#endif
+    for (Size i = 0; i < Ni; ++i) {
+        sum.assign(Nk, 0);
+
+        for (auto c = outer[i]; c < outer[i + 1]; ++c) {
+            const auto j = static_cast<Size>(inner[c]);
+            const auto v = val[c];
+            for (Size k = 0; k < Nk; ++k) {
+                sum[k] += v * B(j, k);
             }
+        }
+
+        for (Size k = 0; k < Nk; ++k) {
+            C(i, k) = sum[k];
         }
     }
 }
 
 
 void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    ASSERT(x.size() == A.rows());
-    ASSERT(A.cols() == y.size());
+    const auto Ni = A.rows();
+    const auto Nj = A.cols();
 
-    ASSERT(A.outer()[0] == 0);  // expect indices to be 0-based
+    ASSERT(x.size() == Ni);
+    ASSERT(y.size() == Nj);
 
     B = A;
+    if (A.empty()) {
+        return;
+    }
 
-    const auto* outer = B.outer();
-    const auto* inner = B.inner();
-    auto* val         = const_cast<Scalar*>(B.data());
+    const auto* const outer = B.outer();
+    const auto* const inner = B.inner();
+    auto* const val         = const_cast<Scalar*>(B.data());
 
-    for (Size r = 0, k = 0; r < B.rows(); ++r) {
-        for (Index j = outer[r]; j < outer[r + 1]; ++j, ++k) {
-            auto c = static_cast<Size>(inner[j]);
-            ASSERT(c < B.cols());
-            val[k] *= x[r] * y[c];
+    ASSERT(outer[0] == 0);  // expect indices to be 0-based
+
+#ifdef eckit_HAVE_OMP
+#pragma omp parallel for
+#endif
+    for (Size i = 0; i < Ni; ++i) {
+        for (auto k = outer[i]; k < outer[i + 1]; ++k) {
+            auto j = static_cast<Size>(inner[k]);
+            ASSERT(j < Nj);
+            val[k] *= x[i] * y[j];
         }
     }
 }

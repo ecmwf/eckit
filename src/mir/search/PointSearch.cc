@@ -70,7 +70,7 @@ void PointSearch::build(const repres::Representation& r) {
     const size_t npts = tree_->itemCount();
     ASSERT(npts > 0);
 
-    trace::Timer timer("PointSearch: building k-d tree");
+    trace::Timer timer("PointSearch: building k-d tree", Log::info());
     Log::info() << "PointSearch: building " << *tree_ << " for " << r << " (" << Log::Pretty(npts, {"point"}) << ")"
                 << std::endl;
 

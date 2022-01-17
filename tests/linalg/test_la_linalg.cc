@@ -71,12 +71,12 @@ CASE("test backend") {
     }
 
     SECTION("gemm - 2x4 x 4x3") {
-        Matrix A = M(2, 4, 1., 2., 3., 4., 5., 6., 7., 8.);
-        Matrix B = M(4, 3, 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20.);
-        Matrix C = M(2, 3, 0., 0., 0., 0., 0., 0.);
+        Matrix A       = M(2, 4, 1., 2., 3., 4., 5., 6., 7., 8.);
+        Matrix B       = M(4, 3, 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20.);
+        Matrix C       = M(2, 3, 0., 0., 0., 0., 0., 0.);
         Matrix C_check = M(2, 3,
-           150., 160., 170.,  // row=0
-           366., 392., 418.); // row=1
+                           150., 160., 170.,   // row=0
+                           366., 392., 418.);  // row=1
 
         linalg.gemm(A, B, C);
 
@@ -101,6 +101,26 @@ CASE("test backend") {
         linalg.spmm(S, B, Y);
         EXPECT(equals(Y, Z));
         EXPECT_THROWS_AS(linalg.spmm(S, Matrix(2, 2), Y), AssertionFailed);
+    }
+
+    SECTION("dsptd") {
+        struct SparseMatrix : linalg::SparseMatrix {
+            using linalg::SparseMatrix::SparseMatrix;
+            Size size() const { return nonZeros(); }
+        };
+
+        Vector x = V(2, 1., 2.);
+        Vector y = V(4, 3., 4., 5., 6.);
+        SparseMatrix R(2, 4, {{0, 0, 6.}, {1, 2, 30.}});
+
+        SparseMatrix P;
+        linalg.dsptd(x, S, y, P);
+
+        EXPECT(P.rows() == R.rows());
+        EXPECT(P.cols() == R.cols());
+        EXPECT(equals(P, R));
+
+        EXPECT_THROWS_AS( linalg.dsptd(y, S, x, P), AssertionFailed);
     }
 }
 

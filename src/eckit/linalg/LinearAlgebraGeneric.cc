@@ -139,15 +139,21 @@ void LinearAlgebraGeneric::print(std::ostream& out) const {
 
 
 void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    const auto outer = A.outer();
-    const auto inner = A.inner();
-    const auto val   = A.data();
-
     const auto Ni = A.rows();
     const auto Nj = A.cols();
 
     ASSERT(y.rows() == Ni);
     ASSERT(x.rows() == Nj);
+
+    if (A.empty()) {
+        return;
+    }
+
+    const auto* const outer = A.outer();
+    const auto* const inner = A.inner();
+    const auto* const val   = A.data();
+
+    ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
 #ifdef eckit_HAVE_OMP
 #pragma omp parallel for
@@ -165,10 +171,6 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
 
 void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) const {
-    const auto outer = A.outer();
-    const auto inner = A.inner();
-    const auto val   = A.data();
-
     const auto Ni = A.rows();
     const auto Nj = A.cols();
     const auto Nk = B.cols();
@@ -176,6 +178,16 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
     ASSERT(C.rows() == Ni);
     ASSERT(B.rows() == Nj);
     ASSERT(C.cols() == Nk);
+
+    if (A.empty()) {
+        return;
+    }
+
+    const auto* const outer = A.outer();
+    const auto* const inner = A.inner();
+    const auto* const val   = A.data();
+
+    ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
     std::vector<Scalar> sum;
 
@@ -186,8 +198,8 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
         sum.assign(Nk, 0);
 
         for (auto c = outer[i]; c < outer[i + 1]; ++c) {
-            const auto j = static_cast<Size>(inner[c]);
-            const auto v = val[c];
+            auto j = static_cast<Size>(inner[c]);
+            auto v = val[c];
             for (Size k = 0; k < Nk; ++k) {
                 sum[k] += v * B(j, k);
             }

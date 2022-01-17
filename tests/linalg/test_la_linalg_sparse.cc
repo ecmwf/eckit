@@ -102,7 +102,7 @@ CASE("test backend") {
         EXPECT_THROWS_AS(linalg.spmm(A, Matrix(2, 2), C), AssertionFailed);
     }
 
-    SECTION("dsptd - vector 3 x sparse 3x3 x vector 3 = sparse 3x3") {
+    SECTION("dsptd - diagonal 3 x sparse 3x3 x diagonal 3 = sparse 3x3") {
         SparseMatrix B;
         linalg.dsptd(x, A, x, B);
 
@@ -111,17 +111,17 @@ CASE("test backend") {
         linalg::Scalar data[4] = {2., -9., 8., 18.};
         EXPECT(equal_sparse_matrix(B, outer, inner, data));
 
-        Log::info() << "dsptd with vectors of non-matching sizes should fail" << std::endl;
+        Log::info() << "dsptd with matrices of non-matching sizes should fail" << std::endl;
         EXPECT_THROWS_AS(linalg.dsptd(x, A, Vector(2), B), AssertionFailed);
     }
 
-    SECTION("dsptd - vector 2 x sparse 2x3 x vector 3 = sparse 2x3") {
-        auto x2 = V(2, 1., 2.);
-        auto A2 = S(2, 3, 4, 0, 0, 1., 0, 2, 2., 1, 0, 3., 1, 1, 4.);
-        auto y2 = V(3, 1., 2., 3.);
+    SECTION("dsptd - diagonal 2 x sparse 2x3 x diagonal 3 = sparse 2x3") {
+        auto x = V(2, 1., 2.);
+        auto y = V(3, 1., 2., 3.);
+        auto Q = S(2, 3, 4, 0, 0, 1., 0, 2, 2., 1, 0, 3., 1, 1, 4.);
 
         SparseMatrix B;
-        linalg.dsptd(x2, A2, y2, B);
+        linalg.dsptd(x, Q, y, B);
         // B.save("B.mat");
 
         linalg::Index outer[4] = {0, 2, 4};
@@ -129,8 +129,24 @@ CASE("test backend") {
         linalg::Scalar data[4] = {1., 6., 6., 16.};
         EXPECT(equal_sparse_matrix(B, outer, inner, data));
 
-        Log::info() << "dsptd with vectors of non-matching sizes should fail" << std::endl;
-        EXPECT_THROWS_AS(linalg.dsptd(y2, A2, x2, B), AssertionFailed);
+        Log::info() << "dsptd with matrices of non-matching sizes should fail" << std::endl;
+        EXPECT_THROWS_AS(linalg.dsptd(y, Q, x, B), AssertionFailed);
+    }
+
+    SECTION("dsptd - diagonal 2 x sparse 2x4 x diagonal 4 = sparse 2x4") {
+        auto x = V(2, 1., 2.);
+        auto y = V(4, 3., 4., 5., 6.);
+
+        SparseMatrix B;
+        linalg.dsptd(x, Q, y, B);
+
+        linalg::Index outer[4] = {0, 1, 2};
+        linalg::Index inner[4] = {0, 2};
+        linalg::Scalar data[4] = {6., 30.};
+        EXPECT(equal_sparse_matrix(B, outer, inner, data));
+
+        Log::info() << "dsptd with matrices of non-matching sizes should fail" << std::endl;
+        EXPECT_THROWS_AS(linalg.dsptd(y, Q, x, B), AssertionFailed);
     }
 }
 

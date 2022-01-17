@@ -101,7 +101,7 @@ CASE("test backend") {
 
         EXPECT(P.rows() == R.rows());
         EXPECT(P.cols() == R.cols());
-        EXPECT(equals(P, R));
+        EXPECT(equal_sparse_matrix(P, R.outer(), R.inner(), R.data()));
 
         EXPECT_THROWS_AS( linalg.dsptd(y, S, x, P), AssertionFailed);
     }

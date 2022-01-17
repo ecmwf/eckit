@@ -11,18 +11,8 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
-
-#include "eckit/linalg/Matrix.h"
-#include "eckit/linalg/SparseMatrix.h"
-#include "eckit/linalg/Vector.h"
 #include "util.h"
 
-#include "eckit/testing/Test.h"
-
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
@@ -34,17 +24,17 @@ void test(const T& v, const T& r) {
     EXPECT(v.rows() == r.rows());
     EXPECT(v.cols() == r.cols());
     EXPECT(v.size() == r.size());
-    EXPECT(make_view(v.begin(), v.end()) == make_view(r.begin(), r.end()));
+    EXPECT(testing::make_view(v.begin(), v.end()) == testing::make_view(r.begin(), r.end()));
 }
 
-void test(const SparseMatrix& v, const SparseMatrix& r) {
+void test(const linalg::SparseMatrix& v, const linalg::SparseMatrix& r) {
     EXPECT(v.rows() == r.rows());
     EXPECT(v.cols() == r.cols());
     EXPECT(v.nonZeros() == r.nonZeros());
-    const Size nnz = v.nonZeros();
-    EXPECT(make_view(v.outer(), v.outer() + v.rows() + 1) == make_view(r.outer(), r.outer() + r.rows() + 1));
-    EXPECT(make_view(v.inner(), v.inner() + nnz) == make_view(r.inner(), r.inner() + nnz));
-    EXPECT(make_view(v.data(), v.data() + nnz) == make_view(r.data(), r.data() + nnz));
+    const auto nnz = v.nonZeros();
+    EXPECT(testing::make_view(v.outer(), v.outer() + v.rows() + 1) == testing::make_view(r.outer(), r.outer() + r.rows() + 1));
+    EXPECT(testing::make_view(v.inner(), v.inner() + nnz) == testing::make_view(r.inner(), r.inner() + nnz));
+    EXPECT(testing::make_view(v.data(), v.data() + nnz) == testing::make_view(r.data(), r.data() + nnz));
 }
 
 template <typename T>
@@ -61,8 +51,9 @@ void stream_test(const T& t) {
         T out(sin);
         test(t, out);
     }
-    if (filename.exists())
+    if (filename.exists()) {
         filename.unlink();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -78,15 +69,14 @@ CASE("test_stream_matrix") {
 }
 
 CASE("test_stream_sparsematrix") {
+    std::vector<eckit::linalg::Triplet> triplets;
 
-    std::vector<Triplet> triplets;
+    triplets.emplace_back(0, 0, 2.);
+    triplets.emplace_back(0, 2, -3.);
+    triplets.emplace_back(1, 1, 2.);
+    triplets.emplace_back(2, 2, 2.);
 
-    triplets.push_back(Triplet(0, 0, 2.));
-    triplets.push_back(Triplet(0, 2, -3.));
-    triplets.push_back(Triplet(1, 1, 2.));
-    triplets.push_back(Triplet(2, 2, 2.));
-
-    SparseMatrix smat(3, 3, triplets);
+    eckit::linalg::SparseMatrix smat(3, 3, triplets);
 
     stream_test(smat);
 }
@@ -97,5 +87,5 @@ CASE("test_stream_sparsematrix") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

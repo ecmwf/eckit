@@ -8,9 +8,9 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "./util.h"
 #include "eckit/config/Resource.h"
 #include "eckit/linalg/LinearAlgebra.h"
+#include "util.h"
 
 namespace eckit {
 namespace test {
@@ -29,15 +29,15 @@ CASE("test backend") {
     Log::info() << linalg << std::endl;
 
     SECTION("dot") {
-        Vector a = V(3, 1., 2., 4.);
+        auto a = V(3, 1., 2., 4.);
 
         EXPECT(linalg.dot(a, a) == 21.);
         EXPECT_THROWS_AS(linalg.dot(a, Vector(2)), AssertionFailed);
     }
 
     SECTION("gemv") {
-        Vector y = V(2, -42., -42.);
-        Vector z = V(2, 3., 0.);
+        auto y = V(2, -42., -42.);
+        auto z = V(2, 3., 0.);
 
         linalg.gemv(A, V(2, -1., -2.), y);
         EXPECT(equal_dense_matrix(y, z));
@@ -45,8 +45,8 @@ CASE("test backend") {
     }
 
     SECTION("gemm - 2x2 x 2x2") {
-        Matrix Y = M(2, 2, -42., -42., -42., -42.);
-        Matrix Z = M(2, 2, 9., -6., -12., 12.);
+        auto Y = M(2, 2, -42., -42., -42., -42.);
+        auto Z = M(2, 2, 9., -6., -12., 12.);
 
         linalg.gemm(A, A, Y);
         EXPECT(equal_dense_matrix(Y, Z));
@@ -54,12 +54,12 @@ CASE("test backend") {
     }
 
     SECTION("gemm - 2x4 x 4x3") {
-        Matrix A       = M(2, 4, 1., 2., 3., 4., 5., 6., 7., 8.);
-        Matrix B       = M(4, 3, 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20.);
-        Matrix C       = M(2, 3, 0., 0., 0., 0., 0., 0.);
-        Matrix C_check = M(2, 3,
-                           150., 160., 170.,   // row=0
-                           366., 392., 418.);  // row=1
+        auto A       = M(2, 4, 1., 2., 3., 4., 5., 6., 7., 8.);
+        auto B       = M(4, 3, 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20.);
+        auto C       = M(2, 3, 0., 0., 0., 0., 0., 0.);
+        auto C_check = M(2, 3,
+                         150., 160., 170.,   // row=0
+                         366., 392., 418.);  // row=1
 
         linalg.gemm(A, B, C);
 

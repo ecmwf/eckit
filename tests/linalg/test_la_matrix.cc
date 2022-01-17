@@ -8,7 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "./util.h"
+#include "util.h"
 
 namespace eckit {
 namespace test {

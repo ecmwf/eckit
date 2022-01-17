@@ -8,10 +8,9 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "./util.h"
 #include "eckit/config/Resource.h"
 #include "eckit/linalg/LinearAlgebra.h"
-#include "eckit/linalg/SparseMatrix.h"
+#include "util.h"
 
 namespace eckit {
 namespace test {

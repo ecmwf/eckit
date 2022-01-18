@@ -198,8 +198,8 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
         sum.assign(Nk, 0);
 
         for (auto c = outer[i]; c < outer[i + 1]; ++c) {
-            auto j = static_cast<Size>(inner[c]);
-            auto v = val[c];
+            const auto j = static_cast<Size>(inner[c]);
+            const auto v = val[c];
             for (Size k = 0; k < Nk; ++k) {
                 sum[k] += v * B(j, k);
             }
@@ -235,7 +235,7 @@ void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const V
 #endif
     for (Size i = 0; i < Ni; ++i) {
         for (auto k = outer[i]; k < outer[i + 1]; ++k) {
-            auto j = static_cast<Size>(inner[k]);
+            const auto j = static_cast<Size>(inner[k]);
             ASSERT(j < Nj);
             val[k] *= x[i] * y[j];
         }

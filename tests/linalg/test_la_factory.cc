@@ -77,10 +77,10 @@ CASE("list") {
         Log::info() << "Available backends: " << oss.str() << std::endl;
 
         for (const std::string& name : dense_backends) {
-            Log::info() << "Looking for '" << name << "'";
+            Log::info() << "Looking for '" << name << "'" << std::endl;
             EXPECT(oss.str().find(name) != std::string::npos);
 
-            Log::info() << "Switching for '" << name << "'";
+            Log::info() << "Switching to '" << name << "'" << std::endl;
             LinearAlgebraDense::backend(name);
             EXPECT(LinearAlgebraDense::backend().name() == name);
         }
@@ -94,10 +94,10 @@ CASE("list") {
         Log::info() << "Available backends: " << oss.str() << std::endl;
 
         for (const std::string& name : sparse_backends) {
-            Log::info() << "Looking for '" << name << "'";
+            Log::info() << "Looking for '" << name << "'" << std::endl;
             EXPECT(oss.str().find(name) != std::string::npos);
 
-            Log::info() << "Switching for '" << name << "'";
+            Log::info() << "Switching to '" << name << "'" << std::endl;
             LinearAlgebraSparse::backend(name);
             EXPECT(LinearAlgebraSparse::backend().name() == name);
         }

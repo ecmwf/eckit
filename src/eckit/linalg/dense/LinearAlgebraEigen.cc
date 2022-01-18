@@ -26,6 +26,7 @@ namespace dense {
 
 static const LinearAlgebraEigen __la("eigen");
 
+
 using vec_t = Eigen::VectorXd::MapType;
 using mat_t = Eigen::MatrixXd::MapType;
 

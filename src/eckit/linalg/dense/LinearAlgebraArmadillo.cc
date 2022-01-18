@@ -29,6 +29,10 @@ namespace dense {
 static const LinearAlgebraArmadillo __la("armadillo");
 
 
+using vec_t = arma::vec;
+using mat_t = arma::mat;
+
+
 void LinearAlgebraArmadillo::print(std::ostream& out) const {
     out << "LinearAlgebraArmadillo[]";
 }
@@ -38,8 +42,8 @@ Scalar LinearAlgebraArmadillo::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
 
     // Armadillo requires non-const pointers to the data for views without copy
-    arma::vec xi(const_cast<Scalar*>(x.data()), x.size(), /* copy_aux_mem= */ false);
-    arma::vec yi(const_cast<Scalar*>(y.data()), y.size(), /* copy_aux_mem= */ false);
+    vec_t xi(const_cast<Scalar*>(x.data()), x.size(), /* copy_aux_mem= */ false);
+    vec_t yi(const_cast<Scalar*>(y.data()), y.size(), /* copy_aux_mem= */ false);
 
     return arma::dot(xi, yi);
 }
@@ -50,9 +54,9 @@ void LinearAlgebraArmadillo::gemv(const Matrix& A, const Vector& x, Vector& y) c
     ASSERT(y.size() == A.rows());
 
     // Armadillo requires non-const pointers to the data for views without copy
-    arma::mat Ai(const_cast<Scalar*>(A.data()), A.rows(), A.cols(), /* copy_aux_mem= */ false);
-    arma::vec xi(const_cast<Scalar*>(x.data()), x.size(), /* copy_aux_mem= */ false);
-    arma::vec yi(y.data(), y.size(), /* copy_aux_mem= */ false);
+    mat_t Ai(const_cast<Scalar*>(A.data()), A.rows(), A.cols(), /* copy_aux_mem= */ false);
+    vec_t xi(const_cast<Scalar*>(x.data()), x.size(), /* copy_aux_mem= */ false);
+    vec_t yi(y.data(), y.size(), /* copy_aux_mem= */ false);
 
     yi = Ai * xi;
 }
@@ -64,9 +68,9 @@ void LinearAlgebraArmadillo::gemm(const Matrix& A, const Matrix& B, Matrix& C) c
     ASSERT(B.cols() == C.cols());
 
     // Armadillo requires non-const pointers to the data for views without copy
-    arma::mat Ai(const_cast<Scalar*>(A.data()), A.rows(), A.cols(), /* copy_aux_mem= */ false);
-    arma::mat Bi(const_cast<Scalar*>(B.data()), B.rows(), B.cols(), /* copy_aux_mem= */ false);
-    arma::mat Ci(C.data(), C.rows(), C.cols(), /* copy_aux_mem= */ false);
+    mat_t Ai(const_cast<Scalar*>(A.data()), A.rows(), A.cols(), /* copy_aux_mem= */ false);
+    mat_t Bi(const_cast<Scalar*>(B.data()), B.rows(), B.cols(), /* copy_aux_mem= */ false);
+    mat_t Ci(C.data(), C.rows(), C.cols(), /* copy_aux_mem= */ false);
 
     Ci = Ai * Bi;
 }

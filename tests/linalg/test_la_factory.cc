@@ -38,7 +38,9 @@ CASE("list") {
         "lapack",
 #endif
 #ifdef eckit_HAVE_MKL
+#if eckit_HAVE_MKL
         "mkl",
+#endif
 #endif
 #ifdef eckit_HAVE_VIENNACL
         "viennacl",
@@ -57,7 +59,9 @@ CASE("list") {
         "eigen",
 #endif
 #ifdef eckit_HAVE_MKL
+#if eckit_HAVE_MKL
         "mkl",
+#endif
 #endif
 #ifdef eckit_HAVE_VIENNACL
         "viennacl",

@@ -150,7 +150,7 @@ public:  // methods
     void toLeftLayout() {
         if (not right_)
             return;
-        move(transformRigthToLeftLayout());
+        move(transformRightToLeftLayout());
     }
 
     void toRightLayout() {
@@ -261,7 +261,7 @@ public:  // methods
     }
 
     /// Transform a right-layout tensor to left-layout
-    Tensor transformRigthToLeftLayout() const {
+    Tensor transformRightToLeftLayout() const {
         Tensor r(shape_);
 
         // COL-MAJOR to ROW-MAJOR

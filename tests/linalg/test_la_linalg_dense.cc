@@ -9,7 +9,7 @@
  */
 
 #include "eckit/config/Resource.h"
-#include "eckit/linalg/LinearAlgebra.h"
+#include "eckit/linalg/LinearAlgebraDense.h"
 #include "util.h"
 
 namespace eckit {

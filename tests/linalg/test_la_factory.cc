@@ -12,7 +12,6 @@
 #include "eckit/eckit.h"
 #include "eckit/linalg/LinearAlgebraDense.h"
 #include "eckit/linalg/LinearAlgebraSparse.h"
-
 #include "eckit/testing/Test.h"
 
 namespace eckit {
@@ -68,18 +67,16 @@ CASE("list") {
 #endif
     };
 
-    auto find_backend = [](const std::string& list, const std::string& entry) {
-        return list.find(entry) != std::string::npos;
-    };
-
     SECTION("dense backends") {
         std::ostringstream oss;
         LinearAlgebraDense::list(oss);
         Log::info() << "Available backends: " << oss.str() << std::endl;
 
         for (const std::string& name : dense_backends) {
-            EXPECT(find_backend(oss.str(), name));
+            Log::info() << "Looking for '" << name << "'";
+            EXPECT(oss.str().find(name) != std::string::npos);
 
+            Log::info() << "Switching for '" << name << "'";
             LinearAlgebraDense::backend(name);
             EXPECT(LinearAlgebraDense::backend().name() == name);
         }
@@ -93,8 +90,10 @@ CASE("list") {
         Log::info() << "Available backends: " << oss.str() << std::endl;
 
         for (const std::string& name : sparse_backends) {
-            EXPECT(find_backend(oss.str(), name));
+            Log::info() << "Looking for '" << name << "'";
+            EXPECT(oss.str().find(name) != std::string::npos);
 
+            Log::info() << "Switching for '" << name << "'";
             LinearAlgebraSparse::backend(name);
             EXPECT(LinearAlgebraSparse::backend().name() == name);
         }

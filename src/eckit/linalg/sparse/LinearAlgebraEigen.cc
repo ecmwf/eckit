@@ -9,99 +9,29 @@
  */
 
 
-#include "eckit/eckit.h"
+#include "eckit/linalg/sparse/LinearAlgebraEigen.h"
 
-#ifdef eckit_HAVE_EIGEN
-
-#include "eckit/linalg/LinearAlgebraEigen.h"
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/linalg/LinearAlgebraGeneric.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
+#include "eckit/linalg/sparse/LinearAlgebraGeneric.h"
 #include "eckit/maths/Eigen.h"
 
 
 namespace eckit {
 namespace linalg {
+namespace sparse {
 
 
-namespace {
-static const std::string __name{"eigen"};
+static const LinearAlgebraEigen __la("eigen");
 
-static const dense::LinearAlgebraEigen __lad(__name);
-static const sparse::LinearAlgebraEigen __las(__name);
-static const deprecated::LinearAlgebraEigen __la(__name);
 
 using vec_t = Eigen::VectorXd::MapType;
 using mat_t = Eigen::MatrixXd::MapType;
 using spm_t = Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index>;
-}  // anonymous namespace
-
-
-namespace dense {
-
-
-//-----------------------------------------------------------------------------
-
-
-void LinearAlgebraEigen::print(std::ostream& out) const {
-    out << "LinearAlgebraEigen[]";
-}
-
-
-Scalar LinearAlgebraEigen::dot(const Vector& x, const Vector& y) const {
-    ASSERT(x.size() == y.size());
-
-    // Eigen requires non-const pointers to the data
-    vec_t xi(Eigen::VectorXd::Map(const_cast<Scalar*>(x.data()), x.size()));
-    vec_t yi(Eigen::VectorXd::Map(const_cast<Scalar*>(y.data()), y.size()));
-
-    return xi.dot(yi);
-}
-
-
-void LinearAlgebraEigen::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols());
-    ASSERT(y.size() == A.rows());
-
-    // Eigen requires non-const pointers to the data
-    mat_t Ai(Eigen::MatrixXd::Map(const_cast<Scalar*>(A.data()), A.rows(), A.cols()));
-    vec_t xi(Eigen::VectorXd::Map(const_cast<Scalar*>(x.data()), x.size()));
-    vec_t yi(Eigen::VectorXd::Map(y.data(), y.size()));
-
-    yi = Ai * xi;
-}
-
-
-void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows());
-    ASSERT(A.rows() == C.rows());
-    ASSERT(B.cols() == C.cols());
-
-    // Eigen requires non-const pointers to the data
-    mat_t Ai(Eigen::MatrixXd::Map(const_cast<Scalar*>(A.data()), A.rows(), A.cols()));
-    mat_t Bi(Eigen::MatrixXd::Map(const_cast<Scalar*>(B.data()), B.rows(), B.cols()));
-    mat_t Ci(Eigen::MatrixXd::Map(C.data(), C.rows(), C.cols()));
-
-    Ci = Ai * Bi;
-}
-
-
-//-----------------------------------------------------------------------------
-
-
-}  // namespace dense
-
-
-//-----------------------------------------------------------------------------
-
-
-namespace sparse {
-
-
-//-----------------------------------------------------------------------------
 
 
 void LinearAlgebraEigen::print(std::ostream& out) const {
@@ -148,12 +78,6 @@ void LinearAlgebraEigen::dsptd(const Vector& x, const SparseMatrix& A, const Vec
 }
 
 
-//-----------------------------------------------------------------------------
-
-
 }  // namespace sparse
 }  // namespace linalg
 }  // namespace eckit
-
-
-#endif  // eckit_HAVE_EIGEN

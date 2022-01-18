@@ -8,50 +8,16 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @author Florian Rathgeber
-/// @author Pedro Maciel
-
 
 #pragma once
 
-#include "eckit/eckit.h"
-
-#ifdef eckit_HAVE_ARMADILLO
-
-#include <ostream>
-
 #include "eckit/linalg/LinearAlgebra.h"
-#include "eckit/linalg/LinearAlgebraGeneric.h"
+#include "eckit/linalg/dense/LinearAlgebraArmadillo.h"
+#include "eckit/linalg/sparse/LinearAlgebraGeneric.h"
 
 
 namespace eckit {
 namespace linalg {
-
-
-//-----------------------------------------------------------------------------
-
-
-namespace dense {
-
-
-struct LinearAlgebraArmadillo final : public LinearAlgebraDense {
-    LinearAlgebraArmadillo() {}
-    LinearAlgebraArmadillo(const std::string& name) :
-        LinearAlgebraDense(name) {}
-
-    Scalar dot(const Vector&, const Vector&) const override;
-    void gemv(const Matrix&, const Vector&, Vector&) const override;
-    void gemm(const Matrix&, const Matrix&, Matrix&) const override;
-    void print(std::ostream&) const override;
-};
-
-
-}  // namespace dense
-
-
-//-----------------------------------------------------------------------------
-
-
 namespace deprecated {
 
 
@@ -71,20 +37,10 @@ private:
     const LinearAlgebraDense& laDense() const override { return lad_; }
     const LinearAlgebraSparse& laSparse() const override { return las_; }
 
-    void print(std::ostream& out) const override {
-        out << "LinearAlgebraArmadillo[]";
-    }
+    void print(std::ostream&) const override;
 };
 
 
 }  // namespace deprecated
-
-
-//-----------------------------------------------------------------------------
-
-
 }  // namespace linalg
 }  // namespace eckit
-
-
-#endif  // eckit_HAVE_ARMADILLO

@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/linalg/LinearAlgebra.h"
+#include "eckit/linalg/LinearAlgebraSparse.h"
 
 #include <map>
 
@@ -35,12 +35,12 @@ static const auto* defaultBackend = "eigen";
 static const auto* defaultBackend = "generic";
 #endif
 
-static pthread_once_t once                      = PTHREAD_ONCE_INIT;
-static BackendRegistry<LinearAlgebra>* backends = nullptr;
+static pthread_once_t once                            = PTHREAD_ONCE_INIT;
+static BackendRegistry<LinearAlgebraSparse>* backends = nullptr;
 
 
 static void init() {
-    backends = new BackendRegistry<LinearAlgebra>(defaultBackend, "ECKIT_LINEAR_ALGEBRA_BACKEND");
+    backends = new BackendRegistry<LinearAlgebraSparse>(defaultBackend, "ECKIT_LINEAR_ALGEBRA_SPARSE_BACKEND");
 }
 
 
@@ -50,37 +50,37 @@ static void init() {
 //-----------------------------------------------------------------------------
 
 
-const LinearAlgebra& LinearAlgebra::backend() {
+const LinearAlgebraSparse& LinearAlgebraSparse::backend() {
     pthread_once(&once, init);
     return backends->find();
 }
 
 
-const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
+const LinearAlgebraSparse& LinearAlgebraSparse::getBackend(const std::string& name) {
     pthread_once(&once, init);
     return backends->find(name);
 }
 
 
-bool LinearAlgebra::hasBackend(const std::string& name) {
+bool LinearAlgebraSparse::hasBackend(const std::string& name) {
     pthread_once(&once, init);
     return backends->has(name);
 }
 
 
-void LinearAlgebra::backend(const std::string& name) {
+void LinearAlgebraSparse::backend(const std::string& name) {
     pthread_once(&once, init);
     backends->backend(name);
 }
 
 
-std::ostream& LinearAlgebra::list(std::ostream& out) {
+std::ostream& LinearAlgebraSparse::list(std::ostream& out) {
     pthread_once(&once, init);
     return backends->list(out);
 }
 
 
-LinearAlgebra::LinearAlgebra(const std::string& name) :
+LinearAlgebraSparse::LinearAlgebraSparse(const std::string& name) :
     name_(name) {
     pthread_once(&once, init);
     backends->add(name, this);

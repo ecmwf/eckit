@@ -9,94 +9,26 @@
  */
 
 
-#include "eckit/eckit.h"
-
-#if eckit_HAVE_MKL
-
-#include "eckit/linalg/LinearAlgebraMKL.h"
+#include "eckit/linalg/sparse/LinearAlgebraMKL.h"
 
 #include "mkl.h"
 #include "mkl_cblas.h"
 
+#include <ostream>
+
 #include "eckit/exception/Exceptions.h"
-#include "eckit/linalg/LinearAlgebraGeneric.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
+#include "eckit/linalg/sparse/LinearAlgebraGeneric.h"
 
 
 namespace eckit {
 namespace linalg {
-
-
-namespace {
-static const std::string __name{"mkl"};
-
-static const dense::LinearAlgebraMKL __lad(__name);
-static const sparse::LinearAlgebraMKL __las(__name);
-static const deprecated::LinearAlgebraMKL __la(__name);
-}  // anonymous namespace
-
-
-namespace dense {
-
-
-//-----------------------------------------------------------------------------
-
-
-void LinearAlgebraMKL::print(std::ostream& out) const {
-    out << "LinearAlgebraMKL[]";
-}
-
-
-Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
-    ASSERT(x.size() == y.size());
-
-    // double cblas_ddot (const MKL_INT n, const double *x, const MKL_INT incx, const double *y, const MKL_INT incy);
-    return cblas_ddot(x.size(), x.data(), 1, y.data(), 1);
-}
-
-
-void LinearAlgebraMKL::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    ASSERT(x.size() == A.cols());
-    ASSERT(y.size() == A.rows());
-
-    // void cblas_dgemv (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE trans,
-    //                   const MKL_INT m, const MKL_INT n,
-    //                   const double alpha, const double a, const MKL_INT lda, const double *x, const MKL_INT incx,
-    //                   const double beta, double *y, const MKL_INT incy);
-    cblas_dgemv(CblasColMajor, CblasNoTrans, A.rows(), A.cols(), 1.0, A.data(), A.rows(), x.data(), 1, 0.0, y.data(),
-                1);
-}
-
-
-void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    ASSERT(A.cols() == B.rows());
-    ASSERT(A.rows() == C.rows());
-    ASSERT(B.cols() == C.cols());
-
-    // void cblas_dgemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb,
-    //                   const MKL_INT m, const MKL_INT n, const MKL_INT k,
-    //                   const double alpha, const double a, const MKL_INT lda, const double *b, const MKL_INT ldb,
-    //                   const double beta, double *c, const MKL_INT ldc);
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, A.rows(), B.cols(), A.cols(), 1.0, A.data(), A.rows(),
-                B.data(), B.rows(), 0.0, C.data(), A.rows());
-}
-
-
-//-----------------------------------------------------------------------------
-
-
-}  // namespace dense
-
-
-//-----------------------------------------------------------------------------
-
-
 namespace sparse {
 
 
-//-----------------------------------------------------------------------------
+static const LinearAlgebraMKL __la("mkl");
 
 
 void LinearAlgebraMKL::print(std::ostream& out) const {
@@ -176,12 +108,6 @@ void LinearAlgebraMKL::dsptd(const Vector& x, const SparseMatrix& A, const Vecto
 }
 
 
-//-----------------------------------------------------------------------------
-
-
 }  // namespace sparse
 }  // namespace linalg
 }  // namespace eckit
-
-
-#endif  // eckit_HAVE_MKL

@@ -9,11 +9,9 @@
  */
 
 
-#include "eckit/eckit.h"
+#include "eckit/linalg/dense/LinearAlgebraLAPACK.h"
 
-#ifdef eckit_HAVE_LAPACK
-
-#include "eckit/linalg/LinearAlgebraLAPACK.h"
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
@@ -32,28 +30,18 @@ void dgemm_(const char* transa, const char* transb, const int* m, const int* n, 
             const int* ldc);
 }
 
+
+namespace eckit {
+namespace linalg {
+namespace dense {
+
+
+static const LinearAlgebraLAPACK __la("lapack");
+
 static const char* trans  = "N";
 static const int inc      = 1;
 static const double alpha = 1.;
 static const double beta  = 0.;
-
-
-namespace eckit {
-namespace linalg {
-
-
-namespace {
-static const std::string __name{"lapack"};
-
-static const dense::LinearAlgebraLAPACK __lad(__name);
-static const deprecated::LinearAlgebraLAPACK __la(__name);
-}  // anonymous namespace
-
-
-namespace dense {
-
-
-//-----------------------------------------------------------------------------
 
 
 void LinearAlgebraLAPACK::print(std::ostream& out) const {
@@ -94,12 +82,6 @@ void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
 }
 
 
-//-----------------------------------------------------------------------------
-
-
 }  // namespace dense
 }  // namespace linalg
 }  // namespace eckit
-
-
-#endif  // eckit_HAVE_LAPACK

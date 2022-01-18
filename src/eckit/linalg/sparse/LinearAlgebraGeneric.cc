@@ -9,10 +9,12 @@
  */
 
 
-#include "eckit/linalg/LinearAlgebraGeneric.h"
+#include "eckit/linalg/sparse/LinearAlgebraGeneric.h"
 
+#include <ostream>
 #include <vector>
 
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
@@ -21,116 +23,13 @@
 
 namespace eckit {
 namespace linalg {
-
-
-namespace {
-static const std::string __name{"generic"};
-
-static const dense::LinearAlgebraGeneric __lad_generic(__name);
-static const sparse::LinearAlgebraGeneric __las_generic(__name);
-static const deprecated::LinearAlgebraGeneric __la_generic(__name);
-
-#ifdef eckit_HAVE_OMP
-static const std::string __name_openmp{"openmp"};
-
-static const dense::LinearAlgebraGeneric __lad_openmp(__name_openmp);
-static const sparse::LinearAlgebraGeneric __las_openmp(__name_openmp);
-static const deprecated::LinearAlgebraGeneric __la_openmp(__name_openmp);
-#endif
-}  // anonymous namespace
-
-
-namespace dense {
-
-
-//-----------------------------------------------------------------------------
-
-
-void LinearAlgebraGeneric::print(std::ostream& out) const {
-    out << "LinearAlgebraGeneric[]";
-}
-
-
-Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
-    const auto Ni = x.size();
-    ASSERT(y.size() == Ni);
-
-    Scalar sum = 0.;
-
-#ifdef eckit_HAVE_OMP
-#pragma omp parallel for reduction(+ \
-                                   : sum)
-#endif
-    for (Size i = 0; i < Ni; ++i) {
-        const auto p = x[i] * y[i];
-        sum += p;
-    }
-
-    return sum;
-}
-
-
-void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) const {
-    const auto Ni = A.rows();
-    const auto Nj = A.cols();
-
-    ASSERT(y.rows() == Ni);
-    ASSERT(x.rows() == Nj);
-
-#ifdef eckit_HAVE_OMP
-#pragma omp parallel for
-#endif
-    for (Size i = 0; i < Ni; ++i) {
-        Scalar sum = 0.;
-
-        for (Size j = 0; j < Nj; ++j) {
-            sum += A(i, j) * x[j];
-        }
-
-        y[i] = sum;
-    }
-}
-
-
-void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
-    const auto Ni = A.rows();
-    const auto Nj = B.cols();
-    const auto Nk = A.cols();
-
-    ASSERT(C.rows() == Ni);
-    ASSERT(C.cols() == Nj);
-    ASSERT(B.rows() == Nk);
-
-#ifdef eckit_HAVE_OMP
-#pragma omp parallel for collapse(2)
-#endif
-    for (Size j = 0; j < Nj; ++j) {
-        for (Size i = 0; i < Ni; ++i) {
-            Scalar sum = 0.;
-
-            for (Size k = 0; k < Nk; ++k) {
-                sum += A(i, k) * B(k, j);
-            }
-
-            C(i, j) = sum;
-        }
-    }
-}
-
-
-//-----------------------------------------------------------------------------
-
-
-}  // namespace dense
-
-
-//-----------------------------------------------------------------------------
-
-
 namespace sparse {
 
 
-//-----------------------------------------------------------------------------
+static const LinearAlgebraGeneric __la_generic("generic");
+#ifdef eckit_HAVE_OMP
+static const LinearAlgebraGeneric __la_openmp("openmp");
+#endif
 
 
 void LinearAlgebraGeneric::print(std::ostream& out) const {
@@ -241,9 +140,6 @@ void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const V
         }
     }
 }
-
-
-//-----------------------------------------------------------------------------
 
 
 }  // namespace sparse

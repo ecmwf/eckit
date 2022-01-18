@@ -9,13 +9,11 @@
  */
 
 
-#include "eckit/eckit.h"
-
-#ifdef eckit_HAVE_ARMADILLO
-
-#include "eckit/linalg/LinearAlgebraArmadillo.h"
+#include "eckit/linalg/dense/LinearAlgebraArmadillo.h"
 
 #include <armadillo>
+
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
@@ -28,15 +26,7 @@ namespace linalg {
 namespace dense {
 
 
-namespace {
-static const std::string __name{"armadillo"};
-
-static const dense::LinearAlgebraArmadillo __lad(__name);
-static const deprecated::LinearAlgebraArmadillo __la(__name);
-}  // anonymous namespace
-
-
-//-----------------------------------------------------------------------------
+static const LinearAlgebraArmadillo __la("armadillo");
 
 
 void LinearAlgebraArmadillo::print(std::ostream& out) const {
@@ -82,12 +72,6 @@ void LinearAlgebraArmadillo::gemm(const Matrix& A, const Matrix& B, Matrix& C) c
 }
 
 
-//-----------------------------------------------------------------------------
-
-
 }  // namespace dense
 }  // namespace linalg
 }  // namespace eckit
-
-
-#endif  // eckit_HAVE_ARMDILLO

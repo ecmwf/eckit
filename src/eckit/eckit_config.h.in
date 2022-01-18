@@ -41,7 +41,11 @@
 
 // external packages
 
+#cmakedefine eckit_HAVE_ARMADILLO
+#cmakedefine eckit_HAVE_CUDA
 #cmakedefine eckit_HAVE_EIGEN
+#cmakedefine eckit_HAVE_LAPACK
+#cmakedefine eckit_HAVE_VIENNACL
 #cmakedefine eckit_HAVE_OMP
 #cmakedefine eckit_HAVE_SSL
 #cmakedefine eckit_HAVE_CURL

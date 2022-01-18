@@ -14,6 +14,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "eckit/deprecated.h"
 #include "eckit/linalg/LinearAlgebraDense.h"
 #include "eckit/linalg/LinearAlgebraSparse.h"
 #include "eckit/linalg/types.h"
@@ -26,8 +27,8 @@ namespace linalg {
 //-----------------------------------------------------------------------------
 
 
-/// @deprecated Use LinearAlgebraDense/LinearAlgebraSparse instead
-class LinearAlgebra {
+/// @deprecated Use eckit::linalg::LinearAlgebraDense/LinearAlgebraSparse instead
+class DEPRECATED("Use eckit::linalg::LinearAlgebraDense/LinearAlgebraSparse instead") LinearAlgebra {
 public:
     // - Static methods
 

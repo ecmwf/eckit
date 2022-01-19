@@ -555,6 +555,69 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
     }
 }
 
+CASE("TensorFloat move constructor") {
+
+    std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
+    std::vector<Size> shape{3,4};
+
+    TensorFloat tensor_from(data.data(), shape, false);
+
+    // force move constructor
+    TensorFloat tensor_to(std::move(tensor_from));
+
+    EXPECT(tensor_to.shape()[0] == 3);
+    EXPECT(tensor_to.shape()[1] == 4);
+
+    EXPECT(tensor_to(0,0) == 0);
+    EXPECT(tensor_to(0,1) == 1);
+    EXPECT(tensor_to(0,2) == 2);
+    EXPECT(tensor_to(0,3) == 3);
+
+    EXPECT(tensor_to(0,4) == 4);
+    EXPECT(tensor_to(0,5) == 5);
+    EXPECT(tensor_to(0,6) == 6);
+    EXPECT(tensor_to(0,7) == 7);
+
+    EXPECT(tensor_to(0,8) == 8);
+    EXPECT(tensor_to(0,9) == 9);
+    EXPECT(tensor_to(0,10) == 10);
+    EXPECT(tensor_to(0,11) == 11);
+
+    EXPECT(tensor_from.data() == nullptr);
+}
+
+CASE("TensorFloat move assignment operator") {
+
+    std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
+    std::vector<Size> shape{3,4};
+
+    TensorFloat tensor_from(data.data(), shape, false);
+
+    // force move assignment
+    TensorFloat tensor_to;
+    tensor_to = std::move(tensor_from);
+
+    EXPECT(tensor_to.shape()[0] == 3);
+    EXPECT(tensor_to.shape()[1] == 4);
+
+    EXPECT(tensor_to(0,0) == 0);
+    EXPECT(tensor_to(0,1) == 1);
+    EXPECT(tensor_to(0,2) == 2);
+    EXPECT(tensor_to(0,3) == 3);
+
+    EXPECT(tensor_to(0,4) == 4);
+    EXPECT(tensor_to(0,5) == 5);
+    EXPECT(tensor_to(0,6) == 6);
+    EXPECT(tensor_to(0,7) == 7);
+
+    EXPECT(tensor_to(0,8) == 8);
+    EXPECT(tensor_to(0,9) == 9);
+    EXPECT(tensor_to(0,10) == 10);
+    EXPECT(tensor_to(0,11) == 11);
+
+    EXPECT(tensor_from.data() == nullptr);
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

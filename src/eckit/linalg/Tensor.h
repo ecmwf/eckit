@@ -128,6 +128,23 @@ public:  // methods
         ::memcpy(array_, other.array_, size() * sizeof(S));
     }
 
+    /// Move constructor
+    Tensor(Tensor&& other) {
+
+        shape_ = std::move(other.shape_);
+        strides_ = std::move(other.strides_);
+
+        size_ = other.size_;
+        right_ = other.right_;
+        own_ = other.own_;
+
+        array_ = other.array_;
+
+        // nullify moved-from tensor
+        other.array_ = nullptr;
+        other.own_ = false;
+    }
+
     /// Destructor
     ~Tensor() {
         if (own_) {
@@ -144,6 +161,32 @@ public:  // methods
         // shape & strides already correct
         // ownership remains same
         ::memcpy(array_, other.array_, size() * sizeof(S));
+        return *this;
+    }
+
+    /// Move assignment operator
+    Tensor& operator=(Tensor&& other) {
+
+        if (&other != this){
+
+            if (own_) {
+                delete[] array_;
+            }
+
+            shape_ = std::move(other.shape_);
+            strides_ = std::move(other.strides_);
+
+            size_ = other.size_;
+            right_ = other.right_;
+            own_ = other.own_;
+
+            array_ = other.array_;
+
+            // nullify moved-from tensor
+            other.array_ = nullptr;
+            other.own_ = false;
+        }
+
         return *this;
     }
 
@@ -300,7 +343,7 @@ public:  // methods
     }
 
     /// Transform a left-layout tensor to right-layout
-    Tensor transformLeftToRightLayout() const {
+    Tensor transformLeftToRightLayout() const {       
         Tensor r(shape_);
 
         // ROW-MAJOR to COL-MAJOR

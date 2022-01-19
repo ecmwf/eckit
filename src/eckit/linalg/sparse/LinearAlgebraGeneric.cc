@@ -91,21 +91,28 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
     std::vector<Scalar> sum;
 
 #ifdef eckit_HAVE_OMP
-#pragma omp parallel for private(sum)
+#pragma omp parallel
 #endif
-    for (Size i = 0; i < Ni; ++i) {
-        sum.assign(Nk, 0);
+    {
+        std::vector<Scalar> sum(Nk);
 
-        for (auto c = outer[i]; c < outer[i + 1]; ++c) {
-            const auto j = static_cast<Size>(inner[c]);
-            const auto v = val[c];
-            for (Size k = 0; k < Nk; ++k) {
-                sum[k] += v * B(j, k);
+#ifdef eckit_HAVE_OMP
+#pragma omp for
+#endif
+        for (Size i = 0; i < Ni; ++i) {
+            sum.assign(Nk, 0);
+
+            for (auto c = outer[i]; c < outer[i + 1]; ++c) {
+                const auto j = static_cast<Size>(inner[c]);
+                const auto v = val[c];
+                for (Size k = 0; k < Nk; ++k) {
+                    sum[k] += v * B(j, k);
+                }
             }
-        }
 
-        for (Size k = 0; k < Nk; ++k) {
-            C(i, k) = sum[k];
+            for (Size k = 0; k < Nk; ++k) {
+                C(i, k) = sum[k];
+            }
         }
     }
 }

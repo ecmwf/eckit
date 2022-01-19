@@ -12,7 +12,6 @@
 #include "eckit/linalg/sparse/LinearAlgebraMKL.h"
 
 #include "mkl.h"
-#include "mkl_cblas.h"
 
 #include <ostream>
 
@@ -30,6 +29,9 @@ namespace sparse {
 
 static const LinearAlgebraMKL __la("mkl");
 
+static const double alpha = 1.;
+static const double beta  = 0.;
+
 
 void LinearAlgebraMKL::print(std::ostream& out) const {
     out << "LinearAlgebraMKL[]";
@@ -43,21 +45,19 @@ void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) c
     // We expect indices to be 0-based
     ASSERT(A.outer()[0] == 0);
 
-    MKL_INT m = A.rows();
-    MKL_INT k = A.cols();
+    const auto m = static_cast<MKL_INT>(A.rows());
+    const auto k = static_cast<MKL_INT>(A.cols());
 
-    double alpha = 1.;
-    double beta  = 0.;
+    // FIXME: mkl_dcsrmv is deprecated, use mkl_sparse_d_mv instead
+    // void mkl_dcsrmv(const char *transa, const MKL_INT *m, const MKL_INT *k,
+    //                 const double *alpha, const char *matdescra,
+    //                 const double *val, const MKL_INT *indx, const MKL_INT *pntrb, const MKL_INT *pntre,
+    //                 const double *x, const double *beta, double *y);
 
-    // void mkl_dcsrmv (char *transa, MKL_INT *m, MKL_INT *k,
-    //                  double *alpha, char *matdescra,
-    //                  double *val, MKL_INT *indx, MKL_INT *pntrb, MKL_INT *pntre,
-    //                  double *x, double *beta, double *y);
-    // std::cout << "Calling MKL::spmv()" << std::endl;
-    auto* matrix = const_cast<double*>(A.data());
-    auto* inner  = const_cast<MKL_INT*>(A.inner());
-    auto* outer  = const_cast<MKL_INT*>(A.outer());
-    auto* vector = const_cast<double*>(x.data());
+    const auto* matrix = static_cast<const double*>(A.data());
+    const auto* inner  = static_cast<const MKL_INT*>(A.inner());
+    const auto* outer  = static_cast<const MKL_INT*>(A.outer());
+    const auto* vector = static_cast<const double*>(x.data());
 
     mkl_dcsrmv("N", &m, &k, &alpha, "G__C", matrix, inner, outer, outer + 1, vector, &beta, y.data());
 }
@@ -71,12 +71,9 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
     // We expect indices to be 0-based
     ASSERT(A.outer()[0] == 0);
 
-    MKL_INT m = A.rows();
-    MKL_INT n = C.cols();
-    MKL_INT k = A.cols();
-
-    double alpha = 1.;
-    double beta  = 0.;
+    const auto m = static_cast<const MKL_INT>(A.rows());
+    const auto n = static_cast<const MKL_INT>(C.cols());
+    const auto k = static_cast<const MKL_INT>(A.cols());
 
     // FIXME: with 0-based indexing, MKL assumes row-major ordering for B and C
     // We need to use 1-based indexing i.e. offset outer and inner indices by 1
@@ -91,11 +88,12 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
         indx[i] = A.inner()[i] + 1;
     }
 
-    // void mkl_dcsrmm (const char *transa, const MKL_INT *m, const MKL_INT *n, const MKL_INT *k,
-    //                  const double *alpha, const char *matdescra,
-    //                  const double *val, const MKL_INT *indx, const MKL_INT *pntrb, const MKL_INT *pntre,
-    //                  const double *b, const MKL_INT *ldb, const double *beta,
-    //                  double *c, const MKL_INT *ldc);
+    // FIXME: mkl_dcsrmm is deprecated, use mkl_sparse_d_mm instead
+    // void mkl_dcsrmm(const char *transa, const MKL_INT *m, const MKL_INT *n, const MKL_INT *k,
+    //                 const double *alpha, const char *matdescra,
+    //                 const double *val, const MKL_INT *indx, const MKL_INT *pntrb, const MKL_INT *pntre,
+    //                 const double *b, const MKL_INT *ldb, const double *beta,
+    //                 double *c, const MKL_INT *ldc);
 
     mkl_dcsrmm("N", &m, &n, &k, &alpha, "G__F", A.data(), indx.data(), pntrb.data(), pntrb.data() + 1, B.data(), &k,
                &beta, C.data(), &m);

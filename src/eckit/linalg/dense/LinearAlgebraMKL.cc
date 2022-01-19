@@ -12,7 +12,6 @@
 #include "eckit/linalg/dense/LinearAlgebraMKL.h"
 
 #include "mkl.h"
-#include "mkl_cblas.h"
 
 #include <ostream>
 
@@ -28,6 +27,12 @@ namespace dense {
 
 static const LinearAlgebraMKL __la("mkl");
 
+static const MKL_INT inc           = 1;
+static const CBLAS_LAYOUT layout   = CblasColMajor;
+static const CBLAS_TRANSPOSE trans = CblasNoTrans;
+static const double alpha          = 1.;
+static const double beta           = 0.;
+
 
 void LinearAlgebraMKL::print(std::ostream& out) const {
     out << "LinearAlgebraMKL[]";
@@ -37,8 +42,14 @@ void LinearAlgebraMKL::print(std::ostream& out) const {
 Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
 
-    // double cblas_ddot (const MKL_INT n, const double *x, const MKL_INT incx, const double *y, const MKL_INT incy);
-    return cblas_ddot(x.size(), x.data(), 1, y.data(), 1);
+    const auto n   = static_cast<const MKL_INT>(x.size());
+    const auto* _x = static_cast<const double*>(x.data());
+    const auto* _y = static_cast<const double*>(y.data());
+
+    // double cblas_ddot(const MKL_INT N, const double *X, const MKL_INT incX,
+    //                   const double *Y, const MKL_INT incY);
+
+    return cblas_ddot(n, _x, inc, _y, inc);
 }
 
 
@@ -46,12 +57,20 @@ void LinearAlgebraMKL::gemv(const Matrix& A, const Vector& x, Vector& y) const {
     ASSERT(x.size() == A.cols());
     ASSERT(y.size() == A.rows());
 
-    // void cblas_dgemv (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE trans,
-    //                   const MKL_INT m, const MKL_INT n,
-    //                   const double alpha, const double a, const MKL_INT lda, const double *x, const MKL_INT incx,
-    //                   const double beta, double *y, const MKL_INT incy);
-    cblas_dgemv(CblasColMajor, CblasNoTrans, A.rows(), A.cols(), 1.0, A.data(), A.rows(), x.data(), 1, 0.0, y.data(),
-                1);
+    const auto m = static_cast<const MKL_INT>(A.rows());
+    const auto n = static_cast<const MKL_INT>(A.cols());
+
+    const auto* _A = static_cast<const double*>(A.data());
+    const auto* _x = static_cast<const double*>(x.data());
+    auto* _y       = static_cast<double*>(y.data());
+
+    // void cblas_dgemv(const CBLAS_LAYOUT Layout,
+    //                  const CBLAS_TRANSPOSE TransA, const MKL_INT M, const MKL_INT N,
+    //                  const double alpha, const double *A, const MKL_INT lda,
+    //                  const double *X, const MKL_INT incX, const double beta,
+    //                  double *Y, const MKL_INT incY);
+
+    cblas_dgemv(layout, trans, m, n, alpha, _A, m, _x, inc, beta, _y, inc);
 }
 
 
@@ -60,12 +79,21 @@ void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
     ASSERT(A.rows() == C.rows());
     ASSERT(B.cols() == C.cols());
 
-    // void cblas_dgemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb,
-    //                   const MKL_INT m, const MKL_INT n, const MKL_INT k,
-    //                   const double alpha, const double a, const MKL_INT lda, const double *b, const MKL_INT ldb,
-    //                   const double beta, double *c, const MKL_INT ldc);
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, A.rows(), B.cols(), A.cols(), 1.0, A.data(), A.rows(),
-                B.data(), B.rows(), 0.0, C.data(), A.rows());
+    const auto m = static_cast<const MKL_INT>(A.rows());
+    const auto n = static_cast<const MKL_INT>(B.cols());
+    const auto k = static_cast<const MKL_INT>(A.cols());
+
+    const auto* _A = static_cast<const double*>(A.data());
+    const auto* _B = static_cast<const double*>(B.data());
+    auto* _C       = static_cast<double*>(C.data());
+
+    // void cblas_dgemm(const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE TransA,
+    //                  const CBLAS_TRANSPOSE TransB, const MKL_INT M, const MKL_INT N,
+    //                  const MKL_INT K, const double alpha, const double *A,
+    //                  const MKL_INT lda, const double *B, const MKL_INT ldb,
+    //                  const double beta, double *C, const MKL_INT ldc);
+
+    cblas_dgemm(layout, trans, trans, m, n, k, alpha, _A, m, _B, k, beta, _C, m);
 }
 
 

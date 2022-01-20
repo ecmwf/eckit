@@ -8,27 +8,25 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @author Florian Rathgeber
-/// @author Pedro Maciel
-/// @author Tiago Quintino
 
+#include "eckit/linalg/BackendRegistry.h"
 
-#pragma once
-
-#include <cstddef>
+#include "eckit/eckit.h"
 
 
 namespace eckit {
 namespace linalg {
 
 
-using Scalar = double;
-using Index  = int;
-using Size   = size_t;
-
-class Vector;
-class Matrix;
-class SparseMatrix;
+const char* backend_default() {
+    return
+#ifdef eckit_HAVE_EIGEN
+        "eigen"
+#else
+        "generic"
+#endif
+        ;
+}
 
 
 }  // namespace linalg

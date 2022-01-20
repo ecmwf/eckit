@@ -8,28 +8,28 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   Matrix.h
-/// @author Florian Rathgeber
-/// @date   June 2015
 
-#ifndef eckit_linalg_Matrix_h
-#define eckit_linalg_Matrix_h
+#pragma once
 
 #include "eckit/linalg/types.h"
+
 
 namespace eckit {
 class Stream;
 }
 
+
 namespace eckit {
 namespace linalg {
 
+
 //-----------------------------------------------------------------------------
+
 
 /// Dense matrix in column major storage order
 class Matrix {
 public:  // types
-    typedef eckit::linalg::Size Size;
+    using Size = linalg::Size;
 
 public:  // methods
     // -- Constructors
@@ -49,7 +49,7 @@ public:  // methods
     /// Copy constructor
     Matrix(const Matrix&);
 
-    // TODO: make virtual if used as base class
+    /// Destructor
     ~Matrix();
 
     // -- Mutators
@@ -77,8 +77,10 @@ public:  // methods
 
     /// @returns size (rows * cols)
     Size size() const { return rows_ * cols_; }
+
     /// @returns number of rows
     Size rows() const { return rows_; }
+
     /// @returns number of columns
     Size cols() const { return cols_; }
 
@@ -98,10 +100,13 @@ public:  // methods
 
     /// @returns iterator to beginning of the data
     Scalar* begin() { return array_; }
+
     /// @returns const iterator to beginning of the data
     const Scalar* begin() const { return array_; }
+
     /// @returns iterator to end of the data
     Scalar* end() { return array_ + size(); }
+
     /// @returns const iterator to end of the data
     const Scalar* end() const { return array_ + size(); }
 
@@ -119,13 +124,12 @@ protected:  // member variables
     bool own_;
 };
 
-//-----------------------------------------------------------------------------
 
 Stream& operator<<(Stream&, const Matrix&);
 
+
 //-----------------------------------------------------------------------------
+
 
 }  // namespace linalg
 }  // namespace eckit
-
-#endif

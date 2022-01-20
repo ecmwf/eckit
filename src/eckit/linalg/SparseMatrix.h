@@ -8,13 +8,12 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   SparseMatrix.h
 /// @author Florian Rathgeber
+/// @author Pedro Maciel
 /// @author Tiago Quintino
-/// @date   June 2015
 
-#ifndef eckit_la_SparseMatrix_h
-#define eckit_la_SparseMatrix_h
+
+#pragma once
 
 #include <cassert>
 #include <iosfwd>
@@ -27,23 +26,27 @@
 #include "eckit/memory/MemoryBuffer.h"
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
 
+namespace eckit {
 class Stream;
 class PathName;
+}  // namespace eckit
 
+
+namespace eckit {
 namespace linalg {
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Sparse matrix in CRS (compressed row storage) format
-///
-class SparseMatrix {
 
+/// Sparse matrix in CRS (compressed row storage) format
+class SparseMatrix {
 public:  // types
     struct Layout {
 
-        Layout() : data_(nullptr), outer_(nullptr), inner_(nullptr) {}
+        Layout() :
+            data_(nullptr), outer_(nullptr), inner_(nullptr) {}
 
         void reset() {
             data_  = nullptr;
@@ -56,9 +59,11 @@ public:  // types
         Index* inner_;  ///< column indices, sized with number of non-zeros (nnz)
     };
 
+
     struct Shape {
 
-        Shape() : size_(0), rows_(0), cols_(0) {}
+        Shape() :
+            size_(0), rows_(0), cols_(0) {}
 
         void reset() {
             size_ = 0;
@@ -171,7 +176,7 @@ public:
     /// @returns a sparse matrix that is a row reduction and reorder accoring to indexes passed in vector
     SparseMatrix rowReduction(const std::vector<size_t>& p) const;
 
-    // I/O
+    // -- I/O
 
     void save(const eckit::PathName& path) const;
     void load(const eckit::PathName& path);
@@ -217,9 +222,9 @@ public:
     /// Is the memory shared
     bool inSharedMemory() const;
 
-    void dump(std::ostream& os) const;
+    void dump(std::ostream&) const;
 
-    void print(std::ostream& os) const;
+    void print(std::ostream&) const;
 
     const Allocator& owner() const;
 
@@ -250,7 +255,7 @@ public:  // iterators
 
         const Scalar& operator*() const;
 
-        void print(std::ostream& os) const;
+        void print(std::ostream&) const;
 
         bool lastOfRow() const { return ((index_ + 1) == Size(matrix_->outer()[row_ + 1])); }
 
@@ -261,8 +266,10 @@ public:  // iterators
     };
 
     struct iterator : const_iterator {
-        iterator(SparseMatrix& matrix) : const_iterator(matrix) {}
-        iterator(SparseMatrix& matrix, Size row) : const_iterator(matrix, row) {}
+        iterator(SparseMatrix& matrix) :
+            const_iterator(matrix) {}
+        iterator(SparseMatrix& matrix, Size row) :
+            const_iterator(matrix, row) {}
         Scalar& operator*();
     };
 
@@ -302,11 +309,12 @@ private:  // members
     friend Stream& operator<<(Stream&, const SparseMatrix&);
 };
 
+
 Stream& operator<<(Stream&, const SparseMatrix&);
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
 }  // namespace linalg
 }  // namespace eckit
-
-#endif

@@ -50,8 +50,11 @@ static void init() {
 //-----------------------------------------------------------------------------
 
 
-const LinearAlgebraSparse& LinearAlgebraSparse::backend() {
+const LinearAlgebraSparse& LinearAlgebraSparse::backend(const std::string& name) {
     pthread_once(&once, init);
+    if (!name.empty()) {
+        backends->backend(name);
+    }
     return backends->find();
 }
 
@@ -65,12 +68,6 @@ const LinearAlgebraSparse& LinearAlgebraSparse::getBackend(const std::string& na
 bool LinearAlgebraSparse::hasBackend(const std::string& name) {
     pthread_once(&once, init);
     return backends->has(name);
-}
-
-
-void LinearAlgebraSparse::backend(const std::string& name) {
-    pthread_once(&once, init);
-    backends->backend(name);
 }
 
 

@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <iosfwd>
+#include <ostream>
 #include <string>
 
 #include "eckit/deprecated.h"
@@ -27,87 +27,95 @@ namespace linalg {
 //-----------------------------------------------------------------------------
 
 
-/// @deprecated Use eckit::linalg::LinearAlgebraDense/LinearAlgebraSparse instead
-class DEPRECATED("Use eckit::linalg::LinearAlgebraDense/LinearAlgebraSparse instead") LinearAlgebra {
+class LinearAlgebra {
 public:
     // - Static methods
 
     /// Get the currently selected backend
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
     static const LinearAlgebra& backend();
 
     /// Select the given backend as the default
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
     static void backend(const std::string& name);
 
     /// List all available backends
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::list() instead")
     static std::ostream& list(std::ostream&);
 
     /// Get a backend by name
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::getBackend() instead")
     static const LinearAlgebra& getBackend(const std::string& name);
 
     /// Check if a backend is available
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::hasBackend() instead")
     static bool hasBackend(const std::string& name);
+
+    /// Get current or specific LinearAlgebraDense backend
+    static const LinearAlgebraDense& denseBackend(const std::string& name = "");
+
+    /// Get current or specific LinearAlgebraSparse backend
+    static const LinearAlgebraSparse& sparseBackend(const std::string& name = "");
+
+    /// Check if a LinearAlgebraDense backend is available
+    static bool hasDenseBackend(const std::string& name);
+
+    /// Check if a LinearAlgebraSparse backend is available
+    static bool hasSparseBackend(const std::string& name);
+
+    // - Constructors/destructor
+
+    LinearAlgebra()  = default;
+    ~LinearAlgebra() = default;
 
     // - Methods
 
     /// Return active backend name
-    const std::string& name() const {
-        return name_;
-    }
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::name() instead")
+    static std::string name();
 
     /// Compute the inner product of vectors x and y
-    Scalar dot(const Vector& x, const Vector& y) const {
-        return laDense().dot(x, y);
+    static Scalar dot(const Vector& x, const Vector& y) {
+        return LinearAlgebraDense::backend().dot(x, y);
     }
 
     /// Compute the product of a dense matrix A and vector x
     /// @note y must be allocated and sized correctly
-    void gemv(const Matrix& A, const Vector& x, Vector& y) const {
-        laDense().gemv(A, x, y);
+    static void gemv(const Matrix& A, const Vector& x, Vector& y) {
+        LinearAlgebraDense::backend().gemv(A, x, y);
     }
 
     /// Compute the product of dense matrices A and X
     /// @note Y must be allocated and sized correctly
-    void gemm(const Matrix& A, const Matrix& X, Matrix& Y) const {
-        laDense().gemm(A, X, Y);
+    static void gemm(const Matrix& A, const Matrix& X, Matrix& Y) {
+        LinearAlgebraDense::backend().gemm(A, X, Y);
     }
 
     /// Compute the product of a sparse matrix A and vector x
     /// @note y must be allocated and sized correctly
-    void spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-        laSparse().spmv(A, x, y);
+    static void spmv(const SparseMatrix& A, const Vector& x, Vector& y) {
+        LinearAlgebraSparse::backend().spmv(A, x, y);
     }
 
     /// Compute the product of sparse matrix A and dense matrix X
     /// @note Y must be allocated and sized correctly
-    void spmm(const SparseMatrix& A, const Matrix& X, Matrix& Y) const {
-        laSparse().spmm(A, X, Y);
+    static void spmm(const SparseMatrix& A, const Matrix& X, Matrix& Y) {
+        LinearAlgebraSparse::backend().spmm(A, X, Y);
     }
 
     /// Compute the product x A' y with x and y diagonal matrices stored as
     /// vectors and A a sparse matrix
     /// @note B does NOT need to be allocated/sized correctly
-    void dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-        laSparse().dsptd(x, A, y, B);
+    static void dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) {
+        LinearAlgebraSparse::backend().dsptd(x, A, y, B);
     }
 
-protected:
-    LinearAlgebra(const std::string& name);
-
-    virtual ~LinearAlgebra() = default;
-
 private:
-    std::string name_;
-
-    virtual const LinearAlgebraDense& laDense() const   = 0;
-    virtual const LinearAlgebraSparse& laSparse() const = 0;
-    virtual void print(std::ostream&) const             = 0;
-
     LinearAlgebra(const LinearAlgebra&) = delete;
     LinearAlgebra& operator=(const LinearAlgebra&) = delete;
 
-    friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra& p) {
-        p.print(s);
-        return s;
+    friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra&) {
+        return s << "LinearAlgebra[LinearAlgebraDense=[" << LinearAlgebraDense::backend() << "],LinearAlgebraSparse=[" << LinearAlgebraSparse::backend() << "]]";
     }
 };
 

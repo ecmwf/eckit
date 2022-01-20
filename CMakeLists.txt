@@ -74,12 +74,6 @@ ecbuild_add_option( FEATURE ECKIT_SQL
                     DESCRIPTION "An SQL engine"
                     CONDITION LEXYACC_FOUND )
 
-### LinearAlgebra (deprecated)
-
-ecbuild_add_option( FEATURE     LINEARALGEBRA_DEPRECATED
-                    DEFAULT     ON
-                    DESCRIPTION "LinearAlgebra backend interface (deprecated)" )
-
 ### Eigen
 
 ecbuild_add_option( FEATURE EIGEN

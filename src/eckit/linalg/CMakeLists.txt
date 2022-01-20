@@ -2,6 +2,8 @@ unset( eckit_la_pincludes )
 unset( eckit_la_plibs )
 list( APPEND eckit_la_srcs
       BackendRegistry.h
+      LinearAlgebra.cc
+      LinearAlgebra.h
       LinearAlgebraDense.cc
       LinearAlgebraDense.h
       LinearAlgebraSparse.cc
@@ -78,45 +80,6 @@ endif()
 
 if( eckit_HAVE_OMP )
     list( APPEND eckit_la_plibs OpenMP::OpenMP_CXX )
-endif()
-
-
-if( eckit_HAVE_LINEARALGEBRA_DEPRECATED )
-    list( APPEND eckit_la_srcs
-          LinearAlgebra.cc
-          LinearAlgebra.h
-          deprecated/LinearAlgebraGeneric.cc
-          deprecated/LinearAlgebraGeneric.h )
-    if( eckit_HAVE_ARMADILLO )
-        list( APPEND eckit_la_srcs
-              deprecated/LinearAlgebraArmadillo.cc
-              deprecated/LinearAlgebraArmadillo.h )
-    endif()
-    if( eckit_HAVE_CUDA )
-        list( APPEND eckit_la_srcs
-              deprecated/LinearAlgebraCUDA.cc
-              deprecated/LinearAlgebraCUDA.h )
-    endif()
-    if( eckit_HAVE_EIGEN )
-        list( APPEND eckit_la_srcs
-              deprecated/LinearAlgebraEigen.cc
-              deprecated/LinearAlgebraEigen.h )
-    endif()
-    if( eckit_HAVE_LAPACK )
-        list( APPEND eckit_la_srcs
-              deprecated/LinearAlgebraLAPACK.cc
-              deprecated/LinearAlgebraLAPACK.h )
-    endif()
-    if( eckit_HAVE_MKL )
-        list( APPEND eckit_la_srcs
-              deprecated/LinearAlgebraMKL.cc
-              deprecated/LinearAlgebraMKL.h )
-    endif()
-    if( eckit_HAVE_VIENNACL )
-        list( APPEND eckit_la_srcs
-              deprecated/LinearAlgebraViennaCL.cc
-              deprecated/LinearAlgebraViennaCL.h )
-    endif()
 endif()
 
 ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED

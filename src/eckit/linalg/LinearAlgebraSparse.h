@@ -24,7 +24,6 @@ namespace linalg {
 //-----------------------------------------------------------------------------
 
 
-/// @deprecated Use LinearAlgebraDense/LinearAlgebraSparse instead
 class LinearAlgebraSparse {
 public:
     // - Constructors
@@ -33,20 +32,17 @@ public:
 
     // - Static methods
 
-    /// Get the currently selected sparse backend
-    static const LinearAlgebraSparse& backend();
+    /// Get backend, re-setting default
+    static const LinearAlgebraSparse& backend(const std::string& name = "");
 
-    /// Select the given sparse backend as the default
-    static void backend(const std::string& name);
-
-    /// List all available backends
-    static std::ostream& list(std::ostream&);
-
-    /// Get a backend by name
+    /// Get backend, re-setting default
     static const LinearAlgebraSparse& getBackend(const std::string& name);
 
     /// Check if a backend is available
     static bool hasBackend(const std::string& name);
+
+    /// List all available backends
+    static std::ostream& list(std::ostream&);
 
     // - Methods
 

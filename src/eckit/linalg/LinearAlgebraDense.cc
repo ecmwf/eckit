@@ -50,8 +50,11 @@ static void init() {
 //-----------------------------------------------------------------------------
 
 
-const LinearAlgebraDense& LinearAlgebraDense::backend() {
+const LinearAlgebraDense& LinearAlgebraDense::backend(const std::string& name) {
     pthread_once(&once, init);
+    if (!name.empty()) {
+        backends->backend(name);
+    }
     return backends->find();
 }
 
@@ -65,12 +68,6 @@ const LinearAlgebraDense& LinearAlgebraDense::getBackend(const std::string& name
 bool LinearAlgebraDense::hasBackend(const std::string& name) {
     pthread_once(&once, init);
     return backends->has(name);
-}
-
-
-void LinearAlgebraDense::backend(const std::string& name) {
-    pthread_once(&once, init);
-    backends->backend(name);
 }
 
 

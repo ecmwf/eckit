@@ -8,9 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @author Florian Rathgeber
-/// @author Pedro Maciel
-
 
 #pragma once
 
@@ -32,7 +29,7 @@ namespace linalg {
 /// Dense matrix in column major storage order
 class Matrix {
 public:  // types
-    typedef eckit::linalg::Size Size;
+    using Size = linalg::Size;
 
 public:  // methods
     // -- Constructors

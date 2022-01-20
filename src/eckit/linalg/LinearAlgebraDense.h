@@ -26,16 +26,12 @@ namespace linalg {
 
 class LinearAlgebraDense {
 public:
-    // - Constructors
-
-    LinearAlgebraDense() = default;
-
     // - Static methods
 
     /// Get backend, re-setting default
     static const LinearAlgebraDense& backend(const std::string& name = "");
 
-    /// Get backend, re-setting default
+    /// Get backend
     static const LinearAlgebraDense& getBackend(const std::string& name);
 
     /// Check if a backend is available
@@ -44,12 +40,10 @@ public:
     /// List all available backends
     static std::ostream& list(std::ostream&);
 
-    // - Methods
-
     /// Return active backend name
-    const std::string& name() const {
-        return name_;
-    }
+    static const std::string& name();
+
+    // - Methods
 
     /// Compute the inner product of vectors x and y
     virtual Scalar dot(const Vector& x, const Vector& y) const = 0;
@@ -63,13 +57,12 @@ public:
     virtual void gemm(const Matrix& A, const Matrix& X, Matrix& Y) const = 0;
 
 protected:
+    LinearAlgebraDense() = default;
     LinearAlgebraDense(const std::string& name);
 
     virtual ~LinearAlgebraDense() = default;
 
 private:
-    std::string name_;
-
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const LinearAlgebraDense& p) {

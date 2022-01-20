@@ -11,7 +11,6 @@
 
 #include "eckit/linalg/LinearAlgebraSparse.h"
 
-#include "eckit/eckit.h"
 #include "eckit/linalg/BackendRegistry.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -24,25 +23,13 @@ namespace linalg {
 //-----------------------------------------------------------------------------
 
 
-namespace {
-
-
-#ifdef eckit_HAVE_EIGEN
-static const auto* defaultBackend = "eigen";
-#else
-static const auto* defaultBackend = "generic";
-#endif
-
 static pthread_once_t once                            = PTHREAD_ONCE_INIT;
 static BackendRegistry<LinearAlgebraSparse>* backends = nullptr;
 
 
 static void init() {
-    backends = new BackendRegistry<LinearAlgebraSparse>(defaultBackend, "ECKIT_LINEAR_ALGEBRA_SPARSE_BACKEND");
+    backends = new BackendRegistry<LinearAlgebraSparse>(backend_default(), "ECKIT_LINEAR_ALGEBRA_SPARSE_BACKEND");
 }
-
-
-}  // namespace
 
 
 //-----------------------------------------------------------------------------
@@ -75,8 +62,12 @@ std::ostream& LinearAlgebraSparse::list(std::ostream& out) {
 }
 
 
-LinearAlgebraSparse::LinearAlgebraSparse(const std::string& name) :
-    name_(name) {
+const std::string& LinearAlgebraSparse::name() {
+    return backends->name();
+}
+
+
+LinearAlgebraSparse::LinearAlgebraSparse(const std::string& name) {
     pthread_once(&once, init);
     backends->add(name, this);
 }

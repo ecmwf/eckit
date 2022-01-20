@@ -11,7 +11,6 @@
 
 #include "eckit/linalg/LinearAlgebraDense.h"
 
-#include "eckit/eckit.h"
 #include "eckit/linalg/BackendRegistry.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -24,25 +23,13 @@ namespace linalg {
 //-----------------------------------------------------------------------------
 
 
-namespace {
-
-
-#ifdef eckit_HAVE_EIGEN
-static const auto* defaultBackend = "eigen";
-#else
-static const auto* defaultBackend = "generic";
-#endif
-
 static pthread_once_t once                           = PTHREAD_ONCE_INIT;
 static BackendRegistry<LinearAlgebraDense>* backends = nullptr;
 
 
 static void init() {
-    backends = new BackendRegistry<LinearAlgebraDense>(defaultBackend, "ECKIT_LINEAR_ALGEBRA_DENSE_BACKEND");
+    backends = new BackendRegistry<LinearAlgebraDense>(backend_default(), "ECKIT_LINEAR_ALGEBRA_DENSE_BACKEND");
 }
-
-
-}  // namespace
 
 
 //-----------------------------------------------------------------------------
@@ -75,8 +62,12 @@ std::ostream& LinearAlgebraDense::list(std::ostream& out) {
 }
 
 
-LinearAlgebraDense::LinearAlgebraDense(const std::string& name) :
-    name_(name) {
+const std::string& LinearAlgebraDense::name() {
+    return backends->name();
+}
+
+
+LinearAlgebraDense::LinearAlgebraDense(const std::string& name) {
     pthread_once(&once, init);
     backends->add(name, this);
 }

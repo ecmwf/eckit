@@ -26,16 +26,12 @@ namespace linalg {
 
 class LinearAlgebraSparse {
 public:
-    // - Constructors
-
-    LinearAlgebraSparse() = default;
-
     // - Static methods
 
     /// Get backend, re-setting default
     static const LinearAlgebraSparse& backend(const std::string& name = "");
 
-    /// Get backend, re-setting default
+    /// Get backend
     static const LinearAlgebraSparse& getBackend(const std::string& name);
 
     /// Check if a backend is available
@@ -44,12 +40,10 @@ public:
     /// List all available backends
     static std::ostream& list(std::ostream&);
 
-    // - Methods
-
     /// Return active backend name
-    const std::string& name() const {
-        return name_;
-    }
+    static const std::string& name();
+
+    // - Methods
 
     /// Compute the product of a sparse matrix A and vector x
     /// @note y must be allocated and sized correctly
@@ -65,13 +59,12 @@ public:
     virtual void dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const = 0;
 
 protected:
+    LinearAlgebraSparse() = default;
     LinearAlgebraSparse(const std::string& name);
 
     virtual ~LinearAlgebraSparse() = default;
 
 private:
-    std::string name_;
-
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const LinearAlgebraSparse& p) {

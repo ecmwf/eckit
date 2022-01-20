@@ -24,7 +24,10 @@ namespace linalg {
 //-----------------------------------------------------------------------------
 
 
-static const LinearAlgebra __backend;
+///@note __backend supports the deprecated functionality, to remove
+static const struct LinearAlgebraInstance : public LinearAlgebra {
+    LinearAlgebraInstance() = default;
+} __backend;
 
 
 //-----------------------------------------------------------------------------
@@ -105,9 +108,9 @@ bool LinearAlgebra::hasSparseBackend(const std::string& name) {
 
 
 std::string LinearAlgebra::name() {
-    const auto denseBackend  = LinearAlgebraDense::backend().name();
-    const auto sparseBackend = LinearAlgebraSparse::backend().name();
-    return denseBackend == sparseBackend ? denseBackend : (denseBackend + "/" + sparseBackend);
+    const auto dense  = LinearAlgebraDense::name();
+    const auto sparse = LinearAlgebraSparse::name();
+    return dense == sparse ? dense : (dense + "/" + sparse);
 }
 
 

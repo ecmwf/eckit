@@ -1,6 +1,7 @@
 unset( eckit_la_pincludes )
 unset( eckit_la_plibs )
 list( APPEND eckit_la_srcs
+      BackendRegistry.cc
       BackendRegistry.h
       LinearAlgebra.cc
       LinearAlgebra.h

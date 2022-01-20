@@ -9,6 +9,8 @@
  */
 
 
+#pragma once
+
 #include <cstdlib>
 #include <map>
 
@@ -22,13 +24,18 @@ namespace eckit {
 namespace linalg {
 
 
+const char* backend_default();
+
+
 template <typename LA>
 class BackendRegistry {
 public:
-    BackendRegistry(const char* default_backend, const char* env_var) :
-        default_(default_backend) {
+    BackendRegistry(const char* default_name, const char* env_var) :
+        default_(default_name) {
+        ASSERT(!default_.empty());
+
         auto* envBackend = ::getenv(env_var);
-        if (envBackend) {
+        if (envBackend != nullptr) {
             default_ = envBackend;
         }
     }
@@ -39,7 +46,13 @@ public:
         if (map_.find(name) == map_.end()) {
             throw BadParameter("Invalid backend " + name, Here());
         }
+
+        ASSERT(!name.empty());
         default_ = name;
+    }
+
+    const std::string& name() const {
+        return default_;
     }
 
     bool has(const std::string& name) const {
@@ -48,13 +61,13 @@ public:
         return map_.find(name) != map_.end();
     }
 
-
-    const LA& find() const {
-        return find(default_);
-    }
-
-    const LA& find(const std::string& name) const {
+    const LA& find(const std::string& name = "") const {
         AutoLock<Mutex> lock(mutex_);
+
+        if (name.empty()) {
+            ASSERT(!default_.empty());
+            return find(default_);
+        }
 
         auto it = map_.find(name);
         if (it == map_.end()) {

@@ -41,7 +41,7 @@ public:
     /// List all available backends
     static std::ostream& list(std::ostream&);
 
-    /// Get a backend by name
+    /// Get a backend by name (re-setting default)
     DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::getBackend() instead")
     static const LinearAlgebra& getBackend(const std::string& name);
 
@@ -59,11 +59,6 @@ public:
 
     /// Check if a LinearAlgebraSparse backend is available
     static bool hasSparseBackend(const std::string& name);
-
-    // - Constructors/destructor
-
-    LinearAlgebra()  = default;
-    ~LinearAlgebra() = default;
 
     // - Methods
 
@@ -106,6 +101,9 @@ public:
     static void dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) {
         LinearAlgebraSparse::backend().dsptd(x, A, y, B);
     }
+
+protected:
+    LinearAlgebra() = default;
 
 private:
     LinearAlgebra(const LinearAlgebra&) = delete;

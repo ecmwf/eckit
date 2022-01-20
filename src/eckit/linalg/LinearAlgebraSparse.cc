@@ -11,8 +11,6 @@
 
 #include "eckit/linalg/LinearAlgebraSparse.h"
 
-#include <map>
-
 #include "eckit/eckit.h"
 #include "eckit/linalg/BackendRegistry.h"
 #include "eckit/thread/AutoLock.h"

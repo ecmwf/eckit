@@ -36,11 +36,9 @@ public:
     static const LinearAlgebra& backend();
 
     /// Select the given backend as the default
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
     static void backend(const std::string& name);
 
     /// List all available backends
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::list() instead")
     static std::ostream& list(std::ostream&);
 
     /// Get a backend by name
@@ -48,7 +46,6 @@ public:
     static const LinearAlgebra& getBackend(const std::string& name);
 
     /// Check if a backend is available
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::hasBackend() instead")
     static bool hasBackend(const std::string& name);
 
     /// Get current or specific LinearAlgebraDense backend

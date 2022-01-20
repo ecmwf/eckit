@@ -60,8 +60,6 @@ public:
     /// Check if a LinearAlgebraSparse backend is available
     static bool hasSparseBackend(const std::string& name);
 
-    // - Methods
-
     /// Return active backend name
     DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::name() instead")
     static std::string name();

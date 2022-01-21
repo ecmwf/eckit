@@ -547,7 +547,7 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
 CASE("TensorFloat move constructor") {
 
     std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
-    std::vector<Size> shape{3,4};
+    std::vector<linalg::Size> shape{3,4};
 
     TensorFloat tensor_from(data.data(), shape, false);
 
@@ -578,7 +578,7 @@ CASE("TensorFloat move constructor") {
 CASE("TensorFloat move assignment operator") {
 
     std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
-    std::vector<Size> shape{3,4};
+    std::vector<linalg::Size> shape{3,4};
 
     TensorFloat tensor_from(data.data(), shape, false);
 

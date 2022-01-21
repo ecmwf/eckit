@@ -31,17 +31,17 @@ class LinearAlgebra {
 public:
     // - Static methods
 
-    /// Get the currently selected backend
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
+    /// Get the currently selected backend (instance)
     static const LinearAlgebra& backend();
 
-    /// Select the given backend as the default
+    /// Select specific backend by name (re-setting default)
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
     static void backend(const std::string& name);
 
     /// List all available backends
     static std::ostream& list(std::ostream&);
 
-    /// Get a backend by name (re-setting default)
+    /// Get specific backend by name
     DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::getBackend() instead")
     static const LinearAlgebra& getBackend(const std::string& name);
 
@@ -49,9 +49,15 @@ public:
     static bool hasBackend(const std::string& name);
 
     /// Get current or specific LinearAlgebraDense backend
-    static const LinearAlgebraDense& denseBackend(const std::string& name = "");
+    static const LinearAlgebraDense& getDenseBackend(const std::string& name = "");
 
     /// Get current or specific LinearAlgebraSparse backend
+    static const LinearAlgebraSparse& getSparseBackend(const std::string& name = "");
+
+    /// Get current or specific LinearAlgebraDense backend (re-setting default)
+    static const LinearAlgebraDense& denseBackend(const std::string& name = "");
+
+    /// Get current or specific LinearAlgebraSparse backend (re-setting default)
     static const LinearAlgebraSparse& sparseBackend(const std::string& name = "");
 
     /// Check if a LinearAlgebraDense backend is available

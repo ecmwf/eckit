@@ -81,19 +81,23 @@ bool LinearAlgebra::hasBackend(const std::string& name) {
 }
 
 
+const LinearAlgebraDense& LinearAlgebra::getDenseBackend(const std::string& name) {
+    return LinearAlgebraDense::getBackend(name);
+}
+
+
+const LinearAlgebraSparse& LinearAlgebra::getSparseBackend(const std::string& name) {
+    return LinearAlgebraSparse::getBackend(name);
+}
+
+
 const LinearAlgebraDense& LinearAlgebra::denseBackend(const std::string& name) {
-    if (!name.empty()) {
-        LinearAlgebraDense::backend(name);
-    }
-    return LinearAlgebraDense::backend();
+    return LinearAlgebraDense::backend(name);
 }
 
 
 const LinearAlgebraSparse& LinearAlgebra::sparseBackend(const std::string& name) {
-    if (!name.empty()) {
-        LinearAlgebraSparse::backend(name);
-    }
-    return LinearAlgebraSparse::backend();
+    return LinearAlgebraSparse::backend(name);
 }
 
 

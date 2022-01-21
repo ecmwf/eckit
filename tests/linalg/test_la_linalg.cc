@@ -97,10 +97,24 @@ CASE("test backend") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
+    using eckit::linalg::LinearAlgebra;
+
     eckit::Main::initialise(argc, argv);
 
     // Set dense/sparse linear algebra backends
-    eckit::linalg::LinearAlgebra::backend(eckit::Resource<std::string>("-linearAlgebraBackend", "generic"));
+    eckit::Resource<std::string> backend("-linearAlgebraBackend", "generic");
+
+    auto setDense  = LinearAlgebra::hasDenseBackend(backend);
+    auto setSparse = LinearAlgebra::hasSparseBackend(backend);
+    ASSERT(setDense || setSparse);
+
+    if (setDense) {
+        LinearAlgebra::denseBackend(backend);
+    }
+
+    if (setSparse) {
+        LinearAlgebra::sparseBackend(backend);
+    }
 
     return eckit::testing::run_tests(argc, argv, false);
 }

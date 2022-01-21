@@ -8,141 +8,88 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <string>
-
 #include "eckit/config/Resource.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/runtime/Main.h"
-
-#include "./util.h"
 #include "eckit/linalg/LinearAlgebra.h"
-#include "eckit/linalg/Matrix.h"
-#include "eckit/linalg/SparseMatrix.h"
-#include "eckit/linalg/Vector.h"
-#include "eckit/log/Log.h"
-#include "eckit/testing/Test.h"
+#include "util.h"
 
 namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template <class T>
-bool equals(const T& a, const T& b) {
-    return testing::make_view(a.data(), a.data() + a.size()) == testing::make_view(b.data(), b.data() + b.size());
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /// Test linear algebra interface
 
 CASE("test backend") {
-    using namespace linalg;
+    using linalg::LinearAlgebra;
+    using linalg::Matrix;
+    using linalg::SparseMatrix;
+    using linalg::Vector;
 
-    Matrix A = M(2, 2, 1., -2., -4., 2.);
+    auto A = M(2, 2, 1., -2., -4., 2.);
     SparseMatrix S(2, 4, {{0, 0, 2.}, {1, 2, 3.}});
 
-    auto& linalg = LinearAlgebra::backend();
-    Log::info() << linalg << std::endl;
+    Log::info() << LinearAlgebra::backend() << std::endl;
 
     SECTION("dot") {
-        Vector a = V(3, 1., 2., 4.);
+        auto a = V(3, 1., 2., 4.);
 
-        EXPECT(linalg.dot(a, a) == 21.);
-        EXPECT_THROWS_AS(linalg.dot(a, Vector(2)), AssertionFailed);
+        EXPECT(LinearAlgebra::dot(a, a) == 21.);
+        EXPECT_THROWS_AS(LinearAlgebra::dot(a, Vector(2)), AssertionFailed);
     }
 
     SECTION("gemv") {
-        Vector y = V(2, -42., -42.);
-        Vector z = V(2, 3., 0.);
+        auto y = V(2, -42., -42.);
+        auto z = V(2, 3., 0.);
 
-        linalg.gemv(A, V(2, -1., -2.), y);
-        EXPECT(equals(y, z));
-        EXPECT_THROWS_AS(linalg.gemv(A, Vector(3), y), AssertionFailed);
+        LinearAlgebra::gemv(A, V(2, -1., -2.), y);
+        EXPECT(equal_dense_matrix(y, z));
+        EXPECT_THROWS_AS(LinearAlgebra::gemv(A, Vector(3), y), AssertionFailed);
     }
 
-    SECTION("gemm - 2x2 x 2x2") {
-        Matrix Y = M(2, 2, -42., -42., -42., -42.);
-        Matrix Z = M(2, 2, 9., -6., -12., 12.);
+    SECTION("gemm") {
+        auto Y = M(2, 2, -42., -42., -42., -42.);
+        auto Z = M(2, 2, 9., -6., -12., 12.);
 
-        linalg.gemm(A, A, Y);
-        EXPECT(equals(Y, Z));
-        EXPECT_THROWS_AS(linalg.gemm(A, Matrix(1, 2), Y), AssertionFailed);
-    }
-
-    SECTION("gemm - 2x4 x 4x3") {
-        Matrix A       = M(2, 4, 1., 2., 3., 4., 5., 6., 7., 8.);
-        Matrix B       = M(4, 3, 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20.);
-        Matrix C       = M(2, 3, 0., 0., 0., 0., 0., 0.);
-        Matrix C_check = M(2, 3,
-                           150., 160., 170.,   // row=0
-                           366., 392., 418.);  // row=1
-
-        linalg.gemm(A, B, C);
-
-        EXPECT(equals(C, C_check));
+        LinearAlgebra::gemm(A, A, Y);
+        EXPECT(equal_dense_matrix(Y, Z));
+        EXPECT_THROWS_AS(LinearAlgebra::gemm(A, Matrix(1, 2), Y), AssertionFailed);
     }
 
     SECTION("spmv") {
-        Vector b = V(4, 5., 5., 5., 5.);
-        Vector y = V(2, -42., -42.);
-        Vector z = V(2, 10., 15.);
+        auto b = V(4, 5., 5., 5., 5.);
+        auto y = V(2, -42., -42.);
+        auto z = V(2, 10., 15.);
 
-        linalg.spmv(S, b, y);
-        EXPECT(equals(y, z));
-        EXPECT_THROWS_AS(linalg.spmv(S, Vector(3), y), AssertionFailed);
+        LinearAlgebra::spmv(S, b, y);
+        EXPECT(equal_dense_matrix(y, z));
+        EXPECT_THROWS_AS(LinearAlgebra::spmv(S, Vector(3), y), AssertionFailed);
     }
 
     SECTION("spmm") {
-        Matrix B = M(4, 2, 5., 7., 5., 7., 5., 7., 5., 7.);
-        Matrix Y = M(2, 2, -42., -42., -42., -42.);
-        Matrix Z = M(2, 2, 10., 14., 15., 21.);
+        auto B = M(4, 2, 5., 7., 5., 7., 5., 7., 5., 7.);
+        auto Y = M(2, 2, -42., -42., -42., -42.);
+        auto Z = M(2, 2, 10., 14., 15., 21.);
 
-        linalg.spmm(S, B, Y);
-        EXPECT(equals(Y, Z));
-        EXPECT_THROWS_AS(linalg.spmm(S, Matrix(2, 2), Y), AssertionFailed);
+        LinearAlgebra::spmm(S, B, Y);
+        EXPECT(equal_dense_matrix(Y, Z));
+        EXPECT_THROWS_AS(LinearAlgebra::spmm(S, Matrix(2, 2), Y), AssertionFailed);
     }
 
     SECTION("dsptd") {
-        struct SparseMatrix : linalg::SparseMatrix {
-            using linalg::SparseMatrix::SparseMatrix;
-            Size size() const { return nonZeros(); }
-        };
-
-        Vector x = V(2, 1., 2.);
-        Vector y = V(4, 3., 4., 5., 6.);
+        auto x = V(2, 1., 2.);
+        auto y = V(4, 3., 4., 5., 6.);
         SparseMatrix R(2, 4, {{0, 0, 6.}, {1, 2, 30.}});
 
         SparseMatrix P;
-        linalg.dsptd(x, S, y, P);
+        LinearAlgebra::dsptd(x, S, y, P);
 
         EXPECT(P.rows() == R.rows());
         EXPECT(P.cols() == R.cols());
-        EXPECT(equals(P, R));
+        EXPECT(equal_sparse_matrix(P, R.outer(), R.inner(), R.data()));
 
-        EXPECT_THROWS_AS( linalg.dsptd(y, S, x, P), AssertionFailed);
+        EXPECT_THROWS_AS(LinearAlgebra::dsptd(y, S, x, P), AssertionFailed);
     }
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-CASE("test wrapping of const data") {
-    using namespace linalg;
-    std::vector<double> array{1., -2., -4., 2.};
-    const double* data = array.data();
-    Matrix A{data, 2, 2};
-    Vector y{data, 2};
-
-    // Matrix access is column-major!!!
-    EXPECT(A(0, 0) == 1.);
-    EXPECT(A(1, 0) == -2.);
-    EXPECT(A(0, 1) == -4.);
-    EXPECT(A(1, 1) == 2.);
-
-    EXPECT(y[0] == 1.);
-    EXPECT(y[1] == -2.);
-}
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -150,12 +97,24 @@ CASE("test wrapping of const data") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    using namespace eckit;
+    using eckit::linalg::LinearAlgebra;
 
-    Main::initialise(argc, argv);
+    eckit::Main::initialise(argc, argv);
 
-    // Set linear algebra backend
-    linalg::LinearAlgebra::backend(Resource<std::string>("-linearAlgebraBackend", "generic"));
+    // Set dense/sparse linear algebra backends
+    eckit::Resource<std::string> backend("-linearAlgebraBackend", "generic");
 
-    return testing::run_tests(argc, argv, false);
+    auto setDense  = LinearAlgebra::hasDenseBackend(backend);
+    auto setSparse = LinearAlgebra::hasSparseBackend(backend);
+    ASSERT(setDense || setSparse);
+
+    if (setDense) {
+        LinearAlgebra::denseBackend(backend);
+    }
+
+    if (setSparse) {
+        LinearAlgebra::sparseBackend(backend);
+    }
+
+    return eckit::testing::run_tests(argc, argv, false);
 }

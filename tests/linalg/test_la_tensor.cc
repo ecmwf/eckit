@@ -8,25 +8,15 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <functional>
 #include <numeric>
-#include <string>
 
 #include "eckit/config/Resource.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/io/AutoCloser.h"
-#include "eckit/linalg/Tensor.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Main.h"
 #include "eckit/serialisation/FileStream.h"
+#include "util.h"
 
-#include "eckit/testing/Test.h"
-
-
-#include "./util.h"
-
-using namespace eckit::linalg;
-using namespace eckit::testing;
+using eckit::linalg::TensorDouble;
+using eckit::linalg::TensorFloat;
 
 namespace eckit {
 namespace test {
@@ -59,7 +49,7 @@ CASE("TensorDouble [2, 3, 4]") {
 
 
 CASE("TensorDouble [2, 3, 4, 5]") {
-    std::vector<Size> shape{2, 2, 3, 5};
+    std::vector<linalg::Size> shape{2, 2, 3, 5};
     std::vector<double> v(TensorDouble::flatten(shape));
 
     for (size_t i = 0; i < v.size(); ++i) {
@@ -84,7 +74,6 @@ CASE("TensorDouble [2, 3, 4, 5]") {
 
 
 CASE("TensorDouble serialization") {
-
     TensorDouble A = TD({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
     PathName path("tensorA");
@@ -107,6 +96,7 @@ CASE("TensorDouble serialization") {
 
     path.unlink();
 }
+
 
 CASE("TensorDouble zero") {
     TensorDouble A = TD({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
@@ -170,7 +160,7 @@ CASE("Fill TensorDouble with scalar") {
 
 CASE("TensorDouble wrapping const data") {
     std::vector<double> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
-    const double* data = array.data();
+    const auto* data = array.data();
     TensorDouble A{data, {2, 2, 3}};
 
     // // column-major order
@@ -209,7 +199,7 @@ CASE("TensorFloat [2, 3, 4]") {
 
 
 CASE("TensorFloat [2, 3, 4, 5]") {
-    std::vector<Size> shape{2, 2, 3, 5};
+    std::vector<linalg::Size> shape{2, 2, 3, 5};
     std::vector<float> v(TensorFloat::flatten(shape));
 
     for (size_t i = 0; i < v.size(); ++i) {
@@ -234,7 +224,6 @@ CASE("TensorFloat [2, 3, 4, 5]") {
 
 
 CASE("TensorFloat serialization") {
-
     TensorFloat A = TF({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
 
     PathName path("tensorA");
@@ -257,6 +246,7 @@ CASE("TensorFloat serialization") {
 
     path.unlink();
 }
+
 
 CASE("TensorFloat zero") {
     TensorFloat A = TF({2, 2, 3}, 1., -2., 3., -4., 5., -6., 7., -8., 9., -10., 11., -12.);
@@ -300,7 +290,7 @@ CASE("Fill TensorFloat with scalar") {
 
 CASE("TensorFloat wrapping const data") {
     std::vector<float> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
-    const float* data = array.data();
+    const auto* data = array.data();
     TensorFloat A{data, {2, 2, 3}};
 
     // // column-major order
@@ -315,7 +305,6 @@ CASE("TensorFloat wrapping const data") {
 
 
 CASE("TensorFloat [2, 3] right to left layout") {
-
     std::vector<float> array{1., 2., 3., 4., 5., 6.};
     TensorFloat A{array.data(), {2, 3}};
 
@@ -331,8 +320,9 @@ CASE("TensorFloat [2, 3] right to left layout") {
     A.toRightLayout();
 
     // A internal order should not change!
-    for (int i = 0; i < A.size(); i++)
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == array[i]);
+    }
 
     // and no change in the
     // retrieved values
@@ -348,8 +338,9 @@ CASE("TensorFloat [2, 3] right to left layout") {
 
     // internal order is now changed!
     std::vector<float> expected_rowmajor_values{1., 3., 5., 2., 4., 6.};
-    for (int i = 0; i < A.size(); i++)
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
+    }
 
     // the outside indexes should still
     // give back the correct values..
@@ -361,13 +352,13 @@ CASE("TensorFloat [2, 3] right to left layout") {
     EXPECT(A(1, 2) == 6.);
 }
 
-CASE("TensorFloat [2, 3] right->left->right layout") {
 
+CASE("TensorFloat [2, 3] right->left->right layout") {
     std::vector<float> array{1., 2., 3., 4., 5., 6.};
     TensorFloat A{array.data(), {2, 3}};
 
     // A internal order
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         //        std::cout << "*(A.data()+i) " << *(A.data()+i) << std::endl;
         EXPECT(*(A.data() + i) == array[i]);
     }
@@ -385,7 +376,7 @@ CASE("TensorFloat [2, 3] right->left->right layout") {
 
     // internal order is now changed!
     std::vector<float> expected_rowmajor_values{1., 3., 5., 2., 4., 6.};
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         //        std::cout << "--- *(A.data()+i) " << *(A.data()+i) << std::endl;
         EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
     }
@@ -402,7 +393,7 @@ CASE("TensorFloat [2, 3] right->left->right layout") {
     A.toRightLayout();
 
     // check that the internal order is back to initial order
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         //        std::cout << "*(A.data()+i) " << *(A.data()+i) << std::endl;
         EXPECT(*(A.data() + i) == array[i]);
     }
@@ -418,7 +409,6 @@ CASE("TensorFloat [2, 3] right->left->right layout") {
 
 
 CASE("TensorFloat [2, 3, 4] right->left->right layout") {
-
     std::vector<float> array(24);
     for (int i = 0; i < 24; i++) {
         array[i] = i;
@@ -427,7 +417,7 @@ CASE("TensorFloat [2, 3, 4] right->left->right layout") {
     TensorFloat A{array.data(), {2, 3, 4}};
 
     // A internal order
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == array[i]);
     }
 
@@ -466,7 +456,7 @@ CASE("TensorFloat [2, 3, 4] right->left->right layout") {
     // internal order is now changed!
     std::vector<float> expected_rowmajor_values{0, 6, 12, 18, 2, 8, 14, 20, 4, 10, 16, 22,
                                                 1, 7, 13, 19, 3, 9, 15, 21, 5, 11, 17, 23};
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
     }
 
@@ -503,16 +493,15 @@ CASE("TensorFloat [2, 3, 4] right->left->right layout") {
     A.toRightLayout();
 
     // check that the internal order is back to initial order
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == array[i]);
     }
 }
 
 
 CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
-
     std::vector<float> array(6 * 3 * 2 * 5);
-    for (int i = 0; i < array.size(); i++) {
+    for (size_t i = 0; i < array.size(); i++) {
         array[i] = i;
     }
 
@@ -520,7 +509,7 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
     TensorFloat A{array.data(), {6, 3, 2, 5}};
 
     // check A internal order
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == array[i]);
     }
 
@@ -542,7 +531,7 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
                                                 70, 106, 142, 178, 5, 41, 77, 113, 149, 23, 59, 95, 131, 167,
                                                 11, 47, 83, 119, 155, 29, 65, 101, 137, 173, 17, 53, 89, 125,
                                                 161, 35, 71, 107, 143, 179};
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
     }
 
@@ -550,7 +539,7 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
     A.toRightLayout();
 
     // check that the internal order is back to initial order
-    for (int i = 0; i < A.size(); i++) {
+    for (linalg::Size i = 0; i < A.size(); i++) {
         EXPECT(*(A.data() + i) == array[i]);
     }
 }
@@ -626,5 +615,5 @@ CASE("TensorFloat move assignment operator") {
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);
-    return run_tests(argc, argv, false);
+    return eckit::testing::run_tests(argc, argv, false);
 }

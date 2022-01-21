@@ -8,163 +8,118 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <map>
-
-#include "eckit/eckit.h"
-
-#include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 
 #include "eckit/linalg/LinearAlgebra.h"
+
+#include <set>
+#include <sstream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/utils/StringTools.h"
 
 namespace eckit {
 namespace linalg {
 
-//----------------------------------------------------------------------------------------------------------------------
 
-namespace {
+//-----------------------------------------------------------------------------
 
-#ifdef eckit_HAVE_EIGEN
-static const char* defaultBackend = "eigen";
-#else
-static const char* defaultBackend = "generic";
-#endif
 
-static pthread_once_t once = PTHREAD_ONCE_INIT;
+///@note __backend supports the deprecated functionality, to remove
+static const struct LinearAlgebraInstance : public LinearAlgebra {
+    LinearAlgebraInstance() = default;
+} __backend;
 
-class BackendRegistry {
-public:
-    typedef std::map<std::string, const LinearAlgebra*> Map;
 
-    BackendRegistry() :
-        default_(defaultBackend) {
-        char* envBackend = ::getenv("ECKIT_LINEAR_ALGEBRA_BACKEND");
-        if (envBackend) {
-            default_ = envBackend;
-        }
-        // std::cout << "Default Linear Algebra backend: " << default_ << std::endl;
-    }
+//-----------------------------------------------------------------------------
 
-    void backend(const std::string& name);
-
-    bool has(const std::string& name) const;
-
-    const LinearAlgebra& find() const;
-    const LinearAlgebra& find(const std::string& name) const;
-
-    void list(std::ostream& out) const;
-
-    void add(const std::string& name, LinearAlgebra* backend);
-
-private:  // members
-    Map map_;
-    std::string default_;
-    mutable Mutex mutex_;
-};
-
-static BackendRegistry* backends = nullptr;
-
-static void init() {
-    backends = new BackendRegistry();
-}
-
-void BackendRegistry::backend(const std::string& name) {
-    AutoLock<Mutex> lock(mutex_);
-    if (map_.find(name) == map_.end()) {
-        throw BadParameter("Invalid backend " + name, Here());
-    }
-    default_ = name;
-}
-
-const LinearAlgebra& BackendRegistry::find() const {
-    return find(default_);
-}
-
-const LinearAlgebra& BackendRegistry::find(const std::string& name) const {
-    AutoLock<Mutex> lock(mutex_);
-
-    BackendRegistry::Map::const_iterator it = map_.find(name);
-    if (it == map_.end()) {
-        eckit::Log::error() << "No Linear algebra backend named [" << name << "]" << std::endl;
-        eckit::Log::error() << "Linear algebra backends are:" << std::endl;
-        for (it = map_.begin(); it != map_.end(); ++it)
-            eckit::Log::error() << "   " << (*it).first << std::endl;
-        throw BadParameter("Linear algebra backend " + name + " not available.", Here());
-    }
-    Log::debug<LibEcKit>() << "Using LinearAlgebra backend " << it->first << std::endl;
-    return *(it->second);
-}
-
-bool BackendRegistry::has(const std::string& name) const {
-    AutoLock<Mutex> lock(mutex_);
-    return (map_.find(name) != map_.end());
-}
-
-void BackendRegistry::list(std::ostream& out) const {
-    AutoLock<Mutex> lock(mutex_);
-    const char* sep = "";
-    for (Map::const_iterator it = map_.begin(); it != map_.end(); ++it) {
-        out << sep << it->first;
-        sep = ", ";
-    }
-}
-
-void BackendRegistry::add(const std::string& name, LinearAlgebra* backend) {
-    AutoLock<Mutex> lock(mutex_);
-    ASSERT(map_.find(name) == map_.end());
-    map_[name] = backend;
-}
-
-}  // anonymous namespace
-
-//----------------------------------------------------------------------------------------------------------------------
 
 const LinearAlgebra& LinearAlgebra::backend() {
-    pthread_once(&once, init);
-    return backends->find();
+    return __backend;
 }
 
-const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
-    pthread_once(&once, init);
-    return backends->find(name);
-}
-
-bool LinearAlgebra::hasBackend(const std::string& name) {
-    pthread_once(&once, init);
-    return backends->has(name);
-}
 
 void LinearAlgebra::backend(const std::string& name) {
-    pthread_once(&once, init);
-    backends->backend(name);
-    Log::debug<LibEcKit>() << "Setting LinearAlgebra backend to " << name << std::endl;
+    ASSERT(LinearAlgebraDense::hasBackend(name) || LinearAlgebraSparse::hasBackend(name));
+
+    if (LinearAlgebraDense::hasBackend(name)) {
+        LinearAlgebraDense::backend(name);
+    }
+
+    if (LinearAlgebraSparse::hasBackend(name)) {
+        LinearAlgebraSparse::backend(name);
+    }
 }
 
-void LinearAlgebra::list(std::ostream& out) {
-    pthread_once(&once, init);
-    backends->list(out);
+
+std::ostream& LinearAlgebra::list(std::ostream& out) {
+    const auto* delimiter = ", ";
+    const auto* sep       = "";
+
+    std::ostringstream str;
+    LinearAlgebraDense::list(str);
+    LinearAlgebraSparse::list(str.str().empty() ? str : (str << delimiter));
+
+    for (const auto& backend : [](const std::vector<std::string>& unsorted) {
+             return std::set<std::string>(unsorted.begin(), unsorted.end());
+         }(StringTools::split(delimiter, str.str()))) {
+        out << sep << backend;
+        sep = delimiter;
+    }
+
+    return out;
 }
 
-void LinearAlgebra::dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const {
-    NOTIMP;
+
+const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
+    backend(name);
+    return __backend;
 }
 
-LinearAlgebra::LinearAlgebra(const std::string& name) :
-    name_(name) {
-    pthread_once(&once, init);
-    backends->add(name, this);
+
+bool LinearAlgebra::hasBackend(const std::string& name) {
+    return LinearAlgebraDense::hasBackend(name) || LinearAlgebraSparse::hasBackend(name);
 }
 
-LinearAlgebra::~LinearAlgebra() {}
 
-const std::string& LinearAlgebra::name() const {
-    return name_;
+const LinearAlgebraDense& LinearAlgebra::getDenseBackend(const std::string& name) {
+    return LinearAlgebraDense::getBackend(name);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+
+const LinearAlgebraSparse& LinearAlgebra::getSparseBackend(const std::string& name) {
+    return LinearAlgebraSparse::getBackend(name);
+}
+
+
+const LinearAlgebraDense& LinearAlgebra::denseBackend(const std::string& name) {
+    return LinearAlgebraDense::backend(name);
+}
+
+
+const LinearAlgebraSparse& LinearAlgebra::sparseBackend(const std::string& name) {
+    return LinearAlgebraSparse::backend(name);
+}
+
+
+bool LinearAlgebra::hasDenseBackend(const std::string& name) {
+    return LinearAlgebraDense::hasBackend(name);
+}
+
+
+bool LinearAlgebra::hasSparseBackend(const std::string& name) {
+    return LinearAlgebraSparse::hasBackend(name);
+}
+
+
+std::string LinearAlgebra::name() {
+    const auto dense  = LinearAlgebraDense::name();
+    const auto sparse = LinearAlgebraSparse::name();
+    return dense == sparse ? dense : (dense + "/" + sparse);
+}
+
+
+//-----------------------------------------------------------------------------
+
 
 }  // namespace linalg
 }  // namespace eckit

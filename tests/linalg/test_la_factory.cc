@@ -8,73 +8,102 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   test_la_factory.cc
-/// @author Florian Rathgeber
-/// @date   July 2015
-
 
 #include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/linalg/LinearAlgebra.h"
-
+#include "eckit/linalg/LinearAlgebraDense.h"
+#include "eckit/linalg/LinearAlgebraSparse.h"
 #include "eckit/testing/Test.h"
-
-using namespace eckit;
-using namespace eckit::testing;
-using namespace eckit::linalg;
 
 namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("test_list") {
-    std::ostringstream oss;
-    LinearAlgebra::list(oss);
-    Log::info() << "Available linear algebra backends: " << oss.str() << std::endl;
-    EXPECT(oss.str().find("generic") != std::string::npos);
-#ifdef eckit_HAVE_ARMADILLO
-    EXPECT(oss.str().find("armadillo") != std::string::npos);
-#endif
-#ifdef eckit_HAVE_CUDA
-    EXPECT(oss.str().find("cuda") != std::string::npos);
-#endif
-#ifdef eckit_HAVE_EIGEN
-    EXPECT(oss.str().find("eigen") != std::string::npos);
-#endif
-#if eckit_HAVE_MKL
-    EXPECT(oss.str().find("mkl") != std::string::npos);
-#endif
-#ifdef eckit_HAVE_OMP
-    EXPECT(oss.str().find("openmp") != std::string::npos);
-#endif
-}
+CASE("list") {
+    using linalg::LinearAlgebraDense;
+    using linalg::LinearAlgebraSparse;
 
-CASE("test_backend") {
-    LinearAlgebra::backend();
-    LinearAlgebra::backend("generic");
-    LinearAlgebra::backend();
+    auto dense_backends = {
+        "generic",
 #ifdef eckit_HAVE_ARMADILLO
-    LinearAlgebra::backend("armadillo");
-    LinearAlgebra::backend();
+        "armadillo",
 #endif
 #ifdef eckit_HAVE_CUDA
-    LinearAlgebra::backend("cuda");
-    LinearAlgebra::backend();
+        "cuda",
 #endif
 #ifdef eckit_HAVE_EIGEN
-    LinearAlgebra::backend("eigen");
-    LinearAlgebra::backend();
+        "eigen",
 #endif
+#ifdef eckit_HAVE_LAPACK
+        "lapack",
+#endif
+#ifdef eckit_HAVE_MKL
 #if eckit_HAVE_MKL
-    LinearAlgebra::backend("mkl");
-    LinearAlgebra::backend();
+        "mkl",
+#endif
+#endif
+#ifdef eckit_HAVE_VIENNACL
+        "viennacl",
 #endif
 #ifdef eckit_HAVE_OMP
-    LinearAlgebra::backend("openmp");
-    LinearAlgebra::backend();
+        "openmp",
 #endif
-    EXPECT_THROWS_AS(LinearAlgebra::backend("foo"), BadParameter);
+    };
+
+    auto sparse_backends = {
+        "generic",
+#ifdef eckit_HAVE_CUDA
+        "cuda",
+#endif
+#ifdef eckit_HAVE_EIGEN
+        "eigen",
+#endif
+#ifdef eckit_HAVE_MKL
+#if eckit_HAVE_MKL
+        "mkl",
+#endif
+#endif
+#ifdef eckit_HAVE_VIENNACL
+        "viennacl",
+#endif
+#ifdef eckit_HAVE_OMP
+        "openmp",
+#endif
+    };
+
+    SECTION("dense backends") {
+        std::ostringstream oss;
+        LinearAlgebraDense::list(oss);
+        Log::info() << "Available backends: " << oss.str() << std::endl;
+
+        for (const std::string& name : dense_backends) {
+            Log::info() << "Looking for '" << name << "'" << std::endl;
+            EXPECT(oss.str().find(name) != std::string::npos);
+
+            Log::info() << "Switching to '" << name << "'" << std::endl;
+            LinearAlgebraDense::backend(name);
+            EXPECT(LinearAlgebraDense::backend().name() == name);
+        }
+
+        EXPECT_THROWS_AS(LinearAlgebraDense::backend("foo"), BadParameter);
+    }
+
+    SECTION("sparse backends") {
+        std::ostringstream oss;
+        LinearAlgebraSparse::list(oss);
+        Log::info() << "Available backends: " << oss.str() << std::endl;
+
+        for (const std::string& name : sparse_backends) {
+            Log::info() << "Looking for '" << name << "'" << std::endl;
+            EXPECT(oss.str().find(name) != std::string::npos);
+
+            Log::info() << "Switching to '" << name << "'" << std::endl;
+            LinearAlgebraSparse::backend(name);
+            EXPECT(LinearAlgebraSparse::backend().name() == name);
+        }
+
+        EXPECT_THROWS_AS(LinearAlgebraSparse::backend("foo"), BadParameter);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -83,5 +112,5 @@ CASE("test_backend") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

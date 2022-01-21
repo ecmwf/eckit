@@ -129,7 +129,7 @@ public:  // methods
     }
 
     /// Move constructor
-    Tensor(Tensor&& other) {
+    Tensor(Tensor&& other) noexcept {
 
         shape_ = std::move(other.shape_);
         strides_ = std::move(other.strides_);
@@ -147,7 +147,7 @@ public:  // methods
 
     /// Destructor
     ~Tensor() {
-        if (own_) {
+        if (own_ && array_) {
             delete[] array_;
         }
     }
@@ -165,11 +165,11 @@ public:  // methods
     }
 
     /// Move assignment operator
-    Tensor& operator=(Tensor&& other) {
+    Tensor& operator=(Tensor&& other) noexcept {
 
         if (&other != this){
 
-            if (own_) {
+            if (own_ && array_) {
                 delete[] array_;
             }
 

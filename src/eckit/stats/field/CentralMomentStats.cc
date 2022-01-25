@@ -57,11 +57,19 @@ struct StandardDeviation final : CentralMomentStatsT<detail::CentralMomentsT<dou
 };
 
 
-static FieldBuilder<Mean> __builder_1("mean");
-static FieldBuilder<Variance> __builder_2("variance");
-static FieldBuilder<Skewness> __builder_3("skewness");
-static FieldBuilder<Kurtosis> __builder_4("kurtosis");
-static FieldBuilder<StandardDeviation> __builder_5("stddev");
+struct Sum final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
+    using CentralMomentStatsT::CentralMomentStatsT;
+    double value() const override { return mean() * double(Counter::count()); }
+    void print(std::ostream& out) const override { out << "Sum[]"; }
+};
+
+
+static const FieldBuilder<Mean> __builder_1("mean");
+static const FieldBuilder<Variance> __builder_2("variance");
+static const FieldBuilder<Skewness> __builder_3("skewness");
+static const FieldBuilder<Kurtosis> __builder_4("kurtosis");
+static const FieldBuilder<StandardDeviation> __builder_5("stddev");
+static const FieldBuilder<StandardDeviation> __builder_6("sum");
 
 
 }  // namespace field

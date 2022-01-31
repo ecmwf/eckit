@@ -21,7 +21,7 @@ namespace tree {
 TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representation& r) : TreeMapped(r, "/dev/zero") {}
 
 
-static TreeBuilder<TreeMappedAnonymousMemory> builder("mapped-anonymous-memory");
+static const TreeBuilder<TreeMappedAnonymousMemory> builder("mapped-anonymous-memory");
 
 
 }  // namespace tree

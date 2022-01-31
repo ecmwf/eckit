@@ -110,7 +110,7 @@ public:
 };
 
 
-static TreeBuilder<TreeMappedCacheFile> builder1("mapped-cache-file");
+static const TreeBuilder<TreeMappedCacheFile> builder1("mapped-cache-file");
 
 
 class TreeMappedTempFile : public TreeMappedFile<TreeMappedTempFile> {
@@ -125,7 +125,7 @@ public:
 };
 
 
-static TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
+static const TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
 
 
 }  // namespace tree

@@ -39,7 +39,7 @@ void MethodT<STATS>::execute(const data::MIRField& field) {
 
     auto v = field.values(0).begin();
     for (auto& s : *this) {
-        auto& value = *(v++);
+        const auto& value = *(v++);
         if (Counter::count(value)) {
             s(value);
         }
@@ -107,16 +107,16 @@ void MethodT<STATS>::stddev(data::MIRField& field) const {
 }
 
 
-static MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>
+static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>
     __stats1("angle.degree.asymmetric");
-static MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
+static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
     __stats2("angle.degree.symmetric");
-static MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::ASYMMETRIC>>>
+static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::ASYMMETRIC>>>
     __stats3("angle.radian.asymmetric");
-static MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
+static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
     __stats4("angle.radian.symmetric");
-static MethodBuilder<MethodT<detail::CentralMomentsT<double>>> __stats5("central-moments");
-static MethodBuilder<MethodT<detail::ScalarT<double>>> __stats6("scalar");
+static const MethodBuilder<MethodT<detail::CentralMomentsT<double>>> __stats5("central-moments");
+static const MethodBuilder<MethodT<detail::ScalarT<double>>> __stats6("scalar");
 
 
 }  // namespace method

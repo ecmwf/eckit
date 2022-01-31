@@ -26,7 +26,7 @@ namespace {
 
 std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
     out << "[";
-    auto sep = "";
+    const auto* sep = "";
     for (const auto& e : v) {
         out << sep << e;
         sep = ",";

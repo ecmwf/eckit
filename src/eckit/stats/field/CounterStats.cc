@@ -55,11 +55,11 @@ struct Minimum final : CounterStats {
 };
 
 
-static FieldBuilder<Count> __builder_1("count");
-static FieldBuilder<CountAboveUpperLimit> __builder_2("count-above-upper-limit");
-static FieldBuilder<CountBelowLowerLimit> __builder_3("count-below-lower-limit");
-static FieldBuilder<Maximum> __builder_4("maximum");
-static FieldBuilder<Minimum> __builder_5("minimum");
+static const FieldBuilder<Count> __builder_1("count");
+static const FieldBuilder<CountAboveUpperLimit> __builder_2("count-above-upper-limit");
+static const FieldBuilder<CountBelowLowerLimit> __builder_3("count-below-lower-limit");
+static const FieldBuilder<Maximum> __builder_4("maximum");
+static const FieldBuilder<Minimum> __builder_5("minimum");
 
 
 }  // namespace field

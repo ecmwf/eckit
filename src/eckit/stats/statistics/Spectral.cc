@@ -106,7 +106,7 @@ void Spectral::print(std::ostream& out) const {
 }
 
 
-static StatisticsBuilder<Spectral> __stats("spectral");
+static const StatisticsBuilder<Spectral> __stats("spectral");
 
 
 }  // namespace statistics

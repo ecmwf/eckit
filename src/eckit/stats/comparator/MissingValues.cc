@@ -79,7 +79,7 @@ void MissingValues::print(std::ostream& out) const {
 }
 
 
-static ComparatorBuilder<MissingValues> __stats("missing-values");
+static const ComparatorBuilder<MissingValues> __stats("missing-values");
 
 
 }  // namespace comparator

@@ -34,21 +34,21 @@ Tree::Tree(const repres::Representation& r) : itemCount_(r.numberOfPoints()) {
 }
 
 
-void Tree::build(std::vector<PointValueType>&) {
+void Tree::build(std::vector<PointValueType>& /*unused*/) {
     std::ostringstream os;
     os << "Tree::build() not implemented for " << *this;
     throw exception::SeriousBug(os.str());
 }
 
 
-void Tree::insert(const PointValueType&) {
+void Tree::insert(const PointValueType& /*unused*/) {
     std::ostringstream os;
     os << "Tree::insert() not implemented for " << *this;
     throw exception::SeriousBug(os.str());
 }
 
 
-void Tree::statsPrint(std::ostream&, bool) {
+void Tree::statsPrint(std::ostream& /*unused*/, bool /*unused*/) {
     std::ostringstream os;
     os << "Tree::statsPrint() not implemented for " << *this;
     throw exception::SeriousBug(os.str());
@@ -62,21 +62,21 @@ void Tree::statsReset() {
 }
 
 
-Tree::PointValueType Tree::nearestNeighbour(const Point&) {
+Tree::PointValueType Tree::nearestNeighbour(const Point& /*unused*/) {
     std::ostringstream os;
     os << "Tree::nearestNeighbour() not implemented for " << *this;
     throw exception::SeriousBug(os.str());
 }
 
 
-std::vector<Tree::PointValueType> Tree::kNearestNeighbours(const Point&, size_t) {
+std::vector<Tree::PointValueType> Tree::kNearestNeighbours(const Point& /*unused*/, size_t /*unused*/) {
     std::ostringstream os;
     os << "Tree::kNearestNeighbours() not implemented for " << *this;
     throw exception::SeriousBug(os.str());
 }
 
 
-std::vector<Tree::PointValueType> Tree::findInSphere(const Point&, double) {
+std::vector<Tree::PointValueType> Tree::findInSphere(const Point& /*unused*/, double /*unused*/) {
     std::ostringstream os;
     os << "Tree::findInSphere() not implemented for " << *this;
     throw exception::SeriousBug(os.str());

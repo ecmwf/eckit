@@ -113,7 +113,8 @@ void DistributionT<DISTRIBUTION>::print(std::ostream& out) const {
 
 
 template <typename DISTRIBUTION>
-typename DISTRIBUTION::param_type DistributionT<DISTRIBUTION>::param(const param::MIRParametrisation&) const {
+typename DISTRIBUTION::param_type DistributionT<DISTRIBUTION>::param(
+    const param::MIRParametrisation& /*unused*/) const {
     NOTIMP;  // ensure specialisation
 }
 
@@ -274,7 +275,7 @@ std::weibull_distribution<double>::param_type DistributionT<std::weibull_distrib
 
 
 template <typename DISTRIBUTION>
-std::string DistributionT<DISTRIBUTION>::to_string(typename DISTRIBUTION::param_type&) const {
+std::string DistributionT<DISTRIBUTION>::to_string(typename DISTRIBUTION::param_type& /*unused*/) const {
     NOTIMP;  // ensure specialisation
 }
 

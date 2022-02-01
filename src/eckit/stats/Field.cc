@@ -33,7 +33,7 @@ static void init() {
 }
 
 
-Field::Field(const param::MIRParametrisation&) {}
+Field::Field(const param::MIRParametrisation& /*unused*/) {}
 
 
 Field::~Field() = default;

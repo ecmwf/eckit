@@ -50,9 +50,9 @@ void Integral::execute(const data::MIRField& field) {
     const atlas::StructuredGrid structured(rep->atlasGrid());
     ASSERT(structured);
 
-    integral_      = 0.;
-    double weights = 0.;
-    auto& values   = field.values(0);
+    integral_          = 0.;
+    double weights     = 0.;
+    const auto& values = field.values(0);
 
     Counter::reset(field);
     size_t i = 0;

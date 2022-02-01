@@ -38,8 +38,8 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
     ASSERT(field1.dimensions() == 1);
     ASSERT(field2.dimensions() == 1);
 
-    auto& values1 = field1.values(0);
-    auto& values2 = field2.values(0);
+    const auto& values1 = field1.values(0);
+    const auto& values2 = field2.values(0);
     ASSERT(values1.size() == values2.size());
 
     if (std::isnan(ignoreAboveLatitude_) == 0 || std::isnan(ignoreBelowLatitude_) == 0) {
@@ -53,9 +53,9 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
         ASSERT(rep1->numberOfPoints() == values1.size());
 
         for (const std::unique_ptr<repres::Iterator> it(rep1->iterator()); it->next();) {
-            auto& p = it->pointUnrotated();
-            auto v1 = values1.at(it->index());
-            auto v2 = values2.at(it->index());
+            const auto& p = it->pointUnrotated();
+            auto v1       = values1.at(it->index());
+            auto v2       = values2.at(it->index());
 
             bool bad  = ignoreAboveLatitude_ < p.lat() || p.lat() < ignoreBelowLatitude_;
             auto diff = bad ? 0. : STATS::difference(v1, v2);
@@ -99,8 +99,8 @@ std::string ComparatorT<MinMax>::execute(const data::MIRField& field1, const dat
     ASSERT(field1.dimensions() == 1);
     ASSERT(field2.dimensions() == 1);
 
-    auto& values1 = field1.values(0);
-    auto& values2 = field2.values(0);
+    const auto& values1 = field1.values(0);
+    const auto& values2 = field2.values(0);
     ASSERT(values1.size() == values2.size());
 
     for (size_t i = 0; i < values1.size(); ++i) {

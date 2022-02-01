@@ -12,6 +12,8 @@
 
 #include "mir/stats/method/MethodT.h"
 
+#include <cmath>
+
 #include "mir/data/MIRField.h"
 #include "mir/stats/detail/AngleT.h"
 #include "mir/stats/detail/CentralMomentsT.h"
@@ -62,7 +64,7 @@ void MethodT<STATS>::mean(data::MIRField& field) const {
     for (auto& s : *this) {
         auto& value = *(v++);
         auto stat   = s.mean();
-        value       = stat == stat ? stat : missingValue;
+        value       = std::isnan(stat) == 0 ? stat : missingValue;
     }
 
     field.update(statistics, 0, true);
@@ -81,7 +83,7 @@ void MethodT<STATS>::variance(data::MIRField& field) const {
 
     for (auto& s : *this) {
         auto stat = s.variance();
-        *v        = stat == stat ? stat : missingValue;
+        *v        = std::isnan(stat) == 0 ? stat : missingValue;
     }
 
     field.update(statistics, 0, true);
@@ -100,7 +102,7 @@ void MethodT<STATS>::stddev(data::MIRField& field) const {
 
     for (auto& s : *this) {
         auto stat = s.standardDeviation();
-        *v        = stat == stat ? stat : missingValue;
+        *v        = std::isnan(stat) == 0 ? stat : missingValue;
     }
 
     field.update(statistics, 0, true);

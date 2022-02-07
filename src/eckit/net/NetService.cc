@@ -59,9 +59,12 @@ void NetService::run() {
     Monitor::instance().name(name());
     Monitor::instance().kind(name());
 
+    std::ostringstream oss;
+    oss << "Waiting on port " << port();
+
     while (!stopped()) {
 
-        Log::status() << "Waiting on port " << port() << std::endl;
+        Log::status() << oss.str() << std::endl;
 
         if(timeout()) {
             Select select(server_);
@@ -71,7 +74,7 @@ void NetService::run() {
             }
         }
 
-        NetUser* user = newUser(server_.accept());
+        NetUser* user = newUser(server_.accept(oss.str()));
 
         if (runAsProcess()) {
             NetServiceProcessControler t(name(),

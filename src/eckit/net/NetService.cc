@@ -59,9 +59,9 @@ void NetService::run() {
     Monitor::instance().name(name());
     Monitor::instance().kind(name());
 
-    Log::status() << "Waiting on port " << port() << std::endl;
-
     while (!stopped()) {
+
+        Log::status() << "Waiting on port " << port() << std::endl;
 
         if(timeout()) {
             Select select(server_);

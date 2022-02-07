@@ -16,6 +16,7 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/thread/ThreadControler.h"
+#include "eckit/io/Select.h"
 
 namespace eckit {
 namespace net {
@@ -62,13 +63,26 @@ void NetService::run() {
 
     while (!stopped()) {
 
+        if(timeout()) {
+            Select select(server_);
+            if(!select.ready(timeout())) {
+                // This will allow to check stopped() again
+                continue;
+            }
+        }
+
+        NetUser* user = newUser(server_.accept());
+
         if (runAsProcess()) {
-            NetServiceProcessControler t(name(), newUser(server_.accept()), server_, Monitor::instance().self(),
+            NetServiceProcessControler t(name(),
+                                         user,
+                                         server_,
+                                         Monitor::instance().self(),
                                          visible_);
             t.start();
         }
         else {
-            ThreadControler t(newUser(server_.accept()));
+            ThreadControler t(user);
             t.start();
         }
     }
@@ -80,6 +94,10 @@ bool NetService::runAsProcess() const {
 
 bool NetService::preferToRunAsProcess() const {
     return false;
+}
+
+long NetService::timeout() const {
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

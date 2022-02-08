@@ -392,8 +392,6 @@ private:  // methods
         return index_part<0>(idx...);
     }
 
-    void move(Tensor&& other) { swap(other); }
-
 protected:      // member variables
     S* array_;  ///< data
 

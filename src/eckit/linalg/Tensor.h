@@ -67,7 +67,6 @@ public:  // class methods
             }
             s[shape.size() - 1] = 1;
         }
-        // std::cout << "shape : " << shape << "\nstrides : " << s << std::endl;
         return s;
     }
 

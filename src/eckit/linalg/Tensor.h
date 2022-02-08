@@ -43,8 +43,6 @@ namespace linalg {
 
 template <typename S>
 class Tensor {
-public:  // types
-    using Size = linalg::Size;
 
 public:  // class methods
     static Size flatten(const std::vector<Size>& shape) {
@@ -190,18 +188,6 @@ public:  // methods
         }
 
         return *this;
-    }
-
-    void toLeftLayout() {
-        if (not right_)
-            return;
-        move(transformRightToLeftLayout());
-    }
-
-    void toRightLayout() {
-        if (right_)
-            return;
-        move(transformLeftToRightLayout());
     }
 
     /// Swap this tensor with another

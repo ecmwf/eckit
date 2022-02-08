@@ -50,7 +50,7 @@ CASE("TensorDouble [2, 3, 4]") {
 
 CASE("TensorDouble [2, 3, 4, 5]") {
     std::vector<linalg::Size> shape{2, 2, 3, 5};
-    std::vector<double> v(TensorDouble::flatten(shape));
+    std::vector<double> v(TensorDouble::flatSize(shape));
 
     for (size_t i = 0; i < v.size(); ++i) {
         v[i] = double(i + 1);
@@ -200,7 +200,7 @@ CASE("TensorFloat [2, 3, 4]") {
 
 CASE("TensorFloat [2, 3, 4, 5]") {
     std::vector<linalg::Size> shape{2, 2, 3, 5};
-    std::vector<float> v(TensorFloat::flatten(shape));
+    std::vector<float> v(TensorFloat::flatSize(shape));
 
     for (size_t i = 0; i < v.size(); ++i) {
         v[i] = float(i + 1);

@@ -45,7 +45,7 @@ template <typename S>
 class Tensor {
 
 public:  // class methods
-    static Size flatten(const std::vector<Size>& shape) {
+    static Size flatSize(const std::vector<Size>& shape) {
         return std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
     }
 
@@ -83,7 +83,7 @@ public:  // methods
         right_(isRight),
         own_(true) {
 
-        size_ = flatten(shape_);
+        size_ = flatSize(shape_);
         ASSERT(size() > 0);
         array_ = new S[size_];
         ASSERT(array_);
@@ -97,7 +97,7 @@ public:  // methods
         own_(false) {
 
         shape_ = shape;
-        size_  = flatten(shape_);
+        size_  = flatSize(shape_);
         ASSERT(size() > 0);
         ASSERT(array_);
     }
@@ -202,7 +202,7 @@ public:  // methods
     /// Resize tensor to given a shape
     /// Invalidates data if shapes don't match, otherwise keeps data and simply reshapes
     void resize(const std::vector<Size>& shape) {
-        if (this->size() != flatten(shape)) {  // avoid reallocation if same size
+        if (this->size() != flatSize(shape)) {  // avoid reallocation if same size
             Tensor m(shape, right_);
             swap(m);
         }

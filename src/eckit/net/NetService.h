@@ -49,6 +49,8 @@ private:
 
     virtual bool preferToRunAsProcess() const;
     virtual bool runAsProcess() const;
+
+    virtual long timeout() const;
 };
 
 

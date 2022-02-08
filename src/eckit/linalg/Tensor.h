@@ -233,7 +233,7 @@ public:  // methods
         s << shape_.size();
         for (auto v : shape_)
             s << v;
-        s.writeBlob(const_cast<S*>(array_), size() * sizeof(S));
+        s.writeBlob(array_, size() * sizeof(S));
     }
 
     /// @returns flatten size (= product of shape vector)

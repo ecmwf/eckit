@@ -141,7 +141,10 @@ public:  // methods
 
         // nullify moved-from tensor
         other.array_ = nullptr;
-        other.own_ = false;
+        other.own_ = false;        
+        other.shape_.clear();
+        other.strides_.clear();
+        other.size_ = 0;
     }
 
     /// Destructor
@@ -183,7 +186,10 @@ public:  // methods
 
             // nullify moved-from tensor
             other.array_ = nullptr;
-            other.own_ = false;
+            other.own_ = false;            
+            other.shape_.clear();
+            other.strides_.clear();
+            other.size_ = 0;
         }
 
         return *this;

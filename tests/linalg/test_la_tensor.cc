@@ -160,7 +160,7 @@ CASE("Fill TensorDouble with scalar") {
 
 CASE("TensorDouble wrapping const data") {
     std::vector<double> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
-    const auto* data = array.data();
+    auto* data = array.data();
     TensorDouble A{data, {2, 2, 3}};
 
     // // column-major order
@@ -290,7 +290,7 @@ CASE("Fill TensorFloat with scalar") {
 
 CASE("TensorFloat wrapping const data") {
     std::vector<float> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
-    const auto* data = array.data();
+    auto* data = array.data();
     TensorFloat A{data, {2, 2, 3}};
 
     // // column-major order

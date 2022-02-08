@@ -90,8 +90,8 @@ public:  // methods
     }
 
     /// Construct tensor from existing data (does NOT take ownership)
-    Tensor(const S* array, const std::vector<Size>& shape, bool isRight = true) :
-        array_(const_cast<S*>(array)),
+    Tensor(S* array, const std::vector<Size>& shape, bool isRight = true) :
+        array_(array),
         strides_(strides(isRight, shape)),
         right_(isRight),
         own_(false) {

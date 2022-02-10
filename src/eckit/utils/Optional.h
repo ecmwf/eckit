@@ -14,27 +14,63 @@ namespace eckit {
 
 template <typename T>
 class Optional {
-public:
 
-    Optional() : holder_(nullptr) {}
-    ~Optional() { delete holder_; }
+public: // methods
+    constexpr Optional() noexcept : valid_(false) {};
 
-    Optional& operator= (T&& obj) {
-        if (holder_)
-            delete holder_;
+    explicit Optional(T&& v) : valid_(true) {
+        new (val_) T(std::forward<T>(v));
+    }
 
-        holder_ = new T(std::move(obj));
+    Optional (const Optional<T>& rhs) : valid_(rhs.valid) {
+        if (valid_)
+            new (val_) T(*reinterpret_cast<const T*>(&rhs.val_));
+    }
 
+    Optional (Optional<T>&& rhs) : valid_(rhs.valid_) {
+        if (valid_)
+            new (val_) T(std::move(*reinterpret_cast<T*>(&rhs.val_)));
+        rhs.valid_ = false;
+    }
+
+    Optional<T>& operator=(T&& v) {
+        valid_ = true;
+        new (val_) T(std::forward<T>(v));
         return *this;
     }
 
-    operator bool() const { return holder_ != nullptr; }
+    ~Optional() {
+        if (valid_) reinterpret_cast<T*>(&val_)->~T();
+    }
 
-    T& value() { return *holder_; }
-    T& operator*() { return *holder_; }
+    bool has_value() const {
+        return valid_;
+    }
 
-private:
-    T* holder_;
+    explicit operator bool() const {
+        return has_value();
+    }
+
+    T& value() {
+        return *value_ptr();
+    }
+
+    T* operator->() {
+        return value_ptr();
+    }
+
+    T& operator*() {
+         return value();
+    }
+
+
+private: // members
+    T* value_ptr() {
+        return reinterpret_cast<T*>(&val_);
+    }
+
+    alignas(T) char val_[sizeof(T)];
+    bool valid_;
 };
 
 } // end namespace eckit

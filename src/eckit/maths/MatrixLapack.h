@@ -73,47 +73,54 @@ template <typename Scalar, typename Index = std::ptrdiff_t>
 class Matrix : private eckit::NonCopyable {
 
 protected:
-    Scalar* data_;
-    Index nr_, nc_;
-    bool is_proxy_;
+    Scalar* data_{nullptr};
+    Index nr_{0}, nc_{0};
+    bool is_proxy_{false};
 
 public:
     typedef Matrix<Scalar> Proxy;
     typedef Matrix<const Scalar> ConstProxy;
 
-    Matrix() {
-        is_proxy_ = false;
-        nr_       = 0.;
-        nc_       = 0.;
-        data_     = NULL;
-    }
+    Matrix() = default;
 
     // Constructor that allocates matrix with sizes
     template <typename T0, typename T1>
     Matrix(const T0& nr, const T1& nc) {
-        is_proxy_ = false;
-        nr_       = 0.;
-        nc_       = 0.;
-        data_     = NULL;
         resize(nr, nc);
     }
 
     template <typename T0, typename T1>
-    Matrix(Scalar* data, const T0& nr, const T1& nc) {
-        is_proxy_ = true;
-        data_     = data;
-        nr_       = nr;
-        nc_       = nc;
+    Matrix(Scalar* data, const T0& nr, const T1& nc) :
+        data_{data},
+        nr_{nr},
+        nc_{nc},
+        is_proxy_{true} {
     }
 
     // This constructor allows you to construct Matrix from Eigen expressions
     Matrix(const Matrix& other) {
-        is_proxy_ = false;
-        nr_       = 0.;
-        nc_       = 0.;
-        data_     = NULL;
         resize(other.nr_, other.nc_);
         memcpy(data_, other.data(), sizeof(Scalar) * nr_ * nc_);
+    }
+
+    // Constructor that allocates matrix and infers sizes from initializer list
+    Matrix(const std::initializer_list<std::initializer_list<Scalar> >& list) {
+        Index nr = list.size();
+        if (nr > 0) {
+            Index nc = list.begin()->size();
+            ASSERT(nc > 0);
+            resize(nr, nc);
+            Index i{0};
+            for (const std::initializer_list<Scalar>& row : list) {
+                ASSERT(row.size() == nc);
+                Index j{0};
+                for (const Scalar& elem : row) {
+                    at(i, j) = elem;
+                    ++j;
+                }
+                ++i;
+            }
+        }
     }
 
     ~Matrix() {

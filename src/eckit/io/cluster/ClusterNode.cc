@@ -28,20 +28,32 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class ClusterHeartBeat : public Thread {
+    int hostOffset_;
     ClusterNode& owner_;
     virtual void run();
 
 public:
-    ClusterHeartBeat(ClusterNode& owner) :
+    ClusterHeartBeat(ClusterNode& owner, int hostOffset=0) :
+        hostOffset_(hostOffset),
         owner_(owner) {}
 };
 
 void ClusterHeartBeat::run() {
     Monitor::instance().name("heartbeat");
-    std::string host = Resource<std::string>("clusterHost", "localhost");
+    std::vector<std::string> hosts = Resource<std::vector<std::string>>("clusterHost", {"localhost"});
     int port         = net::Port("cluster", 9555);
     std::string reply;
     NodeInfo remote;
+
+    // Which cluster host are we talking to in this thread
+    ASSERT(hostOffset_ < hosts.size());
+    std::string host = hosts[hostOffset_];
+
+    // If there are other cluster hosts to consider, spawn heartbeat threads for them too
+    if (hosts.size() > hostOffset_ + 1) {
+        ThreadControler t(new ClusterHeartBeat(owner_, hostOffset_ + 1));
+        t.start();
+    }
 
     for (;;) {
         net::TCPClient client;

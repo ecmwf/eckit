@@ -345,7 +345,7 @@ public:
         return inv;
     }
 
-    Matrix transpose() {
+    Matrix transpose() const {
         Matrix transposed(nc_, nr_);
         for (Index i = 0; i < nr_; ++i)
             for (Index j = 0; j < nc_; ++j)
@@ -411,7 +411,7 @@ public:
     Matrix cwiseProduct(const Matrix& m) const {
         Matrix result(*this);
         for (Index i = 0; i < size(); ++i)
-            result.data_[i] += m.data_[i];
+            result.data_[i] *= m.data_[i];
         return result;
     }
 
@@ -442,6 +442,26 @@ public:
             data_[i] -= m.data_[i];
         return *this;
     }
+
+    bool operator==(const Matrix& m) const {
+        if (rows() != m.rows() || cols() != m.cols()) {
+            return false;
+        }
+        for (Index i = 0; i < size(); ++i) {
+            if (data_[i] != m.data_[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Matrix Scalar multiply
+    Matrix operator*(const Scalar& s) const {
+        Matrix m(*this);
+        m *= s;
+        return m;
+    }
+
 
 private:
     Scalar& at(const Index i, const Index j) { return data_[i + nr_ * j]; }

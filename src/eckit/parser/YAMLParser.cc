@@ -193,10 +193,6 @@ struct YAMLItemKey : public YAMLItem {
         YAMLItem(item->indent_, item->value_) {
 
         YAMLItemLock lock(item);  // Trigger deletion
-
-        std::string v(value_);
-        ASSERT(v.size());
-        value_ = toValue(v.substr(0, v.size() - 1));
     }
 
 
@@ -602,7 +598,9 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
     char c      = peek();
 
     if (c == '"' || c == '\'') {
-        return ObjectParser::parseString(c);
+        Value result = ObjectParser::parseString(c);
+        isKey = (peek(true) == ':');
+        return result;
     }
 
     if (c == '|') {
@@ -641,7 +639,6 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
         while (!endOfToken(c)) {
             char p = next(true);
-            s += p;
             if (!::isspace(p)) {
                 last = i;
             }
@@ -651,16 +648,17 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
             // std::cout << "++++ " << s << " " << colon << " " << (endOfToken(c) || c == ' ') << std::endl;
 
             if (colon && (endOfToken(c) || c == ' ')) {
-                while (s.length() >= 2 && isspace(s[s.length() - 2])) {
+                while (s.length() >= 1 && isspace(s[s.length() - 1])) {
                     s = s.substr(0, s.length() - 1);
                     last--;
-                    s[s.length() - 1] = ':';
                 }
 
                 // std::cout << s << std::endl;
 
                 isKey = true;
                 break;
+            } else {
+                s += p;
             }
 
             colon = (c == ':');
@@ -688,7 +686,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
         line = line_;
 
         if (isKey) {
-            return Value(result);
+            return toValue(result);
         }
 
 
@@ -725,6 +723,7 @@ void YAMLParser::loadItem() {
     std::string key;
     size_t cnt = 0;
     bool isKey = false;
+    Value v;
 
 
     switch (c) {
@@ -742,11 +741,12 @@ void YAMLParser::loadItem() {
             break;
 
         case '"':
-            item = new YAMLItemValue(indent, parseString('"'));
-            break;
-
         case '\'':
-            item = new YAMLItemValue(indent, parseString('\''));
+            v = parseStringOrNumber(isKey);
+            if (isKey) {
+              next(true);
+            }
+            item = new YAMLItemValue(indent, v);
             break;
 
         case '-':
@@ -767,6 +767,9 @@ void YAMLParser::loadItem() {
                         putback('-');
                     }
                     item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
+                    if (isKey) {
+                      next(true);
+                    }
                     break;
             }
 
@@ -787,6 +790,9 @@ void YAMLParser::loadItem() {
                         putback('.');
                     }
                     item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
+                    if (isKey) {
+                      next(true);
+                    }
                     break;
             }
 
@@ -804,17 +810,16 @@ void YAMLParser::loadItem() {
 
         default:
             item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
+            if (isKey) {
+              next(true);
+            }
             break;
     }
 
     ASSERT(item);
 
     if (isKey) {
-        std::string v(item->value_);
-
-        if (v.size() && v[v.size() - 1] == ':') {
-            item = new YAMLItemKey(item);
-        }
+        item = new YAMLItemKey(item);
     }
 
     // std::cout << "YAMLItem -> " << (*item) << std::endl;

@@ -78,8 +78,11 @@ protected:
     bool is_proxy_{false};
 
 public:
-    typedef Matrix<Scalar> Proxy;
-    typedef Matrix<const Scalar> ConstProxy;
+    using MapType      = Matrix;
+    using ConstMapType = MapType;
+
+    using Proxy      = MapType;       // deprecated
+    using ConstProxy = ConstMapType;  // deprecated
 
     Matrix() = default;
 
@@ -100,7 +103,7 @@ public:
     // This constructor allows you to construct Matrix from Eigen expressions
     Matrix(const Matrix& other) {
         resize(other.nr_, other.nc_);
-        memcpy(data_, other.data(), sizeof(Scalar) * nr_ * nc_);
+        std::memcpy(data_, other.data(), sizeof(Scalar) * nr_ * nc_);
     }
 
     // Constructor that allocates matrix and infers sizes from initializer list
@@ -133,7 +136,9 @@ public:
 
     void resize(Index nr, Index nc) {
         if (is_proxy_) {
-            throw eckit::Exception("Illegal call: Trying to resize a proxy matrix", Here());
+            if (nr != nr_ || nc != nc_) {
+                throw eckit::Exception("Illegal call: Trying to resize a proxy matrix", Here());
+            }
         }
         else {
             if (nr != nr_ || nc != nc_) {
@@ -149,7 +154,7 @@ public:
 
     Matrix& operator=(const Matrix& other) {
         resize(other.nr_, other.nc_);
-        memcpy(data_, other.data(), sizeof(Scalar) * nr_ * nc_);
+        std::memcpy(data_, other.data(), sizeof(Scalar) * nr_ * nc_);
         return *this;
     }
 
@@ -502,27 +507,34 @@ class RowVector : public Matrix<Scalar, Index> {
     typedef Matrix<Scalar, Index> Base;
 
 public:
-    typedef RowVector<Scalar> Proxy;
-    typedef RowVector<const Scalar> ConstProxy;
+    using MapType      = RowVector;
+    using ConstMapType = MapType;
+
+    using Proxy      = MapType;       // deprecated
+    using ConstProxy = ConstMapType;  // deprecated
 
 public:
-    RowVector() : Base() {}
+    RowVector() :
+        Base() {}
 
     // Constructor that allocates matrix with sizes
     template <typename T0>
-    RowVector(const T0& nc) : Base(1, nc) {}
+    RowVector(const T0& nc) :
+        Base(1, nc) {}
 
     template <typename T0>
-    RowVector(Scalar* data, const T0& nc) : Base(data, 1, nc) {}
+    RowVector(Scalar* data, const T0& nc) :
+        Base(data, 1, nc) {}
 
     // This constructor allows you to construct Matrix from Eigen expressions
-    RowVector(const Base& other) : Base(other) {}
+    RowVector(const Base& other) :
+        Base(other) {}
 
     void resize(Index nc) { Base::resize(1, nc); }
 
     RowVector& operator=(const Base& other) {
         resize(other.cols());
-        memcpy(this->data(), other.data(), sizeof(Scalar) * this->cols());
+        std::memcpy(this->data(), other.data(), sizeof(Scalar) * this->cols());
         return *this;
     }
 
@@ -540,30 +552,37 @@ public:
 
 template <typename Scalar, typename Index = std::ptrdiff_t>
 class ColVector : public Matrix<Scalar, Index> {
-    typedef Matrix<Scalar, Index> Base;
+    using Base = Matrix<Scalar, Index>;
 
 public:
-    typedef ColVector<Scalar> Proxy;
-    typedef ColVector<const Scalar> ConstProxy;
+    using MapType      = ColVector;
+    using ConstMapType = MapType;
+
+    using Proxy      = MapType;       // deprecated
+    using ConstProxy = ConstMapType;  // deprecated
 
 public:
-    ColVector() : Base() {}
+    ColVector() :
+        Base() {}
 
     // Constructor that allocates matrix with sizes
     template <typename T0>
-    ColVector(const T0& nr) : Base(nr, 1) {}
+    ColVector(const T0& nr) :
+        Base(nr, 1) {}
 
     template <typename T0>
-    ColVector(Scalar* data, const T0& nr) : Base(data, nr, 1) {}
+    ColVector(Scalar* data, const T0& nr) :
+        Base(data, nr, 1) {}
 
     // This constructor allows you to construct Matrix from Eigen expressions
-    ColVector(const Base& other) : Base(other) {}
+    ColVector(const Base& other) :
+        Base(other) {}
 
     void resize(Index nr) { Base::resize(nr, 1); }
 
     ColVector& operator=(const Base& other) {
-        resize(other.rows(), 1);
-        memcpy(this->data(), other.data(), sizeof(Scalar) * this->cols());
+        resize(other.rows());
+        std::memcpy(this->data(), other.data(), sizeof(Scalar) * this->rows());
         return *this;
     }
 

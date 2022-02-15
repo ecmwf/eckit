@@ -35,8 +35,8 @@ class Matrix : public Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eige
     typedef Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> Base;
 
 public:
-    typedef typename Base::MapType Proxy;
-    typedef typename Base::ConstMapType ConstProxy;
+    using Proxy      = typename Base::MapType;       // deprecated (use MapType)
+    using ConstProxy = typename Base::ConstMapType;  // deprecated (use ConstMapType)
 
 public:
     // Default constructor
@@ -97,7 +97,8 @@ class RowVector : public Eigen::Matrix<scalar, 1, Eigen::Dynamic> {
     typedef Eigen::Matrix<scalar, 1, Eigen::Dynamic> Base;
 
 public:
-    typedef typename Base::MapType Proxy;
+    using Proxy      = typename Base::MapType;       // deprecated (use MapType)
+    using ConstProxy = typename Base::ConstMapType;  // deprecated (use ConstMapType)
 
 public:
     // Default constructor
@@ -132,7 +133,8 @@ class ColVector : public Eigen::Matrix<scalar, Eigen::Dynamic, 1> {
     typedef Eigen::Matrix<scalar, Eigen::Dynamic, 1> Base;
 
 public:
-    typedef typename Base::MapType Proxy;
+    using Proxy      = typename Base::MapType;       // deprecated (use MapType)
+    using ConstProxy = typename Base::ConstMapType;  // deprecated (use ConstMapType)
 
 public:
     // Default constructor

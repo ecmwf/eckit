@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <array>
 
 #include "eckit/maths/Matrix.h"
 #include "eckit/types/FloatCompare.h"
@@ -343,6 +344,56 @@ CASE("test matrix operations") {
                     << std::endl;
     }
 }
+
+CASE("Mappings to existing data") {
+    using Matrix    = maths::Matrix<double>;
+    using ColVector = maths::ColVector<double>;
+    using RowVector = maths::RowVector<double>;
+    std::array<double, 6> matrix{1, 3, 5, 2, 4, 6};  // 3x2 column-major layout
+
+    auto A = Matrix::ConstMapType(matrix.data(), 3, 2);
+
+    EXPECT_EQUAL(A(0, 0), 1.);
+    EXPECT_EQUAL(A(0, 1), 2.);
+    EXPECT_EQUAL(A(1, 0), 3.);
+    EXPECT_EQUAL(A(1, 1), 4.);
+    EXPECT_EQUAL(A(2, 0), 5.);
+    EXPECT_EQUAL(A(2, 1), 6.);
+
+    // y = A * x
+    {
+        std::array<double, 2> vector_x{1, 2};
+        std::array<double, 3> vector_y;
+
+        auto x = ColVector::ConstMapType(vector_x.data(), 2);
+        EXPECT_EQUAL(x(0), 1.);
+        EXPECT_EQUAL(x(1), 2.);
+
+        auto y = ColVector::MapType(vector_y.data(), 3);
+        y      = A * x;
+        EXPECT_EQUAL(vector_y[0], 5.);
+        EXPECT_EQUAL(vector_y[1], 11.);
+        EXPECT_EQUAL(vector_y[2], 17.);
+    }
+
+    // y = x * A
+    {
+        std::array<double, 3> vector_x{1, 2, 3};
+        std::array<double, 2> vector_y;
+
+        auto x = RowVector::ConstMapType(vector_x.data(), 3);
+        EXPECT_EQUAL(x(0), 1.);
+        EXPECT_EQUAL(x(1), 2.);
+        EXPECT_EQUAL(x(2), 3.);
+
+        auto y = RowVector::MapType(vector_y.data(), 2);
+        y      = x * A;
+        EXPECT_EQUAL(vector_y[0], 22.);
+        EXPECT_EQUAL(vector_y[1], 28.);
+    }
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

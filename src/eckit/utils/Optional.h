@@ -61,7 +61,7 @@ public: // methods
         return has_value();
     }
 
-    constexpr T const& value() const& {
+    constexpr const T& value() const& {
         return *const_ptr();
     }
     T& value() & {
@@ -71,7 +71,7 @@ public: // methods
         return *ptr();
     }
 
-    constexpr T const& operator*() const& {
+    constexpr const T& operator*() const& {
         return value();
     }
     T& operator*() & {
@@ -80,8 +80,8 @@ public: // methods
     T&& operator*() && {
         return value();
     }
-    
-    constexpr T const& operator()() const& {
+
+    constexpr const T& operator()() const& {
         return value();
     }
     T& operator()() & {

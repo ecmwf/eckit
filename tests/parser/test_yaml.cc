@@ -489,6 +489,7 @@ CASE("test_eckit_yaml_cfg_1") {
 #ifdef eckit_HAVE_UNICODE
 CASE("test_eckit_yaml_unicode") {
     Value v = YAMLParser::decodeFile("unicode.yaml");
+    v.dump(std::cout) << std::endl;
     EXPECT(v["test1"] == v["test2"]);
 }
 #endif  // eckit_HAVE_UNICODE
@@ -632,6 +633,40 @@ CASE("test_eckit_yaml_text_5") {
 
 //     EXPECT_THROWS_AS(YAMLParser::decodeString(text), eckit::SeriousBug);
 // }
+
+
+CASE("test_eckit_yaml_text_7") {
+
+    const char* text = R"YAML(
+---
+a00: a zero
+'a10': a ten
+'a11': 'a eleven'
+"a20": a twenty
+"a21": "a twenty-one"
+'30': thirty
+"40": forty
+"50":
+  "51": fifty-one
+'true': quoted true
+"false": double quoted false
+)YAML";
+
+    Value v = YAMLParser::decodeString(text);
+    v.dump(std::cout) << std::endl;
+    EXPECT(v.isOrderedMap());
+    EXPECT(v.keys().size() == 10);
+    EXPECT(v["a00"] == Value("a zero"));
+    EXPECT(v["a10"] == Value("a ten"));
+    EXPECT(v["a11"] == Value("a eleven"));
+    EXPECT(v["a20"] == Value("a twenty"));
+    EXPECT(v["a21"] == Value("a twenty-one"));
+    EXPECT(v["30"] == Value("thirty"));
+    EXPECT(v["40"] == Value("forty"));
+    EXPECT(v["50"]["51"] == Value("fifty-one"));
+    EXPECT(v["true"] == Value("quoted true"));
+    EXPECT(v["false"] == Value("double quoted false"));
+}
 
 #endif
 

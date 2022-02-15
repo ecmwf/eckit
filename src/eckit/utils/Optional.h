@@ -8,29 +8,44 @@
  * does it submit to any jurisdiction.
  */
 
+/// @author Emanuele Danovaro
+/// @author Simon Smart
+/// @date   Feb 22
+
 #pragma once
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Helper class to manage an optional contained value,
+/// i.e. a value that may or may not be present.
 
 template <typename T>
 class Optional {
 
 public: // methods
     constexpr Optional() noexcept : valid_(false) {};
-
     explicit Optional(T&& v) : valid_(true) {
         new (val_) T(std::forward<T>(v));
     }
 
-    Optional (const Optional<T>& rhs) : valid_(rhs.valid) {
-        if (valid_)
+    Optional(const Optional<T>& rhs) : valid_(rhs.valid) {
+        if (valid_) {
             new (val_) T(*reinterpret_cast<const T*>(&rhs.val_));
+        }
+    }
+    Optional(Optional<T>&& rhs) : valid_(rhs.valid_) {
+        if (valid_) {
+            new (val_) T(std::move(*reinterpret_cast<T*>(&rhs.val_)));
+        }
+        rhs.valid_ = false;
     }
 
-    Optional (Optional<T>&& rhs) : valid_(rhs.valid_) {
-        if (valid_)
-            new (val_) T(std::move(*reinterpret_cast<T*>(&rhs.val_)));
-        rhs.valid_ = false;
+    ~Optional() {
+        if (valid_) {
+            reinterpret_cast<T*>(&val_)->~T();
+        }
     }
 
     Optional<T>& operator=(T&& v) {
@@ -39,38 +54,55 @@ public: // methods
         return *this;
     }
 
-    ~Optional() {
-        if (valid_) reinterpret_cast<T*>(&val_)->~T();
-    }
-
     bool has_value() const {
         return valid_;
     }
-
     explicit operator bool() const {
         return has_value();
     }
 
-    T& value() {
-        return *value_ptr();
+    constexpr T const& value() const& {
+        return *const_ptr();
+    }
+    T& value() & {
+        return *ptr();
+    }
+    T&& value() && {
+        return *ptr();
     }
 
-    T* operator->() {
-        return value_ptr();
+    constexpr T const& operator*() const& {
+        return value();
     }
-
-    T& operator*() {
-         return value();
+    T& operator*() & {
+        return value();
     }
-
+    T&& operator*() && {
+        return value();
+    }
+    
+    constexpr T const& operator()() const& {
+        return value();
+    }
+    T& operator()() & {
+        return value();
+    }
+    T&& operator()() && {
+        return value();
+    }
 
 private: // members
-    T* value_ptr() {
+    T* ptr() {
         return reinterpret_cast<T*>(&val_);
+    }
+    const T* const_ptr() const {
+        return reinterpret_cast<const T*>(&val_);
     }
 
     alignas(T) char val_[sizeof(T)];
     bool valid_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // end namespace eckit

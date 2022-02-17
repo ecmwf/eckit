@@ -32,11 +32,7 @@ namespace maths {
 /// Furthermore it is directly compatible with Fortran matrix manipulation routines
 template <typename scalar, typename index = std::ptrdiff_t>
 class Matrix : public Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> {
-    typedef Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> Base;
-
-public:
-    using Proxy      = typename Base::MapType;       // deprecated (use MapType)
-    using ConstProxy = typename Base::ConstMapType;  // deprecated (use ConstMapType)
+    using Base = Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
 public:
     // Default constructor
@@ -94,11 +90,7 @@ public:
 /// This class is inherited from Eigen's matrix class
 template <typename scalar, typename index = std::ptrdiff_t>
 class RowVector : public Eigen::Matrix<scalar, 1, Eigen::Dynamic> {
-    typedef Eigen::Matrix<scalar, 1, Eigen::Dynamic> Base;
-
-public:
-    using Proxy      = typename Base::MapType;       // deprecated (use MapType)
-    using ConstProxy = typename Base::ConstMapType;  // deprecated (use ConstMapType)
+    using Base = Eigen::Matrix<scalar, 1, Eigen::Dynamic>;
 
 public:
     // Default constructor
@@ -130,11 +122,7 @@ public:
 /// This class is inherited from Eigen's matrix class
 template <typename scalar, typename index = std::ptrdiff_t>
 class ColVector : public Eigen::Matrix<scalar, Eigen::Dynamic, 1> {
-    typedef Eigen::Matrix<scalar, Eigen::Dynamic, 1> Base;
-
-public:
-    using Proxy      = typename Base::MapType;       // deprecated (use MapType)
-    using ConstProxy = typename Base::ConstMapType;  // deprecated (use ConstMapType)
+    using Base = Eigen::Matrix<scalar, Eigen::Dynamic, 1>;
 
 public:
     // Default constructor

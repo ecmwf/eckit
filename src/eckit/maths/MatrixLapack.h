@@ -55,11 +55,11 @@ namespace detail {
 namespace ColMajor_4x4 {
 template <typename T>
 struct remove_const {
-    typedef T type;
+    using type = T;
 };
 template <typename T>
 struct remove_const<T const> {
-    typedef T type;
+    using type = T;
 };
 
 template <typename Scalar>
@@ -80,9 +80,6 @@ protected:
 public:
     using MapType      = Matrix;
     using ConstMapType = MapType;
-
-    using Proxy      = MapType;       // deprecated
-    using ConstProxy = ConstMapType;  // deprecated
 
     Matrix() = default;
 
@@ -504,7 +501,7 @@ private:
 
 template <typename Scalar, typename Index = std::ptrdiff_t>
 class RowVector : public Matrix<Scalar, Index> {
-    typedef Matrix<Scalar, Index> Base;
+    using Base = Matrix<Scalar, Index>;
 
 public:
     using MapType      = RowVector;

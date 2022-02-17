@@ -26,7 +26,7 @@ namespace test {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_determinant") {
-    typedef eckit::maths::Matrix<double> Matrix;
+    using Matrix = eckit::maths::Matrix<double>;
 
     Matrix m(5, 5);
     m(0, 0) = 9.;
@@ -60,7 +60,7 @@ CASE("test_determinant") {
 
 //----------------------------------------------------------------------------------------------------------------------
 CASE("test_inverse") {
-    typedef eckit::maths::Matrix<double> Matrix;
+    using Matrix = eckit::maths::Matrix<double>;
 
     Matrix m(5, 5);
     m(0, 0) = 9.;
@@ -139,7 +139,7 @@ CASE("test_inverse") {
 }
 
 CASE("test matrix operations") {
-    typedef eckit::maths::Matrix<double> Matrix;
+    using Matrix = eckit::maths::Matrix<double>;
 
     SECTION("bounds") {
 

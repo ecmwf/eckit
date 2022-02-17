@@ -70,12 +70,7 @@ CASE("test_inverse") {
     for (int i = 0; i < m.rows(); ++i) {
         for (int j = 0; j < m.cols(); ++j) {
             EXPECT(is_approximately_equal(mi(i, j), minv(i, j), minv_precision));
-            if (i == j) {
-                EXPECT(is_approximately_equal(I(i, j), 1., tolerance));
-            }
-            else {
-                EXPECT(is_approximately_equal(I(i, j), 0., tolerance));
-            }
+            EXPECT(is_approximately_equal(I(i, j), i == j ? 1. : 0., tolerance));
         }
     }
 }

@@ -117,11 +117,12 @@ struct LibraryRegistration {
     LibraryRegistration() { T::instance(); }
 };
 
-#define REGISTER_LIBRARY(X)                                 \
-    static eckit::system::LibraryRegistration<X> libregist; \
-    void force_link_library_register_##X(void* p) {         \
-        if (!p)                                             \
-            force_link_library_register_##X(&libregist);    \
+#define REGISTER_LIBRARY(X)                                       \
+    static const eckit::system::LibraryRegistration<X> libregist; \
+    void force_link_library_register_##X(const void* p) {         \
+        if (!p) {                                                 \
+            force_link_library_register_##X(&libregist);          \
+        }                                                         \
     }
 
 //----------------------------------------------------------------------------------------------------------------------

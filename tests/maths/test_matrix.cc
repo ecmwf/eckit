@@ -21,6 +21,8 @@ using eckit::types::is_approximately_equal;
 namespace eckit {
 namespace test {
 
+constexpr double tolerance = 1.e-8;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_determinant") {
@@ -32,7 +34,7 @@ CASE("test_determinant") {
              {1., 5., 5., 3., 2.},
              {1., 3., 6., 8., 10}};
 
-    EXPECT(is_approximately_equal(m.determinant(), 1124., 1.e-10));
+    EXPECT(is_approximately_equal(m.determinant(), 1124., tolerance));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -53,6 +55,8 @@ CASE("test_inverse") {
         {0.12366548, -0.54181495, -0.10409253, 0.27758007, 0.65124555},
         {-0.31939502, 2.07562278, -0.16281139, -0.5658363, -2.13523132},
         {0.18149466, -1.31316726, 0.15658363, 0.24911032, 1.43060498}};
+    constexpr double minv_precision = 1.e-4;
+
 
     // Compute inverse
     Matrix mi(5, 5);
@@ -65,11 +69,13 @@ CASE("test_inverse") {
     // Verify results
     for (int i = 0; i < m.rows(); ++i) {
         for (int j = 0; j < m.cols(); ++j) {
-            EXPECT(is_approximately_equal(mi(i, j), minv(i, j), 1.e-4));
-            if (i == j)
-                EXPECT(is_approximately_equal(I(i, j), 1., 1.e-8));
-            else
-                EXPECT(is_approximately_equal(I(i, j), 0., 1.e-10));
+            EXPECT(is_approximately_equal(mi(i, j), minv(i, j), minv_precision));
+            if (i == j) {
+                EXPECT(is_approximately_equal(I(i, j), 1., tolerance));
+            }
+            else {
+                EXPECT(is_approximately_equal(I(i, j), 0., tolerance));
+            }
         }
     }
 }
@@ -198,7 +204,7 @@ CASE("test matrix operations") {
             {3., 7.},
             {1., -4.}};
 
-        EXPECT(is_approximately_equal(A.determinant(), -19.));
+        EXPECT(is_approximately_equal(A.determinant(), -19., tolerance));
 
         Log::info() << "A = " << std::endl
                     << A << std::endl;

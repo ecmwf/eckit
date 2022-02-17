@@ -74,7 +74,8 @@ class Matrix : private eckit::NonCopyable {
 
 protected:
     Scalar* data_{nullptr};
-    Index nr_{0}, nc_{0};
+    Index nr_{0};
+    Index nc_{0};
     bool is_proxy_{false};
 
 public:
@@ -111,10 +112,10 @@ public:
             ASSERT(nc > 0);
             resize(nr, nc);
             Index i{0};
-            for (const std::initializer_list<Scalar>& row : list) {
+            for (const auto& row : list) {
                 ASSERT(row.size() == nc);
                 Index j{0};
-                for (const Scalar& elem : row) {
+                for (const auto& elem : row) {
                     at(i, j) = elem;
                     ++j;
                 }
@@ -499,6 +500,9 @@ private:
     }
 };
 
+template <typename Scalar, typename Index>
+class ColVector;
+
 template <typename Scalar, typename Index = std::ptrdiff_t>
 class RowVector : public Matrix<Scalar, Index> {
     using Base = Matrix<Scalar, Index>;
@@ -506,9 +510,6 @@ class RowVector : public Matrix<Scalar, Index> {
 public:
     using MapType      = RowVector;
     using ConstMapType = MapType;
-
-    using Proxy      = MapType;       // deprecated
-    using ConstProxy = ConstMapType;  // deprecated
 
 public:
     RowVector() :
@@ -554,9 +555,6 @@ class ColVector : public Matrix<Scalar, Index> {
 public:
     using MapType      = ColVector;
     using ConstMapType = MapType;
-
-    using Proxy      = MapType;       // deprecated
-    using ConstProxy = ConstMapType;  // deprecated
 
 public:
     ColVector() :

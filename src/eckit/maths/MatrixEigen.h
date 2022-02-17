@@ -57,10 +57,10 @@ public:
             ASSERT(nc > 0);
             this->resize(nr, nc);
             size_t i{0};
-            for (const std::initializer_list<scalar>& row : list) {
+            for (const auto& row : list) {
                 ASSERT(row.size() == nc);
                 size_t j{0};
-                for (const scalar& elem : row) {
+                for (const auto& elem : row) {
                     (*this)(i, j) = elem;
                     ++j;
                 }

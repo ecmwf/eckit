@@ -15,10 +15,8 @@
 
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
 using namespace eckit::testing;
-using namespace eckit::types;
+using eckit::types::is_approximately_equal;
 
 namespace eckit {
 namespace test {

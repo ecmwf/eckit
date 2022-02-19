@@ -69,7 +69,7 @@ static const FieldBuilder<Variance> __builder_2("variance");
 static const FieldBuilder<Skewness> __builder_3("skewness");
 static const FieldBuilder<Kurtosis> __builder_4("kurtosis");
 static const FieldBuilder<StandardDeviation> __builder_5("stddev");
-static const FieldBuilder<StandardDeviation> __builder_6("sum");
+static const FieldBuilder<Sum> __builder_6("sum");
 
 
 }  // namespace field

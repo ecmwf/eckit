@@ -38,7 +38,7 @@ enum AngleSpace
 };
 
 
-/// Angle statistics in degrees [-180,180] or radians [-π,π]
+/// Angle statistics in degrees/radians or symmetric/non-symmetric
 template <typename T, int SCALE, int SYMMETRY>
 struct AngleT {
 private:

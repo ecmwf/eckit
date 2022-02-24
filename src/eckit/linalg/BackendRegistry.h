@@ -76,7 +76,6 @@ public:
             throw BadParameter(msg, Here());
         }
 
-        Log::info() << "Using backend " << it->first << std::endl;
         return *(it->second);
     }
 

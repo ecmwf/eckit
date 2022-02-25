@@ -86,7 +86,7 @@ linalg::TensorDouble TD(std::vector<linalg::Size> shape, ...) {
     using linalg::Size;
     using linalg::TensorDouble;
 
-    Size size = linalg::TensorDouble::flatten(shape);
+    Size size = linalg::TensorDouble::flatSize(shape);
     TensorDouble t(shape);
     va_list args;
     va_start(args, shape);
@@ -102,7 +102,7 @@ linalg::TensorFloat TF(std::vector<linalg::Size> shape, ...) {
     using linalg::Size;
     using linalg::TensorFloat;
 
-    Size size = linalg::TensorFloat::flatten(shape);
+    Size size = linalg::TensorFloat::flatSize(shape);
     TensorFloat t(shape);
     va_list args;
     va_start(args, shape);

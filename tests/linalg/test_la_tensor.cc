@@ -50,7 +50,7 @@ CASE("TensorDouble [2, 3, 4]") {
 
 CASE("TensorDouble [2, 3, 4, 5]") {
     std::vector<linalg::Size> shape{2, 2, 3, 5};
-    std::vector<double> v(TensorDouble::flatten(shape));
+    std::vector<double> v(TensorDouble::flatSize(shape));
 
     for (size_t i = 0; i < v.size(); ++i) {
         v[i] = double(i + 1);
@@ -160,7 +160,7 @@ CASE("Fill TensorDouble with scalar") {
 
 CASE("TensorDouble wrapping const data") {
     std::vector<double> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
-    const auto* data = array.data();
+    auto* data = array.data();
     TensorDouble A{data, {2, 2, 3}};
 
     // // column-major order
@@ -200,7 +200,7 @@ CASE("TensorFloat [2, 3, 4]") {
 
 CASE("TensorFloat [2, 3, 4, 5]") {
     std::vector<linalg::Size> shape{2, 2, 3, 5};
-    std::vector<float> v(TensorFloat::flatten(shape));
+    std::vector<float> v(TensorFloat::flatSize(shape));
 
     for (size_t i = 0; i < v.size(); ++i) {
         v[i] = float(i + 1);
@@ -290,7 +290,7 @@ CASE("Fill TensorFloat with scalar") {
 
 CASE("TensorFloat wrapping const data") {
     std::vector<float> array{1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12.};
-    const auto* data = array.data();
+    auto* data = array.data();
     TensorFloat A{data, {2, 2, 3}};
 
     // // column-major order
@@ -307,6 +307,7 @@ CASE("TensorFloat wrapping const data") {
 CASE("TensorFloat [2, 3] right to left layout") {
     std::vector<float> array{1., 2., 3., 4., 5., 6.};
     TensorFloat A{array.data(), {2, 3}};
+    TensorFloat A_left, A_right;
 
     // column-major order
     EXPECT(A(0, 0) == 1.);
@@ -316,8 +317,8 @@ CASE("TensorFloat [2, 3] right to left layout") {
     EXPECT(A(0, 2) == 5.);
     EXPECT(A(1, 2) == 6.);
 
-    // to right layout
-    A.toRightLayout();
+    // ** to left layout **
+    A_left = A.transformRightToLeftLayout();
 
     // A internal order should not change!
     for (linalg::Size i = 0; i < A.size(); i++) {
@@ -333,33 +334,32 @@ CASE("TensorFloat [2, 3] right to left layout") {
     EXPECT(A(0, 2) == 5.);
     EXPECT(A(1, 2) == 6.);
 
-    // ** to left layout **
-    A.toLeftLayout();
-
     // internal order is now changed!
     std::vector<float> expected_rowmajor_values{1., 3., 5., 2., 4., 6.};
-    for (linalg::Size i = 0; i < A.size(); i++) {
-        EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
+    for (linalg::Size i = 0; i < A_left.size(); i++) {
+        EXPECT(*(A_left.data() + i) == expected_rowmajor_values[i]);
     }
 
-    // the outside indexes should still
-    // give back the correct values..
-    EXPECT(A(0, 0) == 1.);
-    EXPECT(A(1, 0) == 2.);
-    EXPECT(A(0, 1) == 3.);
-    EXPECT(A(1, 1) == 4.);
-    EXPECT(A(0, 2) == 5.);
-    EXPECT(A(1, 2) == 6.);
+    // ** to right layout **
+    A_right = A_left.transformLeftToRightLayout();
+
+    // back to the original order
+    EXPECT(A_right(0, 0) == 1.);
+    EXPECT(A_right(1, 0) == 2.);
+    EXPECT(A_right(0, 1) == 3.);
+    EXPECT(A_right(1, 1) == 4.);
+    EXPECT(A_right(0, 2) == 5.);
+    EXPECT(A_right(1, 2) == 6.);
 }
 
 
 CASE("TensorFloat [2, 3] right->left->right layout") {
     std::vector<float> array{1., 2., 3., 4., 5., 6.};
     TensorFloat A{array.data(), {2, 3}};
+    TensorFloat A_left, A_right;
 
     // A internal order
     for (linalg::Size i = 0; i < A.size(); i++) {
-        //        std::cout << "*(A.data()+i) " << *(A.data()+i) << std::endl;
         EXPECT(*(A.data() + i) == array[i]);
     }
 
@@ -372,13 +372,12 @@ CASE("TensorFloat [2, 3] right->left->right layout") {
     EXPECT(A(1, 2) == 6.);
 
     // ** to left layout **
-    A.toLeftLayout();
+    A_left = A.transformRightToLeftLayout();
 
     // internal order is now changed!
     std::vector<float> expected_rowmajor_values{1., 3., 5., 2., 4., 6.};
-    for (linalg::Size i = 0; i < A.size(); i++) {
-        //        std::cout << "--- *(A.data()+i) " << *(A.data()+i) << std::endl;
-        EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
+    for (linalg::Size i = 0; i < A_left.size(); i++) {
+        EXPECT(*(A_left.data() + i) == expected_rowmajor_values[i]);
     }
 
     // indexes still OK
@@ -390,21 +389,20 @@ CASE("TensorFloat [2, 3] right->left->right layout") {
     EXPECT(A(1, 2) == 6.);
 
     // ** back to right layout **
-    A.toRightLayout();
+    A_right = A_left.transformLeftToRightLayout();
 
     // check that the internal order is back to initial order
-    for (linalg::Size i = 0; i < A.size(); i++) {
-        //        std::cout << "*(A.data()+i) " << *(A.data()+i) << std::endl;
-        EXPECT(*(A.data() + i) == array[i]);
+    for (linalg::Size i = 0; i < A_right.size(); i++) {
+        EXPECT(*(A_right.data() + i) == array[i]);
     }
 
     // indexes still OK
-    EXPECT(A(0, 0) == 1.);
-    EXPECT(A(1, 0) == 2.);
-    EXPECT(A(0, 1) == 3.);
-    EXPECT(A(1, 1) == 4.);
-    EXPECT(A(0, 2) == 5.);
-    EXPECT(A(1, 2) == 6.);
+    EXPECT(A_right(0, 0) == 1.);
+    EXPECT(A_right(1, 0) == 2.);
+    EXPECT(A_right(0, 1) == 3.);
+    EXPECT(A_right(1, 1) == 4.);
+    EXPECT(A_right(0, 2) == 5.);
+    EXPECT(A_right(1, 2) == 6.);
 }
 
 
@@ -415,6 +413,8 @@ CASE("TensorFloat [2, 3, 4] right->left->right layout") {
     }
 
     TensorFloat A{array.data(), {2, 3, 4}};
+    TensorFloat A_left, A_right;
+
 
     // A internal order
     for (linalg::Size i = 0; i < A.size(); i++) {
@@ -451,13 +451,13 @@ CASE("TensorFloat [2, 3, 4] right->left->right layout") {
     EXPECT(A(1, 2, 3) == 23.);
 
     // ** to left layout **
-    A.toLeftLayout();
+    A_left = A.transformRightToLeftLayout();
 
     // internal order is now changed!
     std::vector<float> expected_rowmajor_values{0, 6, 12, 18, 2, 8, 14, 20, 4, 10, 16, 22,
                                                 1, 7, 13, 19, 3, 9, 15, 21, 5, 11, 17, 23};
-    for (linalg::Size i = 0; i < A.size(); i++) {
-        EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
+    for (linalg::Size i = 0; i < A_left.size(); i++) {
+        EXPECT(*(A_left.data() + i) == expected_rowmajor_values[i]);
     }
 
     // indexes still OK
@@ -490,11 +490,11 @@ CASE("TensorFloat [2, 3, 4] right->left->right layout") {
     EXPECT(A(1, 2, 3) == 23.);
 
     // ** back to right layout **
-    A.toRightLayout();
+    A_right = A_left.transformLeftToRightLayout();
 
     // check that the internal order is back to initial order
-    for (linalg::Size i = 0; i < A.size(); i++) {
-        EXPECT(*(A.data() + i) == array[i]);
+    for (linalg::Size i = 0; i < A_right.size(); i++) {
+        EXPECT(*(A_right.data() + i) == array[i]);
     }
 }
 
@@ -507,6 +507,7 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
 
     // tensor A (right-layout by default)
     TensorFloat A{array.data(), {6, 3, 2, 5}};
+    TensorFloat A_left, A_right;
 
     // check A internal order
     for (linalg::Size i = 0; i < A.size(); i++) {
@@ -514,7 +515,7 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
     }
 
     // ** to left layout **
-    A.toLeftLayout();
+    A_left = A.transformRightToLeftLayout();
 
     // internal order is now changed!
     std::vector<float> expected_rowmajor_values{0, 36, 72, 108, 144, 18, 54, 90, 126, 162, 6, 42, 78,
@@ -531,19 +532,82 @@ CASE("TensorFloat [6, 3, 2, 5] right->left->right layout") {
                                                 70, 106, 142, 178, 5, 41, 77, 113, 149, 23, 59, 95, 131, 167,
                                                 11, 47, 83, 119, 155, 29, 65, 101, 137, 173, 17, 53, 89, 125,
                                                 161, 35, 71, 107, 143, 179};
-    for (linalg::Size i = 0; i < A.size(); i++) {
-        EXPECT(*(A.data() + i) == expected_rowmajor_values[i]);
+    for (linalg::Size i = 0; i < A_left.size(); i++) {
+        EXPECT(*(A_left.data() + i) == expected_rowmajor_values[i]);
     }
 
     // ** back to right layout **
-    A.toRightLayout();
+    A_right = A_left.transformLeftToRightLayout();
 
     // check that the internal order is back to initial order
-    for (linalg::Size i = 0; i < A.size(); i++) {
-        EXPECT(*(A.data() + i) == array[i]);
+    for (linalg::Size i = 0; i < A_right.size(); i++) {
+        EXPECT(*(A_right.data() + i) == array[i]);
     }
 }
 
+CASE("TensorFloat move constructor") {
+
+    std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
+    std::vector<linalg::Size> shape{3,4};
+
+    TensorFloat tensor_from(data.data(), shape, false);
+
+    // force move constructor
+    TensorFloat tensor_to(std::move(tensor_from));
+
+    EXPECT(tensor_to.shape()[0] == 3);
+    EXPECT(tensor_to.shape()[1] == 4);
+
+    EXPECT(tensor_to(0,0) == 0);
+    EXPECT(tensor_to(0,1) == 1);
+    EXPECT(tensor_to(0,2) == 2);
+    EXPECT(tensor_to(0,3) == 3);
+
+    EXPECT(tensor_to(0,4) == 4);
+    EXPECT(tensor_to(0,5) == 5);
+    EXPECT(tensor_to(0,6) == 6);
+    EXPECT(tensor_to(0,7) == 7);
+
+    EXPECT(tensor_to(0,8) == 8);
+    EXPECT(tensor_to(0,9) == 9);
+    EXPECT(tensor_to(0,10) == 10);
+    EXPECT(tensor_to(0,11) == 11);
+
+    EXPECT(tensor_from.data() == nullptr);
+}
+
+CASE("TensorFloat move assignment operator") {
+
+    std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
+    std::vector<linalg::Size> shape{3,4};
+
+    TensorFloat tensor_from(data.data(), shape, false);
+
+    // force move assignment
+    TensorFloat tensor_to;
+    tensor_to = std::move(tensor_from);
+
+    EXPECT(tensor_to.shape()[0] == 3);
+    EXPECT(tensor_to.shape()[1] == 4);
+
+    EXPECT(tensor_to(0,0) == 0);
+    EXPECT(tensor_to(0,1) == 1);
+    EXPECT(tensor_to(0,2) == 2);
+    EXPECT(tensor_to(0,3) == 3);
+
+    EXPECT(tensor_to(0,4) == 4);
+    EXPECT(tensor_to(0,5) == 5);
+    EXPECT(tensor_to(0,6) == 6);
+    EXPECT(tensor_to(0,7) == 7);
+
+    EXPECT(tensor_to(0,8) == 8);
+    EXPECT(tensor_to(0,9) == 9);
+    EXPECT(tensor_to(0,10) == 10);
+    EXPECT(tensor_to(0,11) == 11);
+
+    EXPECT(tensor_from.data() == nullptr);
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

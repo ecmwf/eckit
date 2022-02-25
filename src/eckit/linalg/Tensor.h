@@ -43,11 +43,9 @@ namespace linalg {
 
 template <typename S>
 class Tensor {
-public:  // types
-    using Size = linalg::Size;
 
 public:  // class methods
-    static Size flatten(const std::vector<Size>& shape) {
+    static Size flatSize(const std::vector<Size>& shape) {
         return std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
     }
 
@@ -69,7 +67,6 @@ public:  // class methods
             }
             s[shape.size() - 1] = 1;
         }
-        // std::cout << "shape : " << shape << "\nstrides : " << s << std::endl;
         return s;
     }
 
@@ -86,21 +83,21 @@ public:  // methods
         right_(isRight),
         own_(true) {
 
-        size_ = flatten(shape_);
+        size_ = flatSize(shape_);
         ASSERT(size() > 0);
         array_ = new S[size_];
         ASSERT(array_);
     }
 
     /// Construct tensor from existing data (does NOT take ownership)
-    Tensor(const S* array, const std::vector<Size>& shape, bool isRight = true) :
-        array_(const_cast<S*>(array)),
+    Tensor(S* array, const std::vector<Size>& shape, bool isRight = true) :
+        array_(array),
         strides_(strides(isRight, shape)),
         right_(isRight),
         own_(false) {
 
         shape_ = shape;
-        size_  = flatten(shape_);
+        size_  = flatSize(shape_);
         ASSERT(size() > 0);
         ASSERT(array_);
     }
@@ -130,9 +127,29 @@ public:  // methods
         ::memcpy(array_, other.array_, size() * sizeof(S));
     }
 
+    /// Move constructor
+    Tensor(Tensor&& other) noexcept {
+
+        shape_ = std::move(other.shape_);
+        strides_ = std::move(other.strides_);
+
+        size_ = other.size_;
+        right_ = other.right_;
+        own_ = other.own_;
+
+        array_ = other.array_;
+
+        // nullify moved-from tensor
+        other.array_ = nullptr;
+        other.own_ = false;        
+        other.shape_.clear();
+        other.strides_.clear();
+        other.size_ = 0;
+    }
+
     /// Destructor
     ~Tensor() {
-        if (own_) {
+        if (own_ && array_) {
             delete[] array_;
         }
     }
@@ -149,16 +166,33 @@ public:  // methods
         return *this;
     }
 
-    void toLeftLayout() {
-        if (not right_)
-            return;
-        move(transformRigthToLeftLayout());
-    }
+    /// Move assignment operator
+    Tensor& operator=(Tensor&& other) noexcept {
 
-    void toRightLayout() {
-        if (right_)
-            return;
-        move(transformLeftToRightLayout());
+        if (&other != this){
+
+            if (own_ && array_) {
+                delete[] array_;
+            }
+
+            shape_ = std::move(other.shape_);
+            strides_ = std::move(other.strides_);
+
+            size_ = other.size_;
+            right_ = other.right_;
+            own_ = other.own_;
+
+            array_ = other.array_;
+
+            // nullify moved-from tensor
+            other.array_ = nullptr;
+            other.own_ = false;            
+            other.shape_.clear();
+            other.strides_.clear();
+            other.size_ = 0;
+        }
+
+        return *this;
     }
 
     /// Swap this tensor with another
@@ -174,7 +208,7 @@ public:  // methods
     /// Resize tensor to given a shape
     /// Invalidates data if shapes don't match, otherwise keeps data and simply reshapes
     void resize(const std::vector<Size>& shape) {
-        if (this->size() != flatten(shape)) {  // avoid reallocation if same size
+        if (this->size() != flatSize(shape)) {  // avoid reallocation if same size
             Tensor m(shape, right_);
             swap(m);
         }
@@ -205,7 +239,7 @@ public:  // methods
         s << shape_.size();
         for (auto v : shape_)
             s << v;
-        s.writeBlob(const_cast<S*>(array_), size() * sizeof(S));
+        s.writeBlob(array_, size() * sizeof(S));
     }
 
     /// @returns flatten size (= product of shape vector)
@@ -263,7 +297,7 @@ public:  // methods
     }
 
     /// Transform a right-layout tensor to left-layout
-    Tensor transformRigthToLeftLayout() const {
+    Tensor transformRightToLeftLayout() const {
         Tensor r(shape_);
 
         // COL-MAJOR to ROW-MAJOR
@@ -302,7 +336,7 @@ public:  // methods
     }
 
     /// Transform a left-layout tensor to right-layout
-    Tensor transformLeftToRightLayout() const {
+    Tensor transformLeftToRightLayout() const {       
         Tensor r(shape_);
 
         // ROW-MAJOR to COL-MAJOR
@@ -357,8 +391,6 @@ private:  // methods
     constexpr Size index(Ints... idx) const {
         return index_part<0>(idx...);
     }
-
-    void move(Tensor&& other) { swap(other); }
 
 protected:      // member variables
     S* array_;  ///< data

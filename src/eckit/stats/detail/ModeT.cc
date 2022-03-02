@@ -26,7 +26,7 @@ namespace {
 
 std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
     out << "[";
-    auto sep = "";
+    const auto* sep = "";
     for (const auto& e : v) {
         out << sep << e;
         sep = ",";
@@ -42,7 +42,8 @@ void mode_values_and_mins_check(const std::vector<double>& values, const std::ve
     // Check sorting: {values[0], mins[0], values[1], mins[1], values[2], mins[3], values[3], ..., mins[N], values[N+1]}
     for (auto i = values.begin(), j = mins.begin(); j != mins.end(); ++j) {
         ASSERT(*i < *j);
-        ASSERT(++i != values.end());
+        ++i;
+        ASSERT(i != values.end());
         ASSERT(*j < *i);
     }
 }

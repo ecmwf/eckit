@@ -75,7 +75,7 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     const auto& values = field.values(0);
 
     Counter::reset(field);
-    for (auto& value : values) {
+    for (const auto& value : values) {
         count(value);
     }
     const double _max = max();
@@ -92,7 +92,7 @@ void SimplePackingEntropy::execute(const data::MIRField& field) {
     const double one_over_log2 = 1. / M_LN2;
 
     Counter::reset(field);
-    for (auto& value : values) {
+    for (const auto& value : values) {
         if (count(value)) {
             auto b = size_t((value - _min) * scale_);
             ASSERT(b < bucketCount_);
@@ -117,7 +117,7 @@ void SimplePackingEntropy::print(std::ostream& out) const {
 }
 
 
-static StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy");
+static const StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy");
 
 
 }  // namespace statistics

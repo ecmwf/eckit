@@ -38,8 +38,8 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
     ASSERT(field1.dimensions() == 1);
     ASSERT(field2.dimensions() == 1);
 
-    auto& values1 = field1.values(0);
-    auto& values2 = field2.values(0);
+    const auto& values1 = field1.values(0);
+    const auto& values2 = field2.values(0);
     ASSERT(values1.size() == values2.size());
 
     if (std::isnan(ignoreAboveLatitude_) == 0 || std::isnan(ignoreBelowLatitude_) == 0) {
@@ -53,9 +53,9 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
         ASSERT(rep1->numberOfPoints() == values1.size());
 
         for (const std::unique_ptr<repres::Iterator> it(rep1->iterator()); it->next();) {
-            auto& p = it->pointUnrotated();
-            auto v1 = values1.at(it->index());
-            auto v2 = values2.at(it->index());
+            const auto& p = it->pointUnrotated();
+            auto v1       = values1.at(it->index());
+            auto v2       = values2.at(it->index());
 
             bool bad  = ignoreAboveLatitude_ < p.lat() || p.lat() < ignoreBelowLatitude_;
             auto diff = bad ? 0. : STATS::difference(v1, v2);
@@ -99,8 +99,8 @@ std::string ComparatorT<MinMax>::execute(const data::MIRField& field1, const dat
     ASSERT(field1.dimensions() == 1);
     ASSERT(field2.dimensions() == 1);
 
-    auto& values1 = field1.values(0);
-    auto& values2 = field2.values(0);
+    const auto& values1 = field1.values(0);
+    const auto& values2 = field2.values(0);
     ASSERT(values1.size() == values2.size());
 
     for (size_t i = 0; i < values1.size(); ++i) {
@@ -119,14 +119,16 @@ void ComparatorT<MinMax>::print(std::ostream& out) const {
 }
 
 
-static ComparatorBuilder<ComparatorT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
+static const ComparatorBuilder<
+    ComparatorT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
     __comp1("angle-degree");
-static ComparatorBuilder<ComparatorT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
+static const ComparatorBuilder<
+    ComparatorT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
     __comp2("angle-radian");
-static ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>> __comp3("central-moments");
-static ComparatorBuilder<ComparatorT<detail::PNormsT<double>>> __comp4("p-norms");
-static ComparatorBuilder<ComparatorT<detail::ScalarT<double>>> __comp5("scalar");
-static ComparatorBuilder<ComparatorT<MinMax>> __comp6("min-max");
+static const ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>> __comp3("central-moments");
+static const ComparatorBuilder<ComparatorT<detail::PNormsT<double>>> __comp4("p-norms");
+static const ComparatorBuilder<ComparatorT<detail::ScalarT<double>>> __comp5("scalar");
+static const ComparatorBuilder<ComparatorT<MinMax>> __comp6("min-max");
 
 
 }  // namespace comparator

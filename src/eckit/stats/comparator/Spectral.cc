@@ -98,7 +98,7 @@ void Spectral::print(std::ostream& out) const {
 }
 
 
-static ComparatorBuilder<Spectral> __stats("spectral");
+static const ComparatorBuilder<Spectral> __stats("spectral");
 
 
 }  // namespace comparator

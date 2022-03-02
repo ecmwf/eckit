@@ -50,12 +50,12 @@ struct MedianIntegral final : ModeStatsT<detail::MedianIntegral> {
 };
 
 
-static FieldBuilder<ModeReal> __builder_1("mode-real");
-static FieldBuilder<ModeIntegral> __builder_2("mode-integral");
-static FieldBuilder<ModeBoolean> __builder_3("mode-boolean");
+static const FieldBuilder<ModeReal> __builder_1("mode-real");
+static const FieldBuilder<ModeIntegral> __builder_2("mode-integral");
+static const FieldBuilder<ModeBoolean> __builder_3("mode-boolean");
 
-static FieldBuilder<MedianIntegral> __builder_4("median-integral");
-static FieldBuilder<ModeBoolean> __builder_5("median-boolean");  // (alias)
+static const FieldBuilder<MedianIntegral> __builder_4("median-integral");
+static const FieldBuilder<ModeBoolean> __builder_5("median-boolean");  // (alias)
 
 
 }  // namespace field

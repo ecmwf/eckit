@@ -8,93 +8,119 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   LinearAlgebra.h
-/// @author Florian Rathgeber
-/// @author Tiago Quintino
-/// @date   June 2015
 
-#ifndef eckit_la_LinearAlgebra_h
-#define eckit_la_LinearAlgebra_h
+#pragma once
 
+#include <ostream>
 #include <string>
 
+#include "eckit/deprecated.h"
+#include "eckit/linalg/LinearAlgebraDense.h"
+#include "eckit/linalg/LinearAlgebraSparse.h"
 #include "eckit/linalg/types.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 namespace linalg {
 
+
 //-----------------------------------------------------------------------------
 
-class LinearAlgebra : private NonCopyable {
 
+class LinearAlgebra {
 public:
-    const std::string& name() const;
+    // - Static methods
 
-    // static methods
-
-    /// Get the currently selected backend
+    /// Get the currently selected backend (instance)
     static const LinearAlgebra& backend();
 
-    /// Select the given backend as the default
+    /// Select specific backend by name (re-setting default)
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
     static void backend(const std::string& name);
 
     /// List all available backends
-    static void list(std::ostream&);
+    static std::ostream& list(std::ostream&);
 
-    /// Get a backend by name
+    /// Get specific backend by name
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::getBackend() instead")
     static const LinearAlgebra& getBackend(const std::string& name);
 
     /// Check if a backend is available
     static bool hasBackend(const std::string& name);
 
-public:  // virtual methods
+    /// Get current or specific LinearAlgebraDense backend
+    static const LinearAlgebraDense& getDenseBackend(const std::string& name = "");
+
+    /// Get current or specific LinearAlgebraSparse backend
+    static const LinearAlgebraSparse& getSparseBackend(const std::string& name = "");
+
+    /// Get current or specific LinearAlgebraDense backend (re-setting default)
+    static const LinearAlgebraDense& denseBackend(const std::string& name = "");
+
+    /// Get current or specific LinearAlgebraSparse backend (re-setting default)
+    static const LinearAlgebraSparse& sparseBackend(const std::string& name = "");
+
+    /// Check if a LinearAlgebraDense backend is available
+    static bool hasDenseBackend(const std::string& name);
+
+    /// Check if a LinearAlgebraSparse backend is available
+    static bool hasSparseBackend(const std::string& name);
+
+    /// Return active backend name
+    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::name() instead")
+    static std::string name();
+
     /// Compute the inner product of vectors x and y
-    virtual Scalar dot(const Vector&, const Vector&) const = 0;
+    static Scalar dot(const Vector& x, const Vector& y) {
+        return LinearAlgebraDense::backend().dot(x, y);
+    }
 
-    /// Compute the product of a dense matrix A and vector x. The caller is
-    /// responsible for allocating a properly sized output vector y.
-    virtual void gemv(const Matrix&, const Vector&, Vector&) const = 0;
+    /// Compute the product of a dense matrix A and vector x
+    /// @note y must be allocated and sized correctly
+    static void gemv(const Matrix& A, const Vector& x, Vector& y) {
+        LinearAlgebraDense::backend().gemv(A, x, y);
+    }
 
-    /// Compute the product of dense matrices A and B. The caller is
-    /// responsible for allocating a properly sized output matrix C.
-    virtual void gemm(const Matrix&, const Matrix&, Matrix&) const = 0;
+    /// Compute the product of dense matrices A and X
+    /// @note Y must be allocated and sized correctly
+    static void gemm(const Matrix& A, const Matrix& X, Matrix& Y) {
+        LinearAlgebraDense::backend().gemm(A, X, Y);
+    }
 
-    /// Compute the product of a sparse matrix A and vector x. The caller is
-    /// responsible for allocating a properly sized output vector y.
-    virtual void spmv(const SparseMatrix&, const Vector&, Vector&) const = 0;
+    /// Compute the product of a sparse matrix A and vector x
+    /// @note y must be allocated and sized correctly
+    static void spmv(const SparseMatrix& A, const Vector& x, Vector& y) {
+        LinearAlgebraSparse::backend().spmv(A, x, y);
+    }
 
-    /// Compute the product of sparse matrix A and dense matrix B. The caller is
-    /// responsible for allocating a properly sized output matrix C.
-    virtual void spmm(const SparseMatrix&, const Matrix&, Matrix&) const = 0;
+    /// Compute the product of sparse matrix A and dense matrix X
+    /// @note Y must be allocated and sized correctly
+    static void spmm(const SparseMatrix& A, const Matrix& X, Matrix& Y) {
+        LinearAlgebraSparse::backend().spmm(A, X, Y);
+    }
 
     /// Compute the product x A' y with x and y diagonal matrices stored as
-    /// vectors and A a sparse matrix. The caller does NOT need to initialise
-    /// the sparse output matrix C
-    virtual void dsptd(const Vector&, const SparseMatrix&, const Vector&, SparseMatrix&) const;
+    /// vectors and A a sparse matrix
+    /// @note B does NOT need to be allocated/sized correctly
+    static void dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) {
+        LinearAlgebraSparse::backend().dsptd(x, A, y, B);
+    }
 
 protected:
-    LinearAlgebra(const std::string& name);
-
-    virtual ~LinearAlgebra();
+    LinearAlgebra() = default;
 
 private:
-    std::string name_;
+    LinearAlgebra(const LinearAlgebra&) = delete;
+    LinearAlgebra& operator=(const LinearAlgebra&) = delete;
 
-    virtual void print(std::ostream&) const = 0;
-
-    // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra& p) {
-        p.print(s);
-        return s;
+    friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra&) {
+        return s << "LinearAlgebra[LinearAlgebraDense=[" << LinearAlgebraDense::backend() << "],LinearAlgebraSparse=[" << LinearAlgebraSparse::backend() << "]]";
     }
 };
 
+
 //-----------------------------------------------------------------------------
+
 
 }  // namespace linalg
 }  // namespace eckit
-
-#endif

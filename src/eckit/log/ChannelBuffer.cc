@@ -82,11 +82,13 @@ void ChannelBuffer::indent(const char* space) {
 }
 
 void ChannelBuffer::unindent() {
-    IndentTarget* indent = dynamic_cast<IndentTarget*>(target_);
-    if (indent == 0) {
-        throw SeriousBug("Attempt to unindent a Channel that is not indented");
+    if (target_) {
+        IndentTarget* indent = dynamic_cast<IndentTarget*>(target_);
+        if (indent == 0) {
+            throw SeriousBug("Attempt to unindent a Channel that is not indented");
+        }
+        setTarget(indent->target_);
     }
-    setTarget(indent->target_);
 }
 
 void ChannelBuffer::addCallback(channel_callback_t cb, void* data) {

@@ -8,30 +8,30 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   Vector.h
 /// @author Florian Rathgeber
 /// @author Pedro Maciel
 /// @author Tiago Quintino
-/// @date   June 2015
 
-#ifndef eckit_linalg_Vector_h
-#define eckit_linalg_Vector_h
+
+#pragma once
 
 #include "eckit/linalg/types.h"
+
 
 namespace eckit {
 class Stream;
 }
 
+
 namespace eckit {
 namespace linalg {
 
+
 //----------------------------------------------------------------------------------------------------------------------
 
+
 /// Vector for Linear Algebra operations
-///
 /// @todo provide a const view
-///
 class Vector {
 
 public:  // methods
@@ -79,8 +79,10 @@ public:  // methods
 
     /// @returns size (rows * cols)
     Size size() const { return length_; }
+
     /// @returns number of rows (i.e. size)
     Size rows() const { return length_; }
+
     /// @returns number of columns (always 1)
     Size cols() const { return 1; }
 
@@ -94,26 +96,28 @@ public:  // methods
 
     /// @returns iterator to beginning of the data
     Scalar* begin() { return array_; }
+
     /// @returns const iterator to beginning of the data
     const Scalar* begin() const { return array_; }
+
     /// @returns iterator to end of the data
     Scalar* end() { return array_ + length_; }
+
     /// @returns const iterator to end of the data
     const Scalar* end() const { return array_ + length_; }
 
 protected:           // member variables
     Scalar* array_;  ///< Container
-
-    Size length_;  ///< Vector length/size
-
-    bool own_;  ///< do we own the memory allocated in the container ?
+    Size length_;    ///< Vector length/size
+    bool own_;       ///< do we own the memory allocated in the container ?
 };
+
 
 Stream& operator<<(Stream&, const Vector&);
 
+
 //----------------------------------------------------------------------------------------------------------------------
+
 
 }  // namespace linalg
 }  // namespace eckit
-
-#endif

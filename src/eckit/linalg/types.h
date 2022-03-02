@@ -8,28 +8,28 @@
  * nor does it submit to any jurisdiction.
  */
 
-/// @file   types.h
 /// @author Florian Rathgeber
+/// @author Pedro Maciel
 /// @author Tiago Quintino
-/// @date   June 2015
 
-#ifndef eckit_la_types_h
-#define eckit_la_types_h
+
+#pragma once
 
 #include <cstddef>
+
 
 namespace eckit {
 namespace linalg {
 
-typedef double Scalar;
-typedef int Index;
-typedef size_t Size;
+
+using Scalar = double;
+using Index  = int;
+using Size   = size_t;
 
 class Vector;
 class Matrix;
 class SparseMatrix;
 
+
 }  // namespace linalg
 }  // namespace eckit
-
-#endif

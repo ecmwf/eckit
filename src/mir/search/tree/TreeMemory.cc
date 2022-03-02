@@ -75,7 +75,7 @@ void TreeMemory::print(std::ostream& out) const {
 }
 
 
-static TreeBuilder<TreeMemory> builder("memory");
+static const TreeBuilder<TreeMemory> builder("memory");
 
 
 }  // namespace tree

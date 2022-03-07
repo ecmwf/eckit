@@ -32,6 +32,7 @@ public:  // methods
 
     virtual void run() = 0;
 
+    virtual LogTarget* createVerboseLogTarget() const override;
     virtual LogTarget* createWarningLogTarget() const override;
     virtual LogTarget* createErrorLogTarget() const override;
 

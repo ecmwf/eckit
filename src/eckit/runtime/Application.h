@@ -57,6 +57,7 @@ public:
 
 private:  // methods
     virtual LogTarget* createInfoLogTarget() const override;
+    virtual LogTarget* createVerboseLogTarget() const override;
     virtual LogTarget* createWarningLogTarget() const override;
     virtual LogTarget* createErrorLogTarget() const override;
     virtual LogTarget* createDebugLogTarget() const override;

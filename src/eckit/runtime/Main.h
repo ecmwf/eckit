@@ -70,6 +70,7 @@ public:  // methods
     /// Channel handling
 
     virtual LogTarget* createInfoLogTarget() const;
+    virtual LogTarget* createVerboseLogTarget() const;
     virtual LogTarget* createWarningLogTarget() const;
     virtual LogTarget* createErrorLogTarget() const;
     virtual LogTarget* createDebugLogTarget() const;

@@ -55,6 +55,10 @@ private:
                 if (user_)
                     user_->infoMsg(pbase());
                 break;
+            case UserChannel::VERBOSE:
+                if (user_)
+                    user_->verboseMsg(pbase());
+                break;
             case UserChannel::WARN:
                 if (user_)
                     user_->warningMsg(pbase());

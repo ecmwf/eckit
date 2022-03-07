@@ -155,6 +155,19 @@ Channel& Log::error() {
     return x.instance();
 }
 
+struct CreateVerboseChannel : public CreateLogChannel {
+    virtual Channel* createChannel() { return new Channel(Main::instance().createVerboseLogTarget()); }
+};
+
+Channel& Log::verbose() {
+    if (!Main::ready()) {
+        static Channel empty(new PrefixTarget("PRE-MAIN-VERBOSE", new OStreamTarget(std::cout)));
+        return empty;
+    }
+    static ThreadSingleton<Channel, CreateVerboseChannel> x;
+    return x.instance();
+}
+
 struct CreateWarningChannel : public CreateLogChannel {
     virtual Channel* createChannel() { return new Channel(Main::instance().createWarningLogTarget()); }
 };
@@ -220,6 +233,12 @@ std::ostream& Log::userInfo() {
     return u;
 }
 
+std::ostream& Log::userVerbose() {
+    UserChannel& u = user();
+    u.msgType(UserChannel::VERBOSE);
+    return u;
+}
+
 std::ostream& Log::userError() {
     UserChannel& u = user();
     u.msgType(UserChannel::ERROR);
@@ -243,6 +262,7 @@ void Log::notifyClient(const std::string& msg) {
 
 void Log::setStream(std::ostream& out) {
     info().setStream(out);
+    verbose().setStream(out);
     warning().setStream(out);
     error().setStream(out);
     if (debug()) {
@@ -255,6 +275,7 @@ void Log::setStream(std::ostream& out) {
 }
 void Log::addStream(std::ostream& out) {
     info().addStream(out);
+    verbose().addStream(out);
     warning().addStream(out);
     error().addStream(out);
     if (debug()) {
@@ -271,6 +292,7 @@ void Log::setFile(const std::string& path) {
     LogTarget* file = new FileTarget(path);
 
     info().setTarget(file);
+    verbose().setTarget(file);
     warning().setTarget(file);
     error().setTarget(file);
     if (debug()) {
@@ -286,6 +308,7 @@ void Log::addFile(const std::string& path) {
     LogTarget* file = new FileTarget(path);
 
     info().addTarget(file);
+    verbose().addTarget(file);
     warning().addTarget(file);
     error().addTarget(file);
     if (debug()) {
@@ -299,6 +322,7 @@ void Log::addFile(const std::string& path) {
 
 void Log::setCallback(channel_callback_t cb, void* data) {
     info().setCallback(cb, data);
+    verbose().setCallback(cb, data);
     warning().setCallback(cb, data);
     error().setCallback(cb, data);
     if (debug()) {
@@ -315,6 +339,7 @@ void Log::setCallback(channel_callback_t cb, void* data) {
 
 void Log::addCallback(channel_callback_t cb, void* data) {
     info().addCallback(cb, data);
+    verbose().addCallback(cb, data);
     warning().addCallback(cb, data);
     error().addCallback(cb, data);
     if (debug()) {
@@ -328,6 +353,7 @@ void Log::addCallback(channel_callback_t cb, void* data) {
 
 void Log::flush() {
     info().flush();
+    verbose().flush();
     warning().flush();
     error().flush();
     debug().flush();
@@ -339,6 +365,7 @@ void Log::flush() {
 
 void Log::reset() {
     info().reset();
+    verbose().reset();
     warning().reset();
     error().reset();
     debug().reset();
@@ -350,6 +377,7 @@ void Log::reset() {
 
 void Log::print(std::ostream& os) {
     os << "Log::info() " << info() << std::endl;
+    os << "Log::verbose() " << verbose() << std::endl;
     os << "Log::warning() " << warning() << std::endl;
     os << "Log::error() " << error() << std::endl;
     os << "Log::debug() " << debug() << std::endl;

@@ -28,6 +28,7 @@ class UserMsg {
 public:
     virtual ~UserMsg() {}
     virtual void infoMsg(const std::string&)      = 0;
+    virtual void verboseMsg(const std::string&)   = 0;
     virtual void warningMsg(const std::string&)   = 0;
     virtual void errorMsg(const std::string&)     = 0;
     virtual void notifyClient(const std::string&) = 0;
@@ -43,6 +44,7 @@ public:  // types
     {
         NONE,
         INFO,
+        VERBOSE,
         ERROR,
         WARN
     };

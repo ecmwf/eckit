@@ -93,6 +93,10 @@ LogTarget* Application::createInfoLogTarget() const {
     return new TimeStampTarget("(I)");
 }
 
+LogTarget* Application::createVerboseLogTarget() const {
+    return new TimeStampTarget("(V)");
+}
+
 LogTarget* Application::createWarningLogTarget() const {
     return new TimeStampTarget("(W)");
 }

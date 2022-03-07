@@ -41,6 +41,10 @@ int Tool::start() {
     return status;
 }
 
+LogTarget* Tool::createVerboseLogTarget() const {
+    return new OStreamTarget(sendLogErrWarnToStdOut_ ? std::cout : std::cerr);
+}
+
 LogTarget* Tool::createWarningLogTarget() const {
     return new OStreamTarget(sendLogErrWarnToStdOut_ ? std::cout : std::cerr);
 }

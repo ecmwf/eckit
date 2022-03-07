@@ -218,6 +218,10 @@ LogTarget* Main::createInfoLogTarget() const {
     return createDefaultLogTarget();
 }
 
+LogTarget* Main::createVerboseLogTarget() const {
+    return createDefaultLogTarget();
+}
+
 LogTarget* Main::createWarningLogTarget() const {
     return createDefaultLogTarget();
 }

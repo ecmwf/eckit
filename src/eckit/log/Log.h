@@ -49,6 +49,9 @@ public:  // methods
     /// Channel for informative messages
     static Channel& info();
 
+    /// Channel for more verbose informative messages
+    static Channel& verbose();
+
     /// Channel for warning messages
     static Channel& warning();
 
@@ -71,8 +74,10 @@ public:  // methods
 
     /// Get the channel for the user
     static UserChannel& user();
-    /// Channel for informative messages tp remote user
+    /// Channel for informative messages to remote user
     static std::ostream& userInfo();
+    /// Channel for verbose informative messages to remote user
+    static std::ostream& userVerbose();
     /// Channel for warning messages to remote user
     static std::ostream& userWarning();
     /// Channel for error messages to remote user

@@ -44,17 +44,6 @@ Stream& operator>>(Stream&, Timing&);
 Stream& operator<<(Stream&, const Timing&);
 std::ostream& operator<<(std::ostream&, const Timing&);
 
-class AutoTiming {
-    Timer& timer_;
-    Timing start_;
-    Timing& timing_;
-
-public:
-    AutoTiming(Timer& timer, Timing& timing) : timer_(timer), start_(timer), timing_(timing) {}
-
-    ~AutoTiming() { timing_ += Timing(timer_) - start_; }
-};
-
 //----------------------------------------------------------------------------------------------------------------------
 
 class Statistics {
@@ -77,7 +66,24 @@ public:
                            bool always = false);
     static void reportTimeStats(std::ostream& out, const std::string& title, size_t count, double sum_times,
                                 double sum_times_squared, const char* indent = "", bool always = false);
+
+    static Timer& timer() { return timer_; }
+
+private:
     static Timer timer_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class AutoTiming {
+    Timer& timer_;
+    Timing& timing_;
+    Timing start_;
+
+public:
+    AutoTiming(Timer& timer, Timing& timing) : timer_(timer), timing_(timing), start_(timer_) {}
+    AutoTiming(Timing& timing) : AutoTiming(Statistics::timer(), timing) {}
+    ~AutoTiming() { timing_ += Timing(Statistics::timer()) - start_; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

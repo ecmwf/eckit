@@ -31,9 +31,12 @@ struct Timing {
     double cpu_;
     size_t updates_;
 
-    Timing() : elapsed_(0), cpu_(0), updates_(0) {}
-    Timing(double elapsed, double cpu, size_t updates) : elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
-    Timing(Timer& timer) : elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
+    Timing() :
+        elapsed_(0), cpu_(0), updates_(0) {}
+    Timing(double elapsed, double cpu, size_t updates) :
+        elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
+    Timing(Timer& timer) :
+        elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
     Timing& operator+=(const Timing&);
     Timing& operator-=(const Timing&);
     Timing operator-(const Timing&) const;
@@ -81,8 +84,10 @@ class AutoTiming {
     Timing start_;
 
 public:
-    AutoTiming(Timer& timer, Timing& timing) : timer_(timer), timing_(timing), start_(timer_) {}
-    AutoTiming(Timing& timing) : AutoTiming(Statistics::timer(), timing) {}
+    AutoTiming(Timer& timer, Timing& timing) :
+        timer_(timer), timing_(timing), start_(timer_) {}
+    AutoTiming(Timing& timing) :
+        AutoTiming(Statistics::timer(), timing) {}
     ~AutoTiming() { timing_ += Timing(Statistics::timer()) - start_; }
 };
 

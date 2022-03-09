@@ -79,15 +79,12 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 class AutoTiming {
-    Timer& timer_;
     Timing& timing_;
     Timing start_;
 
 public:
-    AutoTiming(Timer& timer, Timing& timing) :
-        timer_(timer), timing_(timing), start_(timer_) {}
     AutoTiming(Timing& timing) :
-        AutoTiming(Statistics::timer(), timing) {}
+        timing_(timing), start_(Statistics::timer()) {}
     ~AutoTiming() { timing_ += Timing(Statistics::timer()) - start_; }
 };
 

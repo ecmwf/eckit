@@ -99,6 +99,7 @@ private:  // members
     std::string home_;  // if not set explicitly, will be empty
 
     bool debug_;
+    bool verbose_;
 
     mutable eckit::Mutex mutex_;
 

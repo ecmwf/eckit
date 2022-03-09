@@ -66,6 +66,8 @@ public:  // methods
     // Check if debugging was set to on (either through environment variable "DEBUG=1",
     // or command-line argument "--debug" or "-debug".
     virtual bool debug() const;
+    // And similarly for verbose output
+    virtual bool verbose() const;
 
     /// Channel handling
 
@@ -92,6 +94,7 @@ private:  // members
     std::string home_;  ///< path to the home, may be redefined so not necessarily the same as environment variable HOME
 
     bool debug_;
+    bool verbose_;
 
     friend class Log;
 };

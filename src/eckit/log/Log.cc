@@ -161,12 +161,27 @@ struct CreateVerboseChannel : public CreateLogChannel {
 
 Channel& Log::verbose() {
     if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN-VERBOSE", new OStreamTarget(std::cout)));
+        const char* e = getenv("VERBOSE");
+
+        if (e && bool(Translator<std::string, bool>()(e))) {
+            static Channel empty(new PrefixTarget("PRE-MAIN-VERBOSE", new OStreamTarget(std::cout)));
+            return empty;
+        }
+        else {
+            static Channel empty;
+            return empty;
+        }
+    }
+
+    if (!Main::instance().verbose_) {
+        static Channel empty;
         return empty;
     }
+
     static ThreadSingleton<Channel, CreateVerboseChannel> x;
     return x.instance();
 }
+
 
 struct CreateWarningChannel : public CreateLogChannel {
     virtual Channel* createChannel() { return new Channel(Main::instance().createWarningLogTarget()); }
@@ -262,7 +277,9 @@ void Log::notifyClient(const std::string& msg) {
 
 void Log::setStream(std::ostream& out) {
     info().setStream(out);
-    verbose().setStream(out);
+    if (verbose()) {
+        verbose().setStream(out);
+    }
     warning().setStream(out);
     error().setStream(out);
     if (debug()) {
@@ -275,7 +292,9 @@ void Log::setStream(std::ostream& out) {
 }
 void Log::addStream(std::ostream& out) {
     info().addStream(out);
-    verbose().addStream(out);
+    if (verbose()) {
+        verbose().addStream(out);
+    }
     warning().addStream(out);
     error().addStream(out);
     if (debug()) {
@@ -292,7 +311,9 @@ void Log::setFile(const std::string& path) {
     LogTarget* file = new FileTarget(path);
 
     info().setTarget(file);
-    verbose().setTarget(file);
+    if (verbose()) {
+        verbose().setTarget(file);
+    }
     warning().setTarget(file);
     error().setTarget(file);
     if (debug()) {
@@ -308,7 +329,9 @@ void Log::addFile(const std::string& path) {
     LogTarget* file = new FileTarget(path);
 
     info().addTarget(file);
-    verbose().addTarget(file);
+    if (verbose()) {
+        verbose().addTarget(file);
+    }
     warning().addTarget(file);
     error().addTarget(file);
     if (debug()) {
@@ -322,7 +345,9 @@ void Log::addFile(const std::string& path) {
 
 void Log::setCallback(channel_callback_t cb, void* data) {
     info().setCallback(cb, data);
-    verbose().setCallback(cb, data);
+    if (verbose()) {
+        verbose().setCallback(cb, data);
+    }
     warning().setCallback(cb, data);
     error().setCallback(cb, data);
     if (debug()) {
@@ -339,7 +364,9 @@ void Log::setCallback(channel_callback_t cb, void* data) {
 
 void Log::addCallback(channel_callback_t cb, void* data) {
     info().addCallback(cb, data);
-    verbose().addCallback(cb, data);
+    if (verbose()) {
+        verbose().addCallback(cb, data);
+    }
     warning().addCallback(cb, data);
     error().addCallback(cb, data);
     if (debug()) {

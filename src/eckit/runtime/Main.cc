@@ -38,7 +38,8 @@ static Main* instance_ = nullptr;
 //----------------------------------------------------------------------------------------------------------------------
 
 Main::Main(int argc, char** argv, const char* homeenv) :
-    taskID_(-1), argc_(argc), argv_(argv), home_("/"), debug_(false) {
+    taskID_(-1), argc_(argc), argv_(argv), home_("/"), debug_(false),
+    verbose_(false) {
 
     if (instance_) {
         std::cerr << "Attempting to create a new instance of Main()" << std::endl;
@@ -49,6 +50,10 @@ Main::Main(int argc, char** argv, const char* homeenv) :
 
     if (::getenv("MAIN_DEBUG")) {
         debug_ = eckit::Translator<std::string, bool>()(::getenv("MAIN_DEBUG"));
+    }
+
+    if (::getenv("MAIN_VERBOSE")) {
+        verbose_ = eckit::Translator<std::string, bool>()(::getenv("MAIN_VERBOSE"));
     }
 
     name_ = displayName_ = PathName(argv[0]).baseName(false);
@@ -72,6 +77,17 @@ Main::Main(int argc, char** argv, const char* homeenv) :
             debug_ = eckit::Translator<std::string, bool>()(argv[i] + ::strlen(debug));
         }
 
+        // Check whether verbose is set from command-line args
+        if (::strcmp(argv[i], "--verbose") == 0) {
+            verbose_ = true;
+        }
+
+        // Check whether verbose is set from command-line args
+        const char* verbose = "--verbose=";
+        if (::strncmp(argv[i], verbose, ::strlen(verbose)) == 0) {
+            verbose_ = eckit::Translator<std::string, bool>()(argv[i] + ::strlen(verbose));
+        }
+
         // Old style -name
         if (::strcmp(argv[i], "-name") == 0) {
             ASSERT(argc > i + 1);
@@ -88,6 +104,10 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         if (::strncmp(argv[i], application_name, ::strlen(application_name)) == 0) {
             name_ = argv[i] + ::strlen(application_name);
         }
+    }
+
+    if (debug_) {
+        verbose_ = true;
     }
 
     ::srand(::getpid() + ::time(0));
@@ -212,6 +232,10 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
 
 bool Main::debug() const {
     return debug_;
+}
+
+bool Main::verbose() const {
+    return verbose_;
 }
 
 LogTarget* Main::createInfoLogTarget() const {

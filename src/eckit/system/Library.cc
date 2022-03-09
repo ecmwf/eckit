@@ -38,7 +38,7 @@ namespace system {
 //----------------------------------------------------------------------------------------------------------------------
 
 Library::Library(const std::string& name) :
-    name_(name), prefix_(name), debug_(false) {
+    name_(name), prefix_(name), debug_(false), verbose_(false) {
 
     LibraryManager::enregister(name, this);
 
@@ -50,11 +50,21 @@ Library::Library(const std::string& name) :
         debug_ = eckit::Translator<std::string, bool>()(e);
     }
 
+    std::string verb_string = prefix_ + "_VERBOSE";
+    const char* verbose = ::getenv(verb_string.c_str());
+    if (verbose) {
+        verbose_ = eckit::Translator<std::string, bool>()(verbose);
+    }
+
     if (!debug_) {
         e = ::getenv("DEBUG");
         if (e) {
             debug_ = eckit::Translator<std::string, bool>()(e);
         }
+    }
+    
+    if (debug_) {
+        verbose_ = true;
     }
 }
 

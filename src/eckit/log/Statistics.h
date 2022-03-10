@@ -31,9 +31,12 @@ struct Timing {
     double cpu_;
     size_t updates_;
 
-    Timing() : elapsed_(0), cpu_(0), updates_(0) {}
-    Timing(double elapsed, double cpu, size_t updates) : elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
-    Timing(Timer& timer) : elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
+    Timing() :
+        elapsed_(0), cpu_(0), updates_(0) {}
+    Timing(double elapsed, double cpu, size_t updates) :
+        elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
+    Timing(Timer& timer) :
+        elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
     Timing& operator+=(const Timing&);
     Timing& operator-=(const Timing&);
     Timing operator-(const Timing&) const;
@@ -43,17 +46,6 @@ struct Timing {
 Stream& operator>>(Stream&, Timing&);
 Stream& operator<<(Stream&, const Timing&);
 std::ostream& operator<<(std::ostream&, const Timing&);
-
-class AutoTiming {
-    Timer& timer_;
-    Timing start_;
-    Timing& timing_;
-
-public:
-    AutoTiming(Timer& timer, Timing& timing) : timer_(timer), start_(timer), timing_(timing) {}
-
-    ~AutoTiming() { timing_ += Timing(timer_) - start_; }
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -77,7 +69,23 @@ public:
                            bool always = false);
     static void reportTimeStats(std::ostream& out, const std::string& title, size_t count, double sum_times,
                                 double sum_times_squared, const char* indent = "", bool always = false);
+
+    static Timer& timer() { return timer_; }
+
+private:
     static Timer timer_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class AutoTiming {
+    Timing& timing_;
+    Timing start_;
+
+public:
+    AutoTiming(Timing& timing) :
+        timing_(timing), start_(Statistics::timer()) {}
+    ~AutoTiming() { timing_ += Timing(Statistics::timer()) - start_; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

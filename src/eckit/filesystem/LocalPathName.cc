@@ -244,6 +244,10 @@ bool LocalPathName::available() const {
     return true;
 }
 
+bool LocalPathName::offsite() const {
+    return false;
+}
+
 LocalPathName LocalPathName::cwd() {
     char buf[PATH_MAX + 1];
     if (!::getcwd(buf, sizeof(buf)))

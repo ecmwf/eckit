@@ -123,6 +123,10 @@ bool PathName::available() const {
     return path_->available();
 }
 
+bool PathName::offsite() const {
+    return path_->offsite();
+}
+
 void PathName::chmod(const FileMode& mode) const {
     path_->chmod(mode);
 }

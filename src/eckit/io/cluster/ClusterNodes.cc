@@ -21,6 +21,7 @@
 #include "eckit/memory/Zero.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Clock.h"
+#include "eckit/config/EtcTable.h"
 
 namespace eckit {
 
@@ -232,9 +233,19 @@ typedef MappedArray<ClusterNodeEntry> NodeArray;
 static NodeArray* nodeArray = 0;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
+static std::set<std::string> offsiteNodes_;
 
 static void init() {
     nodeArray = new NodeArray("~/etc/cluster/nodes", 1024);
+
+    EtcKeyTable config("cluster/offsite", 1);
+    if (config.exists()) {
+        for (const auto& line : config.lines()) {
+            offsiteNodes_.insert(line[0]);
+            Log::info() << "Offsite nodes [" << line[0] << "]" << std::endl;
+        }
+    }
+
 }
 
 void ClusterNodes::reset() {
@@ -338,6 +349,11 @@ bool ClusterNodes::available(const std::string& type, const std::string& node) {
     }
 
     return false;
+}
+
+bool ClusterNodes::offsite(const std::string& type, const std::string& node) {
+    pthread_once(&once, init);
+    return offsiteNodes_.find(node) != offsiteNodes_.end();
 }
 
 void ClusterNodes::offLine(const NodeInfo& info) {

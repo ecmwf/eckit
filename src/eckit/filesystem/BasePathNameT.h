@@ -62,6 +62,7 @@ private:
     virtual BasePathName* realName() const override;
     virtual bool exists() const override;
     virtual bool available() const override;
+    virtual bool offsite() const override;
     virtual void mkdir(short) const override;
     virtual void chmod(const FileMode& mode) const override;
     virtual void unlink(bool verbose) const override;

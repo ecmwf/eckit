@@ -36,11 +36,11 @@ public:
         row_(i), col_(j), val_(v) {}
 
     const Size& row() const { return row_; }
-
     const Size& col() const { return col_; }
-
     const Scalar& value() const { return val_; }
 
+    Size& row() { return row_; }
+    Size& col() { return col_; }
     Scalar& value() { return val_; }
 
     bool operator<(const Triplet& other) const {

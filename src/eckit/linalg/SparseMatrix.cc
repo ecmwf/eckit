@@ -15,6 +15,7 @@
 #include <cstring>
 #include <iterator>
 #include <numeric>
+#include <set>
 
 #include "eckit/eckit.h"  // for endianness
 
@@ -118,8 +119,8 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
 
     // Count number of non-zeros
     Size nnz{0};
-    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
-        if (it->nonZero()) {
+    for (const auto& t : triplets) {
+        if (t.nonZero()) {
             ++nnz;
         }
     }
@@ -128,27 +129,31 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
 
     Size pos = 0;
     Size row = 0;
+    std::set<Size> col;  // known column indices per row
 
-    spm_.outer_[0] = 0; /* first entry is always zero */
+    spm_.outer_[0] = 0; // first entry is always zero
 
     // Build vectors of inner indices and values, update outer index per row
-    for (std::vector<Triplet>::const_iterator it = triplets.begin(); it != triplets.end(); ++it) {
-
-        if (it->nonZero()) {
+    for (const auto& t : triplets) {
+        if (t.nonZero()) {
 
             // triplets are ordered by rows
-            ASSERT(it->row() >= row);
-            ASSERT(it->row() < shape_.rows_);
-            // ASSERT( it->col() >= 0 ); // useless comparison with unsigned int
-            ASSERT(it->col() < shape_.cols_);
+            ASSERT(t.row() >= row);
+            ASSERT(t.row() < shape_.rows_);
+            // ASSERT( t.col() >= 0 ); // useless comparison with unsigned int
+            ASSERT(t.col() < shape_.cols_);
 
             // start a new row
-            while (it->row() > row) {
+            while (t.row() > row) {
                 spm_.outer_[++row] = Index(pos);
+                col.clear();
             }
 
-            spm_.inner_[pos] = Index(it->col());
-            spm_.data_[pos]  = it->value();
+            // ensure these row/column indices aren't known (have already been inserted)
+            ASSERT(col.insert(t.col()).second);
+
+            spm_.inner_[pos] = Index(t.col());
+            spm_.data_[pos]  = t.value();
             ++pos;
         }
     }
@@ -157,7 +162,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
         spm_.outer_[++row] = Index(pos);
     }
 
-    ASSERT(Size(spm_.outer_[shape_.outerSize() - 1]) == nonZeros()); /* last entry is always the nnz */
+    ASSERT(Size(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());  // last entry is always the nnz
 }
 
 

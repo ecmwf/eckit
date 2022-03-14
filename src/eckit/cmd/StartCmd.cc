@@ -32,14 +32,15 @@ StartCmd::~StartCmd() {}
 //----------------------------------------------------------------------------------------------------------------------
 
 void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
-    std::string app = args["1"];
+
+    std::string app = args[1];
     std::set<std::string> names;
 
     bool wait   = args.exists("wait");
     int timeout = 120;
 
-    if (args.exists("timeout")) {
-        timeout = int(args["timeout"]);
+    if (wait) {
+        timeout = int(args["wait"]);
     }
 
     if (app == "all") {
@@ -74,6 +75,9 @@ void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
             start(out, *i);
         }
 
+        if(wait){
+        ::sleep(1);}
+
         for (size_t j = 0; j < info.size(); j++) {
             if (info[j].busy(true)) {
                 if (names.find(info[j].application()) != names.end()) {
@@ -86,10 +90,12 @@ void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
             break;
         }
 
-        ::sleep(1);
+
     }
-    if (wait || names.size() > 0) {
-        throw SeriousBug("Could not start all tasks");
+    if (wait && names.size() > 0) {
+        std::ostringstream oss;
+        oss << "Could not start task(s): " << names;
+        throw SeriousBug(oss.str());
     }
 }
 
@@ -106,7 +112,7 @@ void StartCmd::help(std::ostream&) const {}
 //----------------------------------------------------------------------------------------------------------------------
 
 Arg StartCmd::usage(const std::string& cmd) const {
-    return ~Arg("-wait") + ~Arg("-timeout") + (Arg("all") | Arg("<name>", Arg::text));
+    return ~Arg("-wait", Arg::number) + (Arg("all") | Arg("<name>", Arg::text));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -8,11 +8,11 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <signal.h>
 #include <unistd.h>
 
 #include "eckit/cmd/StopCmd.h"
 #include "eckit/runtime/Monitor.h"
-
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {
@@ -28,18 +28,62 @@ StopCmd::~StopCmd() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void StopCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
-    std::string app = arg[1];
+void StopCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
+    std::string app = args[1];
     bool all        = false;
 
-    if (app == "all")
+    bool wait   = args.exists("wait");
+    int timeout = 120;
+
+    if (args.exists("timeout")) {
+        timeout = int(args["timeout"]);
+    }
+
+    if (app == "all") {
         all = true;
+    }
+
+    size_t active = 0;
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
-    for (unsigned long j = 0; j < info.size(); j++)
-        if (info[j].busy(true) && (all || app == info[j].application()))
-            if (info[j].pid() != getpid())
-                info[j].stop();
+
+    std::vector<int> signals = {0};
+    if (args.exists("kill")) {
+        signals = {0, SIGTERM, SIGINT, SIGKILL};
+    }
+
+    for (int sig : signals) {
+
+        for (size_t w = 0; w < timeout; w++) {
+
+            active = 0;
+            for (size_t j = 0; j < info.size(); j++) {
+                if (info[j].busy(true) && (all || app == info[j].application()))
+                    if (info[j].pid() != getpid()) {
+                        if (sig == 0) {
+                            out << "Stopping " << info[j].application() << std::endl;
+                            info[j].stop();
+                        }
+                        else {
+                            out << "Killing " << info[j].application() << " with signal " << sig << std::endl;
+                            if (::kill(info[j].pid(), sig)) {
+                                out << Log::syserr << std::endl;
+                            }
+                        }
+                        active++;
+                    }
+            }
+            if (!wait || !active) {
+                break;
+            }
+
+            ::sleep(1);
+        }
+    }
+
+    if (wait || active) {
+        throw SeriousBug("Could not stop all tasks");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -49,7 +93,7 @@ void StopCmd::help(std::ostream&) const {}
 //----------------------------------------------------------------------------------------------------------------------
 
 Arg StopCmd::usage(const std::string& cmd) const {
-    return Arg("all") | Arg("<name>", Arg::text);
+    return ~Arg("-kill") + ~Arg("-wait") + ~Arg("-timeout") + (Arg("all") | Arg("<name>", Arg::text));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

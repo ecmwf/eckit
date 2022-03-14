@@ -8,6 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
 #include <fstream>
 
 #include "eckit/cmd/StartCmd.h"
@@ -30,33 +31,66 @@ StartCmd::~StartCmd() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
-    std::string app = arg["1"];
+void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
+    std::string app = args["1"];
+    std::set<std::string> names;
+
+    bool wait   = args.exists("wait");
+    int timeout = 120;
+
+    if (args.exists("timeout")) {
+        timeout = int(args["timeout"]);
+    }
 
     if (app == "all") {
 
         PathName path("~/etc/applications");
-        std::vector<std::string> names;
 
         if (path.exists()) {
             std::ifstream in(path.localPath());
             std::string line;
             while (in >> line) {
-                names.push_back(line);
+                names.insert(line);
             }
         }
         else {
             std::string all = Resource<std::string>("allApplications", "mars,reader,flusher,cleaner,httpsvr,safety");
 
+            std::vector<std::string> tmp;
             Tokenizer token(", \t");
-            token(all, names);
+            token(all, tmp);
+
+            names = std::set<std::string>(tmp.begin(), tmp.end());
+        }
+    }
+    else {
+        names.insert(app);
+    }
+
+    Monitor::TaskArray& info = Monitor::instance().tasks();
+
+    for (size_t w = 0; w < timeout; w++) {
+        for (auto i = names.begin(); i != names.end(); ++i) {
+            start(out, *i);
         }
 
-        for (std::vector<std::string>::iterator i = names.begin(); i != names.end(); ++i)
-            start(out, *i);
+        for (size_t j = 0; j < info.size(); j++) {
+            if (info[j].busy(true)) {
+                if (names.find(info[j].application()) != names.end()) {
+                    names.erase(info[j].application());
+                }
+            }
+        }
+
+        if (!wait || names.size() == 0) {
+            break;
+        }
+
+        ::sleep(1);
     }
-    else
-        start(out, app);
+    if (wait || names.size() > 0) {
+        throw SeriousBug("Could not start all tasks");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -72,7 +106,7 @@ void StartCmd::help(std::ostream&) const {}
 //----------------------------------------------------------------------------------------------------------------------
 
 Arg StartCmd::usage(const std::string& cmd) const {
-    return Arg("all") | Arg("<name>", Arg::text);
+    return ~Arg("-wait") + ~Arg("-timeout") + (Arg("all") | Arg("<name>", Arg::text));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

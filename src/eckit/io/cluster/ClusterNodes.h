@@ -49,6 +49,7 @@ public:
     static NodeInfo any(const std::string& type, const std::set<std::string>& attributes={});
 
     static bool available(const std::string&, const std::string&);
+    static bool offsite(const std::string&, const std::string&);
 
     static void offLine(const std::string&, int);
     static void onLine(const std::string&, int);

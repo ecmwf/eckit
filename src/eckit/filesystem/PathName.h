@@ -121,6 +121,9 @@ public:
     /// @return true (local paths are always available)
     bool available() const;
 
+    /// Check if path is offsite
+    bool offsite() const;
+
     /// Touch the path. The path leading to it is created if it does not exist.
     void touch() const;
 

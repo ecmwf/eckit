@@ -104,6 +104,11 @@ bool BasePathNameT<T>::available() const {
 }
 
 template <class T>
+bool BasePathNameT<T>::offsite() const {
+    return path_.offsite();
+}
+
+template <class T>
 std::string BasePathNameT<T>::clusterName() const {
     return path_.clusterName();
 }

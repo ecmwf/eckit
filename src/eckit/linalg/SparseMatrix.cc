@@ -15,7 +15,7 @@
 #include <cstring>
 #include <iterator>
 #include <numeric>
-#include <set>
+#include <unordered_set>
 
 #include "eckit/eckit.h"  // for endianness
 
@@ -129,7 +129,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
 
     Size pos = 0;
     Size row = 0;
-    std::set<Size> col;  // known column indices per row
+    std::unordered_set<Size> col;  // known column indices per row
 
     spm_.outer_[0] = 0; // first entry is always zero
 

@@ -117,52 +117,46 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) {
 SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets) :
     owner_(new detail::StandardAllocator()) {
 
-    // Count number of non-zeros
-    Size nnz{0};
-    for (const auto& t : triplets) {
-        if (t.nonZero()) {
-            ++nnz;
-        }
-    }
-
-    reserve(rows, cols, nnz);  // allocate memory 1 triplet per non-zero
+    // Allocate non-zeros
+    Size nnz = std::count_if(triplets.begin(), triplets.end(), [](const Triplet& t) { return t.nonZero(); });
+    reserve(rows, cols, nnz);
 
     Size pos = 0;
     Size row = 0;
     std::unordered_set<Size> col;  // known column indices per row
 
-    spm_.outer_[0] = 0; // first entry is always zero
+    spm_.outer_[0] = 0;  // first entry is always zero
 
-    // Build vectors of inner indices and values, update outer index per row
+    // Build inner indices and values, update outer index per row
     for (const auto& t : triplets) {
         if (t.nonZero()) {
 
             // triplets are ordered by rows
             ASSERT(t.row() >= row);
+
             ASSERT(t.row() < shape_.rows_);
-            // ASSERT( t.col() >= 0 ); // useless comparison with unsigned int
             ASSERT(t.col() < shape_.cols_);
 
             // start a new row
             while (t.row() > row) {
-                spm_.outer_[++row] = Index(pos);
+                spm_.outer_[++row] = static_cast<Index>(pos);
                 col.clear();
             }
 
             // ensure these row/column indices aren't known (have already been inserted)
             ASSERT(col.insert(t.col()).second);
 
-            spm_.inner_[pos] = Index(t.col());
+            spm_.inner_[pos] = static_cast<Index>(t.col());
             spm_.data_[pos]  = t.value();
             ++pos;
         }
     }
 
     while (row < shape_.rows_) {
-        spm_.outer_[++row] = Index(pos);
+        spm_.outer_[++row] = static_cast<Index>(pos);
     }
 
-    ASSERT(Size(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());  // last entry is always the nnz
+    ASSERT(static_cast<Size>(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());  // last entry is always the nnz
 }
 
 

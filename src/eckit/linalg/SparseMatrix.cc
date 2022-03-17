@@ -159,14 +159,49 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     ASSERT(static_cast<Size>(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());  // last entry is always the nnz
 }
 
+SparseMatrix::SparseMatrix(Size rows, Size cols, const std::set<Triplet>& triplets, bool /*dummy*/) :
+    owner_(new detail::StandardAllocator()) {
 
-SparseMatrix::SparseMatrix(Stream& s) {
-    owner_.reset(new detail::StandardAllocator());
+    // Allocate non-zeros
+    Size nnz = std::count_if(triplets.begin(), triplets.end(), [](const Triplet& t) { return t.nonZero(); });
+    reserve(rows, cols, nnz);
+
+    Size pos = 0;
+    Size row = 0;
+
+    spm_.outer_[0] = 0;  // first entry is always zero
+
+    // Build inner indices and values, update outer index per row
+    for (const auto& t : triplets) {
+        if (t.nonZero()) {
+            ASSERT(t.row() < shape_.rows_);
+            ASSERT(t.col() < shape_.cols_);
+
+            // start a new row
+            while (t.row() > row) {
+                spm_.outer_[++row] = static_cast<Index>(pos);
+            }
+
+            spm_.inner_[pos] = static_cast<Index>(t.col());
+            spm_.data_[pos]  = t.value();
+            ++pos;
+        }
+    }
+
+    while (row < shape_.rows_) {
+        spm_.outer_[++row] = static_cast<Index>(pos);
+    }
+
+    ASSERT(static_cast<Size>(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());  // last entry is always the nnz
+}
+
+SparseMatrix::SparseMatrix(Stream& s) :
+    owner_(new detail::StandardAllocator()) {
     decode(s);
 }
 
-SparseMatrix::SparseMatrix(const MemoryBuffer& buffer) {
-    owner_.reset(new detail::BufferAllocator(buffer));
+SparseMatrix::SparseMatrix(const MemoryBuffer& buffer) :
+    owner_(new detail::BufferAllocator(buffer)) {
     spm_ = owner_->allocate(shape_);
 }
 
@@ -408,6 +443,50 @@ SparseMatrix& SparseMatrix::transpose() {
     swap(tmp);
 
     return *this;
+}
+
+SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<Size>& renumberRows, const std::vector<Size>& renumberCols) const {
+    ASSERT(rows() == (renumberRows.empty() ? _rows : renumberRows.size()));
+    ASSERT(cols() == (renumberCols.empty() ? _cols : renumberCols.size()));
+
+    std::set<Triplet> triplets;
+
+    if (renumberRows.empty()) {
+        if (!renumberCols.empty()) {
+            // fast(er) version
+
+            for (Size r = 0; r < shape_.rows_; ++r) {
+                for (Index j = spm_.outer_[r]; j < spm_.outer_[r + 1]; ++j) {
+                    auto oldc = static_cast<Size>(spm_.inner_[j]);
+                    ASSERT(oldc < shape_.cols_);
+
+                    auto c = renumberCols.empty() ? oldc : renumberCols[oldc];
+                    ASSERT(c < _cols);
+
+                    triplets.emplace_hint(triplets.end(), r, c, spm_.data_[j]);
+                }
+            }
+
+            return {_rows, _cols, triplets, {}};
+        }
+    }
+
+    for (Size i = 0; i < shape_.rows_; ++i) {
+        auto r = renumberRows.empty() ? i : renumberRows[i];
+        ASSERT(r < _rows);
+
+        for (Index j = spm_.outer_[i]; j < spm_.outer_[i + 1]; ++j) {
+            auto c = static_cast<Size>(spm_.inner_[j]);
+            ASSERT(c < shape_.cols_);
+
+            c = renumberCols.empty() ? c : renumberCols[c];
+            ASSERT(c < _cols);
+
+            triplets.emplace(r, c, spm_.data_[j]);
+        }
+    }
+
+    return {_rows, _cols, triplets, {}};
 }
 
 SparseMatrix SparseMatrix::rowReduction(const std::vector<size_t>& p) const {

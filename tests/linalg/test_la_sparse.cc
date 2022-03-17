@@ -29,11 +29,11 @@ struct Fixture {
 /// Test sparse matrix interface
 
 CASE("move constructor") {
-    SparseMatrix a{S(3, 3, 4, 0, 0, 2., 0, 2, -3., 1, 1, 2., 2, 2, 2.)};
-    EXPECT(!a.empty());
+    SparseMatrix A{S(3, 3, 4, 0, 0, 2., 0, 2, -3., 1, 1, 2., 2, 2, 2.)};
+    EXPECT(!A.empty());
 
-    SparseMatrix b{std::move(a)};
-    EXPECT(!b.empty());
+    SparseMatrix B{std::move(A)};
+    EXPECT(!B.empty());
 }
 
 CASE("eckit la sparse") {
@@ -197,6 +197,42 @@ CASE("eckit la sparse") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("renumber") {
+    // "square"
+    // A =  2  . -3
+    //      .  2  .
+    //      .  .  2
+    SparseMatrix A{3, 3, {{0, 0, 2.}, {0, 2, -3.}, {1, 1, 2.}, {2, 2, 2.}}};
+
+    SECTION("renumber rows") {
+        SparseMatrix B(A.renumber(3, 3, {1, 0, 2}, {}));
+        // B
+        // . 2 .
+        // 2 . -3
+        // .  .  2
+
+        EXPECT(B.nonZeros() == A.nonZeros());
+        //        EXPECT(B.rows() == p.size());
+
+        B.dump(Log::info());
+
+        SparseMatrix C(A.renumber(5, 3, {1, 0, 4}, {}));
+        // C
+        // . 2 .
+        // 2 . -3
+        // . . .
+        // . . .
+        // . . 2
+
+        EXPECT(C.nonZeros() == A.nonZeros());
+        //        EXPECT(B.rows() == p.size());
+
+        C.dump(Log::info());
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE("creation with unassigned triplets ( ECKIT-361 )") {
     Size N{10};
     Size M{8};
@@ -204,7 +240,7 @@ CASE("creation with unassigned triplets ( ECKIT-361 )") {
 
     SECTION("only zero triplets, expects throw") {
         std::vector<Triplet> triplets(N * max_stencil_size);
-        EXPECT_THROWS(SparseMatrix matrix(N, M, triplets));
+        EXPECT_THROWS(SparseMatrix(N, M, triplets));
     }
 
     SECTION("mixed zero / non-zero triplets") {
@@ -215,17 +251,12 @@ CASE("creation with unassigned triplets ( ECKIT-361 )") {
             }
             return row_triplets;
         };
-        auto skip_point = [](Size row) {
-            if (row == 5)
-                return true;
-            return false;
-        };
 
         std::vector<Triplet> triplets(N * max_stencil_size);
 
         Size nonzeros{0};
         for (Size i = 0; i < N; ++i) {
-            if (!skip_point(i)) {
+            if (!(i == 5)) {  // skip point
                 auto row = compute_row_triplets(i);
                 for (Size j = 0; j < row.size(); ++j) {
                     triplets[i * max_stencil_size + j] = row[j];

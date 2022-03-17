@@ -198,36 +198,99 @@ CASE("eckit la sparse") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("renumber") {
-    // "square"
-    // A =  2  . -3
-    //      .  2  .
-    //      .  .  2
+    // A = [ 2  . -3
+    //  .  2  .
+    //  .  .  2
+    // ]
     SparseMatrix A{3, 3, {{0, 0, 2.}, {0, 2, -3.}, {1, 1, 2.}, {2, 2, 2.}}};
+    A.dump(Log::info() << "B = [");
+    Log::info() << "]" << std::endl;
+
+    Index outer[4] = {0, 2, 3, 4};
+    Index inner[4] = {0, 2, 1, 2};
+    Scalar data[4] = {2., -3., 2., 2.};
+    EXPECT(equal_sparse_matrix(A, outer, inner, data));
 
     SECTION("renumber rows") {
+        // B = [ . 2 .
+        //  2 . -3
+        //  .  .  2
+        // ]
         SparseMatrix B(A.renumber(3, 3, {1, 0, 2}, {}));
-        // B
-        // . 2 .
-        // 2 . -3
-        // .  .  2
+        B.dump(Log::info() << "B = [");
+        Log::info() << "]" << std::endl;
 
         EXPECT(B.nonZeros() == A.nonZeros());
-        //        EXPECT(B.rows() == p.size());
 
-        B.dump(Log::info());
+        Index Bouter[4] = {0, 1, 3, 4};
+        Index Binner[4] = {1, 0, 2, 2};
+        Scalar Bdata[4] = {2., 2., -3., 2.};
+        EXPECT(equal_sparse_matrix(B, Bouter, Binner, Bdata));
 
-        SparseMatrix C(A.renumber(5, 3, {1, 0, 4}, {}));
-        // C
-        // . 2 .
-        // 2 . -3
-        // . . .
-        // . . .
-        // . . 2
+        // C = A
+        SparseMatrix C(B.renumber(3, 3, {1, 0, 2}, {}));
+        C.dump(Log::info() << "C = [");
+        Log::info() << "]" << std::endl;
 
         EXPECT(C.nonZeros() == A.nonZeros());
-        //        EXPECT(B.rows() == p.size());
+        EXPECT(equal_sparse_matrix(C, outer, inner, data));
 
-        C.dump(Log::info());
+        // D = [ . 2 .
+        //  2 . -3
+        //  . . .
+        //  . . .
+        //  . . 2
+        // ]
+        SparseMatrix D(A.renumber(5, 3, {1, 0, 4}, {}));
+        D.dump(Log::info() << "D = [");
+        Log::info() << "]" << std::endl;
+
+        EXPECT(D.nonZeros() == A.nonZeros());
+
+        Index Douter[6] = {0, 1, 3, 3, 3, 4};
+        Index Dinner[4] = {1, 0, 2, 2};
+        Scalar Ddata[4] = {2., 2., -3., 2.};
+        EXPECT(equal_sparse_matrix(D, Douter, Dinner, Ddata));
+    }
+
+    SECTION("renumber columns") {
+        // B = [ . 2 -3
+        //  2 . .
+        //  . . 2
+        // ]
+        SparseMatrix B(A.renumber(3, 3, {}, {1, 0, 2}));
+        B.dump(Log::info() << "B = [");
+        Log::info() << "]" << std::endl;
+
+        EXPECT(B.nonZeros() == A.nonZeros());
+
+        Index Bouter[4] = {0, 2, 3, 4};
+        Index Binner[4] = {1, 2, 0, 2};
+        Scalar Bdata[4] = {2., -3., 2., 2.};
+        EXPECT(equal_sparse_matrix(B, Bouter, Binner, Bdata));
+
+        // C = A
+        SparseMatrix C(B.renumber(3, 3, {}, {1, 0, 2}));
+        C.dump(Log::info() << "C = [");
+        Log::info() << "]" << std::endl;
+
+        EXPECT(C.nonZeros() == A.nonZeros());
+        EXPECT(equal_sparse_matrix(C, outer, inner, data));
+
+        // D = [ . 2 . . -3
+        //  2 . . . .
+        //  . . . . 2
+        // ]
+        SparseMatrix D(A.renumber(3, 5, {}, {1, 0, 4}));
+        D.dump(Log::info() << "D = [");
+        Log::info() << "]" << std::endl;
+
+        EXPECT(D.nonZeros() == A.nonZeros());
+
+        Index Douter[4] = {0, 2, 3, 4};
+        Index Dinner[4] = {1, 4, 0, 4};
+        Scalar Ddata[4] = {2., -3., 2., 2.};
+        EXPECT(equal_sparse_matrix(D, Douter, Dinner, Ddata));
     }
 }
 

@@ -159,31 +159,33 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     ASSERT(static_cast<Size>(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());  // last entry is always the nnz
 }
 
-SparseMatrix::SparseMatrix(Size rows, Size cols, const std::set<Triplet>& triplets, bool /*dummy*/) :
+SparseMatrix::SparseMatrix(Size rows, Size cols, const RenumberMap& map) :
     owner_(new detail::StandardAllocator()) {
 
+    auto nonZero = [](Scalar val) -> bool { return val != 0.; };
+
     // Allocate non-zeros
-    Size nnz = std::count_if(triplets.begin(), triplets.end(), [](const Triplet& t) { return t.nonZero(); });
+    Size nnz = std::count_if(map.begin(), map.end(), [&nonZero](const RenumberMap::value_type& t) { return nonZero(t.second); });
     reserve(rows, cols, nnz);
 
-    Size pos = 0;
-    Size row = 0;
+    Index pos = 0;
+    Size row  = 0;
 
     spm_.outer_[0] = 0;  // first entry is always zero
 
     // Build inner indices and values, update outer index per row
-    for (const auto& t : triplets) {
-        if (t.nonZero()) {
-            ASSERT(t.row() < shape_.rows_);
-            ASSERT(t.col() < shape_.cols_);
+    for (const auto& m : map) {
+        if (nonZero(m.second)) {
+            ASSERT(m.first.first < shape_.rows_);
+            ASSERT(m.first.second < shape_.cols_);
 
             // start a new row
-            while (t.row() > row) {
-                spm_.outer_[++row] = static_cast<Index>(pos);
+            while (m.first.first > row) {
+                spm_.outer_[++row] = pos;
             }
 
-            spm_.inner_[pos] = static_cast<Index>(t.col());
-            spm_.data_[pos]  = t.value();
+            spm_.inner_[pos] = m.first.second;
+            spm_.data_[pos]  = m.second;
             ++pos;
         }
     }
@@ -444,33 +446,14 @@ SparseMatrix& SparseMatrix::transpose() {
     return *this;
 }
 
-SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<Index>& renumberRows, const std::vector<Index>& renumberCols) const {
+SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<Index>& renumberRows, const std::vector<Index>& renumberCols, RenumberMode mode) const {
     ASSERT(rows() == (renumberRows.empty() ? _rows : renumberRows.size()));
     ASSERT(cols() == (renumberCols.empty() ? _cols : renumberCols.size()));
 
-    std::set<Triplet> triplets;
+    RenumberMap map;
 
-    if (renumberRows.empty()) {
-        if (!renumberCols.empty()) {
-            // fast(er) version
-
-            for (Size r = 0; r < shape_.rows_; ++r) {
-                for (Index j = spm_.outer_[r]; j < spm_.outer_[r + 1]; ++j) {
-                    auto c = spm_.inner_[j];
-                    ASSERT(c < shape_.cols_);
-
-                    c = renumberCols.empty() ? c : renumberCols[c];
-                    if (c == RenumberRemove) {
-                        continue;
-                    }
-                    ASSERT(c < _cols);
-
-                    triplets.emplace_hint(triplets.end(), r, c, spm_.data_[j]);
-                }
-            }
-
-            return {_rows, _cols, triplets, {}};
-        }
+    if (renumberRows.empty() && renumberCols.empty()) {
+        return *this;
     }
 
     for (Size i = 0; i < shape_.rows_; ++i) {
@@ -481,6 +464,7 @@ SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<In
         ASSERT(r < _rows);
 
         for (Index j = spm_.outer_[i]; j < spm_.outer_[i + 1]; ++j) {
+            auto v = spm_.data_[j];
             auto c = spm_.inner_[j];
             ASSERT(c < shape_.cols_);
 
@@ -490,11 +474,19 @@ SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<In
             }
             ASSERT(c < _cols);
 
-            triplets.emplace(r, c, spm_.data_[j]);
+            RenumberMap::key_type k{r, c};
+            auto it = map.find(k);
+            if (it != map.end()) {
+                ASSERT(mode == RenumberMode::RenumberAccumulateDuplicates);
+                it->second += v;
+            }
+            else {
+                map.emplace(k, v);
+            }
         }
     }
 
-    return {_rows, _cols, triplets, {}};
+    return {_rows, _cols, map};
 }
 
 SparseMatrix SparseMatrix::rowReduction(const std::vector<size_t>& p) const {

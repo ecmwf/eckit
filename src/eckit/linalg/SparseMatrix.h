@@ -18,6 +18,7 @@
 #include <cassert>
 #include <iosfwd>
 #include <limits>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -137,6 +138,15 @@ public:  // types
 
     static constexpr auto RenumberRemove = std::numeric_limits<Index>::max();
 
+    enum RenumberMode
+    {
+        RenumberNoDuplicates         = 0,
+        RenumberAccumulateDuplicates = 1
+    };
+
+    // Ensure unique (i, j) pair (map key)
+    using RenumberMap = std::map<std::pair<Size, Size>, Scalar>;
+
 public:
     // -- Constructors
 
@@ -168,7 +178,7 @@ public:
 
 private:
     /// Constructor from set<Triplet>
-    SparseMatrix(Size rows, Size cols, const std::set<Triplet>& triplets, bool);
+    SparseMatrix(Size rows, Size cols, const RenumberMap&);
 
 public:
     /// Prune entries with exactly the given value
@@ -181,7 +191,7 @@ public:
     SparseMatrix& transpose();
 
     /// Renumber matrix rows and/or columns
-    SparseMatrix renumber(Size rows, Size cols, const std::vector<Index>& renumberRows, const std::vector<Index>& renumberCols) const;
+    SparseMatrix renumber(Size rows, Size cols, const std::vector<Index>& renumberRows, const std::vector<Index>& renumberCols, RenumberMode mode = RenumberMode::RenumberNoDuplicates) const;
 
     /// @returns a sparse matrix that is a row reduction and reorder accoring to indexes passed in vector
     SparseMatrix rowReduction(const std::vector<size_t>& p) const;

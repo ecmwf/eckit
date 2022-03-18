@@ -444,7 +444,7 @@ SparseMatrix& SparseMatrix::transpose() {
     return *this;
 }
 
-SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<Size>& renumberRows, const std::vector<Size>& renumberCols) const {
+SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<Index>& renumberRows, const std::vector<Index>& renumberCols) const {
     ASSERT(rows() == (renumberRows.empty() ? _rows : renumberRows.size()));
     ASSERT(cols() == (renumberCols.empty() ? _cols : renumberCols.size()));
 
@@ -456,10 +456,13 @@ SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<Si
 
             for (Size r = 0; r < shape_.rows_; ++r) {
                 for (Index j = spm_.outer_[r]; j < spm_.outer_[r + 1]; ++j) {
-                    auto oldc = static_cast<Size>(spm_.inner_[j]);
-                    ASSERT(oldc < shape_.cols_);
+                    auto c = spm_.inner_[j];
+                    ASSERT(c < shape_.cols_);
 
-                    auto c = renumberCols.empty() ? oldc : renumberCols[oldc];
+                    c = renumberCols.empty() ? c : renumberCols[c];
+                    if (c == RenumberRemove) {
+                        continue;
+                    }
                     ASSERT(c < _cols);
 
                     triplets.emplace_hint(triplets.end(), r, c, spm_.data_[j]);
@@ -472,13 +475,19 @@ SparseMatrix SparseMatrix::renumber(Size _rows, Size _cols, const std::vector<Si
 
     for (Size i = 0; i < shape_.rows_; ++i) {
         auto r = renumberRows.empty() ? i : renumberRows[i];
+        if (r == RenumberRemove) {
+            continue;
+        }
         ASSERT(r < _rows);
 
         for (Index j = spm_.outer_[i]; j < spm_.outer_[i + 1]; ++j) {
-            auto c = static_cast<Size>(spm_.inner_[j]);
+            auto c = spm_.inner_[j];
             ASSERT(c < shape_.cols_);
 
             c = renumberCols.empty() ? c : renumberCols[c];
+            if (c == RenumberRemove) {
+                continue;
+            }
             ASSERT(c < _cols);
 
             triplets.emplace(r, c, spm_.data_[j]);

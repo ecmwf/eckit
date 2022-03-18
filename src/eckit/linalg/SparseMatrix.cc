@@ -104,13 +104,13 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SparseMatrix::SparseMatrix(Allocator* alloc) {
-    owner_.reset(alloc ? alloc : new detail::StandardAllocator());
+SparseMatrix::SparseMatrix(Allocator* alloc) :
+    owner_(alloc ? alloc : new detail::StandardAllocator()) {
     spm_ = owner_->allocate(shape_);
 }
 
-SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) {
-    owner_.reset(alloc ? alloc : new detail::StandardAllocator());
+SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) :
+    owner_(alloc ? alloc : new detail::StandardAllocator()) {
     reserve(rows, cols, 1);
 }
 
@@ -205,9 +205,8 @@ SparseMatrix::SparseMatrix(const MemoryBuffer& buffer) :
     spm_ = owner_->allocate(shape_);
 }
 
-SparseMatrix::SparseMatrix(const SparseMatrix& other) {
-
-    owner_.reset(new detail::StandardAllocator());
+SparseMatrix::SparseMatrix(const SparseMatrix& other) :
+    owner_(new detail::StandardAllocator()) {
 
     if (!other.empty()) {  // in case we copy an other that was constructed empty
 

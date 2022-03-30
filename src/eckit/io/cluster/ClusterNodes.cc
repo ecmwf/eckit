@@ -314,6 +314,11 @@ NodeInfo ClusterNodes::lookUp(const std::string& type, const std::string& node) 
         }
     }
 
+    if(offsite(type, node)) {
+        throw UnexpectedState(type + "@" + node + " is offsite.");
+    }
+
+
     throw SeriousBug(std::string("Cannot find info for ") + type + "@" + node);
 }
 

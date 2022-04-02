@@ -51,6 +51,7 @@
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/filesystem/FileSpace.h"
 
 namespace eckit {
 
@@ -245,6 +246,9 @@ bool LocalPathName::available() const {
 }
 
 bool LocalPathName::offsite() const {
+    if(FileSpace::exists("offsite")) {
+        return FileSpace::lookUp("offsite").owns(*this);
+    }
     return false;
 }
 

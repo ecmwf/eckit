@@ -9,6 +9,7 @@
  */
 
 #include "eckit/geometry/Point2.h"
+#include "eckit/geometry/polygon/LonLatPolygon.h"
 #include "eckit/geometry/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
 
@@ -84,11 +85,55 @@ CASE("Polygon") {
     }
 }
 
+CASE("LonLatPolygon") {
+    using PointLonLat = eckit::geometry::Point2;
+    using Polygon     = eckit::geometry::polygon::LonLatPolygon;
+
+    SECTION("removeAlignedPoints") {
+        const std::vector<PointLonLat> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
+        EXPECT_EQUAL(Polygon(points1, false).size(), 4);
+        EXPECT_EQUAL(Polygon(points1, true).size(), 2);
+
+        const std::vector<PointLonLat> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}};
+        EXPECT_EQUAL(Polygon(points2, false).size(), 9);
+        EXPECT_EQUAL(Polygon(points2, true).size(), 5);
+    }
+
+    SECTION("contains North pole") {
+        Polygon poly({{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}});
+        EXPECT(poly.contains({0, 90}));
+        EXPECT(poly.contains({10, 90}));
+        EXPECT_NOT(poly.contains({0, -90}));
+        EXPECT_NOT(poly.contains({10, -90}));
+    }
+
+    SECTION("contains South pole") {
+        Polygon poly({{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}});
+        EXPECT_NOT(poly.contains({0, 90}));
+        EXPECT_NOT(poly.contains({10, 90}));
+        EXPECT(poly.contains({0, -90}));
+        EXPECT(poly.contains({10, -90}));
+    }
+
+    SECTION("contains South and North poles") {
+        Polygon poly({{0, -90}, {0, 90}, {1, 90}, {1, -90}, {0, -90}});
+        EXPECT(poly.contains({0, 90}));
+        EXPECT(poly.contains({10, 90}));
+        EXPECT(poly.contains({0, 0}));
+        EXPECT_NOT(poly.contains({10, 0}));
+        EXPECT(poly.contains({0, -90}));
+        EXPECT(poly.contains({10, -90}));
+    }
+
+    SECTION("MIR-566: winding number strict check of edges") {
+        Polygon poly({{110, -34}, {90, -62}, {100, -59}, {110, -50}, {132, -40}, {110, -34}});
+        EXPECT_NOT(poly.contains({90, -40}));
+    }
+}
+
 }  // namespace test
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    using namespace eckit::testing;
-
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

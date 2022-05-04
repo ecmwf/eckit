@@ -13,6 +13,8 @@ Sphere.cc
 Sphere.h
 SphereT.h
 UnitSphere.h
+polygon/LonLatPolygon.cc
+polygon/LonLatPolygon.h
 polygon/Polygon.cc
 polygon/Polygon.h
 )

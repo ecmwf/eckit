@@ -125,6 +125,20 @@ CASE("LonLatPolygon") {
         EXPECT(poly.contains({10, -90}));
     }
 
+    SECTION("MIR-566: wide polygon") {
+        Polygon poly1({{0, 0}, {361, 0}, {361, 2}, {0, 2}, {0, 0}});
+        EXPECT(poly1.contains({0, 1}));
+        EXPECT(poly1.contains({2, 1}));
+        EXPECT_NOT(poly1.contains({362, 1}));
+        EXPECT_NOT(poly1.contains({722, 1}));
+
+        Polygon poly2({{0, 0}, {11, 0}, {11, 2}, {0, 2}, {0, 0}});
+        EXPECT(poly2.contains({0, 1}));
+        EXPECT(poly2.contains({2, 1}));
+        EXPECT(poly2.contains({362, 1}));
+        EXPECT(poly2.contains({722, 1}));
+    }
+
     SECTION("MIR-566: winding number strict check of edges") {
         Polygon poly({{110, -34}, {90, -62}, {100, -59}, {110, -50}, {132, -40}, {110, -34}});
         EXPECT_NOT(poly.contains({90, -40}));

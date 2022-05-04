@@ -81,6 +81,7 @@ public:
 private:
     const bool includeNorthPole_;
     const bool includeSouthPole_;
+    const bool normalise_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

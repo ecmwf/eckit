@@ -24,6 +24,9 @@ namespace polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+using eckit::types::is_approximately_equal;
+using eckit::types::is_approximately_greater_or_equal;
+
 namespace {
 
 constexpr double eps = 1.e-10;
@@ -33,7 +36,17 @@ double cross_product_analog(const Point2& A, const Point2& B, const Point2& C) {
 }
 
 bool point_equal(const Point2& p1, const Point2& p2) {
-    return eckit::types::is_approximately_equal(p1[XX], p2[XX]) && eckit::types::is_approximately_equal(p1[YY], p2[YY]);
+    return is_approximately_equal(p1[XX], p2[XX], eps) && is_approximately_equal(p1[YY], p2[YY], eps);
+}
+
+double normalise(double a, double minimum, double globe) {
+    while (a >= minimum + globe) {
+        a -= globe;
+    }
+    while (a < minimum) {
+        a += globe;
+    }
+    return a;
 }
 
 }  // namespace
@@ -56,7 +69,7 @@ PolygonCoordinates::PolygonCoordinates(const std::vector<Point2>& points, bool r
             // if new point is aligned with existing edge (cross product ~= 0) make the edge longer
             const auto& B = back();
             const auto& C = operator[](size() - 2);
-            if (eckit::types::is_approximately_equal(0., cross_product_analog(A, B, C), eps)) {
+            if (is_approximately_equal(0., cross_product_analog(A, B, C), eps)) {
                 back() = A;
                 ++nbRemovedPoints;
                 continue;
@@ -78,8 +91,8 @@ PolygonCoordinates::PolygonCoordinates(const std::vector<Point2>& points, bool r
 void PolygonCoordinates::print(std::ostream& out) const {
     out << "[";
     const auto* sep = "";
-    for (size_t i = 0; i < size(); ++i) {
-        out << sep << operator[](i);
+    for (const auto& p : *this) {
+        out << sep << p;
         sep = ", ";
     }
     out << "]";
@@ -94,33 +107,40 @@ std::ostream& operator<<(std::ostream& out, const PolygonCoordinates& pc) {
 
 LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool removeAlignedPoints) :
     PolygonCoordinates(points, removeAlignedPoints),
-    includeNorthPole_(max_.y() >= 90. - eps),
-    includeSouthPole_(min_.y() <= -90. + eps) {
-    ASSERT(-90. <= min_.y() && max_.y() <= 90.);
+    includeNorthPole_(is_approximately_equal(max_[LAT], 90., eps)),
+    includeSouthPole_(is_approximately_equal(min_[LAT], -90., eps)),
+    normalise_(is_approximately_greater_or_equal(360., max_[LON] - min_[LON], eps)) {
+    ASSERT(is_approximately_greater_or_equal(min_[LAT], -90., eps));
+    ASSERT(is_approximately_greater_or_equal(90., max_[LAT], eps));
+
+    if (normalise_) {
+        for (auto& p : *this) {
+            p[LON] = normalise(p[LON], min_[LON], 360.);
+        }
+    }
 }
 
 LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points) :
     LonLatPolygon(points, true) {}
 
 bool LonLatPolygon::contains(const Point2& P) const {
-    auto lon = P.x();
-    auto lat = P.y();
+    auto lon = normalise_ ? normalise(P[LON], min_[LON], 360.) : P[LON];
+    auto lat = P[LAT];
     ASSERT(-90. <= lat && lat <= 90.);
 
     // check poles
-    if (includeNorthPole_ && (lat >= 90. - eps)) {
+    if (includeNorthPole_ && is_approximately_equal(lat, 90., eps)) {
         return true;
     }
-    if (includeSouthPole_ && (lat <= -90. + eps)) {
+    if (includeSouthPole_ && is_approximately_equal(lat, -90., eps)) {
         return true;
     }
 
     // check bounding box
-    // FIXME: needs to account for periodicity
-    if (max_.y() + eps < lat || lat < min_.y() - eps) {
+    if (!is_approximately_greater_or_equal(lat, min_[LAT], eps) || !is_approximately_greater_or_equal(max_[LAT], lat, eps)) {
         return false;
     }
-    if (max_.x() + eps < lon || lon < min_.x() - eps) {
+    if (!is_approximately_greater_or_equal(lon, min_[LON], eps) || !is_approximately_greater_or_equal(max_[LON], lon, eps)) {
         return false;
     }
 
@@ -137,13 +157,12 @@ bool LonLatPolygon::contains(const Point2& P) const {
         // intersecting either:
         // - "up" on upward crossing & P left of edge, or
         // - "down" on downward crossing & P right of edge
-        const bool APB = (A.y() <= lat && lat < B.y());
-        const bool BPA = (B.y() <= lat && lat < A.y());
+        const auto APB = A[LAT] <= lat && lat < B[LAT];
+        const auto BPA = B[LAT] <= lat && lat < A[LAT];
 
         if (APB != BPA) {
-            const double side = cross_product_analog(P, A, B);
-            bool on_edge      = std::abs(side) < eps;
-            if (on_edge) {
+            const auto side = cross_product_analog({lon, lat}, A, B);
+            if (is_approximately_equal(side, 0., eps)) {  // on edge
                 return true;
             }
             if (APB && side > 0) {

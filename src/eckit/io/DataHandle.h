@@ -102,6 +102,9 @@ public:
     /// Does not support progess, restart and double buffering
     virtual Length copyTo(DataHandle&, long bufsize);
 
+    virtual Length copyTo(DataHandle&, Length maxsize, TransferWatcher&);
+
+
     // /// Append to an other datahandle
     // virtual Length appendTo(DataHandle&, const std::string& metricsPrefix="");
 

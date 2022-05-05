@@ -229,6 +229,43 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize) {
     return total;
 }
 
+Length DataHandle::copyTo(DataHandle& other, Length maxsize, TransferWatcher& watcher) {
+
+    Buffer buffer(maxsize);
+
+    Length estimate = openForRead();
+    Length toRead = std::min(estimate,maxsize);
+    watcher.fromHandleOpened();
+    AutoClose closer1(*this);
+    other.openForWrite(toRead);
+    watcher.toHandleOpened();
+    AutoClose closer2(other);
+
+    Length total = 0;
+    long length  = -1;
+
+
+    while (total < maxsize && (length = read(buffer, maxsize-total)) > 0) {
+
+        if (other.write((const char*)buffer, length) != length)
+            throw WriteError(name() + " into " + other.name());
+
+        watcher.watch(buffer, length);
+        total += length;
+    }
+
+    if (length < 0)
+        throw ReadError(name() + " into " + other.name());
+
+    if (toRead != 0 && toRead != total) {
+        std::ostringstream os;
+        os << "DataHandle::copyTo got " << total << " bytes out of " << toRead;
+        throw ReadError(name() + " into " + other.name() + " " + os.str());
+    }
+
+    return total;
+}
+
 Length DataHandle::copyTo(DataHandle& other) {
 
     static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);

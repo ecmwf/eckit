@@ -197,46 +197,23 @@ Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
     return saveInto(*file, w);
 }
 
-Length DataHandle::copyTo(DataHandle& other, long bufsize) {
+Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, TransferWatcher& watcher) {
 
+    if (bufsize == -1) {
+        bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
+    }
+
+    if (maxsize != -1) {
+        bufsize = std::min(bufsize, (long) maxsize);
+    }
     Buffer buffer(bufsize);
 
     Length estimate = openForRead();
-    AutoClose closer1(*this);
-    other.openForWrite(estimate);
-    AutoClose closer2(other);
-
-    Length total = 0;
-    long length  = -1;
-
-    while ((length = read(buffer, buffer.size())) > 0) {
-
-        if (other.write((const char*)buffer, length) != length)
-            throw WriteError(name() + " into " + other.name());
-
-        total += length;
-    }
-
-    if (length < 0)
-        throw ReadError(name() + " into " + other.name());
-
-    if (estimate != 0 && estimate != total) {
-        std::ostringstream os;
-        os << "DataHandle::copyTo got " << total << " bytes out of " << estimate;
-        throw ReadError(name() + " into " + other.name() + " " + os.str());
-    }
-
-    return total;
-}
-
-Length DataHandle::copyTo(DataHandle& other, Length maxsize, TransferWatcher& watcher) {
-
-    Buffer buffer(maxsize);
-
-    Length estimate = openForRead();
-    Length toRead = std::min(estimate,maxsize);
     watcher.fromHandleOpened();
     AutoClose closer1(*this);
+
+    Length toRead = maxsize != -1 ? std::min(estimate, maxsize) : estimate;
+    
     other.openForWrite(toRead);
     watcher.toHandleOpened();
     AutoClose closer2(other);
@@ -244,18 +221,19 @@ Length DataHandle::copyTo(DataHandle& other, Length maxsize, TransferWatcher& wa
     Length total = 0;
     long length  = -1;
 
+    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long) (toRead-total)))) > 0) {
 
-    while (total < maxsize && (length = read(buffer, maxsize-total)) > 0) {
-
-        if (other.write((const char*)buffer, length) != length)
+        if (other.write((const char*)buffer, length) != length) {
             throw WriteError(name() + " into " + other.name());
+        }
 
         watcher.watch(buffer, length);
         total += length;
     }
 
-    if (length < 0)
+    if (length < 0) {
         throw ReadError(name() + " into " + other.name());
+    }
 
     if (toRead != 0 && toRead != total) {
         std::ostringstream os;
@@ -265,13 +243,6 @@ Length DataHandle::copyTo(DataHandle& other, Length maxsize, TransferWatcher& wa
 
     return total;
 }
-
-Length DataHandle::copyTo(DataHandle& other) {
-
-    static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
-    return copyTo(other, bufsize);
-}
-
 
 std::string DataHandle::name() const {
     std::ostringstream s;

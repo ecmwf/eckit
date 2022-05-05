@@ -96,13 +96,7 @@ public:
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&);
-
-    /// Quiet version of saveInto
-    /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&, long bufsize);
-
-    virtual Length copyTo(DataHandle&, Length maxsize, TransferWatcher&);
+    virtual Length copyTo(DataHandle&, long bufsize = -1, Length maxsize = -1, TransferWatcher& = TransferWatcher::dummy());
 
 
     // /// Append to an other datahandle

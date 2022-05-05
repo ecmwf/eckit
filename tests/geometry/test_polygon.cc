@@ -170,6 +170,23 @@ CASE("LonLatPolygon") {
         EXPECT(poly.contains({lonmin, latmin}));
         EXPECT(poly.contains({lonmin, latmid}));
     }
+
+    SECTION("Degenerate polygon") {
+        const std::vector<PointLonLat> points{{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}};
+
+        Polygon poly1(points, true);
+        Polygon poly2(points, false);
+
+        for (const auto& p : points) {
+            EXPECT(poly1.contains(p));
+            EXPECT(poly2.contains(p));
+        }
+
+        for (const auto& p : std::vector<PointLonLat>{{2, 2}}) {
+            EXPECT_NOT(poly1.contains(p));
+            EXPECT_NOT(poly2.contains(p));
+        }
+    }
 }
 
 }  // namespace test

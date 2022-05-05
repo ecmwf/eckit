@@ -143,6 +143,27 @@ CASE("LonLatPolygon") {
         Polygon poly({{110, -34}, {90, -62}, {100, -59}, {110, -50}, {132, -40}, {110, -34}});
         EXPECT_NOT(poly.contains({90, -40}));
     }
+
+    SECTION("Edges of simple rectangular polygon") {
+        double lonmin = 0;
+        double lonmax = 360;
+        double latmax = 80;
+        double latmin = 0;
+
+        Polygon poly({{lonmin, latmax}, {lonmax, latmin}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
+
+        double lonmid = 0.5 * (lonmin + lonmax);
+        double latmid = 0.5 * (latmin + latmax);
+
+        EXPECT(poly.contains({lonmin, latmax}));  // FAILS!
+        EXPECT(poly.contains({lonmid, latmax}));  // FAILS!
+        EXPECT(poly.contains({lonmax, latmax}));  // FAILS!
+        EXPECT(poly.contains({lonmax, latmid}));
+        EXPECT(poly.contains({lonmax, latmin}));
+        EXPECT(poly.contains({lonmid, latmin}));  // FAILS!
+        EXPECT(poly.contains({lonmin, latmin}));
+        EXPECT(poly.contains({lonmin, latmid}));
+    }
 }
 
 }  // namespace test

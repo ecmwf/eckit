@@ -17,8 +17,8 @@ namespace eckit {
 namespace test {
 
 CASE("Polygon") {
-    using eckit::geometry::Point2;
-    using eckit::geometry::polygon::Polygon;
+    using geometry::Point2;
+    using geometry::polygon::Polygon;
 
     SECTION("empty polygon") {
         Polygon poly1;
@@ -86,8 +86,8 @@ CASE("Polygon") {
 }
 
 CASE("LonLatPolygon") {
-    using PointLonLat = eckit::geometry::Point2;
-    using Polygon     = eckit::geometry::polygon::LonLatPolygon;
+    using PointLonLat = geometry::Point2;
+    using Polygon     = geometry::polygon::LonLatPolygon;
 
     SECTION("removeAlignedPoints") {
         const std::vector<PointLonLat> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
@@ -137,6 +137,12 @@ CASE("LonLatPolygon") {
         EXPECT(poly2.contains({2, 1}));
         EXPECT(poly2.contains({362, 1}));
         EXPECT(poly2.contains({722, 1}));
+
+        Polygon poly3({{0, 0}, {360, 0}, {360, 2}, {0, 2}, {0, 0}});
+        EXPECT(poly3.contains({0, 1}));
+        EXPECT(poly3.contains({2, 1}));
+        EXPECT_NOT(poly3.contains({362, 1}));
+        EXPECT_NOT(poly3.contains({722, 1}));
     }
 
     SECTION("MIR-566: winding number strict check of edges") {

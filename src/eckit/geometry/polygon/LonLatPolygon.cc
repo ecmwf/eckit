@@ -152,13 +152,20 @@ bool LonLatPolygon::contains(const Point2& P) const {
         const auto& A = operator[](i - 1);
         const auto& B = operator[](i);
 
-        // check point-edge side and direction, using 2D-analog cross-product;
-        // tests if P is left|on|right of a directed A-B infinite line, by
-        // intersecting either:
-        // - "up" on upward crossing & P left of edge, or
-        // - "down" on downward crossing & P right of edge
+        // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge, by:
+        // - testing axis colinearity within left/right of edge
+        // - intersecting "up" on forward crossing & P above edge, or
+        // - intersecting "down" on backward crossing & P below edge
+        if (is_approximately_equal(A[LAT], lat, eps) && is_approximately_equal(lat, B[LAT], eps)) {
+            const auto APB = A[LON] <= lon && lon <= B[LON];
+            const auto BPA = B[LON] <= lon && lon <= A[LON];
+            if (APB || BPA) {
+                return true;
+            }
+        }
+
         const auto APB = A[LAT] <= lat && lat < B[LAT];
-        const auto BPA = B[LAT] <= lat && lat < A[LAT];
+        const auto BPA = B[LAT] < lat && lat <= A[LAT];
 
         if (APB != BPA) {
             const auto side = cross_product_analog({lon, lat}, A, B);

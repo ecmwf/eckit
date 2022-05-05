@@ -161,9 +161,9 @@ CASE("LonLatPolygon") {
         double lonmid = 0.5 * (lonmin + lonmax);
         double latmid = 0.5 * (latmin + latmax);
 
-        EXPECT(poly.contains({lonmin, latmax}));  // FAILS!
-        EXPECT(poly.contains({lonmid, latmax}));  // FAILS!
-        EXPECT(poly.contains({lonmax, latmax}));  // FAILS!
+        EXPECT(poly.contains({lonmin, latmax}));
+        EXPECT(poly.contains({lonmid, latmax}));
+        EXPECT(poly.contains({lonmax, latmax}));
         EXPECT(poly.contains({lonmax, latmid}));
         EXPECT(poly.contains({lonmax, latmin}));
         EXPECT(poly.contains({lonmid, latmin}));

@@ -150,7 +150,7 @@ CASE("LonLatPolygon") {
         double latmax = 80;
         double latmin = 0;
 
-        Polygon poly({{lonmin, latmax}, {lonmax, latmin}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
+        Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
 
         double lonmid = 0.5 * (lonmin + lonmax);
         double latmid = 0.5 * (latmin + latmax);

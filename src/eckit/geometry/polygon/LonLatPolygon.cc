@@ -24,8 +24,8 @@ namespace polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using eckit::types::is_approximately_equal;
-using eckit::types::is_approximately_greater_or_equal;
+using types::is_approximately_equal;
+using types::is_approximately_greater_or_equal;
 
 namespace {
 
@@ -109,7 +109,7 @@ LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool removeAlign
     PolygonCoordinates(points, removeAlignedPoints),
     includeNorthPole_(is_approximately_equal(max_[LAT], 90., eps)),
     includeSouthPole_(is_approximately_equal(min_[LAT], -90., eps)),
-    normalise_(is_approximately_greater_or_equal(360., max_[LON] - min_[LON], eps)) {
+    normalise_(!is_approximately_greater_or_equal(max_[LON] - min_[LON], 360., eps)) {
     ASSERT(is_approximately_greater_or_equal(min_[LAT], -90., eps));
     ASSERT(is_approximately_greater_or_equal(90., max_[LAT], eps));
 

@@ -197,44 +197,48 @@ Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
     return saveInto(*file, w);
 }
 
-Length DataHandle::copyTo(DataHandle& other, long bufsize) {
+Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, TransferWatcher& watcher) {
 
+    if (bufsize == -1) {
+        bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_COPYTO_BUFFER_SIZE", 64 * 1024 * 1024);
+    }
     Buffer buffer(bufsize);
 
     Length estimate = openForRead();
+    watcher.fromHandleOpened();
     AutoClose closer1(*this);
-    other.openForWrite(estimate);
+
+    Length toRead = ((maxsize != -1) ? std::min(estimate, maxsize) : estimate);
+    
+    other.openForWrite(toRead);
+    watcher.toHandleOpened();
     AutoClose closer2(other);
 
     Length total = 0;
     long length  = -1;
 
-    while ((length = read(buffer, buffer.size())) > 0) {
+    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long) (toRead-total)))) > 0) {
 
-        if (other.write((const char*)buffer, length) != length)
+        if (other.write((const char*)buffer, length) != length) {
             throw WriteError(name() + " into " + other.name());
+        }
 
+        watcher.watch(buffer, length);
         total += length;
     }
 
-    if (length < 0)
+    if (length < 0) {
         throw ReadError(name() + " into " + other.name());
+    }
 
-    if (estimate != 0 && estimate != total) {
+    if (toRead != 0 && toRead != total) {
         std::ostringstream os;
-        os << "DataHandle::copyTo got " << total << " bytes out of " << estimate;
+        os << "DataHandle::copyTo got " << total << " bytes out of " << toRead;
         throw ReadError(name() + " into " + other.name() + " " + os.str());
     }
 
     return total;
 }
-
-Length DataHandle::copyTo(DataHandle& other) {
-
-    static const long bufsize = Resource<long>("bufferSize", 64 * 1024 * 1024);
-    return copyTo(other, bufsize);
-}
-
 
 std::string DataHandle::name() const {
     std::ostringstream s;

@@ -96,11 +96,8 @@ public:
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&);
+    virtual Length copyTo(DataHandle&, long bufsize = -1, Length maxsize = -1, TransferWatcher& = TransferWatcher::dummy());
 
-    /// Quiet version of saveInto
-    /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&, long bufsize);
 
     // /// Append to an other datahandle
     // virtual Length appendTo(DataHandle&, const std::string& metricsPrefix="");

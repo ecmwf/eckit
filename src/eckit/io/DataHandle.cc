@@ -200,11 +200,7 @@ Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
 Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, TransferWatcher& watcher) {
 
     if (bufsize == -1) {
-        bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
-    }
-
-    if (maxsize != -1) {
-        bufsize = std::min(bufsize, (long) maxsize);
+        bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_COPYTO_BUFFER_SIZE", 64 * 1024 * 1024);
     }
     Buffer buffer(bufsize);
 
@@ -212,7 +208,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     watcher.fromHandleOpened();
     AutoClose closer1(*this);
 
-    Length toRead = maxsize != -1 ? std::min(estimate, maxsize) : estimate;
+    Length toRead = ((maxsize != -1) ? std::min(estimate, maxsize) : estimate);
     
     other.openForWrite(toRead);
     watcher.toHandleOpened();

@@ -148,6 +148,7 @@ CASE("LonLatPolygon") {
     SECTION("MIR-566: winding number strict check of edges") {
         Polygon poly({{110, -34}, {90, -62}, {100, -59}, {110, -50}, {132, -40}, {110, -34}});
         EXPECT_NOT(poly.contains({90, -40}));
+        EXPECT_NOT(poly.contains({90, -34}));
     }
 
     SECTION("Edges of simple rectangular polygon") {

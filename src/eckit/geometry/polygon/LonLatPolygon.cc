@@ -49,6 +49,50 @@ double normalise(double a, double minimum, double globe) {
     return a;
 }
 
+class Edge {
+    enum Sign
+    {
+        Negative = -1,
+        Zero     = 0,
+        Positive = 1,
+        Invalid
+    };
+    Sign side_;
+    Sign direction_;
+
+public:
+    Edge(const Point2& P, const Point2& A, const Point2& B) :
+        side_([&]() {
+            const auto p = cross_product_analog(P, A, B);
+            return is_approximately_equal(p, 0., eps) ? Zero : p > 0 ? Positive
+                                                                     : Negative;
+        }()),
+        direction_([&]() {
+            const auto APB = A[LAT] <= P[LAT] && P[LAT] <= B[LAT];
+            const auto BPA = B[LAT] <= P[LAT] && P[LAT] <= A[LAT];
+            return APB != BPA && APB ? Positive : APB != BPA && BPA ? Negative
+                                                                    : Zero;
+        }()) {}
+
+    Edge() :
+        side_(Invalid), direction_(Invalid) {}
+
+    void wind(int& w) const {
+        if (side_ == Positive && direction_ == Positive) {
+            ++w;
+        }
+        else if (side_ == Negative && direction_ == Negative) {
+            --w;
+        }
+    }
+
+    bool intersects() const { return direction_ == Positive || direction_ == Negative; }
+    bool colinear() const { return side_ == Zero; }
+
+    operator bool() const { return side_ != Invalid; }
+    bool operator!=(const Edge& other) const { return !operator bool() || side_ != other.side_ || direction_ != other.direction_; }
+};
+
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -148,36 +192,21 @@ bool LonLatPolygon::contains(const Point2& P) const {
     int wn = 0;
 
     // loop on polygon edges
+    Edge prev;
     for (size_t i = 1; i < size(); ++i) {
         const auto& A = operator[](i - 1);
         const auto& B = operator[](i);
+        const Edge edge({lon, lat}, A, B);
 
         // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge, by:
-        // - testing axis colinearity within left/right of edge
         // - intersecting "up" on forward crossing & P above edge, or
         // - intersecting "down" on backward crossing & P below edge
-        if (is_approximately_equal(A[LAT], lat, eps) && is_approximately_equal(lat, B[LAT], eps)) {
-            const auto APB = A[LON] <= lon && lon <= B[LON];
-            const auto BPA = B[LON] <= lon && lon <= A[LON];
-            if (APB || BPA) {
+        if (edge.intersects() && edge != prev) {
+            if (edge.colinear()) {
                 return true;
             }
-        }
-
-        const auto APB = A[LAT] <= lat && lat < B[LAT];
-        const auto BPA = B[LAT] < lat && lat <= A[LAT];
-
-        if (APB != BPA) {
-            const auto side = cross_product_analog({lon, lat}, A, B);
-            if (is_approximately_equal(side, 0., eps)) {  // on edge
-                return true;
-            }
-            if (APB && side > 0) {
-                ++wn;
-            }
-            else if (BPA && side < 0) {
-                --wn;
-            }
+            edge.wind(wn);
+            prev = edge;
         }
     }
 

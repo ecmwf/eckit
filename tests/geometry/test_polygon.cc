@@ -188,6 +188,24 @@ CASE("LonLatPolygon") {
             EXPECT_NOT(poly2.contains(p));
         }
     }
+
+    SECTION("Self-intersecting polygon") {
+        Polygon poly1({{-1, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}});
+
+        EXPECT(poly1.contains({0, 0}));
+        EXPECT(poly1.contains({-1, 0}));
+        EXPECT(poly1.contains({1, 0}));
+        EXPECT_NOT(poly1.contains({0, 1}));
+        EXPECT_NOT(poly1.contains({0, -1}));
+
+        Polygon poly2({{-1, -1}, {1, -1}, {-1, 1}, {1, 1}, {-1, -1}});
+
+        EXPECT(poly2.contains({0, 0}));
+        EXPECT_NOT(poly2.contains({-1, 0}));
+        EXPECT_NOT(poly2.contains({1, 0}));
+        EXPECT(poly2.contains({0, 1}));
+        EXPECT(poly2.contains({0, -1}));
+    }
 }
 
 }  // namespace test

@@ -151,25 +151,45 @@ CASE("LonLatPolygon") {
         EXPECT_NOT(poly.contains({90, -34}));
     }
 
-    SECTION("Edges of simple rectangular polygon") {
+    SECTION("Simple rectangular polygon") {
         double lonmin = 0;
         double lonmax = 360;
+        double lonmid = 0.5 * (lonmin + lonmax);
+
         double latmax = 80;
         double latmin = 0;
+        double latmid = 0.5 * (latmin + latmax);
 
         Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
 
-        double lonmid = 0.5 * (lonmin + lonmax);
-        double latmid = 0.5 * (latmin + latmax);
+        SECTION("Contains edges"){
+            EXPECT(poly.contains({lonmin, latmax}));
+            EXPECT(poly.contains({lonmid, latmax}));
+            EXPECT(poly.contains({lonmax, latmax}));
+            EXPECT(poly.contains({lonmax, latmid}));
+            EXPECT(poly.contains({lonmax, latmin}));
+            EXPECT(poly.contains({lonmid, latmin}));
+            EXPECT(poly.contains({lonmin, latmin}));
+            EXPECT(poly.contains({lonmin, latmid}));
+        }
 
-        EXPECT(poly.contains({lonmin, latmax}));
-        EXPECT(poly.contains({lonmid, latmax}));
-        EXPECT(poly.contains({lonmax, latmax}));
-        EXPECT(poly.contains({lonmax, latmid}));
-        EXPECT(poly.contains({lonmax, latmin}));
-        EXPECT(poly.contains({lonmid, latmin}));
-        EXPECT(poly.contains({lonmin, latmin}));
-        EXPECT(poly.contains({lonmin, latmid}));
+        SECTION("Contains in/outward of edges"){
+            auto eps = 0.001;
+
+            for (size_t i = 0; i <= 100; ++i) {
+                auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 99.;
+                EXPECT(poly.contains({lon, latmin + eps}));
+                EXPECT(poly.contains({lon, latmax - eps}));
+                EXPECT_NOT(poly.contains({lon, latmin - eps}));
+                EXPECT_NOT(poly.contains({lon, latmax + eps}));
+
+                auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 99.;
+                EXPECT(poly.contains({lonmin + eps, lat}));
+                EXPECT(poly.contains({lonmax - eps, lat}));
+                EXPECT_NOT(poly.contains({lonmin - eps, lat}));
+                EXPECT_NOT(poly.contains({lonmax + eps, lat}));
+            }
+        }
     }
 
     SECTION("Degenerate polygon") {

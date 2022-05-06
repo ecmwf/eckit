@@ -24,19 +24,22 @@ namespace polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using types::is_approximately_equal;
-using types::is_approximately_greater_or_equal;
-
 namespace {
 
-constexpr double eps = 1.e-10;
+inline bool is_approximately_equal(double a, double b) {
+    return types::is_approximately_equal(a, b, 1e-10);
+}
+
+inline bool is_approximately_equal(const Point2& p1, const Point2& p2) {
+    return is_approximately_equal(p1[XX], p2[XX]) && is_approximately_equal(p1[YY], p2[YY]);
+}
+
+inline bool is_approximately_greater_or_equal(double a, double b) {
+    return a >= b || is_approximately_equal(a, b);
+}
 
 double cross_product_analog(const Point2& A, const Point2& B, const Point2& C) {
     return (A.x() - C.x()) * (B.y() - C.y()) - (A.y() - C.y()) * (B.x() - C.x());
-}
-
-bool point_equal(const Point2& p1, const Point2& p2) {
-    return is_approximately_equal(p1[XX], p2[XX], eps) && is_approximately_equal(p1[YY], p2[YY], eps);
 }
 
 double normalise(double a, double minimum, double globe) {
@@ -64,8 +67,8 @@ public:
     Edge(const Point2& P, const Point2& A, const Point2& B) :
         side_([&]() {
             const auto p = cross_product_analog(P, A, B);
-            return is_approximately_equal(p, 0., eps) ? Zero : p > 0 ? Positive
-                                                                     : Negative;
+            return is_approximately_equal(p, 0.) ? Zero : p > 0 ? Positive
+                                                                : Negative;
         }()),
         direction_([&]() {
             const auto APB = A[LAT] <= P[LAT] && P[LAT] <= B[LAT];
@@ -99,7 +102,7 @@ public:
 
 PolygonCoordinates::PolygonCoordinates(const std::vector<Point2>& points, bool removeAlignedPoints) :
     PolygonCoordinates::container_type(points) {
-    ASSERT(points.size() > 1 && point_equal(points.front(), points.back()));
+    ASSERT(points.size() > 1 && is_approximately_equal(points.front(), points.back()));
 
     size_t nbRemovedPoints = 0;
     if (removeAlignedPoints && points.size() > 2) {
@@ -113,7 +116,7 @@ PolygonCoordinates::PolygonCoordinates(const std::vector<Point2>& points, bool r
             // if new point is aligned with existing edge (cross product ~= 0) make the edge longer
             const auto& B = back();
             const auto& C = operator[](size() - 2);
-            if (is_approximately_equal(0., cross_product_analog(A, B, C), eps)) {
+            if (is_approximately_equal(0., cross_product_analog(A, B, C))) {
                 back() = A;
                 ++nbRemovedPoints;
                 continue;
@@ -151,15 +154,15 @@ std::ostream& operator<<(std::ostream& out, const PolygonCoordinates& pc) {
 
 LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool removeAlignedPoints) :
     PolygonCoordinates(points, removeAlignedPoints),
-    includeNorthPole_(is_approximately_equal(max_[LAT], 90., eps)),
-    includeSouthPole_(is_approximately_equal(min_[LAT], -90., eps)),
-    normalise_(!is_approximately_greater_or_equal(max_[LON] - min_[LON], 360., eps)) {
-    ASSERT(is_approximately_greater_or_equal(min_[LAT], -90., eps));
-    ASSERT(is_approximately_greater_or_equal(90., max_[LAT], eps));
+    includeNorthPole_(is_approximately_equal(max_[LAT], 90)),
+    includeSouthPole_(is_approximately_equal(min_[LAT], -90)),
+    normalise_(!is_approximately_greater_or_equal(max_[LON] - min_[LON], 360)) {
+    ASSERT(is_approximately_greater_or_equal(min_[LAT], -90));
+    ASSERT(is_approximately_greater_or_equal(90, max_[LAT]));
 
     if (normalise_) {
         for (auto& p : *this) {
-            p[LON] = normalise(p[LON], min_[LON], 360.);
+            p[LON] = normalise(p[LON], min_[LON], 360);
         }
     }
 }
@@ -168,23 +171,23 @@ LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points) :
     LonLatPolygon(points, true) {}
 
 bool LonLatPolygon::contains(const Point2& P) const {
-    auto lon = normalise_ ? normalise(P[LON], min_[LON], 360.) : P[LON];
+    auto lon = normalise_ ? normalise(P[LON], min_[LON], 360) : P[LON];
     auto lat = P[LAT];
-    ASSERT(-90. <= lat && lat <= 90.);
+    ASSERT(-90 <= lat && lat <= 90);
 
     // check poles
-    if (includeNorthPole_ && is_approximately_equal(lat, 90., eps)) {
+    if (includeNorthPole_ && is_approximately_equal(lat, 90)) {
         return true;
     }
-    if (includeSouthPole_ && is_approximately_equal(lat, -90., eps)) {
+    if (includeSouthPole_ && is_approximately_equal(lat, -90)) {
         return true;
     }
 
     // check bounding box
-    if (!is_approximately_greater_or_equal(lat, min_[LAT], eps) || !is_approximately_greater_or_equal(max_[LAT], lat, eps)) {
+    if (!is_approximately_greater_or_equal(lat, min_[LAT]) || !is_approximately_greater_or_equal(max_[LAT], lat)) {
         return false;
     }
-    if (!is_approximately_greater_or_equal(lon, min_[LON], eps) || !is_approximately_greater_or_equal(max_[LON], lon, eps)) {
+    if (!is_approximately_greater_or_equal(lon, min_[LON]) || !is_approximately_greater_or_equal(max_[LON], lon)) {
         return false;
     }
 

@@ -34,13 +34,13 @@ public:  // class methods
     /// @brief Register a library
     static void enregister(const std::string& name, Library* obj);
 
-    /// @brief List currently loaded libaries
+    /// @brief List currently loaded libraries
     static std::vector<std::string> list();
 
     /// @brief List currently loaded plugin libraries
     static std::vector<std::string> loadedPlugins();
 
-    /// @brief Print the list of currently loaded libaries to a std::ostream
+    /// @brief Print the list of currently loaded libraries to a std::ostream
     /// @param [in] s Write list to this stream
     static void list(std::ostream& s);
 
@@ -48,7 +48,7 @@ public:  // class methods
     /// @param [in] name Library name
     /// @returns true if library is registered as linked
     static bool exists(const std::string& name);
-    
+
     /// @brief Lookup a library reference in the manager
     /// @param [in] name Library name
     static const Library& lookup(const std::string& name);

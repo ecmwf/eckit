@@ -155,9 +155,14 @@ CASE("LonLatPolygon") {
 
         Polygon poly3({{0, 0}, {360, 0}, {360, 2}, {0, 2}, {0, 0}});
         EXPECT(poly3.contains({0, 1}));
+        EXPECT(poly3.contains({2 - 360, 1}));
         EXPECT(poly3.contains({2, 1}));
-        EXPECT_NOT(poly3.contains({362, 1}));
-        EXPECT_NOT(poly3.contains({722, 1}));
+        EXPECT(poly3.contains({2 + 360, 1}));
+
+        Polygon poly4({{-100, 18}, {21, 30}, {150, 50}, {260, 18}, {-100, 18}});
+        EXPECT(poly4.contains({-10 - 360, 18}));
+        EXPECT(poly4.contains({-10, 18}));
+        EXPECT(poly4.contains({-10 + 360, 18}));
     }
 
     SECTION("MIR-566: winding number strict check of edges") {

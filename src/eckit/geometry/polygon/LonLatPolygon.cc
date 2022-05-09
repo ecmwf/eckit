@@ -85,7 +85,6 @@ LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePole
 
     includeNorthPole_ = includePoles && is_approximately_equal(max_[LAT], 90);
     includeSouthPole_ = includePoles && is_approximately_equal(min_[LAT], -90);
-    normalise_        = !is_approximately_greater_or_equal(max_[LON] - min_[LON], 360);
     ASSERT(is_approximately_greater_or_equal(min_[LAT], -90));
     ASSERT(is_approximately_greater_or_equal(90, max_[LAT]));
 }
@@ -106,7 +105,7 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
 }
 
 bool LonLatPolygon::contains(const Point2& P) const {
-    auto lon = normalise_ ? normalise(P[LON], min_[LON], 360) : P[LON];
+    auto lon = is_approximately_greater_or_equal(360, max_[LON] - min_[LON]) ? normalise(P[LON], min_[LON], 360) : P[LON];
     auto lat = P[LAT];
     ASSERT(-90 <= lat && lat <= 90);
 

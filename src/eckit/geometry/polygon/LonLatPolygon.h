@@ -74,7 +74,6 @@ private:
     Point2 min_;
     bool includeNorthPole_;
     bool includeSouthPole_;
-    bool normalise_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

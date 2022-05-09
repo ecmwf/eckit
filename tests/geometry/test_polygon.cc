@@ -17,7 +17,6 @@ namespace eckit {
 namespace test {
 
 CASE("Polygon") {
-    using geometry::Point2;
     using geometry::polygon::Polygon;
 
     SECTION("empty polygon") {
@@ -33,7 +32,7 @@ CASE("Polygon") {
 
         EXPECT(poly1.num_vertices() == 0);
 
-        Point2 p1 = {1.0, 2.0};
+        Polygon::value_type p1 = {1.0, 2.0};
         poly1.push_front(p1);
         EXPECT(poly1.num_vertices() == 1);
         EXPECT(poly1.vertex(0) == p1);
@@ -43,7 +42,7 @@ CASE("Polygon") {
         poly2.push_back(p1);
         EXPECT(poly1.sameAs(poly2));
 
-        Point2 p2 = {2.0, 1.0};
+        Polygon::value_type p2 = {2.0, 1.0};
         poly1.push_front(p2);
         EXPECT(!poly1.sameAs(poly2));
 
@@ -56,21 +55,21 @@ CASE("Polygon") {
         Polygon poly2;
         EXPECT(poly1.congruent(poly2));
 
-        Point2 p1 = {1.0, 2.0};
+        Polygon::value_type p1 = {1.0, 2.0};
         poly1.push_front(p1);
         EXPECT(!poly1.congruent(poly2));
 
         poly2.push_back(p1);
         EXPECT(poly1.congruent(poly2));
 
-        Point2 p2 = {2.0, 1.0};
+        Polygon::value_type p2 = {2.0, 1.0};
         poly1.push_front(p2);
         EXPECT(!poly1.congruent(poly2));
 
         poly2.push_back(p2);
         EXPECT(poly1.congruent(poly2));
 
-        Point2 p3 = {3.0, 4.0};
+        Polygon::value_type p3 = {3.0, 4.0};
         poly2.push_back(p3);
         Polygon poly3 = {p2, p3, p1};
         EXPECT(!poly2.sameAs(poly3));
@@ -86,33 +85,49 @@ CASE("Polygon") {
 }
 
 CASE("LonLatPolygon") {
-    using PointLonLat = geometry::Point2;
-    using Polygon     = geometry::polygon::LonLatPolygon;
+    using Polygon = geometry::polygon::LonLatPolygon;
 
-    SECTION("removeAlignedPoints") {
-        const std::vector<PointLonLat> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
-        EXPECT_EQUAL(Polygon(points1, false).size(), 4);
-        EXPECT_EQUAL(Polygon(points1, true).size(), 2);
+    SECTION("construction") {
+        const std::vector<Polygon::value_type> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
+        const std::vector<Polygon::value_type> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}};
 
-        const std::vector<PointLonLat> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}};
-        EXPECT_EQUAL(Polygon(points2, false).size(), 9);
-        EXPECT_EQUAL(Polygon(points2, true).size(), 5);
+        EXPECT_EQUAL(Polygon(points1).size(), 2);
+        EXPECT_EQUAL(Polygon(points1.begin(), points1.end()).size(), 2);
+
+        EXPECT_EQUAL(Polygon(points2).size(), 5);
+        EXPECT_EQUAL(Polygon(points2.begin(), points2.end()).size(), 5);
     }
 
     SECTION("contains North pole") {
-        Polygon poly({{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}});
-        EXPECT(poly.contains({0, 90}));
-        EXPECT(poly.contains({10, 90}));
-        EXPECT_NOT(poly.contains({0, -90}));
-        EXPECT_NOT(poly.contains({10, -90}));
+        const std::vector<Polygon::value_type> points{{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}};
+
+        Polygon poly1(points);
+        EXPECT(poly1.contains({0, 90}));
+        EXPECT(poly1.contains({10, 90}));
+        EXPECT_NOT(poly1.contains({0, -90}));
+        EXPECT_NOT(poly1.contains({10, -90}));
+
+        Polygon poly2(points, false);
+        EXPECT(poly2.contains({0, 90}));
+        EXPECT_NOT(poly2.contains({10, 90}));
+        EXPECT_NOT(poly2.contains({0, -90}));
+        EXPECT_NOT(poly2.contains({10, -90}));
     }
 
     SECTION("contains South pole") {
-        Polygon poly({{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}});
-        EXPECT_NOT(poly.contains({0, 90}));
-        EXPECT_NOT(poly.contains({10, 90}));
-        EXPECT(poly.contains({0, -90}));
-        EXPECT(poly.contains({10, -90}));
+        const std::vector<Polygon::value_type> points{{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}};
+
+        Polygon poly1(points);
+        EXPECT_NOT(poly1.contains({0, 90}));
+        EXPECT_NOT(poly1.contains({10, 90}));
+        EXPECT(poly1.contains({0, -90}));
+        EXPECT(poly1.contains({10, -90}));
+
+        Polygon poly2(points, false);
+        EXPECT_NOT(poly2.contains({0, 90}));
+        EXPECT_NOT(poly2.contains({10, 90}));
+        EXPECT(poly2.contains({0, -90}));
+        EXPECT_NOT(poly2.contains({10, -90}));
     }
 
     SECTION("contains South and North poles") {
@@ -162,7 +177,7 @@ CASE("LonLatPolygon") {
 
         Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
 
-        SECTION("Contains edges"){
+        SECTION("Contains edges") {
             EXPECT(poly.contains({lonmin, latmax}));
             EXPECT(poly.contains({lonmid, latmax}));
             EXPECT(poly.contains({lonmax, latmax}));
@@ -173,8 +188,8 @@ CASE("LonLatPolygon") {
             EXPECT(poly.contains({lonmin, latmid}));
         }
 
-        SECTION("Contains in/outward of edges"){
-            auto eps = 0.001;
+        SECTION("Contains in/outward of edges") {
+            constexpr auto eps = 0.001;
 
             for (size_t i = 0; i <= 100; ++i) {
                 auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 99.;
@@ -193,19 +208,16 @@ CASE("LonLatPolygon") {
     }
 
     SECTION("Degenerate polygon") {
-        const std::vector<PointLonLat> points{{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}};
+        const std::vector<Polygon::value_type> points{{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}};
 
-        Polygon poly1(points, true);
-        Polygon poly2(points, false);
+        Polygon poly(points);
 
         for (const auto& p : points) {
-            EXPECT(poly1.contains(p));
-            EXPECT(poly2.contains(p));
+            EXPECT(poly.contains(p));
         }
 
-        for (const auto& p : std::vector<PointLonLat>{{2, 2}}) {
-            EXPECT_NOT(poly1.contains(p));
-            EXPECT_NOT(poly2.contains(p));
+        for (const auto& p : std::vector<Polygon::value_type>{{2, 2}}) {
+            EXPECT_NOT(poly.contains(p));
         }
     }
 

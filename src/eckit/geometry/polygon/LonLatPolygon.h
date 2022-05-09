@@ -23,26 +23,30 @@ namespace polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class PolygonCoordinates : protected std::vector<Point2> {
+class LonLatPolygon : protected std::vector<Point2> {
 public:
     // -- Types
     using container_type = std::vector<Point2>;
+    using container_type::value_type;
 
     // -- Constructors
 
-    PolygonCoordinates(const container_type& coordinates, bool removeAlignedPoints);
+    explicit LonLatPolygon(const container_type& points, bool includePoles = true);
 
-    PolygonCoordinates(const PolygonCoordinates&) = default;
-    PolygonCoordinates(PolygonCoordinates&&)      = default;
+    template<typename Point2Iterator>
+    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true) : LonLatPolygon(container_type(begin, end), includePoles) {}
+
+    LonLatPolygon(const LonLatPolygon&) = default;
+    LonLatPolygon(LonLatPolygon&&)      = default;
 
     // -- Destructor
 
-    virtual ~PolygonCoordinates() = default;
+    virtual ~LonLatPolygon() = default;
 
     // -- Operators
 
-    PolygonCoordinates& operator=(const PolygonCoordinates&) = default;
-    PolygonCoordinates& operator=(PolygonCoordinates&&)      = default;
+    LonLatPolygon& operator=(const LonLatPolygon&) = default;
+    LonLatPolygon& operator=(LonLatPolygon&&)      = default;
 
     // -- Methods
 
@@ -52,26 +56,6 @@ public:
     using container_type::operator[];
     using container_type::size;
 
-protected:
-    // -- Methods
-
-    void print(std::ostream&) const;
-    friend std::ostream& operator<<(std::ostream&, const PolygonCoordinates&);
-
-    // -- Members
-
-    Point2 max_;
-    Point2 min_;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// @brief Implement PolygonCoordinates::contains for a polygon defined in lon/lat space.
-class LonLatPolygon : public PolygonCoordinates {
-public:
-    explicit LonLatPolygon(const std::vector<Point2>&, bool removeAlignedPoints);
-    explicit LonLatPolygon(const std::vector<Point2>&);
-
     /// @brief Point-in-polygon test based on winding number
     /// @note reference <a href="http://geomalgorithms.com/a03-_inclusion.html">Inclusion of a Point in a Polygon</a>
     /// @param[in] P given point
@@ -79,9 +63,18 @@ public:
     bool contains(const Point2& Plonlat) const;
 
 private:
-    const bool includeNorthPole_;
-    const bool includeSouthPole_;
-    const bool normalise_;
+    // -- Methods
+
+    void print(std::ostream&) const;
+    friend std::ostream& operator<<(std::ostream&, const LonLatPolygon&);
+
+    // -- Members
+
+    Point2 max_;
+    Point2 min_;
+    bool includeNorthPole_;
+    bool includeSouthPole_;
+    bool normalise_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

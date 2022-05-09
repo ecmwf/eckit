@@ -30,10 +30,6 @@ inline bool is_approximately_equal(double a, double b) {
     return types::is_approximately_equal(a, b, 1e-10);
 }
 
-inline bool is_approximately_equal(const Point2& p1, const Point2& p2) {
-    return is_approximately_equal(p1[XX], p2[XX]) && is_approximately_equal(p1[YY], p2[YY]);
-}
-
 inline bool is_approximately_greater_or_equal(double a, double b) {
     return a >= b || is_approximately_equal(a, b);
 }
@@ -52,60 +48,16 @@ double normalise(double a, double minimum, double globe) {
     return a;
 }
 
-class Edge {
-    enum Sign
-    {
-        Negative = -1,
-        Zero     = 0,
-        Positive = 1,
-        Invalid
-    };
-    Sign side_;
-    Sign direction_;
-
-public:
-    Edge(const Point2& P, const Point2& A, const Point2& B) :
-        side_([&]() {
-            const auto p = cross_product_analog(P, A, B);
-            return is_approximately_equal(p, 0.) ? Zero : p > 0 ? Positive
-                                                                : Negative;
-        }()),
-        direction_([&]() {
-            const auto APB = A[LAT] <= P[LAT] && P[LAT] <= B[LAT];
-            const auto BPA = B[LAT] <= P[LAT] && P[LAT] <= A[LAT];
-            return APB != BPA && APB ? Positive : APB != BPA && BPA ? Negative
-                                                                    : Zero;
-        }()) {}
-
-    Edge() :
-        side_(Invalid), direction_(Invalid) {}
-
-    void wind(int& w) const {
-        if (side_ == Positive && direction_ == Positive) {
-            ++w;
-        }
-        else if (side_ == Negative && direction_ == Negative) {
-            --w;
-        }
-    }
-
-    bool intersects() const { return direction_ == Positive || direction_ == Negative; }
-    bool colinear() const { return side_ == Zero; }
-
-    operator bool() const { return side_ != Invalid; }
-    bool operator!=(const Edge& other) const { return !operator bool() || side_ != other.side_ || direction_ != other.direction_; }
-};
-
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PolygonCoordinates::PolygonCoordinates(const std::vector<Point2>& points, bool removeAlignedPoints) :
-    PolygonCoordinates::container_type(points) {
-    ASSERT(points.size() > 1 && is_approximately_equal(points.front(), points.back()));
+LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) :
+    container_type(points) {
+    ASSERT(points.size() > 1);
+    ASSERT(is_approximately_equal(points.front()[LON], points.back()[LON]) && is_approximately_equal(points.front()[LAT], points.back()[LAT]));
 
-    size_t nbRemovedPoints = 0;
-    if (removeAlignedPoints && points.size() > 2) {
+    if (points.size() > 2) {
         clear();  // assumes reserved size is kept
         push_back(points.front());
         push_back(points[1]);
@@ -118,14 +70,11 @@ PolygonCoordinates::PolygonCoordinates(const std::vector<Point2>& points, bool r
             const auto& C = operator[](size() - 2);
             if (is_approximately_equal(0., cross_product_analog(A, B, C))) {
                 back() = A;
-                ++nbRemovedPoints;
                 continue;
             }
 
             push_back(A);
         }
-
-        ASSERT(size() == points.size() - nbRemovedPoints);
     }
 
     max_ = min_ = front();
@@ -133,9 +82,15 @@ PolygonCoordinates::PolygonCoordinates(const std::vector<Point2>& points, bool r
         min_ = value_type::componentsMin(min_, p);
         max_ = value_type::componentsMax(max_, p);
     }
+
+    includeNorthPole_ = includePoles && is_approximately_equal(max_[LAT], 90);
+    includeSouthPole_ = includePoles && is_approximately_equal(min_[LAT], -90);
+    normalise_        = !is_approximately_greater_or_equal(max_[LON] - min_[LON], 360);
+    ASSERT(is_approximately_greater_or_equal(min_[LAT], -90));
+    ASSERT(is_approximately_greater_or_equal(90, max_[LAT]));
 }
 
-void PolygonCoordinates::print(std::ostream& out) const {
+void LonLatPolygon::print(std::ostream& out) const {
     out << "[";
     const auto* sep = "";
     for (const auto& p : *this) {
@@ -145,30 +100,10 @@ void PolygonCoordinates::print(std::ostream& out) const {
     out << "]";
 }
 
-std::ostream& operator<<(std::ostream& out, const PolygonCoordinates& pc) {
+std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
     pc.print(out);
     return out;
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool removeAlignedPoints) :
-    PolygonCoordinates(points, removeAlignedPoints),
-    includeNorthPole_(is_approximately_equal(max_[LAT], 90)),
-    includeSouthPole_(is_approximately_equal(min_[LAT], -90)),
-    normalise_(!is_approximately_greater_or_equal(max_[LON] - min_[LON], 360)) {
-    ASSERT(is_approximately_greater_or_equal(min_[LAT], -90));
-    ASSERT(is_approximately_greater_or_equal(90, max_[LAT]));
-
-    if (normalise_) {
-        for (auto& p : *this) {
-            p[LON] = normalise(p[LON], min_[LON], 360);
-        }
-    }
-}
-
-LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points) :
-    LonLatPolygon(points, true) {}
 
 bool LonLatPolygon::contains(const Point2& P) const {
     auto lon = normalise_ ? normalise(P[LON], min_[LON], 360) : P[LON];
@@ -192,24 +127,36 @@ bool LonLatPolygon::contains(const Point2& P) const {
     }
 
     // winding number
-    int wn = 0;
+    int wn   = 0;
+    int prev = 0;
 
     // loop on polygon edges
-    Edge prev;
     for (size_t i = 1; i < size(); ++i) {
         const auto& A = operator[](i - 1);
         const auto& B = operator[](i);
-        const Edge edge({lon, lat}, A, B);
 
         // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge, by:
         // - intersecting "up" on forward crossing & P above edge, or
         // - intersecting "down" on backward crossing & P below edge
-        if (edge.intersects() && edge != prev) {
-            if (edge.colinear()) {
+        if (A[LAT] <= lat && lat <= B[LAT]) {
+            const auto side = cross_product_analog({lon, lat}, A, B);
+            if (is_approximately_equal(side, 0)) {
                 return true;
             }
-            edge.wind(wn);
-            prev = edge;
+            if (prev != 1 && side > 0) {
+                prev = 1;
+                ++wn;
+            }
+        }
+        else if (B[LAT] <= lat && lat <= A[LAT]) {
+            const auto side = cross_product_analog({lon, lat}, A, B);
+            if (is_approximately_equal(side, 0)) {
+                return true;
+            }
+            if (prev != -1 && side < 0) {
+                prev = -1;
+                --wn;
+            }
         }
     }
 

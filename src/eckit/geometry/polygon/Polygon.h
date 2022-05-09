@@ -24,9 +24,10 @@ namespace polygon {
 //------------------------------------------------------------------------------------------------------
 
 class Polygon : protected std::deque<Point2> {
-    using container_type = std::deque<value_type>;
-
 public:
+    using container_type = std::deque<value_type>;
+    using container_type::value_type;
+
     Polygon() = default;
 
     Polygon(std::initializer_list<value_type> l) :

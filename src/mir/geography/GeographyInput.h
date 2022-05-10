@@ -16,12 +16,7 @@
 #include <string>
 #include <vector>
 
-
-namespace atlas {
-namespace util {
-class PolygonCoordinates;
-}
-}  // namespace atlas
+#include "eckit/geometry/polygon/LonLatPolygon.h"
 
 
 namespace mir {
@@ -38,7 +33,7 @@ public:
      * - GeoJSON "Polygon" is a list of (this) Polygon (eg. "polygon"+"hole"+"hole"+...)
      * - GeoJSON "MultiPolygon" is a list of GeoJSON "Polygon"
      */
-    using Polygon  = std::unique_ptr<atlas::util::PolygonCoordinates>;
+    using Polygon  = std::unique_ptr<eckit::geometry::polygon::LonLatPolygon>;
     using Polygons = std::vector<Polygon>;
 
     enum Geometry

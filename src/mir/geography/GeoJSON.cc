@@ -14,8 +14,8 @@
 
 #include "eckit/filesystem/PathName.h"
 
-#include "mir/util/Atlas.h"
 #include "mir/util/Exceptions.h"
+#include "mir/util/Types.h"
 
 
 namespace mir {
@@ -25,17 +25,17 @@ namespace geography {
 namespace {
 
 
-auto list = [](const eckit::Value& j) -> eckit::ValueList {
+const auto list = [](const eckit::Value& j) -> eckit::ValueList {
     ASSERT(j.isList());
     return j.as<eckit::ValueList>();
 };
 
 
-auto polygon = [](const eckit::Value& j,
-                  const GeographyInput::Geometry& geom) -> GeographyInput::Polygon::element_type* {
+const auto polygon = [](const eckit::Value& j,
+                        const GeographyInput::Geometry& geom) -> GeographyInput::Polygon::element_type* {
     auto c = list(j);
 
-    std::vector<atlas::PointLonLat> p;
+    std::vector<Point2> p;
     p.reserve(c.size());
 
     for (auto& l : c) {
@@ -48,11 +48,11 @@ auto polygon = [](const eckit::Value& j,
     }
 
     if (geom == GeographyInput::Geometry::LonLat) {
-        return new atlas::util::PolygonXY(p);
+        return new GeographyInput::Polygon::element_type(p);
     }
 
     if (geom == GeographyInput::Geometry::Spherical) {
-        return new atlas::util::SphericalPolygon(p);
+        // return new atlas::util::SphericalPolygon(p);
     }
 
     NOTIMP;

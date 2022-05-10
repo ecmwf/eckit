@@ -38,10 +38,16 @@ inline double cross_product_analog(const Point2& A, const Point2& B, const Point
     return (A.x() - C.x()) * (B.y() - C.y()) - (A.y() - C.y()) * (B.x() - C.x());
 }
 
-inline double between(double a, double b, double c, bool symmetric) {
-    return (a <= b && b <= c) || (symmetric && c <= b && b <= a);
+inline int on_direction(double a, double b, double c) {
+    return a <= b && b <= c ? 1 : c <= b && b <= a ? -1
+                                                   : 0;
 };
 
+inline int on_side(const Point2& P, const Point2& A, const Point2& B) {
+    const auto p = cross_product_analog(P, A, B);
+    return is_approximately_equal(p, 0) ? 0 : p > 0 ? 1
+                                                    : -1;
+}
 
 }  // namespace
 
@@ -144,20 +150,15 @@ bool LonLatPolygon::contains(const Point2& P) const {
             // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge, by:
             // - intersecting "up" on forward crossing & P above edge, or
             // - intersecting "down" on backward crossing & P below edge
-            const bool APB = between(A[LAT], lat, B[LAT], false);
-            const bool BPA = between(B[LAT], lat, A[LAT], false);
-            if (APB || BPA) {
-                const auto side = cross_product_analog({lon, lat}, A, B);
-                if (is_approximately_equal(side, 0) && between(A[LON], lon, B[LON], true)) {
+            const auto direction = on_direction(A[LAT], lat, B[LAT]);
+            if (direction != 0) {
+                const auto side = on_side({lon, lat}, A, B);
+                if (side == 0 && on_direction(A[LON], lon, B[LON]) != 0) {
                     return true;
                 }
-                if (prev != 1 && APB && side > 0) {
-                    prev = 1;
-                    ++wn;
-                }
-                else if (prev != -1 && BPA && side < 0) {
-                    prev = -1;
-                    --wn;
+                if ((prev != 1 && direction > 0 && side > 0) || (prev != -1 && direction < 0 && side < 0)) {
+                    prev = direction;
+                    wn += direction;
                 }
             }
         }

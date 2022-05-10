@@ -34,19 +34,14 @@ inline bool is_approximately_greater_or_equal(double a, double b) {
     return a >= b || is_approximately_equal(a, b);
 }
 
-double cross_product_analog(const Point2& A, const Point2& B, const Point2& C) {
+inline double cross_product_analog(const Point2& A, const Point2& B, const Point2& C) {
     return (A.x() - C.x()) * (B.y() - C.y()) - (A.y() - C.y()) * (B.x() - C.x());
 }
 
-double normalise(double a, double minimum, double globe) {
-    while (a >= minimum + globe) {
-        a -= globe;
-    }
-    while (a < minimum) {
-        a += globe;
-    }
-    return a;
-}
+inline double between(double a, double b, double c, bool symmetric) {
+    return (a <= b && b <= c) || (symmetric && c <= b && b <= a);
+};
+
 
 }  // namespace
 
@@ -87,6 +82,8 @@ LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePole
     includeSouthPole_ = includePoles && is_approximately_equal(min_[LAT], -90);
     ASSERT(is_approximately_greater_or_equal(min_[LAT], -90));
     ASSERT(is_approximately_greater_or_equal(90, max_[LAT]));
+
+    quickCheckLongitude_ = is_approximately_greater_or_equal(360, max_[LON] - min_[LON]);
 }
 
 void LonLatPolygon::print(std::ostream& out) const {
@@ -105,9 +102,16 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
 }
 
 bool LonLatPolygon::contains(const Point2& P) const {
-    auto lon = is_approximately_greater_or_equal(360, max_[LON] - min_[LON]) ? normalise(P[LON], min_[LON], 360) : P[LON];
     auto lat = P[LAT];
     ASSERT(-90 <= lat && lat <= 90);
+
+    auto lon = P[LON];
+    while (lon >= min_[LON] + 360) {
+        lon -= 360;
+    }
+    while (lon < min_[LON]) {
+        lon += 360;
+    }
 
     // check poles
     if (includeNorthPole_ && is_approximately_equal(lat, 90)) {
@@ -121,46 +125,52 @@ bool LonLatPolygon::contains(const Point2& P) const {
     if (!is_approximately_greater_or_equal(lat, min_[LAT]) || !is_approximately_greater_or_equal(max_[LAT], lat)) {
         return false;
     }
-    if (!is_approximately_greater_or_equal(lon, min_[LON]) || !is_approximately_greater_or_equal(max_[LON], lon)) {
-        return false;
-    }
-
-    // winding number
-    int wn   = 0;
-    int prev = 0;
-
-    // loop on polygon edges
-    for (size_t i = 1; i < size(); ++i) {
-        const auto& A = operator[](i - 1);
-        const auto& B = operator[](i);
-
-        // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge, by:
-        // - intersecting "up" on forward crossing & P above edge, or
-        // - intersecting "down" on backward crossing & P below edge
-        if (A[LAT] <= lat && lat <= B[LAT]) {
-            const auto side = cross_product_analog({lon, lat}, A, B);
-            if (is_approximately_equal(side, 0)) {
-                return true;
-            }
-            if (prev != 1 && side > 0) {
-                prev = 1;
-                ++wn;
-            }
-        }
-        else if (B[LAT] <= lat && lat <= A[LAT]) {
-            const auto side = cross_product_analog({lon, lat}, A, B);
-            if (is_approximately_equal(side, 0)) {
-                return true;
-            }
-            if (prev != -1 && side < 0) {
-                prev = -1;
-                --wn;
-            }
+    if (quickCheckLongitude_) {
+        if (!is_approximately_greater_or_equal(lon, min_[LON]) || !is_approximately_greater_or_equal(max_[LON], lon)) {
+            return false;
         }
     }
 
-    // wn == 0 only when P is outside
-    return wn != 0;
+    do {
+        // winding number
+        int wn   = 0;
+        int prev = 0;
+
+        // loop on polygon edges
+        for (size_t i = 1; i < size(); ++i) {
+            const auto& A = operator[](i - 1);
+            const auto& B = operator[](i);
+
+            // check point-edge side and direction, testing if P is on|above|below (in latitude) of a A,B polygon edge, by:
+            // - intersecting "up" on forward crossing & P above edge, or
+            // - intersecting "down" on backward crossing & P below edge
+            const bool APB = between(A[LAT], lat, B[LAT], false);
+            const bool BPA = between(B[LAT], lat, A[LAT], false);
+            if (APB || BPA) {
+                const auto side = cross_product_analog({lon, lat}, A, B);
+                if (is_approximately_equal(side, 0) && between(A[LON], lon, B[LON], true)) {
+                    return true;
+                }
+                if (prev != 1 && APB && side > 0) {
+                    prev = 1;
+                    ++wn;
+                }
+                else if (prev != -1 && BPA && side < 0) {
+                    prev = -1;
+                    --wn;
+                }
+            }
+        }
+
+        // wn == 0 only when P is outside
+        if (wn != 0) {
+            return true;
+        }
+
+        lon += 360;
+    } while (lon <= max_[LON]);
+
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

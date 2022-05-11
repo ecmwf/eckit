@@ -8,86 +8,317 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/geometry/Polygon.h"
+#include "eckit/geometry/Point2.h"
+#include "eckit/geometry/polygon/LonLatPolygon.h"
+#include "eckit/geometry/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
-
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-using namespace eckit::geometry;
 
 namespace eckit {
 namespace test {
 
-CASE("empty polygon") {
-    Polygon poly1;
-    Polygon poly2;
+CASE("Polygon") {
+    using geometry::polygon::Polygon;
 
-    EXPECT(poly1.sameAs(poly2));
+    SECTION("empty polygon") {
+        Polygon poly1;
+        Polygon poly2;
+
+        EXPECT(poly1.sameAs(poly2));
+    }
+
+    SECTION("equality") {
+        Polygon poly1;
+        Polygon poly2;
+
+        EXPECT(poly1.num_vertices() == 0);
+
+        Polygon::value_type p1 = {1.0, 2.0};
+        poly1.push_front(p1);
+        EXPECT(poly1.num_vertices() == 1);
+        EXPECT(poly1.vertex(0) == p1);
+
+        EXPECT(!poly1.sameAs(poly2));
+
+        poly2.push_back(p1);
+        EXPECT(poly1.sameAs(poly2));
+
+        Polygon::value_type p2 = {2.0, 1.0};
+        poly1.push_front(p2);
+        EXPECT(!poly1.sameAs(poly2));
+
+        poly2.push_back(p2);
+        EXPECT(!poly1.sameAs(poly2));
+    }
+
+    SECTION("congruence") {
+        Polygon poly1;
+        Polygon poly2;
+        EXPECT(poly1.congruent(poly2));
+
+        Polygon::value_type p1 = {1.0, 2.0};
+        poly1.push_front(p1);
+        EXPECT(!poly1.congruent(poly2));
+
+        poly2.push_back(p1);
+        EXPECT(poly1.congruent(poly2));
+
+        Polygon::value_type p2 = {2.0, 1.0};
+        poly1.push_front(p2);
+        EXPECT(!poly1.congruent(poly2));
+
+        poly2.push_back(p2);
+        EXPECT(poly1.congruent(poly2));
+
+        Polygon::value_type p3 = {3.0, 4.0};
+        poly2.push_back(p3);
+        Polygon poly3 = {p2, p3, p1};
+        EXPECT(!poly2.sameAs(poly3));
+        EXPECT(poly2.congruent(poly3));
+
+        EXPECT(poly2.num_vertices() == 3);
+        EXPECT(poly2.vertex(2) == poly3.vertex(1));
+
+        Polygon poly4 = {p3, p1, p2};
+        EXPECT(!poly2.sameAs(poly4));
+        EXPECT(poly2.congruent(poly4));
+    }
 }
 
-CASE("equality") {
-    Polygon poly1;
-    Polygon poly2;
+CASE("LonLatPolygon") {
+    using Polygon = geometry::polygon::LonLatPolygon;
 
-    EXPECT(poly1.num_vertices() == 0);
+    SECTION("Construction") {
+        const std::vector<Polygon::value_type> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
+        const std::vector<Polygon::value_type> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}};
 
-    Point2 p1 = {1.0, 2.0};
-    poly1.push_front(p1);
-    EXPECT(poly1.num_vertices() == 1);
-    EXPECT(poly1.vertex(0) == p1);
+        EXPECT_EQUAL(Polygon(points1).size(), 2);
+        EXPECT_EQUAL(Polygon(points1.begin(), points1.end()).size(), 2);
 
-    EXPECT(!poly1.sameAs(poly2));
+        EXPECT_EQUAL(Polygon(points2).size(), 5);
+        EXPECT_EQUAL(Polygon(points2.begin(), points2.end()).size(), 5);
+    }
 
-    poly2.push_back(p1);
-    EXPECT(poly1.sameAs(poly2));
+    SECTION("Contains North pole") {
+        const std::vector<Polygon::value_type> points{{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}};
 
-    Point2 p2 = {2.0, 1.0};
-    poly1.push_front(p2);
-    EXPECT(!poly1.sameAs(poly2));
+        Polygon poly1(points);
+        EXPECT(poly1.contains({0, 90}));
+        EXPECT(poly1.contains({10, 90}));
+        EXPECT_NOT(poly1.contains({0, -90}));
+        EXPECT_NOT(poly1.contains({10, -90}));
 
-    poly2.push_back(p2);
-    EXPECT(!poly1.sameAs(poly2));
-}
+        Polygon poly2(points, false);
+        EXPECT(poly2.contains({0, 90}));
+        EXPECT_NOT(poly2.contains({10, 90}));
+        EXPECT_NOT(poly2.contains({0, -90}));
+        EXPECT_NOT(poly2.contains({10, -90}));
+    }
 
-CASE("congruence") {
-    Polygon poly1;
-    Polygon poly2;
-    EXPECT(poly1.congruent(poly2));
+    SECTION("Contains South pole") {
+        const std::vector<Polygon::value_type> points{{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}};
 
-    Point2 p1 = {1.0, 2.0};
-    poly1.push_front(p1);
-    EXPECT(!poly1.congruent(poly2));
+        Polygon poly1(points);
+        EXPECT_NOT(poly1.contains({0, 90}));
+        EXPECT_NOT(poly1.contains({10, 90}));
+        EXPECT(poly1.contains({0, -90}));
+        EXPECT(poly1.contains({10, -90}));
 
-    poly2.push_back(p1);
-    EXPECT(poly1.congruent(poly2));
+        Polygon poly2(points, false);
+        EXPECT_NOT(poly2.contains({0, 90}));
+        EXPECT_NOT(poly2.contains({10, 90}));
+        EXPECT(poly2.contains({0, -90}));
+        EXPECT_NOT(poly2.contains({10, -90}));
+    }
 
-    Point2 p2 = {2.0, 1.0};
-    poly1.push_front(p2);
-    EXPECT(!poly1.congruent(poly2));
+    SECTION("Contains South and North poles") {
+        Polygon poly({{0, -90}, {0, 90}, {1, 90}, {1, -90}, {0, -90}});
+        EXPECT(poly.contains({0, 90}));
+        EXPECT(poly.contains({10, 90}));
+        EXPECT(poly.contains({0, 0}));
+        EXPECT_NOT(poly.contains({10, 0}));
+        EXPECT(poly.contains({0, -90}));
+        EXPECT(poly.contains({10, -90}));
+    }
 
-    poly2.push_back(p2);
-    EXPECT(poly1.congruent(poly2));
+    SECTION("MIR-566: wide polygon") {
+        Polygon poly1({{0, 0}, {361, 0}, {361, 2}, {0, 2}, {0, 0}});
+        EXPECT(poly1.contains({0, 1}));
+        EXPECT(poly1.contains({2, 1}));
+        EXPECT(poly1.contains({362, 1}));
+        EXPECT(poly1.contains({722, 1}));
 
-    Point2 p3 = {3.0, 4.0};
-    poly2.push_back(p3);
-    Polygon poly3 = {p2, p3, p1};
-    EXPECT(!poly2.sameAs(poly3));
-    EXPECT(poly2.congruent(poly3));
+        Polygon poly2({{0, 0}, {11, 0}, {11, 2}, {0, 2}, {0, 0}});
+        EXPECT(poly2.contains({0, 1}));
+        EXPECT(poly2.contains({2, 1}));
+        EXPECT(poly2.contains({362, 1}));
+        EXPECT(poly2.contains({722, 1}));
 
-    EXPECT(poly2.num_vertices() == 3);
-    EXPECT(poly2.vertex(2) == poly3.vertex(1));
+        Polygon poly3({{0, 0}, {360, 0}, {360, 2}, {0, 2}, {0, 0}});
+        EXPECT(poly3.contains({0, 1}));
+        EXPECT(poly3.contains({2 - 360, 1}));
+        EXPECT(poly3.contains({2, 1}));
+        EXPECT(poly3.contains({2 + 360, 1}));
 
-    Polygon poly4 = {p3, p1, p2};
-    EXPECT(!poly2.sameAs(poly4));
-    EXPECT(poly2.congruent(poly4));
+        Polygon poly4({{-100, 18}, {21, 30}, {150, 50}, {260, 18}, {-100, 18}});
+        EXPECT(poly4.contains({-10 - 360, 18}));
+        EXPECT(poly4.contains({-10, 18}));
+        EXPECT(poly4.contains({-10 + 360, 18}));
+
+        Polygon poly5({{-44.2299698513, 44.8732496764},
+                       {-12.2849279262, 75.2545011911},
+                       {72.2148603917, 76.7993105902},
+                       {196.903572422, 71.1350094603},
+                       {304.194105814, 52.8269579527},
+                       {266.886210026, -17.7495991714},
+                       {108.327652927, 34.8499103834},
+                       {-96.2694736324, -17.4340627522},
+                       {-99.8761719143, 7.28288763265},
+                       {-44.2299698513, 44.8732496764}});
+        for (double lon = -1, lat = 10; lat < 70; lat += 1) {
+            EXPECT(poly5.contains({lon - 360, lat}));
+            EXPECT(poly5.contains({lon, lat}));
+            EXPECT(poly5.contains({lon + 360, lat}));
+        }
+
+        constexpr double eps   = 0.001;
+        constexpr double globe = 360;
+        Polygon poly6({{0 * globe, 4 + eps},
+                       {1 * globe, 2 + eps},
+                       {2 * globe, 0 + eps},
+                       {3 * globe, -2 + eps},
+                       {4 * globe, -4 + eps},
+                       {4 * globe, -4 - eps},
+                       {3 * globe, -2 - eps},
+                       {2 * globe, 0 - eps},
+                       {1 * globe, 2 - eps},
+                       {0 * globe, 4 - eps},
+                       {0 * globe, 4 + eps}});
+
+        for (double lon : {-2. * globe, -globe, 0., globe, 2. * globe}) {
+            for (double lat : {4., 2., 0., -2.}) {
+                EXPECT(poly6.contains({lon + 180., lat - 1.}));
+                EXPECT(poly6.contains({lon, lat}));
+            }
+            for (double lat : {5., 3., 1., -1., -3., -5.}) {
+                EXPECT_NOT(poly6.contains({lon, lat}));
+                EXPECT_NOT(poly6.contains({lon + 180., lat - 1.}));
+            }
+        }
+
+        // HEALPix-like equator wedge in longitude
+        Polygon poly({{0, 1}, {0, 90}, {360, 90}, {360, 1}, {361, 0}, {360, -1}, {360, -90}, {0, -90}, {0, -1}, {1, 0}, {0, 1}});
+        EXPECT(poly.contains({0, 0}));
+        EXPECT(poly.contains({1, 0}));
+        EXPECT(poly.contains({360, 0}));
+        EXPECT(poly.contains({361, 0}));
+        EXPECT(poly.contains({720, 0}));
+        EXPECT(poly.contains({721, 0}));
+    }
+
+    SECTION("MIR-566: winding number strict check of edges") {
+        Polygon poly({{110, -34}, {90, -62}, {100, -59}, {110, -50}, {132, -40}, {110, -34}});
+        EXPECT_NOT(poly.contains({90, -40}));
+        EXPECT_NOT(poly.contains({90, -34}));
+    }
+
+    SECTION("Simple rectangular polygon") {
+        double lonmin = 0;
+        double lonmax = 360;
+        double lonmid = 0.5 * (lonmin + lonmax);
+
+        double latmax = 80;
+        double latmin = 0;
+        double latmid = 0.5 * (latmin + latmax);
+
+        Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
+
+        SECTION("Contains edges") {
+            EXPECT(poly.contains({lonmin, latmax}));
+            EXPECT(poly.contains({lonmid, latmax}));
+            EXPECT(poly.contains({lonmax, latmax}));
+            EXPECT(poly.contains({lonmax, latmid}));
+            EXPECT(poly.contains({lonmax, latmin}));
+            EXPECT(poly.contains({lonmid, latmin}));
+            EXPECT(poly.contains({lonmin, latmin}));
+            EXPECT(poly.contains({lonmin, latmid}));
+        }
+
+        SECTION("Contains in/outward of edges") {
+            constexpr auto eps = 0.001;
+
+            for (size_t i = 0; i <= 100; ++i) {
+                const auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 99.;
+                EXPECT(poly.contains({lon, latmin + eps}));
+                EXPECT(poly.contains({lon, latmax - eps}));
+                EXPECT_NOT(poly.contains({lon, latmin - eps}));
+                EXPECT_NOT(poly.contains({lon, latmax + eps}));
+
+                const auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 99.;
+                EXPECT(poly.contains({lonmin + eps, lat}));
+                EXPECT(poly.contains({lonmax - eps, lat}));
+                EXPECT_NOT(poly.contains({lonmin - eps, lat}));
+                EXPECT_NOT(poly.contains({lonmax + eps, lat}));
+            }
+        }
+    }
+
+    SECTION("Parallelogram") {
+        const std::vector<Polygon::value_type> points{{0, 0}, {1, 1}, {2, 1}, {1, 0}, {0, 0}};
+        Polygon poly(points);
+
+        for (const auto& p : points) {
+            EXPECT(poly.contains(p));
+        }
+        EXPECT_NOT(poly.contains({0, 1}));
+        EXPECT_NOT(poly.contains({2, 0}));
+    }
+
+    SECTION("Degenerate polygon") {
+        const std::vector<Polygon::value_type> points{{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}};
+
+        Polygon poly(points);
+
+        for (const auto& p : points) {
+            EXPECT(poly.contains(p));
+        }
+
+        for (const auto& p : std::vector<Polygon::value_type>{{2, 2}}) {
+            EXPECT_NOT(poly.contains(p));
+        }
+    }
+
+    SECTION("Self-intersecting polygon") {
+        Polygon poly1({{-1, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}});
+
+        EXPECT(poly1.contains({0, 0}));
+        EXPECT(poly1.contains({-1, 0}));
+        EXPECT(poly1.contains({1, 0}));
+        EXPECT_NOT(poly1.contains({0, 1}));
+        EXPECT_NOT(poly1.contains({0, -1}));
+
+        Polygon poly2({{-1, -1}, {1, -1}, {-1, 1}, {1, 1}, {-1, -1}});
+
+        EXPECT(poly2.contains({0, 0}));
+        EXPECT_NOT(poly2.contains({-1, 0}));
+        EXPECT_NOT(poly2.contains({1, 0}));
+        EXPECT(poly2.contains({0, 1}));
+        EXPECT(poly2.contains({0, -1}));
+
+        Polygon poly3({{-1, 89}, {1, 89}, {0, 90}, {181, 89}, {179, 89}, {0, 90}, {-1, 89}});
+        EXPECT(poly3.size() == 7);
+
+        for (const auto& lon : {-720., -360., 0., 360., 720.}) {
+            EXPECT(poly3.contains({lon, 89.}));
+            EXPECT(poly3.contains({lon + 180, 89.}));
+            EXPECT_NOT(poly3.contains({lon + 90, 89.}));
+            EXPECT_NOT(poly3.contains({lon + 270, 89.}));
+        }
+    }
 }
 
 }  // namespace test
 }  // namespace eckit
 
-//----------------------------------------------------------------------------------------------------------------------
-
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

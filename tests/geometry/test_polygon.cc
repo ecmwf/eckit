@@ -329,7 +329,6 @@ CASE("LonLatPolygon") {
         constexpr double lon[] = {0, 90, 180, 270, 360};
         constexpr double lat[] = {90, 0, -90};
 
-
         Polygon polys[] = {
             Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[0]}, {lon[0], lat[0]}, {lon[0], lat[1]}}, false),
             Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[0]}, {lon[1], lat[0]}, {lon[1], lat[1]}}, false),
@@ -352,7 +351,6 @@ CASE("LonLatPolygon") {
         }
 
         std::vector<size_t> counts(points.size(), 0);
-
         for (size_t i = 0; i < points.size(); ++i) {
             for (const auto& poly : polys) {
                 if (poly.contains(points[i])) {

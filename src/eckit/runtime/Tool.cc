@@ -24,19 +24,7 @@ Tool::~Tool() {}
 int Tool::start() {
     int status = 0;
 
-    try {
-        run();
-    }
-    catch (Exception& e) {
-        status = 1;
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception terminates " << name() << std::endl;
-    }
-    catch (std::exception& e) {
-        status = 1;
-        Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
-        Log::error() << "** Exception terminates " << name() << std::endl;
-    }
+    run();
 
     return status;
 }

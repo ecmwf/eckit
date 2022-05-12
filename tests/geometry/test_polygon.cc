@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <vector>
+
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/polygon/LonLatPolygon.h"
 #include "eckit/geometry/polygon/Polygon.h"
@@ -316,6 +318,61 @@ CASE("LonLatPolygon") {
             EXPECT(poly3.contains({lon + 180, 89.}));
             EXPECT_NOT(poly3.contains({lon + 90, 89.}));
             EXPECT_NOT(poly3.contains({lon + 270, 89.}));
+        }
+    }
+
+    SECTION("Partitioning (includePoles=false)") {
+        auto mid = [](double a, double b) {
+            return (a + b) / 2.;
+        };
+
+        constexpr double lon[] = {0, 90, 180, 270, 360};
+        constexpr double lat[] = {90, 0, -90};
+
+
+        Polygon polys[] = {
+            Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[0]}, {lon[0], lat[0]}, {lon[0], lat[1]}}, false),
+            Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[0]}, {lon[1], lat[0]}, {lon[1], lat[1]}}, false),
+            Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[0]}, {lon[2], lat[0]}, {lon[2], lat[1]}}, false),
+            Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[0]}, {lon[3], lat[0]}, {lon[3], lat[1]}}, false),
+            Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[2]}, {lon[0], lat[2]}, {lon[0], lat[1]}}, false),
+            Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[2]}, {lon[1], lat[2]}, {lon[1], lat[1]}}, false),
+            Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[2]}, {lon[2], lat[2]}, {lon[2], lat[1]}}, false),
+            Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[2]}, {lon[3], lat[2]}, {lon[3], lat[1]}}, false)};
+
+
+        std::vector<Polygon::value_type> points;
+        const std::vector<double> list_lons{lon[0], mid(lon[0], lon[1]), lon[1], mid(lon[1], lon[2]), lon[2], mid(lon[2], lon[3]), lon[3], mid(lon[3], lon[4])};
+        const std::vector<double> list_lats{lat[0], mid(lat[0], lat[1]), lat[1], mid(lat[1], lat[2]), lat[2]};
+
+        for (double lon : list_lons) {
+            for (double lat : list_lats) {
+                points.emplace_back(lon, lat);
+            }
+        }
+
+        std::vector<size_t> counts(points.size(), 0);
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            for (const auto& poly : polys) {
+                if (poly.contains(points[i])) {
+                    ++counts[i];
+                }
+            }
+        }
+
+        for (size_t i = 0; i < counts.size(); i += list_lats.size() * 2) {
+            EXPECT(counts[i + 0] == 2);
+            EXPECT(counts[i + 1] == 2);
+            EXPECT(counts[i + 2] == 4);
+            EXPECT(counts[i + 3] == 2);
+            EXPECT(counts[i + 4] == 2);
+
+            EXPECT(counts[i + 5] == 1);
+            EXPECT(counts[i + 6] == 1);
+            EXPECT(counts[i + 7] == 2);
+            EXPECT(counts[i + 8] == 1);
+            EXPECT(counts[i + 9] == 1);
         }
     }
 }

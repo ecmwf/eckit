@@ -194,12 +194,15 @@ CASE("LonLatPolygon") {
                        {0 * globe, 4 - eps},
                        {0 * globe, 4 + eps}});
 
-        for (double lon : {-2. * globe, -globe, 0., globe, 2. * globe}) {
-            for (double lat : {4., 2., 0., -2.}) {
+        const std::vector<double> list_lons{-2. * globe, -globe, 0., globe, 2. * globe};
+        const std::vector<double> list_lats1{4., 2., 0., -2.};
+        const std::vector<double> list_lats2{5., 3., 1., -1., -3., -5.};
+        for (double lon : list_lons) {
+            for (double lat : list_lats1) {
                 EXPECT(poly6.contains({lon + 180., lat - 1.}));
                 EXPECT(poly6.contains({lon, lat}));
             }
-            for (double lat : {5., 3., 1., -1., -3., -5.}) {
+            for (double lat : list_lats2) {
                 EXPECT_NOT(poly6.contains({lon, lat}));
                 EXPECT_NOT(poly6.contains({lon + 180., lat - 1.}));
             }
@@ -307,7 +310,8 @@ CASE("LonLatPolygon") {
         Polygon poly3({{-1, 89}, {1, 89}, {0, 90}, {181, 89}, {179, 89}, {0, 90}, {-1, 89}});
         EXPECT(poly3.size() == 7);
 
-        for (const auto& lon : {-720., -360., 0., 360., 720.}) {
+        const std::vector<double> list_lons{-720., -360., 0., 360., 720.};
+        for (const auto& lon : list_lons) {
             EXPECT(poly3.contains({lon, 89.}));
             EXPECT(poly3.contains({lon + 180, 89.}));
             EXPECT_NOT(poly3.contains({lon + 90, 89.}));

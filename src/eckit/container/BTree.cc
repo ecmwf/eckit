@@ -9,6 +9,7 @@
  */
 
 #include <ostream>
+#include <sys/file.h>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/FDataSync.h"
@@ -651,6 +652,17 @@ template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::unlock() {
     L::lockRange(file_.fileno(), 0, 0, F_SETLK, F_UNLCK);
 }
+
+template <class K, class V, int S, class L>
+void BTree<K, V, S, L>::flock() {
+    SYSCALL(::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH));
+}
+
+template <class K, class V, int S, class L>
+void BTree<K, V, S, L>::funlock() {
+    SYSCALL(::flock(file_.fileno(), LOCK_UN));
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <math.h>
+
 #include "eckit/eckit_config.h"
 
 #include "eckit/exception/Exceptions.h"
@@ -221,25 +223,38 @@ CASE("test_eckit_yaml_19") {
     std::cout << "2.19.yaml " << v << std::endl;
     std::cout << toJSON(v) << std::endl;
 
-
-    EXPECT(v["canonical"] == Value(12345));
-    // EXPECT(v["decimal"] == Value(12345));
-    // EXPECT(v["sexagesimal"] == Value(12345));
-    EXPECT(v["octal"] == Value(12));
-    EXPECT(v["hexadecimal"] == Value(12));
-
-
-    // canonical: 12345
-    // decimal: +12,345
-    // sexagesimal: 3:25:45
-    // octal: 014
-    // hexadecimal: 0xC
+    EXPECT(v["base2"] == Value(13579));
+    EXPECT(v["base8"] == Value(13579));
+    EXPECT(v["base10"] == Value(13579));
+    EXPECT(v["base16"] == Value(13579));
+    EXPECT(v["base60"] == Value(13579));
+    EXPECT(v["base_2"] == Value(24680));
+    EXPECT(v["base_8"] == Value(24680));
+    EXPECT(v["base_10"] == Value(24680));
+    EXPECT(v["base_16"] == Value(24680));
+    EXPECT(v["minus-base2"] == Value(-13579));
+    EXPECT(v["minus-base8"] == Value(-13579));
+    EXPECT(v["minus-base10"] == Value(-13579));
+    EXPECT(v["minus-base16"] == Value(-13579));
+    EXPECT(v["minus-base60"] == Value(-13579));
+    EXPECT(v["str-like-base8"] == Value("032413"));
+    EXPECT(v["str-not-base8"] == Value("032418"));
+    EXPECT(v["zero"] == Value(0));
+    EXPECT(v["minus-zero"] == Value(0));
+    EXPECT(v["plus-zero"] == Value(0));
 }
 
 CASE("test_eckit_yaml_20") {
     Value v = YAMLParser::decodeFile("2.20.yaml");
     std::cout << "2.20.yaml " << v << std::endl;
     std::cout << toJSON(v) << std::endl;
+    EXPECT(fabs((double)v["canonical"] - 1230.15) < 1.0e-7);
+    EXPECT(fabs((double)v["exponential"] - 1230.15) < 1.0e-7);
+    EXPECT(fabs((double)v["sexagesimal"] - 1230.15) < 1.0e-7);
+    EXPECT(fabs((double)v["fixed"] - 1230.15) < 1.0e-7);
+    EXPECT(isinf((double)v["negative infinity"]));
+    EXPECT((double)v["negative infinity"] < 0.0);
+    EXPECT(isnan((double)v["not a number"]));
 }
 
 

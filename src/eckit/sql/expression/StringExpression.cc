@@ -57,7 +57,7 @@ const eckit::sql::type::SQLType* StringExpression::type() const {
 StringExpression::StringExpression(const std::string& name) :
     name_(name) {
     size_t len        = name.length();
-    size_t lenDoubles = (len == 0) ? 0 : ((len - 1) / sizeof(double)) + 1;
+    size_t lenDoubles = (len == 0) ? 1 : ((len - 1) / sizeof(double)) + 1;
     size_t lenChars   = lenDoubles * sizeof(double);
 
     value_.resize(lenDoubles);

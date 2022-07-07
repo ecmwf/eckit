@@ -18,8 +18,7 @@
 #include "eckit/filesystem/FileSpaceStrategies.h"
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
+#include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
 
 namespace eckit {
@@ -28,18 +27,18 @@ namespace eckit {
 
 typedef std::map<std::string, FileSpace*> Map;
 
-static Once<Mutex> local_mutex;
+static StaticMutex local_mutex;
 static Map space;
 
 FileSpace::FileSpace(const std::string& name) :
     name_(name), last_(0) {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
     space[name] = this;
     load();
 }
 
 FileSpace::~FileSpace() {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
 
     space.erase(name_);
 }
@@ -112,7 +111,7 @@ const PathName& FileSpace::find(const PathName& path, bool& found) const {
 }
 
 const FileSpace& FileSpace::lookUp(const std::string& name) {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
 
     Map::iterator j = space.find(name);
     if (j == space.end()) {

@@ -9,12 +9,14 @@ Point2.cc
 Point2.h
 Point3.cc
 Point3.h
-Polygon.cc
-Polygon.h
 Sphere.cc
 Sphere.h
 SphereT.h
 UnitSphere.h
+polygon/LonLatPolygon.cc
+polygon/LonLatPolygon.h
+polygon/Polygon.cc
+polygon/Polygon.h
 )
 
 ecbuild_add_library(

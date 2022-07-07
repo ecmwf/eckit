@@ -58,8 +58,10 @@ namespace eckit {
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::vector<std::pair<std::string, std::string> > pathsTable;
+static std::vector<std::string> offsiteFileSystems;
 
 static void expandTilde(std::string& path, bool tildeIsUserHome);
+
 
 static void readPathsTable() {
 
@@ -117,6 +119,32 @@ static void readPathsTable() {
                 break;
         }
     }
+}
+
+
+static void readOffsiteFileSystems() {
+    PathName path("~/etc/disks/offsite");
+    std::ifstream in(path.asString());
+
+    if (!in) {
+        return;
+    }
+
+    eckit::Tokenizer parse(" ");
+
+    char line[1024];
+    while (in.getline(line, sizeof(line))) {
+        std::vector<std::string> s;
+        parse(line, s);
+        if(s.size() == 1 and s[0].size() > 0) {
+            offsiteFileSystems.push_back(s[0]);
+        }
+    }
+}
+
+static void init() {
+    readPathsTable();
+    readOffsiteFileSystems();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -242,6 +270,16 @@ bool LocalPathName::exists() const {
 
 bool LocalPathName::available() const {
     return true;
+}
+
+bool LocalPathName::offsite() const {
+    pthread_once(&once, init);
+    for(const auto& fs : offsiteFileSystems) {
+        if(path_.find(fs) == 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 LocalPathName LocalPathName::cwd() {
@@ -397,7 +435,7 @@ static void expandTilde(std::string& path, bool tildeIsUserHome) {
             // 1. match against a path defined in application / tool home ~/etc/paths
             //    or file defined in $LIBRARY_CONFIG_PATHS
 
-            pthread_once(&once, readPathsTable);
+            pthread_once(&once, init);
 
             std::vector<std::pair<std::string, std::string> >::const_iterator best = pathsTable.end();
             size_t match                                                           = 0;

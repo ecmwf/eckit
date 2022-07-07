@@ -10,7 +10,7 @@
 
 #include "eckit/linalg/Triplet.h"
 
-#include <iostream>
+#include <ostream>
 
 namespace eckit {
 namespace linalg {

@@ -107,6 +107,8 @@ expression/function/FunctionLAST.cc
 expression/function/FunctionLAST.h
 expression/function/FunctionNORM.cc
 expression/function/FunctionNORM.h
+expression/function/FunctionNE.cc
+expression/function/FunctionNE.h
 expression/function/FunctionNOT_IN.cc
 expression/function/FunctionNOT_IN.h
 expression/function/FunctionNOT_NULL.cc

@@ -155,7 +155,6 @@ class TestOutput : public eckit::sql::SQLOutput {
         for (const auto& r : results) {
             r->output(*this);
         }
-        //        eckit::Log::info() << "..." << intOutput_ << floatOutput_ << strOutput_ << std::endl;
         return true;
     }
 

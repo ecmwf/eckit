@@ -323,9 +323,6 @@ double negate_double(double n) {
 double logical_not_double(double n) {
     return !n;
 }
-double not_equal_to_double(double l, double r) {
-    return l != r;
-}
 double greater_double(double l, double r) {
     return l > r;
 }
@@ -449,7 +446,6 @@ static FunctionBuilder<TertiaryFunction<ibits>> ibitsBuilder("ibits", "");
 static FunctionBuilder<UnaryFunction<negate_double>> negate_doubleBuilder("-", "");
 static FunctionBuilder<UnaryFunction<logical_not_double>> logical_not_doubleBuilder("not", "logical not");
 
-static FunctionBuilder<BinaryFunction<not_equal_to_double>> not_equal_to_doubleBuilder("<>", "not equal to");
 static FunctionBuilder<BinaryFunction<greater_double>> greater_doubleBuilder(">", "greater than");
 static FunctionBuilder<BinaryFunction<greater_equal_double>> greater_equal_doubleBuilder(">=", "greater or equal");
 static FunctionBuilder<BinaryFunction<less_double>> less_doubleBuilder("<", "less than");

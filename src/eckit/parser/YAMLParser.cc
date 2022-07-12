@@ -25,6 +25,7 @@
 
 namespace eckit {
 
+static std::string ignoreChar(const std::string& s, const char ignore);
 static Value toValue(const std::string& s);
 
 struct YAMLItem : public Counted {
@@ -426,42 +427,21 @@ Value YAMLParser::parseNumber() {
 }
 
 
-std::string ignoreChar(const std::string& s, const char ignore) {
+static std::string ignoreChar(const std::string& s, const char ignore) {
+    if (s.find(ignore) == std::string::npos) {
+        return s;
+    }
     std::string str = s;
     str.erase(remove(str.begin(), str.end(), ignore), str.end());
     return str;
 }
 
-
-long long parseSexagesimal(const std::string& s) {
-    std::string str = s;
-    long long unit = 1;
-    long long d = 0;
-    while (str.rfind(':') != std::string::npos) {
-        size_t len = str.length();
-        d += strtol(str.substr(len - 2).c_str(), 0, 0) * unit;
-        str = str.substr(0, len - 3);
-        unit *= 60;
-    }
-    if (str[0] == '-') {
-        d = strtol(str.c_str(), 0, 0) * unit - d;
-    } else {
-        d += strtol(str.c_str(), 0, 0) * unit;
-    }
-    return d;
-}
-
 static Value toValue(const std::string& s) {
-    static Regex integer2("^[-+]?0b[01_]+$", false);
-    static Regex integer8("^[-+]?0[0-7_]+$", false);
-    static Regex integer10("^[-+]?(0|[1-9][0-9_]*)$", false);
-    static Regex integer16("^[-+]?0x[0-9a-fA-F_]+$", false);
-    static Regex integer60("^[-+]?[1-9][0-9_]*(:[0-5]?[0-9])+$", false);
+    static Regex integer8("^0o[0-7_]+$", false);
+    static Regex integer10("^[-+]?[0-9_]+$", false);
+    static Regex integer16("0x[0-9a-fA-F_]+$", false);
     static Regex float10(
-        "^[-+]?((0|[1-9][0-9_]*)(\\.[0-9_]*)?|\\.[0-9_]+)([eE][-+]?[0-9]+)?$",
-        false);
-    static Regex float60(
-        "^[-+]?[1-9][0-9_]*(:[0-5]?[0-9])+\\.[0-9_]+$",
+        "^[-+]?(\\.[0-9_]+|[0-9_]+(\\.[0-9_]*)?)([eE][-+]?[0-9]+)?$",
         false);
     static Regex floatspecial(
         "^(\\.(nan|NaN|NAN)|[-+]?\\.(inf|Inf|INF))$",
@@ -483,24 +463,12 @@ static Value toValue(const std::string& s) {
             case '+':
             case '0':
 
-                if (integer2.match(s)) {
-                    std::string str = ignoreChar(s, '_');
-                    if (s[1] == 'b') {  // 0b..., no sign
-                        str = str.substr(2);
-                    } else {  // +0b... or -0b..., signed
-                        str = str.substr(0, 1) + str.substr(3);
-                    }
-                    return Value(strtol(str.c_str(), 0, 2));
-                }
-
                 if (integer8.match(s)) {
-                    std::string str = ignoreChar(s, '_');
-                    return Value(strtol(str.c_str(), 0, 0));
+                    return Value(strtol(ignoreChar(s, '_').substr(2).c_str(), 0, 8));
                 }
 
                 if (integer16.match(s)) {
-                    std::string str = ignoreChar(s, '_');
-                    return Value(strtol(str.c_str(), 0, 0));
+                    return Value(strtol(ignoreChar(s, '_').substr(2).c_str(), 0, 16));
                 }
 
             case '1':
@@ -514,39 +482,22 @@ static Value toValue(const std::string& s) {
             case '9':
 
                 if (integer10.match(s)) {
-                    std::string str = ignoreChar(s, '_');
-                    long long d = Translator<std::string, long long>()(str);
-                    return Value(d);
-                }
-
-                if (integer60.match(s)) {
-                    return Value(parseSexagesimal(s));
-                }
-
-                if (float60.match(s)) {
-                    std::string str = ignoreChar(s, '_');
-                    size_t pos_dot = str.rfind('.');
-                    double frac = Translator<std::string, double>()(str.substr(pos_dot));
-                    double d = (double)parseSexagesimal(str.substr(0, pos_dot));
-                    if (str[0] == '-') {
-                        d -= frac;
-                    } else {
-                        d += frac;
-                    }
+                    long long d = Translator<std::string, long long>()(
+                        ignoreChar(s, '_'));
                     return Value(d);
                 }
 
             case '.':
 
                 if (float10.match(s)) {
-                    std::string str = ignoreChar(s, '_');
-                    double d = Translator<std::string, double>()(str);
+                    double d = Translator<std::string, double>()(
+                        ignoreChar(s, '_'));
                     return Value(d);
                 }
 
                 if (floatspecial.match(s)) {
-                    std::string str = ignoreChar(s, '.');
-                    double d = Translator<std::string, double>()(str);
+                    double d = Translator<std::string, double>()(
+                        ignoreChar(s, '.'));
                     return Value(d);
                 }
 
@@ -564,7 +515,8 @@ static Value toValue(const std::string& s) {
                 break;
 
             case 'n':
-                if (s == "null") {
+            case 'N':
+                if (s == "null" || s == "Null" || s == "NULL") {
                     return Value();
                 }
 
@@ -575,13 +527,15 @@ static Value toValue(const std::string& s) {
                 break;
 
             case 'f':
-                if (s == "false") {
+            case 'F':
+                if (s == "false" || s == "False" || s == "FALSE") {
                     return Value(false);
                 }
                 break;
 
             case 't':
-                if (s == "true") {
+            case 'T':
+                if (s == "true" || s == "True" || s == "TRUE") {
                     return Value(true);
                 }
                 break;
@@ -598,6 +552,11 @@ static Value toValue(const std::string& s) {
 
             case '\'':
                 ASSERT(s[0] != '\'');
+                break;
+            case '~':
+                if (s == "~") {
+                    return Value();
+                }
                 break;
         }
     }

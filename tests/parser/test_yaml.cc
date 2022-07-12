@@ -223,22 +223,18 @@ CASE("test_eckit_yaml_19") {
     std::cout << "2.19.yaml " << v << std::endl;
     std::cout << toJSON(v) << std::endl;
 
-    EXPECT(v["base2"] == Value(13579));
     EXPECT(v["base8"] == Value(13579));
     EXPECT(v["base10"] == Value(13579));
     EXPECT(v["base16"] == Value(13579));
-    EXPECT(v["base60"] == Value(13579));
-    EXPECT(v["base_2"] == Value(24680));
     EXPECT(v["base_8"] == Value(24680));
     EXPECT(v["base_10"] == Value(24680));
     EXPECT(v["base_16"] == Value(24680));
-    EXPECT(v["minus-base2"] == Value(-13579));
-    EXPECT(v["minus-base8"] == Value(-13579));
+    EXPECT(v["zerobase10"] == Value(13579));
+    EXPECT(v["plus-base10"] == Value(13579));
     EXPECT(v["minus-base10"] == Value(-13579));
-    EXPECT(v["minus-base16"] == Value(-13579));
-    EXPECT(v["minus-base60"] == Value(-13579));
-    EXPECT(v["str-like-base8"] == Value("032413"));
-    EXPECT(v["str-not-base8"] == Value("032418"));
+    EXPECT(v["str-base8"] == Value("0o32413"));
+    EXPECT(v["str-base10"] == Value("13579"));
+    EXPECT(v["str-base16"] == Value("0x350b"));
     EXPECT(v["zero"] == Value(0));
     EXPECT(v["minus-zero"] == Value(0));
     EXPECT(v["plus-zero"] == Value(0));
@@ -250,11 +246,16 @@ CASE("test_eckit_yaml_20") {
     std::cout << toJSON(v) << std::endl;
     EXPECT(fabs((double)v["canonical"] - 1230.15) < 1.0e-7);
     EXPECT(fabs((double)v["exponential"] - 1230.15) < 1.0e-7);
-    EXPECT(fabs((double)v["sexagesimal"] - 1230.15) < 1.0e-7);
     EXPECT(fabs((double)v["fixed"] - 1230.15) < 1.0e-7);
+    EXPECT(isinf((double)v["infinity"]));
+    EXPECT((double)v["infinity"] > 0.0);
+    EXPECT(isinf((double)v["positive infinity"]));
+    EXPECT((double)v["positive infinity"] > 0.0);
     EXPECT(isinf((double)v["negative infinity"]));
     EXPECT((double)v["negative infinity"] < 0.0);
     EXPECT(isnan((double)v["not a number"]));
+    EXPECT(isnan((double)v["not a number lower"]));
+    EXPECT(isnan((double)v["not a number upper"]));
 }
 
 
@@ -262,6 +263,19 @@ CASE("test_eckit_yaml_21") {
     Value v = YAMLParser::decodeFile("2.21.yaml");
     std::cout << "2.21.yaml " << v << std::endl;
     std::cout << toJSON(v) << std::endl;
+    EXPECT(v["tilde-null"] == Value());
+    EXPECT(v["lower-null"] == Value());
+    EXPECT(v["cap-null"] == Value());
+    EXPECT(v["upper-null"] == Value());
+    EXPECT(v["lower-true"] == Value(true));
+    EXPECT(v["cap-true"] == Value(true));
+    EXPECT(v["upper-true"] == Value(true));
+    EXPECT(v["y-true"] == Value(true));
+    EXPECT(v["lower-false"] == Value(false));
+    EXPECT(v["cap-false"] == Value(false));
+    EXPECT(v["upper-false"] == Value(false));
+    EXPECT(v["n-false"] == Value(false));
+    EXPECT(v["string"] == Value("12345"));
 }
 
 CASE("test_eckit_yaml_21_extra") {
@@ -278,7 +292,7 @@ CASE("test_eckit_yaml_21_extra") {
     // Check decoding of true, false, null, etc.
     EXPECT(YAMLParser::decodeString("null").typeName() == "Nil");
     EXPECT(YAMLParser::decodeString("false").typeName() == "Bool");
-    EXPECT(YAMLParser::decodeString("~").typeName() == "String");
+    EXPECT(YAMLParser::decodeString("~").typeName() == "Nil");
     EXPECT(YAMLParser::decodeString("y").typeName() == "String");
     EXPECT(YAMLParser::decodeString("n").typeName() == "String");
     EXPECT(YAMLParser::decodeString("string").typeName() == "String");

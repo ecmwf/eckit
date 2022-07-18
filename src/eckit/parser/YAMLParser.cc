@@ -25,7 +25,6 @@
 
 namespace eckit {
 
-static std::string ignoreChar(const std::string& s, const char ignore);
 static Value toValue(const std::string& s);
 
 struct YAMLItem : public Counted {
@@ -426,17 +425,7 @@ Value YAMLParser::parseNumber() {
     return parseStringOrNumber(ignore);
 }
 
-
-static std::string ignoreChar(const std::string& s, const char ignore) {
-    if (s.find(ignore) == std::string::npos) {
-        return s;
-    }
-    std::string str = s;
-    str.erase(remove(str.begin(), str.end(), ignore), str.end());
-    return str;
-}
-
-static Value toValue(const std::string& s) {
+static Value toValue(std::string& s) {
     static Regex integer8("^0o[0-7_]+$", false);
     static Regex integer10("^[-+]?[0-9_]+$", false);
     static Regex integer16("0x[0-9a-fA-F_]+$", false);
@@ -464,11 +453,13 @@ static Value toValue(const std::string& s) {
             case '0':
 
                 if (integer8.match(s)) {
-                    return Value(strtol(ignoreChar(s, '_').substr(2).c_str(), 0, 8));
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
+                    return Value(strtol(s.substr(2).c_str(), 0, 8));
                 }
 
                 if (integer16.match(s)) {
-                    return Value(strtol(ignoreChar(s, '_').substr(2).c_str(), 0, 16));
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
+                    return Value(strtol(s.substr(2).c_str(), 0, 16));
                 }
 
             case '1':
@@ -482,22 +473,22 @@ static Value toValue(const std::string& s) {
             case '9':
 
                 if (integer10.match(s)) {
-                    long long d = Translator<std::string, long long>()(
-                        ignoreChar(s, '_'));
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
+                    long long d = Translator<std::string, long long>()(s);
                     return Value(d);
                 }
 
             case '.':
 
                 if (float10.match(s)) {
-                    double d = Translator<std::string, double>()(
-                        ignoreChar(s, '_'));
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
+                    double d = Translator<std::string, double>()(s);
                     return Value(d);
                 }
 
                 if (floatspecial.match(s)) {
-                    double d = Translator<std::string, double>()(
-                        ignoreChar(s, '.'));
+                    s.erase(remove(s.begin(), s.end(), '.'), s.end());
+                    double d = Translator<std::string, double>()(s);
                     return Value(d);
                 }
 

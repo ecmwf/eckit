@@ -28,7 +28,7 @@ static BackendRegistry<LinearAlgebraDense>* backends = nullptr;
 
 
 static void init() {
-    backends = new BackendRegistry<LinearAlgebraDense>(backend_default(), "ECKIT_LINEAR_ALGEBRA_DENSE_BACKEND");
+    backends = new BackendRegistry<LinearAlgebraDense>(dense_backend_default(), "ECKIT_LINEAR_ALGEBRA_DENSE_BACKEND");
 }
 
 

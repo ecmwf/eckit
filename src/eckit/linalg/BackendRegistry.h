@@ -24,7 +24,8 @@ namespace eckit {
 namespace linalg {
 
 
-const char* backend_default();
+const char* sparse_backend_default();
+const char* dense_backend_default();
 
 
 template <typename LA>

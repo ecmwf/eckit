@@ -28,7 +28,7 @@ static BackendRegistry<LinearAlgebraSparse>* backends = nullptr;
 
 
 static void init() {
-    backends = new BackendRegistry<LinearAlgebraSparse>(backend_default(), "ECKIT_LINEAR_ALGEBRA_SPARSE_BACKEND");
+    backends = new BackendRegistry<LinearAlgebraSparse>(sparse_backend_default(), "ECKIT_LINEAR_ALGEBRA_SPARSE_BACKEND");
 }
 
 

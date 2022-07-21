@@ -18,9 +18,24 @@ namespace eckit {
 namespace linalg {
 
 
-const char* backend_default() {
+const char* sparse_backend_default() {
     return
 #ifdef eckit_HAVE_EIGEN
+        "eigen"
+#else
+        "generic"
+#endif
+        ;
+}
+
+
+const char* dense_backend_default() {
+    return
+#if eckit_HAVE_MKL // always defined: 0 or 1
+        "mkl"
+#elif defined(eckit_HAVE_LAPACK)
+        "lapack"
+#elif defined(eckit_HAVE_EIGEN)
         "eigen"
 #else
         "generic"

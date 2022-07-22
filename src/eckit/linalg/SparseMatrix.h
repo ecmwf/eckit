@@ -134,7 +134,35 @@ public:  // types
         }
     };
 
-public:  // methods
+    class DirectAllocator : public SparseMatrix::Allocator {
+    public:
+        DirectAllocator(const Shape& shape, const Layout& layout) :
+            shape_(shape), layout_(layout) {}
+
+        SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) override;
+
+        void deallocate(SparseMatrix::Layout, SparseMatrix::Shape) override;
+
+        bool inSharedMemory() const override { return false; }
+
+        void print(std::ostream& out) const override { out << "DirectAllocator[]"; }
+
+        const Shape& shape_;
+        const Layout& layout_;
+    };
+
+    static constexpr auto RenumberRemove = std::numeric_limits<Index>::max();
+
+    enum RenumberMode
+    {
+        RenumberNoDuplicates         = 0,
+        RenumberAccumulateDuplicates = 1
+    };
+
+    // Ensure unique (i, j) pair (map key)
+    using RenumberMap = std::map<std::pair<Index, Index>, Scalar>;
+
+public:
     // -- Constructors
 
     /// Default constructor, empty matrix
@@ -143,7 +171,7 @@ public:  // methods
     /// Constructs an identity matrix with provided dimensions
     SparseMatrix(Size rows, Size cols, Allocator* alloc = nullptr);
 
-    /// Constructor from triplets
+    /// Constructor from vector<Triplet>
     SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets);
 
     /// Constructor from Stream
@@ -163,6 +191,10 @@ public:  // methods
     /// Assignment operator (allocates and copies data)
     SparseMatrix& operator=(const SparseMatrix&);
 
+private:
+    /// Constructor from set<Triplet>
+    SparseMatrix(Size rows, Size cols, const RenumberMap&);
+
 public:
     /// Prune entries with exactly the given value
     SparseMatrix& prune(Scalar val = Scalar(0));
@@ -172,6 +204,9 @@ public:
 
     /// Transpose matrix in-place
     SparseMatrix& transpose();
+
+    /// Renumber matrix rows and/or columns
+    SparseMatrix renumber(Size rows, Size cols, const std::vector<Index>& renumberRows, const std::vector<Index>& renumberCols, RenumberMode mode = RenumberMode::RenumberNoDuplicates) const;
 
     /// @returns a sparse matrix that is a row reduction and reorder accoring to indexes passed in vector
     SparseMatrix rowReduction(const std::vector<size_t>& p) const;

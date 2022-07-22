@@ -10,6 +10,7 @@
 
 #include "eckit/geometry/polygon/LonLatPolygon.h"
 
+#include <algorithm>
 #include <cmath>
 #include <ostream>
 
@@ -53,7 +54,7 @@ inline int on_side(const Point2& P, const Point2& A, const Point2& B) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) :
+LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles, bool clockwise) :
     container_type(points) {
     ASSERT(points.size() > 1);
     ASSERT(is_approximately_equal(points.front()[LON], points.back()[LON]) && is_approximately_equal(points.front()[LAT], points.back()[LAT]));
@@ -76,6 +77,10 @@ LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePole
 
             push_back(A);
         }
+    }
+
+    if (clockwise != (area() < 0.)) {
+        std::reverse(begin(), end());
     }
 
     max_ = min_ = front();
@@ -156,7 +161,7 @@ bool LonLatPolygon::contains(const Point2& P) const {
                 if (side == 0 && on_direction(A[LON], lon, B[LON]) != 0) {
                     return true;
                 }
-                if ((prev != 1 && direction > 0 && side > 0) || (prev != -1 && direction < 0 && side < 0)) {
+                if (prev != direction && direction == side) {
                     prev = direction;
                     wn += direction;
                 }
@@ -172,6 +177,20 @@ bool LonLatPolygon::contains(const Point2& P) const {
     } while (lon <= max_[LON]);
 
     return false;
+}
+
+double LonLatPolygon::area(double radius) const {
+    static const double degrees_to_radians = M_PI / 180.;
+
+    double area = 0;
+    for (int i = 0, end = static_cast<int>(size()); i < end; ++i) {
+        const auto& Alon = operator[]((end + i - 2) % end)[LON];
+        const auto& Blat = operator[]((end + i - 1) % end)[LAT];
+        const auto& Clon = operator[](i)[LON];
+        area += (Clon - Alon) * std::sin(Blat * degrees_to_radians);
+    }
+
+    return area * radius * radius / 2. * degrees_to_radians;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

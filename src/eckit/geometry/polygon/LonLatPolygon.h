@@ -31,10 +31,10 @@ public:
 
     // -- Constructors
 
-    explicit LonLatPolygon(const container_type& points, bool includePoles = true);
+    explicit LonLatPolygon(const container_type& points, bool includePoles = true, bool clockwise = false);
 
     template<typename Point2Iterator>
-    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true) : LonLatPolygon(container_type(begin, end), includePoles) {}
+    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true, bool clockwise = false) : LonLatPolygon(container_type(begin, end), includePoles, clockwise) {}
 
     LonLatPolygon(const LonLatPolygon&) = default;
     LonLatPolygon(LonLatPolygon&&)      = default;
@@ -61,6 +61,8 @@ public:
     /// @param[in] P given point
     /// @return if point (lon,lat) is in polygon
     bool contains(const Point2& Plonlat) const;
+
+    double area(double radius = 1) const;
 
 private:
     // -- Methods

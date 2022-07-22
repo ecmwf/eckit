@@ -30,7 +30,7 @@ static BackendRegistry<LinearAlgebraSparse>* backends = nullptr;
 
 static void init() {
     backends = new BackendRegistry<LinearAlgebraSparse>(
-#ifdef eckit_HAVE_EIGEN
+#if eckit_HAVE_EIGEN
         "eigen"
 #else
         "generic"

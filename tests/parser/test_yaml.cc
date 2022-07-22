@@ -515,7 +515,7 @@ CASE("test_eckit_yaml_cfg_1") {
     std::cout << toJSON(v) << std::endl;
 }
 
-#ifdef eckit_HAVE_UNICODE
+#if eckit_HAVE_UNICODE
 CASE("test_eckit_yaml_unicode") {
     Value v = YAMLParser::decodeFile("unicode.yaml");
     v.dump(std::cout) << std::endl;

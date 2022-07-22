@@ -15,7 +15,7 @@
 
 #include "eckit/eckit_config.h"
 
-#ifdef eckit_HAVE_UNICODE
+#if eckit_HAVE_UNICODE
 #include <codecvt>
 #endif /* eckit_HAVE_UNICODE */
 
@@ -124,7 +124,7 @@ Value ObjectParser::parseNumber() {
     }
 }
 
-#ifdef eckit_HAVE_UNICODE
+#if eckit_HAVE_UNICODE
 static std::string utf8(uint32_t code) {
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
     return conv.to_bytes(char32_t(code));
@@ -198,7 +198,7 @@ Value ObjectParser::parseString(char quote) {
                     s += '\t';
                     break;
 
-#ifdef eckit_HAVE_UNICODE
+#if eckit_HAVE_UNICODE
                 case 'u':
                     s += unicode();
                     break;

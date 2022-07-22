@@ -14,11 +14,11 @@
 
 #include "eckit/eckit.h"
 
-#if defined(eckit_HAVE_EXECINFO_BACKTRACE) || defined(__FreeBSD__)
+#if eckit_HAVE_EXECINFO_BACKTRACE || defined(__FreeBSD__)
 #include <execinfo.h>  // for backtrace
 #endif
 
-#ifdef eckit_HAVE_CXXABI_H
+#if eckit_HAVE_CXXABI_H
 #include <cxxabi.h>
 #endif
 
@@ -36,7 +36,7 @@ std::string BackTrace::dump() {
 
     std::ostringstream oss;
 
-#if (defined(eckit_HAVE_EXECINFO_BACKTRACE) || defined(__FreeBSD__)) && !defined(_AIX)
+#if (eckit_HAVE_EXECINFO_BACKTRACE || defined(__FreeBSD__)) && !defined(_AIX)
 
     static Ordinal count = 0;
     ++count;
@@ -54,7 +54,7 @@ std::string BackTrace::dump() {
     if (strings == nullptr)
         oss << " --- no backtrace_symbols found ---\n";
 
-#ifndef eckit_HAVE_CXXABI_H
+#if !eckit_HAVE_CXXABI_H
     for (int s = 0; s < addsize; ++s)
         oss << strings[s] << std::endl;
 #else

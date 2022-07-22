@@ -410,7 +410,7 @@ CASE("Test PathName hashing") {
     // Create and hash some random data. Note that the buffer is bigger than and a non-integer
     // multiple of the buffer size used in hash generation
 
-#ifdef eckit_HAVE_XXHASH
+#if eckit_HAVE_XXHASH
     const char* hash_method = "xxh64";
 #else
     const char* hash_method = "MD5";

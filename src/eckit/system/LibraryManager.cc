@@ -46,7 +46,7 @@ namespace system {
 //----------------------------------------------------------------------------------------------------------------------
 
 static std::string path_from_libhandle(const std::string& libname, void* handle) {
-#ifdef eckit_HAVE_DLINFO
+#if eckit_HAVE_DLINFO
     char path[PATH_MAX];
     if (::dlinfo(handle, RTLD_DI_ORIGIN, path) < 0) {
         std::ostringstream ss;

@@ -11,6 +11,7 @@
 
 #include "eckit/linalg/LinearAlgebraSparse.h"
 
+#include "eckit/eckit.h"
 #include "eckit/linalg/BackendRegistry.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -28,7 +29,14 @@ static BackendRegistry<LinearAlgebraSparse>* backends = nullptr;
 
 
 static void init() {
-    backends = new BackendRegistry<LinearAlgebraSparse>(sparse_backend_default(), "ECKIT_LINEAR_ALGEBRA_SPARSE_BACKEND");
+    backends = new BackendRegistry<LinearAlgebraSparse>(
+#ifdef eckit_HAVE_EIGEN
+        "eigen"
+#else
+        "generic"
+#endif
+        ,
+        "ECKIT_LINEAR_ALGEBRA_SPARSE_BACKEND");
 }
 
 

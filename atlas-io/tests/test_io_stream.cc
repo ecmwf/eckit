@@ -14,7 +14,7 @@
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/PooledHandle.h"
 
-#include "tests/AtlasTestEnvironment.h"
+#include "TestEnvironment.h"
 
 
 namespace atlas {
@@ -53,12 +53,12 @@ CASE("Test seek-for-write works when opening OutputFileStream for append") {
     std::string s2("append   \n");
     std::string s3("overwrite\n");
     {
-        ATLAS_TRACE("write");
+        ATLAS_IO_TRACE("write");
         io::Stream f = io::OutputFileStream("append-test");
         f.write(s1.c_str(), s1.size());
     }
     {
-        ATLAS_TRACE("append");
+        ATLAS_IO_TRACE("append");
         io::Stream f = io::OutputFileStream("append-test", io::Mode::append);
         auto offset  = f.position();
         f.write(s2.c_str(), s2.size());
@@ -68,7 +68,7 @@ CASE("Test seek-for-write works when opening OutputFileStream for append") {
         f.write(s3.c_str(), s3.size());
     }
     {
-        ATLAS_TRACE("read");
+        ATLAS_IO_TRACE("read");
         io::Stream f         = io::InputFileStream("append-test");
         std::string expected = s1 + s3;
         std::string read(expected.size(), ' ');

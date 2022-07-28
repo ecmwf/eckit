@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "atlas_io/atlas-io.h"
-
-#include "atlas/io/ArrayAdaptor.h"
-#include "atlas/io/VectorAdaptor.h"
+#include "eckit/exception/Exceptions.h"
+#define ATLAS_IO_ASSERT(X) ASSERT(X)
+#define ATLAS_IO_ASSERT_MSG(X, M) ASSERT_MSG(X, M)

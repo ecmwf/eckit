@@ -9,28 +9,52 @@
  */
 
 #include <cstring>
+#include <fstream>
 #include <vector>
 
 #include "eckit/io/MemoryHandle.h"
 
-#include "atlas/array.h"
-#include "atlas/util/vector.h"
-
-#include "atlas/io/atlas-io.h"
-
-#include "tests/AtlasTestEnvironment.h"
-
-
-#include "atlas/io/atlas-io.h"
-
+#include "TestEnvironment.h"
 
 namespace atlas {
 namespace test {
 
+template <typename T>
+struct Matrix {
+    std::vector<T> data_;
+    size_t rows_;
+    size_t cols_;
+    size_t size() const { return rows_ * cols_; }
+    T* data() { return data_.data(); }
+    const T* data() const { return data_.data(); }
+    atlas::io::DataType datatype() const { return atlas::io::make_datatype<T>(); }
+    Matrix(size_t rows, size_t cols) { resize(rows, cols); }
+    void resize(size_t rows, size_t cols) {
+        rows_ = rows;
+        cols_ = cols;
+        data_.resize(size());
+    }
+    void assign(std::initializer_list<T> list) { data_.assign(list); }
+    void assign(T value) { data_.assign(size(), value); }
+};
+
+template <typename T>
+void interprete(const Matrix<T>& in, atlas::io::ArrayReference& out) {
+    out = io::ArrayReference(in.data(), in.datatype(), atlas::io::ArrayShape{in.rows_, in.cols_});
+}
+
+template <typename T>
+void decode(const atlas::io::Metadata& metadata, const atlas::io::Data& data, Matrix<T>& out) {
+    atlas::io::ArrayMetadata array(metadata);
+    out.resize(array.shape(0), array.shape(1));
+    ::memcpy(out.data(), data, data.size());
+}
+
+
 struct Arrays {
     std::vector<double> v1;
-    atlas::vector<float> v2;
-    atlas::array::ArrayT<int> v3{0, 0};
+    std::vector<float> v2;
+    Matrix<int> v3{0, 0};
     bool operator==(const Arrays& other) const {
         return v1 == other.v1 && ::memcmp(v2.data(), other.v2.data(), v2.size() * sizeof(float)) == 0 &&
                ::memcmp(v3.data(), other.v3.data(), v3.size() * v3.datatype().size()) == 0;
@@ -40,7 +64,11 @@ struct Arrays {
 
 //-----------------------------------------------------------------------------
 
-static util::Config no_compression("compression", "none");
+static eckit::LocalConfiguration no_compression = [] {
+    eckit::LocalConfiguration c;
+    c.set("compression", "none");
+    return c;
+}();
 
 //-----------------------------------------------------------------------------
 
@@ -62,21 +90,21 @@ static TestRecord record1{[](Arrays& data) {
     data.v1 = {0, 1, 2, 3, 4};
     data.v2 = {3, 2, 1};
     data.v3.resize(3, 2);
-    array::make_view<int, 2>(data.v3).assign({11, 12, 21, 22, 31, 32});
+    data.v3.assign({11, 12, 21, 22, 31, 32});
 }};
 
 static TestRecord record2{[](Arrays& data) {
     data.v1 = {0, 10, 20, 30, 40, 50};
     data.v2 = {30, 20, 10, 40};
     data.v3.resize(2, 3);
-    array::make_view<int, 2>(data.v3).assign({11, 12, 13, 21, 22, 23});
+    data.v3.assign({11, 12, 13, 21, 22, 23});
 }};
 
 static TestRecord record3{[](Arrays& data) {
     data.v1.assign(1024 / 8 - 1, 2.);
     data.v2.assign(1023 * 1024 / 4 + 512 / 4, 1.);
     data.v3.resize(1024, 1024);
-    array::make_view<int, 2>(data.v3).assign(3);
+    data.v3.assign(3);
 }};
 
 std::vector<io::Record::URI> records;
@@ -362,7 +390,7 @@ CASE("Read master record") {
     Arrays data1, data2;
     io::RecordReader record("record.atlas" + suffix());
 
-    ATLAS_DEBUG_VAR(record.metadata("v1"));
+    eckit::Log::info() << "record.metadata(\"v1\"): " << record.metadata("v1") << std::endl;
 
 
     record.read("v1", data1.v1).wait();
@@ -452,7 +480,7 @@ CASE("Write record to memory") {
 
     // write
     {
-        ATLAS_TRACE("write");
+        ATLAS_IO_TRACE("write");
         io::RecordWriter record;
         record.compression(false);
         record.checksum(false);
@@ -462,7 +490,8 @@ CASE("Write record to memory") {
 
         memory.resize(record.estimateMaximumSize());
 
-        ATLAS_DEBUG_VAR(memory.size());
+        eckit::Log::info() << "memory.size() : " << memory.size() << std::endl;
+        ;
 
         eckit::MemoryHandle datahandle_out{memory};
         datahandle_out.openForWrite(0);
@@ -475,7 +504,7 @@ CASE("Write record to memory") {
 
     // read with individual RecordItemReader
     {
-        ATLAS_TRACE("read with RecordItemReader");
+        ATLAS_IO_TRACE("read with RecordItemReader");
 
         io::Session session;
 
@@ -508,7 +537,7 @@ CASE("Write record to memory") {
 
     // read with RecordReader
     {
-        ATLAS_TRACE("read with RecordReader");
+        ATLAS_IO_TRACE("read with RecordReader");
         Arrays data_read;
 
         eckit::MemoryHandle datahandle_in{memory};
@@ -534,25 +563,25 @@ CASE("Write record to memory") {
 
 CASE("RecordPrinter") {
     SECTION("table") {
-        util::Config table_with_details;
+        eckit::LocalConfiguration table_with_details;
         table_with_details.set("format", "table");
         table_with_details.set("details", true);
 
         io::RecordPrinter record{eckit::PathName("record1.atlas" + suffix()), table_with_details};
         std::stringstream out;
         EXPECT_NO_THROW(out << record);
-        Log::debug() << out.str();
+        eckit::Log::debug() << out.str();
     }
 
     SECTION("yaml") {
-        util::Config yaml_with_details;
+        eckit::LocalConfiguration yaml_with_details;
         yaml_with_details.set("format", "yaml");
         yaml_with_details.set("details", true);
 
         io::RecordPrinter record{eckit::PathName("record1.atlas" + suffix()), yaml_with_details};
         std::stringstream out;
         EXPECT_NO_THROW(out << record);
-        Log::debug() << out.str();
+        eckit::Log::debug() << out.str();
     }
 }
 

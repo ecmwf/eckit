@@ -10,7 +10,19 @@
 
 #pragma once
 
-#include "atlas_io/atlas-io.h"
+#include "atlas_io/detail/Time.h"
+#include "atlas_io/detail/Version.h"
 
-#include "atlas/io/ArrayAdaptor.h"
-#include "atlas/io/VectorAdaptor.h"
+namespace atlas {
+namespace io {
+
+struct RecordInfo {
+    Version version_;
+    Time created_;
+
+    const Version& version() const { return version_; }
+    const Time& created() const { return created_; }
+};
+
+}  // namespace io
+}  // namespace atlas

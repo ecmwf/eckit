@@ -18,10 +18,6 @@
 
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
 namespace eckit {
 namespace test {
 
@@ -130,7 +126,9 @@ CASE("Constructing fractions") {
 
     // EXPECT(Fraction(M_PI), Fraction(1200000, 1));
     {
-        Fraction west(-12), east(1.2), increment(1.2);
+        Fraction west(-12);
+        Fraction east(1.2);
+        Fraction increment(1.2);
 
         Fraction f(west);
         while (f < east) {
@@ -140,7 +138,9 @@ CASE("Constructing fractions") {
     }
 
     {
-        Fraction west("-77"), east("7"), increment("0.7");
+        Fraction west("-77");
+        Fraction east("7");
+        Fraction increment("0.7");
 
         Fraction f(west);
         while (f < east) {
@@ -161,6 +161,7 @@ CASE("Constructing fractions") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Overflow during comparisons") {
+    Log::info().precision(16);
 
     {
         Fraction A(5934563467713522511, 13567822205000000);  // 437.39985519021053
@@ -175,7 +176,6 @@ CASE("Overflow during comparisons") {
 
     {
         using limits = std::numeric_limits<Fraction::value_type>;
-        std::streamsize p(Log::info().precision(16));
 
         Fraction A(limits::max() - 6, limits::max() - 1);
         Fraction B(limits::max() - 2, limits::max() - 1);
@@ -211,8 +211,6 @@ CASE("Overflow during comparisons") {
         EXPECT(B <= U);
         EXPECT(U > B);
         EXPECT(U >= B);
-
-        Log::info().precision(p);
     }
 }
 
@@ -261,22 +259,22 @@ CASE("Regression (Fraction <=> double)") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Values known to have problematic conversion to fraction") {
+    Log::debug().precision(16);
 
     auto values = std::vector<double>{0.47718059708975263};
-    std::streamsize p(Log::debug().precision(16));
     for (auto value : values) {
 
         Log::debug() << "Test " << value << "..." << std::endl;
         Log::debug() << "Test " << value << " = " << Fraction(value) << std::endl;
     }
-    Log::debug().precision(p);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Fraction inverse") {
+    Log::debug().precision(16);
 
-    for (auto& test : {
+    for (const auto& test : {
              std::make_pair(Fraction{1, 2}, Fraction{2, 1}),
              std::make_pair(Fraction{1, 3}, Fraction{3, 1}),
          }) {
@@ -296,35 +294,32 @@ CASE("Fraction inverse") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Fraction precision") {
-    auto old = Log::debug().precision(16);
+    Log::debug().precision(16);
 
     const std::vector<Fraction::value_type> primes{2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
     const std::vector<Fraction::value_type> den{10, 100, 1000, 10000, 100000, 1000000, 10000000, 2, 4, 8, 16, 32, 64};
 
-    for (auto& prime : primes) {
+    for (const auto& prime : primes) {
         Fraction exact_p(1, prime);
         Fraction exact_m(-exact_p);
 
-        for (auto& p : den) {
+        for (const auto& p : den) {
             const Fraction precision{1, p};
-            double value_p = round(double(exact_p) * p) / p;
-            double value_m = round(double(exact_m) * p) / p;
+            double value_p = std::round(double(exact_p) * p) / p;
+            double value_m = std::round(double(exact_m) * p) / p;
 
-            Log::debug() << "Test  " << exact_p << " ~=  " << value_p << " +- " << precision << endl;
+            Log::debug() << "Test  " << exact_p << " ~=  " << value_p << " +- " << precision << std::endl;
             EXPECT(Fraction::abs(exact_p - Fraction(value_p, precision)) < precision);
 
-            Log::debug() << "Test " << exact_m << " ~= " << value_m << " +- " << precision << endl;
+            Log::debug() << "Test " << exact_m << " ~= " << value_m << " +- " << precision << std::endl;
             EXPECT(Fraction::abs(exact_m - Fraction(value_m, precision)) < precision);
         }
     }
-
-    Log::debug().precision(old);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 CASE("String to double to fraction to double to string") {
-    auto old = Log::debug().precision(16);
-
     Translator<std::string, double> s2d;
 
     std::string s("-17.9229");
@@ -343,5 +338,5 @@ CASE("String to double to fraction to double to string") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

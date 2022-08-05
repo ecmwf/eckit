@@ -136,6 +136,23 @@ public:  // types
         }
     };
 
+    class DirectAllocator : public SparseMatrix::Allocator {
+    public:
+        DirectAllocator(const Shape& shape, const Layout& layout) :
+            shape_(shape), layout_(layout) {}
+
+        SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) override;
+
+        void deallocate(SparseMatrix::Layout, SparseMatrix::Shape) override;
+
+        bool inSharedMemory() const override { return false; }
+
+        void print(std::ostream& out) const override { out << "DirectAllocator[]"; }
+
+        const Shape& shape_;
+        const Layout& layout_;
+    };
+
     static constexpr auto RenumberRemove = std::numeric_limits<Index>::max();
 
     enum RenumberMode
@@ -145,7 +162,7 @@ public:  // types
     };
 
     // Ensure unique (i, j) pair (map key)
-    using RenumberMap = std::map<std::pair<Size, Size>, Scalar>;
+    using RenumberMap = std::map<std::pair<Index, Index>, Scalar>;
 
 public:
     // -- Constructors

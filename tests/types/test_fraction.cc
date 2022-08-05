@@ -334,6 +334,26 @@ CASE("String to double to fraction to double to string") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("ECC-1438") {
+    Log::info().precision(16);
+
+    using t = std::pair<std::string, Fraction>;
+    for (const auto& p : {
+             t{"W from area", Fraction(-55.03399999999999)},
+             t{"W issue", Fraction(-80955, 1471)},
+             t{"W file/n", Fraction(304966009 - 360000000, 1000000)},
+             t{"W file/nn", Fraction(304966009, 1000000)},
+             t{"E from area", Fraction(-35.03399999999999)},
+             t{"E issue", Fraction(-103050, 2941)},
+             t{"E file/n", Fraction(324960898 - 360000000, 1000000)},
+             t{"E file/nn", Fraction(324960898, 1000000)},
+         }) {
+        Log::info() << p.first << ": \t" << double(p.second) << " = " << p.second << std::endl;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace test
 }  // namespace eckit
 

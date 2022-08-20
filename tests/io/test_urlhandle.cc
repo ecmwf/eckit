@@ -54,7 +54,7 @@ CASE("Get URL 301 and follow Location redirect") {
 CASE("Get URL small file 41 bytes") {
     PathName out("/tmp/t.grib.md5");
     {
-        URLHandle h("http://download.ecmwf.org/test-data/eckit/tests/io/t.grib.md5");
+        URLHandle h("http://get.ecmwf.int/test-data/eckit/tests/io/t.grib.md5");
         h.saveInto(out);
     }
     Log::info() << out << " size " << out.size() << std::endl;
@@ -65,7 +65,7 @@ CASE("Get URL small file 41 bytes") {
 CASE("Get URL 800K file") {
     PathName out("/tmp/t.grib.md5");
     {
-        URLHandle h("http://download.ecmwf.org/test-data/multio/tests/server/single-field.grib");
+        URLHandle h("http://get.ecmwf.int/test-data/multio/tests/server/single-field.grib");
         h.saveInto(out);
     }
     Log::info() << out << " size " << out.size() << std::endl;
@@ -75,7 +75,7 @@ CASE("Get URL 800K file") {
 
 CASE("Handle URLException 404") {
     PathName out("/tmp/foobar");
-    URLHandle h("http://download.ecmwf.org/test-data/eckit/tests/io/foobar");
+    URLHandle h("http://get.ecmwf.int/test-data/eckit/tests/io/foobar");
     try {
         h.saveInto(out);
     }
@@ -98,7 +98,7 @@ CASE("No use of SSL") {
 
 
 CASE("EasyCURL GET") {
-    auto r = EasyCURL().GET("http://download.ecmwf.org/test-data/eckit/tests/io/t.grib.md5");
+    auto r = EasyCURL().GET("http://get.ecmwf.int/test-data/eckit/tests/io/t.grib.md5");
     // Log::info() << "[" << r.body() << "]" << std::endl;
     EXPECT(r.body() == "f59fdc6a09c1d11b0e567309ef541bef  t.grib\n");
 }

@@ -98,6 +98,9 @@ public:
     void lockShared();
     void unlock();
 
+    void flock();
+    void funlock();
+
     void flush();
     void sync();
 

@@ -13,6 +13,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
+#include <algorithm>
 #include <fstream>
 
 #include "eckit/memory/Counted.h"
@@ -424,13 +425,17 @@ Value YAMLParser::parseNumber() {
     return parseStringOrNumber(ignore);
 }
 
-
-static Value toValue(const std::string& s) {
-    static Regex real("^[-+]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)([eE][-+]?[0-9]+)?$", false);
-    static Regex integer("^[-+]?[0-9]+$", false);
-    static Regex hex("^0x[0-9a-zA-Z]+$", false);
-    static Regex octal("^0[0-7]+$", false);
-    static Regex time("[0-9]+:[0-9]+:[0-9]+$", false);
+static Value toValue(std::string& s) {
+    static Regex integer8("^0o[0-7_]+$", false);
+    static Regex integer10("^[-+]?[0-9_]+$", false);
+    static Regex integer16("0x[0-9a-fA-F_]+$", false);
+    static Regex float10(
+        "^[-+]?(\\.[0-9_]+|[0-9_]+(\\.[0-9_]*)?)([eE][-+]?[0-9]+)?$",
+        false);
+    static Regex floatspecial(
+        "^(\\.(nan|NaN|NAN)|[-+]?\\.(inf|Inf|INF))$",
+        false);
+    // static Regex time("[0-9]+:[0-9]+:[0-9]+$", false);
 
     /*
     if (time.match(s)) {
@@ -443,26 +448,19 @@ static Value toValue(const std::string& s) {
     if (s.length()) {
         // This is because checking regex is very slow
         switch (s[0]) {
+            case '-':
+            case '+':
             case '0':
 
-                if (octal.match(s)) {
-                    return Value(strtol(s.c_str(), 0, 0));
+                if (integer8.match(s)) {
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
+                    return Value(strtol(s.substr(2).c_str(), 0, 8));
                 }
 
-                if (s.length() > 2 && s[1] == 'x' && hex.match(s)) {
-                    return Value(strtol(s.c_str(), 0, 0));
+                if (integer16.match(s)) {
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
+                    return Value(strtol(s.substr(2).c_str(), 0, 16));
                 }
-
-                if (integer.match(s)) {
-                    long long d = Translator<std::string, long long>()(s);
-                    return Value(d);
-                }
-
-                if (real.match(s)) {
-                    double d = Translator<std::string, double>()(s);
-                    return Value(d);
-                }
-                break;
 
             case '1':
             case '2':
@@ -473,18 +471,27 @@ static Value toValue(const std::string& s) {
             case '7':
             case '8':
             case '9':
-            case '-':
-            case '+':
-            case '.':
-                if (integer.match(s)) {
+
+                if (integer10.match(s)) {
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
                     long long d = Translator<std::string, long long>()(s);
                     return Value(d);
                 }
 
-                if (real.match(s)) {
+            case '.':
+
+                if (float10.match(s)) {
+                    s.erase(remove(s.begin(), s.end(), '_'), s.end());
                     double d = Translator<std::string, double>()(s);
                     return Value(d);
                 }
+
+                if (floatspecial.match(s)) {
+                    s.erase(remove(s.begin(), s.end(), '.'), s.end());
+                    double d = Translator<std::string, double>()(s);
+                    return Value(d);
+                }
+
                 break;
 
             case 'o':
@@ -499,7 +506,8 @@ static Value toValue(const std::string& s) {
                 break;
 
             case 'n':
-                if (s == "null") {
+            case 'N':
+                if (s == "null" || s == "Null" || s == "NULL") {
                     return Value();
                 }
 
@@ -510,13 +518,15 @@ static Value toValue(const std::string& s) {
                 break;
 
             case 'f':
-                if (s == "false") {
+            case 'F':
+                if (s == "false" || s == "False" || s == "FALSE") {
                     return Value(false);
                 }
                 break;
 
             case 't':
-                if (s == "true") {
+            case 'T':
+                if (s == "true" || s == "True" || s == "TRUE") {
                     return Value(true);
                 }
                 break;
@@ -533,6 +543,11 @@ static Value toValue(const std::string& s) {
 
             case '\'':
                 ASSERT(s[0] != '\'');
+                break;
+            case '~':
+                if (s == "~") {
+                    return Value();
+                }
                 break;
         }
     }

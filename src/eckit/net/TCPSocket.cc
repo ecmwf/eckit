@@ -35,8 +35,7 @@
 #include "eckit/os/AutoAlarm.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/thread/Once.h"
+#include "eckit/thread/StaticMutex.h"
 
 namespace eckit {
 namespace net {
@@ -44,7 +43,7 @@ namespace net {
 
 static in_addr none = {INADDR_NONE};
 
-static Once<Mutex> local_mutex;
+static StaticMutex local_mutex;
 
 TCPSocket::UnknownHost::UnknownHost(const std::string& host) :
     Exception(std::string("Unknown host ") + host) {}
@@ -341,7 +340,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
 
     {  // Block for local_mutex
 
-        AutoLock<Mutex> lock(local_mutex);
+        AutoLock<StaticMutex> lock(local_mutex);
 
         sin.sin_port   = htons(port);
         sin.sin_family = AF_INET;
@@ -596,7 +595,7 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
         ::sleep(5);
     }
 
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
 #ifdef SGI
     int len = sizeof(sin);
 #else
@@ -618,7 +617,7 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
     if (localHost_ == "0.0.0.0") {
         if (addr.length() == 0) {
-            AutoLock<Mutex> lock(local_mutex);
+            AutoLock<StaticMutex> lock(local_mutex);
             localHost_ = Resource<std::string>("host", "");
             if (localHost_.length() == 0) {
                 localHost_ = eckit::Main::hostname();
@@ -641,7 +640,7 @@ void TCPSocket::bind() {}
 static std::map<uint32_t, std::string> cache;
 
 std::string TCPSocket::addrToHost(in_addr addr) {
-    AutoLock<Mutex> lock(local_mutex);
+    AutoLock<StaticMutex> lock(local_mutex);
 
     // For some reason IBM's gethostbyaddr_r dumps core
     // from time to time, so let's cache the result

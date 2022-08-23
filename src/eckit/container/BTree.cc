@@ -12,6 +12,9 @@
 #include <sys/file.h>
 #ifdef __linux__ 
 #include <linux/errno.h>
+#ifndef ENOTSUPP
+#define ENOTSUPP 524
+#endif
 #endif
 
 #include "eckit/exception/Exceptions.h"

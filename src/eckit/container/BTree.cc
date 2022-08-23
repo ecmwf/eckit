@@ -658,15 +658,12 @@ void BTree<K, V, S, L>::flock() {
 
     if (::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH) < 0)
     {
-        std::stringstream ss;
-        ss << "getting: " << errno << " - expecting: EBADF " << EBADF <<
-        ", EINTR" << EINTR <<
-        ", EINVAL" << EINVAL <<
-        ", ENOLCK" << ENOLCK <<
-        ", EWOULDBLOCK" << EWOULDBLOCK;
-        eckit::SeriousBug(ss.str(), Here());
+        if (errno == EBADF || errno == EINTR ||  errno == EINVAL ||  errno == ENOLCK ||  errno == EWOULDBLOCK) {
+            std::stringstream ss;
+            ss << "Error " << Log::syserr << " locking " << path_;
+            throw eckit::SeriousBug(ss.str(), Here());
+        }
     }
-//    SYSCALL(::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH));
 }
 
 template <class K, class V, int S, class L>
@@ -674,15 +671,12 @@ void BTree<K, V, S, L>::funlock() {
 
     if (::flock(file_.fileno(), LOCK_UN) < 0)
     {
-        std::stringstream ss;
-        ss << "getting: " << errno << " - expecting: EBADF " << EBADF <<
-        ", EINTR" << EINTR <<
-        ", EINVAL" << EINVAL <<
-        ", ENOLCK" << ENOLCK <<
-        ", EWOULDBLOCK" << EWOULDBLOCK;
-        eckit::SeriousBug(ss.str(), Here());
+        if (errno == EBADF || errno == EINTR ||  errno == EINVAL ||  errno == ENOLCK ||  errno == EWOULDBLOCK) {
+            std::stringstream ss;
+            ss << "Error " << Log::syserr << " unlocking " << path_;
+            throw eckit::SeriousBug(ss.str(), Here());
+        }
     }
-//    SYSCALL(::flock(file_.fileno(), LOCK_UN));
 }
 
 

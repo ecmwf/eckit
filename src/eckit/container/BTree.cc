@@ -10,6 +10,12 @@
 
 #include <ostream>
 #include <sys/file.h>
+#ifdef __linux__ 
+#include <linux/errno.h>
+#ifndef ENOTSUPP
+#define ENOTSUPP 524
+#endif
+#endif
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/FDataSync.h"
@@ -655,12 +661,60 @@ void BTree<K, V, S, L>::unlock() {
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::flock() {
-    SYSCALL(::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH));
+
+    if (::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH) < 0)
+    {
+        bool skip = false;
+        #ifdef ENOTSUP
+            if (errno == ENOTSUP) {
+                skip = true;
+            }
+        #endif
+        #ifdef ENOTSUPP
+            if (errno == ENOTSUPP) {
+                skip = true;
+            }
+        #endif
+        #ifdef EOPNOTSUPP
+            if (errno == EOPNOTSUPP) {
+                skip = true;
+            }
+        #endif
+        if (!skip) {
+            std::stringstream ss;
+            ss << "Error " << Log::syserr << " locking " << path_;
+            throw eckit::UserError(ss.str(), Here());
+        }
+    }
 }
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::funlock() {
-    SYSCALL(::flock(file_.fileno(), LOCK_UN));
+
+    if (::flock(file_.fileno(), LOCK_UN) < 0)
+    {
+        bool skip = false;
+        #ifdef ENOTSUP
+            if (errno == ENOTSUP) {
+                skip = true;
+            }
+        #endif
+        #ifdef ENOTSUPP
+            if (errno == ENOTSUPP) {
+                skip = true;
+            }
+        #endif
+        #ifdef EOPNOTSUPP
+            if (errno == EOPNOTSUPP) {
+                skip = true;
+            }
+        #endif
+        if (!skip) {
+            std::stringstream ss;
+            ss << "Error " << Log::syserr << " unlocking " << path_;
+            throw eckit::UserError(ss.str(), Here());
+        }
+    }
 }
 
 

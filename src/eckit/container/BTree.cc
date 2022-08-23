@@ -655,12 +655,34 @@ void BTree<K, V, S, L>::unlock() {
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::flock() {
-    SYSCALL(::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH));
+
+    if (::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH) < 0)
+    {
+        std::stringstream ss;
+        ss << "getting: " << errno << " - expecting: EBADF " << EBADF <<
+        ", EINTR" << EINTR <<
+        ", EINVAL" << EINVAL <<
+        ", ENOLCK" << ENOLCK <<
+        ", EWOULDBLOCK" << EWOULDBLOCK;
+        eckit::SeriousBug(ss.str(), Here());
+    }
+//    SYSCALL(::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH));
 }
 
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::funlock() {
-    SYSCALL(::flock(file_.fileno(), LOCK_UN));
+
+    if (::flock(file_.fileno(), LOCK_UN) < 0)
+    {
+        std::stringstream ss;
+        ss << "getting: " << errno << " - expecting: EBADF " << EBADF <<
+        ", EINTR" << EINTR <<
+        ", EINVAL" << EINVAL <<
+        ", ENOLCK" << ENOLCK <<
+        ", EWOULDBLOCK" << EWOULDBLOCK;
+        eckit::SeriousBug(ss.str(), Here());
+    }
+//    SYSCALL(::flock(file_.fileno(), LOCK_UN));
 }
 
 

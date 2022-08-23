@@ -10,6 +10,9 @@
 
 #include <ostream>
 #include <sys/file.h>
+#ifdef __linux__ 
+#include <linux/errno.h>
+#endif
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/FDataSync.h"

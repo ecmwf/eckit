@@ -658,10 +658,26 @@ void BTree<K, V, S, L>::flock() {
 
     if (::flock(file_.fileno(), readOnly_ ? LOCK_EX : LOCK_SH) < 0)
     {
-        if (errno == EBADF || errno == EINTR ||  errno == EINVAL ||  errno == ENOLCK ||  errno == EWOULDBLOCK) {
+        bool skip = false;
+        #ifdef ENOTSUP
+            if (errno == ENOTSUP) {
+                skip = true;
+            }
+        #endif
+        #ifdef ENOTSUPP
+            if (errno == ENOTSUPP) {
+                skip = true;
+            }
+        #endif
+        #ifdef EOPNOTSUPP
+            if (errno == EOPNOTSUPP) {
+                skip = true;
+            }
+        #endif
+        if (!skip) {
             std::stringstream ss;
             ss << "Error " << Log::syserr << " locking " << path_;
-            throw eckit::SeriousBug(ss.str(), Here());
+            throw eckit::UserError(ss.str(), Here());
         }
     }
 }
@@ -671,10 +687,26 @@ void BTree<K, V, S, L>::funlock() {
 
     if (::flock(file_.fileno(), LOCK_UN) < 0)
     {
-        if (errno == EBADF || errno == EINTR ||  errno == EINVAL ||  errno == ENOLCK ||  errno == EWOULDBLOCK) {
+        bool skip = false;
+        #ifdef ENOTSUP
+            if (errno == ENOTSUP) {
+                skip = true;
+            }
+        #endif
+        #ifdef ENOTSUPP
+            if (errno == ENOTSUPP) {
+                skip = true;
+            }
+        #endif
+        #ifdef EOPNOTSUPP
+            if (errno == EOPNOTSUPP) {
+                skip = true;
+            }
+        #endif
+        if (!skip) {
             std::stringstream ss;
             ss << "Error " << Log::syserr << " unlocking " << path_;
-            throw eckit::SeriousBug(ss.str(), Here());
+            throw eckit::UserError(ss.str(), Here());
         }
     }
 }

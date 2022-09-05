@@ -10,6 +10,8 @@
 
 /// @author Emanuele Danovaro
 /// @author Simon Smart
+/// @author Philipp Geier
+///  - Added copy & move assignment operator (has been implicitly deleted  due to move constructor.) 
 /// @date   Feb 22
 
 #pragma once
@@ -48,6 +50,27 @@ public: // methods
         }
     }
 
+    Optional<T>& operator=(const Optional<T>& other) {
+        if (valid_ && other.valid_) {
+            value() = other.value();
+        } else if (valid_ && !other.valid_) {
+            reinterpret_cast<T*>(&val_)->~T();
+            valid_ = false;
+        }
+        return *this;
+    }
+    
+    Optional<T>& operator=(Optional<T>&& other) {
+        if (valid_ && other.valid_) {
+            value() = std::move(other.value());
+            other.valid_ = false;
+        } else if (valid_ && !other.valid_) {
+            reinterpret_cast<T*>(&val_)->~T();
+            valid_ = false;
+        }
+        return *this;
+    }
+   
     Optional<T>& operator=(T&& v) {
         valid_ = true;
         new (val_) T(std::forward<T>(v));

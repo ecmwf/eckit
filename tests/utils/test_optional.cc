@@ -99,6 +99,30 @@ CASE("wrap") {
 
 }
 
+CASE("copy and move assign") {
+    {
+        Optional<long> opt1{1};
+        Optional<long> opt2{2};
+        Optional<long> opt3{3};
+        Optional<long> opt4;
+        ASSERT(opt1.value() == 1);
+        ASSERT(opt2.value() == 2);
+        ASSERT(opt3.value() == 3);
+        ASSERT(!opt4);
+        
+        opt1 = opt2;
+        ASSERT(opt1.value() == 2);
+        
+        opt1 = std::move(opt3);
+        ASSERT(opt1.value() == 3);
+        
+        opt1 = opt4;
+        ASSERT(!opt1);
+        ASSERT(!opt3);
+    }
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace test

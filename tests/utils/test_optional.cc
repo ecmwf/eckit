@@ -444,16 +444,19 @@ CASE("test destructor on non-trivial object") {
     }
 }
 
-CASE("constexpr") {
-    {
-        constexpr Optional<int> v1(1);
-        constexpr Optional<int> v2(v1.value() + 4);
-        EXPECT_EQUAL(v2.value(), 5);
+// Constexpr copy is not possible in C++11 (requires c++14 anyway)
+// * requires conditial branching with member values
+// * allow constexpr construct values with new
+// CASE("constexpr") {
+//     {
+//         constexpr Optional<int> v1(1);
+//         constexpr Optional<int> v2(v1.value() + 4);
+//         EXPECT_EQUAL(v2.value(), 5);
         
-        // Constexpr copy is not possible in C++11 (requires c++14 anyway)
-        // constexpr Optional<int> v3(v2);
-    }
-}
+//         // Constexpr copy is not possible in C++11 (requires c++14 anyway)
+//         // constexpr Optional<int> v3(v2);
+//     }
+// }
 
 //----------------------------------------------------------------------------------------------------------------------
 

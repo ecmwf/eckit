@@ -42,29 +42,34 @@ template <typename T>
 class Optional: public OptionalBase<T> { 
 public:  // methods
     constexpr Optional() noexcept :
-        val_{}, hasValue_(false){};
+        val_{None{}}, hasValue_(false){};
         
-    // constexpr constructor only possible in C++14
-    constexpr explicit Optional(T&& v) :
-        val_{.some = std::move(v)}, hasValue_(true) {
-        // new (&val_.some) T(std::forward<T>(v));
+    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
+    explicit Optional(T&& v) :
+        val_{None{}}, hasValue_(true) {
+        new (&val_.some) T(std::move(v));
     }
     
-    constexpr explicit Optional(const T& v) :
-        val_{.some = v}, hasValue_(true) {
-        // new (&val_.some) T(std::forward<T>(v));
+    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
+    explicit Optional(const T& v) :
+        val_{None{}}, hasValue_(true) {
+        new (&val_.some) T(v);
     }
 
-    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally
+    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
     Optional(const Optional<T>& rhs) :
-        val_{}, hasValue_(rhs.hasValue_) {
-        hasValue_ ? (val_.some = T(rhs.val_.some)), 0 : 0;
+        val_{None{}}, hasValue_(rhs.hasValue_) {
+        if (hasValue_) {
+            new (&val_.some) T(rhs.val_.some);
+        }
     }
     
-    // constexpr move constructor only possible in C++14 because hasValue_ needs to be accessed conditionally
+    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
     Optional(Optional<T>&& rhs) :
-        val_{}, hasValue_(rhs.hasValue_) {
-        hasValue_ ? (val_.some = T(std::move(rhs.val_.some))), 0 : 0;
+        val_{None{}}, hasValue_(rhs.hasValue_) {
+        if (hasValue_) {
+            new (&val_.some) T(std::move(rhs.val_.some));
+        }
         rhs.hasValue_ = false;
     }
 
@@ -137,13 +142,13 @@ public:  // methods
     }
 
     constexpr const T& value() const& {
-        return *const_ptr();
+        return val_.some;
     }
     T& value() & {
-        return *ptr();
+        return val_.some;
     }
     T&& value() && {
-        return *ptr();
+        return val_.some;
     }
 
     constexpr const T& operator*() const& {
@@ -167,13 +172,6 @@ public:  // methods
     }
 
 private:  // members
-    T* ptr() {
-        return &val_.some;
-    }
-    constexpr const T* const_ptr() const {
-        return &val_.some;
-    }
-
     struct None {};
     union t_opt_value_type {
         None none;

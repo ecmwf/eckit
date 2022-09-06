@@ -11,7 +11,7 @@
 /// @author Emanuele Danovaro
 /// @author Simon Smart
 /// @author Philipp Geier
-///  - Added copy & move assignment operator (has been implicitly deleted  due to move constructor.) 
+///  - Added copy & move assignment operator (has been implicitly deleted  due to move constructor.)
 /// @date   Feb 22
 
 #pragma once
@@ -23,64 +23,116 @@ namespace eckit {
 /// Helper class to manage an optional contained value,
 /// i.e. a value that may or may not be present.
 
+// Define non-trivial or trivial destructor in template specialization
 template <typename T>
-class Optional {
+class Optional; 
 
-public: // methods
-    constexpr Optional() noexcept : valid_(false) {};
-    explicit Optional(T&& v) : valid_(true) {
-        new (val_) T(std::forward<T>(v));
+template <typename T, class Enable = void>
+struct OptionalBase {
+    ~OptionalBase() {
+        static_cast<Optional<T>*>(this)->destruct();
+    }
+};
+
+template <typename T>
+struct OptionalBase<T, typename std::enable_if<std::is_trivially_destructible<T>::value>::type> {
+};
+
+template <typename T>
+class Optional: public OptionalBase<T> { 
+public:  // methods
+    constexpr Optional() noexcept :
+        val_{}, hasValue_(false){};
+        
+    // constexpr constructor only possible in C++14
+    constexpr explicit Optional(T&& v) :
+        val_{.some = std::move(v)}, hasValue_(true) {
+        // new (&val_.some) T(std::forward<T>(v));
+    }
+    
+    constexpr explicit Optional(const T& v) :
+        val_{.some = v}, hasValue_(true) {
+        // new (&val_.some) T(std::forward<T>(v));
     }
 
-    Optional(const Optional<T>& rhs) : valid_(rhs.valid) {
-        if (valid_) {
-            new (val_) T(*reinterpret_cast<const T*>(&rhs.val_));
-        }
+    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally
+    Optional(const Optional<T>& rhs) :
+        val_{}, hasValue_(rhs.hasValue_) {
+        hasValue_ ? (val_.some = T(rhs.val_.some)), 0 : 0;
     }
-    Optional(Optional<T>&& rhs) : valid_(rhs.valid_) {
-        if (valid_) {
-            new (val_) T(std::move(*reinterpret_cast<T*>(&rhs.val_)));
-        }
-        rhs.valid_ = false;
+    
+    // constexpr move constructor only possible in C++14 because hasValue_ needs to be accessed conditionally
+    Optional(Optional<T>&& rhs) :
+        val_{}, hasValue_(rhs.hasValue_) {
+        hasValue_ ? (val_.some = T(std::move(rhs.val_.some))), 0 : 0;
+        rhs.hasValue_ = false;
     }
 
-    ~Optional() {
-        if (valid_) {
-            reinterpret_cast<T*>(&val_)->~T();
+    void destruct() {
+        if (hasValue_) {
+            val_.some.~T();
         }
     }
 
     Optional<T>& operator=(const Optional<T>& other) {
-        if (valid_ && other.valid_) {
+        if (hasValue_ && other.hasValue_) {
             value() = other.value();
-        } else if (valid_ && !other.valid_) {
-            reinterpret_cast<T*>(&val_)->~T();
-            valid_ = false;
         }
-        return *this;
-    }
-    
-    Optional<T>& operator=(Optional<T>&& other) {
-        if (valid_ && other.valid_) {
-            value() = std::move(other.value());
-            other.valid_ = false;
-        } else if (valid_ && !other.valid_) {
-            reinterpret_cast<T*>(&val_)->~T();
-            valid_ = false;
+        else if (!hasValue_ && other.hasValue_) {
+            // Explicitly construct here, previous value has been deleted. 
+            new (&val_.some) T(other.value());
+            hasValue_ = true;
         }
-        return *this;
-    }
-   
-    Optional<T>& operator=(T&& v) {
-        valid_ = true;
-        new (val_) T(std::forward<T>(v));
+        else if (hasValue_ && !other.hasValue_) {
+            val_.some.~T();
+            hasValue_ = false;
+        }
         return *this;
     }
 
-    bool has_value() const {
-        return valid_;
+    Optional<T>& operator=(Optional<T>&& other) {
+        if (hasValue_ && other.hasValue_) {
+            value()         = std::move(other.value());
+            other.hasValue_ = false;
+        }
+        else if (!hasValue_ && other.hasValue_) {
+            // Explicitly construct here, previous value has been deleted. 
+            new (&val_.some) T(std::move(other.value()));
+            other.hasValue_ = false;
+            hasValue_ = true;
+        }
+        else if (hasValue_ && !other.hasValue_) {
+            val_.some.~T();
+            hasValue_ = false;
+        }
+        return *this;
     }
-    explicit operator bool() const {
+
+    template<typename TV>
+    Optional<T>& assignValue(TV&& v) {
+        if (!hasValue_) {
+            // Explicitly construct here, previous value has been deleted. 
+            new (&val_.some) T(std::forward<TV>(v));
+        }
+        else {
+            // Can copy assign
+            value() = std::forward<TV>(v);
+        }
+        hasValue_ = true;
+        return *this;
+    }
+    
+    Optional<T>& operator=(const T& v) {
+        return assignValue(v);
+    }
+    Optional<T>& operator=(T&& v) {
+        return assignValue(std::move(v));
+    }
+
+    constexpr bool has_value() const {
+        return hasValue_;
+    }
+    explicit constexpr operator bool() const {
         return has_value();
     }
 
@@ -114,18 +166,32 @@ public: // methods
         return value();
     }
 
-private: // members
+private:  // members
     T* ptr() {
-        return reinterpret_cast<T*>(&val_);
+        return &val_.some;
     }
-    const T* const_ptr() const {
-        return reinterpret_cast<const T*>(&val_);
+    constexpr const T* const_ptr() const {
+        return &val_.some;
     }
 
-    alignas(T) char val_[sizeof(T)];
-    bool valid_;
+    struct None {};
+    union t_opt_value_type {
+        None none;
+        T some;
+        ~t_opt_value_type() = default;
+    };
+    union nt_opt_value_type {
+        None none;
+        T some;
+        ~nt_opt_value_type() {};
+    };
+    
+    using opt_value_type = typename std::conditional<std::is_trivially_destructible<T>::value, t_opt_value_type, nt_opt_value_type>::type;
+
+    opt_value_type val_;
+    bool hasValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // end namespace eckit
+}  // end namespace eckit

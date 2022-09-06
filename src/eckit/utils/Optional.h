@@ -25,7 +25,7 @@ namespace eckit {
 
 // Define non-trivial or trivial destructor in template specialization
 template <typename T>
-class Optional; 
+class Optional;
 
 template <typename T, class Enable = void>
 struct OptionalBase {
@@ -39,17 +39,17 @@ struct OptionalBase<T, typename std::enable_if<std::is_trivially_destructible<T>
 };
 
 template <typename T>
-class Optional: public OptionalBase<T> { 
+class Optional : public OptionalBase<T> {
 public:  // methods
     constexpr Optional() noexcept :
         val_{None{}}, hasValue_(false){};
-        
+
     // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
     explicit Optional(T&& v) :
         val_{None{}}, hasValue_(true) {
         new (&val_.some) T(std::move(v));
     }
-    
+
     // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
     explicit Optional(const T& v) :
         val_{None{}}, hasValue_(true) {
@@ -63,7 +63,7 @@ public:  // methods
             new (&val_.some) T(rhs.val_.some);
         }
     }
-    
+
     // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
     Optional(Optional<T>&& rhs) :
         val_{None{}}, hasValue_(rhs.hasValue_) {
@@ -84,7 +84,7 @@ public:  // methods
             value() = other.value();
         }
         else if (!hasValue_ && other.hasValue_) {
-            // Explicitly construct here, previous value has been deleted. 
+            // Explicitly construct here, previous value has been deleted.
             new (&val_.some) T(other.value());
             hasValue_ = true;
         }
@@ -101,10 +101,10 @@ public:  // methods
             other.hasValue_ = false;
         }
         else if (!hasValue_ && other.hasValue_) {
-            // Explicitly construct here, previous value has been deleted. 
+            // Explicitly construct here, previous value has been deleted.
             new (&val_.some) T(std::move(other.value()));
             other.hasValue_ = false;
-            hasValue_ = true;
+            hasValue_       = true;
         }
         else if (hasValue_ && !other.hasValue_) {
             val_.some.~T();
@@ -113,10 +113,10 @@ public:  // methods
         return *this;
     }
 
-    template<typename TV>
+    template <typename TV>
     Optional<T>& assignValue(TV&& v) {
         if (!hasValue_) {
-            // Explicitly construct here, previous value has been deleted. 
+            // Explicitly construct here, previous value has been deleted.
             new (&val_.some) T(std::forward<TV>(v));
         }
         else {
@@ -126,7 +126,7 @@ public:  // methods
         hasValue_ = true;
         return *this;
     }
-    
+
     Optional<T>& operator=(const T& v) {
         return assignValue(v);
     }
@@ -181,9 +181,9 @@ private:  // members
     union nt_opt_value_type {
         None none;
         T some;
-        ~nt_opt_value_type() {};
+        ~nt_opt_value_type(){};
     };
-    
+
     using opt_value_type = typename std::conditional<std::is_trivially_destructible<T>::value, t_opt_value_type, nt_opt_value_type>::type;
 
     opt_value_type val_;

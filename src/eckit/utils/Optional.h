@@ -40,43 +40,60 @@ struct OptionalBase<T, typename std::enable_if<std::is_trivially_destructible<T>
 
 template <typename T>
 class Optional : public OptionalBase<T> {
+protected:
+    struct TagValueConstructor {};
+    struct TagCopyConstructor {};
+    // struct TagMoveConstructor {};
+
+    // Value constructor for trivial classes. No construction happening, can assign directly and hence make it a constexpr
+    template <typename TV, typename std::enable_if<(std::is_trivial<TV>::value), bool>::type = true>
+    constexpr Optional(TagValueConstructor, TV&& v) :
+        val_{.some = std::forward<TV>(v)}, hasValue_(true) {}
+
+    // Value constructor for non-trivial classes - enforce construction with placement
+    template <typename TV, typename std::enable_if<!(std::is_trivial<TV>::value), bool>::type = true>
+    Optional(TagValueConstructor, TV&& v) :
+        val_{None{}}, hasValue_(true) {
+        new (&val_.some) T(std::forward<TV>(v));
+    }
+
+
+    // Copy constructor for trivial classes. No construction happening, can assign directly and hence make it a constexpr
+    template <typename TV, typename std::enable_if<(std::is_trivial<TV>::value), bool>::type = true>
+    constexpr Optional(TagCopyConstructor, const TV& other) :
+        val_{.some = other.val_.some}, hasValue_(other.hasValue_) {}
+
+    // Copy constructor for non-trivial classes - enforce construction with placement
+    template <typename TV, typename std::enable_if<!(std::is_trivial<TV>::value), bool>::type = true>
+    Optional(TagCopyConstructor, const TV& other) :
+        val_{None{}}, hasValue_(other.hasValue_) {
+        if (hasValue_) {
+            new (&val_.some) T(other.val_.some);
+        }
+    }
+
 public:  // methods
     constexpr Optional() noexcept :
         val_{None{}}, hasValue_(false){};
 
-    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
-    explicit Optional(T&& v) :
-        val_{None{}}, hasValue_(true) {
-        new (&val_.some) T(std::move(v));
-    }
+    constexpr explicit Optional(T&& v) :
+        Optional(TagValueConstructor{}, std::move(v)) {}
 
-    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
-    explicit Optional(const T& v) :
-        val_{None{}}, hasValue_(true) {
-        new (&val_.some) T(v);
-    }
+    constexpr explicit Optional(const T& v) :
+        Optional(TagValueConstructor{}, v) {}
 
-    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
-    Optional(const Optional<T>& rhs) :
-        val_{None{}}, hasValue_(rhs.hasValue_) {
-        if (hasValue_) {
-            new (&val_.some) T(rhs.val_.some);
-        }
-    }
+    constexpr Optional(const Optional<T>& rhs) :
+        Optional(TagCopyConstructor{}, rhs) {}
 
-    // constexpr copy constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
+
+    // constexpr move constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
+    // Also trivial objects would need to modify rhs.hasValue_ to not break semantics, which is only possible in C++14;
     Optional(Optional<T>&& rhs) :
         val_{None{}}, hasValue_(rhs.hasValue_) {
         if (hasValue_) {
             new (&val_.some) T(std::move(rhs.val_.some));
         }
         rhs.hasValue_ = false;
-    }
-
-    void destruct() {
-        if (hasValue_) {
-            val_.some.~T();
-        }
     }
 
     Optional<T>& operator=(const Optional<T>& other) {
@@ -148,7 +165,7 @@ public:  // methods
         return val_.some;
     }
     T&& value() && {
-        return val_.some;
+        return std::move(val_.some);
     }
 
     constexpr const T& operator*() const& {
@@ -171,20 +188,29 @@ public:  // methods
         return value();
     }
 
+protected:
+    void destruct() {
+        if (hasValue_) {
+            val_.some.~T();
+        }
+    }
+
+    friend OptionalBase<T>;
+
 private:  // members
     struct None {};
-    union t_opt_value_type {
+    union td_opt_value_type {
         None none;
         T some;
-        ~t_opt_value_type() = default;
+        ~td_opt_value_type() = default;
     };
-    union nt_opt_value_type {
+    union ntd_opt_value_type {
         None none;
         T some;
-        ~nt_opt_value_type(){};
+        ~ntd_opt_value_type(){};
     };
 
-    using opt_value_type = typename std::conditional<std::is_trivially_destructible<T>::value, t_opt_value_type, nt_opt_value_type>::type;
+    using opt_value_type = typename std::conditional<std::is_trivially_destructible<T>::value, td_opt_value_type, ntd_opt_value_type>::type;
 
     opt_value_type val_;
     bool hasValue_;

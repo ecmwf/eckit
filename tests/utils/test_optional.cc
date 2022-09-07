@@ -444,22 +444,47 @@ CASE("test destructor on non-trivial object") {
         Optional<StringWrap> moveTo2(std::move(moveFromNone));
         EXPECT(!moveFromNone);
         EXPECT(!moveTo2);
+
+        int testDestructorID  = 0;
+        int testDestructorUID = 0;
+        {
+            Optional<StringWrap> testDestructor("abuse me");
+            testDestructorID  = testDestructor().id;
+            testDestructorUID = testDestructor().uid;
+        }
+        EXPECT_NOT_EQUAL(testDestructorID, 0);
+        EXPECT_NOT_EQUAL(testDestructorUID, 0);
+        EXPECT(StringWrap::idIsDeleted(testDestructorID));
+        EXPECT(StringWrap::uidIsDeleted(testDestructorUID));
     }
 }
+
+struct TestOptionalConstexprPOD {
+    int a;
+    int b;
+};
 
 // Constexpr copy is not possible in C++11 (requires c++14 anyway)
 // * requires conditial branching with member values
 // * allow constexpr construct values with new
-// CASE("constexpr") {
-//     {
-//         constexpr Optional<int> v1(1);
-//         constexpr Optional<int> v2(v1.value() + 4);
-//         EXPECT_EQUAL(v2.value(), 5);
+CASE("constexpr") {
+    {
+        constexpr Optional<int> none{};
+        static_assert(!none.has_value(), "Empty optional constexpr");
+        constexpr Optional<int> v1(1);
+        constexpr Optional<int> v2(v1.value() + 4);
+        static_assert(v2.value() == 5, "Valued optional constexpr");
 
-//         // Constexpr copy is not possible in C++11 (requires c++14 anyway)
-//         // constexpr Optional<int> v3(v2);
-//     }
-// }
+        constexpr Optional<TestOptionalConstexprPOD> pod(TestOptionalConstexprPOD{1, 2});
+        static_assert(pod.value().b == 2, "Trivial optional constexpr");
+
+        // Composing not possible with C++11 limitations
+        // constexpr Optional<TestOptionalConstexprPOD> pod2 = bool(pod) ? Optional<TestOptionalConstexprPOD>(TestOptionalConstexprPOD{pod().a+1,2}) : Optional<TestOptionalConstexprPOD>{};
+
+        // // Constexpr copy is not possible in C++11 (requires c++14 anyway)
+        // // constexpr Optional<int> v3(v2);
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

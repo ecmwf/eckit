@@ -472,11 +472,11 @@ CASE("constexpr") {
         constexpr Optional<int> none{};
         static_assert(!none.has_value(), "Empty optional constexpr");
         constexpr Optional<int> v1(1);
-        constexpr Optional<int> v2(v1.value() + 4);
-        static_assert(v2.value() == 5, "Valued optional constexpr");
+        constexpr Optional<int> v2(*v1 + 4);
+        static_assert(*v2 == 5, "Valued optional constexpr");
 
         constexpr Optional<TestOptionalConstexprPOD> pod(TestOptionalConstexprPOD{1, 2});
-        static_assert(pod.value().b == 2, "Trivial optional constexpr");
+        static_assert(pod->b == 2, "Trivial optional constexpr");
 
         // Composing not possible with C++11 limitations
         // constexpr Optional<TestOptionalConstexprPOD> pod2 = bool(pod) ? Optional<TestOptionalConstexprPOD>(TestOptionalConstexprPOD{pod().a+1,2}) : Optional<TestOptionalConstexprPOD>{};

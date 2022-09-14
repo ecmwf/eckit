@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "eckit/exception/Exceptions.h"
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -57,7 +59,6 @@ protected:
         new (&val_.some) T(std::forward<TV>(v));
     }
 
-
     // Copy constructor for trivial classes. No construction happening, can assign directly and hence make it a constexpr
     template <typename TV, typename std::enable_if<(std::is_trivial<TV>::value), bool>::type = true>
     constexpr Optional(TagCopyConstructor, const TV& other) :
@@ -76,7 +77,7 @@ public:  // methods
     constexpr Optional() noexcept :
         val_{None{}}, hasValue_(false){};
 
-    constexpr explicit Optional(T&& v) :
+    constexpr explicit Optional(T&& v) noexcept :
         Optional(TagValueConstructor{}, std::move(v)) {}
 
     constexpr explicit Optional(const T& v) :
@@ -85,10 +86,12 @@ public:  // methods
     constexpr Optional(const Optional<T>& rhs) :
         Optional(TagCopyConstructor{}, rhs) {}
 
+    ~Optional() = default;
+
 
     // constexpr move constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
     // Also trivial objects would need to modify rhs.hasValue_ to not break semantics, which is only possible in C++14;
-    Optional(Optional<T>&& rhs) :
+    Optional(Optional<T>&& rhs) noexcept :
         val_{None{}}, hasValue_(rhs.hasValue_) {
         if (hasValue_) {
             new (&val_.some) T(std::move(rhs.val_.some));
@@ -112,7 +115,7 @@ public:  // methods
         return *this;
     }
 
-    Optional<T>& operator=(Optional<T>&& other) {
+    Optional<T>& operator=(Optional<T>&& other) noexcept {
         if (hasValue_ && other.hasValue_) {
             value()         = std::move(other.value());
             other.hasValue_ = false;
@@ -130,25 +133,30 @@ public:  // methods
         return *this;
     }
 
-    template <typename TV>
-    Optional<T>& assignValue(TV&& v) {
+    Optional<T>& operator=(const T& v) {
         if (!hasValue_) {
-            // Explicitly construct here, previous value has been deleted.
-            new (&val_.some) T(std::forward<TV>(v));
+            // Explicitly copy construct here, previous value has been deleted.
+            new (&val_.some) T(v);
         }
         else {
             // Can copy assign
-            value() = std::forward<TV>(v);
+            value() = v;
         }
         hasValue_ = true;
         return *this;
     }
 
-    Optional<T>& operator=(const T& v) {
-        return assignValue(v);
-    }
-    Optional<T>& operator=(T&& v) {
-        return assignValue(std::move(v));
+    Optional<T>& operator=(T&& v) noexcept {
+        if (!hasValue_) {
+            // Explicitly move construct here, previous value has been deleted.
+            new (&val_.some) T(std::move(v));
+        }
+        else {
+            // Can copy assign
+            value() = std::move(v);
+        }
+        hasValue_ = true;
+        return *this;
     }
 
     constexpr bool has_value() const {
@@ -158,26 +166,33 @@ public:  // methods
         return has_value();
     }
 
-    constexpr const T& value() const& {
+    const T& value() const& {
+        if (!hasValue_)
+            throw eckit::Exception("Optional has no value.");
         return val_.some;
     }
     T& value() & {
+        if (!hasValue_)
+            throw eckit::Exception("Optional has no value.");
         return val_.some;
     }
     T&& value() && {
+        if (!hasValue_)
+            throw eckit::Exception("Optional has no value.");
         return std::move(val_.some);
     }
 
     constexpr const T& operator*() const& {
-        return value();
+        return val_.some;
     }
     T& operator*() & {
-        return value();
+        return val_.some;
     }
     T&& operator*() && {
-        return value();
+        return val_.some;
     }
 
+    // TODO: Discuss about removing this in favour of * and -> (simialy to std::optional)
     constexpr const T& operator()() const& {
         return value();
     }
@@ -186,6 +201,13 @@ public:  // methods
     }
     T&& operator()() && {
         return value();
+    }
+
+    constexpr const T* operator->() const& {
+        return &val_.some;
+    }
+    T* operator->() & {
+        return &val_.some;
     }
 
 protected:

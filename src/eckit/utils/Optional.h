@@ -29,7 +29,7 @@ namespace eckit {
 template <typename T>
 class Optional;
 
-template <typename T, class Enable = void>
+template <typename T, typename Enable = void>
 struct OptionalBase {
     ~OptionalBase() {
         static_cast<Optional<T>*>(this)->destruct();
@@ -75,7 +75,7 @@ protected:
 
 public:  // methods
     constexpr Optional() noexcept :
-        val_{None{}}, hasValue_(false){};
+        val_{None{}}, hasValue_(false) {}
 
     constexpr explicit Optional(T&& v) noexcept :
         Optional(TagValueConstructor{}, std::move(v)) {}
@@ -116,6 +116,10 @@ public:  // methods
     }
 
     Optional<T>& operator=(Optional<T>&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
         if (hasValue_ && other.hasValue_) {
             value()         = std::move(other.value());
             other.hasValue_ = false;
@@ -210,16 +214,16 @@ public:  // methods
         return &val_.some;
     }
 
-protected:
+private:
+
+    friend OptionalBase<T>;
+
     void destruct() {
         if (hasValue_) {
             val_.some.~T();
         }
     }
 
-    friend OptionalBase<T>;
-
-private:  // members
     struct None {};
     union td_opt_value_type {
         None none;
@@ -229,7 +233,7 @@ private:  // members
     union ntd_opt_value_type {
         None none;
         T some;
-        ~ntd_opt_value_type(){};
+        ~ntd_opt_value_type() {}
     };
 
     using opt_value_type = typename std::conditional<std::is_trivially_destructible<T>::value, td_opt_value_type, ntd_opt_value_type>::type;

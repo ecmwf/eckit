@@ -112,6 +112,7 @@ CASE("copy and move assign") {
 
         opt1 = opt2;
         EXPECT(opt1.value() == 2);
+        EXPECT(opt2);
 
         opt1 = std::move(opt3);
         EXPECT(opt1.value() == 3);
@@ -119,6 +120,11 @@ CASE("copy and move assign") {
         opt1 = opt4;
         EXPECT(!opt1);
         EXPECT(!opt3);
+
+        // Self move-assignement
+        opt2 = std::move(opt2);
+        EXPECT(opt2);
+        EXPECT(opt2.value() == 2);
     }
 }
 
@@ -168,6 +174,12 @@ CASE("non-trivial object: std::string") {
         opt = std::move(optTmp3);
         EXPECT(!optTmp3);
         EXPECT_EQUAL(opt.value(), std::string("tmp3"));
+
+        // Test move assign to self
+        Optional<std::string> optTmp4("tmp4");
+        optTmp4 = std::move(optTmp4);
+        EXPECT(optTmp4);
+        EXPECT_EQUAL(optTmp4.value(), std::string("tmp4"));
 
 
         // Test copy construct some

@@ -60,7 +60,7 @@ std::pair<double, char> Bytes::reduceTo1024() const {
     double x = std::abs(bytes_);
 
     size_t n = 0;
-    while (x >= 1024. && n < NUMBER(magnitudes)) {
+    while (x >= 1024. && n < NUMBER(magnitudes)-1) {
         x /= 1024.;
         n++;
     }
@@ -101,9 +101,6 @@ std::string Bytes::shorten() const {
 std::ostream& operator<<(std::ostream& s, const Bytes& b) {
     std::pair<double, char> r = b.reduceTo1024();
 
-    if (b.sign() < 0)
-        s << '-';
-
     s << r.first << ' ';
 
     if (r.second != ' ')
@@ -111,7 +108,7 @@ std::ostream& operator<<(std::ostream& s, const Bytes& b) {
 
     s << "byte";
 
-    if (r.first != 1.)
+    if (std::abs(r.first) != 1.)
         s << 's';
 
     if (b.rate_)

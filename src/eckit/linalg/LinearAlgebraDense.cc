@@ -11,6 +11,7 @@
 
 #include "eckit/linalg/LinearAlgebraDense.h"
 
+#include "eckit/eckit.h"
 #include "eckit/linalg/BackendRegistry.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -28,7 +29,18 @@ static BackendRegistry<LinearAlgebraDense>* backends = nullptr;
 
 
 static void init() {
-    backends = new BackendRegistry<LinearAlgebraDense>(backend_default(), "ECKIT_LINEAR_ALGEBRA_DENSE_BACKEND");
+    backends = new BackendRegistry<LinearAlgebraDense>(
+#if eckit_HAVE_MKL  // always defined: 0 or 1
+        "mkl"
+#elif defined(eckit_HAVE_LAPACK)
+        "lapack"
+#elif defined(eckit_HAVE_EIGEN)
+        "eigen"
+#else
+        "generic"
+#endif
+        ,
+        "ECKIT_LINEAR_ALGEBRA_DENSE_BACKEND");
 }
 
 

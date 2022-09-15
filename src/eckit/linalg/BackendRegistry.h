@@ -24,9 +24,6 @@ namespace eckit {
 namespace linalg {
 
 
-const char* backend_default();
-
-
 template <typename LA>
 class BackendRegistry {
 public:
@@ -34,7 +31,7 @@ public:
         default_(default_name) {
         ASSERT(!default_.empty());
 
-        auto* envBackend = ::getenv(env_var);
+        const auto* envBackend = ::getenv(env_var);
         if (envBackend != nullptr) {
             default_ = envBackend;
         }

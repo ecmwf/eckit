@@ -29,6 +29,7 @@ namespace eckit {
 template <typename T>
 class Optional;
 
+// Define trivial destructor in specialized base class - allows having constexpr optional for trivial types
 template <typename T, typename Enable = void>
 struct OptionalBase {
     ~OptionalBase() {
@@ -218,6 +219,7 @@ private:
 
     friend OptionalBase<T>;
 
+    // Is called in the base class for non-trivial types. Allows creating constexpr optional for trivial types
     void destruct() {
         if (hasValue_) {
             val_.some.~T();
@@ -225,17 +227,22 @@ private:
     }
 
     struct None {};
+    // Using union instead of a char* array with alignas allows getting rid of reinterpret_cast (which might be implementation dependent) and allows defining constexpr for trivial types
+    // An implementation in C++14 would also use unions to have full constexpr support
+    // Union with members that have trivial destructors can have a default destructor
     union td_opt_value_type {
         None none;
         T some;
         ~td_opt_value_type() = default;
     };
+    // Union with members that have non-trivial destructors need to define a destructor
     union ntd_opt_value_type {
         None none;
         T some;
         ~ntd_opt_value_type() {}
     };
 
+    // While using ntd_opt_value_type would be just fine for both cases, doing the conditional type switch allows creating constexpr for optional trivial types
     using opt_value_type = typename std::conditional<std::is_trivially_destructible<T>::value, td_opt_value_type, ntd_opt_value_type>::type;
 
     opt_value_type val_;

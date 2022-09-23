@@ -12,13 +12,10 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/PeekHandle.h"
 #include "eckit/message/Message.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 
 #include <algorithm>
 #include <iomanip>
-#include <string>
-#include <vector>
+
 
 namespace eckit {
 namespace message {
@@ -32,47 +29,47 @@ Splitter::~Splitter() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
-eckit::Mutex* local_mutex               = 0;
-std::vector<SplitterFactory*>* decoders = 0;
-pthread_once_t once                     = PTHREAD_ONCE_INIT;
-void init() {
-    local_mutex = new eckit::Mutex();
-    decoders    = new std::vector<SplitterFactory*>();
+
+SplitterFactory& SplitterFactory::instance() {
+    static SplitterFactory theinstance;
+    return theinstance;
 }
 
-size_t index = 0;
-
-}  // namespace
-
-
-SplitterFactory::SplitterFactory() {
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-    decoders->push_back(this);
+void SplitterFactory::enregister(SplitterBuilderBase* b) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    decoders_.push_back(b);
 }
 
-SplitterFactory::~SplitterFactory() {
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-    decoders->erase(std::remove(decoders->begin(), decoders->end(), this), decoders->end());
+void SplitterFactory::deregister(const SplitterBuilderBase* b) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    decoders_.erase(std::remove(decoders_.begin(), decoders_.end(), b), decoders_.end());
+}
+
+
+SplitterBuilderBase::SplitterBuilderBase() {
+    SplitterFactory::instance().enregister(this);
+}
+
+SplitterBuilderBase::~SplitterBuilderBase() {
+    SplitterFactory::instance().deregister(this);
 }
 
 Splitter* SplitterFactory::lookup(eckit::PeekHandle& handle) {
-    eckit::AutoLock<eckit::Mutex> lock(local_mutex);
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    size_t n = decoders->size();
-    ASSERT(n);
+    size_t n = decoders_.size();
+    ASSERT(n > 0);
 
     for (size_t i = 0; i < n; ++i) {
-        SplitterFactory* d = (*decoders)[(i + index) % n];
-        if (d->match(handle)) {
-            index = i;  // Start with this index for next message
-            return d->make(handle);
+        SplitterBuilderBase* builder = decoders_[(i + index_) % n];
+        if (builder->match(handle)) {
+            index_ = i; // Start with this index for next message
+            return builder->make(handle);
         }
     }
 
     std::ostringstream oss;
-    oss << "Cannot find a metkit SplitterFactory for " << handle << " ";
+    oss << "Cannot find a metkit SplitterBuilder for " << handle << " ";
 
     for (size_t i = 0; i < handle.peeked(); ++i) {
         unsigned char c = handle.peek(i);

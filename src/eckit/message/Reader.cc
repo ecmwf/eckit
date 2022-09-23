@@ -46,7 +46,7 @@ void Reader::init() {
     if (!opened_) {
         handle_.openForRead();
     }
-    splitter_.reset(SplitterFactory::lookup(handle_));
+    splitter_.reset(SplitterFactory::instance().lookup(handle_));
 }
 
 Reader::~Reader() {

@@ -24,6 +24,10 @@ namespace eckit {
 
 /// Helper class to manage an optional contained value,
 /// i.e. a value that may or may not be present.
+namespace {
+struct None {};
+;
+}  // namespace
 
 // Define non-trivial or trivial destructor in template specialization
 template <typename T>
@@ -31,14 +35,35 @@ class Optional;
 
 // Define trivial destructor in specialized base class - allows having constexpr optional for trivial types
 template <typename T, typename Enable = void>
-struct OptionalBase {
+class OptionalBase {
+public:
     ~OptionalBase() {
         static_cast<Optional<T>*>(this)->destruct();
     }
+
+protected:
+    // Union with members that have non-trivial destructors need to define a destructor
+    union opt_value_type {
+        None none;
+        T value;
+        ~opt_value_type() {}
+    };
 };
 
 template <typename T>
-struct OptionalBase<T, typename std::enable_if<std::is_trivially_destructible<T>::value>::type> {
+class OptionalBase<T, typename std::enable_if<std::is_trivially_destructible<T>::value>::type> {
+public:
+    ~OptionalBase() = default;
+
+protected:
+    // Using union instead of a char* array with alignas allows getting rid of reinterpret_cast (which might be implementation dependent) and allows defining constexpr for trivial types
+    // An implementation in C++14 would also use unions to have full constexpr support
+    // Union with members that have trivial destructors can have a default destructor
+    union opt_value_type {
+        None none;
+        T value;
+        ~opt_value_type() = default;
+    };
 };
 
 template <typename T>
@@ -51,26 +76,26 @@ protected:
     // Value constructor for trivial classes. No construction happening, can assign directly and hence make it a constexpr
     template <typename TV, typename std::enable_if<(std::is_trivial<TV>::value), bool>::type = true>
     constexpr Optional(TagValueConstructor, TV&& v) :
-        val_{.some = std::forward<TV>(v)}, hasValue_(true) {}
+        val_{.value = std::forward<TV>(v)}, hasValue_(true) {}
 
     // Value constructor for non-trivial classes - enforce construction with placement
     template <typename TV, typename std::enable_if<!(std::is_trivial<TV>::value), bool>::type = true>
     Optional(TagValueConstructor, TV&& v) :
         val_{None{}}, hasValue_(true) {
-        new (&val_.some) T(std::forward<TV>(v));
+        new (&val_.value) T(std::forward<TV>(v));
     }
 
     // Copy constructor for trivial classes. No construction happening, can assign directly and hence make it a constexpr
     template <typename TV, typename std::enable_if<(std::is_trivial<TV>::value), bool>::type = true>
     constexpr Optional(TagCopyConstructor, const TV& other) :
-        val_{.some = other.val_.some}, hasValue_(other.hasValue_) {}
+        val_{.value = other.val_.value}, hasValue_(other.hasValue_) {}
 
     // Copy constructor for non-trivial classes - enforce construction with placement
     template <typename TV, typename std::enable_if<!(std::is_trivial<TV>::value), bool>::type = true>
     Optional(TagCopyConstructor, const TV& other) :
         val_{None{}}, hasValue_(other.hasValue_) {
         if (hasValue_) {
-            new (&val_.some) T(other.val_.some);
+            new (&val_.value) T(other.val_.value);
         }
     }
 
@@ -95,7 +120,7 @@ public:  // methods
     Optional(Optional<T>&& rhs) noexcept :
         val_{None{}}, hasValue_(rhs.hasValue_) {
         if (hasValue_) {
-            new (&val_.some) T(std::move(rhs.val_.some));
+            new (&val_.value) T(std::move(rhs.val_.value));
         }
         rhs.hasValue_ = false;
     }
@@ -106,11 +131,11 @@ public:  // methods
         }
         else if (!hasValue_ && other.hasValue_) {
             // Explicitly construct here, previous value has been deleted.
-            new (&val_.some) T(other.value());
+            new (&val_.value) T(other.value());
             hasValue_ = true;
         }
         else if (hasValue_ && !other.hasValue_) {
-            val_.some.~T();
+            val_.value.~T();
             hasValue_ = false;
         }
         return *this;
@@ -127,12 +152,12 @@ public:  // methods
         }
         else if (!hasValue_ && other.hasValue_) {
             // Explicitly construct here, previous value has been deleted.
-            new (&val_.some) T(std::move(other.value()));
+            new (&val_.value) T(std::move(other.value()));
             other.hasValue_ = false;
             hasValue_       = true;
         }
         else if (hasValue_ && !other.hasValue_) {
-            val_.some.~T();
+            val_.value.~T();
             hasValue_ = false;
         }
         return *this;
@@ -141,7 +166,7 @@ public:  // methods
     Optional<T>& operator=(const T& v) {
         if (!hasValue_) {
             // Explicitly copy construct here, previous value has been deleted.
-            new (&val_.some) T(v);
+            new (&val_.value) T(v);
         }
         else {
             // Can copy assign
@@ -154,7 +179,7 @@ public:  // methods
     Optional<T>& operator=(T&& v) noexcept {
         if (!hasValue_) {
             // Explicitly move construct here, previous value has been deleted.
-            new (&val_.some) T(std::move(v));
+            new (&val_.value) T(std::move(v));
         }
         else {
             // Can copy assign
@@ -174,27 +199,27 @@ public:  // methods
     const T& value() const& {
         if (!hasValue_)
             throw eckit::Exception("Optional has no value.");
-        return val_.some;
+        return val_.value;
     }
     T& value() & {
         if (!hasValue_)
             throw eckit::Exception("Optional has no value.");
-        return val_.some;
+        return val_.value;
     }
     T&& value() && {
         if (!hasValue_)
             throw eckit::Exception("Optional has no value.");
-        return std::move(val_.some);
+        return std::move(val_.value);
     }
 
     constexpr const T& operator*() const& {
-        return val_.some;
+        return val_.value;
     }
     T& operator*() & {
-        return val_.some;
+        return val_.value;
     }
     T&& operator*() && {
-        return val_.some;
+        return val_.value;
     }
 
     // TODO: Discuss about removing this in favour of * and -> (simialy to std::optional)
@@ -209,41 +234,24 @@ public:  // methods
     }
 
     constexpr const T* operator->() const& {
-        return &val_.some;
+        return &val_.value;
     }
     T* operator->() & {
-        return &val_.some;
+        return &val_.value;
     }
 
 private:
-
     friend OptionalBase<T>;
 
     // Is called in the base class for non-trivial types. Allows creating constexpr optional for trivial types
     void destruct() {
         if (hasValue_) {
-            val_.some.~T();
+            val_.value.~T();
         }
     }
 
-    struct None {};
-    // Using union instead of a char* array with alignas allows getting rid of reinterpret_cast (which might be implementation dependent) and allows defining constexpr for trivial types
-    // An implementation in C++14 would also use unions to have full constexpr support
-    // Union with members that have trivial destructors can have a default destructor
-    union td_opt_value_type {
-        None none;
-        T some;
-        ~td_opt_value_type() = default;
-    };
-    // Union with members that have non-trivial destructors need to define a destructor
-    union ntd_opt_value_type {
-        None none;
-        T some;
-        ~ntd_opt_value_type() {}
-    };
-
     // While using ntd_opt_value_type would be just fine for both cases, doing the conditional type switch allows creating constexpr for optional trivial types
-    using opt_value_type = typename std::conditional<std::is_trivially_destructible<T>::value, td_opt_value_type, ntd_opt_value_type>::type;
+    using opt_value_type = typename OptionalBase<T>::opt_value_type;
 
     opt_value_type val_;
     bool hasValue_;

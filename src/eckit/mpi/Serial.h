@@ -39,6 +39,8 @@ protected:  // methods
 
     virtual std::string processorName() const override;
 
+    virtual size_t remoteSize() const override;
+    
     virtual void barrier() const override;
 
     virtual Request iBarrier() const override;
@@ -115,6 +117,22 @@ protected:  // methods
     virtual Status status() const override { return createStatus(); }
 
     virtual Request request(int tag) const override;
+    
+    // Not implemented - returns NullGroup
+    virtual Group group(int) const override;
+    
+    // Not implemented - returns NullGroup
+    virtual Group group() const override;
+    
+    // Not implemented - returns NullGroup
+    virtual Group remoteGroup() const override;
+
+    // Not implemented
+    virtual Comm& create(const Group&, const std::string& name) const override;
+
+    // Not implemented
+    virtual Comm& create(const Group&, int tag, const std::string& name) const override;
+
 
     static Status createStatus();
 

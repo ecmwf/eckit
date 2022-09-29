@@ -24,6 +24,7 @@
 #include "eckit/maths/Functions.h"
 #include "eckit/mpi/SerialData.h"
 #include "eckit/mpi/SerialRequest.h"
+#include "eckit/mpi/Group.h"
 #include "eckit/mpi/SerialStatus.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
@@ -157,6 +158,10 @@ Comm* Serial::self() const {
 std::string Serial::processorName() const {
     return Main::hostname();
 }
+
+size_t Serial::remoteSize() const {
+    return 0;
+};
 
 void Serial::barrier() const {
     return;
@@ -411,6 +416,33 @@ Request Serial::request(int request) const {
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     return SerialRequestPool::instance()[request];
 }
+
+
+Group Serial::group(int) const {
+    return Group();
+};
+
+Group Serial::group() const {
+    return Group();
+};
+
+Group Serial::remoteGroup() const {
+    return Group();
+};
+
+Comm& Serial::create(const Group&, const std::string& name) const {
+    Comm* newcomm = new Serial(name);
+    addComm(name.c_str(), newcomm);
+    return *newcomm;
+};
+
+Comm& Serial::create(const Group&, int tag, const std::string& name) const {
+    Comm* newcomm = new Serial(name);
+    addComm(name.c_str(), newcomm);
+    return *newcomm;
+};
+
+
 
 void Serial::print(std::ostream& os) const {
     os << "Serial()";

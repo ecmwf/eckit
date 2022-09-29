@@ -38,6 +38,8 @@ protected:  // methods
     virtual eckit::mpi::Comm* self() const override;
 
     virtual std::string processorName() const override;
+    
+    virtual size_t remoteSize() const override;
 
     virtual void barrier() const override;
 
@@ -115,6 +117,16 @@ protected:  // methods
     virtual Status status() const override { return createStatus(); }
 
     virtual Request request(int) const override;
+    
+    virtual Group group(int) const override;
+    
+    virtual Group group() const override;
+    
+    virtual Group remoteGroup() const override;
+
+    virtual Comm& create(const Group&, const std::string& name) const override;
+
+    virtual Comm& create(const Group&, int tag, const std::string& name) const override;
 
     virtual int communicator() const override;
 

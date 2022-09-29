@@ -75,6 +75,7 @@ private:  // methods
 private:  // members
     friend class Parallel;
 
+    bool valid_;
     MPI_Group group_;
 };
 

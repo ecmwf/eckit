@@ -22,12 +22,16 @@ void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc);
 //----------------------------------------------------------------------------------------------------------------------
 
 ParallelGroup::~ParallelGroup() {
-    MPI_CALL(MPI_Group_free(&group_));
+    if (valid_ && !Parallel::finalized()) {
+        MPI_CALL(MPI_Group_free(&group_));
+    }
 }
 
-ParallelGroup::ParallelGroup() {}
+ParallelGroup::ParallelGroup() :
+    valid_{false} {}
 
 ParallelGroup::ParallelGroup(MPI_Group group) :
+    valid_{true},
     group_(group) {}
 
 void ParallelGroup::print(std::ostream& os) const {
@@ -63,7 +67,7 @@ GroupContent* ParallelGroup::difference(const GroupContent& otherContent) const 
 ParallelGroup* ParallelGroup::difference(const ParallelGroup& other) const {
     MPI_Group newGroup;
     MPI_CALL(MPI_Group_difference(group_, other.group_, &newGroup));
-    
+
     return new ParallelGroup(newGroup);
 };
 
@@ -75,7 +79,7 @@ GroupContent* ParallelGroup::intersection(const GroupContent& otherContent) cons
 ParallelGroup* ParallelGroup::intersection(const ParallelGroup& other) const {
     MPI_Group newGroup;
     MPI_CALL(MPI_Group_intersection(group_, other.group_, &newGroup));
-    
+
     return new ParallelGroup(newGroup);
 };
 
@@ -87,21 +91,21 @@ GroupContent* ParallelGroup::union_group(const GroupContent& otherContent) const
 ParallelGroup* ParallelGroup::union_group(const ParallelGroup& other) const {
     MPI_Group newGroup;
     MPI_CALL(MPI_Group_union(group_, other.group_, &newGroup));
-    
+
     return new ParallelGroup(newGroup);
 };
 
 size_t ParallelGroup::size() const {
     int s;
     MPI_CALL(MPI_Group_size(group_, &s));
-    
-    return ((size_t) s);
+
+    return ((size_t)s);
 };
 
 int ParallelGroup::rank() const {
     int r;
     MPI_CALL(MPI_Group_rank(group_, &r));
-    
+
     return r;
 };
 
@@ -109,40 +113,40 @@ int ParallelGroup::rank() const {
 GroupContent* ParallelGroup::excl(const std::vector<int>& ranks) const {
     MPI_Group newGroup;
     MPI_CALL(MPI_Group_excl(group_, ranks.size(), ranks.data(), &newGroup));
-    
+
     return new ParallelGroup(newGroup);
 }
 
 GroupContent* ParallelGroup::incl(const std::vector<int>& ranks) const {
     MPI_Group newGroup;
     MPI_CALL(MPI_Group_incl(group_, ranks.size(), ranks.data(), &newGroup));
-    
+
     return new ParallelGroup(newGroup);
 }
 
 GroupContent* ParallelGroup::range_excl(const std::vector<std::array<int, 3>>& ranks) const {
     MPI_Group newGroup;
-    int (*a)[3] = new int[ranks.size()][3];
-    for (int i=0; i < ranks.size(); ++i) {
+    int(*a)[3] = new int[ranks.size()][3];
+    for (int i = 0; i < ranks.size(); ++i) {
         a[i][0] = ranks[i][0];
         a[i][1] = ranks[i][1];
         a[i][2] = ranks[i][2];
     }
     MPI_CALL(MPI_Group_range_excl(group_, ranks.size(), a, &newGroup));
-    
+
     return new ParallelGroup(newGroup);
 }
 
 GroupContent* ParallelGroup::range_incl(const std::vector<std::array<int, 3>>& ranks) const {
     MPI_Group newGroup;
-    int (*a)[3] = new int[ranks.size()][3];
-    for (int i=0; i < ranks.size(); ++i) {
+    int(*a)[3] = new int[ranks.size()][3];
+    for (int i = 0; i < ranks.size(); ++i) {
         a[i][0] = ranks[i][0];
         a[i][1] = ranks[i][1];
         a[i][2] = ranks[i][2];
     }
     MPI_CALL(MPI_Group_range_incl(group_, ranks.size(), a, &newGroup));
-    
+
     return new ParallelGroup(newGroup);
 }
 
@@ -155,17 +159,17 @@ std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& r
 std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& ranks, const GroupContent& other) const {
     return translate_ranks_native(ranks, dynamic_cast<const ParallelGroup&>(other));
 }
-    
+
 std::unordered_map<int, int> ParallelGroup::translate_ranks(const std::vector<int>& ranks, const GroupContent& other) const {
     std::unordered_map<int, int> map;
     std::vector<int> translated = translate_ranks_native(ranks, other);
 
-    for(int r=0; r < ranks.size(); ++r) {
-        if(translated[r] != MPI_UNDEFINED) {
+    for (int r = 0; r < ranks.size(); ++r) {
+        if (translated[r] != MPI_UNDEFINED) {
             map.emplace(ranks[r], translated[r]);
         }
     }
-    
+
     return map;
 }
 

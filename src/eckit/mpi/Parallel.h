@@ -144,6 +144,8 @@ public:
     MPI_Comm MPIComm() const;
 
 private:  // methods
+    friend class ParallelGroup; // Groups should not call free if mpi has been finalized. Hence PrallelGroup needs to query finalized()
+    
     static void initialize();
 
     static void finalize();

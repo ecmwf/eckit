@@ -127,7 +127,7 @@ public:  // methods
 
     Optional<T>& operator=(const Optional<T>& other) {
         if (hasValue_ && other.hasValue_) {
-            value() = other.value();
+            val_.value = other.value();
         }
         else if (!hasValue_ && other.hasValue_) {
             // Explicitly construct here, previous value has been deleted.
@@ -147,7 +147,7 @@ public:  // methods
         }
 
         if (hasValue_ && other.hasValue_) {
-            value()         = std::move(other.value());
+            val_.value      = std::move(other.value());
             other.hasValue_ = false;
         }
         else if (!hasValue_ && other.hasValue_) {
@@ -163,30 +163,44 @@ public:  // methods
         return *this;
     }
 
-    Optional<T>& operator=(const T& v) {
+    // The std::optional also seems to define a general assignment and does perfect forwarding.
+    // This allows also passing other types from which the wrapped type T can be constructed or assigned
+    template <typename U, typename enable = typename std::enable_if<((!std::is_same<typename std::decay<U>::type, Optional<T>>::value) && (std::is_constructible<T, U>::value) && (std::is_assignable<T&, U>::value))>::type>
+    Optional<T>& operator=(U&& arg) {
         if (!hasValue_) {
-            // Explicitly copy construct here, previous value has been deleted.
-            new (&val_.value) T(v);
+            // Explicitly move construct here, previous value has been deleted.
+            new (&val_.value) T(std::forward<U>(arg));
         }
         else {
             // Can copy assign
-            value() = v;
+            value() = std::forward<U>(arg);
         }
         hasValue_ = true;
         return *this;
     }
 
-    Optional<T>& operator=(T&& v) noexcept {
-        if (!hasValue_) {
-            // Explicitly move construct here, previous value has been deleted.
-            new (&val_.value) T(std::move(v));
+    // Force construct an value by forwarding arguments
+    template <typename... Args>
+    T& emplace(Args&&... args) {
+        if (hasValue_) {
+            // Destruct before reconstructing from arguments
+            val_.value.~T();
         }
-        else {
-            // Can copy assign
-            value() = std::move(v);
-        }
+        new (&val_.value) T(std::forward<Args>(args)...);
         hasValue_ = true;
-        return *this;
+        return val_.value;
+    }
+
+    // Force construct an value by forwarding arguments
+    template <class U, class... Args, typename enable = typename std::enable_if<std::is_constructible<T, std::initializer_list<U>&, Args&&...>::value>::type>
+    T& emplace(std::initializer_list<U> ilist, Args&&... args) {
+        if (hasValue_) {
+            // Destruct before reconstructing from arguments
+            val_.value.~T();
+        }
+        new (&val_.value) T(ilist, std::forward<Args>(args)...);
+        hasValue_ = true;
+        return val_.value;
     }
 
     constexpr bool has_value() const {

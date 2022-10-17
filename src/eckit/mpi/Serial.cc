@@ -419,27 +419,23 @@ Request Serial::request(int request) const {
 
 
 Group Serial::group(int) const {
-    return Group();
+    NOTIMP;
 };
 
 Group Serial::group() const {
-    return Group();
+    NOTIMP;
 };
 
 Group Serial::remoteGroup() const {
-    return Group();
+    NOTIMP;
 };
 
 Comm& Serial::create(const Group&, const std::string& name) const {
-    Comm* newcomm = new Serial(name);
-    addComm(name.c_str(), newcomm);
-    return *newcomm;
+    NOTIMP;
 };
 
 Comm& Serial::create(const Group&, int tag, const std::string& name) const {
-    Comm* newcomm = new Serial(name);
-    addComm(name.c_str(), newcomm);
-    return *newcomm;
+    NOTIMP;
 };
 
 

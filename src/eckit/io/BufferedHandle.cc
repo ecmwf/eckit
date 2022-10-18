@@ -66,22 +66,20 @@ long BufferedHandle::read(void* buffer, long length) {
     ASSERT(read_);
 
     if (eof_)
-        return -1;
+        return 0;
 
     while (len < length && !eof_) {
         long left = used_ - pos_;
         ASSERT(left >= 0);
 
         if (left == 0 && !eof_) {
+            // read() is supposed to return a non-negative number
             used_ = handle().read(buffer_, size_);
             pos_  = 0;
             if (used_ <= 0) {
                 eof_ = true;
-                len  = len ? len : used_;
                 if (len > 0)
                     position_ += len;
-                if (len == 0)
-                    return -1;
                 return len;
             }
             left = used_;

@@ -16,6 +16,8 @@
 
 #include <iosfwd>
 
+#include "eckit/io/Buffer.h"
+
 
 namespace eckit {
 namespace message {
@@ -32,6 +34,8 @@ public:  // methods
     virtual ~Decoder();
 
     virtual void getMetadata(const Message& msg, MetadataGatherer&) const = 0;
+    
+    virtual eckit::Buffer decode(const Message& msg) const = 0;
 
     static Decoder& lookup(const Message&);
 

@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "eckit/types/Types.h"
+#include "eckit/io/Buffer.h"
 
 namespace eckit {
 class DataHandle;
@@ -76,6 +77,8 @@ public:
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
     void getMetadata(MetadataGatherer&) const;
+    
+    eckit::Buffer decode() const;
 
     eckit::DataHandle* readHandle() const;
 

@@ -103,6 +103,10 @@ void Message::getDoubleArray(const std::string& key, std::vector<double>& v) con
     return content_->getDoubleArray(key, v);
 }
 
+eckit::Buffer Message::decode() const {
+    return Decoder::lookup(*this).decode(*this);
+};
+
 Message Message::transform(const eckit::StringDict& dict) const {
     return Message(content_->transform(dict));
 }

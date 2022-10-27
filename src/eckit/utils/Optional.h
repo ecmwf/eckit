@@ -10,9 +10,13 @@
 
 /// @author Emanuele Danovaro
 /// @author Simon Smart
+/// @author Philipp Geier
+///  - Added copy & move assignment operator (has been implicitly deleted  due to move constructor.)
 /// @date   Feb 22
 
 #pragma once
+
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -20,67 +24,219 @@ namespace eckit {
 
 /// Helper class to manage an optional contained value,
 /// i.e. a value that may or may not be present.
+namespace {
+struct None {};
+;
+}  // namespace
+
+// Define non-trivial or trivial destructor in template specialization
+template <typename T>
+class Optional;
+
+// Define trivial destructor in specialized base class - allows having constexpr optional for trivial types
+template <typename T, typename Enable = void>
+class OptionalBase {
+public:
+    ~OptionalBase() {
+        static_cast<Optional<T>*>(this)->destruct();
+    }
+
+protected:
+    // Union with members that have non-trivial destructors need to define a destructor
+    union opt_value_type {
+        None none;
+        T value;
+        ~opt_value_type() {}
+    };
+};
 
 template <typename T>
-class Optional {
+class OptionalBase<T, typename std::enable_if<std::is_trivially_destructible<T>::value>::type> {
+public:
+    ~OptionalBase() = default;
 
-public: // methods
-    constexpr Optional() noexcept : valid_(false) {};
-    explicit Optional(T&& v) : valid_(true) {
-        new (val_) T(std::forward<T>(v));
+protected:
+    // Using union instead of a char* array with alignas allows getting rid of reinterpret_cast (which might be implementation dependent) and allows defining constexpr for trivial types
+    // An implementation in C++14 would also use unions to have full constexpr support
+    // Union with members that have trivial destructors can have a default destructor
+    union opt_value_type {
+        None none;
+        T value;
+        ~opt_value_type() = default;
+    };
+};
+
+template <typename T>
+class Optional : public OptionalBase<T> {
+protected:
+    struct TagValueConstructor {};
+    struct TagCopyConstructor {};
+    // struct TagMoveConstructor {};
+
+    // Value constructor for trivial classes. No construction happening, can assign directly and hence make it a constexpr
+    template <typename TV, typename std::enable_if<(std::is_trivial<TV>::value), bool>::type = true>
+    constexpr Optional(TagValueConstructor, TV&& v) :
+        val_{.value = std::forward<TV>(v)}, hasValue_(true) {}
+
+    // Value constructor for non-trivial classes - enforce construction with placement
+    template <typename TV, typename std::enable_if<!(std::is_trivial<TV>::value), bool>::type = true>
+    Optional(TagValueConstructor, TV&& v) :
+        val_{None{}}, hasValue_(true) {
+        new (&val_.value) T(std::forward<TV>(v));
     }
 
-    Optional(const Optional<T>& rhs) : valid_(rhs.valid) {
-        if (valid_) {
-            new (val_) T(*reinterpret_cast<const T*>(&rhs.val_));
+    // Copy constructor for trivial classes. No construction happening, can assign directly and hence make it a constexpr
+    template <typename TV, typename std::enable_if<(std::is_trivial<TV>::value), bool>::type = true>
+    constexpr Optional(TagCopyConstructor, const TV& other) :
+        val_{.value = other.val_.value}, hasValue_(other.hasValue_) {}
+
+    // Copy constructor for non-trivial classes - enforce construction with placement
+    template <typename TV, typename std::enable_if<!(std::is_trivial<TV>::value), bool>::type = true>
+    Optional(TagCopyConstructor, const TV& other) :
+        val_{None{}}, hasValue_(other.hasValue_) {
+        if (hasValue_) {
+            new (&val_.value) T(other.val_.value);
         }
     }
-    Optional(Optional<T>&& rhs) : valid_(rhs.valid_) {
-        if (valid_) {
-            new (val_) T(std::move(*reinterpret_cast<T*>(&rhs.val_)));
+
+public:  // methods
+    constexpr Optional() noexcept :
+        val_{None{}}, hasValue_(false) {}
+
+    constexpr explicit Optional(T&& v) noexcept :
+        Optional(TagValueConstructor{}, std::move(v)) {}
+
+    constexpr explicit Optional(const T& v) :
+        Optional(TagValueConstructor{}, v) {}
+
+    constexpr Optional(const Optional<T>& rhs) :
+        Optional(TagCopyConstructor{}, rhs) {}
+
+    ~Optional() = default;
+
+
+    // constexpr move constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
+    // Also trivial objects would need to modify rhs.hasValue_ to not break semantics, which is only possible in C++14;
+    Optional(Optional<T>&& rhs) noexcept :
+        val_{None{}}, hasValue_(rhs.hasValue_) {
+        if (hasValue_) {
+            new (&val_.value) T(std::move(rhs.val_.value));
         }
-        rhs.valid_ = false;
+        rhs.hasValue_ = false;
     }
 
-    ~Optional() {
-        if (valid_) {
-            reinterpret_cast<T*>(&val_)->~T();
+    Optional<T>& operator=(const Optional<T>& other) {
+        if (hasValue_ && other.hasValue_) {
+            val_.value = other.value();
         }
-    }
-
-    Optional<T>& operator=(T&& v) {
-        valid_ = true;
-        new (val_) T(std::forward<T>(v));
+        else if (!hasValue_ && other.hasValue_) {
+            // Explicitly construct here, previous value has been deleted.
+            new (&val_.value) T(other.value());
+            hasValue_ = true;
+        }
+        else if (hasValue_ && !other.hasValue_) {
+            val_.value.~T();
+            hasValue_ = false;
+        }
         return *this;
     }
 
-    bool has_value() const {
-        return valid_;
+    Optional<T>& operator=(Optional<T>&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        if (hasValue_ && other.hasValue_) {
+            val_.value      = std::move(other.value());
+            other.hasValue_ = false;
+        }
+        else if (!hasValue_ && other.hasValue_) {
+            // Explicitly construct here, previous value has been deleted.
+            new (&val_.value) T(std::move(other.value()));
+            other.hasValue_ = false;
+            hasValue_       = true;
+        }
+        else if (hasValue_ && !other.hasValue_) {
+            val_.value.~T();
+            hasValue_ = false;
+        }
+        return *this;
     }
-    explicit operator bool() const {
+
+    // The std::optional also seems to define a general assignment and does perfect forwarding.
+    // This allows also passing other types from which the wrapped type T can be constructed or assigned
+    template <typename U, typename enable = typename std::enable_if<((!std::is_same<typename std::decay<U>::type, Optional<T>>::value) && (std::is_constructible<T, U>::value) && (std::is_assignable<T&, U>::value))>::type>
+    Optional<T>& operator=(U&& arg) {
+        if (!hasValue_) {
+            // Explicitly move construct here, previous value has been deleted.
+            new (&val_.value) T(std::forward<U>(arg));
+        }
+        else {
+            // Can copy assign
+            value() = std::forward<U>(arg);
+        }
+        hasValue_ = true;
+        return *this;
+    }
+
+    // Force construct an value by forwarding arguments
+    template <typename... Args>
+    T& emplace(Args&&... args) {
+        if (hasValue_) {
+            // Destruct before reconstructing from arguments
+            val_.value.~T();
+        }
+        new (&val_.value) T(std::forward<Args>(args)...);
+        hasValue_ = true;
+        return val_.value;
+    }
+
+    // Force construct an value by forwarding arguments
+    template <class U, class... Args, typename enable = typename std::enable_if<std::is_constructible<T, std::initializer_list<U>&, Args&&...>::value>::type>
+    T& emplace(std::initializer_list<U> ilist, Args&&... args) {
+        if (hasValue_) {
+            // Destruct before reconstructing from arguments
+            val_.value.~T();
+        }
+        new (&val_.value) T(ilist, std::forward<Args>(args)...);
+        hasValue_ = true;
+        return val_.value;
+    }
+
+    constexpr bool has_value() const {
+        return hasValue_;
+    }
+    explicit constexpr operator bool() const {
         return has_value();
     }
 
-    constexpr const T& value() const& {
-        return *const_ptr();
+    const T& value() const& {
+        if (!hasValue_)
+            throw eckit::Exception("Optional has no value.");
+        return val_.value;
     }
     T& value() & {
-        return *ptr();
+        if (!hasValue_)
+            throw eckit::Exception("Optional has no value.");
+        return val_.value;
     }
     T&& value() && {
-        return *ptr();
+        if (!hasValue_)
+            throw eckit::Exception("Optional has no value.");
+        return std::move(val_.value);
     }
 
     constexpr const T& operator*() const& {
-        return value();
+        return val_.value;
     }
     T& operator*() & {
-        return value();
+        return val_.value;
     }
     T&& operator*() && {
-        return value();
+        return val_.value;
     }
 
+    // TODO: Discuss about removing this in favour of * and -> (simialy to std::optional)
     constexpr const T& operator()() const& {
         return value();
     }
@@ -91,18 +247,30 @@ public: // methods
         return value();
     }
 
-private: // members
-    T* ptr() {
-        return reinterpret_cast<T*>(&val_);
+    constexpr const T* operator->() const& {
+        return &val_.value;
     }
-    const T* const_ptr() const {
-        return reinterpret_cast<const T*>(&val_);
+    T* operator->() & {
+        return &val_.value;
     }
 
-    alignas(T) char val_[sizeof(T)];
-    bool valid_;
+private:
+    friend OptionalBase<T>;
+
+    // Is called in the base class for non-trivial types. Allows creating constexpr optional for trivial types
+    void destruct() {
+        if (hasValue_) {
+            val_.value.~T();
+        }
+    }
+
+    // While using ntd_opt_value_type would be just fine for both cases, doing the conditional type switch allows creating constexpr for optional trivial types
+    using opt_value_type = typename OptionalBase<T>::opt_value_type;
+
+    opt_value_type val_;
+    bool hasValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // end namespace eckit
+}  // end namespace eckit

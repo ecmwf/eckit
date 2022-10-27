@@ -24,6 +24,7 @@
 #include "eckit/mpi/DataType.h"
 #include "eckit/mpi/Operation.h"
 #include "eckit/mpi/Request.h"
+#include "eckit/mpi/Group.h"
 #include "eckit/mpi/Status.h"
 
 namespace eckit {
@@ -91,6 +92,8 @@ public:  // methods
 
     /// @brief MPI size of this communicator
     size_t size() const { return size_; }
+    
+    virtual size_t remoteSize() const = 0;
 
     /// @brief MPI barrier for this communicator
     virtual void barrier() const = 0;
@@ -130,6 +133,16 @@ public:  // methods
     virtual Status status() const = 0;
 
     virtual Request request(int) const = 0;
+    
+    virtual Group group(int) const = 0;
+    
+    virtual Group group() const = 0;
+    
+    virtual Group remoteGroup() const = 0;
+    
+    virtual Comm& create(const Group&, const std::string& name) const = 0;
+    
+    virtual Comm& create(const Group&, int tag, const std::string& name) const = 0;
 
     template <typename T>
     size_t getCount(Status& status) const;

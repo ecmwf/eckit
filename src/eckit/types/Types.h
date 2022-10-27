@@ -145,8 +145,8 @@ inline std::ostream& __print_list(std::ostream& s, const std::array<T, N>& t, Ve
     return s;
 }
 
-template <typename K, typename V>
-inline std::ostream& __print_container(std::ostream& s, const std::map<K, V>& m) {
+template <typename K, typename V, typename C>
+inline std::ostream& __print_container(std::ostream& s, const std::map<K, V, C>& m) {
     const char* sep = "";
     s << "{";
     for (typename std::map<K, V>::const_iterator it = m.begin(); it != m.end(); ++it) {
@@ -193,8 +193,8 @@ inline std::ostream& operator<<(std::ostream& s, const std::array<T, N>& v) {
     return eckit::__print_list(s, v, typename eckit::VectorPrintSelector<T>::selector());
 }
 
-template <typename K, typename V>
-inline std::ostream& operator<<(std::ostream& s, const std::map<K, V>& m) {
+template <typename K, typename V, typename C>
+inline std::ostream& operator<<(std::ostream& s, const std::map<K, V, C>& m) {
     return eckit::__print_container(s, m);
 }
 

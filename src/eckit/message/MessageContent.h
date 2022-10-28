@@ -67,8 +67,6 @@ public:
 
     virtual const void* data() const;
 
-    virtual void getMetadata(MetadataGatherer&) const;
-
     virtual MessageContent* transform(const Transformer&) const;
     virtual MessageContent* transform(const eckit::StringDict&) const;
 

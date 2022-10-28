@@ -17,8 +17,9 @@
 #include <iosfwd>
 #include <vector>
 
-#include "eckit/types/Types.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/message/Decoder.h"
+#include "eckit/types/Types.h"
 
 namespace eckit {
 class DataHandle;
@@ -76,8 +77,9 @@ public:
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
-    void getMetadata(MetadataGatherer&) const;
-    
+    // @TODO Discuss whether the default value representation should be native or string. FDB5 will currently cause errors if it is non string, because it will to a string conversion but no mapping. Hence changes in FDB are required
+    void getMetadata(MetadataGatherer&, ValueRepresentation preferedRepresentation = ValueRepresentation::String) const;
+
     eckit::Buffer decode() const;
 
     eckit::DataHandle* readHandle() const;
@@ -94,25 +96,26 @@ private:
     friend std::ostream& operator<<(std::ostream& s, const Message& p) {
         p.print(s);
         return s;
-        }
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-    template <class T>
-    class StringSetter : public MetadataGatherer {
-        T& object_;
+template <class T>
+class StringSetter : public MetadataGatherer {
+    T& object_;
 
-        virtual void setValue(const std::string& key, const std::string& value) override {
-            object_.setValue(key, value);
-        }
+    virtual void setValue(const std::string& key, const std::string& value) override {
+        object_.setValue(key, value);
+    }
 
-        virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
+    virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
 
-        virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
+    virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
 
-    public:
-        StringSetter(T& object) : object_(object) {}
+public:
+    StringSetter(T& object) :
+        object_(object) {}
 };
 
 template <class T>
@@ -126,7 +129,8 @@ class TypedSetter : public MetadataGatherer {
     virtual void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
 
 public:
-    TypedSetter(T& object) : object_(object) {}
+    TypedSetter(T& object) :
+        object_(object) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -123,8 +123,8 @@ const void* Message::data() const {
     return content_->data();
 }
 
-void Message::getMetadata(MetadataGatherer& gather) const {
-    return Decoder::lookup(*this).getMetadata(*this, gather);
+void Message::getMetadata(MetadataGatherer& gather, ValueRepresentation repr) const {
+    return Decoder::lookup(*this).getMetadata(*this, gather, repr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

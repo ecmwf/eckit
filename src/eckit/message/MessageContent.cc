@@ -80,12 +80,6 @@ const void* MessageContent::data() const {
     throw eckit::SeriousBug(oss.str());
 }
 
-void MessageContent::getMetadata(MetadataGatherer&) const {
-    std::ostringstream oss;
-    oss << "Not implemented " << *this << " getMetadata()";
-    throw eckit::SeriousBug(oss.str());
-}
-
 MessageContent* MessageContent::transform(const Transformer&) const {
     std::ostringstream oss;
     oss << "Not implemented " << *this << " tranform(Transformer)";

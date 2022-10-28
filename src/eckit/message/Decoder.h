@@ -24,6 +24,16 @@ namespace message {
 
 class Message;
 class MetadataGatherer;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+enum class ValueRepresentation : unsigned
+{
+    Native = 0,
+    Numeric = 1,
+    String = 2,
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 
@@ -33,7 +43,7 @@ public:  // methods
 
     virtual ~Decoder();
 
-    virtual void getMetadata(const Message& msg, MetadataGatherer&) const = 0;
+    virtual void getMetadata(const Message& msg, MetadataGatherer&, ValueRepresentation) const = 0;
     
     virtual eckit::Buffer decode(const Message& msg) const = 0;
 

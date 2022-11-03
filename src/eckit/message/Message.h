@@ -81,6 +81,8 @@ public:
     void getMetadata(MetadataGatherer&, ValueRepresentation preferedRepresentation = ValueRepresentation::String) const;
 
     eckit::Buffer decode() const;
+    
+    EncodingFormat getEncodingFormat() const;
 
     eckit::DataHandle* readHandle() const;
 
@@ -90,6 +92,9 @@ public:
 
 private:
     MessageContent* content_;
+    mutable Decoder* decoder_ = nullptr;
+    
+    Decoder& lookupDecoder() const;
 
     void print(std::ostream&) const;
 

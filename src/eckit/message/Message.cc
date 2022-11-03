@@ -104,7 +104,7 @@ void Message::getDoubleArray(const std::string& key, std::vector<double>& v) con
 }
 
 eckit::Buffer Message::decode() const {
-    return Decoder::lookup(*this).decode(*this);
+    return lookupDecoder().decode(*this);
 };
 
 Message Message::transform(const eckit::StringDict& dict) const {
@@ -124,7 +124,18 @@ const void* Message::data() const {
 }
 
 void Message::getMetadata(MetadataGatherer& gather, ValueRepresentation repr) const {
-    return Decoder::lookup(*this).getMetadata(*this, gather, repr);
+    return lookupDecoder().getMetadata(*this, gather, repr);
+}
+
+EncodingFormat Message::getEncodingFormat() const {
+    return lookupDecoder().getEncodingFormat(*this);
+}
+
+Decoder& Message::lookupDecoder() const {
+    if (decoder_ == nullptr) {
+        decoder_ = &Decoder::lookup(*this);
+    }
+    return *decoder_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

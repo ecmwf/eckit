@@ -27,6 +27,13 @@ class MetadataGatherer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+enum class EncodingFormat : unsigned
+{
+    Unknown = 0,
+    GRIB = 1,
+    BUFR = 2,
+};
+
 enum class ValueRepresentation : unsigned
 {
     Native = 0,
@@ -42,6 +49,8 @@ public:  // methods
     Decoder();
 
     virtual ~Decoder();
+    
+    virtual EncodingFormat getEncodingFormat(const Message& msg) const = 0;
 
     virtual void getMetadata(const Message& msg, MetadataGatherer&, ValueRepresentation) const = 0;
     

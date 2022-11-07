@@ -126,6 +126,10 @@ public:  // methods
     }
 
     Optional<T>& operator=(const Optional<T>& other) {
+        if (this == &other) {
+            return *this;
+        }
+        
         if (hasValue_ && other.hasValue_) {
             val_.value = other.value();
         }
@@ -148,11 +152,13 @@ public:  // methods
 
         if (hasValue_ && other.hasValue_) {
             val_.value      = std::move(other.value());
+            other.val_.value.~T();
             other.hasValue_ = false;
         }
         else if (!hasValue_ && other.hasValue_) {
             // Explicitly construct here, previous value has been deleted.
             new (&val_.value) T(std::move(other.value()));
+            other.val_.value.~T();
             other.hasValue_ = false;
             hasValue_       = true;
         }
@@ -168,7 +174,7 @@ public:  // methods
     template <typename U, typename enable = typename std::enable_if<((!std::is_same<typename std::decay<U>::type, Optional<T>>::value) && (std::is_constructible<T, U>::value) && (std::is_assignable<T&, U>::value))>::type>
     Optional<T>& operator=(U&& arg) {
         if (!hasValue_) {
-            // Explicitly move construct here, previous value has been deleted.
+            // Explicitly forward construct here, previous value has been deleted.
             new (&val_.value) T(std::forward<U>(arg));
         }
         else {

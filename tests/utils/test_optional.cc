@@ -119,12 +119,23 @@ CASE("copy and move assign") {
 
         opt1 = opt4;
         EXPECT(!opt1);
+        EXPECT(opt3);
+        opt3.reset();
         EXPECT(!opt3);
 
         // Self move-assignement
         opt2 = std::move(opt2);
         EXPECT(opt2);
         EXPECT(opt2.value() == 2);
+        
+        // Self copy-assignement
+        opt2 = opt2;
+        EXPECT(opt2);
+        EXPECT(opt2.value() == 2);
+        
+        // Assign none
+        opt2 = nullopt;
+        EXPECT(!opt2);
     }
 }
 
@@ -160,6 +171,8 @@ CASE("non-trivial object: std::string") {
         // Test move assign some <- some
         Optional<std::string> optTmp1("tmp1");
         opt = std::move(optTmp1);
+        EXPECT(optTmp1);
+        optTmp1.reset();
         EXPECT(!optTmp1);
         EXPECT_EQUAL(opt.value(), std::string("tmp1"));
 
@@ -167,11 +180,15 @@ CASE("non-trivial object: std::string") {
         Optional<std::string> optTmp2{};
         opt = std::move(optTmp2);
         EXPECT(!optTmp2);
+        optTmp2.reset();
+        EXPECT(!optTmp2);
         EXPECT(!opt);
 
         // Test move assign none <- some
         Optional<std::string> optTmp3("tmp3");
         opt = std::move(optTmp3);
+        EXPECT(optTmp3);
+        optTmp3 = nullopt;
         EXPECT(!optTmp3);
         EXPECT_EQUAL(opt.value(), std::string("tmp3"));
 
@@ -397,6 +414,8 @@ CASE("test destructor on non-trivial object: copy & move assign optional") {
         int testMoveAssignSomeSomeId  = testMoveAssignSomeSome.value().id;
         int testMoveAssignSomeSomeUId = testMoveAssignSomeSome.value().uid;
         opt                           = std::move(testMoveAssignSomeSome);
+        EXPECT(testMoveAssignSomeSome);
+        testMoveAssignSomeSome.reset();
         EXPECT(!testMoveAssignSomeSome);
         EXPECT_EQUAL(opt.value().str, std::string("testMoveAssignSomeSome"));
         int testMoveAssignSomeSomeOptId  = opt.value().id;
@@ -426,6 +445,8 @@ CASE("test destructor on non-trivial object: copy & move assign optional") {
         int testMoveAssignNoneSomeId  = testMoveAssignNoneSome.value().id;
         int testMoveAssignNoneSomeUId = testMoveAssignNoneSome.value().uid;
         opt                           = std::move(testMoveAssignNoneSome);
+        EXPECT(testMoveAssignNoneSome);
+        testMoveAssignNoneSome.reset();
         EXPECT(!testMoveAssignNoneSome);
         EXPECT_EQUAL(opt.value().str, std::string("testMoveAssignNoneSome"));
         int testMoveAssignNoneSomeOptId  = opt.value().id;

@@ -33,7 +33,7 @@ namespace search {
 
 
 class Tree {
-    Tree(const Tree&) = delete;
+    Tree(const Tree&)            = delete;
     Tree& operator=(const Tree&) = delete;
 
 public:
@@ -74,7 +74,7 @@ private:
 };
 
 class TreeFactory {
-    TreeFactory(const TreeFactory&) = delete;
+    TreeFactory(const TreeFactory&)            = delete;
     TreeFactory& operator=(const TreeFactory&) = delete;
 
 protected:

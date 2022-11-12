@@ -109,7 +109,7 @@ class FieldFactory {
     std::string name_;
     virtual Field* make(const param::MIRParametrisation&) = 0;
 
-    FieldFactory(const FieldFactory&) = delete;
+    FieldFactory(const FieldFactory&)            = delete;
     FieldFactory& operator=(const FieldFactory&) = delete;
 
 protected:

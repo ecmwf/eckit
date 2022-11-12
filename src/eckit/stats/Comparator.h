@@ -112,7 +112,7 @@ class ComparatorFactory {
     std::string name_;
     virtual Comparator* make(const param::MIRParametrisation&, const param::MIRParametrisation&) = 0;
 
-    ComparatorFactory(const ComparatorFactory&) = delete;
+    ComparatorFactory(const ComparatorFactory&)            = delete;
     ComparatorFactory& operator=(const ComparatorFactory&) = delete;
 
 protected:

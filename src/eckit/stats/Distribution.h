@@ -102,7 +102,7 @@ private:
 
 
 class DistributionFactory {
-    DistributionFactory(const DistributionFactory&) = delete;
+    DistributionFactory(const DistributionFactory&)              = delete;
     void operator=(const DistributionFactory&)                   = delete;
     virtual Distribution* make(const param::MIRParametrisation&) = 0;
     const std::string name_;

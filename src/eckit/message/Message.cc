@@ -103,6 +103,15 @@ void Message::getDoubleArray(const std::string& key, std::vector<double>& v) con
     return content_->getDoubleArray(key, v);
 }
 
+size_t Message::getSize(const std::string& key) const {
+    return content_->getSize(key);
+}
+
+void Message::getDoubleArray(const std::string& key, double* data, size_t len) const {
+    return content_->getDoubleArray(key, data, len);
+}
+
+
 eckit::Buffer Message::decode() const {
     return lookupDecoder().decode(*this);
 };
@@ -123,8 +132,8 @@ const void* Message::data() const {
     return content_->data();
 }
 
-void Message::getMetadata(MetadataGatherer& gather, ValueRepresentation repr) const {
-    return lookupDecoder().getMetadata(*this, gather, repr);
+void Message::getMetadata(MetadataGatherer& gather, GetMetadataOptions options) const {
+    return lookupDecoder().getMetadata(*this, gather, std::move(options));
 }
 
 EncodingFormat Message::getEncodingFormat() const {

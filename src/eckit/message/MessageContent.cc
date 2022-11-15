@@ -58,7 +58,19 @@ double MessageContent::getDouble(const std::string& key) const {
 
 void MessageContent::getDoubleArray(const std::string& key, std::vector<double>&) const {
     std::ostringstream oss;
-    oss << "Not implemented " << *this << " getDoubleArray()";
+    oss << "Not implemented " << *this << " getDoubleArray(key, vector<double>&)";
+    throw eckit::SeriousBug(oss.str());
+}
+
+void MessageContent::getDoubleArray(const std::string& key, double* data, size_t len) const {
+    std::ostringstream oss;
+    oss << "Not implemented " << *this << " getDoubleArray(key, double*, len)";
+    throw eckit::SeriousBug(oss.str());
+}
+
+size_t MessageContent::getSize(const std::string& key) const {
+    std::ostringstream oss;
+    oss << "Not implemented " << *this << " getSize(key)";
     throw eckit::SeriousBug(oss.str());
 }
 

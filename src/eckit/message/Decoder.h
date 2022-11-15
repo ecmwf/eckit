@@ -17,6 +17,8 @@
 #include <iosfwd>
 
 #include "eckit/io/Buffer.h"
+#include "eckit/utils/EnumBitmask.h"
+#include "eckit/utils/Optional.h"
 
 
 namespace eckit {
@@ -30,15 +32,41 @@ class MetadataGatherer;
 enum class EncodingFormat : unsigned
 {
     Unknown = 0,
-    GRIB = 1,
-    BUFR = 2,
+    GRIB    = 1,
+    BUFR    = 2,
 };
 
 enum class ValueRepresentation : unsigned
 {
     Native = 0,
-    Numeric = 1,
-    String = 2,
+    String = 1,
+};
+
+enum class MetadataFilter : unsigned long
+{
+    AllKeys             = 0,
+    SkipReadOnly        = 1 << 0,
+    SkipOptional        = 1 << 1,
+    SkipEditionSpecific = 1 << 2,
+    SkipCoded           = 1 << 3,
+    SkipComputed        = 1 << 4,
+    SkipDuplicates      = 1 << 5,
+    SkipFunction        = 1 << 6,
+    DumpOnly            = 1 << 7,
+    // BUFR setting
+    IncludeExtraKeyAttributes = 1 << 8,
+};
+
+ENUM_FLAG_OPERATORS(MetadataFilter)
+
+
+struct GetMetadataOptions {
+    ValueRepresentation valueRepresentation{ValueRepresentation::String};
+    MetadataFilter filter{MetadataFilter::AllKeys};
+    eckit::Optional<std::string> nameSpace{};  // Possible namespaces:
+                                               //  ls, statistics, parameter, time, geography, vertical, mars (https://confluence.ecmwf.int/display/UDOC/What+are+namespaces+-+ecCodes+GRIB+FAQ)
+                                               // Default: read gribToRequestNamespace from config, if not given use "mars".
+                                               // To specify all namespaces, use ""
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -49,11 +77,11 @@ public:  // methods
     Decoder();
 
     virtual ~Decoder();
-    
+
     virtual EncodingFormat getEncodingFormat(const Message& msg) const = 0;
 
-    virtual void getMetadata(const Message& msg, MetadataGatherer&, ValueRepresentation) const = 0;
-    
+    virtual void getMetadata(const Message& msg, MetadataGatherer&, const GetMetadataOptions&) const = 0;
+
     virtual eckit::Buffer decode(const Message& msg) const = 0;
 
     static Decoder& lookup(const Message&);

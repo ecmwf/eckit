@@ -81,8 +81,6 @@ public:
     // Write double array at key to pre allocated array 
     void getDoubleArray(const std::string& key, double* data, size_t len) const;
     
-
-    // @TODO Discuss whether the default value representation should be native or string. FDB5 will currently cause errors if it is non string, because it will to a string conversion but no mapping. Hence changes in FDB are required
     void getMetadata(MetadataGatherer&, GetMetadataOptions options = GetMetadataOptions{}) const;
 
     eckit::Buffer decode() const;

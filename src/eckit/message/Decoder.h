@@ -36,11 +36,17 @@ enum class EncodingFormat : unsigned
     BUFR    = 2,
 };
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
 enum class ValueRepresentation : unsigned
 {
     Native = 0,
     String = 1,
 };
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 enum class MetadataFilter : unsigned long
 {
@@ -59,6 +65,8 @@ enum class MetadataFilter : unsigned long
 
 ENUM_FLAG_OPERATORS(MetadataFilter)
 
+
+//----------------------------------------------------------------------------------------------------------------------
 
 struct GetMetadataOptions {
     ValueRepresentation valueRepresentation{ValueRepresentation::String};

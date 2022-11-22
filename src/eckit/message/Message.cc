@@ -136,13 +136,9 @@ void Message::getMetadata(MetadataGatherer& gather, GetMetadataOptions options) 
     return lookupDecoder().getMetadata(*this, gather, std::move(options));
 }
 
-EncodingFormat Message::getEncodingFormat() const {
-    return lookupDecoder().getEncodingFormat(*this);
-}
-
-Decoder& Message::lookupDecoder() const {
+MessageDecoder& Message::lookupDecoder() const {
     if (decoder_ == nullptr) {
-        decoder_ = &Decoder::lookup(*this);
+        decoder_ = &MessageDecoder::lookup(*this);
     }
     return *decoder_;
 }

@@ -64,7 +64,7 @@ public:
 
     Message& operator=(const Message&);
 
-    operator bool() const;
+    explicit operator bool() const;
 
     void write(eckit::DataHandle&) const;
 
@@ -85,8 +85,6 @@ public:
 
     eckit::Buffer decode() const;
 
-    EncodingFormat getEncodingFormat() const;
-
     eckit::DataHandle* readHandle() const;
 
     mars::MarsRequest request() const;
@@ -95,9 +93,9 @@ public:
 
 private:
     MessageContent* content_;
-    mutable Decoder* decoder_ = nullptr;
+    mutable MessageDecoder* decoder_ = nullptr; // non-owning
 
-    Decoder& lookupDecoder() const;
+    MessageDecoder& lookupDecoder() const;
 
     void print(std::ostream&) const;
 

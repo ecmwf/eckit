@@ -139,8 +139,8 @@ public:
 
 class NotImplemented : public Exception {
 public:
-    NotImplemented(const std::string& s, const CodeLocation&);
-    NotImplemented(const CodeLocation&);
+    explicit NotImplemented(const std::string& s, const CodeLocation& = {});
+    explicit NotImplemented(const CodeLocation&);
 };
 
 class Stop : public Exception {
@@ -179,10 +179,15 @@ public:
     OutOfRange(unsigned long long, unsigned long long);
 };
 
-class MethodNotYetImplemented : public Exception {
+/// For compatibility
+using MethodNotYetImplemented = NotImplemented;
+
+class FunctionalityNotSupported : public NotImplemented {
 public:
-    MethodNotYetImplemented(const std::string& msg);
+    explicit FunctionalityNotSupported(const std::string& what, const CodeLocation& loc = {});
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 // File errors
 

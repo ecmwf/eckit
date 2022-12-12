@@ -17,11 +17,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BufferedHandle::BufferedHandle(DataHandle* h, size_t size) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0) {}
+BufferedHandle::BufferedHandle(DataHandle* h, size_t size, bool opened) :
+    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
 
-BufferedHandle::BufferedHandle(DataHandle& h, size_t size) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0) {}
+BufferedHandle::BufferedHandle(DataHandle& h, size_t size, bool opened) :
+    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
 
 BufferedHandle::~BufferedHandle() {}
 
@@ -30,7 +30,12 @@ Length BufferedHandle::openForRead() {
     used_ = pos_ = 0;
     eof_         = false;
     position_    = 0;
-    return handle().openForRead();
+    if (opened_) {
+        return handle().estimate();
+    }
+    else {
+        return handle().openForRead();
+    }
 }
 
 void BufferedHandle::openForWrite(const Length& length) {

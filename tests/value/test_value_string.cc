@@ -76,31 +76,49 @@ CASE("Boolean strings automatically cast to bools as required") {
     Value val_true2("on");
     Value val_true3("yes");
     Value val_true4("1");
+    Value val_true5("TrUe");
+    Value val_true6("On");
+    Value val_true7("YeS");
 
     EXPECT(bool(val_true1));
     EXPECT(bool(val_true2));
     EXPECT(bool(val_true3));
     EXPECT(bool(val_true4));
+    EXPECT(bool(val_true5));
+    EXPECT(bool(val_true6));
+    EXPECT(bool(val_true7));
 
     EXPECT(val_true1.as<bool>());
     EXPECT(val_true2.as<bool>());
     EXPECT(val_true3.as<bool>());
     EXPECT(val_true4.as<bool>());
+    EXPECT(val_true5.as<bool>());
+    EXPECT(val_true6.as<bool>());
+    EXPECT(val_true7.as<bool>());
 
     Value val_false1("false");
     Value val_false2("off");
     Value val_false3("no");
     Value val_false4("0");
+    Value val_false5("fAlSe");
+    Value val_false6("OfF");
+    Value val_false7("NO");
 
     EXPECT(!bool(val_false1));
     EXPECT(!bool(val_false2));
     EXPECT(!bool(val_false3));
     EXPECT(!bool(val_false4));
+    EXPECT(!bool(val_false5));
+    EXPECT(!bool(val_false6));
+    EXPECT(!bool(val_false7));
 
     EXPECT(!val_false1.as<bool>());
     EXPECT(!val_false2.as<bool>());
     EXPECT(!val_false3.as<bool>());
     EXPECT(!val_false4.as<bool>());
+    EXPECT(!val_false5.as<bool>());
+    EXPECT(!val_false6.as<bool>());
+    EXPECT(!val_false7.as<bool>());
 
     Value val_other("other");
 

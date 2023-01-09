@@ -13,6 +13,7 @@
 
 #include "eckit/log/JSON.h"
 #include "eckit/utils/Hash.h"
+#include "eckit/utils/StringTools.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/StringContent.h"
 
@@ -73,10 +74,11 @@ void StringContent::value(std::string& s) const {
 }
 
 void StringContent::value(bool& b) const {
-    if (value_ == "true" || value_ == "on" || value_ == "yes" || value_ == "1") {
+    std::string v = StringTools::lower(value_);
+    if (v == "true" || v == "on" || v == "yes" || v == "1") {
         b = true;
     }
-    else if (value_ == "false" || value_ == "off" || value_ == "no" || value_ == "0") {
+    else if (v == "false" || v == "off" || v == "no" || v == "0") {
         b = false;
     }
     else {

@@ -103,6 +103,19 @@ void Message::getDoubleArray(const std::string& key, std::vector<double>& v) con
     return content_->getDoubleArray(key, v);
 }
 
+size_t Message::getSize(const std::string& key) const {
+    return content_->getSize(key);
+}
+
+void Message::getDoubleArray(const std::string& key, double* data, size_t len) const {
+    return content_->getDoubleArray(key, data, len);
+}
+
+
+eckit::Buffer Message::decode() const {
+    return lookupDecoder().decode(*this);
+};
+
 Message Message::transform(const eckit::StringDict& dict) const {
     return Message(content_->transform(dict));
 }
@@ -119,8 +132,15 @@ const void* Message::data() const {
     return content_->data();
 }
 
-void Message::getMetadata(MetadataGatherer& gather) const {
-    return Decoder::lookup(*this).getMetadata(*this, gather);
+void Message::getMetadata(MetadataGatherer& gather, GetMetadataOptions options) const {
+    return lookupDecoder().getMetadata(*this, gather, std::move(options));
+}
+
+MessageDecoder& Message::lookupDecoder() const {
+    if (decoder_ == nullptr) {
+        decoder_ = &MessageDecoder::lookup(*this);
+    }
+    return *decoder_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

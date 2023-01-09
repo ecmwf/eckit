@@ -119,12 +119,23 @@ CASE("copy and move assign") {
 
         opt1 = opt4;
         EXPECT(!opt1);
+        EXPECT(opt3);
+        opt3.reset();
         EXPECT(!opt3);
 
         // Self move-assignement
         opt2 = std::move(opt2);
         EXPECT(opt2);
         EXPECT(opt2.value() == 2);
+        
+        // Self copy-assignement
+        opt2 = opt2;
+        EXPECT(opt2);
+        EXPECT(opt2.value() == 2);
+        
+        // Assign none
+        opt2 = nullopt;
+        EXPECT(!opt2);
     }
 }
 
@@ -160,6 +171,8 @@ CASE("non-trivial object: std::string") {
         // Test move assign some <- some
         Optional<std::string> optTmp1("tmp1");
         opt = std::move(optTmp1);
+        EXPECT(optTmp1);
+        optTmp1.reset();
         EXPECT(!optTmp1);
         EXPECT_EQUAL(opt.value(), std::string("tmp1"));
 
@@ -167,11 +180,15 @@ CASE("non-trivial object: std::string") {
         Optional<std::string> optTmp2{};
         opt = std::move(optTmp2);
         EXPECT(!optTmp2);
+        optTmp2.reset();
+        EXPECT(!optTmp2);
         EXPECT(!opt);
 
         // Test move assign none <- some
         Optional<std::string> optTmp3("tmp3");
         opt = std::move(optTmp3);
+        EXPECT(optTmp3);
+        optTmp3 = nullopt;
         EXPECT(!optTmp3);
         EXPECT_EQUAL(opt.value(), std::string("tmp3"));
 
@@ -274,7 +291,7 @@ int StringWrap::idCounter = 0;
 std::set<int> StringWrap::deletedIds;
 std::set<int> StringWrap::deletedUIds;
 
-CASE("test destructor on non-trivial object") {
+CASE("test destructor on non-trivial object: copy assign value") {
     {
         Optional<StringWrap> opt;
         EXPECT(!opt);
@@ -285,7 +302,7 @@ CASE("test destructor on non-trivial object") {
         EXPECT_EQUAL(opt.value().str, std::string("testCopyAssignValue1"));
         int testCopyAssignValue1OptId  = opt.value().id;
         int testCopyAssignValue1OptUId = opt.value().uid;
-
+        
         // Test copy assign value Some <- Some
         StringWrap testCopyAssignValue2("testCopyAssignValue2");
         int testCopyAssignValue2Id  = testCopyAssignValue2.id;
@@ -309,6 +326,14 @@ CASE("test destructor on non-trivial object") {
         EXPECT(StringWrap::uidIsDeleted(testCopyAssignValue1OptUId));
         EXPECT(StringWrap::idIsDeleted(testCopyAssignValue2OptId));    // Some as two lines above
         EXPECT(StringWrap::uidIsDeleted(testCopyAssignValue2OptUId));  // Some as two lines above
+    }
+}
+
+        
+CASE("test destructor on non-trivial object: move assign value") {
+    {
+        Optional<StringWrap> opt;
+        EXPECT(!opt);
 
         // Test move assign value None <- Some
         StringWrap testMoveAssignValue1("testMoveAssignValue1");
@@ -336,15 +361,21 @@ CASE("test destructor on non-trivial object") {
         EXPECT(!StringWrap::idIsDeleted(testMoveAssignValue1OptId));
         EXPECT(!StringWrap::uidIsDeleted(testMoveAssignValue1OptUId));
         EXPECT(!StringWrap::uidIsDeleted(testMoveAssignValue2UId));
-
-
-        // Test copy assign some <- none
+        
+        
         Optional<StringWrap> testCopyAssignSomeNone;
         opt = testCopyAssignSomeNone;
         EXPECT(!opt);
         // Reset should delete previous object
         EXPECT(StringWrap::idIsDeleted(testMoveAssignValue2OptId));
         EXPECT(StringWrap::uidIsDeleted(testMoveAssignValue2OptUId));
+   }
+}
+
+CASE("test destructor on non-trivial object: copy & move assign optional") {
+    {
+        Optional<StringWrap> opt;
+        EXPECT(!opt);
 
         // Test copy assign none <- some
         Optional<StringWrap> testCopyAssignNoneSome("testCopyAssignNoneSome");
@@ -377,12 +408,14 @@ CASE("test destructor on non-trivial object") {
         EXPECT(!StringWrap::uidIsDeleted(testCopyAssignNoneSomeOptUId));
         EXPECT(!StringWrap::idIsDeleted(testCopyAssignSomeSomeId));
         EXPECT(!StringWrap::uidIsDeleted(testCopyAssignSomeSomeUId));
-
+        
         // Test move assign some <- some
         Optional<StringWrap> testMoveAssignSomeSome("testMoveAssignSomeSome");
         int testMoveAssignSomeSomeId  = testMoveAssignSomeSome.value().id;
         int testMoveAssignSomeSomeUId = testMoveAssignSomeSome.value().uid;
         opt                           = std::move(testMoveAssignSomeSome);
+        EXPECT(testMoveAssignSomeSome);
+        testMoveAssignSomeSome.reset();
         EXPECT(!testMoveAssignSomeSome);
         EXPECT_EQUAL(opt.value().str, std::string("testMoveAssignSomeSome"));
         int testMoveAssignSomeSomeOptId  = opt.value().id;
@@ -396,7 +429,7 @@ CASE("test destructor on non-trivial object") {
         EXPECT(!StringWrap::idIsDeleted(testCopyAssignSomeSomeOptId));
         EXPECT(!StringWrap::uidIsDeleted(testCopyAssignSomeSomeOptUId));
         EXPECT(!StringWrap::idIsDeleted(testMoveAssignSomeSomeId));
-        EXPECT(!StringWrap::uidIsDeleted(testMoveAssignSomeSomeUId));
+        EXPECT(StringWrap::uidIsDeleted(testMoveAssignSomeSomeUId));
 
         // Test move assign some <- none
         Optional<StringWrap> testMoveAssignSomeNone{};
@@ -412,6 +445,8 @@ CASE("test destructor on non-trivial object") {
         int testMoveAssignNoneSomeId  = testMoveAssignNoneSome.value().id;
         int testMoveAssignNoneSomeUId = testMoveAssignNoneSome.value().uid;
         opt                           = std::move(testMoveAssignNoneSome);
+        EXPECT(testMoveAssignNoneSome);
+        testMoveAssignNoneSome.reset();
         EXPECT(!testMoveAssignNoneSome);
         EXPECT_EQUAL(opt.value().str, std::string("testMoveAssignNoneSome"));
         int testMoveAssignNoneSomeOptId  = opt.value().id;
@@ -419,9 +454,12 @@ CASE("test destructor on non-trivial object") {
         EXPECT_EQUAL(testMoveAssignNoneSomeId, testMoveAssignNoneSomeOptId);
         EXPECT_NOT_EQUAL(testMoveAssignNoneSomeUId, testMoveAssignNoneSomeOptUId);
         EXPECT(!StringWrap::idIsDeleted(testMoveAssignNoneSomeId));
-        EXPECT(!StringWrap::uidIsDeleted(testMoveAssignNoneSomeUId));
+        EXPECT(StringWrap::uidIsDeleted(testMoveAssignNoneSomeUId));
+    }
+}
 
-
+CASE("test destructor on non-trivial object: copy construct") {
+    {
         // Test copy construct some
         Optional<StringWrap> copyFromSome("copyFromSome");
         Optional<StringWrap> copyTo1(copyFromSome);
@@ -437,7 +475,11 @@ CASE("test destructor on non-trivial object") {
         Optional<StringWrap> copyTo2(copyFromNone);
         EXPECT(!copyFromNone);
         EXPECT(!copyTo2);
+    }
+}
 
+CASE("test destructor on non-trivial object: move construct") {
+    {
         // Test move construct some
         Optional<StringWrap> moveFromSome("moveFromSome");
         int moveFromSomeId  = moveFromSome.value().id;
@@ -456,7 +498,11 @@ CASE("test destructor on non-trivial object") {
         Optional<StringWrap> moveTo2(std::move(moveFromNone));
         EXPECT(!moveFromNone);
         EXPECT(!moveTo2);
+    }
+}
 
+CASE("test destructor on non-trivial object: destruct") {
+    {
         int testDestructorID  = 0;
         int testDestructorUID = 0;
         {

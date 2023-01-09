@@ -9,3 +9,4 @@ doc/latex
 .vscode
 .idea
 build/
+*.ccls-cache

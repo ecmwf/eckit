@@ -22,12 +22,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Helper class to manage an optional contained value,
-/// i.e. a value that may or may not be present.
-namespace {
 struct None {};
-;
-}  // namespace
+
+constexpr None nullopt{};
 
 // Define non-trivial or trivial destructor in template specialization
 template <typename T>
@@ -38,7 +35,7 @@ template <typename T, typename Enable = void>
 class OptionalBase {
 public:
     ~OptionalBase() {
-        static_cast<Optional<T>*>(this)->destruct();
+        static_cast<Optional<T>*>(this)->reset();
     }
 
 protected:
@@ -113,7 +110,13 @@ public:  // methods
         Optional(TagCopyConstructor{}, rhs) {}
 
     ~Optional() = default;
-
+    
+    void reset() noexcept {
+        if (hasValue_) {
+            val_.value.~T();
+            hasValue_ = false;
+        }
+    };
 
     // constexpr move constructor only possible in C++14 because hasValue_ needs to be accessed conditionally and new (*ptr) should be used to initialize tho value
     // Also trivial objects would need to modify rhs.hasValue_ to not break semantics, which is only possible in C++14;
@@ -126,6 +129,10 @@ public:  // methods
     }
 
     Optional<T>& operator=(const Optional<T>& other) {
+        if (this == &other) {
+            return *this;
+        }
+        
         if (hasValue_ && other.hasValue_) {
             val_.value = other.value();
         }
@@ -135,8 +142,7 @@ public:  // methods
             hasValue_ = true;
         }
         else if (hasValue_ && !other.hasValue_) {
-            val_.value.~T();
-            hasValue_ = false;
+            reset();
         }
         return *this;
     }
@@ -148,18 +154,20 @@ public:  // methods
 
         if (hasValue_ && other.hasValue_) {
             val_.value      = std::move(other.value());
-            other.hasValue_ = false;
         }
         else if (!hasValue_ && other.hasValue_) {
             // Explicitly construct here, previous value has been deleted.
             new (&val_.value) T(std::move(other.value()));
-            other.hasValue_ = false;
             hasValue_       = true;
         }
         else if (hasValue_ && !other.hasValue_) {
-            val_.value.~T();
-            hasValue_ = false;
+            reset();
         }
+        return *this;
+    }
+    
+    Optional<T>& operator=(const None&) {
+        reset();
         return *this;
     }
 
@@ -168,7 +176,7 @@ public:  // methods
     template <typename U, typename enable = typename std::enable_if<((!std::is_same<typename std::decay<U>::type, Optional<T>>::value) && (std::is_constructible<T, U>::value) && (std::is_assignable<T&, U>::value))>::type>
     Optional<T>& operator=(U&& arg) {
         if (!hasValue_) {
-            // Explicitly move construct here, previous value has been deleted.
+            // Explicitly forward construct here, previous value has been deleted.
             new (&val_.value) T(std::forward<U>(arg));
         }
         else {
@@ -182,10 +190,7 @@ public:  // methods
     // Force construct an value by forwarding arguments
     template <typename... Args>
     T& emplace(Args&&... args) {
-        if (hasValue_) {
-            // Destruct before reconstructing from arguments
-            val_.value.~T();
-        }
+        reset();
         new (&val_.value) T(std::forward<Args>(args)...);
         hasValue_ = true;
         return val_.value;
@@ -194,10 +199,7 @@ public:  // methods
     // Force construct an value by forwarding arguments
     template <class U, class... Args, typename enable = typename std::enable_if<std::is_constructible<T, std::initializer_list<U>&, Args&&...>::value>::type>
     T& emplace(std::initializer_list<U> ilist, Args&&... args) {
-        if (hasValue_) {
-            // Destruct before reconstructing from arguments
-            val_.value.~T();
-        }
+        reset();
         new (&val_.value) T(ilist, std::forward<Args>(args)...);
         hasValue_ = true;
         return val_.value;
@@ -256,13 +258,6 @@ public:  // methods
 
 private:
     friend OptionalBase<T>;
-
-    // Is called in the base class for non-trivial types. Allows creating constexpr optional for trivial types
-    void destruct() {
-        if (hasValue_) {
-            val_.value.~T();
-        }
-    }
 
     // While using ntd_opt_value_type would be just fine for both cases, doing the conditional type switch allows creating constexpr for optional trivial types
     using opt_value_type = typename OptionalBase<T>::opt_value_type;

@@ -61,13 +61,16 @@ public:
 
     virtual void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
+    virtual size_t getSize(const std::string& key) const;
+
+    // Write double array at key to pre allocated array. 
+    virtual void getDoubleArray(const std::string& key, double* data, size_t len) const;
+
     virtual eckit::DataHandle* readHandle() const;
 
     virtual eckit::Offset offset() const;
 
     virtual const void* data() const;
-
-    virtual void getMetadata(MetadataGatherer&) const;
 
     virtual MessageContent* transform(const Transformer&) const;
     virtual MessageContent* transform(const eckit::StringDict&) const;

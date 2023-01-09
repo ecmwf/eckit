@@ -8,40 +8,47 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
-
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
 
 namespace eckit {
 namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::string evaluate_message(bool assser_is_correct) {
-    if(assser_is_correct) {
-        // this shoudl never execute, and therefore the code below never reached
+std::string evaluate_message(bool answer_is_correct) {
+    if (answer_is_correct) {
+        // this should never execute, and therefore the code below never reached
         throw NotImplemented(Here());
         return "NON REACHABLE CODE";
     }
-    else {
-        std::cout << "THIS SHOULD PRINT" << std::endl;
-        return "ASSERT FAILS";
-    }
+
+    std::cout << "THIS SHOULD PRINT" << std::endl;
+    return "ASSERT FAILS";
 }
 
-CASE("Test ASSERT throws correctly") {
+CASE("Test AssertionFailed") {
+    EXPECT_NO_THROW(ASSERT(true));
+    EXPECT_THROWS_AS(ASSERT(false), AssertionFailed);
+}
 
-    bool notfail = true;
-    EXPECT_NO_THROW(ASSERT(notfail));
+CASE("Test FunctionalityNotSupported") {
+    struct A {
+        virtual void method() {
+            throw FunctionalityNotSupported("not supported");
+        }
+    } a;
 
-    notfail = false;
-    EXPECT_THROWS_AS(ASSERT(notfail), AssertionFailed);
+    struct B final : A {
+        void method() override {}
+    } b;
+
+    // "not supported" is also "not implemented"
+    EXPECT_THROWS_AS(a.method(), FunctionalityNotSupported);
+    EXPECT_THROWS_AS(a.method(), NotImplemented);
+
+    EXPECT_NO_THROW(b.method());
 }
 
 CASE("Test ASSERT_MSG does not evaluate message if assertion not triggered") {
@@ -59,5 +66,5 @@ CASE("Test ASSERT_MSG does not evaluate message if assertion not triggered") {
 }  // namespace eckit
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

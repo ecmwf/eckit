@@ -249,27 +249,16 @@ BadValue::BadValue(const std::string& s, const CodeLocation& loc) :
 
 NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& loc) {
     std::ostringstream ss;
-
     ss << "Not implemented: " << s << loc;
-
     reason(ss.str());
+
     Log::status() << what() << std::endl;
 
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
+    std::cout << what() << std::endl
+              << BackTrace::dump() << std::endl;
 }
 
-NotImplemented::NotImplemented(const CodeLocation& loc) {
-    std::ostringstream ss;
-
-    ss << "Not implemented: " << loc.func() << ", line " << loc.line() << " of " << loc.file();
-
-    reason(ss.str());
-    Log::status() << what() << std::endl;
-
-    std::cout << what() << std::endl;
-    std::cout << BackTrace::dump() << std::endl;
-}
+NotImplemented::NotImplemented(const CodeLocation& loc) : NotImplemented("", loc) {}
 
 UserError::UserError(const std::string& r, const CodeLocation& loc) :
     Exception(std::string("UserError: ") + r, loc) {}
@@ -325,6 +314,11 @@ FileError::FileError(const std::string& msg, const CodeLocation& here) {
     Log::status() << what() << std::endl;
 }
 
+FunctionalityNotSupported::FunctionalityNotSupported(const std::string& what, const CodeLocation& loc) :
+    NotImplemented("Functionality not supported: " + what, loc) {}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 FileError::FileError() {}
 
 CantOpenFile::CantOpenFile(const std::string& file, bool retry) :
@@ -347,9 +341,6 @@ CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, boo
     reason(s.str());
     Log::status() << what() << std::endl;
 }
-
-MethodNotYetImplemented::MethodNotYetImplemented(const std::string& msg) :
-    Exception(std::string("Method not yet implemented: " + msg)) {}
 
 WriteError::WriteError(const std::string& file, const CodeLocation& loc) :
     FileError(std::string("Write error on ") + file, loc) {}

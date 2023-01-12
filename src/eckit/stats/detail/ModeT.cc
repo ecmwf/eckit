@@ -110,6 +110,7 @@ ModeBoolean::ModeBoolean(bool disambiguateMax, double min) : min_(min), disambig
 
 
 ModeBoolean::ModeBoolean(const param::MIRParametrisation& param) {
+    reset();
     param.get("mode-disambiguate-max", disambiguateMax_);
     param.get("mode-boolean-min", min_);
 }

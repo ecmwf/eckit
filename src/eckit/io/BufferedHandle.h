@@ -27,11 +27,11 @@ class BufferedHandle : public DataHandle, public HandleHolder {
 public:
     /// Contructor, taking ownership
 
-    BufferedHandle(DataHandle*, size_t = 1024 * 1024);
+    BufferedHandle(DataHandle*, size_t = 1024 * 1024, bool opened = false);
 
     /// Contructor, not taking ownership
 
-    BufferedHandle(DataHandle&, size_t = 1024 * 1024);
+    BufferedHandle(DataHandle&, size_t = 1024 * 1024, bool opened = false);
 
     /// Destructor
 
@@ -71,7 +71,8 @@ private:  // members
     bool eof_;
     bool read_;
     Offset position_;
-
+    bool opened_;
+    
     virtual std::string title() const override;
     virtual void collectMetrics(const std::string& what) const override;
 

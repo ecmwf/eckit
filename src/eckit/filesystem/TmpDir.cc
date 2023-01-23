@@ -18,12 +18,12 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static PathName tmp() {
+static PathName tmp(const char* base) {
 
-    static std::string base(eckit::Resource<std::string>("$TMPDIR", "/tmp"));
+    static std::string static_base(eckit::Resource<std::string>("$TMPDIR", "/tmp"));
 
     // n.b. mutable for mkdtemp
-    std::string tmpl = base + "/tmpdir.XXXXXX";
+    std::string tmpl = (base ? base : static_base) + "/tmpdir.XXXXXX";
     ASSERT(::mkdtemp(&tmpl[0]) == &tmpl[0]);
 
     return tmpl;
@@ -44,12 +44,19 @@ static void deldir(eckit::PathName& p) {
     p.rmdir();
 }
 
+TmpDir::TmpDir(const char* base) :
+    PathName(tmp(base)) {}
 
-TmpDir::TmpDir() :
-    PathName(tmp()) {}
+TmpDir::TmpDir(TmpDir&& rhs) :
+    PathName(rhs) {
+
+    static_cast<PathName&>(rhs) = PathName("");
+}
 
 TmpDir::~TmpDir() noexcept(false) {
-    deldir(*this);
+    if (*this != "") {
+        deldir(*this);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

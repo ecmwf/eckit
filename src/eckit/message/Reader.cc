@@ -28,32 +28,30 @@ namespace eckit {
 namespace message {
 
 Reader::Reader(eckit::DataHandle* h, bool opened) :
-    handle_(new BufferedHandle(h, readerBufferSize())), opened_(opened) {
+//    handle_(h), opened_(opened) {
+    handle_(new BufferedHandle(h, readerBufferSize(), opened)) {
     init();
 }
 
 Reader::Reader(eckit::DataHandle& h, bool opened) :
-    handle_(new BufferedHandle(h, readerBufferSize())), opened_(opened) {
+//    handle_(h), opened_(opened) {
+    handle_(new BufferedHandle(h, readerBufferSize(), opened)) {
     init();
 }
 
 Reader::Reader(const eckit::PathName& path) :
-    handle_(new BufferedHandle(path.fileHandle(), readerBufferSize())), opened_(false) {
+    handle_(new BufferedHandle(path.fileHandle(), readerBufferSize())) {
     init();
 }
 
 void Reader::init() {
-    if (!opened_) {
-        handle_.openForRead();
-    }
-    splitter_.reset(SplitterFactory::lookup(handle_));
+    handle_.openForRead();
+    splitter_.reset(SplitterFactory::instance().lookup(handle_));
 }
 
 Reader::~Reader() {
 
-    if (!opened_) {
-        handle_.close();
-    }
+    handle_.close();
 }
 
 Message Reader::next() {

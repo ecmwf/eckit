@@ -15,6 +15,8 @@
 #define eckit_message_Splitter_h
 
 #include <iosfwd>
+#include <mutex>
+#include <vector>
 
 namespace eckit {
 class DataHandle;
@@ -47,23 +49,44 @@ private:  // methods
     }
 };
 
-class SplitterFactory {
-public:
-    SplitterFactory();
+//----------------------------------------------------------------------------------------------------------------------
 
-    virtual ~SplitterFactory();
+class SplitterBuilderBase {
+
+public:
+    SplitterBuilderBase();
+    virtual ~SplitterBuilderBase();
 
     virtual Splitter* make(eckit::PeekHandle&) const = 0;
-
-
-    static Splitter* lookup(eckit::PeekHandle&);
-
-protected:
     virtual bool match(eckit::PeekHandle&) const = 0;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
+class SplitterFactory {
+public:
+
+    static SplitterFactory& instance();
+
+    Splitter* lookup(eckit::PeekHandle&);
+
+    void enregister(SplitterBuilderBase*);
+    void deregister(const SplitterBuilderBase*);
+
+private:
+
+    SplitterFactory() = default;
+    ~SplitterFactory() = default;
+
+    size_t index_ = 0;
+    std::vector<SplitterBuilderBase*> decoders_; // non-owning pointers
+    std::mutex mutex_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 template <class T>
-class SplitterBuilder : public SplitterFactory {
+class SplitterBuilder : public SplitterBuilderBase {
     virtual Splitter* make(eckit::PeekHandle& handle) const override { return new T(handle); }
 
     virtual bool match(eckit::PeekHandle& handle) const override;

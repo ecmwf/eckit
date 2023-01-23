@@ -8,6 +8,8 @@ Operation.cc
 Operation.h
 Request.cc
 Request.h
+Group.cc
+Group.h
 Serial.cc
 Serial.h
 SerialData.h
@@ -28,6 +30,8 @@ if( HAVE_MPI )
         ParallelStatus.h
         ParallelRequest.cc
         ParallelRequest.h
+        ParallelGroup.cc
+        ParallelGroup.h
         )
 
     set(eckit_mpi_defs ${MPI_C_DEFINITIONS} )

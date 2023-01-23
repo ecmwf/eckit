@@ -17,6 +17,8 @@
 #include <iosfwd>
 #include <vector>
 
+#include "eckit/io/Buffer.h"
+#include "eckit/message/Decoder.h"
 #include "eckit/types/Types.h"
 
 namespace eckit {
@@ -62,7 +64,7 @@ public:
 
     Message& operator=(const Message&);
 
-    operator bool() const;
+    explicit operator bool() const;
 
     void write(eckit::DataHandle&) const;
 
@@ -74,8 +76,14 @@ public:
     long getLong(const std::string& key) const;
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
+    size_t getSize(const std::string& key) const;
+    
+    // Write double array at key to pre allocated array 
+    void getDoubleArray(const std::string& key, double* data, size_t len) const;
+    
+    void getMetadata(MetadataGatherer&, GetMetadataOptions options = GetMetadataOptions{}) const;
 
-    void getMetadata(MetadataGatherer&) const;
+    eckit::Buffer decode() const;
 
     eckit::DataHandle* readHandle() const;
 
@@ -85,31 +93,35 @@ public:
 
 private:
     MessageContent* content_;
+    mutable MessageDecoder* decoder_ = nullptr; // non-owning
+
+    MessageDecoder& lookupDecoder() const;
 
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Message& p) {
         p.print(s);
         return s;
-        }
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-    template <class T>
-    class StringSetter : public MetadataGatherer {
-        T& object_;
+template <class T>
+class StringSetter : public MetadataGatherer {
+    T& object_;
 
-        virtual void setValue(const std::string& key, const std::string& value) override {
-            object_.setValue(key, value);
-        }
+    virtual void setValue(const std::string& key, const std::string& value) override {
+        object_.setValue(key, value);
+    }
 
-        virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
+    virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
 
-        virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
+    virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
 
-    public:
-        StringSetter(T& object) : object_(object) {}
+public:
+    StringSetter(T& object) :
+        object_(object) {}
 };
 
 template <class T>
@@ -123,7 +135,8 @@ class TypedSetter : public MetadataGatherer {
     virtual void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
 
 public:
-    TypedSetter(T& object) : object_(object) {}
+    TypedSetter(T& object) :
+        object_(object) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 

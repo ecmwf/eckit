@@ -35,8 +35,8 @@ public:
 
     const in_addr& address() const { return address_; }
 
-
     static IPAddress myIPAddress();
+    static IPAddress hostAddress(const std::string& hostname);
 
 private:
     // Members

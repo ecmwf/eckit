@@ -51,7 +51,6 @@ private:
 
     std::unique_ptr<Splitter> splitter_;
     eckit::PeekHandle handle_;
-    bool opened_;
 
     void init();
     void print(std::ostream&) const;  // Change to virtual if base class

@@ -17,11 +17,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BufferedHandle::BufferedHandle(DataHandle* h, size_t size) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0) {}
+BufferedHandle::BufferedHandle(DataHandle* h, size_t size, bool opened) :
+    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
 
-BufferedHandle::BufferedHandle(DataHandle& h, size_t size) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0) {}
+BufferedHandle::BufferedHandle(DataHandle& h, size_t size, bool opened) :
+    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
 
 BufferedHandle::~BufferedHandle() {}
 
@@ -30,7 +30,12 @@ Length BufferedHandle::openForRead() {
     used_ = pos_ = 0;
     eof_         = false;
     position_    = 0;
-    return handle().openForRead();
+    if (opened_) {
+        return handle().estimate();
+    }
+    else {
+        return handle().openForRead();
+    }
 }
 
 void BufferedHandle::openForWrite(const Length& length) {
@@ -66,22 +71,20 @@ long BufferedHandle::read(void* buffer, long length) {
     ASSERT(read_);
 
     if (eof_)
-        return -1;
+        return 0;
 
     while (len < length && !eof_) {
         long left = used_ - pos_;
         ASSERT(left >= 0);
 
         if (left == 0 && !eof_) {
+            // read() is supposed to return a non-negative number
             used_ = handle().read(buffer_, size_);
             pos_  = 0;
             if (used_ <= 0) {
                 eof_ = true;
-                len  = len ? len : used_;
                 if (len > 0)
                     position_ += len;
-                if (len == 0)
-                    return -1;
                 return len;
             }
             left = used_;

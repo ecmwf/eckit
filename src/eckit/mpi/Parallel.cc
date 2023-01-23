@@ -20,6 +20,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/mpi/ParallelGroup.h"
 #include "eckit/mpi/ParallelRequest.h"
 #include "eckit/mpi/ParallelStatus.h"
 #include "eckit/runtime/Main.h"
@@ -94,7 +95,7 @@ static MPI_Datatype PARALLEL_TWO_LONG_LONG() {
     return mpi_datatype;
 }
 
-}
+}  // namespace
 
 
 // define MPI_LONG_LONG if not existing to avoid compilation errors
@@ -132,7 +133,7 @@ static MPI_Datatype toType(Data::Code code) {
         /*[Data::LONG_LONG]            = */ MPI_LONG_LONG,
         /*[Data::TWO_LONG]             = */ PARALLEL_TWO_LONG(),
         /*[Data::TWO_LONG_LONG]        = */ PARALLEL_TWO_LONG_LONG(),
-        };
+    };
     return mpi_datatype_[code];
 }
 
@@ -326,6 +327,13 @@ std::string Parallel::processorName() const {
     MPI_CALL(MPI_Get_processor_name(hostname, &size));
     return hostname;
 }
+
+size_t Parallel::remoteSize() const {
+    int s;
+    MPI_CALL(MPI_Comm_remote_size(comm_, &s));
+    return ((size_t)s);
+}
+
 
 void Parallel::barrier() const {
     MPI_CALL(MPI_Barrier(comm_));
@@ -630,6 +638,39 @@ Status Parallel::createStatus() {
 Request Parallel::request(int request) const {
     return Request(new ParallelRequest(MPI_Request_f2c(request)));
 }
+
+Group Parallel::group(int group) const {
+    return Group(new ParallelGroup(MPI_Group_f2c(group)));
+}
+
+Group Parallel::group() const {
+    MPI_Group g;
+    MPI_CALL(MPI_Comm_group(comm_, &g));
+    return Group(new ParallelGroup(g));
+}
+
+Group Parallel::remoteGroup() const {
+    MPI_Group g;
+    MPI_CALL(MPI_Comm_remote_group(comm_, &g));
+    return Group(new ParallelGroup(g));
+}
+
+Comm& Parallel::create(const Group& group, const std::string& name) const {
+    MPI_Comm new_mpi_comm;
+    MPI_CALL(MPI_Comm_create(comm_, dynamic_cast<const ParallelGroup&>(*group.content_).group_, &new_mpi_comm));
+    Comm* newcomm = new Parallel(name, new_mpi_comm, true);
+    addComm(name.c_str(), newcomm);
+    return *newcomm;
+};
+
+Comm& Parallel::create(const Group& group, int tag, const std::string& name) const {
+    MPI_Comm new_mpi_comm;
+    MPI_CALL(MPI_Comm_create_group(comm_, dynamic_cast<const ParallelGroup&>(*group.content_).group_, tag, &new_mpi_comm));
+    Comm* newcomm = new Parallel(name, new_mpi_comm, true);
+    addComm(name.c_str(), newcomm);
+    return *newcomm;
+};
+
 
 MPI_Request* Parallel::toRequest(Request& req) {
     return &(req.as<ParallelRequest>().request_);

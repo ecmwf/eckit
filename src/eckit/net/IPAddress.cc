@@ -48,6 +48,12 @@ std::string IPAddress::asString() const {
     return inet_ntoa(address_);
 }
 
+IPAddress IPAddress::hostAddress(const std::string& hostname) {
+    struct hostent* hostEntry = gethostbyname(hostname.c_str());
+    ASSERT(hostEntry);
+
+    return IPAddress(inet_ntoa(*((struct in_addr*)hostEntry->h_addr_list[0])));
+}
 
 IPAddress IPAddress::myIPAddress() {
     static bool done = false;

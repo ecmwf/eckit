@@ -58,9 +58,9 @@ std::string Translator<bool, std::string>::operator()(bool value) {
 bool Translator<std::string, bool>::operator()(const std::string& str) {
     std::string s = StringTools::lower(str);
 
-    if (s == "no" || s == "off" || s == "false")
+    if (s == "no" || s == "off" || s == "false" || s == "0")
         return false;
-    if (s == "yes" || s == "on" || s == "true")
+    if (s == "yes" || s == "on" || s == "true" || s == "1")
         return true;
 
     // Catter for ints

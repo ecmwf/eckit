@@ -25,11 +25,11 @@ namespace message {
 
 namespace {
 eckit::Mutex* local_mutex       = 0;
-std::vector<Decoder*>* decoders = 0;
+std::vector<MessageDecoder*>* decoders = 0;
 pthread_once_t once             = PTHREAD_ONCE_INIT;
 void init() {
     local_mutex = new eckit::Mutex();
-    decoders    = new std::vector<Decoder*>();
+    decoders    = new std::vector<MessageDecoder*>();
 }
 
 size_t index = 0;
@@ -37,25 +37,25 @@ size_t index = 0;
 }  // namespace
 
 
-Decoder::Decoder() {
+MessageDecoder::MessageDecoder() {
     pthread_once(&once, init);
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
     decoders->push_back(this);
 }
 
-Decoder::~Decoder() {
+MessageDecoder::~MessageDecoder() {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
     decoders->erase(std::remove(decoders->begin(), decoders->end(), this), decoders->end());
 }
 
-Decoder& Decoder::lookup(const Message& msg) {
+MessageDecoder& MessageDecoder::lookup(const Message& msg) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     size_t n = decoders->size();
     ASSERT(n);
 
     for (size_t i = 0; i < n; ++i) {
-        Decoder* d = (*decoders)[(i + index) % n];
+        MessageDecoder* d = (*decoders)[(i + index) % n];
         if (d->match(msg)) {
             index = i;  // Start with this index for next message
             return *d;

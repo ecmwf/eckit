@@ -191,6 +191,15 @@ struct Translator<std::set<std::string>, std::string> {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+// This allows using the Translator without having to explicitly name the type of an argument. For example in case of
+// generic string conversion: translate<std::strig>(someVariable)
+template <typename To, typename From>
+To translate(From&& from) {
+    return Translator<typename std::decay<From>::type, To>()(std::forward<From>(from));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace eckit
 
 #endif

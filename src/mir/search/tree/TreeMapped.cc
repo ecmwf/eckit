@@ -13,9 +13,7 @@
 #include "mir/search/tree/TreeMapped.h"
 
 
-namespace mir {
-namespace search {
-namespace tree {
+namespace mir::search::tree {
 
 
 void TreeMapped::build(std::vector<Tree::PointValueType>& v) {
@@ -66,6 +64,4 @@ TreeMapped::TreeMapped(const repres::Representation& r, const eckit::PathName& p
     Tree(r), umask_(0), path_(path), tree_(path, path.exists() ? 0 : itemCount(), 0) {}
 
 
-}  // namespace tree
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search::tree

@@ -15,9 +15,7 @@
 #include "mir/search/tree/TreeMapped.h"
 
 
-namespace mir {
-namespace search {
-namespace tree {
+namespace mir::search::tree {
 
 
 class TreeMappedAnonymousMemory : public TreeMapped {
@@ -33,6 +31,4 @@ public:
 };
 
 
-}  // namespace tree
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search::tree

@@ -21,9 +21,7 @@
 #include "mir/util/Log.h"
 
 
-namespace mir {
-namespace search {
-namespace tree {
+namespace mir::search::tree {
 
 
 template <class T>
@@ -128,6 +126,4 @@ public:
 static const TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
 
 
-}  // namespace tree
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search::tree

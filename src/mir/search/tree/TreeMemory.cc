@@ -13,9 +13,7 @@
 #include "mir/search/tree/TreeMemory.h"
 
 
-namespace mir {
-namespace search {
-namespace tree {
+namespace mir::search::tree {
 
 
 void TreeMemory::build(std::vector<Tree::PointValueType>& v) {
@@ -78,6 +76,4 @@ void TreeMemory::print(std::ostream& out) const {
 static const TreeBuilder<TreeMemory> builder("memory");
 
 
-}  // namespace tree
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search::tree

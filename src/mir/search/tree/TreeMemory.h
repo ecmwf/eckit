@@ -17,9 +17,7 @@
 #include "mir/search/Tree.h"
 
 
-namespace mir {
-namespace search {
-namespace tree {
+namespace mir::search::tree {
 
 
 class TreeMemory : public Tree {
@@ -52,6 +50,4 @@ public:
 };
 
 
-}  // namespace tree
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search::tree

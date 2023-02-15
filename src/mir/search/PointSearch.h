@@ -17,15 +17,12 @@
 #include "mir/search/Tree.h"
 
 
-namespace mir {
-namespace param {
+namespace mir::param {
 class MIRParametrisation;
-}
-}  // namespace mir
+}  // namespace mir::param
 
 
-namespace mir {
-namespace search {
+namespace mir::search {
 
 
 /// Class for fast searches in point clouds following k-d tree algorithms
@@ -121,5 +118,4 @@ private:
 };
 
 
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search

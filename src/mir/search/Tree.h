@@ -21,15 +21,12 @@
 #include "mir/util/Types.h"
 
 
-namespace mir {
-namespace repres {
+namespace mir::repres {
 class Representation;
-}
-}  // namespace mir
+}  // namespace mir::repres
 
 
-namespace mir {
-namespace search {
+namespace mir::search {
 
 
 class Tree {
@@ -97,5 +94,4 @@ public:
 };
 
 
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search

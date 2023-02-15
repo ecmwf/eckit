@@ -24,8 +24,7 @@
 #include "mir/util/Types.h"
 
 
-namespace mir {
-namespace search {
+namespace mir::search {
 
 PointSearch::PointSearch(const param::MIRParametrisation& parametrisation, const repres::Representation& r) {
     bool caching = LibMir::caching();
@@ -103,5 +102,4 @@ void PointSearch::print(std::ostream& out) const {
     tree_->statsReset();
 }
 
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search

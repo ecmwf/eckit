@@ -22,8 +22,7 @@
 #include "mir/util/Mutex.h"
 
 
-namespace mir {
-namespace search {
+namespace mir::search {
 
 
 Tree::~Tree() = default;
@@ -170,5 +169,4 @@ void TreeFactory::list(std::ostream& out) {
 }
 
 
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search

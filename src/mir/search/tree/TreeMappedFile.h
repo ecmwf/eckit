@@ -23,9 +23,7 @@
 #include "mir/util/Log.h"
 
 
-namespace mir {
-namespace search {
-namespace tree {
+namespace mir::search::tree {
 
 
 template <class T>
@@ -88,6 +86,4 @@ public:
 };
 
 
-}  // namespace tree
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search::tree

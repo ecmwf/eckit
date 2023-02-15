@@ -13,9 +13,7 @@
 #include "mir/search/tree/TreeMappedAnonymousMemory.h"
 
 
-namespace mir {
-namespace search {
-namespace tree {
+namespace mir::search::tree {
 
 
 TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representation& r) : TreeMapped(r, "/dev/zero") {}
@@ -24,6 +22,4 @@ TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representatio
 static const TreeBuilder<TreeMappedAnonymousMemory> builder("mapped-anonymous-memory");
 
 
-}  // namespace tree
-}  // namespace search
-}  // namespace mir
+}  // namespace mir::search::tree

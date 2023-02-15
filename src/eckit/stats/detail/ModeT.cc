@@ -17,9 +17,7 @@
 #include "mir/param/MIRParametrisation.h"
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 namespace {
 
@@ -167,6 +165,4 @@ void MedianIntegral::print(std::ostream& out) const {
 }
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

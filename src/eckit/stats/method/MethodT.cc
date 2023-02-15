@@ -20,9 +20,7 @@
 #include "mir/stats/detail/ScalarT.h"
 
 
-namespace mir {
-namespace stats {
-namespace method {
+namespace mir::stats::method {
 
 
 template <typename STATS>
@@ -121,6 +119,4 @@ static const MethodBuilder<MethodT<detail::CentralMomentsT<double>>> __stats5("c
 static const MethodBuilder<MethodT<detail::ScalarT<double>>> __stats6("scalar");
 
 
-}  // namespace method
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::method

@@ -25,9 +25,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace comparator {
+namespace mir::stats::comparator {
 
 
 template <typename STATS>
@@ -42,7 +40,7 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
     const auto& values2 = field2.values(0);
     ASSERT(values1.size() == values2.size());
 
-    if (std::isnan(ignoreAboveLatitude_) == 0 || std::isnan(ignoreBelowLatitude_) == 0) {
+    if (!std::isnan(ignoreAboveLatitude_) || !std::isnan(ignoreBelowLatitude_)) {
         repres::RepresentationHandle rep1(field1.representation());
         repres::RepresentationHandle rep2(field2.representation());
 
@@ -131,6 +129,4 @@ static const ComparatorBuilder<ComparatorT<detail::ScalarT<double>>> __comp5("sc
 static const ComparatorBuilder<ComparatorT<MinMax>> __comp6("min-max");
 
 
-}  // namespace comparator
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::comparator

@@ -20,8 +20,7 @@
 #include "mir/util/Mutex.h"
 
 
-namespace mir {
-namespace stats {
+namespace mir::stats {
 
 
 static util::recursive_mutex* local_mutex           = nullptr;
@@ -88,5 +87,4 @@ Statistics* StatisticsFactory::build(const std::string& name, const param::MIRPa
 }
 
 
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats

@@ -16,9 +16,7 @@
 #include "mir/stats/detail/Counter.h"
 
 
-namespace mir {
-namespace stats {
-namespace field {
+namespace mir::stats::field {
 
 
 /// Counting statistics on values (min, max, etc.)
@@ -33,6 +31,4 @@ struct CounterStats : detail::Counter, Field {
 };
 
 
-}  // namespace field
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::field

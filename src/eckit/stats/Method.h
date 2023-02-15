@@ -27,8 +27,7 @@ class MIRParametrisation;
 }  // namespace mir
 
 
-namespace mir {
-namespace stats {
+namespace mir::stats {
 
 
 class Method {
@@ -141,5 +140,4 @@ public:
 };
 
 
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats

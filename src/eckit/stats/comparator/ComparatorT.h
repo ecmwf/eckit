@@ -22,16 +22,12 @@
 #include "mir/stats/detail/CounterBinary.h"
 
 
-namespace mir {
-namespace data {
+namespace mir::data {
 class MIRField;
-}
-}  // namespace mir
+}  // namespace mir::data
 
 
-namespace mir {
-namespace stats {
-namespace comparator {
+namespace mir::stats::comparator {
 
 
 /// Generic comparison on two MIRFields
@@ -101,6 +97,4 @@ private:
 };
 
 
-}  // namespace comparator
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::comparator

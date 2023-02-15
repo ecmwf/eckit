@@ -17,9 +17,7 @@
 #include "mir/stats/detail/ModeT.h"
 
 
-namespace mir {
-namespace stats {
-namespace field {
+namespace mir::stats::field {
 
 
 struct ModeReal final : ModeStatsT<detail::ModeReal> {
@@ -58,6 +56,4 @@ static const FieldBuilder<MedianIntegral> __builder_4("median-integral");
 static const FieldBuilder<ModeBoolean> __builder_5("median-boolean");  // (alias)
 
 
-}  // namespace field
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::field

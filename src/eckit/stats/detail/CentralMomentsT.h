@@ -19,9 +19,7 @@
 #include <ostream>
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 /**
@@ -110,6 +108,4 @@ public:
 };
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

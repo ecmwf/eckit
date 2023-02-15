@@ -16,9 +16,7 @@
 #include "mir/stats/detail/Counter.h"
 
 
-namespace mir {
-namespace stats {
-namespace statistics {
+namespace mir::stats::statistics {
 
 
 /**
@@ -84,6 +82,4 @@ private:
 };
 
 
-}  // namespace statistics
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::statistics

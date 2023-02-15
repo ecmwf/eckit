@@ -25,9 +25,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
@@ -290,6 +288,4 @@ size_t CounterBinary::missingIn2NotIn1() const {
 }
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

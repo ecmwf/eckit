@@ -13,9 +13,7 @@
 #include "mir/stats/detail/AngleT.h"
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 constexpr double D360 = 360;
@@ -47,6 +45,4 @@ AngleT<double, AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT() :
     rescale_(1.), descale_(1.), globe_(TWO * M_PI), min_(-M_PI) {}
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

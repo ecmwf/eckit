@@ -15,9 +15,7 @@
 #include <ostream>
 
 
-namespace mir {
-namespace stats {
-namespace field {
+namespace mir::stats::field {
 
 
 struct Count final : CounterStats {
@@ -62,6 +60,4 @@ static const FieldBuilder<Maximum> __builder_4("maximum");
 static const FieldBuilder<Minimum> __builder_5("minimum");
 
 
-}  // namespace field
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::field

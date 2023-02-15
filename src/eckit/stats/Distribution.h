@@ -17,15 +17,12 @@
 #include <string>
 
 
-namespace mir {
-namespace param {
+namespace mir::param {
 class MIRParametrisation;
-}
-}  // namespace mir
+}  // namespace mir::param
 
 
-namespace mir {
-namespace stats {
+namespace mir::stats {
 
 
 class Distribution {
@@ -126,5 +123,4 @@ public:
 };
 
 
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats

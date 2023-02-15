@@ -23,8 +23,7 @@
 #include "mir/util/ValueMap.h"
 
 
-namespace mir {
-namespace stats {
+namespace mir::stats {
 
 
 static util::once_flag once;
@@ -104,5 +103,4 @@ void DistributionFactory::list(std::ostream& out) {
 }
 
 
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats

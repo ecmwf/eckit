@@ -22,9 +22,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace comparator {
+namespace mir::stats::comparator {
 
 
 std::string MissingValues::execute(const data::MIRField& field1, const data::MIRField& field2) {
@@ -82,6 +80,4 @@ void MissingValues::print(std::ostream& out) const {
 static const ComparatorBuilder<MissingValues> __stats("missing-values");
 
 
-}  // namespace comparator
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::comparator

@@ -15,9 +15,7 @@
 #include "mir/stats/Comparator.h"
 
 
-namespace mir {
-namespace stats {
-namespace comparator {
+namespace mir::stats::comparator {
 
 
 /**
@@ -86,6 +84,4 @@ private:
 };
 
 
-}  // namespace comparator
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::comparator

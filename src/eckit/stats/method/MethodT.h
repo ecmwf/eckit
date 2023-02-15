@@ -19,16 +19,12 @@
 #include "mir/stats/detail/Counter.h"
 
 
-namespace mir {
-namespace data {
+namespace mir::data {
 class MIRField;
-}
-}  // namespace mir
+}  // namespace mir::data
 
 
-namespace mir {
-namespace stats {
-namespace method {
+namespace mir::stats::method {
 
 
 /// Generic statistics on a MIRField
@@ -101,6 +97,4 @@ private:
 };
 
 
-}  // namespace method
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::method

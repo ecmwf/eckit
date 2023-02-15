@@ -17,9 +17,7 @@
 #include "mir/stats/detail/CentralMomentsT.h"
 
 
-namespace mir {
-namespace stats {
-namespace field {
+namespace mir::stats::field {
 
 
 struct Mean final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
@@ -72,6 +70,4 @@ static const FieldBuilder<StandardDeviation> __builder_5("stddev");
 static const FieldBuilder<Sum> __builder_6("sum");
 
 
-}  // namespace field
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::field

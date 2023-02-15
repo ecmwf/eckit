@@ -15,16 +15,12 @@
 #include "mir/stats/Distribution.h"
 
 
-namespace mir {
-namespace param {
+namespace mir::param {
 class MIRParametrisation;
-}
-}  // namespace mir
+}  // namespace mir::param
 
 
-namespace mir {
-namespace stats {
-namespace distribution {
+namespace mir::stats::distribution {
 
 
 template <typename DISTRIBUTION>
@@ -102,6 +98,4 @@ private:
 };
 
 
-}  // namespace distribution
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::distribution

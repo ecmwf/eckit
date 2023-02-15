@@ -22,9 +22,7 @@
 #include "mir/stats/statistics/Spectral.h"
 
 
-namespace mir {
-namespace stats {
-namespace comparator {
+namespace mir::stats::comparator {
 
 
 Spectral::Spectral(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
@@ -101,6 +99,4 @@ void Spectral::print(std::ostream& out) const {
 static const ComparatorBuilder<Spectral> __stats("spectral");
 
 
-}  // namespace comparator
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::comparator

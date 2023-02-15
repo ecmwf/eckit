@@ -17,9 +17,7 @@
 #include "mir/stats/detail/CentralMomentsT.h"
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 /// Scalar statistics (composition)
@@ -35,6 +33,4 @@ struct ScalarT : public CentralMomentsT<T> {
 };
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

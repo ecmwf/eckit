@@ -15,9 +15,7 @@
 #include "mir/stats/detail/Counter.h"
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 /// Counter accounting for missing values, for differences of two MIRFIelds
@@ -84,6 +82,4 @@ public:
 };
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

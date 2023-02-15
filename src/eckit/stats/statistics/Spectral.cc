@@ -21,9 +21,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace statistics {
+namespace mir::stats::statistics {
 
 
 Spectral::Spectral(const param::MIRParametrisation& parametrisation) : Statistics(parametrisation) {
@@ -68,7 +66,7 @@ void Spectral::execute(const data::MIRField& field) {
     ASSERT(!field.hasMissing());
 
     const MIRValuesVector& values = field.values(0);
-    ASSERT(values.size());
+    ASSERT(!values.empty());
 
     // set truncation
     // Note: assumes triangular truncation (from GribInput.cc)
@@ -109,6 +107,4 @@ void Spectral::print(std::ostream& out) const {
 static const StatisticsBuilder<Spectral> __stats("spectral");
 
 
-}  // namespace statistics
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::statistics

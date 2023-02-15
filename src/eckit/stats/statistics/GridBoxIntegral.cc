@@ -20,9 +20,7 @@
 #include "mir/util/GridBox.h"
 
 
-namespace mir {
-namespace stats {
-namespace statistics {
+namespace mir::stats::statistics {
 
 
 GridBoxIntegral::GridBoxIntegral(const param::MIRParametrisation& parametrisation) :
@@ -65,6 +63,4 @@ void GridBoxIntegral::print(std::ostream& out) const {
 static const StatisticsBuilder<GridBoxIntegral> __stats("grid-box-integral");
 
 
-}  // namespace statistics
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::statistics

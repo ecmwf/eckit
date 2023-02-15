@@ -21,9 +21,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 enum AngleScale
@@ -110,6 +108,4 @@ template <>
 AngleT<double, AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT::AngleT();
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

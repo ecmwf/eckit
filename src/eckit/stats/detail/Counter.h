@@ -27,9 +27,7 @@ class MIRParametrisation;
 }  // namespace mir
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 /// Counter accounting for missing values
@@ -87,6 +85,4 @@ public:
 };
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

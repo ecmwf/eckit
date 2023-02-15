@@ -19,9 +19,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace distribution {
+namespace mir::stats::distribution {
 
 
 static const DistributionBuilder<DistributionT<std::bernoulli_distribution>> __random1("bernoulli-distribution");
@@ -425,6 +423,4 @@ std::string DistributionT<std::weibull_distribution<double>>::to_string(
 }
 
 
-}  // namespace distribution
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::distribution

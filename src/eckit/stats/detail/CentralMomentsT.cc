@@ -16,9 +16,7 @@
 #include <limits>
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 template <>
@@ -37,6 +35,4 @@ std::complex<float> CentralMomentsT<std::complex<float>>::mean() const {
 }
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

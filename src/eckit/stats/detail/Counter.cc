@@ -20,9 +20,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace detail {
+namespace mir::stats::detail {
 
 
 static double get_param(const param::MIRParametrisation& param, const std::string& key, double def) {
@@ -165,6 +163,4 @@ size_t Counter::maxIndex() const {
 }
 
 
-}  // namespace detail
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::detail

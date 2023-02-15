@@ -16,9 +16,7 @@
 #include "mir/stats/detail/Counter.h"
 
 
-namespace mir {
-namespace stats {
-namespace field {
+namespace mir::stats::field {
 
 
 /// Mode statistics on values
@@ -42,6 +40,4 @@ struct ModeStatsT : detail::Counter, Field, STATS {
 };
 
 
-}  // namespace field
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::field

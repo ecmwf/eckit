@@ -16,9 +16,7 @@
 #include "mir/stats/detail/Counter.h"
 
 
-namespace mir {
-namespace stats {
-namespace field {
+namespace mir::stats::field {
 
 
 /// Central moment statistics on values (mean, stddev, etc.)
@@ -42,6 +40,4 @@ struct CentralMomentStatsT : detail::Counter, Field, STATS {
 };
 
 
-}  // namespace field
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::field

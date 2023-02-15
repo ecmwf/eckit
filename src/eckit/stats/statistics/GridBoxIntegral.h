@@ -16,9 +16,7 @@
 #include "mir/stats/detail/Counter.h"
 
 
-namespace mir {
-namespace stats {
-namespace statistics {
+namespace mir::stats::statistics {
 
 
 class GridBoxIntegral : public Statistics, detail::Counter {
@@ -78,6 +76,4 @@ private:
 };
 
 
-}  // namespace statistics
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::statistics

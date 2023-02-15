@@ -21,9 +21,7 @@
 #include "mir/util/Exceptions.h"
 
 
-namespace mir {
-namespace stats {
-namespace statistics {
+namespace mir::stats::statistics {
 
 
 SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& parametrisation) :
@@ -120,6 +118,4 @@ void SimplePackingEntropy::print(std::ostream& out) const {
 static const StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy");
 
 
-}  // namespace statistics
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::statistics

@@ -23,9 +23,7 @@
 #include "mir/util/Types.h"
 
 
-namespace mir {
-namespace stats {
-namespace statistics {
+namespace mir::stats::statistics {
 
 
 Integral::Integral(const param::MIRParametrisation& parametrisation) :
@@ -88,6 +86,4 @@ void Integral::print(std::ostream& out) const {
 static const StatisticsBuilder<Integral> __stats("integral");
 
 
-}  // namespace statistics
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::statistics

@@ -18,9 +18,7 @@
 #include "mir/stats/detail/ScalarT.h"
 
 
-namespace mir {
-namespace stats {
-namespace statistics {
+namespace mir::stats::statistics {
 
 
 struct MinMax {};
@@ -63,6 +61,4 @@ static const StatisticsBuilder<StatisticsT<detail::ScalarT<double>>> __stats7("s
 static const StatisticsBuilder<StatisticsT<MinMax>> __stats8("min-max");
 
 
-}  // namespace statistics
-}  // namespace stats
-}  // namespace mir
+}  // namespace mir::stats::statistics

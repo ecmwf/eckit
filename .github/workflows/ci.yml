@@ -16,6 +16,9 @@ on:
   pull_request_target:
     types: [labeled]
 
+  # Trigger the workflow manually
+  workflow_dispatch: ~
+
 jobs:
   # Run CI including downstream packages on self-hosted runners
   downstream-ci:

@@ -2,9 +2,10 @@ name: reusable-ci
 
 on:
   workflow_call:
-    eckit_sha:
-      required: true
-      type: string
+    inputs:
+      eckit_sha:
+        required: true
+        type: string
 
 jobs:
   ci:

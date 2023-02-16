@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       eckit:
-        required: true
+        default: 'ecmwf/eckit@develop'
         type: string
 
 jobs:

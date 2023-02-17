@@ -427,6 +427,10 @@ int Parallel::undefined() const {
     return MPI_UNDEFINED;
 }
 
+int Parallel::procNull() const {
+    return MPI_PROC_NULL;
+}
+
 size_t Parallel::getCount(Status& st, Data::Code type) const {
     int count = 0;
 
@@ -601,6 +605,20 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
     MPI_CALL(MPI_Isend(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_, toRequest(req)));
 
     return req;
+}
+
+Status Parallel::sendreceive_replace(void* sendrecv, size_t count, Data::Code type,
+				     int dest, int sendtag, int source, int recvtag) const {
+    ASSERT(count < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    Status status = createStatus();
+
+    MPI_CALL(MPI_Sendrecv_replace(sendrecv, int(count), mpitype,
+				  dest, sendtag, source, recvtag, comm_, toStatus(status)));
+
+    return status;
 }
 
 Comm& Parallel::split(int color, const std::string& name) const {

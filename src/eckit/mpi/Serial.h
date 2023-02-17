@@ -24,6 +24,7 @@ public:
         static constexpr int anyTag() { return -1; }
         static constexpr int anySource() { return -1; }
         static constexpr int undefined() { return -32766; }
+        static constexpr int procNull() { return -1; }
     };
 
 protected:  // methods
@@ -62,6 +63,8 @@ protected:  // methods
     virtual int anyTag() const override;
 
     virtual int undefined() const override;
+
+    virtual int procNull() const override;
 
     virtual size_t getCount(Status& st, Data::Code type) const override;
 
@@ -105,6 +108,9 @@ protected:  // methods
     virtual Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const override;
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
+
+    virtual Status sendreceive_replace(void* sendrecv, size_t count, Data::Code type,
+				       int dest, int sendtag, int source, int recvtag) const override;
 
     virtual Comm& split(int color, const std::string& name) const override;
 

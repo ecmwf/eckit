@@ -298,6 +298,10 @@ int Serial::undefined() const {
     return Serial::Constants::undefined();
 }
 
+int Serial::procNull() const {
+    return Serial::Constants::procNull();
+}
+
 size_t Serial::getCount(Status& st, Data::Code) const {
     return st.as<SerialStatus>().count_;
 }
@@ -382,6 +386,21 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
     (*st).count_     = send.count();
     (*st).source_    = 0;
     (*st).tag_       = send.tag();
+    (*st).error_     = 0;
+
+    return Status(st);
+}
+
+Status Serial::sendreceive_replace(void* sendrecv, size_t count, Data::Code type,
+				   int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
+    std::ostringstream oss;
+    oss << "Serial::sendreceive_replace() [" << *this << "]";
+    throw NotImplemented(oss.str(), Here());
+    
+    SerialStatus* st = new SerialStatus();
+    (*st).count_     = 0; //send.count();
+    (*st).source_    = 0;
+    (*st).tag_       = 0; //send.tag();
     (*st).error_     = 0;
 
     return Status(st);

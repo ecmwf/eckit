@@ -1,4 +1,4 @@
-eckit
+ecKit
 =====
 
 [![eckit release version](https://img.shields.io/github/release/ecmwf/eckit.svg)](https://github.com/ecmwf/eckit/releases/latest)

@@ -513,7 +513,11 @@ void Parallel::reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, O
     MPI_Datatype mpitype = toType(type);
     MPI_Op mpiop         = toOp(op);
 
-    MPI_CALL(MPI_Reduce(MPI_IN_PLACE, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+    if ( rank() == root ) {
+      MPI_CALL(MPI_Reduce(MPI_IN_PLACE, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+    } else {
+      MPI_CALL(MPI_Reduce(sendrecvbuf, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+    }
 }
 
 void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op) const {

@@ -607,8 +607,8 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
     return req;
 }
 
-Status Parallel::sendreceive_replace(void* sendrecv, size_t count, Data::Code type,
-				     int dest, int sendtag, int source, int recvtag) const {
+Status Parallel::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
+				    int dest, int sendtag, int source, int recvtag) const {
     ASSERT(count < size_t(std::numeric_limits<int>::max()));
 
     MPI_Datatype mpitype = toType(type);

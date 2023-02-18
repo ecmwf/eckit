@@ -245,7 +245,6 @@ public:  // methods
     /// All reduce operations, in place buffer
     ///
 
-
     template <typename T>
     void allReduceInPlace(T* sendrecvbuf, size_t count, Operation::Code op) const;
 
@@ -343,12 +342,12 @@ public:  // methods
     ///
 
     template <typename T>
-    Status sendreceive_replace(T* sendrecv, size_t count,
-			       int dest, int sendtag, int source, int recvtag) const;
+    Status sendReceiveReplace(T* sendrecv, size_t count,
+			      int dest, int sendtag, int source, int recvtag) const;
 
     template <typename T>
-    Status sendreceive_replace(T& sendrecv,
-			       int dest, int sendtag, int source, int recvtag) const;
+    Status sendReceiveReplace(T& sendrecv,
+			      int dest, int sendtag, int source, int recvtag) const;
 
     ///
     /// All to all of vector< vector<> >
@@ -413,8 +412,8 @@ protected:  // methods
 
     virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
 
-    virtual Status sendreceive_replace(void* sendrecv, size_t count, Data::Code datatype,
-				       int dest, int sendtag, int source, int recvtag) const = 0;
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code datatype,
+				      int dest, int sendtag, int source, int recvtag) const = 0;
 
     /// @brief Call free on this communicator
     /// After calling this method, the communicator should not be used again
@@ -874,17 +873,17 @@ void eckit::mpi::Comm::synchronisedSend(const T& sendbuf, int dest, int tag) con
 ///
 
 template <typename T>
-eckit::mpi::Status eckit::mpi::Comm::sendreceive_replace(T* sendrecv, size_t count,
-							 int dest, int sendtag, int source, int recvtag) const {
-    return sendreceive_replace(sendrecv, count, Data::Type<T>::code(),
-			       dest, sendtag, source, recvtag);
+eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T* sendrecv, size_t count,
+							int dest, int sendtag, int source, int recvtag) const {
+    return sendReceiveReplace(sendrecv, count, Data::Type<T>::code(),
+			      dest, sendtag, source, recvtag);
 }
 
 template <typename T>
-eckit::mpi::Status eckit::mpi::Comm::sendreceive_replace(T& sendrecv,
-							 int dest, int sendtag, int source, int recvtag) const {
-    return sendreceive_replace(&sendrecv, 1, Data::Type<T>::code(),
-			       dest, sendtag, source, recvtag);
+eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T& sendrecv,
+							int dest, int sendtag, int source, int recvtag) const {
+    return sendReceiveReplace(&sendrecv, 1, Data::Type<T>::code(),
+			      dest, sendtag, source, recvtag);
 }
 
 ///

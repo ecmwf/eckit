@@ -391,16 +391,24 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
     return Status(st);
 }
 
-Status Serial::sendreceive_replace(void* sendrecv, size_t count, Data::Code type,
-				   int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
-    std::ostringstream oss;
-    oss << "Serial::sendreceive_replace() [" << *this << "]";
-    throw NotImplemented(oss.str(), Here());
+Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
+				  int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
+    SerialRequestPool::instance().createSendRequest(sendrecv, count, type, sendtag);
+    ReceiveRequest recv_request(sendrecv, count, type, recvtag);
+    SendRequest& send = SerialRequestPool::instance().matchingSendRequest(recv_request);
+    if (recvtag != anyTag()) {
+        ASSERT(recvtag == send.tag());
+    }
+    ASSERT(count == send.count());
+    if (count > 0) {
+        memcpy(sendrecv, send.buffer(), send.count() * dataSize[send.type()]);
+    }
     
     SerialStatus* st = new SerialStatus();
-    (*st).count_     = 0; //send.count();
+    (*st).count_     = send.count();
     (*st).source_    = 0;
-    (*st).tag_       = 0; //send.tag();
+    (*st).tag_       = send.tag();
     (*st).error_     = 0;
 
     return Status(st);

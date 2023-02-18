@@ -108,8 +108,8 @@ protected:  // methods
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
-    virtual Status sendreceive_replace(void* sendrecv, size_t count, Data::Code type,
-				       int dest, int sendtag, int source, int recvtag) const override;
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
+				      int dest, int sendtag, int source, int recvtag) const override;
 
     virtual eckit::SharedBuffer broadcastFile(const eckit::PathName& filepath, size_t root) const override;
 

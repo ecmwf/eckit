@@ -497,6 +497,25 @@ void Parallel::scatterv(const void* sendbuf, const int sendcounts[], const int d
                           recvbuf, int(recvcount), mpitype, int(root), comm_));
 }
 
+  void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op, size_t root) const {
+    ASSERT(count < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+    MPI_Op mpiop         = toOp(op);
+    ;
+
+    MPI_CALL(MPI_Reduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, int(root), comm_));
+}
+
+void Parallel::reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op, size_t root) const {
+    ASSERT(count < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+    MPI_Op mpiop         = toOp(op);
+
+    MPI_CALL(MPI_Reduce(MPI_IN_PLACE, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+}
+
 void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op) const {
     ASSERT(count < size_t(std::numeric_limits<int>::max()));
 

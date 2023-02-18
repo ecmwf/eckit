@@ -336,6 +336,16 @@ void Serial::scatterv(const void* sendbuf, const int[], const int[], void* recvb
     }
 }
 
+  void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code, size_t root) const {
+    if (recvbuf != sendbuf && count > 0) {
+        memcpy(recvbuf, sendbuf, count * dataSize[type]);
+    }
+}
+
+void Serial::reduceInPlace(void*, size_t, Data::Code, Operation::Code, size_t root) const {
+    return;
+}
+
 void Serial::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code) const {
     if (recvbuf != sendbuf && count > 0) {
         memcpy(recvbuf, sendbuf, count * dataSize[type]);

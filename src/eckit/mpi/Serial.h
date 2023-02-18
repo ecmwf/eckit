@@ -82,6 +82,12 @@ protected:  // methods
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
                           size_t recvcount, Data::Code type, size_t root) const override;
 
+    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
+			Operation::Code op, size_t root) const override;
+
+    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type,
+			       Operation::Code op, size_t root) const override;
+
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
 

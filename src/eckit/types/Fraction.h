@@ -43,7 +43,6 @@ public:  // methods
     Fraction(value_type top, value_type bottom);
 
     explicit Fraction(double n);
-    explicit Fraction(double n, const Fraction& precision);
     explicit Fraction(int n) : top_(n), bottom_(1) {}
     explicit Fraction(short n) : top_(n), bottom_(1) {}
     explicit Fraction(long n) : top_(n), bottom_(1) {}
@@ -85,25 +84,29 @@ public:  // operators
 
     void hash(eckit::MD5&) const;
 
-    Fraction operator+(const Fraction& other) const;
+    value_type numerator() const { return top_; }
 
-    Fraction operator-(const Fraction& other) const;
+    value_type denominator() const { return bottom_; }
 
-    Fraction operator/(const Fraction& other) const;
+    Fraction operator+(const Fraction&) const;
 
-    Fraction operator*(const Fraction& other) const;
+    Fraction operator-(const Fraction&) const;
 
-    bool operator==(const Fraction& other) const;
+    Fraction operator/(const Fraction&) const;
 
-    bool operator<(const Fraction& other) const;
+    Fraction operator*(const Fraction&) const;
 
-    bool operator<=(const Fraction& other) const;
+    bool operator==(const Fraction&) const;
 
-    bool operator!=(const Fraction& other) const;
+    bool operator<(const Fraction&) const;
 
-    bool operator>(const Fraction& other) const;
+    bool operator<=(const Fraction&) const;
 
-    bool operator>=(const Fraction& other) const;
+    bool operator!=(const Fraction&) const;
+
+    bool operator>(const Fraction&) const;
+
+    bool operator>=(const Fraction&) const;
 
     Fraction& operator+=(const Fraction& other) {
         *this = (*this) + other;

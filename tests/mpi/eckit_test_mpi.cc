@@ -350,6 +350,64 @@ CASE("test_scatterv") {
     /// TODO
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("sendReceiveReplace") {
+  size_t rank  = mpi::comm().rank();
+  size_t first = 0;
+  size_t last  = mpi::comm().size() - 1;
+  Log::info() << "Testing swap" << std::endl;
+  {
+    int d = int(mpi::comm().rank()) + 1;
+    if (rank == first) {
+      EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, int(last), 0, int(last), 0));
+      EXPECT(d == int(mpi::comm().size()));
+    }
+    if (rank == last) {
+      EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, int(first), 0, int(first), 0));
+      EXPECT(d == 1);
+    }
+  }
+  Log::info() << "Testing open end shift" << std::endl;
+  {
+    int d = int(mpi::comm().rank()) + 1;
+    int expected = d+1;
+    if (rank == last) {
+      expected = d;
+    }
+    int dest = int(rank)-1;
+    int src  = int(rank)+1;
+    if (rank == first) {
+      dest = mpi::comm().procNull();
+    }
+    if (rank == last) {
+      src = mpi::comm().procNull();
+    }
+    EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, dest, 0, src, 0));
+    EXPECT(d == expected);
+  }
+  Log::info() << "Testing circular shift" << std::endl;
+  {
+    int d = int(mpi::comm().rank()) + 1;
+    int expected = d+1;
+    if (rank == last) {
+      expected = int(first)+1;
+    }
+    int dest = int(rank)-1;
+    int src  = int(rank)+1;
+    if (rank == first) {
+      dest = int(last);
+    }
+    if (rank == last) {
+      src = int(first);
+    }
+    EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, dest, 0, src, 0));
+    EXPECT(d == expected);
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE("test_reduce") {
     int d = int(mpi::comm().rank()) + 1;
 
@@ -370,7 +428,7 @@ CASE("test_reduce") {
     {
         size_t rank = mpi::comm().rank();
         size_t root = 0; /* master */
-	
+
         int sum;
         int prod;
         int max;
@@ -428,7 +486,7 @@ CASE("test_reduce") {
     {
         size_t rank = mpi::comm().rank();
         size_t root = 0; /* master */
-	
+
         int sum  = d;
         int prod = d;
         int max  = d;

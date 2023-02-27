@@ -10,7 +10,7 @@ on:
       - '**'
 
   # Trigger the workflow on pull request
-  pull_request_target: ~
+  pull_request: ~
 
 jobs:
   # Calls a reusable CI workflow to build & test the current repository.
@@ -18,5 +18,5 @@ jobs:
     name: ci
     uses: ./.github/workflows/reusable-ci.yml
     with:
-      eckit_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      eckit_sha: ${{ github.sha }}
     secrets: inherit

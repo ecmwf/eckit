@@ -28,3 +28,47 @@ jobs:
     with:
       eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
     secrets: inherit
+
+  # Run CI of private downstream packages on self-hosted runners
+  private-downstream-ci:
+    name: private-downstream-ci
+    needs: [downstream-ci]
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Dispatch private downstream CI
+        uses: ecmwf-actions/dispatch-private-downstream-ci@v1
+        with:
+          token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          owner: ecmwf-actions
+          repository: private-downstream-ci
+          event_type: downstream-ci
+          payload: '{"eckit": "ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}"}'
+
+  # Build downstream packages on HPC
+  downstream-ci-hpc:
+    name: downstream-ci-hpc
+    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci-hpc.yml@main
+    with:
+      eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
+    secrets: inherit
+
+  # Run CI of private downstream packages on HPC
+  private-downstream-ci-hpc:
+    name: private-downstream-ci-hpc
+    needs: [downstream-ci-hpc]
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Dispatch private downstream CI
+        uses: ecmwf-actions/dispatch-private-downstream-ci@v1
+        with:
+          token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          owner: ecmwf-actions
+          repository: private-downstream-ci
+          event_type: downstream-ci-hpc
+          payload: '{"eckit": "ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}"}'

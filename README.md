@@ -1,2 +1,2 @@
 # griditer
-Geospatial Grid definitiona and iteration library
+Geospatial Grid definitions and iterators library

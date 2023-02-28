@@ -124,6 +124,8 @@ public:  // methods
     /// status.error() == 0 if there is an incoming message
     virtual Status iProbe(int source, int tag) const = 0;
 
+    virtual int procNull() const = 0;
+    
     virtual int undefined() const = 0;
 
     virtual int anySource() const = 0;
@@ -227,6 +229,32 @@ public:  // methods
                   Iter rfirst, Iter rlast, size_t root) const;
 
     ///
+    /// Reduce operations, separate buffers
+    ///
+
+    template <typename T>
+    void reduce(const T send, T& recv, Operation::Code op, size_t root) const;
+
+    template <typename T>
+    void reduce(const T* send, T* recv, size_t count, Operation::Code op, size_t root) const;
+
+    template <typename T>
+    void reduce(const std::vector<T>& send, std::vector<T>& recv, Operation::Code op, size_t root) const;
+
+    ///
+    /// Reduce operations, in place buffer
+    ///
+
+    template <typename T>
+    void reduceInPlace(T* sendrecvbuf, size_t count, Operation::Code op, size_t root) const;
+
+    template <typename T>
+    void reduceInPlace(T& sendrecvbuf, Operation::Code op, size_t root) const;
+
+    template <class Iter>
+    void reduceInPlace(Iter first, Iter last, Operation::Code op, size_t root) const;
+
+    ///
     /// All reduce operations, separate buffers
     ///
 
@@ -242,7 +270,6 @@ public:  // methods
     ///
     /// All reduce operations, in place buffer
     ///
-
 
     template <typename T>
     void allReduceInPlace(T* sendrecvbuf, size_t count, Operation::Code op) const;
@@ -337,6 +364,18 @@ public:  // methods
     Request iSend(const T& sendbuf, int dest, int tag) const;
 
     ///
+    /// In place simultaneous send and receive
+    ///
+
+    template <typename T>
+    Status sendReceiveReplace(T* sendrecv, size_t count,
+			      int dest, int sendtag, int source, int recvtag) const;
+
+    template <typename T>
+    Status sendReceiveReplace(T& sendrecv,
+			      int dest, int sendtag, int source, int recvtag) const;
+
+    ///
     /// All to all of vector< vector<> >
     ///
 
@@ -372,10 +411,17 @@ protected:  // methods
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
                           size_t recvcount, Data::Code datatype, size_t root) const = 0;
 
+    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype,
+                        Operation::Code op, size_t root) const = 0;
+
+    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype,
+			       Operation::Code op, size_t root) const = 0;
+
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype,
                            Operation::Code op) const = 0;
 
-    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype, Operation::Code op) const = 0;
+    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype,
+				  Operation::Code op) const = 0;
 
     virtual void allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount,
                            Data::Code datatype) const = 0;
@@ -398,6 +444,9 @@ protected:  // methods
     virtual Request iReceive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
     virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
+
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code datatype,
+				      int dest, int sendtag, int source, int recvtag) const = 0;
 
     /// @brief Call free on this communicator
     /// After calling this method, the communicator should not be used again
@@ -692,6 +741,47 @@ void eckit::mpi::Comm::scatterv(CIter first, CIter last, const std::vector<int>&
 }
 
 ///
+/// Reduce operations, separate buffers
+///
+
+template <typename T>
+void eckit::mpi::Comm::reduce(const T send, T& recv, Operation::Code op, size_t root) const {
+  reduce(&send, &recv, 1, Data::Type<T>::code(), op, root);
+}
+
+template <typename T>
+void eckit::mpi::Comm::reduce(const T* send, T* recv, size_t count, Operation::Code op, size_t root) const {
+  reduce(send, recv, count, Data::Type<T>::code(), op, root);
+}
+
+template <typename T>
+void eckit::mpi::Comm::reduce(const std::vector<T>& send, std::vector<T>& recv, Operation::Code op, size_t root) const {
+    ECKIT_MPI_ASSERT(send.size() == recv.size());
+    reduce(send.data(), recv.data(), send.size(), Data::Type<T>::code(), op, root);
+}
+
+///
+/// Reduce operations, in place buffer
+///
+
+template <typename T>
+void eckit::mpi::Comm::reduceInPlace(T* sendrecvbuf, size_t count, Operation::Code op, size_t root) const {
+  reduceInPlace(sendrecvbuf, count, Data::Type<T>::code(), op, root);
+}
+
+template <typename T>
+void eckit::mpi::Comm::reduceInPlace(T& sendrecvbuf, Operation::Code op, size_t root) const {
+  reduceInPlace(&sendrecvbuf, 1, Data::Type<T>::code(), op, root);
+}
+
+template <class Iter>
+void eckit::mpi::Comm::reduceInPlace(Iter first, Iter last, Operation::Code op, size_t root) const {
+    typename std::iterator_traits<Iter>::difference_type count = std::distance(first, last);
+    Data::Code type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+    reduceInPlace(&(*first), count, type, op, root);
+}
+
+///
 /// All reduce operations, separate buffers
 ///
 
@@ -713,8 +803,7 @@ void eckit::mpi::Comm::allReduce(const std::vector<T>& send, std::vector<T>& rec
 
 ///
 /// All reduce operations, in place buffer
-/// tatus
-
+///
 
 template <typename T>
 void eckit::mpi::Comm::allReduceInPlace(T* sendrecvbuf, size_t count, Operation::Code op) const {
@@ -852,6 +941,23 @@ void eckit::mpi::Comm::synchronisedSend(const T& sendbuf, int dest, int tag) con
     synchronisedSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
 }
 
+///
+/// In place simultaneous send and receive
+///
+
+template <typename T>
+eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T* sendrecv, size_t count,
+							int dest, int sendtag, int source, int recvtag) const {
+    return sendReceiveReplace(sendrecv, count, Data::Type<T>::code(),
+			      dest, sendtag, source, recvtag);
+}
+
+template <typename T>
+eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T& sendrecv,
+							int dest, int sendtag, int source, int recvtag) const {
+    return sendReceiveReplace(&sendrecv, 1, Data::Type<T>::code(),
+			      dest, sendtag, source, recvtag);
+}
 
 ///
 /// Non-blocking send

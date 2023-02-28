@@ -298,6 +298,10 @@ int Serial::undefined() const {
     return Serial::Constants::undefined();
 }
 
+int Serial::procNull() const {
+    return Serial::Constants::procNull();
+}
+
 size_t Serial::getCount(Status& st, Data::Code) const {
     return st.as<SerialStatus>().count_;
 }
@@ -330,6 +334,16 @@ void Serial::scatterv(const void* sendbuf, const int[], const int[], void* recvb
     if (recvbuf != sendbuf && recvcount > 0) {
         memcpy(recvbuf, sendbuf, recvcount * dataSize[type]);
     }
+}
+
+  void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code, size_t root) const {
+    if (recvbuf != sendbuf && count > 0) {
+        memcpy(recvbuf, sendbuf, count * dataSize[type]);
+    }
+}
+
+void Serial::reduceInPlace(void*, size_t, Data::Code, Operation::Code, size_t root) const {
+    return;
 }
 
 void Serial::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code) const {
@@ -378,6 +392,29 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
         memcpy(recv, send.buffer(), send.count() * dataSize[send.type()]);
     }
 
+    SerialStatus* st = new SerialStatus();
+    (*st).count_     = send.count();
+    (*st).source_    = 0;
+    (*st).tag_       = send.tag();
+    (*st).error_     = 0;
+
+    return Status(st);
+}
+
+Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
+				  int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
+    AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
+    SerialRequestPool::instance().createSendRequest(sendrecv, count, type, sendtag);
+    ReceiveRequest recv_request(sendrecv, count, type, recvtag);
+    SendRequest& send = SerialRequestPool::instance().matchingSendRequest(recv_request);
+    if (recvtag != anyTag()) {
+        ASSERT(recvtag == send.tag());
+    }
+    ASSERT(count == send.count());
+    if (count > 0) {
+        memcpy(sendrecv, send.buffer(), send.count() * dataSize[send.type()]);
+    }
+    
     SerialStatus* st = new SerialStatus();
     (*st).count_     = send.count();
     (*st).source_    = 0;

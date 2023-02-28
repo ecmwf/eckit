@@ -63,6 +63,8 @@ protected:  // methods
 
     virtual int undefined() const override;
 
+    virtual int procNull() const override;
+
     virtual size_t getCount(Status& st, Data::Code type) const override;
 
     virtual void broadcast(void* buffer, size_t count, Data::Code type, size_t root) const override;
@@ -78,6 +80,12 @@ protected:  // methods
 
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
                           size_t recvcount, Data::Code type, size_t root) const override;
+
+    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
+			Operation::Code op, size_t root) const override;
+
+    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type,
+			       Operation::Code op, size_t root) const override;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
@@ -105,6 +113,9 @@ protected:  // methods
     virtual Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const override;
 
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
+
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
+				      int dest, int sendtag, int source, int recvtag) const override;
 
     virtual eckit::SharedBuffer broadcastFile(const eckit::PathName& filepath, size_t root) const override;
 

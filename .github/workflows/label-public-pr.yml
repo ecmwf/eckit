@@ -7,21 +7,4 @@ on:
 
 jobs:
   label:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.head.repo.fork }}
-    steps:
-      - name: Add label `contributor`
-        if: ${{ github.event.action == 'opened' }}
-        uses: ecmwf-actions/labeler@v1
-        with:
-          issue: ${{ github.event.number }}
-          label: contributor
-          action: add
-
-      - name: Remove label `approved-for-ci`
-        if: ${{ github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'approved-for-ci') }}
-        uses: ecmwf-actions/labeler@v1
-        with:
-          issue: ${{ github.event.number }}
-          label: approved-for-ci
-          action: remove
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/label-pr.yml@v2

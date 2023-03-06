@@ -38,20 +38,36 @@ namespace linalg {
 /// The operator() is only provided for inspection and testing.
 ///
 /// Supports 2 memory layouts:
-///   * Column-major (as in Fortran) where [fast idx] .... [slow idx]
-///   * Row-major (as in C) where [slow idx] .... [fast idx]
+///   * Column-major (as in Fortran) where [fast idx] .... [slow idx] - also known as "left" layout
+///   * Row-major (as in C) where [slow idx] .... [fast idx] - also known as "right" layout
 
 template <typename S>
 class Tensor {
 
+
+// tensor layout (internal)
+enum class layout_t {
+    RowMajor,
+    ColMajor
+};
+
 public:  // class methods
+
+    // tensor layouts
+    struct layout {
+        static constexpr layout_t RowMajor = layout_t::RowMajor;
+        static constexpr layout_t Right = layout_t::RowMajor;
+        static constexpr layout_t ColMajor = layout_t::ColMajor;
+        static constexpr layout_t Left = layout_t::ColMajor;
+    };
+
     static Size flatSize(const std::vector<Size>& shape) {
         return std::accumulate(std::begin(shape), std::end(shape), 1, std::multiplies<Size>());
     }
 
-    static std::vector<Size> strides(bool colMajor, const std::vector<Size>& shape) {
+    static std::vector<Size> strides(layout_t layout, const std::vector<Size>& shape) {
         std::vector<Size> s(shape.size());
-        if (colMajor) {
+        if (layout==layout_t::ColMajor) {
             Size prod = 1;
             s[0]      = prod;
             for (int i = 1; i < s.size(); ++i) {
@@ -72,15 +88,15 @@ public:  // class methods
 
 public:  // methods
     /// Default constructor (empty tensor)
-    Tensor(bool isColMajor = true) :
-        array_(0), size_(0), shape_(0), strides_(0), colMajor_(isColMajor), own_(false) {}
+    Tensor(layout_t layout=layout_t::ColMajor) :
+        array_(0), size_(0), shape_(0), strides_(0), colMajor_(layout==layout_t::ColMajor), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
-    Tensor(const std::vector<Size>& shape, bool isColMajor = true) :
+    Tensor(const std::vector<Size>& shape, layout_t layout = layout_t::ColMajor) :
         array_(nullptr),
         shape_(shape),
-        strides_(strides(isColMajor, shape)),
-        colMajor_(isColMajor),
+        strides_(strides(layout, shape)),
+        colMajor_(layout==layout_t::ColMajor),
         own_(true) {
 
         size_ = flatSize(shape_);
@@ -90,10 +106,10 @@ public:  // methods
     }
 
     /// Construct tensor from existing data (does NOT take ownership)
-    Tensor(S* array, const std::vector<Size>& shape, bool isColMajor = true) :
+    Tensor(S* array, const std::vector<Size>& shape, layout_t layout = layout_t::ColMajor) :
         array_(array),
-        strides_(strides(isColMajor, shape)),
-        colMajor_(isColMajor),
+        strides_(strides(layout, shape)),
+        colMajor_(layout==layout_t::ColMajor),
         own_(false) {
 
         shape_ = shape;
@@ -116,7 +132,7 @@ public:  // methods
         ASSERT(size() > 0);
         ASSERT(array_);
         s.readBlob(array_, size() * sizeof(S));
-        strides_ = strides(colMajor_, shape_);
+        strides_ = colMajor_==true? strides(layout_t::ColMajor, shape_) : strides(layout_t::RowMajor, shape_);
     }
 
     /// Copy constructor
@@ -209,12 +225,12 @@ public:  // methods
     /// Invalidates data if shapes don't match, otherwise keeps data and simply reshapes
     void resize(const std::vector<Size>& shape) {
         if (this->size() != flatSize(shape)) {  // avoid reallocation if same size
-            Tensor m(shape, colMajor_);
+            Tensor m(shape, layout_t::ColMajor);
             swap(m);
         }
         else {  // optimise when we dont need to reallocate
             shape_   = shape;
-            strides_ = strides(colMajor_, shape);
+            strides_ = colMajor_==true? strides(layout_t::ColMajor, shape) : strides(layout_t::RowMajor, shape);
         }
     }
 
@@ -301,8 +317,8 @@ public:  // methods
         Tensor r(shape_);
 
         // COL-MAJOR to ROW-MAJOR
-        std::vector<Size> strd_rev = strides(/*rowMajor*/ false, shape_);
-        std::vector<Size> strd     = strides(/*colMajor*/ true, shape_);
+        std::vector<Size> strd_rev = strides(/*rowMajor*/ layout_t::RowMajor, shape_);
+        std::vector<Size> strd     = strides(/*colMajor*/ layout_t::ColMajor, shape_);
 
         // main loop
         Size shape_size = shape_.size();
@@ -340,8 +356,8 @@ public:  // methods
         Tensor r(shape_);
 
         // ROW-MAJOR to COL-MAJOR
-        std::vector<Size> strd_rev = strides(/*rowMajor*/ false, shape_);
-        std::vector<Size> strd     = strides(/*colMajor*/ true, shape_);
+        std::vector<Size> strd_rev = strides(/*rowMajor*/ layout_t::RowMajor, shape_);
+        std::vector<Size> strd     = strides(/*colMajor*/ layout_t::ColMajor, shape_);
 
         Size shape_size = shape_.size();
         std::vector<Size> row_major_indexes(shape_size);

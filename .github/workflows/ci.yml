@@ -12,10 +12,15 @@ on:
   # Trigger the workflow on pull request
   pull_request: ~
 
+  # Trigger on public pull request approval
+  pull_request_target:
+    types: [labeled]
+
 jobs:
   # Calls a reusable CI workflow to build & test the current repository.
   ci:
     name: ci
+    if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
     uses: ./.github/workflows/reusable-ci.yml
     with:
       eckit_sha: ${{ github.sha }}

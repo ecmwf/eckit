@@ -81,14 +81,14 @@ public:  // class methods
 public:  // methods
     /// Default constructor (empty tensor)
     Tensor(Layout layout=Layout::ColMajor) :
-        array_(0), size_(0), shape_(0), strides_(0), colMajor_(layout==Layout::ColMajor), own_(false) {}
+        array_(0), size_(0), shape_(0), strides_(0), layout_(layout), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
     Tensor(const std::vector<Size>& shape, Layout layout = Layout::ColMajor) :
         array_(nullptr),
         shape_(shape),
         strides_(strides(layout, shape)),
-        colMajor_(layout==Layout::ColMajor),
+        layout_(layout),
         own_(true) {
 
         size_ = flatSize(shape_);
@@ -101,7 +101,7 @@ public:  // methods
     Tensor(S* array, const std::vector<Size>& shape, Layout layout = Layout::ColMajor) :
         array_(array),
         strides_(strides(layout, shape)),
-        colMajor_(layout==Layout::ColMajor),
+        layout_(layout),
         own_(false) {
 
         shape_ = shape;
@@ -114,22 +114,30 @@ public:  // methods
     Tensor(Stream& s) :
         array_(0), size_(0), shape_(0), own_(true) {
         Size shape_size;
-        s >> colMajor_;
+        
+        // layout
+        int layoutAsInt;
+        s >> layoutAsInt;
+        layout_ = static_cast<Layout>(layoutAsInt);
+
+        // shape
         s >> shape_size;
         shape_.resize(shape_size);
         for (auto& v : shape_)
             s >> v;
-        // s >> colMajor_;
         resize(shape_);
+
         ASSERT(size() > 0);
         ASSERT(array_);
+
+        // data
         s.readBlob(array_, size() * sizeof(S));
-        strides_ = colMajor_==true? strides(Layout::ColMajor, shape_) : strides(Layout::RowMajor, shape_);
+        strides_ = strides(layout_, shape_);
     }
 
     /// Copy constructor
     Tensor(const Tensor& other) :
-        array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), strides_(other.strides_), colMajor_(other.colMajor_), own_(true) {
+        array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), strides_(other.strides_), layout_(other.layout_), own_(true) {
         ASSERT(size() > 0);
         ASSERT(array_);
         ::memcpy(array_, other.array_, size() * sizeof(S));
@@ -142,7 +150,7 @@ public:  // methods
         strides_ = std::move(other.strides_);
 
         size_ = other.size_;
-        colMajor_ = other.colMajor_;
+        layout_ = other.layout_;
         own_ = other.own_;
 
         array_ = other.array_;
@@ -166,7 +174,7 @@ public:  // methods
     /// Consistently retains ownership to avoid surprises in ownership behaviour.
     /// However, if a resize() triggers reallocation of memory, ownership will be reset.
     Tensor& operator=(const Tensor& other) {
-        colMajor_ = other.colMajor_;
+        layout_ = other.layout_;
         resize(other.shape());
         // shape & strides already correct
         // ownership remains same
@@ -187,7 +195,7 @@ public:  // methods
             strides_ = std::move(other.strides_);
 
             size_ = other.size_;
-            colMajor_ = other.colMajor_;
+            layout_ = other.layout_;
             own_ = other.own_;
 
             array_ = other.array_;
@@ -209,7 +217,7 @@ public:  // methods
         std::swap(size_, other.size_);
         std::swap(shape_, other.shape_);
         std::swap(strides_, other.strides_);
-        std::swap(colMajor_, other.colMajor_);
+        std::swap(layout_, other.layout_);
         std::swap(own_, other.own_);
     }
 
@@ -217,12 +225,12 @@ public:  // methods
     /// Invalidates data if shapes don't match, otherwise keeps data and simply reshapes
     void resize(const std::vector<Size>& shape) {
         if (this->size() != flatSize(shape)) {  // avoid reallocation if same size
-            Tensor m(shape, Layout::ColMajor);
+            Tensor m(shape, layout_);
             swap(m);
         }
         else {  // optimise when we dont need to reallocate
             shape_   = shape;
-            strides_ = colMajor_==true? strides(Layout::ColMajor, shape) : strides(Layout::RowMajor, shape);
+            strides_ = strides(layout_, shape);
         }
     }
 
@@ -243,7 +251,7 @@ public:  // methods
     /// Serialise to a Stream
     /// This serialisation is not cross-platform
     void encode(Stream& s) const {
-        s << colMajor_;
+        s << static_cast<int>(layout_);
         s << shape_.size();
         for (auto v : shape_)
             s << v;
@@ -276,7 +284,7 @@ public:  // methods
 
     void print(std::ostream& s) const {
         const char sep = ',';
-        s << "Tensor(colMajor=" << colMajor_ << sep;
+        s << "Tensor(layout=" << static_cast<int>(layout_) << sep;
         s << "shape=[";
         for (int i = 0; i < shape_.size(); ++i) {
             s << shape_[i] << sep;
@@ -288,7 +296,7 @@ public:  // methods
         s << "])";
     }
 
-    bool isColMajor() const { return colMajor_; }
+    Layout layout() const { return layout_; }
 
     /// @brief Multidimensional index operator A(i,j,k,...)
     /// @pre  number of parameter must match shape size
@@ -334,8 +342,8 @@ public:  // methods
             *(r.data() + gidx_rm) = *(data() + gidx_cm);
         }
 
-        // set the colMajor flag to false
-        r.colMajor_ = false;
+        // set layout to rowMajor
+        r.layout_ = Layout::RowMajor;
 
         // strides are now colMajor-to-rowMajor
         r.strides_ = strd_rev;
@@ -372,8 +380,8 @@ public:  // methods
             *(r.data() + gidx_cm) = *(data() + gidx_rm);
         }
 
-        // set the colMajor flag to false
-        r.colMajor_ = true;
+        // set the layout as colMajor
+        r.layout_ = Layout::ColMajor;
 
         // strides are now rowMajor-to-colMajor
         r.strides_ = strd;
@@ -408,7 +416,7 @@ protected:      // member variables
     std::vector<Size> shape_;    ///< tensor shape is a vector of sizes per dimension
     std::vector<Size> strides_;  ///< tensor strides precomputed at construction
 
-    bool colMajor_;  ///< memory layout? (column-major equivalent to Fortran layout)
+    Layout layout_;  ///< memory layout? (column-major equivalent to Fortran layout)
     bool own_;    ///< ownership
 };
 

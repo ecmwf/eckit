@@ -1,0 +1,4 @@
+
+#define griditer_VERSION_MAJOR @griditer_VERSION_MAJOR@
+#define griditer_VERSION_MINOR @griditer_VERSION_MINOR@
+#define griditer_VERSION_PATCH @griditer_VERSION_PATCH@

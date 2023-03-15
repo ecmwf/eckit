@@ -15,8 +15,41 @@ project(griditer VERSION 0.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(APPLE)
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+endif()
+
+
+# library/resources
 add_subdirectory(src)
 add_subdirectory(etc)
 add_subdirectory(share)
-add_subdirectory(tests)
+
+macro(get_all_targets targets dir)
+    get_property(subdirs DIRECTORY ${dir} PROPERTY SUBDIRECTORIES)
+    foreach(subdir ${subdirs})
+        get_all_targets(${targets} ${subdir})
+    endforeach()
+
+    get_property(current_targets DIRECTORY ${dir} PROPERTY BUILDSYSTEM_TARGETS)
+    list(APPEND ${targets} ${current_targets})
+endmacro()
+
+set(all_targets)
+get_all_targets(all_targets ${CMAKE_CURRENT_SOURCE_DIR})
+
+install(
+    TARGETS ${all_targets}
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    PUBLIC_HEADER DESTINATION include
+    RUNTIME DESTINATION bin)
+
+
+# tests
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
 

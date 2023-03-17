@@ -31,10 +31,7 @@ static std::string extract_loader(const param::MIRParametrisation& param) {
     bool caching = LibMir::caching();
     param.get("caching", caching);
 
-    static const std::string cacheable =
-        eckit::Resource<std::string>("$MIR_POINT_SEARCH_LOADER;mirPointSearchLoader", "mapped-cache-file");
-
-    std::string name = caching ? cacheable : "memory";
+    std::string name = caching ? LibMir::cacheLoader(LibMir::cache_loader::POINT_SEARCH) : "memory";
     param.get("point-search-trees", name);
     return name;
 }

@@ -4,10 +4,10 @@ on:
   # Trigger the workflow on push to master or develop, except tag creation
   push:
     branches:
-      - 'master'
-      - 'develop'
+      - "master"
+      - "develop"
     tags-ignore:
-      - '**'
+      - "**"
 
   # Trigger the workflow on pull request
   pull_request: ~
@@ -16,12 +16,59 @@ on:
   pull_request_target:
     types: [labeled]
 
+  # Trigger the workflow manually
+  workflow_dispatch: ~
+
 jobs:
-  # Calls a reusable CI workflow to build & test the current repository.
-  ci:
-    name: ci
+  # Run CI including downstream packages on self-hosted runners
+  downstream-ci:
+    name: downstream-ci
     if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-    uses: ./.github/workflows/reusable-ci.yml
+    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci.yml@main
     with:
-      eckit_sha: ${{ github.sha }}
+      eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
     secrets: inherit
+
+  # Run CI of private downstream packages on self-hosted runners
+  private-downstream-ci:
+    name: private-downstream-ci
+    needs: [downstream-ci]
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Dispatch private downstream CI
+        uses: ecmwf-actions/dispatch-private-downstream-ci@v1
+        with:
+          token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          owner: ecmwf-actions
+          repository: private-downstream-ci
+          event_type: downstream-ci
+          payload: '{"eckit": "ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}"}'
+
+  # Build downstream packages on HPC
+  downstream-ci-hpc:
+    name: downstream-ci-hpc
+    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci-hpc.yml@main
+    with:
+      eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
+    secrets: inherit
+
+  # Run CI of private downstream packages on HPC
+  private-downstream-ci-hpc:
+    name: private-downstream-ci-hpc
+    needs: [downstream-ci-hpc]
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Dispatch private downstream CI
+        uses: ecmwf-actions/dispatch-private-downstream-ci@v1
+        with:
+          token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          owner: ecmwf-actions
+          repository: private-downstream-ci
+          event_type: downstream-ci-hpc
+          payload: '{"eckit": "ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}"}'

@@ -10,7 +10,7 @@ on:
 jobs:
   ci-hpc:
     name: ci-hpc
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-hpc.yml@main
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci-hpc.yml@v2
     with:
       name-prefix: eckit-
       build-inputs: |

@@ -12,8 +12,22 @@
 
 #include <iostream>
 
+#include "griditer/util.h"
+
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
+    const auto* sep = "";
+    for (const auto& value : v) {
+        out << sep << value;
+        sep = ", ";
+    }
+    return out;
+}
+
 
 int main(int argc, char* argv[]) {
-    std::cout << "Hello, example!" << std::endl;
-    return 0;
+
+    std::cout << grit::util::linspace(1, 2, 2, true) << std::endl;
+    std::cout << grit::util::arange(1, 2, 0.5) << std::endl;
 }

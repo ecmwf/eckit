@@ -24,5 +24,4 @@ std::vector<double> arange(double start, double stop, double step);
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
 
 
-}
-
+}  // namespace grit::util

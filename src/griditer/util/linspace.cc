@@ -10,9 +10,7 @@
  */
 
 
-#pragma once
-
-#include <cassert>
+#include <algorithm>
 
 #include "griditer/util.h"
 
@@ -21,9 +19,18 @@ namespace grit::util {
 
 
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint) {
-    return {};
+    if (num == 0) {
+        return {};
+    }
+
+    const auto step = num > 1 ? (stop - start) / static_cast<double>(endpoint ? (num - 1) : num) : 0;
+
+    std::vector<double> l(num);
+    std::generate_n(l.begin(), num,
+                    [start, step, n = 0ull]() mutable { return start + static_cast<double>(n++) * step; });
+
+    return l;
 }
 
 
-}
-
+}  // namespace grit::util

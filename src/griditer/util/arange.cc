@@ -10,9 +10,9 @@
  */
 
 
-#pragma once
-
-#include <cassert>
+#include <algorithm>
+#include <cmath>
+#include <limits>
 
 #include "griditer/util.h"
 
@@ -20,10 +20,27 @@
 namespace grit::util {
 
 
+template <typename T>
+bool approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
+    auto min = std::min(std::abs(x), std::abs(y));
+    return std::abs(min) == 0. ? std::abs(x - y) < eps
+                               : std::abs(x - y) / std::max(std::numeric_limits<T>::min(), min) < eps;
+};
+
+
 std::vector<double> arange(double start, double stop, double step) {
-    return {};
+    if (approximately_equal(step, 0.) || approximately_equal(start, stop) || (stop - start) * step < 0.) {
+        std::vector<double> l(1, start);
+        return l;
+    }
+
+    const auto num = static_cast<size_t>((stop - start) / step) + 1;
+
+    std::vector<double> l(num);
+    std::generate_n(l.begin(), num, [start, step, n = 0]() mutable { return start + static_cast<double>(n++) * step; });
+
+    return l;
 }
 
 
-}
-
+}  // namespace grit::util

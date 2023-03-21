@@ -27,7 +27,7 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 
 
 int main(int argc, char* argv[]) {
-
     std::cout << grit::util::linspace(1, 2, 2, true) << std::endl;
     std::cout << grit::util::arange(1, 2, 0.5) << std::endl;
+    std::cout << grit::util::gaussian_latitudes(64, false) << std::endl;
 }

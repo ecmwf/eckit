@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <vector>
 
 
@@ -22,6 +23,9 @@ std::vector<double> arange(double start, double stop, double step);
 
 
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
+
+
+std::vector<double> gaussian_latitudes(size_t N, bool increasing);
 
 
 }  // namespace grit::util

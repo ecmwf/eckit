@@ -235,7 +235,7 @@ public:  // methods
         return val_.value;
     }
     T&& operator*() && {
-        return val_.value;
+        return std::move(val_.value);
     }
 
     // TODO: Discuss about removing this in favour of * and -> (simialy to std::optional)

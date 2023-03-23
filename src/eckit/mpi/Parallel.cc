@@ -427,6 +427,10 @@ int Parallel::undefined() const {
     return MPI_UNDEFINED;
 }
 
+int Parallel::procNull() const {
+    return MPI_PROC_NULL;
+}
+
 size_t Parallel::getCount(Status& st, Data::Code type) const {
     int count = 0;
 
@@ -491,6 +495,29 @@ void Parallel::scatterv(const void* sendbuf, const int sendcounts[], const int d
 
     MPI_CALL(MPI_Scatterv(const_cast<void*>(sendbuf), const_cast<int*>(sendcounts), const_cast<int*>(displs), mpitype,
                           recvbuf, int(recvcount), mpitype, int(root), comm_));
+}
+
+  void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op, size_t root) const {
+    ASSERT(count < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+    MPI_Op mpiop         = toOp(op);
+    ;
+
+    MPI_CALL(MPI_Reduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, int(root), comm_));
+}
+
+void Parallel::reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op, size_t root) const {
+    ASSERT(count < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+    MPI_Op mpiop         = toOp(op);
+
+    if ( rank() == root ) {
+      MPI_CALL(MPI_Reduce(MPI_IN_PLACE, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+    } else {
+      MPI_CALL(MPI_Reduce(sendrecvbuf, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+    }
 }
 
 void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op) const {
@@ -601,6 +628,20 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
     MPI_CALL(MPI_Isend(const_cast<void*>(send), int(count), mpitype, dest, tag, comm_, toRequest(req)));
 
     return req;
+}
+
+Status Parallel::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
+				    int dest, int sendtag, int source, int recvtag) const {
+    ASSERT(count < size_t(std::numeric_limits<int>::max()));
+
+    MPI_Datatype mpitype = toType(type);
+
+    Status status = createStatus();
+
+    MPI_CALL(MPI_Sendrecv_replace(sendrecv, int(count), mpitype,
+				  dest, sendtag, source, recvtag, comm_, toStatus(status)));
+
+    return status;
 }
 
 Comm& Parallel::split(int color, const std::string& name) const {

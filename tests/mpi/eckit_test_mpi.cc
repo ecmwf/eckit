@@ -350,6 +350,192 @@ CASE("test_scatterv") {
     /// TODO
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("sendReceiveReplace") {
+    int mpi_rank = mpi::comm().rank();
+    int mpi_size = mpi::comm().size();
+    int first = 0;
+    int last  = mpi_size - 1;
+    int sendtag = 0;
+    int recvtag = 0;
+    Log::info() << "Testing swap" << std::endl;
+    {
+        int d = mpi_rank + 1;
+        if (mpi_rank == first) {
+            int dest = last; // send to last
+            int src = last;  // receive from last
+            EXPECT_EQUAL(d, 1);
+            EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, dest, sendtag, src, recvtag));
+            EXPECT_EQUAL(d, mpi_size);
+        }
+        if (mpi_rank == last) {
+            int dest = first; // send to first
+            int src = first;  // receive to first
+            EXPECT_EQUAL(d, mpi_size);
+            EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, dest, sendtag, src, recvtag));
+            EXPECT_EQUAL(d, 1);
+        }
+    }
+    Log::info() << "Testing open end shift" << std::endl;
+    {
+        int d = mpi_rank + 1;
+        int expected = d+1;
+        if (mpi_rank == last) {
+            expected = d;
+        }
+        int dest = mpi_rank-1; // send to lower rank
+        int src  = mpi_rank+1; // receive from higher rank
+        if (mpi_rank == first) {
+            dest = mpi::comm().procNull(); // first receives nothing
+        }
+        if (mpi_rank == last) {
+            src = mpi::comm().procNull(); // last sends nothing
+        }
+        EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, dest, sendtag, src, recvtag));
+        EXPECT_EQUAL(d, expected);
+    }
+    Log::info() << "Testing circular shift" << std::endl;
+    {
+        int d = mpi_rank + 1;
+        int expected = d+1;
+        if (mpi_rank == last) {
+            expected = first+1;
+        }
+        int dest = mpi_rank-1;  // send to lower rank
+        int src  = mpi_rank+1;
+        if (mpi_rank == first) {
+            dest = last;
+        }
+        if (mpi_rank == last) {
+            src = first;
+        }
+        EXPECT_NO_THROW(mpi::comm().sendReceiveReplace(d, dest, sendtag, src, recvtag));
+        EXPECT_EQUAL(d, expected);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_reduce") {
+    int mpi_rank = mpi::comm().rank();
+    int mpi_size = mpi::comm().size();
+
+    int d = mpi_rank + 1;
+
+    std::pair<double, int> v(-d, mpi_rank);
+    std::cout << "v : " << v << std::endl;
+    std::cout << std::flush;
+    mpi::comm().barrier();
+
+    // check results
+    int root = 0; /* master */
+    int s = 0;
+    int p = 1;
+    int mx = 0;
+    int mn = mpi_size;
+    std::pair<double,int> mxloc{-double(mpi_size),mpi_size-1};
+    std::pair<double,int> mnloc{-double(1),0};
+    if (mpi_rank == root) {
+        for (size_t j = 0; j < mpi_size; ++j) {
+            s += (j + 1);
+            p *= (j + 1);
+        }
+        mx = mpi_size;
+        mn = 1;
+        mxloc = std::pair<double,int>{-double(1),0};
+        mnloc = std::pair<double,int>{-double(mpi_size),mpi_size-1};
+    }
+
+    Log::info() << "Testing reduce" << std::endl;
+    {
+        int sum{0};
+        EXPECT_NO_THROW(mpi::comm().reduce(d, sum, mpi::sum(), root));
+        EXPECT_EQUAL(sum, s);
+
+        int prod{1};
+        EXPECT_NO_THROW(mpi::comm().reduce(d, prod, mpi::prod(), root));
+        EXPECT_EQUAL(prod, p);
+
+        int max{0};
+        EXPECT_NO_THROW(mpi::comm().reduce(d, max, mpi::max(), root));
+        EXPECT_EQUAL(max, mx);
+
+        int min{mpi_size};
+        EXPECT_NO_THROW(mpi::comm().reduce(d, min, mpi::min(), root));
+        EXPECT_EQUAL(min, mn);
+
+        std::pair<double, int> maxloc{-double(mpi_size),mpi_size-1};
+        EXPECT_NO_THROW(mpi::comm().reduce(v, maxloc, mpi::maxloc(), root));
+        EXPECT_EQUAL(maxloc.first, mxloc.first );
+        EXPECT_EQUAL(maxloc.second, mxloc.second);
+
+        std::pair<double, int> minloc{-double(1),0};
+        EXPECT_NO_THROW(mpi::comm().reduce(v, minloc, mpi::minloc(), root));
+        EXPECT_EQUAL(minloc.first, mnloc.first );
+        EXPECT_EQUAL(minloc.second, mnloc.second);
+
+    }
+
+    std::vector<float> arr(5, mpi_rank + 1);
+    std::cout << "arr : " << arr << std::endl;
+
+    std::cout << std::flush;
+    mpi::comm().barrier();
+
+    Log::info() << "Testing reduce inplace" << std::endl;
+    {
+        int root = 0; /* master */
+
+        int sum  = d;
+        int prod = d;
+        int max  = d;
+        int min  = d;
+
+        if (mpi_rank != root) {
+            s = d;
+            p = d;
+            mx = d;
+            mn = d;
+        }
+
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(sum, mpi::sum(), root));
+        EXPECT_EQUAL(sum, s);
+
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(prod, mpi::prod(), root));
+        EXPECT_EQUAL(prod, p);
+
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(max, mpi::max(), root));
+        EXPECT_EQUAL(max, mx);
+
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(min, mpi::min(), root));
+        EXPECT_EQUAL(min, mn);
+
+        std::vector<float> expected;
+
+        expected = (mpi_rank == root) ? std::vector<float>(5, mpi_size) : arr;
+        std::vector<float> maxvec = arr;
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(maxvec.begin(), maxvec.end(), mpi::max(), root));
+        EXPECT_EQUAL(maxvec, expected);
+
+        expected = (mpi_rank == root) ? std::vector<float>(5, 1) : arr;
+        std::vector<float> minvec = arr;
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(minvec.begin(), minvec.end(), mpi::min(), root));
+        EXPECT_EQUAL(minvec, expected);
+
+        expected = (mpi_rank == root) ? std::vector<float>(5, s) : arr;
+        std::vector<float> sumvec = arr;
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(sumvec.begin(), sumvec.end(), mpi::sum(), root));
+        EXPECT_EQUAL(sumvec, expected);
+
+        expected = (mpi_rank == root) ? std::vector<float>(5, p) : arr;
+        std::vector<float> prodvec = arr;
+        EXPECT_NO_THROW(mpi::comm().reduceInPlace(prodvec.begin(), prodvec.end(), mpi::prod(), root));
+        EXPECT_EQUAL(prodvec, expected);
+
+    }
+}
+
 CASE("test_allReduce") {
     int d = int(mpi::comm().rank()) + 1;
 

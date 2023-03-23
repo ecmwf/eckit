@@ -20,6 +20,15 @@ if(APPLE)
 endif()
 
 
+# dependencies (all optional)
+find_package(eccodes 2.29)
+
+option(REQUIRE_ECCODES "Require ecCodes")
+if(REQUIRE_ECCODES AND NOT eccodes_FOUND)
+    message(FATAL_ERROR "eccodes_FOUND=${eccodes_FOUND}")
+endif()
+
+
 # library/resources
 add_subdirectory(src)
 add_subdirectory(etc)

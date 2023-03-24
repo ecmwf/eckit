@@ -93,28 +93,52 @@ static const std::map<std::string, &type_creator> __types{
 #endif
 
 
+void test_grib_gridtype(codes_handle* h) {
+    assert(h != nullptr);
+
+    char mesg[1024];
+    auto length = sizeof(mesg);
+    assert(CODES_SUCCESS == codes_get_string(h, "gridType", mesg, &length));
+
+    std::string gridType(mesg);
+
+    std::cout << "gridType='" << gridType << "'" << std::endl;
+}
+
+
+void test_grib_iterator(codes_handle* h) {
+    assert(h != nullptr);
+
+    int err = 0;
+
+    // long bitmapPresent = 0;
+    // assert(CODES_SUCCESS == codes_get_long(h, "bitmapPresent", &bitmapPresent));
+
+    auto* it = codes_grib_iterator_new(h, 0, &err);
+    assert(CODES_SUCCESS == err);
+
+    int n = 0;
+    for (double lat = 0, lon = 0, value = 0; codes_grib_iterator_next(it, &lat, &lon, &value) > 0; ++n) {
+        std::cout << "- " << n << " - lat=" << lat << " lon=" << lon << " value=" << value << "\n";
+    }
+    std::cout.flush();
+
+    codes_grib_iterator_delete(it);
+}
+
+
 int main(int argc, const char* argv[]) {
     for (int i = 1; i < argc; ++i) {
-        auto* in = std::fopen(argv[1], "rb");
+        auto* in = std::fopen(argv[i], "rb");
         assert(in != nullptr && "unable to open file");
 
         int err = 0;
         for (codes_handle* h = nullptr; nullptr != (h = codes_handle_new_from_file(nullptr, in, PRODUCT_GRIB, &err));) {
             assert(CODES_SUCCESS == err);
 
-            // long bitmapPresent = 0;
-            // assert(CODES_SUCCESS == codes_get_long(h, "bitmapPresent", &bitmapPresent));
+            test_grib_gridtype(h);
+            // test_grib_iterator(h);
 
-            auto* it = codes_grib_iterator_new(h, 0, &err);
-            assert(CODES_SUCCESS == err);
-
-            int n = 0;
-            for (double lat = 0, lon = 0, value = 0; codes_grib_iterator_next(it, &lat, &lon, &value) > 0; ++n) {
-                std::cout << "- " << n << " - lat=" << lat << " lon=" << lon << " value=" << value << "\n";
-            }
-            std::cout.flush();
-
-            codes_grib_iterator_delete(it);
             codes_handle_delete(h);
         }
 

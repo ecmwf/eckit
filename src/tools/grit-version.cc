@@ -10,8 +10,12 @@
  */
 
 
-#include "griditer/example.h"
-#include "griditer/griditer.h"
+#include <iostream>
+
+#include "grit/grit.h"
 
 
-static const int ANSWER = 42;
+int main(int /*argc*/, const char* /*argv*/[]) {
+    std::cout << grit_VERSION_MAJOR << '.' << grit_VERSION_MINOR << '.' << grit_VERSION_PATCH << std::endl;
+    return 0;
+}

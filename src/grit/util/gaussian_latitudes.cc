@@ -10,7 +10,7 @@
  */
 
 
-#include "griditer/util.h"
+#include "grit/util.h"
 
 #include <cmath>
 #include <limits>

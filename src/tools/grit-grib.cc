@@ -16,7 +16,7 @@
 #include <cstdio>
 #include <iostream>
 
-#include "griditer/griditer.h"
+#include "grit/grit.h"
 
 
 int main(int argc, const char* argv[]) {

@@ -14,7 +14,7 @@
 #include <cmath>
 #include <limits>
 
-#include "griditer/util.h"
+#include "grit/util.h"
 
 
 namespace grit::util {

@@ -1,4 +1,4 @@
-configure_file(griditer.h.in griditer.h)
+configure_file(grit.h.in grit.h)
 
 add_library(grit SHARED
     util.cc

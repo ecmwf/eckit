@@ -13,7 +13,7 @@
 #include <iostream>
 #include <numeric>
 
-#include "griditer/util.h"
+#include "grit/util.h"
 
 
 template <typename T>

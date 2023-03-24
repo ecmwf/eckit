@@ -22,10 +22,15 @@ endif()
 
 # dependencies (all optional)
 find_package(eccodes 2.29)
-
 option(REQUIRE_ECCODES "Require ecCodes")
 if(REQUIRE_ECCODES AND NOT eccodes_FOUND)
     message(FATAL_ERROR "eccodes_FOUND=${eccodes_FOUND}")
+endif()
+
+find_package(PROJ 9.2)
+option(REQUIRE_PROJ "Require PROJ")
+if(REQUIRE_PROJ AND NOT PROJ_FOUND)
+    message(FATAL_ERROR "PROJ_FOUND=${PROJ_FOUND}")
 endif()
 
 

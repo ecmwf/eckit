@@ -1,6 +1,7 @@
 configure_file(griditer.h.in griditer.h)
 
 add_library(grit SHARED
+    util.cc
     util.h
     util/arange.cc
     util/gaussian_latitudes.cc

@@ -13,4 +13,19 @@
 #include "griditer/util.h"
 
 
-namespace grit::util {}  // namespace grit::util
+namespace grit::util {
+
+
+struct regular_ll_args {
+    size_t Ni;
+    size_t Nj;
+    double iStart;
+    double iStop;
+    double iStep;
+    double jStart;
+    double jStop;
+    double jStep;
+};
+
+
+}  // namespace grit::util

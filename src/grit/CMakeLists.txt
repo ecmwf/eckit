@@ -1,6 +1,10 @@
 configure_file(grit.h.in grit.h)
 
 add_library(grit SHARED
+	scanner.cc
+	scanner.h
+	transformation.cc
+	transformation.h
     util.cc
     util.h
     util/arange.cc

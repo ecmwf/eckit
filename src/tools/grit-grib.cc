@@ -15,8 +15,82 @@
 #include <cassert>
 #include <cstdio>
 #include <iostream>
+#include <map>
+#include <string>
 
 #include "grit/grit.h"
+
+
+#if 0
+struct regular_ll_args {  // also, rotated_ll
+    size_t n_i;
+    size_t n_j;
+    double i_start;
+    double i_stop;
+    double i_step;
+    double j_start;
+    double j_stop;
+    double j_step;
+};
+
+
+struct regular_gg_args {  // also, rotated_gg
+    size_t n;
+    size_t n_i;
+    double i_start;
+    double i_stop;
+    double j_start;
+    double j_stop;
+};
+
+
+struct reduced_gg_args {  // also, reduced_rotated_gg
+    size_t n;
+    std::vector<long> n_i;
+    double i_start;
+    double i_stop;
+    double i_step;
+    double j_start;
+    double j_stop;
+    double j_step;
+};
+
+
+struct reduced_ll_args {
+    std::vector<long> n_i;
+    double i_start;
+    double i_stop;
+    double i_step;
+    double j_start;
+    double j_stop;
+    double j_step;
+};
+
+
+template <typename R, typename ...ARGS> using function = R(*)(ARGS...);
+using type_creator = function<void*, int>;
+
+
+static const std::map<std::string, &type_creator> __types{
+    {"regular_ll", nullptr}
+};
+#endif
+
+
+#if 0
+(grib2/template.3.(gaussian|grid|latlon).def)
+  double latitudeOfFirstPointInDegrees
+  double latitudeOfLastPointInDegrees
+  double longitudeOfFirstPointInDegrees
+  double longitudeOfLastPointInDegrees
+  double DiInDegrees
+  double DjInDegrees
+  size_t n_i
+  size_t n_j
+  size_t numberOfParallelsBetweenAPoleAndTheEquator
+  size_t basicAngleOfTheInitialProductionDomain
+  size_t subdivisionsOfBasicAngle
+#endif
 
 
 int main(int argc, const char* argv[]) {

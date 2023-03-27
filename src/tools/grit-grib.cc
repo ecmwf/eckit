@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 
 #include "grit/grit.h"
@@ -106,24 +107,56 @@ void test_grib_gridtype(codes_handle* h) {
 }
 
 
+struct grib : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
+    std::string get_string(const std::string& key) {
+        char mesg[1024];
+        auto length = sizeof(mesg);
+        assert(CODES_SUCCESS == codes_get_string(get(), key.c_str(), mesg, &length));
+        return mesg;
+    }
+
+
+public:
+    using t = std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>;
+
+    explicit grib(codes_handle* h) : t(h, &codes_handle_delete) {
+        assert(*this);
+    }
+
+    std::string gridType() {
+        return get_string("gridType");
+    }
+
+    struct iterator : std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)> {
+        using t = std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)>;
+
+        explicit iterator(codes_handle* h) : t(codes_grib_iterator_new(h, 0, &err), &codes_grib_iterator_delete) {
+            assert(CODES_SUCCESS == err);
+            assert(*this);
+        }
+
+        bool next() { return codes_grib_iterator_next(get(), &lat, &lon, &value) > 0; }
+
+        friend std::ostream& operator<<(std::ostream& out, const iterator& it) {
+            return (out << "- lat=" << it.lat << " lon=" << it.lon << " value=" << it.value);
+        }
+
+        int err      = 0;
+        double lat   = 0;
+        double lon   = 0;
+        double value = 0;
+    };
+};
+
+
+
+
+
 void test_grib_iterator(codes_handle* h) {
     assert(h != nullptr);
 
-    int err = 0;
-
     // long bitmapPresent = 0;
     // assert(CODES_SUCCESS == codes_get_long(h, "bitmapPresent", &bitmapPresent));
-
-    auto* it = codes_grib_iterator_new(h, 0, &err);
-    assert(CODES_SUCCESS == err);
-
-    int n = 0;
-    for (double lat = 0, lon = 0, value = 0; codes_grib_iterator_next(it, &lat, &lon, &value) > 0; ++n) {
-        std::cout << "- " << n << " - lat=" << lat << " lon=" << lon << " value=" << value << "\n";
-    }
-    std::cout.flush();
-
-    codes_grib_iterator_delete(it);
 }
 
 
@@ -134,12 +167,16 @@ int main(int argc, const char* argv[]) {
 
         int err = 0;
         for (codes_handle* h = nullptr; nullptr != (h = codes_handle_new_from_file(nullptr, in, PRODUCT_GRIB, &err));) {
-            assert(CODES_SUCCESS == err);
+            grib g(h);
 
-            test_grib_gridtype(h);
-            // test_grib_iterator(h);
-
-            codes_handle_delete(h);
+#if 0
+            int n = 0;
+            for (grib::iterator it(h); it.next(); ++n) {
+                std::cout << "- " << n << " " << it << "\n";
+            }
+            std::cout.flush();
+#endif
+            std::cout << "gridType: '" << g.gridType() << "'" << std::endl;
         }
 
         std::fclose(in);

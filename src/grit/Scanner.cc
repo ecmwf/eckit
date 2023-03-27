@@ -10,7 +10,7 @@
  */
 
 
-#include "grit/scanner.h"
+#include "grit/Scanner.h"
 
 
 namespace grit {

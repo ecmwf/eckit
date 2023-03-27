@@ -14,6 +14,7 @@ jobs:
     with:
       repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
       name_prefix: eckit-
+      codecov_upload: true
       build_package_inputs: |
         repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
         self_coverage: true

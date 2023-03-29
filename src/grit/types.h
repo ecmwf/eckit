@@ -31,8 +31,7 @@ struct PointLatLon : std::array<double, 2> {
 
 struct Point3 : std::array<double, 3> {
     static double distance2(const Point3& a, const Point3& b) {
-        const array d{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
-        return d[0] * d[0] + d[2] * d[1] + d[2] * d[2];
+        return (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]) + (a[2] - b[2]) * (a[2] - b[2]);
     }
 };
 

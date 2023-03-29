@@ -24,11 +24,8 @@ namespace grit::geometry {
 BoundingBox::BoundingBox(double north, double west, double south, double east) :
     north_(north), west_(west), south_(south), east_(east) {
     if (west_ != east_) {
-        auto eastNormalised = util::normalise_longitude_to_minimum(east, west);
-        if (eastNormalised == west_) {
-            eastNormalised += 360.;
-        }
-        east_ = eastNormalised;
+        auto e = util::normalise_longitude_to_minimum(east, west);
+        east_  = e == west_ ? (e + 360.) : e;
     }
 
     assert(west_ <= east_ && east_ <= west_ + 360. && "BoundingBox: longitude range");
@@ -36,35 +33,36 @@ BoundingBox::BoundingBox(double north, double west, double south, double east) :
 }
 
 
+BoundingBox::BoundingBox() : BoundingBox(90., 0., -90., 360.) {}
+
+
 bool BoundingBox::operator==(const BoundingBox& other) const {
-    return (north_ == other.north_) && (south_ == other.south_) && (west_ == other.west_) && (east_ == other.east_);
+    return north_ == other.north_ && south_ == other.south_ && west_ == other.west_ && east_ == other.east_;
 }
 
 
 bool BoundingBox::isPeriodicWestEast() const {
-    return (west_ != east_) && (west_ == util::normalise_longitude_to_minimum(east_, west_));
+    return west_ != east_ && west_ == util::normalise_longitude_to_minimum(east_, west_);
 }
 
 
 bool BoundingBox::contains(double lat, double lon) const {
-    return (lat <= north_) && (lat >= south_) && (util::normalise_longitude_to_minimum(lon, west_) <= east_);
+    return lat <= north_ && lat >= south_ && util::normalise_longitude_to_minimum(lon, west_) <= east_;
 }
 
 
 bool BoundingBox::contains(const BoundingBox& other) const {
-
     if (other.empty()) {
-        return contains(other.south(), other.west());
+        return contains(other.south_, other.west_);
     }
 
     // check for West/East range (if non-periodic), then other's corners
-    if (east_ - west_ < other.east() - other.west() ||
-        east_ < util::normalise_longitude_to_minimum(other.east(), west_)) {
+    if (east_ - west_ < other.east_ - other.west_ || east_ < util::normalise_longitude_to_minimum(other.east_, west_)) {
         return false;
     }
 
-    return contains(other.north(), other.west()) && contains(other.north(), other.east()) &&
-           contains(other.south(), other.west()) && contains(other.south(), other.east());
+    return contains(other.north_, other.west_) && contains(other.north_, other.east_) &&
+           contains(other.south_, other.west_) && contains(other.south_, other.east_);
 }
 
 

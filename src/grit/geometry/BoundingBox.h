@@ -25,7 +25,7 @@ public:
 
     BoundingBox(double north, double west, double south, double east);
 
-    BoundingBox() : BoundingBox(90., 0., -90., 360.) {}
+    BoundingBox();
 
     BoundingBox(const BoundingBox&) = default;
 

@@ -10,54 +10,30 @@
  */
 
 
-#include "mir/util/BoundingBox.h"
+#include "grit/geometry/BoundingBox.h"
 
 #include <algorithm>
-#include <ostream>
+#include <cassert>
 
-#include "eckit/types/FloatCompare.h"
-#include "eckit/utils/MD5.h"
-
-#include "mir/api/MIRJob.h"
-#include "mir/param/MIRParametrisation.h"
-#include "mir/util/Exceptions.h"
-#include "mir/util/Grib.h"
+#include "grit/util.h"
 
 
-namespace mir::util {
+namespace grit::geometry {
 
 
-static double get(const param::MIRParametrisation& param, const char* key) {
-    double value = 0.;
-    ASSERT(param.get(key, value));
-    return value;
-}
-
-
-BoundingBox::BoundingBox() :
-    north_(Latitude::NORTH_POLE), west_(Longitude::GREENWICH), south_(Latitude::SOUTH_POLE), east_(Longitude::GLOBE) {}
-
-
-BoundingBox::BoundingBox(const Latitude& north, const Longitude& west, const Latitude& south, const Longitude& east) :
+BoundingBox::BoundingBox(double north, double west, double south, double east) :
     north_(north), west_(west), south_(south), east_(east) {
     if (west_ != east_) {
-        auto eastNormalised = east_.normalise(west_);
+        auto eastNormalised = util::normalise_longitude_to_minimum(east, west);
         if (eastNormalised == west_) {
-            eastNormalised += Longitude::GLOBE;
+            eastNormalised += 360.;
         }
         east_ = eastNormalised;
     }
 
-    ASSERT(west_ <= east_ && east_ <= west_ + Longitude::GLOBE);
-    ASSERT(Latitude::SOUTH_POLE <= south_ && south_ <= north_ && north_ <= Latitude::NORTH_POLE);
+    assert(west_ <= east_ && east_ <= west_ + 360. && "BoundingBox: longitude range");
+    assert(-90. <= south_ && south_ <= north_ && north_ <= 90. && "BoundingBox: latitude range");
 }
-
-
-BoundingBox::BoundingBox(const param::MIRParametrisation& param) :
-    BoundingBox(get(param, "north"), get(param, "west"), get(param, "south"), get(param, "east")) {}
-
-
-BoundingBox::BoundingBox(const BoundingBox&) = default;
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {
@@ -65,60 +41,13 @@ bool BoundingBox::operator==(const BoundingBox& other) const {
 }
 
 
-BoundingBox& BoundingBox::operator=(const BoundingBox& other) = default;
-
-
-BoundingBox::~BoundingBox() = default;
-
-
-void BoundingBox::print(std::ostream& out) const {
-    out << "BoundingBox["
-        << "north=" << north_ << ",west=" << west_ << ",south=" << south_ << ",east=" << east_ << "]";
-}
-
-
-void BoundingBox::fillGrib(grib_info& info) const {
-    // Warning: scanning mode not considered
-    info.grid.latitudeOfFirstGridPointInDegrees  = north_.value();
-    info.grid.longitudeOfFirstGridPointInDegrees = west_.value();
-    info.grid.latitudeOfLastGridPointInDegrees   = south_.value();
-    info.grid.longitudeOfLastGridPointInDegrees  = east_.value();
-
-    info.extra_set("expandBoundingBox", 1L);
-}
-
-
-void BoundingBox::hash(eckit::MD5& md5) const {
-    md5.add(north_);
-    md5.add(west_);
-    md5.add(south_);
-    md5.add(east_);
-}
-
-
-void BoundingBox::fillJob(api::MIRJob& job) const {
-    job.set("area", north_.value(), west_.value(), south_.value(), east_.value());
-}
-
-
 bool BoundingBox::isPeriodicWestEast() const {
-    return (west_ != east_) && (west_ == east_.normalise(west_));
+    return (west_ != east_) && (west_ == util::normalise_longitude_to_minimum(east_, west_));
 }
 
 
-bool BoundingBox::contains(const PointLatLon& p) const {
-    return contains(p.lat(), p.lon());
-}
-
-
-bool BoundingBox::contains(const Point2& p) const {
-    // notice the order
-    return contains(p[0], p[1]);
-}
-
-
-bool BoundingBox::contains(const Latitude& lat, const Longitude& lon) const {
-    return (lat <= north_) && (lat >= south_) && (lon.normalise(west_) <= east_);
+bool BoundingBox::contains(double lat, double lon) const {
+    return (lat <= north_) && (lat >= south_) && (util::normalise_longitude_to_minimum(lon, west_) <= east_);
 }
 
 
@@ -129,7 +58,8 @@ bool BoundingBox::contains(const BoundingBox& other) const {
     }
 
     // check for West/East range (if non-periodic), then other's corners
-    if (east_ - west_ < other.east() - other.west() || east_ < other.east().normalise(west_)) {
+    if (east_ - west_ < other.east() - other.west() ||
+        east_ < util::normalise_longitude_to_minimum(other.east(), west_)) {
         return false;
     }
 
@@ -139,9 +69,8 @@ bool BoundingBox::contains(const BoundingBox& other) const {
 
 
 bool BoundingBox::intersects(BoundingBox& other) const {
-
-    Latitude n = std::min(north_, other.north_);
-    Latitude s = std::max(south_, other.south_);
+    auto n = std::min(north_, other.north_);
+    auto s = std::max(south_, other.south_);
 
     bool intersectsSN = s <= n;
     if (!intersectsSN) {
@@ -153,10 +82,10 @@ bool BoundingBox::intersects(BoundingBox& other) const {
         return intersectsSN;
     }
 
-    Longitude w = std::min(west_, other.west_);
-    Longitude e = w;
+    auto w = std::min(west_, other.west_);
+    auto e = w;
 
-    auto intersect = [](const BoundingBox& a, const BoundingBox& b, Longitude& w, Longitude& e) {
+    auto intersect = [](const BoundingBox& a, const BoundingBox& b, double& w, double& e) {
         bool p = a.isPeriodicWestEast();
         if (p || b.isPeriodicWestEast()) {
             w = (p ? b : a).west_;
@@ -164,22 +93,23 @@ bool BoundingBox::intersects(BoundingBox& other) const {
             return true;
         }
 
-        Longitude ref = b.west_.normalise(a.west_);
-        Longitude w_  = std::max(a.west_, ref);
-        Longitude e_  = std::min(a.east_, b.east_.normalise(ref));
+        auto ref = util::normalise_longitude_to_minimum(b.west_, a.west_);
+        auto w_  = std::max(a.west_, ref);
+        auto e_  = std::min(a.east_, util::normalise_longitude_to_minimum(b.east_, ref));
 
         if (w_ <= e_) {
             w = w_;
             e = e_;
             return true;
         }
+
         return false;
     };
 
     bool intersectsWE = west_ <= other.west_ ? intersect(*this, other, w, e) || intersect(other, *this, w, e)
                                              : intersect(other, *this, w, e) || intersect(*this, other, w, e);
 
-    ASSERT(w <= e);
+    assert(w <= e && "BoundingBox::intersects: longitude range");
     other = {n, w, s, e};
 
     return intersectsSN && intersectsWE;
@@ -187,14 +117,8 @@ bool BoundingBox::intersects(BoundingBox& other) const {
 
 
 bool BoundingBox::empty() const {
-    return !eckit::types::is_strictly_greater(north_.value(), south_.value()) ||
-           !eckit::types::is_strictly_greater(east_.value(), west_.value());
+    return util::approximately_equal(north_, south_) || util::approximately_equal(west_, east_);
 }
 
 
-void BoundingBox::makeName(std::ostream& out) const {
-    out << "-" << north_ << ":" << west_ << ":" << south_ << ":" << east_;
-}
-
-
-}  // namespace mir::util
+}  // namespace grit::geometry

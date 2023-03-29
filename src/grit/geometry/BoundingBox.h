@@ -12,26 +12,8 @@
 
 #pragma once
 
-#include <iosfwd>
 
-#include "mir/util/Types.h"
-
-
-struct grib_info;
-namespace eckit {
-class MD5;
-}
-namespace mir {
-namespace api {
-class MIRJob;
-}
-namespace param {
-class MIRParametrisation;
-}
-}  // namespace mir
-
-
-namespace mir::util {
+namespace grit::geometry {
 
 
 class BoundingBox {
@@ -41,21 +23,26 @@ public:
 
     // -- Constructors
 
-    BoundingBox();
-    BoundingBox(const Latitude& north, const Longitude& west, const Latitude& south, const Longitude& east);
-    BoundingBox(const param::MIRParametrisation&);
-    BoundingBox(const BoundingBox&);
+    BoundingBox(double north, double west, double south, double east);
+
+    BoundingBox() : BoundingBox(90., 0., -90., 360.) {}
+
+    BoundingBox(const BoundingBox&) = default;
+
+    BoundingBox(BoundingBox&&) = default;
 
     // -- Destructor
 
-    virtual ~BoundingBox();
+    virtual ~BoundingBox() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    BoundingBox& operator=(const BoundingBox&);
+    BoundingBox& operator=(const BoundingBox&) = default;
+
+    BoundingBox& operator=(BoundingBox&&) = default;
 
     bool operator==(const BoundingBox&) const;
 
@@ -63,37 +50,23 @@ public:
 
     // -- Methods
 
-    // DON'T IMPLEMENT SETTERS
+    double north() const { return north_; }
 
-    const Latitude& north() const { return north_; }
+    double west() const { return west_; }
 
-    const Longitude& west() const { return west_; }
+    double south() const { return south_; }
 
-    const Latitude& south() const { return south_; }
-
-    const Longitude& east() const { return east_; }
+    double east() const { return east_; }
 
     bool isPeriodicWestEast() const;
 
-    bool contains(const PointLatLon&) const;
-
-    bool contains(const Point2&) const;
-
-    bool contains(const Latitude&, const Longitude&) const;
+    bool contains(double lat, double lon) const;
 
     bool contains(const BoundingBox&) const;
 
     bool intersects(BoundingBox&) const;
 
     bool empty() const;
-
-    void fillGrib(grib_info&) const;
-
-    void fillJob(api::MIRJob&) const;
-
-    void hash(eckit::MD5&) const;
-
-    void makeName(std::ostream&) const;
 
     // -- Overridden methods
     // None
@@ -109,8 +82,7 @@ protected:
     // None
 
     // -- Methods
-
-    virtual void print(std::ostream&) const;
+    // None
 
     // -- Overridden methods
     // None
@@ -127,10 +99,10 @@ protected:
 private:
     // -- Members
 
-    Latitude north_;
-    Longitude west_;
-    Latitude south_;
-    Longitude east_;
+    double north_;
+    double west_;
+    double south_;
+    double east_;
 
     // -- Methods
     // None
@@ -145,12 +117,8 @@ private:
     // None
 
     // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& s, const BoundingBox& p) {
-        p.print(s);
-        return s;
-    }
+    // None
 };
 
 
-}  // namespace mir::util
+}  // namespace grit::geometry

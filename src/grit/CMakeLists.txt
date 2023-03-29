@@ -11,6 +11,8 @@ add_library(grit SHARED
     Scanner.h
     Transformation.cc
     Transformation.h
+    geometry/BoundingBox.cc
+    geometry/BoundingBox.h
     geometry/GreatCircle.cc
     geometry/GreatCircle.h
     geometry/Sphere.cc

@@ -10,18 +10,7 @@
  */
 
 
-namespace grit {
+#include "grit/Transformation.h"
 
 
-struct Scanner {
-    Scanner(const Scanner&) = default;
-    Scanner(Scanner&&)      = default;
-
-    Scanner& operator=(const Scanner&) = default;
-    Scanner& operator=(Scanner&&)      = default;
-
-    virtual ~Scanner() = default;
-};
-
-
-}  // namespace grit
+namespace grit {}  // namespace grit

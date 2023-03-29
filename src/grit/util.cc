@@ -13,4 +13,29 @@
 #include "grit/util.h"
 
 
-namespace grit::util {}
+namespace grit::util {
+
+
+double normalise_longitude_to_minimum(double lon, double minimum) {
+    while (lon < minimum) {
+        lon += 360.;
+    }
+    while (lon >= minimum + 360.) {
+        lon -= 360.;
+    }
+    return lon;
+}
+
+
+double normalise_longitude_to_maximum(double lon, double maximum) {
+    while (lon > maximum) {
+        lon -= 360.;
+    }
+    while (lon <= maximum - 360.) {
+        lon += 360.;
+    }
+    return lon;
+}
+
+
+}  // namespace grit::util

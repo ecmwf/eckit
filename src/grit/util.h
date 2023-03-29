@@ -12,11 +12,21 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
+#include <limits>
 #include <vector>
 
 
 namespace grit::util {
+
+
+template <typename T>
+bool approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
+    auto min = std::min(std::abs(x), std::abs(y));
+    return std::abs(min) == 0. ? std::abs(x - y) < eps
+                               : std::abs(x - y) / std::max(std::numeric_limits<T>::min(), min) < eps;
+};
 
 
 std::vector<double> arange(double start, double stop, double step);
@@ -26,6 +36,14 @@ std::vector<double> linspace(double start, double stop, size_t num, bool endpoin
 
 
 std::vector<double> gaussian_latitudes(size_t N, bool increasing);
+
+
+/// @return longitude in degree within range [minimum, minimum + 360[
+double normalise_longitude_to_minimum(double lon, double minimum);
+
+
+/// @return longitude in degree within range ]maximum - 360, maximum]
+double normalise_longitude_to_maximum(double lon, double maximum);
 
 
 }  // namespace grit::util

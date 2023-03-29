@@ -23,55 +23,6 @@
 
 
 #if 0
-struct regular_ll_args {  // also, rotated_ll
-    size_t n_i;
-    size_t n_j;
-    double i_start;
-    double i_stop;
-    double i_step;
-    double j_start;
-    double j_stop;
-    double j_step;
-};
-
-
-struct regular_gg_args {  // also, rotated_gg
-    size_t n;
-    size_t n_i;
-    double i_start;
-    double i_stop;
-    double j_start;
-    double j_stop;
-};
-
-
-struct reduced_gg_args {  // also, reduced_rotated_gg
-    size_t n;
-    std::vector<long> n_i;
-    double i_start;
-    double i_stop;
-    double i_step;
-    double j_start;
-    double j_stop;
-    double j_step;
-};
-
-
-struct reduced_ll_args {
-    std::vector<long> n_i;
-    double i_start;
-    double i_stop;
-    double i_step;
-    double j_start;
-    double j_stop;
-    double j_step;
-};
-
-
-template <typename R, typename ...ARGS> using function = R(*)(ARGS...);
-using type_creator = function<void*, int>;
-
-
 static const std::map<std::string, &type_creator> __types{
     {"regular_ll", nullptr}
 };
@@ -94,38 +45,69 @@ static const std::map<std::string, &type_creator> __types{
 #endif
 
 
-void test_grib_gridtype(codes_handle* h) {
-    assert(h != nullptr);
+struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
+    using t = std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>;
 
-    char mesg[1024];
-    auto length = sizeof(mesg);
-    assert(CODES_SUCCESS == codes_get_string(h, "gridType", mesg, &length));
+    bool get_bool(const std::string& key) const { return get_long(key) != 0L; }
 
-    std::string gridType(mesg);
+    double get_double(const std::string& key) const {
+        if (auto value = cache_double.find(key); value != cache_double.end()) {
+            return value->second;
+        }
 
-    std::cout << "gridType='" << gridType << "'" << std::endl;
-}
+        double value = 0;
+        assert(CODES_SUCCESS == codes_get_double(get(), key.c_str(), &value));
 
+        cache_double[key] = value;
+        return value;
+    }
 
-struct grib : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
-    std::string get_string(const std::string& key) {
+    long get_long(const std::string& key) const {
+        if (auto value = cache_long.find(key); value != cache_long.end()) {
+            return value->second;
+        }
+
+        long value = 0;
+        assert(CODES_SUCCESS == codes_get_long(get(), key.c_str(), &value));
+
+        cache_long[key] = value;
+        return value;
+    }
+
+    size_t get_size_t(const std::string& key) const {
+        auto value = get_long(key);
+        assert(value >= 0);
+        return static_cast<size_t>(value);
+    }
+
+    std::string get_string(const std::string& key) const {
         char mesg[1024];
         auto length = sizeof(mesg);
         assert(CODES_SUCCESS == codes_get_string(get(), key.c_str(), mesg, &length));
-        return mesg;
+        const std::string value(mesg);
+
+        cache_string[key] = value;
+        return value;
     }
 
+    mutable std::map<std::string, double> cache_double;
+    mutable std::map<std::string, long> cache_long;
+    mutable std::map<std::string, std::string> cache_string;
 
-public:
-    using t = std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>;
+    explicit grib_type(codes_handle* h) : t(h, &codes_handle_delete) { assert(*this); }
 
-    explicit grib(codes_handle* h) : t(h, &codes_handle_delete) {
-        assert(*this);
-    }
+    std::string type() const { return get_string("gridType"); }
 
-    std::string gridType() {
-        return get_string("gridType");
-    }
+    size_t Ni() const { return get_size_t("Ni"); }
+    size_t Nj() const { return get_size_t("Nj"); }
+
+    double i_start() const { return get_double("longitudeOfFirstGridPointInDegrees"); }
+    double i_step() const { return get_double("iDirectionIncrementInDegrees"); }
+    double i_stop() const { return get_double("longitudeOfLastGridPointInDegrees"); }
+
+    double j_start() const { return get_double("latitudeOfFirstGridPointInDegrees"); }
+    double j_step() const { return get_double("jDirectionIncrementInDegrees"); }
+    double j_stop() const { return get_double("latitudeOfLastGridPointInDegrees"); }
 
     struct iterator : std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)> {
         using t = std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)>;
@@ -149,9 +131,6 @@ public:
 };
 
 
-
-
-
 void test_grib_iterator(codes_handle* h) {
     assert(h != nullptr);
 
@@ -160,14 +139,21 @@ void test_grib_iterator(codes_handle* h) {
 }
 
 
+struct test;
+
+static const std::map<std::string, test*> __builders{};
+
+
 int main(int argc, const char* argv[]) {
+
+
     for (int i = 1; i < argc; ++i) {
         auto* in = std::fopen(argv[i], "rb");
         assert(in != nullptr && "unable to open file");
 
         int err = 0;
         for (codes_handle* h = nullptr; nullptr != (h = codes_handle_new_from_file(nullptr, in, PRODUCT_GRIB, &err));) {
-            grib g(h);
+            grib_type grib(h);
 
 #if 0
             int n = 0;
@@ -176,7 +162,57 @@ int main(int argc, const char* argv[]) {
             }
             std::cout.flush();
 #endif
-            std::cout << "gridType: '" << g.gridType() << "'" << std::endl;
+
+            auto type = grib.type();
+            std::cout << "type: '" << type << "'" << std::endl;
+
+            if (type == "regular_ll") {
+                struct regular_ll_args {  // also, rotated_ll
+                    size_t n_i;
+                    double i_start;
+                    double i_stop;
+                    double i_step;
+                    size_t n_j;
+                    double j_start;
+                    double j_stop;
+                    double j_step;
+                };
+
+                regular_ll_args args{grib.Ni(), grib.i_start(), grib.i_stop(), grib.i_step(),
+                                     grib.Nj(), grib.j_start(), grib.j_stop(), grib.j_step()};
+
+
+                //                struct regular_gg_args {  // also, rotated_gg
+                //                    size_t n;
+                //                    size_t n_i;
+                //                    double i_start;
+                //                    double i_stop;
+                //                    double j_start;
+                //                    double j_stop;
+                //                };
+
+
+                //                struct reduced_gg_args {  // also, reduced_rotated_gg
+                //                    size_t n;
+                //                    std::vector<long> n_i;
+                //                    double i_start;
+                //                    double i_stop;
+                //                    double i_step;
+                //                    double j_start;
+                //                    double j_stop;
+                //                    double j_step;
+                //                };
+
+
+                //                struct reduced_ll_args {
+                //                    std::vector<long> n_i;
+                //                    double i_start;
+                //                    double i_stop;
+                //                    double i_step;
+                //                    double j_start;
+                //                    double j_stop;
+                //                    double j_step;
+            };
         }
 
         std::fclose(in);

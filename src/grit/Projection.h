@@ -13,15 +13,7 @@
 namespace grit {
 
 
-struct Scanner {
-    Scanner(const Scanner&) = default;
-    Scanner(Scanner&&)      = default;
-
-    Scanner& operator=(const Scanner&) = default;
-    Scanner& operator=(Scanner&&)      = default;
-
-    virtual ~Scanner() = default;
-};
+struct Projection {};
 
 
 }  // namespace grit

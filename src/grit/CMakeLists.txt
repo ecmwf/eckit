@@ -1,6 +1,12 @@
 configure_file(grit.h.in grit.h)
 
 add_library(grit SHARED
+    Figure.cc
+    Figure.h
+    Iterator.cc
+    Iterator.h
+    Projection.cc
+    Projection.h
     Scanner.cc
     Scanner.h
     Transformation.cc

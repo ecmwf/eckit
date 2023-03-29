@@ -8,3 +8,12 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+
+
+namespace grit {
+
+
+struct Transformation {};
+
+
+}  // namespace grit

@@ -20,14 +20,6 @@
 namespace grit::util {
 
 
-template <typename T>
-bool approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
-    auto min = std::min(std::abs(x), std::abs(y));
-    return std::abs(min) == 0. ? std::abs(x - y) < eps
-                               : std::abs(x - y) / std::max(std::numeric_limits<T>::min(), min) < eps;
-};
-
-
 std::vector<double> arange(double start, double stop, double step) {
     if (approximately_equal(step, 0.) || approximately_equal(start, stop) || (stop - start) * step < 0.) {
         std::vector<double> l(1, start);

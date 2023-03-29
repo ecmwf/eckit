@@ -74,11 +74,13 @@ public:
 
 
 int main(int argc, char* argv[]) {
-    //    std::cout << grit::util::linspace(1, 2, 2, true) << std::endl;
-    //    std::cout << grit::util::arange(1, 2, 0.5) << std::endl;
-    //    std::cout << grit::util::gaussian_latitudes(64, false) << std::endl;
+    //        std::cout << grit::util::linspace(1, 2, 2, true) << std::endl;
+    //        std::cout << grit::util::arange(1, 2, 0.5) << std::endl;
+    //        std::cout << grit::util::gaussian_latitudes(64, false) << std::endl;
+    //        std::cout << grit::util::normalise_longitude_to_maximum(0.,0.) << std::endl;
+    //        std::cout << grit::util::normalise_longitude_to_minimum(0.,0.) << std::endl;
 
-
+#if 0
     iterable_t it{1, 2, 3, 4};
 
     for (const auto& v : it) {
@@ -86,4 +88,5 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << std::accumulate(it.begin(), it.end(), 0) << std::endl;
+#endif
 }

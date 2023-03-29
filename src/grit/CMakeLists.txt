@@ -5,12 +5,21 @@ add_library(grit SHARED
     Figure.h
     Iterator.cc
     Iterator.h
+    types.h
     Projection.cc
     Projection.h
     Scanner.cc
     Scanner.h
     Transformation.cc
     Transformation.h
+    geometry/EllipsoidOfRevolution.cc
+    geometry/EllipsoidOfRevolution.h
+    geometry/GreatCircle.cc
+    geometry/GreatCircle.h
+    geometry/Sphere.cc
+    geometry/Sphere.h
+    geometry/SphereT.h
+    geometry/UnitSphere.h
     util.cc
     util.h
     util/arange.cc

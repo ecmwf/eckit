@@ -3,23 +3,24 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#ifndef GreatCircle_H
-#define GreatCircle_H
+
+#pragma once
+
 
 #include <vector>
-#include "eckit/geometry/Point2.h"
 
-//------------------------------------------------------------------------------------------------------
+#include "grit/types.h"
 
-namespace eckit {
+
+namespace grit {
 namespace geometry {
 
-//------------------------------------------------------------------------------------------------------
 
 class GreatCircle {
 public:
@@ -41,9 +42,6 @@ private:
     bool crossesPoles_;
 };
 
-//------------------------------------------------------------------------------------------------------
 
 }  // namespace geometry
-}  // namespace eckit
-
-#endif
+}  // namespace grit

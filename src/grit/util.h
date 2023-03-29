@@ -13,6 +13,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <limits>
 #include <vector>
@@ -27,6 +28,12 @@ bool approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
     return std::abs(min) == 0. ? std::abs(x - y) < eps
                                : std::abs(x - y) / std::max(std::numeric_limits<T>::min(), min) < eps;
 };
+
+
+static const double degrees_to_radians = M_PI / 180.;
+
+
+static const double radians_to_degrees = 180. * M_1_PI;
 
 
 std::vector<double> arange(double start, double stop, double step);

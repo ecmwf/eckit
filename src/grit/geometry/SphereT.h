@@ -3,22 +3,22 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#ifndef SphereT_H
-#define SphereT_H
 
-#include "eckit/geometry/Sphere.h"
+#pragma once
 
-//------------------------------------------------------------------------------------------------------
 
-namespace eckit {
+#include "grit/geometry/Sphere.h"
+
+
+namespace grit {
 namespace geometry {
 
-//------------------------------------------------------------------------------------------------------
 
 /// Definition of a sphere parametrised with a geodetic datum
 template <class DATUM>
@@ -77,9 +77,6 @@ struct SphereT {
     }
 };
 
-//------------------------------------------------------------------------------------------------------
 
 }  // namespace geometry
-}  // namespace eckit
-
-#endif
+}  // namespace grit

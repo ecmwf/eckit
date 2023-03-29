@@ -12,22 +12,14 @@
 
 #pragma once
 
-#include "grit/geometry/SphereT.h"
+#include <array>
 
 
 namespace grit {
-namespace geometry {
 
 
-/// Definition of a unit datum
-struct DatumUnit {
-    static constexpr double radius() { return 1.; }
-};
+using Point2 = std::array<double, 2>;
+using Point3 = std::array<double, 3>;
 
 
-/// Definition of a unit sphere
-using UnitSphere = SphereT<DatumUnit>;
-
-
-}  // namespace geometry
 }  // namespace grit

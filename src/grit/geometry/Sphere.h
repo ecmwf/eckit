@@ -3,25 +3,23 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#ifndef Sphere_H
-#define Sphere_H
 
-//------------------------------------------------------------------------------------------------------
+#pragma once
 
-namespace eckit {
+
+namespace grit {
 namespace geometry {
 
-//------------------------------------------------------------------------------------------------------
 
-class Point2;
-class Point3;
+struct Point2;
+struct Point3;
 
-//------------------------------------------------------------------------------------------------------
 
 struct Sphere {
     /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
@@ -59,9 +57,6 @@ struct Sphere {
     static void convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat);
 };
 
-//------------------------------------------------------------------------------------------------------
 
 }  // namespace geometry
-}  // namespace eckit
-
-#endif
+}  // namespace grit

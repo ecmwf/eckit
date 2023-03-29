@@ -3,25 +3,23 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#ifndef EllipsoidOfRevolution_H
-#define EllipsoidOfRevolution_H
 
-//------------------------------------------------------------------------------------------------------
+#pragma once
 
-namespace eckit {
+
+namespace grit {
 namespace geometry {
 
-//------------------------------------------------------------------------------------------------------
 
-class Point2;
-class Point3;
+struct Point2;
+struct Point3;
 
-//------------------------------------------------------------------------------------------------------
 
 struct EllipsoidOfRevolution {
     // Convert elliptic coordinates to Cartesian
@@ -29,9 +27,6 @@ struct EllipsoidOfRevolution {
                                             Point3& B, double height = 0.);
 };
 
-//------------------------------------------------------------------------------------------------------
 
 }  // namespace geometry
-}  // namespace eckit
-
-#endif
+}  // namespace grit

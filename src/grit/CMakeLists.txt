@@ -19,6 +19,7 @@ add_library(grit SHARED
     geometry/Sphere.h
     geometry/SphereT.h
     geometry/UnitSphere.h
+    types.cc
     types.h
     util.cc
     util.h

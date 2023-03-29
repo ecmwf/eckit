@@ -5,7 +5,6 @@ add_library(grit SHARED
     Figure.h
     Iterator.cc
     Iterator.h
-    types.h
     Projection.cc
     Projection.h
     Scanner.cc
@@ -18,6 +17,7 @@ add_library(grit SHARED
     geometry/Sphere.h
     geometry/SphereT.h
     geometry/UnitSphere.h
+    types.h
     util.cc
     util.h
     util/arange.cc

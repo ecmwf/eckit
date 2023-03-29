@@ -28,7 +28,7 @@ namespace grit {
 
 
 struct Iterator {
-    Iterator() {}
+    Iterator() = default;
 
     Iterator(const Iterator&) = delete;
     Iterator(Iterator&&)      = delete;
@@ -43,7 +43,7 @@ struct Iterator {
         return false;
     }
 
-    size_t pos_;
+    size_t pos_ = 0;
 
     std::unique_ptr<Scanner*> scanner_;
     std::vector<Transformation*> transformation_;

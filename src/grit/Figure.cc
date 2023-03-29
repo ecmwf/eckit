@@ -13,6 +13,7 @@
 #include "grit/Figure.h"
 
 #include <cassert>
+#include <limits>
 
 #include "grit/util.h"
 

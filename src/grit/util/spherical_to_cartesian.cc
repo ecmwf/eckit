@@ -10,28 +10,27 @@
  */
 
 
-#include "grit/geometry/EllipsoidOfRevolution.h"
-
 #include <cassert>
 #include <cmath>
 
+#include "grit/types.h"
+#include "grit/util.h"
 
-namespace grit {
-namespace geometry {
+
+namespace grit::geometry {
 
 
-void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const double& b, const Point2& Alonlat,
-                                                        Point3& B, double height) {
+void spherical_to_cartesian(Point3& B, double lon, double lat, double a, double b, double height) {
     assert(a > 0.);
     assert(b > 0.);
-    assert(-90. <= Alonlat[1] && Alonlat[1] <= 90. && "Invalid latitude");
+    assert(-90. <= lat && lat <= 90. && "Invalid latitude");
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
 
-    const double lambda_deg = util::normalise_longitude_to_minimum(Alonlat[0], -180.);
-    const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * Alonlat[1];
+    const double lambda_deg = util::normalise_longitude_to_minimum(lon, -180.);
+    const double lambda     = util::degrees_to_radians * lambda_deg;
+    const double phi        = util::degrees_to_radians * lat;
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
@@ -46,5 +45,4 @@ void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const d
 }
 
 
-}  // namespace geometry
-}  // namespace grit
+}  // namespace grit::geometry

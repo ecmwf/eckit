@@ -16,8 +16,7 @@
 #include "grit/geometry/Sphere.h"
 
 
-namespace grit {
-namespace geometry {
+namespace grit::geometry {
 
 
 /// Definition of a sphere parametrised with a geodetic datum
@@ -78,5 +77,4 @@ struct SphereT {
 };
 
 
-}  // namespace geometry
-}  // namespace grit
+}  // namespace grit::geometry

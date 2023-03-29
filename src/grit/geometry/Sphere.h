@@ -12,13 +12,10 @@
 
 #pragma once
 
-
-namespace grit {
-namespace geometry {
+#include "grit/types.h"
 
 
-struct Point2;
-struct Point3;
+namespace grit::geometry {
 
 
 struct Sphere {
@@ -58,5 +55,4 @@ struct Sphere {
 };
 
 
-}  // namespace geometry
-}  // namespace grit
+}  // namespace grit::geometry

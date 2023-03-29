@@ -19,7 +19,9 @@ namespace grit {
 
 
 using Point2 = std::array<double, 2>;
-using Point3 = std::array<double, 3>;
+struct Point3 : std::array<double, 3> {
+    static double distance2(const Point3& a, const Point3& b) { return 0.; }
+};
 
 
 }  // namespace grit

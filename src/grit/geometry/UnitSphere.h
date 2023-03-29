@@ -15,8 +15,7 @@
 #include "grit/geometry/SphereT.h"
 
 
-namespace grit {
-namespace geometry {
+namespace grit::geometry {
 
 
 /// Definition of a unit datum
@@ -29,5 +28,4 @@ struct DatumUnit {
 using UnitSphere = SphereT<DatumUnit>;
 
 
-}  // namespace geometry
-}  // namespace grit
+}  // namespace grit::geometry

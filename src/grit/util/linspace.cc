@@ -11,8 +11,7 @@
 
 
 #include <algorithm>
-
-#include "grit/util.h"
+#include <vector>
 
 
 namespace grit::util {

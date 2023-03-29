@@ -21,8 +21,7 @@
 #include "grit/util.h"
 
 
-namespace grit {
-namespace geometry {
+namespace grit::geometry {
 
 
 inline double squared(double x) {
@@ -52,9 +51,9 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
     assert(-90. <= Alonlat[1] && Alonlat[1] <= 90. && "Invalid latitude");
     assert(-90. <= Blonlat[1] && Blonlat[1] <= 90. && "Invalid latitude");
 
-    const double phi1   = degrees_to_radians * Alonlat[1];
-    const double phi2   = degrees_to_radians * Blonlat[1];
-    const double lambda = degrees_to_radians * (Blonlat[0] - Alonlat[0]);
+    const double phi1   = util::degrees_to_radians * Alonlat[1];
+    const double phi2   = util::degrees_to_radians * Blonlat[1];
+    const double lambda = util::degrees_to_radians * (Blonlat[0] - Alonlat[0]);
 
     const double cos_phi1   = cos(phi1);
     const double sin_phi1   = sin(phi1);
@@ -123,7 +122,7 @@ double Sphere::area(const double& radius, const Point2& WestNorth, const Point2&
     assert(-90. <= S && S <= 90.);
     assert(N >= S);
 
-    double latitude_fraction = 0.5 * (std::sin(degrees_to_radians * N) - std::sin(degrees_to_radians * S));
+    double latitude_fraction = 0.5 * (std::sin(util::degrees_to_radians * N) - std::sin(util::degrees_to_radians * S));
 
     // Calculate area
     return area(radius) * latitude_fraction * longitude_fraction;
@@ -184,10 +183,9 @@ void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, 
     const double y = util::approximately_equal(A[1], 0.) ? 0. : A[1];
     const double z = std::min(radius, std::max(-radius, A[2])) / radius;
 
-    Blonlat[0] = radians_to_degrees * std::atan2(y, x);
-    Blonlat[1] = radians_to_degrees * std::asin(z);
+    Blonlat[0] = util::radians_to_degrees * std::atan2(y, x);
+    Blonlat[1] = util::radians_to_degrees * std::asin(z);
 }
 
 
-}  // namespace geometry
-}  // namespace grit
+}  // namespace grit::geometry

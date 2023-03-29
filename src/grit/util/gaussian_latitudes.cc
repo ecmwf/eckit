@@ -10,12 +10,11 @@
  */
 
 
-#include "grit/util.h"
-
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 
 namespace grit::util {

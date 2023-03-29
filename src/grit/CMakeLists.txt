@@ -12,8 +12,6 @@ add_library(grit SHARED
     Scanner.h
     Transformation.cc
     Transformation.h
-    geometry/EllipsoidOfRevolution.cc
-    geometry/EllipsoidOfRevolution.h
     geometry/GreatCircle.cc
     geometry/GreatCircle.h
     geometry/Sphere.cc
@@ -24,7 +22,8 @@ add_library(grit SHARED
     util.h
     util/arange.cc
     util/gaussian_latitudes.cc
-    util/linspace.cc)
+    util/linspace.cc
+    util/spherical_to_cartesian.cc)
 
 target_include_directories(grit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 

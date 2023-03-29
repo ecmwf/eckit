@@ -18,8 +18,7 @@
 #include "grit/types.h"
 
 
-namespace grit {
-namespace geometry {
+namespace grit::geometry {
 
 
 class GreatCircle {
@@ -33,7 +32,7 @@ public:
     /// Great circle longitude given latitude, see http://www.edwilliams.org/avform.htm#Par
     std::vector<double> longitude(double lat) const;
 
-    bool crossesPoles() const;
+    bool crossesPoles() const { return crossesPoles_; }
 
 private:
     const Point2 A_;
@@ -43,5 +42,4 @@ private:
 };
 
 
-}  // namespace geometry
-}  // namespace grit
+}  // namespace grit::geometry

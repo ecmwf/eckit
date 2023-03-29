@@ -43,7 +43,7 @@ public:
     bool sphere() const { return R_ == R_; }
     double a() const { return a_; }
     double b() const { return b_; }
-    double R() const { return R_; }
+    double R() const;
 
     // -- Overridden methods
     // None

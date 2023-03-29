@@ -24,7 +24,7 @@ namespace grit::geometry {
 class GreatCircle {
 public:
     /// Great circle given two points in geographic coordinates
-    GreatCircle(const Point2&, const Point2&);
+    GreatCircle(const PointLatLon&, const PointLatLon&);
 
     /// Great circle latitude given longitude, see http://www.edwilliams.org/avform.htm#Int
     std::vector<double> latitude(double lon) const;
@@ -35,8 +35,8 @@ public:
     bool crossesPoles() const { return crossesPoles_; }
 
 private:
-    const Point2 A_;
-    const Point2 B_;
+    const PointLatLon A_;
+    const PointLatLon B_;
 
     bool crossesPoles_;
 };

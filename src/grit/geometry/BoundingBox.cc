@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include "grit/geometry/Sphere.h"
 #include "grit/util.h"
 
 
@@ -116,6 +117,17 @@ bool BoundingBox::intersects(BoundingBox& other) const {
 
 bool BoundingBox::empty() const {
     return util::approximately_equal(north_, south_) || util::approximately_equal(west_, east_);
+}
+
+
+double BoundingBox::area(double radius) const {
+    double lonf = isPeriodicWestEast() ? 1. : ((east_ - west_) / 360.);
+    assert(0. <= lonf && lonf <= 1.);
+
+    double latf = 0.5 * (std::sin(util::degrees_to_radians * north_) - std::sin(util::degrees_to_radians * south_));
+    assert(0. <= latf && latf <= 1.);
+
+    return Sphere::area(radius) * latf * lonf;
 }
 
 

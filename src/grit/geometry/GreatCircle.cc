@@ -27,15 +27,15 @@ static bool pole(double lat) {
 }
 
 
-GreatCircle::GreatCircle(const Point2& Alonlat, const Point2& Blonlat) : A_(Alonlat), B_(Blonlat) {
-    const bool Apole       = pole(A_[1]);
-    const bool Bpole       = pole(B_[1]);
-    const double lon12_deg = util::normalise_longitude_to_minimum(A_[0] - B_[0], -180.);
+GreatCircle::GreatCircle(const PointLatLon& A, const PointLatLon& B) : A_(A), B_(B) {
+    const bool Apole       = pole(A_.lat);
+    const bool Bpole       = pole(B_.lat);
+    const double lon12_deg = util::normalise_longitude_to_minimum(A_.lon - B_.lon, -180.);
 
     const bool lon_same     = Apole || Bpole || util::approximately_equal(lon12_deg, 0.);
     const bool lon_opposite = Apole || Bpole || util::approximately_equal(std::abs(lon12_deg), 180.);
-    const bool lat_same     = util::approximately_equal(A_[1], B_[1]);
-    const bool lat_opposite = util::approximately_equal(A_[1], -B_[1]);
+    const bool lat_same     = util::approximately_equal(A_.lat, B_.lat);
+    const bool lat_opposite = util::approximately_equal(A_.lat, -B_.lat);
 
     assert(!(lat_same && lon_same) && !(lat_opposite && lon_opposite) &&
            "Great circle cannot be defined by points collinear with the centre");
@@ -49,11 +49,11 @@ std::vector<double> GreatCircle::latitude(double lon) const {
         return {};
     }
 
-    const double lat1     = util::degrees_to_radians * A_[1];
-    const double lat2     = util::degrees_to_radians * B_[1];
-    const double lambda1p = util::degrees_to_radians * (lon - A_[0]);
-    const double lambda2p = util::degrees_to_radians * (lon - B_[0]);
-    const double lambda   = util::degrees_to_radians * util::normalise_longitude_to_minimum(B_[0] - A_[0], -180.);
+    const double lat1     = util::degrees_to_radians * A_.lat;
+    const double lat2     = util::degrees_to_radians * B_.lat;
+    const double lambda1p = util::degrees_to_radians * (lon - A_.lon);
+    const double lambda2p = util::degrees_to_radians * (lon - B_.lon);
+    const double lambda   = util::degrees_to_radians * util::normalise_longitude_to_minimum(B_.lon - A_.lon, -180.);
 
     double lat =
         std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
@@ -63,7 +63,7 @@ std::vector<double> GreatCircle::latitude(double lon) const {
 
 std::vector<double> GreatCircle::longitude(double lat) const {
     if (crossesPoles()) {
-        const double lon = pole(A_[1]) ? B_[0] : A_[0];
+        const double lon = pole(A_.lat) ? B_.lon : A_.lon;
         if (pole(lat)) {
             return {lon};
         }
@@ -71,10 +71,10 @@ std::vector<double> GreatCircle::longitude(double lat) const {
         return {lon, lon + 180.};
     }
 
-    const double lon12 = util::degrees_to_radians * util::normalise_longitude_to_minimum(A_[0] - B_[0], -180.);
-    const double lon1  = util::degrees_to_radians * A_[0];
-    const double lat1  = util::degrees_to_radians * A_[1];
-    const double lat2  = util::degrees_to_radians * B_[1];
+    const double lon12 = util::degrees_to_radians * util::normalise_longitude_to_minimum(A_.lon - B_.lon, -180.);
+    const double lon1  = util::degrees_to_radians * A_.lon;
+    const double lat1  = util::degrees_to_radians * A_.lat;
+    const double lat2  = util::degrees_to_radians * B_.lat;
     const double lat3  = util::degrees_to_radians * lat;
 
     const double X = std::sin(lat1) * std::cos(lat2) * std::sin(lon12);

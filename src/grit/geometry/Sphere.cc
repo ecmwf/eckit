@@ -29,7 +29,7 @@ inline double squared(double x) {
 }
 
 
-double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
+double Sphere::centralAngle(const PointLatLon& A, const PointLatLon& B) {
     /*
      * Δσ = atan( ((cos(ϕ2) * sin(Δλ))^2 + (cos(ϕ1) * sin(ϕ2) - sin(ϕ1) * cos(ϕ2) * cos(Δλ))^2) /
      *            (sin(ϕ1) * sin(ϕ2) + cos(ϕ1) * cos(ϕ2) * cos(Δλ)) )
@@ -46,12 +46,9 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
      * }
      */
 
-    assert(-90. <= Alonlat[1] && Alonlat[1] <= 90. && "Invalid latitude");
-    assert(-90. <= Blonlat[1] && Blonlat[1] <= 90. && "Invalid latitude");
-
-    const double phi1   = util::degrees_to_radians * Alonlat[1];
-    const double phi2   = util::degrees_to_radians * Blonlat[1];
-    const double lambda = util::degrees_to_radians * (Blonlat[0] - Alonlat[0]);
+    const double phi1   = util::degrees_to_radians * A.lat;
+    const double phi2   = util::degrees_to_radians * B.lat;
+    const double lambda = util::degrees_to_radians * (B.lon - A.lon);
 
     const double cos_phi1   = std::cos(phi1);
     const double sin_phi1   = std::sin(phi1);
@@ -90,8 +87,8 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
 }
 
 
-double Sphere::distance(const double& radius, const Point2& Alonlat, const Point2& Blonlat) {
-    return radius * centralAngle(Alonlat, Blonlat);
+double Sphere::distance(const double& radius, const PointLatLon& A, const PointLatLon& B) {
+    return radius * centralAngle(A, B);
 }
 
 
@@ -106,52 +103,25 @@ double Sphere::area(const double& radius) {
 }
 
 
-double Sphere::area(const double& radius, const Point2& WestNorth, const Point2& EastSouth) {
+double Sphere::greatCircleLatitudeGivenLongitude(const PointLatLon& A, const PointLatLon& B, const double& lon) {
+    GreatCircle gc(A, B);
+    auto lats = gc.latitude(lon);
+    return lats.size() == 1 ? lats[0] : std::numeric_limits<double>::signaling_NaN();
+}
+
+
+void Sphere::greatCircleLongitudeGivenLatitude(const PointLatLon& A, const PointLatLon& B, const double& lat,
+                                               double& lon1, double& lon2) {
+    GreatCircle gc(A, B);
+    auto lons = gc.longitude(lat);
+
+    lon1 = lons.size() > 0 ? lons[0] : std::numeric_limits<double>::signaling_NaN();
+    lon2 = lons.size() > 1 ? lons[1] : std::numeric_limits<double>::signaling_NaN();
+}
+
+
+void Sphere::convertSphericalToCartesian(const double& radius, const PointLatLon& A, Point3& B, double height) {
     assert(radius > 0.);
-
-    // Set longitude fraction
-    double W = WestNorth[0];
-    double E = util::normalise_longitude_to_minimum(EastSouth[0], W);
-    double longitude_range(
-        util::approximately_equal(W, E) && !util::approximately_equal(EastSouth[0], WestNorth[0]) ? 360. : E - W);
-    assert(longitude_range <= 360.);
-
-    double longitude_fraction = longitude_range / 360.;
-
-    // Set latitude fraction
-    double N = WestNorth[1];
-    double S = EastSouth[1];
-    assert(-90. <= N && N <= 90.);
-    assert(-90. <= S && S <= 90.);
-    assert(N >= S);
-
-    double latitude_fraction = 0.5 * (std::sin(util::degrees_to_radians * N) - std::sin(util::degrees_to_radians * S));
-
-    // Calculate area
-    return area(radius) * latitude_fraction * longitude_fraction;
-}
-
-
-double Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon) {
-    GreatCircle gc(Alonlat, Blonlat);
-    auto lat = gc.latitude(Clon);
-    return lat.size() == 1 ? lat[0] : std::numeric_limits<double>::signaling_NaN();
-}
-
-
-void Sphere::greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clat,
-                                               double& Clon1, double& Clon2) {
-    GreatCircle gc(Alonlat, Blonlat);
-    auto lon = gc.longitude(Clat);
-
-    Clon1 = lon.size() > 0 ? lon[0] : std::numeric_limits<double>::signaling_NaN();
-    Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
-}
-
-
-void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height) {
-    assert(radius > 0.);
-    assert(-90. <= Alonlat[1] && Alonlat[1] <= 90. && "Invalid latitude");
 
     /*
      * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
@@ -166,32 +136,32 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
      * poles and quadrants.
      */
 
-    const double lambda_deg = util::normalise_longitude_to_minimum(Alonlat[0], -180.);
+    const double lambda_deg = util::normalise_longitude_to_minimum(A.lon, -180.);
     const double lambda     = util::degrees_to_radians * lambda_deg;
-    const double phi        = util::degrees_to_radians * Alonlat[1];
+    const double phi        = util::degrees_to_radians * A.lat;
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
     const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
-    B[0] = (radius + height) * cos_phi * cos_lambda;
-    B[1] = (radius + height) * cos_phi * sin_lambda;
-    B[2] = (radius + height) * sin_phi;
+    B.x = (radius + height) * cos_phi * cos_lambda;
+    B.y = (radius + height) * cos_phi * sin_lambda;
+    B.z = (radius + height) * sin_phi;
 }
 
 
-void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat) {
+void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, PointLatLon& B) {
     assert(radius > 0.);
 
     // numerical conditioning for both z (poles) and y
 
-    const double x = A[0];
-    const double y = util::approximately_equal(A[1], 0.) ? 0. : A[1];
-    const double z = std::min(radius, std::max(-radius, A[2])) / radius;
+    const double x = A.x;
+    const double y = util::approximately_equal(A.y, 0.) ? 0. : A.y;
+    const double z = std::min(radius, std::max(-radius, A.z)) / radius;
 
-    Blonlat[0] = util::radians_to_degrees * std::atan2(y, x);
-    Blonlat[1] = util::radians_to_degrees * std::asin(z);
+    B.lon = util::radians_to_degrees * std::atan2(y, x);
+    B.lat = util::radians_to_degrees * std::asin(z);
 }
 
 

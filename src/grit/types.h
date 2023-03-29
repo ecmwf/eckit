@@ -18,21 +18,24 @@
 namespace grit {
 
 
-using Point2 = std::array<double, 2>;
-
-
 struct PointLatLon : std::array<double, 2> {
     PointLatLon(double lat, double lon);
 
-    double lat() const { return operator[](0); }
-    double lon() const { return operator[](1); }
+    double& lat = operator[](0);
+    double& lon = operator[](1);
 };
 
 
 struct Point3 : std::array<double, 3> {
+    using array::array;
+
     static double distance2(const Point3& a, const Point3& b) {
-        return (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]) + (a[2] - b[2]) * (a[2] - b[2]);
+        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
     }
+
+    double& x = operator[](0);
+    double& y = operator[](1);
+    double& z = operator[](2);
 };
 
 

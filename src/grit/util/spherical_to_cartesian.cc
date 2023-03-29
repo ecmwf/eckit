@@ -39,9 +39,9 @@ void spherical_to_cartesian(Point3& B, double lon, double lat, double a, double 
 
     const double N_phi = a * a / std::sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi);
 
-    B[0] = (N_phi + height) * cos_phi * cos_lambda;
-    B[1] = (N_phi + height) * cos_phi * sin_lambda;
-    B[2] = (N_phi * (b * b) / (a * a) + height) * sin_phi;
+    B.x = (N_phi + height) * cos_phi * cos_lambda;
+    B.y = (N_phi + height) * cos_phi * sin_lambda;
+    B.z = (N_phi * (b * b) / (a * a) + height) * sin_phi;
 }
 
 

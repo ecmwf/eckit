@@ -68,6 +68,8 @@ public:
 
     bool empty() const;
 
+    double area(double radius) const;
+
     // -- Overridden methods
     // None
 

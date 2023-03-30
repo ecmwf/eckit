@@ -12,14 +12,14 @@
 
 #include "grit/types.h"
 
-#include <cassert>
+#include "grit/exception.h"
 
 
 namespace grit {
 
 
 PointLatLon::PointLatLon(double lat, double lon) : array{lat, lon} {
-    assert(-90. <= lat && lat <= 90.);
+    ASSERT_MSG(-90. <= lat && lat <= 90., "PointLatLon: invalid latitude");
 }
 
 

@@ -11,6 +11,7 @@ add_library(grit SHARED
     Scanner.h
     Transformation.cc
     Transformation.h
+    exception.h
     figure/Sphere.cc
     figure/Sphere.h
     figure/Spheroid.cc

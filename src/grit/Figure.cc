@@ -12,9 +12,9 @@
 
 #include "grit/Figure.h"
 
-#include <cassert>
 #include <limits>
 
+#include "grit/exception.h"
 #include "grit/util.h"
 
 
@@ -26,13 +26,13 @@ Figure::Figure(double R) : Figure(R, R) {}
 
 Figure::Figure(double a, double b) :
     a_(a), b_(b), R_(util::approximately_equal(a, b) ? a : std::numeric_limits<double>::signaling_NaN()) {
-    assert(0. < a && "Figure: 0. < a");
-    assert(0. < b && "Figure: 0. < b");
+    ASSERT(0. < a);
+    ASSERT(0. < b);
 }
 
 
 double Figure::R() const {
-    assert(sphere() && "Figure::R");
+    ASSERT(sphere());
     return R_;
 }
 

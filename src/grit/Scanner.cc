@@ -16,11 +16,6 @@
 namespace grit {
 
 
-bool Scanner::operator++() {
-    return false;
-}
-
-
 #if 0
 Scanning mode (grib2/tables/30/3.4.table, grib2/template.3.scanning_mode.def)
 

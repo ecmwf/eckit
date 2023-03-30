@@ -12,10 +12,10 @@
 
 #include "grit/geometry/GreatCircle.h"
 
-#include <cassert>
 #include <cmath>
 #include <limits>
 
+#include "grit/exception.h"
 #include "grit/util.h"
 
 
@@ -37,8 +37,8 @@ GreatCircle::GreatCircle(const PointLatLon& A, const PointLatLon& B) : A_(A), B_
     const bool lat_same     = util::approximately_equal(A_.lat, B_.lat);
     const bool lat_opposite = util::approximately_equal(A_.lat, -B_.lat);
 
-    assert(!(lat_same && lon_same) && !(lat_opposite && lon_opposite) &&
-           "Great circle cannot be defined by points collinear with the centre");
+    ASSERT_MSG(!(lat_same && lon_same) && !(lat_opposite && lon_opposite),
+               "Great circle cannot be defined by points collinear with the centre");
 
     crossesPoles_ = lon_same || lon_opposite;
 }

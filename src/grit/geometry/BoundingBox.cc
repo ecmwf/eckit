@@ -13,8 +13,8 @@
 #include "grit/geometry/BoundingBox.h"
 
 #include <algorithm>
-#include <cassert>
 
+#include "grit/exception.h"
 #include "grit/geometry/Sphere.h"
 #include "grit/util.h"
 
@@ -29,8 +29,8 @@ BoundingBox::BoundingBox(double north, double west, double south, double east) :
         east_  = e == west_ ? (e + 360.) : e;
     }
 
-    assert(west_ <= east_ && east_ <= west_ + 360. && "BoundingBox: longitude range");
-    assert(-90. <= south_ && south_ <= north_ && north_ <= 90. && "BoundingBox: latitude range");
+    ASSERT_MSG(west_ <= east_ && east_ <= west_ + 360., "BoundingBox: longitude range");
+    ASSERT_MSG(-90. <= south_ && south_ <= north_ && north_ <= 90., "BoundingBox: latitude range");
 }
 
 
@@ -108,7 +108,7 @@ bool BoundingBox::intersects(BoundingBox& other) const {
     bool intersectsWE = west_ <= other.west_ ? intersect(*this, other, w, e) || intersect(other, *this, w, e)
                                              : intersect(other, *this, w, e) || intersect(*this, other, w, e);
 
-    assert(w <= e && "BoundingBox::intersects: longitude range");
+    ASSERT_MSG(w <= e, "BoundingBox::intersects: longitude range");
     other = {n, w, s, e};
 
     return intersectsSN && intersectsWE;
@@ -122,10 +122,10 @@ bool BoundingBox::empty() const {
 
 double BoundingBox::area(double radius) const {
     double lonf = isPeriodicWestEast() ? 1. : ((east_ - west_) / 360.);
-    assert(0. <= lonf && lonf <= 1.);
+    ASSERT(0. <= lonf && lonf <= 1.);
 
     double latf = 0.5 * (std::sin(util::degrees_to_radians * north_) - std::sin(util::degrees_to_radians * south_));
-    assert(0. <= latf && latf <= 1.);
+    ASSERT(0. <= latf && latf <= 1.);
 
     return Sphere::area(radius) * latf * lonf;
 }

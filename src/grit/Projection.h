@@ -10,10 +10,92 @@
  */
 
 
+#pragma once
+
+#include "grit/types.h"
+
+
 namespace grit {
 
 
-struct Projection {};
+class Projection {
+public:
+    // -- Types
+    // None
+
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+
+    Projection() noexcept = default;
+
+    Projection(const Projection&) = default;
+    Projection(Projection&&)      = default;
+
+    // -- Destructor
+
+    virtual ~Projection() = default;
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+
+    Projection& operator=(const Projection&) = default;
+    Projection& operator=(Projection&&)      = default;
+
+    // -- Methods
+
+    virtual Point3 direct(const PointLatLon&) const;
+    virtual Point3 inverse(const Point3&) const;
+    virtual PointLatLon to_(const PointLatLon&) const;
+    virtual PointLatLon to_(const Point3&) const;
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
+};
 
 
 }  // namespace grit

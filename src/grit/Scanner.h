@@ -40,7 +40,7 @@ public:
 
     // -- Operators
 
-    virtual bool operator++();
+    virtual bool operator++() = 0;
 
     // -- Methods
     // None

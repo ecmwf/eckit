@@ -10,9 +10,9 @@
  */
 
 
-#include <cassert>
 #include <cmath>
 
+#include "grit/exception.h"
 #include "grit/types.h"
 #include "grit/util.h"
 
@@ -21,9 +21,9 @@ namespace grit::geometry {
 
 
 void spherical_to_cartesian(Point3& B, double lon, double lat, double a, double b, double height) {
-    assert(a > 0.);
-    assert(b > 0.);
-    assert(-90. <= lat && lat <= 90. && "Invalid latitude");
+    ASSERT(a > 0.);
+    ASSERT(b > 0.);
+    ASSERT_MSG(-90. <= lat && lat <= 90., "Invalid latitude");
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)

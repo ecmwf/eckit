@@ -12,44 +12,45 @@
 
 #include "grit/figure/Spheroid.h"
 
-#include <cassert>
+
+#include "grit/exception.h"
 
 
 namespace grit::figure {
 
 
 double Spheroid::angle(const PointLatLon& A, const PointLatLon& B) const {
-    assert(false && "Not implemented: Spheroid::angle");
+    NOTIMP;
 }
 
 
 double Spheroid::angle(const Point3& A, const Point3& B) const {
-    assert(false && "Not implemented: Spheroid::angle");
+    NOTIMP;
 }
 
 
 double Spheroid::distance(const PointLatLon& A, const PointLatLon& B) const {
-    assert(false && "Not implemented: Spheroid::distance");
+    NOTIMP;
 }
 
 
 double Spheroid::distance(const Point3& A, const Point3& B) const {
-    assert(false && "Not implemented: Spheroid::distance");
+    NOTIMP;
 }
 
 
 double Spheroid::area() const {
-    assert(false && "Not implemented: Spheroid::area");
+    NOTIMP;
 }
 
 
 Point3 Spheroid::ll_to_xyz(const PointLatLon& P, double height) const {
-    assert(false && "Not implemented: Spheroid::ll_to_xyz");
+    NOTIMP;
 }
 
 
 PointLatLon Spheroid::xyz_to_ll(const Point3& P) const {
-    assert(false && "Not implemented: Spheroid::xyz_to_ll");
+    NOTIMP;
 }
 
 

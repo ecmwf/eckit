@@ -13,9 +13,9 @@
 #include "grit/geometry/Sphere.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 
+#include "grit/exception.h"
 #include "grit/util.h"
 
 
@@ -63,13 +63,13 @@ double Sphere::centralAngle(const PointLatLon& A, const PointLatLon& B) {
         return 0.;
     }
 
-    assert(angle > 0.);
+    ASSERT(angle > 0.);
     return angle;
 }
 
 
 double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
-    assert(radius > 0.);
+    ASSERT(radius > 0.);
 
     // Δσ = 2 * asin( chord / 2 )
 
@@ -81,7 +81,7 @@ double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
     const double chord = std::sqrt(d2) / radius;
     const double angle = std::asin(chord * 0.5) * 2.;
 
-    assert(angle > 0.);
+    ASSERT(angle > 0.);
     return angle;
 }
 
@@ -97,13 +97,13 @@ double Sphere::distance(double radius, const Point3& A, const Point3& B) {
 
 
 double Sphere::area(double radius) {
-    assert(radius > 0.);
+    ASSERT(radius > 0.);
     return 4. * M_PI * radius * radius;
 }
 
 
 Point3 Sphere::convertSphericalToCartesian(double radius, const PointLatLon& A, double height) {
-    assert(radius > 0.);
+    ASSERT(radius > 0.);
 
     /*
      * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
@@ -133,7 +133,7 @@ Point3 Sphere::convertSphericalToCartesian(double radius, const PointLatLon& A, 
 
 
 PointLatLon Sphere::convertCartesianToSpherical(double radius, const Point3& A) {
-    assert(radius > 0.);
+    ASSERT(radius > 0.);
 
     // numerical conditioning for both z (poles) and y
 

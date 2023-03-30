@@ -12,13 +12,13 @@
 
 #include "eccodes.h"
 
-#include <cassert>
 #include <cstdio>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
 
+#include "grit/exception.h"
 #include "grit/grit.h"
 
 
@@ -56,7 +56,7 @@ struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>
         }
 
         double value = 0;
-        assert(CODES_SUCCESS == codes_get_double(get(), key.c_str(), &value));
+        ASSERT(CODES_SUCCESS == codes_get_double(get(), key.c_str(), &value));
 
         cache_double[key] = value;
         return value;
@@ -68,7 +68,7 @@ struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>
         }
 
         long value = 0;
-        assert(CODES_SUCCESS == codes_get_long(get(), key.c_str(), &value));
+        ASSERT(CODES_SUCCESS == codes_get_long(get(), key.c_str(), &value));
 
         cache_long[key] = value;
         return value;
@@ -76,14 +76,14 @@ struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>
 
     size_t get_size_t(const std::string& key) const {
         auto value = get_long(key);
-        assert(value >= 0);
+        ASSERT(value >= 0);
         return static_cast<size_t>(value);
     }
 
     std::string get_string(const std::string& key) const {
         char mesg[1024];
         auto length = sizeof(mesg);
-        assert(CODES_SUCCESS == codes_get_string(get(), key.c_str(), mesg, &length));
+        ASSERT(CODES_SUCCESS == codes_get_string(get(), key.c_str(), mesg, &length));
         const std::string value(mesg);
 
         cache_string[key] = value;
@@ -94,7 +94,7 @@ struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>
     mutable std::map<std::string, long> cache_long;
     mutable std::map<std::string, std::string> cache_string;
 
-    explicit grib_type(codes_handle* h) : t(h, &codes_handle_delete) { assert(*this); }
+    explicit grib_type(codes_handle* h) : t(h, &codes_handle_delete) { ASSERT(*this); }
 
     std::string type() const { return get_string("gridType"); }
 
@@ -113,8 +113,8 @@ struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>
         using t = std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)>;
 
         explicit iterator(codes_handle* h) : t(codes_grib_iterator_new(h, 0, &err), &codes_grib_iterator_delete) {
-            assert(CODES_SUCCESS == err);
-            assert(*this);
+            ASSERT(CODES_SUCCESS == err);
+            ASSERT(*this);
         }
 
         bool next() { return codes_grib_iterator_next(get(), &lat, &lon, &value) > 0; }
@@ -132,10 +132,10 @@ struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>
 
 
 void test_grib_iterator(codes_handle* h) {
-    assert(h != nullptr);
+    ASSERT(h != nullptr);
 
     // long bitmapPresent = 0;
-    // assert(CODES_SUCCESS == codes_get_long(h, "bitmapPresent", &bitmapPresent));
+    // ASSERT(CODES_SUCCESS == codes_get_long(h, "bitmapPresent", &bitmapPresent));
 }
 
 
@@ -149,7 +149,7 @@ int main(int argc, const char* argv[]) {
 
     for (int i = 1; i < argc; ++i) {
         auto* in = std::fopen(argv[i], "rb");
-        assert(in != nullptr && "unable to open file");
+        ASSERT(in != nullptr && "unable to open file");
 
         int err = 0;
         for (codes_handle* h = nullptr; nullptr != (h = codes_handle_new_from_file(nullptr, in, PRODUCT_GRIB, &err));) {

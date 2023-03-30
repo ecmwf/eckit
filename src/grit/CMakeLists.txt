@@ -27,6 +27,8 @@ add_library(grit SHARED
     geometry/UnitSphere.h
     pl/Classical.cc
     pl/Classical.h
+    pl/Octahedral.cc
+    pl/Octahedral.h
     pl/Pl.h
     types.cc
     types.h

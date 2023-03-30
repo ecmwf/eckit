@@ -10,18 +10,18 @@
  */
 
 
-#include "grit/pl/Classical.h"
-
 #include <map>
 #include <string>
+#include <utility>
 
 #include "grit/exception.h"
+#include "grit/util.h"
 
 
-namespace grit::pl {
+namespace grit::util {
 
 
-static const std::map<size_t, Pl::pl_type> __N{
+static const std::map<size_t, pl_type> __classical_pls{
     {16, {20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64}},
     {24, {20, 25, 36, 40, 45, 48, 54, 60, 64, 72, 80, 80, 90, 90, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96}},
     {32, {20,  27,  36,  40,  45,  50,  60,  64,  72,  75,  80,  90,  90,  96,  100, 108,
@@ -1332,30 +1332,24 @@ static const std::map<size_t, Pl::pl_type> __N{
 };
 
 
-const Pl::pl_type& Classical::pl(size_t N) {
-    static Classical pls;
-
-    const auto& pl = pls.get_pl(N);
-    ASSERT(pl.size() == 2 * N);
-
-    return pl;
-}
-
-
-const Pl::pl_type& Classical::get_pl(size_t N) const {
+const pl_type& reduced_gaussian_classical_pl(size_t N) {
     ASSERT(N > 0);
 
-    static std::map<size_t, Pl::pl_type> __cache;
+    static std::map<size_t, pl_type> __cache;
     if (auto pl = __cache.find(N); pl != __cache.end()) {
         return pl->second;
     }
 
-    const auto& pl_half = get_pl_half(N);
-    ASSERT(pl_half.size() == N);
+    auto pl_half = __classical_pls.find(N);
+    if (pl_half == __classical_pls.end()) {
+        throw runtime_error("reduced_gaussian_classical_pl: unknown N=" + std::to_string(N));
+    }
+
+    ASSERT(pl_half->second.size() == N);
 
     pl_type pl(N * 2);
 
-    auto p = pl_half.begin();
+    auto p = pl_half->second.begin();
     for (size_t i = 0, j = 2 * N - 1; i < N; ++i, --j) {
         pl[i] = pl[j] = *p++;
     }
@@ -1365,14 +1359,4 @@ const Pl::pl_type& Classical::get_pl(size_t N) const {
 }
 
 
-const Pl::pl_type& Classical::get_pl_half(size_t N) const {
-    if (auto pl = __N.find(N); pl != __N.end()) {
-        ASSERT(pl->second.size() == N);
-        return pl->second;
-    }
-
-    throw runtime_error("Classical::get_pl_half: unknown N=" + std::to_string(N));
-}
-
-
-}  // namespace grit::pl
+}  // namespace grit::util

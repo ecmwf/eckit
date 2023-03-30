@@ -10,27 +10,17 @@
  */
 
 
-#include "grit/pl/Octahedral.h"
-
 #include <map>
+#include <utility>
 
 #include "grit/exception.h"
+#include "grit/util.h"
 
 
-namespace grit::pl {
+namespace grit::util {
 
 
-const Pl::pl_type& Octahedral::pl(size_t N) {
-    static Octahedral pls;
-
-    const auto& pl = pls.get_pl(N);
-    ASSERT(pl.size() == 2 * N);
-
-    return pl;
-}
-
-
-const Pl::pl_type& Octahedral::get_pl(size_t N) const {
+const pl_type& reduced_gaussian_octahedral_pl(size_t N) {
     ASSERT(N > 0);
 
     static std::map<size_t, pl_type> __cache;
@@ -40,7 +30,7 @@ const Pl::pl_type& Octahedral::get_pl(size_t N) const {
 
     pl_type pl(N * 2);
 
-    pl_value_type p = 20;
+    pl_type::value_type p = 20;
     for (size_t i = 0, j = 2 * N - 1; i < N; ++i, --j) {
         pl[i] = pl[j] = p;
         p += 4;
@@ -51,9 +41,4 @@ const Pl::pl_type& Octahedral::get_pl(size_t N) const {
 }
 
 
-const Pl::pl_type& Octahedral::get_pl_half(size_t N) const {
-    NOTIMP;
-}
-
-
-}  // namespace grit::pl
+}  // namespace grit::util

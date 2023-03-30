@@ -25,18 +25,16 @@ add_library(grit SHARED
     geometry/Spheroid.cc
     geometry/Spheroid.h
     geometry/UnitSphere.h
-    pl/Classical.cc
-    pl/Classical.h
-    pl/Octahedral.cc
-    pl/Octahedral.h
-    pl/Pl.h
     types.cc
     types.h
     util.cc
     util.h
     util/arange.cc
     util/gaussian_latitudes.cc
-    util/linspace.cc)
+    util/linspace.cc
+    util/reduced_gaussian_classical_pl.cc
+    util/reduced_gaussian_octahedral_pl.cc
+    util/regular_gaussian_pl.cc)
 
 target_include_directories(grit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 

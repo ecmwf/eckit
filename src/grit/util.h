@@ -30,10 +30,10 @@ bool approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
 };
 
 
-static const double degrees_to_radians = M_PI / 180.;
+static constexpr double degrees_to_radians = M_PI / 180.;
 
 
-static const double radians_to_degrees = 180. * M_1_PI;
+static constexpr double radians_to_degrees = 180. * M_1_PI;
 
 
 std::vector<double> arange(double start, double stop, double step);
@@ -51,6 +51,18 @@ double normalise_longitude_to_minimum(double lon, double minimum);
 
 /// @return longitude in degree within range ]maximum - 360, maximum]
 double normalise_longitude_to_maximum(double lon, double maximum);
+
+
+using pl_type = std::vector<long>;
+
+
+const pl_type& reduced_gaussian_classical_pl(size_t N);
+
+
+const pl_type& reduced_gaussian_octahedral_pl(size_t N);
+
+
+pl_type::value_type regular_gaussian_pl(size_t N);
 
 
 }  // namespace grit::util

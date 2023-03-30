@@ -11,13 +11,16 @@ add_library(grit SHARED
     Scanner.h
     Transformation.cc
     Transformation.h
+    figure/Sphere.cc
+    figure/Sphere.h
+    figure/Spheroid.cc
+    figure/Spheroid.h
     geometry/BoundingBox.cc
     geometry/BoundingBox.h
     geometry/GreatCircle.cc
     geometry/GreatCircle.h
     geometry/Sphere.cc
     geometry/Sphere.h
-    geometry/SphereT.h
     geometry/UnitSphere.h
     types.cc
     types.h

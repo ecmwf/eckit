@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include "grit/types.h"
+
 
 namespace grit {
 
@@ -29,8 +31,12 @@ public:
     explicit Figure(double R);
     explicit Figure(double a, double b);
 
+    Figure(const Figure&) = default;
+    Figure(Figure&&)      = default;
+
     // -- Destructor
-    // None
+
+    virtual ~Figure() = default;
 
     // -- Convertors
     // None
@@ -38,12 +44,36 @@ public:
     // -- Operators
     // None
 
+    Figure& operator=(const Figure&) = default;
+    Figure& operator=(Figure&&)      = default;
+
     // -- Methods
 
     bool sphere() const { return R_ == R_; }
     double a() const { return a_; }
     double b() const { return b_; }
     double R() const;
+
+    /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
+    virtual double angle(const PointLatLon&, const PointLatLon&) const = 0;
+
+    /// Great-circle central angle between two points (Cartesian coordinates) in radians
+    virtual double angle(const Point3&, const Point3&) const = 0;
+
+    /// Great-circle distance between two points (latitude/longitude coordinates) in metres
+    virtual double distance(const PointLatLon&, const PointLatLon&) const = 0;
+
+    /// Great-circle distance between two points (Cartesian coordinates) in metres
+    virtual double distance(const Point3&, const Point3&) const = 0;
+
+    /// Surface area in square metres
+    virtual double area() const = 0;
+
+    // Convert spherical coordinates to Cartesian
+    virtual Point3 ll_to_xyz(const PointLatLon&, double height) const = 0;
+
+    // Convert Cartesian coordinates to spherical
+    virtual PointLatLon xyz_to_ll(const Point3&) const = 0;
 
     // -- Overridden methods
     // None
@@ -73,9 +103,9 @@ protected:
 private:
     // -- Members
 
-    const double a_;
-    const double b_;
-    const double R_;
+    double a_;
+    double b_;
+    double R_;
 
     // -- Methods
     // None

@@ -13,14 +13,81 @@
 namespace grit {
 
 
-struct Scanner {
-    Scanner(const Scanner&) = default;
-    Scanner(Scanner&&)      = default;
+class Scanner {
+public:
+    // -- Types
+    // None
 
-    Scanner& operator=(const Scanner&) = default;
-    Scanner& operator=(Scanner&&)      = default;
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+
+    Scanner();
+
+    Scanner(const Scanner&) = delete;
+    Scanner(Scanner&&)      = delete;
+
+    Scanner& operator=(const Scanner&) = delete;
+    Scanner& operator=(Scanner&&)      = delete;
+
+    // -- Destructor
 
     virtual ~Scanner() = default;
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+
+    virtual bool operator++();
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
 };
 
 

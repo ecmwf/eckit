@@ -10,20 +10,15 @@
  */
 
 
-#include <memory>
+#pragma once
+
+#include "grit/Figure.h"
 
 
-namespace grit {
-struct Figure;
-struct Scanner;
-struct Transformation;
-}  // namespace grit
+namespace grit::figure {
 
 
-namespace grit {
-
-
-class Iterator {
+class Sphere final : public Figure {
 public:
     // -- Types
     // None
@@ -33,46 +28,29 @@ public:
 
     // -- Constructors
 
-    Iterator(Scanner* scanner, Figure* figure, Transformation* transformation);
-
-    Iterator(const Iterator&) = delete;
-    Iterator(Iterator&&)      = delete;
-
-    Iterator& operator=(const Iterator&) = delete;
-    Iterator& operator=(Iterator&&)      = delete;
+    explicit Sphere(double R) : Figure(R) {}
 
     // -- Destructor
-
-    virtual ~Iterator() = delete;
+    // None
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    bool operator++();
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
     // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    double angle(const PointLatLon&, const PointLatLon&) const override;
+    double angle(const Point3&, const Point3&) const override;
+    double distance(const PointLatLon&, const PointLatLon&) const override;
+    double distance(const Point3&, const Point3&) const override;
+    double area() const override;
+    Point3 ll_to_xyz(const PointLatLon&, double height) const override;
+    PointLatLon xyz_to_ll(const Point3&) const override;
 
     // -- Class members
     // None
@@ -82,10 +60,7 @@ protected:
 
 private:
     // -- Members
-
-    std::unique_ptr<Scanner> scanner_;
-    std::unique_ptr<Figure> figure_;
-    std::unique_ptr<Transformation> transformation_;
+    // None
 
     // -- Methods
     // None
@@ -103,5 +78,4 @@ private:
     // None
 };
 
-
-}  // namespace grit
+}  // namespace grit::figure

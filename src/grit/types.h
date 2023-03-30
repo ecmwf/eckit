@@ -27,7 +27,7 @@ struct PointLatLon : std::array<double, 2> {
 
 
 struct Point3 : std::array<double, 3> {
-    using array::array;
+    Point3(double x, double y, double z) : array{x, y, z} {}
 
     static double distance2(const Point3& a, const Point3& b) {
         return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);

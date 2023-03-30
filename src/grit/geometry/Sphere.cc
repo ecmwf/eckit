@@ -15,9 +15,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <limits>
 
-#include "grit/geometry/GreatCircle.h"
 #include "grit/util.h"
 
 
@@ -70,7 +68,7 @@ double Sphere::centralAngle(const PointLatLon& A, const PointLatLon& B) {
 }
 
 
-double Sphere::centralAngle(const double& radius, const Point3& A, const Point3& B) {
+double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
     assert(radius > 0.);
 
     // Δσ = 2 * asin( chord / 2 )
@@ -83,44 +81,28 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
     const double chord = std::sqrt(d2) / radius;
     const double angle = std::asin(chord * 0.5) * 2.;
 
+    assert(angle > 0.);
     return angle;
 }
 
 
-double Sphere::distance(const double& radius, const PointLatLon& A, const PointLatLon& B) {
+double Sphere::distance(double radius, const PointLatLon& A, const PointLatLon& B) {
     return radius * centralAngle(A, B);
 }
 
 
-double Sphere::distance(const double& radius, const Point3& A, const Point3& B) {
+double Sphere::distance(double radius, const Point3& A, const Point3& B) {
     return radius * centralAngle(radius, A, B);
 }
 
 
-double Sphere::area(const double& radius) {
+double Sphere::area(double radius) {
     assert(radius > 0.);
     return 4. * M_PI * radius * radius;
 }
 
 
-double Sphere::greatCircleLatitudeGivenLongitude(const PointLatLon& A, const PointLatLon& B, const double& lon) {
-    GreatCircle gc(A, B);
-    auto lats = gc.latitude(lon);
-    return lats.size() == 1 ? lats[0] : std::numeric_limits<double>::signaling_NaN();
-}
-
-
-void Sphere::greatCircleLongitudeGivenLatitude(const PointLatLon& A, const PointLatLon& B, const double& lat,
-                                               double& lon1, double& lon2) {
-    GreatCircle gc(A, B);
-    auto lons = gc.longitude(lat);
-
-    lon1 = lons.size() > 0 ? lons[0] : std::numeric_limits<double>::signaling_NaN();
-    lon2 = lons.size() > 1 ? lons[1] : std::numeric_limits<double>::signaling_NaN();
-}
-
-
-void Sphere::convertSphericalToCartesian(const double& radius, const PointLatLon& A, Point3& B, double height) {
+Point3 Sphere::convertSphericalToCartesian(double radius, const PointLatLon& A, double height) {
     assert(radius > 0.);
 
     /*
@@ -145,13 +127,12 @@ void Sphere::convertSphericalToCartesian(const double& radius, const PointLatLon
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
     const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
-    B.x = (radius + height) * cos_phi * cos_lambda;
-    B.y = (radius + height) * cos_phi * sin_lambda;
-    B.z = (radius + height) * sin_phi;
+    return {(radius + height) * cos_phi * cos_lambda, (radius + height) * cos_phi * sin_lambda,
+            (radius + height) * sin_phi};
 }
 
 
-void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, PointLatLon& B) {
+PointLatLon Sphere::convertCartesianToSpherical(double radius, const Point3& A) {
     assert(radius > 0.);
 
     // numerical conditioning for both z (poles) and y
@@ -160,8 +141,7 @@ void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, 
     const double y = util::approximately_equal(A.y, 0.) ? 0. : A.y;
     const double z = std::min(radius, std::max(-radius, A.z)) / radius;
 
-    B.lon = util::radians_to_degrees * std::atan2(y, x);
-    B.lat = util::radians_to_degrees * std::asin(z);
+    return {util::radians_to_degrees * std::atan2(y, x), util::radians_to_degrees * std::asin(z)};
 }
 
 

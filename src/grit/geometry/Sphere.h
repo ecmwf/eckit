@@ -23,31 +23,22 @@ struct Sphere {
     static double centralAngle(const PointLatLon&, const PointLatLon&);
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
-    static double centralAngle(const double& radius, const Point3&, const Point3&);
+    static double centralAngle(double radius, const Point3&, const Point3&);
 
     /// Great-circle distance between two points (latitude/longitude coordinates) in metres
-    static double distance(const double& radius, const PointLatLon&, const PointLatLon&);
+    static double distance(double radius, const PointLatLon&, const PointLatLon&);
 
     /// Great-circle distance between two points (Cartesian coordinates) in metres
-    static double distance(const double& radius, const Point3&, const Point3&);
+    static double distance(double radius, const Point3&, const Point3&);
 
     /// Surface area in square metres
-    static double area(const double& radius);
-
-    // Great-circle intermediate latitude provided two circle points (A, B) and intermediate
-    // longitude (C) in degrees
-    static double greatCircleLatitudeGivenLongitude(const PointLatLon&, const PointLatLon&, const double& lon);
-
-    // Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate
-    // latitude (C) in degrees
-    static void greatCircleLongitudeGivenLatitude(const PointLatLon&, const PointLatLon&, const double& lat,
-                                                  double& lon1, double& lon2);
+    static double area(double radius);
 
     // Convert spherical coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radius, const PointLatLon&, Point3&, double height = 0.);
+    static Point3 convertSphericalToCartesian(double radius, const PointLatLon&, double height = 0.);
 
     // Convert Cartesian coordinates to spherical
-    static void convertCartesianToSpherical(const double& radius, const Point3&, PointLatLon&);
+    static PointLatLon convertCartesianToSpherical(double radius, const Point3&);
 };
 
 

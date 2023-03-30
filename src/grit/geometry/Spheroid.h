@@ -18,27 +18,39 @@
 namespace grit::geometry {
 
 
-struct Sphere {
+struct Spheroid {
+#if 0
     /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
     static double angle(const PointLatLon&, const PointLatLon&);
+#endif
 
+#if 0
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
-    static double angle(double radius, const Point3&, const Point3&);
+    static double angle(double a, double b, const Point3&, const Point3&);
+#endif
 
+#if 0
     /// Great-circle distance between two points (latitude/longitude coordinates) in metres
-    static double distance(double radius, const PointLatLon&, const PointLatLon&);
+    static double distance(double a, double b, const PointLatLon&, const PointLatLon&);
+#endif
 
+#if 0
     /// Great-circle distance between two points (Cartesian coordinates) in metres
-    static double distance(double radius, const Point3&, const Point3&);
+    static double distance(double a, double b, const Point3&, const Point3&);
+#endif
 
+#if 0
     /// Surface area in square metres
-    static double area(double radius);
+    static double area(double a, double b);
+#endif
 
     // Convert spherical coordinates to Cartesian
-    static Point3 ll_to_xyz(double radius, const PointLatLon&, double height);
+    static Point3 ll_to_xyz(double a, double b, const PointLatLon&, double height);
 
+#if 0
     // Convert Cartesian coordinates to spherical
-    static PointLatLon xyz_to_ll(double radius, const Point3&);
+    static PointLatLon xyz_to_ll(double a, double b, const Point3&);
+#endif
 };
 
 

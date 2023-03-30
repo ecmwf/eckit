@@ -22,6 +22,8 @@ add_library(grit SHARED
     geometry/GreatCircle.h
     geometry/Sphere.cc
     geometry/Sphere.h
+    geometry/Spheroid.cc
+    geometry/Spheroid.h
     geometry/UnitSphere.h
     types.cc
     types.h
@@ -29,8 +31,7 @@ add_library(grit SHARED
     util.h
     util/arange.cc
     util/gaussian_latitudes.cc
-    util/linspace.cc
-    util/spherical_to_cartesian.cc)
+    util/linspace.cc)
 
 target_include_directories(grit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 

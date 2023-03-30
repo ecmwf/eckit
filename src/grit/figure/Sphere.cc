@@ -19,12 +19,12 @@ namespace grit::figure {
 
 
 double Sphere::angle(const PointLatLon& A, const PointLatLon& B) const {
-    return geometry::Sphere::centralAngle(A, B);
+    return geometry::Sphere::angle(A, B);
 }
 
 
 double Sphere::angle(const Point3& A, const Point3& B) const {
-    return geometry::Sphere::centralAngle(R(), A, B);
+    return geometry::Sphere::angle(R(), A, B);
 }
 
 
@@ -44,12 +44,12 @@ double Sphere::area() const {
 
 
 Point3 Sphere::ll_to_xyz(const PointLatLon& P, double height) const {
-    return geometry::Sphere::convertSphericalToCartesian(R(), P, height);
+    return geometry::Sphere::ll_to_xyz(R(), P, height);
 }
 
 
 PointLatLon Sphere::xyz_to_ll(const Point3& P) const {
-    return geometry::Sphere::convertCartesianToSpherical(R(), P);
+    return geometry::Sphere::xyz_to_ll(R(), P);
 }
 
 

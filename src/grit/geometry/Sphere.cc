@@ -16,6 +16,7 @@
 #include <cmath>
 
 #include "grit/exception.h"
+#include "grit/geometry/Spheroid.h"
 #include "grit/util.h"
 
 
@@ -27,7 +28,7 @@ inline double squared(double x) {
 }
 
 
-double Sphere::centralAngle(const PointLatLon& A, const PointLatLon& B) {
+double Sphere::angle(const PointLatLon& A, const PointLatLon& B) {
     /*
      * Δσ = atan( ((cos(ϕ2) * sin(Δλ))^2 + (cos(ϕ1) * sin(ϕ2) - sin(ϕ1) * cos(ϕ2) * cos(Δλ))^2) /
      *            (sin(ϕ1) * sin(ϕ2) + cos(ϕ1) * cos(ϕ2) * cos(Δλ)) )
@@ -55,20 +56,20 @@ double Sphere::centralAngle(const PointLatLon& A, const PointLatLon& B) {
     const double cos_lambda = std::cos(lambda);
     const double sin_lambda = std::sin(lambda);
 
-    const double angle = atan2(
+    const double sigma = atan2(
         std::sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
         sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
-    if (util::approximately_equal(angle, 0.)) {
+    if (util::approximately_equal(sigma, 0.)) {
         return 0.;
     }
 
-    ASSERT(angle > 0.);
-    return angle;
+    ASSERT(sigma > 0.);
+    return sigma;
 }
 
 
-double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
+double Sphere::angle(double radius, const Point3& A, const Point3& B) {
     ASSERT(radius > 0.);
 
     // Δσ = 2 * asin( chord / 2 )
@@ -79,20 +80,20 @@ double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
     }
 
     const double chord = std::sqrt(d2) / radius;
-    const double angle = std::asin(chord * 0.5) * 2.;
+    const double sigma = std::asin(chord * 0.5) * 2.;
 
-    ASSERT(angle > 0.);
-    return angle;
+    ASSERT(sigma > 0.);
+    return sigma;
 }
 
 
 double Sphere::distance(double radius, const PointLatLon& A, const PointLatLon& B) {
-    return radius * centralAngle(A, B);
+    return radius * angle(A, B);
 }
 
 
 double Sphere::distance(double radius, const Point3& A, const Point3& B) {
-    return radius * centralAngle(radius, A, B);
+    return radius * angle(radius, A, B);
 }
 
 
@@ -102,37 +103,12 @@ double Sphere::area(double radius) {
 }
 
 
-Point3 Sphere::convertSphericalToCartesian(double radius, const PointLatLon& A, double height) {
-    ASSERT(radius > 0.);
-
-    /*
-     * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
-     * numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line).
-     *
-     * cos α = sqrt( 1 - sin^2 α) is better conditioned than explicit cos α, and
-     * coupled with λ in [-180°, 180°[ the accuracy of the trigonometric
-     * functions is the same (before converting/multiplying its angle argument
-     * to radian) and explicitly chosing -180° over 180° for longitude.
-     *
-     * These three conditionings combined project very accurately to the sphere
-     * poles and quadrants.
-     */
-
-    const double lambda_deg = util::normalise_longitude_to_minimum(A.lon, -180.);
-    const double lambda     = util::degrees_to_radians * lambda_deg;
-    const double phi        = util::degrees_to_radians * A.lat;
-
-    const double sin_phi    = std::sin(phi);
-    const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
-    const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
-    const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
-
-    return {(radius + height) * cos_phi * cos_lambda, (radius + height) * cos_phi * sin_lambda,
-            (radius + height) * sin_phi};
+Point3 Sphere::ll_to_xyz(double radius, const PointLatLon& P, double height) {
+    return Spheroid::ll_to_xyz(radius, radius, P, height);
 }
 
 
-PointLatLon Sphere::convertCartesianToSpherical(double radius, const Point3& A) {
+PointLatLon Sphere::xyz_to_ll(double radius, const Point3& A) {
     ASSERT(radius > 0.);
 
     // numerical conditioning for both z (poles) and y

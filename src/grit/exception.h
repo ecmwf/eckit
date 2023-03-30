@@ -24,4 +24,7 @@ namespace grit {
 #define NOTIMP throw std::runtime_error("Not implemented")
 
 
+using std::runtime_error;
+
+
 }  // namespace grit

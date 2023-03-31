@@ -6,6 +6,10 @@ on:
       eckit:
         required: false
         type: string
+      codecov:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   ci:
@@ -14,6 +18,7 @@ jobs:
     with:
       repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
       name_prefix: eckit-
+      codecov_upload: ${{ inputs.codecov }}
       build_package_inputs: |
         repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
         self_coverage: true

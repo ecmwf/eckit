@@ -45,14 +45,14 @@ struct dirent* StdDir::dirent() {
     /// @todo Note that readdir_r() has been deprecated by POSIX standard
     ///       however readdir() isn't thread-safe yet, not even in glic implementation
     ///       until then we prefer to use readdir_r
-#ifdef eckit_HAVE_READDIR_R
+#if eckit_HAVE_READDIR_R
     ::readdir_r(d_, &buf, &e);
 #else
     e = ::readdir(d_);
 #endif
 
     if (e == nullptr && errno) {
-#ifdef eckit_HAVE_READDIR_R
+#if eckit_HAVE_READDIR_R
         const char* func = "readdir_r";
 #else
         const char* func = "readdir";

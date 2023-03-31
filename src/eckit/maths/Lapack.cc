@@ -6,7 +6,7 @@ namespace eckit {
 namespace maths {
 namespace lapack {
 
-#ifdef eckit_HAVE_LAPACK
+#if eckit_HAVE_LAPACK
 
 extern "C" {
 void dgetrf_(int* M, int* N, double* A, int* lda, int* ipiv, int* info);

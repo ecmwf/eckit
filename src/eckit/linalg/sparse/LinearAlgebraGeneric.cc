@@ -27,7 +27,7 @@ namespace sparse {
 
 
 static const LinearAlgebraGeneric __la_generic("generic");
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 static const LinearAlgebraGeneric __la_openmp("openmp");
 #endif
 
@@ -54,7 +54,7 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
 
     ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 #pragma omp parallel for
 #endif
     for (Size i = 0; i < Ni; ++i) {
@@ -90,13 +90,13 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
 
     std::vector<Scalar> sum;
 
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 #pragma omp parallel
 #endif
     {
         std::vector<Scalar> sum(Nk);
 
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 #pragma omp for
 #endif
         for (Size i = 0; i < Ni; ++i) {
@@ -136,7 +136,7 @@ void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const V
 
     ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 #pragma omp parallel for
 #endif
     for (Size i = 0; i < Ni; ++i) {

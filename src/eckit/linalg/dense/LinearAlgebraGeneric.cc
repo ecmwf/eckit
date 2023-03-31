@@ -26,7 +26,7 @@ namespace dense {
 
 
 static const LinearAlgebraGeneric __la_generic("generic");
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 static const LinearAlgebraGeneric __la_openmp("openmp");
 #endif
 
@@ -42,7 +42,7 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
 
     Scalar sum = 0.;
 
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 #pragma omp parallel for reduction(+ \
                                    : sum)
 #endif
@@ -62,7 +62,7 @@ void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) con
     ASSERT(y.rows() == Ni);
     ASSERT(x.rows() == Nj);
 
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 #pragma omp parallel for
 #endif
     for (Size i = 0; i < Ni; ++i) {
@@ -86,7 +86,7 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
     ASSERT(C.cols() == Nj);
     ASSERT(B.rows() == Nk);
 
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
 #pragma omp parallel for collapse(2)
 #endif
     for (Size j = 0; j < Nj; ++j) {

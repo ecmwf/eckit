@@ -119,9 +119,9 @@ void SystemInfo::print(std::ostream& out) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 bool SystemInfo::isBigEndian() {
-#if ECKIT_BIG_ENDIAN
+#if eckit_BIG_ENDIAN
     return true;
-#elif ECKIT_LITTLE_ENDIAN
+#elif eckit_LITTLE_ENDIAN
     return false;
 #else
     throw SeriousBug("Unsupported endianess -- neither BIG or LITTLE detected");
@@ -129,9 +129,9 @@ bool SystemInfo::isBigEndian() {
 }
 
 bool SystemInfo::isLittleEndian() {
-#if ECKIT_BIG_ENDIAN
+#if eckit_BIG_ENDIAN
     return false;
-#elif ECKIT_LITTLE_ENDIAN
+#elif eckit_LITTLE_ENDIAN
     return true;
 #else
     throw SeriousBug("Unsupported endianess -- neither BIG or LITTLE detected");

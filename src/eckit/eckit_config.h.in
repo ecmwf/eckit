@@ -7,60 +7,60 @@
 
 // endiness
 
-#define eckit_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@
-#define ECKIT_BIG_ENDIAN       @ECKIT_BIG_ENDIAN@ /* backward compatibility */
-
-#define eckit_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@
-#define ECKIT_LITTLE_ENDIAN    @ECKIT_LITTLE_ENDIAN@ /* backward compatibility */
+#cmakedefine01 eckit_BIG_ENDIAN
+#cmakedefine01 eckit_LITTLE_ENDIAN
 
 // system
 
 #define ECKIT_SIZEOF_TIME_T    @ECKIT_SIZEOF_TIME_T@
 
-#cmakedefine eckit_HAVE_DLFCN_H
-#cmakedefine eckit_HAVE_DLADDR
-#cmakedefine eckit_HAVE_MAP_ANONYMOUS
-#cmakedefine eckit_HAVE_MAP_ANON
-#cmakedefine eckit_HAVE_FUNOPEN
-#cmakedefine eckit_HAVE_FSYNC
-#cmakedefine eckit_HAVE_FDATASYNC
-#cmakedefine eckit_HAVE_F_FULLFSYNC
-#cmakedefine eckit_HAVE_FMEMOPEN
-#cmakedefine eckit_HAVE_DLINFO
-#cmakedefine eckit_HAVE_FOPENCOOKIE
-#cmakedefine eckit_HAVE_EXECINFO_BACKTRACE
-#cmakedefine eckit_HAVE_CXXABI_H
-#cmakedefine eckit_HAVE_GMTIME_R
-#cmakedefine eckit_HAVE_READDIR_R
-#cmakedefine eckit_HAVE_DIRFD
-#cmakedefine eckit_HAVE_DIRENT_D_TYPE
-#cmakedefine eckit_HAVE_CXX_INT_128
-#cmakedefine eckit_HAVE_AIO
-#cmakedefine eckit_HAVE_UNICODE
-#cmakedefine eckit_HAVE_XXHASH
+#cmakedefine01 eckit_HAVE_DLFCN_H
+#cmakedefine01 eckit_HAVE_DLADDR
+#cmakedefine01 eckit_HAVE_MAP_ANONYMOUS
+#cmakedefine01 eckit_HAVE_MAP_ANON
+#cmakedefine01 eckit_HAVE_FUNOPEN
+#cmakedefine01 eckit_HAVE_FSYNC
+#cmakedefine01 eckit_HAVE_FDATASYNC
+#cmakedefine01 eckit_HAVE_F_FULLFSYNC
+#cmakedefine01 eckit_HAVE_FMEMOPEN
+#cmakedefine01 eckit_HAVE_DLINFO
+#cmakedefine01 eckit_HAVE_FOPENCOOKIE
+#cmakedefine01 eckit_HAVE_EXECINFO_BACKTRACE
+#cmakedefine01 eckit_HAVE_CXXABI_H
+#cmakedefine01 eckit_HAVE_GMTIME_R
+#cmakedefine01 eckit_HAVE_READDIR_R
+#cmakedefine01 eckit_HAVE_DIRFD
+#cmakedefine01 eckit_HAVE_DIRENT_D_TYPE
+#cmakedefine01 eckit_HAVE_CXX_INT_128
+#cmakedefine01 eckit_HAVE_AIO
+#cmakedefine01 eckit_HAVE_UNICODE
+#cmakedefine01 eckit_HAVE_XXHASH
 
 // external packages
 
-#cmakedefine eckit_HAVE_ARMADILLO
-#cmakedefine eckit_HAVE_CUDA
-#cmakedefine eckit_HAVE_EIGEN
-#cmakedefine eckit_HAVE_LAPACK
-#cmakedefine eckit_HAVE_VIENNACL
-#cmakedefine eckit_HAVE_OMP
-#cmakedefine eckit_HAVE_SSL
-#cmakedefine eckit_HAVE_CURL
-#cmakedefine eckit_HAVE_JEMALLOC
-
-#define eckit_HAVE_MKL @eckit_HAVE_MKL@
-#define ECKIT_HAVE_MKL @eckit_HAVE_MKL@ /* backward compatibility */
-
-#define eckit_HAVE_MPI @eckit_HAVE_MPI@
-#define ECKIT_HAVE_MPI @eckit_HAVE_MPI@ /* backward compatibility */
+#cmakedefine01 eckit_HAVE_ARMADILLO
+#cmakedefine01 eckit_HAVE_CUDA
+#cmakedefine01 eckit_HAVE_EIGEN
+#cmakedefine01 eckit_HAVE_LAPACK
+#cmakedefine01 eckit_HAVE_VIENNACL
+#cmakedefine01 eckit_HAVE_OMP
+#cmakedefine01 eckit_HAVE_SSL
+#cmakedefine01 eckit_HAVE_CURL
+#cmakedefine01 eckit_HAVE_JEMALLOC
+#cmakedefine01 eckit_HAVE_MKL
+#cmakedefine01 eckit_HAVE_MPI
 
 // Have we built certain libraries
 
-#cmakedefine eckit_HAVE_ECKIT_CMD
-#cmakedefine eckit_HAVE_ECKIT_SQL
-#cmakedefine eckit_HAVE_ECKIT_MPI
+#cmakedefine01 eckit_HAVE_ECKIT_CMD
+#cmakedefine01 eckit_HAVE_ECKIT_SQL
+#cmakedefine01 eckit_HAVE_ECKIT_MPI
+
+// Backward compatibility with atlas < 0.30.0
+// Its use will be removed with ATLAS-367.
+#define ECKIT_HAVE_MKL         @eckit_HAVE_MKL@
+#define ECKIT_HAVE_MPI         @eckit_HAVE_MPI@
+#define ECKIT_BIG_ENDIAN       @eckit_BIG_ENDIAN@
+#define ECKIT_LITTLE_ENDIAN    @eckit_LITTLE_ENDIAN@
 
 #endif // eckit_config_h

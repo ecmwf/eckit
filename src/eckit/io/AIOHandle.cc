@@ -24,7 +24,7 @@
 #include "eckit/os/Stat.h"
 #include "eckit/types/Types.h"
 
-#ifdef eckit_HAVE_AIO
+#if eckit_HAVE_AIO
 #include <aio.h>
 #endif
 
@@ -32,7 +32,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#ifdef eckit_HAVE_AIO
+#if eckit_HAVE_AIO
 
 struct AIOBuffer : private eckit::NonCopyable {
 

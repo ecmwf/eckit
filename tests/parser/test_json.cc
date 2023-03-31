@@ -144,7 +144,7 @@ CASE("test_eckit_parser_comment_in_string") {
     EXPECT(v["test"] == "#fff");
 }
 
-#ifdef eckit_HAVE_UNICODE
+#if eckit_HAVE_UNICODE
 CASE("test_eckit_parser_unicode") {
     istringstream in("{\"test\": \"\\u0061\"}");
     JSONParser p(in);

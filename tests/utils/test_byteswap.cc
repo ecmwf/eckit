@@ -67,7 +67,7 @@ CASE("Low-level roundtrip 64 bits") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if ECKIT_LITTLE_ENDIAN  // use htons and htonl as correctness tests, and test against specifc bit patterns
+#if eckit_LITTLE_ENDIAN  // use htons and htonl as correctness tests, and test against specifc bit patterns
 
 CASE("Check correctness 16 bit swap") {
 
@@ -238,7 +238,7 @@ CASE("ByteSwap double") {
     }
 }
 
-#endif  // ECKIT_LITTLE_ENDIAN
+#endif  // eckit_LITTLE_ENDIAN
 
 //----------------------------------------------------------------------------------------------------------------------
 

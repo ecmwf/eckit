@@ -692,7 +692,7 @@ void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<Loca
 
         bool do_stat = true;
 
-#if defined(eckit_HAVE_DIRENT_D_TYPE)
+#if eckit_HAVE_DIRENT_D_TYPE
         do_stat = false;
         if (e->d_type == DT_DIR) {
             dirs.push_back(full);
@@ -896,7 +896,7 @@ LocalPathName LocalPathName::mountPoint() const {
 
 void LocalPathName::syncParentDirectory() const {
     PathName directory = dirName();
-#ifdef eckit_HAVE_DIRFD
+#if eckit_HAVE_DIRFD
     //    Log::info() << "Syncing directory " << directory << std::endl;
     DIR* d = opendir(directory.localPath());
     if (!d)

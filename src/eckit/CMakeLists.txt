@@ -3,15 +3,15 @@
 test_big_endian( _BIG_ENDIAN )
 
 if( _BIG_ENDIAN )
-        set( ECKIT_BIG_ENDIAN    1 )
-        set( ECKIT_LITTLE_ENDIAN 0 )
+        set( eckit_BIG_ENDIAN    1 )
+        set( eckit_LITTLE_ENDIAN 0 )
 else()
-        set( ECKIT_BIG_ENDIAN    0 )
-        set( ECKIT_LITTLE_ENDIAN 1 )
+        set( eckit_BIG_ENDIAN    0 )
+        set( eckit_LITTLE_ENDIAN 1 )
 endif()
 
-set( ECKIT_BIG_ENDIAN    ${ECKIT_BIG_ENDIAN}    )
-set( ECKIT_LITTLE_ENDIAN ${ECKIT_LITTLE_ENDIAN} )
+set( ECKIT_BIG_ENDIAN    ${eckit_BIG_ENDIAN}    )
+set( ECKIT_LITTLE_ENDIAN ${eckit_LITTLE_ENDIAN} )
 
 ### check support for DL library
 

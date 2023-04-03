@@ -19,7 +19,7 @@
 
 //--------------------------------------------------------------------------------------------
 
-#ifdef eckit_HAVE_EIGEN
+#if eckit_HAVE_EIGEN
 
 #define EIGEN_NO_AUTOMATIC_RESIZING
 #define EIGEN_DONT_ALIGN

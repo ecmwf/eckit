@@ -114,7 +114,7 @@ CASE("test_libeckit") {
     EXPECT_NO_THROW(LibEcKit::instance().configuration());  // tests an empty configuration
 }
 
-#ifdef eckit_HAVE_ECKIT_CMD
+#if eckit_HAVE_ECKIT_CMD
 CASE("test dynamic load") {
     EXPECT(!LibraryManager::exists("eckit_cmd"));
     EXPECT(LibraryManager::loadLibrary("eckit_cmd") != nullptr);
@@ -127,14 +127,14 @@ CASE("test fail dynamic load") {
     EXPECT(LibraryManager::loadLibrary("fake-library") == nullptr);
 }
 
-#ifdef eckit_HAVE_ECKIT_SQL
+#if eckit_HAVE_ECKIT_SQL
 CASE("Can load library without a eckit::Library object") {
     EXPECT(!LibraryManager::exists("eckit_sql"));
     EXPECT(LibraryManager::loadLibrary("eckit_sql") != nullptr);
 }
 #endif
 
-#ifdef eckit_HAVE_ECKIT_MPI
+#if eckit_HAVE_ECKIT_MPI
 CASE("Fails to load a plugin without a eckit::Plugin object") {
     EXPECT(!LibraryManager::exists("eckit_mpi"));
     EXPECT_THROW_AS(LibraryManager::loadPlugin("eckit_mpi"), UnexpectedState);

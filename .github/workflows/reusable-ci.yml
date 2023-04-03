@@ -3,21 +3,24 @@ name: reusable-ci
 on:
   workflow_call:
     inputs:
-      eckit_sha:
-        required: true
+      eckit:
+        required: false
         type: string
+      codecov:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   ci:
     name: eckit-ci
     uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v2
     with:
-      repository: ecmwf/eckit
-      ref: ${{ inputs.eckit_sha }}
+      repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
       name_prefix: eckit-
+      codecov_upload: ${{ inputs.codecov }}
       build_package_inputs: |
-        repository: ecmwf/eckit
-        sha: ${{ inputs.eckit_sha }}
+        repository: ${{ inputs.eckit || 'ecmwf/eckit@develop' }}
         self_coverage: true
         dependencies: ecmwf/ecbuild
         dependency_branch: develop

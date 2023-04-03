@@ -20,7 +20,7 @@
 
 //--------------------------------------------------------------------------------------------------
 
-#if (!defined eckit_HAVE_MAP_ANONYMOUS) && (defined eckit_HAVE_MAP_ANON)
+#if (!eckit_HAVE_MAP_ANONYMOUS) && eckit_HAVE_MAP_ANON
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 

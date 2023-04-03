@@ -30,11 +30,11 @@ static BackendRegistry<LinearAlgebraDense>* backends = nullptr;
 
 static void init() {
     backends = new BackendRegistry<LinearAlgebraDense>(
-#if eckit_HAVE_MKL  // always defined: 0 or 1
+#if eckit_HAVE_MKL
         "mkl"
-#elif defined(eckit_HAVE_LAPACK)
+#elif eckit_HAVE_LAPACK
         "lapack"
-#elif defined(eckit_HAVE_EIGEN)
+#elif eckit_HAVE_EIGEN
         "eigen"
 #else
         "generic"

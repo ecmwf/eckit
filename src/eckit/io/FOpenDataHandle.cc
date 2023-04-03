@@ -208,14 +208,14 @@ static int closefn(void* data) {
 }
 
 
-#if defined(eckit_HAVE_FOPENCOOKIE)
+#if eckit_HAVE_FOPENCOOKIE
 FILE* opencookie(FOpenDataHandle* h, const char* mode) {
     ASSERT(sizeof(long) >= sizeof(size_t));
     ASSERT(sizeof(long) >= sizeof(ssize_t));
     cookie_io_functions_t func = {&readfn, &writefn, &seekfn, &closefn};
     return ::fopencookie(h, mode, func);
 }
-#elif defined(eckit_HAVE_FUNOPEN)
+#elif eckit_HAVE_FUNOPEN
 
 static int _read(void* data, char* buffer, int length) {
     return readfn(data, buffer, length);

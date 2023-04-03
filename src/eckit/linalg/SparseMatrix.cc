@@ -33,7 +33,7 @@
 namespace eckit {
 namespace linalg {
 
-#ifdef ECKIT_LITTLE_ENDIAN
+#if eckit_LITTLE_ENDIAN
 static const bool littleEndian = true;
 #else
 static const bool littleEndian = false;

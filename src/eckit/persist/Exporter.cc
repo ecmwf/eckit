@@ -122,7 +122,7 @@ const int Swap<T>::last = sizeof(T) - 1;
 
 class Endian {
 public:
-#ifdef ECKIT_LITTLE_ENDIAN
+#if eckit_LITTLE_ENDIAN
     template <class T>
     static T transform(T x) {
         return Swap<T>()(x);

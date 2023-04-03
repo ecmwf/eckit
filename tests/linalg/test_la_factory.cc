@@ -25,48 +25,46 @@ CASE("list") {
 
     auto dense_backends = {
         "generic",
-#ifdef eckit_HAVE_ARMADILLO
+#if eckit_HAVE_ARMADILLO
         "armadillo",
 #endif
-#ifdef eckit_HAVE_CUDA
+#if eckit_HAVE_CUDA
         "cuda",
 #endif
-#ifdef eckit_HAVE_EIGEN
+#if eckit_HAVE_EIGEN
         "eigen",
 #endif
-#ifdef eckit_HAVE_LAPACK
+#if eckit_HAVE_LAPACK
         "lapack",
 #endif
-#ifdef eckit_HAVE_MKL
 #if eckit_HAVE_MKL
         "mkl",
 #endif
-#endif
-#ifdef eckit_HAVE_VIENNACL
+#if eckit_HAVE_VIENNACL
         "viennacl",
 #endif
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
         "openmp",
 #endif
     };
 
     auto sparse_backends = {
         "generic",
-#ifdef eckit_HAVE_CUDA
+#if eckit_HAVE_CUDA
         "cuda",
 #endif
-#ifdef eckit_HAVE_EIGEN
+#if eckit_HAVE_EIGEN
         "eigen",
 #endif
-#ifdef eckit_HAVE_MKL
+#if eckit_HAVE_MKL
 #if eckit_HAVE_MKL
         "mkl",
 #endif
 #endif
-#ifdef eckit_HAVE_VIENNACL
+#if eckit_HAVE_VIENNACL
         "viennacl",
 #endif
-#ifdef eckit_HAVE_OMP
+#if eckit_HAVE_OMP
         "openmp",
 #endif
     };

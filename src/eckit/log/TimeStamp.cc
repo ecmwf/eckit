@@ -28,7 +28,7 @@ TimeStamp::TimeStamp(time_t t, const std::string& format) :
 
 std::ostream& operator<<(std::ostream& s, const TimeStamp& x) {
     char buf[80];
-#ifdef eckit_HAVE_GMTIME_R
+#if eckit_HAVE_GMTIME_R
     struct tm t;
     ::strftime(buf, sizeof(buf), x.format_.c_str(), gmtime_r(&x.time_, &t));
 #else

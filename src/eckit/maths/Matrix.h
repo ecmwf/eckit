@@ -46,7 +46,7 @@ class Matrix;
 
 }  // namespace eckit
 
-#ifdef eckit_HAVE_EIGEN
+#if eckit_HAVE_EIGEN
 
 // Implementation using Eigen
 #include "eckit/maths/MatrixEigen.h"

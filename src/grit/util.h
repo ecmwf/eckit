@@ -32,6 +32,21 @@ bool approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
 };
 
 
+template <typename T>
+pl_type pl_convert(const T& pl) {
+    ASSERT(!pl.empty());
+
+    pl_type _pl(pl.size());
+    std::transform(pl.begin(), pl.end(), _pl.begin(),
+                   [](typename T::value_type p) { return static_cast<pl_type::value_type>(p); });
+    return std::move(_pl);
+}
+
+
+template <>
+pl_type pl_convert(const pl_type&);
+
+
 static constexpr double degrees_to_radians = M_PI / 180.;
 
 

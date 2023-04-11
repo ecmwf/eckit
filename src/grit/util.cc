@@ -16,6 +16,12 @@
 namespace grit::util {
 
 
+template <>
+pl_type pl_convert(const pl_type& pl) {
+    return pl;
+}
+
+
 double normalise_longitude_to_minimum(double lon, double minimum) {
     while (lon < minimum) {
         lon += 360.;

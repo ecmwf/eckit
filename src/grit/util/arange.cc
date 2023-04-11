@@ -21,7 +21,7 @@ namespace grit::util {
 
 
 std::vector<double> arange(double start, double stop, double step) {
-    if (approximately_equal(step, 0.) || approximately_equal(start, stop) || (stop - start) * step < 0.) {
+    if (is_approximately_equal(step, 0.) || is_approximately_equal(start, stop) || (stop - start) * step < 0.) {
         std::vector<double> l(1, start);
         return l;
     }

@@ -60,7 +60,7 @@ double Sphere::angle(const PointLatLon& A, const PointLatLon& B) {
         std::sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
         sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
-    if (util::approximately_equal(sigma, 0.)) {
+    if (util::is_approximately_equal(sigma, 0.)) {
         return 0.;
     }
 
@@ -75,7 +75,7 @@ double Sphere::angle(double radius, const Point3& A, const Point3& B) {
     // Δσ = 2 * asin( chord / 2 )
 
     const double d2 = Point3::distance2(A, B);
-    if (util::approximately_equal(d2, 0.)) {
+    if (util::is_approximately_equal(d2, 0.)) {
         return 0.;
     }
 
@@ -114,7 +114,7 @@ PointLatLon Sphere::xyz_to_ll(double radius, const Point3& A) {
     // numerical conditioning for both z (poles) and y
 
     const double x = A.x;
-    const double y = util::approximately_equal(A.y, 0.) ? 0. : A.y;
+    const double y = util::is_approximately_equal(A.y, 0.) ? 0. : A.y;
     const double z = std::min(radius, std::max(-radius, A.z)) / radius;
 
     return {util::radians_to_degrees * std::atan2(y, x), util::radians_to_degrees * std::asin(z)};

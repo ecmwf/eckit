@@ -116,7 +116,7 @@ bool BoundingBox::intersects(BoundingBox& other) const {
 
 
 bool BoundingBox::empty() const {
-    return util::approximately_equal(north_, south_) || util::approximately_equal(west_, east_);
+    return util::is_approximately_equal(north_, south_) || util::is_approximately_equal(west_, east_);
 }
 
 

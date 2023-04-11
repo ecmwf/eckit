@@ -23,7 +23,7 @@ namespace grit::geometry {
 
 
 static bool pole(double lat) {
-    return util::approximately_equal(std::abs(lat), 90.);
+    return util::is_approximately_equal(std::abs(lat), 90.);
 }
 
 
@@ -32,10 +32,10 @@ GreatCircle::GreatCircle(const PointLatLon& A, const PointLatLon& B) : A_(A), B_
     const bool Bpole       = pole(B_.lat);
     const double lon12_deg = util::normalise_longitude_to_minimum(A_.lon - B_.lon, -180.);
 
-    const bool lon_same     = Apole || Bpole || util::approximately_equal(lon12_deg, 0.);
-    const bool lon_opposite = Apole || Bpole || util::approximately_equal(std::abs(lon12_deg), 180.);
-    const bool lat_same     = util::approximately_equal(A_.lat, B_.lat);
-    const bool lat_opposite = util::approximately_equal(A_.lat, -B_.lat);
+    const bool lon_same     = Apole || Bpole || util::is_approximately_equal(lon12_deg, 0.);
+    const bool lon_opposite = Apole || Bpole || util::is_approximately_equal(std::abs(lon12_deg), 180.);
+    const bool lat_same     = util::is_approximately_equal(A_.lat, B_.lat);
+    const bool lat_opposite = util::is_approximately_equal(A_.lat, -B_.lat);
 
     ASSERT_MSG(!(lat_same && lon_same) && !(lat_opposite && lon_opposite),
                "Great circle cannot be defined by points collinear with the centre");
@@ -80,18 +80,18 @@ std::vector<double> GreatCircle::longitude(double lat) const {
     const double X = std::sin(lat1) * std::cos(lat2) * std::sin(lon12);
     const double Y = std::sin(lat1) * std::cos(lat2) * std::cos(lon12) - std::cos(lat1) * std::sin(lat2);
 
-    if (util::approximately_equal(X, 0.) && util::approximately_equal(Y, 0.)) {
+    if (util::is_approximately_equal(X, 0.) && util::is_approximately_equal(Y, 0.)) {
         return {};  // parallel (that is, equator)
     }
 
     const double lon0 = lon1 + std::atan2(Y, X);
     const double C    = std::cos(lat1) * std::cos(lat2) * std::tan(lat3) * std::sin(lon12) / std::sqrt(X * X + Y * Y);
 
-    if (util::approximately_equal(C, -1.)) {
+    if (util::is_approximately_equal(C, -1.)) {
         return {util::radians_to_degrees * (lon0 + M_PI)};
     }
 
-    if (util::approximately_equal(C, 1.)) {
+    if (util::is_approximately_equal(C, 1.)) {
         return {util::radians_to_degrees * lon0};
     }
 

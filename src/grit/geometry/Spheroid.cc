@@ -47,7 +47,7 @@ Point3 Spheroid::ll_to_xyz(double a, double b, const PointLatLon& P, double heig
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
     const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
-    if (util::approximately_equal(a, b)) {
+    if (util::is_approximately_equal(a, b)) {
         return {(a + height) * cos_phi * cos_lambda, (a + height) * cos_phi * sin_lambda, (a + height) * sin_phi};
     }
 

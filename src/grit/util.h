@@ -25,7 +25,7 @@ namespace grit::util {
 
 
 template <typename T>
-bool approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
+bool is_approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
     auto min = std::min(std::abs(x), std::abs(y));
     return std::abs(min) == 0. ? std::abs(x - y) < eps
                                : std::abs(x - y) / std::max(std::numeric_limits<T>::min(), min) < eps;

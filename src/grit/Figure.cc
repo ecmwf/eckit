@@ -25,7 +25,7 @@ Figure::Figure(double R) : Figure(R, R) {}
 
 
 Figure::Figure(double a, double b) :
-    a_(a), b_(b), R_(util::approximately_equal(a, b) ? a : std::numeric_limits<double>::signaling_NaN()) {
+    a_(a), b_(b), R_(util::is_approximately_equal(a, b) ? a : std::numeric_limits<double>::signaling_NaN()) {
     ASSERT(0. < a);
     ASSERT(0. < b);
 }

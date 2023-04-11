@@ -1332,7 +1332,7 @@ static const std::map<size_t, pl_type> __classical_pls{
 };
 
 
-const pl_type& reduced_gaussian_classical_pl(size_t N) {
+const pl_type& reduced_classical_pl(size_t N) {
     ASSERT(N > 0);
 
     static std::map<size_t, pl_type> __cache;
@@ -1342,7 +1342,7 @@ const pl_type& reduced_gaussian_classical_pl(size_t N) {
 
     auto pl_half = __classical_pls.find(N);
     if (pl_half == __classical_pls.end()) {
-        throw runtime_error("reduced_gaussian_classical_pl: unknown N=" + std::to_string(N));
+        throw runtime_error("reduced_classical_pl: unknown N=" + std::to_string(N));
     }
 
     ASSERT(pl_half->second.size() == N);

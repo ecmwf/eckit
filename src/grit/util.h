@@ -70,13 +70,13 @@ double normalise_longitude_to_minimum(double lon, double minimum);
 double normalise_longitude_to_maximum(double lon, double maximum);
 
 
-const pl_type& reduced_gaussian_classical_pl(size_t N);
+const pl_type& reduced_classical_pl(size_t N);
 
 
-const pl_type& reduced_gaussian_octahedral_pl(size_t N);
+const pl_type& reduced_octahedral_pl(size_t N);
 
 
-pl_type::value_type regular_gaussian_pl(size_t N);
+pl_type::value_type regular_pl(size_t N);
 
 
 }  // namespace grit::util

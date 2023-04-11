@@ -11,7 +11,6 @@
 
 
 #include <map>
-#include <utility>
 
 #include "grit/exception.h"
 #include "grit/types.h"
@@ -20,24 +19,10 @@
 namespace grit::util {
 
 
-const pl_type& reduced_gaussian_octahedral_pl(size_t N) {
+pl_type::value_type regular_pl(size_t N) {
     ASSERT(N > 0);
 
-    static std::map<size_t, pl_type> __cache;
-    if (auto pl = __cache.find(N); pl != __cache.end()) {
-        return pl->second;
-    }
-
-    pl_type pl(N * 2);
-
-    pl_type::value_type p = 20;
-    for (size_t i = 0, j = 2 * N - 1; i < N; ++i, --j) {
-        pl[i] = pl[j] = p;
-        p += 4;
-    }
-
-    __cache[N] = std::move(pl);
-    return __cache[N];
+    return static_cast<pl_type::value_type>(4 * N);
 }
 
 

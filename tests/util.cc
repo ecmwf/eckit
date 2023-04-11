@@ -75,10 +75,10 @@ int main(int argc, char* argv[]) {
     //        std::cout << grit::util::normalise_longitude_to_maximum(0.,0.) << std::endl;
     //        std::cout << grit::util::normalise_longitude_to_minimum(0.,0.) << std::endl;
 
-    std::cout << grit::util::reduced_gaussian_classical_pl(16) << std::endl;
-    std::cout << grit::util::reduced_gaussian_classical_pl(16) << std::endl;
-    std::cout << grit::util::reduced_gaussian_octahedral_pl(16) << std::endl;
-    std::cout << grit::util::reduced_gaussian_octahedral_pl(16) << std::endl;
+    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
+    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
+    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
+    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
 
 #if 0
     iterable_t it{1, 2, 3, 4};

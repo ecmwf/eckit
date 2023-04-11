@@ -32,9 +32,9 @@ add_library(grit SHARED
     util/arange.cc
     util/gaussian_latitudes.cc
     util/linspace.cc
-    util/reduced_gaussian_classical_pl.cc
-    util/reduced_gaussian_octahedral_pl.cc
-    util/regular_gaussian_pl.cc)
+    util/reduced_classical_pl.cc
+    util/reduced_octahedral_pl.cc
+    util/regular_pl.cc)
 
 target_include_directories(grit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 

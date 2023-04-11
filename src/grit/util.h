@@ -18,6 +18,8 @@
 #include <limits>
 #include <vector>
 
+#include "grit/types.h"
+
 
 namespace grit::util {
 
@@ -51,9 +53,6 @@ double normalise_longitude_to_minimum(double lon, double minimum);
 
 /// @return longitude in degree within range ]maximum - 360, maximum]
 double normalise_longitude_to_maximum(double lon, double maximum);
-
-
-using pl_type = std::vector<long>;
 
 
 const pl_type& reduced_gaussian_classical_pl(size_t N);

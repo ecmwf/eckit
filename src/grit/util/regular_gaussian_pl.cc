@@ -13,7 +13,7 @@
 #include <map>
 
 #include "grit/exception.h"
-#include "grit/util.h"
+#include "grit/types.h"
 
 
 namespace grit::util {
@@ -22,7 +22,7 @@ namespace grit::util {
 pl_type::value_type regular_gaussian_pl(size_t N) {
     ASSERT(N > 0);
 
-    return 4 * N;
+    return static_cast<pl_type::value_type>(4 * N);
 }
 
 

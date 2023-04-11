@@ -13,6 +13,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 
 namespace grit {
@@ -37,6 +38,9 @@ struct Point3 : std::array<double, 3> {
     double& y = operator[](1);
     double& z = operator[](2);
 };
+
+
+using pl_type = std::vector<long>;
 
 
 }  // namespace grit

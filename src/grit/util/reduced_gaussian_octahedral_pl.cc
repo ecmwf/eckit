@@ -14,7 +14,7 @@
 #include <utility>
 
 #include "grit/exception.h"
-#include "grit/util.h"
+#include "grit/types.h"
 
 
 namespace grit::util {

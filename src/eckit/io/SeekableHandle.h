@@ -27,12 +27,8 @@ namespace eckit {
 
 class SeekableHandle : public DataHandle {
 public:
-    /// Contructor, taking ownership
 
     SeekableHandle(PeekHandle*);
-
-    /// Contructor, not taking ownership
-
     SeekableHandle(PeekHandle&);
 
     /// Destructor
@@ -62,10 +58,15 @@ public:
     virtual Length estimate() override;
     virtual Offset position() override;
 
+    // Jump to the end of the buffered position, and start again.
+    void clear();
+
 
 private:  // members
-    PeekHandle& handle_;
-    size_t position_;
+    bool owned_;
+    PeekHandle* handle_;
+    Offset seekableStart_;
+    Offset position_;
 
     virtual std::string title() const override;
     virtual void collectMetrics( const std::string& what) const override; // Tag for metrics collection

@@ -32,8 +32,17 @@ Length PeekHandle::openForRead() {
     return handle().openForRead();
 }
 
-void PeekHandle::skip(const Length&) {
-    NOTIMP;
+void PeekHandle::skip(const Length& len) {
+    if (len == Length(peek_.size())) {
+        peek_.clear();
+    } else if (len < Length(peek_.size())) {
+        for (long i = 0; i < len; ++i) {
+            peek_.pop_front();
+        }
+    } else {
+        // This would involve reads/seeks, etc. Not needed now.
+        NOTIMP;
+    }
 }
 
 unsigned char PeekHandle::peek(size_t n) {

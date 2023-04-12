@@ -32,6 +32,7 @@ add_library(grit SHARED
     util/arange.cc
     util/gaussian_latitudes.cc
     util/linspace.cc
+    util/monotonic_crop.cc
     util/reduced_classical_pl.cc
     util/reduced_octahedral_pl.cc
     util/regular_pl.cc)

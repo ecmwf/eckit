@@ -62,6 +62,9 @@ std::vector<double> linspace(double start, double stop, size_t num, bool endpoin
 std::vector<double> gaussian_latitudes(size_t N, bool increasing);
 
 
+std::vector<double> monotonic_crop(std::vector<double>&, double min, double max, double eps);
+
+
 /// @return longitude in degree within range [minimum, minimum + 360[
 double normalise_longitude_to_minimum(double lon, double minimum);
 

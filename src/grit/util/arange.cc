@@ -10,10 +10,6 @@
  */
 
 
-#include <algorithm>
-#include <cmath>
-#include <limits>
-
 #include "grit/util.h"
 
 

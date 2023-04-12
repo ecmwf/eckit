@@ -69,18 +69,18 @@ public:
 
 
 int main(int argc, char* argv[]) {
-    //        std::cout << grit::util::linspace(1, 2, 2, true) << std::endl;
-    //        std::cout << grit::util::arange(1, 2, 0.5) << std::endl;
-    //        std::cout << grit::util::gaussian_latitudes(64, false) << std::endl;
-    //        std::cout << grit::util::normalise_longitude_to_maximum(0.,0.) << std::endl;
-    //        std::cout << grit::util::normalise_longitude_to_minimum(0.,0.) << std::endl;
-
-    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
-    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
-    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
-    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
-
 #if 0
+    std::cout << grit::util::linspace(1, 2, 2, true) << std::endl;
+    std::cout << grit::util::arange(1, 2, 0.5) << std::endl;
+    std::cout << grit::util::gaussian_latitudes(64, false) << std::endl;
+    std::cout << grit::util::normalise_longitude_to_maximum(0., 360.) << std::endl;
+    std::cout << grit::util::normalise_longitude_to_minimum(0., -360.) << std::endl;
+#elif 0
+    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
+    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
+    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
+    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
+#else
     iterable_t it{1, 2, 3, 4};
 
     for (const auto& v : it) {

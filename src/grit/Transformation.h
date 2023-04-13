@@ -10,10 +10,90 @@
  */
 
 
+#pragma once
+
+#include "grit/types.h"
+
+
 namespace grit {
 
 
-struct Transformation {};
+class Transformation {
+public:
+    // -- Types
+    // None
+
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+
+    Transformation() noexcept = default;
+
+    Transformation(const Transformation&) = default;
+    Transformation(Transformation&&)      = default;
+
+    // -- Destructor
+
+    virtual ~Transformation() = default;
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+
+    Transformation& operator=(const Transformation&) = default;
+    Transformation& operator=(Transformation&&)      = default;
+
+    virtual Point operator()(const Point&) const = 0;
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
+};
 
 
 }  // namespace grit

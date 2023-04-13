@@ -47,10 +47,8 @@ public:
 
     // -- Methods
 
-    virtual PointXYZ direct(const PointLatLon&) const;
-    virtual PointXYZ inverse(const PointXYZ&) const;
-    virtual PointLatLon to_(const PointLatLon&) const;
-    virtual PointLatLon to_(const PointXYZ&) const;
+    virtual Point direct(const Point&) const  = 0;
+    virtual Point inverse(const Point&) const = 0;
 
     // -- Overridden methods
     // None

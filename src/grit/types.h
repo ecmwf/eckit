@@ -13,6 +13,7 @@
 #pragma once
 
 #include <array>
+#include <variant>
 #include <vector>
 
 
@@ -27,10 +28,18 @@ struct PointLatLon : std::array<double, 2> {
 };
 
 
-struct Point3 : std::array<double, 3> {
-    Point3(double x, double y, double z) : array{x, y, z} {}
+struct PointXY : std::array<double, 2> {
+    PointXY(double x, double y);
 
-    static double distance2(const Point3& a, const Point3& b) {
+    double& x = operator[](0);
+    double& y = operator[](1);
+};
+
+
+struct PointXYZ : std::array<double, 3> {
+    PointXYZ(double x, double y, double z) : array{x, y, z} {}
+
+    static double distance2(const PointXYZ& a, const PointXYZ& b) {
         return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
     }
 
@@ -38,6 +47,15 @@ struct Point3 : std::array<double, 3> {
     double& y = operator[](1);
     double& z = operator[](2);
 };
+
+
+using Point2 = PointXY;
+
+
+using Point3 = PointXYZ;
+
+
+using Point = std::variant<PointLatLon, PointXY, PointXYZ>;
 
 
 using pl_type = std::vector<long>;

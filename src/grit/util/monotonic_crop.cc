@@ -11,8 +11,6 @@
 
 
 #include <algorithm>
-#include <iostream>
-#include <iterator>
 
 #include "grit/exception.h"
 #include "grit/util.h"
@@ -26,22 +24,24 @@ std::vector<double> monotonic_crop(const std::vector<double>& values, double min
         return {};
     }
 
-    ASSERT(!values.empty() && min <= max);
 
-    auto lt = [eps](double a, double b) { return a < b && (0. == eps || !is_approximately_equal(a, b, eps)); };
-
-    if (values.size() == 1 || values.front() < values.back()) {
-        // monotonically increasing
+    // monotonically increasing
+    const auto increasing = values.size() == 1 || values.front() < values.back();
+    if (increasing) {
         ASSERT(std::is_sorted(values.begin(), values.end()));
 
+        auto lt = [eps](double a, double b) { return a < b && (0. == eps || !is_approximately_equal(a, b, eps)); };
         return {std::lower_bound(values.begin(), values.end(), min, lt),
                 std::upper_bound(values.begin(), values.end(), max, lt)};
     }
 
+
     // monotonically decreasing
     ASSERT(std::is_sorted(values.rbegin(), values.rend()));
 
-    return {};  // FIXME
+    auto gt = [eps](double a, double b) { return a > b && (0. == eps || !is_approximately_equal(a, b, eps)); };
+    return {std::lower_bound(values.begin(), values.end(), max, gt),
+            std::upper_bound(values.begin(), values.end(), min, gt)};
 }
 
 

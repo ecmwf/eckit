@@ -49,12 +49,6 @@ struct PointXYZ : std::array<double, 3> {
 };
 
 
-using Point2 = PointXY;
-
-
-using Point3 = PointXYZ;
-
-
 using Point = std::variant<PointLatLon, PointXY, PointXYZ>;
 
 

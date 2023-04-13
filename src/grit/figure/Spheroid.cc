@@ -24,7 +24,7 @@ double Spheroid::angle(const PointLatLon& A, const PointLatLon& B) const {
 }
 
 
-double Spheroid::angle(const Point3& A, const Point3& B) const {
+double Spheroid::angle(const PointXYZ& A, const PointXYZ& B) const {
     NOTIMP;
 }
 
@@ -34,7 +34,7 @@ double Spheroid::distance(const PointLatLon& A, const PointLatLon& B) const {
 }
 
 
-double Spheroid::distance(const Point3& A, const Point3& B) const {
+double Spheroid::distance(const PointXYZ& A, const PointXYZ& B) const {
     NOTIMP;
 }
 
@@ -44,12 +44,12 @@ double Spheroid::area() const {
 }
 
 
-Point3 Spheroid::ll_to_xyz(const PointLatLon& P, double height) const {
+PointXYZ Spheroid::ll_to_xyz(const PointLatLon& P, double height) const {
     NOTIMP;
 }
 
 
-PointLatLon Spheroid::xyz_to_ll(const Point3& P) const {
+PointLatLon Spheroid::xyz_to_ll(const PointXYZ& P) const {
     NOTIMP;
 }
 

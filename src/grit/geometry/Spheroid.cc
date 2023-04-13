@@ -21,7 +21,7 @@
 namespace grit::geometry {
 
 
-Point3 Spheroid::ll_to_xyz(double a, double b, const PointLatLon& P, double height) {
+PointXYZ Spheroid::ll_to_xyz(double a, double b, const PointLatLon& P, double height) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
 

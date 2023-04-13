@@ -23,22 +23,22 @@ struct Sphere {
     static double angle(const PointLatLon&, const PointLatLon&);
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
-    static double angle(double radius, const Point3&, const Point3&);
+    static double angle(double radius, const PointXYZ&, const PointXYZ&);
 
     /// Great-circle distance between two points (latitude/longitude coordinates) in metres
     static double distance(double radius, const PointLatLon&, const PointLatLon&);
 
     /// Great-circle distance between two points (Cartesian coordinates) in metres
-    static double distance(double radius, const Point3&, const Point3&);
+    static double distance(double radius, const PointXYZ&, const PointXYZ&);
 
     /// Surface area in square metres
     static double area(double radius);
 
     // Convert spherical coordinates to Cartesian
-    static Point3 ll_to_xyz(double radius, const PointLatLon&, double height);
+    static PointXYZ ll_to_xyz(double radius, const PointLatLon&, double height);
 
     // Convert Cartesian coordinates to spherical
-    static PointLatLon xyz_to_ll(double radius, const Point3&);
+    static PointLatLon xyz_to_ll(double radius, const PointXYZ&);
 };
 
 

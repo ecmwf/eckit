@@ -45,12 +45,12 @@ public:
     // -- Overridden methods
 
     double angle(const PointLatLon&, const PointLatLon&) const override;
-    double angle(const Point3&, const Point3&) const override;
+    double angle(const PointXYZ&, const PointXYZ&) const override;
     double distance(const PointLatLon&, const PointLatLon&) const override;
-    double distance(const Point3&, const Point3&) const override;
+    double distance(const PointXYZ&, const PointXYZ&) const override;
     double area() const override;
-    Point3 ll_to_xyz(const PointLatLon&, double height) const override;
-    PointLatLon xyz_to_ll(const Point3&) const override;
+    PointXYZ ll_to_xyz(const PointLatLon&, double height) const override;
+    PointLatLon xyz_to_ll(const PointXYZ&) const override;
 
     // -- Class members
     // None

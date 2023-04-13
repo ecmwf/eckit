@@ -23,7 +23,7 @@ double Sphere::angle(const PointLatLon& A, const PointLatLon& B) const {
 }
 
 
-double Sphere::angle(const Point3& A, const Point3& B) const {
+double Sphere::angle(const PointXYZ& A, const PointXYZ& B) const {
     return geometry::Sphere::angle(R(), A, B);
 }
 
@@ -33,7 +33,7 @@ double Sphere::distance(const PointLatLon& A, const PointLatLon& B) const {
 }
 
 
-double Sphere::distance(const Point3& A, const Point3& B) const {
+double Sphere::distance(const PointXYZ& A, const PointXYZ& B) const {
     return geometry::Sphere::distance(R(), A, B);
 }
 
@@ -43,12 +43,12 @@ double Sphere::area() const {
 }
 
 
-Point3 Sphere::ll_to_xyz(const PointLatLon& P, double height) const {
+PointXYZ Sphere::ll_to_xyz(const PointLatLon& P, double height) const {
     return geometry::Sphere::ll_to_xyz(R(), P, height);
 }
 
 
-PointLatLon Sphere::xyz_to_ll(const Point3& P) const {
+PointLatLon Sphere::xyz_to_ll(const PointXYZ& P) const {
     return geometry::Sphere::xyz_to_ll(R(), P);
 }
 

@@ -69,12 +69,12 @@ double Sphere::angle(const PointLatLon& A, const PointLatLon& B) {
 }
 
 
-double Sphere::angle(double radius, const Point3& A, const Point3& B) {
+double Sphere::angle(double radius, const PointXYZ& A, const PointXYZ& B) {
     ASSERT(radius > 0.);
 
     // Δσ = 2 * asin( chord / 2 )
 
-    const double d2 = Point3::distance2(A, B);
+    const double d2 = PointXYZ::distance2(A, B);
     if (util::is_approximately_equal(d2, 0.)) {
         return 0.;
     }
@@ -92,7 +92,7 @@ double Sphere::distance(double radius, const PointLatLon& A, const PointLatLon& 
 }
 
 
-double Sphere::distance(double radius, const Point3& A, const Point3& B) {
+double Sphere::distance(double radius, const PointXYZ& A, const PointXYZ& B) {
     return radius * angle(radius, A, B);
 }
 
@@ -103,12 +103,12 @@ double Sphere::area(double radius) {
 }
 
 
-Point3 Sphere::ll_to_xyz(double radius, const PointLatLon& P, double height) {
+PointXYZ Sphere::ll_to_xyz(double radius, const PointLatLon& P, double height) {
     return Spheroid::ll_to_xyz(radius, radius, P, height);
 }
 
 
-PointLatLon Sphere::xyz_to_ll(double radius, const Point3& A) {
+PointLatLon Sphere::xyz_to_ll(double radius, const PointXYZ& A) {
     ASSERT(radius > 0.);
 
     // numerical conditioning for both z (poles) and y

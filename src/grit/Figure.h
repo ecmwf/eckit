@@ -58,22 +58,22 @@ public:
     virtual double angle(const PointLatLon&, const PointLatLon&) const = 0;
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
-    virtual double angle(const Point3&, const Point3&) const = 0;
+    virtual double angle(const PointXYZ&, const PointXYZ&) const = 0;
 
     /// Great-circle distance between two points (latitude/longitude coordinates) in metres
     virtual double distance(const PointLatLon&, const PointLatLon&) const = 0;
 
     /// Great-circle distance between two points (Cartesian coordinates) in metres
-    virtual double distance(const Point3&, const Point3&) const = 0;
+    virtual double distance(const PointXYZ&, const PointXYZ&) const = 0;
 
     /// Surface area in square metres
     virtual double area() const = 0;
 
     // Convert spherical coordinates to Cartesian
-    virtual Point3 ll_to_xyz(const PointLatLon&, double height) const = 0;
+    virtual PointXYZ ll_to_xyz(const PointLatLon&, double height) const = 0;
 
     // Convert Cartesian coordinates to spherical
-    virtual PointLatLon xyz_to_ll(const Point3&) const = 0;
+    virtual PointLatLon xyz_to_ll(const PointXYZ&) const = 0;
 
     // -- Overridden methods
     // None

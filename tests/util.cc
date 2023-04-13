@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
     std::cout << grit::util::reduced_classical_pl(16) << std::endl;
     std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
     std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
-#else
+#elif 0
     iterable_t it{1, 2, 3, 4};
 
     for (const auto& v : it) {
@@ -88,5 +88,10 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << std::accumulate(it.begin(), it.end(), 0) << std::endl;
+#else
+    std::vector<double> values1{4., 3., 2., 1.};
+    std::vector<double> values2{1., 2., 3., 4.};
+
+    std::cout << grit::util::monotonic_crop(values1, 2., 3., 0.) << std::endl;
 #endif
 }

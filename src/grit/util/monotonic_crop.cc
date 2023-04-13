@@ -17,7 +17,7 @@
 namespace grit::util {
 
 
-std::vector<double> monotonic_crop(std::vector<double>& values, double min, double max, double eps) {
+std::vector<double> monotonic_crop(const std::vector<double>& values, double min, double max, double eps) {
     ASSERT(!values.empty());
     ASSERT(min <= max);
 
@@ -40,6 +40,9 @@ std::vector<double> monotonic_crop(std::vector<double>& values, double min, doub
     }
 
     ASSERT(min <= max);
+
+    // FIXME
+    return values;
 }
 
 

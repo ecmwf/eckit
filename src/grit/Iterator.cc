@@ -23,13 +23,19 @@ namespace grit {
 
 Iterator::Iterator(Scanner* scanner, Figure* figure, Transformation* transformation) :
     scanner_(scanner), figure_(figure), transformation_(transformation) {
-    ASSERT(bool(scanner));
-    ASSERT(bool(figure));
+    ASSERT(scanner_);
+    ASSERT(figure_);
 }
 
 
 bool Iterator::operator++() {
     return ++(*scanner_);
+}
+
+
+size_t Iterator::size() const {
+    ASSERT(scanner_);
+    return scanner_->size();
 }
 
 

@@ -12,6 +12,8 @@
 
 #include <memory>
 
+#include "grit/types.h"
+
 
 namespace grit {
 struct Figure;
@@ -23,10 +25,43 @@ struct Transformation;
 namespace grit {
 
 
-class Iterator {
+class Iterator final {
 public:
     // -- Types
-    // None
+
+    using value_type = Point;
+
+private:
+    // -- Types
+
+    template <typename X>
+    struct iterator_t {
+        X& cnt;
+        size_t pos;
+
+        bool operator!=(const iterator_t& other) const { return &cnt != &other.cnt || pos != other.pos; }
+
+        iterator_t& operator++() {
+            pos++;
+            return *this;
+        }
+
+        iterator_t operator++(int) {
+            auto old = *this;
+            operator++();
+            return old;
+        }
+
+        typename X::value_type& operator*() { return cnt.at(pos); }
+
+        const typename X::value_type& operator*() const { return cnt.at(pos); }
+    };
+
+public:
+    // -- Types
+
+    using iterator       = iterator_t<Iterator>;
+    using const_iterator = iterator_t<const Iterator>;
 
     // -- Exceptions
     // None
@@ -43,7 +78,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Iterator() = delete;
+    ~Iterator() = delete;
 
     // -- Convertors
     // None
@@ -51,25 +86,20 @@ public:
     // -- Operators
 
     bool operator++();
+    bool operator++(int) { return operator++(); }
 
     // -- Methods
-    // None
 
-    // -- Overridden methods
-    // None
+    size_t size() const;
 
-    // -- Class members
-    // None
+    iterator begin() { return {*this, 0}; }
+    iterator end() { return {*this, this->size()}; }
 
-    // -- Class methods
-    // None
+    const_iterator cbegin() const { return {*this, 0}; }
+    const_iterator cend() const { return {*this, this->size()}; }
 
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
+    const_iterator begin() const { return cbegin(); }
+    const_iterator end() const { return cend(); }
 
     // -- Overridden methods
     // None

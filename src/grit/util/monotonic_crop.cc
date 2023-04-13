@@ -10,6 +10,7 @@
  */
 
 
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 
@@ -21,41 +22,26 @@ namespace grit::util {
 
 
 std::vector<double> monotonic_crop(const std::vector<double>& values, double min, double max, double eps) {
-    ASSERT(!values.empty());
-    ASSERT(min <= max);
-
-    const bool increasing = values.front() <= values.back();
-
-    if (max < values.back()) {
-        max = values.back();
-    }
-    else if (max <= values.front()) {
-        auto it = std::lower_bound(values.rbegin(), values.rend(), max);
-
-        std::cout << "max it: " << std::distance(values.rbegin(), it) << std::endl;
-
-        max = *it;
+    if (values.empty() || min > max) {
+        return {};
     }
 
-    if (min > values.front()) {
-        min = values.front();
+    ASSERT(!values.empty() && min <= max);
+
+    auto lt = [eps](double a, double b) { return a < b && (0. == eps || !is_approximately_equal(a, b, eps)); };
+
+    if (values.size() == 1 || values.front() < values.back()) {
+        // monotonically increasing
+        ASSERT(std::is_sorted(values.begin(), values.end()));
+
+        return {std::lower_bound(values.begin(), values.end(), min, lt),
+                std::upper_bound(values.begin(), values.end(), max, lt)};
     }
-    else if (min >= values.back()) {
-        auto it = std::lower_bound(values.begin(), values.end(), min, [](double l1, double l2) { return l1 > l2; });
 
-        std::cout << "min it: " << std::distance(values.begin(), it) << std::endl;
+    // monotonically decreasing
+    ASSERT(std::is_sorted(values.rbegin(), values.rend()));
 
-        min = *it;
-    }
-
-    ASSERT(min <= max);
-
-
-    std::cout << "min: " << min << '\n' << "max: " << max << std::endl;
-
-
-    // FIXME
-    return values;
+    return {};  // FIXME
 }
 
 

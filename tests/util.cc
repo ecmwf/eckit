@@ -11,7 +11,6 @@
 
 
 #include <iostream>
-#include <numeric>
 
 #include "grit/util.h"
 
@@ -81,14 +80,6 @@ int main(int argc, char* argv[]) {
     std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
     std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
 #elif 0
-    iterable_t it{1, 2, 3, 4};
-
-    for (const auto& v : it) {
-        std::cout << v << std::endl;
-    }
-
-    std::cout << std::accumulate(it.begin(), it.end(), 0) << std::endl;
-#else
     std::vector<double> values1{1., 2., 3., 4., 5., 6.};
     std::vector<double> values2{6., 5., 4., 3., 2., 1.};
 

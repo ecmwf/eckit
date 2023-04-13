@@ -89,8 +89,8 @@ int main(int argc, char* argv[]) {
 
     std::cout << std::accumulate(it.begin(), it.end(), 0) << std::endl;
 #else
-    std::vector<double> values1{4., 3., 2., 1.};
-    std::vector<double> values2{1., 2., 3., 4.};
+    std::vector<double> values1{6., 5., 4., 3., 2., 1.};
+    std::vector<double> values2{1., 2., 3., 4., 5., 6.};
 
     std::cout << grit::util::monotonic_crop(values1, 2., 3., 0.) << std::endl;
 #endif

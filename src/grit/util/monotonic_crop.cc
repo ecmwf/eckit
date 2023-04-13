@@ -10,6 +10,9 @@
  */
 
 
+#include <iostream>
+#include <iterator>
+
 #include "grit/exception.h"
 #include "grit/util.h"
 
@@ -28,7 +31,10 @@ std::vector<double> monotonic_crop(const std::vector<double>& values, double min
     }
     else if (max <= values.front()) {
         auto it = std::lower_bound(values.rbegin(), values.rend(), max);
-        max     = *it;
+
+        std::cout << "max it: " << std::distance(values.rbegin(), it) << std::endl;
+
+        max = *it;
     }
 
     if (min > values.front()) {
@@ -36,10 +42,17 @@ std::vector<double> monotonic_crop(const std::vector<double>& values, double min
     }
     else if (min >= values.back()) {
         auto it = std::lower_bound(values.begin(), values.end(), min, [](double l1, double l2) { return l1 > l2; });
-        min     = *it;
+
+        std::cout << "min it: " << std::distance(values.begin(), it) << std::endl;
+
+        min = *it;
     }
 
     ASSERT(min <= max);
+
+
+    std::cout << "min: " << min << '\n' << "max: " << max << std::endl;
+
 
     // FIXME
     return values;

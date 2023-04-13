@@ -98,6 +98,101 @@ namespace grit {
     string uuidOfHGrid
 - irregular_latlon
 
+
+// to instantiate ecCodes iterators
+- regular_gg:
+  - latitudeFirstInDegrees, longitudeFirstInDegrees
+  - latitudeLastInDegrees
+  - DiInDegrees
+  - Ni
+  - Nj
+  - N
+  - iScansNegatively, jScansPositively
+- reduced_gg:
+  - latitudeOfFirstGridPointInDegrees, longitudeOfFirstGridPointInDegrees
+  - latitudeOfLastGridPointInDegrees, longitudeOfLastGridPointInDegrees
+  - N
+  - pl
+  - Nj
+- lambert_azimuthal_equal_area:
+  - latitudeOfFirstGridPointInDegrees, longitudeOfFirstGridPointInDegrees
+  - radius
+  - Nx
+  - Ny
+  - standardParallelInDegrees
+  - centralLongitudeInDegrees
+  - Dx
+  - Dy
+  - iScansNegatively, jScansPositively, jPointsAreConsecutive, alternativeRowScanning
+- lambert:
+  - latitudeOfFirstGridPointInDegrees, longitudeOfFirstGridPointInDegrees
+  - radius
+  - Nx
+  - Ny
+  - LoVInDegrees
+  - LaDInDegrees
+  - Latin1InDegrees
+  - Latin2InDegrees
+  - DxInMetres
+  - DyInMetres
+  - iScansNegatively, jScansPositively, jPointsAreConsecutive, alternativeRowScanning
+- regular_ll, rotated_ll:
+  - latitudeFirstInDegrees, longitudeFirstInDegrees
+  - DiInDegrees
+  - Ni
+  - Nj
+  - DjInDegrees
+  - isRotatedGrid
+  - angleOfRotation, latitudeOfSouthernPoleInDegrees, longitudeOfSouthernPoleInDegrees
+  - iScansNegatively, jScansPositively, jPointsAreConsecutive
+- reduced_ll:
+  - latitudeFirstInDegrees, longitudeFirstInDegrees
+  - latitudeLastInDegrees, longitudeLastInDegrees
+  - Nj
+  - DjInDegrees
+  - pl
+- mercator:
+  - latitudeOfFirstGridPointInDegrees, longitudeOfFirstGridPointInDegrees
+  - latitudeOfLastGridPointInDegrees, longitudeOfLastGridPointInDegrees
+  - radius
+  - Ni
+  - Nj
+  - LaDInDegrees
+  - orientationOfTheGridInDegrees
+  - DiInMetres
+  - DjInMetres
+  - iScansNegatively, jScansPositively, jPointsAreConsecutive, alternativeRowScanning
+- polar_stereographic:
+  - latitudeOfFirstGridPointInDegrees, longitudeOfFirstGridPointInDegrees
+  - radius
+  - Nx
+  - Ny
+  - southPoleOnProjectionPlane
+  - orientationOfTheGridInDegrees
+  - LaDInDegrees
+  - DxInMetres
+  - DyInMetres
+  - iScansNegatively, jScansPositively, jPointsAreConsecutive, alternativeRowScanning
+- space_view:
+  - radius
+  - earthIsOblate
+  - earthMajorAxis
+  - earthMinorAxis
+  - Nx
+  - Ny
+  - latitudeOfSubSatellitePointInDegrees
+  - longitudeOfSubSatellitePointInDegrees
+  - dx
+  - dy
+  - XpInGridLengths
+  - YpInGridLengths
+  - orientationOfTheGridInDegrees
+  - NrInRadiusOfEarthScaled
+  - Xo
+  - Yo
+  - iScansNegatively, jScansPositively, jPointsAreConsecutive, alternativeRowScanning
+
+
 Projection, rotation, shape (grib2/template.3.(rotation|shape_of_the_earth).def)
 - projSourceString, projTargetString, projString=projTargetString
 

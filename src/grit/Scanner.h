@@ -10,6 +10,9 @@
  */
 
 
+#include <cstddef>
+
+
 namespace grit {
 
 
@@ -23,7 +26,7 @@ public:
 
     // -- Constructors
 
-    Scanner();
+    Scanner() = default;
 
     Scanner(const Scanner&) = delete;
     Scanner(Scanner&&)      = delete;
@@ -43,7 +46,8 @@ public:
     virtual bool operator++() = 0;
 
     // -- Methods
-    // None
+
+    virtual size_t size() const = 0;
 
     // -- Overridden methods
     // None

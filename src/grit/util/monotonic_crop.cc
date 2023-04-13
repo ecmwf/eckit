@@ -36,7 +36,7 @@ std::vector<double> monotonic_crop(const std::vector<double>& values, double min
     }
 
 
-    // monotonically decreasing
+    // monotonically non-increasing
     ASSERT(std::is_sorted(values.rbegin(), values.rend()));
 
     auto gt = [eps](double a, double b) { return a > b && (0. == eps || !is_approximately_equal(a, b, eps)); };

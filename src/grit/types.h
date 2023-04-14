@@ -13,6 +13,7 @@
 #pragma once
 
 #include <array>
+#include <iosfwd>
 #include <variant>
 #include <vector>
 
@@ -25,6 +26,14 @@ struct PointLatLon : std::array<double, 2> {
 
     double& lat = operator[](0);
     double& lon = operator[](1);
+};
+
+
+struct PointLonLat : std::array<double, 2> {
+    PointLonLat(double lon, double lat);
+
+    double& lon = operator[](0);
+    double& lat = operator[](1);
 };
 
 
@@ -50,6 +59,9 @@ struct PointXYZ : std::array<double, 3> {
 
 
 using Point = std::variant<PointLatLon, PointXY, PointXYZ>;
+
+
+std::ostream& operator<<(std::ostream&, const Point&);
 
 
 using pl_type = std::vector<long>;

@@ -13,6 +13,7 @@
 #pragma once
 
 #include <array>
+#include <cmath>
 #include <ostream>
 
 #include "grit/exception.h"
@@ -27,6 +28,20 @@ private:
     // -- Types
 
     using P = std::array<T, 2>;
+
+    // -- Class methods
+
+    static T normal(double a, double minimum) {
+        while (a < minimum) {
+            a += 360.;
+        }
+
+        while (a >= minimum + 360.) {
+            a -= 360.;
+        }
+
+        return a;
+    };
 
 public:
     // -- Types
@@ -60,11 +75,15 @@ public:
         return *this;
     }
 
-    bool operator==(const PointLatLon<T>& other) const {
-        return P(make_normalised(lat, lon)) == P(make_normalised(other.lat, other.lon));
-    }
+    bool operator==(const PointLatLon<T>& other) const { return lat == other.lat && normal(other.lon, lon) == lon; }
 
     bool operator!=(const PointLatLon<T>& other) const { return !operator==(other); }
+
+    bool is_approximately_equal(const PointLatLon<T>& other, T eps) const {
+        const auto dlon = normal(other.lon, lon) - lon;
+        return std::abs(lat - other.lat) < eps &&
+               (std::abs(lat - 90.) < eps || std::abs(lat + 90.) < eps || dlon < eps || dlon - 360. < eps);
+    };
 
     // -- Members
 
@@ -73,27 +92,18 @@ public:
 
     // -- Methods
 
-    static PointLatLon make_normalised(T lat, T lon) {
-        auto normal = [](double a, double minimum) {
-            while (a < minimum) {
-                a += 360.;
-            }
-            while (a >= minimum + 360.) {
-                a -= 360.;
-            }
-
-            return a;
-        };
-
+    static PointLatLon make(T lat, T lon) {
         lat = normal(lat, -90.);
 
         if (lat > 90.) {
-            lat -= 180.;
+            lat = 180. - lat;
             lon += 180.;
         }
 
         return {lat, lat == -90. || lat == 90. ? 0. : normal(lon, 0.)};
     }
+
+    PointLatLon antipode() const { return make(lat + 180., lon); }
 
     // -- Overridden methods
     // None

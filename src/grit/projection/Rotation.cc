@@ -57,7 +57,7 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
 }
 
 
-PointLatLon Rotation::direct(const PointLatLon& p) const {
+PointLatLon Rotation::fwd(const PointLatLon& p) const {
     if (rotation_ == rotation_type::ANGLE) {
         auto q = p;
         q.lon -= angle_;
@@ -74,7 +74,7 @@ PointLatLon Rotation::direct(const PointLatLon& p) const {
 }
 
 
-PointLatLon Rotation::inverse(const PointLatLon& q) const {
+PointLatLon Rotation::inv(const PointLatLon& q) const {
     if (rotation_ == rotation_type::ANGLE) {
         auto p = q;
         p.lon += angle_;
@@ -91,13 +91,13 @@ PointLatLon Rotation::inverse(const PointLatLon& q) const {
 }
 
 
-Point Rotation::direct(const Point& p) const {
-    return direct(std::get<PointLatLon>(p));
+Point Rotation::fwd(const Point& p) const {
+    return fwd(std::get<PointLatLon>(p));
 }
 
 
-Point Rotation::inverse(const Point& q) const {
-    return inverse(std::get<PointLatLon>(q));
+Point Rotation::inv(const Point& q) const {
+    return inv(std::get<PointLatLon>(q));
 }
 
 

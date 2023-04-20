@@ -79,8 +79,8 @@ public:
     // -- Methods
 
     bool rotated() const { return rotation_ != rotation_type::UNROTATED; }
-    PointLatLon direct(const PointLatLon&) const;
-    PointLatLon inverse(const PointLatLon&) const;
+    PointLatLon fwd(const PointLatLon&) const;
+    PointLatLon inv(const PointLatLon&) const;
 
     // -- Overridden methods
     // None
@@ -114,8 +114,8 @@ private:
 
     // -- Overridden methods
 
-    Point direct(const Point&) const override;
-    Point inverse(const Point&) const override;
+    Point fwd(const Point&) const override;
+    Point inv(const Point&) const override;
 
     // -- Class members
     // None

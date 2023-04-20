@@ -47,8 +47,8 @@ public:
 
     // -- Methods
 
-    virtual Point direct(const Point&) const  = 0;
-    virtual Point inverse(const Point&) const = 0;
+    virtual Point fwd(const Point&) const = 0;
+    virtual Point inv(const Point&) const = 0;
 
     // -- Overridden methods
     // None

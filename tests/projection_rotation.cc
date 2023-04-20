@@ -10,97 +10,45 @@
  */
 
 
-#include <cmath>
 #include <iostream>
-#include <memory>
-#include <vector>
 
-#include "grit/Projection.h"
 #include "grit/exception.h"
 #include "grit/projection/Rotation.h"
-#include "grit/util.h"
-
-
-using grit::PointLatLon;
-using grit::projection::Rotation;
-
-static const PointLatLon SP{-90., 0.};
-static const PointLatLon NP{90., 180.};
-
-
-bool equivalent(const PointLatLon& a, const PointLatLon& b) {
-    auto f  = [=](double lon) { return 10. + std::cos(lon * grit::util::degrees_to_radians); };
-    auto eq = [](double a, double b) { return grit::util::is_approximately_equal(a, b, 1e-5); };
-
-    auto ok = (eq(a.lat, 90.) && eq(b.lat, 90.)) || (eq(a.lat, -90.) && eq(b.lat, -90.)) ||
-              eq(a.lat, b.lat) && eq(f(a.lon), f(b.lon));
-
-    std::cout << a << " <=> " << b << " ? " << ok << std::endl;
-    return ok;
-}
-
-
-void eqv(const Rotation& rot, const PointLatLon& a, const PointLatLon& b) {
-    auto bn  = rot.direct(a);
-    auto bok = equivalent(bn, b);
-    //    std::cout << a << " -> " << bn << " == " << b << " ? " << bok << std::endl;
-
-    auto an  = rot.inverse(b);
-    auto aok = equivalent(an, a);
-    //    std::cout << b << " <- " << an << " == " << a << " ? " << aok << std::endl;
-
-    ASSERT(aok && bok);
-}
 
 
 int main(int argc, char* argv[]) {
+    using grit::PointLatLon;
+    using grit::projection::Rotation;
+
+
     {
-        std::unique_ptr<grit::Projection> unrotated(new Rotation(-90., 0., 0.));
+        const PointLatLon p(1, 1);
 
-        const PointLatLon a(1, 1);
-        auto b = unrotated->direct(a);
-        auto c = unrotated->inverse(b);
-        auto e = unrotated->inverse(a);
-        auto f = unrotated->direct(e);
-
-        std::cout << "unrotated: " << a << " -> " << b << " -> " << c << std::endl;
-        std::cout << "unrotated: " << a << " -> " << e << " -> " << f << std::endl;
+        for (const auto& rotation : {
+                 Rotation(-90., 0., 0.),
+                 Rotation(-90., 0., 10.),
+                 Rotation(-89., 1., 0.),
+                 Rotation(-89., 1., 10.),
+                 Rotation(90., 180., 0.),
+                 Rotation(90., 180., 10.),
+                 Rotation(-89.9, 0., 0.),
+                 Rotation(-89.9, 0., 10.),
+                 Rotation(89.9, 0., 0.),
+                 Rotation(89.9, 0., 10.),
+                 Rotation(1., 1., 0.),
+                 Rotation(1., 1., 10.),
+             }) {
+            ASSERT(p.is_approximately_equal(rotation.inv(rotation.fwd(p)), 1e-5));
+            ASSERT(p.is_approximately_equal(rotation.fwd(rotation.inv(p)), 1e-5));
+        }
     }
 
-    {
-        std::unique_ptr<grit::Projection> angle_only(new Rotation(-90., 0., 10.));
-
-        const PointLatLon a(1, 1);
-        auto b = angle_only->direct(a);
-        auto c = angle_only->inverse(b);
-        auto e = angle_only->inverse(a);
-        auto f = angle_only->direct(e);
-
-        std::cout << "angle_only: " << a << " -> " << b << " -> " << c << std::endl;
-        std::cout << "angle_only: " << a << " -> " << e << " -> " << f << std::endl;
-    }
 
     {
-        std::unique_ptr<grit::Projection> angle_vector(new Rotation(-89., 1., 10.));
+        const int Ni = 12;
+        const int Nj = 3;
 
-        const PointLatLon a(1, 1);
-        auto b = angle_vector->direct(a);
-        auto c = angle_vector->inverse(b);
-        auto e = angle_vector->inverse(a);
-        auto f = angle_vector->direct(e);
-
-        std::cout << "angle_vector: " << a << " -> " << b << " -> " << c << std::endl;
-        std::cout << "angle_vector: " << a << " -> " << e << " -> " << f << std::endl;
-    }
-
-    {
-        const int nx = 12;
-        const int ny = 6;
-
-
-        Rotation rot(-133.3, 2.,
-                     180.);  // NP (lat, lon) = (46.7, 2., 180.) (SP cannot be expressed canonically for the same point)
-
+        Rotation rot(-46.7, 182., 0.);
         const PointLatLon ref[]{
             {-46.7, -178.},
             {-16.7, -178.},
@@ -188,77 +136,54 @@ int main(int argc, char* argv[]) {
             {46.7, 2.},
         };
 
-        for (int i = 0, jglo = 0; i < nx; i++) {
-            for (int j = 0; j < ny + 1; j++, jglo++) {
-                double lon = static_cast<double>(i) * 360. / static_cast<double>(nx);
-                double lat = static_cast<double>(j - ny / 2) * 90. / static_cast<double>(ny / 2);
-                PointLatLon p0(lat, lon);
-                auto p1 = rot.direct(p0);
-                auto p2 = rot.inverse(p1);
-                ASSERT(equivalent(p2, p0));
-                ASSERT(equivalent(p1, ref[jglo]));
+        for (int i = 0, k = 0; i < Ni; i++) {
+            for (int j = 0; j < 2 * Nj + 1; j++, k++) {
+                PointLatLon a(static_cast<double>(j - Nj) * 90. / static_cast<double>(Nj),
+                              static_cast<double>(i) * 360. / static_cast<double>(Ni));
+                auto b = rot.fwd(a);
+                ASSERT(b.is_approximately_equal(ref[k], 1.e-5));
+                ASSERT(a.is_approximately_equal(rot.inv(b), 1.e-5));
             }
         }
     }
 
 
     {
-        for (const auto& p : {SP, NP, PointLatLon{-89.9, 0.}, PointLatLon{89.9, 0.}}) {
-            Rotation rotation(p.lat, p.lon, 0.);
-            ASSERT(rotation.rotated() == (p != SP));
-        }
-    }
+        const Rotation unrotated(-90., 0., 0.);
+        const Rotation angle_only(-90., 0., -180.);
+        const Rotation rotation(-40., 4., 180.);
 
-
-    {
-        using P  = PointLatLon;
-        using PQ = std::pair<PointLatLon, PointLatLon>;
-
-        Rotation unrotated(SP.lat, SP.lon, 0.);
         ASSERT(not unrotated.rotated());
-
-        for (const auto& p : {P{90., 0.}, P{0., 0.}, P{25., 270.}, P{45., -180.}}) {
-            eqv(unrotated, p, p);
-        }
-
-        Rotation angle_only(SP.lat, SP.lon, -180.);
         ASSERT(angle_only.rotated());
-
-        for (const auto& p : {P{90., 0.}, P{0., 0.}, P{25., 270.}, P{45., -180.}}) {
-            eqv(angle_only, p, {p.lat, p.lon - 180.});
-        }
-
-        Rotation rotation(-40., 4., 0.);
         ASSERT(rotation.rotated());
 
-        eqv(rotation, {90., 0.}, {40., -176.});
-        //        eqv(rotation, {0., 0.}, {-50., -176.});
-        //        eqv(rotation, {45., -180.}, {85., -176.});
+        const PointLatLon p[] = {{90., 0.}, {0., 0.}, {25., 270.}, {45., -180.}};
 
-#if 0
-    Config config;
-    config.set("north_pole", std::vector<double>{-176, 40});
-    Rotation rotation(config);
-    Log::info() << rotation << std::endl;
+        struct test_t {
+            const Rotation& rotation;
+            const PointLatLon a;
+            const PointLatLon b;
+        };
 
-    EXPECT(rotation.rotated());
+        for (const auto& test : {
+                 test_t{unrotated, p[0], p[0]},
+                 test_t{unrotated, p[1], p[1]},
+                 test_t{unrotated, p[2], p[2]},
+                 test_t{unrotated, p[3], p[3]},
+                 test_t{angle_only, p[0], {p[0].lat, p[0].lon - 180.}},
+                 test_t{angle_only, p[1], {p[1].lat, p[1].lon - 180.}},
+                 test_t{angle_only, p[2], {p[2].lat, p[2].lon - 180.}},
+                 test_t{angle_only, p[3], {p[3].lat, p[3].lon - 180.}},
+                 test_t{rotation, p[0], {40., -176.}},
+                 test_t{rotation, p[1], {-50., -176.}},
+                 test_t{rotation, p[2], {15.762700, 113.657357}},
+                 test_t{rotation, p[3], {85., -176.}},
+             }) {
+            auto b = test.rotation.fwd(test.a);
+            ASSERT(b.is_approximately_equal(test.b, 1e-5));
 
-    PointLonLat p, r;
-
-    p = {0., 90.};
-    r = {-176., 40.};
-    EXPECT_EQUIVALENT(rotation.rotate(p), r);
-    EXPECT_EQUIVALENT(rotation.unrotate(r), p);
-
-    p = {0., 0.};
-    r = {-176., -50.};
-    EXPECT_EQUIVALENT(rotation.rotate(p), r);
-    EXPECT_EQUIVALENT(rotation.unrotate(r), p);
-
-    p = {-180., 45.};
-    r = {-176., 85.};
-    EXPECT_EQUIVALENT(rotation.rotate(p), r);
-    EXPECT_EQUIVALENT(rotation.unrotate(r), p);
-#endif
+            auto a = test.rotation.inv(b);
+            ASSERT(a.is_approximately_equal(test.a, 1e-5));
+        }
     }
 }

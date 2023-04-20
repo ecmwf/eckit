@@ -29,6 +29,10 @@ add_library(grit SHARED
     projection/Rotation.h
     types.cc
     types.h
+    types/MatrixXYZ.h
+    types/PointLatLon.h
+    types/PointXY.h
+    types/PointXYZ.h
     util.cc
     util.h
     util/arange.cc

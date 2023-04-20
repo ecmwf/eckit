@@ -22,14 +22,10 @@
 namespace grit::projection {
 
 
-inline PointLatLon rotate(const Rotation::MatrixXYZ& R, const PointLatLon& p) {
-    return geometry::Sphere::xyz_to_ll(1., R * geometry::Sphere::ll_to_xyz(1., p, 0.));
-}
-
-
-Rotation::Rotation(PointLatLon south_pole, double angle) : angle_(util::normalise_longitude_to_minimum(angle, 0.)) {
-    const auto theta = -(south_pole.lat + 90.) * util::degrees_to_radians;
-    const auto phi   = -(south_pole.lon) * util::degrees_to_radians;
+Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
+    angle_(util::normalise_longitude_to_minimum(angle, 0.)) {
+    const auto theta = -(south_pole_lat + 90.) * util::degrees_to_radians;
+    const auto phi   = -(south_pole_lon)*util::degrees_to_radians;
 
     const auto sin_theta = std::sin(theta);
     const auto cos_theta = std::cos(theta);
@@ -61,41 +57,47 @@ Rotation::Rotation(PointLatLon south_pole, double angle) : angle_(util::normalis
 }
 
 
-Point grit::projection::Rotation::direct(const Point& p) const {
-    ASSERT(std::holds_alternative<PointLatLon>(p));
-
+PointLatLon Rotation::direct(const PointLatLon& p) const {
     if (rotation_ == rotation_type::ANGLE) {
-        auto q = std::get<PointLatLon>(p);
+        auto q = p;
         q.lon -= angle_;
         return q;
     }
 
     if (rotation_ == rotation_type::ANGLE_VECTOR) {
-        auto q = std::get<PointLatLon>(p);
+        auto q = p;
         q.lon -= angle_;
-        return rotate(R_, q);
+        return geometry::Sphere::xyz_to_ll(1., R_ * geometry::Sphere::ll_to_xyz(1., q, 0.));
     }
 
     return p;
 }
 
 
-Point grit::projection::Rotation::inverse(const Point& q) const {
-    ASSERT(std::holds_alternative<PointLatLon>(q));
-
+PointLatLon Rotation::inverse(const PointLatLon& q) const {
     if (rotation_ == rotation_type::ANGLE) {
-        auto p = std::get<PointLatLon>(q);
+        auto p = q;
         p.lon += angle_;
         return p;
     }
 
     if (rotation_ == rotation_type::ANGLE_VECTOR) {
-        auto p = rotate(U_, std::get<PointLatLon>(q));
+        auto p = geometry::Sphere::xyz_to_ll(1., U_ * geometry::Sphere::ll_to_xyz(1., q, 0.));
         p.lon += angle_;
         return p;
     }
 
     return q;
+}
+
+
+Point Rotation::direct(const Point& p) const {
+    return direct(std::get<PointLatLon>(p));
+}
+
+
+Point Rotation::inverse(const Point& q) const {
+    return inverse(std::get<PointLatLon>(q));
 }
 
 

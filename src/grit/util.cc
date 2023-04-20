@@ -44,16 +44,4 @@ double normalise_longitude_to_maximum(double lon, double maximum) {
 }
 
 
-void normalise_latitude_and_longitude(double& lat, double& lon, double lon_minimum) {
-    lat = normalise_longitude_to_minimum(lat, -90.);
-
-    if (lat > 90.) {
-        lat -= 180.;
-        lon += 180.;
-    }
-
-    lon = normalise_longitude_to_minimum(lon, lon_minimum);
-}
-
-
 }  // namespace grit::util

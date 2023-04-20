@@ -12,37 +12,12 @@
 
 #include "grit/types.h"
 
-#include <iostream>
-
 #include "grit/exception.h"
 
 
-namespace grit {
-
-
-PointLatLon::PointLatLon(double lat, double lon) : array{lat, lon} {
-    ASSERT_MSG(-90. <= lat && lat <= 90., "PointLatLon: invalid latitude");
+std::ostream& operator<<(std::ostream& out, const grit::Point& p) {
+    return std::holds_alternative<grit::PointLatLon>(p) ? out << std::get<grit::PointLatLon>(p)
+           : std::holds_alternative<grit::PointXY>(p)   ? out << std::get<grit::PointXY>(p)
+           : std::holds_alternative<grit::PointXYZ>(p)  ? out << std::get<grit::PointXYZ>(p)
+                                                        : NOTIMP;
 }
-
-
-std::ostream& operator<<(std::ostream& out, const Point& P) {
-    if (std::holds_alternative<PointLatLon>(P)) {
-        const auto& Q = std::get<PointLatLon>(P);
-        return out << '{' << Q.lat << ", " << Q.lon << '}';
-    }
-
-    if (std::holds_alternative<PointXY>(P)) {
-        const auto& Q = std::get<PointXY>(P);
-        return out << '{' << Q.x << ", " << Q.y << '}';
-    }
-
-    if (std::holds_alternative<PointXYZ>(P)) {
-        const auto& Q = std::get<PointXYZ>(P);
-        return out << '{' << Q.x << ", " << Q.y << ", " << Q.z << '}';
-    }
-
-    NOTIMP;
-}
-
-
-}  // namespace grit

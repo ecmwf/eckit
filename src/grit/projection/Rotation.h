@@ -65,7 +65,7 @@ public:
 
     // -- Constructors
 
-    Rotation(PointLatLon south_pole, double angle);
+    Rotation(double south_pole_lat, double south_pole_lon, double angle);
 
     // -- Destructor
     // None
@@ -77,7 +77,10 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    bool rotated() const { return rotation_ != rotation_type::UNROTATED; }
+    PointLatLon direct(const PointLatLon&) const;
+    PointLatLon inverse(const PointLatLon&) const;
 
     // -- Overridden methods
     // None

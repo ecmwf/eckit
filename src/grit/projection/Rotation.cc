@@ -13,91 +13,98 @@
 #include "grit/projection/Rotation.h"
 
 #include <cmath>
+#include <utility>
 
-#include "grit/exception.h"
 #include "grit/geometry/Sphere.h"
+#include "grit/types/MatrixXYZ.h"
 #include "grit/util.h"
 
 
 namespace grit::projection {
 
 
-Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
-    angle_(util::normalise_longitude_to_minimum(angle, 0.)) {
+Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) : rotated_(true) {
+    using M = types::MatrixXYZ<double>;
+
+    struct No final : Rotate {
+        PointLatLon operator()(const PointLatLon& p) const override { return p; }
+    };
+
+    struct Angle final : Rotate {
+        explicit Angle(double angle) : angle_(angle) {}
+        PointLatLon operator()(const PointLatLon& p) const override { return {p.lat, p.lon + angle_}; }
+        const double angle_;
+    };
+
+    struct Matrix final : Rotate {
+        explicit Matrix(M&& R) : R_(R) {}
+        PointLatLon operator()(const PointLatLon& p) const override {
+            return geometry::Sphere::xyz_to_ll(1., R_ * geometry::Sphere::ll_to_xyz(1., p, 0.));
+        }
+        const M R_;
+    };
+
+    const auto alpha = angle * util::degrees_to_radians;
     const auto theta = -(south_pole_lat + 90.) * util::degrees_to_radians;
     const auto phi   = -(south_pole_lon)*util::degrees_to_radians;
 
-    const auto sin_theta = std::sin(theta);
-    const auto cos_theta = std::cos(theta);
-    const auto sin_phi   = std::sin(phi);
-    const auto cos_phi   = std::cos(phi);
+    const auto ca = std::cos(alpha);
+    const auto ct = std::cos(theta);
+    const auto cp = std::cos(phi);
 
-    auto eq = [](double a, double b) { return util::is_approximately_equal(a, b, 1.e-12); };
-    if (eq(sin_theta, 0) && eq(cos_theta, 1)) {
-        rotation_ = eq(angle_, 0) && eq(sin_phi, 0) && eq(cos_phi, 1) ? rotation_type::UNROTATED : rotation_type::ANGLE;
+    if (util::is_approximately_equal(ct, 1., 1.e-12)) {
+        if (util::is_approximately_equal(ca * cp, 1., 1.e-12)) {
+            fwd_     = std::make_unique<No>();
+            inv_     = std::make_unique<No>();
+            rotated_ = false;
+            return;
+        }
+
+        auto a = util::normalise_longitude_to_minimum(angle - south_pole_lon, -180.);
+        fwd_   = std::make_unique<Angle>(-a);
+        inv_   = std::make_unique<Angle>(a);
         return;
     }
 
-    rotation_ = rotation_type::ANGLE_VECTOR;
+    const auto sa = std::sin(alpha);
+    const auto st = std::sin(theta);
+    const auto sp = std::sin(phi);
 
-    // Rotate: rotate by ϑ (y-axis, along the rotated Greenwich meridian), then by φ (z-axis)
-    // q = Rz * Ry * p = [  cosφ sinφ   ] * [  cosϑ   sinϑ ] * p = [  cosϑ.cosφ sinφ  sinϑ.cosφ ] * p
-    //                   [ -sinφ cosφ   ]   [       1      ]       [ -cosϑ.sinφ cosφ -sinϑ.sinφ ]
-    //                   [            1 ]   [ -sinϑ   cosϑ ]       [   -sinϑ            cosϑ    ]
-    R_ = {cos_theta * cos_phi,  sin_phi, sin_theta * cos_phi,
-          -cos_theta * sin_phi, cos_phi, -sin_theta * sin_phi,
-          -sin_theta,           0.,      cos_theta};
+    // Rotate: rotate by α, then ϑ (y-axis, along the rotated Greenwich meridian), then φ (z-axis)
+    // q = Rz Ry Ra p = [  cosφ sinφ   ] [  cosϑ   sinϑ ] [  cosα sinα   ] p
+    //                  [ -sinφ cosφ   ] [       1      ] [ -sinα cosα   ]
+    //                  [            1 ] [ -sinϑ   cosϑ ] [            1 ]
+    fwd_ = std::make_unique<Matrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp, cp * st,    //
+                                      -sa * cp - ca * ct * sp, ca * cp - sa * ct * sp, -sp * st,  //
+                                      -ca * st, -sa * st, ct});
 
-    // Un-rotate (the reverse):
-    // p = Ry * Rz * q = [ cosϑ   -sinϑ ] * [ cosφ -sinφ   ] * q = [ cosϑ.cosφ -cosϑ.sinφ -sinϑ ] * q
-    //                   [      1       ]   [ sinφ  cosφ   ]       [    sinφ       cosφ         ]
-    //                   [ sinϑ    cosϑ ]   [            1 ]       [ sinϑ.cosφ -sinϑ.sinφ  cosϑ ]
-    U_ = {cos_theta * cos_phi, -cos_theta * sin_phi, -sin_theta, sin_phi, cos_phi, 0.,
-          sin_theta * cos_phi, -sin_theta * sin_phi, cos_theta};
+    // Un-rotate (rotate by -φ, -ϑ, -α):
+    // p = Ra Ry Rz q = [ cosα -sinα   ] [ cosϑ   -sinϑ ] [ cosφ -sinφ   ] q
+    //                  [ sinα  cosα   ] [      1       ] [ sinφ  cosφ   ]
+    //                  [            1 ] [ sinϑ    cosϑ ] [            1 ]
+    inv_ = std::make_unique<Matrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp, -ca * st,  //
+                                      sa * cp * ct + ca * sp, ca * cp - sa * ct * sp, -sa * st,   //
+                                      cp * st, -sp * st, ct});
 }
 
 
 PointLatLon Rotation::fwd(const PointLatLon& p) const {
-    if (rotation_ == rotation_type::ANGLE) {
-        auto q = p;
-        q.lon -= angle_;
-        return q;
-    }
-
-    if (rotation_ == rotation_type::ANGLE_VECTOR) {
-        auto q = p;
-        q.lon -= angle_;
-        return geometry::Sphere::xyz_to_ll(1., R_ * geometry::Sphere::ll_to_xyz(1., q, 0.));
-    }
-
-    return p;
+    return (*fwd_)(p);
 }
 
 
 PointLatLon Rotation::inv(const PointLatLon& q) const {
-    if (rotation_ == rotation_type::ANGLE) {
-        auto p = q;
-        p.lon += angle_;
-        return p;
-    }
-
-    if (rotation_ == rotation_type::ANGLE_VECTOR) {
-        auto p = geometry::Sphere::xyz_to_ll(1., U_ * geometry::Sphere::ll_to_xyz(1., q, 0.));
-        p.lon += angle_;
-        return p;
-    }
-
-    return q;
+    return (*inv_)(q);
 }
 
 
 Point Rotation::fwd(const Point& p) const {
-    return fwd(std::get<PointLatLon>(p));
+    return (*fwd_)(std::get<PointLatLon>(p));
 }
 
 
 Point Rotation::inv(const Point& q) const {
-    return inv(std::get<PointLatLon>(q));
+    return (*inv_)(std::get<PointLatLon>(q));
 }
 
 

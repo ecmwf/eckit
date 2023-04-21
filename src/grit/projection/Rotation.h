@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <array>
+#include <memory>
 
 #include "grit/Projection.h"
 
@@ -25,39 +25,16 @@ class Rotation final : public Projection {
 public:
     // -- Types
 
-    struct MatrixXYZ : std::array<double, 9> {
-        MatrixXYZ() : array{1, 0, 0, 0, 1, 0, 0, 0, 1} {}
+    struct Rotate {
+        Rotate()          = default;
+        virtual ~Rotate() = default;
 
-        MatrixXYZ(double xx, double xy, double xz, double yx, double yy, double yz, double zx, double zy, double zz) :
-            array{xx, xy, xz, yx, yy, yz, zx, zy, zz} {}
+        Rotate(const Rotate&)         = delete;
+        Rotate(Rotate&&)              = delete;
+        void operator=(const Rotate&) = delete;
+        void operator=(Rotate&&)      = delete;
 
-        MatrixXYZ(const MatrixXYZ& other) : array(other) {}
-        MatrixXYZ(MatrixXYZ&& other) : array(other) {}
-
-        ~MatrixXYZ() = default;
-
-        MatrixXYZ& operator=(const MatrixXYZ& other) {
-            array::operator=(other);
-            return *this;
-        }
-        MatrixXYZ& operator=(MatrixXYZ&& other) {
-            array::operator=(other);
-            return *this;
-        }
-
-        double& xx = operator[](0);
-        double& xy = operator[](1);
-        double& xz = operator[](2);
-        double& yx = operator[](3);
-        double& yy = operator[](4);
-        double& yz = operator[](5);
-        double& zx = operator[](6);
-        double& zy = operator[](7);
-        double& zz = operator[](8);
-
-        PointXYZ operator*(const PointXYZ& p) const {
-            return {xx * p.x + xy * p.y + xz * p.z, yx * p.x + yy * p.y + yz * p.z, zx * p.x + zy * p.y + zz * p.z};
-        }
+        virtual PointLatLon operator()(const PointLatLon&) const = 0;
     };
 
     // -- Exceptions
@@ -78,7 +55,7 @@ public:
 
     // -- Methods
 
-    bool rotated() const { return rotation_ != rotation_type::UNROTATED; }
+    bool rotated() const { return rotated_; }
     PointLatLon fwd(const PointLatLon&) const;
     PointLatLon inv(const PointLatLon&) const;
 
@@ -92,22 +69,11 @@ public:
     // None
 
 private:
-    // -- Types
-
-    enum class rotation_type
-    {
-        UNROTATED,
-        ANGLE,
-        ANGLE_VECTOR
-    };
-
     // -- Members
 
-    rotation_type rotation_ = rotation_type::UNROTATED;
-
-    MatrixXYZ R_;
-    MatrixXYZ U_;
-    double angle_ = 0.;
+    std::unique_ptr<Rotate> fwd_;
+    std::unique_ptr<Rotate> inv_;
+    bool rotated_;
 
     // -- Methods
     // None

@@ -22,6 +22,21 @@ int main(int argc, char* argv[]) {
 
 
     {
+        PointLatLon SP{-90., 0.};
+        double delta[] = {-720., -360., 0., 360., 720.};
+
+        for (double angle : delta) {
+            for (double dlat : delta) {
+                for (double dlon : delta) {
+                    Rotation rotation(SP.lat + dlat, SP.lon + dlon, angle);
+                    std::cout << rotation.rotated() << std::endl;
+                }
+            }
+        }
+    }
+
+
+    {
         const PointLatLon p(1, 1);
 
         for (const auto& rotation : {

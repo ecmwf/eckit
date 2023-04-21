@@ -23,13 +23,23 @@ int main(int argc, char* argv[]) {
 
     {
         PointLatLon SP{-90., 0.};
-        double delta[] = {-720., -360., 0., 360., 720.};
+        double delta1[] = {-720., -360., 0., 360., 720.};
+        double delta2[] = {-1., 1.};
 
-        for (double angle : delta) {
-            for (double dlat : delta) {
-                for (double dlon : delta) {
-                    Rotation rotation(SP.lat + dlat, SP.lon + dlon, angle);
-                    std::cout << rotation.rotated() << std::endl;
+        for (double d1 : delta1) {
+            for (double d2 : delta1) {
+                for (double d3 : delta1) {
+                    Rotation rotation(SP.lat + d1, SP.lon + d2, d3);
+                    ASSERT(not rotation.rotated());
+
+                    for (double d4 : delta2) {
+                        for (double d5 : delta2) {
+                            for (double d6 : delta2) {
+                                Rotation rotation(SP.lat + d1 + d4, SP.lon + d2 + d5, d3 + d6);
+                                ASSERT(rotation.rotated());
+                            }
+                        }
+                    }
                 }
             }
         }

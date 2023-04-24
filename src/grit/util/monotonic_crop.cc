@@ -10,8 +10,6 @@
  */
 
 
-#include <algorithm>
-
 #include "grit/exception.h"
 #include "grit/util.h"
 
@@ -19,7 +17,8 @@
 namespace grit::util {
 
 
-std::vector<double> monotonic_crop(const std::vector<double>& values, double min, double max, double eps) {
+std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterator> monotonic_crop(
+    const std::vector<double>& values, double min, double max, double eps) {
     if (values.empty() || min > max) {
         return {};
     }

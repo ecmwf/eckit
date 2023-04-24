@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
+#include <utility>
 #include <vector>
 
 #include "grit/types.h"
@@ -62,7 +63,8 @@ std::vector<double> linspace(double start, double stop, size_t num, bool endpoin
 std::vector<double> gaussian_latitudes(size_t N, bool increasing);
 
 
-std::vector<double> monotonic_crop(const std::vector<double>&, double min, double max, double eps);
+std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterator> monotonic_crop(
+    const std::vector<double>&, double min, double max, double eps);
 
 
 /// @return longitude in degree within range [minimum, minimum + 360[

@@ -29,6 +29,7 @@ add_library(grit SHARED
     types/PointXYZ.h
     util.cc
     util.h
+    util/Mutex.h
     util/arange.cc
     util/gaussian_latitudes.cc
     util/linspace.cc

@@ -76,7 +76,7 @@ protected:
     double distance(const PointXYZ&, const PointXYZ&) const override;
     double area() const override;
 
-    PointXYZ ll_to_xyz(const PointLatLon&, double height) const override;
+    PointXYZ ll_to_xyz(const PointLatLon&) const override;
     PointLatLon xyz_to_ll(const PointXYZ&) const override;
 
     // -- Class members

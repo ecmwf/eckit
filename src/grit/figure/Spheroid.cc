@@ -13,6 +13,7 @@
 #include "grit/figure/Spheroid.h"
 
 #include "grit/exception.h"
+#include "grit/geometry/Spheroid.h"
 #include "grit/util.h"
 
 
@@ -37,37 +38,37 @@ double Spheroid::R() const {
 
 
 double Spheroid::angle(const PointLatLon& A, const PointLatLon& B) const {
-    NOTIMP;
+    return geometry::Spheroid::angle(A, B);
 }
 
 
 double Spheroid::angle(const PointXYZ& A, const PointXYZ& B) const {
-    NOTIMP;
+    return geometry::Spheroid::angle(a_, b_, A, B);
 }
 
 
 double Spheroid::distance(const PointLatLon& A, const PointLatLon& B) const {
-    NOTIMP;
+    return geometry::Spheroid::distance(a_, b_, A, B);
 }
 
 
 double Spheroid::distance(const PointXYZ& A, const PointXYZ& B) const {
-    NOTIMP;
+    return geometry::Spheroid::distance(a_, b_, A, B);
 }
 
 
 double Spheroid::area() const {
-    NOTIMP;
+    return geometry::Spheroid::area(a_, b_);
 }
 
 
-PointXYZ Spheroid::ll_to_xyz(const PointLatLon& P, double height) const {
-    NOTIMP;
+PointXYZ Spheroid::ll_to_xyz(const PointLatLon& P) const {
+    return geometry::Spheroid::ll_to_xyz(a_, b_, P, 0.);
 }
 
 
 PointLatLon Spheroid::xyz_to_ll(const PointXYZ& P) const {
-    NOTIMP;
+    return geometry::Spheroid::xyz_to_ll(a_, b_, P);
 }
 
 

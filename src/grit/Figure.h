@@ -72,7 +72,7 @@ public:
     virtual double area() const = 0;
 
     // Convert spherical coordinates to Cartesian
-    virtual PointXYZ ll_to_xyz(const PointLatLon&, double height) const = 0;
+    virtual PointXYZ ll_to_xyz(const PointLatLon&) const = 0;
 
     // Convert Cartesian coordinates to spherical
     virtual PointLatLon xyz_to_ll(const PointXYZ&) const = 0;

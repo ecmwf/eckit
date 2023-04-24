@@ -13,6 +13,7 @@
 #include "grit/figure/Sphere.h"
 
 #include "grit/exception.h"
+#include "grit/geometry/Sphere.h"
 
 
 namespace grit::figure {
@@ -24,37 +25,37 @@ Sphere::Sphere(double R) : R_(R) {
 
 
 double Sphere::angle(const PointLatLon& A, const PointLatLon& B) const {
-    NOTIMP;
+    return geometry::Sphere::angle(A, B);
 }
 
 
 double Sphere::angle(const PointXYZ& A, const PointXYZ& B) const {
-    NOTIMP;
+    return geometry::Sphere::angle(R_, A, B);
 }
 
 
 double Sphere::distance(const PointLatLon& A, const PointLatLon& B) const {
-    NOTIMP;
+    return geometry::Sphere::distance(R_, A, B);
 }
 
 
 double Sphere::distance(const PointXYZ& A, const PointXYZ& B) const {
-    NOTIMP;
+    return geometry::Sphere::distance(R_, A, B);
 }
 
 
 double Sphere::area() const {
-    NOTIMP;
+    return geometry::Sphere::area(R_);
 }
 
 
-PointXYZ Sphere::ll_to_xyz(const PointLatLon& P, double height) const {
-    NOTIMP;
+PointXYZ Sphere::ll_to_xyz(const PointLatLon& P) const {
+    return geometry::Sphere::ll_to_xyz(R_, P, 0.);
 }
 
 
 PointLatLon Sphere::xyz_to_ll(const PointXYZ& P) const {
-    NOTIMP;
+    return geometry::Sphere::xyz_to_ll(R_, P);
 }
 
 

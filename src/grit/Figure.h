@@ -12,6 +12,10 @@
 
 #pragma once
 
+#include <iosfwd>
+#include <string>
+
+
 #include "grit/types.h"
 
 
@@ -121,6 +125,37 @@ private:
 
     // -- Friends
     // None
+};
+
+
+struct FigureFactory {
+    using key_type = std::string;
+
+    Figure* build(const key_type&);
+    static void list(std::ostream&);
+
+    FigureFactory(const FigureFactory&)            = delete;
+    FigureFactory(FigureFactory&&)                 = delete;
+    FigureFactory& operator=(const FigureFactory&) = delete;
+    FigureFactory& operator=(FigureFactory&&)      = delete;
+
+    virtual Figure* make() = 0;
+
+protected:
+    explicit FigureFactory(const key_type&);
+    virtual ~FigureFactory();
+
+private:
+    const key_type key_;
+};
+
+
+template <class T>
+class FigureBuilder final : public FigureFactory {
+    Figure* make() override { return new T; }
+
+public:
+    explicit FigureBuilder(const FigureFactory::key_type& key) : FigureFactory(key) {}
 };
 
 

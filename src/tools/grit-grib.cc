@@ -19,6 +19,8 @@
 #include <string>
 
 #include "grit/exception.h"
+#include "grit/figure/Sphere.h"
+#include "grit/figure/Spheroid.h"
 #include "grit/grit.h"
 
 
@@ -142,6 +144,51 @@ void test_grib_iterator(codes_handle* h) {
 struct test;
 
 static const std::map<std::string, test*> __builders{};
+
+
+namespace GRIB {
+
+
+grit::Figure* make_figure(long code) {
+    // Code table 3.2 – Shape of the reference system
+
+    switch (code) {
+        case 0:
+            return new grit::figure::Sphere(6367470.);
+        case 1:
+            // Earth assumed spherical with radius specified (in m) by data producer
+            NOTIMP;
+        case 2:
+            return new grit::figure::Spheroid(6378160., 6356775.);
+        case 3:
+            // Earth assumed oblate spheroid with major and minor axes specified (in km) by data producer
+            NOTIMP;
+        case 4:
+            return new grit::figure::Spheroid(6378137., 6356752.314);
+        case 5:
+            return new grit::figure::Spheroid(6378137., 6356752.314140347);
+        case 6:
+            return new grit::figure::Sphere(6371229.);
+        case 7:
+            // Earth assumed oblate spheroid with major or minor axes specified (in m) by data producer
+            NOTIMP;
+        case 8:
+            return new grit::figure::Sphere(6371200.);
+        case 9:
+            return new grit::figure::Spheroid(6377563.396, 6356256.909);
+        case 10:
+            // Earth model assumed WGS84 with corrected geomagnetic coordinates (latitude and longitude) defined by
+            // Gustafsson et al., 1992
+            NOTIMP;
+        case 11:
+            return new grit::figure::Sphere(695990000.);
+        default:
+            NOTIMP;
+    }
+}
+
+
+}  // namespace GRIB
 
 
 int main(int argc, const char* argv[]) {

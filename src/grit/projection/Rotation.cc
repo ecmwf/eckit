@@ -53,18 +53,16 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
     const auto cp = std::cos(phi);
 
     if (util::is_approximately_equal(ct, 1., 1.e-12)) {
-        if (util::is_approximately_equal(ca * cp, 1., 1.e-12)) {
-            fwd_     = std::make_unique<No>();
-            inv_     = std::make_unique<No>();
-            rotated_ = false;
-            return;
-        }
+        angle    = util::normalise_longitude_to_minimum(angle - south_pole_lon, -180.);
+        rotated_ = !util::is_approximately_equal(angle, 0., 1.e-12);
 
-        auto a = util::normalise_longitude_to_minimum(angle - south_pole_lon, -180.);
-        fwd_   = std::make_unique<Angle>(-a);
-        inv_   = std::make_unique<Angle>(a);
+        fwd_.reset(rotated_ ? static_cast<Rotate*>(new Angle(-angle)) : new No);
+        inv_.reset(rotated_ ? static_cast<Rotate*>(new Angle(angle)) : new No);
         return;
     }
+
+    // FIXME this supports either angle-based or matrix-based rotation (but not both);
+    // Implementing as Euler angles rotation matrix (ideal, but reordering Rz Ry Ra) changes the existing unit test
 
     const auto sa = std::sin(alpha);
     const auto st = std::sin(theta);
@@ -85,26 +83,6 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
     inv_ = std::make_unique<Matrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp, -ca * st,  //
                                       sa * cp * ct + ca * sp, ca * cp - sa * ct * sp, -sa * st,   //
                                       cp * st, -sp * st, ct});
-}
-
-
-PointLatLon Rotation::fwd(const PointLatLon& p) const {
-    return (*fwd_)(p);
-}
-
-
-PointLatLon Rotation::inv(const PointLatLon& q) const {
-    return (*inv_)(q);
-}
-
-
-Point Rotation::fwd(const Point& p) const {
-    return (*fwd_)(std::get<PointLatLon>(p));
-}
-
-
-Point Rotation::inv(const Point& q) const {
-    return (*inv_)(std::get<PointLatLon>(q));
 }
 
 

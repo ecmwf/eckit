@@ -22,49 +22,19 @@ int main(int argc, char* argv[]) {
 
 
     {
-        PointLatLon SP{-90., 0.};
-        double delta1[] = {-720., -360., 0., 360., 720.};
-        double delta2[] = {-1., 1.};
+        const PointLatLon p(1, 1);
+        int delta[] = {-360, -180, -1, 0, 1, 90, 91, 180};
 
-        for (double d1 : delta1) {
-            for (double d2 : delta1) {
-                for (double d3 : delta1) {
-                    Rotation rotation(SP.lat + d1, SP.lon + d2, d3);
-                    ASSERT(not rotation.rotated());
+        for (auto a : delta) {
+            for (auto b : delta) {
+                for (auto c : delta) {
+                    Rotation rot(-90. + static_cast<double>(a), 0. + static_cast<double>(b), static_cast<double>(c));
+                    ASSERT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 
-                    for (double d4 : delta2) {
-                        for (double d5 : delta2) {
-                            for (double d6 : delta2) {
-                                Rotation rotation(SP.lat + d1 + d4, SP.lon + d2 + d5, d3 + d6);
-                                ASSERT(rotation.rotated());
-                            }
-                        }
-                    }
+                    ASSERT(p.is_approximately_equal(rot.inv(rot.fwd(p)), 1e-5));
+                    ASSERT(p.is_approximately_equal(rot.fwd(rot.inv(p)), 1e-5));
                 }
             }
-        }
-    }
-
-
-    {
-        const PointLatLon p(1, 1);
-
-        for (const auto& rotation : {
-                 Rotation(-90., 0., 0.),
-                 Rotation(-90., 0., 10.),
-                 Rotation(-89., 1., 0.),
-                 Rotation(-89., 1., 10.),
-                 Rotation(90., 180., 0.),
-                 Rotation(90., 180., 10.),
-                 Rotation(-89.9, 0., 0.),
-                 Rotation(-89.9, 0., 10.),
-                 Rotation(89.9, 0., 0.),
-                 Rotation(89.9, 0., 10.),
-                 Rotation(1., 1., 0.),
-                 Rotation(1., 1., 10.),
-             }) {
-            ASSERT(p.is_approximately_equal(rotation.inv(rotation.fwd(p)), 1e-5));
-            ASSERT(p.is_approximately_equal(rotation.fwd(rotation.inv(p)), 1e-5));
         }
     }
 

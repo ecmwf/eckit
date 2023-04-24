@@ -18,27 +18,10 @@
 
 #include "grit/exception.h"
 #include "grit/log.h"
-#include "grit/util.h"
 #include "grit/util/Mutex.h"
 
 
 namespace grit {
-
-
-Figure::Figure(double R) : Figure(R, R) {}
-
-
-Figure::Figure(double a, double b) :
-    a_(a), b_(b), R_(util::is_approximately_equal(a, b) ? a : std::numeric_limits<double>::signaling_NaN()) {
-    ASSERT(0. < a);
-    ASSERT(0. < b);
-}
-
-
-double Figure::R() const {
-    ASSERT(sphere());
-    return R_;
-}
 
 
 static util::once_flag __once;

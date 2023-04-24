@@ -32,9 +32,7 @@ public:
 
     // -- Constructors
 
-    explicit Figure(double R);
-    explicit Figure(double a, double b);
-
+    Figure()              = default;
     Figure(const Figure&) = default;
     Figure(Figure&&)      = default;
 
@@ -53,10 +51,10 @@ public:
 
     // -- Methods
 
-    bool sphere() const { return R_ == R_; }
-    double a() const { return a_; }
-    double b() const { return b_; }
-    double R() const;
+    virtual bool sphere() const = 0;
+    virtual double a() const    = 0;
+    virtual double b() const    = 0;
+    virtual double R() const    = 0;
 
     /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
     virtual double angle(const PointLatLon&, const PointLatLon&) const = 0;
@@ -106,10 +104,7 @@ protected:
 
 private:
     // -- Members
-
-    double a_;
-    double b_;
-    double R_;
+    // None
 
     // -- Methods
     // None

@@ -10,6 +10,10 @@ add_library(grit SHARED
     Scanner.cc
     Scanner.h
     exception.h
+    figure/Sphere.cc
+    figure/Sphere.h
+    figure/Spheroid.cc
+    figure/Spheroid.h
     geometry/BoundingBox.cc
     geometry/BoundingBox.h
     geometry/GreatCircle.cc

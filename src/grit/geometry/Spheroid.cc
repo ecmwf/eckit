@@ -12,13 +12,36 @@
 
 #include "grit/geometry/Spheroid.h"
 
-#include <cmath>
-
 #include "grit/exception.h"
 #include "grit/util.h"
 
 
 namespace grit::geometry {
+
+
+double Spheroid::angle(const PointLatLon& A, const PointLatLon& B) {
+    NOTIMP;
+}
+
+
+double Spheroid::angle(double a, double b, const PointXYZ& A, const PointXYZ& B) {
+    NOTIMP;
+}
+
+
+double Spheroid::distance(double a, double b, const PointLatLon& A, const PointLatLon& B) {
+    NOTIMP;
+}
+
+
+double Spheroid::distance(double a, double b, const PointXYZ& A, const PointXYZ& B) {
+    NOTIMP;
+}
+
+
+double Spheroid::area(double a, double b) {
+    NOTIMP;
+}
 
 
 PointXYZ Spheroid::ll_to_xyz(double a, double b, const PointLatLon& P, double height) {
@@ -54,6 +77,11 @@ PointXYZ Spheroid::ll_to_xyz(double a, double b, const PointLatLon& P, double he
     const double N_phi = a * a / std::sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi);
     return {(N_phi + height) * cos_phi * cos_lambda, (N_phi + height) * cos_phi * sin_lambda,
             (N_phi * (b * b) / (a * a) + height) * sin_phi};
+}
+
+
+PointLatLon Spheroid::xyz_to_ll(double a, double b, const PointXYZ& A) {
+    NOTIMP;
 }
 
 

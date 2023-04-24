@@ -14,6 +14,7 @@
 
 #include "grit/exception.h"
 #include "grit/types.h"
+#include "grit/types/MatrixXYZ.h"
 
 
 int main(int argc, char* argv[]) {
@@ -35,4 +36,15 @@ int main(int argc, char* argv[]) {
 
     ASSERT(PointLatLon(-30.000000000000018, -59.99999999999996).is_approximately_equal({-30, 300}, 1e-5));
     ASSERT(PointLatLon(-46.7, -178.00000000000003).is_approximately_equal({-46.7, -178.}, 1e-5));
+
+
+    {
+        using MatrixXYZ = grit::types::MatrixXYZ<double>;
+        MatrixXYZ M{1, 2, 3,  //
+                    4, 5, 6,  //
+                    7, 8, 1};
+        const auto W = M.inverse();
+        std::cout << "M M^-1=" << (M * W) << std::endl;
+        std::cout << "M^-1 M=" << (W * M) << std::endl;
+    }
 }

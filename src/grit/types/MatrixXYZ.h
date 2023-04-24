@@ -15,6 +15,7 @@
 #include <array>
 #include <ostream>
 
+#include "grit/exception.h"
 #include "grit/types/PointXYZ.h"
 
 
@@ -37,7 +38,6 @@ public:
 
     // -- Constructors
 
-    MatrixXYZ() : P{1, 0, 0, 0, 1, 0, 0, 0, 1} {}
     MatrixXYZ(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) : P{xx, xy, xz, yx, yy, yz, zx, zy, zz} {}
     MatrixXYZ(const MatrixXYZ& other) : P(other) {}
     MatrixXYZ(MatrixXYZ&& other) : P(other) {}
@@ -65,6 +65,13 @@ public:
         return {xx * p.x + xy * p.y + xz * p.z, yx * p.x + yy * p.y + yz * p.z, zx * p.x + zy * p.y + zz * p.z};
     }
 
+    MatrixXYZ<T> operator*(const MatrixXYZ<T>& M) const {
+        return {
+            xx * M.xx + xy * M.yx + xz * M.zx, xx * M.xy + xy * M.yy + xz * M.zy, xx * M.xz + xy * M.yz + xz * M.zz,
+            yx * M.xx + yy * M.yx + yz * M.zx, yx * M.xy + yy * M.yy + yz * M.zy, yx * M.xz + yy * M.yz + yz * M.zz,
+            zx * M.xx + zy * M.yx + zz * M.zx, zx * M.xy + zy * M.yy + zz * M.zy, zx * M.xz + zy * M.yz + zz * M.zz};
+    }
+
     // -- Members
 
     T& xx = P::operator[](0);
@@ -78,7 +85,17 @@ public:
     T& zz = P::operator[](8);
 
     // -- Methods
-    // None
+
+    static MatrixXYZ<T> identity() { return {1, 0, 0, 0, 1, 0, 0, 0, 1}; }
+
+    MatrixXYZ<T> inverse() const {
+        auto det = xx * (yy * zz - yz * zy) - xy * (yx * zz - yz * zx) + xz * (yx * zy - yy * zx);
+        ASSERT_MSG(det != 0, "MatrixXYZ: singular matrix");
+
+        return {(yy * zz - yz * zy) / det, (xz * zy - xy * zz) / det, (xy * yz - xz * yy) / det,
+                (yz * zx - yx * zz) / det, (xx * zz - xz * zx) / det, (xz * yx - xx * yz) / det,
+                (yx * zy - yy * zx) / det, (xy * zx - xx * zy) / det, (xx * yy - xy * yx) / det};
+    }
 
     // -- Overridden methods
     // None

@@ -12,19 +12,15 @@
 
 #pragma once
 
-#include <cassert>
-#include <stdexcept>
+#include <iostream>
 
 
-namespace grit::exception {
+namespace grit {
 
 
-using std::runtime_error;
+auto& error = std::cerr;
+auto& warn  = std::cout;
+auto& info  = std::clog;
 
 
-}
-
-
-#define ASSERT assert
-#define ASSERT_MSG(x, y) assert((x) && (y))
-#define NOTIMP throw ::grit::exception::runtime_error("Not implemented")
+}  // namespace grit

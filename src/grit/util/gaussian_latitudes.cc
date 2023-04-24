@@ -12,9 +12,10 @@
 
 #include <cmath>
 #include <limits>
-#include <stdexcept>
 #include <string>
 #include <vector>
+
+#include "grit/exception.h"
 
 
 namespace grit::util {
@@ -80,8 +81,8 @@ std::vector<double> gaussian_latitudes(size_t N, bool increasing) {
         }
 
         if (!converged) {
-            throw std::runtime_error("Could not calculate latitude within accuracy/iterations: " + std::to_string(eps) +
-                                     "/" + std::to_string(Nmax));
+            throw exception::runtime_error("Could not calculate latitude within accuracy/iterations: " +
+                                           std::to_string(eps) + "/" + std::to_string(Nmax));
         }
 
         // Convert colatitude [rad] to latitude [degree], symmetry

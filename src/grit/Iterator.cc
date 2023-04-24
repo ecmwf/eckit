@@ -13,18 +13,19 @@
 #include "grit/Iterator.h"
 
 #include "grit/Figure.h"
+#include "grit/Projection.h"
 #include "grit/Scanner.h"
-#include "grit/Transformation.h"
 #include "grit/exception.h"
 
 
 namespace grit {
 
 
-Iterator::Iterator(Scanner* scanner, Figure* figure, Transformation* transformation) :
-    scanner_(scanner), figure_(figure), transformation_(transformation) {
+Iterator::Iterator(Scanner* scanner, Figure* figure, Projection* projection) :
+    scanner_(scanner), figure_(figure), projection_(projection) {
     ASSERT(scanner_);
     ASSERT(figure_);
+    ASSERT(projection_);
 }
 
 

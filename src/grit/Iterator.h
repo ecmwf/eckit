@@ -17,8 +17,8 @@
 
 namespace grit {
 struct Figure;
+struct Projection;
 struct Scanner;
-struct Transformation;
 }  // namespace grit
 
 
@@ -68,7 +68,7 @@ public:
 
     // -- Constructors
 
-    Iterator(Scanner* scanner, Figure* figure, Transformation* transformation);
+    Iterator(Scanner*, Figure*, Projection*);
 
     Iterator(const Iterator&) = delete;
     Iterator(Iterator&&)      = delete;
@@ -115,7 +115,7 @@ private:
 
     std::unique_ptr<Scanner> scanner_;
     std::unique_ptr<Figure> figure_;
-    std::unique_ptr<Transformation> transformation_;
+    std::unique_ptr<Projection> projection_;
 
     // -- Methods
     // None

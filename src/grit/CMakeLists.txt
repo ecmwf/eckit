@@ -9,8 +9,6 @@ add_library(grit SHARED
     Projection.h
     Scanner.cc
     Scanner.h
-    Transformation.cc
-    Transformation.h
     exception.h
     figure/Sphere.cc
     figure/Sphere.h

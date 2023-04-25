@@ -2,6 +2,7 @@ include(CTest)
 
 foreach(name
         projection
+        projection_ll_to_xyz
         projection_rotation
         types
         util)

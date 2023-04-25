@@ -18,6 +18,8 @@ add_library(grit SHARED
     geometry/Spheroid.h
     geometry/UnitSphere.h
     log.h
+    projection/LatLonToXYZ.cc
+    projection/LatLonToXYZ.h
     projection/Rotation.cc
     projection/Rotation.h
     types.cc

@@ -19,8 +19,6 @@
 #include <string>
 
 #include "grit/exception.h"
-#include "grit/figure/Sphere.h"
-#include "grit/figure/Spheroid.h"
 #include "grit/grit.h"
 
 
@@ -149,6 +147,7 @@ static const std::map<std::string, test*> __builders{};
 namespace GRIB {
 
 
+#if 0
 grit::Figure* make_figure(long code) {
     // Code table 3.2 – Shape of the reference system
 
@@ -186,6 +185,7 @@ grit::Figure* make_figure(long code) {
             NOTIMP;
     }
 }
+#endif
 
 
 }  // namespace GRIB

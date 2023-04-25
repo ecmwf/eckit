@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include <iosfwd>
+#include <string>
+
 #include "grit/types.h"
 
 
@@ -93,6 +96,37 @@ private:
 
     // -- Friends
     // None
+};
+
+
+struct ProjectionFactory {
+    using key_type = std::string;
+
+    Projection* build(const key_type&);
+    static void list(std::ostream&);
+
+    ProjectionFactory(const ProjectionFactory&)            = delete;
+    ProjectionFactory(ProjectionFactory&&)                 = delete;
+    ProjectionFactory& operator=(const ProjectionFactory&) = delete;
+    ProjectionFactory& operator=(ProjectionFactory&&)      = delete;
+
+    virtual Projection* make() = 0;
+
+protected:
+    explicit ProjectionFactory(const key_type&);
+    virtual ~ProjectionFactory();
+
+private:
+    const key_type key_;
+};
+
+
+template <class T>
+class ProjectionBuilder final : public ProjectionFactory {
+    Projection* make() override { return new T; }
+
+public:
+    explicit ProjectionBuilder(const ProjectionFactory::key_type& key) : ProjectionFactory(key) {}
 };
 
 

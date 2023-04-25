@@ -12,7 +12,12 @@
 
 #include "grit/Projection.h"
 
-// #include <>
+#include <map>
+#include <ostream>
+
+#include "grit/exception.h"
+#include "grit/log.h"
+#include "grit/util/Mutex.h"
 
 
 namespace grit {
@@ -211,6 +216,63 @@ Projection centre (grib2/tables/30/3.5.table)
   2 0 Only one projection centre is used
   2 1 Projection is bipolar and symmetric
 #endif
+
+
+static util::once_flag __once;
+static util::recursive_mutex* __mutex                                         = nullptr;
+static std::map<ProjectionFactory::key_type, ProjectionFactory*>* __factories = nullptr;
+
+
+static void __init() {
+    __mutex     = new util::recursive_mutex();
+    __factories = new std::map<ProjectionFactory::key_type, ProjectionFactory*>();
+}
+
+
+Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key) {
+    util::call_once(__once, __init);
+    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+
+    if (auto f = __factories->find(key); f != __factories->end()) {
+        return f->second->make();
+    }
+
+    list(error << "ProjectionFactory: unknown '" << key << "', choices are: ");
+    throw exception::runtime_error("ProjectionFactory: unknown '" + key + "'");
+}
+
+
+void ProjectionFactory::list(std::ostream& out) {
+    util::call_once(__once, __init);
+    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+
+    const char* sep = "";
+    for (const auto& j : *__factories) {
+        out << sep << j.first;
+        sep = ", ";
+    }
+}
+
+
+ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) : key_(key) {
+    util::call_once(__once, __init);
+    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+
+    if (auto f = __factories->find(key); f != __factories->end()) {
+        throw exception::runtime_error("ProjectionFactory: duplicate '" + key + "'");
+    }
+
+    (*__factories)[key] = this;
+}
+
+
+ProjectionFactory::~ProjectionFactory() {
+    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+
+    if (__factories != nullptr) {
+        __factories->erase(key_);
+    }
+}
 
 
 }  // namespace grit

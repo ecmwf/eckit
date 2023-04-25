@@ -1,6 +1,7 @@
 include(CTest)
 
 foreach(name
+        param
         projection
         projection_ll_to_xyz
         projection_rotation

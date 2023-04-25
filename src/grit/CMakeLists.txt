@@ -1,6 +1,7 @@
 configure_file(grit.h.in grit.h)
 
 add_library(grit SHARED
+	Parametrisation.h
     Iterator.cc
     Iterator.h
     Projection.cc
@@ -18,6 +19,8 @@ add_library(grit SHARED
     geometry/Spheroid.h
     geometry/UnitSphere.h
     log.h
+    param/Map.cc
+    param/Map.h
     projection/LatLonToXYZ.cc
     projection/LatLonToXYZ.h
     projection/Rotation.cc

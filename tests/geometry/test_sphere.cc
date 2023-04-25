@@ -196,6 +196,49 @@ CASE("test unit sphere lon 315") {
 }
 
 // -----------------------------------------------------------------------------
+// test unit sphere latitudes outside [-90, 90]
+
+CASE("test unit sphere lat 100") {
+    const PointLonLat ll1(0., 100.);
+    const PointLonLat ll2(180., 80.);
+    PointXYZ p, q;
+
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::Exception);
+
+    // Optional behavior normalises coordinates
+    const double height = 0.;
+    const bool normalise_lats_across_poles = true;
+    UnitSphere::convertSphericalToCartesian(ll1, p, height, normalise_lats_across_poles);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
+
+    // sin(x) and sin(pi-x) are not bitwise identical
+    EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
+    EXPECT(eckit::types::is_approximately_equal(p.y(), q.y()));
+    EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
+}
+
+CASE("test unit sphere lat -120") {
+    const PointLonLat ll1(45., -120.);
+    const PointLonLat ll2(225., -60.);
+    PointXYZ p, q;
+
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::Exception);
+
+    // Optional behavior normalises coordinates
+    const double height = 0.;
+    const bool normalise_lats_across_poles = true;
+    UnitSphere::convertSphericalToCartesian(ll1, p, height, normalise_lats_across_poles);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
+
+    // sin(x) and sin(pi-x) are not bitwise identical
+    EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
+    EXPECT(eckit::types::is_approximately_equal(p.y(), q.y()));
+    EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
+}
+
+// -----------------------------------------------------------------------------
 // test unit sphere area
 
 CASE("test unit sphere area globe") {

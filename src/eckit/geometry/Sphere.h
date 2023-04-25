@@ -52,7 +52,8 @@ struct Sphere {
                                                   double& Clon1, double& Clon2);
 
     // Convert spherical coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.);
+    static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.,
+                                            bool normalise_lats_across_poles = false);
 
     // Convert Cartesian coordinates to spherical
     static void convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat);

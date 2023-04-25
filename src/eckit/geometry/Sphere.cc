@@ -175,10 +175,12 @@ void Sphere::greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Poin
     Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
 }
 
-void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height) {
+void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height,
+                                         const bool normalise_lats_across_poles) {
     ASSERT(radius > 0.);
 
-    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
+    const bool lat_across_pole = (Alonlat[1] < -90. || Alonlat[1] > 90.);
+    if (!normalise_lats_across_poles && lat_across_pole) {
         std::ostringstream oss;
         oss.precision(max_digits10);
         oss << "Invalid latitude " << Alonlat[1];
@@ -196,9 +198,16 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
      *
      * These three conditionings combined project very accurately to the sphere
      * poles and quadrants.
+     *
+     * Note the option `normalise_lats_across_poles` enables normalising latitudes
+     * outside [-90,90] back into the interval according to the transformation:
+     *   (λ, ϕ) -> (λ+180, 180-ϕ) if ϕ > 90
+     *          -> (λ+180, -180-ϕ) if ϕ < -90
+     * As the SphericalToCartesian algorithm depends on sin(ϕ) which is invariant
+     * under this renormalisation, this option controls only the longitude phase-shift.
      */
 
-    const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
+    const double lambda_deg = normalise_longitude(Alonlat[0] + (lat_across_pole ? 180. : 0.), -180.);
     const double lambda     = degrees_to_radians * lambda_deg;
     const double phi        = degrees_to_radians * Alonlat[1];
 

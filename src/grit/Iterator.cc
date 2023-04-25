@@ -12,7 +12,6 @@
 
 #include "grit/Iterator.h"
 
-#include "grit/Figure.h"
 #include "grit/Projection.h"
 #include "grit/Scanner.h"
 #include "grit/exception.h"
@@ -21,10 +20,8 @@
 namespace grit {
 
 
-Iterator::Iterator(Scanner* scanner, Figure* figure, Projection* projection) :
-    scanner_(scanner), figure_(figure), projection_(projection) {
+Iterator::Iterator(Scanner* scanner, Projection* projection) : scanner_(scanner), projection_(projection) {
     ASSERT(scanner_);
-    ASSERT(figure_);
     ASSERT(projection_);
 }
 

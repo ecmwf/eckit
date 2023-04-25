@@ -36,7 +36,7 @@ class Exception : public std::exception {
 
 public:  // methods
     /// Constructor with message
-    Exception(const std::string& what, const CodeLocation& location = CodeLocation());
+    Exception(const std::string& what, const CodeLocation& location = CodeLocation(), bool quiet=false);
 
     /// Destructor
     /// @throws nothing

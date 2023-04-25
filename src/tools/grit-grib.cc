@@ -12,21 +12,18 @@
 
 #include "eccodes.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
-#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "grit/Parametrisation.h"
 #include "grit/exception.h"
 #include "grit/grit.h"
-
-
-#if 0
-static const std::map<std::string, &type_creator> __types{
-    {"regular_ll", nullptr}
-};
-#endif
+#include "grit/param/Map.h"
+#include "grit/types.h"
 
 
 #if 0
@@ -43,108 +40,6 @@ static const std::map<std::string, &type_creator> __types{
   size_t basicAngleOfTheInitialProductionDomain
   size_t subdivisionsOfBasicAngle
 #endif
-
-
-struct grib_type : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
-    using t = std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>;
-
-    bool get_bool(const std::string& key) const { return get_long(key) != 0L; }
-
-    double get_double(const std::string& key) const {
-        if (auto value = cache_double.find(key); value != cache_double.end()) {
-            return value->second;
-        }
-
-        double value = 0;
-        ASSERT(CODES_SUCCESS == codes_get_double(get(), key.c_str(), &value));
-
-        cache_double[key] = value;
-        return value;
-    }
-
-    long get_long(const std::string& key) const {
-        if (auto value = cache_long.find(key); value != cache_long.end()) {
-            return value->second;
-        }
-
-        long value = 0;
-        ASSERT(CODES_SUCCESS == codes_get_long(get(), key.c_str(), &value));
-
-        cache_long[key] = value;
-        return value;
-    }
-
-    size_t get_size_t(const std::string& key) const {
-        auto value = get_long(key);
-        ASSERT(value >= 0);
-        return static_cast<size_t>(value);
-    }
-
-    std::string get_string(const std::string& key) const {
-        char mesg[1024];
-        auto length = sizeof(mesg);
-        ASSERT(CODES_SUCCESS == codes_get_string(get(), key.c_str(), mesg, &length));
-        const std::string value(mesg);
-
-        cache_string[key] = value;
-        return value;
-    }
-
-    mutable std::map<std::string, double> cache_double;
-    mutable std::map<std::string, long> cache_long;
-    mutable std::map<std::string, std::string> cache_string;
-
-    explicit grib_type(codes_handle* h) : t(h, &codes_handle_delete) { ASSERT(*this); }
-
-    std::string type() const { return get_string("gridType"); }
-
-    size_t Ni() const { return get_size_t("Ni"); }
-    size_t Nj() const { return get_size_t("Nj"); }
-
-    double i_start() const { return get_double("longitudeOfFirstGridPointInDegrees"); }
-    double i_step() const { return get_double("iDirectionIncrementInDegrees"); }
-    double i_stop() const { return get_double("longitudeOfLastGridPointInDegrees"); }
-
-    double j_start() const { return get_double("latitudeOfFirstGridPointInDegrees"); }
-    double j_step() const { return get_double("jDirectionIncrementInDegrees"); }
-    double j_stop() const { return get_double("latitudeOfLastGridPointInDegrees"); }
-
-    struct iterator : std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)> {
-        using t = std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)>;
-
-        explicit iterator(codes_handle* h) : t(codes_grib_iterator_new(h, 0, &err), &codes_grib_iterator_delete) {
-            ASSERT(CODES_SUCCESS == err);
-            ASSERT(*this);
-        }
-
-        bool next() { return codes_grib_iterator_next(get(), &lat, &lon, &value) > 0; }
-
-        friend std::ostream& operator<<(std::ostream& out, const iterator& it) {
-            return (out << "- lat=" << it.lat << " lon=" << it.lon << " value=" << it.value);
-        }
-
-        int err      = 0;
-        double lat   = 0;
-        double lon   = 0;
-        double value = 0;
-    };
-};
-
-
-void test_grib_iterator(codes_handle* h) {
-    ASSERT(h != nullptr);
-
-    // long bitmapPresent = 0;
-    // ASSERT(CODES_SUCCESS == codes_get_long(h, "bitmapPresent", &bitmapPresent));
-}
-
-
-struct test;
-
-static const std::map<std::string, test*> __builders{};
-
-
-namespace GRIB {
 
 
 #if 0
@@ -188,7 +83,304 @@ grit::Figure* make_figure(long code) {
 #endif
 
 
-}  // namespace GRIB
+class GribParametrisation final : public grit::Parametrisation,
+                                  std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
+private:
+    // -- Types
+
+    using t = std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>;
+
+public:
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+
+    explicit GribParametrisation(codes_handle* h) : t(h, &codes_handle_delete) { ASSERT(*this); }
+
+    // -- Destructor
+    // None
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+    // None
+
+    // -- Methods
+
+    template <typename T>
+    T get(const key_type& key) const {
+        auto value = T();
+        ASSERT(get(key, value));
+        return value;
+    }
+
+    // -- Overridden methods
+
+    bool has(const key_type& key) const override { return 0 != codes_is_defined(t::get(), key.c_str()); }
+
+    bool get(const key_type& key, bool& value) const override {
+        if (long another = 0; get(key, another)) {
+            value = another != 0;
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, int& value) const override {
+        if (long another = 0; get(key, another)) {
+            value = static_cast<int>(another);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, unsigned int& value) const override {
+        if (long another = 0; get(key, another) && 0 <= another) {
+            value = static_cast<unsigned int>(another);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, long& value) const override {
+        if (cache_.get(key, value)) {
+            return true;
+        }
+
+        if (CODES_SUCCESS == codes_get_long(t::get(), key.c_str(), &value)) {
+            cache_.set(key, value);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, unsigned long& value) const override {
+        if (long another = 0; get(key, another) && 0 <= another) {
+            value = static_cast<unsigned long>(another);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, float& value) const override {
+        if (double another = 0; get(key, another)) {
+            value = static_cast<float>(another);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, double& value) const override {
+        if (cache_.get(key, value)) {
+            return true;
+        }
+
+        if (CODES_SUCCESS == codes_get_double(t::get(), key.c_str(), &value)) {
+            cache_.set(key, value);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::string& value) const override {
+        if (cache_.get(key, value)) {
+            return true;
+        }
+
+        char mesg[1024];
+        if (auto length = sizeof(mesg); CODES_SUCCESS == codes_get_string(t::get(), key.c_str(), mesg, &length)) {
+            value = mesg;
+            cache_.set(key, value);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<bool>& value) const override {
+        if (std::vector<long> another; get(key, another)) {
+            value.resize(another.size());
+            std::transform(another.begin(), another.end(), value.begin(), [](long v) { return v != 0; });
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<int>& value) const override {
+        if (std::vector<long> another; get(key, another)) {
+            value.resize(another.size());
+            std::transform(another.begin(), another.end(), value.begin(), [](long v) { return static_cast<int>(v); });
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<unsigned int>& value) const override {
+        if (std::vector<long> another; get(key, another)) {
+            value.resize(another.size());
+            std::transform(another.begin(), another.end(), value.begin(), [](long v) {
+                ASSERT(0 <= v);
+                return static_cast<unsigned int>(v);
+            });
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<long>& value) const override {
+        if (cache_.get(key, value)) {
+            return true;
+        }
+
+        if (size_t size = 0; CODES_SUCCESS == codes_get_size(t::get(), key.c_str(), &size)) {
+            std::vector<long> another(size);
+            if (CODES_SUCCESS == codes_get_long_array(t::get(), key.c_str(), another.data(), &size)) {
+                value.swap(another);
+                cache_.set(key, value);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<unsigned long>& value) const override {
+        if (std::vector<long> another; get(key, another)) {
+            value.resize(another.size());
+            std::transform(another.begin(), another.end(), value.begin(), [](long v) {
+                ASSERT(0 <= v);
+                return static_cast<unsigned long>(v);
+            });
+            return true;
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<float>& value) const override {
+        if (cache_.get(key, value)) {
+            return true;
+        }
+
+        if (size_t size = 0; CODES_SUCCESS == codes_get_size(t::get(), key.c_str(), &size)) {
+            std::vector<float> another(size);
+            if (CODES_SUCCESS == codes_get_float_array(t::get(), key.c_str(), another.data(), &size)) {
+                value.swap(another);
+                cache_.set(key, value);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<double>& value) const override {
+        if (cache_.get(key, value)) {
+            return true;
+        }
+
+        if (size_t size = 0; CODES_SUCCESS == codes_get_size(t::get(), key.c_str(), &size)) {
+            std::vector<double> another(size);
+            if (CODES_SUCCESS == codes_get_double_array(t::get(), key.c_str(), another.data(), &size)) {
+                value.swap(another);
+                cache_.set(key, value);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool get(const key_type& key, std::vector<std::string>& value) const override { NOTIMP; }
+
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+    // -- Members
+
+    mutable grit::param::Map cache_;
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
+
+#if 0
+    std::string type() const { return get_string("gridType"); }
+    
+    size_t Ni() const { return get_size_t("Ni"); }
+    size_t Nj() const { return get_size_t("Nj"); }
+    
+    double i_start() const { return get_double("longitudeOfFirstGridPointInDegrees"); }
+    double i_step() const {  return get_double("iDirectionIncrementInDegrees"); }
+    double i_stop() const {  return get_double("longitudeOfLastGridPointInDegrees"); }
+    
+    double j_start() const { return get_double("latitudeOfFirstGridPointInDegrees"); }
+    double j_step() const {  return get_double("jDirectionIncrementInDegrees"); }
+    double j_stop() const {  return get_double("latitudeOfLastGridPointInDegrees"); }
+    
+    struct iterator : std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)> {
+        using t = std::unique_ptr<codes_iterator, decltype(&codes_grib_iterator_delete)>;
+        
+        explicit iterator(codes_handle* h) : t(codes_grib_iterator_new(h, 0, &err), &codes_grib_iterator_delete) {
+            ASSERT(CODES_SUCCESS == err);
+            ASSERT(*this);
+        }
+        
+        bool next() { return codes_grib_iterator_next(get(), &lat, &lon, &value) > 0; }
+        
+        friend std::ostream& operator<<(std::ostream& out, const iterator& it) {
+            return (out << "- lat=" << it.lat << " lon=" << it.lon << " value=" << it.value);
+        }
+        
+        int err      = 0;
+        double lat   = 0;
+        double lon   = 0;
+        double value = 0;
+    };
+#endif
+};
+
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec) {
+    const auto* s = "";
+
+    out << '{';
+    for (const auto& v : vec) {
+        out << s << v;
+        s = ", ";
+    }
+
+    return out << '}';
+}
 
 
 int main(int argc, const char* argv[]) {
@@ -200,7 +392,7 @@ int main(int argc, const char* argv[]) {
 
         int err = 0;
         for (codes_handle* h = nullptr; nullptr != (h = codes_handle_new_from_file(nullptr, in, PRODUCT_GRIB, &err));) {
-            grib_type grib(h);
+            GribParametrisation grib(h);
 
 #if 0
             int n = 0;
@@ -210,55 +402,54 @@ int main(int argc, const char* argv[]) {
             std::cout.flush();
 #endif
 
-            auto type = grib.type();
+            std::string type;
+            ASSERT(grib.get("gridType", type));
             std::cout << "type: '" << type << "'" << std::endl;
 
+            if (grib.has("pl")) {
+                std::cout << "pl: '" << grib.get<grit::pl_type>("pl") << "'" << std::endl;
+            }
+
             if (type == "regular_ll") {
-                struct regular_ll_args {  // also, rotated_ll
-                    size_t n_i;
-                    double i_start;
-                    double i_stop;
-                    double i_step;
-                    size_t n_j;
-                    double j_start;
-                    double j_stop;
-                    double j_step;
-                };
-
-                regular_ll_args args{grib.Ni(), grib.i_start(), grib.i_stop(), grib.i_step(),
-                                     grib.Nj(), grib.j_start(), grib.j_stop(), grib.j_step()};
-
-
-                //                struct regular_gg_args {  // also, rotated_gg
-                //                    size_t n;
-                //                    size_t n_i;
-                //                    double i_start;
-                //                    double i_stop;
-                //                    double j_start;
-                //                    double j_stop;
-                //                };
-
-
-                //                struct reduced_gg_args {  // also, reduced_rotated_gg
-                //                    size_t n;
-                //                    std::vector<long> n_i;
-                //                    double i_start;
-                //                    double i_stop;
-                //                    double i_step;
-                //                    double j_start;
-                //                    double j_stop;
-                //                    double j_step;
-                //                };
-
-
-                //                struct reduced_ll_args {
-                //                    std::vector<long> n_i;
-                //                    double i_start;
-                //                    double i_stop;
-                //                    double i_step;
-                //                    double j_start;
-                //                    double j_stop;
-                //                    double j_step;
+                //  struct regular_ll_args {  // also, rotated_ll
+                //      size_t n_i;
+                //      double i_start;
+                //      double i_stop;
+                //      double i_step;
+                //      size_t n_j;
+                //      double j_start;
+                //      double j_stop;
+                //      double j_step;
+                //  };``
+                //
+                //  struct regular_gg_args {  // also, rotated_gg
+                //      size_t n;
+                //      size_t n_i;
+                //      double i_start;
+                //      double i_stop;
+                //      double j_start;
+                //      double j_stop;
+                //  };
+                //
+                //  struct reduced_gg_args {  // also, reduced_rotated_gg
+                //      size_t n;
+                //      std::vector<long> n_i;
+                //      double i_start;
+                //      double i_stop;
+                //      double i_step;
+                //      double j_start;
+                //      double j_stop;
+                //      double j_step;
+                //  };
+                //
+                //  struct reduced_ll_args {
+                //      std::vector<long> n_i;
+                //      double i_start;
+                //      double i_stop;
+                //      double i_step;
+                //      double j_start;
+                //      double j_stop;
+                //      double j_step;
             };
         }
 

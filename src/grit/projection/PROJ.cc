@@ -12,13 +12,15 @@
 
 #include "grit/projection/PROJ.h"
 
+#include "grit/Parametrisation.h"
 #include "grit/exception.h"
+#include "grit/types.h"
 
 
 namespace grit::projection {
 
 
-PROJ::PROJ(const std::string& source, const std::string& target) :
+PROJ::PROJ(const std::string& source, const std::string& target, double(lon_minimum)) :
     proj_(nullptr), ctx_(PJ_DEFAULT_CTX), source_(source), target_(target) {
     ASSERT(!source.empty());
 
@@ -28,96 +30,94 @@ PROJ::PROJ(const std::string& source, const std::string& target) :
 
     proj_.reset(proj_normalize_for_visualization(ctx_.get(), p.get()));
     ASSERT(proj_);
+
+    struct LatLon final : Convert {
+        PJ_COORD convert(const Point& p) const final {
+            const auto& q = std::get<PointLatLon>(p);
+            return proj_coord(q.lon, q.lat, 0, 0);
+        }
+
+        Point convert(const PJ_COORD& c) const final { return PointLatLon::make(c.enu.n, c.enu.e, lon_minimum_); }
+
+        explicit LatLon(double lon_minimum) : lon_minimum_(lon_minimum) {}
+        const double lon_minimum_;
+    };
+
+    struct XY final : Convert {
+        PJ_COORD convert(const Point& p) const final {
+            const auto& q = std::get<PointXY>(p);
+            return proj_coord(q.x, q.y, 0, 0);
+        }
+
+        Point convert(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
+    };
+
+    struct XYZ final : Convert {
+        PJ_COORD convert(const Point& p) const final {
+            const auto& q = std::get<PointXYZ>(p);
+            return proj_coord(q.x, q.y, q.z, 0);
+        }
+
+        Point convert(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }
+    };
+
+    auto convert_ptr = [lon_minimum](const std::string& string) -> Convert* {
+        constexpr auto ctx = PJ_DEFAULT_CTX;
+
+        pj_t identity(proj_create_crs_to_crs(ctx, string.c_str(), string.c_str(), nullptr));
+        pj_t crs(proj_get_target_crs(ctx, identity.get()));
+        pj_t cs(proj_crs_get_coordinate_system(ctx, crs.get()));
+        ASSERT(cs);
+
+        auto type = proj_cs_get_type(ctx, cs.get());
+        auto dim  = proj_cs_get_axis_count(ctx, cs.get());
+
+        return type == PJ_CS_TYPE_CARTESIAN && dim == 3   ? static_cast<Convert*>(new XYZ)
+               : type == PJ_CS_TYPE_CARTESIAN && dim == 2 ? static_cast<Convert*>(new XY)
+               : type == PJ_CS_TYPE_ELLIPSOIDAL           ? static_cast<Convert*>(new LatLon(lon_minimum))
+               : type == PJ_CS_TYPE_SPHERICAL             ? static_cast<Convert*>(new LatLon(lon_minimum))
+                                                          : NOTIMP;
+    };
+
+    from_.reset(convert_ptr(source_));
+    ASSERT(from_);
+
+    to_.reset(convert_ptr(target_));
+    ASSERT(to_);
 }
 
 
-std::string PROJ::ellipsoid() const {
-    pj_t identity(proj_create_crs_to_crs(ctx_.get(), target_.c_str(), target_.c_str(), nullptr));
-    pj_t proj(proj_get_target_crs(ctx_.get(), identity.get()));
+PROJ::PROJ(const Parametrisation& param) :
+    PROJ(param.has("source") ? param.get_string("source") : "EPSG:4326",  // default to WGS 84
+         param.has("target") ? param.get_string("target") : "EPSG:4326",  // ...
+         param.has("lon_minimum") ? param.get_double("lon_minimum") : 0) {}
 
-    if (pj_t ellipsoid(proj_get_ellipsoid(ctx_.get(), proj.get())); ellipsoid) {
-        double a = 0;
-        double b = 0;
-        ASSERT(proj_ellipsoid_get_parameters(ctx_.get(), ellipsoid.get(), &a, &b, nullptr, nullptr));
-        ASSERT(0 < b && b <= a);
-        return b < a ? "+proj=lonlat +a=" + std::to_string(a) + " +b=" + std::to_string(b)
-                     : "+proj=lonlat +R=" + std::to_string(a);
-    }
 
-    // EPSG:4326 -> WGS84 (lat,lon), EPSG:4978 -> WGS84 (x,y,z)
-    return "EPSG:4326";
+std::string PROJ::ellipsoid(const std::string& string) {
+    constexpr auto ctx = PJ_DEFAULT_CTX;
+
+    pj_t identity(proj_create_crs_to_crs(ctx, string.c_str(), string.c_str(), nullptr));
+    pj_t crs(proj_get_target_crs(ctx, identity.get()));
+    pj_t ellipsoid(proj_get_ellipsoid(ctx, crs.get()));
+    ASSERT(ellipsoid);
+
+    double a = 0;
+    double b = 0;
+    ASSERT(proj_ellipsoid_get_parameters(ctx, ellipsoid.get(), &a, &b, nullptr, nullptr));
+    ASSERT(0 < b && b <= a);
+
+    return b < a ? "+a=" + std::to_string(a) + " +b=" + std::to_string(b) : "+R=" + std::to_string(a);
 }
 
 
-template <class T>
-PJ_COORD __from(const T&) {
-    NOTIMP;
+Point PROJ::fwd(const Point& p) const {
+    return to_->convert(proj_trans(proj_.get(), PJ_FWD, from_->convert(p)));
 }
 
 
-template <>
-PJ_COORD __from(const PointLatLon& p) {
-    return proj_coord(p.lon, p.lat, 0, 0);
+Point PROJ::inv(const Point& q) const {
+    return from_->convert(proj_trans(proj_.get(), PJ_INV, to_->convert(q)));
 }
-
-
-template <>
-PJ_COORD __from(const PointXY& p) {
-    return proj_coord(p.x, p.y, 0, 0);
-}
-
-
-template <>
-PJ_COORD __from(const PointXYZ& p) {
-    return proj_coord(p.x, p.y, p.z, 0);
-}
-
-
-template <class T>
-T __to(const PJ_COORD&) {
-    NOTIMP;
-}
-
-
-template <>
-PointLatLon __to(const PJ_COORD& c) {
-    return PointLatLon::make(c.enu.n, c.enu.e);
-}
-
-
-template <>
-PointXY __to(const PJ_COORD& c) {
-    return {c.xy.x, c.xy.y};
-}
-
-
-template <>
-PointXYZ __to(const PJ_COORD& c) {
-    return {c.xyz.x, c.xyz.y, c.xyz.z};
-}
-
-
-template <class PointSource, class PointTarget>
-PointTarget PROJTT<PointSource, PointTarget>::fwd(const PointSource& p) const {
-    return __to<PointTarget>(proj_trans(PROJ::proj().get(), PJ_FWD, __from(p)));
-}
-
-
-template <class PointSource, class PointTarget>
-PointSource PROJTT<PointSource, PointTarget>::inv(const PointTarget& q) const {
-    return __to<PointSource>(proj_trans(PROJ::proj().get(), PJ_INV, __from(q)));
-}
-
-
-ProjectionBuilder<PROJ_LatLon_to_LatLon> __PROJ_LatLon_to_LatLon("PROJ_LatLon_to_LatLon");
-ProjectionBuilder<PROJ_LatLon_to_XY> __PROJ_LatLon_to_XY("PROJ_LatLon_to_XY ");
-ProjectionBuilder<PROJ_LatLon_to_XYZ> __PROJ_LatLon_to_XYZ("PROJ_LatLon_to_XYZ");
-ProjectionBuilder<PROJ_XY_to_LatLon> __PROJ_XY_to_LatLon("PROJ_XY_to_LatLon");
-ProjectionBuilder<PROJ_XY_to_XY> __PROJ_XY_to_XY("PROJ_XY_to_XY ");
-ProjectionBuilder<PROJ_XY_to_XYZ> __PROJ_XY_to_XYZ("PROJ_XY_to_XYZ");
-ProjectionBuilder<PROJ_XYZ_to_LatLon> __PROJ_XYZ_to_LatLon("PROJ_XYZ_to_LatLon");
-ProjectionBuilder<PROJ_XYZ_to_XY> __PROJ_XYZ_to_XY("PROJ_XYZ_to_XY ");
-ProjectionBuilder<PROJ_XYZ_to_XYZ> __PROJ_XYZ_to_XYZ("PROJ_XYZ_to_XYZ");
 
 
 }  // namespace grit::projection

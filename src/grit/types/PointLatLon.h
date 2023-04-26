@@ -92,7 +92,7 @@ public:
 
     // -- Methods
 
-    static PointLatLon make(T lat, T lon) {
+    static PointLatLon make(T lat, T lon, T lon_minimum = 0) {
         lat = normal(lat, -90.);
 
         if (lat > 90.) {
@@ -100,7 +100,7 @@ public:
             lon += 180.;
         }
 
-        return {lat, lat == -90. || lat == 90. ? 0. : normal(lon, 0.)};
+        return {lat, lat == -90. || lat == 90. ? 0. : normal(lon, lon_minimum)};
     }
 
     PointLatLon antipode() const { return make(lat + 180., lon); }

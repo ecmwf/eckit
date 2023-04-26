@@ -16,16 +16,14 @@
 
 #include <proj.h>
 
-#include "grit/Parametrisation.h"
 #include "grit/Projection.h"
-#include "grit/types.h"
 
 
 namespace grit::projection {
 
 
-/// Compute coordinates using PROJ (base class)
-class PROJ : public Projection {
+/// Calculate coordinates using PROJ
+class PROJ final : public Projection {
 public:
     // -- Types
 
@@ -41,11 +39,26 @@ public:
         explicit operator PJ_CONTEXT*() const { return t::get(); }
     };
 
+    struct Convert {
+        Convert()          = default;
+        virtual ~Convert() = default;
+
+        Convert(const Convert&)        = delete;
+        Convert(Convert&&)             = delete;
+        void operator=(const Convert&) = delete;
+        void operator=(Convert&&)      = delete;
+
+        virtual PJ_COORD convert(const Point&) const = 0;
+        virtual Point convert(const PJ_COORD&) const = 0;
+    };
+
     // -- Exceptions
     // None
 
     // -- Constructors
-    // None
+
+    PROJ(const std::string& source, const std::string& target, double lon_minimum = 0.);
+    explicit PROJ(const Parametrisation&);
 
     // -- Destructor
     // None
@@ -60,31 +73,13 @@ public:
 
     const std::string& source() const { return source_; }
     const std::string& target() const { return target_; }
-    std::string ellipsoid() const;
+
+    static std::string ellipsoid(const std::string& string);
 
     // -- Overridden methods
-    // None
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Constructors
-
-    PROJ(const std::string& source, const std::string& target);
-
-    // -- Members
-    // None
-
-    // -- Methods
-
-    const pj_t& proj() const { return proj_; }
-
-    // -- Overridden methods
-    // None
+    Point fwd(const Point&) const override;
+    Point inv(const Point&) const override;
 
     // -- Class members
     // None
@@ -100,7 +95,9 @@ private:
 
     const std::string source_;
     const std::string target_;
-    std::string ellipsoid_;
+
+    std::unique_ptr<Convert> from_;
+    std::unique_ptr<Convert> to_;
 
     // -- Methods
     // None
@@ -117,79 +114,6 @@ private:
     // -- Friends
     // None
 };
-
-
-/// Compute coordinates using PROJ (specialization on input/output point types)
-template <class PointSource, class PointTarget>
-class PROJTT final : public PROJ {
-public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
-    // -- Constructors
-
-    explicit PROJTT(const Parametrisation& param) : PROJ(param.get_string("source"), param.get_string("target")) {}
-
-    PROJTT(const std::string& source, const std::string& target) : PROJ(source, target) {}
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-
-    PointTarget fwd(const PointSource&) const;
-    PointSource inv(const PointTarget&) const;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    Point fwd(const Point& p) const override { return {fwd(std::get<PointSource>(p))}; }
-    Point inv(const Point& q) const override { return {inv(std::get<PointTarget>(q))}; }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
-};
-
-
-using PROJ_LatLon_to_LatLon = PROJTT<PointLatLon, PointLatLon>;
-using PROJ_LatLon_to_XY     = PROJTT<PointLatLon, PointXY>;
-using PROJ_LatLon_to_XYZ    = PROJTT<PointLatLon, PointXYZ>;
-using PROJ_XY_to_LatLon     = PROJTT<PointXY, PointLatLon>;
-using PROJ_XY_to_XY         = PROJTT<PointXY, PointXY>;
-using PROJ_XY_to_XYZ        = PROJTT<PointXY, PointXYZ>;
-using PROJ_XYZ_to_LatLon    = PROJTT<PointXYZ, PointLatLon>;
-using PROJ_XYZ_to_XY        = PROJTT<PointXYZ, PointXY>;
-using PROJ_XYZ_to_XYZ       = PROJTT<PointXYZ, PointXYZ>;
 
 
 }  // namespace grit::projection

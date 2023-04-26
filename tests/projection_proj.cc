@@ -18,35 +18,61 @@
 #include "grit/types.h"
 
 
-int main(int argc, char* argv[]) {
-    using grit::PointLatLon;
-    using grit::PointXY;
-
-    const std::string string1 = "+proj=utm +zone=32 +datum=WGS84";
-    const std::string string2 = "EPSG:32632";
-
+bool operator==(const grit::Point& p, const grit::Point& q) {
+    ASSERT(p.index() == q.index());
 
     constexpr double eps = 1e-6;
 
-    for (const auto& string : {string1, string2}) {
+    return std::holds_alternative<grit::PointLatLon>(p)
+               ? std::get<grit::PointLatLon>(p).is_approximately_equal(std::get<grit::PointLatLon>(q), eps)
+           : std::holds_alternative<grit::PointXY>(p)
+               ? std::get<grit::PointXY>(p).is_approximately_equal(std::get<grit::PointXY>(q), eps)
+           : std::holds_alternative<grit::PointXYZ>(p)
+               ? std::get<grit::PointXYZ>(p).is_approximately_equal(std::get<grit::PointXYZ>(q), eps)
+               : NOTIMP;
+}
 
-        grit::projection::PROJ_LatLon_to_XY projection(grit::param::Map({
-            {"source", "EPSG:4326"},
-            {"target", string},
-        }));
 
-        std::cout.precision(16);
+int main(int argc, char* argv[]) {
+    std::cout.precision(14);
 
-        PointLatLon a{55., 12.};
-        std::cout << "a: " << a << std::endl;
+    grit::PointLatLon a{55., 12.};
+
+    struct {
+        const grit::Point b;
+        const std::string target;
+    } tests[] = {
+        {grit::PointXY{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
+        {grit::PointXY{691875.632137542, 6098907.825129169}, "EPSG:32632"},
+        {a, "EPSG:4326"},
+        {a, "EPSG:4979"},
+        {grit::PointXYZ{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
+        {grit::PointXYZ{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
+        {grit::PointXYZ{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
+        {a, "+proj=latlon +ellps=sphere"},
+    };
+
+    for (const auto& test : tests) {
+        grit::projection::PROJ projection(grit::param::Map({{"source", "EPSG:4326"}, {"target", test.target}}));
+
+        std::cout << "ellipsoid: '" << grit::projection::PROJ::ellipsoid(projection.target()) << std::endl;
 
         auto b = projection.fwd(a);
-        std::cout << "b: " << b << std::endl;
-
         auto c = projection.inv(b);
-        std::cout << "c: " << c << std::endl;
 
-        std::cout << b.is_approximately_equal({691875.632137542, 6098907.825129169}, eps) << std::endl;
-        std::cout << a.is_approximately_equal(projection.inv(b), eps) << std::endl;
+        std::cout << "-> a:" << a << " -> fwd(a):" << b << " -> inv(fwd(a)):" << c << std::endl;
+
+        ASSERT(b == test.b);
+        ASSERT(c == a);
+
+        grit::projection::PROJ reverse(grit::param::Map({{"source", test.target}, {"target", "EPSG:4326"}}));
+
+        auto d = reverse.fwd(test.b);
+        auto e = reverse.inv(d);
+
+        std::cout << "-> b:" << test.b << " -> fwd(b):" << d << " -> inv(fwd(b)):" << e << std::endl;
+
+        ASSERT(d == a);
+        ASSERT(e == test.b);
     }
 }

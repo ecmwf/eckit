@@ -58,6 +58,10 @@ public:
         return *this;
     }
 
+    bool is_approximately_equal(const PointXY<T>& other, T eps) const {
+        return std::abs(x - other.x) < eps && std::abs(y - other.y) < eps;
+    };
+
     // -- Members
 
     T& x = P::operator[](0);

@@ -58,6 +58,9 @@ public:
         return *this;
     }
 
+    bool is_approximately_equal(const PointXYZ<T>& other, T eps) const {
+        return std::abs(x - other.x) < eps && std::abs(y - other.y) < eps && std::abs(z - other.z) < eps;
+    };
 
     // -- Members
 

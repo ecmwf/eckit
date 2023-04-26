@@ -12,3 +12,9 @@ foreach(name
     add_test(test_${name} test_${name})
 endforeach()
 
+if(PROJ_FOUND)
+    add_executable(test_projection_proj projection_proj.cc)
+    target_link_libraries(test_projection_proj grit)
+    add_test(test_projection_proj test_projection_proj)
+endif()
+

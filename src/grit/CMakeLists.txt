@@ -47,6 +47,7 @@ add_library(grit SHARED
 target_include_directories(grit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 if(TARGET PROJ::proj)
+    target_sources(grit PRIVATE projection/PROJ.cc projection/PROJ.h)
     target_link_libraries(grit PROJ::proj)
 endif()
 

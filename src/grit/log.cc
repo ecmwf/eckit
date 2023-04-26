@@ -10,18 +10,18 @@
  */
 
 
-#pragma once
+#include <iostream>
 
-#include <iosfwd>
+#include "grit/log.h"
 
 
 namespace grit {
 
 
-extern std::ostream& error;
-extern std::ostream& warn;
-extern std::ostream& info;
-extern std::ostream& log;
+std::ostream& error = std::cerr;
+std::ostream& warn  = std::cout;
+std::ostream& info  = std::clog;
+std::ostream& log   = std::clog;
 
 
 }  // namespace grit

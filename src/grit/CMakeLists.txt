@@ -18,6 +18,7 @@ add_library(grit SHARED
     geometry/Spheroid.cc
     geometry/Spheroid.h
     geometry/UnitSphere.h
+    log.cc
     log.h
     param/Map.cc
     param/Map.h

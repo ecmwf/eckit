@@ -66,9 +66,8 @@ struct SphereT {
     }
 
     // Convert spherical coordinates to Cartesian
-    inline static void convertSphericalToCartesian(const Point2& Alonlat, Point3& B, double height = 0.,
-                                                   bool normalise_lats_across_poles = false) {
-        Sphere::convertSphericalToCartesian(DATUM::radius(), Alonlat, B, height, normalise_lats_across_poles);
+    inline static void convertSphericalToCartesian(const Point2& Alonlat, Point3& B, double height = 0.) {
+        Sphere::convertSphericalToCartesian(DATUM::radius(), Alonlat, B, height);
     }
 
     // Convert Cartesian coordinates to spherical

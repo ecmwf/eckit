@@ -203,13 +203,7 @@ CASE("test unit sphere lat 100") {
     const PointLonLat ll2(180., 80.);
     PointXYZ p, q;
 
-    // Default behavior throws
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::Exception);
-
-    // Optional behavior normalises coordinates
-    const double height = 0.;
-    const bool normalise_lats_across_poles = true;
-    UnitSphere::convertSphericalToCartesian(ll1, p, height, normalise_lats_across_poles);
+    UnitSphere::convertSphericalToCartesian(ll1, p);
     UnitSphere::convertSphericalToCartesian(ll2, q);
 
     // sin(x) and sin(pi-x) are not bitwise identical
@@ -223,13 +217,7 @@ CASE("test unit sphere lat -120") {
     const PointLonLat ll2(225., -60.);
     PointXYZ p, q;
 
-    // Default behavior throws
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::Exception);
-
-    // Optional behavior normalises coordinates
-    const double height = 0.;
-    const bool normalise_lats_across_poles = true;
-    UnitSphere::convertSphericalToCartesian(ll1, p, height, normalise_lats_across_poles);
+    UnitSphere::convertSphericalToCartesian(ll1, p);
     UnitSphere::convertSphericalToCartesian(ll2, q);
 
     // sin(x) and sin(pi-x) are not bitwise identical

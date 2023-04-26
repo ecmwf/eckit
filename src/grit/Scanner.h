@@ -26,13 +26,8 @@ public:
 
     // -- Constructors
 
-    Scanner() = default;
-
     Scanner(const Scanner&) = delete;
     Scanner(Scanner&&)      = delete;
-
-    Scanner& operator=(const Scanner&) = delete;
-    Scanner& operator=(Scanner&&)      = delete;
 
     // -- Destructor
 
@@ -42,6 +37,9 @@ public:
     // None
 
     // -- Operators
+
+    Scanner& operator=(const Scanner&) = delete;
+    Scanner& operator=(Scanner&&)      = delete;
 
     virtual bool operator++() = 0;
 

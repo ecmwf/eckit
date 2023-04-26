@@ -35,8 +35,15 @@ void handle_assert(const std::string&, const CodeLocation&);
 class Exception : public std::exception {
 
 public:  // methods
+
     /// Constructor with message
-    Exception(const std::string& what, const CodeLocation& location = CodeLocation(), bool quiet=false);
+    Exception(const std::string& what);
+
+    /// Constructor with message and location
+    Exception(const std::string& what, const CodeLocation& location);
+
+    /// Constructor with message location and "quiet" flag
+    Exception(const std::string& what, const CodeLocation& location, bool quiet);
 
     /// Destructor
     /// @throws nothing

@@ -62,6 +62,14 @@ void Exception::exceptionStack(std::ostream& out, bool callStack) {
     out << "End stack" << std::endl;
 }
 
+Exception::Exception(const std::string& what) :
+    Exception(what, eckit::CodeLocation{}, false) {
+}
+
+Exception::Exception(const std::string& what, const CodeLocation& location) :
+    Exception(what, location, false) {
+}
+
 Exception::Exception(const std::string& w, const CodeLocation& location, bool quiet) :
     what_(w), next_(first()), location_(location) {
     callStack_ = BackTrace::dump();

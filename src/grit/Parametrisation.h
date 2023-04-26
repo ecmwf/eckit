@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include "grit/exception.h"
+
 
 namespace grit {
 
@@ -67,6 +69,24 @@ public:
     virtual bool get(const key_type&, std::vector<float>&) const         = 0;
     virtual bool get(const key_type&, std::vector<double>&) const        = 0;
     virtual bool get(const key_type&, std::vector<std::string>&) const   = 0;
+
+    bool get_bool(const key_type&) const;
+    int get_int(const key_type&) const;
+    unsigned int get_unsigned_int(const key_type&) const;
+    long get_long(const key_type&) const;
+    unsigned long get_unsigned_long(const key_type&) const;
+    float get_float(const key_type&) const;
+    double get_double(const key_type&) const;
+    std::string get_string(const key_type&) const;
+
+    std::vector<bool> get_vector_bool(const key_type&) const;
+    std::vector<int> get_vector_int(const key_type&) const;
+    std::vector<unsigned int> get_vector_unsigned_int(const key_type&) const;
+    std::vector<long> get_vector_long(const key_type&) const;
+    std::vector<unsigned long> get_vector_unsigned_long(const key_type&) const;
+    std::vector<float> get_vector_float(const key_type&) const;
+    std::vector<double> get_vector_double(const key_type&) const;
+    std::vector<std::string> get_vector_string(const key_type&) const;
 
     // -- Overridden methods
     // None

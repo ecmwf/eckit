@@ -1,6 +1,7 @@
 configure_file(grit.h.in grit.h)
 
 add_library(grit SHARED
+	Parametrisation.cc
 	Parametrisation.h
     Iterator.cc
     Iterator.h

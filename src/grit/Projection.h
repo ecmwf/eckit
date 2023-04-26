@@ -19,6 +19,11 @@
 
 
 namespace grit {
+class Parametrisation;
+}
+
+
+namespace grit {
 
 
 class Projection {
@@ -102,7 +107,7 @@ private:
 struct ProjectionFactory {
     using key_type = std::string;
 
-    Projection* build(const key_type&);
+    Projection* build(const key_type&, const Parametrisation&);
     static void list(std::ostream&);
 
     ProjectionFactory(const ProjectionFactory&)            = delete;
@@ -110,7 +115,7 @@ struct ProjectionFactory {
     ProjectionFactory& operator=(const ProjectionFactory&) = delete;
     ProjectionFactory& operator=(ProjectionFactory&&)      = delete;
 
-    virtual Projection* make() = 0;
+    virtual Projection* make(const Parametrisation&) = 0;
 
 protected:
     explicit ProjectionFactory(const key_type&);
@@ -123,7 +128,7 @@ private:
 
 template <class T>
 class ProjectionBuilder final : public ProjectionFactory {
-    Projection* make() override { return new T; }
+    Projection* make(const Parametrisation& param) override { return new T(param); }
 
 public:
     explicit ProjectionBuilder(const ProjectionFactory::key_type& key) : ProjectionFactory(key) {}

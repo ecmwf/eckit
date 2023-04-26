@@ -229,12 +229,12 @@ static void __init() {
 }
 
 
-Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key) {
+Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key, const Parametrisation& param) {
     util::call_once(__once, __init);
     util::lock_guard<util::recursive_mutex> lock(*__mutex);
 
     if (auto f = __factories->find(key); f != __factories->end()) {
-        return f->second->make();
+        return f->second->make(param);
     }
 
     list(error << "ProjectionFactory: unknown '" << key << "', choices are: ");

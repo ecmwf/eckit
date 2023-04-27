@@ -1,26 +1,22 @@
-include(CTest)
-
-foreach(name
-        param
-        projection
-        projection_ll_to_xyz
-        projection_rotation
-        types
-        util)
-    add_executable(test_${name} ${name}.cc)
-    target_link_libraries(test_${name} grit)
-    add_test(test_${name} test_${name})
-endforeach()
+list(APPEND TESTS
+    test_param
+    test_projection
+    test_projection_ll_to_xyz
+    test_projection_rotation
+    test_types
+    test_util)
 
 if(PROJ_FOUND)
-    add_executable(test_projection_proj projection_proj.cc)
-    target_link_libraries(test_projection_proj grit)
-    add_test(test_projection_proj test_projection_proj)
+    list(APPEND TESTS test_projection_proj)
 endif()
 
 if(eckit_FOUND)
-    add_executable(test_search search.cc)
-    target_link_libraries(test_search grit eckit)
-    add_test(test_search test_search)
+    list(APPEND TESTS test_search)
 endif()
+
+foreach(test ${TESTS})
+    add_executable(${test} ${test}.cc)
+    target_link_libraries(${test} grit)
+    add_test(${test} ${test})
+endforeach()
 

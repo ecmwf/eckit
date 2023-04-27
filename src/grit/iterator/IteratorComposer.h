@@ -10,15 +10,22 @@
  */
 
 
-#pragma once
+#include <memory>
+#include <vector>
 
-#include <cstddef>
+#include "grit/Iterator.h"
 
 
 namespace grit {
+struct Projection;
+struct Scanner;
+}  // namespace grit
 
 
-class Scanner {
+namespace grit::iterator {
+
+
+class IteratorComposer final : public Iterator {
 public:
     // -- Types
     // None
@@ -28,43 +35,23 @@ public:
 
     // -- Constructors
 
-    Scanner(const Scanner&) = delete;
-    Scanner(Scanner&&)      = delete;
+    explicit IteratorComposer(Scanner*, const std::vector<Projection*>& = {});
 
     // -- Destructor
-
-    virtual ~Scanner() = default;
+    // None
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    Scanner& operator=(const Scanner&) = delete;
-    Scanner& operator=(Scanner&&)      = delete;
-
-    virtual bool operator++()    = 0;
-    virtual bool operator++(int) = 0;
+    bool operator++() override;
+    bool operator++(int) override;
 
     // -- Methods
 
-    virtual size_t size() const = 0;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
+    size_t size() const override;
+    const std::vector<std::unique_ptr<Projection>> projections() const;
 
     // -- Overridden methods
     // None
@@ -77,7 +64,9 @@ protected:
 
 private:
     // -- Members
-    // None
+
+    std::unique_ptr<Scanner> scanner_;
+    std::vector<std::unique_ptr<Projection>> projections_;
 
     // -- Methods
     // None
@@ -96,4 +85,4 @@ private:
 };
 
 
-}  // namespace grit
+}  // namespace grit::iterator

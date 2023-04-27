@@ -3,7 +3,9 @@ configure_file(grit.h.in grit.h)
 add_library(grit SHARED
 	Parametrisation.cc
 	Parametrisation.h
-    Iterator.cc
+	iterator/IteratorAggregator.h
+	iterator/IteratorComposer.cc
+	iterator/IteratorComposer.h
     Iterator.h
     Projection.cc
     Projection.h

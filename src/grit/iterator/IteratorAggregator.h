@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <cstddef>
+#include "grit/Iterator.h"
 
 
-namespace grit {
+namespace grit::iterator {
 
 
-class Scanner {
+class IteratorAggregator {
 public:
     // -- Types
     // None
@@ -28,27 +28,20 @@ public:
 
     // -- Constructors
 
-    Scanner(const Scanner&) = delete;
-    Scanner(Scanner&&)      = delete;
+    IteratorAggregator();
 
     // -- Destructor
 
-    virtual ~Scanner() = default;
+    virtual ~IteratorAggregator() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    Scanner& operator=(const Scanner&) = delete;
-    Scanner& operator=(Scanner&&)      = delete;
-
-    virtual bool operator++()    = 0;
-    virtual bool operator++(int) = 0;
+    // None
 
     // -- Methods
-
-    virtual size_t size() const = 0;
+    // None
 
     // -- Overridden methods
     // None
@@ -96,4 +89,4 @@ private:
 };
 
 
-}  // namespace grit
+}  // namespace grit::iterator

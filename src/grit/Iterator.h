@@ -10,27 +10,21 @@
  */
 
 
-#include <memory>
+#pragma once
 
 #include "grit/types.h"
 
 
 namespace grit {
-struct Projection;
-struct Scanner;
-}  // namespace grit
 
 
-namespace grit {
-
-
-class Iterator final {
+class Iterator {
 public:
     // -- Types
 
     using value_type = Point;
 
-private:
+protected:
     // -- Types
 
     template <typename X>
@@ -56,6 +50,10 @@ private:
         const typename X::value_type& operator*() const { return cnt.at(pos); }
     };
 
+    // -- Constructors
+
+    Iterator() = default;
+
 public:
     // -- Types
 
@@ -67,29 +65,27 @@ public:
 
     // -- Constructors
 
-    Iterator(Scanner*, Projection*);
-
     Iterator(const Iterator&) = delete;
     Iterator(Iterator&&)      = delete;
 
-    Iterator& operator=(const Iterator&) = delete;
-    Iterator& operator=(Iterator&&)      = delete;
-
     // -- Destructor
 
-    ~Iterator() = delete;
+    virtual ~Iterator() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    bool operator++();
-    bool operator++(int) { return operator++(); }
+    Iterator& operator=(const Iterator&) = delete;
+    Iterator& operator=(Iterator&&)      = delete;
+
+    virtual bool operator++()    = 0;
+    virtual bool operator++(int) = 0;
 
     // -- Methods
 
-    size_t size() const;
+    virtual size_t size() const = 0;
 
     iterator begin() { return {*this, 0}; }
     iterator end() { return {*this, this->size()}; }
@@ -111,9 +107,7 @@ public:
 
 private:
     // -- Members
-
-    std::unique_ptr<Scanner> scanner_;
-    std::unique_ptr<Projection> projection_;
+    // None
 
     // -- Methods
     // None

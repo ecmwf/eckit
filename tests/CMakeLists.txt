@@ -18,3 +18,9 @@ if(PROJ_FOUND)
     add_test(test_projection_proj test_projection_proj)
 endif()
 
+if(eckit_FOUND)
+    add_executable(test_search search.cc)
+    target_link_libraries(test_search grit eckit)
+    add_test(test_search test_search)
+endif()
+

@@ -23,14 +23,23 @@ endif()
 # dependencies (all optional)
 find_package(eccodes 2.29)
 option(REQUIRE_ECCODES "Require ecCodes")
+message(STATUS "REQUIRE_ECCODES=${REQUIRE_ECCODES}, eccodes_FOUND=${eccodes_FOUND}")
 if(REQUIRE_ECCODES AND NOT eccodes_FOUND)
     message(FATAL_ERROR "eccodes_FOUND=${eccodes_FOUND}")
 endif()
 
 find_package(PROJ 9.2)
 option(REQUIRE_PROJ "Require PROJ")
+message(STATUS "REQUIRE_PROJ=${REQUIRE_PROJ}, PROJ_FOUND=${PROJ_FOUND}")
 if(REQUIRE_PROJ AND NOT PROJ_FOUND)
     message(FATAL_ERROR "PROJ_FOUND=${PROJ_FOUND}")
+endif()
+
+find_package(eckit)
+option(REQUIRE_ECKIT "Require eckit")
+message(STATUS "REQUIRE_ECKIT=${REQUIRE_ECKIT}, eckit_FOUND=${eckit_FOUND}")
+if(REQUIRE_ECKIT AND NOT eckit_FOUND)
+    message(FATAL_ERROR "eckit_FOUND=${eckit_FOUND}")
 endif()
 
 

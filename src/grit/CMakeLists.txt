@@ -48,6 +48,11 @@ add_library(grit SHARED
 
 target_include_directories(grit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
+if(eckit_FOUND)
+    target_sources(grit PRIVATE Search.h)
+    target_link_libraries(grit eckit)
+endif()
+
 if(TARGET PROJ::proj)
     target_sources(grit PRIVATE projection/PROJ.cc projection/PROJ.h)
     target_link_libraries(grit PROJ::proj)

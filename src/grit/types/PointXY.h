@@ -35,6 +35,7 @@ public:
 
     // -- Constructors
 
+    PointXY() : P{0, 0} {}
     PointXY(T x, T y) : P{x, y} {}
     PointXY(const PointXY& other) : P(other) {}
     PointXY(PointXY&& other) : P(other) {}
@@ -67,8 +68,11 @@ public:
     T& X = P::operator[](0);
     T& Y = P::operator[](1);
 
+    static constexpr size_t DIMS = 2;
+
     // -- Methods
-    // None
+
+    T x(size_t dim) const { return P::at(dim); }
 
     // -- Overridden methods
     // None
@@ -77,7 +81,14 @@ public:
     // None
 
     // -- Class methods
-    // None
+
+    static T distance(const PointXY& a, const PointXY& b, size_t dim) { return std::abs(a.x(dim) - b.x(dim)); }
+
+    static T distance(const PointXY& a, const PointXY& b) { return std::sqrt(distance2(a, b)); }
+
+    static T distance2(const PointXY& a, const PointXY& b) {
+        return (a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y);
+    }
 
     // -- Friends
 

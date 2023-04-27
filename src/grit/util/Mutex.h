@@ -14,7 +14,7 @@
 
 #undef grit_ECKIT_THREADS
 
-#if defined(grit_ECKIT_THREADS)
+#ifdef grit_ECKIT_THREADS
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #else
@@ -25,7 +25,7 @@
 namespace grit::util {
 
 
-#if defined(grit_ECKIT_THREADS)
+#ifdef grit_ECKIT_THREADS
 
 
 using recursive_mutex = eckit::Mutex;

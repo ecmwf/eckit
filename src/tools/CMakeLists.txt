@@ -1,8 +1,13 @@
+list(APPEND TOOLS
+    grit-version)
 
-foreach(name
-        grit-version)
-    add_executable(${name} ${name}.cc)
-    target_link_libraries(${name} grit)
+if(eckit_FOUND)
+    list(APPEND TOOLS grit-search)
+endif()
+
+foreach(tool ${TOOLS})
+    add_executable(${tool} ${tool}.cc)
+    target_link_libraries(${tool} grit)
 endforeach()
 
 if(TARGET eccodes)

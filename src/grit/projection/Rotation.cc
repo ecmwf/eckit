@@ -15,6 +15,7 @@
 #include <cmath>
 #include <utility>
 
+#include "grit/Parametrisation.h"
 #include "grit/geometry/Sphere.h"
 #include "grit/types/MatrixXYZ.h"
 #include "grit/util.h"
@@ -84,6 +85,11 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
                                       sa * cp * ct + ca * sp, ca * cp - sa * ct * sp, -sa * st,   //
                                       cp * st, -sp * st, ct});
 }
+
+
+Rotation::Rotation(const Parametrisation& param) :
+    Rotation(param.get_double("south_pole_lat"), param.get_double("south_pole_lon"),
+             param.has("angle") ? param.get_double("angle") : 0) {}
 
 
 }  // namespace grit::projection

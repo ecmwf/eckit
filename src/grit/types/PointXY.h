@@ -59,13 +59,13 @@ public:
     }
 
     bool is_approximately_equal(const PointXY& other, T eps) const {
-        return std::abs(x - other.x) < eps && std::abs(y - other.y) < eps;
+        return std::abs(X - other.X) < eps && std::abs(Y - other.Y) < eps;
     };
 
     // -- Members
 
-    T& x = P::operator[](0);
-    T& y = P::operator[](1);
+    T& X = P::operator[](0);
+    T& Y = P::operator[](1);
 
     // -- Methods
     // None
@@ -82,7 +82,7 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointXY& p) {
-        return out << '{' << p.x << ", " << p.y << '}';
+        return out << '{' << p.X << ", " << p.Y << '}';
     }
 };
 

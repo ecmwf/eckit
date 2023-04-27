@@ -62,39 +62,39 @@ public:
     }
 
     PointXYZ<T> operator*(const PointXYZ<T>& p) const {
-        return {xx * p.x + xy * p.y + xz * p.z, yx * p.x + yy * p.y + yz * p.z, zx * p.x + zy * p.y + zz * p.z};
+        return {XX * p.X + XY * p.Y + XZ * p.Z, YX * p.X + YY * p.Y + YZ * p.Z, ZX * p.X + ZY * p.Y + ZZ * p.Z};
     }
 
     MatrixXYZ<T> operator*(const MatrixXYZ<T>& M) const {
         return {
-            xx * M.xx + xy * M.yx + xz * M.zx, xx * M.xy + xy * M.yy + xz * M.zy, xx * M.xz + xy * M.yz + xz * M.zz,
-            yx * M.xx + yy * M.yx + yz * M.zx, yx * M.xy + yy * M.yy + yz * M.zy, yx * M.xz + yy * M.yz + yz * M.zz,
-            zx * M.xx + zy * M.yx + zz * M.zx, zx * M.xy + zy * M.yy + zz * M.zy, zx * M.xz + zy * M.yz + zz * M.zz};
+            XX * M.XX + XY * M.YX + XZ * M.ZX, XX * M.XY + XY * M.YY + XZ * M.ZY, XX * M.XZ + XY * M.YZ + XZ * M.ZZ,
+            YX * M.XX + YY * M.YX + YZ * M.ZX, YX * M.XY + YY * M.YY + YZ * M.ZY, YX * M.XZ + YY * M.YZ + YZ * M.ZZ,
+            ZX * M.XX + ZY * M.YX + ZZ * M.ZX, ZX * M.XY + ZY * M.YY + ZZ * M.ZY, ZX * M.XZ + ZY * M.YZ + ZZ * M.ZZ};
     }
 
     // -- Members
 
-    T& xx = P::operator[](0);
-    T& xy = P::operator[](1);
-    T& xz = P::operator[](2);
-    T& yx = P::operator[](3);
-    T& yy = P::operator[](4);
-    T& yz = P::operator[](5);
-    T& zx = P::operator[](6);
-    T& zy = P::operator[](7);
-    T& zz = P::operator[](8);
+    T& XX = P::operator[](0);
+    T& XY = P::operator[](1);
+    T& XZ = P::operator[](2);
+    T& YX = P::operator[](3);
+    T& YY = P::operator[](4);
+    T& YZ = P::operator[](5);
+    T& ZX = P::operator[](6);
+    T& ZY = P::operator[](7);
+    T& ZZ = P::operator[](8);
 
     // -- Methods
 
     static MatrixXYZ<T> identity() { return {1, 0, 0, 0, 1, 0, 0, 0, 1}; }
 
     MatrixXYZ<T> inverse() const {
-        auto det = xx * (yy * zz - yz * zy) - xy * (yx * zz - yz * zx) + xz * (yx * zy - yy * zx);
+        auto det = XX * (YY * ZZ - YZ * ZY) - XY * (YX * ZZ - YZ * ZX) + XZ * (YX * ZY - YY * ZX);
         ASSERT_MSG(det != 0, "MatrixXYZ: singular matrix");
 
-        return {(yy * zz - yz * zy) / det, (xz * zy - xy * zz) / det, (xy * yz - xz * yy) / det,
-                (yz * zx - yx * zz) / det, (xx * zz - xz * zx) / det, (xz * yx - xx * yz) / det,
-                (yx * zy - yy * zx) / det, (xy * zx - xx * zy) / det, (xx * yy - xy * yx) / det};
+        return {(YY * ZZ - YZ * ZY) / det, (XZ * ZY - XY * ZZ) / det, (XY * YZ - XZ * YY) / det,
+                (YZ * ZX - YX * ZZ) / det, (XX * ZZ - XZ * ZX) / det, (XZ * YX - XX * YZ) / det,
+                (YX * ZY - YY * ZX) / det, (XY * ZX - XX * ZY) / det, (XX * YY - XY * YX) / det};
     }
 
     // -- Overridden methods
@@ -109,8 +109,8 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const MatrixXYZ& m) {
-        return out << "{{" << m.xx << ", " << m.xy << ", " << m.xz << "}, {" << m.yx << ", " << m.yy << ", " << m.yz
-                   << "}, {" << m.zx << ", " << m.zy << ", " << m.zz << "}}";
+        return out << "{{" << m.XX << ", " << m.XY << ", " << m.XZ << "}, {" << m.YX << ", " << m.YY << ", " << m.YZ
+                   << "}, {" << m.ZX << ", " << m.ZY << ", " << m.ZZ << "}}";
     }
 };
 

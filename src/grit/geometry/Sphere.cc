@@ -113,9 +113,9 @@ PointLatLon Sphere::xyz_to_ll(double radius, const PointXYZ& A) {
 
     // numerical conditioning for both z (poles) and y
 
-    const double x = A.x;
-    const double y = util::is_approximately_equal(A.y, 0.) ? 0. : A.y;
-    const double z = std::min(radius, std::max(-radius, A.z)) / radius;
+    const double x = A.X;
+    const double y = util::is_approximately_equal(A.Y, 0.) ? 0. : A.Y;
+    const double z = std::min(radius, std::max(-radius, A.Z)) / radius;
 
     return {util::radians_to_degrees * std::asin(z), util::radians_to_degrees * std::atan2(y, x)};
 }

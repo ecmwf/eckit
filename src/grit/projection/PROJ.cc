@@ -49,7 +49,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     struct XY final : Convert {
         PJ_COORD convert(const Point& p) const final {
             const auto& q = std::get<PointXY>(p);
-            return proj_coord(q.x, q.y, 0, 0);
+            return proj_coord(q.X, q.Y, 0, 0);
         }
 
         Point convert(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
@@ -58,7 +58,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     struct XYZ final : Convert {
         PJ_COORD convert(const Point& p) const final {
             const auto& q = std::get<PointXYZ>(p);
-            return proj_coord(q.x, q.y, q.z, 0);
+            return proj_coord(q.X, q.Y, q.Z, 0);
         }
 
         Point convert(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }

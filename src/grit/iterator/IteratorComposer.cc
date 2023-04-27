@@ -12,8 +12,6 @@
 
 #include "grit/iterator/IteratorComposer.h"
 
-#include "grit/Projection.h"
-#include "grit/Scanner.h"
 #include "grit/exception.h"
 
 

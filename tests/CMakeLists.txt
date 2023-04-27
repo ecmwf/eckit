@@ -1,4 +1,5 @@
 list(APPEND TESTS
+    test_iterator
     test_param
     test_projection
     test_projection_ll_to_xyz

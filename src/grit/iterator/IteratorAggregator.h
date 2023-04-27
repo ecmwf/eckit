@@ -18,7 +18,7 @@
 namespace grit::iterator {
 
 
-class IteratorAggregator {
+class IteratorAggregator final : public Iterator {
 public:
     // -- Types
     // None
@@ -31,8 +31,7 @@ public:
     IteratorAggregator();
 
     // -- Destructor
-
-    virtual ~IteratorAggregator() = default;
+    // None
 
     // -- Convertors
     // None

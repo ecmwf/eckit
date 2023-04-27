@@ -10,16 +10,14 @@
  */
 
 
+#pragma once
+
 #include <memory>
 #include <vector>
 
 #include "grit/Iterator.h"
-
-
-namespace grit {
-struct Projection;
-struct Scanner;
-}  // namespace grit
+#include "grit/Projection.h"
+#include "grit/Scanner.h"
 
 
 namespace grit::iterator {

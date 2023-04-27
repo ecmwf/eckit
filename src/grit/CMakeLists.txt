@@ -27,6 +27,8 @@ add_library(grit SHARED
     projection/LatLonToXYZ.h
     projection/Rotation.cc
     projection/Rotation.h
+    test.cc
+    test.h
     types.cc
     types.h
     types/MatrixXYZ.h

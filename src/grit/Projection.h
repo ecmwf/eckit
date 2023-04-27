@@ -107,8 +107,8 @@ private:
 struct ProjectionFactory {
     using key_type = std::string;
 
-    Projection* build(const key_type&, const Parametrisation&);
-    static void list(std::ostream&);
+    static Projection* build(const key_type&, const Parametrisation&);
+    static std::ostream& list(std::ostream&);
 
     ProjectionFactory(const ProjectionFactory&)            = delete;
     ProjectionFactory(ProjectionFactory&&)                 = delete;

@@ -12,19 +12,20 @@
 
 #include <iostream>
 
-#include "grit/exception.h"
+#include "grit/test.h"
 #include "grit/types.h"
 #include "grit/types/MatrixXYZ.h"
 
 
 int main(int argc, char* argv[]) {
+    using grit::Point;
     using grit::PointLatLon;
 
     PointLatLon p(90., 1);
 
     std::cout << "p: " << p << std::endl;
     std::cout << "p: " << PointLatLon::make(p.lat, p.lon) << std::endl;
-    std::cout << "p: " << (p == PointLatLon(90., 50.)) << std::endl;
+    std::cout << "p: " << (Point(p) == PointLatLon(90., 50.)) << std::endl;
 
     PointLatLon q(-90., 1.);
     std::cout << "q: " << q << std::endl;
@@ -32,10 +33,15 @@ int main(int argc, char* argv[]) {
     std::cout << "~~q: " << q.antipode().antipode() << std::endl;
 
     auto r(PointLatLon::make(-91., -10.));
-    ASSERT(r == r.antipode().antipode());
+    EXPECT(Point(r) == r.antipode().antipode());
 
-    ASSERT(PointLatLon(-30.000000000000018, -59.99999999999996).is_approximately_equal({-30, 300}, 1e-5));
-    ASSERT(PointLatLon(-46.7, -178.00000000000003).is_approximately_equal({-46.7, -178.}, 1e-5));
+    Point a1 = PointLatLon{-30, 300};
+    Point a2 = PointLatLon{-30.000000000000018, -59.99999999999996};
+    EXPECT(a1 == a2);
+
+    Point b1 = PointLatLon{-46.7, -178.};
+    Point b2 = PointLatLon{-46.7, -178.00000000000003};
+    EXPECT(b1 == b2);
 
 
     {

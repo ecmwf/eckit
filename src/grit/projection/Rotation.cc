@@ -24,6 +24,9 @@
 namespace grit::projection {
 
 
+static ProjectionBuilder<Rotation> __projection("rotation");
+
+
 Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) : rotated_(true) {
     using M = types::MatrixXYZ<double>;
 

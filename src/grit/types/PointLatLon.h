@@ -75,10 +75,6 @@ public:
         return *this;
     }
 
-    bool operator==(const PointLatLon<T>& other) const { return lat == other.lat && normal(other.lon, lon) == lon; }
-
-    bool operator!=(const PointLatLon<T>& other) const { return !operator==(other); }
-
     bool is_approximately_equal(const PointLatLon<T>& other, T eps) const {
         const auto dlon = normal(other.lon, lon) - lon;
         return std::abs(lat - other.lat) < eps &&

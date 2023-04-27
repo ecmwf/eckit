@@ -30,6 +30,7 @@ public:
 
     LatLonToXYZ(double a, double b);
     explicit LatLonToXYZ(double R);
+    explicit LatLonToXYZ(const Parametrisation&);
 
     // -- Destructor
     // None

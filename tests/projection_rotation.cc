@@ -12,11 +12,12 @@
 
 #include <iostream>
 
-#include "grit/exception.h"
 #include "grit/projection/Rotation.h"
+#include "grit/test.h"
 
 
 int main(int argc, char* argv[]) {
+    using grit::Point;
     using grit::PointLatLon;
     using grit::projection::Rotation;
 
@@ -29,10 +30,10 @@ int main(int argc, char* argv[]) {
             for (auto b : delta) {
                 for (auto c : delta) {
                     Rotation rot(-90. + static_cast<double>(a), 0. + static_cast<double>(b), static_cast<double>(c));
-                    ASSERT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
+                    EXPECT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 
-                    ASSERT(p.is_approximately_equal(rot.inv(rot.fwd(p)), 1e-5));
-                    ASSERT(p.is_approximately_equal(rot.fwd(rot.inv(p)), 1e-5));
+                    EXPECT(Point(p) == rot.inv(rot.fwd(p)));
+                    EXPECT(Point(p) == rot.fwd(rot.inv(p)));
                 }
             }
         }
@@ -136,8 +137,8 @@ int main(int argc, char* argv[]) {
                 PointLatLon a(static_cast<double>(j - Nj) * 90. / static_cast<double>(Nj),
                               static_cast<double>(i) * 360. / static_cast<double>(Ni));
                 auto b = rot.fwd(a);
-                ASSERT(b.is_approximately_equal(ref[k], 1.e-5));
-                ASSERT(a.is_approximately_equal(rot.inv(b), 1.e-5));
+                EXPECT(Point(b) == ref[k]);
+                EXPECT(Point(a) == rot.inv(b));
             }
         }
     }
@@ -148,37 +149,37 @@ int main(int argc, char* argv[]) {
         const Rotation angle_only(-90., 0., -180.);
         const Rotation rotation(-40., 4., 180.);
 
-        ASSERT(not unrotated.rotated());
-        ASSERT(angle_only.rotated());
-        ASSERT(rotation.rotated());
+        EXPECT(not unrotated.rotated());
+        EXPECT(angle_only.rotated());
+        EXPECT(rotation.rotated());
 
         const PointLatLon p[] = {{90., 0.}, {0., 0.}, {25., 270.}, {45., -180.}};
 
-        struct test_t {
+        struct {
             const Rotation& rotation;
             const PointLatLon a;
             const PointLatLon b;
+        } tests[] = {
+            {unrotated, p[0], p[0]},
+            {unrotated, p[1], p[1]},
+            {unrotated, p[2], p[2]},
+            {unrotated, p[3], p[3]},
+            {angle_only, p[0], {p[0].lat, p[0].lon - 180.}},
+            {angle_only, p[1], {p[1].lat, p[1].lon - 180.}},
+            {angle_only, p[2], {p[2].lat, p[2].lon - 180.}},
+            {angle_only, p[3], {p[3].lat, p[3].lon - 180.}},
+            {rotation, p[0], {40., -176.}},
+            {rotation, p[1], {-50., -176.}},
+            {rotation, p[2], {15.762700, 113.657357}},
+            {rotation, p[3], {85., -176.}},
         };
 
-        for (const auto& test : {
-                 test_t{unrotated, p[0], p[0]},
-                 test_t{unrotated, p[1], p[1]},
-                 test_t{unrotated, p[2], p[2]},
-                 test_t{unrotated, p[3], p[3]},
-                 test_t{angle_only, p[0], {p[0].lat, p[0].lon - 180.}},
-                 test_t{angle_only, p[1], {p[1].lat, p[1].lon - 180.}},
-                 test_t{angle_only, p[2], {p[2].lat, p[2].lon - 180.}},
-                 test_t{angle_only, p[3], {p[3].lat, p[3].lon - 180.}},
-                 test_t{rotation, p[0], {40., -176.}},
-                 test_t{rotation, p[1], {-50., -176.}},
-                 test_t{rotation, p[2], {15.762700, 113.657357}},
-                 test_t{rotation, p[3], {85., -176.}},
-             }) {
+        for (const auto& test : tests) {
             auto b = test.rotation.fwd(test.a);
-            ASSERT(b.is_approximately_equal(test.b, 1e-5));
+            EXPECT(Point(b) == test.b);
 
             auto a = test.rotation.inv(b);
-            ASSERT(a.is_approximately_equal(test.a, 1e-5));
+            EXPECT(Point(a) == test.a);
         }
     }
 }

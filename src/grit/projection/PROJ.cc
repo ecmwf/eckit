@@ -20,7 +20,10 @@
 namespace grit::projection {
 
 
-PROJ::PROJ(const std::string& source, const std::string& target, double(lon_minimum)) :
+static ProjectionBuilder<PROJ> __projection("proj");
+
+
+PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
     proj_(nullptr), ctx_(PJ_DEFAULT_CTX), source_(source), target_(target) {
     ASSERT(!source.empty());
 

@@ -12,25 +12,9 @@
 
 #include <iostream>
 
-#include "grit/exception.h"
 #include "grit/param/Map.h"
 #include "grit/projection/PROJ.h"
-#include "grit/types.h"
-
-
-bool operator==(const grit::Point& p, const grit::Point& q) {
-    ASSERT(p.index() == q.index());
-
-    constexpr double eps = 1e-6;
-
-    return std::holds_alternative<grit::PointLatLon>(p)
-               ? std::get<grit::PointLatLon>(p).is_approximately_equal(std::get<grit::PointLatLon>(q), eps)
-           : std::holds_alternative<grit::PointXY>(p)
-               ? std::get<grit::PointXY>(p).is_approximately_equal(std::get<grit::PointXY>(q), eps)
-           : std::holds_alternative<grit::PointXYZ>(p)
-               ? std::get<grit::PointXYZ>(p).is_approximately_equal(std::get<grit::PointXYZ>(q), eps)
-               : NOTIMP;
-}
+#include "grit/test.h"
 
 
 int main(int argc, char* argv[]) {
@@ -62,8 +46,8 @@ int main(int argc, char* argv[]) {
 
         std::cout << "-> a:" << a << " -> fwd(a):" << b << " -> inv(fwd(a)):" << c << std::endl;
 
-        ASSERT(b == test.b);
-        ASSERT(c == a);
+        EXPECT(b == test.b);
+        EXPECT(c == a);
 
         grit::projection::PROJ reverse(grit::param::Map({{"source", test.target}, {"target", "EPSG:4326"}}));
 
@@ -72,7 +56,7 @@ int main(int argc, char* argv[]) {
 
         std::cout << "-> b:" << test.b << " -> fwd(b):" << d << " -> inv(fwd(b)):" << e << std::endl;
 
-        ASSERT(d == a);
-        ASSERT(e == test.b);
+        EXPECT(d == a);
+        EXPECT(e == test.b);
     }
 }

@@ -23,20 +23,6 @@ namespace grit::projection {
 /// Compute coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Rotation final : public Projection {
 public:
-    // -- Types
-
-    struct Rotate {
-        Rotate()          = default;
-        virtual ~Rotate() = default;
-
-        Rotate(const Rotate&)         = delete;
-        Rotate(Rotate&&)              = delete;
-        void operator=(const Rotate&) = delete;
-        void operator=(Rotate&&)      = delete;
-
-        virtual PointLatLon operator()(const PointLatLon&) const = 0;
-    };
-
     // -- Exceptions
     // None
 
@@ -70,6 +56,20 @@ public:
     // None
 
 private:
+    // -- Types
+
+    struct Rotate {
+        Rotate()          = default;
+        virtual ~Rotate() = default;
+
+        Rotate(const Rotate&)         = delete;
+        Rotate(Rotate&&)              = delete;
+        void operator=(const Rotate&) = delete;
+        void operator=(Rotate&&)      = delete;
+
+        virtual PointLatLon operator()(const PointLatLon&) const = 0;
+    };
+
     // -- Members
 
     std::unique_ptr<Rotate> fwd_;

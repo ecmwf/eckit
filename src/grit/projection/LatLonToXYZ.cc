@@ -12,12 +12,16 @@
 
 #include "grit/projection/LatLonToXYZ.h"
 
+#include "grit/Parametrisation.h"
 #include "grit/geometry/Sphere.h"
 #include "grit/geometry/Spheroid.h"
 #include "grit/util.h"
 
 
 namespace grit::projection {
+
+
+static ProjectionBuilder<LatLonToXYZ> __projection("ll_to_xyz");
 
 
 LatLonToXYZ::LatLonToXYZ(double a, double b) {
@@ -49,6 +53,11 @@ LatLonToXYZ::LatLonToXYZ(double a, double b) {
 
 
 LatLonToXYZ::LatLonToXYZ(double R) : LatLonToXYZ(R, R) {}
+
+
+LatLonToXYZ::LatLonToXYZ(const Parametrisation& param) :
+    LatLonToXYZ(param.has("R") ? param.get_double("R") : param.get_double("a"),
+                param.has("R") ? param.get_double("R") : param.get_double("b")) {}
 
 
 }  // namespace grit::projection

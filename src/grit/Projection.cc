@@ -242,7 +242,7 @@ Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key, con
 }
 
 
-void ProjectionFactory::list(std::ostream& out) {
+std::ostream& ProjectionFactory::list(std::ostream& out) {
     util::call_once(__once, __init);
     util::lock_guard<util::recursive_mutex> lock(*__mutex);
 
@@ -251,6 +251,8 @@ void ProjectionFactory::list(std::ostream& out) {
         out << sep << j.first;
         sep = ", ";
     }
+
+    return out;
 }
 
 

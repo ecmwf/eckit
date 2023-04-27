@@ -12,11 +12,12 @@
 
 #include <iostream>
 
-#include "grit/exception.h"
 #include "grit/projection/LatLonToXYZ.h"
+#include "grit/test.h"
 
 
 int main(int argc, char* argv[]) {
+    using grit::Point;
     using grit::PointLatLon;
     using grit::projection::LatLonToXYZ;
 
@@ -30,7 +31,7 @@ int main(int argc, char* argv[]) {
         auto r = to_xyz.inv(q);
         std::cout << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
 
-        ASSERT(p.is_approximately_equal(r, 1e-12));
+        EXPECT(Point(p) == r);
     }
 
 

@@ -13,27 +13,27 @@
 #include <iostream>
 #include <memory>
 
-#include "grit/exception.h"
 #include "grit/param/Map.h"
+#include "grit/test.h"
 
 
 int main(int argc, char* argv[]) {
     std::unique_ptr<grit::Parametrisation> param(new grit::param::Map({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
 
     int a = 0;
-    ASSERT(param->get("a", a));
+    EXPECT(param->get("a", a));
     std::cout << "a: '" << a << "'" << std::endl;
 
     std::string b;
-    ASSERT(param->get("b", b));
+    EXPECT(param->get("b", b));
     std::cout << "b: '" << b << "'" << std::endl;
 
     size_t c = 0;
-    ASSERT(param->get("c", c));
+    EXPECT(param->get("c", c));
     std::cout << "c: '" << c << "'" << std::endl;
 
     int d = 321;
     dynamic_cast<grit::param::Map*>(param.get())->set("b", d);
-    ASSERT(param->get("b", d));
+    EXPECT(param->get("b", d));
     std::cout << "d: '" << d << "'" << std::endl;
 }

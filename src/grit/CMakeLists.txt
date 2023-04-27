@@ -25,6 +25,8 @@ add_library(grit SHARED
     param/Map.h
     projection/LatLonToXYZ.cc
     projection/LatLonToXYZ.h
+    projection/None.cc
+    projection/None.h
     projection/Rotation.cc
     projection/Rotation.h
     test.cc

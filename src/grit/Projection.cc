@@ -246,10 +246,10 @@ std::ostream& ProjectionFactory::list(std::ostream& out) {
     util::call_once(__once, __init);
     util::lock_guard<util::recursive_mutex> lock(*__mutex);
 
-    const char* sep = "";
+    const char* sep = "'";
     for (const auto& j : *__factories) {
-        out << sep << j.first;
-        sep = ", ";
+        out << sep << j.first << '\'';
+        sep = ", '";
     }
 
     return out;

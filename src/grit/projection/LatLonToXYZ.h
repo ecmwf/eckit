@@ -20,7 +20,7 @@
 namespace grit::projection {
 
 
-/// Compute coordinates of a point on a sphere or spheroid, in [x, y, z]
+/// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
 class LatLonToXYZ final : public Projection {
 public:
     // -- Exceptions

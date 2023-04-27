@@ -24,7 +24,16 @@ int main(int argc, char* argv[]) {
     using grit::PointXYZ;
     using Projection = std::unique_ptr<grit::Projection>;
 
+
     Point p = PointLatLon{1, 1};
+
+
+    {
+        std::unique_ptr<grit::Projection> projection(grit::ProjectionFactory::build("none", grit::param::Map{}));
+        EXPECT(p == projection->inv(p));
+        EXPECT(p == projection->fwd(p));
+    }
+
 
     {
         grit::param::Map param({

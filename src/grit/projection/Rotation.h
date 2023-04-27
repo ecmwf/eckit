@@ -20,7 +20,7 @@
 namespace grit::projection {
 
 
-/// Compute coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
+/// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Rotation final : public Projection {
 public:
     // -- Exceptions

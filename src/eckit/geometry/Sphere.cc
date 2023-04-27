@@ -190,14 +190,20 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
      * These three conditionings combined project very accurately to the sphere
      * poles and quadrants.
      *
-     * Latitudes outside [-90,90] are normalised back into the interval by the transformation:
-     *   (λ, ϕ) -> (λ+180, 180-ϕ) if ϕ > 90
-     *          -> (λ+180, -180-ϕ) if ϕ < -90
-     * As the convertSphericalToCartesian algorithm depends on sin(ϕ) which is invariant
-     * under this transformation, the normalisation affects only the longitude phase-shift.
+     * Latitudes outside the standard interval [-90°,90°] are first normalised
+     * into the interval [-90°,270°], then any points with latitudes in
+     * [90°,270°] are flagged as "across the pole". Such points are re-labeled
+     * with equivalent coordinates that lie within the standard coordinate patch
+     * by the transformation
+     *   (λ, ϕ) -> (λ+180°, 180°-ϕ)
+     * As the convertSphericalToCartesian algorithm depends on sin(ϕ) which is
+     * invariant under this transformation, the normalisation procedure is
+     * simplified to only perform the longitude phase shift.
      */
 
-    const bool lat_across_pole = (Alonlat[1] < -90. || Alonlat[1] > 90.);
+    // We normalise the latitude by calling the logically-identical normalise_longitude.
+    const auto& normalise_latitude = normalise_longitude;
+    const bool lat_across_pole = (normalise_latitude(Alonlat[1], -90.) > 90.);
 
     const double lambda_deg = normalise_longitude(Alonlat[0] + (lat_across_pole ? 180. : 0.), -180.);
     const double lambda     = degrees_to_radians * lambda_deg;

@@ -212,6 +212,20 @@ CASE("test unit sphere lat 100") {
     EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
 }
 
+CASE("test unit sphere lat 290") {
+    const PointLonLat ll1(15., 290.);
+    const PointLonLat ll2(15., -70.);
+    PointXYZ p, q;
+
+    UnitSphere::convertSphericalToCartesian(ll1, p);
+    UnitSphere::convertSphericalToCartesian(ll2, q);
+
+    // sin(x) and sin(pi-x) are not bitwise identical
+    EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
+    EXPECT(eckit::types::is_approximately_equal(p.y(), q.y()));
+    EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
+}
+
 CASE("test unit sphere lat -120") {
     const PointLonLat ll1(45., -120.);
     const PointLonLat ll2(225., -60.);

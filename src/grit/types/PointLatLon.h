@@ -53,8 +53,8 @@ public:
     // -- Constructors
 
     PointLatLon(T lat, T lon) : P{lat, lon} { ASSERT_MSG(-90. <= lat && lat <= 90., "PointLatLon: invalid latitude"); }
-    PointLatLon(const PointLatLon<T>& other) : P(other) {}
-    PointLatLon(PointLatLon<T>&& other) : P(other) {}
+    PointLatLon(const PointLatLon& other) : P(other) {}
+    PointLatLon(PointLatLon&& other) : P(other) {}
 
     // -- Destructor
 
@@ -65,17 +65,17 @@ public:
 
     // -- Operators
 
-    PointLatLon& operator=(const PointLatLon<T>& other) {
+    PointLatLon& operator=(const PointLatLon& other) {
         P::operator=(other);
         return *this;
     }
 
-    PointLatLon& operator=(PointLatLon<T>&& other) {
+    PointLatLon& operator=(PointLatLon&& other) {
         P::operator=(other);
         return *this;
     }
 
-    bool is_approximately_equal(const PointLatLon<T>& other, T eps) const {
+    bool is_approximately_equal(const PointLatLon& other, T eps) const {
         const auto dlon = normal(other.lon, lon) - lon;
         return std::abs(lat - other.lat) < eps &&
                (std::abs(lat - 90.) < eps || std::abs(lat + 90.) < eps || dlon < eps || dlon - 360. < eps);

@@ -36,8 +36,8 @@ public:
     // -- Constructors
 
     PointXYZ(T x, T y, T z) : P{x, y, z} {}
-    PointXYZ(const PointXYZ<T>& other) : P(other) {}
-    PointXYZ(PointXYZ<T>&& other) : P(other) {}
+    PointXYZ(const PointXYZ& other) : P(other) {}
+    PointXYZ(PointXYZ&& other) : P(other) {}
 
     // -- Destructor
 
@@ -48,17 +48,17 @@ public:
 
     // -- Operators
 
-    PointXYZ& operator=(const PointXYZ<T>& other) {
+    PointXYZ& operator=(const PointXYZ& other) {
         P::operator=(other);
         return *this;
     }
 
-    PointXYZ& operator=(PointXYZ<T>&& other) {
+    PointXYZ& operator=(PointXYZ&& other) {
         P::operator=(other);
         return *this;
     }
 
-    bool is_approximately_equal(const PointXYZ<T>& other, T eps) const {
+    bool is_approximately_equal(const PointXYZ& other, T eps) const {
         return std::abs(x - other.x) < eps && std::abs(y - other.y) < eps && std::abs(z - other.z) < eps;
     };
 
@@ -79,7 +79,7 @@ public:
 
     // -- Class methods
 
-    static T distance2(const PointXYZ<T>& a, const PointXYZ<T>& b) {
+    static T distance2(const PointXYZ& a, const PointXYZ& b) {
         return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z);
     }
 

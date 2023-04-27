@@ -36,8 +36,8 @@ public:
     // -- Constructors
 
     PointXY(T x, T y) : P{x, y} {}
-    PointXY(const PointXY<T>& other) : P(other) {}
-    PointXY(PointXY<T>&& other) : P(other) {}
+    PointXY(const PointXY& other) : P(other) {}
+    PointXY(PointXY&& other) : P(other) {}
 
     // -- Destructor
 
@@ -48,17 +48,17 @@ public:
 
     // -- Operators
 
-    PointXY& operator=(const PointXY<T>& other) {
+    PointXY& operator=(const PointXY& other) {
         P::operator=(other);
         return *this;
     }
 
-    PointXY& operator=(PointXY<T>&& other) {
+    PointXY& operator=(PointXY&& other) {
         P::operator=(other);
         return *this;
     }
 
-    bool is_approximately_equal(const PointXY<T>& other, T eps) const {
+    bool is_approximately_equal(const PointXY& other, T eps) const {
         return std::abs(x - other.x) < eps && std::abs(y - other.y) < eps;
     };
 

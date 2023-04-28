@@ -11,15 +11,25 @@
 
 
 #include <iostream>
-// #include <vector>
 
+#include "grit/Scanner.h"
+#include "grit/exception.h"
 #include "grit/iterator/IteratorAggregator.h"
 #include "grit/iterator/IteratorComposer.h"
 
 
 int main(int argc, const char* argv[]) {
 
-    grit::iterator::IteratorComposer it(nullptr);
+    grit::iterator::IteratorComposer i(nullptr);
+
+
+    struct ScannerTest : public grit::Scanner {
+        bool operator++() override { NOTIMP; }
+        bool operator++(int) override { NOTIMP; }
+        size_t size() const override { NOTIMP; }
+    };
+
+    grit::iterator::IteratorAggregator<ScannerTest> j;
 
 
     return 0;

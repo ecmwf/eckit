@@ -18,7 +18,8 @@
 namespace grit::iterator {
 
 
-class IteratorAggregator final : public Iterator {
+template <typename Scanner>
+class IteratorAggregator final : public Iterator, protected Scanner {
 public:
     // -- Types
     // None
@@ -28,7 +29,7 @@ public:
 
     // -- Constructors
 
-    IteratorAggregator();
+    IteratorAggregator() = default;
 
     // -- Destructor
     // None
@@ -75,7 +76,10 @@ private:
     // None
 
     // -- Overridden methods
-    // None
+
+    bool operator++() override { return Scanner::operator++(); }
+    bool operator++(int) override { return Scanner::operator++(0); }
+    size_t size() const override { return Scanner::size(); }
 
     // -- Class members
     // None

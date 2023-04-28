@@ -60,6 +60,10 @@ public:
     // None
 
 protected:
+    // -- Constructors
+
+    Scanner() = default;
+
     // -- Members
     // None
 

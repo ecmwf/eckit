@@ -42,7 +42,8 @@ Library::Library(const std::string& name) :
 
     LibraryManager::enregister(name, this);
 
-    std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(), ::toupper);
+    std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(),
+                   [](char c) { return (c == '-') ? '_' : ::toupper(c); });
 
     std::string s = prefix_ + "_DEBUG";
     const char* e = ::getenv(s.c_str());

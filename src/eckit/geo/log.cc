@@ -24,4 +24,4 @@ std::ostream& info  = std::clog;
 std::ostream& log   = std::clog;
 
 
-}  // namespace grit
+}  // namespace eckit::geo

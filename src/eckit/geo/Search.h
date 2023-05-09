@@ -38,4 +38,4 @@ using SearchXYZ = eckit::KDTreeMemory<search::Traits<PointXYZ, size_t>>;
 using SearchXY = eckit::KDTreeMemory<search::Traits<PointXY, size_t>>;
 
 
-}  // namespace grit
+}  // namespace eckit::geo

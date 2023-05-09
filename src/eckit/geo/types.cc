@@ -14,8 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-std::ostream &operator<<(std::ostream &out, const eckit::geo::Point &p)
-{
+std::ostream& operator<<(std::ostream& out, const eckit::geo::Point& p) {
     return std::holds_alternative<eckit::geo::PointLatLon>(p)
                ? out << std::get<eckit::geo::PointLatLon>(p)
            : std::holds_alternative<eckit::geo::PointXY>(p)

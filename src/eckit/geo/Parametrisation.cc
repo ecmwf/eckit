@@ -112,4 +112,4 @@ std::vector<std::string> Parametrisation::get_vector_string(const Parametrisatio
 }
 
 
-};  // namespace grit
+};  // namespace eckit::geo

@@ -14,4 +14,4 @@
 
 #include "eckit/geo/types.h"
 
-bool operator==(const eckit::geo::Point &, const eckit::geo::Point &);
+bool operator==(const eckit::geo::Point&, const eckit::geo::Point&);

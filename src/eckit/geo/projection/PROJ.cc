@@ -12,8 +12,8 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
-#include "eckit/geo/Parametrisation.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Parametrisation.h"
 #include "eckit/geo/types.h"
 
 
@@ -42,7 +42,8 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
         Point convert(const PJ_COORD& c) const final { return PointLatLon::make(c.enu.n, c.enu.e, lon_minimum_); }
 
-        explicit LatLon(double lon_minimum) : lon_minimum_(lon_minimum) {}
+        explicit LatLon(double lon_minimum) :
+            lon_minimum_(lon_minimum) {}
         const double lon_minimum_;
     };
 

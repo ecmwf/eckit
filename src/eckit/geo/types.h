@@ -33,6 +33,6 @@ using Point       = std::variant<PointLatLon, PointXY, PointXYZ>;
 using pl_type = std::vector<long>;
 
 
-}  // namespace grit
+}  // namespace eckit::geo
 
-std::ostream &operator<<(std::ostream &, const eckit::geo::Point &);
+std::ostream& operator<<(std::ostream&, const eckit::geo::Point&);

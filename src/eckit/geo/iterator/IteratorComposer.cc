@@ -18,7 +18,8 @@
 namespace eckit::geo::iterator {
 
 
-IteratorComposer::IteratorComposer(Scanner* scanner, const std::vector<Projection*>& projections) : scanner_(scanner) {
+IteratorComposer::IteratorComposer(Scanner* scanner, const std::vector<Projection*>& projections) :
+    scanner_(scanner) {
     ASSERT(scanner_);
 
     projections_.reserve(projections.size());

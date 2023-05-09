@@ -25,10 +25,9 @@ class Map final : public Parametrisation {
 public:
     // -- Types
 
-    using value_type =
-        std::variant<bool, int, unsigned int, long, unsigned long, float, double, std::string, std::vector<bool>,
-                     std::vector<int>, std::vector<unsigned int>, std::vector<long>, std::vector<unsigned long>,
-                     std::vector<float>, std::vector<double>, std::vector<std::string>>;
+    using value_type = std::variant<bool, int, unsigned int, long, unsigned long, float, double, std::string, std::vector<bool>,
+                                    std::vector<int>, std::vector<unsigned int>, std::vector<long>, std::vector<unsigned long>,
+                                    std::vector<float>, std::vector<double>, std::vector<std::string>>;
 
     using container_type = std::map<key_type, value_type>;
 

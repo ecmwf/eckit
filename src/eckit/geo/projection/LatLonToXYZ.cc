@@ -32,7 +32,8 @@ LatLonToXYZ::LatLonToXYZ(double a, double b) {
         using S = geometry::Sphere;
         const double R_;
 
-        explicit LatLonToSphereXYZ(double R) : R_(R) {}
+        explicit LatLonToSphereXYZ(double R) :
+            R_(R) {}
         PointXYZ operator()(const PointLatLon& p) const override { return S::ll_to_xyz(R_, p, 0.); }
         PointLatLon operator()(const PointXYZ& q) const override { return S::xyz_to_ll(R_, q); }
     };
@@ -42,7 +43,8 @@ LatLonToXYZ::LatLonToXYZ(double a, double b) {
         const double a_;
         const double b_;
 
-        explicit LatLonToSpheroidXYZ(double a, double b) : a_(a), b_(b) {}
+        explicit LatLonToSpheroidXYZ(double a, double b) :
+            a_(a), b_(b) {}
         PointXYZ operator()(const PointLatLon& p) const override { return S::ll_to_xyz(a_, b_, p, 0.); }
         PointLatLon operator()(const PointXYZ& q) const override { NOTIMP; }
     };
@@ -52,7 +54,8 @@ LatLonToXYZ::LatLonToXYZ(double a, double b) {
 }
 
 
-LatLonToXYZ::LatLonToXYZ(double R) : LatLonToXYZ(R, R) {}
+LatLonToXYZ::LatLonToXYZ(double R) :
+    LatLonToXYZ(R, R) {}
 
 
 LatLonToXYZ::LatLonToXYZ(const Parametrisation& param) :

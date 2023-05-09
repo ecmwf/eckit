@@ -14,8 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-bool operator==(const eckit::geo::Point &p, const eckit::geo::Point &q)
-{
+bool operator==(const eckit::geo::Point& p, const eckit::geo::Point& q) {
     ASSERT(p.index() == q.index());
 
     constexpr double eps = 1e-6;

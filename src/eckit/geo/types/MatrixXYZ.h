@@ -38,9 +38,12 @@ public:
 
     // -- Constructors
 
-    MatrixXYZ(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) : P{xx, xy, xz, yx, yy, yz, zx, zy, zz} {}
-    MatrixXYZ(const MatrixXYZ& other) : P(other) {}
-    MatrixXYZ(MatrixXYZ&& other) : P(other) {}
+    MatrixXYZ(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) :
+        P{xx, xy, xz, yx, yy, yz, zx, zy, zz} {}
+    MatrixXYZ(const MatrixXYZ& other) :
+        P(other) {}
+    MatrixXYZ(MatrixXYZ&& other) :
+        P(other) {}
 
     // -- Destructor
 

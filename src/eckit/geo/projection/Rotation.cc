@@ -27,7 +27,8 @@ namespace eckit::geo::projection {
 static ProjectionBuilder<Rotation> __projection("rotation");
 
 
-Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) : rotated_(true) {
+Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
+    rotated_(true) {
     using M = types::MatrixXYZ<double>;
 
     struct No final : Rotate {
@@ -35,13 +36,15 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
     };
 
     struct Angle final : Rotate {
-        explicit Angle(double angle) : angle_(angle) {}
+        explicit Angle(double angle) :
+            angle_(angle) {}
         PointLatLon operator()(const PointLatLon& p) const override { return {p.lat, p.lon + angle_}; }
         const double angle_;
     };
 
     struct Matrix final : Rotate {
-        explicit Matrix(M&& R) : R_(R) {}
+        explicit Matrix(M&& R) :
+            R_(R) {}
         PointLatLon operator()(const PointLatLon& p) const override {
             return geometry::Sphere::xyz_to_ll(1., R_ * geometry::Sphere::ll_to_xyz(1., p, 0.));
         }

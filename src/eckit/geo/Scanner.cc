@@ -51,4 +51,4 @@ Scanning mode (grib2/tables/30/3.4.table, grib2/template.3.scanning_mode.def)
 #endif
 
 
-}  // namespace grit
+}  // namespace eckit::geo

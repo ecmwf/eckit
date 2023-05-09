@@ -38,8 +38,7 @@ std::vector<double> gaussian_latitudes(size_t N, bool increasing) {
             }
 
             for (size_t j = 2; j <= i - (i % 2); j += 2) {
-                zfn[i - j] = zfn[i - j + 2] * static_cast<double>((j - 1) * (2 * i - j + 2)) /
-                             static_cast<double>(j * (2 * i - j + 1));
+                zfn[i - j] = zfn[i - j + 2] * static_cast<double>((j - 1) * (2 * i - j + 2)) / static_cast<double>(j * (2 * i - j + 1));
             }
         }
 

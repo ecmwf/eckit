@@ -24,4 +24,4 @@ extern std::ostream& info;
 extern std::ostream& log;
 
 
-}  // namespace grit
+}  // namespace eckit::geo

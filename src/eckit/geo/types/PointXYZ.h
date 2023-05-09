@@ -37,10 +37,14 @@ public:
 
     // -- Constructors
 
-    PointXYZ() : P{0, 0, 0} {}
-    PointXYZ(T x, T y, T z) : P{x, y, z} {}
-    PointXYZ(const PointXYZ& other) : P(other) {}
-    PointXYZ(PointXYZ&& other) : P(other) {}
+    PointXYZ() :
+        P{0, 0, 0} {}
+    PointXYZ(T x, T y, T z) :
+        P{x, y, z} {}
+    PointXYZ(const PointXYZ& other) :
+        P(other) {}
+    PointXYZ(PointXYZ&& other) :
+        P(other) {}
 
     // -- Destructor
 

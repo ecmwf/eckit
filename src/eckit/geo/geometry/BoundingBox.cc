@@ -34,7 +34,8 @@ BoundingBox::BoundingBox(double north, double west, double south, double east) :
 }
 
 
-BoundingBox::BoundingBox() : BoundingBox(90., 0., -90., 360.) {}
+BoundingBox::BoundingBox() :
+    BoundingBox(90., 0., -90., 360.) {}
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {
@@ -62,8 +63,7 @@ bool BoundingBox::contains(const BoundingBox& other) const {
         return false;
     }
 
-    return contains(other.north_, other.west_) && contains(other.north_, other.east_) &&
-           contains(other.south_, other.west_) && contains(other.south_, other.east_);
+    return contains(other.north_, other.west_) && contains(other.north_, other.east_) && contains(other.south_, other.west_) && contains(other.south_, other.east_);
 }
 
 

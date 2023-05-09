@@ -20,7 +20,8 @@
 namespace eckit::geo::param {
 
 
-Map::Map(const container_type& other) : map_(other) {}
+Map::Map(const container_type& other) :
+    map_(other) {}
 
 
 bool Map::has(const key_type& key) const {

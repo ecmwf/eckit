@@ -74,7 +74,7 @@ public:
     Iterator& operator=(const Iterator&) = delete;
     Iterator& operator=(Iterator&&)      = delete;
 
-    virtual bool operator++()    = 0;
+    virtual bool operator++() = 0;
 
     // -- Methods
 
@@ -119,4 +119,4 @@ private:
 };
 
 
-}  // namespace grit
+}  // namespace eckit::geo

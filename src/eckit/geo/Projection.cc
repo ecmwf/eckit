@@ -256,7 +256,8 @@ std::ostream& ProjectionFactory::list(std::ostream& out) {
 }
 
 
-ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) : key_(key) {
+ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) :
+    key_(key) {
     util::call_once(__once, __init);
     util::lock_guard<util::recursive_mutex> lock(*__mutex);
 
@@ -277,4 +278,4 @@ ProjectionFactory::~ProjectionFactory() {
 }
 
 
-}  // namespace grit
+}  // namespace eckit::geo

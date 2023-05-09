@@ -35,10 +35,14 @@ public:
 
     // -- Constructors
 
-    PointXY() : P{0, 0} {}
-    PointXY(T x, T y) : P{x, y} {}
-    PointXY(const PointXY& other) : P(other) {}
-    PointXY(PointXY&& other) : P(other) {}
+    PointXY() :
+        P{0, 0} {}
+    PointXY(T x, T y) :
+        P{x, y} {}
+    PointXY(const PointXY& other) :
+        P(other) {}
+    PointXY(PointXY&& other) :
+        P(other) {}
 
     // -- Destructor
 

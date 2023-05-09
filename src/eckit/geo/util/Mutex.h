@@ -32,4 +32,4 @@ inline void call_once(once_flag& flag, Callable&& fun) {
     pthread_once(&(flag.once_), fun);
 }
 
-} // namespace eckit::geo::util
+}  // namespace eckit::geo::util

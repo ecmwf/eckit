@@ -12,15 +12,16 @@
 
 #include "eckit/geo/Iterator.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Scanner.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit::geo {
 
 
-Iterator::Iterator(Scanner* scanner, Projection* projection) : scanner_(scanner), projection_(projection) {
+Iterator::Iterator(Scanner* scanner, Projection* projection) :
+    scanner_(scanner), projection_(projection) {
     ASSERT(scanner_);
     ASSERT(projection_);
 }
@@ -37,4 +38,4 @@ size_t Iterator::size() const {
 }
 
 
-}  // namespace grit
+}  // namespace eckit::geo

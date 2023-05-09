@@ -132,4 +132,4 @@ private:
 };
 
 
-}  // namespace grit
+}  // namespace eckit::geo

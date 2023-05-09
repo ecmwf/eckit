@@ -19,8 +19,8 @@
 #include <string>
 #include <vector>
 
-#include "eckit/geo/Parametrisation.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Parametrisation.h"
 #include "eckit/geo/grit.h"
 #include "eckit/geo/param/Map.h"
 #include "eckit/geo/types.h"
@@ -96,7 +96,8 @@ public:
 
     // -- Constructors
 
-    explicit GribParametrisation(codes_handle* h) : t(h, &codes_handle_delete) { ASSERT(*this); }
+    explicit GribParametrisation(codes_handle* h) :
+        t(h, &codes_handle_delete) { ASSERT(*this); }
 
     // -- Destructor
     // None

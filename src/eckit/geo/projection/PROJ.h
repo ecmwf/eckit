@@ -29,13 +29,15 @@ public:
 
     struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
         using t = std::unique_ptr<PJ, decltype(&proj_destroy)>;
-        explicit pj_t(PJ* ptr) : t(ptr, &proj_destroy) {}
+        explicit pj_t(PJ* ptr) :
+            t(ptr, &proj_destroy) {}
         explicit operator PJ*() const { return t::get(); }
     };
 
     struct ctx_t : std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)> {
         using t = std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)>;
-        explicit ctx_t(PJ_CONTEXT* ptr) : t(ptr, &proj_context_destroy) {}
+        explicit ctx_t(PJ_CONTEXT* ptr) :
+            t(ptr, &proj_context_destroy) {}
         explicit operator PJ_CONTEXT*() const { return t::get(); }
     };
 

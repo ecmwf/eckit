@@ -131,8 +131,9 @@ class ProjectionBuilder final : public ProjectionFactory {
     Projection* make(const Parametrisation& param) override { return new T(param); }
 
 public:
-    explicit ProjectionBuilder(const ProjectionFactory::key_type& key) : ProjectionFactory(key) {}
+    explicit ProjectionBuilder(const ProjectionFactory::key_type& key) :
+        ProjectionFactory(key) {}
 };
 
 
-}  // namespace grit
+}  // namespace eckit::geo

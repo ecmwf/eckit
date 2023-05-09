@@ -965,6 +965,7 @@ if( HAVE_ECKIT_SQL )
   add_subdirectory( sql )
 endif()
 
+add_subdirectory( geo )
 add_subdirectory( geometry )
 add_subdirectory( linalg )
 add_subdirectory( maths )

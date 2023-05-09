@@ -10,14 +10,14 @@
  */
 
 
-#include "grit/param/Map.h"
+#include "eckit/geo/param/Map.h"
 
 #include <cstddef>
 
-#include "grit/exception.h"
+#include "eckit/exception/Exceptions.h"
 
 
-namespace grit::param {
+namespace eckit::geo::param {
 
 
 Map::Map(const container_type& other) : map_(other) {}
@@ -200,4 +200,4 @@ bool Map::get(const key_type& key, std::vector<std::string>& value) const {
 }
 
 
-}  // namespace grit::param
+}  // namespace eckit::geo::param

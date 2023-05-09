@@ -15,12 +15,12 @@
 #include <memory>
 #include <vector>
 
-#include "grit/Iterator.h"
-#include "grit/Projection.h"
-#include "grit/Scanner.h"
+#include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/Scanner.h"
 
 
-namespace grit::iterator {
+namespace eckit::geo::iterator {
 
 
 class IteratorComposer final : public Iterator {
@@ -44,7 +44,6 @@ public:
     // -- Operators
 
     bool operator++() override;
-    bool operator++(int) override;
 
     // -- Methods
 
@@ -83,4 +82,4 @@ private:
 };
 
 
-}  // namespace grit::iterator
+}  // namespace eckit::geo::iterator

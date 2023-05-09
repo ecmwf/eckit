@@ -16,10 +16,10 @@
 
 #include <proj.h>
 
-#include "grit/Projection.h"
+#include "eckit/geo/Projection.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 /// Calculate coordinates using PROJ
@@ -116,4 +116,4 @@ private:
 };
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

@@ -10,17 +10,17 @@
  */
 
 
-#include "grit/Projection.h"
+#include "eckit/geo/Projection.h"
 
 #include <map>
 #include <ostream>
 
-#include "grit/exception.h"
-#include "grit/log.h"
-#include "grit/util/Mutex.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/log.h"
+#include "eckit/geo/util/Mutex.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 #if 0
@@ -238,7 +238,7 @@ Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key, con
     }
 
     list(error << "ProjectionFactory: unknown '" << key << "', choices are: ");
-    throw exception::runtime_error("ProjectionFactory: unknown '" + key + "'");
+    throw BadValue("ProjectionFactory: unknown '" + key + "'");
 }
 
 
@@ -261,7 +261,7 @@ ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) : k
     util::lock_guard<util::recursive_mutex> lock(*__mutex);
 
     if (auto f = __factories->find(key); f != __factories->end()) {
-        throw exception::runtime_error("ProjectionFactory: duplicate '" + key + "'");
+        throw BadValue("ProjectionFactory: duplicate '" + key + "'");
     }
 
     (*__factories)[key] = this;

@@ -14,10 +14,10 @@
 
 #include <memory>
 
-#include "grit/Projection.h"
+#include "eckit/geo/Projection.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
@@ -94,4 +94,4 @@ private:
 };
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

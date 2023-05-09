@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 struct Sphere {
@@ -42,4 +42,4 @@ struct Sphere {
 };
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

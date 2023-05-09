@@ -15,10 +15,10 @@
 #include <string>
 #include <vector>
 
-#include "grit/exception.h"
+#include "eckit/exception/Exceptions.h"
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 std::vector<double> gaussian_latitudes(size_t N, bool increasing) {
@@ -81,8 +81,8 @@ std::vector<double> gaussian_latitudes(size_t N, bool increasing) {
         }
 
         if (!converged) {
-            throw exception::runtime_error("Could not calculate latitude within accuracy/iterations: " +
-                                           std::to_string(eps) + "/" + std::to_string(Nmax));
+            throw BadValue("Could not calculate latitude within accuracy/iterations: "
+                           + std::to_string(eps) + "/" + std::to_string(Nmax));
         }
 
         // Convert colatitude [rad] to latitude [degree], symmetry
@@ -96,4 +96,4 @@ std::vector<double> gaussian_latitudes(size_t N, bool increasing) {
 }
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

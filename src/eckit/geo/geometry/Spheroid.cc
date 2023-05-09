@@ -10,13 +10,13 @@
  */
 
 
-#include "grit/geometry/Spheroid.h"
+#include "eckit/geo/geometry/Spheroid.h"
 
-#include "grit/exception.h"
-#include "grit/util.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 double Spheroid::angle(const PointLatLon& A, const PointLatLon& B) {
@@ -85,4 +85,4 @@ PointLatLon Spheroid::xyz_to_ll(double a, double b, const PointXYZ& A) {
 }
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

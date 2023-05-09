@@ -15,10 +15,8 @@
 #include <string>
 #include <vector>
 
-#include "grit/exception.h"
 
-
-namespace grit {
+namespace eckit::geo {
 
 
 class Parametrisation {

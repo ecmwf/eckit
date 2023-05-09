@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#include "grit/Search.h"
+#include "eckit/geo/Search.h"
 
 
 int main(int argc, const char* argv[]) {

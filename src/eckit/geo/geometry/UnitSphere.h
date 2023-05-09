@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "grit/geometry/SphereT.h"
+#include "eckit/geo/geometry/SphereT.h"
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 /// Definition of a unit datum
@@ -28,4 +28,4 @@ struct DatumUnit {
 using UnitSphere = SphereT<DatumUnit>;
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

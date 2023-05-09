@@ -15,15 +15,15 @@
 #include <iosfwd>
 #include <string>
 
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit {
+namespace eckit::geo {
 class Parametrisation;
 }
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 class Projection {

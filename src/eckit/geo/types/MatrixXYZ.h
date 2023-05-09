@@ -15,11 +15,11 @@
 #include <array>
 #include <ostream>
 
-#include "grit/exception.h"
-#include "grit/types/PointXYZ.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/types/PointXYZ.h"
 
 
-namespace grit::types {
+namespace eckit::geo::types {
 
 
 template <typename T>
@@ -115,4 +115,4 @@ public:
 };
 
 
-}  // namespace grit::types
+}  // namespace eckit::geo::types

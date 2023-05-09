@@ -10,12 +10,12 @@
  */
 
 
-#include "grit/scanner/Reduced.h"
+#include "eckit/geo/scanner/Reduced.h"
 
 // #include <>
 
 
-namespace grit::scanner {
+namespace eckit::geo::scanner {
 
 
 Reduced::Reduced() = default;
@@ -31,4 +31,4 @@ size_t Reduced::size() const {
 }
 
 
-}  // namespace grit::scanner
+}  // namespace eckit::geo::scanner

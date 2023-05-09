@@ -19,10 +19,10 @@
 #include <utility>
 #include <vector>
 
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 template <typename T>
@@ -84,4 +84,4 @@ const pl_type& reduced_octahedral_pl(size_t N);
 pl_type::value_type regular_pl(size_t N);
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

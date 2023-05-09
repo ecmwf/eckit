@@ -10,17 +10,17 @@
  */
 
 
-#include "grit/geometry/Sphere.h"
+#include "eckit/geo/geometry/Sphere.h"
 
 #include <algorithm>
 #include <cmath>
 
-#include "grit/exception.h"
-#include "grit/geometry/Spheroid.h"
-#include "grit/util.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/geometry/Spheroid.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 inline double squared(double x) {
@@ -121,4 +121,4 @@ PointLatLon Sphere::xyz_to_ll(double radius, const PointXYZ& A) {
 }
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

@@ -12,10 +12,6 @@
 
 #pragma once
 
-#include "grit/exception.h"
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
-#define EXPECT ASSERT
-
-
-bool operator==(const grit::Point&, const grit::Point&);
+bool operator==(const eckit::geo::Point &, const eckit::geo::Point &);

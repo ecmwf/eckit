@@ -12,21 +12,11 @@
 
 #pragma once
 
-#undef grit_ECKIT_THREADS
-
-#ifdef grit_ECKIT_THREADS
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#else
-#include <mutex>
-#endif
 
 
-namespace grit::util {
-
-
-#ifdef grit_ECKIT_THREADS
-
+namespace eckit::geo::util {
 
 using recursive_mutex = eckit::Mutex;
 
@@ -42,17 +32,4 @@ inline void call_once(once_flag& flag, Callable&& fun) {
     pthread_once(&(flag.once_), fun);
 }
 
-
-#else
-
-
-using std::call_once;
-using std::lock_guard;
-using std::once_flag;
-using std::recursive_mutex;
-
-
-#endif
-
-
-}  // namespace grit::util
+} // namespace eckit::geo::util

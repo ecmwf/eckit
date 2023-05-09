@@ -13,23 +13,10 @@
 #pragma once
 
 #include "eckit/container/KDTree.h"
-
-#ifdef ASSERT
-#undef ASSERT
-#endif
-
-#ifdef ASSERT_MSG
-#undef ASSERT_MSG
-#endif
-
-#ifdef NOTIMP
-#undef NOTIMP
-#endif
-
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 namespace search {

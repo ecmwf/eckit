@@ -12,10 +12,10 @@
 
 #include <iostream>
 
-#include "grit/log.h"
+#include "eckit/geo/log.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 std::ostream& error = std::cerr;

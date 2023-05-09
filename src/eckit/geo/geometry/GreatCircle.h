@@ -15,10 +15,10 @@
 
 #include <vector>
 
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 class GreatCircle {
@@ -42,4 +42,4 @@ private:
 };
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

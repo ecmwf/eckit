@@ -15,10 +15,10 @@
 #include <map>
 #include <variant>
 
-#include "grit/Parametrisation.h"
+#include "eckit/geo/Parametrisation.h"
 
 
-namespace grit::param {
+namespace eckit::geo::param {
 
 
 class Map final : public Parametrisation {
@@ -118,4 +118,4 @@ private:
 };
 
 
-}  // namespace grit::param
+}  // namespace eckit::geo::param

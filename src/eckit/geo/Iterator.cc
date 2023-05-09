@@ -10,14 +10,14 @@
  */
 
 
-#include "grit/Iterator.h"
+#include "eckit/geo/Iterator.h"
 
-#include "grit/Projection.h"
-#include "grit/Scanner.h"
-#include "grit/exception.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/Scanner.h"
+#include "eckit/exception/Exceptions.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 Iterator::Iterator(Scanner* scanner, Projection* projection) : scanner_(scanner), projection_(projection) {

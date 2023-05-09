@@ -10,16 +10,16 @@
  */
 
 
-#include "grit/geometry/BoundingBox.h"
+#include "eckit/geo/geometry/BoundingBox.h"
 
 #include <algorithm>
 
-#include "grit/exception.h"
-#include "grit/geometry/Sphere.h"
-#include "grit/util.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/geometry/Sphere.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 BoundingBox::BoundingBox(double north, double west, double south, double east) :
@@ -131,4 +131,4 @@ double BoundingBox::area(double radius) const {
 }
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

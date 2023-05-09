@@ -10,12 +10,12 @@
  */
 
 
-#include "grit/scanner/Regular.h"
+#include "eckit/geo/scanner/Regular.h"
 
 // #include <>
 
 
-namespace grit::scanner {
+namespace eckit::geo::scanner {
 
 
 Regular::Regular() = default;
@@ -31,4 +31,4 @@ size_t Regular::size() const {
 }
 
 
-}  // namespace grit::scanner
+}  // namespace eckit::geo::scanner

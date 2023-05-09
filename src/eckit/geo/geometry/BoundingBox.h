@@ -13,7 +13,7 @@
 #pragma once
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 class BoundingBox {
@@ -123,4 +123,4 @@ private:
 };
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

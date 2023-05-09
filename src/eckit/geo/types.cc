@@ -10,14 +10,17 @@
  */
 
 
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
-#include "grit/exception.h"
+#include "eckit/exception/Exceptions.h"
 
-
-std::ostream& operator<<(std::ostream& out, const grit::Point& p) {
-    return std::holds_alternative<grit::PointLatLon>(p) ? out << std::get<grit::PointLatLon>(p)
-           : std::holds_alternative<grit::PointXY>(p)   ? out << std::get<grit::PointXY>(p)
-           : std::holds_alternative<grit::PointXYZ>(p)  ? out << std::get<grit::PointXYZ>(p)
-                                                        : NOTIMP;
+std::ostream &operator<<(std::ostream &out, const eckit::geo::Point &p)
+{
+    return std::holds_alternative<eckit::geo::PointLatLon>(p)
+               ? out << std::get<eckit::geo::PointLatLon>(p)
+           : std::holds_alternative<eckit::geo::PointXY>(p)
+               ? out << std::get<eckit::geo::PointXY>(p)
+           : std::holds_alternative<eckit::geo::PointXYZ>(p)
+               ? out << std::get<eckit::geo::PointXYZ>(p)
+               : NOTIMP;
 }

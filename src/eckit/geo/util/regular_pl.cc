@@ -12,11 +12,11 @@
 
 #include <map>
 
-#include "grit/exception.h"
-#include "grit/types.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 pl_type::value_type regular_pl(size_t N) {
@@ -26,4 +26,4 @@ pl_type::value_type regular_pl(size_t N) {
 }
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

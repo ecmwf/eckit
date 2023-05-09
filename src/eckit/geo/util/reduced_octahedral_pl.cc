@@ -13,11 +13,11 @@
 #include <map>
 #include <utility>
 
-#include "grit/exception.h"
-#include "grit/types.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 const pl_type& reduced_octahedral_pl(size_t N) {
@@ -41,4 +41,4 @@ const pl_type& reduced_octahedral_pl(size_t N) {
 }
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

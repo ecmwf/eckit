@@ -10,18 +10,18 @@
  */
 
 
-#include "grit/projection/Rotation.h"
+#include "eckit/geo/projection/Rotation.h"
 
 #include <cmath>
 #include <utility>
 
-#include "grit/Parametrisation.h"
-#include "grit/geometry/Sphere.h"
-#include "grit/types/MatrixXYZ.h"
-#include "grit/util.h"
+#include "eckit/geo/Parametrisation.h"
+#include "eckit/geo/geometry/Sphere.h"
+#include "eckit/geo/types/MatrixXYZ.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 static ProjectionBuilder<Rotation> __projection("rotation");
@@ -95,4 +95,4 @@ Rotation::Rotation(const Parametrisation& param) :
              param.has("angle") ? param.get_double("angle") : 0) {}
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

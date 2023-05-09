@@ -10,14 +10,14 @@
  */
 
 
-#include "grit/projection/PROJ.h"
+#include "eckit/geo/projection/PROJ.h"
 
-#include "grit/Parametrisation.h"
-#include "grit/exception.h"
-#include "grit/types.h"
+#include "eckit/geo/Parametrisation.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 static ProjectionBuilder<PROJ> __projection("proj");
@@ -123,4 +123,4 @@ Point PROJ::inv(const Point& q) const {
 }
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

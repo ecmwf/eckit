@@ -14,10 +14,10 @@
 
 #include <memory>
 
-#include "grit/Projection.h"
+#include "eckit/geo/Projection.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
@@ -95,4 +95,4 @@ private:
 };
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

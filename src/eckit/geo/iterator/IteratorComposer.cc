@@ -10,12 +10,12 @@
  */
 
 
-#include "grit/iterator/IteratorComposer.h"
+#include "eckit/geo/iterator/IteratorComposer.h"
 
-#include "grit/exception.h"
+#include "eckit/exception/Exceptions.h"
 
 
-namespace grit::iterator {
+namespace eckit::geo::iterator {
 
 
 IteratorComposer::IteratorComposer(Scanner* scanner, const std::vector<Projection*>& projections) : scanner_(scanner) {
@@ -34,14 +34,9 @@ bool IteratorComposer::operator++() {
 }
 
 
-bool IteratorComposer::operator++(int) {
-    return scanner_->operator++(0);
-}
-
-
 size_t IteratorComposer::size() const {
     return scanner_->size();
 }
 
 
-}  // namespace grit::iterator
+}  // namespace eckit::geo::iterator

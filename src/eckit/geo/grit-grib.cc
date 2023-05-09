@@ -19,11 +19,11 @@
 #include <string>
 #include <vector>
 
-#include "grit/Parametrisation.h"
-#include "grit/exception.h"
-#include "grit/grit.h"
-#include "grit/param/Map.h"
-#include "grit/types.h"
+#include "eckit/geo/Parametrisation.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/grit.h"
+#include "eckit/geo/param/Map.h"
+#include "eckit/geo/types.h"
 
 
 #if 0

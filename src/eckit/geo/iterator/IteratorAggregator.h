@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "grit/Iterator.h"
+#include "eckit/geo/Iterator.h"
 
 
-namespace grit::iterator {
+namespace eckit::geo::iterator {
 
 
 template <typename Scanner>
@@ -92,4 +92,4 @@ private:
 };
 
 
-}  // namespace grit::iterator
+}  // namespace eckit::geo::iterator

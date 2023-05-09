@@ -10,10 +10,10 @@
  */
 
 
-#include "grit/Scanner.h"
+#include "eckit/geo/Scanner.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 #if 0

@@ -16,10 +16,10 @@
 #include <cmath>
 #include <ostream>
 
-#include "grit/exception.h"
+#include "eckit/exception/Exceptions.h"
 
 
-namespace grit::types {
+namespace eckit::geo::types {
 
 
 template <typename T>
@@ -118,4 +118,4 @@ public:
 };
 
 
-}  // namespace grit::types
+}  // namespace eckit::geo::types

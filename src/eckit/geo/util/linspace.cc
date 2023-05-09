@@ -14,7 +14,7 @@
 #include <vector>
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint) {
@@ -32,4 +32,4 @@ std::vector<double> linspace(double start, double stop, size_t num, bool endpoin
 }
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

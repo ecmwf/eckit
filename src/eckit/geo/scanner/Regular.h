@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "grit/Scanner.h"
+#include "eckit/geo/Scanner.h"
 
 
-namespace grit::scanner {
+namespace eckit::geo::scanner {
 
 
 class Regular final : public Scanner {
@@ -74,4 +74,4 @@ private:
 };
 
 
-}  // namespace grit::scanner
+}  // namespace eckit::geo::scanner

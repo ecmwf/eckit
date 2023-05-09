@@ -10,15 +10,15 @@
  */
 
 
-#include "grit/projection/LatLonToXYZ.h"
+#include "eckit/geo/projection/LatLonToXYZ.h"
 
-#include "grit/Parametrisation.h"
-#include "grit/geometry/Sphere.h"
-#include "grit/geometry/Spheroid.h"
-#include "grit/util.h"
+#include "eckit/geo/Parametrisation.h"
+#include "eckit/geo/geometry/Sphere.h"
+#include "eckit/geo/geometry/Spheroid.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 static ProjectionBuilder<LatLonToXYZ> __projection("ll_to_xyz");
@@ -60,4 +60,4 @@ LatLonToXYZ::LatLonToXYZ(const Parametrisation& param) :
                 param.has("R") ? param.get_double("R") : param.get_double("b")) {}
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

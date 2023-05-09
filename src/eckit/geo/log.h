@@ -15,7 +15,7 @@
 #include <iosfwd>
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 extern std::ostream& error;

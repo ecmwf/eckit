@@ -10,19 +10,24 @@
  */
 
 
-#include "grit/test.h"
+#include "eckit/geo/test.h"
 
+#include "eckit/exception/Exceptions.h"
 
-bool operator==(const grit::Point& p, const grit::Point& q) {
+bool operator==(const eckit::geo::Point &p, const eckit::geo::Point &q)
+{
     ASSERT(p.index() == q.index());
 
     constexpr double eps = 1e-6;
 
-    return std::holds_alternative<grit::PointLatLon>(p)
-               ? std::get<grit::PointLatLon>(p).is_approximately_equal(std::get<grit::PointLatLon>(q), eps)
-           : std::holds_alternative<grit::PointXY>(p)
-               ? std::get<grit::PointXY>(p).is_approximately_equal(std::get<grit::PointXY>(q), eps)
-           : std::holds_alternative<grit::PointXYZ>(p)
-               ? std::get<grit::PointXYZ>(p).is_approximately_equal(std::get<grit::PointXYZ>(q), eps)
+    return std::holds_alternative<eckit::geo::PointLatLon>(p)
+               ? std::get<eckit::geo::PointLatLon>(p)
+                     .is_approximately_equal(std::get<eckit::geo::PointLatLon>(q), eps)
+           : std::holds_alternative<eckit::geo::PointXY>(p)
+               ? std::get<eckit::geo::PointXY>(p)
+                     .is_approximately_equal(std::get<eckit::geo::PointXY>(q), eps)
+           : std::holds_alternative<eckit::geo::PointXYZ>(p)
+               ? std::get<eckit::geo::PointXYZ>(p)
+                     .is_approximately_equal(std::get<eckit::geo::PointXYZ>(q), eps)
                : NOTIMP;
 }

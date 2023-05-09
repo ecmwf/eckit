@@ -10,10 +10,10 @@
  */
 
 
-#include "grit/util.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 std::vector<double> arange(double start, double stop, double step) {
@@ -31,4 +31,4 @@ std::vector<double> arange(double start, double stop, double step) {
 }
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

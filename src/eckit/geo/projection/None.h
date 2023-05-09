@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "grit/Projection.h"
+#include "eckit/geo/Projection.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 class None final : public Projection {
@@ -75,4 +75,4 @@ private:
 };
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

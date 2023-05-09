@@ -10,10 +10,10 @@
  */
 
 
-#include "grit/projection/None.h"
+#include "eckit/geo/projection/None.h"
 
 
-namespace grit::projection {
+namespace eckit::geo::projection {
 
 
 static ProjectionBuilder<None> __projection1("");
@@ -23,4 +23,4 @@ static ProjectionBuilder<None> __projection2("none");
 None::None(const Parametrisation&) {}
 
 
-}  // namespace grit::projection
+}  // namespace eckit::geo::projection

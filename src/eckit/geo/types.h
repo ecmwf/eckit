@@ -16,12 +16,12 @@
 #include <variant>
 #include <vector>
 
-#include "grit/types/PointLatLon.h"
-#include "grit/types/PointXY.h"
-#include "grit/types/PointXYZ.h"
+#include "eckit/geo/types/PointLatLon.h"
+#include "eckit/geo/types/PointXY.h"
+#include "eckit/geo/types/PointXYZ.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 using PointLatLon = types::PointLatLon<double>;
@@ -35,5 +35,4 @@ using pl_type = std::vector<long>;
 
 }  // namespace grit
 
-
-std::ostream& operator<<(std::ostream&, const grit::Point&);
+std::ostream &operator<<(std::ostream &, const eckit::geo::Point &);

@@ -10,16 +10,16 @@
  */
 
 
-#include "grit/geometry/GreatCircle.h"
+#include "eckit/geo/geometry/GreatCircle.h"
 
 #include <cmath>
 #include <limits>
 
-#include "grit/exception.h"
-#include "grit/util.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::geometry {
+namespace eckit::geo::geometry {
 
 
 static bool pole(double lat) {
@@ -104,4 +104,4 @@ std::vector<double> GreatCircle::longitude(double lat) const {
 }
 
 
-}  // namespace grit::geometry
+}  // namespace eckit::geo::geometry

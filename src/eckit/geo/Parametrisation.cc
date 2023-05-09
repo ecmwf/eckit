@@ -10,12 +10,12 @@
  */
 
 
-#include "grit/Parametrisation.h"
+#include "eckit/geo/Parametrisation.h"
 
-#include "grit/exception.h"
+#include "eckit/exception/Exceptions.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 namespace {

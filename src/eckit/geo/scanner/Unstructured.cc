@@ -10,12 +10,12 @@
  */
 
 
-#include "grit/scanner/Unstructured.h"
+#include "eckit/geo/scanner/Unstructured.h"
 
 // #include <>
 
 
-namespace grit::scanner {
+namespace eckit::geo::scanner {
 
 
 Unstructured::Unstructured() = default;
@@ -31,4 +31,4 @@ size_t Unstructured::size() const {
 }
 
 
-}  // namespace grit::scanner
+}  // namespace eckit::geo::scanner

@@ -10,11 +10,11 @@
  */
 
 
-#include "grit/exception.h"
-#include "grit/util.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterator> monotonic_crop(
@@ -44,4 +44,4 @@ std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterat
 }
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

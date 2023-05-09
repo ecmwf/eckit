@@ -15,7 +15,7 @@
 #include <cstddef>
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 class Scanner {

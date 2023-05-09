@@ -16,7 +16,7 @@
 #include <ostream>
 
 
-namespace grit::types {
+namespace eckit::geo::types {
 
 
 template <typename T>
@@ -98,4 +98,4 @@ public:
 };
 
 
-}  // namespace grit::types
+}  // namespace eckit::geo::types

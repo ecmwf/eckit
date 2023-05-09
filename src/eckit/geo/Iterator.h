@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "grit/types.h"
+#include "eckit/geo/types.h"
 
 
-namespace grit {
+namespace eckit::geo {
 
 
 class Iterator {
@@ -37,12 +37,6 @@ protected:
         iterator_t& operator++() {
             pos++;
             return *this;
-        }
-
-        iterator_t operator++(int) {
-            auto old = *this;
-            operator++();
-            return old;
         }
 
         typename X::value_type& operator*() { return cnt.at(pos); }
@@ -81,7 +75,6 @@ public:
     Iterator& operator=(Iterator&&)      = delete;
 
     virtual bool operator++()    = 0;
-    virtual bool operator++(int) = 0;
 
     // -- Methods
 

@@ -10,10 +10,10 @@
  */
 
 
-#include "grit/util.h"
+#include "eckit/geo/util.h"
 
 
-namespace grit::util {
+namespace eckit::geo::util {
 
 
 template <>
@@ -44,4 +44,4 @@ double normalise_longitude_to_maximum(double lon, double maximum) {
 }
 
 
-}  // namespace grit::util
+}  // namespace eckit::geo::util

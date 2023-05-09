@@ -53,10 +53,6 @@ static void catch_terminate() {
     end("Terminate was called");
 }
 
-static void catch_unexpected() {
-    end("Unexpected was called");
-}
-
 [[noreturn]] static void catch_new_handler() {
     delete[] reserve_;
     reserve_ = nullptr;
@@ -75,7 +71,6 @@ Application::Application(int argc, char** argv, const char* homeenv) :
 
     std::set_new_handler(&catch_new_handler);
     std::set_terminate(&catch_terminate);
-    std::set_unexpected(&catch_unexpected);
 
     Monitor::active(true);
     Monitor::instance().startup();

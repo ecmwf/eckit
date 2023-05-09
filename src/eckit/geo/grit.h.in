@@ -1,0 +1,4 @@
+
+#define grit_VERSION_MAJOR @grit_VERSION_MAJOR@
+#define grit_VERSION_MINOR @grit_VERSION_MINOR@
+#define grit_VERSION_PATCH @grit_VERSION_PATCH@

@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <cstddef>
+#include "grit/Scanner.h"
 
 
-namespace grit {
+namespace grit::scanner {
 
 
-class Scanner {
+class Reduced final : public Scanner {
 public:
     // -- Types
     // None
@@ -28,42 +28,15 @@ public:
 
     // -- Constructors
 
-    Scanner(const Scanner&) = delete;
-    Scanner(Scanner&&)      = delete;
+    Reduced();
 
     // -- Destructor
-
-    virtual ~Scanner() = default;
+    // None
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    Scanner& operator=(const Scanner&) = delete;
-    Scanner& operator=(Scanner&&)      = delete;
-
-    virtual bool operator++() = 0;
-
-    // -- Methods
-
-    virtual size_t size() const = 0;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Constructors
-
-    Scanner() = default;
-
-    // -- Members
     // None
 
     // -- Methods
@@ -86,7 +59,9 @@ private:
     // None
 
     // -- Overridden methods
-    // None
+
+    bool operator++() override;
+    size_t size() const override;
 
     // -- Class members
     // None
@@ -99,4 +74,4 @@ private:
 };
 
 
-}  // namespace grit
+}  // namespace grit::scanner

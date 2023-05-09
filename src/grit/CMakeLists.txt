@@ -31,6 +31,12 @@ add_library(grit SHARED
     projection/None.h
     projection/Rotation.cc
     projection/Rotation.h
+    scanner/Reduced.cc
+    scanner/Reduced.h
+    scanner/Regular.cc
+    scanner/Regular.h
+    scanner/Unstructured.cc
+    scanner/Unstructured.h
     test.cc
     test.h
     types.cc

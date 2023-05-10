@@ -13,6 +13,8 @@
 
 #include "BSPHyperPlane.h"
 
+#include "eckit/container/sptree/SPNode.h"
+
 namespace eckit {
 
 template <class Traits, class Partition>

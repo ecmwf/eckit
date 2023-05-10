@@ -17,6 +17,7 @@
 #define eckit_log_PrefixTarget_h
 
 #include <iosfwd>
+#include <string>
 #include <utility>
 
 #include "eckit/log/WrapperTarget.h"

@@ -14,6 +14,9 @@
 #ifndef eckit_StrStream_h
 #define eckit_StrStream_h
 
+#include <iosfwd>
+#include <sstream>
+
 #include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------

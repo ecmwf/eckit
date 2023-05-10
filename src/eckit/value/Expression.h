@@ -14,6 +14,7 @@
 #ifndef Expression_H
 #define Expression_H
 
+#include <functional>
 #include <memory>
 
 #include "eckit/memory/NonCopyable.h"
@@ -21,49 +22,49 @@
 
 //====================================================================
 
-inline const char* opname(const negate<eckit::Value>&) {
+inline const char* opname(const std::negate<eckit::Value>&) {
     return "-";
 }
-inline const char* opname(const multiplies<eckit::Value>&) {
+inline const char* opname(const std::multiplies<eckit::Value>&) {
     return "*";
 }
-inline const char* opname(const divides<eckit::Value>&) {
+inline const char* opname(const std::divides<eckit::Value>&) {
     return "/";
 }
-inline const char* opname(const modulus<eckit::Value>&) {
+inline const char* opname(const std::modulus<eckit::Value>&) {
     return "%";
 }
-inline const char* opname(const plus<eckit::Value>&) {
+inline const char* opname(const std::plus<eckit::Value>&) {
     return "+";
 }
-inline const char* opname(const minus<eckit::Value>&) {
+inline const char* opname(const std::minus<eckit::Value>&) {
     return "-";
 }
-inline const char* opname(const greater<eckit::Value>&) {
+inline const char* opname(const std::greater<eckit::Value>&) {
     return ">";
 }
-inline const char* opname(const equal_to<eckit::Value>&) {
+inline const char* opname(const std::equal_to<eckit::Value>&) {
     return "==";
 }
-inline const char* opname(const less<eckit::Value>&) {
+inline const char* opname(const std::less<eckit::Value>&) {
     return "<";
 }
-inline const char* opname(const greater_equal<eckit::Value>&) {
+inline const char* opname(const std::greater_equal<eckit::Value>&) {
     return ">=";
 }
-inline const char* opname(const less_equal<eckit::Value>&) {
+inline const char* opname(const std::less_equal<eckit::Value>&) {
     return "<=";
 }
-inline const char* opname(const not_equal_to<eckit::Value>&) {
+inline const char* opname(const std::not_equal_to<eckit::Value>&) {
     return "!=";
 }
-inline const char* opname(const logical_not<eckit::Value>&) {
+inline const char* opname(const std::logical_not<eckit::Value>&) {
     return "!";
 }
-inline const char* opname(const logical_and<eckit::Value>&) {
+inline const char* opname(const std::logical_and<eckit::Value>&) {
     return "&&";
 }
-inline const char* opname(const logical_or<eckit::Value>&) {
+inline const char* opname(const std::logical_or<eckit::Value>&) {
     return "||";
 }
 

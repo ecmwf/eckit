@@ -17,6 +17,10 @@
 #include <stdint.h>
 #include <sys/time.h>
 
+#include <iostream>
+#include <map>
+#include <utility>
+
 #include "eckit/eckit.h"
 
 #include "eckit/memory/NonCopyable.h"

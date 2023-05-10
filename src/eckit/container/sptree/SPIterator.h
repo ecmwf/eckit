@@ -11,6 +11,7 @@
 #ifndef SPIterator_H
 #define SPIterator_H
 
+#include "eckit/container/sptree/SPValue.h"
 
 namespace eckit {
 

@@ -14,6 +14,8 @@
 #ifndef eckit_StdioBuf_h
 #define eckit_StdioBuf_h
 
+#include <strstream>
+
 #include "eckit/eckit.h"
 
 

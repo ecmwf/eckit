@@ -17,8 +17,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
-
 
 //-----------------------------------------------------------------------------
 

@@ -11,6 +11,7 @@
 #ifndef SPValue_H
 #define SPValue_H
 
+#include <iostream>
 
 namespace eckit {
 

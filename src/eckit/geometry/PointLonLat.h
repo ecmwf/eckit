@@ -19,19 +19,18 @@
 #include "eckit/exception/Exceptions.h"
 
 
-namespace eckit::geo::types {
+namespace eckit::geometry {
 
 
-template <typename T>
-class PointLatLon final : protected std::array<T, 2> {
+class PointLonLat final : protected std::array<double, 2> {
 private:
     // -- Types
 
-    using P = std::array<T, 2>;
+    using P = std::array<double, 2>;
 
     // -- Class methods
 
-    static T normal(double a, double minimum) {
+    static double normal(double a, double minimum) {
         while (a < minimum) {
             a += 360.;
         }
@@ -52,45 +51,45 @@ public:
 
     // -- Constructors
 
-    PointLatLon(T lat, T lon) :
-        P{lat, lon} { ASSERT_MSG(-90. <= lat && lat <= 90., "PointLatLon: invalid latitude"); }
-    PointLatLon(const PointLatLon& other) :
+    PointLonLat(double lat, double lon) :
+        P{lat, lon} { ASSERT_MSG(-90. <= lat && lat <= 90., "PointLonLat: invalid latitude"); }
+    PointLonLat(const PointLonLat& other) :
         P(other) {}
-    PointLatLon(PointLatLon&& other) :
+    PointLonLat(PointLonLat&& other) :
         P(other) {}
 
     // -- Destructor
 
-    ~PointLatLon() = default;
+    ~PointLonLat() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    PointLatLon& operator=(const PointLatLon& other) {
+    PointLonLat& operator=(const PointLonLat& other) {
         P::operator=(other);
         return *this;
     }
 
-    PointLatLon& operator=(PointLatLon&& other) {
+    PointLonLat& operator=(PointLonLat&& other) {
         P::operator=(other);
         return *this;
     }
 
-    bool is_approximately_equal(const PointLatLon& other, T eps) const {
+    bool is_approximately_equal(const PointLonLat& other, double eps) const {
         const auto dlon = normal(other.lon, lon) - lon;
         return std::abs(lat - other.lat) < eps && (std::abs(lat - 90.) < eps || std::abs(lat + 90.) < eps || dlon < eps || dlon - 360. < eps);
     };
 
     // -- Members
 
-    T& lat = P::operator[](0);
-    T& lon = P::operator[](1);
+    double& lat = P::operator[](0);
+    double& lon = P::operator[](1);
 
     // -- Methods
 
-    static PointLatLon make(T lat, T lon, T lon_minimum = 0) {
+    static PointLonLat make(double lat, double lon, double lon_minimum = 0) {
         lat = normal(lat, -90.);
 
         if (lat > 90.) {
@@ -101,7 +100,7 @@ public:
         return {lat, lat == -90. || lat == 90. ? 0. : normal(lon, lon_minimum)};
     }
 
-    PointLatLon antipode() const { return make(lat + 180., lon); }
+    PointLonLat antipode() const { return make(lat + 180., lon); }
 
     // -- Overridden methods
     // None
@@ -114,10 +113,11 @@ public:
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& out, const PointLatLon& p) {
+    friend std::ostream& operator<<(std::ostream& out, const PointLonLat& p) {
         return out << '{' << p.lat << ", " << p.lon << '}';
     }
 };
 
+bool points_equal(const PointLonLat&, const PointLonLat&);
 
-}  // namespace eckit::geo::types
+}  // namespace eckit::geometry

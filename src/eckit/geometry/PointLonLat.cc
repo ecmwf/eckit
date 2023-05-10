@@ -9,23 +9,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/geometry/PointLonLat.h"
 
-#pragma once
+#include "eckit/geometry/UnitSphere.h"
+#include "eckit/types/FloatCompare.h"
 
-#include "eckit/geo/geometry/SphereT.h"
+namespace eckit::geometry {
 
+bool points_equal(const PointLonLat& a, const PointLonLat& b) {
+    return eckit::types::is_approximately_equal<double>(UnitSphere::centralAngle(a, b), 0.0);
+}
 
-namespace eckit::geo::geometry {
-
-
-/// Definition of a unit datum
-struct DatumUnit {
-    static constexpr double radius() { return 1.; }
-};
-
-
-/// Definition of a unit sphere
-using UnitSphere = SphereT<DatumUnit>;
-
-
-}  // namespace eckit::geo::geometry
+}  // namespace eckit::geometry

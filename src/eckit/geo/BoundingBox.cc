@@ -9,18 +9,15 @@
  * does it submit to any jurisdiction.
  */
 
-
-#include "eckit/geo/geometry/BoundingBox.h"
+#include "eckit/geo/BoundingBox.h"
 
 #include <algorithm>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/util.h"
+#include "eckit/geometry/Sphere.h"
 
-
-namespace eckit::geo::geometry {
-
+namespace eckit::geo {
 
 BoundingBox::BoundingBox(double north, double west, double south, double east) :
     north_(north), west_(west), south_(south), east_(east) {
@@ -127,8 +124,7 @@ double BoundingBox::area(double radius) const {
     double latf = 0.5 * (std::sin(util::degrees_to_radians * north_) - std::sin(util::degrees_to_radians * south_));
     ASSERT(0. <= latf && latf <= 1.);
 
-    return Sphere::area(radius) * latf * lonf;
+    return geometry::Sphere::area(radius) * latf * lonf;
 }
 
-
-}  // namespace eckit::geo::geometry
+}  // namespace eckit::geo

@@ -1,4 +1,6 @@
 list(APPEND eckit_geo_srcs
+	BoundingBox.cc
+	BoundingBox.h
 	Iterator.h
 	Parametrisation.cc
 	Parametrisation.h
@@ -7,22 +9,13 @@ list(APPEND eckit_geo_srcs
 	Scanner.cc
 	Scanner.h
 	Search.h
-	geometry/BoundingBox.cc
-	geometry/BoundingBox.h
-	geometry/GreatCircle.cc
-	geometry/GreatCircle.h
-	geometry/Sphere.cc
-	geometry/Sphere.h
-	geometry/Spheroid.cc
-	geometry/Spheroid.h
-	geometry/UnitSphere.h
 	iterator/IteratorAggregator.h
 	iterator/IteratorComposer.cc
 	iterator/IteratorComposer.h
 	param/Map.cc
 	param/Map.h
-	projection/LatLonToXYZ.cc
-	projection/LatLonToXYZ.h
+	projection/LonLatToXYZ.cc
+	projection/LonLatToXYZ.h
 	projection/None.cc
 	projection/None.h
 	projection/Rotation.cc

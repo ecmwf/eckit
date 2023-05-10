@@ -21,16 +21,16 @@ namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
-class LatLonToXYZ final : public Projection {
+class LonLatToXYZ final : public Projection {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    LatLonToXYZ(double a, double b);
-    explicit LatLonToXYZ(double R);
-    explicit LatLonToXYZ(const Parametrisation&);
+    LonLatToXYZ(double a, double b);
+    explicit LonLatToXYZ(double R);
+    explicit LonLatToXYZ(const Parametrisation&);
 
     // -- Destructor
     // None
@@ -43,8 +43,8 @@ public:
 
     // -- Methods
 
-    PointXYZ fwd(const PointLatLon& p) const { return (*impl_)(p); }
-    PointLatLon inv(const PointXYZ& q) const { return (*impl_)(q); }
+    Point3 fwd(const PointLonLat& p) const { return (*impl_)(p); }
+    PointLonLat inv(const Point3& q) const { return (*impl_)(q); }
 
     // -- Overridden methods
     // None
@@ -67,8 +67,8 @@ private:
         void operator=(const Implementation&) = delete;
         void operator=(Implementation&&)      = delete;
 
-        virtual PointXYZ operator()(const PointLatLon&) const = 0;
-        virtual PointLatLon operator()(const PointXYZ&) const = 0;
+        virtual Point3 operator()(const PointLonLat&) const = 0;
+        virtual PointLonLat operator()(const Point3&) const = 0;
     };
 
     // -- Members
@@ -80,8 +80,8 @@ private:
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override { return (*impl_)(std::get<PointLatLon>(p)); }
-    Point inv(const Point& q) const override { return (*impl_)(std::get<PointXYZ>(q)); }
+    Point fwd(const Point& p) const override { return (*impl_)(std::get<PointLonLat>(p)); }
+    Point inv(const Point& q) const override { return (*impl_)(std::get<Point3>(q)); }
 
     // -- Class members
     // None

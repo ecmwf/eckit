@@ -43,8 +43,8 @@ public:
     // -- Methods
 
     bool rotated() const { return rotated_; }
-    PointLatLon fwd(const PointLatLon& p) const { return (*fwd_)(p); }
-    PointLatLon inv(const PointLatLon& q) const { return (*inv_)(q); }
+    PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
+    PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
 
     // -- Overridden methods
     // None
@@ -67,7 +67,7 @@ private:
         void operator=(const Rotate&) = delete;
         void operator=(Rotate&&)      = delete;
 
-        virtual PointLatLon operator()(const PointLatLon&) const = 0;
+        virtual PointLonLat operator()(const PointLonLat&) const = 0;
     };
 
     // -- Members
@@ -81,8 +81,8 @@ private:
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override { return (*fwd_)(std::get<PointLatLon>(p)); }
-    Point inv(const Point& q) const override { return (*inv_)(std::get<PointLatLon>(q)); }
+    Point fwd(const Point& p) const override { return (*fwd_)(std::get<PointLonLat>(p)); }
+    Point inv(const Point& q) const override { return (*inv_)(std::get<PointLonLat>(q)); }
 
     // -- Class members
     // None

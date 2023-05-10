@@ -34,35 +34,35 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     proj_.reset(proj_normalize_for_visualization(ctx_.get(), p.get()));
     ASSERT(proj_);
 
-    struct LatLon final : Convert {
+    struct LonLat final : Convert {
         PJ_COORD convert(const Point& p) const final {
-            const auto& q = std::get<PointLatLon>(p);
+            const auto& q = std::get<PointLonLat>(p);
             return proj_coord(q.lon, q.lat, 0, 0);
         }
 
-        Point convert(const PJ_COORD& c) const final { return PointLatLon::make(c.enu.n, c.enu.e, lon_minimum_); }
+        Point convert(const PJ_COORD& c) const final { return PointLonLat::make(c.enu.n, c.enu.e, lon_minimum_); }
 
-        explicit LatLon(double lon_minimum) :
+        explicit LonLat(double lon_minimum) :
             lon_minimum_(lon_minimum) {}
         const double lon_minimum_;
     };
 
     struct XY final : Convert {
         PJ_COORD convert(const Point& p) const final {
-            const auto& q = std::get<PointXY>(p);
+            const auto& q = std::get<Point2>(p);
             return proj_coord(q.X, q.Y, 0, 0);
         }
 
-        Point convert(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
+        Point convert(const PJ_COORD& c) const final { return Point2{c.xy.x, c.xy.y}; }
     };
 
     struct XYZ final : Convert {
         PJ_COORD convert(const Point& p) const final {
-            const auto& q = std::get<PointXYZ>(p);
+            const auto& q = std::get<Point3>(p);
             return proj_coord(q.X, q.Y, q.Z, 0);
         }
 
-        Point convert(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }
+        Point convert(const PJ_COORD& c) const final { return Point3{c.xy.x, c.xy.y, c.xyz.z}; }
     };
 
     auto convert_ptr = [lon_minimum](const std::string& string) -> Convert* {
@@ -78,8 +78,8 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
         return type == PJ_CS_TYPE_CARTESIAN && dim == 3   ? static_cast<Convert*>(new XYZ)
                : type == PJ_CS_TYPE_CARTESIAN && dim == 2 ? static_cast<Convert*>(new XY)
-               : type == PJ_CS_TYPE_ELLIPSOIDAL           ? static_cast<Convert*>(new LatLon(lon_minimum))
-               : type == PJ_CS_TYPE_SPHERICAL             ? static_cast<Convert*>(new LatLon(lon_minimum))
+               : type == PJ_CS_TYPE_ELLIPSOIDAL           ? static_cast<Convert*>(new LonLat(lon_minimum))
+               : type == PJ_CS_TYPE_SPHERICAL             ? static_cast<Convert*>(new LonLat(lon_minimum))
                                                           : NOTIMP;
     };
 

@@ -16,37 +16,36 @@
 #include <utility>
 
 #include "eckit/geo/Parametrisation.h"
-#include "eckit/geo/geometry/Sphere.h"
-#include "eckit/geo/types/MatrixXYZ.h"
 #include "eckit/geo/util.h"
-
+#include "eckit/geometry/UnitSphere.h"
+#include "eckit/maths/Matrix3.h"
 
 namespace eckit::geo::projection {
-
 
 static ProjectionBuilder<Rotation> __projection("rotation");
 
 
 Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
     rotated_(true) {
-    using M = types::MatrixXYZ<double>;
+    using M = maths::Matrix3<double>;
 
     struct No final : Rotate {
-        PointLatLon operator()(const PointLatLon& p) const override { return p; }
+        PointLonLat operator()(const PointLonLat& p) const override { return p; }
     };
 
     struct Angle final : Rotate {
         explicit Angle(double angle) :
             angle_(angle) {}
-        PointLatLon operator()(const PointLatLon& p) const override { return {p.lat, p.lon + angle_}; }
+        PointLonLat operator()(const PointLonLat& p) const override { return {p.lat, p.lon + angle_}; }
         const double angle_;
     };
 
     struct Matrix final : Rotate {
         explicit Matrix(M&& R) :
             R_(R) {}
-        PointLatLon operator()(const PointLatLon& p) const override {
-            return geometry::Sphere::xyz_to_ll(1., R_ * geometry::Sphere::ll_to_xyz(1., p, 0.));
+        PointLonLat operator()(const PointLonLat& p) const override {
+            return geometry::UnitSphere::convertCartesianToSpherical(
+                R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
         }
         const M R_;
     };
@@ -96,6 +95,5 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
 Rotation::Rotation(const Parametrisation& param) :
     Rotation(param.get_double("south_pole_lat"), param.get_double("south_pole_lon"),
              param.has("angle") ? param.get_double("angle") : 0) {}
-
 
 }  // namespace eckit::geo::projection

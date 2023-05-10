@@ -13,14 +13,12 @@
 #pragma once
 
 #include "eckit/container/KDTree.h"
-#include "eckit/geo/types.h"
-
+#include "eckit/geometry/Point2.h"
+#include "eckit/geometry/Point3.h"
 
 namespace eckit::geo {
 
-
 namespace search {
-
 
 template <typename PointT, typename PayloadT>
 struct Traits {
@@ -28,14 +26,10 @@ struct Traits {
     using Payload = PayloadT;
 };
 
-
 }  // namespace search
 
+using Search3 = KDTreeMemory<search::Traits<geometry::Point3, size_t>>;
 
-using SearchXYZ = eckit::KDTreeMemory<search::Traits<PointXYZ, size_t>>;
-
-
-using SearchXY = eckit::KDTreeMemory<search::Traits<PointXY, size_t>>;
-
+using Search2 = KDTreeMemory<search::Traits<geometry::Point2, size_t>>;
 
 }  // namespace eckit::geo

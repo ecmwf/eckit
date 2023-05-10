@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#include "grit/Search.h"
+#include "eckit/geo/Search.h"
 
 
 int main(int argc, const char* argv[]) {
@@ -22,7 +22,7 @@ int main(int argc, const char* argv[]) {
             {{0, 0, 0}, 0},
         };
 
-        grit::SearchXYZ search;
+        eckit::geo::Search3 search;
         search.build(points);
 
         std::cout << search.nearestNeighbour({0.1, 0, 0}) << std::endl;
@@ -40,7 +40,7 @@ int main(int argc, const char* argv[]) {
             {{0, 0}, 0},
         };
 
-        grit::SearchXY search;
+        eckit::geo::Search2 search;
         search.build(points);
 
         std::cout << search.nearestNeighbour({0.1, 0}) << std::endl;

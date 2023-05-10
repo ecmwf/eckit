@@ -124,7 +124,7 @@ CASE("test_eckit_container_kdtree_constructor") {
     typedef KDTreeMemory<TestTreeTrait> Tree;
 
     Tree kd;
-    typedef Tree::PointType Point;
+    using Point = Tree::PointType;
 
     std::vector<Tree::Value> points;
 

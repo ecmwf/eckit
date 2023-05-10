@@ -40,7 +40,7 @@ pl_type pl_convert(const T& pl) {
     pl_type _pl(pl.size());
     std::transform(pl.begin(), pl.end(), _pl.begin(),
                    [](typename T::value_type p) { return static_cast<pl_type::value_type>(p); });
-    return std::move(_pl);
+    return _pl;
 }
 
 

@@ -110,7 +110,7 @@ protected:
     LinearAlgebra() = default;
 
 private:
-    LinearAlgebra(const LinearAlgebra&) = delete;
+    LinearAlgebra(const LinearAlgebra&)            = delete;
     LinearAlgebra& operator=(const LinearAlgebra&) = delete;
 
     friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra&) {

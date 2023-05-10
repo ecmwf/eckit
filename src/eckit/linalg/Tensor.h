@@ -45,8 +45,8 @@ template <typename S>
 class Tensor {
 
 public:  // class methods
-
-    enum class Layout : int { // specify underlying type to be "int" for interoperability
+    enum class Layout : int
+    {  // specify underlying type to be "int" for interoperability
         Right    = 0,
         Left     = 1,
         RowMajor = Right,
@@ -59,7 +59,7 @@ public:  // class methods
 
     static std::vector<Size> strides(Layout layout, const std::vector<Size>& shape) {
         std::vector<Size> s(shape.size());
-        if (layout==Layout::ColMajor) {
+        if (layout == Layout::ColMajor) {
             Size prod = 1;
             s[0]      = prod;
             for (int i = 1; i < s.size(); ++i) {
@@ -80,7 +80,7 @@ public:  // class methods
 
 public:  // methods
     /// Default constructor (empty tensor)
-    Tensor(Layout layout=Layout::ColMajor) :
+    Tensor(Layout layout = Layout::ColMajor) :
         array_(0), size_(0), shape_(0), strides_(0), layout_(layout), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
@@ -114,7 +114,7 @@ public:  // methods
     Tensor(Stream& s) :
         array_(0), size_(0), shape_(0), own_(true) {
         Size shape_size;
-        
+
         // layout
         int layoutAsInt;
         s >> layoutAsInt;
@@ -146,18 +146,18 @@ public:  // methods
     /// Move constructor
     Tensor(Tensor&& other) noexcept {
 
-        shape_ = std::move(other.shape_);
+        shape_   = std::move(other.shape_);
         strides_ = std::move(other.strides_);
 
-        size_ = other.size_;
+        size_   = other.size_;
         layout_ = other.layout_;
-        own_ = other.own_;
+        own_    = other.own_;
 
         array_ = other.array_;
 
         // nullify moved-from tensor
         other.array_ = nullptr;
-        other.own_ = false;        
+        other.own_   = false;
         other.shape_.clear();
         other.strides_.clear();
         other.size_ = 0;
@@ -185,24 +185,24 @@ public:  // methods
     /// Move assignment operator
     Tensor& operator=(Tensor&& other) noexcept {
 
-        if (&other != this){
+        if (&other != this) {
 
             if (own_ && array_) {
                 delete[] array_;
             }
 
-            shape_ = std::move(other.shape_);
+            shape_   = std::move(other.shape_);
             strides_ = std::move(other.strides_);
 
-            size_ = other.size_;
+            size_   = other.size_;
             layout_ = other.layout_;
-            own_ = other.own_;
+            own_    = other.own_;
 
             array_ = other.array_;
 
             // nullify moved-from tensor
             other.array_ = nullptr;
-            other.own_ = false;            
+            other.own_   = false;
             other.shape_.clear();
             other.strides_.clear();
             other.size_ = 0;
@@ -352,7 +352,7 @@ public:  // methods
     }
 
     /// Transform a rowMajor-layout tensor to colMajor-layout
-    Tensor transformRowMajorToColMajor() const {       
+    Tensor transformRowMajorToColMajor() const {
         Tensor r(shape_);
 
         // ROW-MAJOR to COL-MAJOR
@@ -417,7 +417,7 @@ protected:      // member variables
     std::vector<Size> strides_;  ///< tensor strides precomputed at construction
 
     Layout layout_;  ///< memory layout? (column-major equivalent to Fortran layout)
-    bool own_;    ///< ownership
+    bool own_;       ///< ownership
 };
 
 //----------------------------------------------------------------------------------------------------------------------

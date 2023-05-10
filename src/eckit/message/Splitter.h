@@ -58,14 +58,13 @@ public:
     virtual ~SplitterBuilderBase();
 
     virtual Splitter* make(eckit::PeekHandle&) const = 0;
-    virtual bool match(eckit::PeekHandle&) const = 0;
+    virtual bool match(eckit::PeekHandle&) const     = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SplitterFactory {
 public:
-
     static SplitterFactory& instance();
 
     Splitter* lookup(eckit::PeekHandle&);
@@ -74,12 +73,11 @@ public:
     void deregister(const SplitterBuilderBase*);
 
 private:
-
-    SplitterFactory() = default;
+    SplitterFactory()  = default;
     ~SplitterFactory() = default;
 
     size_t index_ = 0;
-    std::vector<SplitterBuilderBase*> decoders_; // non-owning pointers
+    std::vector<SplitterBuilderBase*> decoders_;  // non-owning pointers
     std::mutex mutex_;
 };
 

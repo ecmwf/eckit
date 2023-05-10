@@ -47,10 +47,10 @@ public:
     SQLDatabase(const std::string& name = "default");
     virtual ~SQLDatabase();
 
-    SQLDatabase(const SQLDatabase&) = delete;
+    SQLDatabase(const SQLDatabase&)            = delete;
     SQLDatabase& operator=(const SQLDatabase&) = delete;
 
-    SQLDatabase(SQLDatabase&&) = default;
+    SQLDatabase(SQLDatabase&&)            = default;
     SQLDatabase& operator=(SQLDatabase&&) = default;
 
     // -- Methods

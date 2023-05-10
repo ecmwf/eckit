@@ -31,7 +31,8 @@ class UrlAccess {
 
 
 public:
-    UrlAccess(Url& url, const std::string& s) : url_(url), s_(s) {}
+    UrlAccess(Url& url, const std::string& s) :
+        url_(url), s_(s) {}
 
     operator std::string();
     operator long();

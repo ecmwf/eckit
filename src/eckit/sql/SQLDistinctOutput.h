@@ -31,10 +31,11 @@ class SQLDistinctOutput : public SQLOutput {
 
     struct DoubleBitwiseLessComparator {
         bool operator()(const std::vector<double>& lhs, const std::vector<double>& rhs) const {
-            if (lhs.size() != rhs.size()) return lhs.size() < rhs.size();
+            if (lhs.size() != rhs.size())
+                return lhs.size() < rhs.size();
             for (int i = 0; i < lhs.size(); ++i) {
-                const void* p1 = &lhs[i];
-                const void* p2 = &rhs[i];
+                const void* p1          = &lhs[i];
+                const void* p2          = &rhs[i];
                 const uint64_t& punned1 = *reinterpret_cast<const uint64_t*>(p1);
                 const uint64_t& punned2 = *reinterpret_cast<const uint64_t*>(p2);
                 if (punned1 != punned2) {

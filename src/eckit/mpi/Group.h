@@ -11,10 +11,10 @@
 #ifndef eckit_mpi_Group_h
 #define eckit_mpi_Group_h
 
-#include <iosfwd>
-#include <vector>
 #include <array>
+#include <iosfwd>
 #include <unordered_map>
+#include <vector>
 
 #include "eckit/memory/Counted.h"
 
@@ -32,30 +32,29 @@ public:
     virtual int group() const = 0;
 
     virtual int compare(const GroupContent&) const = 0;
-    
+
     virtual GroupContent* difference(const GroupContent&) const = 0;
-    
+
     virtual GroupContent* intersection(const GroupContent&) const = 0;
-    
+
     virtual GroupContent* union_group(const GroupContent&) const = 0;
 
     virtual size_t size() const = 0;
-    
+
     virtual int rank() const = 0;
-    
+
     virtual GroupContent* excl(const std::vector<int>& ranks) const = 0;
-    
+
     virtual GroupContent* incl(const std::vector<int>& ranks) const = 0;
-    
+
     virtual GroupContent* range_excl(const std::vector<std::array<int, 3>>& ranks) const = 0;
-    
+
     virtual GroupContent* range_incl(const std::vector<std::array<int, 3>>& ranks) const = 0;
-    
+
     virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const GroupContent&) const = 0;
 
 private:
     friend class Group;
-   
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -84,7 +83,7 @@ public:  // methods
     T& as() {
         return dynamic_cast<T&>(*content_);
     }
-    
+
     template <class T>
     const T& as() const {
         return dynamic_cast<const T&>(*content_);
@@ -94,35 +93,35 @@ public:  // methods
     /// Use only for interfacing with Fortran
     int group() const;
 
-    // Compares a group. 
+    // Compares a group.
     //
-    // Returns 
+    // Returns
     //  * an negative integer (< 0): if the groups are not equal (MPI_UNQUAL)
     //  * zero (= 0): if the groups are identical (MPI_IDENT), i.e. members are in exactly the same order in both groups
     //  * a positive integer (> 0): if the groups are similar (MPI_SIMILAR), i.e. both groups contain the same members but in different order
     int compare(const Group&) const;
-    
+
     Group difference(const Group&) const;
-    
+
     Group intersection(const Group&) const;
-    
+
     // Can not name the function union because it is a reserved word
     Group union_group(const Group&) const;
-    
+
     size_t size() const;
-    
-    // Returns the rank of the calling process in the given group. 
+
+    // Returns the rank of the calling process in the given group.
     int rank() const;
-    
+
     Group excl(const std::vector<int>& ranks) const;
-    
+
     Group incl(const std::vector<int>& ranks) const;
-    
+
     Group range_excl(const std::vector<std::array<int, 3>>& ranks) const;
-    
+
     Group range_incl(const std::vector<std::array<int, 3>>& ranks) const;
-    
-    std::unordered_map<int,int> translate_ranks(const std::vector<int>&, const Group&) const;
+
+    std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const Group&) const;
 
 private:  // methods
     void print(std::ostream&) const;
@@ -134,7 +133,7 @@ private:  // methods
 
 private:  // members
     GroupContent* content_;
-    
+
     friend class Parallel;
 };
 

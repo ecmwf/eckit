@@ -40,7 +40,8 @@ public:  // methods
     typedef typename store_t::iterator iterator;
     typedef typename store_t::const_iterator const_iterator;
 
-    DenseMap() : sorted_(true) {}
+    DenseMap() :
+        sorted_(true) {}
 
     ~DenseMap() {}
 

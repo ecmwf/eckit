@@ -136,7 +136,7 @@ static void readOffsiteFileSystems() {
     while (in.getline(line, sizeof(line))) {
         std::vector<std::string> s;
         parse(line, s);
-        if(s.size() == 1 and s[0].size() > 0) {
+        if (s.size() == 1 and s[0].size() > 0) {
             offsiteFileSystems.push_back(s[0]);
         }
     }
@@ -274,8 +274,8 @@ bool LocalPathName::available() const {
 
 bool LocalPathName::offsite() const {
     pthread_once(&once, init);
-    for(const auto& fs : offsiteFileSystems) {
-        if(path_.find(fs) == 0) {
+    for (const auto& fs : offsiteFileSystems) {
+        if (path_.find(fs) == 0) {
             return true;
         }
     }

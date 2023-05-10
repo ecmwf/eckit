@@ -191,7 +191,9 @@ Tests fail_3 = {{CASE("F1"){EXPECT(0 == 1);
 }
 }
 , {
-    CASE("F3") { EXPECT(0 == 1); }
+    CASE("F3") {
+        EXPECT(0 == 1);
+    }
 }
 }
 ;
@@ -249,7 +251,9 @@ SECTION("S2") {
 for (int j = 0; j < 10; j++) {
     std::stringstream ss;
     ss << "test-" << j;
-    SECTION(ss.str()) { ++global_counters[4]; }
+    SECTION(ss.str()) {
+        ++global_counters[4];
+    }
 }
 }
 }

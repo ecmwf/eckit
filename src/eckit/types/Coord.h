@@ -36,8 +36,10 @@ public:
 
     // -- Contructors
 
-    Coord(double l = 0) : value_(l) {}
-    Coord(const Coord& other) : value_(other.value_) {}
+    Coord(double l = 0) :
+        value_(l) {}
+    Coord(const Coord& other) :
+        value_(other.value_) {}
 
 
     // -- Operators

@@ -36,7 +36,7 @@ SeekableHandle::~SeekableHandle() {
 }
 
 Length SeekableHandle::openForRead() {
-    position_ = 0;
+    position_      = 0;
     seekableStart_ = 0;
     return handle_->openForRead();
 }

@@ -67,10 +67,12 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         if (ClusterNodes::available("mover", it->first)) {
             if (!ClusterNodes::lookUp("mover", it->first).supportsAttributes(moverAttributes)) {
                 cost.erase(it++);
-            } else {
+            }
+            else {
                 ++it;
             }
-        } else {
+        }
+        else {
             cost.erase(it++);
         }
     }

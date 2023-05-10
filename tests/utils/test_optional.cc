@@ -127,12 +127,12 @@ CASE("copy and move assign") {
         opt2 = std::move(opt2);
         EXPECT(opt2);
         EXPECT(opt2.value() == 2);
-        
+
         // Self copy-assignement
         opt2 = opt2;
         EXPECT(opt2);
         EXPECT(opt2.value() == 2);
-        
+
         // Assign none
         opt2 = nullopt;
         EXPECT(!opt2);
@@ -302,7 +302,7 @@ CASE("test destructor on non-trivial object: copy assign value") {
         EXPECT_EQUAL(opt.value().str, std::string("testCopyAssignValue1"));
         int testCopyAssignValue1OptId  = opt.value().id;
         int testCopyAssignValue1OptUId = opt.value().uid;
-        
+
         // Test copy assign value Some <- Some
         StringWrap testCopyAssignValue2("testCopyAssignValue2");
         int testCopyAssignValue2Id  = testCopyAssignValue2.id;
@@ -329,7 +329,7 @@ CASE("test destructor on non-trivial object: copy assign value") {
     }
 }
 
-        
+
 CASE("test destructor on non-trivial object: move assign value") {
     {
         Optional<StringWrap> opt;
@@ -361,15 +361,15 @@ CASE("test destructor on non-trivial object: move assign value") {
         EXPECT(!StringWrap::idIsDeleted(testMoveAssignValue1OptId));
         EXPECT(!StringWrap::uidIsDeleted(testMoveAssignValue1OptUId));
         EXPECT(!StringWrap::uidIsDeleted(testMoveAssignValue2UId));
-        
-        
+
+
         Optional<StringWrap> testCopyAssignSomeNone;
         opt = testCopyAssignSomeNone;
         EXPECT(!opt);
         // Reset should delete previous object
         EXPECT(StringWrap::idIsDeleted(testMoveAssignValue2OptId));
         EXPECT(StringWrap::uidIsDeleted(testMoveAssignValue2OptUId));
-   }
+    }
 }
 
 CASE("test destructor on non-trivial object: copy & move assign optional") {
@@ -408,7 +408,7 @@ CASE("test destructor on non-trivial object: copy & move assign optional") {
         EXPECT(!StringWrap::uidIsDeleted(testCopyAssignNoneSomeOptUId));
         EXPECT(!StringWrap::idIsDeleted(testCopyAssignSomeSomeId));
         EXPECT(!StringWrap::uidIsDeleted(testCopyAssignSomeSomeUId));
-        
+
         // Test move assign some <- some
         Optional<StringWrap> testMoveAssignSomeSome("testMoveAssignSomeSome");
         int testMoveAssignSomeSomeId  = testMoveAssignSomeSome.value().id;

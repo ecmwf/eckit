@@ -48,7 +48,6 @@ public:
     eckit::Offset position();
 
 private:
-
     std::unique_ptr<Splitter> splitter_;
     eckit::PeekHandle handle_;
 

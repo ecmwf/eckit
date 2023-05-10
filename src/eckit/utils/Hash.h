@@ -111,7 +111,8 @@ class HashBuilder : public HashBuilderBase {
     virtual Hash* make(const std::string& param) override { return new T(param); }
 
 public:
-    HashBuilder(const std::string& name) : HashBuilderBase(name) {}
+    HashBuilder(const std::string& name) :
+        HashBuilderBase(name) {}
     virtual ~HashBuilder() override = default;
 };
 

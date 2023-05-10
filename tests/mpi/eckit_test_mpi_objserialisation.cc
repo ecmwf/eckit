@@ -183,7 +183,7 @@ public:
 
     eckit::Buffer sendBuffer_;
 
-    Fixture(const Fixture&) = delete;
+    Fixture(const Fixture&)            = delete;
     Fixture& operator=(const Fixture&) = delete;
 
     void send(const Obj& o, size_t to) {

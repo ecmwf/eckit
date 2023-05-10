@@ -119,7 +119,7 @@ protected:                    // members
     in_addr localAddr_;       // local ip adress
 
     int receiveBufferSize_ = 0;
-    int sendBufferSize_ = 0;
+    int sendBufferSize_    = 0;
 
     // Debug
     bool debug_;

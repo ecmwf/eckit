@@ -287,7 +287,7 @@ CASE("Select from constructed table") {
     SECTION("Test SQL select where string is not empty") {
 
         for (const auto& sql : {"select rcol from table1 where scol != \"\"",
-                                                  "select rcol from table1 where scol != ''"}) {
+                                "select rcol from table1 where scol != ''"}) {
 
             eckit::sql::SQLParser::parseString(session, sql);
 

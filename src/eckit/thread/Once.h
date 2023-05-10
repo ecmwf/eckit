@@ -58,7 +58,8 @@ template <class T>
 pthread_mutex_t Once<T>::mutex_;
 
 template <class T>
-Once<T>::Once() : value_(0) {}
+Once<T>::Once() :
+    value_(0) {}
 
 template <class T>
 Once<T>::~Once() {}

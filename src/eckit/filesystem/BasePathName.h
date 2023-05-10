@@ -59,14 +59,14 @@ public:
     virtual void match(std::vector<BasePathName*>&, bool) const                                      = 0;
     virtual void reserve(const Length&) const                                                        = 0;
 
-    virtual BasePathName* unique() const           = 0;
-    virtual const char* type() const               = 0;
-    virtual BasePathName* dirName() const          = 0;
-    virtual BasePathName* fullName() const         = 0;
-    virtual BasePathName* orphanName() const       = 0;
-    virtual BasePathName* checkClusterNode() const = 0;
-    virtual BasePathName* baseName(bool) const     = 0;
-    virtual std::string extension() const          = 0;
+    virtual BasePathName* unique() const                      = 0;
+    virtual const char* type() const                          = 0;
+    virtual BasePathName* dirName() const                     = 0;
+    virtual BasePathName* fullName() const                    = 0;
+    virtual BasePathName* orphanName() const                  = 0;
+    virtual BasePathName* checkClusterNode() const            = 0;
+    virtual BasePathName* baseName(bool) const                = 0;
+    virtual std::string extension() const                     = 0;
     virtual std::string hash(const std::string& method) const = 0;
 
     virtual std::string clusterName() const = 0;

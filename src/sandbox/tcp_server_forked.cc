@@ -112,7 +112,7 @@ public:
 private:
     int port_;
 
-    FDBSvrApp(const FDBSvrApp&) = delete;
+    FDBSvrApp(const FDBSvrApp&)            = delete;
     FDBSvrApp& operator=(const FDBSvrApp&) = delete;
 
     virtual void run() {

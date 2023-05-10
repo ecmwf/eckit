@@ -132,12 +132,14 @@ public:  // types
     typedef typename base_t::builder_ptr builder_ptr;
 
 public:  // methods
-    ConcreteBuilderT0() : k_(name()) {
+    ConcreteBuilderT0() :
+        k_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT0() -- " << T::className());
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
 
-    ConcreteBuilderT0(const key_t& k) : k_(k) {
+    ConcreteBuilderT0(const key_t& k) :
+        k_(k) {
         DEBUG_BUILDER("ConcreteBuilderT0() -- " << T::className());
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
@@ -177,12 +179,14 @@ public:  // types
     typedef typename base_t::ARG1 ARG1;
 
 public:  // methods
-    ConcreteBuilderT1() : k_(name()) {
+    ConcreteBuilderT1() :
+        k_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT1() -- " << T::className());
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
 
-    ConcreteBuilderT1(const key_t& k) : k_(k) {
+    ConcreteBuilderT1(const key_t& k) :
+        k_(k) {
         DEBUG_BUILDER("ConcreteBuilderT1() -- " << T::className());
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
@@ -224,12 +228,14 @@ public:  // types
     typedef typename base_t::ARG2 ARG2;
 
 public:  // methods
-    ConcreteBuilderT2() : k_(name()) {
+    ConcreteBuilderT2() :
+        k_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT2() -- " << T::className());
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }
 
-    ConcreteBuilderT2(const key_t& k) : k_(k) {
+    ConcreteBuilderT2(const key_t& k) :
+        k_(k) {
         DEBUG_BUILDER("ConcreteBuilderT2() -- " << T::className());
         Factory<product_t>::instance().regist(k_, builder_ptr(this));
     }

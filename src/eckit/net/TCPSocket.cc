@@ -481,16 +481,16 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
     return *this;
 }
 
-void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, const int size ) {
+void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, const int size) {
     Log::debug() << "Setting " << ssock << " buffer size " << size << std::endl;
 
     int flg           = 0;
     socklen_t flgsize = sizeof(flg);
 
     if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
-            Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
+        Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
 
-   if (flg != size) {
+    if (flg != size) {
         if (setsockopt(socket, SOL_SOCKET, stype, &size, sizeof(size)) < 0)
             Log::warning() << "setsockopt " << ssock << " " << Log::syserr << std::endl;
 
@@ -501,12 +501,12 @@ void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, co
 #if defined(__linux__)
         // For Linux we ignore if the effective size is 2x what is set
         // see Linux 'man 7 socket'
-        // when set using setsockopt() the Linux kernel doubles the socket buffer size 
+        // when set using setsockopt() the Linux kernel doubles the socket buffer size
         // to allow space for bookkeeping overhead and  this  doubled  value  is
         // returned  by  getsockopt(). The minimum (doubled) value for this option is 2048.
-        warn &= !(flg == 2 * size);  
+        warn &= !(flg == 2 * size);
 #endif
-        if(warn)
+        if (warn)
             Log::warning() << "Attempt to set " << stype << " buffer size to " << size << " but kernel set size to " << flg << std::endl;
     }
 }
@@ -669,7 +669,7 @@ std::string TCPSocket::addrToHost(in_addr addr) {
     else
         h = &host;
 #else
-    h = gethostbyaddr(reinterpret_cast<char*>(&addr), sizeof(addr), AF_INET);
+    h             = gethostbyaddr(reinterpret_cast<char*>(&addr), sizeof(addr), AF_INET);
 #endif
 
     std::string s      = h ? std::string(h->h_name) : IPAddress(addr).asString();
@@ -705,7 +705,7 @@ void TCPSocket::register_ignore_sigpipe() {
     struct sigaction act;
     eckit::zero(act);
     act.sa_handler = SIG_IGN;
-    act.sa_flags = SA_RESTART;
+    act.sa_flags   = SA_RESTART;
     SYSCALL(::sigaction(SIGPIPE, &act, nullptr));  //< shouldn't fail -- see ERROR conditions in man(2) sigaction
 #endif
 }

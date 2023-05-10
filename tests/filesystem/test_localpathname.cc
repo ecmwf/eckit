@@ -9,8 +9,8 @@
  */
 
 #include <unistd.h>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "eckit/types/Types.h"
 

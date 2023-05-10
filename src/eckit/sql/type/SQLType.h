@@ -69,7 +69,6 @@ protected:
     static bool exists(const std::string&);
 
 private:
-
     std::string name_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLType& p) {

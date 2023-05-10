@@ -33,7 +33,8 @@ class IfstreamStream : public Stream {
 public:
     // -- Contructors
 
-    IfstreamStream(std::ifstream& f) : f_(f) {}
+    IfstreamStream(std::ifstream& f) :
+        f_(f) {}
 
     // -- Destructor
 

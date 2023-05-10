@@ -24,7 +24,8 @@ class AutoCloser {
     T& obj_;
 
 public:  // methods
-    AutoCloser(T& obj) : obj_(obj) {}
+    AutoCloser(T& obj) :
+        obj_(obj) {}
 
     /// Assume that close() can throw
     /// Otherwise we could test the interface with:

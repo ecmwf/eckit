@@ -60,7 +60,7 @@ std::pair<double, char> Bytes::reduceTo1024() const {
     double x = std::abs(bytes_);
 
     size_t n = 0;
-    while (x >= 1024. && n < NUMBER(magnitudes)-1) {
+    while (x >= 1024. && n < NUMBER(magnitudes) - 1) {
         x /= 1024.;
         n++;
     }

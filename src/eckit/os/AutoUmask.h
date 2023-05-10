@@ -25,7 +25,8 @@ class AutoUmask {
     mode_t umask_;
 
 public:
-    explicit AutoUmask(mode_t u = 0) : umask_(::umask(u)) {}
+    explicit AutoUmask(mode_t u = 0) :
+        umask_(::umask(u)) {}
     ~AutoUmask() { ::umask(umask_); }
 };
 

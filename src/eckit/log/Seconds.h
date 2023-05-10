@@ -33,7 +33,7 @@ public:
     Seconds(double, bool compact = false);
     Seconds(const struct ::timeval&, bool compact = false);
 
-    //#include "eckit/types/Seconds.b"
+    // #include "eckit/types/Seconds.b"
 
     // -- Operators
 

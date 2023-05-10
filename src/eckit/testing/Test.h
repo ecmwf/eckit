@@ -15,13 +15,13 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
-#include <cstdlib> // for setenv
+#include <cstdlib>  // for setenv
 
 #include <functional>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <set>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Colour.h"
@@ -38,7 +38,8 @@ namespace testing {
 
 class TestException : public Exception {
 public:
-    TestException(const std::string& w, const CodeLocation& l) : Exception(w, l) {}
+    TestException(const std::string& w, const CodeLocation& l) :
+        Exception(w, l) {}
 };
 
 enum TestVerbosity
@@ -57,7 +58,8 @@ enum InitEckitMain
 
 class SetEnv {
 public:
-    SetEnv(const char* key, const char* val) : key_(key), value_(val) {
+    SetEnv(const char* key, const char* val) :
+        key_(key), value_(val) {
         oldValue_ = ::getenv(key_);
         ::setenv(key_, value_, true);
     }
@@ -193,9 +195,12 @@ template <typename T>
 class ArrayView {
 public:
     // -- Constructors
-    ArrayView(const T* data, size_t size) : data_(data), size_(size) {}
-    ArrayView(const T* begin, const T* end) : data_(begin), size_(end - begin) {}
-    explicit ArrayView(const std::vector<T>& vec) : data_(&vec[0]), size_(vec.size()) {}
+    ArrayView(const T* data, size_t size) :
+        data_(data), size_(size) {}
+    ArrayView(const T* begin, const T* end) :
+        data_(begin), size_(end - begin) {}
+    explicit ArrayView(const std::vector<T>& vec) :
+        data_(&vec[0]), size_(vec.size()) {}
 
     // -- Accessors
     const T& operator[](int i) const { return data_[i]; }
@@ -364,7 +369,8 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
             eckit::Log::info() << "Running case " << i << ": " << test.description() << " ..." << std::endl;
             test.run(v, failures);
             eckit::Log::info() << "Completed case " << i << ": " << test.descriptionNoSection() << std::endl;
-        } else {
+        }
+        else {
             eckit::Log::info() << "Skipping case " << i << ": " << test.description() << "..." << std::endl;
         }
     }
@@ -379,16 +385,16 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 }
 
 int run_tests_main(std::vector<Test>& tests, int argc, char* argv[], bool initEckitMain = true) {
-    
+
     // deactivate loading of plugins not to influence some tests
     ::setenv("AUTO_LOAD_PLUGINS", "false", true);
-    
+
     if (initEckitMain)
         eckit::Main::initialise(argc, argv);
-    
+
     eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
     int failures = run(tests);
-    
+
     eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
     return failures;
 }
@@ -417,10 +423,10 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 #if ECKIT_TESTING_SELF_REGISTER_CASES
 
-#define CASE(description)                                                                                           \
-    void UNIQUE_NAME2(test_, __LINE__)(std::string&, int&, int);                                                    \
+#define CASE(description)                                                                                                 \
+    void UNIQUE_NAME2(test_, __LINE__)(std::string&, int&, int);                                                          \
     static const eckit::testing::TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description,                     \
-                                                                                   &UNIQUE_NAME2(test_, __LINE__)); \
+                                                                                         &UNIQUE_NAME2(test_, __LINE__)); \
     void UNIQUE_NAME2(test_, __LINE__)(std::string & _test_subsection, int& _num_subsections, int _subsection)
 
 #else  // ECKIT_TESTING_SELF_REGISTER_CASES

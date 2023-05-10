@@ -35,7 +35,8 @@ class LocalFileManager : public URIManager {
     virtual PathName path(const URI& uri) const override;
 
 public:
-    LocalFileManager(const std::string& name) : URIManager(name) {}
+    LocalFileManager(const std::string& name) :
+        URIManager(name) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------

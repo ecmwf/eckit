@@ -38,7 +38,7 @@ protected:  // methods
     virtual eckit::mpi::Comm* self() const override;
 
     virtual std::string processorName() const override;
-    
+
     virtual size_t remoteSize() const override;
 
     virtual void barrier() const override;
@@ -82,10 +82,10 @@ protected:  // methods
                           size_t recvcount, Data::Code type, size_t root) const override;
 
     virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
-			Operation::Code op, size_t root) const override;
+                        Operation::Code op, size_t root) const override;
 
     virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type,
-			       Operation::Code op, size_t root) const override;
+                               Operation::Code op, size_t root) const override;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
@@ -115,7 +115,7 @@ protected:  // methods
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
     virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-				      int dest, int sendtag, int source, int recvtag) const override;
+                                      int dest, int sendtag, int source, int recvtag) const override;
 
     virtual eckit::SharedBuffer broadcastFile(const eckit::PathName& filepath, size_t root) const override;
 
@@ -128,11 +128,11 @@ protected:  // methods
     virtual Status status() const override { return createStatus(); }
 
     virtual Request request(int) const override;
-    
+
     virtual Group group(int) const override;
-    
+
     virtual Group group() const override;
-    
+
     virtual Group remoteGroup() const override;
 
     virtual Comm& create(const Group&, const std::string& name) const override;
@@ -141,8 +141,7 @@ protected:  // methods
 
     virtual int communicator() const override;
 
-public: // static methods
-
+public:  // static methods
     static Status createStatus();
 
     static MPI_Status* toStatus(Status&);
@@ -154,9 +153,9 @@ public:
     /// Warning! Do not use the return value to free or modify the MPI communicator!
     MPI_Comm MPIComm() const;
 
-private:  // methods
-    friend class ParallelGroup; // Groups should not call free if mpi has been finalized. Hence PrallelGroup needs to query finalized()
-    
+private:                         // methods
+    friend class ParallelGroup;  // Groups should not call free if mpi has been finalized. Hence PrallelGroup needs to query finalized()
+
     static void initialize();
 
     static void finalize();

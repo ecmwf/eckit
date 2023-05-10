@@ -43,8 +43,7 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
     Scalar sum = 0.;
 
 #if eckit_HAVE_OMP
-#pragma omp parallel for reduction(+ \
-                                   : sum)
+#pragma omp parallel for reduction(+ : sum)
 #endif
     for (Size i = 0; i < Ni; ++i) {
         const auto p = x[i] * y[i];

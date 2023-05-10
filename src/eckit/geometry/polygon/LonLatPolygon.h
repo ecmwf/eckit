@@ -33,8 +33,9 @@ public:
 
     explicit LonLatPolygon(const container_type& points, bool includePoles = true);
 
-    template<typename Point2Iterator>
-    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true) : LonLatPolygon(container_type(begin, end), includePoles) {}
+    template <typename Point2Iterator>
+    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true) :
+        LonLatPolygon(container_type(begin, end), includePoles) {}
 
     LonLatPolygon(const LonLatPolygon&) = default;
     LonLatPolygon(LonLatPolygon&&)      = default;

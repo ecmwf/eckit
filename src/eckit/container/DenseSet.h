@@ -38,7 +38,8 @@ public:  // methods
     typedef typename store_t::const_iterator iterator;
     typedef typename store_t::const_iterator const_iterator;
 
-    DenseSet(size_t s = 0) : sorted_(true) {
+    DenseSet(size_t s = 0) :
+        sorted_(true) {
         if (s > 0)
             reserve(s);
     }

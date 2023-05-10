@@ -345,7 +345,7 @@ public:
     Value element(const Value&) const;
     Value remove(const Value&);
 
-    void append(const Value&); // List append
+    void append(const Value&);  // List append
 
     // -- Methods
 

@@ -27,11 +27,14 @@ class BasePathNameT : public BasePathName {
 public:
     // -- Contructors
 
-    BasePathNameT(const T& path) : path_(path) {}
+    BasePathNameT(const T& path) :
+        path_(path) {}
 
-    BasePathNameT(const char* path, bool tildeIsUserHome = false) : path_(path, tildeIsUserHome) {}
+    BasePathNameT(const char* path, bool tildeIsUserHome = false) :
+        path_(path, tildeIsUserHome) {}
 
-    BasePathNameT(const std::string& path, bool tildeIsUserHome = false) : path_(path, tildeIsUserHome) {}
+    BasePathNameT(const std::string& path, bool tildeIsUserHome = false) :
+        path_(path, tildeIsUserHome) {}
 
 protected:
     // -- Methods

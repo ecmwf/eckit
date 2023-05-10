@@ -22,9 +22,9 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/mpi/Group.h"
 #include "eckit/mpi/SerialData.h"
 #include "eckit/mpi/SerialRequest.h"
-#include "eckit/mpi/Group.h"
 #include "eckit/mpi/SerialStatus.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
@@ -336,7 +336,7 @@ void Serial::scatterv(const void* sendbuf, const int[], const int[], void* recvb
     }
 }
 
-  void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code, size_t root) const {
+void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code, size_t root) const {
     if (recvbuf != sendbuf && count > 0) {
         memcpy(recvbuf, sendbuf, count * dataSize[type]);
     }
@@ -402,7 +402,7 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
 }
 
 Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-				  int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
+                                  int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     SerialRequestPool::instance().createSendRequest(sendrecv, count, type, sendtag);
     ReceiveRequest recv_request(sendrecv, count, type, recvtag);
@@ -414,7 +414,7 @@ Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
     if (count > 0) {
         memcpy(sendrecv, send.buffer(), send.count() * dataSize[send.type()]);
     }
-    
+
     SerialStatus* st = new SerialStatus();
     (*st).count_     = send.count();
     (*st).source_    = 0;
@@ -474,7 +474,6 @@ Comm& Serial::create(const Group&, const std::string& name) const {
 Comm& Serial::create(const Group&, int tag, const std::string& name) const {
     NOTIMP;
 };
-
 
 
 void Serial::print(std::ostream& os) const {

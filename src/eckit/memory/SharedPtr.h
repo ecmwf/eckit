@@ -75,17 +75,20 @@ public:  // types
 
 public:  // methods
     /// Constructor
-    SharedPtr() : ptr_(0) {}
+    SharedPtr() :
+        ptr_(0) {}
 
     /// Constructor.
     /// @param ptr naked pointer
-    explicit SharedPtr(T* ptr) : ptr_(ptr) {
+    explicit SharedPtr(T* ptr) :
+        ptr_(ptr) {
         if (!null())
             ptr_->attach();
     }
 
     /// Copy constructor
-    SharedPtr(const SharedPtr& other) : ptr_(other.ptr_) {
+    SharedPtr(const SharedPtr& other) :
+        ptr_(other.ptr_) {
         if (!null())
             ptr_->attach();
     }

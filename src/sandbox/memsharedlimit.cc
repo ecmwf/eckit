@@ -185,7 +185,7 @@ public:
     ~MemApp() {}
 
 private:
-    MemApp(const MemApp&) = delete;
+    MemApp(const MemApp&)            = delete;
     MemApp& operator=(const MemApp&) = delete;
 
     virtual void run() {

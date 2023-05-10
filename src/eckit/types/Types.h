@@ -76,7 +76,8 @@ class output_list_iterator : public output_iterator {
     output_list<T>* list_;
 
 public:
-    output_list_iterator(output_list<T>* l) : list_(l) {}
+    output_list_iterator(output_list<T>* l) :
+        list_(l) {}
     ~output_list_iterator() {}
 
     output_list_iterator<T>& operator=(const T& v) {

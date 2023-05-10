@@ -614,7 +614,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
     if (c == '"' || c == '\'') {
         Value result = ObjectParser::parseString(c);
-        isKey = (peek(true) == ':');
+        isKey        = (peek(true) == ':');
         return result;
     }
 
@@ -672,7 +672,8 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
                 isKey = true;
                 break;
-            } else {
+            }
+            else {
                 s += p;
             }
 
@@ -759,7 +760,7 @@ void YAMLParser::loadItem() {
         case '\'':
             v = parseStringOrNumber(isKey);
             if (isKey) {
-              next(true);
+                next(true);
             }
             item = new YAMLItemValue(indent, v);
             break;
@@ -783,7 +784,7 @@ void YAMLParser::loadItem() {
                     }
                     item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
                     if (isKey) {
-                      next(true);
+                        next(true);
                     }
                     break;
             }
@@ -806,7 +807,7 @@ void YAMLParser::loadItem() {
                     }
                     item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
                     if (isKey) {
-                      next(true);
+                        next(true);
                     }
                     break;
             }
@@ -826,7 +827,7 @@ void YAMLParser::loadItem() {
         default:
             item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
             if (isKey) {
-              next(true);
+                next(true);
             }
             break;
     }

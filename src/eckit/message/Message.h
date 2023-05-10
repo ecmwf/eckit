@@ -77,10 +77,10 @@ public:
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
     size_t getSize(const std::string& key) const;
-    
-    // Write double array at key to pre allocated array 
+
+    // Write double array at key to pre allocated array
     void getDoubleArray(const std::string& key, double* data, size_t len) const;
-    
+
     void getMetadata(MetadataGatherer&, GetMetadataOptions options = GetMetadataOptions{}) const;
 
     eckit::Buffer decode() const;
@@ -93,7 +93,7 @@ public:
 
 private:
     MessageContent* content_;
-    mutable MessageDecoder* decoder_ = nullptr; // non-owning
+    mutable MessageDecoder* decoder_ = nullptr;  // non-owning
 
     MessageDecoder& lookupDecoder() const;
 

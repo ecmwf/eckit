@@ -47,7 +47,8 @@ public:
     typedef std::pair<Point, Payload> value_type;
 
 public:
-    SPTree(Alloc& alloc) : alloc_(alloc), root_(0) {}
+    SPTree(Alloc& alloc) :
+        alloc_(alloc), root_(0) {}
 
     ~SPTree() { alloc_.deleteNode(root_, (Node*)0); }
 

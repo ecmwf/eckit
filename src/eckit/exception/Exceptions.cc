@@ -213,8 +213,7 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc) {
 }
 
 
-void handle_assert(const std::string& msg, const CodeLocation& loc)
-{
+void handle_assert(const std::string& msg, const CodeLocation& loc) {
     std::ostringstream s;
     s << "Assertion failed: " << msg << " in " << loc.func() << ", line " << loc.line() << " of " << loc.file();
 
@@ -266,7 +265,8 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
               << BackTrace::dump() << std::endl;
 }
 
-NotImplemented::NotImplemented(const CodeLocation& loc) : NotImplemented("", loc) {}
+NotImplemented::NotImplemented(const CodeLocation& loc) :
+    NotImplemented("", loc) {}
 
 UserError::UserError(const std::string& r, const CodeLocation& loc) :
     Exception(std::string("UserError: ") + r, loc) {}

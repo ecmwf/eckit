@@ -16,8 +16,8 @@
 #include <fstream>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/log/LogTarget.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/log/LogTarget.h"
 
 namespace eckit {
 

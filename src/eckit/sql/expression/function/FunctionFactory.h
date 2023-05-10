@@ -79,7 +79,8 @@ public:  // methods
     virtual ~FunctionBuilderBase();
 
     virtual std::shared_ptr<FunctionExpression> make(const std::string& name,
-                                                     const expression::Expressions& args) const = 0;
+                                                     const expression::Expressions& args) const
+        = 0;
     int arity() const;
     std::string help() const;
 };

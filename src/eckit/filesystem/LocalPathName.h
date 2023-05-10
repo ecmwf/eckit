@@ -42,11 +42,18 @@ public:  // methods
 
     friend std::ostream& operator<<(std::ostream& s, const LocalPathName& p) { return s << p.path_; }
 
-    LocalPathName(const char* p = "/", bool tildeIsUserHome = false, bool skipTildeExpansion = false) : path_(parsePath(p))
-        { if (!skipTildeExpansion) tidy(tildeIsUserHome, skipTildeExpansion); }
-    LocalPathName(const std::string& p, bool tildeIsUserHome = false, bool skipTildeExpansion = false) : path_(parsePath(p))
-        { if (!skipTildeExpansion) tidy(tildeIsUserHome, skipTildeExpansion); }
-    LocalPathName(const LocalPathName& p) : path_(p.path_) {}
+    LocalPathName(const char* p = "/", bool tildeIsUserHome = false, bool skipTildeExpansion = false) :
+        path_(parsePath(p)) {
+        if (!skipTildeExpansion)
+            tidy(tildeIsUserHome, skipTildeExpansion);
+    }
+    LocalPathName(const std::string& p, bool tildeIsUserHome = false, bool skipTildeExpansion = false) :
+        path_(parsePath(p)) {
+        if (!skipTildeExpansion)
+            tidy(tildeIsUserHome, skipTildeExpansion);
+    }
+    LocalPathName(const LocalPathName& p) :
+        path_(p.path_) {}
 
     // Assignment
 
@@ -135,7 +142,7 @@ public:  // methods
     /// Return the hash digest of the file
     /// @param method - specifies the hash method to use (default xxHash)
     /// @return the hash digest
-    std::string hash(const std::string& method="xxh64") const;
+    std::string hash(const std::string& method = "xxh64") const;
 
     /// Check if path exists
     /// @return true if the path exists

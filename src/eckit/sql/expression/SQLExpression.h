@@ -90,7 +90,7 @@ public:
     virtual void print(std::ostream&) const = 0;
 
 protected:
-    SQLExpression(const SQLExpression&) = default;
+    SQLExpression(const SQLExpression&)            = default;
     SQLExpression& operator=(const SQLExpression&) = default;
 
     bool isBitfield_;
@@ -113,7 +113,7 @@ private:
 }  // namespace sql
 }  // namespace eckit
 
-//#include "eckit/sql/expression/SQLExpressions.h"
+// #include "eckit/sql/expression/SQLExpressions.h"
 
 using namespace eckit::sql::expression;
 

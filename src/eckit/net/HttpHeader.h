@@ -48,7 +48,8 @@ public:
     };
 
 public:
-    HttpError(int status, const std::string& msg = "HttpError") : Exception(msg), status_(status) {}
+    HttpError(int status, const std::string& msg = "HttpError") :
+        Exception(msg), status_(status) {}
 
     int status() const { return status_; }
 };

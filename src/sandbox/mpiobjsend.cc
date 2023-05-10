@@ -160,7 +160,7 @@ public:
 private:
     eckit::Buffer sendBuffer_;
 
-    ObjSend(const ObjSend&) = delete;
+    ObjSend(const ObjSend&)            = delete;
     ObjSend& operator=(const ObjSend&) = delete;
 
     void send(const Obj& o, size_t to) {

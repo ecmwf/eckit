@@ -27,7 +27,6 @@ namespace eckit {
 
 class SeekableHandle : public DataHandle {
 public:
-
     SeekableHandle(PeekHandle*);
     SeekableHandle(PeekHandle&);
 
@@ -69,8 +68,7 @@ private:  // members
     Offset position_;
 
     virtual std::string title() const override;
-    virtual void collectMetrics( const std::string& what) const override; // Tag for metrics collection
-
+    virtual void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
 };
 
 //-----------------------------------------------------------------------------

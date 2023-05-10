@@ -38,7 +38,7 @@ public:
     void newLimit(short val, unsigned short n = 0);
 
 private:
-    SharedInt(const SharedInt&) = delete;
+    SharedInt(const SharedInt&)            = delete;
     SharedInt& operator=(const SharedInt&) = delete;
 };
 

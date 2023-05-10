@@ -41,7 +41,7 @@ protected:  // methods
     virtual std::string processorName() const override;
 
     virtual size_t remoteSize() const override;
-    
+
     virtual void barrier() const override;
 
     virtual Request iBarrier() const override;
@@ -83,10 +83,10 @@ protected:  // methods
                           size_t recvcount, Data::Code type, size_t root) const override;
 
     virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
-			Operation::Code op, size_t root) const override;
+                        Operation::Code op, size_t root) const override;
 
     virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type,
-			       Operation::Code op, size_t root) const override;
+                               Operation::Code op, size_t root) const override;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
@@ -116,7 +116,7 @@ protected:  // methods
     virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
     virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-				      int dest, int sendtag, int source, int recvtag) const override;
+                                      int dest, int sendtag, int source, int recvtag) const override;
 
     virtual Comm& split(int color, const std::string& name) const override;
 
@@ -129,13 +129,13 @@ protected:  // methods
     virtual Status status() const override { return createStatus(); }
 
     virtual Request request(int tag) const override;
-    
+
     // Not implemented - returns NullGroup
     virtual Group group(int) const override;
-    
+
     // Not implemented - returns NullGroup
     virtual Group group() const override;
-    
+
     // Not implemented - returns NullGroup
     virtual Group remoteGroup() const override;
 

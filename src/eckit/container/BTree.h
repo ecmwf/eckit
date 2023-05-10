@@ -232,7 +232,8 @@ private:
         time_t last_;
         bool dirty_;
 
-        _PageInfo(Page* page = 0) : page_(page), count_(0), last_(time(nullptr)), dirty_(false) {}
+        _PageInfo(Page* page = 0) :
+            page_(page), count_(0), last_(time(nullptr)), dirty_(false) {}
     };
 
     typedef std::map<unsigned long, _PageInfo> Cache;

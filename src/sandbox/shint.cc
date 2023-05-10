@@ -81,7 +81,7 @@ private:
         return std::numeric_limits<short>::max();
     }
 
-    SemApp(const SemApp&) = delete;
+    SemApp(const SemApp&)            = delete;
     SemApp& operator=(const SemApp&) = delete;
 
     virtual void run() {

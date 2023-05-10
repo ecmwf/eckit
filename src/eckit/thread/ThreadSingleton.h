@@ -31,7 +31,8 @@ struct NewAlloc0 {
 
 template <typename TYPE, typename P1>
 struct NewAlloc1 {
-    NewAlloc1(const P1& p1) : p1_(p1) {}
+    NewAlloc1(const P1& p1) :
+        p1_(p1) {}
     TYPE* operator()() { return new TYPE(p1_); }
     P1 p1_;
 };
@@ -68,10 +69,12 @@ template <typename T, typename A>
 pthread_key_t ThreadSingleton<T, A>::key_;
 
 template <typename T, typename A>
-ThreadSingleton<T, A>::ThreadSingleton() : alloc_(A()) {}
+ThreadSingleton<T, A>::ThreadSingleton() :
+    alloc_(A()) {}
 
 template <typename T, typename A>
-ThreadSingleton<T, A>::ThreadSingleton(const A& alloc) : alloc_(alloc) {}
+ThreadSingleton<T, A>::ThreadSingleton(const A& alloc) :
+    alloc_(alloc) {}
 
 template <typename T, typename A>
 ThreadSingleton<T, A>::~ThreadSingleton() {

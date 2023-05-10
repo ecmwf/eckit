@@ -110,7 +110,7 @@ public:  // methods
         Optional(TagCopyConstructor{}, rhs) {}
 
     ~Optional() = default;
-    
+
     void reset() noexcept {
         if (hasValue_) {
             val_.value.~T();
@@ -132,7 +132,7 @@ public:  // methods
         if (this == &other) {
             return *this;
         }
-        
+
         if (hasValue_ && other.hasValue_) {
             val_.value = other.value();
         }
@@ -153,19 +153,19 @@ public:  // methods
         }
 
         if (hasValue_ && other.hasValue_) {
-            val_.value      = std::move(other.value());
+            val_.value = std::move(other.value());
         }
         else if (!hasValue_ && other.hasValue_) {
             // Explicitly construct here, previous value has been deleted.
             new (&val_.value) T(std::move(other.value()));
-            hasValue_       = true;
+            hasValue_ = true;
         }
         else if (hasValue_ && !other.hasValue_) {
             reset();
         }
         return *this;
     }
-    
+
     Optional<T>& operator=(const None&) {
         reset();
         return *this;

@@ -44,7 +44,7 @@ struct MemoryInfo {
     // /proc/pid/smap
     size_t mapped_shared_;
     size_t mapped_read_;
-    size_t mapped_write_;   
+    size_t mapped_write_;
     size_t mapped_execute_;
     size_t mapped_private_;
 

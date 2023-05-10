@@ -40,13 +40,14 @@ template <typename ELEM>
 class Queue {
 
 public:  // public
-    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
+    Queue(size_t max) :
+        max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
 
-    Queue(const Queue&) = delete;
+    Queue(const Queue&)            = delete;
     Queue& operator=(const Queue&) = delete;
 
     // n.b. cannot move object with std::condition_variable
-    Queue(Queue&& rhs) = delete;
+    Queue(Queue&& rhs)            = delete;
     Queue& operator=(Queue&& rhs) = delete;
 
     size_t maxSize() const { return max_; }

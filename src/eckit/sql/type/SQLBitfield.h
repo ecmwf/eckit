@@ -33,7 +33,7 @@ public:
     const FieldNames& fields() const { return bitfieldDef_.first; }
     const Sizes& sizes() const { return bitfieldDef_.second; }
 
-    static std::string make(const std::string&, const FieldNames&, const Sizes&, const char* aliasName=NULL);
+    static std::string make(const std::string&, const FieldNames&, const Sizes&, const char* aliasName = NULL);
 
 private:
     SQLBitfield(const SQLBitfield&);

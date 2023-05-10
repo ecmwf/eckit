@@ -56,8 +56,8 @@ private:
 
 
 struct CacheCreator : Manager::CacheContentCreator {
-    CacheCreator()                    = default;
-    CacheCreator(const CacheCreator&) = delete;
+    CacheCreator()                               = default;
+    CacheCreator(const CacheCreator&)            = delete;
     CacheCreator& operator=(const CacheCreator&) = delete;
 
 private:
@@ -80,8 +80,8 @@ private:
 
 
 struct CacheCreatorCantMiss : ManagerCantMiss::CacheContentCreator {
-    CacheCreatorCantMiss()                            = default;
-    CacheCreatorCantMiss(const CacheCreatorCantMiss&) = delete;
+    CacheCreatorCantMiss()                                       = default;
+    CacheCreatorCantMiss(const CacheCreatorCantMiss&)            = delete;
     CacheCreatorCantMiss& operator=(const CacheCreatorCantMiss&) = delete;
 
 private:

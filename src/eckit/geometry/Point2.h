@@ -22,13 +22,17 @@ class Point2 : public eckit::geometry::KPoint<2> {
     typedef KPoint<2> BasePoint;
 
 public:
-    Point2() : BasePoint() {}
+    Point2() :
+        BasePoint() {}
 
-    Point2(const BasePoint& p) : BasePoint(p) {}
+    Point2(const BasePoint& p) :
+        BasePoint(p) {}
 
-    Point2(const double* p) : BasePoint(p) {}
+    Point2(const double* p) :
+        BasePoint(p) {}
 
-    Point2(double x, double y) : BasePoint() {
+    Point2(double x, double y) :
+        BasePoint() {
         x_[XX] = x;
         x_[YY] = y;
     }

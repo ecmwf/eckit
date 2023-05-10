@@ -70,7 +70,8 @@ private:
 class InstantTCPStream : public TCPStreamBase {
 public:
     /// @note  does not take ownership of TCPSocket
-    InstantTCPStream(net::TCPSocket& socket) : socket_(socket) {}
+    InstantTCPStream(net::TCPSocket& socket) :
+        socket_(socket) {}
 
     virtual TCPSocket& socket() override { return socket_; }
 

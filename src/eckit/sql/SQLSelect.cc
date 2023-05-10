@@ -124,12 +124,12 @@ const type::SQLType* SQLSelect::typeOf(const std::string& name, const SQLTable* 
 }
 
 static bool compareTables(SelectOneTable* a, SelectOneTable* b) {
-    //#if 1
+    // #if 1
     //	if(&(a->table_->owner()) != &(b->table_->owner()))
     return a->table_->owner().name() < b->table_->owner().name();
-    //#else
+    // #else
     //	return a->table_->index() < b->table_->index();
-    //#endif
+    // #endif
 }
 
 inline bool SQLSelect::resultsOut() {

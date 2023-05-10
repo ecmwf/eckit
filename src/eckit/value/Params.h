@@ -83,9 +83,11 @@ public:  // types
 
 public:  // methods
     template <typename T>
-    explicit Params(const T& x) : self_(new Model<T>(x)) {}
+    explicit Params(const T& x) :
+        self_(new Model<T>(x)) {}
 
-    Params(const Params& x) : self_(x.self_->copy_()) {}
+    Params(const Params& x) :
+        self_(x.self_->copy_()) {}
 
     static void registerFactory(const std::string& name, factory_t f) { factories()[name] = f; }
 
@@ -122,7 +124,8 @@ private:  // internal classes
     typedef std::map<std::string, factory_t> factory_map;
     static factory_map& factories();
 
-    Params(Concept* concept) : self_(concept) {}
+    Params(Concept* concept) :
+        self_(concept) {}
 
     struct Concept {
         virtual ~Concept() {}
@@ -134,8 +137,10 @@ private:  // internal classes
 
     template <typename T>
     struct Model : Concept {
-        Model(T x) : data_(x) {}
-        Model(Stream& s) : data_(s) {}
+        Model(T x) :
+            data_(x) {}
+        Model(Stream& s) :
+            data_(s) {}
 
         virtual Concept* copy_() const { return new Model(data_); }
 

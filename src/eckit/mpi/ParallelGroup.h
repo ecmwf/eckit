@@ -39,37 +39,37 @@ private:  // methods
     virtual int group() const override;
 
     virtual int compare(const GroupContent&) const override;
-    
+
     int compare(const ParallelGroup&) const;
-    
+
     virtual GroupContent* difference(const GroupContent&) const override;
-    
+
     ParallelGroup* difference(const ParallelGroup&) const;
-    
+
     virtual GroupContent* intersection(const GroupContent&) const override;
-    
+
     ParallelGroup* intersection(const ParallelGroup&) const;
-    
+
     virtual GroupContent* union_group(const GroupContent&) const override;
-    
+
     ParallelGroup* union_group(const ParallelGroup&) const;
-    
+
     virtual size_t size() const override;
-    
+
     virtual int rank() const override;
-    
+
     virtual GroupContent* excl(const std::vector<int>& ranks) const override;
-    
+
     virtual GroupContent* incl(const std::vector<int>& ranks) const override;
 
-    virtual GroupContent* range_excl(const std::vector<std::array<int,3>>& ranks) const override;
+    virtual GroupContent* range_excl(const std::vector<std::array<int, 3>>& ranks) const override;
 
-    virtual GroupContent* range_incl(const std::vector<std::array<int,3>>& ranks) const override;
-    
+    virtual GroupContent* range_incl(const std::vector<std::array<int, 3>>& ranks) const override;
+
     std::vector<int> translate_ranks_native(const std::vector<int>& ranks, const ParallelGroup& other) const;
-    
+
     std::vector<int> translate_ranks_native(const std::vector<int>& ranks, const GroupContent& other) const;
-    
+
     virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>& ranks, const GroupContent& other) const override;
 
 private:  // members

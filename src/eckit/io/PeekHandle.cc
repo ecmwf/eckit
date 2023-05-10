@@ -35,11 +35,13 @@ Length PeekHandle::openForRead() {
 void PeekHandle::skip(const Length& len) {
     if (len == Length(peek_.size())) {
         peek_.clear();
-    } else if (len < Length(peek_.size())) {
+    }
+    else if (len < Length(peek_.size())) {
         for (long i = 0; i < len; ++i) {
             peek_.pop_front();
         }
-    } else {
+    }
+    else {
         // This would involve reads/seeks, etc. Not needed now.
         NOTIMP;
     }

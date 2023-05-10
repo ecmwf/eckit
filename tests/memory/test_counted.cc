@@ -215,23 +215,39 @@ void TestSwap() {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_default") {
-    SECTION("Type FooLock") { TestDefault<FooLock>(); }
-    SECTION("Type FooNoLock") { TestDefault<FooNoLock>(); }
+    SECTION("Type FooLock") {
+        TestDefault<FooLock>();
+    }
+    SECTION("Type FooNoLock") {
+        TestDefault<FooNoLock>();
+    }
 }
 
 CASE("test_copy") {
-    SECTION("Type FooLock") { TestCopy<FooLock>(); }
-    SECTION("Type FooNoLock") { TestCopy<FooNoLock>(); }
+    SECTION("Type FooLock") {
+        TestCopy<FooLock>();
+    }
+    SECTION("Type FooNoLock") {
+        TestCopy<FooNoLock>();
+    }
 }
 
 CASE("test_release") {
-    SECTION("Type FooLock") { TestRelease<FooLock>(); }
-    SECTION("Type FooNoLock") { TestRelease<FooNoLock>(); }
+    SECTION("Type FooLock") {
+        TestRelease<FooLock>();
+    }
+    SECTION("Type FooNoLock") {
+        TestRelease<FooNoLock>();
+    }
 }
 
 CASE("test_swap") {
-    SECTION("Type FooLock") { TestSwap<FooLock>(); }
-    SECTION("Type FooNoLock") { TestSwap<FooNoLock>(); }
+    SECTION("Type FooLock") {
+        TestSwap<FooLock>();
+    }
+    SECTION("Type FooNoLock") {
+        TestSwap<FooNoLock>();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

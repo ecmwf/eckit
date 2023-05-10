@@ -209,7 +209,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     AutoClose closer1(*this);
 
     Length toRead = ((maxsize != -1) ? std::min(estimate, maxsize) : estimate);
-    
+
     other.openForWrite(toRead);
     watcher.toHandleOpened();
     AutoClose closer2(other);
@@ -217,7 +217,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     Length total = 0;
     long length  = -1;
 
-    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long) (toRead-total)))) > 0) {
+    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long)(toRead - total)))) > 0) {
 
         if (other.write((const char*)buffer, length) != length) {
             throw WriteError(name() + " into " + other.name());

@@ -28,13 +28,13 @@ namespace eckit {
 namespace message {
 
 Reader::Reader(eckit::DataHandle* h, bool opened) :
-//    handle_(h), opened_(opened) {
+    //    handle_(h), opened_(opened) {
     handle_(new BufferedHandle(h, readerBufferSize(), opened)) {
     init();
 }
 
 Reader::Reader(eckit::DataHandle& h, bool opened) :
-//    handle_(h), opened_(opened) {
+    //    handle_(h), opened_(opened) {
     handle_(new BufferedHandle(h, readerBufferSize(), opened)) {
     init();
 }

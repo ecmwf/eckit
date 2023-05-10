@@ -78,7 +78,8 @@ class AutoIndent {
     Channel& channel_;
 
 public:
-    AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
+    AutoIndent(Channel& channel, const char* prefix = "") :
+        channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
 };
 

@@ -34,7 +34,7 @@ static void init(SocketOptions& opts) {
     static bool tcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", true);
 
     static int receiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
-    static int sendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
+    static int sendBufferSize    = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
 
     opts.reusePort(reusePort);
     opts.reuseAddr(reuseAddr);
@@ -62,7 +62,7 @@ void SocketOptions::print(std::ostream& s) const {
       << "ipLowDelay=" << ipLowDelay_ << ", "
       << "tcpNoDelay=" << tcpNoDelay_ << ", "
       << "receiveBufferSize=" << receiveBufferSize_ << ", "
-      << "sendBufferSize=" << sendBufferSize_ 
+      << "sendBufferSize=" << sendBufferSize_
       << "]" << std::endl;
 }
 

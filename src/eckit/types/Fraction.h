@@ -35,7 +35,8 @@ public:
 
 public:  // methods
          // -- Contructors
-    Fraction() : top_(0), bottom_(1) {}
+    Fraction() :
+        top_(0), bottom_(1) {}
 
     // template<class T>
     // explicit Fraction(T top): top_(top), bottom_(1) {}
@@ -43,15 +44,23 @@ public:  // methods
     Fraction(value_type top, value_type bottom);
 
     explicit Fraction(double n);
-    explicit Fraction(int n) : top_(n), bottom_(1) {}
-    explicit Fraction(short n) : top_(n), bottom_(1) {}
-    explicit Fraction(long n) : top_(n), bottom_(1) {}
-    explicit Fraction(long long n) : top_(n), bottom_(1) {}
+    explicit Fraction(int n) :
+        top_(n), bottom_(1) {}
+    explicit Fraction(short n) :
+        top_(n), bottom_(1) {}
+    explicit Fraction(long n) :
+        top_(n), bottom_(1) {}
+    explicit Fraction(long long n) :
+        top_(n), bottom_(1) {}
 
-    explicit Fraction(unsigned int n) : top_(n), bottom_(1) {}
-    explicit Fraction(unsigned short n) : top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long n) : top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long long n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned int n) :
+        top_(n), bottom_(1) {}
+    explicit Fraction(unsigned short n) :
+        top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long n) :
+        top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long long n) :
+        top_(n), bottom_(1) {}
 
     // Fraction(const Fraction& other):
     //     top_(other.top_), bottom_(other.bottom_) {}

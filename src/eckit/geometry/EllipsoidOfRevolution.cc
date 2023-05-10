@@ -12,7 +12,7 @@
 
 #include <cmath>
 #include <ios>
-//#include <limits>  // for std::numeric_limits
+// #include <limits>  // for std::numeric_limits
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"

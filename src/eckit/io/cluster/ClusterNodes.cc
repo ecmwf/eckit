@@ -13,6 +13,7 @@
 
 #include <algorithm>
 
+#include "eckit/config/EtcTable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/io/cluster/ClusterNodes.h"
@@ -21,7 +22,6 @@
 #include "eckit/memory/Zero.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Clock.h"
-#include "eckit/config/EtcTable.h"
 
 namespace eckit {
 
@@ -52,12 +52,11 @@ class ClusterNodeEntry {
         zero(attributes_);
         nattrs_ = 0;
         for (const auto& a : attributes) {
-            strncpy(attributes_[nattrs_++], a.c_str(), sizeof(attributes_[0])-1);
+            strncpy(attributes_[nattrs_++], a.c_str(), sizeof(attributes_[0]) - 1);
         }
     }
 
 public:
-
     ClusterNodeEntry(const NodeInfo& info) :
         ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
 
@@ -173,7 +172,7 @@ public:
         zero(attributes_);
         nattrs_ = 0;
         for (const auto& a : attrs) {
-            strncpy(attributes_[nattrs_++], a.c_str(), sizeof(attributes_[0])-1);
+            strncpy(attributes_[nattrs_++], a.c_str(), sizeof(attributes_[0]) - 1);
         }
     }
 
@@ -196,7 +195,8 @@ public:
                     break;
                 }
             }
-            if (!found) return false;
+            if (!found)
+                return false;
         }
         return true;
     }
@@ -245,7 +245,6 @@ static void init() {
             Log::info() << "Offsite nodes [" << line[0] << "]" << std::endl;
         }
     }
-
 }
 
 void ClusterNodes::reset() {
@@ -314,7 +313,7 @@ NodeInfo ClusterNodes::lookUp(const std::string& type, const std::string& node) 
         }
     }
 
-    if(offsite(type, node)) {
+    if (offsite(type, node)) {
         throw UnexpectedState(type + "@" + node + " is offsite.");
     }
 

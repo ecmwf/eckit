@@ -27,7 +27,8 @@ class URLException : public Exception {
     int code_;
 
 public:
-    URLException(const std::string& what, int code) : Exception(what), code_(code) {}
+    URLException(const std::string& what, int code) :
+        Exception(what), code_(code) {}
     int code() const { return code_; }
 };
 
@@ -35,7 +36,6 @@ public:
 
 class URLHandle : public DataHandle {
 public:
-
     URLHandle(const std::string& uri, bool useSSL = true);
 
     URLHandle(Stream&);
@@ -68,7 +68,6 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
-
     std::string uri_;
     std::unique_ptr<DataHandle> handle_;
 

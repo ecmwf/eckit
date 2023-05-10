@@ -93,7 +93,8 @@ struct OnePayload {
     bool ready_;
     bool done_;
     PAYLOAD payload_;
-    OnePayload() : ready_(false), done_(false), payload_() {}
+    OnePayload() :
+        ready_(false), done_(false), payload_() {}
 };
 
 template <class PAYLOAD>

@@ -53,9 +53,9 @@ public:
     bool isBitfield() const { return isBitfield_; }
     bool isMissingValue(const double* val) const {
         // return hasMissingValue_ && (*val == missingValue_);
-        const char* punnable_val = reinterpret_cast<const char*>(val);
-        const char* punnable_missing = reinterpret_cast<const char*>(&missingValue_);
-        const uint64_t* punned_val = reinterpret_cast<const uint64_t*>(punnable_val);
+        const char* punnable_val       = reinterpret_cast<const char*>(val);
+        const char* punnable_missing   = reinterpret_cast<const char*>(&missingValue_);
+        const uint64_t* punned_val     = reinterpret_cast<const uint64_t*>(punnable_val);
         const uint64_t* punned_missing = reinterpret_cast<const uint64_t*>(punnable_missing);
         return hasMissingValue_ && (*punned_val == *punned_missing);
     }

@@ -17,8 +17,8 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 namespace system {
@@ -30,7 +30,6 @@ class Plugin;
 
 class LibraryManager : private eckit::NonCopyable {
 public:  // class methods
-
     /// @brief Register a library
     static void enregister(const std::string& name, Library* obj);
 
@@ -84,7 +83,6 @@ public:  // class methods
     ///        To be called from the Plugin destructor
     /// @param [in] name Name of the library plugin to deregister
     static void deregisterPlugin(const std::string& name);
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

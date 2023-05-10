@@ -26,7 +26,7 @@ class DataHandle;
 
 #include "eckit/memory/OnlyMovable.h"
 #include "eckit/sql/SQLSelectFactory.h"
-//#include "eckit/sql/SQLInsertFactory.h"
+// #include "eckit/sql/SQLInsertFactory.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutputConfig.h"
 

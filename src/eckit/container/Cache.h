@@ -36,7 +36,8 @@ class Cache : private NonCopyable {
 
 public:  // types
     struct Entry {
-        Entry(const V& v) : v_(v), expired_(false), hits_(0) {
+        Entry(const V& v) :
+            v_(v), expired_(false), hits_(0) {
             gettimeofday(&age_, 0);
             last_ = age_;
         }
@@ -134,7 +135,8 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 template <typename K, typename V>
-Cache<K, V>::Cache() : storage_() {}
+Cache<K, V>::Cache() :
+    storage_() {}
 
 template <typename K, typename V>
 Cache<K, V>::~Cache() {

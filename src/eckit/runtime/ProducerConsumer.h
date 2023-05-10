@@ -94,7 +94,8 @@ struct OnePayload {
     bool ready_;
     bool done_;
     PAYLOAD payload_;
-    OnePayload() : ready_(false), done_(false), payload_() {}
+    OnePayload() :
+        ready_(false), done_(false), payload_() {}
 };
 
 template <class PAYLOAD>
@@ -113,7 +114,8 @@ public:
 
 
 template <class PAYLOAD>
-ProducerConsumer<PAYLOAD>::ProducerConsumer(long count) : count_(count), error_(false) {}
+ProducerConsumer<PAYLOAD>::ProducerConsumer(long count) :
+    count_(count), error_(false) {}
 template <class PAYLOAD>
 ProducerConsumer<PAYLOAD>::~ProducerConsumer() {}
 

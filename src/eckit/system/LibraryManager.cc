@@ -427,8 +427,8 @@ const Library& LibraryManager::lookup(const std::string& name) {
 }
 
 const Plugin& LibraryManager::lookupPlugin(const std::string& name) {
-    Plugin * plugin = LibraryRegistry::instance().lookupPlugin(name);
-    if(plugin)
+    Plugin* plugin = LibraryRegistry::instance().lookupPlugin(name);
+    if (plugin)
         return *plugin;
     throw eckit::BadValue("Plugin " + name + " not loaded");
 }

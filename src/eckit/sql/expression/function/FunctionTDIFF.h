@@ -14,8 +14,8 @@
 #ifndef FunctionTDIFF_H
 #define FunctionTDIFF_H
 
-#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 namespace eckit {
 namespace sql {

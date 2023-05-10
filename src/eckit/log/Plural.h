@@ -23,7 +23,8 @@ namespace eckit {
 class Plural : private eckit::NonCopyable {
 
 public:  // methods
-    Plural(int count, const std::string& s) : s_(s), count_(count) {}
+    Plural(int count, const std::string& s) :
+        s_(s), count_(count) {}
 
     ~Plural() {}
 

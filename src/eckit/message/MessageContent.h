@@ -18,8 +18,8 @@
 #include <iosfwd>
 #include <vector>
 
-#include "eckit/types/Types.h"
 #include "eckit/memory/Counted.h"
+#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -63,7 +63,7 @@ public:
 
     virtual size_t getSize(const std::string& key) const;
 
-    // Write double array at key to pre allocated array. 
+    // Write double array at key to pre allocated array.
     virtual void getDoubleArray(const std::string& key, double* data, size_t len) const;
 
     virtual eckit::DataHandle* readHandle() const;

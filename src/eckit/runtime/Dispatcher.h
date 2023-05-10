@@ -225,7 +225,8 @@ class DispatchInfo : public Thread {
     virtual void run() override;
 
 public:
-    DispatchInfo(Dispatcher<Traits>& owner) : owner_(owner) {}
+    DispatchInfo(Dispatcher<Traits>& owner) :
+        owner_(owner) {}
 };
 
 //=================================================================

@@ -76,7 +76,8 @@ public:  // methods
     void unlock() const { memory::detail::ThreadedLock::unlock(); }
 
 public:
-    Counted() : count_(0) {}
+    Counted() :
+        count_(0) {}
 
     virtual ~Counted();
 

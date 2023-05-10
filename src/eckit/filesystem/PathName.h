@@ -214,7 +214,7 @@ public:
     void hash(Hash&) const;
 
     /// Hash a path as in-place as possible. Returns the hash digest
-    std::string hash(const std::string& method="xxh64") const;
+    std::string hash(const std::string& method = "xxh64") const;
 
     /// Get child files and directories
     /// @param files vector to be filled with child files of path

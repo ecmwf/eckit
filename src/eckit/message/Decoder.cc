@@ -24,9 +24,9 @@ namespace message {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-eckit::Mutex* local_mutex       = 0;
+eckit::Mutex* local_mutex              = 0;
 std::vector<MessageDecoder*>* decoders = 0;
-pthread_once_t once             = PTHREAD_ONCE_INIT;
+pthread_once_t once                    = PTHREAD_ONCE_INIT;
 void init() {
     local_mutex = new eckit::Mutex();
     decoders    = new std::vector<MessageDecoder*>();

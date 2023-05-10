@@ -160,7 +160,8 @@ void TeeHandle::cost(std::map<std::string, Length>& c, bool read) const {
 
 bool TeeHandle::moveable() const {
     for (const auto& dh : datahandles_) {
-        if (!dh->moveable()) return false;
+        if (!dh->moveable())
+            return false;
     }
     return true;
 }

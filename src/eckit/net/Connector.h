@@ -32,7 +32,8 @@ class ConnectorException : public Exception {
     virtual bool retryOnClient() const { return true; }
 
 public:
-    ConnectorException(const std::string& what) : Exception(what) {}
+    ConnectorException(const std::string& what) :
+        Exception(what) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ public:
 
     static Connector& service(const std::string& name, const std::string& node);
     static Connector& service(const std::string& name, const std::map<std::string, Length>& cost,
-                              const std::set<std::string>& attributes={});
+                              const std::set<std::string>& attributes = {});
 
     static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 
@@ -144,7 +145,8 @@ class AutoMemoize {
     unsigned long t_;
 
 public:
-    AutoMemoize(Connector& c, unsigned long t) : c_(c), t_(t) { c_.memoize(true, t_); }
+    AutoMemoize(Connector& c, unsigned long t) :
+        c_(c), t_(t) { c_.memoize(true, t_); }
     ~AutoMemoize() { c_.memoize(false, t_); }
 };
 

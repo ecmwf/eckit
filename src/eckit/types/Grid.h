@@ -44,7 +44,8 @@ public:
 
     Grid(const std::string&);
 
-    Grid(double ns = undef, double ew = undef) : northSouth_(ns), eastWest_(ew) {}
+    Grid(double ns = undef, double ew = undef) :
+        northSouth_(ns), eastWest_(ew) {}
 
     Grid(const std::vector<double>&);
 

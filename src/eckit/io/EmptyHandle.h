@@ -26,7 +26,8 @@ class EmptyHandle : public DataHandle {
 public:
     // -- Contructors
     EmptyHandle() {}
-    EmptyHandle(Stream& s) : DataHandle(s) {}
+    EmptyHandle(Stream& s) :
+        DataHandle(s) {}
 
     // -- Destructor
 

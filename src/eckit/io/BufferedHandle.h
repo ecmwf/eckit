@@ -72,10 +72,9 @@ private:  // members
     bool read_;
     Offset position_;
     bool opened_;
-    
+
     virtual std::string title() const override;
     virtual void collectMetrics(const std::string& what) const override;
-
 };
 
 //-----------------------------------------------------------------------------

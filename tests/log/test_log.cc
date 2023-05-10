@@ -10,8 +10,8 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/log/Log.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
@@ -69,31 +69,30 @@ CASE("test_bytes") {
     b = 1024.;
     EXPECT("1 Kbyte" == std::string(b));
     EXPECT("1K" == b.shorten());
-    b = 1024.*1024.;
+    b = 1024. * 1024.;
     EXPECT("1 Mbyte" == std::string(b));
     EXPECT("1M" == b.shorten());
-    b = 1024.*1024.*1024.;
+    b = 1024. * 1024. * 1024.;
     EXPECT("1 Gbyte" == std::string(b));
     EXPECT("1G" == b.shorten());
-    b = 1024.*1024.*1024.*1024.;
+    b = 1024. * 1024. * 1024. * 1024.;
     EXPECT("1 Tbyte" == std::string(b));
     EXPECT("1T" == b.shorten());
-    b = 1024.*1024.*1024.*1024.*1024.;
+    b = 1024. * 1024. * 1024. * 1024. * 1024.;
     EXPECT("1 Pbyte" == std::string(b));
     EXPECT("1P" == b.shorten());
-    b = 1024.*1024.*1024.*1024.*1024.*1024.;
+    b = 1024. * 1024. * 1024. * 1024. * 1024. * 1024.;
     EXPECT("1 Ebyte" == std::string(b));
     EXPECT("1E" == b.shorten());
-    b = 1024.*1024.*1024.*1024.*1024.*1024.*1024.;
+    b = 1024. * 1024. * 1024. * 1024. * 1024. * 1024. * 1024.;
     EXPECT("1 Zbyte" == std::string(b));
     EXPECT("1Z" == b.shorten());
-    b = 1024.*1024.*1024.*1024.*1024.*1024.*1024.*1024.;
+    b = 1024. * 1024. * 1024. * 1024. * 1024. * 1024. * 1024. * 1024.;
     EXPECT("1 Ybyte" == std::string(b));
     EXPECT("1Y" == b.shorten());
-    b = 1024.*1024.*1024.*1024.*1024.*1024.*1024.*1024.*1024.;
+    b = 1024. * 1024. * 1024. * 1024. * 1024. * 1024. * 1024. * 1024. * 1024.;
     EXPECT("1024 Ybytes" == std::string(b));
     EXPECT("99Y" == b.shorten());
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 

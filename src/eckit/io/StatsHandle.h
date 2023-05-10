@@ -86,7 +86,7 @@ public:
     virtual void toRemote(Stream& s) const override;
     virtual void cost(std::map<std::string, Length>&, bool) const override;
     virtual std::string title() const override;
-    virtual void collectMetrics(const std::string& what) const override; // Tag for metrics collection
+    virtual void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
 
 
 private:

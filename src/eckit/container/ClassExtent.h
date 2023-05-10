@@ -223,7 +223,8 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1&, P2&), P1& arg1, P2& arg2) {
 }
 
 template <class T>
-ClassExtent<T>::Extent::Extent() : inited_(true) {}
+ClassExtent<T>::Extent::Extent() :
+    inited_(true) {}
 
 template <class T>
 ClassExtent<T>::Extent::~Extent() {

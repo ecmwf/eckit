@@ -47,7 +47,6 @@ public:  // types
     }
 
 private:  // members
-
     struct Context;
     std::unique_ptr<Context> ctx_;
 };

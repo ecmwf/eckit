@@ -10,12 +10,11 @@
 
 #include "eckit/filesystem/PathNameFactory.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
-#include "eckit/config/LibEcKit.h"
-#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit {
 
@@ -61,7 +60,8 @@ void PathNameFactoryImpl::enregister(const std::string& name, const PathNameBuil
 
 void PathNameFactoryImpl::deregister(const PathNameBuilderBase* builder) {
 
-    if(LibEcKit::instance().dontDeregisterFactories()) return;
+    if (LibEcKit::instance().dontDeregisterFactories())
+        return;
 
     AutoLock<StaticMutex> lock(static_mutex_);
 

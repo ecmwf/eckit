@@ -1,8 +1,9 @@
 list( APPEND eckit_maths_lib_srcs
 Eigen.h
-Lapack.h
 Lapack.cc
+Lapack.h
 Matrix.h
+Matrix3.h
 MatrixEigen.h
 MatrixLapack.h
 )

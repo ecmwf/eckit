@@ -16,14 +16,12 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/types/PointXYZ.h"
+#include "eckit/geometry/Point3.h"
 
-
-namespace eckit::geo::types {
-
+namespace eckit::maths {
 
 template <typename T>
-class MatrixXYZ final : protected std::array<T, 9> {
+class Matrix3 final : protected std::array<T, 9> {
 private:
     // -- Types
 
@@ -38,37 +36,37 @@ public:
 
     // -- Constructors
 
-    MatrixXYZ(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) :
+    Matrix3(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) :
         P{xx, xy, xz, yx, yy, yz, zx, zy, zz} {}
-    MatrixXYZ(const MatrixXYZ& other) :
+    Matrix3(const Matrix3& other) :
         P(other) {}
-    MatrixXYZ(MatrixXYZ&& other) :
+    Matrix3(Matrix3&& other) :
         P(other) {}
 
     // -- Destructor
 
-    ~MatrixXYZ() = default;
+    ~Matrix3() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    MatrixXYZ& operator=(const MatrixXYZ<T>& other) {
+    Matrix3& operator=(const Matrix3<T>& other) {
         P::operator=(other);
         return *this;
     }
 
-    MatrixXYZ& operator=(MatrixXYZ<T>&& other) {
+    Matrix3& operator=(Matrix3<T>&& other) {
         P::operator=(other);
         return *this;
     }
 
-    PointXYZ<T> operator*(const PointXYZ<T>& p) const {
+    geometry::Point3 operator*(const geometry::Point3& p) const {
         return {XX * p.X + XY * p.Y + XZ * p.Z, YX * p.X + YY * p.Y + YZ * p.Z, ZX * p.X + ZY * p.Y + ZZ * p.Z};
     }
 
-    MatrixXYZ<T> operator*(const MatrixXYZ<T>& M) const {
+    Matrix3<T> operator*(const Matrix3<T>& M) const {
         return {
             XX * M.XX + XY * M.YX + XZ * M.ZX, XX * M.XY + XY * M.YY + XZ * M.ZY, XX * M.XZ + XY * M.YZ + XZ * M.ZZ,
             YX * M.XX + YY * M.YX + YZ * M.ZX, YX * M.XY + YY * M.YY + YZ * M.ZY, YX * M.XZ + YY * M.YZ + YZ * M.ZZ,
@@ -89,11 +87,11 @@ public:
 
     // -- Methods
 
-    static MatrixXYZ<T> identity() { return {1, 0, 0, 0, 1, 0, 0, 0, 1}; }
+    static Matrix3<T> identity() { return {1, 0, 0, 0, 1, 0, 0, 0, 1}; }
 
-    MatrixXYZ<T> inverse() const {
+    Matrix3<T> inverse() const {
         auto det = XX * (YY * ZZ - YZ * ZY) - XY * (YX * ZZ - YZ * ZX) + XZ * (YX * ZY - YY * ZX);
-        ASSERT_MSG(det != 0, "MatrixXYZ: singular matrix");
+        ASSERT_MSG(det != 0, "Matrix3: singular matrix");
 
         return {(YY * ZZ - YZ * ZY) / det, (XZ * ZY - XY * ZZ) / det, (XY * YZ - XZ * YY) / det,
                 (YZ * ZX - YX * ZZ) / det, (XX * ZZ - XZ * ZX) / det, (XZ * YX - XX * YZ) / det,
@@ -111,11 +109,10 @@ public:
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& out, const MatrixXYZ& m) {
+    friend std::ostream& operator<<(std::ostream& out, const Matrix3& m) {
         return out << "{{" << m.XX << ", " << m.XY << ", " << m.XZ << "}, {" << m.YX << ", " << m.YY << ", " << m.YZ
                    << "}, {" << m.ZX << ", " << m.ZY << ", " << m.ZZ << "}}";
     }
 };
 
-
-}  // namespace eckit::geo::types
+}  // namespace eckit::maths

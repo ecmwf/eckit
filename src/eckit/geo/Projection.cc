@@ -16,12 +16,11 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/log.h"
-#include "eckit/geo/util/Mutex.h"
-
+#include "eckit/log/Log.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit::geo {
-
 
 #if 0
 - mercator:
@@ -217,34 +216,31 @@ Projection centre (grib2/tables/30/3.5.table)
   2 1 Projection is bipolar and symmetric
 #endif
 
-
-static util::once_flag __once;
-static util::recursive_mutex* __mutex                                         = nullptr;
+static pthread_once_t __once                                                  = PTHREAD_ONCE_INIT;
+static Mutex* __mutex                                                         = nullptr;
 static std::map<ProjectionFactory::key_type, ProjectionFactory*>* __factories = nullptr;
 
-
 static void __init() {
-    __mutex     = new util::recursive_mutex();
+    __mutex     = new Mutex;
     __factories = new std::map<ProjectionFactory::key_type, ProjectionFactory*>();
 }
 
-
-Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key, const Parametrisation& param) {
-    util::call_once(__once, __init);
-    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key,
+                                     const Parametrisation& param) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
 
     if (auto f = __factories->find(key); f != __factories->end()) {
         return f->second->make(param);
     }
 
-    list(error << "ProjectionFactory: unknown '" << key << "', choices are: ");
+    list(Log::error() << "ProjectionFactory: unknown '" << key << "', choices are: ");
     throw BadValue("ProjectionFactory: unknown '" + key + "'");
 }
 
-
 std::ostream& ProjectionFactory::list(std::ostream& out) {
-    util::call_once(__once, __init);
-    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
 
     const char* sep = "'";
     for (const auto& j : *__factories) {
@@ -255,11 +251,10 @@ std::ostream& ProjectionFactory::list(std::ostream& out) {
     return out;
 }
 
-
 ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) :
     key_(key) {
-    util::call_once(__once, __init);
-    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
 
     if (auto f = __factories->find(key); f != __factories->end()) {
         throw BadValue("ProjectionFactory: duplicate '" + key + "'");
@@ -270,12 +265,11 @@ ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) :
 
 
 ProjectionFactory::~ProjectionFactory() {
-    util::lock_guard<util::recursive_mutex> lock(*__mutex);
+    AutoLock<Mutex> lock(*__mutex);
 
     if (__factories != nullptr) {
         __factories->erase(key_);
     }
 }
-
 
 }  // namespace eckit::geo

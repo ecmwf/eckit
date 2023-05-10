@@ -18,8 +18,6 @@ list(APPEND eckit_geo_srcs
 	iterator/IteratorAggregator.h
 	iterator/IteratorComposer.cc
 	iterator/IteratorComposer.h
-	log.cc
-	log.h
 	param/Map.cc
 	param/Map.h
 	projection/LatLonToXYZ.cc
@@ -34,8 +32,6 @@ list(APPEND eckit_geo_srcs
 	scanner/Regular.h
 	scanner/Unstructured.cc
 	scanner/Unstructured.h
-	test.cc
-	test.h
 	types.cc
 	types.h
 	types/MatrixXYZ.h
@@ -44,7 +40,6 @@ list(APPEND eckit_geo_srcs
 	types/PointXYZ.h
 	util.cc
 	util.h
-	util/Mutex.h
 	util/arange.cc
 	util/gaussian_latitudes.cc
 	util/linspace.cc

@@ -15,9 +15,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLOutput.h"
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 SQLString::SQLString(const std::string& name, size_t maxLen) :
     SQLType(name), maxLen_(maxLen) {
@@ -57,6 +55,4 @@ size_t SQLString::width() const {
     return maxLen_ + 2;
 }
 
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type

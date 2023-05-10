@@ -47,8 +47,7 @@ using namespace eckit::testing;
 #define DEBUG_(x) std::cerr << #x << " : [" << x << "] @ " << __FILE__ << " +" << __LINE__ << std::endl;
 #endif
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -153,8 +152,7 @@ CASE("test_multi_colouring") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 void on_signal_dumpbacktrace(int signum) {
     printf("Caught signal %d\n", signum);

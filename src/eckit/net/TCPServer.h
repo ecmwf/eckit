@@ -18,10 +18,7 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Mutex.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
@@ -63,7 +60,6 @@ private:  // members
     Mutex mutex_;
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
 
@@ -73,9 +69,6 @@ public:
     explicit EphemeralTCPServer(int port, const SocketOptions& = SocketOptions::data());
 };
 
-
-}  // namespace net
-}  // namespace eckit
-
+}  // namespace eckit::net
 
 #endif

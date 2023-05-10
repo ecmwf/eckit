@@ -18,12 +18,9 @@
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/thread/ThreadControler.h"
 
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 class NetServiceProcessControler : public ProcessControler {
-
 public:
     NetServiceProcessControler(const std::string& name, NetUser* user, TCPServer& server, long parent, bool visible);
 
@@ -39,7 +36,6 @@ private:
     virtual void afterForkInParent();
     virtual void afterForkInChild();
 };
-
 
 NetService::NetService(int port, bool visible, const SocketOptions& options) :
     server_(port, options), visible_(visible) {}
@@ -144,5 +140,4 @@ void NetServiceProcessControler::afterForkInChild() {
     server_.close();
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

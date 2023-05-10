@@ -21,9 +21,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/SQLExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -91,8 +89,6 @@ typedef std::vector<Expressions> VectorOfExpressions;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression
 
 #endif

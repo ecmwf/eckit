@@ -15,8 +15,7 @@ using namespace eckit::linalg;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -242,8 +241,7 @@ CASE("creation with unassigned triplets ( ECKIT-361 )") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);

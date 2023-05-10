@@ -17,8 +17,7 @@ using namespace eckit;
 using namespace eckit::testing;
 using namespace eckit::geometry;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 CASE("Inits to Zero") {
     Point2 q;
@@ -148,8 +147,7 @@ CASE("Point3 cross") {
     EXPECT(types::is_approximately_equal(p7[ZZ], p8[ZZ]));
 }
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 //----------------------------------------------------------------------------------------------------------------------
 

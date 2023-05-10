@@ -10,8 +10,7 @@
 
 #include "eckit/sql/SQLStatement.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 SQLStatement::SQLStatement() {}
 
@@ -19,5 +18,4 @@ SQLStatement::~SQLStatement() {}
 
 void SQLStatement::print(std::ostream& s) const {}
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

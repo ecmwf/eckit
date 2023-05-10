@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionROWNUMBER : public FunctionIntegerExpression {
 public:
@@ -55,9 +52,6 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

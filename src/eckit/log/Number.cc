@@ -12,8 +12,7 @@
 
 #include "eckit/log/Number.h"
 
-namespace eckit {
-namespace log {
+namespace eckit::log {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -74,5 +73,4 @@ void Number::printBinary(std::ostream& ss, W n) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace log
-}  // namespace eckit
+}  // namespace eckit::log

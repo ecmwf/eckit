@@ -13,10 +13,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/net/Endpoint.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 TCPClient::TCPClient(const SocketOptions& options) :
     TCPSocket(), port_(0), options_(options) {}
@@ -43,5 +40,4 @@ TCPSocket& TCPClient::connect(const net::Endpoint& endpoint, int retries, int ti
     return connect(endpoint.hostname(), endpoint.port(), retries, timeout);
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

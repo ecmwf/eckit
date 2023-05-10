@@ -23,8 +23,7 @@ using namespace eckit;
 using namespace eckit::types;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -1013,8 +1012,7 @@ CASE("test_iProbe") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     int failures = run_tests(argc, argv);

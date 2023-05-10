@@ -18,9 +18,7 @@
 
 using namespace eckit;
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 double const MISSING_VALUE_REAL = -2147483647.0;
 // long const MISSING_VALUE_INT =  2147483647;
@@ -92,6 +90,4 @@ void SQLExpression::expandStars(const std::vector<std::reference_wrapper<const S
     e.push_back(shared_from_this());
 }
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

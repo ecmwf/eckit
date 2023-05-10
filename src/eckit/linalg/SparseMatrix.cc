@@ -29,9 +29,7 @@
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Stream.h"
 
-
-namespace eckit {
-namespace linalg {
+namespace eckit::linalg {
 
 #if eckit_LITTLE_ENDIAN
 static const bool littleEndian = true;
@@ -617,5 +615,4 @@ SparseMatrix::Allocator::~Allocator() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

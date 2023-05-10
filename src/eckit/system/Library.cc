@@ -32,8 +32,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -219,5 +218,4 @@ const void* Library::addr() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

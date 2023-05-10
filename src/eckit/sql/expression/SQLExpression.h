@@ -20,8 +20,7 @@
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 // Forward declarations
 
 class SQLSelect;
@@ -110,8 +109,7 @@ private:
 };
 
 }  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 // #include "eckit/sql/expression/SQLExpressions.h"
 

@@ -16,8 +16,7 @@
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SelectOneTable.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,7 +39,6 @@ struct Environment {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

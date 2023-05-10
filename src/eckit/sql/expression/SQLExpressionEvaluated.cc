@@ -14,9 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -108,6 +106,4 @@ const type::SQLType* SQLExpressionEvaluated::type() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

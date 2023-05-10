@@ -15,8 +15,7 @@
 
 using namespace eckit;
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -104,9 +103,7 @@ TableDefs SchemaAnalyzer::definitions() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
-
+}  // namespace eckit::sql
 
 #if 0
 SchemaAnalyzer::SchemaAnalyzer()

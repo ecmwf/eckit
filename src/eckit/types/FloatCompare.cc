@@ -17,8 +17,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
-namespace eckit {
-namespace types {
+namespace eckit::types {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -161,5 +160,4 @@ template bool is_approximately_equal(double a, double b, double epsilon, int max
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace types
-}  // namespace eckit
+}  // namespace eckit::types

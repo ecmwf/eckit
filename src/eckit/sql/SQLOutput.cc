@@ -12,8 +12,7 @@
 
 #include <ostream>
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -33,5 +32,4 @@ void SQLOutput::print(std::ostream& s) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

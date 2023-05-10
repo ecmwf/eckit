@@ -18,8 +18,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/SQLExpression.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLSelect;
 class SQLTable;
@@ -95,8 +94,6 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace expression
-}  // namespace sql
-}  // namespace eckit
-
+}  // namespace eckit::sql
 
 #endif

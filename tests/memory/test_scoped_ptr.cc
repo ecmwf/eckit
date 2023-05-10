@@ -25,8 +25,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 /// These tests are similar to the test for boost scoped_ptr and shared ptrs
 /// This allows as in the future to drop out, our own home grown managed
@@ -132,8 +131,7 @@ CASE("test_scoped_ptr") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

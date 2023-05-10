@@ -16,9 +16,7 @@
 
 #include "eckit/sql/expression/SQLExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -57,8 +55,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression
 
 #endif

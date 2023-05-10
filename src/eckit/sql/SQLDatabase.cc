@@ -21,8 +21,7 @@
 
 using namespace eckit;
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -117,5 +116,4 @@ void SQLDatabase::setIncludePath(const std::string& includePath) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

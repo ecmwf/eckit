@@ -21,8 +21,7 @@ class PathName;
 #include "eckit/sql/SQLIterator.h"
 #include "eckit/sql/SQLTypedefs.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLBitColumn;
 class SQLTable;
@@ -100,7 +99,6 @@ protected:
     size_t sizeDoubles_;
 };
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

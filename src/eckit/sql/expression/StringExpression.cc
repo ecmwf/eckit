@@ -43,10 +43,7 @@ bool matchEx(const std::string& regex, const std::string& s) {
 
 }  // namespace
 
-namespace eckit {
-namespace sql {
-namespace expression {
-
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -144,6 +141,4 @@ void StringExpression::print(std::ostream& s) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

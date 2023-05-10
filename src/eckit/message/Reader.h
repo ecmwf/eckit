@@ -29,8 +29,7 @@ class PathName;
 class Offset;
 };  // namespace eckit
 
-namespace eckit {
-namespace message {
+namespace eckit::message {
 
 class Message;
 class Splitter;
@@ -60,9 +59,6 @@ private:
     }
 };
 
-
-}  // namespace message
-}  // namespace eckit
-
+}  // namespace eckit::message
 
 #endif

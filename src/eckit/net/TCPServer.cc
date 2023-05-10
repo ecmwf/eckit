@@ -19,10 +19,7 @@
 #include "eckit/net/TCPServer.h"
 #include "eckit/thread/AutoLock.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 TCPServer::TCPServer(const SocketOptions& options) :
     TCPSocket(), port_(0), listen_(-1), options_(options), closeExec_(true) {}
@@ -144,6 +141,4 @@ EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) :
 EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) :
     TCPServer(port, opts) {}
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

@@ -21,9 +21,7 @@ using namespace eckit::sql::expression;
 #pragma _CRI noopt
 #endif
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -152,5 +150,4 @@ void SQLOrderOutput::outputBitfield(double, bool) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

@@ -11,9 +11,7 @@
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/utils/StringTools.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -135,6 +133,4 @@ bool OrderByExpressions::operator==(const OrderByExpressions& o) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

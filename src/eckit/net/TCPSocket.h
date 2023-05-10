@@ -18,8 +18,7 @@
 #include "eckit/net/SocketOptions.h"
 #include "eckit/utils/Hash.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 /// @note this class calls sets a handler to ignore SIGPIPE
 
@@ -144,7 +143,6 @@ private:  // methods
 
 std::ostream& operator<<(std::ostream&, in_addr);
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

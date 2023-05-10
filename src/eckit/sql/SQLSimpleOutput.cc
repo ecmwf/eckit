@@ -15,8 +15,7 @@
 
 #include <limits>
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -171,5 +170,4 @@ unsigned long long SQLSimpleOutput::count() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

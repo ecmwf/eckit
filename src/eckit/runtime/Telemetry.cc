@@ -27,8 +27,7 @@
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Clock.h"
 
-namespace eckit {
-namespace runtime {
+namespace eckit::runtime {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -230,5 +229,4 @@ unsigned long long Telemetry::countSent() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace runtime
-}  // namespace eckit
+}  // namespace eckit::runtime

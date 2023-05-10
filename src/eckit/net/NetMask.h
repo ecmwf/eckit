@@ -20,10 +20,7 @@
 
 #include "eckit/net/IPAddress.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 class NetMask {
 public:  // methods
@@ -43,8 +40,6 @@ private:  // methods
     }
 };
 
-}  // namespace net
-}  // namespace eckit
-
+}  // namespace eckit::net
 
 #endif

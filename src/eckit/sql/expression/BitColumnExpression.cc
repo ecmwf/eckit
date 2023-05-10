@@ -26,10 +26,7 @@
 #pragma _CRI noopt
 #endif
 
-
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -149,6 +146,4 @@ std::string BitColumnExpression::tableColumnToFullname(const SQLColumn& column) 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

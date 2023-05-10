@@ -17,9 +17,7 @@
 #include "eckit/net/TCPServer.h"
 #include "eckit/thread/Thread.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 class NetUser;
 
@@ -53,8 +51,6 @@ private:
     virtual long timeout() const;
 };
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

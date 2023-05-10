@@ -20,8 +20,7 @@ using namespace eckit;
 using namespace eckit::testing;
 using namespace eckit::geometry;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -357,8 +356,7 @@ CASE("test_kdtree_iterate_empty") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

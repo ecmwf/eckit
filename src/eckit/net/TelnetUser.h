@@ -13,9 +13,7 @@
 
 #include "eckit/net/NetUser.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 class TelnetUser : public NetUser {
 public:
@@ -28,7 +26,6 @@ private:
     std::string from_;
 };
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

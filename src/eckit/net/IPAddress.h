@@ -19,9 +19,7 @@
 
 #include <netinet/in.h>
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 class IPAddress {
 public:
@@ -54,8 +52,6 @@ private:
     }
 };
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

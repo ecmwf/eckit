@@ -16,8 +16,7 @@
 
 #include <iosfwd>
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -69,5 +68,4 @@ struct MemoryInfo {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

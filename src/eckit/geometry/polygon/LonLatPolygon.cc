@@ -18,9 +18,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
-namespace polygon {
+namespace eckit::geometry::polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -176,6 +174,4 @@ bool LonLatPolygon::contains(const Point2& P) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace polygon
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry::polygon

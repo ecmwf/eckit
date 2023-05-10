@@ -22,13 +22,9 @@ namespace eckit {
 class Stream;
 }
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 /// Vector for Linear Algebra operations
 /// @todo provide a const view
@@ -118,6 +114,4 @@ Stream& operator<<(Stream&, const Vector&);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

@@ -24,8 +24,7 @@
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
-namespace option {
+namespace eckit::option {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -88,7 +87,6 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option
 
 #endif  // eckit_option_CmdArgs_H

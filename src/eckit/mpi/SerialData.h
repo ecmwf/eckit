@@ -13,8 +13,7 @@
 #include <complex>
 #include "eckit/mpi/DataType.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 static size_t dataSize[Data::MAX_DATA_CODE] = {
     /*[Data::CHAR]                 = */ sizeof(char),
@@ -47,7 +46,6 @@ static size_t dataSize[Data::MAX_DATA_CODE] = {
     /*[Data::TWO_LONG_LONG]        = */ 2 * sizeof(long long),
 };
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi
 
 #endif

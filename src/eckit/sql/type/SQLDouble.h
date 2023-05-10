@@ -16,8 +16,7 @@
 
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLOutput;
 
@@ -46,7 +45,6 @@ private:
 };
 
 }  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

@@ -13,8 +13,7 @@
 #include "eckit/mpi/Serial.h"
 #include "eckit/mpi/SerialStatus.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,5 +29,4 @@ void SerialStatus::print(std::ostream& os) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

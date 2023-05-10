@@ -17,9 +17,7 @@
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/utils/Tokenizer.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 SQLTable::SQLTable(SQLDatabase& owner, const std::string& path, const std::string& name) :
     path_(path), name_(name), owner_(owner) {
@@ -230,5 +228,4 @@ void SQLTable::print(std::ostream& s) const {
     s << ")" << std::endl;
 }
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

@@ -22,8 +22,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Tokenizer.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 constexpr bool have_parallel() {
 #if eckit_HAVE_MPI
@@ -330,5 +329,4 @@ void Assert(int code, const char* msg, const char* file, int line, const char* f
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

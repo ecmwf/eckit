@@ -12,10 +12,7 @@
 #include "eckit/net/Telnetable.h"
 #include "eckit/net/Telnet.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 Telnetable::Telnetable(int port) :
     telnet_(new Telnet(port)) {
@@ -27,5 +24,4 @@ Telnetable::~Telnetable() {
     telnet_.stop();
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

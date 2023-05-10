@@ -28,11 +28,9 @@
 
 using namespace eckit;
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config,
                        const std::string& csvDelimiter) :
@@ -173,5 +171,4 @@ std::vector<std::string> SQLSession::includePaths() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

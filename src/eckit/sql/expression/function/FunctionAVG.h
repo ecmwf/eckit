@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionAVG : public FunctionExpression {
 public:
@@ -54,9 +51,6 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

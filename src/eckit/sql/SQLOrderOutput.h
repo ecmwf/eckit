@@ -22,8 +22,7 @@
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -70,7 +69,6 @@ private:  // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

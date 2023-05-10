@@ -12,10 +12,7 @@
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/types/DateTime.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -66,7 +63,4 @@ const eckit::sql::type::SQLType* FunctionTDIFF::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

@@ -18,8 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace eckit {
-namespace message {
+namespace eckit::message {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -70,5 +69,4 @@ MessageDecoder& MessageDecoder::lookup(const Message& msg) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message

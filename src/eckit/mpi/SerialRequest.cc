@@ -13,8 +13,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/mpi/SerialData.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,5 +46,4 @@ ReceiveRequest::ReceiveRequest(void* buffer, size_t count, Data::Code type, int 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

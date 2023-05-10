@@ -12,9 +12,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLOutput.h"
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 SQLBit::SQLBit(const std::string& name, unsigned long mask, unsigned long shift) :
     type::SQLType(name), mask_(mask), shift_(shift) {}
@@ -35,6 +33,4 @@ std::string SQLBit::asString(const double* val) const {
     return ((decltype(mask_)(*val) & mask_) == 0) ? "0" : "1";
 }
 
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type

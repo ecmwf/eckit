@@ -30,8 +30,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -511,5 +510,4 @@ static CommBuilder<Serial> SerialBuilder("serial");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

@@ -17,9 +17,7 @@
 
 #include "eckit/sql/expression/ColumnExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -60,8 +58,6 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression
 
 #endif

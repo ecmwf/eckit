@@ -19,11 +19,7 @@
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 
-
-namespace eckit {
-namespace linalg {
-namespace dense {
-
+namespace eckit::linalg::dense {
 
 static const LinearAlgebraGeneric __la_generic("generic");
 #if eckit_HAVE_OMP
@@ -101,7 +97,4 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
     }
 }
 
-
-}  // namespace dense
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::dense

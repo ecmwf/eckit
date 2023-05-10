@@ -14,9 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -84,5 +82,4 @@ SQLTableFactoryBase::~SQLTableFactoryBase() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

@@ -14,10 +14,7 @@
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/StringTools.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -63,7 +60,4 @@ double FunctionNE::eval(bool& missing) const {
     return equal(*args_[0], *args_[1], missing);
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

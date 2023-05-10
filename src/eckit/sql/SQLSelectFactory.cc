@@ -22,9 +22,7 @@
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -251,5 +249,4 @@ SQLSelect* SQLSelectFactory::create(bool distinct, const Expressions& select_lis
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

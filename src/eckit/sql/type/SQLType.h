@@ -18,8 +18,7 @@
 
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -86,7 +85,6 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

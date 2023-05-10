@@ -20,10 +20,7 @@
 
 #include "eckit/option/Option.h"
 
-
-namespace eckit {
-
-namespace option {
+namespace eckit::option {
 
 class Separator : public Option {
 public:
@@ -102,9 +99,6 @@ private:
     // -- Friends
 };
 
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option
 
 #endif

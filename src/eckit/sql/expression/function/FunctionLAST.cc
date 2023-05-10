@@ -14,10 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionLAST.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -67,7 +64,4 @@ void FunctionLAST::partialResult() {
     value_ = (args_[0]->eval(missing));
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

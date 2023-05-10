@@ -26,24 +26,17 @@
 #include "eckit/sql/SelectOneTable.h"
 #include "eckit/sql/expression/OrderByExpressions.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 class SQLTableIterator;
-namespace expression {
-namespace function {
+namespace expression::function {
 class FunctionROWNUMBER;
 class FunctionTHIN;
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace expression::function
+}  // namespace eckit::sql
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 class SQLSelect : public SQLStatement {
 
@@ -152,7 +145,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

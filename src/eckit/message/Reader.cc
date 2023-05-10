@@ -24,11 +24,9 @@ static size_t readerBufferSize() {
 }
 }  // namespace
 
-namespace eckit {
-namespace message {
+namespace eckit::message {
 
-Reader::Reader(eckit::DataHandle* h, bool opened) :
-    //    handle_(h), opened_(opened) {
+Reader::Reader(eckit::DataHandle* h, bool opened) :  //    handle_(h), opened_(opened) {
     handle_(new BufferedHandle(h, readerBufferSize(), opened)) {
     init();
 }
@@ -66,6 +64,4 @@ eckit::Offset Reader::position() {
     return handle_.position();
 }
 
-
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message

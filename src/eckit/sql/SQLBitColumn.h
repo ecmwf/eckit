@@ -16,8 +16,7 @@
 
 #include "eckit/sql/SQLColumn.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLBitColumn : public SQLColumn {
 public:
@@ -45,7 +44,6 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

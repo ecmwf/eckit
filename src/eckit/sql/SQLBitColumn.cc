@@ -15,8 +15,7 @@
 
 using namespace eckit;
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 SQLBitColumn::SQLBitColumn(const SQLColumn& column, const std::string& field) :
     SQLColumn(column), field_(field), mask_(0), shift_(0) {
@@ -46,5 +45,4 @@ void SQLBitColumn::advance(unsigned long n) {
 
 void SQLBitColumn::print(std::ostream& s) const {}
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

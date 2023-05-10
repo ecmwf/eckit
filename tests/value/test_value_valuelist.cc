@@ -22,11 +22,9 @@ using namespace eckit::test::value_helper;
 
 using eckit::types::is_approximately_equal;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 CASE("Test casting values into ValueList") {
     // A ValueList is just a std::list<Value>. No point in testing the functionality of stl. Just
@@ -486,9 +484,7 @@ CASE("Hash of a value") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
-
+}  // namespace eckit::test
 
 int main(int argc, char* argv[]) {
     return run_tests(argc, argv);

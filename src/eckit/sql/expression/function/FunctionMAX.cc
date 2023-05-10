@@ -14,10 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionMAX.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -70,7 +67,4 @@ void FunctionMAX::partialResult() {
             value_ = value;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

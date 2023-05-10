@@ -25,9 +25,7 @@
 #include "eckit/sql/expression/SQLExpressionEvaluated.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -749,5 +747,4 @@ void SQLSelect::outputFiles(const std::vector<PathName>& files) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

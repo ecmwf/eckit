@@ -12,8 +12,7 @@
 
 #include "eckit/system/LibraryManager.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -32,5 +31,4 @@ void Plugin::finalise() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

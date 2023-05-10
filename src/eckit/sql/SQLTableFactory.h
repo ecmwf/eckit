@@ -27,8 +27,7 @@
 /// TODO: Consider whether this really ought to be a global factory, or something that
 ///       is handled on a per session basis.
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLTable;
 class SQLTableFactoryBase;
@@ -76,7 +75,6 @@ public:  // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

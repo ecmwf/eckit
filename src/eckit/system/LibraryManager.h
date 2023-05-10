@@ -20,8 +20,7 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 class Library;
 class Plugin;
@@ -87,5 +86,4 @@ public:  // class methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

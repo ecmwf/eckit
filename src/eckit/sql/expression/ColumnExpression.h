@@ -17,8 +17,7 @@
 
 #include "eckit/sql/expression/SQLExpression.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLOutput;
 class SQLTable;
@@ -91,7 +90,6 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

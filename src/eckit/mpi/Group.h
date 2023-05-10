@@ -18,8 +18,7 @@
 
 #include "eckit/memory/Counted.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -139,7 +138,6 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi
 
 #endif

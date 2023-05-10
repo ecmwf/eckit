@@ -23,9 +23,7 @@
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SchemaAnalyzer.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -119,7 +117,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif  // eckit_sql_SQLDatabase_H

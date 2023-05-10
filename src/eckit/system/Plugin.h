@@ -14,8 +14,7 @@
 
 #include "eckit/system/Library.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -52,5 +51,4 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

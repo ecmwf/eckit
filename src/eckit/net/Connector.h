@@ -21,9 +21,7 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -153,7 +151,6 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

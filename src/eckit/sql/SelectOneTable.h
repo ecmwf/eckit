@@ -17,8 +17,7 @@
 
 #include "eckit/sql/expression/SQLExpressions.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -65,7 +64,6 @@ typedef std::vector<SelectOneTable*> SortedTables;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

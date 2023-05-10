@@ -25,9 +25,7 @@
 
 using namespace eckit;
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -150,7 +148,4 @@ const SQLType* SQLType::subType(const std::string&) const {
     return this;
 }
 
-
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type

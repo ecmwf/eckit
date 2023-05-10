@@ -18,8 +18,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -319,8 +318,7 @@ CASE("test_map_double_bool") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

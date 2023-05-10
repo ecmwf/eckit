@@ -15,8 +15,7 @@
 #include "eckit/mpi/DataType.h"
 #include "eckit/mpi/Request.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 class SerialRequestPool;
 class Serial;
@@ -106,7 +105,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi
 
 #endif

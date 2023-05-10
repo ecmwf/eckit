@@ -19,12 +19,9 @@
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* table, int begin, int end) :
     type_(0),
@@ -197,6 +194,4 @@ void ColumnExpression::tables(std::set<const SQLTable*>& t) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

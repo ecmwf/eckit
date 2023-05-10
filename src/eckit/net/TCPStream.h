@@ -18,8 +18,7 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 class TCPServer;
 
@@ -96,7 +95,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

@@ -17,10 +17,7 @@
 
 #include <cstddef>
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 using Scalar = double;
 using Index  = int;
@@ -30,6 +27,4 @@ class Vector;
 class Matrix;
 class SparseMatrix;
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

@@ -13,9 +13,7 @@
 #include "eckit/serialisation/FileStream.h"
 #include "util.h"
 
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -83,8 +81,7 @@ CASE("test_stream_sparsematrix") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

@@ -16,15 +16,13 @@
 #include <string>
 #include <vector>
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 typedef std::vector<std::string> FieldNames;
 typedef std::vector<int32_t> Sizes;
 typedef std::pair<FieldNames, Sizes> BitfieldDef;
 typedef std::map<std::string, BitfieldDef> BitfieldDefs;
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

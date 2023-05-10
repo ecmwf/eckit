@@ -17,9 +17,7 @@
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 class SQLBitfield : public SQLType {
 public:
@@ -57,8 +55,6 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type
 
 #endif

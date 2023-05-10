@@ -40,8 +40,7 @@
 #include "eckit/system/SystemInfoFreeBSD.h"
 #endif
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -140,5 +139,4 @@ bool SystemInfo::isLittleEndian() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

@@ -10,8 +10,7 @@
 
 #include "eckit/mpi/Operation.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -41,5 +40,4 @@ Operation::Code minloc() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

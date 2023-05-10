@@ -10,8 +10,7 @@
 
 #include "util.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -34,8 +33,7 @@ CASE("test wrapping of const data") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);

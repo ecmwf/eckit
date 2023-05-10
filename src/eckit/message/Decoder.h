@@ -20,9 +20,7 @@
 #include "eckit/utils/EnumBitmask.h"
 #include "eckit/utils/Optional.h"
 
-
-namespace eckit {
-namespace message {
+namespace eckit::message {
 
 class Message;
 class MetadataGatherer;
@@ -74,7 +72,6 @@ private:  // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message
 
 #endif

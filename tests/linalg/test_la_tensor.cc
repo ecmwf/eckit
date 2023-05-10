@@ -18,12 +18,9 @@
 using eckit::linalg::TensorDouble;
 using eckit::linalg::TensorFloat;
 
-namespace eckit {
-namespace test {
-
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 CASE("TensorDouble [2, 2]") {
     TensorDouble A = TD({2, 2}, 1., -2., -4., 3.);
@@ -610,8 +607,7 @@ CASE("TensorFloat move assignment operator") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);

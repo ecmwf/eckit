@@ -16,10 +16,7 @@
 #include <algorithm>
 #include <iomanip>
 
-
-namespace eckit {
-namespace message {
-
+namespace eckit::message {
 
 Splitter::Splitter(eckit::PeekHandle& handle) :
     handle_(handle) {}
@@ -89,5 +86,4 @@ Splitter* SplitterFactory::lookup(eckit::PeekHandle& handle) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message

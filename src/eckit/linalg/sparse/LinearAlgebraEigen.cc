@@ -20,14 +20,9 @@
 #include "eckit/linalg/sparse/LinearAlgebraGeneric.h"
 #include "eckit/maths/Eigen.h"
 
-
-namespace eckit {
-namespace linalg {
-namespace sparse {
-
+namespace eckit::linalg::sparse {
 
 static const LinearAlgebraEigen __la("eigen");
-
 
 using vec_t = Eigen::VectorXd::MapType;
 using mat_t = Eigen::MatrixXd::MapType;
@@ -77,7 +72,4 @@ void LinearAlgebraEigen::dsptd(const Vector& x, const SparseMatrix& A, const Vec
     generic.dsptd(x, A, y, B);
 }
 
-
-}  // namespace sparse
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::sparse

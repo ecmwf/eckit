@@ -12,8 +12,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,5 +52,4 @@ void NullStatus::print(std::ostream& os) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

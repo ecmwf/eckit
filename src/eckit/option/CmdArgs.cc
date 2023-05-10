@@ -24,13 +24,9 @@
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
 
-
-namespace eckit {
-namespace option {
-
+namespace eckit::option {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 CmdArgs::CmdArgs(usage_proc usage, int args_count, int minimum_args, bool throw_on_error) {
     init(usage, args_count, minimum_args, throw_on_error);
@@ -187,5 +183,4 @@ const std::string& CmdArgs::tool() const {
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option

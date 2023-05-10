@@ -17,13 +17,9 @@
 
 #include "eckit/net/TCPSocket.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 class Endpoint;
-
 
 class TCPClient : public TCPSocket, private eckit::NonCopyable {
 public:
@@ -49,8 +45,6 @@ private:  // methods
     virtual std::string bindingAddress() const override { return options_.bindAddress(); }
 };
 
-}  // namespace net
-}  // namespace eckit
-
+}  // namespace eckit::net
 
 #endif  // TCPClient_H

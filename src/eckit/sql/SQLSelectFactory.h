@@ -33,9 +33,7 @@ class SQLExpression;
 }  // namespace sql
 }  // namespace eckit
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -82,7 +80,6 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

@@ -11,10 +11,7 @@
 #include "eckit/sql/expression/function/FunctionOR.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -59,7 +56,4 @@ std::shared_ptr<SQLExpression> FunctionOR::simplify(bool& changed) {
     return 0;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

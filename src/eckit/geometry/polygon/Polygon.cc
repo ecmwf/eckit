@@ -14,9 +14,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
-namespace polygon {
+namespace eckit::geometry::polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -65,6 +63,4 @@ void Polygon::print(std::ostream& s) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace polygon
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry::polygon

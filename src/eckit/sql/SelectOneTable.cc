@@ -11,8 +11,7 @@
 
 #include "eckit/sql/SelectOneTable.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -25,5 +24,4 @@ SelectOneTable::~SelectOneTable() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

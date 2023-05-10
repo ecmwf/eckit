@@ -20,10 +20,7 @@
 
 #include "eckit/option/Option.h"
 
-
-namespace eckit {
-namespace option {
-
+namespace eckit::option {
 
 template <class T>
 class SimpleOption : public Option {
@@ -41,9 +38,7 @@ private:
     virtual void copy(const Configuration& from, Configured& to) const override;
 };
 
-
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option
 
 #include "eckit/option/SimpleOption.cc"
 

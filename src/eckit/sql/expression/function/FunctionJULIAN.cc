@@ -14,10 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/types/Date.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -52,7 +49,4 @@ double FunctionJULIAN::eval(bool& missing) const {
     return date.julian();
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

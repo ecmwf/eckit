@@ -26,9 +26,7 @@
 #include "eckit/net/UDPServer.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 static void* get_sockaddr(struct sockaddr* sa) {
     if (sa->sa_family == AF_INET) {
@@ -37,7 +35,6 @@ static void* get_sockaddr(struct sockaddr* sa) {
     else
         return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
-
 
 UDPServer::UDPServer(int port) :
     port_(port), socketfd_(0) {
@@ -123,6 +120,4 @@ std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const {
     return r;
 }
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

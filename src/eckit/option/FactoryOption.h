@@ -20,14 +20,11 @@
 
 #include "eckit/option/Option.h"
 
-namespace eckit {
-namespace option {
-
+namespace eckit::option {
 
 /// @note Factory option essentially provides a std::string option, whose acceptable values are listed on the
 ///       command line (typename T may be any class that implements the list() method). It does no checks on
 ///       the validity of input received, and just returns the appropriate string
-
 
 template <class T>
 class FactoryOption : public Option {
@@ -46,9 +43,7 @@ private:
     virtual void copy(const Configuration& from, Configured& to) const override;
 };
 
-
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option
 
 #include "eckit/option/FactoryOption.cc"
 

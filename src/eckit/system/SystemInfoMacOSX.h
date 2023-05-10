@@ -19,8 +19,7 @@
 
 #include "eckit/system/SystemInfo.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -44,7 +43,6 @@ private:    // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system
 
 #endif

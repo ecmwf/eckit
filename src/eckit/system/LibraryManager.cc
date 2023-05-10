@@ -40,8 +40,7 @@
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -455,5 +454,4 @@ void LibraryManager::deregisterPlugin(const std::string& name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

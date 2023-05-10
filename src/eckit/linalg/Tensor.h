@@ -27,8 +27,7 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
-namespace eckit {
-namespace linalg {
+namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -449,6 +448,4 @@ inline std::vector<size_t> shapify(int rank, int shape[]) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

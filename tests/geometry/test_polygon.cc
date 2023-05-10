@@ -15,8 +15,7 @@
 #include "eckit/geometry/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 CASE("Polygon") {
     using geometry::polygon::Polygon;
@@ -375,8 +374,7 @@ CASE("LonLatPolygon") {
     }
 }
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

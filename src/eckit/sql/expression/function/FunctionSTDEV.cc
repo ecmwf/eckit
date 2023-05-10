@@ -13,10 +13,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionSTDEV.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -47,7 +44,4 @@ double FunctionSTDEV::eval(bool& missing) const {
     return sqrt(x);
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

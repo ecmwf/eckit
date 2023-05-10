@@ -37,9 +37,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 static in_addr none = {INADDR_NONE};
 
@@ -813,6 +811,4 @@ std::ostream& operator<<(std::ostream& s, in_addr a) {
     return s;
 }
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

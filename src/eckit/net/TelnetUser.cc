@@ -13,9 +13,7 @@
 #include "eckit/net/Telnet.h"
 #include "eckit/runtime/Monitor.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 TelnetUser::TelnetUser(TCPSocket& protocol) :
     NetUser(protocol), from_(protocol_.remoteHost()) {}
@@ -36,5 +34,4 @@ void TelnetUser::serve(Stream&, std::istream& in, std::ostream& out) {
     Log::info() << "Exiting telnet user loop..." << std::endl;
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

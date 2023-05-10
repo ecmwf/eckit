@@ -16,8 +16,7 @@
 
 #include "eckit/os/BackTrace.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -87,5 +86,4 @@ const char* SQLOutputConfig::defaultOutputFormat = "default";
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

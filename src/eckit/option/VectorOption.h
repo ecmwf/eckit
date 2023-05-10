@@ -21,11 +21,7 @@
 #include "eckit/option/Option.h"
 #include "eckit/option/SimpleOption.h"
 
-
-namespace eckit {
-
-namespace option {
-
+namespace eckit::option {
 
 template <class T>
 class VectorOption : public Option {
@@ -105,10 +101,7 @@ private:
     // -- Friends
 };
 
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option
 
 #include "eckit/option/VectorOption.cc"
 

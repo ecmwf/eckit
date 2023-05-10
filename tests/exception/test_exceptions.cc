@@ -12,8 +12,7 @@
 
 #include "eckit/testing/Test.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -62,8 +61,7 @@ CASE("Test ASSERT_MSG does not evaluate message if assertion not triggered") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

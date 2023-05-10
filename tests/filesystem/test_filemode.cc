@@ -31,11 +31,9 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 CASE("Create a file controling its mode") {
     SECTION("---,---,---") {
@@ -251,8 +249,7 @@ CASE("From resource use as mask") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

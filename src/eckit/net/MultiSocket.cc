@@ -17,9 +17,7 @@
 #include "eckit/net/TCPStream.h"
 #include "eckit/utils/MD5.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 const size_t VERSION = 1;
 // Server
@@ -234,5 +232,4 @@ MultiSocket::MultiSocket(MultiSocket& other) :
     ASSERT(sockets_.size() == streams_);
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

@@ -11,10 +11,7 @@
 #include "eckit/sql/expression/function/FunctionSUM.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -61,7 +58,4 @@ void FunctionSUM::partialResult() {
     }
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

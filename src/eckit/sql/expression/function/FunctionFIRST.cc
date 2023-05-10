@@ -14,10 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFIRST.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -72,7 +69,4 @@ void FunctionFIRST::partialResult() {
     notFirst_ = true;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

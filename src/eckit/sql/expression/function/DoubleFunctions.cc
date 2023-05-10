@@ -15,13 +15,9 @@
 #include <climits>
 #include <cmath>
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 template <typename T, int ARITY>
 class ArityFunction : public FunctionExpression {
@@ -459,7 +455,4 @@ static FunctionBuilder<MultiplyFunction> multiplyBuilder("*", "multiply");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

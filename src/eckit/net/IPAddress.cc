@@ -18,9 +18,7 @@
 #include <unistd.h>
 #include <ostream>
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 IPAddress::IPAddress(const std::string& addr) {
     if (inet_aton(addr.c_str(), &address_) == 0) {
@@ -29,7 +27,6 @@ IPAddress::IPAddress(const std::string& addr) {
         throw eckit::SeriousBug(os.str());
     }
 }
-
 
 IPAddress::IPAddress(const char* addr) {
     if (inet_aton(addr, &address_) == 0) {
@@ -73,5 +70,4 @@ IPAddress IPAddress::myIPAddress() {
     return mine;
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

@@ -30,9 +30,7 @@
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Translator.h"
 
-
-namespace eckit {
-namespace testing {
+namespace eckit::testing {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -409,8 +407,7 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace testing
-}  // namespace eckit
+}  // namespace eckit::testing
 
 // Helper macros for unique naming
 

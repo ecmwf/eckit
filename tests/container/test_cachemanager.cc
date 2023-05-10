@@ -16,8 +16,7 @@
 
 #include "eckit/testing/Test.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -162,8 +161,7 @@ CASE("test_cachemanager") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

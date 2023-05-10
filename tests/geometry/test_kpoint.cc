@@ -16,8 +16,7 @@ using namespace eckit;
 using namespace eckit::testing;
 using namespace eckit::geometry;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 CASE("KPoint Inits to Zero") {
     Point3 p;
@@ -107,8 +106,7 @@ CASE("KPoint distance2 comparison") {
     EXPECT(p1.distance2(zz) < p2.distance2(zz));
 }
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 //----------------------------------------------------------------------------------------------------------------------
 

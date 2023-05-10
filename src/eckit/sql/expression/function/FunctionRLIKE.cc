@@ -15,10 +15,7 @@
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/Regex.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -98,8 +95,4 @@ double FunctionRLIKE::eval(bool& missing) const {
     return match(*args_[0], *args_[1], missing);
 }
 
-
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

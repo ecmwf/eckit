@@ -16,13 +16,11 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLOutput;
 
-namespace expression {
-namespace function {
+namespace expression::function {
 
 class FunctionIntegerExpression : public FunctionExpression {
 public:
@@ -47,9 +45,7 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace expression::function
+}  // namespace eckit::sql
 
 #endif

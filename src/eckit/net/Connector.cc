@@ -16,9 +16,7 @@
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -421,5 +419,4 @@ void Connector::memoize(bool on, unsigned long life) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

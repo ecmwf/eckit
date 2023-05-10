@@ -16,8 +16,8 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
+#include "eckit/geometry/PointLonLat.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,24 +47,26 @@ static std::streamsize max_digits10 = 15 + 3;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const double& b, const Point2& Alonlat,
-                                                        Point3& B, double height) {
+Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a,
+                                                          double b,
+                                                          const PointLonLat& A,
+                                                          double height) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
 
-    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
+    if (!(-90. <= A.lat && A.lat <= 90.)) {
         std::ostringstream oss;
         oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alonlat[1];
+        oss << "Invalid latitude " << A.lat;
         throw BadValue(oss.str(), Here());
     }
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
 
-    const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
+    const double lambda_deg = normalise_longitude(A.lon, -180.);
     const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * Alonlat[1];
+    const double phi        = degrees_to_radians * A.lat;
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
@@ -73,9 +75,9 @@ void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const d
 
     const double N_phi = a * a / std::sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi);
 
-    B[0] = (N_phi + height) * cos_phi * cos_lambda;
-    B[1] = (N_phi + height) * cos_phi * sin_lambda;
-    B[2] = (N_phi * (b * b) / (a * a) + height) * sin_phi;
+    return {(N_phi + height) * cos_phi * cos_lambda,
+            (N_phi + height) * cos_phi * sin_lambda,
+            (N_phi * (b * b) / (a * a) + height) * sin_phi};
 }
 
 //----------------------------------------------------------------------------------------------------------------------

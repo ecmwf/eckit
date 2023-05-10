@@ -11,6 +11,8 @@
 #ifndef SphereT_H
 #define SphereT_H
 
+#include "eckit/geometry/Point3.h"
+#include "eckit/geometry/PointLonLat.h"
 #include "eckit/geometry/Sphere.h"
 
 //------------------------------------------------------------------------------------------------------
@@ -27,8 +29,8 @@ struct SphereT {
     inline static double radius() { return DATUM::radius(); }
 
     /// Great-circle central angle between two points (longitude/latitude coordinates) in radians
-    inline static double centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
-        return Sphere::centralAngle(Alonlat, Blonlat);
+    inline static double centralAngle(const PointLonLat& A, const PointLonLat& B) {
+        return Sphere::centralAngle(A, B);
     }
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
@@ -37,8 +39,8 @@ struct SphereT {
     }
 
     /// Great-circle distance between two points (longitude/latitude coordinates) in metres
-    inline static double distance(const Point2& Alonlat, const Point2& Blonlat) {
-        return Sphere::distance(DATUM::radius(), Alonlat, Blonlat);
+    inline static double distance(const PointLonLat& A, const PointLonLat& B) {
+        return Sphere::distance(DATUM::radius(), A, B);
     }
 
     /// Great-circle distance between two points (Cartesian coordinates) in metres
@@ -47,32 +49,32 @@ struct SphereT {
     /// Surface area in square metres
     inline static double area() { return Sphere::area(DATUM::radius()); }
 
-    /// Surface area between parallels and meridians defined by two points (longitude/latitude coordinates) in square
-    /// metres
-    inline static double area(const Point2& WestNorth, const Point2& EastSouth) {
+    /// Surface area between parallels and meridians defined by two points (longitude/latitude coordinates) in square metres
+    inline static double area(const PointLonLat& WestNorth, const PointLonLat& EastSouth) {
         return Sphere::area(DATUM::radius(), WestNorth, EastSouth);
     }
 
-    // Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
-    inline static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat,
-                                                           const double& Clon) {
-        return Sphere::greatCircleLatitudeGivenLongitude(Alonlat, Blonlat, Clon);
+    /// Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
+    inline static double greatCircleLatitudeGivenLongitude(const PointLonLat& A,
+                                                           const PointLonLat& B,
+                                                           double Clon) {
+        return Sphere::greatCircleLatitudeGivenLongitude(A, B, Clon);
     }
 
-    // Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate latitude (C) in degrees
-    inline static void greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat,
-                                                         const double& Clat, double& Clon1, double& Clon2) {
-        return Sphere::greatCircleLongitudeGivenLatitude(Alonlat, Blonlat, Clat, Clon1, Clon2);
+    /// Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate latitude (C) in degrees
+    inline static void greatCircleLongitudeGivenLatitude(
+        const PointLonLat& A, const PointLonLat& B, double Clat, double& Clon1, double& Clon2) {
+        return Sphere::greatCircleLongitudeGivenLatitude(A, B, Clat, Clon1, Clon2);
     }
 
-    // Convert spherical coordinates to Cartesian
-    inline static void convertSphericalToCartesian(const Point2& Alonlat, Point3& B, double height = 0.) {
-        Sphere::convertSphericalToCartesian(DATUM::radius(), Alonlat, B, height);
+    /// Convert spherical coordinates to Cartesian
+    inline static Point3 convertSphericalToCartesian(const PointLonLat& A, double height = 0.) {
+        return Sphere::convertSphericalToCartesian(DATUM::radius(), A, height);
     }
 
-    // Convert Cartesian coordinates to spherical
-    inline static void convertCartesianToSpherical(const Point3& A, Point2& Blonlat) {
-        Sphere::convertCartesianToSpherical(DATUM::radius(), A, Blonlat);
+    /// Convert Cartesian coordinates to spherical
+    inline static PointLonLat convertCartesianToSpherical(const Point3& A) {
+        return Sphere::convertCartesianToSpherical(DATUM::radius(), A);
     }
 };
 

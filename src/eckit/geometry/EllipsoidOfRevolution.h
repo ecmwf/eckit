@@ -17,15 +17,17 @@ namespace eckit::geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-class Point2;
+class PointLonLat;
 class Point3;
 
 //------------------------------------------------------------------------------------------------------
 
 struct EllipsoidOfRevolution {
     // Convert elliptic coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radiusA, const double& radiusB, const Point2& Alonlat,
-                                            Point3& B, double height = 0.);
+    static Point3 convertSphericalToCartesian(double a,
+                                              double b,
+                                              const PointLonLat&,
+                                              double height = 0.);
 };
 
 //------------------------------------------------------------------------------------------------------

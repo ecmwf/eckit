@@ -17,45 +17,46 @@ namespace eckit::geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-class Point2;
+class PointLonLat;
 class Point3;
 
 //------------------------------------------------------------------------------------------------------
 
 struct Sphere {
     /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
-    static double centralAngle(const Point2& Alonlat, const Point2& Blonlat);
+    static double centralAngle(const PointLonLat&, const PointLonLat&);
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
-    static double centralAngle(const double& radius, const Point3& A, const Point3& B);
+    static double centralAngle(double radius, const Point3& A, const Point3& B);
 
     /// Great-circle distance between two points (latitude/longitude coordinates) in metres
-    static double distance(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
+    static double distance(double radius, const PointLonLat&, const PointLonLat&);
 
     /// Great-circle distance between two points (Cartesian coordinates) in metres
-    static double distance(const double& radius, const Point3& A, const Point3& B);
+    static double distance(double radius, const Point3& A, const Point3& B);
 
     /// Surface area in square metres
-    static double area(const double& radius);
+    static double area(double radius);
 
-    /// Surface area between parallels and meridians defined by two points (longitude/latitude
-    /// coordinates) in square metres
-    static double area(const double& radius, const Point2& Alonlat, const Point2& Blonlat);
+    /// Surface area between parallels and meridians defined by two points (longitude/latitude coordinates) in square metres
+    static double area(double radius, const PointLonLat& WestNorth, const PointLonLat& EastSouth);
 
-    // Great-circle intermediate latitude provided two circle points (A, B) and intermediate
-    // longitude (C) in degrees
-    static double greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon);
+    /// Great-circle intermediate latitude provided two circle points (A, B) and intermediate longitude (C) in degrees
+    static double greatCircleLatitudeGivenLongitude(const PointLonLat&,
+                                                    const PointLonLat&,
+                                                    double Clon);
 
-    // Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate
-    // latitude (C) in degrees
-    static void greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clat,
-                                                  double& Clon1, double& Clon2);
+    /// Great-circle intermediate longitude(s) provided two circle points (A, B) and intermediate latitude (C) in degrees
+    static void greatCircleLongitudeGivenLatitude(
+        const PointLonLat&, const PointLonLat&, double Clat, double& Clon1, double& Clon2);
 
-    // Convert spherical coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.);
+    /// Convert spherical coordinates to Cartesian
+    static Point3 convertSphericalToCartesian(double radius,
+                                              const PointLonLat&,
+                                              double height = 0.);
 
-    // Convert Cartesian coordinates to spherical
-    static void convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat);
+    /// Convert Cartesian coordinates to spherical
+    static PointLonLat convertCartesianToSpherical(double radius, const Point3&);
 };
 
 //------------------------------------------------------------------------------------------------------

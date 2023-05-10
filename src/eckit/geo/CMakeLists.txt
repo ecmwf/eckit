@@ -6,6 +6,7 @@ list(APPEND eckit_geo_srcs
 	Projection.h
 	Scanner.cc
 	Scanner.h
+	Search.h
 	geometry/BoundingBox.cc
 	geometry/BoundingBox.h
 	geometry/GreatCircle.cc
@@ -49,12 +50,22 @@ list(APPEND eckit_geo_srcs
 	util/regular_pl.cc
 )
 
+set(eckit_geo_include_dirs )
+set(eckit_geo_libs eckit)
+
+if(HAVE_PROJ)
+	list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
+	list(APPEND eckit_geo_libs PROJ::proj)
+	list(APPEND eckit_geo_include_dirs ${PROJ_INCLUDE_DIRS})
+endif()
+
 ecbuild_add_library(
 	TARGET eckit_geo
 	TYPE SHARED
 	INSTALL_HEADERS ALL
 	HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
 	SOURCES ${eckit_geo_srcs}
-	PUBLIC_LIBS eckit
+	PUBLIC_LIBS ${eckit_geo_libs}
+	PUBLIC_INCLUDES ${eckit_geo_include_dirs}
 )
 

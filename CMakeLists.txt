@@ -236,6 +236,13 @@ ecbuild_add_option( FEATURE AIO
                     CONDITION ${AIO_FOUND}
                     DESCRIPTION "support for asynchronous IO")
 
+### PROJ support
+
+find_package( PROJ 9.2 )
+ecbuild_add_option( FEATURE PROJ
+                    DEFAULT OFF
+                    DESCRIPTION "support PROJ-based projections")
+
 ### c math library, needed when including "math.h"
 
 find_package( CMath )

@@ -94,12 +94,12 @@ class CondUnary : public Expression<U> {
 
     std::unique_ptr<Expression<U> > cond_;
 
-    virtual void print(std::ostream& s) const override { s << opname(T()) << '(' << *cond_ << ')'; }
+    void print(std::ostream& s) const override { s << opname(T()) << '(' << *cond_ << ')'; }
 
 public:
     CondUnary(Expression<U>* cond) :
         cond_(cond) {}
-    virtual ~CondUnary() override {}
+    ~CondUnary() override {}
     virtual eckit::Value eval(U& task) const { return T()(cond_->eval(task)); }
 };
 
@@ -109,13 +109,13 @@ class CondBinary : public Expression<U> {
     std::unique_ptr<Expression<U> > left_;
     std::unique_ptr<Expression<U> > right_;
 
-    virtual void print(std::ostream& s) const override { s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
+    void print(std::ostream& s) const override { s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
 
 public:
     CondBinary(Expression<U>* left, Expression<U>* right) :
         left_(left), right_(right) {}
 
-    virtual ~CondBinary() override {}
+    ~CondBinary() override {}
     eckit::Value eval(U& task) const;
 };
 
@@ -127,19 +127,19 @@ inline eckit::Value CondBinary<T, U>::eval(U& task) const {
 template <class T>
 class StringExpression : public Expression<T> {
     std::string str_;
-    virtual void print(std::ostream& s) const override { s << str_; }
+    void print(std::ostream& s) const override { s << str_; }
 
 public:
     StringExpression(const std::string& s) :
         str_(s) {}
-    virtual ~StringExpression() override {}
+    ~StringExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(str_); }
 };
 
 template <class T>
 class NumberExpression : public Expression<T> {
     long long value_;
-    virtual void print(std::ostream& s) const override { s << value_; }
+    void print(std::ostream& s) const override { s << value_; }
 
 protected:
     long long value() const { return value_; }
@@ -147,20 +147,20 @@ protected:
 public:
     NumberExpression(long long n) :
         value_(n) {}
-    virtual ~NumberExpression() override {}
+    ~NumberExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(value_); }
 };
 
 template <class T>
 class ListExpression : public Expression<T> {
     std::vector<Expression<T>*> v_;
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
 public:
     ListExpression();
     ListExpression(const std::vector<Expression<T>*>& v) :
         v_(v) {}
-    virtual ~ListExpression() override;
+    ~ListExpression() override;
     virtual eckit::Value eval(T&) const;
 };
 

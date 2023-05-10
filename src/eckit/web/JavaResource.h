@@ -35,7 +35,7 @@ public:
 
     // -- Destructor
 
-    virtual ~JavaResource() override;
+    ~JavaResource() override;
 
     // -- Convertors
     // None
@@ -68,7 +68,7 @@ protected:
 
     // -- Overridden methods
 
-    virtual void GET(std::ostream&, Url&) override;
+    void GET(std::ostream&, Url&) override;
 
     // -- Class members
     // None

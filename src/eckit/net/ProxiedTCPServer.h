@@ -31,7 +31,7 @@ public:
                                    bool* connected = nullptr) override;
 
 private:
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 };
 
 

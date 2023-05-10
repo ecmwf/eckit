@@ -28,7 +28,7 @@ namespace system {
 class SystemInfoFreeBSD : public SystemInfo {
 
 public:  // methods
-    virtual ~SystemInfoFreeBSD() override;
+    ~SystemInfoFreeBSD() override;
 
     virtual eckit::LocalPathName executablePath() const;
 

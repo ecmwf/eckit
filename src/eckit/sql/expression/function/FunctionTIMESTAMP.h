@@ -27,7 +27,7 @@ public:
     std::shared_ptr<SQLExpression> clone() const override;
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
+    const eckit::sql::type::SQLType* type() const override;
 
     static int arity() { return 2; }
 
@@ -35,7 +35,7 @@ private:
     FunctionTIMESTAMP& operator=(const FunctionTIMESTAMP&);
 
     // -- Overridden methods
-    virtual double eval(bool& missing) const override;
+    double eval(bool& missing) const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionTIMESTAMP& p)

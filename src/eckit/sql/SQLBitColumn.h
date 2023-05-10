@@ -35,10 +35,10 @@ private:
     // -- Overridden methods
 
     // From ODBIterator
-    virtual void rewind() override;
-    virtual double next(bool& missing) override;
-    virtual void advance(unsigned long) override;
-    virtual void print(std::ostream&) const override;
+    void rewind() override;
+    double next(bool& missing) override;
+    void advance(unsigned long) override;
+    void print(std::ostream&) const override;
 
     // friend std::ostream& operator<<(std::ostream& s,const SQLBitColumn& p)
     //	{ p.print(s); return s; }

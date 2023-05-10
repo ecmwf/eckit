@@ -39,8 +39,8 @@ public:
     void ready(bool&);
     void age(time_t&);
 
-    virtual void start() override;
-    virtual void stop() override;
+    void start() override;
+    void stop() override;
 
 protected:  // methods
     bool canPick();
@@ -51,7 +51,7 @@ private:  // methods
     void send(Request*);
     void receive(Request*);
 
-    virtual void run() override;
+    void run() override;
 
 private:  // members
     PipeStream* pipe_;

@@ -25,7 +25,7 @@ public:
     ~FunctionROWNUMBER();
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
+    const eckit::sql::type::SQLType* type() const override;
 
     std::shared_ptr<SQLExpression> clone() const override;
 
@@ -33,13 +33,13 @@ public:
 
 protected:
     // -- Overridden methods
-    virtual void print(std::ostream& s) const override;
-    virtual void prepare(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
-    virtual bool isConstant() const override;
-    virtual void partialResult() override;
-    virtual double eval(bool& missing) const override;
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
+    void print(std::ostream& s) const override;
+    void prepare(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
+    bool isConstant() const override;
+    void partialResult() override;
+    double eval(bool& missing) const override;
+    std::shared_ptr<SQLExpression> simplify(bool&) override;
     bool isAggregate() const override { return false; }
 
 private:

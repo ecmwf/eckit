@@ -35,7 +35,7 @@ public:
 
     // -- Destructor
 
-    virtual ~VectorOption() override;  // Change to virtual if base class
+    ~VectorOption() override;  // Change to virtual if base class
 
     // -- Convertors
     // None
@@ -61,7 +61,7 @@ protected:
 
     // -- Methods
 
-    virtual void print(std::ostream&) const override;  // Change to virtual if base class
+    void print(std::ostream&) const override;  // Change to virtual if base class
 
     // -- Overridden methods
     // None
@@ -88,9 +88,9 @@ private:
 
     // -- Overridden methods
 
-    virtual void set(Configured&) const override;
-    virtual void set(const std::string& value, Configured&) const override;
-    virtual void copy(const Configuration& from, Configured& to) const override;
+    void set(Configured&) const override;
+    void set(const std::string& value, Configured&) const override;
+    void copy(const Configuration& from, Configured& to) const override;
 
     // -- Class members
     // None

@@ -61,7 +61,7 @@ public:
 
     // -- Destructor
 
-    virtual ~DataHandle() override {}
+    ~DataHandle() override {}
 
     // -- Methods
 
@@ -148,8 +148,8 @@ public:
 
     // From Streamble
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

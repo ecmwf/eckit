@@ -31,16 +31,16 @@ class FactoryOption : public Option {
 public:
     FactoryOption(const std::string& name, const std::string& description);
 
-    virtual ~FactoryOption() override;  // Change to virtual if base class
+    ~FactoryOption() override;  // Change to virtual if base class
 
 protected:
-    virtual void print(std::ostream&) const override;  // Change to virtual if base class
+    void print(std::ostream&) const override;  // Change to virtual if base class
 
 private:
     using Option::set;
 
-    virtual void set(const std::string& value, Configured&) const override;
-    virtual void copy(const Configuration& from, Configured& to) const override;
+    void set(const std::string& value, Configured&) const override;
+    void copy(const Configuration& from, Configured& to) const override;
 };
 
 }  // namespace eckit::option

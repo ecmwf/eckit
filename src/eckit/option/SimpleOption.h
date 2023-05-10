@@ -27,15 +27,15 @@ class SimpleOption : public Option {
 public:
     SimpleOption(const std::string& name, const std::string& description);
 
-    virtual ~SimpleOption() override;
+    ~SimpleOption() override;
 
 protected:
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:
-    virtual void set(Configured&) const override;
-    virtual void set(const std::string& value, Configured&) const override;
-    virtual void copy(const Configuration& from, Configured& to) const override;
+    void set(Configured&) const override;
+    void set(const std::string& value, Configured&) const override;
+    void copy(const Configuration& from, Configured& to) const override;
 };
 
 }  // namespace eckit::option

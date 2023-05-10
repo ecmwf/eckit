@@ -43,9 +43,9 @@ private:
 
     // From CmdResource
 
-    virtual void execute(std::istream&, std::ostream&, CmdArg&) override;
-    virtual void help(std::ostream&) const override;
-    virtual Arg usage(const std::string& cmd) const override;
+    void execute(std::istream&, std::ostream&, CmdArg&) override;
+    void help(std::ostream&) const override;
+    Arg usage(const std::string& cmd) const override;
 };
 
 //-----------------------------------------------------------------------------

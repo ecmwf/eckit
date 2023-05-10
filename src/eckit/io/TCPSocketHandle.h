@@ -41,17 +41,17 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return true; }
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void rewind() override;
+    void print(std::ostream&) const override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override { return true; }
 
     // From Streamable
 
@@ -85,8 +85,8 @@ public:
 private:
     net::TCPSocket socket_;
 
-    virtual void print(std::ostream&) const override;
-    virtual void close() override;
+    void print(std::ostream&) const override;
+    void close() override;
 };
 
 

@@ -31,17 +31,17 @@ public:
     /// @pre must have been closed
     ~PooledHandle();
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return true; }
-    virtual void hash(MD5& md5) const override;
-    virtual Offset position() override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override { return true; }
+    void hash(MD5& md5) const override;
+    Offset position() override;
 
     // for testing
 
@@ -53,7 +53,7 @@ private:
     PathName path_;
     PoolHandleEntry* entry_;
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 };
 
 }  // namespace eckit

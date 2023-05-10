@@ -35,9 +35,9 @@ public:
 
     void closeExec(bool on) { closeExec_ = on; }
 
-    virtual int socket() override;
+    int socket() override;
 
-    virtual void close() override;
+    void close() override;
 
 protected:  // members
     int port_;
@@ -46,14 +46,14 @@ protected:  // members
     SocketOptions options_;  //< options to build the socket
 
 protected:  // methods
-    virtual void bind() override;
+    void bind() override;
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
 private:  // methods
     // To be used by Select
 
-    virtual std::string bindingAddress() const override;
+    std::string bindingAddress() const override;
 
 private:  // members
     bool closeExec_;

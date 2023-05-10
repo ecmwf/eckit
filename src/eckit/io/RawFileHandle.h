@@ -28,23 +28,23 @@ public:
 
     ~RawFileHandle();
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void print(std::ostream&) const override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void print(std::ostream&) const override;
 
-    virtual Length size() override;
-    virtual Length estimate() override;
-    virtual Offset position() override;
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return true; }
-    virtual void skip(const Length&) override;
+    Length size() override;
+    Length estimate() override;
+    Offset position() override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override { return true; }
+    void skip(const Length&) override;
 
-    virtual void encode(Stream&) const override;
+    void encode(Stream&) const override;
 
 private:
     std::string path_;

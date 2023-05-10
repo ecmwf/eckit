@@ -199,12 +199,12 @@ private:
 
     // From Thread
 
-    virtual void run() override;
+    void run() override;
 
     // From Monitorable
 
-    virtual void status(std::ostream&) const override;
-    virtual void json(JSON&) const override;
+    void status(std::ostream&) const override;
+    void json(JSON&) const override;
 
 
     // No copy
@@ -222,7 +222,7 @@ template <class Traits>
 class DispatchInfo : public Thread {
     // Dispatcher owning this thread
     Dispatcher<Traits>& owner_;
-    virtual void run() override;
+    void run() override;
 
 public:
     DispatchInfo(Dispatcher<Traits>& owner) :

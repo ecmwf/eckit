@@ -42,7 +42,7 @@ public:
 
     class RawTag : public Tag {
         std::string tag_;
-        virtual void print(std::ostream& s) const override { s << tag_; }
+        void print(std::ostream& s) const override { s << tag_; }
 
     protected:
         RawTag(const std::string& s) :
@@ -98,7 +98,7 @@ public:
         Image& operator=(const Image&);
 
         std::string name_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
     };
 
     class Link : public Tag {
@@ -109,7 +109,7 @@ public:
             url_(addHex(url)) {}
 
     private:
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
         std::string url_;
     };
 
@@ -173,11 +173,11 @@ public:
 
     private:
         std::string str_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
     };
 
     class EndForm : public Tag {
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
     };
 
     class BeginTextArea {
@@ -222,7 +222,7 @@ public:
     class HiddenField : public Tag {
         std::string name_;
         std::string value_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
         HiddenField(const std::string& name, const std::string& value) :
@@ -233,7 +233,7 @@ public:
     class Button : public Tag {
         std::string type_;
         std::string title_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
         Button(const std::string& type, const std::string& title) :
@@ -244,7 +244,7 @@ public:
         std::string name_;
         std::string value_;
         bool on_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
         CheckBox(const std::string& name, const std::string& value, bool on) :
@@ -277,7 +277,7 @@ public:
         int padding_;
         int spacing_;
         int width_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
         BeginTable(bool border = true, int width = 0, int padding = 0, int spacing = 0) :
@@ -296,7 +296,7 @@ public:
         int align_;
         int colspan_;
         int rowspan_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     protected:
         TableTag(const std::string& tag, int align, int colspan, int rowspan) :

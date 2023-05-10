@@ -22,17 +22,17 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LocalFileManager : public URIManager {
-    virtual bool exists(const URI& uri) override;
+    bool exists(const URI& uri) override;
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override;
+    DataHandle* newWriteHandle(const URI& uri) override;
 
-    virtual DataHandle* newReadHandle(const URI& uri) override;
+    DataHandle* newReadHandle(const URI& uri) override;
 
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override;
+    DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override;
 
-    virtual std::string asString(const URI& uri) const override;
+    std::string asString(const URI& uri) const override;
 
-    virtual PathName path(const URI& uri) const override;
+    PathName path(const URI& uri) const override;
 
 public:
     LocalFileManager(const std::string& name) :

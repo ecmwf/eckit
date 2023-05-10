@@ -26,11 +26,11 @@ class OStreamTarget : public LogTarget {
 public:  // methods
     OStreamTarget(std::ostream& out);
 
-    virtual ~OStreamTarget() override;
+    ~OStreamTarget() override;
 
-    virtual void write(const char* start, const char* end) override;
-    virtual void flush() override;
-    virtual void print(std::ostream& s) const override;
+    void write(const char* start, const char* end) override;
+    void flush() override;
+    void print(std::ostream& s) const override;
 
 private:
     std::ostream& out_;

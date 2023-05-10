@@ -25,7 +25,7 @@ public:
     ~FunctionRMS();
 
     // -- Overridden methods
-    virtual double eval(bool& missing) const override;
+    double eval(bool& missing) const override;
 
     std::shared_ptr<SQLExpression> clone() const override;
 
@@ -39,10 +39,10 @@ private:
     double squares_;
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void prepare(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
-    virtual void partialResult() override;
+    const eckit::sql::type::SQLType* type() const override;
+    void prepare(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
+    void partialResult() override;
 
     bool isAggregate() const override { return true; }
 

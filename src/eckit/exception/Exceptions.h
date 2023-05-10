@@ -46,9 +46,9 @@ public:  // methods
 
     /// Destructor
     /// @throws nothing
-    virtual ~Exception() noexcept override;
+    ~Exception() noexcept override;
 
-    virtual const char* what() const noexcept override { return what_.c_str(); }
+    const char* what() const noexcept override { return what_.c_str(); }
     virtual bool retryOnServer() const { return false; }
     virtual bool retryOnClient() const { return false; }
     virtual bool terminateApplication() const { return false; }

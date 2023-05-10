@@ -85,9 +85,9 @@ private:
 
 template <class T>
 class SplitterBuilder : public SplitterBuilderBase {
-    virtual Splitter* make(eckit::PeekHandle& handle) const override { return new T(handle); }
+    Splitter* make(eckit::PeekHandle& handle) const override { return new T(handle); }
 
-    virtual bool match(eckit::PeekHandle& handle) const override;
+    bool match(eckit::PeekHandle& handle) const override;
     //     return M(handle);
     // }
 };

@@ -24,24 +24,24 @@ class AIOHandle : public DataHandle {
 public:  // methods
     AIOHandle(const PathName& path, size_t count = 16, size_t buffsize = 1024 * 1024, bool fsync = false);
 
-    virtual ~AIOHandle() override;
+    ~AIOHandle() override;
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void flush() override;
+    void rewind() override;
+    void print(std::ostream&) const override;
 
-    virtual Length size() override;
-    virtual Length estimate() override;
-    virtual Offset position() override;
+    Length size() override;
+    Length estimate() override;
+    Offset position() override;
 
-    virtual bool canSeek() const override { return false; }
+    bool canSeek() const override { return false; }
 
 private:  // methods
     size_t getFreeSlot();
@@ -60,7 +60,7 @@ private:  // members
     bool fsync_;
 
 
-    virtual std::string title() const override;
+    std::string title() const override;
 };
 
 }  // namespace eckit

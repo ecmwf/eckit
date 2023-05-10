@@ -27,18 +27,18 @@ public:
     std::shared_ptr<SQLExpression> clone() const override;
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
+    const eckit::sql::type::SQLType* type() const override;
 
     static int arity() { return 2; }
 
 protected:
     // -- Overridden methods
-    virtual void print(std::ostream& s) const override;
-    virtual void prepare(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
-    virtual bool isConstant() const override;
-    virtual double eval(bool& missing) const override;
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
+    void print(std::ostream& s) const override;
+    void prepare(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
+    bool isConstant() const override;
+    double eval(bool& missing) const override;
+    std::shared_ptr<SQLExpression> simplify(bool&) override;
     bool isAggregate() const override { return false; }
 
 private:

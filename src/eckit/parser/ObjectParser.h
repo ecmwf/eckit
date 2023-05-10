@@ -25,7 +25,7 @@ namespace eckit {
 class ObjectParser : public StreamParser {
 
 public:  // methods
-    virtual ~ObjectParser() override;
+    ~ObjectParser() override;
 
     virtual Value parse();
 

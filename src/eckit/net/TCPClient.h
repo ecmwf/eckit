@@ -32,7 +32,7 @@ public:
     virtual TCPSocket& connect(const net::Endpoint& endpoint, int retries = 5, int timeout = 0);
 
 protected:  // methods
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
     void buildSockAddress();
 
@@ -41,8 +41,8 @@ private:  // members
     SocketOptions options_;
 
 private:  // methods
-    virtual void bind() override;
-    virtual std::string bindingAddress() const override { return options_.bindAddress(); }
+    void bind() override;
+    std::string bindingAddress() const override { return options_.bindAddress(); }
 };
 
 }  // namespace eckit::net

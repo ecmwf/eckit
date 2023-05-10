@@ -26,7 +26,7 @@ public:
     MMappedFileHandle(const std::string&);
     MMappedFileHandle(Stream&);
 
-    virtual ~MMappedFileHandle() override;
+    ~MMappedFileHandle() override;
 
     const std::string& path() const { return path_; }
 
@@ -34,37 +34,37 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
-    virtual Length size() override;
-    virtual Length estimate() override;
-    virtual Offset position() override;
-    virtual bool isEmpty() const override;
-    virtual void restartReadFrom(const Offset& from) override;
-    virtual void restartWriteFrom(const Offset& from) override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void flush() override;
+    void rewind() override;
+    void print(std::ostream&) const override;
+    Length size() override;
+    Length estimate() override;
+    Offset position() override;
+    bool isEmpty() const override;
+    void restartReadFrom(const Offset& from) override;
+    void restartWriteFrom(const Offset& from) override;
 
-    virtual std::string title() const override;
-    virtual std::string metricsTag() const override;
+    std::string title() const override;
+    std::string metricsTag() const override;
 
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return true; }
-    virtual void skip(const Length&) override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override { return true; }
+    void skip(const Length&) override;
 
-    virtual DataHandle* clone() const override;
-    virtual void hash(MD5& md5) const override;
+    DataHandle* clone() const override;
+    void hash(MD5& md5) const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

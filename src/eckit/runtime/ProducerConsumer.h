@@ -109,7 +109,7 @@ class ProducerConsumerTask : public Thread {
 
 public:
     ProducerConsumerTask(Consumer<PAYLOAD>&, ProducerConsumer<PAYLOAD>&, OnePayload<PAYLOAD>*);
-    virtual void run() override;
+    void run() override;
 };
 
 

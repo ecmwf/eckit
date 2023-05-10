@@ -33,41 +33,41 @@ protected:  // methods
     Serial(const std::string& name);
     Serial(const std::string& name, int);
 
-    virtual ~Serial() override;
+    ~Serial() override;
 
-    virtual eckit::mpi::Comm* self() const override;
+    eckit::mpi::Comm* self() const override;
 
-    virtual std::string processorName() const override;
+    std::string processorName() const override;
 
-    virtual size_t remoteSize() const override;
+    size_t remoteSize() const override;
 
-    virtual void barrier() const override;
+    void barrier() const override;
 
-    virtual Request iBarrier() const override;
+    Request iBarrier() const override;
 
-    virtual void abort(int errorcode = -1) const override;
+    void abort(int errorcode = -1) const override;
 
-    virtual Status wait(Request&) const override;
+    Status wait(Request&) const override;
 
-    virtual Status waitAny(std::vector<Request>&, int&) const override;
+    Status waitAny(std::vector<Request>&, int&) const override;
 
-    virtual std::vector<Status> waitAll(std::vector<Request>&) const override;
+    std::vector<Status> waitAll(std::vector<Request>&) const override;
 
-    virtual Status probe(int source, int tag) const override;
+    Status probe(int source, int tag) const override;
 
-    virtual Status iProbe(int source, int tag) const override;
+    Status iProbe(int source, int tag) const override;
 
-    virtual int anySource() const override;
+    int anySource() const override;
 
-    virtual int anyTag() const override;
+    int anyTag() const override;
 
-    virtual int undefined() const override;
+    int undefined() const override;
 
-    virtual int procNull() const override;
+    int procNull() const override;
 
-    virtual size_t getCount(Status& st, Data::Code type) const override;
+    size_t getCount(Status& st, Data::Code type) const override;
 
-    virtual void broadcast(void* buffer, size_t count, Data::Code type, size_t root) const override;
+    void broadcast(void* buffer, size_t count, Data::Code type, size_t root) const override;
 
     virtual void gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code type,
                         size_t root) const override;
@@ -90,7 +90,7 @@ protected:  // methods
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
 
-    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op) const override;
+    void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op) const override;
 
     virtual void allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount,
                            Data::Code type) const override;
@@ -104,50 +104,50 @@ protected:  // methods
     virtual void allToAllv(const void* sendbuf, const int sendcounts[], const int sdispls[], void* recvbuf,
                            const int recvcounts[], const int rdispls[], Data::Code type) const override;
 
-    virtual Status receive(void* recv, size_t count, Data::Code type, int source, int tag) const override;
+    Status receive(void* recv, size_t count, Data::Code type, int source, int tag) const override;
 
-    virtual void send(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
+    void send(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
-    virtual void synchronisedSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
+    void synchronisedSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
-    virtual Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const override;
+    Request iReceive(void* recv, size_t count, Data::Code type, int source, int tag) const override;
 
-    virtual Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
+    Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
     virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
                                       int dest, int sendtag, int source, int recvtag) const override;
 
-    virtual Comm& split(int color, const std::string& name) const override;
+    Comm& split(int color, const std::string& name) const override;
 
-    virtual void free() override;
+    void free() override;
 
-    virtual eckit::SharedBuffer broadcastFile(const eckit::PathName& filepath, size_t root) const override;
+    eckit::SharedBuffer broadcastFile(const eckit::PathName& filepath, size_t root) const override;
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
-    virtual Status status() const override { return createStatus(); }
+    Status status() const override { return createStatus(); }
 
-    virtual Request request(int tag) const override;
-
-    // Not implemented - returns NullGroup
-    virtual Group group(int) const override;
+    Request request(int tag) const override;
 
     // Not implemented - returns NullGroup
-    virtual Group group() const override;
+    Group group(int) const override;
 
     // Not implemented - returns NullGroup
-    virtual Group remoteGroup() const override;
+    Group group() const override;
+
+    // Not implemented - returns NullGroup
+    Group remoteGroup() const override;
 
     // Not implemented
-    virtual Comm& create(const Group&, const std::string& name) const override;
+    Comm& create(const Group&, const std::string& name) const override;
 
     // Not implemented
-    virtual Comm& create(const Group&, int tag, const std::string& name) const override;
+    Comm& create(const Group&, int tag, const std::string& name) const override;
 
 
     static Status createStatus();
 
-    virtual int communicator() const override;
+    int communicator() const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

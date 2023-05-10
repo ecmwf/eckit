@@ -30,12 +30,12 @@ public:
 
     in_addr remoteAddr() { return socket().remoteAddr(); }
 
-    virtual long write(const void* buf, long len) override { return socket().write(buf, len); }
+    long write(const void* buf, long len) override { return socket().write(buf, len); }
 
-    virtual long read(void* buf, long len) override { return socket().read(buf, len); }
+    long read(void* buf, long len) override { return socket().read(buf, len); }
 
 protected:
-    virtual std::string name() const override;
+    std::string name() const override;
 
 
 private:  // methods
@@ -52,7 +52,7 @@ public:
 
     ~TCPStream() override;
 
-    virtual TCPSocket& socket() override { return socket_; }
+    TCPSocket& socket() override { return socket_; }
 
 protected:  // members
     TCPSocket socket_;
@@ -60,7 +60,7 @@ protected:  // members
 private:
     TCPStream(TCPServer&);
 
-    virtual void closeOutput() override;
+    void closeOutput() override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ public:
     InstantTCPStream(net::TCPSocket& socket) :
         socket_(socket) {}
 
-    virtual TCPSocket& socket() override { return socket_; }
+    TCPSocket& socket() override { return socket_; }
 
 private:
     InstantTCPStream(TCPServer&);

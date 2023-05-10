@@ -61,7 +61,7 @@ public:
     const SQLTable& findTable(const std::string& name) const;
     void ensureFetch(const SQLTable& table, const std::string& columnName);
 
-    virtual Expressions output() const override;
+    Expressions output() const override;
 
     std::vector<eckit::PathName> outputFiles() const;
     void outputFiles(const std::vector<eckit::PathName>& files);
@@ -72,7 +72,7 @@ public:
     unsigned long long execute() override;
 
 protected:
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:
     // No copy allowed

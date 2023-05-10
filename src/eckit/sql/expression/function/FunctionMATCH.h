@@ -43,8 +43,8 @@ private:
     const SelectAST subquery_;
     std::vector<std::vector<double> > subqueryResult_;
 
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
+    const eckit::sql::type::SQLType* type() const override;
+    double eval(bool& missing) const override;
     virtual void prepare(SQLSelect& sql);
 
     // -- Friends

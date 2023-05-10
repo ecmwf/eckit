@@ -30,15 +30,15 @@ public:  // types
 
     xxHash(const void* data, size_t len);
 
-    virtual ~xxHash() override;
+    ~xxHash() override;
 
-    virtual void reset() const override;
+    void reset() const override;
 
-    virtual digest_t compute(const void*, long) override;
+    digest_t compute(const void*, long) override;
 
-    virtual void update(const void*, long) override;
+    void update(const void*, long) override;
 
-    virtual digest_t digest() const override;
+    digest_t digest() const override;
 
     template <class T>
     xxHash& operator<<(const T& x) {

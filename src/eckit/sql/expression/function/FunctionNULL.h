@@ -30,11 +30,11 @@ public:
 
 private:
     // No copy allowed
-    virtual const eckit::sql::type::SQLType* type() const override;
+    const eckit::sql::type::SQLType* type() const override;
     FunctionNULL& operator=(const FunctionNULL&);
 
     // -- Overridden methods
-    virtual double eval(bool& missing) const override;
+    double eval(bool& missing) const override;
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionNULL& p)
     //	{ p.print(s); return s; }

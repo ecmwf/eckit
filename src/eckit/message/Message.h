@@ -111,13 +111,13 @@ template <class T>
 class StringSetter : public MetadataGatherer {
     T& object_;
 
-    virtual void setValue(const std::string& key, const std::string& value) override {
+    void setValue(const std::string& key, const std::string& value) override {
         object_.setValue(key, value);
     }
 
-    virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
+    void setValue(const std::string& /*key*/, long /*value*/) override {}
 
-    virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
+    void setValue(const std::string& /*key*/, double /*value*/) override {}
 
 public:
     StringSetter(T& object) :
@@ -128,11 +128,11 @@ template <class T>
 class TypedSetter : public MetadataGatherer {
     T& object_;
 
-    virtual void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
+    void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, long value) override { object_.setValue(key, value); }
+    void setValue(const std::string& key, long value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
+    void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
 
 public:
     TypedSetter(T& object) :

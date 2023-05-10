@@ -28,8 +28,8 @@ protected:  // methods
     ~LineBasedTarget();
 
 private:
-    virtual void write(const char* start, const char* end) override;
-    virtual void flush() override;
+    void write(const char* start, const char* end) override;
+    void flush() override;
     virtual void line(const char* line) = 0;
 
     void reserve(size_t size);

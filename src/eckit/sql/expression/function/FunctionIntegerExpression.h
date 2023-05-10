@@ -30,8 +30,8 @@ public:
     ~FunctionIntegerExpression();
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void output(SQLOutput& s) const override;
+    const eckit::sql::type::SQLType* type() const override;
+    void output(SQLOutput& s) const override;
 
     static int arity() { return 1; }
 

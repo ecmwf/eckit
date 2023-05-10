@@ -75,7 +75,7 @@ public:  // methods
 private:  // methods
     void init(std::function<void(const std::string&)> usage, int args_count, int minumum_args, bool throw_on_errror);
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:  // members
     std::set<std::string> keys_;

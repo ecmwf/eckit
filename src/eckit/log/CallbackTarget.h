@@ -29,12 +29,12 @@ public:
 
     CallbackTarget(callback_t callback, void* context = 0);
 
-    virtual ~CallbackTarget() override;
+    ~CallbackTarget() override;
 
 private:
-    virtual void line(const char* line) override;
+    void line(const char* line) override;
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
 private:
     callback_t callback_;

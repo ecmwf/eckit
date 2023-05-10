@@ -36,7 +36,7 @@ public:
 
     /// Destructor
 
-    virtual ~PeekHandle() override;
+    ~PeekHandle() override;
 
     // -- Operators
 
@@ -51,24 +51,24 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
+    Length openForRead() override;
 
-    virtual long read(void*, long) override;
-    virtual void close() override;
+    long read(void*, long) override;
+    void close() override;
 
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
-    virtual void skip(const Length&) override;
+    void rewind() override;
+    void print(std::ostream&) const override;
+    void skip(const Length&) override;
 
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override;
 
-    virtual Length estimate() override;
-    virtual Offset position() override;
-    virtual Length size() override;
+    Length estimate() override;
+    Offset position() override;
+    Length size() override;
 
-    virtual std::string title() const override;
-    virtual void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
+    std::string title() const override;
+    void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
 
 private:  // members
     std::deque<unsigned char> peek_;

@@ -26,14 +26,14 @@ class TimeStampTarget : public WrapperTarget {
 public:
     TimeStampTarget(const char* tag = "", LogTarget* target = 0);
 
-    virtual ~TimeStampTarget() override;
+    ~TimeStampTarget() override;
 
 protected:
     void print(std::ostream& s) const override;
 
 private:
-    virtual void writePrefix() override;
-    virtual void writeSuffix() override;
+    void writePrefix() override;
+    void writeSuffix() override;
 
 private:
     const char* tag_;

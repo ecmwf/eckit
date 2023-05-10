@@ -21,7 +21,7 @@ namespace eckit::mpi {
 
 class StatusContent : public Counted {
 public:
-    virtual ~StatusContent() override;
+    ~StatusContent() override;
 
     virtual int source() const = 0;
     virtual int tag() const    = 0;
@@ -34,13 +34,13 @@ public:
 
 class NullStatus : public StatusContent {
 public:
-    virtual ~NullStatus() override {}
+    ~NullStatus() override {}
 
-    virtual int source() const override { return -1; };
-    virtual int tag() const override { return -1; };
-    virtual int error() const override { return 1; };
+    int source() const override { return -1; };
+    int tag() const override { return -1; };
+    int error() const override { return 1; };
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

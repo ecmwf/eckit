@@ -30,8 +30,8 @@ private:
     // No copy allowed
     FunctionSTDEV& operator=(const FunctionSTDEV&);
 
-    virtual double eval(bool& missing) const override;
-    virtual const eckit::sql::type::SQLType* type() const override;
+    double eval(bool& missing) const override;
+    const eckit::sql::type::SQLType* type() const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionSTDEV& p)

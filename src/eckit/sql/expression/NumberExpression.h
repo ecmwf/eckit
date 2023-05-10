@@ -27,8 +27,8 @@ public:
     NumberExpression(const NumberExpression&);
     ~NumberExpression();
 
-    virtual std::shared_ptr<SQLExpression> clone() const override;
-    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
+    std::shared_ptr<SQLExpression> clone() const override;
+    std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
 
     void value(double v) { value_ = v; }
 
@@ -39,14 +39,14 @@ private:
     double value_;
 
     // -- Overridden methods
-    virtual void print(std::ostream& s) const override;
-    virtual void prepare(SQLSelect& sql) override;
-    virtual void cleanup(SQLSelect& sql) override;
+    void print(std::ostream& s) const override;
+    void prepare(SQLSelect& sql) override;
+    void cleanup(SQLSelect& sql) override;
 
-    virtual const type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
-    virtual bool isConstant() const override { return true; }
-    virtual bool isNumber() const override { return true; }
+    const type::SQLType* type() const override;
+    double eval(bool& missing) const override;
+    bool isConstant() const override { return true; }
+    bool isNumber() const override { return true; }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -42,7 +42,7 @@ public:
     Expressions(Expressions&&)            = default;
     Expressions& operator=(Expressions&&) = default;
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
     friend std::ostream& operator<<(std::ostream& o, const Expressions& e) {
         e.print(o);
@@ -51,31 +51,31 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////
 
-    virtual void prepare(SQLSelect&) override {}
-    virtual void cleanup(SQLSelect&) override {}
+    void prepare(SQLSelect&) override {}
+    void cleanup(SQLSelect&) override {}
 
     const type::SQLType* type() const override;
 
     // -- For WHERE
     using SQLExpression::eval;
-    virtual double eval(bool& missing) const override { NOTIMP; }
+    double eval(bool& missing) const override { NOTIMP; }
 
-    virtual bool isConstant() const override { NOTIMP; }
-    virtual bool isNumber() const override { return false; }
+    bool isConstant() const override { NOTIMP; }
+    bool isNumber() const override { return false; }
     virtual bool isVector() const { return true; }
     virtual Expressions& vector() { return *this; }
 
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override { return shared_from_this(); }
+    std::shared_ptr<SQLExpression> simplify(bool&) override { return shared_from_this(); }
 
-    virtual std::shared_ptr<SQLExpression> clone() const override;
-    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift_) const override;
+    std::shared_ptr<SQLExpression> clone() const override;
+    std::shared_ptr<SQLExpression> reshift(int minColumnShift_) const override;
     virtual Expressions reshift_expressions(int minColumnShift_) const;
 
-    virtual bool isAggregate() const override { return false; }
+    bool isAggregate() const override { return false; }
     // For select expression
 
-    virtual void output(SQLOutput&) const override { return NOTIMP; }
-    virtual void partialResult() override {}
+    void output(SQLOutput&) const override { return NOTIMP; }
+    void partialResult() override {}
     virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,
                              expression::Expressions&) override {
         NOTIMP;

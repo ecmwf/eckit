@@ -120,9 +120,9 @@ private:
     // None
 
     // From Stream
-    virtual long write(const void* buf, long len) override;
-    virtual long read(void* buf, long len) override;
-    virtual std::string name() const override;
+    long write(const void* buf, long len) override;
+    long read(void* buf, long len) override;
+    std::string name() const override;
 
     // -- Friends
 

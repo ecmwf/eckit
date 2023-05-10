@@ -43,21 +43,21 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
-    virtual bool canSeek() const override { return false; }
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void rewind() override;
+    void print(std::ostream&) const override;
+    bool canSeek() const override { return false; }
 
     // From Streamable
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

@@ -21,7 +21,7 @@ namespace eckit::mpi {
 
 class RequestContent : public Counted {
 public:
-    virtual ~RequestContent() override;
+    ~RequestContent() override;
 
     virtual void print(std::ostream&) const = 0;
 

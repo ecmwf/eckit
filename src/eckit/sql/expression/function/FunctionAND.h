@@ -37,10 +37,10 @@ private:
     // No copy allowed
     FunctionAND& operator=(const FunctionAND&);
 
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
-    virtual bool andSplit(expression::Expressions&) override;
+    const eckit::sql::type::SQLType* type() const override;
+    double eval(bool& missing) const override;
+    std::shared_ptr<SQLExpression> simplify(bool&) override;
+    bool andSplit(expression::Expressions&) override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionAND& p)

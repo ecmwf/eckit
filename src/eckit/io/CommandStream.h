@@ -37,8 +37,8 @@ public:
 
     // From Stream
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
 
 private:
     // -- Members
@@ -48,7 +48,7 @@ private:
     // -- Overridden methods
 
     // From Stream
-    virtual std::string name() const override;
+    std::string name() const override;
 };
 
 

@@ -35,7 +35,7 @@ private:  // methods
     /// constructor, taking ownership of stream
     ChannelBuffer(std::size_t size = 1024);
 
-    virtual ~ChannelBuffer() override;
+    ~ChannelBuffer() override;
 
     bool active() const;
 
@@ -63,11 +63,11 @@ protected:  // methods
 
     /// typically you don't need to override this
     /// @see dumpBuffer
-    virtual int_type overflow(int_type ch) override;
+    int_type overflow(int_type ch) override;
 
     /// typically you don't need to override this
     /// @see dumpBuffer
-    virtual int_type sync() override;
+    int_type sync() override;
 
 protected:  // members
     LogTarget* target_;

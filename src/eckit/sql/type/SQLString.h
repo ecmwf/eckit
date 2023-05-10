@@ -33,12 +33,12 @@ private:
     SQLString& operator=(const SQLString&);
 
     // -- Overridden methods
-    virtual size_t size() const override;
-    virtual void output(SQLOutput&, double, bool) const override;
-    virtual void output(SQLOutput&, const double*, bool) const override;
-    virtual std::string asString(const double* val) const override;
-    virtual int getKind() const override { return stringType; }
-    virtual manipulator format() const override;
+    size_t size() const override;
+    void output(SQLOutput&, double, bool) const override;
+    void output(SQLOutput&, const double*, bool) const override;
+    std::string asString(const double* val) const override;
+    int getKind() const override { return stringType; }
+    manipulator format() const override;
 
     size_t width() const override;
 

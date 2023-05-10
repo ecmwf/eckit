@@ -29,7 +29,7 @@ public:
 
     MemoryHandle(size_t size = 1024 * 1024, bool grow = true);
 
-    virtual ~MemoryHandle() override;
+    ~MemoryHandle() override;
 
     /// Access the underlying buffer
     /// Size is provided by both the non-const overriden virtual function size()
@@ -42,26 +42,26 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
-    virtual void skip(const Length&) override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void flush() override;
+    void rewind() override;
+    void print(std::ostream&) const override;
+    void skip(const Length&) override;
 
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return true; }
+    Offset seek(const Offset&) override;
+    bool canSeek() const override { return true; }
 
-    virtual Length size() override;
-    virtual Length estimate() override;
-    virtual Offset position() override;
+    Length size() override;
+    Length estimate() override;
+    Offset position() override;
 
-    virtual DataHandle* clone() const override;
+    DataHandle* clone() const override;
 
 private:  // members
     char* address_;
@@ -76,7 +76,7 @@ private:  // members
 
     Offset position_;
 
-    virtual std::string title() const override;
+    std::string title() const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

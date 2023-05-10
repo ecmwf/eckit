@@ -32,10 +32,10 @@ private:
     SQLInt(const SQLInt&);
     SQLInt& operator=(const SQLInt&);
 
-    virtual size_t size() const override;
-    virtual void output(SQLOutput& s, double, bool) const override;
-    virtual int getKind() const override { return integerType; }
-    virtual std::string asString(const double* val) const override;
+    size_t size() const override;
+    void output(SQLOutput& s, double, bool) const override;
+    int getKind() const override { return integerType; }
+    std::string asString(const double* val) const override;
 
     // friend std::ostream& operator<<(std::ostream& s,const SQLInt& p)
     //	{ p.print(s); return s; }

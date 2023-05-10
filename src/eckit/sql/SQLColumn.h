@@ -30,7 +30,7 @@ class SQLColumn : public SQLIterator {
 public:
     SQLColumn(const type::SQLType&, SQLTable&, const std::string&, size_t index, bool hasMissingValue,
               double missingValue, const BitfieldDef& d = BitfieldDef());
-    virtual ~SQLColumn() override;
+    ~SQLColumn() override;
 
     void scan();
 
@@ -64,14 +64,14 @@ public:
     // -- Overridden methods
     // From SQLIterator
 
-    virtual void rewind() override;
-    virtual double next(bool& missing) override;
-    virtual void advance(unsigned long) override;
+    void rewind() override;
+    double next(bool& missing) override;
+    void advance(unsigned long) override;
 
 protected:
     unsigned long long noRows_;
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
     // private:
 protected:
     SQLColumn(const SQLColumn&);

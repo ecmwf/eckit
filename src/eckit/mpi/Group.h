@@ -24,7 +24,7 @@ namespace eckit::mpi {
 
 class GroupContent : public Counted {
 public:
-    virtual ~GroupContent() override;
+    ~GroupContent() override;
 
     virtual void print(std::ostream&) const = 0;
 

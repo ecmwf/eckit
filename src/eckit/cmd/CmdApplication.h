@@ -30,7 +30,7 @@ protected:
     void execute();
 
 private:
-    virtual std::string prompt() const override;
+    std::string prompt() const override;
     virtual std::string name() const;
 
     void startup(std::ostream&);

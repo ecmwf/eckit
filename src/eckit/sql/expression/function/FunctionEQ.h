@@ -38,9 +38,9 @@ private:
     double tmp_;
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
+    const eckit::sql::type::SQLType* type() const override;
+    double eval(bool& missing) const override;
+    std::shared_ptr<SQLExpression> simplify(bool&) override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionEQ& p)

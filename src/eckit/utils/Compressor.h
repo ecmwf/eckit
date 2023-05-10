@@ -60,10 +60,10 @@ class NoCompressor : public Compressor {
 public:  // types
     NoCompressor();
 
-    virtual ~NoCompressor() override = default;
+    ~NoCompressor() override = default;
 
-    virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
-    virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
+    size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
+    void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -79,12 +79,12 @@ public:
 
 template <class T>
 class CompressorBuilder : public CompressorBuilderBase {
-    virtual Compressor* make() override { return new T(); }
+    Compressor* make() override { return new T(); }
 
 public:
     CompressorBuilder(const std::string& name) :
         CompressorBuilderBase(name) {}
-    virtual ~CompressorBuilder() override = default;
+    ~CompressorBuilder() override = default;
 };
 
 class CompressorFactory {

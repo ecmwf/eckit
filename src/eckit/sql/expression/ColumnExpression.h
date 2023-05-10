@@ -56,16 +56,16 @@ protected:
     int nominalShift_;
 
     // -- Overridden methods
-    virtual void print(std::ostream& s) const override;
-    virtual void preprepare(SQLSelect& sql) override;
-    virtual void prepare(SQLSelect& sql) override;
-    virtual void updateType(SQLSelect& sql) override;
-    virtual void cleanup(SQLSelect& sql) override;
-    virtual double eval(bool& missing) const override;
-    virtual void eval(double* out, bool& missing) const override;
-    virtual std::string evalAsString(bool& missing) const override;
-    virtual bool isConstant() const override { return false; }
-    virtual void output(SQLOutput& s) const override;
+    void print(std::ostream& s) const override;
+    void preprepare(SQLSelect& sql) override;
+    void prepare(SQLSelect& sql) override;
+    void updateType(SQLSelect& sql) override;
+    void cleanup(SQLSelect& sql) override;
+    double eval(bool& missing) const override;
+    void eval(double* out, bool& missing) const override;
+    std::string evalAsString(bool& missing) const override;
+    bool isConstant() const override { return false; }
+    void output(SQLOutput& s) const override;
 
     // We want to be able to construct a fully qualified column name, given a shortened one
     // (e.g. varno --> varno@body). But this needs to be overridable for BitExpressions
@@ -77,9 +77,9 @@ private:
     ColumnExpression& operator=(const ColumnExpression&);
 
     // -- Overridden methods
-    virtual const type::SQLType* type() const override { return type_; }
-    virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, Expressions&) override;
-    virtual void tables(std::set<const SQLTable*>&) override;
+    const type::SQLType* type() const override { return type_; }
+    void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&, Expressions&) override;
+    void tables(std::set<const SQLTable*>&) override;
 
     friend class SQLSelectFactory;
 

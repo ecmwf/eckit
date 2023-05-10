@@ -26,13 +26,13 @@ class CgiResource : public HtmlResource {
 public:
     CgiResource();
 
-    virtual ~CgiResource() override;
+    ~CgiResource() override;
 
 protected:  // members
     std::string name_;
 
 protected:  // overridden methods
-    virtual void GET(std::ostream&, Url&) override;
+    void GET(std::ostream&, Url&) override;
 };
 
 //-----------------------------------------------------------------------------

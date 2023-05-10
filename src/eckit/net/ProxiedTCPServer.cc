@@ -47,8 +47,9 @@ net::TCPSocket& ProxiedTCPServer::accept(const std::string& message, int timeout
         x |= c;
         x &= 0xffffffff;
 
-        if (x == end)
+        if (x == end) {
             return socket;
+        }
     }
 
     throw SeriousBug("ProxiedTCPServer: invalid header");

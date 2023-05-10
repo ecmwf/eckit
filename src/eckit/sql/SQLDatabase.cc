@@ -102,8 +102,9 @@ void SQLDatabase::setVariable(const std::string& name, std::shared_ptr<expressio
 
 std::shared_ptr<expression::SQLExpression> SQLDatabase::getVariable(const std::string& name) const {
     Variables::const_iterator j = variables_.find(name);
-    if (j == variables_.end())
+    if (j == variables_.end()) {
         throw eckit::UserError("Undefined variable", name);
+    }
     return j->second;
 }
 

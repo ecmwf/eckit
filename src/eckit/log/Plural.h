@@ -31,8 +31,9 @@ public:  // methods
 protected:  // methods
     void print(std::ostream& s) const {
         s << BigNum(count_) << ' ' << s_;
-        if (count_ > 1)
+        if (count_ > 1) {
             s << 's';
+        }
     }
 
 private:  // members

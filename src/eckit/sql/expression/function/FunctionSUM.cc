@@ -34,8 +34,9 @@ const type::SQLType* FunctionSUM::type() const {
 }
 
 double FunctionSUM::eval(bool& missing) const {
-    if (resultNULL_)
+    if (resultNULL_) {
         missing = true;
+    }
     return value_;
 }
 

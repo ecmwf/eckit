@@ -38,8 +38,9 @@ bool Properties::has(const key_t& k) const {
 
 Properties::property_t Properties::get(const key_t& k) const {
     PropertyMap::const_iterator vit = props_.find(k);
-    if (vit != props_.end())
+    if (vit != props_.end()) {
         return (*vit).second;
+    }
     else
         return property_t();  // return Nil Value...
 }
@@ -82,8 +83,9 @@ void Properties::json(JSON& s) const {
 }
 
 void Properties::print(std::ostream& s) const {
-    for (PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit)
+    for (PropertyMap::const_iterator vit = props_.begin(); vit != props_.end(); ++vit) {
         s << "(" << (*vit).first << "," << (*vit).second << ")";
+    }
 }
 
 void Properties::encode(Stream& s) const {

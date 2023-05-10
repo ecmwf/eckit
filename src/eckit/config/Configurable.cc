@@ -35,16 +35,18 @@ void Configurable::dumpAllResources(std::ostream& s) {
 
 void Configurable::dumpResources(std::ostream& s) const {
     AutoLock<Mutex> lock(const_cast<Configurable&>(*this).mutex_);
-    for (Set::const_iterator i = resources_.begin(); i != resources_.end(); ++i)
+    for (Set::const_iterator i = resources_.begin(); i != resources_.end(); ++i) {
         (*i)->dump(s);
+    }
 }
 
 // Reset all registered resources
 
 void Configurable::resetResources() {
     AutoLock<Mutex> lock(mutex_);
-    for (Set::iterator i = resources_.begin(); i != resources_.end(); ++i)
+    for (Set::iterator i = resources_.begin(); i != resources_.end(); ++i) {
         (*i)->reset();
+    }
 }
 
 void Configurable::add(ResourceBase* res) {

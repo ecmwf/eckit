@@ -45,8 +45,9 @@ MemStream::MemStream(const char* p, long len) :
     in_(p, len), out_(10240), pos_(0), length_(0) {}
 
 long MemStream::write(const void* buf, long len) {
-    if (out_.size() - length_ < static_cast<size_t>(len))
+    if (out_.size() - length_ < static_cast<size_t>(len)) {
         out_.resize(out_.size() * 2);
+    }
 
     ::memcpy((char*)out_ + length_, buf, len);
 
@@ -57,8 +58,9 @@ long MemStream::write(const void* buf, long len) {
 long MemStream::read(void* buf, long len) {
     long size = std::min(long(len), long(in_.size() - pos_));
 
-    if (size <= 0)
+    if (size <= 0) {
         return -1;
+    }
 
     ::memcpy(buf, (char*)in_ + pos_, size);
     pos_ += size;

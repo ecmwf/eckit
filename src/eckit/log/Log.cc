@@ -235,8 +235,9 @@ std::ostream& Log::userWarning() {
 void Log::notifyClient(const std::string& msg) {
     UserChannel& u = user();
     UserMsg* um    = u.userMsg();
-    if (um)
+    if (um) {
         um->notifyClient(msg);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -36,8 +36,9 @@ double FunctionTDIFF::eval(bool& missing) const {
     int andate = (int)args_[2]->eval(missing);
     int antime = (int)args_[3]->eval(missing);
 
-    if (missing)
+    if (missing) {
         return 0;
+    }
 
     // Check for invalid values
 

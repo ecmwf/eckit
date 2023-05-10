@@ -101,8 +101,9 @@ void StringExpression::expandStars(const std::vector<std::reference_wrapper<cons
             e.push_back(std::make_shared<ColumnExpression>(name, &table.get()));
         }
     }
-    if (!matched)
+    if (!matched) {
         throw eckit::UserError(std::string("No columns matching regex '") + name_ + "' found.");
+    }
 }
 
 std::shared_ptr<SQLExpression> StringExpression::clone() const {

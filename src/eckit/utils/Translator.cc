@@ -20,9 +20,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 static unsigned long long multiplier(const char* p) {
-
-    while (isspace(*p))
+    while (isspace(*p)) {
         p++;
+    }
 
     if (*p && *(p + 1)) {
         // cater for GB or GiB (SI units)
@@ -58,10 +58,12 @@ std::string Translator<bool, std::string>::operator()(bool value) {
 bool Translator<std::string, bool>::operator()(const std::string& str) {
     std::string s = StringTools::lower(str);
 
-    if (s == "no" || s == "off" || s == "false" || s == "0")
+    if (s == "no" || s == "off" || s == "false" || s == "0") {
         return false;
-    if (s == "yes" || s == "on" || s == "true" || s == "1")
+    }
+    if (s == "yes" || s == "on" || s == "true" || s == "1") {
         return true;
+    }
 
     // Catter for ints
     return atoi(s.c_str());  // 0 is returned on non-conversion
@@ -80,11 +82,12 @@ std::string Translator<unsigned int, std::string>::operator()(unsigned int value
 }
 
 int Translator<std::string, int>::operator()(const std::string& s) {
-
-    if (s == "no" || s == "off" || s == "false")
+    if (s == "no" || s == "off" || s == "false") {
         return false;
-    if (s == "yes" || s == "on" || s == "true")
+    }
+    if (s == "yes" || s == "on" || s == "true") {
         return true;
+    }
 
     // Catter for ints
     char* more;
@@ -93,11 +96,12 @@ int Translator<std::string, int>::operator()(const std::string& s) {
 }
 
 unsigned int Translator<std::string, unsigned int>::operator()(const std::string& s) {
-
-    if (s == "no" || s == "off" || s == "false")
+    if (s == "no" || s == "off" || s == "false") {
         return false;
-    if (s == "yes" || s == "on" || s == "true")
+    }
+    if (s == "yes" || s == "on" || s == "true") {
         return true;
+    }
 
     // Catter for ints
     char* more;
@@ -256,16 +260,18 @@ std::vector<long> Translator<std::string, std::vector<long> >::operator()(const 
     parse(s, r);
 
     std::vector<long> result;
-    for (size_t i = 0; i < r.size(); i++)
+    for (size_t i = 0; i < r.size(); i++) {
         result.push_back(Translator<std::string, long>()(r[i]));
+    }
     return result;
 }
 
 std::string Translator<std::vector<long>, std::string>::operator()(const std::vector<long>& v) {
     std::string result;
     for (size_t i = 0; i < v.size(); ++i) {
-        if (i)
+        if (i) {
             result += " ";
+        }
         result += Translator<long, std::string>()(v[i]);
     }
     return result;
@@ -274,8 +280,9 @@ std::string Translator<std::vector<long>, std::string>::operator()(const std::ve
 std::string Translator<std::vector<std::string>, std::string>::operator()(const std::vector<std::string>& v) {
     std::string result;
     for (size_t i = 0; i < v.size(); ++i) {
-        if (i)
+        if (i) {
             result += ",";
+        }
 
         result += v[i];
     }
@@ -295,8 +302,9 @@ std::set<std::string> Translator<std::string, std::set<std::string> >::operator(
 std::string Translator<std::set<std::string>, std::string>::operator()(const std::set<std::string>& v) {
     std::string result;
     for (std::set<std::string>::const_iterator i = v.begin(); i != v.end(); ++i) {
-        if (result.length())
+        if (result.length()) {
             result += ",";
+        }
         result += *i;
     }
     return result;

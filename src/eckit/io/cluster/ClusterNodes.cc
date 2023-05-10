@@ -72,10 +72,12 @@ public:
     }
 
     bool operator<(const ClusterNodeEntry& other) const {
-        if (strcmp(node_, other.node_) < 0)
+        if (strcmp(node_, other.node_) < 0) {
             return true;
-        if (strcmp(type_, other.type_) < 0)
+        }
+        if (strcmp(type_, other.type_) < 0) {
             return true;
+        }
         return false;
     }
 
@@ -195,8 +197,9 @@ public:
                     break;
                 }
             }
-            if (!found)
+            if (!found) {
                 return false;
+            }
         }
         return true;
     }
@@ -251,19 +254,21 @@ void ClusterNodes::reset() {
     pthread_once(&once, init);
     AutoLock<NodeArray> lock(*nodeArray);
 
-    for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k)
+    for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
         (*k).offLine(true);
+    }
 }
 
 void ClusterNodes::cleanup() {
     pthread_once(&once, init);
     AutoLock<NodeArray> lock(*nodeArray);
 
-    for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k)
+    for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
         if ((*k).active() && !(*k).available()) {
             Log::info() << "Forget " << (*k) << std::endl;
             (*k).active(false);
         }
+    }
 }
 
 
@@ -348,8 +353,9 @@ bool ClusterNodes::available(const std::string& type, const std::string& node) {
     AutoLock<NodeArray> lock(*nodeArray);
 
     for (NodeArray::const_iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
-        if ((*k).active() && type == (*k).type() && node == (*k).node())
+        if ((*k).active() && type == (*k).type() && node == (*k).node()) {
             return (*k).available();
+        }
     }
 
     return false;
@@ -368,8 +374,9 @@ void ClusterNodes::offLine(const NodeInfo& info) {
     const std::string& type = info.name();
 
     for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
-        if ((*k).active() && type == (*k).type() && node == (*k).node())
+        if ((*k).active() && type == (*k).type() && node == (*k).node()) {
             (*k).offLine(true);
+        }
     }
 }
 
@@ -378,8 +385,9 @@ void ClusterNodes::offLine(const std::string& host, int port) {
     AutoLock<NodeArray> lock(*nodeArray);
 
     for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
-        if ((*k).active() && host == (*k).host() && port == (*k).port())
+        if ((*k).active() && host == (*k).host() && port == (*k).port()) {
             (*k).offLine(true);
+        }
     }
 }
 
@@ -388,8 +396,9 @@ void ClusterNodes::onLine(const std::string& host, int port) {
     AutoLock<NodeArray> lock(*nodeArray);
 
     for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
-        if ((*k).active() && host == (*k).host() && port == (*k).port())
+        if ((*k).active() && host == (*k).host() && port == (*k).port()) {
             (*k).offLine(false);
+        }
     }
 }
 
@@ -398,8 +407,9 @@ void ClusterNodes::list(std::ostream& out) {
 
     AutoLock<NodeArray> lock(*nodeArray);
     for (NodeArray::const_iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
-        if ((*k).active())
+        if ((*k).active()) {
             out << *k << std::endl;
+        }
     }
 }
 
@@ -451,8 +461,9 @@ void ClusterNodes::receive(Stream& s) {
     pthread_once(&once, init);
 
     AutoLock<NodeArray> lock(*nodeArray);
-    for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k)
+    for (NodeArray::iterator k = nodeArray->begin(); k != nodeArray->end(); ++k) {
         (*k).active(false);
+    }
 
     bool more;
     NodeArray::iterator k = nodeArray->begin();
@@ -461,8 +472,9 @@ void ClusterNodes::receive(Stream& s) {
 
         s >> more;
 
-        if (!more)
+        if (!more) {
             break;
+        }
 
         ASSERT(k != nodeArray->end());
         (*k).receive(s);

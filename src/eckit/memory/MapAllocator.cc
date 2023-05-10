@@ -33,8 +33,9 @@ MapAllocator::MapAllocator(size_t length) :
     fd_(-1), length_(whole_page(length)), count_(0), more_(0) {
     addr_ = MMap::mmap(0, length_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
 
-    if (addr_ == MAP_FAILED)
+    if (addr_ == MAP_FAILED) {
         throw FailedSystemCall("mmap", Here());
+    }
 
     next_ = (char*)addr_;
     left_ = length_;
@@ -44,8 +45,9 @@ MapAllocator::MapAllocator(size_t length) :
 MapAllocator::~MapAllocator() {
     //	Log::warning() << "MapAllocator deleted " << length_ << std::endl;
     munmap(addr_, length_);
-    if (fd_ >= 0)
+    if (fd_ >= 0) {
         close(fd_);
+    }
     delete more_;
 }
 

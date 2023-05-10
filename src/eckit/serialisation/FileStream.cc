@@ -29,8 +29,9 @@ FileStream::~FileStream() {
 
 void FileStream::close() {
     if (!read_) {
-        if (::fflush(file_))
+        if (::fflush(file_)) {
             throw WriteError(std::string("FileStream::~FileStream(fflush(") + name_ + "))");
+        }
 
         // Because AIX has large system buffers,
         // the close may be successful without the
@@ -40,8 +41,9 @@ void FileStream::close() {
 
         int ret = fsync(fileno(file_));
 
-        while (ret < 0 && errno == EINTR)
+        while (ret < 0 && errno == EINTR) {
             ret = fsync(fileno(file_));
+        }
         if (ret < 0) {
             Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) << Log::syserr << std::endl;
         }
@@ -53,15 +55,17 @@ void FileStream::close() {
 #if eckit_HAVE_DIRFD
         PathName directory = PathName(name_).dirName();
         DIR* d             = ::opendir(directory.localPath());
-        if (!d)
+        if (!d) {
             SYSCALL(-1);
+        }
 
         int dir;
         SYSCALL(dir = dirfd(d));
         ret = ::fsync(dir);
 
-        while (ret < 0 && errno == EINTR)
+        while (ret < 0 && errno == EINTR) {
             ret = fsync(dir);
+        }
 
         if (ret < 0) {
             Log::error() << "Cannot fsync(" << directory << ")" << Log::syserr << std::endl;

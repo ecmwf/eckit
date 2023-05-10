@@ -22,8 +22,9 @@ CSVParser::CSVParser(std::istream& in, bool header) :
 
 Value CSVParser::decodeFile(const PathName& path, bool header) {
     std::ifstream in(std::string(path).c_str());
-    if (!in)
+    if (!in) {
         throw eckit::CantOpenFile(path);
+    }
     return CSVParser(in, header).parse();
 }
 

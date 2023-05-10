@@ -45,8 +45,9 @@ public:  // methods
     /// Removes an entry from the registry
     /// @pre Must exist
     void deregister(const std::string& name) {
-        if (LibEcKit::instance().dontDeregisterFactories())
+        if (LibEcKit::instance().dontDeregisterFactories()) {
             return;
+        }
         AutoLock<Mutex> lockme(mutex_);
         ASSERT(map_.find(name) != map_.end());
         map_.erase(name);
@@ -185,14 +186,17 @@ class HttpURIManager : public URIManager {
     virtual std::string asString(const URI& uri) const override {
 
         std::string auth = uri.authority();
-        if (!auth.empty())
+        if (!auth.empty()) {
             auth = "//" + auth;
+        }
         std::string q = uri.query();
-        if (!q.empty())
+        if (!q.empty()) {
             q = "?" + q;
+        }
         std::string f = uri.fragment();
-        if (!f.empty())
+        if (!f.empty()) {
             f = "#" + f;
+        }
 
         return uri.scheme() + ":" + auth + uri.name() + q + f;
     }

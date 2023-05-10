@@ -213,18 +213,21 @@ public:  // methods
     }
 
     const T& value() const& {
-        if (!hasValue_)
+        if (!hasValue_) {
             throw eckit::Exception("Optional has no value.");
+        }
         return val_.value;
     }
     T& value() & {
-        if (!hasValue_)
+        if (!hasValue_) {
             throw eckit::Exception("Optional has no value.");
+        }
         return val_.value;
     }
     T&& value() && {
-        if (!hasValue_)
+        if (!hasValue_) {
             throw eckit::Exception("Optional has no value.");
+        }
         return std::move(val_.value);
     }
 

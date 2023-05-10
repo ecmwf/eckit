@@ -44,13 +44,15 @@ public:  // methods
 
     LocalPathName(const char* p = "/", bool tildeIsUserHome = false, bool skipTildeExpansion = false) :
         path_(parsePath(p)) {
-        if (!skipTildeExpansion)
+        if (!skipTildeExpansion) {
             tidy(tildeIsUserHome, skipTildeExpansion);
+        }
     }
     LocalPathName(const std::string& p, bool tildeIsUserHome = false, bool skipTildeExpansion = false) :
         path_(parsePath(p)) {
-        if (!skipTildeExpansion)
+        if (!skipTildeExpansion) {
             tidy(tildeIsUserHome, skipTildeExpansion);
+        }
     }
     LocalPathName(const LocalPathName& p) :
         path_(p.path_) {}

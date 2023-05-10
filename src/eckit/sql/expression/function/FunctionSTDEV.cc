@@ -39,8 +39,9 @@ const type::SQLType* FunctionSTDEV::type() const {
 
 double FunctionSTDEV::eval(bool& missing) const {
     double x = FunctionVAR::eval(missing);
-    if (x < 0)
+    if (x < 0) {
         x = 0;
+    }
     return sqrt(x);
 }
 

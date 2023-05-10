@@ -51,8 +51,9 @@ ThreadControler::~ThreadControler() {
 void ThreadControler::execute() {
     // Make a copy, because "this" will desappear
     Thread* proc = proc_;
-    if (detached_)
+    if (detached_) {
         proc_ = nullptr;
+    }
 
     // cout << "ThreadControler::execute(" << this << ")" <<  " " << hex << pthread_self() << std::endl;
     //=================
@@ -120,10 +121,12 @@ void ThreadControler::start() {
     if (stack_) {
         THRCALL(::pthread_attr_setstacksize(&attr, stack_));
     }
-    if (detached_)
+    if (detached_) {
         THRCALL(::pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED));
-    else
+    }
+    else {
         THRCALL(::pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE));
+    }
 
     AutoLock<MutexCond> lock(cond_);
 
@@ -131,8 +134,9 @@ void ThreadControler::start() {
 
     pthread_attr_destroy(&attr);
 
-    while (!running_)
+    while (!running_) {
         cond_.wait();
+    }
 }
 
 void ThreadControler::kill() {
@@ -164,8 +168,9 @@ bool ThreadControler::active() {
         int n = pthread_getschedparam(thread_, &policy, &param);
 
         // The thread does not exist
-        if (n != 0)
+        if (n != 0) {
             thread_ = 0;
+        }
     }
     return thread_ != 0;
 }

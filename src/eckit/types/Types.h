@@ -126,8 +126,9 @@ inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, Vect
 
     s << '[';
     for (Ordinal i = 0; i < t.size(); i++) {
-        if (i != 0)
+        if (i != 0) {
             s << ',';
+        }
         s << t[i];
     }
     s << ']';
@@ -138,8 +139,9 @@ template <typename T, std::size_t N>
 inline std::ostream& __print_list(std::ostream& s, const std::array<T, N>& t, VectorPrintSimple) {
     s << '[';
     for (Ordinal i = 0; i < t.size(); i++) {
-        if (i != 0)
+        if (i != 0) {
             s << ',';
+        }
         s << t[i];
     }
     s << ']';

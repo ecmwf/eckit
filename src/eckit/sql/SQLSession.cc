@@ -93,8 +93,9 @@ SQLOutput& SQLSession::output() {
 
     ASSERT(output_ || config_);
 
-    if (!output_)
+    if (!output_) {
         output_.reset(config_->buildOutput());
+    }
 
     return *output_;
 }
@@ -122,8 +123,9 @@ SQLTable* SQLSession::openDataHandle(DataHandle &dh)
 
 void SQLSession::loadDefaultSchema() {
     std::string schemaPathName(schemaFile());
-    if (schemaPathName.empty())
+    if (schemaPathName.empty()) {
         return;
+    }
 
     Log::debug<LibEcKit>() << "Loading schema " << schemaPathName << std::endl;
 
@@ -149,8 +151,9 @@ std::string SQLSession::readIncludeFile(const std::string& fileName) {
     for (size_t i(0); i < dirs.size(); ++i) {
         PathName pathName(dirs[i] + fileName);
         Log::debug<LibEcKit>() << "Looking for include file " << fileName << " in " << dirs[i] << std::endl;
-        if (!pathName.exists())
+        if (!pathName.exists()) {
             continue;
+        }
 
         FileHandle dh(pathName);
         size_t sz = dh.openForRead();

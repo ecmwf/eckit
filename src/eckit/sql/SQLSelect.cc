@@ -47,8 +47,9 @@ SQLSelect::SQLSelect(const Expressions& columns, const std::vector<std::referenc
     mixedAggregatedAndScalar_(false),
     doOutputCached_(false) {
     // TODO: Convert tables_, allTables_ to use references rather than pointers.
-    for (const SQLTable& t : tables)
+    for (const SQLTable& t : tables) {
         tables_.push_back(&t);
+    }
 }
 
 SQLSelect::~SQLSelect() {}
@@ -64,11 +65,13 @@ const SQLTable& SQLSelect::findTable(const std::string& name) const {
         }
     }
 
-    if (names.size() == 0)
+    if (names.size() == 0) {
         throw eckit::UserError("Can't find a table for", name);
+    }
 
-    if (names.size() != 1)
+    if (names.size() != 1) {
         throw eckit::UserError("Ambiguous column name", name);
+    }
 
     Log::debug<LibEcKit>() << "SQLSelect::findTable: name='" << name << "'" << std::endl;
 
@@ -83,8 +86,9 @@ void SQLSelect::ensureFetch(const SQLTable& table, const std::string& columnName
     std::string fullname = column.fullName();
 
     allTables_.insert(&table);
-    if (tablesToFetch_.find(&table) == tablesToFetch_.end())
+    if (tablesToFetch_.find(&table) == tablesToFetch_.end()) {
         tablesToFetch_[&table] = SelectOneTable(&table);
+    }
 
     auto& fetch(tablesToFetch_[&table].fetch_);
     if (std::find_if(fetch.begin(), fetch.end(), [&](const SQLColumn& c) { return &c == &column; }) == fetch.end()) {
@@ -113,8 +117,9 @@ SQLSelect::ValueLookup& SQLSelect::column(const std::string& name, const SQLTabl
 }
 
 const type::SQLType* SQLSelect::typeOf(const std::string& name, const SQLTable* table) const {
-    if (!table)
+    if (!table) {
         table = &findTable(name);
+    }
     const SQLColumn& column(table->column(name));
 
     const type::SQLType& type = column.type();
@@ -135,9 +140,11 @@ inline bool SQLSelect::resultsOut() {
 }
 
 std::shared_ptr<SQLExpression> SQLSelect::findAliasedExpression(const std::string& alias) {
-    for (size_t i(0); i < select_.size(); ++i)
-        if (select_[i]->title() == alias)
+    for (size_t i(0); i < select_.size(); ++i) {
+        if (select_[i]->title() == alias) {
             return select_[i];
+        }
+    }
     return 0;
 }
 
@@ -152,8 +159,9 @@ void SQLSelect::prepareExecute() {
         (*c)->preprepare(*this);
     }
 
-    if (where_)
+    if (where_) {
         where_->preprepare(*this);
+    }
     output_.preprepare(*this);
 
     // If no tables have been required, but there are expressions, it implies that we are
@@ -223,8 +231,9 @@ void SQLSelect::prepareExecute() {
         while (more) {
             more = false;
             std::shared_ptr<SQLExpression> w(where->simplify(more));
-            if (w)
+            if (w) {
                 where = w;
+            }
             simplifiedWhere_ = where;
         }
 
@@ -290,14 +299,16 @@ void SQLSelect::prepareExecute() {
 
     // ------------------------------------
 
-    for (TableMap::iterator j = tablesToFetch_.begin(); j != tablesToFetch_.end(); ++j)
+    for (TableMap::iterator j = tablesToFetch_.begin(); j != tablesToFetch_.end(); ++j) {
         sortedTables_.push_back(&(*j).second);
+    }
 
     if (where) {
         // Try to analyse where
         expression::Expressions e;
-        if (!where->andSplit(e))
+        if (!where->andSplit(e)) {
             e.push_back(where);
+        }
 
         for (size_t i = 0; i < e.size(); ++i) {
             Log::debug<LibEcKit>() << "WHERE AND split " << *(e[i]) << std::endl;
@@ -306,9 +317,9 @@ void SQLSelect::prepareExecute() {
             std::set<const SQLTable*> t;
             e[i]->tables(t);
 
-            for (std::set<const SQLTable*>::iterator j = t.begin(); j != t.end(); ++j)
+            for (std::set<const SQLTable*>::iterator j = t.begin(); j != t.end(); ++j) {
                 Log::debug<LibEcKit>() << "  tables -> " << (*j)->fullName() << std::endl;
-
+            }
 
             if (t.size() == 1) {
                 const SQLTable* table = *(t.begin());
@@ -320,35 +331,40 @@ void SQLSelect::prepareExecute() {
     }
 
     // Needed, for example, if we do: select count(*) from "file.oda"
-    if (sortedTables_.size() == 0)
-        for (std::vector<const SQLTable*>::iterator i = tables_.begin(); i != tables_.end(); ++i)
+    if (sortedTables_.size() == 0) {
+        for (std::vector<const SQLTable*>::iterator i = tables_.begin(); i != tables_.end(); ++i) {
             sortedTables_.push_back(new SelectOneTable(*i));  // TODO: release the objects!
+        }
+    }
 
     std::sort(sortedTables_.begin(), sortedTables_.end(), compareTables);
     Log::debug<LibEcKit>() << "TABLE order " << std::endl;
     for (SortedTables::iterator k = sortedTables_.begin(); k != sortedTables_.end(); ++k) {
         Log::debug<LibEcKit>() << (*k)->table_->fullName() << " " << (*k)->order_ << std::endl;
 
-        for (size_t i = 0; i < (*k)->check_.size(); i++)
+        for (size_t i = 0; i < (*k)->check_.size(); i++) {
             Log::debug<LibEcKit>() << "    QUICK CHECK " << *((*k)->check_[i]) << std::endl;
+        }
 
-        for (size_t i = 0; i < (*k)->index_.size(); i++)
+        for (size_t i = 0; i < (*k)->index_.size(); i++) {
             Log::debug<LibEcKit>() << "    INDEX CHECK " << *((*k)->index_[i]) << std::endl;
+        }
     }
 
 
     // Add the multi-table quick checks
     if (where) {
         expression::Expressions e;
-        if (!where->andSplit(e))
+        if (!where->andSplit(e)) {
             e.push_back(where);
+        }
 
         std::set<const SQLTable*> ordered;
         for (SortedTables::iterator k = sortedTables_.begin(); k != sortedTables_.end(); ++k) {
             const SQLTable* table = (*k)->table_;
             ordered.insert(table);
 
-            for (size_t i = 0; i < e.size(); ++i)
+            for (size_t i = 0; i < e.size(); ++i) {
                 if (e[i]) {
                     // Get tables accessed
                     std::set<const SQLTable*> t;
@@ -356,9 +372,11 @@ void SQLSelect::prepareExecute() {
 
                     if (t.size() != 1) {
                         bool ok = true;
-                        for (std::set<const SQLTable*>::iterator j = t.begin(); j != t.end(); ++j)
-                            if (ordered.find(*j) == ordered.end())
+                        for (std::set<const SQLTable*>::iterator j = t.begin(); j != t.end(); ++j) {
+                            if (ordered.find(*j) == ordered.end()) {
                                 ok = false;
+                            }
+                        }
 
                         if (ok) {
                             (*k)->check_.push_back(e[i]);
@@ -368,9 +386,11 @@ void SQLSelect::prepareExecute() {
                             e[i] = 0;
                         }
                     }
-                    else
+                    else {
                         e[i] = 0;
+                    }
                 }
+            }
         }
 
         // Add what's left to last table
@@ -389,8 +409,9 @@ void SQLSelect::prepareExecute() {
         Log::debug<LibEcKit>() << "SQLSelect:prepareExecute: TABLE order " << (*k)->table_->fullName() << " "
                                << (*k)->order_ << std::endl;
 
-        for (size_t i = 0; i < (*k)->check_.size(); i++)
+        for (size_t i = 0; i < (*k)->check_.size(); i++) {
             Log::debug<LibEcKit>() << "    QUICK CHECK " << *((*k)->check_[i]) << std::endl;
+        }
     }
 }
 
@@ -405,11 +426,13 @@ void SQLSelect::postExecute() {
 
     output_.flush();
     output_.cleanup(*this);
-    if (simplifiedWhere_)
+    if (simplifiedWhere_) {
         simplifiedWhere_->cleanup(*this);
+    }
 
-    for (expression::Expressions::iterator c(select_.begin()); c != select_.end(); ++c)
+    for (expression::Expressions::iterator c(select_.begin()); c != select_.end(); ++c) {
         (*c)->cleanup(*this);
+    }
 
     Log::debug<LibEcKit>() << "Matching row(s): " << BigNum(output_.count()) << " out of " << BigNum(total_)
                            << std::endl;
@@ -457,8 +480,9 @@ void SQLSelect::refreshCursorMetadata(SQLTable* table, SQLTableIterator& cursor)
         (*c)->updateType(*this);
     }
 
-    if (where_)
+    if (where_) {
         where_->prepare(*this);
+    }
 
     output_.updateTypes(*this);
 }
@@ -499,13 +523,15 @@ bool SQLSelect::writeOutput() {
     double value;
     if (!where || (((value = where->eval(missing)) || !value)  // !value for the 'WHERE 0' case, ODB-106
                    && !missing)) {
-        if (!aggregate_)
+        if (!aggregate_) {
             newRow = resultsOut();
+        }
         else {
             size_t n = select_.size();
             if (!mixedAggregatedAndScalar_) {
-                for (size_t i = 0; i < n; i++)
+                for (size_t i = 0; i < n; i++) {
                     select_[i]->partialResult();
+                }
             }
             else {
 
@@ -526,8 +552,9 @@ bool SQLSelect::writeOutput() {
                 }
 
                 Expressions& aggregated = aggregatedResults_[nonAggregatedValues];
-                for (size_t i = 0; i < aggregated.size(); ++i)
+                for (size_t i = 0; i < aggregated.size(); ++i) {
                     aggregated[i]->partialResult();
+                }
             }
         }
     }
@@ -540,8 +567,9 @@ unsigned long long SQLSelect::process() {
     ASSERT(cursors_.size() != 0);
     ASSERT(count_ == 0);
 
-    while (processOneRow())
+    while (processOneRow()) {
         /* Intentionally blank */;
+    }
 
     return count_;
 }
@@ -578,8 +606,9 @@ bool SQLSelect::processNextTableRow(size_t tableIndex) {
             }
         }
 
-        if (ok)
+        if (ok) {
             return true;
+        }
 
         skips_++;
         total_++;
@@ -616,8 +645,9 @@ bool SQLSelect::processOneRow() {
 
     if (count_ == 0) {
         for (size_t idx = 0; idx < cursors_.size(); idx++) {
-            if (!processNextTableRow(idx))
+            if (!processNextTableRow(idx)) {
                 return false;  // If false, there is no data
+            }
         }
 
         if (writeOutput()) {
@@ -728,8 +758,9 @@ void SQLSelect::print(std::ostream& s) const {
         sep = ',';
     }
 
-    if (where_.get())
+    if (where_.get()) {
         s << " WHERE " << *where_;
+    }
 
     s << " " << output_;
 }

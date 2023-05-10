@@ -26,8 +26,9 @@ void Isa::add(TypeInfo* t, const std::string& s) {
 }
 
 Isa* Isa::get(const std::string& s) {
-    if (map_ == 0)
+    if (map_ == 0) {
         map_ = new std::map<std::string, Isa*>;
+    }
     std::map<std::string, Isa*>::iterator j = map_->find(s);
     return (j == map_->end()) ? (Isa*)0 : (Isa*)(*j).second;
 }
@@ -70,21 +71,24 @@ void _describe(std::ostream& s, int depth, double what) {
 }
 
 void _startClass(std::ostream& s, int depth, const std::string& name) {
-    for (int i = 0; i < depth; i++)
+    for (int i = 0; i < depth; i++) {
         s << " ";
+    }
     s << name;
     s << "{" << std::endl;
 }
 
 void _endClass(std::ostream& s, int depth, const std::string& name) {
-    for (int i = 0; i < depth; i++)
+    for (int i = 0; i < depth; i++) {
         s << " ";
+    }
     s << "}" << std::endl;
 }
 
 void _startMember(std::ostream& s, int depth, const std::string& name) {
-    for (int i = 0; i < depth; i++)
+    for (int i = 0; i < depth; i++) {
         s << " ";
+    }
     s << name << ": ";
 }
 

@@ -299,8 +299,9 @@ public:  // methods
         for (auto& path : scanPaths) {
 
             LocalPathName dir(path);
-            if (not dir.exists() or not dir.isDir())
+            if (not dir.exists() or not dir.isDir()) {
                 continue;
+            }
 
             LocalPathName realdir(dir.realName());
             if (visited.count(realdir)) {
@@ -427,8 +428,9 @@ const Library& LibraryManager::lookup(const std::string& name) {
 
 const Plugin& LibraryManager::lookupPlugin(const std::string& name) {
     Plugin* plugin = LibraryRegistry::instance().lookupPlugin(name);
-    if (plugin)
+    if (plugin) {
         return *plugin;
+    }
     throw eckit::BadValue("Plugin " + name + " not loaded");
 }
 

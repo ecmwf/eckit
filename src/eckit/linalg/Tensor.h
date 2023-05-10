@@ -122,8 +122,9 @@ public:  // methods
         // shape
         s >> shape_size;
         shape_.resize(shape_size);
-        for (auto& v : shape_)
+        for (auto& v : shape_) {
             s >> v;
+        }
         resize(shape_);
 
         ASSERT(size() > 0);
@@ -252,8 +253,9 @@ public:  // methods
     void encode(Stream& s) const {
         s << static_cast<int>(layout_);
         s << shape_.size();
-        for (auto v : shape_)
+        for (auto v : shape_) {
             s << v;
+        }
         s.writeBlob(array_, size() * sizeof(S));
     }
 

@@ -42,10 +42,12 @@ FunctionRLIKE::~FunctionRLIKE() {}
 
 void FunctionRLIKE::trimStringInDouble(char*& p, size_t& len) {
     len = 0;
-    for (; len < sizeof(double) && isprint(p[len]); ++len)
+    for (; len < sizeof(double) && isprint(p[len]); ++len) {
         ;
-    for (; len > 0 && isspace(p[len - 1]); --len)
+    }
+    for (; len > 0 && isspace(p[len - 1]); --len) {
         ;
+    }
     size_t plen = len;
     for (char* pp = p; isspace(*p) && p < pp + plen;) {
 
@@ -60,8 +62,9 @@ void FunctionRLIKE::prepare(SQLSelect& sql) {
 
     SQLExpression &l(*args_[0]), &r(*args_[1]);
 
-    if (l.type()->getKind() != SQLType::stringType || r.type()->getKind() != SQLType::stringType)
+    if (l.type()->getKind() != SQLType::stringType || r.type()->getKind() != SQLType::stringType) {
         throw eckit::UserError("Arguments of RLIKE must be of string type");
+    }
 
     bool missing(false);
     double v2(r.eval(missing));
@@ -77,8 +80,9 @@ void FunctionRLIKE::prepare(SQLSelect& sql) {
 
 bool FunctionRLIKE::match(const SQLExpression& l, const SQLExpression& r, bool& missing) const {
     double v1 = l.eval(missing);
-    if (missing)
+    if (missing) {
         return false;
+    }
 
     char* p1(reinterpret_cast<char*>(&v1));
     size_t len1(sizeof(double));

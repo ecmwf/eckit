@@ -30,8 +30,9 @@ void Configurable::htmlAllResources(std::ostream& s, Url& url) {
 }
 
 void Configurable::htmlResources(std::ostream& s, Url& url) {
-    for (Set::const_iterator i = resources_.begin(); i != resources_.end(); ++i)
+    for (Set::const_iterator i = resources_.begin(); i != resources_.end(); ++i) {
         (*i)->GET(s, url);
+    }
 }
 
 void ResourceBase::GET(std::ostream& s, Url& url) {

@@ -17,8 +17,9 @@ void run(int argc, char** argv) {
     Main::initialise(argc, argv);
 
     // This should initialise MPI automatically
-    if (mpi::comm().rank() == 0)
+    if (mpi::comm().rank() == 0) {
         std::cout << "mpi::comm().size() = " << mpi::comm().size() << std::endl;
+    }
 }
 
 int main(int argc, char** argv) {

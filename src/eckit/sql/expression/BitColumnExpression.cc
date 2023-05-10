@@ -67,8 +67,9 @@ void BitColumnExpression::prepare(SQLSelect& sql) {
 
 void BitColumnExpression::updateType(SQLSelect& sql) {
     std::string name = name_ + "." + field_ + tableReference_;
-    if (!table_)
+    if (!table_) {
         table_ = &sql.findTable(name);
+    }
     value_ = &sql.column(name, table_);
     type_  = sql.typeOf(name, table_);
 
@@ -87,8 +88,9 @@ void BitColumnExpression::updateType(SQLSelect& sql) {
 }
 
 double BitColumnExpression::eval(bool& missing) const {
-    if (value_->second)
+    if (value_->second) {
         missing = true;
+    }
     unsigned long x = static_cast<unsigned long>(*value_->first);
     return (x & mask_) >> bitShift_;
 }

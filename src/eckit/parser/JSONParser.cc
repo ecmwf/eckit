@@ -27,8 +27,9 @@ JSONParser::JSONParser(std::istream& in) :
 
 Value JSONParser::decodeFile(const PathName& path) {
     std::ifstream in(std::string(path).c_str());
-    if (!in)
+    if (!in) {
         throw eckit::CantOpenFile(path);
+    }
     return JSONParser(in).parse();
 }
 

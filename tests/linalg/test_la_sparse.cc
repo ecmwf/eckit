@@ -215,8 +215,9 @@ CASE("creation with unassigned triplets ( ECKIT-361 )") {
             return row_triplets;
         };
         auto skip_point = [](Size row) {
-            if (row == 5)
+            if (row == 5) {
                 return true;
+            }
             return false;
         };
 

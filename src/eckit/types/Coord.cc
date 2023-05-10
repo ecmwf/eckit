@@ -22,10 +22,12 @@ namespace eckit {
 
 Longitude::Longitude(double l) :
     Coord(l) {
-    while (value_ < 0.0)
+    while (value_ < 0.0) {
         value_ += 360.0;
-    while (value_ >= 360.0)
+    }
+    while (value_ >= 360.0) {
         value_ -= 360.0;
+    }
 }
 
 Latitude::Latitude(double l) :

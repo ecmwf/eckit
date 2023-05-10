@@ -106,8 +106,9 @@ public:
 
     static bool equal(const KPoint& p1, const KPoint& p2) {
         for (size_t i = 0; i < dimensions(); i++) {
-            if (p1.x_[i] != p2.x_[i])
+            if (p1.x_[i] != p2.x_[i]) {
                 return false;
+            }
         }
         return true;
     }

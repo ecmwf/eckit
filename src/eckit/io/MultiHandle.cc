@@ -119,11 +119,12 @@ void MultiHandle::openForWrite(const Length& length) {
 
     Log::info() << "MultiHandle::openForWrite " << length_.size() << std::endl;
 
-
-    if (current_ != datahandles_.end())
+    if (current_ != datahandles_.end()) {
         Log::info() << "MultiHandle::openForWrite " << (*curlen_) << std::endl;
-    else
+    }
+    else {
         Log::warning() << "MultiHandle::openForWrite is empty" << std::endl;
+    }
 }
 
 void MultiHandle::openForAppend(const Length&) {
@@ -143,8 +144,9 @@ void MultiHandle::openCurrent() {
 }
 
 long MultiHandle::read1(char* buffer, long length) {
-    if (current_ == datahandles_.end())
+    if (current_ == datahandles_.end()) {
         return 0;
+    }
 
     long n = (*current_)->read(buffer, length);
     if (n <= 0) {
@@ -184,8 +186,9 @@ long MultiHandle::write(const void* buffer, long length) {
     Log::debug() << "MultiHandle::write " << *(*current_) << " " << length << ' ' << *curlen_ << ' ' << len << ' '
                  << written_ << std::endl;
 
-    if (n <= 0)
+    if (n <= 0) {
         return n;
+    }
 
     written_ += n;
 
@@ -216,8 +219,9 @@ long MultiHandle::write(const void* buffer, long length) {
 }
 
 void MultiHandle::close() {
-    if (current_ != datahandles_.end())
+    if (current_ != datahandles_.end()) {
         (*current_)->close();
+    }
     current_ = datahandles_.end();
 }
 
@@ -229,21 +233,23 @@ void MultiHandle::flush() {
 
 void MultiHandle::rewind() {
     ASSERT(read_);
-    if (current_ != datahandles_.end())
+    if (current_ != datahandles_.end()) {
         (*current_)->close();
+    }
     current_ = datahandles_.begin();
     openCurrent();
 }
 
 void MultiHandle::print(std::ostream& s) const {
-
-    if (format(s) == Log::compactFormat)
+    if (format(s) == Log::compactFormat) {
         s << "MultiHandle";
+    }
     else {
         s << "MultiHandle[";
         for (size_t i = 0; i < datahandles_.size(); i++) {
-            if (i != 0)
+            if (i != 0) {
                 s << ",(";
+            }
             datahandles_[i]->print(s);
             s << ")";
         }
@@ -252,15 +258,16 @@ void MultiHandle::print(std::ostream& s) const {
 }
 
 bool MultiHandle::merge(DataHandle* other) {
-
-    if (other->isEmpty())
+    if (other->isEmpty()) {
         return true;
+    }
 
     // Poor man's RTTI,
     // Does not support inheritance
 
-    if (!sameClass(*other))
+    if (!sameClass(*other)) {
         return false;
+    }
 
     // An other MultiHandle
 
@@ -269,8 +276,9 @@ bool MultiHandle::merge(DataHandle* other) {
 
     // Merge in all datahandles
 
-    for (size_t i = 0; i < handle->datahandles_.size(); i++)
+    for (size_t i = 0; i < handle->datahandles_.size(); i++) {
         (*this) += handle->datahandles_[i];
+    }
 
     handle->datahandles_.clear();
 
@@ -279,15 +287,17 @@ bool MultiHandle::merge(DataHandle* other) {
 
 Length MultiHandle::size() {
     Length total = 0;
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         total += datahandles_[i]->size();
+    }
     return total;
 }
 
 Length MultiHandle::estimate() {
     Length total = 0;
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         total += datahandles_[i]->estimate();
+    }
     return total;
 }
 
@@ -320,8 +330,9 @@ Offset MultiHandle::position() {
 Offset MultiHandle::seek(const Offset& offset) {
     ASSERT(read_);  /// seek only allowed on read mode
 
-    if (current_ != datahandles_.end())
+    if (current_ != datahandles_.end()) {
         (*current_)->close();
+    }
 
     const long long seekto = offset;
     long long accumulated  = 0;
@@ -343,8 +354,9 @@ Offset MultiHandle::seek(const Offset& offset) {
 void MultiHandle::restartReadFrom(const Offset& offset) {
     Log::warning() << *this << " restart read from " << offset << std::endl;
     ASSERT(read_);
-    if (current_ != datahandles_.end())
+    if (current_ != datahandles_.end()) {
         (*current_)->close();
+    }
 
     long long from        = offset;
     long long accumulated = 0;
@@ -370,8 +382,9 @@ void MultiHandle::toRemote(Stream& s) const {
     s << className();
     DataHandle::encode(s);
     s << datahandles_.size();
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->toRemote(s);
+    }
     s << length_;
     s.endObject();
 }
@@ -381,8 +394,9 @@ void MultiHandle::toLocal(Stream& s) const {
     s << className();
     DataHandle::encode(s);
     s << datahandles_.size();
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->toLocal(s);
+    }
     s << length_;
     s.endObject();
 }
@@ -399,14 +413,17 @@ DataHandle* MultiHandle::toLocal() {
 }
 
 void MultiHandle::cost(std::map<std::string, Length>& c, bool read) const {
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->cost(c, read);
+    }
 }
 
 bool MultiHandle::moveable() const {
-    for (size_t i = 0; i < datahandles_.size(); i++)
-        if (!datahandles_[i]->moveable())
+    for (size_t i = 0; i < datahandles_.size(); i++) {
+        if (!datahandles_[i]->moveable()) {
             return false;
+        }
+    }
     return datahandles_.size() > 0;
 }
 
@@ -423,10 +440,12 @@ const std::set<std::string>& MultiHandle::requiredMoverAttributes() const {
 std::string MultiHandle::title() const {
     std::ostringstream os;
     os << "[";
-    if (datahandles_.size() > 0)
+    if (datahandles_.size() > 0) {
         os << datahandles_[0]->title();
-    if (datahandles_.size() > 1)
+    }
+    if (datahandles_.size() > 1) {
         os << ",...{" << datahandles_.size() << "}";
+    }
     os << "]";
     return os.str();
 }

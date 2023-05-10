@@ -59,20 +59,25 @@ struct Candidate {
 const PathName& FileSpaceStrategies::selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s) {
     Log::info() << "FileSpace::selectFileSystem is " << s << std::endl;
 
-    if (s == "roundRobin")
+    if (s == "roundRobin") {
         return FileSpaceStrategies::roundRobin(fileSystems);
+    }
 
-    if (s == "weightedRandom")
+    if (s == "weightedRandom") {
         return FileSpaceStrategies::weightedRandom(fileSystems);
+    }
 
-    if (s == "pureRandom")
+    if (s == "pureRandom") {
         return FileSpaceStrategies::pureRandom(fileSystems);
+    }
 
-    if (s == "weightedRandomPercent")
+    if (s == "weightedRandomPercent") {
         return FileSpaceStrategies::weightedRandomPercent(fileSystems);
+    }
 
-    if (s == "leastUsedPercent")
+    if (s == "leastUsedPercent") {
         return FileSpaceStrategies::leastUsedPercent(fileSystems);
+    }
 
     return FileSpaceStrategies::leastUsed(fileSystems);
 }
@@ -107,8 +112,9 @@ const PathName& FileSpaceStrategies::leastUsed(const std::vector<PathName>& file
         }
     }
 
-    if (!checked)
+    if (!checked) {
         throw Retry(std::string("No available filesystem (") + fileSystems[0] + ")");
+    }
 
     Log::info() << "Filespace strategy leastUsed selected " << fileSystems[best] << " " << Bytes(free) << " available"
                 << std::endl;
@@ -217,13 +223,15 @@ static std::vector<Candidate> findCandidates(const std::vector<PathName>& fileSy
 const PathName& FileSpaceStrategies::roundRobin(const std::vector<PathName>& fileSystems) {
     std::vector<Candidate> candidates = findCandidates(fileSystems, &computeNull);
 
-    if (candidates.empty())
+    if (candidates.empty()) {
         return leastUsed(fileSystems);
+    }
 
     static long value = -1;
 
-    if (value < 0)
+    if (value < 0) {
         value = ::getpid();
+    }
 
     value++;
     value %= candidates.size();
@@ -243,8 +251,9 @@ static void attenuateProbabilities(std::vector<Candidate>& candidates) {
     ASSERT(attenuation >= 0.);
     ASSERT(attenuation <= 1.);
 
-    if (attenuation == 0.)
+    if (attenuation == 0.) {
         return;
+    }
 
     // compute mean
 
@@ -328,8 +337,9 @@ static const PathName& chooseByProbabylity(const char* strategy, const std::vect
 const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fileSystems) {
     std::vector<Candidate> candidates = findCandidates(fileSystems, &computeIdentity);
 
-    if (candidates.empty())
+    if (candidates.empty()) {
         return leastUsed(fileSystems);
+    }
 
     attenuateProbabilities(candidates); /* has no effect */
 
@@ -339,8 +349,9 @@ const PathName& FileSpaceStrategies::pureRandom(const std::vector<PathName>& fil
 const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>& fileSystems) {
     std::vector<Candidate> candidates = findCandidates(fileSystems, &computeAvailable);
 
-    if (candidates.empty())
+    if (candidates.empty()) {
         return leastUsed(fileSystems);
+    }
 
     attenuateProbabilities(candidates);
 
@@ -350,8 +361,9 @@ const PathName& FileSpaceStrategies::weightedRandom(const std::vector<PathName>&
 const PathName& FileSpaceStrategies::weightedRandomPercent(const std::vector<PathName>& fileSystems) {
     std::vector<Candidate> candidates = findCandidates(fileSystems, &computePercent);
 
-    if (candidates.empty())
+    if (candidates.empty()) {
         return leastUsed(fileSystems);
+    }
 
     attenuateProbabilities(candidates);
 

@@ -41,8 +41,9 @@ public:
 
 void Test::run() {
     ThreadPool pool("p", 20);
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 100; i++) {
         pool.push(new X(i));
+    }
 
     // pool.waitForThreads();
 }

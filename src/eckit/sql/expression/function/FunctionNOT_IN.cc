@@ -38,8 +38,9 @@ double FunctionNOT_IN::eval(bool& missing) const {
     const SQLExpression& x = *args_[size_];
     for (int i = 0; i < size_; ++i) {
         args_[i]->eval(missing);
-        if (FunctionEQ::equal(x, *args_[i], missing))
+        if (FunctionEQ::equal(x, *args_[i], missing)) {
             return false;
+        }
     }
 
     return true;

@@ -194,8 +194,9 @@ template <class PAYLOAD>
 PAYLOAD& Pipe<PAYLOAD>::message() {
     AutoLock<MutexCond> lock(payloads_[wi_].cond_);
 
-    while (payloads_[wi_].ready_)
+    while (payloads_[wi_].ready_) {
         payloads_[wi_].cond_.wait();
+    }
 
     if (error()) {
         AutoLock<Mutex> lck(mutex_);
@@ -232,8 +233,9 @@ PAYLOAD& Pipe<PAYLOAD>::receive() {
 
     AutoLock<MutexCond> lock(payloads_[ri_].cond_);
 
-    while (!payloads_[ri_].ready_)
+    while (!payloads_[ri_].ready_) {
         payloads_[ri_].cond_.wait();
+    }
 
     if (error()) {
         AutoLock<Mutex> lck(mutex_);

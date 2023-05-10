@@ -27,8 +27,9 @@ void sort(OffsetList& offset, LengthList& length) {
     typedef std::map<Offset, Length> OffsetLengthMap;
 
     OffsetLengthMap ol;
-    for (i = 0; i < offset.size(); i++)
+    for (i = 0; i < offset.size(); i++) {
         ol[offset[i]] = length[i];
+    }
 
     i = 0;
     for (OffsetLengthMap::iterator j = ol.begin(); j != ol.end(); ++j, ++i) {
@@ -41,14 +42,16 @@ bool compress(OffsetList& offset, LengthList& length) {
     ASSERT(offset.size() == length.size());
 
     size_t j = 0;
-    for (size_t i = 1; i < offset.size(); i++)
-        if ((offset[j] + length[j]) == offset[i])
+    for (size_t i = 1; i < offset.size(); i++) {
+        if ((offset[j] + length[j]) == offset[i]) {
             length[j] += length[i];
+        }
         else {
             ASSERT(++j < offset.size());
             offset[j] = offset[i];
             length[j] = length[i];
         }
+    }
 
     long save = offset.size() - j - 1;
     if (save > 0) {

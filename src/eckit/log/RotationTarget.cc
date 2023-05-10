@@ -50,8 +50,9 @@ public:
 
     void flush() {
         AutoLock<StaticMutex> lock(local_mutex);
-        if (last_)
+        if (last_) {
             last_->flush();
+        }
     }
 
 private:

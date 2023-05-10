@@ -251,8 +251,9 @@ public:
 
 template <class T>
 inline T SysCall(T code, const char* msg, const char* file, int line, const char* func) {
-    if (code < 0)
+    if (code < 0) {
         throw FailedSystemCall(msg, CodeLocation(file, line, func), errno);
+    }
     return code;
 }
 
@@ -269,8 +270,9 @@ inline long long SysCall(long long code, const char* msg, const T& ctx, const ch
 
 
 inline void ThrCall(int code, const char* msg, const char* file, int line, const char* func) {
-    if (code != 0)  // Threads return errno in return code
+    if (code != 0) {  // Threads return errno in return code
         handle_panic(msg, CodeLocation(file, line, func));
+    }
 }
 
 /// This functions hides that assertions may be handled by a throw of AssertionFailed

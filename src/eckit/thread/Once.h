@@ -70,8 +70,9 @@ Once<T>::operator T&() {
 
     ::pthread_mutex_lock(&mutex_);
 
-    if (!value_)
+    if (!value_) {
         value_ = new T();
+    }
 
     ::pthread_mutex_unlock(&mutex_);
 

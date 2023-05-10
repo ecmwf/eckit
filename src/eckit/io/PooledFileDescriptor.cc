@@ -36,8 +36,9 @@ void PooledFileDescriptor::open() {
 }
 
 void PooledFileDescriptor::close() {
-    if (fd_ < 0)
+    if (fd_ < 0) {
         return;
+    }
 
     if (readOnly_) {
         ASSERT(file_);

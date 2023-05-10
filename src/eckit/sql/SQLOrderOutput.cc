@@ -32,8 +32,9 @@ SQLOrderOutput::~SQLOrderOutput() {}
 
 void SQLOrderOutput::print(std::ostream& s) const {
     s << "SQLOrderOutput[" << output_ << " ORDER BY ";
-    for (size_t i = 0; i < by_.first.size(); i++)
+    for (size_t i = 0; i < by_.first.size(); i++) {
         s << *(by_.first[i]) << (by_.second[i] ? " ASC " : " DESC ") << ", ";
+    }
     s << "]";
 }
 
@@ -57,8 +58,9 @@ bool SQLOrderOutput::cachedNext() {
 
         // If there are no more results, we are done
 
-        if (it == sortedResults_.end())
+        if (it == sortedResults_.end()) {
             return false;
+        }
 
         // Given identical sorted keys, we use the order that rows are appended
 
@@ -69,11 +71,13 @@ bool SQLOrderOutput::cachedNext() {
         // Remove entries that have been output
 
         rows.pop();
-        if (rows.empty())
+        if (rows.empty()) {
             sortedResults_.erase(it);
+        }
 
-        if (success)
+        if (success) {
             return true;
+        }
     }
 }
 
@@ -114,8 +118,9 @@ void SQLOrderOutput::prepare(SQLSelect& sql) {
             bool missing(false);
             size_t index(ex[i]->eval(missing));
             ASSERT(!missing);
-            if (index < 1)
+            if (index < 1) {
                 throw eckit::UserError("ORDER BY: indices of columns must be positive");
+            }
             byIndices_.push_back(index);
         }
     }
@@ -123,8 +128,9 @@ void SQLOrderOutput::prepare(SQLSelect& sql) {
 
 void SQLOrderOutput::cleanup(SQLSelect& sql) {
     output_.cleanup(sql);
-    for (Expressions::iterator j = by_.first.begin(); j != by_.first.end(); ++j)
+    for (Expressions::iterator j = by_.first.begin(); j != by_.first.end(); ++j) {
         (*j)->cleanup(sql);
+    }
 }
 
 // Direct output functions removed in order output

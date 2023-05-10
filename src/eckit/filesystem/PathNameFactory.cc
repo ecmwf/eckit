@@ -59,9 +59,9 @@ void PathNameFactoryImpl::enregister(const std::string& name, const PathNameBuil
 }
 
 void PathNameFactoryImpl::deregister(const PathNameBuilderBase* builder) {
-
-    if (LibEcKit::instance().dontDeregisterFactories())
+    if (LibEcKit::instance().dontDeregisterFactories()) {
         return;
+    }
 
     AutoLock<StaticMutex> lock(static_mutex_);
 

@@ -113,8 +113,9 @@ static YAMLConfiguration* loadConfig() {
 
     PathName telemetryConfigFile = Resource<PathName>("$TELEMETRY_CONFIG_FILE,telemetryConfigFile", "~/etc/config/telemetry.yaml");
 
-    if (telemetryConfigFile.exists())
+    if (telemetryConfigFile.exists()) {
         return new YAMLConfiguration(telemetryConfigFile);
+    }
 
     return nullptr;
 }
@@ -123,8 +124,9 @@ Reporter::Reporter() {
 
     std::unique_ptr<YAMLConfiguration> config(loadConfig());
 
-    if (not config)
+    if (not config) {
         return;
+    }
 
     LOG_DEBUG_LIB(LibEcKit) << "Telemetry config: " << *config << std::endl;
 
@@ -140,9 +142,9 @@ Reporter::Reporter() {
 }
 
 std::string Reporter::report(Report::Type type, const Report& report) {
-
-    if (not enabled())  //< early return if we don't have servers configured
+    if (not enabled()) {  //< early return if we don't have servers configured
         return std::string();
+    }
 
     std::ostringstream out;
     JSON j(out);

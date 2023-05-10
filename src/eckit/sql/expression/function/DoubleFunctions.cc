@@ -35,8 +35,9 @@ class UnaryFunction : public ArityFunction<UnaryFunction<FN>, 1> {
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
 
         return FN(a0);
     }
@@ -51,11 +52,13 @@ class BinaryFunction : public ArityFunction<BinaryFunction<FN>, 2> {
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a1 = this->args_[1]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
 
         return FN(a0, a1);
     }
@@ -70,14 +73,17 @@ class TertiaryFunction : public ArityFunction<TertiaryFunction<FN>, 3> {
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a1 = this->args_[1]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a2 = this->args_[2]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
 
         return FN(a0, a1, a2);
     }
@@ -92,17 +98,21 @@ class QuaternaryFunction : public ArityFunction<QuaternaryFunction<FN>, 4> {
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a1 = this->args_[1]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a2 = this->args_[2]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a3 = this->args_[3]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
 
         return FN(a0, a1, a2, a3);
     }
@@ -117,20 +127,25 @@ class QuinaryFunction : public ArityFunction<QuinaryFunction<FN>, 5> {
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a1 = this->args_[1]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a2 = this->args_[2]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a3 = this->args_[3]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
         double a4 = this->args_[4]->eval(m);
-        if (m)
+        if (m) {
             return this->missingValue_;
+        }
 
         return FN(a0, a1, a2, a3, a4);
     }

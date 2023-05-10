@@ -40,8 +40,9 @@ public:  // methods
 
     DenseSet(size_t s = 0) :
         sorted_(true) {
-        if (s > 0)
+        if (s > 0) {
             reserve(s);
+        }
     }
 
     ~DenseSet() {}
@@ -93,33 +94,38 @@ public:  // methods
     const_reference operator[](const size_t& i) const { return values_[i]; }
 
     iterator find(const V& v) {
-        if (empty())
+        if (empty()) {
             return end();
+        }
 
         ASSERT(sorted());
         iterator it = std::lower_bound(begin(), end(), v);
-        if (it != end() && *it == v)
+        if (it != end() && *it == v) {
             return it;
+        }
 
         return end();
     }
 
     const_iterator find(const V& v) const {
-        if (empty())
+        if (empty()) {
             return cend();
+        }
 
         ASSERT(sorted());
         const_iterator it = std::lower_bound(cbegin(), cend(), v);
-        if (it != cend() && *it == v)
+        if (it != cend() && *it == v) {
             return it;
+        }
 
         return cend();
     }
 
     void print(std::ostream& s) const {
         const_iterator it = cbegin();
-        for (; it != cend(); ++it)
+        for (; it != cend(); ++it) {
             s << *it << std::endl;
+        }
     }
 
     bool operator==(const DenseSet& rhs) const { return !operator!=(rhs); }

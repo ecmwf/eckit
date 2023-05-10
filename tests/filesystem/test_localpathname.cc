@@ -191,8 +191,9 @@ CASE("Find children files and dirs") {
     ref_files.insert("testdir/foo/file.2");
     ref_files.insert("testdir/bar/file.3");
 
-    for (std::set<LocalPathName>::const_iterator j = ref_files.begin(); j != ref_files.end(); ++j)
+    for (std::set<LocalPathName>::const_iterator j = ref_files.begin(); j != ref_files.end(); ++j) {
         j->touch();
+    }
 
     PathName t(LocalPathName::cwd());
     t += "/testdir";

@@ -84,22 +84,26 @@ void TaskInfo::progressName(const std::string& s) {
 
 void TaskInfo::out(char* from, char* to) {
     touch();
-    for (char* p = from; p != to; p++)
+    for (char* p = from; p != to; p++) {
         buffer_[(pos_++) % size_] = *p;
+    }
 }
 
 unsigned long TaskInfo::text(char* buf, unsigned long max, unsigned long& pos) const {
     unsigned long len = pos_ - pos;
-    if (len > size_)
+    if (len > size_) {
         len = size_;
-    if (len > max)
+    }
+    if (len > max) {
         len = max;
+    }
 
     unsigned long p = pos_ - len + size_;
     unsigned long n = len;
 
-    while (n-- > 0)
+    while (n-- > 0) {
         *buf++ = buffer_[(p++) % size_];
+    }
 
     pos = pos_;
 
@@ -107,19 +111,22 @@ unsigned long TaskInfo::text(char* buf, unsigned long max, unsigned long& pos) c
 }
 
 bool TaskInfo::busy(bool check) {
-    if (!busy_)
+    if (!busy_) {
         return false;
+    }
 
     time_t now = ::time(nullptr);
 
     // After 2 minutes, force the check
-    if ((now - check_) > 120)
+    if ((now - check_) > 120) {
         check = true;
+    }
 
     check_ = now;
 
-    if (!check)
+    if (!check) {
         return busy_;
+    }
 
     // Check first
 

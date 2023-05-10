@@ -122,8 +122,9 @@ CASE("From one PooledFile") {
             files.emplace_back(new PooledFile(test.path1_));
         }
 
-        for (auto& file : files)
+        for (auto& file : files) {
             EXPECT_NO_THROW(file->open());
+        }
 
         // read interlaced from N pooled files
         size_t p = 0;
@@ -147,8 +148,9 @@ CASE("From one PooledFile") {
         EXPECT(files[0]->nbOpens() == 1);
         EXPECT(files[0]->nbReads() == N * M);
 
-        for (auto& file : files)
+        for (auto& file : files) {
             EXPECT_NO_THROW(file->close());
+        }
     }
 }
 

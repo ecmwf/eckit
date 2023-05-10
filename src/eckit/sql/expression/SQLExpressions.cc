@@ -19,8 +19,9 @@ const type::SQLType* Expressions::type() const {
 
 std::shared_ptr<SQLExpression> Expressions::clone() const {
     std::shared_ptr<Expressions> r = std::make_shared<Expressions>(this->size());
-    for (size_t i = 0; i < this->size(); ++i)
+    for (size_t i = 0; i < this->size(); ++i) {
         (*r)[i] = (*this)[i]->clone();
+    }
 
     return r;
 }

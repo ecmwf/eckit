@@ -60,8 +60,9 @@ int DateContent::compare(const Content& other) const {
 }
 
 int DateContent::compareDate(const DateContent& other) const {
-    if (value_ == other.value_)
+    if (value_ == other.value_) {
         return 0;
+    }
 
     return (value_ < other.value_) ? -1 : 1;
 }

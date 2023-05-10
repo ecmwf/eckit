@@ -46,8 +46,9 @@ CASE("test_large_file") {
     // make temporary file name
     int fd;
     char filename[] = "large.XXXXXX";
-    if ((fd = ::mkstemp(filename)) == -1)
+    if ((fd = ::mkstemp(filename)) == -1) {
         ::perror("cannot create temporary file"), ::exit(EXIT_FAILURE);
+    }
 
     std::cout << "openning file '" << filename << "'" << std::endl;
 
@@ -56,12 +57,14 @@ CASE("test_large_file") {
     //      perror("Error opening file"),  exit(EXIT_FAILURE);
 
     // stretch the file size
-    if ((long long)::lseek(fd, TOTAL_SIZE - 1, SEEK_SET) < 0)
+    if ((long long)::lseek(fd, TOTAL_SIZE - 1, SEEK_SET) < 0) {
         ::perror("Error calling lseek() to 'stretch' the file"), ::exit(EXIT_FAILURE);
+    }
 
     // write something to the end of the file to actually resize it correctly
-    if (::write(fd, "", 1) != 1)
+    if (::write(fd, "", 1) != 1) {
         ::close(fd), perror("Error writing last byte of the file"), ::exit(EXIT_FAILURE);
+    }
 
     // lock the region beyond the 2GB limit until the EOF
 

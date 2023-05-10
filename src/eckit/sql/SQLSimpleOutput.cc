@@ -46,8 +46,9 @@ void SQLSimpleOutput::flush() {
 bool SQLSimpleOutput::output(const expression::Expressions& results) {
     size_t n = results.size();
     for (size_t i = 0; i < n; i++) {
-        if (i)
+        if (i) {
             out_ << config_.fieldDelimiter();
+        }
         currentColumn_ = i;
         results[i]->output(*this);
     }
@@ -60,15 +61,17 @@ template <typename T>
 void SQLSimpleOutput::outputValue(double x, bool missing) {
     format(out_, currentColumn_);
 
-    if (missing && !config_.doNotWriteNULL())
+    if (missing && !config_.doNotWriteNULL()) {
         out_ << "NULL";
+    }
     else {
         if (config_.fullPrecision()) {
             out_.precision(std::numeric_limits<T>::digits10 + 2);
             out_ << std::fixed << static_cast<T>(x);
         }
-        else
+        else {
             out_ << static_cast<T>(x);
+        }
     }
 }
 
@@ -104,8 +107,9 @@ void SQLSimpleOutput::outputBitfield(double x, bool missing) {
     }
 
     format(out_, currentColumn_);
-    if (missing && !config_.doNotWriteNULL())
+    if (missing && !config_.doNotWriteNULL()) {
         out_ << "NULL";
+    }
     else {
         std::stringstream ss;
         log::Number::printBinary(ss, static_cast<unsigned long>(x));
@@ -146,13 +150,15 @@ void SQLSimpleOutput::printHeader(SQLSelect& sql) {
             const std::string& name(columns[i]->title());
             const type::SQLType* type(columns[i]->type());
 
-            if (i)
+            if (i) {
                 out_ << config_.fieldDelimiter();
+            }
 
             format(out_, i);
 
-            if (config_.outputFormat() != "wide")
+            if (config_.outputFormat() != "wide") {
                 out_ << name;
+            }
             else {
                 std::stringstream ss;
                 ss << name << ":" << type->name();

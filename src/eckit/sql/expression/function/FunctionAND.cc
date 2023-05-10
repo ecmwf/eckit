@@ -57,8 +57,9 @@ bool FunctionAND::andSplit(expression::Expressions& e) {
 
 std::shared_ptr<SQLExpression> FunctionAND::simplify(bool& changed) {
     std::shared_ptr<SQLExpression> x = FunctionExpression::simplify(changed);
-    if (x)
+    if (x) {
         return x;
+    }
 
     for (int i = 0; i < 2; i++) {
         bool missing = false;

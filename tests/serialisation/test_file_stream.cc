@@ -63,8 +63,9 @@ string v_charp;
 
 struct F {
     ~F() {
-        if (filename.exists())
+        if (filename.exists()) {
             filename.unlink();
+        }
     }
 
     static PathName filename;

@@ -80,8 +80,9 @@ public:  // public
     }
 
     bool checkInterrupt() {
-        if (interrupt_)
+        if (interrupt_) {
             std::rethrow_exception(interrupt_);
+        }
         return true;
     }
 
@@ -94,8 +95,9 @@ public:  // public
     long pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.empty()) {
-            if (closed_)
+            if (closed_) {
                 return -1;
+            }
             cv_.wait(locker);
         }
         std::swap(e, queue_.front());
@@ -108,8 +110,9 @@ public:  // public
     long pop(std::vector<ELEM>& elems) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.empty()) {
-            if (closed_)
+            if (closed_) {
                 return -1;
+            }
             cv_.wait(locker);
         }
 

@@ -133,8 +133,9 @@ public:
     void statsReset() { alloc_.statsReset(); }
 
     void statsPrint(std::ostream& o, bool fancy) const {
-        if (fancy)
+        if (fancy) {
             o << *this << ": ";
+        }
         alloc_.statsPrint(o, fancy);
     }
 

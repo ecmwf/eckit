@@ -23,8 +23,9 @@ namespace eckit::net {
 static void offLine(const std::string& host, int port) {
     static bool setNodeOfflineOnError = Resource<bool>("setNodeOfflineOnError", false);
 
-    if (setNodeOfflineOnError)
+    if (setNodeOfflineOnError) {
         ClusterNodes::offLine(host, port);
+    }
 }
 
 Connector::Connector(const std::string& host, int port, const std::string& node) :
@@ -167,8 +168,9 @@ public:
         std::pair<std::string, std::string> p(name, node);
 
         Cache::iterator j = cache_.find(p);
-        if (j != cache_.end())
+        if (j != cache_.end()) {
             return (*j).second;
+        }
 
         // Log::info() << "Connector::nodeInfo(" << name << "," << node << ")" << std::endl;
 

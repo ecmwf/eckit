@@ -149,11 +149,13 @@ void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer, Consumer<PA
     while (!error()) {
         AutoLock<MutexCond> lock(payloads[i].cond_);
 
-        while (payloads[i].ready_)
+        while (payloads[i].ready_) {
             payloads[i].cond_.wait();
+        }
 
-        if (error())
+        if (error()) {
             break;
+        }
 
         if (producer.done()) {
             payloads[i].done_  = true;
@@ -201,11 +203,13 @@ void ProducerConsumerTask<PAYLOAD>::run() {
 
         AutoLock<MutexCond> lock(payloads_[i].cond_);
 
-        while (!payloads_[i].ready_)
+        while (!payloads_[i].ready_) {
             payloads_[i].cond_.wait();
+        }
 
-        if (owner_.error())
+        if (owner_.error()) {
             break;
+        }
 
         if (payloads_[i].done_) {
             payloads_[i].ready_ = false;

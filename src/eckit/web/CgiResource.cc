@@ -48,8 +48,9 @@ void CgiResource::GET(std::ostream& s, Url& url) {
 
     s << HttpStream::dontEncode;
 
-    while (fgets(line, sizeof(line), pipe))
+    while (fgets(line, sizeof(line), pipe)) {
         s << line;
+    }
 
     s << HttpStream::doEncode;
 }

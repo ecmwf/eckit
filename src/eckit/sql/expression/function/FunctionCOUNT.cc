@@ -53,8 +53,9 @@ void FunctionCOUNT::cleanup(SQLSelect& sql) {
 void FunctionCOUNT::partialResult() {
     bool missing = false;
     args_[0]->eval(missing);
-    if (!missing)
+    if (!missing) {
         count_++;
+    }
     // cout << "FunctionCOUNT::partialResult " << count_ << std::endl;
 }
 

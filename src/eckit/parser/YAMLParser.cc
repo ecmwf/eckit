@@ -73,11 +73,13 @@ public:
 
     void set(const YAMLItem* item) {
         if (item != item_) {
-            if (item_)
+            if (item_) {
                 item_->detach();
+            }
             item_ = item;
-            if (item_)
+            if (item_) {
                 item_->attach();
+            }
         }
     }
 };
@@ -404,8 +406,9 @@ YAMLParser::~YAMLParser() {
 
 Value YAMLParser::decodeFile(const PathName& path) {
     std::ifstream in(std::string(path).c_str());
-    if (!in)
+    if (!in) {
         throw eckit::CantOpenFile(path);
+    }
     return YAMLParser(in).parse();
 }
 

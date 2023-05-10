@@ -148,8 +148,9 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
             }
         }
         char* p = l;
-        while (p && *p == ' ')
+        while (p && *p == ' ') {
             ++p;
+        }
 
         command_ = p;
         pos_     = 0;
@@ -162,15 +163,17 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
                 unAlias();
 
                 // Print command if different from input
-                if (command_ != l)
+                if (command_ != l) {
                     (*out_) << command_ << std::endl;
+                }
 
                 buffer_.resize(command_.size());
                 std::copy(command_.begin(), command_.end(), buffer_.begin());
                 buffer_.push_back(0);
 
-                if (prompt_)
+                if (prompt_) {
                     historize();
+                }
 
                 CmdYacc::eckit_cmd_parse();
             }
@@ -201,9 +204,9 @@ void CmdParser::eckit_cmd_error(char* msg)
 //----------------------------------------------------------------------------------------------------------------------
 
 void CmdParser::prompt(const Prompter& prompter) {
-
-    if (prompt_)
+    if (prompt_) {
         (*out_) << prompter.prompt() << "%" << history_.size() + 1 << "> " << std::flush;
+    }
 
     Log::status() << "Idle..." << std::endl;
 }
@@ -225,10 +228,12 @@ void CmdParser::historize() {
 
 void CmdParser::shell(const std::string& s) {
     int ret = 0;
-    if (not s.empty())
+    if (not s.empty()) {
         ret = ::system(s.c_str());
-    else
+    }
+    else {
         ret = ::system("$SHELL");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -237,10 +242,12 @@ void CmdParser::history(const long n, std::ostream& out) {
     long size = history_.size();
     long from = n ? size - n : 0;
 
-    if (from < 0)
+    if (from < 0) {
         from = 0;
-    for (int i = from; i < size; i++)
+    }
+    for (int i = from; i < size; i++) {
         out << std::setw(4) << i + 1 << "  " << history_[i] << std::endl;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -267,8 +274,9 @@ void CmdParser::unAlias() {
 
         Log::debug() << "Expanding '" << tokens[0] << "' to '" << aliased << std::endl;
 
-        for (size_t i = 1; i < tokens.size(); ++i)
+        for (size_t i = 1; i < tokens.size(); ++i) {
             aliased += " " + tokens[i];
+        }
 
         command_ = aliased;
 
@@ -288,8 +296,9 @@ int hIndex(const std::string& cmd, std::vector<std::string>& h, std::string& pre
         pre = cmd.substr(0, i);
         Log::debug() << "In repeat() command" << std::endl;
 
-        if (!p)
+        if (!p) {
             return size;
+        }
 
         if (*p == '!') {
             post = ++p;
@@ -300,18 +309,22 @@ int hIndex(const std::string& cmd, std::vector<std::string>& h, std::string& pre
             int idx   = atoi(p);
             int start = (idx <= 0) ? size : -1;
 
-            if (*p == '-')
+            if (*p == '-') {
                 ++p;
-            while (isdigit((int)(*p)))
+            }
+            while (isdigit((int)(*p))) {
                 ++p;
+            }
 
             post = p;
             return start + idx;
         }
 
-        for (int i = size - 1; i >= 0; --i)
-            if (h[i].find(p, 0) == 0)
+        for (int i = size - 1; i >= 0; --i) {
+            if (h[i].find(p, 0) == 0) {
                 return i;
+            }
+        }
 
         return size;
     }
@@ -326,8 +339,9 @@ void CmdParser::repeat() {
     std::vector<std::string> tokens;
     tokenize(command_, tokens);
 
-    if (!tokens.size())
+    if (!tokens.size()) {
         return;
+    }
 
     std::string pre(""), post("");
     int which = hIndex(tokens[0], history_, pre, post);
@@ -336,8 +350,9 @@ void CmdParser::repeat() {
         if (static_cast<size_t>(which) < history_.size()) {
             std::string newcmd = pre + history_[which];
             newcmd += post;
-            for (size_t i = 1; i < tokens.size(); ++i)
+            for (size_t i = 1; i < tokens.size(); ++i) {
                 newcmd += " " + tokens[i];
+            }
 
             command_ = newcmd;
             Log::debug() << "New command '" << command_ << "'" << std::endl;
@@ -371,13 +386,17 @@ void CmdParser::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::ostr
     Log::debug() << "Executing " << std::endl
                  << arg_ << std::endl;
 
-    if (flags_['x'])
+    if (flags_['x']) {
         Log::info() << command_ << std::flush;
+    }
 
-    if (!flags_['n'])
-        if (!CmdResource::run(proc, arg_, std::cin, *out_))
-            if (flags_['e'])
+    if (!flags_['n']) {
+        if (!CmdResource::run(proc, arg_, std::cin, *out_)) {
+            if (flags_['e']) {
                 Main::instance().terminate();
+            }
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -402,9 +421,11 @@ void CmdParser::alias() {
 
 void CmdParser::aliasCompletion(const std::string& text, std::vector<std::string>& result) {
     std::vector<std::string> aliases = theAlias_.args();
-    for (size_t i = 0; i < aliases.size(); i++)
-        if (aliases[i].find(text) == 0)
+    for (size_t i = 0; i < aliases.size(); i++) {
+        if (aliases[i].find(text) == 0) {
             result.push_back(aliases[i]);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -423,8 +444,9 @@ void CmdParser::flag(const char flag, bool value) {
 void CmdParser::flags(const std::string& s) {
     std::string flags = "exntuv";
 
-    for (size_t j = 0; j < flags.length(); ++j)
+    for (size_t j = 0; j < flags.length(); ++j) {
         flags_[flags[j]] = false;
+    }
 
     Tokenizer tokenize(" ");
     std::vector<std::string> tokens;
@@ -433,10 +455,12 @@ void CmdParser::flags(const std::string& s) {
     for (size_t i = 0; i < tokens.size(); ++i) {
         if (tokens[i].length() == 2) {
             char begin = tokens[i][0];
-            if (begin == '-')
+            if (begin == '-') {
                 flags_[tokens[i][1]] = true;
-            if (begin == '+')
+            }
+            if (begin == '+') {
                 flags_[tokens[i][1]] = false;
+            }
         }
     }
 }
@@ -463,8 +487,9 @@ void CmdParser::addCmd(const char c) {
 //----------------------------------------------------------------------------------------------------------------------
 
 int CmdParser::input() {
-    if (buffer_.empty())
+    if (buffer_.empty()) {
         return ';';
+    }
 
     int n = buffer_.front();
     buffer_.erase(buffer_.begin());

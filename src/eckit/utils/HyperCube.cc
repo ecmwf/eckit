@@ -16,14 +16,15 @@ namespace eckit {
 
 static void addLoop(Ordinal d, Ordinal which, Ordinal where, Ordinal count, Ordinal depth, HyperCube& target,
                     const HyperCube::Dimensions& dims, HyperCube::Coordinates& coord, HyperCube::Remapping& remap) {
-    if (d == depth)
+    if (d == depth) {
         remap.push_back(target.index(coord));
+    }
     else {
-
         int k = 0;
         for (size_t i = 0; i < dims[d]; i++, k++) {
-            if (which == d && i == where)
+            if (which == d && i == where) {
                 k += count;
+            }
             coord[d] = k;
             addLoop(d + 1, which, where, count, depth, target, dims, coord, remap);
         }

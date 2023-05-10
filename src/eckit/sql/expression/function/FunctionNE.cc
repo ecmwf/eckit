@@ -44,8 +44,9 @@ bool FunctionNE::equal(const SQLExpression& l, const SQLExpression& r, bool& mis
         std::string v1(l.evalAsString(missing));
         std::string v2(r.evalAsString(missing));
 
-        if (missing)
+        if (missing) {
             return false;
+        }
 
         v1 = StringTools::trim(v1, "\t\n\v\f\r ");
         v2 = StringTools::trim(v2, "\t\n\v\f\r ");

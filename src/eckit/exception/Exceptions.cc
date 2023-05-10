@@ -53,9 +53,10 @@ void Exception::exceptionStack(std::ostream& out, bool callStack) {
     while (e) {
         out << e->what() << std::endl;
 
-        if (callStack)
+        if (callStack) {
             out << e->callStack() << std::endl
                 << std::endl;
+        }
 
         e = e->next_;
     }
@@ -333,8 +334,9 @@ CantOpenFile::CantOpenFile(const std::string& file, bool retry) :
     retry_(retry) {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
-    if (retry)
+    if (retry) {
         s << " (retry ok)";
+    }
     reason(s.str());
     Log::status() << what() << std::endl;
 }
@@ -343,8 +345,9 @@ CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, boo
     retry_(retry) {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
-    if (retry)
+    if (retry) {
         s << " (retry ok)";
+    }
     s << loc;
     reason(s.str());
     Log::status() << what() << std::endl;

@@ -50,8 +50,9 @@ struct PathExpanderRegistry {
         if (j == m.end()) {
             std::ostringstream msg;
             msg << "No PathExpander found with name '" << name << "'. Registered path expand handlers are:";
-            for (j = m.begin(); j != m.end(); ++j)
+            for (j = m.begin(); j != m.end(); ++j) {
                 msg << " '" << (*j).first << "'";
+            }
             throw eckit::UserError(msg.str());
         }
 
@@ -71,8 +72,9 @@ std::string PathExpander::expand(const std::string& path) {
     for (StringList::const_iterator it = vl.begin(); it != vl.end(); ++it) {
         const std::string& incurly = *it;
 
-        if (incurly.empty())
+        if (incurly.empty()) {
             throw BadValue("PathExpander received empty key");
+        }
 
         size_t pos      = incurly.find_first_of("?");
         std::string key = incurly.substr(0, pos);

@@ -117,9 +117,9 @@ void SQLParser::parseString(SQLSession& session, const std::string& s) {
 }
 
 std::string SQLParser::cleanUpSQLText(const std::string& sql) {
-
-    if (sql.empty())
+    if (sql.empty()) {
         return sql;
+    }
 
     std::string s(sql);
 

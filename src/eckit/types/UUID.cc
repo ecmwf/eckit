@@ -21,8 +21,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 static char to_char(size_t i) {
-    if (i <= 9)
+    if (i <= 9) {
         return static_cast<char>('0' + i);
+    }
     else
         return static_cast<char>('a' + (i - 10));
 }
@@ -42,8 +43,9 @@ UUID::~UUID() {}
 
 bool UUID::isNil() const {
     for (size_t i = 0; i < size(); ++i) {
-        if (data_[i] != 0U)
+        if (data_[i] != 0U) {
             return false;
+        }
     }
     return true;
 }

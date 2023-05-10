@@ -33,10 +33,12 @@ bool Password::check(const std::string& user, const std::string& password) {
 
     bool match = password == p.pw_passwd;
 
-    if (match)
+    if (match) {
         Log::error() << "User " << user << " gave an valid password" << std::endl;
-    else
+    }
+    else {
         Log::error() << "User " << user << " gave an invalid password" << std::endl;
+    }
 
     return match;
 }

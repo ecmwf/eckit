@@ -240,25 +240,32 @@ private:
     // -- Private Methods
     template <typename U>
     bool compareEqual_(const U* data, const size_t size) const {
-        if (size != this->size())
+        if (size != this->size()) {
             return false;
-        if (size == 0)
+        }
+        if (size == 0) {
             return true;
-        for (size_t i = 0; i < this->size(); i++)
-            if (data[i] != this->at(i))
+        }
+        for (size_t i = 0; i < this->size(); i++) {
+            if (data[i] != this->at(i)) {
                 return false;
+            }
+        }
         return true;
     }
 
     template <typename U>
     bool compareApproxEqual_(const U* data, const size_t size, const U epsilon) const {
-        if (size != this->size())
+        if (size != this->size()) {
             return false;
-        if (size == 0)
+        }
+        if (size == 0) {
             return true;
+        }
         for (size_t i = 0; i < this->size(); i++) {
-            if (!eckit::types::is_approximately_equal(this->at(i), data[i], epsilon))
+            if (!eckit::types::is_approximately_equal(this->at(i), data[i], epsilon)) {
                 return false;
+            }
         }
         return true;
     }
@@ -322,8 +329,9 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
     size_t num_tests = tests.size();
 
     if (num_tests == 0) {
-        if (v >= Summary)
+        if (v >= Summary) {
             eckit::Log::info() << "Eckit testing found no test cases to run." << std::endl;
+        }
         return -1;
     }
 
@@ -387,8 +395,9 @@ int run_tests_main(std::vector<Test>& tests, int argc, char* argv[], bool initEc
     // deactivate loading of plugins not to influence some tests
     ::setenv("AUTO_LOAD_PLUGINS", "false", true);
 
-    if (initEckitMain)
+    if (initEckitMain) {
         eckit::Main::initialise(argc, argv);
+    }
 
     eckit::Log::info() << "Running " << tests.size() << " tests:" << std::endl;
     int failures = run(tests);

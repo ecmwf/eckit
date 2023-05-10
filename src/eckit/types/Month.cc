@@ -42,8 +42,9 @@ Month::Month(const std::string& s) :
                 case 6:
                 case 8:
                     value = atol(s.c_str());
-                    if ((value % 100) == 0)
+                    if ((value % 100) == 0) {
                         value++;  // For dates as 970900
+                    }
                     date_ = Date(value);
                     break;
 
@@ -54,10 +55,12 @@ Month::Month(const std::string& s) :
             break;
 
         case 2:
-            if (result[0].length() != 2 && result[0].length() != 4)
+            if (result[0].length() != 2 && result[0].length() != 4) {
                 err = true;
-            if (result[1].length() != 2)
+            }
+            if (result[1].length() != 2) {
                 err = true;
+            }
 
             value = atol(result[0].c_str()) * 10000 + atol(result[1].c_str()) * 100 + 1;
 
@@ -67,17 +70,21 @@ Month::Month(const std::string& s) :
 
         case 3:
 
-            if (result[0].length() != 2 && result[0].length() != 4)
+            if (result[0].length() != 2 && result[0].length() != 4) {
                 err = true;
-            if (result[1].length() != 2)
+            }
+            if (result[1].length() != 2) {
                 err = true;
-            if (result[2].length() != 2)
+            }
+            if (result[2].length() != 2) {
                 err = true;
+            }
 
             value = atol(result[0].c_str()) * 10000 + atol(result[1].c_str()) * 100 + atol(result[2].c_str());
 
-            if ((value % 100) == 0)
+            if ((value % 100) == 0) {
                 value++;  // For dates as 970900
+            }
             date_ = Date(value);
 
             break;
@@ -87,8 +94,9 @@ Month::Month(const std::string& s) :
             break;
     }
 
-    if (err)
+    if (err) {
         throw SeriousBug(std::string("Invalid month ") + s);
+    }
 }
 
 Month::operator std::string() const {

@@ -31,13 +31,15 @@ EtcTable::~EtcTable() {}
 
 const std::vector<std::string>& EtcTable::lookUp(const std::string& name) {
     AutoLock<Mutex> lock(mutex_);
-    if (last_ == 0)
+    if (last_ == 0) {
         load();
+    }
 
     for (std::vector<std::vector<std::string> >::const_iterator j = lines_.begin(); j != lines_.end(); ++j) {
         const std::vector<std::string>& line = *j;
-        if (match(name, line))
+        if (match(name, line)) {
             return line;
+        }
     }
 
     return empty;
@@ -45,8 +47,9 @@ const std::vector<std::string>& EtcTable::lookUp(const std::string& name) {
 
 std::vector<std::string> EtcTable::keys() {
     AutoLock<Mutex> lock(mutex_);
-    if (last_ == 0)
+    if (last_ == 0) {
         load();
+    }
 
     std::vector<std::string> v;
 
@@ -60,8 +63,9 @@ std::vector<std::string> EtcTable::keys() {
 
 std::vector<std::vector<std::string> > EtcTable::lines() {
     AutoLock<Mutex> lock(mutex_);
-    if (last_ == 0)
+    if (last_ == 0) {
         load();
+    }
 
     return lines_;
 }
@@ -109,17 +113,21 @@ void EtcTable::load() {
 
         size_t i = 0;
         while (i < s.size()) {
-            if (s[i].length() == 0)
+            if (s[i].length() == 0) {
                 s.erase(s.begin() + i);
-            else
+            }
+            else {
                 i++;
+            }
         }
 
-        if (s.size() == 0 || s[0][0] == '#')
+        if (s.size() == 0 || s[0][0] == '#') {
             continue;
+        }
 
-        if (size_ && s.size() != size_)
+        if (size_ && s.size() != size_) {
             Log::warning() << "Ignoring " << line << std::endl;
+        }
 
         lines_.push_back(s);
     }

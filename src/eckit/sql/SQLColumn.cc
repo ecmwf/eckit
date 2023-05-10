@@ -58,9 +58,9 @@ void SQLColumn::rewind() {
 }
 
 void SQLColumn::setPool(int n) {
-
-    if (iterator_)
+    if (iterator_) {
         iterator_->unload();
+    }
 
     current_  = n;
     position_ = 0;
@@ -74,8 +74,9 @@ void SQLColumn::setPool(int n) {
 }
 
 double SQLColumn::next(bool& missing) {
-    if (position_ == last_)
+    if (position_ == last_) {
         setPool(current_ + 1);
+    }
 
     position_++;
     return iterator_->next(missing);

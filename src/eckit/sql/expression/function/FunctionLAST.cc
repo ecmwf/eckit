@@ -37,8 +37,9 @@ const eckit::sql::type::SQLType* FunctionLAST::type() const {
 FunctionLAST::~FunctionLAST() {}
 
 double FunctionLAST::eval(bool& missing) const {
-    if (value_ == DBL_MAX)
+    if (value_ == DBL_MAX) {
         missing = true;
+    }
 
     return value_;
 }

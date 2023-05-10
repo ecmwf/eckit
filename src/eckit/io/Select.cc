@@ -43,8 +43,9 @@ Select::~Select() {}
 void Select::add(int fd) {
     ASSERT(fd >= 0 && fd < getdtablesize());
     FD_SET(fd, &files_);
-    if (fd > last_)
+    if (fd > last_) {
         last_ = fd;
+    }
 }
 
 void Select::add(net::TCPSocket& p) {
@@ -84,7 +85,7 @@ bool Select::ready(long sec) {
         bool some = false;
         FD_ZERO(&set_);
 
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < size; i++) {
             if (FD_ISSET(i, &files_)) {
                 int nbytes = 0;
 
@@ -103,9 +104,11 @@ bool Select::ready(long sec) {
                     some = true;
                 }
             }
+        }
 
-        if (some)
+        if (some) {
             return true;
+        }
 
         for (;;) {
 
@@ -114,8 +117,9 @@ bool Select::ready(long sec) {
 
             switch (::select(size, &set_, 0, &excep, &timeout)) {
                 case -1:
-                    if (errno != EINTR)
+                    if (errno != EINTR) {
                         throw FailedSystemCall("select");
+                    }
                     break;
 
                 case 0:

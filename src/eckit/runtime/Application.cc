@@ -143,8 +143,9 @@ void Application::unique() {
 
     PathName lockFile("~/locks/" + name_);
 
-    if (!lockFile.exists())
+    if (!lockFile.exists()) {
         lockFile.touch();
+    }
 
     Semaphore* sem = new Semaphore(lockFile);
 

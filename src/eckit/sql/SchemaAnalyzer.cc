@@ -75,8 +75,9 @@ std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipT
             continue;
         }
 
-        if (!from.empty())
+        if (!from.empty()) {
             from += ", ";
+        }
         from += table.name();
 
         for (const auto& col : table.columns()) {
@@ -87,8 +88,9 @@ std::string SchemaAnalyzer::generateSelectAll(const std::set<std::string>& skipT
                 Log::info() << "SchemaAnalyzer::generateSelectAll(): Skipping " << fullname << std::endl;
             }
             else {
-                if (!selectlist.empty())
+                if (!selectlist.empty()) {
                     selectlist += ", ";
+                }
                 selectlist += fullname;
             }
         }

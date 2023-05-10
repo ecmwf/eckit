@@ -70,8 +70,9 @@ long BufferedHandle::read(void* buffer, long length) {
 
     ASSERT(read_);
 
-    if (eof_)
+    if (eof_) {
         return 0;
+    }
 
     while (len < length && !eof_) {
         long left = used_ - pos_;
@@ -83,8 +84,9 @@ long BufferedHandle::read(void* buffer, long length) {
             pos_  = 0;
             if (used_ <= 0) {
                 eof_ = true;
-                if (len > 0)
+                if (len > 0) {
                     position_ += len;
+                }
                 return len;
             }
             left = used_;
@@ -101,8 +103,9 @@ long BufferedHandle::read(void* buffer, long length) {
         ASSERT(size >= 0);
     }
 
-    if (len > 0)
+    if (len > 0) {
         position_ += len;
+    }
     return len;
 }
 
@@ -137,8 +140,9 @@ long BufferedHandle::write(const void* buffer, long length) {
 }
 
 void BufferedHandle::close() {
-    if (!read_)
+    if (!read_) {
         bufferFlush();
+    }
     handle().close();
 }
 

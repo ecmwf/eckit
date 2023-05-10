@@ -77,8 +77,9 @@ public:  // methods
     bool empty() const { return items_.empty(); }
 
     void sort() {
-        if (sorted_)
+        if (sorted_) {
             return;
+        }
 
         std::stable_sort(items_.begin(), items_.end(), LessThan());
         auto last     = std::unique(items_.rbegin(), items_.rend(), Equals());
@@ -116,33 +117,38 @@ public:  // methods
     value_type& operator[](const size_t& i) { return items_[i].second; }
 
     iterator find(const K& k) {
-        if (empty())
+        if (empty()) {
             return end();
+        }
 
         ASSERT(sorted());
         iterator it = std::lower_bound(begin(), end(), k, Compare());
-        if (it != end() && it->first == k)
+        if (it != end() && it->first == k) {
             return it;
+        }
 
         return end();
     }
 
     const_iterator find(const K& k) const {
-        if (empty())
+        if (empty()) {
             return cend();
+        }
 
         ASSERT(sorted());
         const_iterator it = std::lower_bound(cbegin(), cend(), k, Compare());
-        if (it != cend() && it->first == k)
+        if (it != cend() && it->first == k) {
             return it;
+        }
 
         return cend();
     }
 
     void print(std::ostream& s) const {
         const_iterator it = cbegin();
-        for (; it != cend(); ++it)
+        for (; it != cend(); ++it) {
             s << it->first << " " << it->second << std::endl;
+        }
     }
 
     friend std::ostream& operator<<(std::ostream& s, const DenseMap& m) {

@@ -33,16 +33,18 @@ struct TestFactory::PImpl {
     void regist(const std::string& name, TestBuilder* builder) {
         std::cout << "registering builder [" << name << "]" << std::endl;
         Store::iterator itr = register_.find(name);
-        if (itr != register_.end())
+        if (itr != register_.end()) {
             throw std::bad_alloc();
+        }
         register_[name] = builder;
     }
 
     TestBuilder& get(const std::string& name) {
         std::cout << "get builder [" << name << "]" << std::endl;
         Store::iterator itr = register_.find(name);
-        if (itr == register_.end())
+        if (itr == register_.end()) {
             throw std::bad_alloc();
+        }
         ASSERT(itr->second);
         return *(itr->second);
     }

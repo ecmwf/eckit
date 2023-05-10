@@ -82,8 +82,10 @@ Value ObjectParser::parseNumber() {
         real = true;
         s += next();
         c = next();
-        if (!isdigit(c))
-            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
+        if (!isdigit(c)) {
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '")
+                                      + c + "'");
+        }
         s += c;
         while (isdigit(peek())) {
             s += next();
@@ -102,8 +104,10 @@ Value ObjectParser::parseNumber() {
             c = next();
         }
 
-        if (!isdigit(c))
-            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c + "'");
+        if (!isdigit(c)) {
+            throw StreamParser::Error(std::string("ObjectParser::parseNumber invalid char '") + c
+                                      + "'");
+        }
         s += c;
         while (isdigit(peek())) {
             s += next();

@@ -45,8 +45,9 @@ PipeHandle::~PipeHandle() {}
 
 void PipeHandle::open(const char* mode) {
     file_ = ::popen(name_.c_str(), mode);
-    if (file_ == nullptr)
+    if (file_ == nullptr) {
         throw CantOpenFile(name_);
+    }
 }
 
 Length PipeHandle::openForRead() {
@@ -72,8 +73,9 @@ long PipeHandle::write(const void* buffer, long length) {
 }
 
 void PipeHandle::close() {
-    if (file_ == 0)
+    if (file_ == 0) {
         return;
+    }
 
     if (::pclose(file_) != 0) {
         Log::error() << "pclose(" << name_ << ')' << Log::syserr << std::endl;

@@ -21,8 +21,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 inline void printTime(std::ostream& s, long n) {
-    if (n < 10)
+    if (n < 10) {
         s << '0';
+    }
     s << n;
 }
 
@@ -93,8 +94,9 @@ Time::Time(const std::string& s) {
             break;
     }
 
-    if (err)
+    if (err) {
         throw BadTime(std::string("Invalid time ") + s);
+    }
 
     if (hh >= 24 || mm >= 60 || ss >= 60 || hh < 0 || mm < 0 || ss < 0) {
         std::string msg = "Wrong input for time: ";

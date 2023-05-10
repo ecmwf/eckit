@@ -96,8 +96,9 @@ public:  // methods
         ASSERT(mem > 0);
 
         parts_t parts = nparts(mem);
-        if (shint_.free(SLOT) < parts)
+        if (shint_.free(SLOT) < parts) {
             std::cout << pid << " WAIT " << parts << std::endl;
+        }
 
         shint_.use(SLOT, short(parts));  // processes wait here for available parts
 

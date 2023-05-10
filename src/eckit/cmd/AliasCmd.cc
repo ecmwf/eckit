@@ -27,12 +27,15 @@ AliasCmd::~AliasCmd() {}
 //----------------------------------------------------------------------------------------------------------------------
 
 void AliasCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
-    if (arg.exists(2))
+    if (arg.exists(2)) {
         CmdParser::alias(arg[1], arg[2]);
-    else if (arg.exists(1))
+    }
+    else if (arg.exists(1)) {
         CmdParser::alias(arg[1]);
-    else
+    }
+    else {
         CmdParser::alias();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

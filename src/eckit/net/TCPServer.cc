@@ -73,8 +73,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
             break;
         }
 
-        if (errno != EINTR)
+        if (errno != EINTR) {
             throw FailedSystemCall("accept");
+        }
     }
 
     remoteAddr_ = from.sin_addr;
@@ -83,8 +84,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
     // Set the 'close on exec'
 
-    if (closeExec_)
+    if (closeExec_) {
         SYSCALL(fcntl(socket_, F_SETFD, FD_CLOEXEC));
+    }
 
     register_ignore_sigpipe();
 
@@ -99,8 +101,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
 void TCPServer::close() {
     TCPSocket::close();
-    if (listen_ >= 0)
+    if (listen_ >= 0) {
         ::close(listen_);
+    }
     listen_ = -1;
 }
 

@@ -30,10 +30,13 @@ ClassSpec PartFileHandle::classSpec_ = {
 Reanimator<PartFileHandle> PartFileHandle::reanimator_;
 
 void PartFileHandle::print(std::ostream& s) const {
-    if (format(s) == Log::compactFormat)
+    if (format(s) == Log::compactFormat) {
         s << "PartFileHandle";
-    else
-        s << "PartFileHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_ << ']';
+    }
+    else {
+        s << "PartFileHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_
+          << ']';
+    }
 }
 
 void PartFileHandle::encode(Stream& s) const {
@@ -69,8 +72,9 @@ DataHandle* PartFileHandle::clone() const {
 
 
 bool PartFileHandle::compress(bool sorted) {
-    if (sorted)
+    if (sorted) {
         eckit::sort(offset_, length_);
+    }
     return eckit::compress(offset_, length_);
 }
 
@@ -99,12 +103,13 @@ long PartFileHandle::read1(char* buffer, long length) {
     ASSERT(handle_);
 
     // skip empty entries if any
-    while (index_ < offset_.size() && length_[index_] == Length(0))
+    while (index_ < offset_.size() && length_[index_] == Length(0)) {
         index_++;
+    }
 
-    if (index_ == offset_.size())
+    if (index_ == offset_.size()) {
         return 0;
-
+    }
 
     Length ll = (long long)offset_[index_] + Length(pos_);
     off_t pos = ll;
@@ -222,21 +227,24 @@ bool PartFileHandle::canSeek() const {
 }
 
 bool PartFileHandle::merge(DataHandle* other) {
-    if (other->isEmpty())
+    if (other->isEmpty()) {
         return true;
+    }
 
     // Poor man's RTTI,
     // Does not support inheritance
 
-    if (!sameClass(*other))
+    if (!sameClass(*other)) {
         return false;
+    }
 
     // We should be safe to cast now....
 
     PartFileHandle* handle = dynamic_cast<PartFileHandle*>(other);
 
-    if (path_ != handle->path_)
+    if (path_ != handle->path_) {
         return false;
+    }
 
     ASSERT(handle->offset_.size() == handle->length_.size());
 

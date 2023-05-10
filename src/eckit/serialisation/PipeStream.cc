@@ -94,8 +94,9 @@ long PipeStream::write(const void* buf, long length) {
             return len;
         }
 
-        if (len == 0)
+        if (len == 0) {
             return sent;
+        }
 
         sent += len;
         length -= len;
@@ -117,8 +118,9 @@ long PipeStream::read(void* buf, long length) {
             return len;
         }
 
-        if (len == 0)
+        if (len == 0) {
             return received;
+        }
 
         received += len;
         length -= len;

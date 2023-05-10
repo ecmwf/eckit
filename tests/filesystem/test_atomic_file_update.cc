@@ -48,8 +48,9 @@ CASE("Atomically update the contents of a file") {
     Log::info() << tmppath << " : exists " << tmppath.exists() << std::endl;
 
     std::ofstream of(tmppath.localPath());
-    if (!of)
+    if (!of) {
         throw CantOpenFile(tmppath.localPath(), Here());
+    }
     of << s.str();
     of.close();
 

@@ -51,13 +51,15 @@ TeeHandle::TeeHandle(Stream& s) :
 void TeeHandle::encode(Stream& s) const {
     DataHandle::encode(s);
     s << datahandles_.size();
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         s << *(datahandles_[i]);
+    }
 }
 
 TeeHandle::~TeeHandle() {
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         delete datahandles_[i];
+    }
 }
 
 void TeeHandle::operator+=(DataHandle* dh) {
@@ -70,8 +72,9 @@ Length TeeHandle::openForRead() {
 }
 
 void TeeHandle::openForWrite(const Length& length) {
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->openForWrite(length);
+    }
 }
 
 void TeeHandle::openForAppend(const Length&) {
@@ -86,21 +89,24 @@ long TeeHandle::write(const void* buffer, long length) {
     long len = 0;
     for (size_t i = 0; i < datahandles_.size(); i++) {
         long l = datahandles_[i]->write(buffer, length);
-        if (i)
+        if (i) {
             ASSERT(len == l);
+        }
         len = l;
     }
     return len;
 }
 
 void TeeHandle::close() {
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->close();
+    }
 }
 
 void TeeHandle::flush() {
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->flush();
+    }
 }
 
 void TeeHandle::rewind() {
@@ -108,13 +114,15 @@ void TeeHandle::rewind() {
 }
 
 void TeeHandle::print(std::ostream& s) const {
-    if (format(s) == Log::compactFormat)
+    if (format(s) == Log::compactFormat) {
         s << "TeeHandle";
+    }
     else {
         s << "TeeHandle[";
         for (size_t i = 0; i < datahandles_.size(); i++) {
-            if (i != 0)
+            if (i != 0) {
                 s << ",(";
+            }
             datahandles_[i]->print(s);
             s << ")";
         }
@@ -127,8 +135,9 @@ void TeeHandle::toRemote(Stream& s) const {
     s << className();
     DataHandle::encode(s);
     s << datahandles_.size();
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->toRemote(s);
+    }
     s.endObject();
 }
 
@@ -137,8 +146,9 @@ void TeeHandle::toLocal(Stream& s) const {
     s << className();
     DataHandle::encode(s);
     s << datahandles_.size();
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->toLocal(s);
+    }
     s.endObject();
 }
 
@@ -154,14 +164,16 @@ DataHandle* TeeHandle::toLocal() {
 }
 
 void TeeHandle::cost(std::map<std::string, Length>& c, bool read) const {
-    for (size_t i = 0; i < datahandles_.size(); i++)
+    for (size_t i = 0; i < datahandles_.size(); i++) {
         datahandles_[i]->cost(c, read);
+    }
 }
 
 bool TeeHandle::moveable() const {
     for (const auto& dh : datahandles_) {
-        if (!dh->moveable())
+        if (!dh->moveable()) {
             return false;
+        }
     }
     return true;
 }

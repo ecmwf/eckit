@@ -260,8 +260,9 @@ for (int j = 0; j < 10; j++) {
 , {CASE("Expect runs multiple times in for-loop"){
 
       int i = 0;
-for (int j = 0; j < 10; j++)
+for (int j = 0; j < 10; j++) {
     EXPECT(i++ == j);
+}
 EXPECT(i == 10);
 }
 }

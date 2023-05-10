@@ -164,8 +164,9 @@ template <typename T>
 JSON& JSON::operator<<(const std::map<std::string, T>& m) {
     startObject();
 
-    for (typename std::map<std::string, T>::const_iterator it = m.begin(); it != m.end(); ++it)
+    for (typename std::map<std::string, T>::const_iterator it = m.begin(); it != m.end(); ++it) {
         *this << (*it).first << (*it).second;
+    }
 
     endObject();
     return *this;

@@ -166,20 +166,24 @@ public:
 
 template <class T>
 ListExpression<T>::~ListExpression() {
-    for (size_t i = 0; i < v_.size(); i++)
+    for (size_t i = 0; i < v_.size(); i++) {
         delete v_[i];
+    }
 }
 
 template <class T>
 void ListExpression<T>::print(std::ostream& s) const {
     s << '[';
     for (size_t i = 0; i < v_.size(); i++) {
-        if (i)
+        if (i) {
             s << ',';
-        if (v_[i])
+        }
+        if (v_[i]) {
             s << *v_[i];
-        else
+        }
+        else {
             s << "(null)";
+        }
     }
     s << ']';
 }
@@ -187,9 +191,11 @@ void ListExpression<T>::print(std::ostream& s) const {
 template <class T>
 eckit::Value ListExpression<T>::eval(T& t) const {
     std::vector<eckit::Value> v;
-    for (size_t i = 0; i < v_.size(); i++)
-        if (v_[i])
+    for (size_t i = 0; i < v_.size(); i++) {
+        if (v_[i]) {
             v.push_back(v_[i]->eval(t));
+        }
+    }
 
     return v;
 }

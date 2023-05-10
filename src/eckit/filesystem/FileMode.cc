@@ -67,8 +67,9 @@ mode_t FileMode::mask(const FileMode& target) const {
 }
 
 void FileMode::testAssign(const std::string& s, char got, char test, mode_t& mode, mode_t mask) const {
-    if (got == test)
+    if (got == test) {
         mode |= mask;
+    }
     else {
         if (got != '-') {
             std::ostringstream oss;
@@ -146,26 +147,35 @@ std::string FileMode::toString() const {
 
     std::string s("---,---,---");
 
-    if (mode_ & S_IRUSR)
+    if (mode_ & S_IRUSR) {
         s[0] = 'r';
-    if (mode_ & S_IWUSR)
+    }
+    if (mode_ & S_IWUSR) {
         s[1] = 'w';
-    if (mode_ & S_IXUSR)
+    }
+    if (mode_ & S_IXUSR) {
         s[2] = 'x';
+    }
 
-    if (mode_ & S_IRGRP)
+    if (mode_ & S_IRGRP) {
         s[4] = 'r';
-    if (mode_ & S_IWGRP)
+    }
+    if (mode_ & S_IWGRP) {
         s[5] = 'w';
-    if (mode_ & S_IXGRP)
+    }
+    if (mode_ & S_IXGRP) {
         s[6] = 'x';
+    }
 
-    if (mode_ & S_IROTH)
+    if (mode_ & S_IROTH) {
         s[8] = 'r';
-    if (mode_ & S_IWOTH)
+    }
+    if (mode_ & S_IWOTH) {
         s[9] = 'w';
-    if (mode_ & S_IXOTH)
+    }
+    if (mode_ & S_IXOTH) {
         s[10] = 'x';
+    }
 
     return s;
 }

@@ -92,8 +92,9 @@ public:
         eckit::Log::error() << "Cannot set default communicator to '" << name
                             << "', no communicator with that name was found" << std::endl;
         eckit::Log::error() << "Current communicators are:" << std::endl;
-        for (itr = communicators.begin(); itr != communicators.end(); ++itr)
+        for (itr = communicators.begin(); itr != communicators.end(); ++itr) {
             eckit::Log::error() << "   " << (*itr).first << std::endl;
+        }
         throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
@@ -129,8 +130,9 @@ public:
     Comm& getComm(const char* name = nullptr) {
         AutoLock<Mutex> lock(mutex_);
 
-        if (!name && default_)
+        if (!name && default_) {
             return *default_; /* most common case first */
+        }
 
         if (!default_) {
             initDefault();
@@ -148,8 +150,9 @@ public:
 
         eckit::Log::error() << "No Communicator '" << name << "'" << std::endl;
         eckit::Log::error() << "Current communicators are:" << std::endl;
-        for (itr = communicators.begin(); itr != communicators.end(); ++itr)
+        for (itr = communicators.begin(); itr != communicators.end(); ++itr) {
             eckit::Log::error() << "   " << (*itr).first << std::endl;
+        }
         throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
@@ -183,8 +186,11 @@ public:
             Comm* comm = itr->second;
 
             // refuse to delete the default communicator
-            if (default_ == comm)
-                throw SeriousBug("Trying to delete the default Communicator with name " + std::string(name), Here());
+            if (default_ == comm) {
+                throw SeriousBug("Trying to delete the default Communicator with name "
+                                     + std::string(name),
+                                 Here());
+            }
 
             comm->free();
             delete comm;
@@ -240,8 +246,9 @@ public:
 
         eckit::Log::error() << "No CommFactory for [" << builder << "]" << std::endl;
         eckit::Log::error() << "CommFactories are:" << std::endl;
-        for (j = factories.begin(); j != factories.end(); ++j)
+        for (j = factories.begin(); j != factories.end(); ++j) {
             eckit::Log::error() << "   " << (*j).first << std::endl;
+        }
 
         throw eckit::SeriousBug(std::string("No CommFactory called ") + builder, Here());
     }

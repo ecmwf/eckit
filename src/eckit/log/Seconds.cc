@@ -81,11 +81,13 @@ std::ostream& operator<<(std::ostream& s, const Seconds& sec) {
         }
         else {
             if (m) {
-                if (flg)
+                if (flg) {
                     ss << ' ';
+                }
                 ss << m << ' ' << periods[i].name_;
-                if (m > 1)
+                if (m > 1) {
                     ss << 's';
+                }
                 n %= periods[i].length_;
                 flg++;
             }

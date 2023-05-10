@@ -663,8 +663,9 @@ CASE("test_allGatherv") {
     // check results
     std::vector<int> expected;
     for (size_t j = 0; j < mpi::comm().size(); ++j) {
-        for (size_t i = 0; i < j; ++i)
+        for (size_t i = 0; i < j; ++i) {
             expected.push_back(j);
+        }
     }
 
     EXPECT(recv.buffer == expected);

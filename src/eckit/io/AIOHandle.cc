@@ -122,16 +122,18 @@ size_t AIOHandle::getFreeSlot() {
     /* wait until at least one buffer is done */
     errno = 0;
     while (::aio_suspend(aioplist.data(), aioplist.size(), nullptr) < 0) {
-        if (errno != EINTR)
+        if (errno != EINTR) {
             throw FailedSystemCall("aio_suspend");
+        }
     }
 
     // find which one has completed
     bool ok = false;
     for (n = 0; n < count_; n++) {
         int e = ::aio_error(buffers_[n]->caioptr());
-        if (e == EINPROGRESS)
+        if (e == EINPROGRESS) {
             continue;
+        }
 
         buffers_[n]->active(false);
 
@@ -155,8 +157,9 @@ size_t AIOHandle::getFreeSlot() {
 }
 
 long AIOHandle::write(const void* buffer, long length) {
-    if (length == 0)
+    if (length == 0) {
         return 0;
+    }
 
     size_t n = getFreeSlot();
 
@@ -184,8 +187,9 @@ void AIOHandle::flush() {
 
             errno = 0;
             while (::aio_suspend(aioplist.data(), aioplist.size(), nullptr) < 0) {
-                if (errno != EINTR)
+                if (errno != EINTR) {
                     throw FailedSystemCall("aio_suspend");
+                }
             }
 
             int e = ::aio_error(buffers_[n]->caioptr());
@@ -228,8 +232,9 @@ void AIOHandle::flush() {
             const struct aiocb* aiop = &aio;
             errno                    = 0;
             while (::aio_suspend(&aiop, 1, nullptr) < 0) {
-                if (errno != EINTR)
+                if (errno != EINTR) {
                     throw FailedSystemCall("aio_suspend");
+                }
             }
 
             int e = ::aio_error(&aio);

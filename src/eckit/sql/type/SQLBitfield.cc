@@ -40,8 +40,9 @@ SQLBitfield::~SQLBitfield() {}
 unsigned long SQLBitfield::mask(const std::string& n) const {
     std::map<std::string, unsigned long>::const_iterator j = mask_.find(n);
 
-    if (j == mask_.end())
+    if (j == mask_.end()) {
         throw eckit::UserError("SQLBitfield no field", n);
+    }
 
     return (*j).second;
 }
@@ -49,8 +50,9 @@ unsigned long SQLBitfield::mask(const std::string& n) const {
 unsigned long SQLBitfield::shift(const std::string& n) const {
     std::map<std::string, unsigned long>::const_iterator j = shift_.find(n);
 
-    if (j == shift_.end())
+    if (j == shift_.end()) {
         throw eckit::UserError("SQLBitfield no field", n);
+    }
 
     return (*j).second;
 }
@@ -60,16 +62,19 @@ std::string SQLBitfield::make(const std::string& name, const FieldNames& fields,
 
     std::stringstream s;
     s << name << "[";
-    for (size_t i = 0; i < fields.size(); ++i)
-        s << fields[i] << ":" << Translator<int, std::string>()(sizes[i]) << ((i + 1 != fields.size()) ? ";" : "");
+    for (size_t i = 0; i < fields.size(); ++i) {
+        s << fields[i] << ":" << Translator<int, std::string>()(sizes[i])
+          << ((i + 1 != fields.size()) ? ";" : "");
+    }
     s << "]";
     std::string typeName = s.str();
 
     if (!exists(typeName)) {
         // Ownership of SQLBitfield assumed by TypeRegistry
         SQLType::registerType(new SQLBitfield(typeName, fields, sizes));
-        if (ddlName)
+        if (ddlName) {
             SQLType::createAlias(typeName, ddlName);
+        }
     }
 
     return typeName;
@@ -95,18 +100,21 @@ const SQLType* SQLBitfield::subType(const std::string& name) const {
     std::vector<std::string> v;
     Tokenizer(".@")(name, v);
 
-    if (v.size() == 1)
+    if (v.size() == 1) {
         return this;
-    if (v.size() == 2 && name.find('@') != std::string::npos)
+    }
+    if (v.size() == 2 && name.find('@') != std::string::npos) {
         return this;
+    }
 
     ASSERT(v.size() == 3 || v.size() == 2);  // name was e.g: "status.active@body" or "status.active"
 
     std::string field = v[1];
     std::string full  = name;  // this->name() + "." + field;
 
-    if (exists(full))
+    if (exists(full)) {
         return &lookup(full);
+    }
 
     return SQLType::registerType(new SQLBit(full, mask(field), shift(field)));
 }

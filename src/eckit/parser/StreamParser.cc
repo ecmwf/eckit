@@ -65,8 +65,9 @@ char StreamParser::peek(bool spaces) {
     for (;;) {
         char c = _peek();
 
-        if (_eof())
+        if (_eof()) {
             return 0;
+        }
 
         if (comments_ && comment_.find(c) != comment_.end()) {
             while (_peek() != '\n' && !_eof()) {
@@ -92,8 +93,9 @@ char StreamParser::peek(bool spaces) {
 char StreamParser::next(bool spaces) {
     for (;;) {
         char c = _get();
-        if (_eof())
+        if (_eof()) {
             throw StreamParser::Error(std::string("StreamParser::next reached eof"));
+        }
 
         if (comments_ && comment_.find(c) != comment_.end()) {
             while (_peek() != '\n' && !_eof()) {
@@ -114,14 +116,17 @@ char StreamParser::next(bool spaces) {
 
 void StreamParser::consume(char c) {
     char n = next();
-    if (c != n)
-        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '" + n + "'",
+    if (c != n) {
+        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '"
+                                      + n + "'",
                                   line_ + 1);
+    }
 }
 
 void StreamParser::consume(const char* p) {
-    while (*p)
+    while (*p) {
         consume(*p++);
+    }
 }
 
 

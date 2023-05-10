@@ -100,14 +100,16 @@ Value& CmdArg::operator[](const long l) {
 }
 
 void CmdArg::print(std::ostream& out) const {
-    for (CmdMap::const_iterator i = args_.begin(); i != args_.end(); ++i)
+    for (CmdMap::const_iterator i = args_.begin(); i != args_.end(); ++i) {
         out << (*i).first << " = " << (*i).second << std::endl;
+    }
 }
 
 std::vector<std::string> CmdArg::args() const {
     std::vector<std::string> result;
-    for (CmdMap::const_iterator i = args_.begin(); i != args_.end(); ++i)
+    for (CmdMap::const_iterator i = args_.begin(); i != args_.end(); ++i) {
         result.push_back((*i).first);
+    }
     return result;
 }
 
@@ -121,18 +123,21 @@ void CmdArg::erase(long from, long to) {
     long i = from;
     while ((j = args_.find(Translator<long, std::string>()(i))) != args_.end()) {
         CmdMap::iterator k = args_.find(Translator<long, std::string>()(to + 1 - from + i));
-        if (k != args_.end())
+        if (k != args_.end()) {
             (*j).second = (*k).second;
-        else
+        }
+        else {
             args_.erase(j);
+        }
         ++i;
     }
 }
 
 void CmdArg::erase(const std::string& s) {
     CmdMap::iterator j = args_.find(s);
-    if (j != args_.end())
+    if (j != args_.end()) {
         args_.erase(j);
+    }
 }
 
 void CmdArg::operator+=(const CmdArg& other) {
@@ -144,8 +149,9 @@ void CmdArg::operator+=(const CmdArg& other) {
     // Find where we start adding
     long i = 0;
     CmdMap::iterator j;
-    while ((j = args_.find(Translator<long, std::string>()(i))) != args_.end())
+    while ((j = args_.find(Translator<long, std::string>()(i))) != args_.end()) {
         ++i;
+    }
 
     // Dont copy arg[0]
     tmp.args_.erase(tmp.args_.find("0"));
@@ -159,8 +165,9 @@ void CmdArg::operator+=(const CmdArg& other) {
     }
 
     // Add the rest
-    for (CmdMap::iterator m = tmp.args_.begin(); m != tmp.args_.end(); ++m)
+    for (CmdMap::iterator m = tmp.args_.begin(); m != tmp.args_.end(); ++m) {
         args_[(*m).first] = (*m).second;
+    }
 }
 
 bool CmdArg::exists(const std::string& key) const {

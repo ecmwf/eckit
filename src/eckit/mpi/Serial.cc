@@ -110,8 +110,9 @@ public:
 private:
     Request registerRequest(SerialRequest* request) {
         ++n_;
-        if (size_t(n_) == requests_.size())
+        if (size_t(n_) == requests_.size()) {
             n_ = 0;
+        }
         request->request_ = n_;
         Request r(request);
         requests_[n_] = r;
@@ -369,14 +370,16 @@ void Serial::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, co
 }
 
 void Serial::allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type) const {
-    if (recvbuf != sendbuf && sendcount > 0)
+    if (recvbuf != sendbuf && sendcount > 0) {
         memcpy(recvbuf, sendbuf, sendcount * dataSize[type]);
+    }
 }
 
 void Serial::allToAllv(const void* sendbuf, const int sendcounts[], const int[], void* recvbuf, const int[],
                        const int[], Data::Code type) const {
-    if (recvbuf != sendbuf && sendcounts[0] > 0)
+    if (recvbuf != sendbuf && sendcounts[0] > 0) {
         memcpy(recvbuf, sendbuf, sendcounts[0] * dataSize[type]);
+    }
 }
 
 Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/, int tag) const {

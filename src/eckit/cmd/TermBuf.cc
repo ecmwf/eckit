@@ -46,8 +46,9 @@ TermBuf::~TermBuf() {
 
 int TermBuf::sync() {
     for (char* c = pbase(); c != pptr(); ++c) {
-        if (*c == '\n')
+        if (*c == '\n') {
             clearEOL();
+        }
         out_ << *c;
     }
     setp(pbase(), epptr());
@@ -57,8 +58,9 @@ int TermBuf::sync() {
 
 int TermBuf::overflow(int c) {
     sync();
-    if (c == EOF)
+    if (c == EOF) {
         return 0;
+    }
 
     sputc(c);
     return 0;

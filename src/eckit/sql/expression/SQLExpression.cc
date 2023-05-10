@@ -72,8 +72,9 @@ void SQLExpression::title(const std::string& t) {
 }
 
 std::string SQLExpression::title() const {
-    if (title_.size())
+    if (title_.size()) {
         return title_;
+    }
 
     std::ostringstream s;
     s << *this;

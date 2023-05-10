@@ -29,10 +29,12 @@ SharedHandle::SharedHandle(DataHandle& handle) :
 SharedHandle::~SharedHandle() {}
 
 void SharedHandle::print(std::ostream& s) const {
-    if (format(s) == Log::compactFormat)
+    if (format(s) == Log::compactFormat) {
         s << "SharedHandle";
-    else
+    }
+    else {
         s << "SharedHandle[handle=" << handle_ << ']';
+    }
 }
 
 Length SharedHandle::openForRead() {

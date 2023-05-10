@@ -114,8 +114,9 @@ void TCPSocket::closeInput() {
 long TCPSocket::write(const void* buf, long length) {
 
     // Allow zero length packets
-    if (length == 0)
+    if (length == 0) {
         return ::write(socket_, buf, length);
+    }
 
     long requested = length;
 
@@ -201,8 +202,9 @@ long TCPSocket::write(const void* buf, long length) {
 }
 
 long TCPSocket::read(void* buf, long length) {
-    if (length <= 0)
+    if (length <= 0) {
         return length;
+    }
 
     static bool useSelectOnTCPSocket = Resource<bool>("useSelectOnTCPSocket", false);
     long received                    = 0;
@@ -246,8 +248,9 @@ long TCPSocket::read(void* buf, long length) {
                 Log::status() << "Resuming transfer" << std::endl;
                 len = ::read(socket_, p, length);
             }
-            else
+            else {
                 len = ::read(socket_, p, length);
+            }
         }
         else {
             len = ::read(socket_, p, length);
@@ -418,8 +421,9 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
             switch (errno) {
                 case ECONNREFUSED:
                     if (++tries >= retries) {
-                        if (retries >= 0)
+                        if (retries >= 0) {
                             throw TooManyRetries(tries);
+                        }
                     }
                     ::sleep(5);
                     break;
@@ -485,15 +489,18 @@ void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, co
     int flg           = 0;
     socklen_t flgsize = sizeof(flg);
 
-    if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
+    if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0) {
         Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
+    }
 
     if (flg != size) {
-        if (setsockopt(socket, SOL_SOCKET, stype, &size, sizeof(size)) < 0)
+        if (setsockopt(socket, SOL_SOCKET, stype, &size, sizeof(size)) < 0) {
             Log::warning() << "setsockopt " << ssock << " " << Log::syserr << std::endl;
+        }
 
-        if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0)
+        if (getsockopt(socket, SOL_SOCKET, stype, &flg, &flgsize) < 0) {
             Log::warning() << "getsockopt " << ssock << " " << Log::syserr << std::endl;
+        }
 
         bool warn = (flg != size);
 #if defined(__linux__)
@@ -504,8 +511,10 @@ void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, co
         // returned  by  getsockopt(). The minimum (doubled) value for this option is 2048.
         warn &= !(flg == 2 * size);
 #endif
-        if (warn)
-            Log::warning() << "Attempt to set " << stype << " buffer size to " << size << " but kernel set size to " << flg << std::endl;
+        if (warn) {
+            Log::warning() << "Attempt to set " << stype << " buffer size to " << size
+                           << " but kernel set size to " << flg << std::endl;
+        }
     }
 }
 
@@ -522,14 +531,16 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
     if (opts.reuseAddr()) {
         int flg = 1;
-        if (::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg)) < 0)
+        if (::setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &flg, sizeof(flg)) < 0) {
             Log::warning() << "setsockopt SO_REUSEADDR" << Log::syserr << std::endl;
+        }
     }
 
     if (opts.keepAlive()) {
         int flg = 1;
-        if (::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg)) < 0)
+        if (::setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &flg, sizeof(flg)) < 0) {
             Log::warning() << "setsockopt SO_KEEPALIVE" << Log::syserr << std::endl;
+        }
     }
 
     if (opts.reusePort()) {
@@ -544,8 +555,9 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
         linger ling;
         ling.l_onoff  = 0;
         ling.l_linger = 0;
-        if (::setsockopt(s, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling)) < 0)
+        if (::setsockopt(s, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling)) < 0) {
             Log::warning() << "setsockopt SO_LINGER" << Log::syserr << std::endl;
+        }
 #endif
 
 #ifdef SO_DONTLINGER
@@ -556,14 +568,16 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
     if (opts.ipLowDelay()) {
         int tos = IPTOS_LOWDELAY;
-        if (::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)) < 0)
+        if (::setsockopt(s, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)) < 0) {
             Log::warning() << "setsockopt IP_TOS" << Log::syserr << std::endl;
+        }
     }
 
     if (opts.tcpNoDelay()) {
         int flag = 1;
-        if (::setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)) < 0)
+        if (::setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)) < 0) {
             Log::warning() << "setsockopt TCP_NODELAY" << Log::syserr << std::endl;
+        }
     }
 
     receiveBufferSize_ = receiveBufferSize_ ? receiveBufferSize_ : opts.receiveBufferSize();
@@ -583,10 +597,12 @@ int TCPSocket::createSocket(int port, const SocketOptions& opts) {
 
     std::string addr = bindingAddress();
 
-    if (addr.length() == 0)
+    if (addr.length() == 0) {
         sin.sin_addr.s_addr = INADDR_ANY;
-    else
+    }
+    else {
         sin.sin_addr.s_addr = ::inet_addr(addr.c_str());
+    }
 
     while (::bind(s, reinterpret_cast<sockaddr*>(&sin), sizeof(sin)) == -1) {
         Log::warning() << "bind port " << localPort_ << " " << addr << Log::syserr << std::endl;
@@ -646,8 +662,9 @@ std::string TCPSocket::addrToHost(in_addr addr) {
 
     std::map<uint32_t, std::string>::iterator j = cache.find(addr.s_addr);
 
-    if (j != cache.end())
+    if (j != cache.end()) {
         return (*j).second;
+    }
 
     hostent* h;
 
@@ -679,8 +696,9 @@ std::string TCPSocket::addrToHost(in_addr addr) {
 std::string TCPSocket::hostName(const std::string& h, bool full) {
     in_addr_t addr = ::inet_addr(h.c_str());
     if (addr == (in_addr_t)-1) {
-        if (full)
+        if (full) {
             return h;
+        }
         else
             return h.substr(0, h.find('.'));
     }
@@ -748,8 +766,9 @@ long TCPSocket::rawRead(void* buf, long length) {
 }
 
 bool TCPSocket::stillConnected() const {
-    if (socket_ == -1)
+    if (socket_ == -1) {
         return false;
+    }
 
     fd_set r;
     fd_set e;
@@ -765,8 +784,9 @@ bool TCPSocket::stillConnected() const {
     ::timeval tv = {0, 0};
 
     if (::select(socket_ + 1, &r, &w, &e, &tv) >= 0) {
-        if (!FD_ISSET(socket_, &r))
+        if (!FD_ISSET(socket_, &r)) {
             return true;
+        }
 
         int n = 0;
         if (::ioctl(socket_, FIONREAD, &n) < 0) {

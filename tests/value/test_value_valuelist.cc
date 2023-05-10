@@ -439,8 +439,9 @@ CASE("Test automatic creation of valuelists from vectors") {
     // constructed.
 
     std::vector<int> vint;
-    for (int i = 99; i > 0; i -= 11)
+    for (int i = 99; i > 0; i -= 11) {
         vint.push_back(i);
+    }
 
     Value val = toValue(vint);
 
@@ -454,8 +455,9 @@ CASE("Test automatic creation of valuelists from lists") {
     // constructed.
 
     std::list<int> lint;
-    for (int i = 99; i > 0; i -= 11)
+    for (int i = 99; i > 0; i -= 11) {
         lint.push_back(i);
+    }
 
     Value val = toValue(lint);
 

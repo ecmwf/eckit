@@ -36,9 +36,11 @@ std::shared_ptr<SQLExpression> FunctionIN::clone() const {
 
 double FunctionIN::eval(bool& missing) const {
     const SQLExpression& x = *args_[size_];
-    for (size_t i = 0; i < size_; ++i)
-        if (FunctionEQ::equal(x, *args_[i], missing))
+    for (size_t i = 0; i < size_; ++i) {
+        if (FunctionEQ::equal(x, *args_[i], missing)) {
             return true;
+        }
+    }
     return false;
 }
 

@@ -84,10 +84,12 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
 }
 
 KDMapped::~KDMapped() {
-    if (addr_)
+    if (addr_) {
         SYSCALL(munmap(addr_, size_));
-    if (fd_ >= 0)
+    }
+    if (fd_ >= 0) {
         SYSCALL(close(fd_));
+    }
 }
 
 // Warning, takes ownership of maps

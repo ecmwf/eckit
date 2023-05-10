@@ -16,8 +16,9 @@ namespace eckit::net {
 
 Telnetable::Telnetable(int port) :
     telnet_(new Telnet(port)) {
-    if (port != 0)
+    if (port != 0) {
         telnet_.start();
+    }
 }
 
 Telnetable::~Telnetable() {

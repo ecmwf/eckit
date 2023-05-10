@@ -498,7 +498,7 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
     ensureHeaders();
     ASSERT(code_);
     for (auto c : http_codes) {
-        if (c.code_ == code_)
+        if (c.code_ == code_) {
             if (c.redirect_) {
                 char* url = NULL;
                 _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
@@ -506,6 +506,7 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
                 location = url;
                 return true;
             }
+        }
     }
     return false;
 }

@@ -36,10 +36,12 @@ static void deldir(eckit::PathName& p) {
     std::vector<eckit::PathName> dirs;
     p.children(files, dirs);
 
-    for (auto& f : files)
+    for (auto& f : files) {
         f.unlink();
-    for (auto& d : dirs)
+    }
+    for (auto& d : dirs) {
         deldir(d);
+    }
 
     p.rmdir();
 }

@@ -144,8 +144,9 @@ Recycler<T>::Recycler(const PathName& path) :
 
 template <class T>
 Recycler<T>::~Recycler() {
-    if (fd_ >= 0)
+    if (fd_ >= 0) {
         SYSCALL(::close(fd_));
+    }
 }
 
 
@@ -186,8 +187,9 @@ void Recycler<T>::push(Iter begin, Iter end) {
     SYSCALL(here = ::lseek(fd_, 0, SEEK_END));
     ASSERT((here % sizeof(T)) == 0);
 
-    for (Iter j = begin; j != end; ++j)
+    for (Iter j = begin; j != end; ++j) {
         ASSERT(::write(fd_, &(*j), sizeof(T)) == sizeof(T));
+    }
 }
 
 template <class T>

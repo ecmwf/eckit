@@ -74,8 +74,9 @@ Stream::~Stream() {}
 
 void Stream::putBytes(const void* buf, long len) {
     writeCount_ += len;
-    if (write(buf, len) != len)
+    if (write(buf, len) != len) {
         throw WriteError(name());
+    }
 }
 
 std::ostream& operator<<(std::ostream& out, const Stream& s) {
@@ -84,8 +85,9 @@ std::ostream& operator<<(std::ostream& out, const Stream& s) {
 }
 
 void Stream::getBytes(void* buf, long len) {
-    if (read(buf, len) != len)
+    if (read(buf, len) != len) {
         throw ReadError(name());
+    }
 }
 
 
@@ -112,8 +114,9 @@ void Stream::putLong(unsigned long p) {
             unsigned short s = htons(p);
             putBytes(&s, sizeof(s));
         }
-        else
+        else {
             NOTIMP;
+        }
     }
     else {
         p = htonl(p);
@@ -144,8 +147,9 @@ unsigned long Stream::getLong() {
 }
 
 std::ostream& operator<<(std::ostream& s, Stream::tag t) {
-    if (t >= 0 && t < tag_count)
+    if (t >= 0 && t < tag_count) {
         return s << '\'' << tag_names[t] << '\'';
+    }
     else
         return s << '\'' << long(t) << '\'';
 }
@@ -164,8 +168,9 @@ void Stream::badTag(Stream::tag need, Stream::tag got) {
         long length = getLong();
         std::string s;
         s.resize(length);
-        for (long i = 0; i < length; i++)
+        for (long i = 0; i < length; i++) {
             s[i] = getChar();
+        }
         Log::error() << "String is " << s << std::endl;
     }
 
@@ -188,8 +193,9 @@ Stream::tag Stream::nextTag() {
         return tag_eof;
     }
 
-    if (len == EOF)
+    if (len == EOF) {
         throw ShortFile(name());
+    }
 
     tag t = static_cast<tag>(c);
     //  Log::debug() << "Next tag " << t << std::endl;
@@ -201,8 +207,9 @@ Stream::tag Stream::readTag(Stream::tag need) {
 
     // Skip any end-of-object lingering
 
-    while ((t = nextTag()) == tag_end_obj)
+    while ((t = nextTag()) == tag_end_obj) {
         ;
+    }
 
     if (t == tag_exception) {
         std::string s;
@@ -210,9 +217,9 @@ Stream::tag Stream::readTag(Stream::tag need) {
         throw RemoteException(s, name());
     }
 
-    if (need != t)
+    if (need != t) {
         badTag(need, t);
-
+    }
 
     return t;
 }
@@ -641,11 +648,13 @@ Stream& Stream::operator>>(std::string& s) {
 
 bool Stream::next(std::string& s) {
     tag t = nextTag();
-    if (t == tag_eof)
+    if (t == tag_eof) {
         return false;
+    }
 
-    if (t != tag_string)
+    if (t != tag_string) {
         badTag(tag_string, t);
+    }
 
     long length = getLong();
     char buf[length];
@@ -662,11 +671,13 @@ bool Stream::next(std::string& s) {
 bool Stream::next(int& x) {
 
     tag t = nextTag();
-    if (t == tag_eof)
+    if (t == tag_eof) {
         return false;
+    }
 
-    if (t != tag_int)
+    if (t != tag_int) {
         badTag(tag_int, t);
+    }
 
     union {
         uint32_t u;
@@ -710,8 +721,9 @@ bool Stream::endObjectFound() {
 }
 
 void Stream::skipEndObject() {
-    if (endObjectFound())
+    if (endObjectFound()) {
         lastTag_ = tag_zero;
+    }
 }
 
 #if 0
@@ -762,14 +774,17 @@ bool Stream::next() {
     for (;;) {
         tag t = nextTag();
 
-        if (t == tag_start_obj)
+        if (t == tag_start_obj) {
             return true;
+        }
 
-        if (t == tag_eof)
+        if (t == tag_eof) {
             return false;
+        }
 
-        if (t != tag_end_obj)
+        if (t != tag_end_obj) {
             badTag(tag_start_obj, t);
+        }
     }
 }
 

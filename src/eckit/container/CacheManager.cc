@@ -78,9 +78,9 @@ void CacheManagerBase::rescanCache(const eckit::PathName& base) const {
     std::ofstream out(mapping.asString().c_str(), std::ios::app);
 
     for (std::vector<PathName>::const_iterator j = files.begin(); j != files.end(); ++j) {
-
-        if (j->extension() != extension_)
+        if (j->extension() != extension_) {
             continue;
+        }
 
         eckit::Log::info() << "CACHE-MANAGER cleanup " << db << ", indexing " << (*j) << std::endl;
 
@@ -115,8 +115,9 @@ void CacheManagerBase::touch(const eckit::PathName& base, const eckit::PathName&
     // 2- where do we store the data (path)
     // 3- What is the threshold (size_t)
 
-    if (!maxCacheSize_)
+    if (!maxCacheSize_) {
         return;
+    }
 
     if (not writable(base)) {
         Log::warning() << "CACHE-MANAGER base " << base << " isn't writable, cannot update cache management"

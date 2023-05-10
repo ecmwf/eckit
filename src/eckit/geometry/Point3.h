@@ -1,5 +1,14 @@
-#ifndef eckit_geometry_Point3_h
-#define eckit_geometry_Point3_h
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#pragma once
 
 #include "eckit/geometry/KPoint.h"
 
@@ -10,24 +19,47 @@ namespace eckit::geometry {
 //------------------------------------------------------------------------------------------------------
 
 class Point3 : public eckit::geometry::KPoint<3> {
-
-    typedef KPoint<3> BasePoint;
+    using BasePoint = KPoint<3>;
 
 public:
-    Point3() :
-        BasePoint() {}
+    Point3() = default;
 
     Point3(const BasePoint& p) :
         BasePoint(p) {}
 
-    Point3(const double* p) :
+    explicit Point3(const double* p) :
         BasePoint(p) {}
 
-    Point3(double x, double y, double z) :
-        BasePoint() {
+    Point3(double x, double y, double z) {
         x_[XX] = x;
         x_[YY] = y;
         x_[ZZ] = z;
+    }
+
+    Point3(const Point3& other) :
+        Point3(other.X, other.Y, other.Z) {}
+
+    Point3(Point3&& other) :
+        Point3(other.X, other.Y, other.Z) {}
+
+    double& X = x_[XX];
+
+    double& Y = x_[YY];
+
+    double& Z = x_[ZZ];
+
+    Point3& operator=(const Point3& other) {
+        x_[0] = other[0];
+        x_[1] = other[1];
+        x_[2] = other[2];
+        return *this;
+    }
+
+    Point3& operator=(Point3&& other) {
+        x_[0] = other[0];
+        x_[1] = other[1];
+        x_[2] = other[2];
+        return *this;
     }
 
     double operator[](const size_t& i) const {
@@ -59,5 +91,3 @@ bool points_equal(const Point3&, const Point3&);
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

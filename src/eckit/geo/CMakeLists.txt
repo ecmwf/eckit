@@ -35,10 +35,6 @@ list(APPEND eckit_geo_srcs
 	scanner/Unstructured.h
 	types.cc
 	types.h
-	types/MatrixXYZ.h
-	types/PointLatLon.h
-	types/PointXY.h
-	types/PointXYZ.h
 	util.cc
 	util.h
 	util/arange.cc
@@ -51,7 +47,7 @@ list(APPEND eckit_geo_srcs
 )
 
 set(eckit_geo_include_dirs )
-set(eckit_geo_libs eckit)
+set(eckit_geo_libs eckit_geometry eckit_maths)
 
 if(HAVE_PROJ)
 	list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)

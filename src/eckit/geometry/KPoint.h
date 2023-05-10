@@ -8,8 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KPoint_H
-#define KPoint_H
+#pragma once
 
 #include <algorithm>
 #include <cassert>
@@ -48,7 +47,7 @@ public:
 
     double x(size_t axis) const { return x_[axis]; }
 
-    KPoint() {}
+    KPoint() = default;
 
     KPoint(const double* x) { std::copy(x, x + dimensions(), x_); }
 
@@ -281,5 +280,3 @@ const size_t KPoint<SIZE>::DIMS;
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

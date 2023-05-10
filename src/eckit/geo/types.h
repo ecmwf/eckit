@@ -16,18 +16,17 @@
 #include <variant>
 #include <vector>
 
-#include "eckit/geo/types/PointLatLon.h"
-#include "eckit/geo/types/PointXY.h"
-#include "eckit/geo/types/PointXYZ.h"
+#include "eckit/geometry/Point2.h"
+#include "eckit/geometry/Point3.h"
+#include "eckit/geometry/PointLonLat.h"
 
 
 namespace eckit::geo {
 
-
-using PointLatLon = types::PointLatLon<double>;
-using PointXY     = types::PointXY<double>;
-using PointXYZ    = types::PointXYZ<double>;
-using Point       = std::variant<PointLatLon, PointXY, PointXYZ>;
+using PointLonLat = eckit::geometry::PointLonLat;
+using Point2      = eckit::geometry::Point2;
+using Point3      = eckit::geometry::Point3;
+using Point       = std::variant<PointLonLat, Point2, Point3>;
 
 
 using pl_type = std::vector<long>;

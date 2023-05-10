@@ -90,10 +90,8 @@ const PathName& FileSpace::sameFileSystem(const PathName& path) const {
         Log::info() << f << " matches " << path << std::endl;
         return f;
     }
-    else {
-        Log::warning() << "Cannot find matching file system for " << path << std::endl;
-        return selectFileSystem();
-    }
+    Log::warning() << "Cannot find matching file system for " << path << std::endl;
+    return selectFileSystem();
 }
 
 const PathName& FileSpace::find(const PathName& path, bool& found) const {

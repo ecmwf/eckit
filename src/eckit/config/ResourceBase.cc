@@ -130,12 +130,10 @@ std::string ResourceBase::name() const {
     if (owner_) {
         return owner_->kind() + '.' + owner_->name() + '.' + name_;
     }
-    else
-        return name_;
+    return name_;
 }
 
 void ResourceBase::dump(std::ostream& s) const {
-
     // need const_cast here
     ((ResourceBase*)this)->init();
 

@@ -392,8 +392,7 @@ void LocalPathName::unlink(bool verbose) const {
         if (errno != ENOENT) {
             throw FailedSystemCall(std::string("unlink ") + path_);
         }
-        else
-            Log::info() << "Unlink failed " << path_ << Log::syserr << std::endl;
+        Log::info() << "Unlink failed " << path_ << Log::syserr << std::endl;
     }
 }
 
@@ -403,8 +402,7 @@ void LocalPathName::rmdir(bool verbose) const {
         if (errno != ENOENT) {
             throw FailedSystemCall(std::string("rmdir ") + path_);
         }
-        else
-            Log::info() << "Rmdir failed " << path_ << Log::syserr << std::endl;
+        Log::info() << "Rmdir failed " << path_ << Log::syserr << std::endl;
     }
 }
 

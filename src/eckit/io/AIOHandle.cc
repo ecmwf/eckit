@@ -148,9 +148,7 @@ size_t AIOHandle::getFreeSlot() {
             ok = true;
             break;
         }
-        else {
-            throw FailedSystemCall("aio_error");
-        }
+        throw FailedSystemCall("aio_error");
     }
     ASSERT(ok);
     return n;

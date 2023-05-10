@@ -699,8 +699,7 @@ std::string TCPSocket::hostName(const std::string& h, bool full) {
         if (full) {
             return h;
         }
-        else
-            return h.substr(0, h.find('.'));
+        return h.substr(0, h.find('.'));
     }
 
     struct in_addr a;
@@ -801,10 +800,8 @@ bool TCPSocket::stillConnected() const {
 
         return true;
     }
-    else {
-        Log::info() << "TCPSocket::stillConnected(select) failed " << Log::syserr << std::endl;
-        return false;
-    }
+    Log::info() << "TCPSocket::stillConnected(select) failed " << Log::syserr << std::endl;
+    return false;
 }
 
 void TCPSocket::debug(bool on) {

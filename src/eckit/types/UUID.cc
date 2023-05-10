@@ -24,8 +24,7 @@ static char to_char(size_t i) {
     if (i <= 9) {
         return static_cast<char>('0' + i);
     }
-    else
-        return static_cast<char>('a' + (i - 10));
+    return static_cast<char>('a' + (i - 10));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

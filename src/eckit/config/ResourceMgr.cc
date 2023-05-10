@@ -77,38 +77,39 @@ bool ResourceMgr::parse(const char* p) {
         }
         p++;
     }
+
     if (*p != ':') {
         return false;
     }
-    else {
-        switch (n) {
-            case 1:
-                s[2] = s[0];
-                s[0] = "";
-                break;
-            case 2:
-                s[2] = s[1];
-                s[1] = s[0];
-                s[0] = "";
-                break;
-            case 3:
-                break;
-        }
 
-        p++;
-        p = skip_spaces(p);
-
-        // Remove trailing blanks
-        int l = ::strlen(p) - 1;
-        while (l >= 0 && isspace(p[l])) {
-            l--;
-        }
-
-        ResourceQualifier x(s[0], s[1], s[2]);
-
-        std::string t = std::string(p, l + 1);
-        resmap_[x]    = t;
+    switch (n) {
+        case 1:
+            s[2] = s[0];
+            s[0] = "";
+            break;
+        case 2:
+            s[2] = s[1];
+            s[1] = s[0];
+            s[0] = "";
+            break;
+        case 3:
+            break;
     }
+
+    p++;
+    p = skip_spaces(p);
+
+    // Remove trailing blanks
+    int l = ::strlen(p) - 1;
+    while (l >= 0 && isspace(p[l])) {
+        l--;
+    }
+
+    ResourceQualifier x(s[0], s[1], s[2]);
+
+    std::string t = std::string(p, l + 1);
+    resmap_[x]    = t;
+
     return true;
 }
 

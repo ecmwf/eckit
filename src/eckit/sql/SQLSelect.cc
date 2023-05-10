@@ -635,10 +635,8 @@ bool SQLSelect::processOneRow() {
             count_++;
             return true;
         }
-        else {
-            doOutputCached_ = false;
-            return false;
-        }
+        doOutputCached_ = false;
+        return false;
     }
 
     // If this is the first retrieve, we need to initialise all tables

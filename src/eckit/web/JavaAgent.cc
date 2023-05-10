@@ -69,8 +69,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
             s << int(-1);
             return;
         }
-        else
-            s << int(0);
+        s << int(0);
 
         a->user_ = user;
     }

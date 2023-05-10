@@ -198,14 +198,10 @@ DataHandle* MemoryHandle::clone() const {
         h->size_ = size_;
         return h;
     }
-    else {
-        if (readOnly_) {
-            return new MemoryHandle(static_cast<const void*>(address_), size_);
-        }
-        else {
-            return new MemoryHandle(address_, size_);
-        }
+    if (readOnly_) {
+        return new MemoryHandle(static_cast<const void*>(address_), size_);
     }
+    return new MemoryHandle(address_, size_);
 }
 
 const void* MemoryHandle::data() const {

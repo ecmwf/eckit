@@ -83,8 +83,7 @@ bool Semaphore::tryLock(void) {
             if (errno == EAGAIN) {
                 return false;
             }
-            else
-                throw FailedSystemCall("semop try_lock");
+            throw FailedSystemCall("semop try_lock");
         }
     }
     return true;

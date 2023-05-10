@@ -83,10 +83,8 @@ char StreamParser::peek(bool spaces) {
             //            std::cout << "peek(" << c << ")" << std::endl;
             return c;
         }
-        else {
-            //            std::cout << "skip(" << c << ")" << std::endl;
-            _get();
-        }
+        //            std::cout << "skip(" << c << ")" << std::endl;
+        _get();
     }
 }
 

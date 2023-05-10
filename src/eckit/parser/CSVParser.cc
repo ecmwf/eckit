@@ -59,17 +59,15 @@ Value CSVParser::parse() {
         }
         return result;
     }
-    else {
-        ValueList result;
-        while (peek(true)) {
-            ValueList line = nextLine();
-            if (line.size() == 0) {
-                break;
-            }
-            result.push_back(line);
+    ValueList result;
+    while (peek(true)) {
+        ValueList line = nextLine();
+        if (line.size() == 0) {
+            break;
         }
-        return result;
+        result.push_back(line);
     }
+    return result;
 }
 
 Value CSVParser::nextItem(bool& comma) {

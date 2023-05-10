@@ -122,10 +122,8 @@ Value ObjectParser::parseNumber() {
         double d = Translator<std::string, double>()(s);
         return Value(d);
     }
-    else {
-        long long d = Translator<std::string, long long>()(s);
-        return Value(d);
-    }
+    long long d = Translator<std::string, long long>()(s);
+    return Value(d);
 }
 
 #if eckit_HAVE_UNICODE

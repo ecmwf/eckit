@@ -174,10 +174,8 @@ bool Cache<K, V>::update(const K& k, const V& v) {
         e.reset(v);
         return true;
     }
-    else {
-        storage_.insert(std::make_pair(k, Entry(v)));
-        return false;
-    }
+    storage_.insert(std::make_pair(k, Entry(v)));
+    return false;
 }
 
 template <typename K, typename V>

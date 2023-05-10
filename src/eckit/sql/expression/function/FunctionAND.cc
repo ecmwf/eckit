@@ -74,11 +74,9 @@ std::shared_ptr<SQLExpression> FunctionAND::simplify(bool& changed) {
                 std::cout << *x << std::endl;
                 return x;
             }
-            else {
-                std::cout << "SYMPLIFY " << *this << "to 0 " << std::endl;
-                changed = true;
-                return SQLExpression::number(0);
-            }
+            std::cout << "SYMPLIFY " << *this << "to 0 " << std::endl;
+            changed = true;
+            return SQLExpression::number(0);
         }
     }
 

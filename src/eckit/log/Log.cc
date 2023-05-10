@@ -182,10 +182,8 @@ Channel& Log::debug() {
             static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
             return empty;
         }
-        else {
-            static Channel empty;
-            return empty;
-        }
+        static Channel empty;
+        return empty;
     }
 
     if (!Main::instance().debug_) {

@@ -267,9 +267,7 @@ Value Value::tail() const {
         v.erase(v.begin());
         return v;
     }
-    else {
-        return Value();
-    }
+    return Value();
 }
 
 Value::operator ValueList() const {

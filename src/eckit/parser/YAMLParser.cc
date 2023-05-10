@@ -676,9 +676,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
                 isKey = true;
                 break;
             }
-            else {
-                s += p;
-            }
+            s += p;
 
             colon = (c == ':');
         }

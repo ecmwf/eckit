@@ -30,9 +30,7 @@ Params::value_t getValue(const ScopeParams& p, const Params::key_t& key) {
     if (StringTools::startsWith(key, p.scope_)) {
         return getValue(p.p_, key.substr(p.scope_.length()));
     }
-    else {
-        return Params::value_t();
-    }
+    return Params::value_t();
 }
 
 void print(const ScopeParams& p, std::ostream& s) {

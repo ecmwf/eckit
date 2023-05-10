@@ -33,9 +33,7 @@ Length BufferedHandle::openForRead() {
     if (opened_) {
         return handle().estimate();
     }
-    else {
-        return handle().openForRead();
-    }
+    return handle().openForRead();
 }
 
 void BufferedHandle::openForWrite(const Length& length) {

@@ -41,8 +41,7 @@ Properties::property_t Properties::get(const key_t& k) const {
     if (vit != props_.end()) {
         return (*vit).second;
     }
-    else
-        return property_t();  // return Nil Value...
+    return property_t();  // return Nil Value...
 }
 
 Properties& Properties::set(const key_t& k, const property_t& v) {

@@ -134,9 +134,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
             }
             throw UserError("An error occurred in argument parsing", Here());
         }
-        else {
-            ::exit(1);
-        }
+        ::exit(1);
     }
 }
 

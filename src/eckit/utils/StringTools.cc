@@ -147,8 +147,7 @@ std::string StringTools::trim(const std::string& str, const std::string& chars) 
     if ((std::string::npos == startpos) || (std::string::npos == endpos)) {
         return "";
     }
-    else
-        return str.substr(startpos, endpos - startpos + 1);
+    return str.substr(startpos, endpos - startpos + 1);
 }
 
 std::string StringTools::front_trim(const std::string& str) {
@@ -161,8 +160,7 @@ std::string StringTools::front_trim(const std::string& str, const std::string& c
     if (std::string::npos == startpos) {
         return "";
     }
-    else
-        return str.substr(startpos);
+    return str.substr(startpos);
 }
 
 std::string StringTools::back_trim(const std::string& str) {
@@ -175,8 +173,7 @@ std::string StringTools::back_trim(const std::string& str, const std::string& ch
     if (std::string::npos == endpos) {
         return "";
     }
-    else
-        return str.substr(0, endpos + 1);
+    return str.substr(0, endpos + 1);
 }
 
 std::vector<std::string> StringTools::split(const std::string& delim, const std::string& text) {

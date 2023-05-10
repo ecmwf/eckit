@@ -57,7 +57,6 @@ public:
     SendRequest& matchingSendRequest(const ReceiveRequest& req) { return matchingSendRequest(req.tag()); }
 
     SendRequest& matchingSendRequest(int tag) {
-        Request send;
         if (tag == anyTag()) {
             std::map<int, std::deque<Request> >::iterator it = send_.begin();
             for (; it != send_.end(); ++it) {
@@ -70,13 +69,11 @@ public:
             }
             throw eckit::Exception("No send requests available", Here());
         }
-        else {
-            ASSERT(send_.count(tag) > 0);
-            ASSERT(send_[tag].size());
-            Request send = send_[tag].front();
-            send_[tag].pop_front();
-            return send.as<SendRequest>();
-        }
+        ASSERT(send_.count(tag) > 0);
+        ASSERT(send_[tag].size());
+        Request send = send_[tag].front();
+        send_[tag].pop_front();
+        return send.as<SendRequest>();
     }
 
     SendRequest* matchNextSendRequest(int tag) {

@@ -152,9 +152,7 @@ public:  // methods
         if (subsection_.length() != 0) {
             return description_ + " (section: " + subsection_ + ")";
         }
-        else {
-            return description_;
-        }
+        return description_;
     }
 
     const std::string& descriptionNoSection() const {

@@ -47,8 +47,7 @@ double FunctionTHIN::eval(bool& missing) const {
     if ((*count_) % every_nth == 0) {
         return 1.0;
     }
-    else
-        return 0.0;
+    return 0.0;
 }
 
 void FunctionTHIN::prepare(SQLSelect& sql) {

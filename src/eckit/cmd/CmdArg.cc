@@ -74,9 +74,7 @@ const Value& CmdArg::get(const std::string& key, const Value& def) const {
     if (j == args_.end()) {
         return def;
     }
-    else {
-        return (*j).second;
-    }
+    return (*j).second;
 }
 
 void CmdArg::set(const std::string& key, const Value& val) {
@@ -189,8 +187,7 @@ const Value& CmdArg::operator()(const std::string& key, Value defaultval) {
         set(key, defaultval);
         return args_[key];
     }
-    else
-        return (*j).second;
+    return (*j).second;
 }
 
 const Value& CmdArg::operator()(const long lkey, Value defaultval) {

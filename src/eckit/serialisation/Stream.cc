@@ -131,27 +131,24 @@ unsigned long Stream::getLong() {
             getBytes(&n, sizeof(n));
             return ntohl(n);
         }
-        else if (sizeof(unsigned short) == 4) {
+        if (sizeof(unsigned short) == 4) {
             unsigned short s;
             getBytes(&s, sizeof(s));
             return ntohs(s);
         }
-        else
-            NOTIMP;
+        NOTIMP;
     }
-    else {
-        long p;
-        getBytes(&p, sizeof(p));
-        return ntohl(p);
-    }
+
+    long p;
+    getBytes(&p, sizeof(p));
+    return ntohl(p);
 }
 
 std::ostream& operator<<(std::ostream& s, Stream::tag t) {
     if (t >= 0 && t < tag_count) {
         return s << '\'' << tag_names[t] << '\'';
     }
-    else
-        return s << '\'' << long(t) << '\'';
+    return s << '\'' << long(t) << '\'';
 }
 
 void Stream::badTag(Stream::tag need, Stream::tag got) {

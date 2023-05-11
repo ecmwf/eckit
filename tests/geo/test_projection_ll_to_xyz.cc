@@ -12,20 +12,19 @@
 
 #include <iostream>
 
-#include "grit/projection/LatLonToXYZ.h"
-#include "grit/test.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/testing/Test.h"
 
 
 int main(int argc, char* argv[]) {
-    using grit::Point;
-    using grit::PointLatLon;
-    using grit::projection::LatLonToXYZ;
+    using eckit::geo::Point;
+    using eckit::geo::PointLonLat;
+    using eckit::geo::projection::LonLatToXYZ;
 
-    const PointLatLon p(1., 723.);
-
+    const PointLonLat p(1., 723.);
 
     {
-        LatLonToXYZ to_xyz(1.);
+        LonLatToXYZ to_xyz(1.);
 
         auto q = to_xyz.fwd(p);
         auto r = to_xyz.inv(q);
@@ -36,11 +35,11 @@ int main(int argc, char* argv[]) {
 
 
     {
-        LatLonToXYZ to_xyz_ab(3., 2.);  // oblate
-        LatLonToXYZ to_xyz_ba(2., 3.);  // problate
+        LonLatToXYZ to_xyz_ab(3., 2.);  // oblate
+        LonLatToXYZ to_xyz_ba(2., 3.);  // problate
 
         for (const auto& lon : {0., 90., 180., 270.}) {
-            PointLatLon p{0., lon};
+            PointLonLat p{0., lon};
             std::cout << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_ab.fwd(p)
                       << ", p_ba(x,y,z): " << to_xyz_ba.fwd(p) << std::endl;
         }

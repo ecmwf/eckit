@@ -11,8 +11,9 @@
 
 
 #include <iostream>
+#include <vector>
 
-#include "grit/util.h"
+#include "eckit/geo/util.h"
 
 
 template <typename T>
@@ -51,7 +52,6 @@ struct iterator_t {
 
 
 class iterable_t : public std::vector<double> {
-
     using iterator       = iterator_t<iterable_t>;
     using const_iterator = iterator_t<const iterable_t>;
 
@@ -68,24 +68,26 @@ public:
 
 
 int main(int argc, char* argv[]) {
+    using namespace eckit::geo::util;
+
 #if 0
-    std::cout << grit::util::linspace(1, 2, 2, true) << std::endl;
-    std::cout << grit::util::arange(1, 2, 0.5) << std::endl;
-    std::cout << grit::util::gaussian_latitudes(64, false) << std::endl;
-    std::cout << grit::util::normalise_longitude_to_maximum(0., 360.) << std::endl;
-    std::cout << grit::util::normalise_longitude_to_minimum(0., -360.) << std::endl;
-#elif 0
-    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
-    std::cout << grit::util::reduced_classical_pl(16) << std::endl;
-    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
-    std::cout << grit::util::reduced_octahedral_pl(16) << std::endl;
+    std::cout << linspace(1, 2, 2, true) << std::endl;
+    std::cout << arange(1, 2, 0.5) << std::endl;
+    std::cout << gaussian_latitudes(64, false) << std::endl;
+    std::cout << normalise_longitude_to_maximum(0., 360.) << std::endl;
+    std::cout << normalise_longitude_to_minimum(0., -360.) << std::endl;
+#elif 1
+    std::cout << reduced_classical_pl(16) << std::endl;
+    std::cout << reduced_classical_pl(16) << std::endl;
+    std::cout << reduced_octahedral_pl(16) << std::endl;
+    std::cout << reduced_octahedral_pl(16) << std::endl;
 #elif 0
     std::vector<double> values1{1., 2., 3., 4., 5., 6.};
     std::vector<double> values2{6., 5., 4., 3., 2., 1.};
 
-    std::cout << grit::util::monotonic_crop({1.}, 1., 1., 0.) << std::endl;
-    std::cout << grit::util::monotonic_crop({1., 1., 1.}, 1., 2., 0.) << std::endl;
-    std::cout << grit::util::monotonic_crop(values1, 2., 3., 0.) << std::endl;
-    std::cout << grit::util::monotonic_crop(values2, 2., 3., 0.) << std::endl;
+    std::cout << monotonic_crop({1.}, 1., 1., 0.) << std::endl;
+    std::cout << monotonic_crop({1., 1., 1.}, 1., 2., 0.) << std::endl;
+    std::cout << monotonic_crop(values1, 2., 3., 0.) << std::endl;
+    std::cout << monotonic_crop(values2, 2., 3., 0.) << std::endl;
 #endif
 }

@@ -12,25 +12,21 @@
 
 #include <iostream>
 
-#include "grit/Scanner.h"
-#include "grit/exception.h"
-#include "grit/iterator/IteratorAggregator.h"
-#include "grit/iterator/IteratorComposer.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Scanner.h"
+#include "eckit/geo/iterator/IteratorAggregator.h"
+#include "eckit/geo/iterator/IteratorComposer.h"
 
 
 int main(int argc, const char* argv[]) {
+    eckit::geo::iterator::IteratorComposer i(nullptr);
 
-    grit::iterator::IteratorComposer i(nullptr);
-
-
-    struct ScannerTest : public grit::Scanner {
+    struct ScannerTest : public eckit::geo::Scanner {
         bool operator++() override { NOTIMP; }
-        bool operator++(int) override { NOTIMP; }
         size_t size() const override { NOTIMP; }
     };
 
-    grit::iterator::IteratorAggregator<ScannerTest> j;
-
+    eckit::geo::iterator::IteratorAggregator<ScannerTest> j;
 
     return 0;
 }

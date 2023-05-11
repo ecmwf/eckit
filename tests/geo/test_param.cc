@@ -13,12 +13,13 @@
 #include <iostream>
 #include <memory>
 
-#include "grit/param/Map.h"
-#include "grit/test.h"
+#include "eckit/geo/param/Map.h"
+#include "eckit/testing/Test.h"
 
 
 int main(int argc, char* argv[]) {
-    std::unique_ptr<grit::Parametrisation> param(new grit::param::Map({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
+    std::unique_ptr<eckit::geo::Parametrisation> param(
+        new eckit::geo::param::Map({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
 
     int a = 0;
     EXPECT(param->get("a", a));
@@ -33,7 +34,7 @@ int main(int argc, char* argv[]) {
     std::cout << "c: '" << c << "'" << std::endl;
 
     int d = 321;
-    dynamic_cast<grit::param::Map*>(param.get())->set("b", d);
+    dynamic_cast<eckit::geo::param::Map*>(param.get())->set("b", d);
     EXPECT(param->get("b", d));
     std::cout << "d: '" << d << "'" << std::endl;
 }

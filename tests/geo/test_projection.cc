@@ -13,69 +13,71 @@
 #include <iostream>
 #include <memory>
 
-#include "grit/Projection.h"
-#include "grit/param/Map.h"
-#include "grit/test.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/param/Map.h"
+#include "eckit/testing/Test.h"
 
 
 int main(int argc, char* argv[]) {
-    using grit::Point;
-    using grit::PointLatLon;
-    using grit::PointXYZ;
-    using Projection = std::unique_ptr<grit::Projection>;
+    using eckit::geo::Point;
+    using eckit::geo::Point3;
+    using eckit::geo::PointLonLat;
+    using Projection = std::unique_ptr<eckit::geo::Projection>;
 
-
-    Point p = PointLatLon{1, 1};
-
+    Point p = PointLonLat{1, 1};
 
     {
-        std::unique_ptr<grit::Projection> projection(grit::ProjectionFactory::build("none", grit::param::Map{}));
+        std::unique_ptr<eckit::geo::Projection> projection(
+            eckit::geo::ProjectionFactory::build("none", eckit::geo::param::Map{}));
         EXPECT(p == projection->inv(p));
         EXPECT(p == projection->fwd(p));
     }
 
-
     {
-        grit::param::Map param({
+        eckit::geo::param::Map param({
             {"projection", "rotation"},
             {"south_pole_lat", -91.},
             {"south_pole_lon", -361.},
         });
 
-        std::unique_ptr<grit::Projection> projection(
-            grit::ProjectionFactory::build(param.get_string("projection"), param));
+        std::unique_ptr<eckit::geo::Projection> projection(
+            eckit::geo::ProjectionFactory::build(param.get_string("projection"), param));
 
         EXPECT(p == projection->inv(projection->fwd(p)));
         EXPECT(p == projection->fwd(projection->inv(p)));
     }
 
-
     {
-        Projection s1(grit::ProjectionFactory::build("ll_to_xyz", grit::param::Map({{"R", 1.}})));
-        Projection s2(grit::ProjectionFactory::build("ll_to_xyz", grit::param::Map({{"a", 1.}, {"b", 1.}})));
-        Projection s3(grit::ProjectionFactory::build("ll_to_xyz", grit::param::Map({{"a", 1.}, {"b", 0.5}})));
+        Projection s1(
+            eckit::geo::ProjectionFactory::build("ll_to_xyz", eckit::geo::param::Map({{"R", 1.}})));
+        Projection s2(
+            eckit::geo::ProjectionFactory::build("ll_to_xyz",
+                                                 eckit::geo::param::Map({{"a", 1.}, {"b", 1.}})));
+        Projection s3(
+            eckit::geo::ProjectionFactory::build("ll_to_xyz",
+                                                 eckit::geo::param::Map({{"a", 1.}, {"b", 0.5}})));
 
         EXPECT(p == s1->inv(s1->fwd(p)));
         EXPECT(p == s2->inv(s2->fwd(p)));
         EXPECT(s1->fwd(p) == s2->fwd(p));
 
-        Point q = PointLatLon{0, 1};
+        Point q = PointLonLat{1, 0};
 
         EXPECT(s1->fwd(q) == s3->fwd(q));
         EXPECT(s2->fwd(q) == s3->fwd(q));
 
         struct {
-            PointLatLon a;
-            PointXYZ b;
+            PointLonLat a;
+            Point3 b;
         } tests[] = {
             {{0, 0}, {1, 0, 0}},
-            {{0, 90}, {0, 1, 0}},
-            {{0, 180}, {-1, 0, 0}},
-            {{0, 270}, {0, -1, 0}},
-            {{-90, 0}, {0, 0, -0.5}},
-            {{-90, 42}, {0, 0, -0.5}},
-            {{90, 0}, {0, 0, 0.5}},
-            {{90, 42}, {0, 0, 0.5}},
+            {{90, 0}, {0, 1, 0}},
+            {{180, 0}, {-1, 0, 0}},
+            {{270, 0}, {0, -1, 0}},
+            {{0, -90}, {0, 0, -0.5}},
+            {{42, -90}, {0, 0, -0.5}},
+            {{0, 90}, {0, 0, 0.5}},
+            {{42, 90}, {0, 0, 0.5}},
         };
 
         for (const auto& test : tests) {

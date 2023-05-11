@@ -21,7 +21,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Parametrisation.h"
-#include "eckit/geo/grit.h"
 #include "eckit/geo/param/Map.h"
 #include "eckit/geo/types.h"
 
@@ -43,39 +42,39 @@
 
 
 #if 0
-grit::Figure* make_figure(long code) {
+eckit::geo::Figure* make_figure(long code) {
     // Code table 3.2 – Shape of the reference system
 
     switch (code) {
         case 0:
-            return new grit::figure::Sphere(6367470.);
+            return new eckit::geo::figure::Sphere(6367470.);
         case 1:
             // Earth assumed spherical with radius specified (in m) by data producer
             NOTIMP;
         case 2:
-            return new grit::figure::Spheroid(6378160., 6356775.);
+            return new eckit::geo::figure::Spheroid(6378160., 6356775.);
         case 3:
             // Earth assumed oblate spheroid with major and minor axes specified (in km) by data producer
             NOTIMP;
         case 4:
-            return new grit::figure::Spheroid(6378137., 6356752.314);
+            return new eckit::geo::figure::Spheroid(6378137., 6356752.314);
         case 5:
-            return new grit::figure::Spheroid(6378137., 6356752.314140347);
+            return new eckit::geo::figure::Spheroid(6378137., 6356752.314140347);
         case 6:
-            return new grit::figure::Sphere(6371229.);
+            return new eckit::geo::figure::Sphere(6371229.);
         case 7:
             // Earth assumed oblate spheroid with major or minor axes specified (in m) by data producer
             NOTIMP;
         case 8:
-            return new grit::figure::Sphere(6371200.);
+            return new eckit::geo::figure::Sphere(6371200.);
         case 9:
-            return new grit::figure::Spheroid(6377563.396, 6356256.909);
+            return new eckit::geo::figure::Spheroid(6377563.396, 6356256.909);
         case 10:
             // Earth model assumed WGS84 with corrected geomagnetic coordinates (latitude and longitude) defined by
             // Gustafsson et al., 1992
             NOTIMP;
         case 11:
-            return new grit::figure::Sphere(695990000.);
+            return new eckit::geo::figure::Sphere(695990000.);
         default:
             NOTIMP;
     }
@@ -83,7 +82,7 @@ grit::Figure* make_figure(long code) {
 #endif
 
 
-class GribParametrisation final : public grit::Parametrisation,
+class GribParametrisation final : public eckit::geo::Parametrisation,
                                   std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
 private:
     // -- Types
@@ -316,7 +315,7 @@ public:
 private:
     // -- Members
 
-    mutable grit::param::Map cache_;
+    mutable eckit::geo::param::Map cache_;
 
     // -- Methods
     // None
@@ -385,8 +384,6 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec) {
 
 
 int main(int argc, const char* argv[]) {
-
-
     for (int i = 1; i < argc; ++i) {
         auto* in = std::fopen(argv[i], "rb");
         ASSERT(in != nullptr && "unable to open file");
@@ -408,7 +405,7 @@ int main(int argc, const char* argv[]) {
             std::cout << "type: '" << type << "'" << std::endl;
 
             if (grib.has("pl")) {
-                std::cout << "pl: '" << grib.get<grit::pl_type>("pl") << "'" << std::endl;
+                std::cout << "pl: '" << grib.get<eckit::geo::pl_type>("pl") << "'" << std::endl;
             }
 
             if (type == "regular_ll") {

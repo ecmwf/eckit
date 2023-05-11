@@ -243,6 +243,9 @@ ecbuild_add_option( FEATURE PROJ
                     DEFAULT OFF
                     DESCRIPTION "support PROJ-based projections")
 
+### ecCodes
+ecbuild_add_option( FEATURE ECCODES REQUIRED_PACKAGES eccodes DESCRIPTION "FIXME: remove" )
+
 ### c math library, needed when including "math.h"
 
 find_package( CMath )

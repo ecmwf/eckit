@@ -28,7 +28,8 @@ namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static double normalise_longitude(double a, const double& minimum) {
+// Shift the angle a by increments of 360 until it lies in [minimum, minimum+360)
+static double normalise_angle(double a, const double& minimum) {
     while (a < minimum) {
         a += 360;
     }
@@ -67,25 +68,24 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
      * year = {1975},
      * doi = {10.1179/sre.1975.23.176.88}
      * }
+     *
+     * Latitudes outside the canonical interval [-90°,90°] are first shifted
+     * into the interval [-90°,270°], then any points with latitudes in
+     * [90°,270°] are flagged as "across the pole". Such points are re-labeled
+     * with equivalent coordinates that lie within the canonical coordinate patch
+     * by the transformation
+     *   (λ, ϕ) -> (λ+180°, 180°-ϕ)
      */
 
-    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
-        ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alonlat[1];
-        throw BadValue(oss.str(), Here());
-    }
+    const double Alat = normalise_angle(Alonlat[1], -90.);
+    const double Blat = normalise_angle(Blonlat[1], -90.);
 
-    if (!(-90. <= Blonlat[1] && Blonlat[1] <= 90.)) {
-        ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << Blonlat[1];
-        throw BadValue(oss.str(), Here());
-    }
+    const bool A_across_pole = (Alat > 90.);
+    const bool B_across_pole = (Blat > 90.);
 
-    const double phi1   = degrees_to_radians * Alonlat[1];
-    const double phi2   = degrees_to_radians * Blonlat[1];
-    const double lambda = degrees_to_radians * (Blonlat[0] - Alonlat[0]);
+    const double phi1   = degrees_to_radians * (A_across_pole ? 180. - Alat : Alat);
+    const double phi2   = degrees_to_radians * (B_across_pole ? 180. - Blat : Blat);
+    const double lambda = degrees_to_radians * (Blonlat[0] - Alonlat[0] + ((A_across_pole == B_across_pole) ? 0. : 180.));
 
     const double cos_phi1   = cos(phi1);
     const double sin_phi1   = sin(phi1);
@@ -139,7 +139,7 @@ double Sphere::area(const double& radius, const Point2& WestNorth, const Point2&
 
     // Set longitude fraction
     double W = WestNorth[0];
-    double E = normalise_longitude(EastSouth[0], W);
+    double E = normalise_angle(EastSouth[0], W);
     double longitude_range(
         types::is_approximately_equal(W, E) && !types::is_approximately_equal(EastSouth[0], WestNorth[0]) ? 360.
                                                                                                           : E - W);
@@ -190,22 +190,20 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
      * These three conditionings combined project very accurately to the sphere
      * poles and quadrants.
      *
-     * Latitudes outside the standard interval [-90°,90°] are first normalised
+     * Latitudes outside the canonical interval [-90°,90°] are first shifted
      * into the interval [-90°,270°], then any points with latitudes in
      * [90°,270°] are flagged as "across the pole". Such points are re-labeled
-     * with equivalent coordinates that lie within the standard coordinate patch
+     * with equivalent coordinates that lie within the canonical coordinate patch
      * by the transformation
      *   (λ, ϕ) -> (λ+180°, 180°-ϕ)
      * As the convertSphericalToCartesian algorithm depends on sin(ϕ) which is
      * invariant under this transformation, the normalisation procedure is
-     * simplified to only perform the longitude phase shift.
+     * simplified to only perform the longitude part of the transformation.
      */
 
-    // We normalise the latitude by calling the logically-identical normalise_longitude.
-    const auto& normalise_latitude = normalise_longitude;
-    const bool lat_across_pole = (normalise_latitude(Alonlat[1], -90.) > 90.);
+    const bool A_across_pole = (normalise_angle(Alonlat[1], -90.) > 90.);
 
-    const double lambda_deg = normalise_longitude(Alonlat[0] + (lat_across_pole ? 180. : 0.), -180.);
+    const double lambda_deg = normalise_angle(Alonlat[0] + (A_across_pole ? 180. : 0.), -180.);
     const double lambda     = degrees_to_radians * lambda_deg;
     const double phi        = degrees_to_radians * Alonlat[1];
 

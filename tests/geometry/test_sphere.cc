@@ -196,7 +196,7 @@ CASE("test unit sphere lon 315") {
 }
 
 // -----------------------------------------------------------------------------
-// test unit sphere latitudes outside [-90, 90]
+// test unit sphere with non-canonical latitudes outside [-90, 90]
 
 CASE("test unit sphere lat 100") {
     const PointLonLat ll1(0., 100.);
@@ -238,6 +238,28 @@ CASE("test unit sphere lat -120") {
     EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
     EXPECT(eckit::types::is_approximately_equal(p.y(), q.y()));
     EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
+}
+
+// -----------------------------------------------------------------------------
+// test unit sphere distances with non-canonical coordinates
+
+CASE("test unit sphere distances") {
+    const PointLonLat P1(-71.6, -33.);  // Valparaíso
+    const PointLonLat P2(121.8, 31.4);  // Shanghai
+
+    // Same points with added shifts
+    const PointLonLat P1b(288.4, -33.);    // Valparaíso + longitude shift
+    const PointLonLat P2b(301.8, 148.6);   // Shanghai + latitude/longitude shift
+    const PointLonLat P2c(-58.2, -211.4);  // Shanghai + latitude/longitude shift
+
+    const double d0 = UnitSphere::distance(P1, P2);
+    const double d1 = UnitSphere::distance(P1b, P2);
+    const double d2 = UnitSphere::distance(P1, P2b);
+    const double d3 = UnitSphere::distance(P1, P2c);
+
+    EXPECT(eckit::types::is_approximately_equal(d0, d1));
+    EXPECT(eckit::types::is_approximately_equal(d0, d2));
+    EXPECT(eckit::types::is_approximately_equal(d0, d3));
 }
 
 // -----------------------------------------------------------------------------

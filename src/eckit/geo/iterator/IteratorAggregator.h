@@ -78,7 +78,6 @@ private:
     // -- Overridden methods
 
     bool operator++() override { return Scanner::operator++(); }
-    bool operator++(int) override { return Scanner::operator++(0); }
     size_t size() const override { return Scanner::size(); }
 
     // -- Class members

@@ -18,7 +18,7 @@
 
 int main(int argc, const char* argv[]) {
     {
-        std::vector<grit::SearchXYZ::Value> points{
+        std::vector<eckit::geo::Search3::Value> points{
             {{0, 0, 0}, 0},
         };
 
@@ -36,7 +36,7 @@ int main(int argc, const char* argv[]) {
 
 
     {
-        std::vector<grit::SearchXY::Value> points{
+        std::vector<eckit::geo::Search2::Value> points{
             {{0, 0}, 0},
         };
 

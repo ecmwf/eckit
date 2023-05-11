@@ -13,23 +13,68 @@
 #pragma once
 
 #include "eckit/container/KDTree.h"
+#include "eckit/container/sptree/SPValue.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
+#include "eckit/geometry/PointLonLat.h"
+#include "eckit/geometry/UnitSphere.h"
+
 
 namespace eckit::geo {
 
-namespace search {
 
+namespace search {
 template <typename PointT, typename PayloadT>
 struct Traits {
     using Point   = PointT;
     using Payload = PayloadT;
 };
-
 }  // namespace search
+
 
 using Search3 = KDTreeMemory<search::Traits<geometry::Point3, size_t>>;
 
+
 using Search2 = KDTreeMemory<search::Traits<geometry::Point2, size_t>>;
+
+
+struct SearchLonLat : Search3 {
+    using Point = geometry::PointLonLat;
+    using Value = SPValue<TT<search::Traits<Point, Payload>, KDMemory>>;
+
+    using Search3::Search3;
+
+    void insert(const SearchLonLat::Value& value) {
+        Search3::insert({convert(value.point()), value.payload()});
+    }
+
+    template <typename ITER>
+    void build(ITER begin, ITER end) {
+        for (auto it = begin; it != end; ++it) {
+            insert(*it);
+        }
+    }
+
+    template <typename Container>
+    void build(Container& c) {
+        build(c.begin(), c.end());
+    }
+
+    NodeInfo nearestNeighbour(const Point& p) { return Search3::nearestNeighbour(convert(p)); }
+
+    NodeList findInSphere(const Point& p, double radius) {
+        return Search3::findInSphere(convert(p), radius);
+    }
+
+    NodeList kNearestNeighbours(const Point& p, size_t k) {
+        return Search3::kNearestNeighbours(convert(p), k);
+    }
+
+private:
+    static Search3::Point convert(const Point& p) {
+        return geometry::UnitSphere::convertSphericalToCartesian(p);
+    }
+};
+
 
 }  // namespace eckit::geo

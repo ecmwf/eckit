@@ -17,6 +17,7 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/GreatCircle.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
@@ -27,17 +28,6 @@
 namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-// Shift the angle a by increments of 360 until it lies in [minimum, minimum+360)
-static double normalise_angle(double a, const double& minimum) {
-    while (a < minimum) {
-        a += 360;
-    }
-    while (a >= minimum + 360) {
-        a -= 360;
-    }
-    return a;
-}
 
 static const double radians_to_degrees = 180. * M_1_PI;
 
@@ -68,24 +58,14 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
      * year = {1975},
      * doi = {10.1179/sre.1975.23.176.88}
      * }
-     *
-     * Latitudes outside the canonical interval [-90°,90°] are first shifted
-     * into the interval [-90°,270°], then any points with latitudes in
-     * [90°,270°] are flagged as "across the pole". Such points are re-labeled
-     * with equivalent coordinates that lie within the canonical coordinate patch
-     * by the transformation
-     *   (λ, ϕ) -> (λ+180°, 180°-ϕ)
      */
 
-    const double Alat = normalise_angle(Alonlat[1], -90.);
-    const double Blat = normalise_angle(Blonlat[1], -90.);
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat);
+    const Point2 blonlat = canonicaliseOnSphere(Blonlat);
 
-    const bool A_across_pole = (Alat > 90.);
-    const bool B_across_pole = (Blat > 90.);
-
-    const double phi1   = degrees_to_radians * (A_across_pole ? 180. - Alat : Alat);
-    const double phi2   = degrees_to_radians * (B_across_pole ? 180. - Blat : Blat);
-    const double lambda = degrees_to_radians * (Blonlat[0] - Alonlat[0] + ((A_across_pole == B_across_pole) ? 0. : 180.));
+    const double phi1   = degrees_to_radians * alonlat[1];
+    const double phi2   = degrees_to_radians * blonlat[1];
+    const double lambda = degrees_to_radians * (blonlat[0] - alonlat[0]);
 
     const double cos_phi1   = cos(phi1);
     const double sin_phi1   = sin(phi1);
@@ -189,23 +169,13 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
      *
      * These three conditionings combined project very accurately to the sphere
      * poles and quadrants.
-     *
-     * Latitudes outside the canonical interval [-90°,90°] are first shifted
-     * into the interval [-90°,270°], then any points with latitudes in
-     * [90°,270°] are flagged as "across the pole". Such points are re-labeled
-     * with equivalent coordinates that lie within the canonical coordinate patch
-     * by the transformation
-     *   (λ, ϕ) -> (λ+180°, 180°-ϕ)
-     * As the convertSphericalToCartesian algorithm depends on sin(ϕ) which is
-     * invariant under this transformation, the normalisation procedure is
-     * simplified to only perform the longitude part of the transformation.
      */
 
-    const bool A_across_pole = (normalise_angle(Alonlat[1], -90.) > 90.);
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
 
-    const double lambda_deg = normalise_angle(Alonlat[0] + (A_across_pole ? 180. : 0.), -180.);
+    const double lambda_deg = alonlat[0];
     const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * Alonlat[1];
+    const double phi        = degrees_to_radians * alonlat[1];
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);

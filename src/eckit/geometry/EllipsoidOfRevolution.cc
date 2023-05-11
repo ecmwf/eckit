@@ -16,6 +16,7 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 
@@ -26,17 +27,6 @@ namespace eckit::geometry {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-
-// Shift the angle a by increments of 360 until it lies in [minimum, minimum+360)
-static double normalise_angle(double a, const double& minimum) {
-    while (a < minimum) {
-        a += 360;
-    }
-    while (a >= minimum + 360) {
-        a -= 360;
-    }
-    return a;
-}
 
 static const double degrees_to_radians = M_PI / 180.;
 
@@ -55,15 +45,12 @@ void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const d
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
-    //
-    // See Sphere::convertSphericalToCartesian for a description of how
-    // points with latitudes outside [-90°,90°] are handled.
 
-    const bool A_across_pole = (normalise_angle(Alonlat[1], -90.) > 90.);
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
 
-    const double lambda_deg = normalise_angle(Alonlat[0] + (A_across_pole ? 180. : 0.), -180.);
+    const double lambda_deg = alonlat[0];
     const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * Alonlat[1];
+    const double phi        = degrees_to_radians * alonlat[1];
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);

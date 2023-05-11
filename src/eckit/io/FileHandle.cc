@@ -56,16 +56,18 @@ FileHandle::~FileHandle() {}
 
 void FileHandle::open(const char* mode) {
     file_ = ::fopen(name_.c_str(), mode);
-    if (file_ == nullptr)
+    if (file_ == nullptr) {
         throw CantOpenFile(name_);
+    }
 
     // Don't buffer writes, so we know when the filesystems
     // are full at fwrite time, and not at fclose time.
     // There should not be any performances issues as
     // this class is used with large buffers anyway
 
-    if (!(::strcmp(mode, "r") == 0))
+    if (!(::strcmp(mode, "r") == 0)) {
         setbuf(file_, 0);
+    }
     else {
         static long bufSize = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
         long size           = bufSize;
@@ -94,8 +96,9 @@ void FileHandle::openForWrite(const Length& length) {
         ASSERT(length == path.size());
         open("r+");
     }
-    else
+    else {
         open("w");
+    }
 }
 
 void FileHandle::openForAppend(const Length&) {
@@ -135,13 +138,15 @@ long FileHandle::write(const void* buffer, long length) {
 }
 
 void FileHandle::flush() {
-    if (file_ == nullptr)
+    if (file_ == nullptr) {
         return;
+    }
 
     if (file_) {
         if (!read_) {
-            if (::fflush(file_))
+            if (::fflush(file_)) {
                 throw WriteError(std::string("fflush(") + name_ + ")", Here());
+            }
 
             int ret = eckit::fsync(fileno(file_));
 
@@ -157,16 +162,18 @@ void FileHandle::flush() {
 
             // On Linux, you must also flush the directory
             static bool fileHandleSyncsParentDir = eckit::Resource<bool>("fileHandleSyncsParentDir", true);
-            if (fileHandleSyncsParentDir)
+            if (fileHandleSyncsParentDir) {
                 PathName(name_).syncParentDirectory();
+            }
         }
     }
 }
 
 
 void FileHandle::close() {
-    if (file_ == nullptr)
+    if (file_ == nullptr) {
         return;
+    }
 
     if (file_) {
         // The OS may have large system buffers, therefore the close may be successful without the
@@ -204,8 +211,9 @@ Length FileHandle::estimate() {
 
 bool FileHandle::isEmpty() const {
     Stat::Struct info;
-    if (Stat::stat(name_.c_str(), &info) == -1)
+    if (Stat::stat(name_.c_str(), &info) == -1) {
         return false;  // File does not exists
+    }
     return info.st_size == 0;
 }
 
@@ -216,16 +224,18 @@ Offset FileHandle::position() {
 
 void FileHandle::advance(const Length& len) {
     off_t l = len;
-    if (::fseeko(file_, l, SEEK_CUR) < 0)
+    if (::fseeko(file_, l, SEEK_CUR) < 0) {
         throw ReadError(name_);
+    }
 }
 
 void FileHandle::restartReadFrom(const Offset& from) {
     ASSERT(read_);
     Log::warning() << *this << " restart read from " << from << std::endl;
     off_t l = from;
-    if (::fseeko(file_, l, SEEK_SET) < 0)
+    if (::fseeko(file_, l, SEEK_SET) < 0) {
         throw ReadError(name_);
+    }
 
     ASSERT(::ftello(file_) == l);
 }
@@ -234,16 +244,18 @@ void FileHandle::restartWriteFrom(const Offset& from) {
     ASSERT(!read_);
     Log::warning() << *this << " restart write from " << from << std::endl;
     off_t l = from;
-    if (::fseeko(file_, l, SEEK_SET) < 0)
+    if (::fseeko(file_, l, SEEK_SET) < 0) {
         throw ReadError(name_);
+    }
 
     ASSERT(::ftello(file_) == l);
 }
 
 Offset FileHandle::seek(const Offset& from) {
     off_t l = from;
-    if (::fseeko(file_, l, SEEK_SET) < 0)
+    if (::fseeko(file_, l, SEEK_SET) < 0) {
         throw ReadError(name_);
+    }
     off_t w = ::ftello(file_);
     ASSERT(w == l);
     return w;
@@ -255,8 +267,9 @@ bool FileHandle::canSeek() const {
 
 void FileHandle::skip(const Length& n) {
     off_t l = n;
-    if (::fseeko(file_, l, SEEK_CUR) < 0)
+    if (::fseeko(file_, l, SEEK_CUR) < 0) {
         throw ReadError(name_);
+    }
 }
 
 void FileHandle::toRemote(Stream& s) const {

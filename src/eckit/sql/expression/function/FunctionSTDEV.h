@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionVAR.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionSTDEV : public FunctionVAR {
 public:
@@ -33,17 +30,14 @@ private:
     // No copy allowed
     FunctionSTDEV& operator=(const FunctionSTDEV&);
 
-    virtual double eval(bool& missing) const override;
-    virtual const eckit::sql::type::SQLType* type() const override;
+    double eval(bool& missing) const override;
+    const eckit::sql::type::SQLType* type() const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionSTDEV& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

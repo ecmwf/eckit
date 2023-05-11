@@ -26,14 +26,14 @@ class AgentResource : public HtmlResource {
 public:
     AgentResource();
 
-    virtual ~AgentResource() override;
+    ~AgentResource() override;
 
 protected:  // members
     std::string name_;
 
 
 protected:  // overridden methods
-    virtual void GET(std::ostream&, Url&) override;
+    void GET(std::ostream&, Url&) override;
 };
 
 //-----------------------------------------------------------------------------

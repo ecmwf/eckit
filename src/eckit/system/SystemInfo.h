@@ -21,8 +21,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 struct MemoryInfo;
 
@@ -76,7 +75,6 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system
 
 #endif

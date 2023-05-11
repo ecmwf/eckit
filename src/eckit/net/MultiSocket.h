@@ -17,8 +17,7 @@
 
 #include "eckit/io/Select.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 class TCPServer;
 class TCPSocket;
@@ -89,8 +88,6 @@ private:  // methods
     }
 };
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

@@ -91,18 +91,21 @@ int MapContent::compare(const Content& other) const {
 }
 
 int MapContent::compareMap(const MapContent& other) const {
-    if (value_ == other.value_)
+    if (value_ == other.value_) {
         return 0;
-    if (value_ < other.value_)
+    }
+    if (value_ < other.value_) {
         return -1;
+    }
     return 1;
 }
 
 void MapContent::print(std::ostream& s) const {
     s << '{';
     for (ValueMap::const_iterator j = value_.begin(); j != value_.end(); ++j) {
-        if (j != value_.begin())
+        if (j != value_.begin()) {
             s << " , ";
+        }
         s << (*j).first;
         s << " => ";
         s << (*j).second;

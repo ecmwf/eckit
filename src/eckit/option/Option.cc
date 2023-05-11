@@ -18,14 +18,10 @@
 
 #include "eckit/exception/Exceptions.h"
 
-namespace eckit {
-
-namespace option {
-
+namespace eckit::option {
 
 Option::Option(const std::string& name, const std::string& description) :
     name_(name), description_(description), hasDefault_(false) {}
-
 
 Option::~Option() {}
 
@@ -110,7 +106,4 @@ void SimpleOption<bool>::print(std::ostream& out) const {
     out << "   --" << name_ << " (" << description_ << ")";
 }
 
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option

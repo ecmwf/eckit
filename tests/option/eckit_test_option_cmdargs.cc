@@ -30,8 +30,7 @@ using namespace eckit::option;
 using namespace eckit::types;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -237,8 +236,7 @@ CASE("test_eckit_option_cmdargs_vector_size_check") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv, false);  // will not call main::initialize

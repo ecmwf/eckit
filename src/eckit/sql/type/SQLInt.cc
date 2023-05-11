@@ -13,9 +13,7 @@
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -38,6 +36,4 @@ std::string SQLInt::asString(const double* val) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type

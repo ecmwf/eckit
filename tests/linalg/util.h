@@ -18,8 +18,7 @@
 #include "eckit/linalg/Vector.h"
 #include "eckit/testing/Test.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -136,5 +135,4 @@ bool equal_sparse_matrix(const linalg::SparseMatrix& A, const linalg::Index* out
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test

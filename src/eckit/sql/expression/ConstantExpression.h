@@ -18,8 +18,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/SQLExpression.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLSelect;
 class SQLTable;
@@ -38,49 +37,49 @@ public:
     ConstantExpression(const ConstantExpression&, const PrivateKey&);
     ConstantExpression& operator=(const ConstantExpression&) = delete;
 
-    virtual ~ConstantExpression() override;
+    ~ConstantExpression() override;
 
-    virtual void prepare(SQLSelect&) override { NOTIMP; }
-    virtual void cleanup(SQLSelect&) override { NOTIMP; }
+    void prepare(SQLSelect&) override { NOTIMP; }
+    void cleanup(SQLSelect&) override { NOTIMP; }
 
     // -- For WHERE
-    virtual double eval(bool& missing) const override {
+    double eval(bool& missing) const override {
         missing = missing_;
         return value_;
     }
 
-    virtual bool isConstant() const override { return true; }
-    virtual bool isNumber() const override { NOTIMP; }
+    bool isConstant() const override { return true; }
+    bool isNumber() const override { NOTIMP; }
 
     // virtual SQLExpression* simplify(bool&);
     // virtual void title(const std::string&);
-    // virtual std::string title() const override;
+    // std::string title() const override;
 
-    virtual const type::SQLType* type() const override;
+    const type::SQLType* type() const override;
     // ----
 
-    virtual std::shared_ptr<SQLExpression> clone() const override {
+    std::shared_ptr<SQLExpression> clone() const override {
         return std::make_shared<ConstantExpression>(*this, PrivateKey());
     }
-    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override { return clone(); }
+    std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override { return clone(); }
 
-    virtual bool isAggregate() const override { return false; }
+    bool isAggregate() const override { return false; }
     // For select expression
 
-    virtual void output(SQLOutput& s) const override;
-    virtual void partialResult() override { NOTIMP; }
+    void output(SQLOutput& s) const override;
+    void partialResult() override { NOTIMP; }
     virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,
                              expression::Expressions&) override {
         NOTIMP;
     }
 
-    virtual bool isBitfield() const override { return isBitfield_; }
+    bool isBitfield() const override { return isBitfield_; }
     BitfieldDef bitfieldDef() const { return bitfieldDef_; }
-    virtual bool hasMissingValue() const override { return hasMissingValue_; }
+    bool hasMissingValue() const override { return hasMissingValue_; }
     double missingValue() const { return missingValue_; }
 
 protected:
-    virtual void print(std::ostream&) const override { NOTIMP; }
+    void print(std::ostream&) const override { NOTIMP; }
 
     bool isBitfield_;
     BitfieldDef bitfieldDef_;
@@ -95,8 +94,6 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace expression
-}  // namespace sql
-}  // namespace eckit
-
+}  // namespace eckit::sql
 
 #endif

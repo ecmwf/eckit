@@ -32,11 +32,11 @@ private:  // constructor
     ParallelRequest(MPI_Request);
 
 private:  // methods
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
-    virtual int request() const override;
+    int request() const override;
 
-    virtual bool test() override;
+    bool test() override;
 
 private:  // members
     friend class Parallel;

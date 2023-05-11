@@ -35,7 +35,6 @@ void handle_assert(const std::string&, const CodeLocation&);
 class Exception : public std::exception {
 
 public:  // methods
-
     /// Constructor with message
     Exception(const std::string& what);
 
@@ -47,9 +46,9 @@ public:  // methods
 
     /// Destructor
     /// @throws nothing
-    virtual ~Exception() noexcept override;
+    ~Exception() noexcept override;
 
-    virtual const char* what() const noexcept override { return what_.c_str(); }
+    const char* what() const noexcept override { return what_.c_str(); }
     virtual bool retryOnServer() const { return false; }
     virtual bool retryOnClient() const { return false; }
     virtual bool terminateApplication() const { return false; }
@@ -252,8 +251,9 @@ public:
 
 template <class T>
 inline T SysCall(T code, const char* msg, const char* file, int line, const char* func) {
-    if (code < 0)
+    if (code < 0) {
         throw FailedSystemCall(msg, CodeLocation(file, line, func), errno);
+    }
     return code;
 }
 
@@ -270,8 +270,9 @@ inline long long SysCall(long long code, const char* msg, const T& ctx, const ch
 
 
 inline void ThrCall(int code, const char* msg, const char* file, int line, const char* func) {
-    if (code != 0)  // Threads return errno in return code
+    if (code != 0) {  // Threads return errno in return code
         handle_panic(msg, CodeLocation(file, line, func));
+    }
 }
 
 /// This functions hides that assertions may be handled by a throw of AssertionFailed
@@ -327,7 +328,7 @@ public:
 #define PANIC(a) ::eckit::Panic((a), #a, Here())
 #define NOTIMP throw ::eckit::NotImplemented(Here())
 
-#define ASSERT(a)        static_cast<void>(0), (a) ? (void)0 : ::eckit::Assert(!(a), #a, __FILE__, __LINE__, __func__)
+#define ASSERT(a) static_cast<void>(0), (a) ? (void)0 : ::eckit::Assert(!(a), #a, __FILE__, __LINE__, __func__)
 #define ASSERT_MSG(a, m) static_cast<void>(0), (a) ? (void)0 : ::eckit::Assert(!(a), m, __FILE__, __LINE__, __func__)
 
 #define CHECK_CALL_NOLOG(a) ::eckit::PanicNoLog(a, #a, Here())

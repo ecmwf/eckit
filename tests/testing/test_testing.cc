@@ -191,7 +191,9 @@ Tests fail_3 = {{CASE("F1"){EXPECT(0 == 1);
 }
 }
 , {
-    CASE("F3") { EXPECT(0 == 1); }
+    CASE("F3") {
+        EXPECT(0 == 1);
+    }
 }
 }
 ;
@@ -249,15 +251,18 @@ SECTION("S2") {
 for (int j = 0; j < 10; j++) {
     std::stringstream ss;
     ss << "test-" << j;
-    SECTION(ss.str()) { ++global_counters[4]; }
+    SECTION(ss.str()) {
+        ++global_counters[4];
+    }
 }
 }
 }
 , {CASE("Expect runs multiple times in for-loop"){
 
       int i = 0;
-for (int j = 0; j < 10; j++)
+for (int j = 0; j < 10; j++) {
     EXPECT(i++ == j);
+}
 EXPECT(i == 10);
 }
 }

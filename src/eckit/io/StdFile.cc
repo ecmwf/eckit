@@ -20,8 +20,9 @@ StdFile::StdFile(const PathName& name, const std::string& mode) :
     file_(0) {
     file_ = ::fopen(name.localPath(), mode.c_str());
 
-    if (file_ == 0)
+    if (file_ == 0) {
         throw CantOpenFile(name);
+    }
 }
 
 StdFile::~StdFile() {
@@ -30,8 +31,9 @@ StdFile::~StdFile() {
 
 void StdFile::close() noexcept(false) {
     if (isOpen()) {
-        if (fclose(file_))
+        if (fclose(file_)) {
             throw FailedSystemCall("fclose");
+        }
     }
     file_ = 0;
 }

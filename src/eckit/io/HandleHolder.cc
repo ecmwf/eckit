@@ -34,8 +34,9 @@ HandleHolder::HandleHolder(DataHandle* handle) :
     handle_(handle), owned_(true) {}
 
 HandleHolder::~HandleHolder() {
-    if (owned_)
+    if (owned_) {
         delete handle_;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

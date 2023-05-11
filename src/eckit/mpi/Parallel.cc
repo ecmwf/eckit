@@ -497,7 +497,7 @@ void Parallel::scatterv(const void* sendbuf, const int sendcounts[], const int d
                           recvbuf, int(recvcount), mpitype, int(root), comm_));
 }
 
-  void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op, size_t root) const {
+void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op, size_t root) const {
     ASSERT(count < size_t(std::numeric_limits<int>::max()));
 
     MPI_Datatype mpitype = toType(type);
@@ -513,10 +513,11 @@ void Parallel::reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, O
     MPI_Datatype mpitype = toType(type);
     MPI_Op mpiop         = toOp(op);
 
-    if ( rank() == root ) {
-      MPI_CALL(MPI_Reduce(MPI_IN_PLACE, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
-    } else {
-      MPI_CALL(MPI_Reduce(sendrecvbuf, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+    if (rank() == root) {
+        MPI_CALL(MPI_Reduce(MPI_IN_PLACE, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
+    }
+    else {
+        MPI_CALL(MPI_Reduce(sendrecvbuf, sendrecvbuf, int(count), mpitype, mpiop, int(root), comm_));
     }
 }
 
@@ -631,7 +632,7 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
 }
 
 Status Parallel::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-				    int dest, int sendtag, int source, int recvtag) const {
+                                    int dest, int sendtag, int source, int recvtag) const {
     ASSERT(count < size_t(std::numeric_limits<int>::max()));
 
     MPI_Datatype mpitype = toType(type);
@@ -639,7 +640,7 @@ Status Parallel::sendReceiveReplace(void* sendrecv, size_t count, Data::Code typ
     Status status = createStatus();
 
     MPI_CALL(MPI_Sendrecv_replace(sendrecv, int(count), mpitype,
-				  dest, sendtag, source, recvtag, comm_, toStatus(status)));
+                                  dest, sendtag, source, recvtag, comm_, toStatus(status)));
 
     return status;
 }

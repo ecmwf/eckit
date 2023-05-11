@@ -14,10 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionLAST.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -40,8 +37,9 @@ const eckit::sql::type::SQLType* FunctionLAST::type() const {
 FunctionLAST::~FunctionLAST() {}
 
 double FunctionLAST::eval(bool& missing) const {
-    if (value_ == DBL_MAX)
+    if (value_ == DBL_MAX) {
         missing = true;
+    }
 
     return value_;
 }
@@ -67,7 +65,4 @@ void FunctionLAST::partialResult() {
     value_ = (args_[0]->eval(missing));
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

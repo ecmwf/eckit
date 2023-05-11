@@ -43,8 +43,9 @@ void JavaResource::GET(std::ostream& s, Url& url) {
 
         s << HttpStream::dontEncode;
         char c;
-        while (in.get(c))
+        while (in.get(c)) {
             s << c;
+        }
         s << HttpStream::doEncode;
     }
 }

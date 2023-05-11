@@ -28,7 +28,7 @@ class TeeTarget : public LogTarget {
 public:  // methods
     TeeTarget(LogTarget* left, LogTarget* right);
 
-    virtual ~TeeTarget() override;
+    ~TeeTarget() override;
 
 protected:
     void print(std::ostream& s) const override;
@@ -38,8 +38,8 @@ private:
     LogTarget* right_;
 
 private:
-    virtual void write(const char* start, const char* end) override;
-    virtual void flush() override;
+    void write(const char* start, const char* end) override;
+    void flush() override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

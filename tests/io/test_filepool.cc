@@ -26,8 +26,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -223,16 +222,16 @@ CASE("test_eckit_io_filepool_0") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     int failures = run_tests(argc, argv);
 
     for (size_t i = 0; i < 5; ++i) {
         PathName path(eckit::test::files[i]);
-        if (path.exists())
+        if (path.exists()) {
             path.unlink();
+        }
     }
 
     return failures;

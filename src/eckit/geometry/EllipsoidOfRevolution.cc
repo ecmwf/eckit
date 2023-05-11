@@ -12,7 +12,7 @@
 
 #include <cmath>
 #include <ios>
-//#include <limits>  // for std::numeric_limits
+// #include <limits>  // for std::numeric_limits
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
@@ -21,8 +21,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
+namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -81,5 +80,4 @@ void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const d
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry

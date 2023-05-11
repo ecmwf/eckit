@@ -30,7 +30,7 @@ public:
 
     Application(int argc, char** argv, const char* homeenv = nullptr);
 
-    virtual ~Application() override;
+    ~Application() override;
 
     // -- Methods
 
@@ -43,23 +43,23 @@ public:
 
     // From Task
 
-    virtual void start() override;
-    virtual void stop() override;
-    virtual void kill() override;
-    virtual void wait() override {}
-    virtual bool active() override { return true; }
+    void start() override;
+    void stop() override;
+    void kill() override;
+    void wait() override {}
+    bool active() override { return true; }
 
     bool running() const { return running_; }
 
-    virtual void terminate() override;
+    void terminate() override;
 
     time_t uptime();
 
 private:  // methods
-    virtual LogTarget* createInfoLogTarget() const override;
-    virtual LogTarget* createWarningLogTarget() const override;
-    virtual LogTarget* createErrorLogTarget() const override;
-    virtual LogTarget* createDebugLogTarget() const override;
+    LogTarget* createInfoLogTarget() const override;
+    LogTarget* createWarningLogTarget() const override;
+    LogTarget* createErrorLogTarget() const override;
+    LogTarget* createDebugLogTarget() const override;
 
 
     /// overriden from Configurable

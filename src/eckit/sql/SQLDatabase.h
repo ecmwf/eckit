@@ -23,9 +23,7 @@
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SchemaAnalyzer.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,10 +45,10 @@ public:
     SQLDatabase(const std::string& name = "default");
     virtual ~SQLDatabase();
 
-    SQLDatabase(const SQLDatabase&) = delete;
+    SQLDatabase(const SQLDatabase&)            = delete;
     SQLDatabase& operator=(const SQLDatabase&) = delete;
 
-    SQLDatabase(SQLDatabase&&) = default;
+    SQLDatabase(SQLDatabase&&)            = default;
     SQLDatabase& operator=(SQLDatabase&&) = default;
 
     // -- Methods
@@ -119,7 +117,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif  // eckit_sql_SQLDatabase_H

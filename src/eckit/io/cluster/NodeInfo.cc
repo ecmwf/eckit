@@ -161,7 +161,9 @@ NodeInfo NodeInfo::sendLogin(Stream& s) {
 
 bool NodeInfo::supportsAttributes(const std::set<std::string>& attrs) const {
     for (const auto& a : attrs) {
-        if (attributes_.find(a) == attributes_.end()) return false;
+        if (attributes_.find(a) == attributes_.end()) {
+            return false;
+        }
     }
     return true;
 }

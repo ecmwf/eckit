@@ -64,8 +64,9 @@ JSON::JSON(std::ostream& out, JSON::Formatting formatting) :
 }
 
 JSON::~JSON() {
-    if (null_)
+    if (null_) {
         out_ << "null";
+    }
 }
 
 void JSON::sep() {

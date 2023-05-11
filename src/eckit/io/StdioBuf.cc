@@ -39,8 +39,9 @@ StdioBuf::~StdioBuf() {
 int StdioBuf::sync() {
     size_t s = pptr() - pbase();
     if (s) {
-        if (::fwrite(pbase(), 1, s, file_) != s)
+        if (::fwrite(pbase(), 1, s, file_) != s) {
             return EOF;
+        }
     }
 
     setp(pbase(), epptr());
@@ -49,19 +50,22 @@ int StdioBuf::sync() {
 }
 
 int StdioBuf::overflow(int c) {
-    if (sync())
+    if (sync()) {
         return EOF;
+    }
 
-    if (c == EOF)
+    if (c == EOF) {
         return 0;
+    }
 
     sputc(c);
     return 0;
 }
 
 int StdioBuf::underflow() {
-    if (gptr() < egptr())
+    if (gptr() < egptr()) {
         return *(unsigned char*)gptr();
+    }
 
 #ifndef OLD_STREAMBUF
     int n = ::fread(in_, 1, sizeof(in_), file_);
@@ -69,8 +73,9 @@ int StdioBuf::underflow() {
     int n = ::fread(base(), 1, sizeof(in_), file_);
 #endif
 
-    if (n == EOF || n == 0)
+    if (n == EOF || n == 0) {
         return EOF;
+    }
 
 #ifndef OLD_STREAMBUF
     setg(in_, in_, in_ + n);

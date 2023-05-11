@@ -36,7 +36,8 @@ public:  // types
 public:  // methods
     /// Constructor
     /// @throws nothing
-    explicit ScopedPtr(pointer_type ptr = 0) : ptr_(ptr) {}
+    explicit ScopedPtr(pointer_type ptr = 0) :
+        ptr_(ptr) {}
 
     /// Destructor
     /// @throws nothing

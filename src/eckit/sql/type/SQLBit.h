@@ -16,9 +16,7 @@
 
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 class SQLBit : public SQLType {
 public:
@@ -39,17 +37,15 @@ private:
     // -- Overridden methods
     // None
 
-    virtual size_t size() const override;
-    virtual void output(SQLOutput&, double, bool) const override;
-    virtual int getKind() const override { return integerType; }
-    virtual std::string asString(const double* val) const override;
+    size_t size() const override;
+    void output(SQLOutput&, double, bool) const override;
+    int getKind() const override { return integerType; }
+    std::string asString(const double* val) const override;
 
     // friend std::ostream& operator<<(std::ostream& s,const SQLBit& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type
 
 #endif

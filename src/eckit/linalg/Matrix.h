@@ -18,13 +18,9 @@ namespace eckit {
 class Stream;
 }
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 //-----------------------------------------------------------------------------
-
 
 /// Dense matrix in column major storage order
 class Matrix {
@@ -130,6 +126,4 @@ Stream& operator<<(Stream&, const Matrix&);
 
 //-----------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

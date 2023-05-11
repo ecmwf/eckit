@@ -11,9 +11,7 @@
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/utils/StringTools.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -43,9 +41,9 @@ bool OrderByExpressions::operator<(const OrderByExpressions& o) const {
         const SQLExpression& right = asc ? *o[i] : *(*this)[i];
 
         if (left.type()->getKind() == type::SQLType::stringType) {
-
-            if (right.type()->getKind() != type::SQLType::stringType)
+            if (right.type()->getKind() != type::SQLType::stringType) {
                 return false;
+            }
 
             bool missing1 = false;
             bool missing2 = false;
@@ -53,14 +51,16 @@ bool OrderByExpressions::operator<(const OrderByExpressions& o) const {
             std::string v1(left.evalAsString(missing1));
             std::string v2(right.evalAsString(missing2));
 
-            if (missing1 != missing2)
+            if (missing1 != missing2) {
                 return missing1;
+            }
 
             v1 = StringTools::trim(v1, "\t\n\v\f\r ");
             v2 = StringTools::trim(v2, "\t\n\v\f\r ");
 
-            if (v1 != v2)
+            if (v1 != v2) {
                 return (v1 < v2);
+            }
         }
         else {
 
@@ -70,11 +70,13 @@ bool OrderByExpressions::operator<(const OrderByExpressions& o) const {
             double leftValue  = left.eval(leftMissing);
             double rightValue = right.eval(rightMissing);
 
-            if (leftMissing != rightMissing)
+            if (leftMissing != rightMissing) {
                 return leftMissing;
+            }
 
-            if (leftValue != rightValue)
+            if (leftValue != rightValue) {
                 return (leftValue < rightValue);
+            }
         }
     }
 
@@ -95,9 +97,9 @@ bool OrderByExpressions::operator==(const OrderByExpressions& o) const {
         const SQLExpression& right = asc ? *o[i] : *(*this)[i];
 
         if (left.type()->getKind() == type::SQLType::stringType) {
-
-            if (right.type()->getKind() != type::SQLType::stringType)
+            if (right.type()->getKind() != type::SQLType::stringType) {
                 return false;
+            }
 
             bool missing1 = false;
             bool missing2 = false;
@@ -105,14 +107,16 @@ bool OrderByExpressions::operator==(const OrderByExpressions& o) const {
             std::string v1(left.evalAsString(missing1));
             std::string v2(right.evalAsString(missing2));
 
-            if (missing1 != missing2)
+            if (missing1 != missing2) {
                 return false;
+            }
 
             v1 = StringTools::trim(v1, "\t\n\v\f\r ");
             v2 = StringTools::trim(v2, "\t\n\v\f\r ");
 
-            if (v1 != v2)
+            if (v1 != v2) {
                 return false;
+            }
         }
         else {
 
@@ -122,10 +126,12 @@ bool OrderByExpressions::operator==(const OrderByExpressions& o) const {
             double leftValue  = left.eval(leftMissing);
             double rightValue = right.eval(rightMissing);
 
-            if (leftMissing != rightMissing)
+            if (leftMissing != rightMissing) {
                 return false;
-            if (leftValue != rightValue)
+            }
+            if (leftValue != rightValue) {
                 return false;
+            }
         }
     }
 
@@ -135,6 +141,4 @@ bool OrderByExpressions::operator==(const OrderByExpressions& o) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

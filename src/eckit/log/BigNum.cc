@@ -23,8 +23,9 @@ void BigNum::print(std::ostream& s, long long v) {
         s << ',';
         s << std::setw(3) << std::setfill('0') << (v % 1000);
     }
-    else
+    else {
         s << v;
+    }
 }
 
 void BigNum::print(std::ostream& s) const {

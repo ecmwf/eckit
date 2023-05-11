@@ -22,8 +22,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Tokenizer.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 constexpr bool have_parallel() {
 #if eckit_HAVE_MPI
@@ -45,15 +44,15 @@ public:
         }
         if (have_parallel()) {
             const std::string defaultMPIDetectionVars =
-                "OMPI_COMM_WORLD_SIZE"   // OpenMPI
-                ",ALPS_APP_PE"           // Cray aprun
-                ",PMI_SIZE"              // Intel MPI
-                ",SLURM_STEP_NUM_TASKS"; // slurm srun
-            std::string eckitMPIDetectionVars = eckit::LibResource<std::string,LibEcKit>("$ECKIT_MPI_DETECTION_VARS;eckitMPIDetectionVars",defaultMPIDetectionVars);
+                "OMPI_COMM_WORLD_SIZE"    // OpenMPI
+                ",ALPS_APP_PE"            // Cray aprun
+                ",PMI_SIZE"               // Intel MPI
+                ",SLURM_STEP_NUM_TASKS";  // slurm srun
+            std::string eckitMPIDetectionVars = eckit::LibResource<std::string, LibEcKit>("$ECKIT_MPI_DETECTION_VARS;eckitMPIDetectionVars", defaultMPIDetectionVars);
             std::vector<std::string> envVars;
-            Tokenizer{','}(eckitMPIDetectionVars,envVars);
-            for( const auto& env : envVars ) {
-                if( ::getenv(env.c_str()) ) {
+            Tokenizer{','}(eckitMPIDetectionVars, envVars);
+            for (const auto& env : envVars) {
+                if (::getenv(env.c_str())) {
                     return "parallel";
                 }
             }
@@ -93,8 +92,9 @@ public:
         eckit::Log::error() << "Cannot set default communicator to '" << name
                             << "', no communicator with that name was found" << std::endl;
         eckit::Log::error() << "Current communicators are:" << std::endl;
-        for (itr = communicators.begin(); itr != communicators.end(); ++itr)
+        for (itr = communicators.begin(); itr != communicators.end(); ++itr) {
             eckit::Log::error() << "   " << (*itr).first << std::endl;
+        }
         throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
@@ -130,8 +130,9 @@ public:
     Comm& getComm(const char* name = nullptr) {
         AutoLock<Mutex> lock(mutex_);
 
-        if (!name && default_)
+        if (!name && default_) {
             return *default_; /* most common case first */
+        }
 
         if (!default_) {
             initDefault();
@@ -149,8 +150,9 @@ public:
 
         eckit::Log::error() << "No Communicator '" << name << "'" << std::endl;
         eckit::Log::error() << "Current communicators are:" << std::endl;
-        for (itr = communicators.begin(); itr != communicators.end(); ++itr)
+        for (itr = communicators.begin(); itr != communicators.end(); ++itr) {
             eckit::Log::error() << "   " << (*itr).first << std::endl;
+        }
         throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
     }
 
@@ -184,8 +186,11 @@ public:
             Comm* comm = itr->second;
 
             // refuse to delete the default communicator
-            if (default_ == comm)
-                throw SeriousBug("Trying to delete the default Communicator with name " + std::string(name), Here());
+            if (default_ == comm) {
+                throw SeriousBug("Trying to delete the default Communicator with name "
+                                     + std::string(name),
+                                 Here());
+            }
 
             comm->free();
             delete comm;
@@ -241,8 +246,9 @@ public:
 
         eckit::Log::error() << "No CommFactory for [" << builder << "]" << std::endl;
         eckit::Log::error() << "CommFactories are:" << std::endl;
-        for (j = factories.begin(); j != factories.end(); ++j)
+        for (j = factories.begin(); j != factories.end(); ++j) {
             eckit::Log::error() << "   " << (*j).first << std::endl;
+        }
 
         throw eckit::SeriousBug(std::string("No CommFactory called ") + builder, Here());
     }
@@ -330,5 +336,4 @@ void Assert(int code, const char* msg, const char* file, int line, const char* f
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

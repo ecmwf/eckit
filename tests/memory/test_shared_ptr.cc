@@ -29,8 +29,7 @@ using namespace eckit::testing;
 #pragma clang diagnostic ignored "-Wself-assign-overloaded"
 #endif
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -204,8 +203,7 @@ CASE("test_intrusive_shared_ptr") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

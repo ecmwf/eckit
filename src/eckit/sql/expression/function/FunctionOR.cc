@@ -11,10 +11,7 @@
 #include "eckit/sql/expression/function/FunctionOR.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -42,24 +39,23 @@ double FunctionOR::eval(bool& missing) const {
 
 std::shared_ptr<SQLExpression> FunctionOR::simplify(bool& changed) {
     std::shared_ptr<SQLExpression> x = FunctionExpression::simplify(changed);
-    if (x)
+    if (x) {
         return x;
+    }
 
     for (int i = 0; i < 2; i++) {
         bool missing = false;
-        if (args_[i]->isConstant())
+        if (args_[i]->isConstant()) {
             if (args_[i]->eval(missing)) {
                 std::cout << "SYMPLIFY " << *this << " to 1" << std::endl;
                 ;
                 changed = true;
                 return SQLExpression::number(1);
             }
+        }
     }
 
     return 0;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

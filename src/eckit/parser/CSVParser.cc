@@ -22,8 +22,9 @@ CSVParser::CSVParser(std::istream& in, bool header) :
 
 Value CSVParser::decodeFile(const PathName& path, bool header) {
     std::ifstream in(std::string(path).c_str());
-    if (!in)
+    if (!in) {
         throw eckit::CantOpenFile(path);
+    }
     return CSVParser(in, header).parse();
 }
 
@@ -58,17 +59,15 @@ Value CSVParser::parse() {
         }
         return result;
     }
-    else {
-        ValueList result;
-        while (peek(true)) {
-            ValueList line = nextLine();
-            if (line.size() == 0) {
-                break;
-            }
-            result.push_back(line);
+    ValueList result;
+    while (peek(true)) {
+        ValueList line = nextLine();
+        if (line.size() == 0) {
+            break;
         }
-        return result;
+        result.push_back(line);
     }
+    return result;
 }
 
 Value CSVParser::nextItem(bool& comma) {

@@ -19,24 +19,23 @@
 
 #include "eckit/system/SystemInfo.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SystemInfoMacOSX : public SystemInfo {
 
 public:  // methods
-    virtual ~SystemInfoMacOSX() override;
+    ~SystemInfoMacOSX() override;
 
-    virtual eckit::LocalPathName executablePath() const override;
+    eckit::LocalPathName executablePath() const override;
 
     virtual size_t memoryAllocated() const;
     virtual size_t arenaSize() const;
 
-    virtual MemoryInfo memoryUsage() const override;
+    MemoryInfo memoryUsage() const override;
 
-    virtual std::string dynamicLibraryName(const std::string& name) const override;
+    std::string dynamicLibraryName(const std::string& name) const override;
 
 protected:  // methods
 private:    // members
@@ -44,7 +43,6 @@ private:    // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system
 
 #endif

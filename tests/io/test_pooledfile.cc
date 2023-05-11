@@ -29,8 +29,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -123,8 +122,9 @@ CASE("From one PooledFile") {
             files.emplace_back(new PooledFile(test.path1_));
         }
 
-        for (auto& file : files)
+        for (auto& file : files) {
             EXPECT_NO_THROW(file->open());
+        }
 
         // read interlaced from N pooled files
         size_t p = 0;
@@ -148,8 +148,9 @@ CASE("From one PooledFile") {
         EXPECT(files[0]->nbOpens() == 1);
         EXPECT(files[0]->nbReads() == N * M);
 
-        for (auto& file : files)
+        for (auto& file : files) {
             EXPECT_NO_THROW(file->close());
+        }
     }
 }
 
@@ -256,8 +257,7 @@ CASE("Seeking to location") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

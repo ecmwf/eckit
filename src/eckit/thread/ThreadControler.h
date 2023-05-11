@@ -31,13 +31,13 @@ public:
     /// @note ThreadControler takes ownership of Thread
     explicit ThreadControler(Thread*, bool detached = true, size_t stack = 0);
 
-    virtual ~ThreadControler() override;
+    ~ThreadControler() override;
 
-    virtual void start() override;
-    virtual void stop() override;
-    virtual void kill() override;
-    virtual void wait() override;
-    virtual bool active() override;
+    void start() override;
+    void stop() override;
+    void kill() override;
+    void wait() override;
+    bool active() override;
 
 protected:  // members
     MutexCond cond_;

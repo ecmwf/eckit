@@ -42,9 +42,11 @@ struct SPNodeInfo {
     double distance_;
 
 public:
-    SPNodeInfo() : node_(0), id_(0), distance_(0) {}
+    SPNodeInfo() :
+        node_(0), id_(0), distance_(0) {}
 
-    SPNodeInfo(const Node* node, ID id, double distance) : node_(node), id_(id), distance_(distance) {}
+    SPNodeInfo(const Node* node, ID id, double distance) :
+        node_(node), id_(id), distance_(distance) {}
 
     ID id() const { return id_; }
 

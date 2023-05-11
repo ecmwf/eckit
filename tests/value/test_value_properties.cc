@@ -94,8 +94,9 @@ CASE("Test serialization") {
         EXPECT(p["Vector"] == p2["Vector"]);
         EXPECT(p["Map"] == p2["Map"]);
     }
-    if (filename.exists())
+    if (filename.exists()) {
         filename.unlink();
+    }
 
     Properties access_nested = p.get("Nested");
 

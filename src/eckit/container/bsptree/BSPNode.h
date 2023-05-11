@@ -13,6 +13,8 @@
 
 #include "BSPHyperPlane.h"
 
+#include "eckit/container/sptree/SPNode.h"
+
 namespace eckit {
 
 template <class Traits, class Partition>
@@ -37,7 +39,7 @@ private:
 
 public:
     BSPNode(const Value& v, const HyperPlane& plane, double dist);
-    virtual ~BSPNode() override {}
+    ~BSPNode() override {}
 
     template <typename Container>
     static BSPNode* build(Alloc& a, Partition& p, const Container& nodes, double dist, int depth = 0);

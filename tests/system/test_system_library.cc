@@ -30,8 +30,7 @@ using eckit::system::Library;
 using eckit::system::LibraryManager;
 using eckit::system::Plugin;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -144,8 +143,7 @@ CASE("Fails to load a plugin without a eckit::Plugin object") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

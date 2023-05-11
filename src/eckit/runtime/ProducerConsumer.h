@@ -94,7 +94,8 @@ struct OnePayload {
     bool ready_;
     bool done_;
     PAYLOAD payload_;
-    OnePayload() : ready_(false), done_(false), payload_() {}
+    OnePayload() :
+        ready_(false), done_(false), payload_() {}
 };
 
 template <class PAYLOAD>
@@ -108,12 +109,13 @@ class ProducerConsumerTask : public Thread {
 
 public:
     ProducerConsumerTask(Consumer<PAYLOAD>&, ProducerConsumer<PAYLOAD>&, OnePayload<PAYLOAD>*);
-    virtual void run() override;
+    void run() override;
 };
 
 
 template <class PAYLOAD>
-ProducerConsumer<PAYLOAD>::ProducerConsumer(long count) : count_(count), error_(false) {}
+ProducerConsumer<PAYLOAD>::ProducerConsumer(long count) :
+    count_(count), error_(false) {}
 template <class PAYLOAD>
 ProducerConsumer<PAYLOAD>::~ProducerConsumer() {}
 
@@ -147,11 +149,13 @@ void ProducerConsumer<PAYLOAD>::execute(Producer<PAYLOAD>& producer, Consumer<PA
     while (!error()) {
         AutoLock<MutexCond> lock(payloads[i].cond_);
 
-        while (payloads[i].ready_)
+        while (payloads[i].ready_) {
             payloads[i].cond_.wait();
+        }
 
-        if (error())
+        if (error()) {
             break;
+        }
 
         if (producer.done()) {
             payloads[i].done_  = true;
@@ -199,11 +203,13 @@ void ProducerConsumerTask<PAYLOAD>::run() {
 
         AutoLock<MutexCond> lock(payloads_[i].cond_);
 
-        while (!payloads_[i].ready_)
+        while (!payloads_[i].ready_) {
             payloads_[i].cond_.wait();
+        }
 
-        if (owner_.error())
+        if (owner_.error()) {
             break;
+        }
 
         if (payloads_[i].done_) {
             payloads_[i].ready_ = false;

@@ -11,19 +11,16 @@
 
 #include "eckit/net/NetService.h"
 #include "eckit/config/Resource.h"
+#include "eckit/io/Select.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/NetUser.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/io/Select.h"
 
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 class NetServiceProcessControler : public ProcessControler {
-
 public:
     NetServiceProcessControler(const std::string& name, NetUser* user, TCPServer& server, long parent, bool visible);
 
@@ -39,7 +36,6 @@ private:
     virtual void afterForkInParent();
     virtual void afterForkInChild();
 };
-
 
 NetService::NetService(int port, bool visible, const SocketOptions& options) :
     server_(port, options), visible_(visible) {}
@@ -66,9 +62,9 @@ void NetService::run() {
 
         Log::status() << oss.str() << std::endl;
 
-        if(timeout()) {
+        if (timeout()) {
             Select select(server_);
-            if(!select.ready(timeout())) {
+            if (!select.ready(timeout())) {
                 // This will allow to check stopped() again
                 continue;
             }
@@ -144,5 +140,4 @@ void NetServiceProcessControler::afterForkInChild() {
     server_.close();
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

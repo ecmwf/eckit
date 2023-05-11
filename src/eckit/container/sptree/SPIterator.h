@@ -11,6 +11,7 @@
 #ifndef SPIterator_H
 #define SPIterator_H
 
+#include "eckit/container/sptree/SPValue.h"
 
 namespace eckit {
 
@@ -32,7 +33,8 @@ class SPIterator {
 
 
 public:
-    SPIterator(Alloc& alloc, Ptr ptr) : alloc_(alloc), ptr_(ptr) {
+    SPIterator(Alloc& alloc, Ptr ptr) :
+        alloc_(alloc), ptr_(ptr) {
         // std::cout << "SPIterator " << ptr << std::endl;
         Node* node = alloc_.convert(ptr_, (Node*)0);
         if (node) {

@@ -13,22 +13,19 @@
 
 #include "eckit/net/NetUser.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 class TelnetUser : public NetUser {
 public:
     explicit TelnetUser(net::TCPSocket&);
-    virtual ~TelnetUser() override;
+    ~TelnetUser() override;
     static void terminate(TelnetUser& other) { other.stop(); }
 
 private:
-    virtual void serve(Stream&, std::istream&, std::ostream&) override;
+    void serve(Stream&, std::istream&, std::ostream&) override;
     std::string from_;
 };
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

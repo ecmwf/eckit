@@ -44,49 +44,49 @@ public:
     // From DataHandle
 
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void flush() override;
 
-    virtual Length estimate() override;
-    virtual Offset position() override;
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return handle().canSeek(); }
-    virtual void skip(const Length&) override;
+    Length estimate() override;
+    Offset position() override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override { return handle().canSeek(); }
+    void skip(const Length&) override;
 
-    virtual void rewind() override;
-    virtual void restartReadFrom(const Offset&) override;
-    virtual void restartWriteFrom(const Offset&) override;
+    void rewind() override;
+    void restartReadFrom(const Offset&) override;
+    void restartWriteFrom(const Offset&) override;
 
-    virtual DataHandle* clone() const override;
+    DataHandle* clone() const override;
 
-    virtual Length saveInto(DataHandle& other, TransferWatcher& watcher) override;
+    Length saveInto(DataHandle& other, TransferWatcher& watcher) override;
 
-    virtual std::string name() const override;
-
-
-    virtual bool compress(bool) override;
-    virtual bool merge(DataHandle*) override;
-    virtual bool isEmpty() const override;
+    std::string name() const override;
 
 
-    virtual bool moveable() const override;
-    virtual const std::set<std::string>& requiredMoverAttributes() const override;
-    virtual void toLocal(Stream& s) const override;
+    bool compress(bool) override;
+    bool merge(DataHandle*) override;
+    bool isEmpty() const override;
 
-    virtual DataHandle* toLocal() override;
 
-    virtual void toRemote(Stream& s) const override;
-    virtual void cost(std::map<std::string, Length>&, bool) const override;
-    virtual std::string title() const override;
-    virtual void collectMetrics(const std::string& what) const override; // Tag for metrics collection
+    bool moveable() const override;
+    const std::set<std::string>& requiredMoverAttributes() const override;
+    void toLocal(Stream& s) const override;
+
+    DataHandle* toLocal() override;
+
+    void toRemote(Stream& s) const override;
+    void cost(std::map<std::string, Length>&, bool) const override;
+    std::string title() const override;
+    void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
 
 
 private:

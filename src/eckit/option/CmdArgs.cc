@@ -24,13 +24,9 @@
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
 
-
-namespace eckit {
-namespace option {
-
+namespace eckit::option {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 CmdArgs::CmdArgs(usage_proc usage, int args_count, int minimum_args, bool throw_on_error) {
     init(usage, args_count, minimum_args, throw_on_error);
@@ -138,9 +134,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
             }
             throw UserError("An error occurred in argument parsing", Here());
         }
-        else {
-            ::exit(1);
-        }
+        ::exit(1);
     }
 }
 
@@ -187,5 +181,4 @@ const std::string& CmdArgs::tool() const {
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option

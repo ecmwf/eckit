@@ -28,8 +28,9 @@ int AutoAlarm::sec_     = 0;
 void AutoAlarm::sigAlarm(int) {
     Log::error() << "Alarm signal received" << std::endl;
     caught_ = true;
-    if (throw_)
+    if (throw_) {
         throw TimeOut("AutoAlarm", sec_);
+    }
 }
 
 AutoAlarm::AutoAlarm(int sec, bool t) {

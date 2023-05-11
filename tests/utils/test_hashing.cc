@@ -176,7 +176,9 @@ CASE("Hashing") {
         testHash(*hash, "MD5");
     }
 
-    SECTION("Not Existing Hashing") { EXPECT_THROWS(HashFactory::instance().build("dummy name")); }
+    SECTION("Not Existing Hashing") {
+        EXPECT_THROWS(HashFactory::instance().build("dummy name"));
+    }
 
     for (auto const& element : results) {
         if (HashFactory::instance().has(element.first)) {

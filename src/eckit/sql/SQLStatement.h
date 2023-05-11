@@ -16,8 +16,7 @@
 
 #include "eckit/sql/expression/SQLExpressions.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 // Forward declarations
 
 class SQLDatabase;
@@ -45,7 +44,6 @@ private:
     }
 };
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

@@ -13,9 +13,7 @@
 #include "eckit/net/TelnetUser.h"
 #include "eckit/runtime/Monitor.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 Telnet::Telnet(int port) :
     NetService(port) {}
@@ -27,6 +25,4 @@ net::NetUser* Telnet::newUser(net::TCPSocket& protocol) const {
     return new TelnetUser(protocol);
 }
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

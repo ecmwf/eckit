@@ -27,8 +27,7 @@
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Clock.h"
 
-namespace eckit {
-namespace runtime {
+namespace eckit::runtime {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -114,8 +113,9 @@ static YAMLConfiguration* loadConfig() {
 
     PathName telemetryConfigFile = Resource<PathName>("$TELEMETRY_CONFIG_FILE,telemetryConfigFile", "~/etc/config/telemetry.yaml");
 
-    if (telemetryConfigFile.exists())
+    if (telemetryConfigFile.exists()) {
         return new YAMLConfiguration(telemetryConfigFile);
+    }
 
     return nullptr;
 }
@@ -124,8 +124,9 @@ Reporter::Reporter() {
 
     std::unique_ptr<YAMLConfiguration> config(loadConfig());
 
-    if (not config)
+    if (not config) {
         return;
+    }
 
     LOG_DEBUG_LIB(LibEcKit) << "Telemetry config: " << *config << std::endl;
 
@@ -141,9 +142,9 @@ Reporter::Reporter() {
 }
 
 std::string Reporter::report(Report::Type type, const Report& report) {
-
-    if (not enabled())  //< early return if we don't have servers configured
+    if (not enabled()) {  //< early return if we don't have servers configured
         return std::string();
+    }
 
     std::ostringstream out;
     JSON j(out);
@@ -195,7 +196,7 @@ class NullReport : public Report {
 public:
     NullReport() {}
     ~NullReport() override {}
-    virtual void json(JSON&) const override {}
+    void json(JSON&) const override {}
 };
 
 class WraperReport : public Report {
@@ -203,7 +204,7 @@ public:
     WraperReport(std::function<void(JSON&)>& f) :
         callable_(f) {}
     ~WraperReport() override {}
-    virtual void json(JSON& j) const override { callable_(j); }
+    void json(JSON& j) const override { callable_(j); }
     std::function<void(JSON&)>& callable_;
 };
 
@@ -230,5 +231,4 @@ unsigned long long Telemetry::countSent() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace runtime
-}  // namespace eckit
+}  // namespace eckit::runtime

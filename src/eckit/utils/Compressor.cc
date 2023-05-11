@@ -87,8 +87,9 @@ Compressor* CompressorFactory::build(const std::string& name) {
     if (j == builders_.end()) {
         eckit::Log::error() << "No CompressorBuilder for [" << nameLowercase << "]" << std::endl;
         eckit::Log::error() << "CompressorBuilders are:" << std::endl;
-        for (j = builders_.begin(); j != builders_.end(); ++j)
+        for (j = builders_.begin(); j != builders_.end(); ++j) {
             eckit::Log::error() << "   " << (*j).first << std::endl;
+        }
         throw eckit::SeriousBug(std::string("No CompressorBuilder called ") + nameLowercase);
     }
 

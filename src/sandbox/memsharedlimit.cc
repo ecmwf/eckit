@@ -96,8 +96,9 @@ public:  // methods
         ASSERT(mem > 0);
 
         parts_t parts = nparts(mem);
-        if (shint_.free(SLOT) < parts)
+        if (shint_.free(SLOT) < parts) {
             std::cout << pid << " WAIT " << parts << std::endl;
+        }
 
         shint_.use(SLOT, short(parts));  // processes wait here for available parts
 
@@ -185,7 +186,7 @@ public:
     ~MemApp() {}
 
 private:
-    MemApp(const MemApp&) = delete;
+    MemApp(const MemApp&)            = delete;
     MemApp& operator=(const MemApp&) = delete;
 
     virtual void run() {

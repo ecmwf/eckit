@@ -52,8 +52,9 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
 
     int agentClearance = a->clearance();
 
-    if (agentClearance == JavaAgent::none)
+    if (agentClearance == JavaAgent::none) {
         s << int(0);  // No need for password
+    }
     else {
         s << int(1);  // Ask for password;
 
@@ -68,8 +69,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
             s << int(-1);
             return;
         }
-        else
-            s << int(0);
+        s << int(0);
 
         a->user_ = user;
     }

@@ -14,10 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFIRST.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -40,8 +37,9 @@ const eckit::sql::type::SQLType* FunctionFIRST::type() const {
 FunctionFIRST::~FunctionFIRST() {}
 
 double FunctionFIRST::eval(bool& missing) const {
-    if (value_ == DBL_MAX)
+    if (value_ == DBL_MAX) {
         missing = true;
+    }
 
     return value_;
 }
@@ -72,7 +70,4 @@ void FunctionFIRST::partialResult() {
     notFirst_ = true;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

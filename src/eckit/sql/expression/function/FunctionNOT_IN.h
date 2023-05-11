@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionNOT_IN : public FunctionExpression {
 public:
@@ -38,17 +35,14 @@ private:
     int size_;
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
+    const eckit::sql::type::SQLType* type() const override;
+    double eval(bool& missing) const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionNOT_IN& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

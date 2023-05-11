@@ -12,10 +12,7 @@
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/types/DateTime.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -39,8 +36,9 @@ double FunctionTDIFF::eval(bool& missing) const {
     int andate = (int)args_[2]->eval(missing);
     int antime = (int)args_[3]->eval(missing);
 
-    if (missing)
+    if (missing) {
         return 0;
+    }
 
     // Check for invalid values
 
@@ -66,7 +64,4 @@ const eckit::sql::type::SQLType* FunctionTDIFF::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

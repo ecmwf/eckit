@@ -43,8 +43,9 @@ void SharedInt::release(int n, short v) {
 void SharedInt::newLimit(short val, unsigned short n) {
     int v;
     while ((v = semctl(semaphore_, 2 * n + 1, GETVAL, 0)) != val) {
-        if (v < 0)
+        if (v < 0) {
             throw FailedSystemCall("semctl GETVAL");
+        }
         short delta = val - v;
         typedef unsigned short int U;
         struct sembuf set[] = {{

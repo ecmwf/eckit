@@ -18,8 +18,7 @@
 
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -69,7 +68,6 @@ protected:
     static bool exists(const std::string&);
 
 private:
-
     std::string name_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLType& p) {
@@ -87,7 +85,6 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

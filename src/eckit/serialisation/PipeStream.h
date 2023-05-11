@@ -58,9 +58,9 @@ private:
 
     // From Stream
 
-    virtual long write(const void*, long) override;
-    virtual long read(void*, long) override;
-    virtual std::string name() const override { return "pipe"; }
+    long write(const void*, long) override;
+    long read(void*, long) override;
+    std::string name() const override { return "pipe"; }
 };
 
 

@@ -17,8 +17,7 @@
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -72,5 +71,4 @@ void Endpoint::validate() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

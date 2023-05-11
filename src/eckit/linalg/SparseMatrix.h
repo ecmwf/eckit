@@ -32,13 +32,9 @@ class Stream;
 class PathName;
 }  // namespace eckit
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 /// Sparse matrix in CRS (compressed row storage) format
 class SparseMatrix {
@@ -315,6 +311,4 @@ Stream& operator<<(Stream&, const SparseMatrix&);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

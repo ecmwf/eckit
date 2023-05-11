@@ -24,9 +24,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -192,9 +190,15 @@ void test_scalar_value(T v, std::string bitstr, std::string swapped) {
 }
 
 CASE("ByteSwap short") {
-    SECTION("short 1234") { test_scalar_value<short>(1234, "0000010011010010", "1101001000000100"); }
-    SECTION("short 3145") { test_scalar_value<short>(3145, "0000110001001001", "0100100100001100"); }
-    SECTION("short 32767") { test_scalar_value<short>(32767, "0111111111111111", "1111111101111111"); }
+    SECTION("short 1234") {
+        test_scalar_value<short>(1234, "0000010011010010", "1101001000000100");
+    }
+    SECTION("short 3145") {
+        test_scalar_value<short>(3145, "0000110001001001", "0100100100001100");
+    }
+    SECTION("short 32767") {
+        test_scalar_value<short>(32767, "0111111111111111", "1111111101111111");
+    }
 }
 
 CASE("ByteSwap int") {
@@ -298,23 +302,41 @@ void test_roundtrip_vector() {
 }
 
 CASE("test_roundtrip_vector") {
-    SECTION("short") { test_roundtrip_vector<short>(); }
-    SECTION("unsigned short") { test_roundtrip_vector<unsigned short>(); }
-    SECTION("int") { test_roundtrip_vector<int>(); }
-    SECTION("unsigned int") { test_roundtrip_vector<unsigned int>(); }
-    SECTION("long") { test_roundtrip_vector<long>(); }
-    SECTION("unsigned long") { test_roundtrip_vector<unsigned long>(); }
-    SECTION("long long") { test_roundtrip_vector<long long>(); }
-    SECTION("unsigned long long") { test_roundtrip_vector<unsigned long long>(); }
-    SECTION("float") { test_roundtrip_vector<float>(); }
-    SECTION("double") { test_roundtrip_vector<double>(); }
+    SECTION("short") {
+        test_roundtrip_vector<short>();
+    }
+    SECTION("unsigned short") {
+        test_roundtrip_vector<unsigned short>();
+    }
+    SECTION("int") {
+        test_roundtrip_vector<int>();
+    }
+    SECTION("unsigned int") {
+        test_roundtrip_vector<unsigned int>();
+    }
+    SECTION("long") {
+        test_roundtrip_vector<long>();
+    }
+    SECTION("unsigned long") {
+        test_roundtrip_vector<unsigned long>();
+    }
+    SECTION("long long") {
+        test_roundtrip_vector<long long>();
+    }
+    SECTION("unsigned long long") {
+        test_roundtrip_vector<unsigned long long>();
+    }
+    SECTION("float") {
+        test_roundtrip_vector<float>();
+    }
+    SECTION("double") {
+        test_roundtrip_vector<double>();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
-
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

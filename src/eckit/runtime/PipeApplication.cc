@@ -92,10 +92,12 @@ void PipeApplication::run() {
                 Log::info() << "End of input, exiting" << std::endl;
                 return;
             }
-            if (end_)
+            if (end_) {
                 endBatch();
-            else
+            }
+            else {
                 process(pipe);
+            }
         }
         catch (std::exception& e) {
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
@@ -104,8 +106,9 @@ void PipeApplication::run() {
             throw;
         }
 
-        if (debug)
+        if (debug) {
             continue;
+        }
 
         struct rusage usage;
         getrusage(RUSAGE_SELF, &usage);

@@ -46,7 +46,7 @@ public:
     static NodeInfo lookUp(const std::string& type, const std::string& node);
 
     // Attributes argument is optional. Determines a labelled subset of a given type of node
-    static NodeInfo any(const std::string& type, const std::set<std::string>& attributes={});
+    static NodeInfo any(const std::string& type, const std::set<std::string>& attributes = {});
 
     static bool available(const std::string&, const std::string&);
     static bool offsite(const std::string&, const std::string&);

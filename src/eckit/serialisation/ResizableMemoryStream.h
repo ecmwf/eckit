@@ -28,11 +28,11 @@ public:
 
     ~ResizableMemoryStream();
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void rewind() override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void rewind() override;
 
-    virtual std::string name() const override;
+    std::string name() const override;
 
     size_t position() const;
 

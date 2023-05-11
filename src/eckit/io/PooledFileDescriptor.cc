@@ -36,8 +36,9 @@ void PooledFileDescriptor::open() {
 }
 
 void PooledFileDescriptor::close() {
-    if (fd_ < 0)
+    if (fd_ < 0) {
         return;
+    }
 
     if (readOnly_) {
         ASSERT(file_);
@@ -55,11 +56,9 @@ ssize_t PooledFileDescriptor::read(void* buf, size_t nbyte) {
         ASSERT(file_);
         return file_->read(buf, nbyte);
     }
-    else {
-        ssize_t len;
-        SYSCALL(len = ::read(fd_, buf, nbyte));
-        return len;
-    }
+    ssize_t len;
+    SYSCALL(len = ::read(fd_, buf, nbyte));
+    return len;
 }
 
 ssize_t PooledFileDescriptor::write(const void* buf, size_t nbyte) {
@@ -81,11 +80,9 @@ off_t PooledFileDescriptor::seek(off_t offset) {
         ASSERT(file_);
         return file_->seek(offset);
     }
-    else {
-        off_t here;
-        SYSCALL(here = ::lseek(fd_, offset, SEEK_SET));
-        return here;
-    }
+    off_t here;
+    SYSCALL(here = ::lseek(fd_, offset, SEEK_SET));
+    return here;
 }
 
 off_t PooledFileDescriptor::seekEnd() {
@@ -93,11 +90,9 @@ off_t PooledFileDescriptor::seekEnd() {
         ASSERT(file_);
         return file_->seekEnd();
     }
-    else {
-        off_t here;
-        SYSCALL(here = ::lseek(fd_, 0, SEEK_END));
-        return here;
-    }
+    off_t here;
+    SYSCALL(here = ::lseek(fd_, 0, SEEK_END));
+    return here;
 }
 
 }  // namespace eckit

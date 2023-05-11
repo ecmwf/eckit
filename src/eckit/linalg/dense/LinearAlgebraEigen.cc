@@ -18,14 +18,9 @@
 #include "eckit/linalg/Vector.h"
 #include "eckit/maths/Eigen.h"
 
-
-namespace eckit {
-namespace linalg {
-namespace dense {
-
+namespace eckit::linalg::dense {
 
 static const LinearAlgebraEigen __la("eigen");
-
 
 using vec_t = Eigen::VectorXd::MapType;
 using mat_t = Eigen::MatrixXd::MapType;
@@ -73,7 +68,4 @@ void LinearAlgebraEigen::gemm(const Matrix& A, const Matrix& B, Matrix& C) const
     Ci = Ai * Bi;
 }
 
-
-}  // namespace dense
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::dense

@@ -73,11 +73,13 @@ public:
 
     void set(const YAMLItem* item) {
         if (item != item_) {
-            if (item_)
+            if (item_) {
                 item_->detach();
+            }
             item_ = item;
-            if (item_)
+            if (item_) {
                 item_->attach();
+            }
         }
     }
 };
@@ -404,8 +406,9 @@ YAMLParser::~YAMLParser() {
 
 Value YAMLParser::decodeFile(const PathName& path) {
     std::ifstream in(std::string(path).c_str());
-    if (!in)
+    if (!in) {
         throw eckit::CantOpenFile(path);
+    }
     return YAMLParser(in).parse();
 }
 
@@ -614,7 +617,7 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
     if (c == '"' || c == '\'') {
         Value result = ObjectParser::parseString(c);
-        isKey = (peek(true) == ':');
+        isKey        = (peek(true) == ':');
         return result;
     }
 
@@ -672,9 +675,8 @@ Value YAMLParser::parseStringOrNumber(bool& isKey) {
 
                 isKey = true;
                 break;
-            } else {
-                s += p;
             }
+            s += p;
 
             colon = (c == ':');
         }
@@ -759,7 +761,7 @@ void YAMLParser::loadItem() {
         case '\'':
             v = parseStringOrNumber(isKey);
             if (isKey) {
-              next(true);
+                next(true);
             }
             item = new YAMLItemValue(indent, v);
             break;
@@ -783,7 +785,7 @@ void YAMLParser::loadItem() {
                     }
                     item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
                     if (isKey) {
-                      next(true);
+                        next(true);
                     }
                     break;
             }
@@ -806,7 +808,7 @@ void YAMLParser::loadItem() {
                     }
                     item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
                     if (isKey) {
-                      next(true);
+                        next(true);
                     }
                     break;
             }
@@ -826,7 +828,7 @@ void YAMLParser::loadItem() {
         default:
             item = new YAMLItemValue(indent, parseStringOrNumber(isKey));
             if (isKey) {
-              next(true);
+                next(true);
             }
             break;
     }

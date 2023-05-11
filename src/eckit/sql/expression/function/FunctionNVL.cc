@@ -11,10 +11,7 @@
 #include "eckit/sql/expression/function/FunctionNVL.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -43,8 +40,4 @@ double FunctionNVL::eval(bool&) const {
     return missing ? args_[1]->eval(missing) : x;
 }
 
-
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

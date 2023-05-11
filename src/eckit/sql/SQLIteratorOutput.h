@@ -29,10 +29,10 @@ template <typename T = odb::SelectIterator>
 class SQLIteratorOutput : public SQLOutput {
 public:
     SQLIteratorOutput(T&);
-    virtual ~SQLIteratorOutput() override;
+    ~SQLIteratorOutput() override;
 
 protected:
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:
     // No copy allowed
@@ -51,10 +51,10 @@ private:
 
     virtual void size(int);
     virtual void reset();
-    virtual void flush() override;
+    void flush() override;
     virtual bool output(const expression::Expressions&);
-    virtual void prepare(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
+    void prepare(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
     virtual unsigned long long count();
 
     virtual void outputReal(double, bool) { NOTIMP; };

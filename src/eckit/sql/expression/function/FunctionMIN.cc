@@ -14,10 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionMIN.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -40,8 +37,9 @@ const eckit::sql::type::SQLType* FunctionMIN::type() const {
 FunctionMIN::~FunctionMIN() {}
 
 double FunctionMIN::eval(bool& missing) const {
-    if (value_ == DBL_MAX)
+    if (value_ == DBL_MAX) {
         missing = true;
+    }
 
     return value_;
 }
@@ -65,12 +63,11 @@ void FunctionMIN::output(SQLOutput& s) const {
 void FunctionMIN::partialResult() {
     bool missing = false;
     double value = args_[0]->eval(missing);
-    if (!missing)
-        if (value < value_)
+    if (!missing) {
+        if (value < value_) {
             value_ = value;
+        }
+    }
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

@@ -45,30 +45,30 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void flush() override;
+    void rewind() override;
+    void print(std::ostream&) const override;
 
-    virtual bool canSeek() const override { return false; }
+    bool canSeek() const override { return false; }
 
-    virtual void toRemote(Stream&) const override;
-    virtual void toLocal(Stream&) const override;
-    virtual DataHandle* toLocal() override;
-    virtual void cost(std::map<std::string, Length>&, bool) const override;
-    virtual bool moveable() const override;
-    virtual const std::set<std::string>& requiredMoverAttributes() const override;
+    void toRemote(Stream&) const override;
+    void toLocal(Stream&) const override;
+    DataHandle* toLocal() override;
+    void cost(std::map<std::string, Length>&, bool) const override;
+    bool moveable() const override;
+    const std::set<std::string>& requiredMoverAttributes() const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

@@ -46,14 +46,17 @@ void RemoteCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
         }
     }
 
-    if (a.isNumber())
+    if (a.isNumber()) {
         taskid = (long long)a;
+    }
 
     if (taskid < 0 || static_cast<unsigned long>(taskid) >= info.size()) {
-        if (a.isString())
+        if (a.isString()) {
             out << a << ": task not found" << std::endl;
-        if (a.isNumber())
+        }
+        if (a.isNumber()) {
             out << taskid << ": task Id not found" << std::endl;
+        }
         return;
     }
 
@@ -78,8 +81,9 @@ void RemoteCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
 
         char buf[1024 * 4];
         int len = 1024 * 4;
-        while ((len = remote.read(buf, sizeof(buf))) > 0)
+        while ((len = remote.read(buf, sizeof(buf))) > 0) {
             std::copy(buf, buf + len, std::ostream_iterator<char>(out, ""));
+        }
         out << std::flush;
     }
     catch (std::exception& e) {

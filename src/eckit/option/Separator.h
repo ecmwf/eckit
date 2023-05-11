@@ -20,10 +20,7 @@
 
 #include "eckit/option/Option.h"
 
-
-namespace eckit {
-
-namespace option {
+namespace eckit::option {
 
 class Separator : public Option {
 public:
@@ -36,7 +33,7 @@ public:
 
     // -- Destructor
 
-    virtual ~Separator() override;  // Change to virtual if base class
+    ~Separator() override;  // Change to virtual if base class
 
     // -- Convertors
     // None
@@ -62,7 +59,7 @@ protected:
 
     // -- Methods
 
-    virtual void print(std::ostream&) const override;  // Change to virtual if base class
+    void print(std::ostream&) const override;  // Change to virtual if base class
 
     // -- Overridden methods
     // None
@@ -88,9 +85,9 @@ private:
     // -- Overridden methods
 
     using Option::set;
-    virtual void set(const std::string& value, Configured&) const override;
-    virtual bool active() const override;
-    virtual void copy(const Configuration& from, Configured& to) const override;
+    void set(const std::string& value, Configured&) const override;
+    bool active() const override;
+    void copy(const Configuration& from, Configured& to) const override;
 
 
     // -- Class members
@@ -102,9 +99,6 @@ private:
     // -- Friends
 };
 
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option
 
 #endif

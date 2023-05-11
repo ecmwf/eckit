@@ -14,10 +14,7 @@
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/StringTools.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -47,8 +44,9 @@ bool FunctionNE::equal(const SQLExpression& l, const SQLExpression& r, bool& mis
         std::string v1(l.evalAsString(missing));
         std::string v2(r.evalAsString(missing));
 
-        if (missing)
+        if (missing) {
             return false;
+        }
 
         v1 = StringTools::trim(v1, "\t\n\v\f\r ");
         v2 = StringTools::trim(v2, "\t\n\v\f\r ");
@@ -63,7 +61,4 @@ double FunctionNE::eval(bool& missing) const {
     return equal(*args_[0], *args_[1], missing);
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

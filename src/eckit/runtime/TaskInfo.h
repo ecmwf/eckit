@@ -199,7 +199,7 @@ public:
     void host(const std::string& h) {
         touch();
         strncpy(host_, h.c_str(), sizeof(host_));
-        host_[sizeof(host_)-1] = '\0';
+        host_[sizeof(host_) - 1] = '\0';
     }
 
     std::string host() const { return host_; }

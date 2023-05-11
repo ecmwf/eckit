@@ -72,8 +72,9 @@ void CmdApplication::userMode() {
             CmdParser::parse(command, std::cout);
         }
         catch (std::exception& e) {
-            if (fail)
+            if (fail) {
                 throw;
+            }
 
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;
@@ -101,8 +102,9 @@ void CmdApplication::userMode() {
                 break;
             }
             catch (std::exception& e) {
-                if (fail)
+                if (fail) {
                     throw;
+                }
 
                 Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
                 Log::error() << "** Exception is ignored" << std::endl;
@@ -132,10 +134,12 @@ void CmdApplication::serveMode(long port) {
 
 void CmdApplication::execute() {
     long port = Resource<long>("-serve", 0);
-    if (port)
+    if (port) {
         serveMode(port);
-    else
+    }
+    else {
         userMode();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

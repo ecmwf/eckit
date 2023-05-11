@@ -19,12 +19,9 @@
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* table, int begin, int end) :
     type_(0),
@@ -59,20 +56,23 @@ ColumnExpression::~ColumnExpression() {}
 
 double ColumnExpression::eval(bool& missing) const {
     // n.b. we should only ever get here for numerical columns. Probably should ASSERT()
-    if (value_->second)
+    if (value_->second) {
         missing = true;
+    }
     return *(value_->first);
 }
 
 void ColumnExpression::eval(double* out, bool& missing) const {
-    if (value_->second)
+    if (value_->second) {
         missing = true;
+    }
     ::memcpy(out, value_->first, type_->size());
 }
 
 std::string ColumnExpression::evalAsString(bool& missing) const {
-    if (value_->second)
+    if (value_->second) {
         missing = true;
+    }
     return type_->asString(value_->first);
 }
 
@@ -86,8 +86,9 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
     /// There is no straightforward way to do these both in one prepare() statement, without
     /// shifting the functionality outside.
 
-    if (!table_)
+    if (!table_) {
         table_ = &sql.findTable(columnName_);
+    }
     sql.ensureFetch(*table_, columnName_);
 
     // Get the details into the ColumnExpression
@@ -138,8 +139,9 @@ void ColumnExpression::cleanup(SQLSelect& sql) {
 
 void ColumnExpression::print(std::ostream& s) const {
     s << columnName_;
-    if (nominalShift_ != 0)
+    if (nominalShift_ != 0) {
         s << "#" << nominalShift_;
+    }
     // if(table_) s << "@" << table_->fullName();
 }
 
@@ -154,9 +156,11 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
 
     if (beginIndex_ != -1 && endIndex_ != -1) {
         ASSERT(beginIndex_ <= endIndex_);
-        for (int i = beginIndex_; i <= endIndex_; i++)
-            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_" + Translator<int, std::string>()(i),
+        for (int i = beginIndex_; i <= endIndex_; i++) {
+            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_"
+                                                               + Translator<int, std::string>()(i),
                                                            this->table()));
+        }
         return;
     }
 
@@ -184,8 +188,10 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
             e.push_back(std::make_shared<ColumnExpression>(names[i], &table));
         }
     }
-    if (!matched)
-        throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_ + " found.");
+    if (!matched) {
+        throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_
+                               + " found.");
+    }
 
     L << "ColumnExpression::expandStars: added " << ss.str() << std::endl;
 }
@@ -197,6 +203,4 @@ void ColumnExpression::tables(std::set<const SQLTable*>& t) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

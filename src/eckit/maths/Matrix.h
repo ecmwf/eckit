@@ -31,9 +31,7 @@
 
 #include "eckit/eckit.h"
 
-namespace eckit {
-
-namespace maths {
+namespace eckit::maths {
 
 template <typename scalar, typename index>
 class RowVector;
@@ -42,9 +40,7 @@ class ColVector;
 template <typename scalar, typename index>
 class Matrix;
 
-}  // namespace maths
-
-}  // namespace eckit
+}  // namespace eckit::maths
 
 #if eckit_HAVE_EIGEN
 

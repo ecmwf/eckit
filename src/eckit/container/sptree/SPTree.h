@@ -47,7 +47,8 @@ public:
     typedef std::pair<Point, Payload> value_type;
 
 public:
-    SPTree(Alloc& alloc) : alloc_(alloc), root_(0) {}
+    SPTree(Alloc& alloc) :
+        alloc_(alloc), root_(0) {}
 
     ~SPTree() { alloc_.deleteNode(root_, (Node*)0); }
 
@@ -132,8 +133,9 @@ public:
     void statsReset() { alloc_.statsReset(); }
 
     void statsPrint(std::ostream& o, bool fancy) const {
-        if (fancy)
+        if (fancy) {
             o << *this << ": ";
+        }
         alloc_.statsPrint(o, fancy);
     }
 

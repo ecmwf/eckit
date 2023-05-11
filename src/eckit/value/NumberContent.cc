@@ -68,28 +68,34 @@ int NumberContent::compare(const Content& other) const {
 
 int NumberContent::compareNumber(const NumberContent& other) const {
     long long dif = (value_ - other.value_);
-    if (dif == 0)
+    if (dif == 0) {
         return dif;
-    if (dif < 0)
+    }
+    if (dif < 0) {
         return -1;
+    }
 
     return 1;
 }
 
 int NumberContent::compareDouble(const DoubleContent& other) const {
     double dif = (value_ - other.value_);
-    if (dif == 0)
+    if (dif == 0) {
         return dif;
-    if (dif < 0)
+    }
+    if (dif < 0) {
         return -1;
+    }
     return 1;
 }
 
 void NumberContent::value(bool& b) const {
-    if (value_ == 0)
+    if (value_ == 0) {
         b = false;
-    else
+    }
+    else {
         b = true;
+    }
 }
 
 void NumberContent::value(long long& l) const {

@@ -30,7 +30,7 @@ class YAMLParser : public ObjectParser {
 
 public:  // methods
     YAMLParser(std::istream& in);
-    virtual ~YAMLParser() override;
+    ~YAMLParser() override;
 
     static Value decodeFile(const PathName& path);
     static Value decodeString(const std::string& str);
@@ -59,14 +59,14 @@ private:
 
     bool endOfToken(char);
 
-    virtual Value parseValue() override;
+    Value parseValue() override;
 
-    virtual Value parseString(char quote = '"') override;
-    virtual Value parseNumber() override;
+    Value parseString(char quote = '"') override;
+    Value parseNumber() override;
 
     Value parseStringOrNumber(bool& isKey);
 
-    virtual std::string parserName() const override;
+    std::string parserName() const override;
 
 
     void anchor(const Value& key, const Value& value);

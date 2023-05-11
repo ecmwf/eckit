@@ -91,14 +91,15 @@ void PartHandle::openForAppend(const Length&) {
 
 long PartHandle::read1(char* buffer, long length) {
     // skip empty entries if any
-    while (index_ < offset_.size() && length_[index_] == Length(0))
+    while (index_ < offset_.size() && length_[index_] == Length(0)) {
         index_++;
+    }
 
     ASSERT(index_ <= offset_.size());
 
-    if (index_ == offset_.size())
+    if (index_ == offset_.size()) {
         return 0;
-
+    }
 
     Length ll = (long long)offset_[index_] + Length(pos_);
     off_t pos = ll;

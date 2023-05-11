@@ -81,8 +81,9 @@ static void usage(const std::string& tool) {
 }
 
 Hash::digest_t HashTool::computeHash(PathName& file) {
-    if (last_ == file)  // avoid 2 hashes in check following a generate
+    if (last_ == file) {  // avoid 2 hashes in check following a generate
         return hash_->digest();
+    }
 
     LOG_DEBUG_LIB(LibEcKit) << "Calculating hash for " << file << std::endl;
     hash_->reset();  // zero hash
@@ -95,8 +96,9 @@ void HashTool::hash(PathName& path) {
 
     LOG_DEBUG_LIB(LibEcKit) << "scanning path " << path << std::endl;
 
-    if (not check_ and not generate_)
+    if (not check_ and not generate_) {
         return;
+    }
 
     // skip if this is a hash file
     if (path.extension() == extension_) {
@@ -158,8 +160,9 @@ void HashTool::hash(PathName& path) {
         }
     }
 
-    if (not quiet_)
+    if (not quiet_) {
         Log::info() << outdigest << " : " << file << std::endl;
+    }
 }
 
 void HashTool::scan(PathName& path) {
@@ -173,8 +176,9 @@ void HashTool::scan(PathName& path) {
         PathName realpath         = path.realName();
         const std::string pathstr = realpath.asString();
 
-        if (visited_.find(pathstr) != visited_.end())
+        if (visited_.find(pathstr) != visited_.end()) {
             return;
+        }
 
         visited_.insert(pathstr);
 
@@ -190,10 +194,11 @@ void HashTool::scan(PathName& path) {
         }
 
         // descend to children directory
-        if (recurse_)
+        if (recurse_) {
             for (auto& dir : dirs) {
                 scan(dir);
             }
+        }
     }
     else {
         hash(path);

@@ -28,11 +28,11 @@ class Parallel;
 
 class ParallelStatus : public StatusContent {
 private:  // methods
-    virtual int source() const override { return status_.MPI_SOURCE; }
-    virtual int tag() const override { return status_.MPI_TAG; }
-    virtual int error() const override { return status_.MPI_ERROR; }
+    int source() const override { return status_.MPI_SOURCE; }
+    int tag() const override { return status_.MPI_TAG; }
+    int error() const override { return status_.MPI_ERROR; }
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:  // members
     friend class Parallel;

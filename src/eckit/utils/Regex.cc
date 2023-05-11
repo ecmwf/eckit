@@ -54,8 +54,9 @@ Regex::Regex(const std::string& s, bool shell, bool extended) :
                 case '[':
                     re[j++] = '[';
                     i++;
-                    while (i < s.length() && s[i] != ']')
+                    while (i < s.length() && s[i] != ']') {
                         re[j++] = s[i++];
+                    }
                     re[j++] = ']';
                     break;
 

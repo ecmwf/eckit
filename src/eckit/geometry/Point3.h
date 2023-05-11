@@ -5,8 +5,7 @@
 
 //------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
+namespace eckit::geometry {
 
 //------------------------------------------------------------------------------------------------------
 
@@ -15,13 +14,17 @@ class Point3 : public eckit::geometry::KPoint<3> {
     typedef KPoint<3> BasePoint;
 
 public:
-    Point3() : BasePoint() {}
+    Point3() :
+        BasePoint() {}
 
-    Point3(const BasePoint& p) : BasePoint(p) {}
+    Point3(const BasePoint& p) :
+        BasePoint(p) {}
 
-    Point3(const double* p) : BasePoint(p) {}
+    Point3(const double* p) :
+        BasePoint(p) {}
 
-    Point3(double x, double y, double z) : BasePoint() {
+    Point3(double x, double y, double z) :
+        BasePoint() {
         x_[XX] = x;
         x_[YY] = y;
         x_[ZZ] = z;
@@ -55,7 +58,6 @@ bool points_equal(const Point3&, const Point3&);
 
 //------------------------------------------------------------------------------------------------------
 
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry
 
 #endif

@@ -23,8 +23,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -93,8 +92,7 @@ CASE("Write to a new file") {
     }
 }
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 //----------------------------------------------------------------------------------------------------------------------
 

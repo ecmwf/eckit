@@ -16,8 +16,7 @@
 
 #include "eckit/thread/ThreadControler.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 /// A telnet-able object
 
@@ -42,7 +41,6 @@ private:
     ThreadControler telnet_;
 };
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

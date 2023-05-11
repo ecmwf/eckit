@@ -51,8 +51,9 @@ std::string BackTrace::dump() {
     oss << "backtrace [" << count << "] stack has " << addsize << " addresses\n";
 
     strings = backtrace_symbols(buffer, addsize);
-    if (strings == nullptr)
+    if (strings == nullptr) {
         oss << " --- no backtrace_symbols found ---\n";
+    }
 
 #if !eckit_HAVE_CXXABI_H
     for (int s = 0; s < addsize; ++s)
@@ -82,8 +83,9 @@ std::string BackTrace::dump() {
                         else {
                             oss << buffer;
                         }
-                        if (d)
+                        if (d) {
                             free(d);
+                        }
                     }
                     i = 0;
                     break;

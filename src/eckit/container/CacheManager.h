@@ -126,7 +126,7 @@ public:  // methods
 
     class CacheContentCreator {
     public:
-        virtual ~CacheContentCreator() = default;
+        virtual ~CacheContentCreator()                                       = default;
         virtual void create(const PathName&, value_type& value, bool& saved) = 0;
     };
 

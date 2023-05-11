@@ -10,9 +10,7 @@
 
 #include "eckit/net/TCPStream.h"
 
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 TCPStream::TCPStream(net::TCPSocket& socket) :
     socket_(socket) {}
@@ -40,6 +38,4 @@ SharedTCPStream::SharedTCPStream(net::TCPSocket& s) :
 
 SharedTCPStream::~SharedTCPStream() {}
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

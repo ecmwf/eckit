@@ -2,9 +2,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
-namespace eckit {
-namespace maths {
-namespace lapack {
+namespace eckit::maths::lapack {
 
 #if eckit_HAVE_LAPACK
 
@@ -51,6 +49,4 @@ void getri(int* M, float* data, int* lda, int* ipiv, float* work, int* lwork, in
 
 #endif
 
-}  // namespace lapack
-}  // namespace maths
-}  // namespace eckit
+}  // namespace eckit::maths::lapack

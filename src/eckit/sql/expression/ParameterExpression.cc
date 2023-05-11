@@ -13,9 +13,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLSession.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -65,6 +63,4 @@ bool ParameterExpression::isConstant() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

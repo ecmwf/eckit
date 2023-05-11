@@ -41,10 +41,12 @@ void DirCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
 
     char buf[PATH_MAX];
     const char* p = getcwd(buf, sizeof(buf));
-    if (p)
+    if (p) {
         out << p << std::endl;
-    else
+    }
+    else {
         throw FailedSystemCall("getcwd");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

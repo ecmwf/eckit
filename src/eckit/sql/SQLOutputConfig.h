@@ -17,8 +17,7 @@
 
 #include "eckit/filesystem/PathName.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLOutput;
 
@@ -130,7 +129,6 @@ protected:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

@@ -16,10 +16,7 @@
 #include <algorithm>
 #include <iomanip>
 
-
-namespace eckit {
-namespace message {
-
+namespace eckit::message {
 
 Splitter::Splitter(eckit::PeekHandle& handle) :
     handle_(handle) {}
@@ -63,7 +60,7 @@ Splitter* SplitterFactory::lookup(eckit::PeekHandle& handle) {
     for (size_t i = 0; i < n; ++i) {
         SplitterBuilderBase* builder = decoders_[(i + index_) % n];
         if (builder->match(handle)) {
-            index_ = i; // Start with this index for next message
+            index_ = i;  // Start with this index for next message
             return builder->make(handle);
         }
     }
@@ -89,5 +86,4 @@ Splitter* SplitterFactory::lookup(eckit::PeekHandle& handle) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message

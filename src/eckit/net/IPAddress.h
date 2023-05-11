@@ -19,14 +19,13 @@
 
 #include <netinet/in.h>
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 class IPAddress {
 public:
     // Contructors
-    IPAddress(const in_addr& address) : address_(address) {}
+    IPAddress(const in_addr& address) :
+        address_(address) {}
 
     IPAddress(const std::string&);
     IPAddress(const char*);
@@ -53,8 +52,6 @@ private:
     }
 };
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

@@ -23,8 +23,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -58,5 +57,4 @@ size_t ResourceUsage::numberOfSwaps() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

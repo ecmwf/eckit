@@ -19,11 +19,7 @@
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 
-
-namespace eckit {
-namespace linalg {
-namespace dense {
-
+namespace eckit::linalg::dense {
 
 static const LinearAlgebraGeneric __la_generic("generic");
 #if eckit_HAVE_OMP
@@ -43,8 +39,7 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
     Scalar sum = 0.;
 
 #if eckit_HAVE_OMP
-#pragma omp parallel for reduction(+ \
-                                   : sum)
+#pragma omp parallel for reduction(+ : sum)
 #endif
     for (Size i = 0; i < Ni; ++i) {
         const auto p = x[i] * y[i];
@@ -102,7 +97,4 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
     }
 }
 
-
-}  // namespace dense
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::dense

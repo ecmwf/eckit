@@ -45,16 +45,21 @@ HttpHeader::HttpHeader() :
 }
 
 HttpHeader& HttpHeader::operator=(std::map<std::string, std::string, std::less<std::string> >& parsed) {
-    for (std::map<std::string, std::string, std::less<std::string> >::const_iterator i = parsed.begin();
-         i != parsed.end(); ++i)
+    for (std::map<std::string, std::string, std::less<std::string> >::const_iterator i
+         = parsed.begin();
+         i != parsed.end();
+         ++i) {
         header_[(*i).first] = (*i).second;
+    }
 
     Map::const_iterator j = header_.find(Content_Length);
 
-    if (j != header_.end())
+    if (j != header_.end()) {
         contentLength_ = atol(((*j).second).c_str());
-    else
+    }
+    else {
         contentLength_ = 0;
+    }
 
     return *this;
 }
@@ -132,8 +137,9 @@ void HttpHeader::print(std::ostream& s) const {
 
     long len      = content_.size();
     const char* p = static_cast<const char*>(content_.data());
-    while (len-- > 0)
+    while (len-- > 0) {
         s.put(*p++);
+    }
 }
 
 void HttpHeader::forward(const std::string& s) {
@@ -163,8 +169,9 @@ void HttpHeader::type(const std::string& s) {
 const std::string& HttpHeader::type() const {
     Map::const_iterator i = header_.find(Content_Type);
 
-    if (i != header_.end())
+    if (i != header_.end()) {
         return (*i).second;
+    }
 
     return DefaultType;
 }
@@ -187,21 +194,27 @@ bool HttpHeader::authenticated() const {
     if (i != header_.end()) {
         const char* s = (*i).second.c_str();
 
-        while (*s != ' ' && *s != '\t')
+        while (*s != ' ' && *s != '\t') {
             s++;
-        while (*s == ' ' || *s == '\t')
+        }
+        while (*s == ' ' || *s == '\t') {
             s++;
+        }
 
         unsigned char b64[256];
-        for (int j = 0; j < 256; j++)
+        for (int j = 0; j < 256; j++) {
             b64[j] = 64;
+        }
 
-        for (unsigned char c = 'A'; c <= 'Z'; c++)
+        for (unsigned char c = 'A'; c <= 'Z'; c++) {
             b64[c] = c - 'A';
-        for (unsigned char c = 'a'; c <= 'z'; c++)
+        }
+        for (unsigned char c = 'a'; c <= 'z'; c++) {
             b64[c] = c - 'a' + 26;
-        for (unsigned char c = '0'; c <= '9'; c++)
+        }
+        for (unsigned char c = '0'; c <= '9'; c++) {
             b64[c] = c - '0' + 52;
+        }
 
         b64[int('+')] = 62;
         b64[int('/')] = 63;

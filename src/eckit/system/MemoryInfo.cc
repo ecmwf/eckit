@@ -21,8 +21,7 @@
 #include "eckit/memory/Shmget.h"
 #include "eckit/system/MemoryInfo.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -170,6 +169,4 @@ void MemoryInfo::delta(std::ostream& out, const MemoryInfo& other) const {
     }
 }
 
-
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

@@ -105,8 +105,9 @@ struct Swap {
     static const int last = sizeof(T) - 1;
     T operator()(T v) {
         unsigned char* p = (unsigned char*)&v;
-        for (int i = 0; i < half; i++)
+        for (int i = 0; i < half; i++) {
             std::swap(p[i], p[last - i]);
+        }
         return v;
     }
 };
@@ -164,8 +165,9 @@ void Exporter::writeString(const std::string& s) {
 
     writeTag(TAG_STRING);
     writeUnsigned(len);
-    for (size_t i = 0; i < len; i++)
+    for (size_t i = 0; i < len; i++) {
         buffer[i] = s[i];
+    }
 
     ASSERT((size_t)handle_.write(buffer, len) == len);
 }
@@ -348,9 +350,11 @@ void _endObject(eckit::Exporter& e, unsigned long long type, unsigned long long 
 void Exporter::endObject() {
     ASSERT(readTag() == TAG_END_OBJECT);
     ASSERT(subCount_);
-    for (std::map<std::string, Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
-        if (!(*j).second.used())
+    for (std::map<std::string, Datatype>::iterator j = members_.begin(); j != members_.end(); ++j) {
+        if (!(*j).second.used()) {
             std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
+        }
+    }
 
     members_.clear();
     stack_.clear();
@@ -415,8 +419,9 @@ void _nextSubObject(eckit::Exporter& e) {
 std::string Exporter::path() const {
     std::string s;
     for (std::vector<std::string>::const_iterator j = stack_.begin(); j != stack_.end(); ++j) {
-        if (s.length())
+        if (s.length()) {
             s += ".";
+        }
         s += (*j);
     }
     return s;
@@ -426,9 +431,11 @@ void Exporter::nextSubObject() {
     ASSERT(readTag() == TAG_START_SUBOBJECT);
     subCount_++;
 
-    for (std::map<std::string, Datatype>::iterator j = members_.begin(); j != members_.end(); ++j)
-        if (!(*j).second.used())
+    for (std::map<std::string, Datatype>::iterator j = members_.begin(); j != members_.end(); ++j) {
+        if (!(*j).second.used()) {
             std::cout << "WARNING NOT USED [" << (*j).first << "]" << std::endl;
+        }
+    }
 
     members_.clear();
 
@@ -526,8 +533,9 @@ Evolve::Evolve(eckit::Exporter& e) :
 
 Evolve::Evolve(Evolve* e, char const* klass, char const* name) :
     e_(e->e_), path_(e->path()), parent_(e) {
-    if (path_.length())
+    if (path_.length()) {
         path_ += ".";
+    }
     path_ += klass;
 
     if (name) {

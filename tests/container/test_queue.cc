@@ -17,8 +17,7 @@ using namespace eckit;
 using namespace eckit::testing;
 using namespace eckit::types;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -83,8 +82,7 @@ CASE("Multi Producer Multi Consumer Queue access size = 1") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

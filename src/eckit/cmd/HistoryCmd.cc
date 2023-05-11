@@ -35,8 +35,9 @@ HistoryCmd::~HistoryCmd() {}
 
 void HistoryCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
     long long lines = 0;
-    if (args.exists(1))
+    if (args.exists(1)) {
         lines = args[1];
+    }
     CmdParser::history(lines, out);
 }
 

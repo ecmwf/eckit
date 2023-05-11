@@ -15,8 +15,7 @@ using namespace eckit::linalg;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -216,8 +215,9 @@ CASE("creation with unassigned triplets ( ECKIT-361 )") {
             return row_triplets;
         };
         auto skip_point = [](Size row) {
-            if (row == 5)
+            if (row == 5) {
                 return true;
+            }
             return false;
         };
 
@@ -242,8 +242,7 @@ CASE("creation with unassigned triplets ( ECKIT-361 )") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);

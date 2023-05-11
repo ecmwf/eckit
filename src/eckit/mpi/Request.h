@@ -15,14 +15,13 @@
 
 #include "eckit/memory/Counted.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class RequestContent : public Counted {
 public:
-    virtual ~RequestContent() override;
+    ~RequestContent() override;
 
     virtual void print(std::ostream&) const = 0;
 
@@ -78,7 +77,6 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi
 
 #endif

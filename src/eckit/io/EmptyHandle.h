@@ -26,7 +26,8 @@ class EmptyHandle : public DataHandle {
 public:
     // -- Contructors
     EmptyHandle() {}
-    EmptyHandle(Stream& s) : DataHandle(s) {}
+    EmptyHandle(Stream& s) :
+        DataHandle(s) {}
 
     // -- Destructor
 
@@ -36,25 +37,25 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override { return 0; }
-    virtual void openForWrite(const Length&) override {}
-    virtual void openForAppend(const Length&) override {}
+    Length openForRead() override { return 0; }
+    void openForWrite(const Length&) override {}
+    void openForAppend(const Length&) override {}
 
-    virtual long read(void*, long) override { return 0; }
-    virtual long write(const void*, long n) override { return n; }
-    virtual void close() override {}
-    virtual void flush() override {}
-    virtual Offset seek(const Offset&) override { return 0; }
-    virtual Offset position() override { return 0; }
-    virtual void rewind() override {}
-    virtual void print(std::ostream& s) const override { s << "Empty Handle"; }
-    virtual bool isEmpty() const override { return true; }
-    virtual bool canSeek() const override { return true; }
+    long read(void*, long) override { return 0; }
+    long write(const void*, long n) override { return n; }
+    void close() override {}
+    void flush() override {}
+    Offset seek(const Offset&) override { return 0; }
+    Offset position() override { return 0; }
+    void rewind() override {}
+    void print(std::ostream& s) const override { s << "Empty Handle"; }
+    bool isEmpty() const override { return true; }
+    bool canSeek() const override { return true; }
 
     // From Streamable
 
-    virtual void encode(Stream& s) const override { DataHandle::encode(s); }
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream& s) const override { DataHandle::encode(s); }
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

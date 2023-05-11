@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionOR : public FunctionExpression {
 public:
@@ -30,9 +27,9 @@ public:
     // -- Overridden methods
     std::shared_ptr<SQLExpression> clone() const override;
 
-    virtual double eval(bool& missing) const override;
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
+    double eval(bool& missing) const override;
+    const eckit::sql::type::SQLType* type() const override;
+    std::shared_ptr<SQLExpression> simplify(bool&) override;
 
     static int arity() { return 2; }
     static const char* help() { return ""; }
@@ -46,9 +43,6 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

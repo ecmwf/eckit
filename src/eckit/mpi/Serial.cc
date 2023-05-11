@@ -22,16 +22,15 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/maths/Functions.h"
+#include "eckit/mpi/Group.h"
 #include "eckit/mpi/SerialData.h"
 #include "eckit/mpi/SerialRequest.h"
-#include "eckit/mpi/Group.h"
 #include "eckit/mpi/SerialStatus.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -58,7 +57,6 @@ public:
     SendRequest& matchingSendRequest(const ReceiveRequest& req) { return matchingSendRequest(req.tag()); }
 
     SendRequest& matchingSendRequest(int tag) {
-        Request send;
         if (tag == anyTag()) {
             std::map<int, std::deque<Request> >::iterator it = send_.begin();
             for (; it != send_.end(); ++it) {
@@ -71,13 +69,11 @@ public:
             }
             throw eckit::Exception("No send requests available", Here());
         }
-        else {
-            ASSERT(send_.count(tag) > 0);
-            ASSERT(send_[tag].size());
-            Request send = send_[tag].front();
-            send_[tag].pop_front();
-            return send.as<SendRequest>();
-        }
+        ASSERT(send_.count(tag) > 0);
+        ASSERT(send_[tag].size());
+        Request send = send_[tag].front();
+        send_[tag].pop_front();
+        return send.as<SendRequest>();
     }
 
     SendRequest* matchNextSendRequest(int tag) {
@@ -111,8 +107,9 @@ public:
 private:
     Request registerRequest(SerialRequest* request) {
         ++n_;
-        if (size_t(n_) == requests_.size())
+        if (size_t(n_) == requests_.size()) {
             n_ = 0;
+        }
         request->request_ = n_;
         Request r(request);
         requests_[n_] = r;
@@ -336,7 +333,7 @@ void Serial::scatterv(const void* sendbuf, const int[], const int[], void* recvb
     }
 }
 
-  void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code, size_t root) const {
+void Serial::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code, size_t root) const {
     if (recvbuf != sendbuf && count > 0) {
         memcpy(recvbuf, sendbuf, count * dataSize[type]);
     }
@@ -370,14 +367,16 @@ void Serial::allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, co
 }
 
 void Serial::allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t, Data::Code type) const {
-    if (recvbuf != sendbuf && sendcount > 0)
+    if (recvbuf != sendbuf && sendcount > 0) {
         memcpy(recvbuf, sendbuf, sendcount * dataSize[type]);
+    }
 }
 
 void Serial::allToAllv(const void* sendbuf, const int sendcounts[], const int[], void* recvbuf, const int[],
                        const int[], Data::Code type) const {
-    if (recvbuf != sendbuf && sendcounts[0] > 0)
+    if (recvbuf != sendbuf && sendcounts[0] > 0) {
         memcpy(recvbuf, sendbuf, sendcounts[0] * dataSize[type]);
+    }
 }
 
 Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/, int tag) const {
@@ -402,7 +401,7 @@ Status Serial::receive(void* recv, size_t count, Data::Code type, int /*source*/
 }
 
 Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-				  int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
+                                  int /*dest*/, int sendtag, int /*source*/, int recvtag) const {
     AutoLock<SerialRequestPool> lock(SerialRequestPool::instance());
     SerialRequestPool::instance().createSendRequest(sendrecv, count, type, sendtag);
     ReceiveRequest recv_request(sendrecv, count, type, recvtag);
@@ -414,7 +413,7 @@ Status Serial::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
     if (count > 0) {
         memcpy(sendrecv, send.buffer(), send.count() * dataSize[send.type()]);
     }
-    
+
     SerialStatus* st = new SerialStatus();
     (*st).count_     = send.count();
     (*st).source_    = 0;
@@ -476,7 +475,6 @@ Comm& Serial::create(const Group&, int tag, const std::string& name) const {
 };
 
 
-
 void Serial::print(std::ostream& os) const {
     os << "Serial()";
 }
@@ -512,5 +510,4 @@ static CommBuilder<Serial> SerialBuilder("serial");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

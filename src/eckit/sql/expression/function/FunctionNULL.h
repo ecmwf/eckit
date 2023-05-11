@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionNULL : public FunctionExpression {
 public:
@@ -33,19 +30,16 @@ public:
 
 private:
     // No copy allowed
-    virtual const eckit::sql::type::SQLType* type() const override;
+    const eckit::sql::type::SQLType* type() const override;
     FunctionNULL& operator=(const FunctionNULL&);
 
     // -- Overridden methods
-    virtual double eval(bool& missing) const override;
+    double eval(bool& missing) const override;
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionNULL& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

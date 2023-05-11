@@ -16,9 +16,7 @@
 
 #include "eckit/sql/expression/SQLExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,25 +38,23 @@ private:
     const type::SQLType* type_;  // non-owning
 
     // -- Overridden methods
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
     virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,
                              expression::Expressions&) override;
-    virtual void prepare(SQLSelect& sql) override;
-    virtual void cleanup(SQLSelect& sql) override;
+    void prepare(SQLSelect& sql) override;
+    void cleanup(SQLSelect& sql) override;
 
-    virtual const type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
-    virtual void eval(double* out, bool& missing) const override;
-    virtual std::string evalAsString(bool& missing) const override;
-    virtual bool isConstant() const override { return true; }
-    virtual bool isNumber() const override { return true; }
-    virtual void output(SQLOutput& o) const override;
+    const type::SQLType* type() const override;
+    double eval(bool& missing) const override;
+    void eval(double* out, bool& missing) const override;
+    std::string evalAsString(bool& missing) const override;
+    bool isConstant() const override { return true; }
+    bool isNumber() const override { return true; }
+    void output(SQLOutput& o) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression
 
 #endif

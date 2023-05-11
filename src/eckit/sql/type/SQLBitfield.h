@@ -17,9 +17,7 @@
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 class SQLBitfield : public SQLType {
 public:
@@ -33,7 +31,7 @@ public:
     const FieldNames& fields() const { return bitfieldDef_.first; }
     const Sizes& sizes() const { return bitfieldDef_.second; }
 
-    static std::string make(const std::string&, const FieldNames&, const Sizes&, const char* aliasName=NULL);
+    static std::string make(const std::string&, const FieldNames&, const Sizes&, const char* aliasName = NULL);
 
 private:
     SQLBitfield(const SQLBitfield&);
@@ -45,20 +43,18 @@ private:
     std::map<std::string, unsigned long> mask_;
     std::map<std::string, unsigned long> shift_;
 
-    virtual size_t size() const override;
-    virtual void output(SQLOutput& s, double, bool) const override;
-    virtual std::string asString(const double* val) const override;
-    virtual const SQLType* subType(const std::string&) const override;
-    virtual int getKind() const override { return bitmapType; }
+    size_t size() const override;
+    void output(SQLOutput& s, double, bool) const override;
+    std::string asString(const double* val) const override;
+    const SQLType* subType(const std::string&) const override;
+    int getKind() const override { return bitmapType; }
 
     size_t width_;
-    virtual size_t width() const override;
+    size_t width() const override;
     // friend std::ostream& operator<<(std::ostream& s,const SQLBitfield& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type
 
 #endif

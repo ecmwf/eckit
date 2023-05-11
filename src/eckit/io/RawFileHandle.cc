@@ -37,8 +37,9 @@ RawFileHandle::RawFileHandle(const std::string& path, bool overwrite) :
 
 
 RawFileHandle::~RawFileHandle() {
-    if (fd_ != -1)
+    if (fd_ != -1) {
         close();
+    }
 }
 
 Length RawFileHandle::openForRead() {

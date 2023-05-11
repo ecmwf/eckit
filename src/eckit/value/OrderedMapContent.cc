@@ -88,8 +88,9 @@ Value OrderedMapContent::remove(const Value& key) {
     Value result = value_[key];
     value_.erase(key);
     auto it = std::find(keys_.begin(), keys_.end(), key);
-    if (it != keys_.end())
+    if (it != keys_.end()) {
         keys_.erase(it);
+    }
     return result;
 }
 
@@ -154,8 +155,9 @@ int OrderedMapContent::compareOrderedMap(const OrderedMapContent& other) const {
 void OrderedMapContent::print(std::ostream& s) const {
     s << '{';
     for (ValueList::const_iterator j = keys_.begin(); j != keys_.end(); ++j) {
-        if (j != keys_.begin())
+        if (j != keys_.begin()) {
             s << " , ";
+        }
         s << *j;
         s << " => ";
         s << value(*j);

@@ -20,8 +20,7 @@ using namespace eckit;
 using namespace eckit::testing;
 using namespace eckit::geometry;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -71,20 +70,27 @@ private:
     static bool isAnyPointInBoxInterior(const Node* node, Alloc& alloc, const Point& lbound, const Point& ubound) {
         const Point& point = node->value().point();
 
-        if (isPointInBoxInterior(point, lbound, ubound))
+        if (isPointInBoxInterior(point, lbound, ubound)) {
             return true;
+        }
 
         const size_t axis = node->axis();
 
-        if (lbound.x(axis) < point.x(axis))
-            if (Node* left = node->left(alloc))
-                if (isAnyPointInBoxInterior(left, alloc, lbound, ubound))
+        if (lbound.x(axis) < point.x(axis)) {
+            if (Node* left = node->left(alloc)) {
+                if (isAnyPointInBoxInterior(left, alloc, lbound, ubound)) {
                     return true;
+                }
+            }
+        }
 
-        if (ubound.x(axis) > point.x(axis))
-            if (Node* right = node->right(alloc))
-                if (isAnyPointInBoxInterior(right, alloc, lbound, ubound))
+        if (ubound.x(axis) > point.x(axis)) {
+            if (Node* right = node->right(alloc)) {
+                if (isAnyPointInBoxInterior(right, alloc, lbound, ubound)) {
                     return true;
+                }
+            }
+        }
 
         return false;
     }
@@ -93,8 +99,9 @@ private:
     /// with bottom-left and top-right corners at \p lbound and \p ubound.
     static bool isPointInBoxInterior(const Point& point, const Point& lbound, const Point& ubound) {
         for (size_t d = 0; d < Point::DIMS; ++d) {
-            if (point.x(d) <= lbound.x(d) || point.x(d) >= ubound.x(d))
+            if (point.x(d) <= lbound.x(d) || point.x(d) >= ubound.x(d)) {
                 return false;
+            }
         }
         return true;
     }
@@ -144,16 +151,16 @@ CASE("test_eckit_container_kdtree_constructor") {
     Point nr = kd.nearestNeighbour(testPoint).point();
 
     // we should find the same point
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == refPoint.x(i));
-
+    }
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == refPoint.x(i));
-
+    }
 
     // test "off the scale" - i.e. not within a group of points
     delta = Point(1000.0, 0.0);
@@ -161,8 +168,9 @@ CASE("test_eckit_container_kdtree_constructor") {
     testPoint = Point::add(points.back().point(), delta);
     nr        = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == points.back().point().x(i));
+    }
 
     // and negatively
     //
@@ -171,9 +179,9 @@ CASE("test_eckit_container_kdtree_constructor") {
     testPoint = Point::add(points.front().point(), delta);
     nr        = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == points.front().point().x(i));
-
+    }
 
     // test N nearest
     refPoint = points[points.size() / 2].point();
@@ -238,16 +246,16 @@ CASE("test_eckit_container_kdtree_insert") {
     Point nr = kd.nearestNeighbour(testPoint).point();
 
     // we should find the same point
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == refPoint.x(i));
-
+    }
 
     // test exact match to a point
 
     nr = kd.nearestNeighbour(refPoint).point();
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == refPoint.x(i));
-
+    }
 
     // test "off the scale" - i.e. not within a group of points
     delta = Point(1000.0, 0.0);
@@ -255,8 +263,9 @@ CASE("test_eckit_container_kdtree_insert") {
     testPoint = Point::add(points.back().point(), delta);
     nr        = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == points.back().point().x(i));
+    }
 
     // and negatively
     //
@@ -265,9 +274,9 @@ CASE("test_eckit_container_kdtree_insert") {
     testPoint = Point::add(points.front().point(), delta);
     nr        = kd.nearestNeighbour(testPoint).point();
 
-    for (unsigned int i = 0; i < Point::dimensions(); i++)
+    for (unsigned int i = 0; i < Point::dimensions(); i++) {
         EXPECT(nr.x(i) == points.front().point().x(i));
-
+    }
 
     // test N nearest
     refPoint = points[points.size() / 2].point();
@@ -320,8 +329,9 @@ CASE("test_kdtree_mapped") {
 
     // Write file with kdtree
     {
-        if (path.exists())
+        if (path.exists()) {
             path.unlink();
+        }
         Tree kd(path, points.size(), 0);
         EXPECT_EQUAL(kd.size(), 0);
         kd.build(points);
@@ -357,8 +367,7 @@ CASE("test_kdtree_iterate_empty") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

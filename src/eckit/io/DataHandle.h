@@ -35,7 +35,8 @@ class RestartTransfer {
     Offset from_;
 
 public:
-    RestartTransfer(const Offset& from) : from_(from) {}
+    RestartTransfer(const Offset& from) :
+        from_(from) {}
     const Offset& from() const { return from_; }
 };
 
@@ -60,7 +61,7 @@ public:
 
     // -- Destructor
 
-    virtual ~DataHandle() override {}
+    ~DataHandle() override {}
 
     // -- Methods
 
@@ -133,7 +134,7 @@ public:
     virtual void cost(std::map<std::string, Length>&, bool) const;
     virtual std::string title() const;
     virtual std::string metricsTag() const;
-    virtual void collectMetrics(const std::string& what) const; // Tag for metrics collection
+    virtual void collectMetrics(const std::string& what) const;  // Tag for metrics collection
 
     // This is the MD5 of the Handle, not the data it points to
 
@@ -147,8 +148,8 @@ public:
 
     // From Streamble
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 
@@ -167,7 +168,8 @@ class AutoClose {
     DataHandle& handle_;
 
 public:
-    AutoClose(DataHandle& handle) : handle_(handle) {}
+    AutoClose(DataHandle& handle) :
+        handle_(handle) {}
     ~AutoClose() noexcept(false);
 };
 

@@ -28,7 +28,8 @@ private:
     Partition partition_;
 
 public:
-    BSPTreeX(Alloc& alloc) : SPTree<Traits, BSPNode<Traits, Partition> >(alloc) {}
+    BSPTreeX(Alloc& alloc) :
+        SPTree<Traits, BSPNode<Traits, Partition> >(alloc) {}
 
 
     /// Container must be a random access
@@ -45,7 +46,8 @@ class BSPTreeMemory : public BSPTreeX<TT<Traits, KDMemory>, Partition> {
     KDMemory alloc_;
 
 public:
-    BSPTreeMemory() : BSPTreeX<TT<Traits, KDMemory>, Partition>(alloc_) {}
+    BSPTreeMemory() :
+        BSPTreeX<TT<Traits, KDMemory>, Partition>(alloc_) {}
 };
 
 template <class Traits, class Partition>

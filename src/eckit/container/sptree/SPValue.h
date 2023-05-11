@@ -11,6 +11,7 @@
 #ifndef SPValue_H
 #define SPValue_H
 
+#include <iostream>
 
 namespace eckit {
 
@@ -24,10 +25,12 @@ public:
     Payload payload_;
 
 public:
-    SPValue(const Point& point, const Payload& payload) : point_(point), payload_(payload) {}
+    SPValue(const Point& point, const Payload& payload) :
+        point_(point), payload_(payload) {}
 
     template <class V>
-    SPValue(const V& v) : point_(v.point()), payload_(v.payload()) {}
+    SPValue(const V& v) :
+        point_(v.point()), payload_(v.payload()) {}
 
     const Point& point() const { return point_; }
     const Payload& payload() const { return payload_; }

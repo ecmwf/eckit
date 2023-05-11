@@ -24,8 +24,7 @@
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
-namespace option {
+namespace eckit::option {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -76,7 +75,7 @@ public:  // methods
 private:  // methods
     void init(std::function<void(const std::string&)> usage, int args_count, int minumum_args, bool throw_on_errror);
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:  // members
     std::set<std::string> keys_;
@@ -88,7 +87,6 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option
 
 #endif  // eckit_option_CmdArgs_H

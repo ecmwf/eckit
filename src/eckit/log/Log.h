@@ -120,7 +120,8 @@ class LogFormatSetter {
     int format_;
 
 public:
-    explicit LogFormatSetter(int f) : format_(f) {}
+    explicit LogFormatSetter(int f) :
+        format_(f) {}
 
     friend std::ostream& operator<<(std::ostream& s, const LogFormatSetter& f) {
         format(s, f.format_);
@@ -128,7 +129,8 @@ public:
     }
 };
 
-DEPRECATED("Use eckit::format() instead") std::ostream& setformat(std::ostream& s, int f);
+DEPRECATED("Use eckit::format() instead")
+std::ostream& setformat(std::ostream& s, int f);
 
 inline LogFormatSetter setformat(int format) {
     return LogFormatSetter(format);

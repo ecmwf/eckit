@@ -27,8 +27,9 @@ static long date2Value(const Date& date) {
 
     long value = date - jan01;
 
-    if (numberOfDays == 365 && value > feb28 - jan01)
+    if (numberOfDays == 365 && value > feb28 - jan01) {
         value++;
+    }
 
     return value;
 }

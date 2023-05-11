@@ -24,8 +24,7 @@
 #include "eckit/memory/MemoryBuffer.h"
 #include "eckit/system/MemoryInfo.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -83,5 +82,4 @@ std::string SystemInfoMacOSX::dynamicLibraryName(const std::string& name) const 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

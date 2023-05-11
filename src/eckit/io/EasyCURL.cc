@@ -498,7 +498,7 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
     ensureHeaders();
     ASSERT(code_);
     for (auto c : http_codes) {
-        if (c.code_ == code_)
+        if (c.code_ == code_) {
             if (c.redirect_) {
                 char* url = NULL;
                 _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
@@ -506,6 +506,7 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
                 location = url;
                 return true;
             }
+        }
     }
     return false;
 }
@@ -517,7 +518,7 @@ public:
     EasyCURLResponseDirect(const std::string& url, CURLHandle* curl) :
         EasyCURLResponseImp(url, curl){};
 
-    virtual void perform() override {
+    void perform() override {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERFUNCTION, &_headersCallback));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERDATA, this));
@@ -526,7 +527,7 @@ public:
         _(curl_easy_perform(ch_->curl_));
     }
 
-    virtual std::string body() const override {
+    std::string body() const override {
         if (!handle_) {
             return "";
         }
@@ -545,13 +546,13 @@ public:
         return handle_->write(ptr, size);
     }
 
-    virtual unsigned long long contentLength(bool& present) override { NOTIMP; }
+    unsigned long long contentLength(bool& present) override { NOTIMP; }
 
-    virtual size_t read(void* ptr, size_t size) override { NOTIMP; }
+    size_t read(void* ptr, size_t size) override { NOTIMP; }
 
-    virtual void ensureHeaders() override {}
+    void ensureHeaders() override {}
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 };
 
 
@@ -571,7 +572,7 @@ public:
 
     ~EasyCURLResponseStream() { _(curl_multi_remove_handle(multi, ch_->curl_)); }
 
-    virtual void perform() override {
+    void perform() override {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERFUNCTION, &_headersCallback));
         _(curl_easy_setopt(ch_->curl_, CURLOPT_HEADERDATA, this));
@@ -581,9 +582,9 @@ public:
 
     size_t writeCallback(const void* ptr, size_t size) override { return buffer_.write(ptr, size); }
 
-    virtual std::string body() const override { NOTIMP; }
+    std::string body() const override { NOTIMP; }
 
-    virtual unsigned long long contentLength(bool& present) override {
+    unsigned long long contentLength(bool& present) override {
         ensureHeaders();
         present = false;
         auto j  = headers_.find("content-length");
@@ -642,7 +643,7 @@ public:
         return active;
     }
 
-    virtual size_t read(void* ptr, size_t size) override {
+    size_t read(void* ptr, size_t size) override {
 
         while (buffer_.length() < size) {
             if (waitForData() == 0) {
@@ -655,7 +656,7 @@ public:
         return buffer_.read(ptr, size);
     }
 
-    virtual void ensureHeaders() override {
+    void ensureHeaders() override {
         while (!body_) {
             if (waitForData() == 0) {
                 break;
@@ -663,7 +664,7 @@ public:
         }
     }
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 };
 
 
@@ -728,14 +729,14 @@ private:
 
     std::string message_;
 
-    virtual void print(std::ostream& s) const override;
-    virtual Length openForRead() override;
-    virtual long read(void*, long) override;
-    virtual void close() override;
-    virtual Length size() override;
-    virtual Length estimate() override;
-    virtual Offset position() override { return position_; }
-    virtual bool canSeek() const override { return false; }
+    void print(std::ostream& s) const override;
+    Length openForRead() override;
+    long read(void*, long) override;
+    void close() override;
+    Length size() override;
+    Length estimate() override;
+    Offset position() override { return position_; }
+    bool canSeek() const override { return false; }
 };
 
 

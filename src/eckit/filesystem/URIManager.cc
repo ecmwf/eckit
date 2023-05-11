@@ -45,7 +45,9 @@ public:  // methods
     /// Removes an entry from the registry
     /// @pre Must exist
     void deregister(const std::string& name) {
-        if(LibEcKit::instance().dontDeregisterFactories()) return;
+        if (LibEcKit::instance().dontDeregisterFactories()) {
+            return;
+        }
         AutoLock<Mutex> lockme(mutex_);
         ASSERT(map_.find(name) != map_.end());
         map_.erase(name);
@@ -138,20 +140,20 @@ void URIManager::print(std::ostream& s) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LocalFilePartManager : public URIManager {
-    virtual bool query() override { return true; }
-    virtual bool fragment() override { return true; }
+    bool query() override { return true; }
+    bool fragment() override { return true; }
 
-    virtual bool exists(const URI& uri) override { return path(uri).exists(); }
+    bool exists(const URI& uri) override { return path(uri).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override { return path(uri).fileHandle(); }
+    DataHandle* newWriteHandle(const URI& uri) override { return path(uri).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& uri) override { return path(uri).fileHandle(); }
+    DataHandle* newReadHandle(const URI& uri) override { return path(uri).fileHandle(); }
 
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
+    DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
         return path(uri).partHandle(ol, ll);
     }
 
-    virtual std::string asString(const URI& uri) const override { return uri.name(); }
+    std::string asString(const URI& uri) const override { return uri.name(); }
 
     PathName path(const URI& uri) const override { return PathName("local", uri.name()); }
 
@@ -163,35 +165,38 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 class HttpURIManager : public URIManager {
-    virtual bool authority() override { return true; }
-    virtual bool query() override { return true; }
-    virtual bool fragment() override { return true; }
+    bool authority() override { return true; }
+    bool query() override { return true; }
+    bool fragment() override { return true; }
 
-    virtual bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
+    bool exists(const URI& uri) override { return PathName(uri.scheme() + ":" + uri.name()).exists(); }
 
-    virtual DataHandle* newWriteHandle(const URI& uri) override {
+    DataHandle* newWriteHandle(const URI& uri) override {
         return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
     }
 
-    virtual DataHandle* newReadHandle(const URI& uri) override {
+    DataHandle* newReadHandle(const URI& uri) override {
         return PathName(uri.scheme() + ":" + uri.name()).fileHandle();
     }
 
-    virtual DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
+    DataHandle* newReadHandle(const URI& uri, const OffsetList& ol, const LengthList& ll) override {
         return PathName(uri.scheme() + ":" + uri.name()).partHandle(ol, ll);
     }
 
-    virtual std::string asString(const URI& uri) const override {
+    std::string asString(const URI& uri) const override {
 
         std::string auth = uri.authority();
-        if (!auth.empty())
+        if (!auth.empty()) {
             auth = "//" + auth;
+        }
         std::string q = uri.query();
-        if (!q.empty())
+        if (!q.empty()) {
             q = "?" + q;
+        }
         std::string f = uri.fragment();
-        if (!f.empty())
+        if (!f.empty()) {
             f = "#" + f;
+        }
 
         return uri.scheme() + ":" + auth + uri.name() + q + f;
     }

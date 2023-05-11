@@ -16,13 +16,11 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLOutput;
 
-namespace expression {
-namespace function {
+namespace expression::function {
 
 class FunctionIntegerExpression : public FunctionExpression {
 public:
@@ -32,8 +30,8 @@ public:
     ~FunctionIntegerExpression();
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void output(SQLOutput& s) const override;
+    const eckit::sql::type::SQLType* type() const override;
+    void output(SQLOutput& s) const override;
 
     static int arity() { return 1; }
 
@@ -47,9 +45,7 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace expression::function
+}  // namespace eckit::sql
 
 #endif

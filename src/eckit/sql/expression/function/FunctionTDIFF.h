@@ -14,13 +14,10 @@
 #ifndef FunctionTDIFF_H
 #define FunctionTDIFF_H
 
-#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -39,17 +36,14 @@ private:
     FunctionTDIFF& operator=(const FunctionTDIFF&);
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
+    const eckit::sql::type::SQLType* type() const override;
+    double eval(bool& missing) const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionTDIFF& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

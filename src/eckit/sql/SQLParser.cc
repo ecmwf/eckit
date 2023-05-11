@@ -71,8 +71,7 @@ extern "C" int eckit_sql_wrap(void* scanner) {
     return includeStack(scanner).pop(scanner);
 }
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 // void SQLParser::parseString(SQLSession& session, const std::string& s, std::istream* is)
 //{
@@ -118,9 +117,9 @@ void SQLParser::parseString(SQLSession& session, const std::string& s) {
 }
 
 std::string SQLParser::cleanUpSQLText(const std::string& sql) {
-
-    if (sql.empty())
+    if (sql.empty()) {
         return sql;
+    }
 
     std::string s(sql);
 
@@ -135,5 +134,4 @@ std::string SQLParser::cleanUpSQLText(const std::string& sql) {
     return s;
 }
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

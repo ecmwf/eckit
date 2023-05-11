@@ -22,9 +22,7 @@
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/SchemaComponents.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -72,7 +70,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

@@ -27,14 +27,14 @@ class WrapperTarget : public LogTarget {
 protected:  // methods
     WrapperTarget(LogTarget* target = 0);
 
-    virtual ~WrapperTarget() override;
+    ~WrapperTarget() override;
 
 protected:  // members
     LogTarget* target_;
 
 private:
-    virtual void write(const char* start, const char* end) override;
-    virtual void flush() override;
+    void write(const char* start, const char* end) override;
+    void flush() override;
 
     virtual void writePrefix() = 0;
     virtual void writeSuffix() = 0;

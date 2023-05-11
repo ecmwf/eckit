@@ -32,10 +32,12 @@ void UpTimeCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
     time_t now = ::time(0);
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
-    for (unsigned long j = 0; j < info.size(); j++)
-        if (info[j].busy(true) && (info[j].parent() == -1))
-            out << TimeStamp(info[j].start()) << " " << info[j].application() << " " << Seconds(now - info[j].start())
-                << std::endl;
+    for (unsigned long j = 0; j < info.size(); j++) {
+        if (info[j].busy(true) && (info[j].parent() == -1)) {
+            out << TimeStamp(info[j].start()) << " " << info[j].application() << " "
+                << Seconds(now - info[j].start()) << std::endl;
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

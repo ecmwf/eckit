@@ -28,7 +28,7 @@ public:
     FileHandle(const std::string&, bool = false);
     FileHandle(Stream&);
 
-    virtual ~FileHandle() override;
+    ~FileHandle() override;
 
     void advance(const Length&);
 
@@ -38,41 +38,41 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
-    virtual void rewind() override;
-    virtual void print(std::ostream&) const override;
-    virtual Length size() override;
-    virtual Length estimate() override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void flush() override;
+    void rewind() override;
+    void print(std::ostream&) const override;
+    Length size() override;
+    Length estimate() override;
 
-    virtual Offset position() override;
-    virtual bool isEmpty() const override;
-    virtual void restartReadFrom(const Offset& from) override;
-    virtual void restartWriteFrom(const Offset& from) override;
-    virtual void toRemote(Stream&) const override;
-    virtual void cost(std::map<std::string, Length>&, bool) const override;
-    virtual std::string title() const override;
-    virtual std::string metricsTag() const override;
+    Offset position() override;
+    bool isEmpty() const override;
+    void restartReadFrom(const Offset& from) override;
+    void restartWriteFrom(const Offset& from) override;
+    void toRemote(Stream&) const override;
+    void cost(std::map<std::string, Length>&, bool) const override;
+    std::string title() const override;
+    std::string metricsTag() const override;
 
-    virtual bool moveable() const override { return true; }
+    bool moveable() const override { return true; }
 
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override;
-    virtual void skip(const Length&) override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override;
+    void skip(const Length&) override;
 
-    virtual DataHandle* clone() const override;
-    virtual void hash(MD5& md5) const override;
+    DataHandle* clone() const override;
+    void hash(MD5& md5) const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

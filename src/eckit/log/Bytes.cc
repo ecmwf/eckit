@@ -41,12 +41,14 @@ int Bytes::sign() const {
 }
 
 double Bytes::rate(double num, double den) {
-
-    if (num == 0.)
+    if (num == 0.) {
         return 0.;
+    }
 
-    if (den == 0.)
-        return num * std::numeric_limits<double>::infinity();  // must be after, num gives sign to inf
+    if (den == 0.) {
+        return num
+               * std::numeric_limits<double>::infinity();  // must be after, num gives sign to inf
+    }
 
     return num / den;
 }
@@ -60,7 +62,7 @@ std::pair<double, char> Bytes::reduceTo1024() const {
     double x = std::abs(bytes_);
 
     size_t n = 0;
-    while (x >= 1024. && n < NUMBER(magnitudes)-1) {
+    while (x >= 1024. && n < NUMBER(magnitudes) - 1) {
         x /= 1024.;
         n++;
     }
@@ -103,16 +105,19 @@ std::ostream& operator<<(std::ostream& s, const Bytes& b) {
 
     s << r.first << ' ';
 
-    if (r.second != ' ')
+    if (r.second != ' ') {
         s << r.second;
+    }
 
     s << "byte";
 
-    if (std::abs(r.first) != 1.)
+    if (std::abs(r.first) != 1.) {
         s << 's';
+    }
 
-    if (b.rate_)
+    if (b.rate_) {
         s << " per second";
+    }
 
     return s;
 }

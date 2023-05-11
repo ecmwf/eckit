@@ -38,7 +38,8 @@ public:  // types
         key_type key_;
         value_type value_;
 
-        Entry(const key_type& k, const value_type& v) : key_(k), value_(v) {}
+        Entry(const key_type& k, const value_type& v) :
+            key_(k), value_(v) {}
 
         friend std::ostream& operator<<(std::ostream& s, const Entry& e) {
             s << "key=" << e.key_;

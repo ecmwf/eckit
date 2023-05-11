@@ -16,8 +16,8 @@
 #include <fstream>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/log/LogTarget.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/log/LogTarget.h"
 
 namespace eckit {
 
@@ -29,10 +29,10 @@ public:
     virtual ~FileTarget();
 
 private:
-    virtual void write(const char* start, const char* end) override;
-    virtual void flush() override;
+    void write(const char* start, const char* end) override;
+    void flush() override;
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
 private:
     std::ofstream out_;

@@ -12,10 +12,7 @@
 #include "eckit/sql/expression/function/FunctionEQ.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -41,14 +38,12 @@ double FunctionNOT_IN::eval(bool& missing) const {
     const SQLExpression& x = *args_[size_];
     for (int i = 0; i < size_; ++i) {
         args_[i]->eval(missing);
-        if (FunctionEQ::equal(x, *args_[i], missing))
+        if (FunctionEQ::equal(x, *args_[i], missing)) {
             return false;
+        }
     }
 
     return true;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

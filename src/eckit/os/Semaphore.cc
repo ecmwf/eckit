@@ -43,14 +43,16 @@ Semaphore::Semaphore(const PathName& name, int count) :
         key = ftok(name.localPath(), 1);
     }
 
-    if (key == key_t(-1))
+    if (key == key_t(-1)) {
         throw FailedSystemCall(std::string("ftok(") + name + std::string(")"));
+    }
 
     /// @note cannot use Log::debug() of SYSCALL here, because Log may not yet be initialized
     // std::cout << "Creating semaphore path=" << name << ", count=" << count << ", key=" << hex <<
     // key << dec << std::endl;
-    if ((semaphore_ = semget(key, count_, 0666 | IPC_CREAT)) < 0)
+    if ((semaphore_ = semget(key, count_, 0666 | IPC_CREAT)) < 0) {
         perror("semget failed"), throw FailedSystemCall("semget");
+    }
 }
 
 Semaphore::~Semaphore() {
@@ -59,7 +61,7 @@ Semaphore::~Semaphore() {
 
 void Semaphore::lock(void) {
     mutex_.lock();
-    if (++level_ == 1)
+    if (++level_ == 1) {
         while (semop(semaphore_, _lock, NUMBER(_lock)) < 0) {
             if (errno != EINTR) {
                 --level_;
@@ -67,33 +69,37 @@ void Semaphore::lock(void) {
                 throw FailedSystemCall("semop lock");
             }
         }
+    }
 }
 
 bool Semaphore::tryLock(void) {
-    if (!mutex_.tryLock())
+    if (!mutex_.tryLock()) {
         return false;
-    if (++level_ == 1)
+    }
+    if (++level_ == 1) {
         if (semop(semaphore_, _try_lock, NUMBER(_try_lock)) < 0) {
             --level_;
             mutex_.unlock();
-            if (errno == EAGAIN)
+            if (errno == EAGAIN) {
                 return false;
-            else
-                throw FailedSystemCall("semop try_lock");
+            }
+            throw FailedSystemCall("semop try_lock");
         }
+    }
     return true;
 }
 
 void Semaphore::unlock(void) {
     ASSERT(level_ > 0);
 
-    if (--level_ == 0)
+    if (--level_ == 0) {
         while (semop(semaphore_, _unlock, NUMBER(_unlock)) < 0) {
             if (errno != EINTR) {
                 ++level_;
                 throw FailedSystemCall("semop unlock");
             }
         }
+    }
 
     mutex_.unlock();
 }
@@ -101,11 +107,13 @@ void Semaphore::unlock(void) {
 bool Semaphore::test(unsigned short n) {
     struct sembuf test = {n, 0, IPC_NOWAIT};
 
-    if (semop(semaphore_, &test, 1) == 0)
+    if (semop(semaphore_, &test, 1) == 0) {
         return false;  // Free
+    }
 
-    if (errno == EAGAIN)
+    if (errno == EAGAIN) {
         return true;  // in use
+    }
 
     throw FailedSystemCall("semop test");
 }

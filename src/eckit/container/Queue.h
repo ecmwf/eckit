@@ -40,13 +40,14 @@ template <typename ELEM>
 class Queue {
 
 public:  // public
-    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
+    Queue(size_t max) :
+        max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
 
-    Queue(const Queue&) = delete;
+    Queue(const Queue&)            = delete;
     Queue& operator=(const Queue&) = delete;
 
     // n.b. cannot move object with std::condition_variable
-    Queue(Queue&& rhs) = delete;
+    Queue(Queue&& rhs)            = delete;
     Queue& operator=(Queue&& rhs) = delete;
 
     size_t maxSize() const { return max_; }
@@ -79,8 +80,9 @@ public:  // public
     }
 
     bool checkInterrupt() {
-        if (interrupt_)
+        if (interrupt_) {
             std::rethrow_exception(interrupt_);
+        }
         return true;
     }
 
@@ -93,8 +95,9 @@ public:  // public
     long pop(ELEM& e) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.empty()) {
-            if (closed_)
+            if (closed_) {
                 return -1;
+            }
             cv_.wait(locker);
         }
         std::swap(e, queue_.front());
@@ -107,8 +110,9 @@ public:  // public
     long pop(std::vector<ELEM>& elems) {
         std::unique_lock<std::mutex> locker(mutex_);
         while (checkInterrupt() && queue_.empty()) {
-            if (closed_)
+            if (closed_) {
                 return -1;
+            }
             cv_.wait(locker);
         }
 

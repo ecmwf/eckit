@@ -19,14 +19,10 @@
 
 #include <iostream>
 
-namespace eckit {
-
-namespace option {
-
+namespace eckit::option {
 
 Separator::Separator(const std::string& description) :
     Option("", description) {}
-
 
 Separator::~Separator() {}
 
@@ -48,6 +44,4 @@ void Separator::print(std::ostream& out) const {
         << description_ << ":" << std::endl;
 }
 
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option

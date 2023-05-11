@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionTIMESTAMP : public FunctionIntegerExpression {
 public:
@@ -30,7 +27,7 @@ public:
     std::shared_ptr<SQLExpression> clone() const override;
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
+    const eckit::sql::type::SQLType* type() const override;
 
     static int arity() { return 2; }
 
@@ -38,16 +35,13 @@ private:
     FunctionTIMESTAMP& operator=(const FunctionTIMESTAMP&);
 
     // -- Overridden methods
-    virtual double eval(bool& missing) const override;
+    double eval(bool& missing) const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionTIMESTAMP& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

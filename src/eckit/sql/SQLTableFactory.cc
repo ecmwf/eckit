@@ -14,9 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -44,8 +42,9 @@ SQLTable* SQLTableFactory::build(SQLDatabase& owner, const std::string& name, co
 
         for (const auto& factory : factories_) {
             SQLTable* t = factory->build(owner, name, location2);
-            if (t)
+            if (t) {
                 return t;
+            }
         }
     }
 
@@ -84,5 +83,4 @@ SQLTableFactoryBase::~SQLTableFactoryBase() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

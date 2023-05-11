@@ -50,7 +50,8 @@ private:  // members
 
 class AutoStdPipe : public StdPipe {
 public:
-    AutoStdPipe(const std::string& name, const std::string& mode = "r") : StdPipe(name, mode) {}
+    AutoStdPipe(const std::string& name, const std::string& mode = "r") :
+        StdPipe(name, mode) {}
     ~AutoStdPipe() noexcept(false) { close(); }
 };
 

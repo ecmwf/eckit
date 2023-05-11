@@ -18,8 +18,7 @@
 using namespace eckit::testing;
 using eckit::types::is_approximately_equal;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 constexpr double tolerance = 1.e-8;
 
@@ -333,8 +332,7 @@ CASE("Mappings to existing data") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

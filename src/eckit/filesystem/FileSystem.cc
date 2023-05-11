@@ -47,8 +47,9 @@ unsigned long long FileSystem::avail() const {
 }
 
 long FileSystem::usage() const {
-    if (!fs_.total)
+    if (!fs_.total) {
         return 0;
+    }
     return long(((double)(fs_.total - fs_.available) / fs_.total * 100) + 0.5);
 }
 

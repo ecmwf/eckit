@@ -14,8 +14,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -43,7 +42,6 @@ struct Buffer {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi
 
 #endif

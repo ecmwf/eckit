@@ -15,6 +15,9 @@
 #ifndef eckit_cmd_TermBuf_H
 #define eckit_cmd_TermBuf_H
 
+#include <iosfwd>
+#include <streambuf>
+
 #include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------

@@ -41,10 +41,12 @@ CmdResource::CmdResource(const std::string& s) {
     std::vector<std::string> tokens;
     tokenize(s, tokens);
 
-    if (!resources_)
+    if (!resources_) {
         resources_ = new Map();
-    for (size_t i = 0; i < tokens.size(); i++)
+    }
+    for (size_t i = 0; i < tokens.size(); i++) {
         (*resources_)[tokens[i]] = this;
+    }
 }
 
 CmdResource::~CmdResource() {
@@ -88,8 +90,9 @@ void CmdResource::print(std::ostream& out) const {
     Map* m = resources_;
 
     out << "Contents: " << std::endl;
-    for (Map::iterator i = m->begin(); i != m->end(); ++i)
+    for (Map::iterator i = m->begin(); i != m->end(); ++i) {
         out << (*i).first << " = " << (*i).second << std::endl;
+    }
 }
 
 std::vector<std::string> CmdResource::completion(const std::string& c) {
@@ -212,8 +215,9 @@ void CmdResource::help(std::ostream& out, const std::string& cmdname) {
             cmd->help(out);
             out << std::endl;
         }
-        else
+        else {
             out << " '" << cmdname << "' not found" << std::endl;
+        }
     }
 }
 
@@ -235,20 +239,23 @@ bool CmdResource::run(void (*proc)(CmdResource*, CmdArg&, std::istream&, std::os
             return true;
         }
         catch (Abort& e) {
-            if (fail)
+            if (fail) {
                 throw;
+            }
         }
         catch (std::exception& e) {
-            if (fail)
+            if (fail) {
                 throw;
+            }
 
             Log::error() << "** " << e.what() << " Caught in " << Here() << std::endl;
             Log::error() << "** Exception is ignored" << std::endl;
         }
     }
     else {
-        if (fail)
+        if (fail) {
             throw eckit::SeriousBug(strcmd + ": command not found");
+        }
         out << "'" << strcmd << "': command not found" << std::endl;
     }
 
@@ -263,8 +270,9 @@ void CmdResource::redirect(CmdResource* cmd, CmdArg& args, std::istream& in, std
     std::string file = tokens[0];
     std::ofstream out(file.c_str());
 
-    if (!out)
+    if (!out) {
         throw CantOpenFile(file);
+    }
 
     CmdArg newargs = args;
     newargs.erase(">");
@@ -272,8 +280,9 @@ void CmdResource::redirect(CmdResource* cmd, CmdArg& args, std::istream& in, std
     cmd->execute(in, out, newargs);
 
     out.close();
-    if (out.bad())
+    if (out.bad()) {
         throw WriteError(file);
+    }
 }
 
 void CmdResource::append(CmdResource* cmd, CmdArg& args, std::istream& in, std::ostream&) {
@@ -283,8 +292,9 @@ void CmdResource::append(CmdResource* cmd, CmdArg& args, std::istream& in, std::
 
     std::string file = tokens[0];
     std::ofstream out(file.c_str(), std::ios::app);
-    if (!out)
+    if (!out) {
         throw CantOpenFile(file);
+    }
 
     CmdArg newargs = args;
     newargs.erase(">>");
@@ -292,8 +302,9 @@ void CmdResource::append(CmdResource* cmd, CmdArg& args, std::istream& in, std::
     cmd->execute(in, out, newargs);
 
     out.close();
-    if (out.bad())
+    if (out.bad()) {
         throw WriteError(file);
+    }
 }
 
 void CmdResource::pipe(CmdResource* cmd, CmdArg& args, std::istream& in, std::ostream&) {

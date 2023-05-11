@@ -38,8 +38,9 @@ public:
 static Nil* nil = 0;  // must be a pointer, so we control when is created to respect order of destruction at_exit()
 
 static Nil* nill() {
-    if (!nil)
+    if (!nil) {
         nil = new Nil();
+    }
     return nil;
 }
 
@@ -266,9 +267,7 @@ Value Value::tail() const {
         v.erase(v.begin());
         return v;
     }
-    else {
-        return Value();
-    }
+    return Value();
 }
 
 Value::operator ValueList() const {

@@ -18,9 +18,7 @@
 
 #include "eckit/sql/expression/SQLExpressions.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 /// @note This is fundamentally used only for the purpose of the SQLOrderOutput class
 
@@ -45,8 +43,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression
 
 #endif

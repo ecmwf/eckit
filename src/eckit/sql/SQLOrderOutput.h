@@ -22,18 +22,17 @@
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SQLOrderOutput : public SQLOutput {
 public:
     SQLOrderOutput(SQLOutput& output, const std::pair<expression::Expressions, std::vector<bool>>& by);
-    virtual ~SQLOrderOutput() override;
+    ~SQLOrderOutput() override;
 
 private:  // methods
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
     // -- Members
 
@@ -46,31 +45,30 @@ private:  // methods
     std::vector<size_t> byIndices_;
 
     // -- Overridden methods
-    virtual void reset() override;
-    virtual void flush() override;
+    void reset() override;
+    void flush() override;
 
     /// OrderBy builds a std::map of sorted results. Now we start outputting them.
-    virtual bool cachedNext() override;
+    bool cachedNext() override;
 
-    virtual bool output(const expression::Expressions&) override;
-    virtual void preprepare(SQLSelect&) override;
-    virtual void prepare(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
-    virtual unsigned long long count() override;
+    bool output(const expression::Expressions&) override;
+    void preprepare(SQLSelect&) override;
+    void prepare(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
+    unsigned long long count() override;
 
     // Overridden (and removed) functions
 
-    virtual void outputReal(double, bool) override;
-    virtual void outputDouble(double, bool) override;
-    virtual void outputInt(double, bool) override;
-    virtual void outputUnsignedInt(double, bool) override;
-    virtual void outputString(const char*, size_t, bool) override;
-    virtual void outputBitfield(double, bool) override;
+    void outputReal(double, bool) override;
+    void outputDouble(double, bool) override;
+    void outputInt(double, bool) override;
+    void outputUnsignedInt(double, bool) override;
+    void outputString(const char*, size_t, bool) override;
+    void outputBitfield(double, bool) override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

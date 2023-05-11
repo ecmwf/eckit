@@ -23,8 +23,7 @@
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,7 +39,7 @@ public:
     virtual std::vector<size_t> columnOffsets() const    = 0;
     virtual const double* data() const                   = 0;
     virtual std::vector<size_t> doublesDataSizes() const = 0;
-    virtual std::vector<char> columnsHaveMissing() const = 0; // n.b. don't use std::vector<bool> ...
+    virtual std::vector<char> columnsHaveMissing() const = 0;  // n.b. don't use std::vector<bool> ...
     virtual std::vector<double> missingValues() const    = 0;
 };
 
@@ -85,7 +84,8 @@ public:
     virtual void print(std::ostream& s) const;
 
     virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<const SQLColumn>>&,
-                                       std::function<void(SQLTableIterator&)> metadataUpdateCallback) const = 0;
+                                       std::function<void(SQLTableIterator&)> metadataUpdateCallback) const
+        = 0;
 
 protected:
     std::string path_;
@@ -128,7 +128,6 @@ inline bool operator<(std::reference_wrapper<const SQLTable> lhs, std::reference
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

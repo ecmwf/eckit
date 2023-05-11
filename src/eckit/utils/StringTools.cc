@@ -60,10 +60,12 @@ std::string StringTools::substitute(const std::string& s, const std::map<std::st
                 break;
 
             default:
-                if (var)
+                if (var) {
                     word += s[i];
-                else
+                }
+                else {
                     result += s[i];
+                }
                 break;
         }
     }
@@ -108,8 +110,9 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
                 break;
 
             default:
-                if (var)
+                if (var) {
                     word += s[i];
+                }
                 break;
         }
     }
@@ -141,10 +144,10 @@ std::string StringTools::trim(const std::string& str, const std::string& chars) 
     size_t startpos = str.find_first_not_of(chars);
     size_t endpos   = str.find_last_not_of(chars);
 
-    if ((std::string::npos == startpos) || (std::string::npos == endpos))
+    if ((std::string::npos == startpos) || (std::string::npos == endpos)) {
         return "";
-    else
-        return str.substr(startpos, endpos - startpos + 1);
+    }
+    return str.substr(startpos, endpos - startpos + 1);
 }
 
 std::string StringTools::front_trim(const std::string& str) {
@@ -154,10 +157,10 @@ std::string StringTools::front_trim(const std::string& str) {
 std::string StringTools::front_trim(const std::string& str, const std::string& chars) {
     size_t startpos = str.find_first_not_of(chars);
 
-    if (std::string::npos == startpos)
+    if (std::string::npos == startpos) {
         return "";
-    else
-        return str.substr(startpos);
+    }
+    return str.substr(startpos);
 }
 
 std::string StringTools::back_trim(const std::string& str) {
@@ -167,10 +170,10 @@ std::string StringTools::back_trim(const std::string& str) {
 std::string StringTools::back_trim(const std::string& str, const std::string& chars) {
     size_t endpos = str.find_last_not_of(chars);
 
-    if (std::string::npos == endpos)
+    if (std::string::npos == endpos) {
         return "";
-    else
-        return str.substr(0, endpos + 1);
+    }
+    return str.substr(0, endpos + 1);
 }
 
 std::vector<std::string> StringTools::split(const std::string& delim, const std::string& text) {
@@ -181,12 +184,15 @@ std::vector<std::string> StringTools::split(const std::string& delim, const std:
 }
 
 bool StringTools::startsWith(const std::string& str, const std::string& substr) {
-    if (substr.empty() || str.size() < substr.size())
+    if (substr.empty() || str.size() < substr.size()) {
         return false;
+    }
 
-    for (std::string::size_type i = 0; i < substr.size(); ++i)
-        if (substr[i] != str[i])
+    for (std::string::size_type i = 0; i < substr.size(); ++i) {
+        if (substr[i] != str[i]) {
             return false;
+        }
+    }
 
     return true;
 }
@@ -196,13 +202,15 @@ bool StringTools::beginsWith(const std::string& str, const std::string& substr) 
 }
 
 bool StringTools::endsWith(const std::string& str, const std::string& substr) {
-    if (substr.empty() || str.size() < substr.size())
+    if (substr.empty() || str.size() < substr.size()) {
         return false;
+    }
 
     std::string::const_reverse_iterator rj = str.rbegin();
     for (std::string::const_reverse_iterator ri = substr.rbegin(); ri != substr.rend(); ++ri, ++rj) {
-        if (*ri != *rj)
+        if (*ri != *rj) {
             return false;
+        }
     }
 
     return true;

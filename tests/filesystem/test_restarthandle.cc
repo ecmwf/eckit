@@ -28,8 +28,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -195,12 +194,15 @@ void Tester::setup() {
 }
 
 void Tester::teardown() {
-    if (path1_.exists())
+    if (path1_.exists()) {
         path1_.unlink();
-    if (path2_.exists())
+    }
+    if (path2_.exists()) {
         path2_.unlink();
-    if (path3_.exists())
+    }
+    if (path3_.exists()) {
         path3_.unlink();
+    }
 }
 
 
@@ -219,8 +221,7 @@ CASE("test_restarthandle") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

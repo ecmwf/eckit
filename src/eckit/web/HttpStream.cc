@@ -53,8 +53,9 @@ typedef std::vector<char> VC;
 class back_encoder_iterator : public std::iterator<std::output_iterator_tag, char> {
     VC& container;
     void push(const char* p) {
-        while (*p)
+        while (*p) {
             container.push_back(*p++);
+        }
     }
 
 public:
@@ -111,11 +112,12 @@ void HttpBuf::reset() {
 }
 
 int HttpBuf::sync() {
-
-    if (owner_.iword(xindex))
+    if (owner_.iword(xindex)) {
         std::copy(pbase(), pptr(), back_encoder(buffer_));
-    else
+    }
+    else {
         std::copy(pbase(), pptr(), std::back_inserter(buffer_));
+    }
 
     setp(pbase(), epptr());
     return 0;
@@ -123,8 +125,9 @@ int HttpBuf::sync() {
 
 int HttpBuf::overflow(int c) {
     sync();
-    if (c == EOF)
+    if (c == EOF) {
         return 0;
+    }
 
     sputc(c);
     return 0;

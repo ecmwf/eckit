@@ -12,8 +12,7 @@
 
 #include <ostream>
 
-namespace eckit {
-namespace linalg {
+namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -31,5 +30,4 @@ std::ostream& operator<<(std::ostream& os, const eckit::linalg::Triplet& p) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

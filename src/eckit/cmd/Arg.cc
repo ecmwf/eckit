@@ -50,15 +50,17 @@ class ArgContentOption : public ArgContent {
         bool more = true;
         while (more) {
             more = false;
-            for (std::vector<std::string>::iterator j = v.begin(); j != v.end(); ++j)
+            for (std::vector<std::string>::iterator j = v.begin(); j != v.end(); ++j) {
                 if ((*j) == name_) {
                     more = true;
                     v.push_back("** marker **");
-                    if ((*(j + 1))[0] != '-')
+                    if ((*(j + 1))[0] != '-') {
                         v.erase(j + 1);
+                    }
                     v.erase(j);
                     break;
                 }
+            }
         }
     }
 
@@ -127,8 +129,9 @@ template <class T>
 void ArgContentList<T>::push(ArgContent* a) {
     ArgContentList* e = dynamic_cast<T*>(a);
     if (e) {
-        for (size_t i = 0; i < e->list_.size(); i++)
+        for (size_t i = 0; i < e->list_.size(); i++) {
             list_.push_back(e->list_[i]->clone());
+        }
     }
     else {
         list_.push_back(a->clone());
@@ -152,8 +155,9 @@ ArgContentList<T>::~ArgContentList() {
 template <class T>
 ArgContentList<T>::ArgContentList(const std::vector<ArgContent*>& list) :
     list_(list) {
-    for (size_t i = 0; i < list_.size(); i++)
+    for (size_t i = 0; i < list_.size(); i++) {
         list_[i] = list_[i]->clone();
+    }
 }
 
 template <class T>
@@ -163,14 +167,16 @@ ArgContent* ArgContentList<T>::clone() const {
 
 template <class T>
 void ArgContentList<T>::completion(const std::vector<std::string>& s, std::vector<std::string>& r) {
-    for (size_t i = 0; i < list_.size(); i++)
+    for (size_t i = 0; i < list_.size(); i++) {
         list_[i]->completion(s, r);
+    }
 }
 
 template <class T>
 void ArgContentList<T>::consume(std::vector<std::string>& s) {
-    for (size_t i = 0; i < list_.size(); i++)
+    for (size_t i = 0; i < list_.size(); i++) {
         list_[i]->consume(s);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -179,15 +185,17 @@ class ArgContentExclusive : public ArgContentList<ArgContentExclusive> {
 
     void print(std::ostream& s, bool bra) const {
         std::string p = "";
-        if (bra)
+        if (bra) {
             s << "(";
+        }
         for (size_t i = 0; i < list_.size(); i++) {
             s << p;
             list_[i]->print(s, true);
             p = " | ";
         }
-        if (bra)
+        if (bra) {
             s << ")";
+        }
     }
 
 public:

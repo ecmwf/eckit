@@ -31,11 +31,11 @@ class JSONResource : public HttpResource {
 public:
     JSONResource(const std::string&);
 
-    virtual ~JSONResource() override;
+    ~JSONResource() override;
 
 private:
-    virtual void GET(std::ostream&, Url&) override;
-    virtual void POST(std::ostream&, Url&) override;
+    void GET(std::ostream&, Url&) override;
+    void POST(std::ostream&, Url&) override;
     virtual void json(eckit::JSON&, const eckit::Value&) = 0;
 };
 

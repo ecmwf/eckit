@@ -17,8 +17,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
-
 
 //-----------------------------------------------------------------------------
 
@@ -33,7 +33,8 @@ class FstreamStream : public Stream {
 public:
     // -- Contructors
 
-    FstreamStream(std::fstream& f) : f_(f) {}
+    FstreamStream(std::fstream& f) :
+        f_(f) {}
 
     // -- Destructor
 

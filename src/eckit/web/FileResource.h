@@ -25,12 +25,12 @@ class FileResource : public HtmlResource {
 public:
     FileResource();
 
-    virtual ~FileResource() override;
+    ~FileResource() override;
 
 protected:
     std::string name_;
 
-    virtual void GET(std::ostream&, Url&) override;
+    void GET(std::ostream&, Url&) override;
 };
 
 

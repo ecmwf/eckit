@@ -34,7 +34,8 @@ public:  // types
     typedef std::vector<Ordinal> Remapping;
 
 public:  // methods
-    explicit HyperCube(const Dimensions& d) : dimensions_(d) {}
+    explicit HyperCube(const Dimensions& d) :
+        dimensions_(d) {}
 
     /// Translate coordinates into an index to a 1 dimension array
     Ordinal index(const Coordinates&) const;
@@ -89,13 +90,15 @@ inline Ordinal HyperCube::index(const Coordinates& coord) const {
 
 /// Method is inlined for speed
 inline void HyperCube::combine(Remapping& map1, const Remapping& map2) {
-    if (map1.size() == 0)
+    if (map1.size() == 0) {
         map1 = map2;
-    else
+    }
+    else {
         for (Remapping::iterator i = map1.begin(); i != map1.end(); ++i) {
             ASSERT(*i < map2.size());
             *i = map2[*i];
         }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

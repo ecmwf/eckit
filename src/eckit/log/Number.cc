@@ -12,8 +12,7 @@
 
 #include "eckit/log/Number.h"
 
-namespace eckit {
-namespace log {
+namespace eckit::log {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -39,7 +38,7 @@ void Number::printBinary(std::ostream& ss, W n) {
     bool oneSeen = false;
 
     int endianTest = 1;
-    if (*reinterpret_cast<char*>(&endianTest))
+    if (*reinterpret_cast<char*>(&endianTest)) {
         for (int i = sizeof(W) - 1; i >= 0; --i) {
             unsigned char c = s[i];
             for (unsigned char mask = 1 << 7; mask; mask >>= 1) {
@@ -48,12 +47,14 @@ void Number::printBinary(std::ostream& ss, W n) {
                     oneSeen = true;
                 }
                 else {
-                    if (oneSeen)
+                    if (oneSeen) {
                         ss << '0';
+                    }
                 }
             }
         }
-    else
+    }
+    else {
         for (size_t i = 0; i < sizeof(W); ++i) {
             unsigned char c = s[i];
             for (unsigned char mask = 1 << 7; mask; mask >>= 1) {
@@ -62,17 +63,19 @@ void Number::printBinary(std::ostream& ss, W n) {
                     oneSeen = true;
                 }
                 else {
-                    if (oneSeen)
+                    if (oneSeen) {
                         ss << '0';
+                    }
                 }
             }
         }
+    }
 
-    if (!oneSeen)
+    if (!oneSeen) {
         ss << '0';
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace log
-}  // namespace eckit
+}  // namespace eckit::log

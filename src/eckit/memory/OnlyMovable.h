@@ -23,12 +23,12 @@ protected:
 
     // Copying not allowed
 
-    OnlyMovable(const OnlyMovable&) = delete;
+    OnlyMovable(const OnlyMovable&)            = delete;
     OnlyMovable& operator=(const OnlyMovable&) = delete;
 
     // Moving is allowed
 
-    OnlyMovable(OnlyMovable&&) = default;
+    OnlyMovable(OnlyMovable&&)            = default;
     OnlyMovable& operator=(OnlyMovable&&) = default;
 };
 

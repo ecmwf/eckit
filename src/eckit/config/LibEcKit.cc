@@ -19,9 +19,9 @@
 
 #include "eckit/config/LibEcKit.h"
 
+#include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/config/Resource.h"
 
 namespace eckit {
 
@@ -30,8 +30,7 @@ namespace eckit {
 REGISTER_LIBRARY(LibEcKit);
 
 LibEcKit::LibEcKit() :
-    Library("eckit"), abort_handler_(&(::abort)), dontDeregisterFactories_(false)
-{
+    Library("eckit"), abort_handler_(&(::abort)), dontDeregisterFactories_(false) {
     // can't use Resource here (too early in the initialisation)
     dontDeregisterFactories_ = (::getenv("ECKIT_DONT_DEREGISTER_FACTORIES") != nullptr);
 }

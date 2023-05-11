@@ -27,7 +27,8 @@ namespace eckit::geometry {
 
 namespace {
 
-static double normalise_longitude(double a, const double& minimum) {
+// Shift the angle a by increments of 360 until it lies in [minimum, minimum+360)
+static double normalise_angle(double a, const double& minimum) {
     while (a < minimum) {
         a += 360;
     }
@@ -52,17 +53,15 @@ void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const d
     ASSERT(a > 0.);
     ASSERT(b > 0.);
 
-    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
-        std::ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alonlat[1];
-        throw BadValue(oss.str(), Here());
-    }
-
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
+    //
+    // See Sphere::convertSphericalToCartesian for a description of how
+    // points with latitudes outside [-90°,90°] are handled.
 
-    const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
+    const bool A_across_pole = (normalise_angle(Alonlat[1], -90.) > 90.);
+
+    const double lambda_deg = normalise_angle(Alonlat[0] + (A_across_pole ? 180. : 0.), -180.);
     const double lambda     = degrees_to_radians * lambda_deg;
     const double phi        = degrees_to_radians * Alonlat[1];
 

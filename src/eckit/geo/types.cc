@@ -9,9 +9,12 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/geo/types.h"
 
+
 #include "eckit/exception/Exceptions.h"
+
 
 std::ostream& operator<<(std::ostream& out, const eckit::geo::Point& p) {
     return std::holds_alternative<eckit::geo::PointLonLat>(p)
@@ -22,6 +25,7 @@ std::ostream& operator<<(std::ostream& out, const eckit::geo::Point& p) {
                ? out << std::get<eckit::geo::Point3>(p)
                : NOTIMP;
 }
+
 
 bool operator==(const eckit::geo::Point& p, const eckit::geo::Point& q) {
     ASSERT(p.index() == q.index());

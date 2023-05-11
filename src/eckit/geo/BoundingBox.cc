@@ -9,6 +9,7 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/geo/BoundingBox.h"
 
 #include <algorithm>
@@ -17,7 +18,9 @@
 #include "eckit/geo/util.h"
 #include "eckit/geometry/Sphere.h"
 
+
 namespace eckit::geo {
+
 
 BoundingBox::BoundingBox(double north, double west, double south, double east) :
     north_(north), west_(west), south_(south), east_(east) {
@@ -126,5 +129,6 @@ double BoundingBox::area(double radius) const {
 
     return geometry::Sphere::area(radius) * latf * lonf;
 }
+
 
 }  // namespace eckit::geo

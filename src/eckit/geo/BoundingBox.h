@@ -12,7 +12,9 @@
 
 #pragma once
 
+
 namespace eckit::geo {
+
 
 class BoundingBox {
 public:
@@ -119,5 +121,6 @@ private:
     // -- Friends
     // None
 };
+
 
 }  // namespace eckit::geo

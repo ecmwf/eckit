@@ -17,7 +17,9 @@
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 #include "eckit/geometry/Sphere.h"
 
+
 namespace eckit::geo::projection {
+
 
 static ProjectionBuilder<LonLatToXYZ> __projection("ll_to_xyz");
 
@@ -65,5 +67,6 @@ LonLatToXYZ::LonLatToXYZ(double R) :
 LonLatToXYZ::LonLatToXYZ(const Parametrisation& param) :
     LonLatToXYZ(param.has("R") ? param.get_double("R") : param.get_double("a"),
                 param.has("R") ? param.get_double("R") : param.get_double("b")) {}
+
 
 }  // namespace eckit::geo::projection

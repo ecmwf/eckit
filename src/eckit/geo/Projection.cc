@@ -20,7 +20,9 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
+
 namespace eckit::geo {
+
 
 #if 0
 - mercator:
@@ -216,6 +218,7 @@ Projection centre (grib2/tables/30/3.5.table)
   2 1 Projection is bipolar and symmetric
 #endif
 
+
 static pthread_once_t __once                                                  = PTHREAD_ONCE_INIT;
 static Mutex* __mutex                                                         = nullptr;
 static std::map<ProjectionFactory::key_type, ProjectionFactory*>* __factories = nullptr;
@@ -224,6 +227,7 @@ static void __init() {
     __mutex     = new Mutex;
     __factories = new std::map<ProjectionFactory::key_type, ProjectionFactory*>();
 }
+
 
 Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key,
                                      const Parametrisation& param) {
@@ -238,6 +242,7 @@ Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key,
     throw BadValue("ProjectionFactory: unknown '" + key + "'");
 }
 
+
 std::ostream& ProjectionFactory::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
@@ -250,6 +255,7 @@ std::ostream& ProjectionFactory::list(std::ostream& out) {
 
     return out;
 }
+
 
 ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) :
     key_(key) {
@@ -271,5 +277,6 @@ ProjectionFactory::~ProjectionFactory() {
         __factories->erase(key_);
     }
 }
+
 
 }  // namespace eckit::geo

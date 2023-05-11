@@ -23,6 +23,7 @@
 
 namespace eckit::geo {
 
+
 using PointLonLat = eckit::geometry::PointLonLat;
 using Point2      = eckit::geometry::Point2;
 using Point3      = eckit::geometry::Point3;
@@ -34,6 +35,8 @@ using pl_type = std::vector<long>;
 
 }  // namespace eckit::geo
 
+
 std::ostream& operator<<(std::ostream&, const eckit::geo::Point&);
+
 
 bool operator==(const eckit::geo::Point&, const eckit::geo::Point&);

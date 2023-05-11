@@ -20,7 +20,9 @@
 #include "eckit/geometry/UnitSphere.h"
 #include "eckit/maths/Matrix3.h"
 
+
 namespace eckit::geo::projection {
+
 
 static ProjectionBuilder<Rotation> __projection("rotation");
 
@@ -95,5 +97,6 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
 Rotation::Rotation(const Parametrisation& param) :
     Rotation(param.get_double("south_pole_lat"), param.get_double("south_pole_lon"),
              param.has("angle") ? param.get_double("angle") : 0) {}
+
 
 }  // namespace eckit::geo::projection

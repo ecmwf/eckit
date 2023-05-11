@@ -354,6 +354,8 @@ config/LibEcKit.cc
 config/LibEcKit.h
 config/LocalConfiguration.cc
 config/LocalConfiguration.h
+config/MappedConfiguration.cc
+config/MappedConfiguration.h
 config/Parametrisation.cc
 config/Parametrisation.h
 config/Resource.h

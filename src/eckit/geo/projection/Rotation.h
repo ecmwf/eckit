@@ -29,7 +29,7 @@ public:
     // -- Constructors
 
     Rotation(double south_pole_lat, double south_pole_lon, double angle);
-    explicit Rotation(const Parametrisation&);
+    explicit Rotation(const Configuration&);
 
     // -- Destructor
     // None

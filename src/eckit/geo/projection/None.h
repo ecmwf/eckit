@@ -29,7 +29,7 @@ public:
     // -- Constructors
 
     None() = default;
-    explicit None(const Parametrisation&);
+    explicit None(const Configuration&);
 
     // -- Destructor
     // None

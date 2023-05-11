@@ -15,14 +15,16 @@
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Parametrisation.h"
-#include "eckit/geo/param/Map.h"
+// #include "eckit/config/Configuration.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/types.h"
+#include "eckit/value/Value.h"
 
 
 #if 0
@@ -82,12 +84,34 @@ eckit::geo::Figure* make_figure(long code) {
 #endif
 
 
-class GribParametrisation final : public eckit::geo::Parametrisation,
-                                  std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
+// static eckit::Value v;
+class Grib final : std::unique_ptr<codes_handle, decltype(&codes_handle_delete)> {
 private:
     // -- Types
 
     using t = std::unique_ptr<codes_handle, decltype(&codes_handle_delete)>;
+
+    using cache_key_type = std::string;
+
+    using cache_value_type = std::variant<bool, int, unsigned int, long, unsigned long, float, double, std::string, std::vector<bool>,
+                                          std::vector<int>, std::vector<unsigned int>, std::vector<long>, std::vector<unsigned long>,
+                                          std::vector<float>, std::vector<double>, std::vector<std::string>>;
+
+    struct cache_type : protected std::map<cache_key_type, cache_value_type> {
+        template <typename T>
+        bool get(const key_type& key, T& value) const {
+            if (auto it = find(key); it != end()) {
+                value = std::get<T>(it->second);
+                return true;
+            }
+            return false;
+        }
+
+        template <typename T>
+        void set(const key_type& key, T& value) {
+            operator[](key) = value;
+        }
+    };
 
 public:
     // -- Exceptions
@@ -95,7 +119,8 @@ public:
 
     // -- Constructors
 
-    explicit GribParametrisation(codes_handle* h) :
+    explicit Grib(codes_handle* h) :
+        //        Configuration(v),
         t(h, &codes_handle_delete) { ASSERT(*this); }
 
     // -- Destructor
@@ -110,7 +135,7 @@ public:
     // -- Methods
 
     template <typename T>
-    T get(const key_type& key) const {
+    T get(const cache_key_type& key) const {
         auto value = T();
         ASSERT(get(key, value));
         return value;
@@ -118,9 +143,9 @@ public:
 
     // -- Overridden methods
 
-    bool has(const key_type& key) const override { return 0 != codes_is_defined(t::get(), key.c_str()); }
+    bool has(const cache_key_type& key) const /*override*/ { return 0 != codes_is_defined(t::get(), key.c_str()); }
 
-    bool get(const key_type& key, bool& value) const override {
+    bool get(const cache_key_type& key, bool& value) const /*override*/ {
         if (long another = 0; get(key, another)) {
             value = another != 0;
             return true;
@@ -129,7 +154,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, int& value) const override {
+    bool get(const cache_key_type& key, int& value) const /*override*/ {
         if (long another = 0; get(key, another)) {
             value = static_cast<int>(another);
             return true;
@@ -138,16 +163,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, unsigned int& value) const override {
-        if (long another = 0; get(key, another) && 0 <= another) {
-            value = static_cast<unsigned int>(another);
-            return true;
-        }
-
-        return false;
-    }
-
-    bool get(const key_type& key, long& value) const override {
+    bool get(const cache_key_type& key, long& value) const /*override*/ {
         if (cache_.get(key, value)) {
             return true;
         }
@@ -160,7 +176,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, unsigned long& value) const override {
+    bool get(const cache_key_type& key, unsigned long& value) const /*override*/ {
         if (long another = 0; get(key, another) && 0 <= another) {
             value = static_cast<unsigned long>(another);
             return true;
@@ -169,7 +185,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, float& value) const override {
+    bool get(const cache_key_type& key, float& value) const /*override*/ {
         if (double another = 0; get(key, another)) {
             value = static_cast<float>(another);
             return true;
@@ -178,7 +194,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, double& value) const override {
+    bool get(const cache_key_type& key, double& value) const /*override*/ {
         if (cache_.get(key, value)) {
             return true;
         }
@@ -191,7 +207,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, std::string& value) const override {
+    bool get(const cache_key_type& key, std::string& value) const /*override*/ {
         if (cache_.get(key, value)) {
             return true;
         }
@@ -206,17 +222,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, std::vector<bool>& value) const override {
-        if (std::vector<long> another; get(key, another)) {
-            value.resize(another.size());
-            std::transform(another.begin(), another.end(), value.begin(), [](long v) { return v != 0; });
-            return true;
-        }
-
-        return false;
-    }
-
-    bool get(const key_type& key, std::vector<int>& value) const override {
+    bool get(const cache_key_type& key, std::vector<int>& value) const /*override*/ {
         if (std::vector<long> another; get(key, another)) {
             value.resize(another.size());
             std::transform(another.begin(), another.end(), value.begin(), [](long v) { return static_cast<int>(v); });
@@ -226,20 +232,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, std::vector<unsigned int>& value) const override {
-        if (std::vector<long> another; get(key, another)) {
-            value.resize(another.size());
-            std::transform(another.begin(), another.end(), value.begin(), [](long v) {
-                ASSERT(0 <= v);
-                return static_cast<unsigned int>(v);
-            });
-            return true;
-        }
-
-        return false;
-    }
-
-    bool get(const key_type& key, std::vector<long>& value) const override {
+    bool get(const cache_key_type& key, std::vector<long>& value) const /*override*/ {
         if (cache_.get(key, value)) {
             return true;
         }
@@ -256,7 +249,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, std::vector<unsigned long>& value) const override {
+    bool get(const cache_key_type& key, std::vector<unsigned long>& value) const /*override*/ {
         if (std::vector<long> another; get(key, another)) {
             value.resize(another.size());
             std::transform(another.begin(), another.end(), value.begin(), [](long v) {
@@ -269,7 +262,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, std::vector<float>& value) const override {
+    bool get(const cache_key_type& key, std::vector<float>& value) const /*override*/ {
         if (cache_.get(key, value)) {
             return true;
         }
@@ -286,7 +279,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, std::vector<double>& value) const override {
+    bool get(const cache_key_type& key, std::vector<double>& value) const /*override*/ {
         if (cache_.get(key, value)) {
             return true;
         }
@@ -303,7 +296,7 @@ public:
         return false;
     }
 
-    bool get(const key_type& key, std::vector<std::string>& value) const override { NOTIMP; }
+    bool get(const cache_key_type& key, std::vector<std::string>& value) const /*override*/ { NOTIMP; }
 
 
     // -- Class members
@@ -315,13 +308,14 @@ public:
 private:
     // -- Members
 
-    mutable eckit::geo::param::Map cache_;
+    mutable cache_type cache_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    void print(std::ostream&) const /*override*/ {}
 
     // -- Class members
     // None
@@ -331,6 +325,8 @@ private:
 
     // -- Friends
     // None
+};
+
 
 #if 0
     std::string type() const { return get_string("gridType"); }
@@ -366,7 +362,6 @@ private:
         double value = 0;
     };
 #endif
-};
 
 
 template <typename T>
@@ -390,7 +385,7 @@ int main(int argc, const char* argv[]) {
 
         int err = 0;
         for (codes_handle* h = nullptr; nullptr != (h = codes_handle_new_from_file(nullptr, in, PRODUCT_GRIB, &err));) {
-            GribParametrisation grib(h);
+            Grib grib(h);
 
 #if 0
             int n = 0;
@@ -405,7 +400,7 @@ int main(int argc, const char* argv[]) {
             std::cout << "type: '" << type << "'" << std::endl;
 
             if (grib.has("pl")) {
-                std::cout << "pl: '" << grib.get<eckit::geo::pl_type>("pl") << "'" << std::endl;
+                //                std::cout << "pl: '" << grib.get<eckit::geo::pl_type>("pl") << "'" << std::endl;
             }
 
             if (type == "regular_ll") {

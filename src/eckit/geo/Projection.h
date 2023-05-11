@@ -18,8 +18,8 @@
 #include "eckit/geo/types.h"
 
 
-namespace eckit::geo {
-class Parametrisation;
+namespace eckit {
+class Configuration;
 }
 
 
@@ -107,7 +107,7 @@ private:
 struct ProjectionFactory {
     using key_type = std::string;
 
-    static Projection* build(const key_type&, const Parametrisation&);
+    static Projection* build(const key_type&, const Configuration&);
     static std::ostream& list(std::ostream&);
 
     ProjectionFactory(const ProjectionFactory&)            = delete;
@@ -115,7 +115,7 @@ struct ProjectionFactory {
     ProjectionFactory& operator=(const ProjectionFactory&) = delete;
     ProjectionFactory& operator=(ProjectionFactory&&)      = delete;
 
-    virtual Projection* make(const Parametrisation&) = 0;
+    virtual Projection* make(const Configuration&) = 0;
 
 protected:
     explicit ProjectionFactory(const key_type&);
@@ -128,7 +128,7 @@ private:
 
 template <class T>
 class ProjectionBuilder final : public ProjectionFactory {
-    Projection* make(const Parametrisation& param) override { return new T(param); }
+    Projection* make(const Configuration& param) override { return new T(param); }
 
 public:
     explicit ProjectionBuilder(const ProjectionFactory::key_type& key) :

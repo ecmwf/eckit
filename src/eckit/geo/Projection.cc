@@ -230,7 +230,7 @@ static void __init() {
 
 
 Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key,
-                                     const Parametrisation& param) {
+                                     const Configuration& param) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 

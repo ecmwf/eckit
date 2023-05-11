@@ -12,7 +12,7 @@
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 
-#include "eckit/geo/Parametrisation.h"
+#include "eckit/config/Configuration.h"
 #include "eckit/geo/util.h"
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 #include "eckit/geometry/Sphere.h"
@@ -64,9 +64,9 @@ LonLatToXYZ::LonLatToXYZ(double R) :
     LonLatToXYZ(R, R) {}
 
 
-LonLatToXYZ::LonLatToXYZ(const Parametrisation& param) :
-    LonLatToXYZ(param.has("R") ? param.get_double("R") : param.get_double("a"),
-                param.has("R") ? param.get_double("R") : param.get_double("b")) {}
+LonLatToXYZ::LonLatToXYZ(const Configuration& param) :
+    LonLatToXYZ(param.getDouble("R", param.getDouble("a")),
+                param.getDouble("R", param.getDouble("b"))) {}
 
 
 }  // namespace eckit::geo::projection

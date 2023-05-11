@@ -60,7 +60,7 @@ public:
     // -- Constructors
 
     PROJ(const std::string& source, const std::string& target, double lon_minimum = 0.);
-    explicit PROJ(const Parametrisation&);
+    explicit PROJ(const Configuration&);
 
     // -- Destructor
     // None

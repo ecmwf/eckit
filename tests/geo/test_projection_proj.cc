@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include "eckit/geo/param/Map.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/projection/PROJ.h"
 #include "eckit/testing/Test.h"
 
@@ -39,8 +39,7 @@ int main(int argc, char* argv[]) {
     };
 
     for (const auto& test : tests) {
-        eckit::geo::projection::PROJ projection(
-            eckit::geo::param::Map({{"source", "EPSG:4326"}, {"target", test.target}}));
+        eckit::geo::projection::PROJ projection(eckit::MappedConfiguration({{"source", "EPSG:4326"}, {"target", test.target}}));
 
         std::cout << "ellipsoid: '" << eckit::geo::projection::PROJ::ellipsoid(projection.target())
                   << std::endl;
@@ -53,8 +52,7 @@ int main(int argc, char* argv[]) {
         EXPECT(b == test.b);
         EXPECT(c == a);
 
-        eckit::geo::projection::PROJ reverse(
-            eckit::geo::param::Map({{"source", test.target}, {"target", "EPSG:4326"}}));
+        eckit::geo::projection::PROJ reverse(eckit::MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}}));
 
         auto d = reverse.fwd(test.b);
         auto e = reverse.inv(d);

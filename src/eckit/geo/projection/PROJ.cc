@@ -12,8 +12,8 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
+#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Parametrisation.h"
 #include "eckit/geo/types.h"
 
 
@@ -91,10 +91,10 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 }
 
 
-PROJ::PROJ(const Parametrisation& param) :
-    PROJ(param.has("source") ? param.get_string("source") : "EPSG:4326",  // default to WGS 84
-         param.has("target") ? param.get_string("target") : "EPSG:4326",  // ...
-         param.has("lon_minimum") ? param.get_double("lon_minimum") : 0) {}
+PROJ::PROJ(const Configuration& param) :
+    PROJ(param.getString("source", "EPSG:4326"),  // default to WGS 84
+         param.getString("target", "EPSG:4326"),  // ...
+         param.getDouble("lon_minimum", 0)) {}
 
 
 std::string PROJ::ellipsoid(const std::string& string) {

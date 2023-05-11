@@ -2,8 +2,6 @@ list(APPEND eckit_geo_srcs
 	BoundingBox.cc
 	BoundingBox.h
 	Iterator.h
-	Parametrisation.cc
-	Parametrisation.h
 	Projection.cc
 	Projection.h
 	Scanner.cc
@@ -12,8 +10,6 @@ list(APPEND eckit_geo_srcs
 	iterator/IteratorAggregator.h
 	iterator/IteratorComposer.cc
 	iterator/IteratorComposer.h
-	param/Map.cc
-	param/Map.h
 	projection/LonLatToXYZ.cc
 	projection/LonLatToXYZ.h
 	projection/None.cc

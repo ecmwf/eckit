@@ -20,7 +20,7 @@ static ProjectionBuilder<None> __projection1("");
 static ProjectionBuilder<None> __projection2("none");
 
 
-None::None(const Parametrisation&) {}
+None::None(const Configuration&) {}
 
 
 }  // namespace eckit::geo::projection

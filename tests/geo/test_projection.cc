@@ -13,49 +13,46 @@
 #include <iostream>
 #include <memory>
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/param/Map.h"
 #include "eckit/testing/Test.h"
 
 
 int main(int argc, char* argv[]) {
+    using eckit::MappedConfiguration;
+
     using eckit::geo::Point;
     using eckit::geo::Point3;
     using eckit::geo::PointLonLat;
-    using Projection = std::unique_ptr<eckit::geo::Projection>;
+
+    using Projection        = std::unique_ptr<eckit::geo::Projection>;
+    using ProjectionFactory = eckit::geo::ProjectionFactory;
 
     Point p = PointLonLat{1, 1};
 
     {
-        std::unique_ptr<eckit::geo::Projection> projection(
-            eckit::geo::ProjectionFactory::build("none", eckit::geo::param::Map{}));
+        Projection projection(ProjectionFactory::build("none", MappedConfiguration{}));
         EXPECT(p == projection->inv(p));
         EXPECT(p == projection->fwd(p));
     }
 
     {
-        eckit::geo::param::Map param({
+        MappedConfiguration param({
             {"projection", "rotation"},
             {"south_pole_lat", -91.},
             {"south_pole_lon", -361.},
         });
 
-        std::unique_ptr<eckit::geo::Projection> projection(
-            eckit::geo::ProjectionFactory::build(param.get_string("projection"), param));
+        Projection projection(ProjectionFactory::build(param.getString("projection"), param));
 
         EXPECT(p == projection->inv(projection->fwd(p)));
         EXPECT(p == projection->fwd(projection->inv(p)));
     }
 
     {
-        Projection s1(
-            eckit::geo::ProjectionFactory::build("ll_to_xyz", eckit::geo::param::Map({{"R", 1.}})));
-        Projection s2(
-            eckit::geo::ProjectionFactory::build("ll_to_xyz",
-                                                 eckit::geo::param::Map({{"a", 1.}, {"b", 1.}})));
-        Projection s3(
-            eckit::geo::ProjectionFactory::build("ll_to_xyz",
-                                                 eckit::geo::param::Map({{"a", 1.}, {"b", 0.5}})));
+        Projection s1(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"R", 1.}})));
+        Projection s2(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"a", 1.}, {"b", 1.}})));
+        Projection s3(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
 
         EXPECT(p == s1->inv(s1->fwd(p)));
         EXPECT(p == s2->inv(s2->fwd(p)));

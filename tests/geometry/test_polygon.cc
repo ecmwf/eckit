@@ -264,6 +264,10 @@ CASE("LonLatPolygon") {
                 EXPECT_NOT(poly.contains({lonmax + eps, lat}));
             }
         }
+
+        // Test points at non-canonical coordinates
+        EXPECT(poly.contains({lonmid + 360., latmid}));
+        EXPECT(poly.contains({lonmid, 180. - latmid}));
     }
 
     SECTION("Parallelogram") {

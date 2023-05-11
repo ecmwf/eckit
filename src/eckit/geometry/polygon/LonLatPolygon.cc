@@ -106,16 +106,30 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
 }
 
 bool LonLatPolygon::contains(const Point2& P) const {
-    auto lat = P[LAT];
-    ASSERT(-90 <= lat && lat <= 90);
+    // Shift the angle a by increments of 360 until it lies in [minimum, minimum+360)
+    auto normalise_angle = [](double a, const double minimum) {
+        while (a < minimum) {
+            a += 360;
+        }
+        while (a >= minimum + 360) {
+            a -= 360;
+        }
+        return a;
+    };
 
-    auto lon = P[LON];
-    while (lon >= min_[LON] + 360) {
-        lon -= 360;
+    // Latitudes outside the canonical interval [-90°,90°] are first shifted
+    // into the interval [-90°,270°], then any points with latitudes in
+    // [90°,270°] are flagged as "across the pole". Such points are re-labeled
+    // with equivalent coordinates that lie within the canonical coordinate patch
+    // by the transformation
+    //   (λ, ϕ) -> (λ+180°, 180°-ϕ)
+    auto lat = normalise_angle(P[LAT], -90.);
+    const bool P_across_pole = (lat > 90.);
+    if (P_across_pole) {
+        lat = 180. - lat;
     }
-    while (lon < min_[LON]) {
-        lon += 360;
-    }
+
+    auto lon = normalise_angle(P[LON] + (P_across_pole ? 180. : 0.), min_[LON]);
 
     // check poles
     if (includeNorthPole_ && is_approximately_equal(lat, 90)) {

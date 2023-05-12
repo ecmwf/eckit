@@ -12,7 +12,15 @@
 
 #pragma once
 
+#include <iosfwd>
+#include <string>
+
 #include "eckit/geo/Point.h"
+
+
+namespace eckit {
+class Configuration;
+}
 
 
 namespace eckit::geo {
@@ -116,6 +124,28 @@ private:
 
     // -- Friends
     // None
+};
+
+
+struct IteratorFactory {
+    using key_type = std::string;
+
+    static Iterator* build(const key_type&, const Configuration&);
+    static std::ostream& list(std::ostream&);
+
+    IteratorFactory(const IteratorFactory&)            = delete;
+    IteratorFactory(IteratorFactory&&)                 = delete;
+    IteratorFactory& operator=(const IteratorFactory&) = delete;
+    IteratorFactory& operator=(IteratorFactory&&)      = delete;
+
+    virtual Iterator* make(const Configuration&) = 0;
+
+protected:
+    explicit IteratorFactory(const key_type&);
+    virtual ~IteratorFactory();
+
+private:
+    const key_type key_;
 };
 
 

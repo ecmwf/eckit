@@ -1,6 +1,7 @@
 list(APPEND eckit_geo_srcs
 	BoundingBox.cc
 	BoundingBox.h
+	Iterator.cc
 	Iterator.h
 	Point.cc
 	Point.h

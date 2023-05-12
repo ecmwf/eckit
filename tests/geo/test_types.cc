@@ -12,15 +12,13 @@
 
 #include <iostream>
 
-#include "eckit/geo/types.h"
+#include "eckit/geo/Point.h"
 #include "eckit/maths/Matrix3.h"
 #include "eckit/testing/Test.h"
 
 
 int main(int argc, char* argv[]) {
-    using eckit::geo::Point;
-    using eckit::geo::PointLonLat;
-    using eckit::geo::points_equal;
+    using namespace eckit::geo;
 
     PointLonLat p(1, 90.);
 

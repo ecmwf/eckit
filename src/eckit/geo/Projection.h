@@ -15,7 +15,7 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/geo/types.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit {

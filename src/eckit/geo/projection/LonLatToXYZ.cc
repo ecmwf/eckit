@@ -13,9 +13,9 @@
 #include "eckit/geo/projection/LonLatToXYZ.h"
 
 #include "eckit/config/Configuration.h"
-#include "eckit/geo/util.h"
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 #include "eckit/geometry/Sphere.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
@@ -55,8 +55,8 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
         PointLonLat operator()(const Point3& q) const override { NOTIMP; }
     };
 
-    impl_.reset(util::is_approximately_equal(a, b) ? static_cast<Implementation*>(new LonLatToSphereXYZ(a))
-                                                   : new LonLatToSpheroidXYZ(a, b));
+    impl_.reset(types::is_approximately_equal(a, b) ? static_cast<Implementation*>(new LonLatToSphereXYZ(a))
+                                                    : new LonLatToSpheroidXYZ(a, b));
 }
 
 

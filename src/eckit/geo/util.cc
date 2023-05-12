@@ -22,25 +22,25 @@ pl_type pl_convert(const pl_type& pl) {
 }
 
 
-double normalise_longitude_to_minimum(double lon, double minimum) {
-    while (lon < minimum) {
-        lon += 360.;
+double normalise_angle_to_minimum(double a, double minimum) {
+    while (a < minimum) {
+        a += 360.;
     }
-    while (lon >= minimum + 360.) {
-        lon -= 360.;
+    while (a >= minimum + 360.) {
+        a -= 360.;
     }
-    return lon;
+    return a;
 }
 
 
-double normalise_longitude_to_maximum(double lon, double maximum) {
-    while (lon > maximum) {
-        lon -= 360.;
+double normalise_angle_to_maximum(double a, double maximum) {
+    while (a > maximum) {
+        a -= 360.;
     }
-    while (lon <= maximum - 360.) {
-        lon += 360.;
+    while (a <= maximum - 360.) {
+        a += 360.;
     }
-    return lon;
+    return a;
 }
 
 

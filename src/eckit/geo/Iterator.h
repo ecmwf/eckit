@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/geo/types.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo {

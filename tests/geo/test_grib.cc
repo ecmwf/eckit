@@ -23,7 +23,6 @@
 #include "eckit/exception/Exceptions.h"
 // #include "eckit/config/Configuration.h"
 #include "eckit/config/MappedConfiguration.h"
-#include "eckit/geo/types.h"
 #include "eckit/value/Value.h"
 
 

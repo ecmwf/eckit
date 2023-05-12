@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/types.h"
+#include "eckit/geo/Point.h"
 
 #include <ostream>
 

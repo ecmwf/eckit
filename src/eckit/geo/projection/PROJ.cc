@@ -14,7 +14,6 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/types.h"
 
 
 namespace eckit::geo::projection {

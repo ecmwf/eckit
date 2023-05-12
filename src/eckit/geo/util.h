@@ -15,22 +15,14 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <limits>
 #include <utility>
 #include <vector>
-
-#include "eckit/geo/types.h"
 
 
 namespace eckit::geo::util {
 
 
-template <typename T>
-bool is_approximately_equal(T x, T y, T eps = std::numeric_limits<T>::epsilon()) {
-    auto min = std::min(std::abs(x), std::abs(y));
-    return std::abs(min) == 0. ? std::abs(x - y) < eps
-                               : std::abs(x - y) / std::max(std::numeric_limits<T>::min(), min) < eps;
-};
+using pl_type = std::vector<long>;
 
 
 template <typename T>
@@ -48,12 +40,6 @@ template <>
 pl_type pl_convert(const pl_type&);
 
 
-static constexpr double degrees_to_radians = M_PI / 180.;
-
-
-static constexpr double radians_to_degrees = 180. * M_1_PI;
-
-
 std::vector<double> arange(double start, double stop, double step);
 
 
@@ -67,12 +53,12 @@ std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterat
     const std::vector<double>&, double min, double max, double eps);
 
 
-/// @return longitude in degree within range [minimum, minimum + 360[
-double normalise_longitude_to_minimum(double lon, double minimum);
+/// @return angle [degree] within range [minimum, minimum + 360[
+double normalise_angle_to_minimum(double lon, double minimum);
 
 
-/// @return longitude in degree within range ]maximum - 360, maximum]
-double normalise_longitude_to_maximum(double lon, double maximum);
+/// @return angle [degree] within range ]maximum - 360, maximum]
+double normalise_angle_to_maximum(double lon, double maximum);
 
 
 const pl_type& reduced_classical_pl(size_t N);

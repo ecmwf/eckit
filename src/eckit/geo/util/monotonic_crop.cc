@@ -10,8 +10,12 @@
  */
 
 
+#include <algorithm>
+#include <utility>
+#include <vector>
+
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/util.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::util {
@@ -29,7 +33,7 @@ std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterat
     if (increasing) {
         ASSERT(std::is_sorted(values.begin(), values.end()));
 
-        auto lt = [eps](double a, double b) { return a < b && (0. == eps || !is_approximately_equal(a, b, eps)); };
+        auto lt = [eps](double a, double b) { return a < b && (0. == eps || !types::is_approximately_equal(a, b, eps)); };
         return {std::lower_bound(values.begin(), values.end(), min, lt),
                 std::upper_bound(values.begin(), values.end(), max, lt)};
     }
@@ -38,7 +42,7 @@ std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterat
     // monotonically non-increasing
     ASSERT(std::is_sorted(values.rbegin(), values.rend()));
 
-    auto gt = [eps](double a, double b) { return a > b && (0. == eps || !is_approximately_equal(a, b, eps)); };
+    auto gt = [eps](double a, double b) { return a > b && (0. == eps || !types::is_approximately_equal(a, b, eps)); };
     return {std::lower_bound(values.begin(), values.end(), max, gt),
             std::upper_bound(values.begin(), values.end(), min, gt)};
 }

@@ -2,6 +2,8 @@ list(APPEND eckit_geo_srcs
 	BoundingBox.cc
 	BoundingBox.h
 	Iterator.h
+	Point.cc
+	Point.h
 	Projection.cc
 	Projection.h
 	Scanner.cc
@@ -22,8 +24,6 @@ list(APPEND eckit_geo_srcs
 	scanner/Regular.h
 	scanner/Unstructured.cc
 	scanner/Unstructured.h
-	types.cc
-	types.h
 	util.cc
 	util.h
 	util/arange.cc

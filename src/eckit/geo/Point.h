@@ -14,7 +14,6 @@
 
 #include <iosfwd>
 #include <variant>
-#include <vector>
 
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
@@ -24,18 +23,13 @@
 namespace eckit::geo {
 
 
-using PointLonLat = geometry::PointLonLat;
-using Point2      = geometry::Point2;
-using Point3      = geometry::Point3;
-using Point       = std::variant<PointLonLat, Point2, Point3>;
-
-
-using pl_type = std::vector<long>;
-
-
+using geometry::Point2;
+using geometry::Point3;
+using geometry::PointLonLat;
 using geometry::points_equal;
 
 
+using Point = std::variant<PointLonLat, Point2, Point3>;
 bool points_equal(const Point&, const Point&);
 
 

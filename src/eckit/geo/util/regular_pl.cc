@@ -10,10 +10,8 @@
  */
 
 
-#include <map>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/types.h"
+#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::util {

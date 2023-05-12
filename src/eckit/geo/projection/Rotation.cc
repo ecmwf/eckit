@@ -19,6 +19,7 @@
 #include "eckit/geo/util.h"
 #include "eckit/geometry/UnitSphere.h"
 #include "eckit/maths/Matrix3.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
@@ -52,17 +53,19 @@ Rotation::Rotation(double south_pole_lat, double south_pole_lon, double angle) :
         const M R_;
     };
 
-    const auto alpha = angle * util::degrees_to_radians;
-    const auto theta = -(south_pole_lat + 90.) * util::degrees_to_radians;
-    const auto phi   = -(south_pole_lon)*util::degrees_to_radians;
+    constexpr auto degrees_to_radians = M_PI / 180.;
+
+    const auto alpha = angle * degrees_to_radians;
+    const auto theta = -(south_pole_lat + 90.) * degrees_to_radians;
+    const auto phi   = -south_pole_lon * degrees_to_radians;
 
     const auto ca = std::cos(alpha);
     const auto ct = std::cos(theta);
     const auto cp = std::cos(phi);
 
-    if (util::is_approximately_equal(ct, 1., 1.e-12)) {
-        angle    = util::normalise_longitude_to_minimum(angle - south_pole_lon, -180.);
-        rotated_ = !util::is_approximately_equal(angle, 0., 1.e-12);
+    if (types::is_approximately_equal(ct, 1., 1.e-12)) {
+        angle    = util::normalise_angle_to_minimum(angle - south_pole_lon, -180.);
+        rotated_ = !types::is_approximately_equal(angle, 0., 1.e-12);
 
         fwd_.reset(rotated_ ? static_cast<Rotate*>(new Angle(-angle)) : new No);
         inv_.reset(rotated_ ? static_cast<Rotate*>(new Angle(angle)) : new No);

@@ -28,20 +28,6 @@ private:
 
     using P = std::array<double, 2>;
 
-    // -- Class methods
-
-    static double normal(double a, double minimum) {
-        while (a < minimum) {
-            a += 360.;
-        }
-
-        while (a >= minimum + 360.) {
-            a -= 360.;
-        }
-
-        return a;
-    };
-
 public:
     // -- Types
     // None
@@ -53,8 +39,10 @@ public:
 
     PointLonLat(double lat, double lon) :
         P{lat, lon} { ASSERT_MSG(-90. <= lat && lat <= 90., "PointLonLat: invalid latitude"); }
+
     PointLonLat(const PointLonLat& other) :
         P(other) {}
+
     PointLonLat(PointLonLat&& other) :
         P(other) {}
 
@@ -77,11 +65,6 @@ public:
         return *this;
     }
 
-    bool is_approximately_equal(const PointLonLat& other, double eps) const {
-        const auto dlon = normal(other.lon, lon) - lon;
-        return std::abs(lat - other.lat) < eps && (std::abs(lat - 90.) < eps || std::abs(lat + 90.) < eps || dlon < eps || dlon - 360. < eps);
-    };
-
     // -- Members
 
     double& lat = P::operator[](0);
@@ -89,15 +72,19 @@ public:
 
     // -- Methods
 
+    static double normalise_angle_to_minimum(double, double minimum);
+
+    static double normalise_angle_to_maximum(double, double maximum);
+
     static PointLonLat make(double lat, double lon, double lon_minimum = 0) {
-        lat = normal(lat, -90.);
+        lat = normalise_angle_to_minimum(lat, -90.);
 
         if (lat > 90.) {
             lat = 180. - lat;
             lon += 180.;
         }
 
-        return {lat, lat == -90. || lat == 90. ? 0. : normal(lon, lon_minimum)};
+        return {lat, lat == -90. || lat == 90. ? 0. : normalise_angle_to_minimum(lon, lon_minimum)};
     }
 
     PointLonLat antipode() const { return make(lat + 180., lon); }

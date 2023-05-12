@@ -9,15 +9,41 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/geometry/PointLonLat.h"
 
 #include "eckit/geometry/UnitSphere.h"
 #include "eckit/types/FloatCompare.h"
 
+
 namespace eckit::geometry {
+
 
 bool points_equal(const PointLonLat& a, const PointLonLat& b) {
     return types::is_approximately_equal<double>(UnitSphere::centralAngle(a, b), 0.0);
 }
+
+
+double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
+    while (a < minimum) {
+        a += 360.;
+    }
+    while (a >= minimum + 360.) {
+        a -= 360.;
+    }
+    return a;
+}
+
+
+double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
+    while (a > maximum) {
+        a -= 360.;
+    }
+    while (a <= maximum - 360.) {
+        a += 360.;
+    }
+    return a;
+}
+
 
 }  // namespace eckit::geometry

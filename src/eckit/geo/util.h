@@ -43,22 +43,14 @@ pl_type pl_convert(const pl_type&);
 std::vector<double> arange(double start, double stop, double step);
 
 
-std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
-
-
 std::vector<double> gaussian_latitudes(size_t N, bool increasing);
+
+
+std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
 
 
 std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterator> monotonic_crop(
     const std::vector<double>&, double min, double max, double eps);
-
-
-/// @return angle [degree] within range [minimum, minimum + 360[
-double normalise_angle_to_minimum(double lon, double minimum);
-
-
-/// @return angle [degree] within range ]maximum - 360, maximum]
-double normalise_angle_to_maximum(double lon, double maximum);
 
 
 const pl_type& reduced_classical_pl(size_t N);

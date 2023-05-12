@@ -128,7 +128,7 @@ private:
 
 template <class T>
 class ProjectionBuilder final : public ProjectionFactory {
-    Projection* make(const Configuration& param) override { return new T(param); }
+    Projection* make(const Configuration& config) override { return new T(config); }
 
 public:
     explicit ProjectionBuilder(const ProjectionFactory::key_type& key) :

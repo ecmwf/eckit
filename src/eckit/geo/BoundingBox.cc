@@ -16,7 +16,7 @@
 #include <cmath>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/util.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geometry/Sphere.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -27,7 +27,7 @@ namespace eckit::geo {
 BoundingBox::BoundingBox(double north, double west, double south, double east) :
     north_(north), west_(west), south_(south), east_(east) {
     if (west_ != east_) {
-        auto e = util::normalise_angle_to_minimum(east, west);
+        auto e = PointLonLat::normalise_angle_to_minimum(east, west);
         east_  = e == west_ ? (e + 360.) : e;
     }
 
@@ -46,12 +46,12 @@ bool BoundingBox::operator==(const BoundingBox& other) const {
 
 
 bool BoundingBox::isPeriodicWestEast() const {
-    return west_ != east_ && west_ == util::normalise_angle_to_minimum(east_, west_);
+    return west_ != east_ && west_ == PointLonLat::normalise_angle_to_minimum(east_, west_);
 }
 
 
 bool BoundingBox::contains(double lat, double lon) const {
-    return lat <= north_ && lat >= south_ && util::normalise_angle_to_minimum(lon, west_) <= east_;
+    return lat <= north_ && lat >= south_ && PointLonLat::normalise_angle_to_minimum(lon, west_) <= east_;
 }
 
 
@@ -61,7 +61,7 @@ bool BoundingBox::contains(const BoundingBox& other) const {
     }
 
     // check for West/East range (if non-periodic), then other's corners
-    if (east_ - west_ < other.east_ - other.west_ || east_ < util::normalise_angle_to_minimum(other.east_, west_)) {
+    if (east_ - west_ < other.east_ - other.west_ || east_ < PointLonLat::normalise_angle_to_minimum(other.east_, west_)) {
         return false;
     }
 
@@ -94,9 +94,9 @@ bool BoundingBox::intersects(BoundingBox& other) const {
             return true;
         }
 
-        auto ref = util::normalise_angle_to_minimum(b.west_, a.west_);
+        auto ref = PointLonLat::normalise_angle_to_minimum(b.west_, a.west_);
         auto w_  = std::max(a.west_, ref);
-        auto e_  = std::min(a.east_, util::normalise_angle_to_minimum(b.east_, ref));
+        auto e_  = std::min(a.east_, PointLonLat::normalise_angle_to_minimum(b.east_, ref));
 
         if (w_ <= e_) {
             w = w_;

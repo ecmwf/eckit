@@ -223,6 +223,7 @@ static pthread_once_t __once                                                  = 
 static Mutex* __mutex                                                         = nullptr;
 static std::map<ProjectionFactory::key_type, ProjectionFactory*>* __factories = nullptr;
 
+
 static void __init() {
     __mutex     = new Mutex;
     __factories = new std::map<ProjectionFactory::key_type, ProjectionFactory*>();
@@ -230,12 +231,12 @@ static void __init() {
 
 
 Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key,
-                                     const Configuration& param) {
+                                     const Configuration& config) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
     if (auto f = __factories->find(key); f != __factories->end()) {
-        return f->second->make(param);
+        return f->second->make(config);
     }
 
     list(Log::error() << "ProjectionFactory: unknown '" << key << "', choices are: ");

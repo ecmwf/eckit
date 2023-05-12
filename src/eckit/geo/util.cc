@@ -22,26 +22,4 @@ pl_type pl_convert(const pl_type& pl) {
 }
 
 
-double normalise_angle_to_minimum(double a, double minimum) {
-    while (a < minimum) {
-        a += 360.;
-    }
-    while (a >= minimum + 360.) {
-        a -= 360.;
-    }
-    return a;
-}
-
-
-double normalise_angle_to_maximum(double a, double maximum) {
-    while (a > maximum) {
-        a -= 360.;
-    }
-    while (a <= maximum - 360.) {
-        a += 360.;
-    }
-    return a;
-}
-
-
 }  // namespace eckit::geo::util

@@ -17,7 +17,7 @@
 namespace eckit::geometry {
 
 bool points_equal(const PointLonLat& a, const PointLonLat& b) {
-    return eckit::types::is_approximately_equal<double>(UnitSphere::centralAngle(a, b), 0.0);
+    return types::is_approximately_equal<double>(UnitSphere::centralAngle(a, b), 0.0);
 }
 
 }  // namespace eckit::geometry

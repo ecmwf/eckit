@@ -149,4 +149,14 @@ private:
 };
 
 
+template <class T>
+class IteratorBuilder final : public IteratorFactory {
+    Iterator* make(const Configuration& config) override { return new T(config); }
+
+public:
+    explicit IteratorBuilder(const IteratorFactory::key_type& key) :
+        IteratorFactory(key) {}
+};
+
+
 }  // namespace eckit::geo

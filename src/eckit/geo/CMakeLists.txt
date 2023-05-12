@@ -10,6 +10,8 @@ list(APPEND eckit_geo_srcs
 	Scanner.cc
 	Scanner.h
 	Search.h
+	grib/RegularLL.cc
+	grib/RegularLL.h
 	iterator/IteratorAggregator.h
 	iterator/IteratorComposer.cc
 	iterator/IteratorComposer.h

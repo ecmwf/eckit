@@ -65,8 +65,8 @@ LonLatToXYZ::LonLatToXYZ(double R) :
 
 
 LonLatToXYZ::LonLatToXYZ(const Configuration& param) :
-    LonLatToXYZ(param.getDouble("R", param.getDouble("a")),
-                param.getDouble("R", param.getDouble("b"))) {}
+    LonLatToXYZ(param.getDouble("a", param.getDouble("R", 1.)),
+                param.getDouble("b", param.getDouble("R", 1.))) {}
 
 
 }  // namespace eckit::geo::projection

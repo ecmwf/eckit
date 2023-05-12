@@ -18,6 +18,8 @@
 
 
 int main(int argc, char* argv[]) {
+    using eckit::geo::points_equal;
+
     std::cout.precision(14);
 
     eckit::geo::PointLonLat a{12., 55.};
@@ -49,8 +51,8 @@ int main(int argc, char* argv[]) {
 
         std::cout << "-> a:" << a << " -> fwd(a):" << b << " -> inv(fwd(a)):" << c << std::endl;
 
-        EXPECT(b == test.b);
-        EXPECT(c == a);
+        EXPECT(points_equal(b, test.b));
+        EXPECT(points_equal(c, a));
 
         eckit::geo::projection::PROJ reverse(eckit::MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}}));
 
@@ -59,7 +61,7 @@ int main(int argc, char* argv[]) {
 
         std::cout << "-> b:" << test.b << " -> fwd(b):" << d << " -> inv(fwd(b)):" << e << std::endl;
 
-        EXPECT(d == a);
-        EXPECT(e == test.b);
+        EXPECT(points_equal(d, a));
+        EXPECT(points_equal(e, test.b));
     }
 }

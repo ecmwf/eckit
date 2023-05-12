@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
         auto r = to_xyz.inv(q);
         std::cout << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
 
-        EXPECT(Point(p) == r);
+        EXPECT(eckit::geo::points_equal(p, r));
     }
 
 

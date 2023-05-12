@@ -19,6 +19,7 @@
 int main(int argc, char* argv[]) {
     using eckit::geo::Point;
     using eckit::geo::PointLonLat;
+    using eckit::geo::points_equal;
     using eckit::geo::projection::Rotation;
 
     {
@@ -31,8 +32,8 @@ int main(int argc, char* argv[]) {
                     Rotation rot(-90. + static_cast<double>(a), 0. + static_cast<double>(b), static_cast<double>(c));
                     EXPECT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 
-                    EXPECT(Point(p) == rot.inv(rot.fwd(p)));
-                    EXPECT(Point(p) == rot.fwd(rot.inv(p)));
+                    EXPECT(points_equal(p, rot.inv(rot.fwd(p))));
+                    EXPECT(points_equal(p, rot.fwd(rot.inv(p))));
                 }
             }
         }
@@ -135,8 +136,8 @@ int main(int argc, char* argv[]) {
                 PointLonLat a(static_cast<double>(i) * 360. / static_cast<double>(Ni),
                               static_cast<double>(j - Nj) * 90. / static_cast<double>(Nj));
                 auto b = rot.fwd(a);
-                EXPECT(Point(b) == ref[k]);
-                EXPECT(Point(a) == rot.inv(b));
+                EXPECT(points_equal(b, ref[k]));
+                EXPECT(points_equal(a, rot.inv(b)));
             }
         }
     }
@@ -173,10 +174,10 @@ int main(int argc, char* argv[]) {
 
         for (const auto& test : tests) {
             auto b = test.rotation.fwd(test.a);
-            EXPECT(Point(b) == test.b);
+            EXPECT(points_equal(b, test.b));
 
             auto a = test.rotation.inv(b);
-            EXPECT(Point(a) == test.a);
+            EXPECT(points_equal(a, test.a));
         }
     }
 }

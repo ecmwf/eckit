@@ -20,12 +20,13 @@
 int main(int argc, char* argv[]) {
     using eckit::geo::Point;
     using eckit::geo::PointLonLat;
+    using eckit::geo::points_equal;
 
     PointLonLat p(1, 90.);
 
     std::cout << "p: " << p << std::endl;
     std::cout << "p: " << PointLonLat::make(p.lon, p.lat) << std::endl;
-    std::cout << "p: " << (Point(p) == PointLonLat(50., 90.)) << std::endl;
+    std::cout << "p: " << points_equal(p, PointLonLat(50., 90.)) << std::endl;
 
     PointLonLat q(1., -90.);
     std::cout << "q: " << q << std::endl;
@@ -33,15 +34,15 @@ int main(int argc, char* argv[]) {
     std::cout << "~~q: " << q.antipode().antipode() << std::endl;
 
     auto r(PointLonLat::make(-10., -91.));
-    EXPECT(Point(r) == r.antipode().antipode());
+    EXPECT(points_equal(r, r.antipode().antipode()));
 
     Point a1 = PointLonLat{300, -30};
     Point a2 = PointLonLat{-59.99999999999996, -30.000000000000018};
-    EXPECT(a1 == a2);
+    EXPECT(points_equal(a1, a2));
 
     Point b1 = PointLonLat{-178., -46.7};
     Point b2 = PointLonLat{-178.00000000000003, -46.7};
-    EXPECT(b1 == b2);
+    EXPECT(points_equal(b1, b2));
 
     {
         using Matrix3 = eckit::maths::Matrix3<double>;

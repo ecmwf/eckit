@@ -12,32 +12,24 @@
 
 #include "eckit/geo/types.h"
 
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 
 
-std::ostream& operator<<(std::ostream& out, const eckit::geo::Point& p) {
-    return std::holds_alternative<eckit::geo::PointLonLat>(p)
-               ? out << std::get<eckit::geo::PointLonLat>(p)
-           : std::holds_alternative<eckit::geo::Point2>(p)
-               ? out << std::get<eckit::geo::Point2>(p)
-           : std::holds_alternative<eckit::geo::Point3>(p)
-               ? out << std::get<eckit::geo::Point3>(p)
-               : NOTIMP;
+namespace eckit::geo {
+
+
+bool points_equal(const Point& p, const Point& q) {
+    ASSERT(p.index() == q.index());
+    return std::visit([&](const auto& p, const auto& q) { return points_equal(p, q); }, p, q);
 }
 
 
-bool operator==(const eckit::geo::Point& p, const eckit::geo::Point& q) {
-    ASSERT(p.index() == q.index());
+}  // namespace eckit::geo
 
-    constexpr double eps = 1e-6;
 
-    return std::holds_alternative<eckit::geo::PointLonLat>(p)
-               ? points_equal(std::get<eckit::geo::PointLonLat>(p),
-                              std::get<eckit::geo::PointLonLat>(q))
-           : std::holds_alternative<eckit::geo::Point2>(p)
-               ? points_equal(std::get<eckit::geo::Point2>(p), std::get<eckit::geo::Point2>(q))
-           : std::holds_alternative<eckit::geo::Point3>(p)
-               ? points_equal(std::get<eckit::geo::Point3>(p), std::get<eckit::geo::Point3>(q))
-               : NOTIMP;
+std::ostream& operator<<(std::ostream& out, const eckit::geo::Point& p) {
+    std::visit([&](const auto& p) { out << p; }, p);
+    return out;
 }

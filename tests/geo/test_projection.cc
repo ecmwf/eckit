@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
     using eckit::geo::Point;
     using eckit::geo::Point3;
     using eckit::geo::PointLonLat;
+    using eckit::geo::points_equal;
 
     using Projection        = std::unique_ptr<eckit::geo::Projection>;
     using ProjectionFactory = eckit::geo::ProjectionFactory;
@@ -32,8 +33,8 @@ int main(int argc, char* argv[]) {
 
     {
         Projection projection(ProjectionFactory::build("none", MappedConfiguration{}));
-        EXPECT(p == projection->inv(p));
-        EXPECT(p == projection->fwd(p));
+        EXPECT(points_equal(p, projection->inv(p)));
+        EXPECT(points_equal(p, projection->fwd(p)));
     }
 
     {
@@ -45,8 +46,8 @@ int main(int argc, char* argv[]) {
 
         Projection projection(ProjectionFactory::build(param.getString("projection"), param));
 
-        EXPECT(p == projection->inv(projection->fwd(p)));
-        EXPECT(p == projection->fwd(projection->inv(p)));
+        EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
+        EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
     }
 
     {
@@ -54,14 +55,14 @@ int main(int argc, char* argv[]) {
         Projection s2(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"a", 1.}, {"b", 1.}})));
         Projection s3(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
 
-        EXPECT(p == s1->inv(s1->fwd(p)));
-        EXPECT(p == s2->inv(s2->fwd(p)));
-        EXPECT(s1->fwd(p) == s2->fwd(p));
+        EXPECT(points_equal(p, s1->inv(s1->fwd(p))));
+        EXPECT(points_equal(p, s2->inv(s2->fwd(p))));
+        EXPECT(points_equal(s1->fwd(p), s2->fwd(p)));
 
         Point q = PointLonLat{1, 0};
 
-        EXPECT(s1->fwd(q) == s3->fwd(q));
-        EXPECT(s2->fwd(q) == s3->fwd(q));
+        EXPECT(points_equal(s1->fwd(q), s3->fwd(q)));
+        EXPECT(points_equal(s2->fwd(q), s3->fwd(q)));
 
         struct {
             PointLonLat a;
@@ -78,7 +79,7 @@ int main(int argc, char* argv[]) {
         };
 
         for (const auto& test : tests) {
-            EXPECT(s3->fwd(test.a) == Point(test.b));
+            EXPECT(points_equal(s3->fwd(test.a), test.b));
         }
     }
 }

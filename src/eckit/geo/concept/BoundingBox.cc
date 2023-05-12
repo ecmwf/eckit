@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/BoundingBox.h"
+#include "eckit/geo/concept/BoundingBox.h"
 
 #include <algorithm>
 #include <cmath>
@@ -21,7 +21,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::concept {
 
 
 BoundingBox::BoundingBox(double north, double west, double south, double east) :
@@ -138,4 +138,4 @@ double BoundingBox::area(double radius) const {
 }
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::concepts

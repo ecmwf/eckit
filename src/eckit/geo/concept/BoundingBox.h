@@ -13,7 +13,7 @@
 #pragma once
 
 
-namespace eckit::geo {
+namespace eckit::geo::concept {
 
 
 class BoundingBox {
@@ -24,11 +24,8 @@ public:
     // -- Constructors
 
     BoundingBox(double north, double west, double south, double east);
-
     BoundingBox();
-
     BoundingBox(const BoundingBox&) = default;
-
     BoundingBox(BoundingBox&&) = default;
 
     // -- Destructor
@@ -41,33 +38,21 @@ public:
     // -- Operators
 
     BoundingBox& operator=(const BoundingBox&) = default;
-
     BoundingBox& operator=(BoundingBox&&) = default;
-
     bool operator==(const BoundingBox&) const;
-
     bool operator!=(const BoundingBox& other) const { return !operator==(other); }
 
     // -- Methods
 
     double north() const { return north_; }
-
     double west() const { return west_; }
-
     double south() const { return south_; }
-
     double east() const { return east_; }
-
     bool isPeriodicWestEast() const;
-
     bool contains(double lat, double lon) const;
-
     bool contains(const BoundingBox&) const;
-
     bool intersects(BoundingBox&) const;
-
     bool empty() const;
-
     double area(double radius) const;
 
     // -- Overridden methods
@@ -123,4 +108,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::concepts

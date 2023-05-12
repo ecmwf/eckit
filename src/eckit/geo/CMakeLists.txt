@@ -1,6 +1,4 @@
 list(APPEND eckit_geo_srcs
-	BoundingBox.cc
-	BoundingBox.h
 	Iterator.cc
 	Iterator.h
 	Point.cc
@@ -10,6 +8,8 @@ list(APPEND eckit_geo_srcs
 	Scanner.cc
 	Scanner.h
 	Search.h
+	concept/BoundingBox.cc
+	concept/BoundingBox.h
 	grib/RegularLL.cc
 	grib/RegularLL.h
 	iterator/IteratorAggregator.h

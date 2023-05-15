@@ -14,13 +14,13 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::concept {
 
 
-    static eckit::Fraction adjust(const eckit::Fraction& target, const eckit::Fraction& inc, bool up) {
+    static Fraction adjust(const Fraction& target, const Fraction& inc, bool up)
+    {
         ASSERT(inc > 0);
 
         auto r = target / inc;
@@ -38,13 +38,11 @@ namespace eckit::geo::concept {
         Range(_a, _b, _inc, _ref) {
         ASSERT(0 < period);
 
-        const eckit::Fraction inc(_inc);
-
-        if ((n_ - 1) * inc >= period) {
+        if ((n_ - 1) * inc_ >= period) {
             n_ -= 1;
-            ASSERT(n_ * inc == period || (n_ - 1) * inc < period);
+            ASSERT(n_ * inc_ == period || (n_ - 1) * inc_ < period);
 
-            b_ = a_ + (n_ - 1) * inc;
+            b_ = a_ + (n_ - 1) * inc_;
         }
     }
 
@@ -55,24 +53,26 @@ namespace eckit::geo::concept {
         if (types::is_approximately_equal(_inc, 0.) || types::is_approximately_equal(_a, _b)) {
             a_ = b_ = _ref;
             n_      = 1;
+            inc_ = Fraction{0};
             return;
         }
 
-        ASSERT(_a <= _b);  // FIXME remove
+        ASSERT(_a <= _b); // FIXME remove
 
-        const eckit::Fraction a(_a);
-        const eckit::Fraction b(_b);
-        const eckit::Fraction inc(_inc);
-        const eckit::Fraction ref(_ref);
+        inc_ = Fraction{_inc};
 
-        auto shift = (ref / inc).decimalPart() * inc;
-        a_         = shift + adjust(a - shift, inc, true);
+        const Fraction a(_a);
+        const Fraction b(_b);
+        const Fraction ref(_ref);
 
-        auto c = shift + adjust(b - shift, inc, false);
-        c      = a_ + ((c - a_) / inc).integralPart() * inc;
+        auto shift = (ref / inc_).decimalPart() * inc_;
+        a_ = shift + adjust(a - shift, inc_, true);
+
+        auto c = shift + adjust(b - shift, inc_, false);
+        c = a_ + ((c - a_) / inc_).integralPart() * inc_;
         b_     = c < a_ ? a_ : c;
 
-        n_ = static_cast<size_t>(((b_ - a_) / inc).integralPart() + 1);
+        n_ = static_cast<size_t>(((b_ - a_) / inc_).integralPart() + 1);
 
         ASSERT(a_ <= b_);
         ASSERT(1 <= n_);

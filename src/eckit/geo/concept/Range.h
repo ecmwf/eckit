@@ -14,6 +14,8 @@
 
 #include <cstddef>
 
+#include "eckit/types/Fraction.h"
+
 
 namespace eckit::geo::concept {
 
@@ -83,6 +85,7 @@ namespace eckit::geo::concept {
         size_t n_;
         double a_;
         double b_;
+        Fraction inc_;
 
         // -- Methods
         // None

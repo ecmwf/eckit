@@ -28,9 +28,8 @@ namespace eckit::geo::concept {
 
         // -- Constructors
 
+        Range(double a, double b, double inc, double ref, double period);
         Range(double a, double b, double inc, double ref);
-
-        Range(double a, double b, double inc);
 
         Range(const Range&) = delete;
         Range(Range&&)      = delete;

@@ -19,10 +19,7 @@
 namespace eckit::geo::concept {
 
 
-    namespace {
-
-
-    eckit::Fraction adjust(const eckit::Fraction& target, const eckit::Fraction& inc, bool up) {
+    static eckit::Fraction adjust(const eckit::Fraction& target, const eckit::Fraction& inc, bool up) {
         ASSERT(inc > 0);
 
         auto r = target / inc;
@@ -36,7 +33,19 @@ namespace eckit::geo::concept {
     }
 
 
-    }  // namespace
+    Range::Range(double _a, double _b, double _inc, double _ref, double period) :
+        Range(_a, _b, _inc, _ref) {
+        ASSERT(0 < period);
+
+        const eckit::Fraction inc(_inc);
+
+        if ((n_ - 1) * inc >= period) {
+            n_ -= 1;
+            ASSERT(n_ * inc == period || (n_ - 1) * inc < period);
+
+            b_ = a_ + (n_ - 1) * inc;
+        }
+    }
 
 
     Range::Range(double _a, double _b, double _inc, double _ref) {
@@ -73,10 +82,6 @@ namespace eckit::geo::concept {
         ASSERT(a_ <= b_);
         ASSERT(n_ >= 1);
     }
-
-
-    Range::Range(double a, double b, double inc) :
-        Range(a, b, inc, a) {}
 
 
 }  // namespace eckit::geo::concept

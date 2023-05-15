@@ -12,48 +12,40 @@
 
 #pragma once
 
+#include <cstddef>
+
 
 namespace eckit::geo::concept {
 
 
-    class BoundingBox {
+    class Range {
     public:
+        // -- Types
+        // None
+
         // -- Exceptions
         // None
 
         // -- Constructors
 
-        BoundingBox(double north, double west, double south, double east);
-        BoundingBox();
-        BoundingBox(const BoundingBox&) = default;
-        BoundingBox(BoundingBox&&)      = default;
+        Range(size_t N, double a, double b, double inc, double ref);
+
+        Range(size_t N, double a, double b, double inc) :
+            Range(N, a, b, inc, a) {}
 
         // -- Destructor
 
-        virtual ~BoundingBox() = default;
+        virtual ~Range() = default;
 
         // -- Convertors
         // None
 
         // -- Operators
-
-        BoundingBox& operator=(const BoundingBox&) = default;
-        BoundingBox& operator=(BoundingBox&&)      = default;
-        bool operator==(const BoundingBox&) const;
-        bool operator!=(const BoundingBox& other) const { return !operator==(other); }
+        // None
 
         // -- Methods
 
-        double north() const { return north_; }
-        double west() const { return west_; }
-        double south() const { return south_; }
-        double east() const { return east_; }
-        bool isPeriodicWestEast() const;
-        bool contains(double lat, double lon) const;
-        bool contains(const BoundingBox&) const;
-        bool intersects(BoundingBox&) const;
-        bool empty() const;
-        double area(double radius) const;
+        size_t size() const { return N_; }
 
         // -- Overridden methods
         // None
@@ -80,16 +72,10 @@ namespace eckit::geo::concept {
         // -- Class methods
         // None
 
-        // -- Friends
-        // None
-
     private:
         // -- Members
 
-        double north_;
-        double west_;
-        double south_;
-        double east_;
+        const size_t N_;
 
         // -- Methods
         // None

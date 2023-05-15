@@ -10,6 +10,8 @@ list(APPEND eckit_geo_srcs
 	Search.h
 	concept/BoundingBox.cc
 	concept/BoundingBox.h
+	concept/Range.cc
+	concept/Range.h
 	grib/RegularLL.cc
 	grib/RegularLL.h
 	iterator/IteratorAggregator.h

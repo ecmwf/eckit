@@ -18,50 +18,63 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
 SeekableHandle::SeekableHandle(PeekHandle* h) :
-    handle_(*h), position_(0) {}
+    owned_(true),
+    handle_(h),
+    seekableStart_(0),
+    position_(0) {}
 
 SeekableHandle::SeekableHandle(PeekHandle& h) :
-    handle_(h), position_(0) {}
+    owned_(false),
+    handle_(&h),
+    seekableStart_(0),
+    position_(0) {}
 
-SeekableHandle::~SeekableHandle() {}
+SeekableHandle::~SeekableHandle() {
+    if (owned_)
+        delete handle_;
+}
 
 Length SeekableHandle::openForRead() {
     position_ = 0;
-    return handle_.openForRead();
+    seekableStart_ = 0;
+    return handle_->openForRead();
 }
 
 void SeekableHandle::close() {
-    handle_.close();
+    handle_->close();
 }
 
 void SeekableHandle::print(std::ostream& s) const {
     s << "SeekableHandle[";
-    handle_.print(s);
+    handle_->print(s);
     s << ']';
 }
 
 Length SeekableHandle::estimate() {
-    return handle_.estimate();
+    return handle_->estimate();
 }
 
 void SeekableHandle::skip(const Length& len) {
+    ASSERT(position_ + len <= seekableStart_ + Length(handle_->peeked()));
     position_ += len;
 }
 
 long SeekableHandle::read(void* buffer, long length) {
-    long len = handle_.peek(buffer, length, position_);
+    long len = handle_->peek(buffer, length, position_ - seekableStart_);
     ASSERT(len >= 0);
     position_ += len;
     return len;
 }
 
 void SeekableHandle::rewind() {
+    ASSERT(seekableStart_ == Offset(0));
     position_ = 0;
 }
 
 Offset SeekableHandle::seek(const Offset& off) {
+    ASSERT(off >= seekableStart_);
+    ASSERT(off <= seekableStart_ + Length(handle_->peeked()));
     position_ = off;
     return position_;
 }
@@ -75,11 +88,18 @@ Offset SeekableHandle::position() {
 }
 
 std::string SeekableHandle::title() const {
-    return std::string("{") + handle_.title() + "}";
+    return std::string("{") + handle_->title() + "}";
 }
 
 void SeekableHandle::collectMetrics(const std::string& what) const {
-    handle_.collectMetrics(what);
+    handle_->collectMetrics(what);
+}
+
+void SeekableHandle::clear() {
+    Length peeked = handle_->peeked();
+    handle_->skip(peeked);
+    seekableStart_ += peeked;
+    position_ = seekableStart_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

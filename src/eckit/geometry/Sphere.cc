@@ -13,12 +13,12 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/GreatCircle.h"
+#include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
-#include "eckit/geometry/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -27,20 +27,9 @@ namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using types::is_approximately_equal;
+static const double radians_to_degrees = 180. * M_1_PI;
 
-static constexpr double radians_to_degrees = 180. * M_1_PI;
-
-static constexpr double degrees_to_radians = M_PI / 180.;
-
-void assert_latitude(double lat) {
-    if (!(-90. <= lat && lat <= 90.)) {
-        std::ostringstream oss;
-        oss.precision(std::numeric_limits<double>::max_digits10);
-        oss << "Invalid latitude " << lat;
-        throw BadValue(oss.str(), Here());
-    }
-}
+static const double degrees_to_radians = M_PI / 180.;
 
 inline double squared(double x) {
     return x * x;
@@ -48,10 +37,7 @@ inline double squared(double x) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-double Sphere::centralAngle(const PointLonLat& A, const PointLonLat& B) {
-    assert_latitude(A.lat);
-    assert_latitude(B.lat);
-
+double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat, bool normalise_angle) {
     /*
      * Δσ = atan( ((cos(ϕ2) * sin(Δλ))^2 + (cos(ϕ1) * sin(ϕ2) - sin(ϕ1) * cos(ϕ2) * cos(Δλ))^2) /
      *            (sin(ϕ1) * sin(ϕ2) + cos(ϕ1) * cos(ϕ2) * cos(Δλ)) )
@@ -68,21 +54,31 @@ double Sphere::centralAngle(const PointLonLat& A, const PointLonLat& B) {
      * }
      */
 
-    const double phi1   = degrees_to_radians * A.lat;
-    const double phi2   = degrees_to_radians * B.lat;
-    const double lambda = degrees_to_radians * (B.lon - A.lon);
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+        assert_latitude_range(Blonlat[1]);
+    }
 
-    const double cos_phi1   = cos(phi1);
-    const double sin_phi1   = sin(phi1);
-    const double cos_phi2   = cos(phi2);
-    const double sin_phi2   = sin(phi2);
-    const double cos_lambda = cos(lambda);
-    const double sin_lambda = sin(lambda);
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat);
+    const Point2 blonlat = canonicaliseOnSphere(Blonlat);
 
-    const double angle = std::atan2(std::sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
+    const double phi1   = degrees_to_radians * alonlat[1];
+    const double phi2   = degrees_to_radians * blonlat[1];
+    const double lambda = degrees_to_radians * (blonlat[0] - alonlat[0]);
+
+    const double cos_phi1   = std::cos(phi1);
+    const double sin_phi1   = std::sin(phi1);
+    const double cos_phi2   = std::cos(phi2);
+    const double sin_phi2   = std::sin(phi2);
+    const double cos_lambda = std::cos(lambda);
+    const double sin_lambda = std::sin(lambda);
+
+    const double angle = std::atan2(std::sqrt(squared(cos_phi2 * sin_lambda)
+                                              + squared(cos_phi1 * sin_phi2
+                                                        - sin_phi1 * cos_phi2 * cos_lambda)),
                                     sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
-    if (is_approximately_equal(angle, 0.)) {
+    if (types::is_approximately_equal(angle, 0.)) {
         return 0.;
     }
 
@@ -90,13 +86,13 @@ double Sphere::centralAngle(const PointLonLat& A, const PointLonLat& B) {
     return angle;
 }
 
-double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
+double Sphere::centralAngle(const double& radius, const Point3& A, const Point3& B) {
     ASSERT(radius > 0.);
 
     // Δσ = 2 * asin( chord / 2 )
 
     const double d2 = Point3::distance2(A, B);
-    if (is_approximately_equal(d2, 0.)) {
+    if (types::is_approximately_equal(d2, 0.)) {
         return 0.;
     }
 
@@ -106,39 +102,38 @@ double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
     return angle;
 }
 
-double Sphere::distance(double radius, const PointLonLat& A, const PointLonLat& B) {
-    return radius * centralAngle(A, B);
+double Sphere::distance(const double& radius, const Point2& Alonlat, const Point2& Blonlat) {
+    return radius * centralAngle(Alonlat, Blonlat, true);
 }
 
-double Sphere::distance(double radius, const Point3& A, const Point3& B) {
+double Sphere::distance(const double& radius, const Point3& A, const Point3& B) {
     return radius * centralAngle(radius, A, B);
 }
 
-double Sphere::area(double radius) {
+double Sphere::area(const double& radius) {
     ASSERT(radius > 0.);
     return 4. * M_PI * radius * radius;
 }
 
-double Sphere::area(double radius, const PointLonLat& WestNorth, const PointLonLat& EastSouth) {
+double Sphere::area(const double& radius, const Point2& WestNorth, const Point2& EastSouth) {
     ASSERT(radius > 0.);
-    assert_latitude(WestNorth.lat);
-    assert_latitude(EastSouth.lat);
 
     // Set longitude fraction
-    double W = WestNorth.lon;
-    double E = PointLonLat::normalise_angle_to_minimum(EastSouth.lon, W);
-    double longitude_range(is_approximately_equal(W, E)
-                                   && !is_approximately_equal(EastSouth.lon, WestNorth.lon)
-                               ? 360.
-                               : E - W);
+    double W = WestNorth[0];
+    double E = normalise_angle(EastSouth[0], W);
+    double longitude_range(
+        types::is_approximately_equal(W, E) && !types::is_approximately_equal(EastSouth[0], WestNorth[0]) ? 360.
+                                                                                                          : E - W);
     ASSERT(longitude_range <= 360.);
 
     double longitude_fraction = longitude_range / 360.;
 
     // Set latitude fraction
-    double N = WestNorth.lat;
-    double S = EastSouth.lat;
-    ASSERT(S <= N);
+    double N = WestNorth[1];
+    double S = EastSouth[1];
+    ASSERT(-90. <= N && N <= 90.);
+    ASSERT(-90. <= S && S <= 90.);
+    ASSERT(N >= S);
 
     double latitude_fraction = 0.5 * (std::sin(degrees_to_radians * N) - std::sin(degrees_to_radians * S));
 
@@ -146,26 +141,24 @@ double Sphere::area(double radius, const PointLonLat& WestNorth, const PointLonL
     return area(radius) * latitude_fraction * longitude_fraction;
 }
 
-double Sphere::greatCircleLatitudeGivenLongitude(const PointLonLat& A,
-                                                 const PointLonLat& B,
-                                                 double Clon) {
-    GreatCircle gc(A, B);
+double Sphere::greatCircleLatitudeGivenLongitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clon) {
+    GreatCircle gc(Alonlat, Blonlat);
     auto lat = gc.latitude(Clon);
     return lat.size() == 1 ? lat[0] : std::numeric_limits<double>::signaling_NaN();
 }
 
-void Sphere::greatCircleLongitudeGivenLatitude(
-    const PointLonLat& A, const PointLonLat& B, double Clat, double& Clon1, double& Clon2) {
-    GreatCircle gc(A, B);
+void Sphere::greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Point2& Blonlat, const double& Clat,
+                                               double& Clon1, double& Clon2) {
+    GreatCircle gc(Alonlat, Blonlat);
     auto lon = gc.longitude(Clat);
 
     Clon1 = lon.size() > 0 ? lon[0] : std::numeric_limits<double>::signaling_NaN();
     Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
 }
 
-Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, double height) {
+void Sphere::convertSphericalToCartesian(
+    const double& radius, const Point2& Alonlat, Point3& B, double height, bool normalise_angle) {
     ASSERT(radius > 0.);
-    assert_latitude(A.lat);
 
     /*
      * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
@@ -180,31 +173,37 @@ Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, 
      * poles and quadrants.
      */
 
-    const double lambda_deg = PointLonLat::normalise_angle_to_minimum(A.lon, -180.);
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+    }
+
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
+
+    const double lambda_deg = alonlat[0];
     const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * A.lat;
+    const double phi        = degrees_to_radians * alonlat[1];
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
     const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
-    const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda)
-                                                         : std::sqrt(1. - sin_lambda * sin_lambda);
+    const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
-    return {(radius + height) * cos_phi * cos_lambda,
-            (radius + height) * cos_phi * sin_lambda,
-            (radius + height) * sin_phi};
+    B[0] = (radius + height) * cos_phi * cos_lambda;
+    B[1] = (radius + height) * cos_phi * sin_lambda;
+    B[2] = (radius + height) * sin_phi;
 }
 
-PointLonLat Sphere::convertCartesianToSpherical(double radius, const Point3& A) {
+void Sphere::convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat) {
     ASSERT(radius > 0.);
 
     // numerical conditioning for both z (poles) and y
 
     const double x = A[0];
-    const double y = is_approximately_equal(A[1], 0.) ? 0. : A[1];
+    const double y = types::is_approximately_equal(A[1], 0.) ? 0. : A[1];
     const double z = std::min(radius, std::max(-radius, A[2])) / radius;
 
-    return {radians_to_degrees * std::atan2(y, x), radians_to_degrees * std::asin(z)};
+    Blonlat[0] = radians_to_degrees * std::atan2(y, x);
+    Blonlat[1] = radians_to_degrees * std::asin(z);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -11,12 +11,11 @@
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 
 #include <cmath>
-#include <limits>
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/CoordinateHelpers.h"
+#include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
-#include "eckit/geometry/PointLonLat.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -24,28 +23,35 @@ namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a,
-                                                          double b,
-                                                          const PointLonLat& A,
-                                                          double height) {
+namespace {
+
+static const double degrees_to_radians = M_PI / 180.;
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a,
+                                                        const double& b,
+                                                        const Point2& Alonlat,
+                                                        Point3& B,
+                                                        double height,
+                                                        bool normalise_angle) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
-
-    if (!(-90. <= A.lat && A.lat <= 90.)) {
-        std::ostringstream oss;
-        oss.precision(std::numeric_limits<double>::max_digits10);
-        oss << "Invalid latitude " << A.lat;
-        throw BadValue(oss.str(), Here());
-    }
-
-    static const double degrees_to_radians = M_PI / 180.;
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
 
-    const double lambda_deg = PointLonLat::normalise_angle_to_minimum(A.lon, -180.);
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+    }
+
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
+
+    const double lambda_deg = alonlat[0];
     const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * A.lat;
+    const double phi        = degrees_to_radians * alonlat[1];
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
@@ -54,9 +60,9 @@ Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a,
 
     const double N_phi = a * a / std::sqrt(a * a * cos_phi * cos_phi + b * b * sin_phi * sin_phi);
 
-    return {(N_phi + height) * cos_phi * cos_lambda,
-            (N_phi + height) * cos_phi * sin_lambda,
-            (N_phi * (b * b) / (a * a) + height) * sin_phi};
+    B[0] = (N_phi + height) * cos_phi * cos_lambda;
+    B[1] = (N_phi + height) * cos_phi * sin_lambda;
+    B[2] = (N_phi * (b * b) / (a * a) + height) * sin_phi;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

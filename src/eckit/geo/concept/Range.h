@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <cstddef>
+#include <vector>
 
 #include "eckit/types/Fraction.h"
 
@@ -53,6 +53,8 @@ namespace eckit::geo::concept {
         size_t n() const { return n_; }
         double a() const { return a_; }
         double b() const { return b_; }
+
+        std::vector<double> to_vector() const;
 
         // -- Overridden methods
         // None

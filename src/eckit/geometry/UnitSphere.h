@@ -21,14 +21,7 @@ namespace eckit::geometry {
 
 /// Definition of a unit datum
 struct DatumUnit {
-
-    /* C++-11:
-    static constexpr double radius() {
-        return 1.;
-    }
-    */
-
-    static double radius() { return 1.; }
+    static constexpr double radius() { return 1.; }
 };
 
 //------------------------------------------------------------------------------------------------------

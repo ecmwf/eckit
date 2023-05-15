@@ -11,8 +11,7 @@
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 
 #include <cmath>
-#include <ios>
-// #include <limits>  // for std::numeric_limits
+#include <limits>
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
@@ -25,28 +24,6 @@ namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
-
-static double normalise_longitude(double a, const double& minimum) {
-    while (a < minimum) {
-        a += 360;
-    }
-    while (a >= minimum + 360) {
-        a -= 360;
-    }
-    return a;
-}
-
-static const double degrees_to_radians = M_PI / 180.;
-
-static std::streamsize max_digits10 = 15 + 3;
-
-// C++-11: std::numeric_limits<double>::max_digits10;
-
-}  // namespace
-
-//----------------------------------------------------------------------------------------------------------------------
-
 Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a,
                                                           double b,
                                                           const PointLonLat& A,
@@ -56,15 +33,17 @@ Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a,
 
     if (!(-90. <= A.lat && A.lat <= 90.)) {
         std::ostringstream oss;
-        oss.precision(max_digits10);
+        oss.precision(std::numeric_limits<double>::max_digits10);
         oss << "Invalid latitude " << A.lat;
         throw BadValue(oss.str(), Here());
     }
 
+    static const double degrees_to_radians = M_PI / 180.;
+
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
 
-    const double lambda_deg = normalise_longitude(A.lon, -180.);
+    const double lambda_deg = PointLonLat::normalise_angle_to_minimum(A.lon, -180.);
     const double lambda     = degrees_to_radians * lambda_deg;
     const double phi        = degrees_to_radians * A.lat;
 

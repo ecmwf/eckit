@@ -12,7 +12,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ios>
 #include <limits>
 #include <sstream>
 
@@ -28,21 +27,20 @@ namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static double normalise_longitude(double a, double minimum) {
-    while (a < minimum) {
-        a += 360;
+using types::is_approximately_equal;
+
+static constexpr double radians_to_degrees = 180. * M_1_PI;
+
+static constexpr double degrees_to_radians = M_PI / 180.;
+
+void assert_latitude(double lat) {
+    if (!(-90. <= lat && lat <= 90.)) {
+        std::ostringstream oss;
+        oss.precision(std::numeric_limits<double>::max_digits10);
+        oss << "Invalid latitude " << lat;
+        throw BadValue(oss.str(), Here());
     }
-    while (a >= minimum + 360) {
-        a -= 360;
-    }
-    return a;
 }
-
-static const double radians_to_degrees = 180. * M_1_PI;
-
-static const double degrees_to_radians = M_PI / 180.;
-
-static constexpr std::streamsize max_digits10 = std::numeric_limits<double>::max_digits10;
 
 inline double squared(double x) {
     return x * x;
@@ -51,7 +49,8 @@ inline double squared(double x) {
 //----------------------------------------------------------------------------------------------------------------------
 
 double Sphere::centralAngle(const PointLonLat& A, const PointLonLat& B) {
-    using namespace std;
+    assert_latitude(A.lat);
+    assert_latitude(B.lat);
 
     /*
      * Δσ = atan( ((cos(ϕ2) * sin(Δλ))^2 + (cos(ϕ1) * sin(ϕ2) - sin(ϕ1) * cos(ϕ2) * cos(Δλ))^2) /
@@ -69,20 +68,6 @@ double Sphere::centralAngle(const PointLonLat& A, const PointLonLat& B) {
      * }
      */
 
-    if (!(-90. <= A.lat && A.lat <= 90.)) {
-        ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << A.lat;
-        throw BadValue(oss.str(), Here());
-    }
-
-    if (!(-90. <= B.lat && B.lat <= 90.)) {
-        ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << B.lat;
-        throw BadValue(oss.str(), Here());
-    }
-
     const double phi1   = degrees_to_radians * A.lat;
     const double phi2   = degrees_to_radians * B.lat;
     const double lambda = degrees_to_radians * (B.lon - A.lon);
@@ -94,10 +79,10 @@ double Sphere::centralAngle(const PointLonLat& A, const PointLonLat& B) {
     const double cos_lambda = cos(lambda);
     const double sin_lambda = sin(lambda);
 
-    const double angle = atan2(sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
-                               sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
+    const double angle = std::atan2(std::sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
+                                    sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
-    if (types::is_approximately_equal(angle, 0.)) {
+    if (is_approximately_equal(angle, 0.)) {
         return 0.;
     }
 
@@ -111,7 +96,7 @@ double Sphere::centralAngle(double radius, const Point3& A, const Point3& B) {
     // Δσ = 2 * asin( chord / 2 )
 
     const double d2 = Point3::distance2(A, B);
-    if (types::is_approximately_equal(d2, 0.)) {
+    if (is_approximately_equal(d2, 0.)) {
         return 0.;
     }
 
@@ -136,12 +121,14 @@ double Sphere::area(double radius) {
 
 double Sphere::area(double radius, const PointLonLat& WestNorth, const PointLonLat& EastSouth) {
     ASSERT(radius > 0.);
+    assert_latitude(WestNorth.lat);
+    assert_latitude(EastSouth.lat);
 
     // Set longitude fraction
     double W = WestNorth.lon;
-    double E = normalise_longitude(EastSouth.lon, W);
-    double longitude_range(types::is_approximately_equal(W, E)
-                                   && !types::is_approximately_equal(EastSouth.lon, WestNorth.lon)
+    double E = PointLonLat::normalise_angle_to_minimum(EastSouth.lon, W);
+    double longitude_range(is_approximately_equal(W, E)
+                                   && !is_approximately_equal(EastSouth.lon, WestNorth.lon)
                                ? 360.
                                : E - W);
     ASSERT(longitude_range <= 360.);
@@ -151,7 +138,7 @@ double Sphere::area(double radius, const PointLonLat& WestNorth, const PointLonL
     // Set latitude fraction
     double N = WestNorth.lat;
     double S = EastSouth.lat;
-    ASSERT(-90. <= S && S <= N && N <= 90.);
+    ASSERT(S <= N);
 
     double latitude_fraction = 0.5 * (std::sin(degrees_to_radians * N) - std::sin(degrees_to_radians * S));
 
@@ -178,13 +165,7 @@ void Sphere::greatCircleLongitudeGivenLatitude(
 
 Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, double height) {
     ASSERT(radius > 0.);
-
-    if (!(-90. <= A.lat && A.lat <= 90.)) {
-        std::ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << A.lat;
-        throw BadValue(oss.str(), Here());
-    }
+    assert_latitude(A.lat);
 
     /*
      * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
@@ -199,7 +180,7 @@ Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, 
      * poles and quadrants.
      */
 
-    const double lambda_deg = normalise_longitude(A.lon, -180.);
+    const double lambda_deg = PointLonLat::normalise_angle_to_minimum(A.lon, -180.);
     const double lambda     = degrees_to_radians * lambda_deg;
     const double phi        = degrees_to_radians * A.lat;
 
@@ -220,7 +201,7 @@ PointLonLat Sphere::convertCartesianToSpherical(double radius, const Point3& A) 
     // numerical conditioning for both z (poles) and y
 
     const double x = A[0];
-    const double y = types::is_approximately_equal(A[1], 0.) ? 0. : A[1];
+    const double y = is_approximately_equal(A[1], 0.) ? 0. : A[1];
     const double z = std::min(radius, std::max(-radius, A[2])) / radius;
 
     return {radians_to_degrees * std::atan2(y, x), radians_to_degrees * std::asin(z)};

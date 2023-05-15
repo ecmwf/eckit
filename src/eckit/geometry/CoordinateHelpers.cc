@@ -8,8 +8,7 @@
 #include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/Point2.h"
 
-namespace eckit {
-namespace geometry {
+namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -26,17 +25,16 @@ double normalise_angle(double a, const double minimum) {
 //----------------------------------------------------------------------------------------------------------------------
 
 Point2 canonicaliseOnSphere(const Point2& lonlat, const double minimum_lon) {
-    const double lat = normalise_angle(lonlat[1], -90.);
+    const double lat       = normalise_angle(lonlat[1], -90.);
     const bool across_pole = (lat > 90.);
 
     if (!across_pole) {
         return Point2(normalise_angle(lonlat[0], minimum_lon), lat);
-    } else {
-        return Point2(normalise_angle(lonlat[0] + 180., minimum_lon), 180. - lat);
     }
+
+    return Point2(normalise_angle(lonlat[0] + 180., minimum_lon), 180. - lat);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry

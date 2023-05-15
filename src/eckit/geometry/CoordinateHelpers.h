@@ -8,8 +8,7 @@
 #ifndef CoordinateHelpers_H
 #define CoordinateHelpers_H
 
-namespace eckit {
-namespace geometry {
+namespace eckit::geometry {
 
 class Point2;
 
@@ -37,7 +36,6 @@ Point2 canonicaliseOnSphere(const Point2& lonlat, double minimum_lon = 0.);
 
 //------------------------------------------------------------------------------------------------------
 
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry
 
 #endif  // CoordinateHelpers_H

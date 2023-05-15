@@ -12,15 +12,71 @@
 
 #include "eckit/geo/concept/Range.h"
 
-// #include <>
+#include "eckit/exception/Exceptions.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::concept {
 
 
-    Range::Range(size_t N, double a, double b, double inc, double ref) :
-        N_(N) {
+    namespace {
+
+
+    eckit::Fraction adjust(const eckit::Fraction& target, const eckit::Fraction& inc, bool up) {
+        ASSERT(inc > 0);
+
+        auto r = target / inc;
+        auto n = r.integralPart();
+
+        if (!r.integer() && (r > 0) == up) {
+            n += (up ? 1 : -1);
+        }
+
+        return (n * inc);
     }
+
+
+    }  // namespace
+
+
+    Range::Range(double _a, double _b, double _inc, double _ref) {
+        ASSERT(_a <= _b);
+        ASSERT(0 <= _inc);
+
+        const eckit::Fraction a(_a);
+        const eckit::Fraction b(_b);
+        const eckit::Fraction inc(_inc);
+        const eckit::Fraction ref(_ref);
+
+
+        if (inc == 0) {
+            b_ = a_ = a;
+            n_      = 1;
+            return;
+        }
+
+        auto shift = (ref / inc).decimalPart() * inc;
+        a_         = shift + adjust(a - shift, inc, true);
+
+        if (b == a) {
+            b_ = a_;
+        }
+        else {
+
+            auto c = shift + adjust(b - shift, inc, false);
+            c      = a_ + ((c - a_) / inc).integralPart() * inc;
+            b_     = c < a_ ? a_ : c;
+        }
+
+        n_ = static_cast<size_t>(((b_ - a_) / inc).integralPart() + 1);
+
+        ASSERT(a_ <= b_);
+        ASSERT(n_ >= 1);
+    }
+
+
+    Range::Range(double a, double b, double inc) :
+        Range(a, b, inc, a) {}
 
 
 }  // namespace eckit::geo::concept

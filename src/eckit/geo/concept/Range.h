@@ -28,10 +28,12 @@ namespace eckit::geo::concept {
 
         // -- Constructors
 
-        Range(size_t N, double a, double b, double inc, double ref);
+        Range(double a, double b, double inc, double ref);
 
-        Range(size_t N, double a, double b, double inc) :
-            Range(N, a, b, inc, a) {}
+        Range(double a, double b, double inc);
+
+        Range(const Range&) = delete;
+        Range(Range&&)      = delete;
 
         // -- Destructor
 
@@ -41,11 +43,15 @@ namespace eckit::geo::concept {
         // None
 
         // -- Operators
-        // None
+
+        Range& operator=(const Range&) = delete;
+        Range& operator=(Range&&)      = delete;
 
         // -- Methods
 
-        size_t size() const { return N_; }
+        size_t n() const { return n_; }
+        double a() const { return a_; }
+        double b() const { return b_; }
 
         // -- Overridden methods
         // None
@@ -75,7 +81,9 @@ namespace eckit::geo::concept {
     private:
         // -- Members
 
-        const size_t N_;
+        size_t n_;
+        double a_;
+        double b_;
 
         // -- Methods
         // None

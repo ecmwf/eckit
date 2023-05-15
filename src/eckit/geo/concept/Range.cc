@@ -13,6 +13,7 @@
 #include "eckit/geo/concept/Range.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
 
@@ -49,38 +50,32 @@ namespace eckit::geo::concept {
 
 
     Range::Range(double _a, double _b, double _inc, double _ref) {
-        ASSERT(_a <= _b);
         ASSERT(0 <= _inc);
+
+        if (types::is_approximately_equal(_inc, 0.) || types::is_approximately_equal(_a, _b)) {
+            a_ = b_ = _ref;
+            n_      = 1;
+            return;
+        }
+
+        ASSERT(_a <= _b);  // FIXME remove
 
         const eckit::Fraction a(_a);
         const eckit::Fraction b(_b);
         const eckit::Fraction inc(_inc);
         const eckit::Fraction ref(_ref);
 
-
-        if (inc == 0) {
-            b_ = a_ = a;
-            n_      = 1;
-            return;
-        }
-
         auto shift = (ref / inc).decimalPart() * inc;
         a_         = shift + adjust(a - shift, inc, true);
 
-        if (b == a) {
-            b_ = a_;
-        }
-        else {
-
-            auto c = shift + adjust(b - shift, inc, false);
-            c      = a_ + ((c - a_) / inc).integralPart() * inc;
-            b_     = c < a_ ? a_ : c;
-        }
+        auto c = shift + adjust(b - shift, inc, false);
+        c      = a_ + ((c - a_) / inc).integralPart() * inc;
+        b_     = c < a_ ? a_ : c;
 
         n_ = static_cast<size_t>(((b_ - a_) / inc).integralPart() + 1);
 
         ASSERT(a_ <= b_);
-        ASSERT(n_ >= 1);
+        ASSERT(1 <= n_);
     }
 
 

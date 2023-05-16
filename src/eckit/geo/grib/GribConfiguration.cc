@@ -10,27 +10,24 @@
  */
 
 
-#include "eckit/geo/grib/RegularLL.h"
+#include "eckit/geo/grib/GribConfiguration.h"
 
 
 namespace eckit::geo::grib {
 
 
-static const IteratorBuilder<RegularLL> __iterator("regular_ll");
+//RegularLL::RegularLL(const Configuration&) {
+//}
 
 
-RegularLL::RegularLL(const Configuration&) {
-}
+//size_t RegularLL::size() const {
+//    return 0;
+//}
 
 
-size_t RegularLL::size() const {
-    return 0;
-}
-
-
-bool RegularLL::operator++() {
-    return false;
-}
+//bool RegularLL::operator++() {
+//    return false;
+//}
 
 
 }  // namespace eckit::geo::grib

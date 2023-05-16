@@ -12,8 +12,6 @@ list(APPEND eckit_geo_srcs
     Scanner.cc
     Scanner.h
     Search.h
-    grib/RegularLL.cc
-    grib/RegularLL.h
     iterator/IteratorAggregator.h
     iterator/IteratorComposer.cc
     iterator/IteratorComposer.h
@@ -57,5 +55,13 @@ ecbuild_add_library(
     SOURCES ${eckit_geo_srcs}
     PUBLIC_LIBS ${eckit_geo_libs}
     PUBLIC_INCLUDES ${eckit_geo_include_dirs}
+)
+
+ecbuild_add_library(
+    TARGET eckit_geo_grib
+    TYPE SHARED
+    CONDITION HAVE_ECCODES
+    SOURCES grib/GribConfiguration.cc grib/GribConfiguration.h
+    PUBLIC_LIBS eckit_geo
 )
 

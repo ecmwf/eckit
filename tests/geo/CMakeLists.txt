@@ -19,6 +19,6 @@ if(HAVE_ECCODES)
     ecbuild_add_test(
         TARGET  eckit_test_geo_grib
         SOURCES test_grib.cc
-        LIBS    eckit_geo eccodes)
+        LIBS    eckit_geo_grib)
 endif()
 

@@ -21,9 +21,7 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-// #include "eckit/config/Configuration.h"
-#include "eckit/config/MappedConfiguration.h"
-#include "eckit/value/Value.h"
+#include "eckit/geo/grib/GribConfiguration.h"
 
 
 #if 0
@@ -140,7 +138,7 @@ int main(int argc, const char* argv[]) {
 
         int err = 0;
         for (codes_handle* h = nullptr; nullptr != (h = codes_handle_new_from_file(nullptr, in, PRODUCT_GRIB, &err));) {
-            Grib grib(h);
+            eckit::geo::grib::GribConfiguration grib(h);
 
 #if 0
             int n = 0;

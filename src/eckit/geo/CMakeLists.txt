@@ -62,6 +62,6 @@ ecbuild_add_library(
     TYPE SHARED
     CONDITION HAVE_ECCODES
     SOURCES grib/GribConfiguration.cc grib/GribConfiguration.h
-    PUBLIC_LIBS eckit_geo
+    PUBLIC_LIBS eckit_geo eccodes
 )
 

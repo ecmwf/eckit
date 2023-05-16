@@ -12,7 +12,9 @@
 
 #pragma once
 
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Scanner.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::scanner {
@@ -28,10 +30,11 @@ public:
 
     // -- Constructors
 
-    Regular();
+    Regular(size_t ni, size_t nj, double north, double west, double we, double ns);
 
     // -- Destructor
-    // None
+
+    ~Regular() override;
 
     // -- Convertors
     // None
@@ -53,10 +56,27 @@ public:
 
 private:
     // -- Members
-    // None
+
+    size_t ni_;
+    size_t nj_;
+    Fraction north_;
+    Fraction west_;
+    Fraction we_;
+    Fraction ns_;
+    size_t i_;
+    size_t j_;
+    double latValue_;
+    double lonValue_;
+    Fraction lat_;
+    Fraction lon_;
+    size_t count_;
+    bool first_;
+
+    Point p_;
 
     // -- Methods
-    // None
+
+    void print(std::ostream&) const;
 
     // -- Overridden methods
 

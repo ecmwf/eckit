@@ -12,16 +12,61 @@
 
 #include "eckit/geo/scanner/Regular.h"
 
-// #include <>
+#include <ostream>
+
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit::geo::scanner {
 
 
-Regular::Regular() = default;
+Regular::Regular(size_t ni, size_t nj, double north, double west, double we, double ns) :
+    ni_(ni), nj_(nj), north_(north), west_(west), we_(we), ns_(ns), i_(0), j_(0), lat_(north_), lon_(west_), count_(0), first_(true), p_(PointLonLat{0, 0}) {
+    latValue_ = lat_;
+    lonValue_ = lon_;
+}
+
+
+Regular::~Regular() {
+    auto count = count_ + (i_ > 0 || j_ > 0 ? 1 : 0);
+    ASSERT(count == ni_ * nj_);
+}
+
+
+void Regular::print(std::ostream& out) const {
+    out << "Regular[ni=" << ni_ << ",nj=" << nj_ << ",north=" << north_ << ",west=" << west_
+        << ",we=" << we_ << ",ns=" << ns_ << ",i=" << i_ << ",j=" << j_ << ",count=" << count_
+        << "]";
+}
 
 
 bool Regular::operator++() {
+    if (j_ < nj_) {
+        if (i_ < ni_) {
+            p_ = PointLonLat{lonValue_, latValue_};
+
+            lon_ += we_;
+
+            if (first_) {
+                first_ = false;
+            }
+            else {
+                count_++;
+            }
+
+            if (++i_ == ni_) {
+                j_++;
+                i_ = 0;
+                lat_ -= ns_;
+                lon_      = west_;
+                latValue_ = lat_;
+            }
+
+            lonValue_ = lon_;
+
+            return true;
+        }
+    }
     return false;
 }
 

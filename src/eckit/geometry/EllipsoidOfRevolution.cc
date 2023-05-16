@@ -11,9 +11,6 @@
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 
 #include <cmath>
-#include <ios>
-// #include <limits>  // for std::numeric_limits
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
@@ -30,21 +27,25 @@ namespace {
 
 static const double degrees_to_radians = M_PI / 180.;
 
-static std::streamsize max_digits10 = 15 + 3;
-
-// C++-11: std::numeric_limits<double>::max_digits10;
-
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const double& b, const Point2& Alonlat,
-                                                        Point3& B, double height) {
+void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a,
+                                                        const double& b,
+                                                        const Point2& Alonlat,
+                                                        Point3& B,
+                                                        double height,
+                                                        bool normalise_angle) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
+
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+    }
 
     const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
 

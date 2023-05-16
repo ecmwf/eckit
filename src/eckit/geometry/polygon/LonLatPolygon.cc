@@ -106,11 +106,14 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
     return out;
 }
 
-bool LonLatPolygon::contains(const Point2& P) const {
+bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const {
+    if (!normalise_angle) {
+        assert_latitude_range(Plonlat[LAT]);
+    }
 
-    const Point2 p = canonicaliseOnSphere(P, min_[LON]);
-    auto lat = p[LAT];
-    auto lon = p[LON];
+    const Point2 p = canonicaliseOnSphere(Plonlat, min_[LON]);
+    auto lat       = p[LAT];
+    auto lon       = p[LON];
 
     // check poles
     if (includeNorthPole_ && is_approximately_equal(lat, 90)) {

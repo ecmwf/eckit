@@ -203,8 +203,8 @@ CASE("test unit sphere lat 100") {
     const PointLonLat ll2(180., 80.);
     PointXYZ p, q;
 
-    UnitSphere::convertSphericalToCartesian(ll1, p);
-    UnitSphere::convertSphericalToCartesian(ll2, q);
+    UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
+    UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
@@ -217,8 +217,8 @@ CASE("test unit sphere lat 290") {
     const PointLonLat ll2(15., -70.);
     PointXYZ p, q;
 
-    UnitSphere::convertSphericalToCartesian(ll1, p);
-    UnitSphere::convertSphericalToCartesian(ll2, q);
+    UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
+    UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
@@ -231,8 +231,8 @@ CASE("test unit sphere lat -120") {
     const PointLonLat ll2(225., -60.);
     PointXYZ p, q;
 
-    UnitSphere::convertSphericalToCartesian(ll1, p);
-    UnitSphere::convertSphericalToCartesian(ll2, q);
+    UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
+    UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));

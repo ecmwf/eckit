@@ -5,6 +5,10 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <limits>
+#include <sstream>
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/Point2.h"
 
@@ -29,10 +33,21 @@ Point2 canonicaliseOnSphere(const Point2& lonlat, const double minimum_lon) {
     const bool across_pole = (lat > 90.);
 
     if (!across_pole) {
-        return Point2(normalise_angle(lonlat[0], minimum_lon), lat);
+        return {normalise_angle(lonlat[0], minimum_lon), lat};
     }
 
-    return Point2(normalise_angle(lonlat[0] + 180., minimum_lon), 180. - lat);
+    return {normalise_angle(lonlat[0] + 180., minimum_lon), 180. - lat};
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void assert_latitude_range(double lat) {
+    if (!(-90. <= lat && lat <= 90.)) {
+        std::ostringstream oss;
+        oss.precision(std::numeric_limits<double>::max_digits10);
+        oss << "Invalid latitude " << lat;
+        throw BadValue(oss.str(), Here());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

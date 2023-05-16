@@ -12,14 +12,14 @@ namespace eckit::geometry {
 
 class Point2;
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Shift angle in increments of 360° until it lies in [minimum, minimum+360°).
 ///
 /// Inputs angle and minimum are in degrees, returned angle is in degrees.
 double normalise_angle(double angle, double minimum);
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Shift input point on sphere so its longitude lies in [minimum_lon, minimum_lon+360°)
 /// and its latitude lies in [-90°, 90°].
@@ -34,7 +34,13 @@ double normalise_angle(double angle, double minimum);
 /// Inputs lonlat and minimum_lon are in degrees, returned angles are in degrees.
 Point2 canonicaliseOnSphere(const Point2& lonlat, double minimum_lon = 0.);
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Assert latitude lies in [-90°, 90°].
+void assert_latitude_range(double lat);
+
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
 

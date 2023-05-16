@@ -12,7 +12,11 @@
 
 #pragma once
 
+#include "eckit/geo/BoundingBox.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Scanner.h"
+#include "eckit/geo/util.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::scanner {
@@ -21,14 +25,20 @@ namespace eckit::geo::scanner {
 class Reduced final : public Scanner {
 public:
     // -- Types
-    // None
+
+    using pl_type = util::pl_type;
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Reduced();
+    Reduced(const std::vector<double>& latitudes,
+            pl_type&& pl,
+            const BoundingBox&,
+            size_t N,
+            size_t Nj,
+            size_t k);
 
     // -- Destructor
     // None
@@ -53,10 +63,29 @@ public:
 
 private:
     // -- Members
-    // None
+
+    const std::vector<double>& latitudes_;
+    const pl_type pl_;
+    const BoundingBox& bbox_;
+    const size_t N_;
+    size_t Ni_;
+    size_t Nj_;
+    Fraction lon_;
+    double lat_;
+    Fraction inc_;
+    size_t i_;
+    size_t j_;
+    size_t k_;
+    size_t count_;
+    bool first_;
+
+    Point p_;
 
     // -- Methods
-    // None
+
+    void print(std::ostream&) const;
+    size_t index() const;
+    size_t resetToRow(size_t);
 
     // -- Overridden methods
 

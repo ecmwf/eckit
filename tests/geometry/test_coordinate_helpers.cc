@@ -10,8 +10,7 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 using namespace geometry;
 
@@ -62,8 +61,7 @@ CASE("canonicalise on sphere") {
 
 // -----------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

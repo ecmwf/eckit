@@ -12,9 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ios>
 #include <limits>
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
@@ -33,17 +31,13 @@ static const double radians_to_degrees = 180. * M_1_PI;
 
 static const double degrees_to_radians = M_PI / 180.;
 
-static constexpr std::streamsize max_digits10 = std::numeric_limits<double>::max_digits10;
-
 inline double squared(double x) {
     return x * x;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
-    using namespace std;
-
+double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat, bool normalise_angle) {
     /*
      * Δσ = atan( ((cos(ϕ2) * sin(Δλ))^2 + (cos(ϕ1) * sin(ϕ2) - sin(ϕ1) * cos(ϕ2) * cos(Δλ))^2) /
      *            (sin(ϕ1) * sin(ϕ2) + cos(ϕ1) * cos(ϕ2) * cos(Δλ)) )
@@ -60,6 +54,11 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
      * }
      */
 
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+        assert_latitude_range(Blonlat[1]);
+    }
+
     const Point2 alonlat = canonicaliseOnSphere(Alonlat);
     const Point2 blonlat = canonicaliseOnSphere(Blonlat);
 
@@ -67,15 +66,17 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
     const double phi2   = degrees_to_radians * blonlat[1];
     const double lambda = degrees_to_radians * (blonlat[0] - alonlat[0]);
 
-    const double cos_phi1   = cos(phi1);
-    const double sin_phi1   = sin(phi1);
-    const double cos_phi2   = cos(phi2);
-    const double sin_phi2   = sin(phi2);
-    const double cos_lambda = cos(lambda);
-    const double sin_lambda = sin(lambda);
+    const double cos_phi1   = std::cos(phi1);
+    const double sin_phi1   = std::sin(phi1);
+    const double cos_phi2   = std::cos(phi2);
+    const double sin_phi2   = std::sin(phi2);
+    const double cos_lambda = std::cos(lambda);
+    const double sin_lambda = std::sin(lambda);
 
-    const double angle = atan2(sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
-                               sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
+    const double angle = std::atan2(std::sqrt(squared(cos_phi2 * sin_lambda)
+                                              + squared(cos_phi1 * sin_phi2
+                                                        - sin_phi1 * cos_phi2 * cos_lambda)),
+                                    sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
     if (types::is_approximately_equal(angle, 0.)) {
         return 0.;
@@ -102,7 +103,7 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
 }
 
 double Sphere::distance(const double& radius, const Point2& Alonlat, const Point2& Blonlat) {
-    return radius * centralAngle(Alonlat, Blonlat);
+    return radius * centralAngle(Alonlat, Blonlat, true);
 }
 
 double Sphere::distance(const double& radius, const Point3& A, const Point3& B) {
@@ -155,7 +156,8 @@ void Sphere::greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Poin
     Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
 }
 
-void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height) {
+void Sphere::convertSphericalToCartesian(
+    const double& radius, const Point2& Alonlat, Point3& B, double height, bool normalise_angle) {
     ASSERT(radius > 0.);
 
     /*
@@ -170,6 +172,10 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
      * These three conditionings combined project very accurately to the sphere
      * poles and quadrants.
      */
+
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+    }
 
     const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
 

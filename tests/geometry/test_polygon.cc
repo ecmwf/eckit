@@ -266,6 +266,9 @@ CASE("LonLatPolygon") {
         }
 
         // Test points at non-canonical coordinates
+        // Default behavior throws
+        EXPECT_THROWS_AS(poly.contains({lonmid, 180. - latmid}, eckit::BadValue);
+
         EXPECT(poly.contains({lonmid + 360., latmid}, true));
         EXPECT(poly.contains({lonmid, 180. - latmid}, true));
     }

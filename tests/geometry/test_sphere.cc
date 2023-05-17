@@ -203,6 +203,9 @@ CASE("test unit sphere lat 100") {
     const PointLonLat ll2(180., 80.);
     PointXYZ p, q;
 
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::BadValue);
+
     UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
     UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
 
@@ -217,6 +220,9 @@ CASE("test unit sphere lat 290") {
     const PointLonLat ll2(15., -70.);
     PointXYZ p, q;
 
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::BadValue);
+
     UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
     UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
 
@@ -230,6 +236,9 @@ CASE("test unit sphere lat -120") {
     const PointLonLat ll1(45., -120.);
     const PointLonLat ll2(225., -60.);
     PointXYZ p, q;
+
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::BadValue);
 
     UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
     UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);

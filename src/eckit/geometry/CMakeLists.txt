@@ -1,4 +1,6 @@
 list( APPEND eckit_geometry_srcs
+CoordinateHelpers.cc
+CoordinateHelpers.h
 EllipsoidOfRevolution.cc
 EllipsoidOfRevolution.h
 GreatCircle.cc

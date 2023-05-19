@@ -12,11 +12,10 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ios>
 #include <limits>
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/GreatCircle.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
@@ -28,21 +27,9 @@ namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static double normalise_longitude(double a, const double& minimum) {
-    while (a < minimum) {
-        a += 360;
-    }
-    while (a >= minimum + 360) {
-        a -= 360;
-    }
-    return a;
-}
-
 static const double radians_to_degrees = 180. * M_1_PI;
 
 static const double degrees_to_radians = M_PI / 180.;
-
-static constexpr std::streamsize max_digits10 = std::numeric_limits<double>::max_digits10;
 
 inline double squared(double x) {
     return x * x;
@@ -50,9 +37,7 @@ inline double squared(double x) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
-    using namespace std;
-
+double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat, bool normalise_angle) {
     /*
      * Δσ = atan( ((cos(ϕ2) * sin(Δλ))^2 + (cos(ϕ1) * sin(ϕ2) - sin(ϕ1) * cos(ϕ2) * cos(Δλ))^2) /
      *            (sin(ϕ1) * sin(ϕ2) + cos(ϕ1) * cos(ϕ2) * cos(Δλ)) )
@@ -69,33 +54,29 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
      * }
      */
 
-    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
-        ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alonlat[1];
-        throw BadValue(oss.str(), Here());
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+        assert_latitude_range(Blonlat[1]);
     }
 
-    if (!(-90. <= Blonlat[1] && Blonlat[1] <= 90.)) {
-        ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << Blonlat[1];
-        throw BadValue(oss.str(), Here());
-    }
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat);
+    const Point2 blonlat = canonicaliseOnSphere(Blonlat);
 
-    const double phi1   = degrees_to_radians * Alonlat[1];
-    const double phi2   = degrees_to_radians * Blonlat[1];
-    const double lambda = degrees_to_radians * (Blonlat[0] - Alonlat[0]);
+    const double phi1   = degrees_to_radians * alonlat[1];
+    const double phi2   = degrees_to_radians * blonlat[1];
+    const double lambda = degrees_to_radians * (blonlat[0] - alonlat[0]);
 
-    const double cos_phi1   = cos(phi1);
-    const double sin_phi1   = sin(phi1);
-    const double cos_phi2   = cos(phi2);
-    const double sin_phi2   = sin(phi2);
-    const double cos_lambda = cos(lambda);
-    const double sin_lambda = sin(lambda);
+    const double cos_phi1   = std::cos(phi1);
+    const double sin_phi1   = std::sin(phi1);
+    const double cos_phi2   = std::cos(phi2);
+    const double sin_phi2   = std::sin(phi2);
+    const double cos_lambda = std::cos(lambda);
+    const double sin_lambda = std::sin(lambda);
 
-    const double angle = atan2(sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
-                               sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
+    const double angle = std::atan2(std::sqrt(squared(cos_phi2 * sin_lambda)
+                                              + squared(cos_phi1 * sin_phi2
+                                                        - sin_phi1 * cos_phi2 * cos_lambda)),
+                                    sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
     if (types::is_approximately_equal(angle, 0.)) {
         return 0.;
@@ -122,7 +103,7 @@ double Sphere::centralAngle(const double& radius, const Point3& A, const Point3&
 }
 
 double Sphere::distance(const double& radius, const Point2& Alonlat, const Point2& Blonlat) {
-    return radius * centralAngle(Alonlat, Blonlat);
+    return radius * centralAngle(Alonlat, Blonlat, true);
 }
 
 double Sphere::distance(const double& radius, const Point3& A, const Point3& B) {
@@ -139,7 +120,7 @@ double Sphere::area(const double& radius, const Point2& WestNorth, const Point2&
 
     // Set longitude fraction
     double W = WestNorth[0];
-    double E = normalise_longitude(EastSouth[0], W);
+    double E = normalise_angle(EastSouth[0], W);
     double longitude_range(
         types::is_approximately_equal(W, E) && !types::is_approximately_equal(EastSouth[0], WestNorth[0]) ? 360.
                                                                                                           : E - W);
@@ -175,15 +156,9 @@ void Sphere::greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Poin
     Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
 }
 
-void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height) {
+void Sphere::convertSphericalToCartesian(
+    const double& radius, const Point2& Alonlat, Point3& B, double height, bool normalise_angle) {
     ASSERT(radius > 0.);
-
-    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
-        std::ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alonlat[1];
-        throw BadValue(oss.str(), Here());
-    }
 
     /*
      * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
@@ -198,9 +173,15 @@ void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alo
      * poles and quadrants.
      */
 
-    const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+    }
+
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
+
+    const double lambda_deg = alonlat[0];
     const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * Alonlat[1];
+    const double phi        = degrees_to_radians * alonlat[1];
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);

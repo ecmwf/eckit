@@ -11,11 +11,9 @@
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 
 #include <cmath>
-#include <ios>
-// #include <limits>  // for std::numeric_limits
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 
@@ -27,44 +25,33 @@ namespace eckit::geometry {
 
 namespace {
 
-static double normalise_longitude(double a, const double& minimum) {
-    while (a < minimum) {
-        a += 360;
-    }
-    while (a >= minimum + 360) {
-        a -= 360;
-    }
-    return a;
-}
-
 static const double degrees_to_radians = M_PI / 180.;
-
-static std::streamsize max_digits10 = 15 + 3;
-
-// C++-11: std::numeric_limits<double>::max_digits10;
 
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const double& b, const Point2& Alonlat,
-                                                        Point3& B, double height) {
+void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a,
+                                                        const double& b,
+                                                        const Point2& Alonlat,
+                                                        Point3& B,
+                                                        double height,
+                                                        bool normalise_angle) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
-
-    if (!(-90. <= Alonlat[1] && Alonlat[1] <= 90.)) {
-        std::ostringstream oss;
-        oss.precision(max_digits10);
-        oss << "Invalid latitude " << Alonlat[1];
-        throw BadValue(oss.str(), Here());
-    }
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
 
-    const double lambda_deg = normalise_longitude(Alonlat[0], -180.);
+    if (!normalise_angle) {
+        assert_latitude_range(Alonlat[1]);
+    }
+
+    const Point2 alonlat = canonicaliseOnSphere(Alonlat, -180.);
+
+    const double lambda_deg = alonlat[0];
     const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * Alonlat[1];
+    const double phi        = degrees_to_radians * alonlat[1];
 
     const double sin_phi    = std::sin(phi);
     const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);

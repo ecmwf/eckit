@@ -13,11 +13,11 @@
 
 #include "eckit/geometry/Sphere.h"
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geometry {
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 /// Definition of a sphere parametrised with a geodetic datum
 template <class DATUM>
@@ -27,8 +27,10 @@ struct SphereT {
     inline static double radius() { return DATUM::radius(); }
 
     /// Great-circle central angle between two points (longitude/latitude coordinates) in radians
-    inline static double centralAngle(const Point2& Alonlat, const Point2& Blonlat) {
-        return Sphere::centralAngle(Alonlat, Blonlat);
+    inline static double centralAngle(const Point2& Alonlat,
+                                      const Point2& Blonlat,
+                                      bool normalise_angle = false) {
+        return Sphere::centralAngle(Alonlat, Blonlat, normalise_angle);
     }
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
@@ -66,8 +68,11 @@ struct SphereT {
     }
 
     // Convert spherical coordinates to Cartesian
-    inline static void convertSphericalToCartesian(const Point2& Alonlat, Point3& B, double height = 0.) {
-        Sphere::convertSphericalToCartesian(DATUM::radius(), Alonlat, B, height);
+    inline static void convertSphericalToCartesian(const Point2& Alonlat,
+                                                   Point3& B,
+                                                   double height        = 0.,
+                                                   bool normalise_angle = false) {
+        Sphere::convertSphericalToCartesian(DATUM::radius(), Alonlat, B, height, normalise_angle);
     }
 
     // Convert Cartesian coordinates to spherical
@@ -76,7 +81,7 @@ struct SphereT {
     }
 };
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
 

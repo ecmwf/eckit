@@ -1,5 +1,19 @@
-build:
-  modules:
-    - ecbuild
-    - ninja
-  parallel: 64
+matrix:
+  - mpi_on
+  - mpi_off
+
+mpi_on:
+  build:
+    modules:
+      - ecbuild
+      - ninja
+      - openmpi
+    parallel: 64
+    ntasks: 4
+
+mpi_off:
+  build:
+    modules:
+      - ecbuild
+      - ninja
+    parallel: 64

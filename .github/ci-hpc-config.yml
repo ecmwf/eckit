@@ -5,15 +5,18 @@ matrix:
 mpi_on:
   build:
     modules:
-      - ecbuild
       - ninja
-      - openmpi
+    modules_package:
+      - eckit:openmpi
+    dependencies:
+      - ecmwf/ecbuild@develop
     parallel: 64
     ntasks: 4
 
 mpi_off:
   build:
     modules:
-      - ecbuild
       - ninja
+    dependencies:
+      - ecmwf/ecbuild@develop
     parallel: 64

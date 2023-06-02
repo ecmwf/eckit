@@ -1,5 +1,22 @@
-build:
-  modules:
-    - ecbuild
-    - ninja
-  parallel: 64
+matrix:
+  - mpi_on
+  - mpi_off
+
+mpi_on:
+  build:
+    modules:
+      - ninja
+    modules_package:
+      - eckit:openmpi
+    dependencies:
+      - ecmwf/ecbuild@develop
+    parallel: 64
+    ntasks: 4
+
+mpi_off:
+  build:
+    modules:
+      - ninja
+    dependencies:
+      - ecmwf/ecbuild@develop
+    parallel: 64

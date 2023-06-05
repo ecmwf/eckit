@@ -163,7 +163,7 @@ void Sphere::greatCircleLongitudeGivenLatitude(
     Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
 }
 
-Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, double height) {
+Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, double height, bool normalise_angle) {
     ASSERT(radius > 0.);
     assert_latitude(A.lat);
 

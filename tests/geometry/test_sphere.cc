@@ -42,8 +42,7 @@ CASE("test unit sphere radius") {
 // test unit sphere poles
 
 CASE("test unit sphere north pole") {
-    const PointLonLat ll1(0., 90.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
+    auto p = UnitSphere::convertSphericalToCartesian({0., 90.});
 
     EXPECT(p.X == 0);
     EXPECT(p.Y == 0);
@@ -51,8 +50,7 @@ CASE("test unit sphere north pole") {
 }
 
 CASE("test unit sphere south pole") {
-    const PointLonLat ll1(0., -90.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
+    auto p = UnitSphere::convertSphericalToCartesian({0., -90.});
 
     EXPECT(p.X == 0);
     EXPECT(p.Y == 0);
@@ -63,10 +61,8 @@ CASE("test unit sphere south pole") {
 // test unit sphere quadrants
 
 CASE("test unit sphere lon 0") {
-    const PointLonLat ll1(0., 0.);
-    const PointLonLat ll2(-360., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({0., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-360., 0.});
 
     EXPECT(p.X == R);
     EXPECT(p.Y == 0);
@@ -76,10 +72,8 @@ CASE("test unit sphere lon 0") {
 }
 
 CASE("test unit sphere lon 90") {
-    const PointLonLat ll1(90., 0.);
-    const PointLonLat ll2(-270., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({90., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-270., 0.});
 
     EXPECT(p.X == 0);
     EXPECT(p.Y == R);
@@ -89,10 +83,8 @@ CASE("test unit sphere lon 90") {
 }
 
 CASE("test unit sphere lon 180") {
-    const PointLonLat ll1(180., 0.);
-    const PointLonLat ll2(-180., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({180., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-180., 0.});
 
     EXPECT(p.X == -R);
     EXPECT(p.Y == 0);
@@ -102,10 +94,8 @@ CASE("test unit sphere lon 180") {
 }
 
 CASE("test unit sphere lon 270") {
-    const PointLonLat ll1(270., 0.);
-    const PointLonLat ll2(-90., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({270., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-90., 0.});
 
     EXPECT(p.X == 0);
     EXPECT(p.Y == -R);
@@ -121,10 +111,8 @@ CASE("test unit sphere lon 270") {
 const double L = R * std::sqrt(2) / 2.;
 
 CASE("test unit sphere lon 45") {
-    const PointLonLat ll1(45., 0.);
-    const PointLonLat ll2(-315., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({45., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-315., 0.});
 
     EXPECT(eckit::types::is_approximately_equal(p.X, L));
     EXPECT(eckit::types::is_approximately_equal(p.Y, L));
@@ -134,10 +122,8 @@ CASE("test unit sphere lon 45") {
 }
 
 CASE("test unit sphere lon 135") {
-    const PointLonLat ll1(135., 0.);
-    const PointLonLat ll2(-225., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({135., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-225., 0.});
 
     EXPECT(eckit::types::is_approximately_equal(p.X, -L));
     EXPECT(eckit::types::is_approximately_equal(p.Y, L));
@@ -147,10 +133,8 @@ CASE("test unit sphere lon 135") {
 }
 
 CASE("test unit sphere lon 225") {
-    const PointLonLat ll1(225., 0.);
-    const PointLonLat ll2(-135., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({225., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-135., 0.});
 
     EXPECT(eckit::types::is_approximately_equal(p.X, -L));
     EXPECT(eckit::types::is_approximately_equal(p.Y, -L));
@@ -160,10 +144,8 @@ CASE("test unit sphere lon 225") {
 }
 
 CASE("test unit sphere lon 315") {
-    const PointLonLat ll1(315., 0.);
-    const PointLonLat ll2(-45., 0.);
-    auto p = UnitSphere::convertSphericalToCartesian(ll1);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2);
+    auto p = UnitSphere::convertSphericalToCartesian({315., 0.});
+    auto q = UnitSphere::convertSphericalToCartesian({-45., 0.});
 
     EXPECT(eckit::types::is_approximately_equal(p.X, L));
     EXPECT(eckit::types::is_approximately_equal(p.Y, -L));
@@ -176,14 +158,11 @@ CASE("test unit sphere lon 315") {
 // test unit sphere with non-canonical latitudes outside [-90, 90]
 
 CASE("test unit sphere lat 100") {
-    const PointLonLat ll1(0., 100.);
-    const PointLonLat ll2(180., 80.);
-
     // Default behavior throws
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1), eckit::BadValue);
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({0., 100. }), eckit::BadValue);
 
-    auto p = UnitSphere::convertSphericalToCartesian(ll1, 0., true);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2, 0., true);
+    auto p = UnitSphere::convertSphericalToCartesian({0., 100. }, 0., true);
+    auto q = UnitSphere::convertSphericalToCartesian({180., 80.}, 0., true);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
@@ -192,14 +171,11 @@ CASE("test unit sphere lat 100") {
 }
 
 CASE("test unit sphere lat 290") {
-    const PointLonLat ll1(15., 290.);
-    const PointLonLat ll2(15., -70.);
-
     // Default behavior throws
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1), eckit::BadValue);
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({15., 290.}), eckit::BadValue);
 
-    auto p = UnitSphere::convertSphericalToCartesian(ll1, 0., true);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2, 0., true);
+    auto p = UnitSphere::convertSphericalToCartesian({15., 290.}, 0., true);
+    auto q = UnitSphere::convertSphericalToCartesian({15., -70.}, 0., true);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
@@ -208,14 +184,11 @@ CASE("test unit sphere lat 290") {
 }
 
 CASE("test unit sphere lat -120") {
-    const PointLonLat ll1(45., -120.);
-    const PointLonLat ll2(225., -60.);
-
     // Default behavior throws
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1), eckit::BadValue);
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({45., -120.}), eckit::BadValue);
 
-    auto p = UnitSphere::convertSphericalToCartesian(ll1, 0., true);
-    auto q = UnitSphere::convertSphericalToCartesian(ll2, 0., true);
+    auto p = UnitSphere::convertSphericalToCartesian({45., -120.}, 0., true);
+    auto q = UnitSphere::convertSphericalToCartesian({225., -60.}, 0., true);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
@@ -253,12 +226,8 @@ CASE("test unit sphere area globe") {
 }
 
 CASE("test unit sphere area hemispheres") {
-    const PointLonLat ll1(-180., 90.);
-    const PointLonLat ll2(180., 0.);
-    const PointLonLat ll3(-180., 0.);
-    const PointLonLat ll4(180., -90.);
-    const double area_hemisphere_north = UnitSphere::area(ll1, ll2);
-    const double area_hemisphere_south = UnitSphere::area(ll3, ll4);
+    const double area_hemisphere_north = UnitSphere::area({-180., 90.}, {180., 0.  });
+    const double area_hemisphere_south = UnitSphere::area({-180., 0. }, {180., -90.});
 
     EXPECT(area_hemisphere_north == 0.5 * UnitSphere::area());
     EXPECT(area_hemisphere_north == area_hemisphere_south);

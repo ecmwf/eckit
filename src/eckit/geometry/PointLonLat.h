@@ -37,8 +37,8 @@ public:
 
     // -- Constructors
 
-    PointLonLat(double lat, double lon) :
-        P{lat, lon} { ASSERT_MSG(-90. <= lat && lat <= 90., "PointLonLat: invalid latitude"); }
+    PointLonLat(double lon, double lat) :
+        P{lon, lat} { ASSERT_MSG(-90. <= lat && lat <= 90., "PointLonLat: invalid latitude"); }
 
     PointLonLat(const PointLonLat& other) :
         P(other) {}
@@ -67,8 +67,8 @@ public:
 
     // -- Members
 
-    double& lat = P::operator[](0);
-    double& lon = P::operator[](1);
+    double& lon = P::operator[](0);
+    double& lat = P::operator[](1);
 
     // -- Methods
 

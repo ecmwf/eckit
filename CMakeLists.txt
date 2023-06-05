@@ -238,10 +238,10 @@ ecbuild_add_option( FEATURE AIO
 
 ### PROJ support
 
-find_package( PROJ 9.2 )
 ecbuild_add_option( FEATURE PROJ
                     DEFAULT OFF
-                    DESCRIPTION "support PROJ-based projections")
+                    DESCRIPTION "support PROJ-based projections"
+                    REQUIRED_PACKAGES "PROJ VERSION 9.2" )
 
 ### ecCodes
 ecbuild_add_option( FEATURE ECCODES REQUIRED_PACKAGES eccodes DESCRIPTION "FIXME: remove" )

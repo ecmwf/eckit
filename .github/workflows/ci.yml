@@ -4,10 +4,10 @@ on:
   # Trigger the workflow on push to master or develop, except tag creation
   push:
     branches:
-      - "master"
-      - "develop"
+      - 'master'
+      - 'develop'
     tags-ignore:
-      - "**"
+      - '**'
 
   # Trigger the workflow on pull request
   pull_request: ~
@@ -27,6 +27,7 @@ jobs:
     uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci.yml@main
     with:
       eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
+      codecov_upload: true
     secrets: inherit
 
   # Run CI of private downstream packages on self-hosted runners
@@ -73,12 +74,3 @@ jobs:
           repository: private-downstream-ci
           event_type: downstream-ci-hpc
           payload: '{"eckit": "ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}"}'
-
-  codecov:
-    name: code-coverage
-    if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-    uses: ./.github/workflows/reusable-ci.yml
-    with:
-      eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
-      codecov: true
-    secrets: inherit

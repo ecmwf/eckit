@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
@@ -167,7 +168,7 @@ void URI::parseQueryValues(const std::string& query) {
         std::vector<std::string> s;
         splitValues(attributeValue, s);
         if (s.size() == 2) {
-            queryValues_[s[0]] = s[1];
+            queryValues_[s[0]] = encode(decode(s[1]));
         }
     }
 }
@@ -218,13 +219,13 @@ std::string URI::authority() const {
 }
 
 void URI::query(const std::string& attribute, const std::string& value) {
-    queryValues_[attribute] = value;
+    queryValues_[attribute] = encode(value);
 }
 
 const std::string URI::query(const std::string& attribute) const {
     auto it = queryValues_.find(attribute);
     if (it != queryValues_.end()) {
-        return it->second;
+        return decode(it->second);
     }
     return "";
 }
@@ -255,6 +256,45 @@ std::string URI::asString() const {
     ASSERT(!scheme_.empty());
     return URIManager::lookUp(scheme_).asString(*this);
 }
+
+std::string URI::encode(const std::string& value) {
+    std::ostringstream escaped;
+    escaped.fill('0');
+    escaped << std::hex;
+
+    for (std::string::value_type c : value) {
+        // Keep alphanumeric and other accepted characters intact
+        if (isalnum((unsigned char) c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            escaped << c;
+        }
+        else {
+            // Any other characters are percent-encoded
+            escaped << std::uppercase;
+            escaped << '%' << std::setw(2) << int((unsigned char) c);
+            escaped << std::nouppercase;
+        }
+    }
+
+    return escaped.str();
+}
+
+std::string URI::decode(const std::string& value) {
+    std::string out;
+
+    for (int i=0; i<value.length(); i++) {
+        if (value[i]=='%') {
+            unsigned int x = std::stoul(value.substr(i+1,2), nullptr, 16);
+            out+=static_cast<char>(x);
+            i+=2;
+        } else {
+            out+=value[i];
+        }
+    }
+
+    return out;
+}
+
+
 
 std::string URI::asRawString() const {
     std::string auth = authority();

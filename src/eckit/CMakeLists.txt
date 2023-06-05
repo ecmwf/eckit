@@ -662,6 +662,8 @@ serialisation/Streamable.cc
 serialisation/Streamable.h
 )
 
+
+
 list( APPEND eckit_persist_srcs
 persist/Bless.h
 persist/DumpLoad.cc
@@ -967,6 +969,7 @@ if( HAVE_ECKIT_SQL )
   add_subdirectory( sql )
 endif()
 
+add_subdirectory( distributed )
 add_subdirectory( geo )
 add_subdirectory( geometry )
 add_subdirectory( linalg )

@@ -38,8 +38,9 @@ Configuration::Configuration(const Configuration& other, const std::string& path
     root_(new Value(*other.root_)), separator_(other.separator_) {
     bool found = false;
     *root_     = lookUp(path, found);
-    if (!found)
+    if (!found) {
         throw ConfigurationNotFound(path);
+    }
 }
 
 Configuration::Configuration(const Configuration& other) :
@@ -95,8 +96,9 @@ eckit::Configuration::operator Value() const {
 eckit::Value Configuration::lookUp(const std::string& name) const {
     bool found     = false;
     eckit::Value v = lookUp(name, found);
-    if (!found)
+    if (!found) {
         throw ConfigurationNotFound(name);
+    }
     return v;
 }
 
@@ -452,8 +454,9 @@ std::vector<LocalConfiguration> Configuration::getSubConfigurations() const {
 
 LocalConfiguration Configuration::getSubConfiguration(const std::string& name) const {
     LocalConfiguration result;
-    if (has(name))
+    if (has(name)) {
         _get(name, result);
+    }
     return result;
 }
 

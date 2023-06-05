@@ -29,7 +29,7 @@ public:  // methods
 
     /// Destructor
 
-    virtual ~Library() override;
+    ~Library() override;
 
 protected:
     virtual Channel* createChannel() const;

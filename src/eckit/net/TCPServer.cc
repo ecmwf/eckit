@@ -19,10 +19,7 @@
 #include "eckit/net/TCPServer.h"
 #include "eckit/thread/AutoLock.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 TCPServer::TCPServer(const SocketOptions& options) :
     TCPSocket(), port_(0), listen_(-1), options_(options), closeExec_(true) {}
@@ -76,8 +73,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
             break;
         }
 
-        if (errno != EINTR)
+        if (errno != EINTR) {
             throw FailedSystemCall("accept");
+        }
     }
 
     remoteAddr_ = from.sin_addr;
@@ -86,8 +84,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
     // Set the 'close on exec'
 
-    if (closeExec_)
+    if (closeExec_) {
         SYSCALL(fcntl(socket_, F_SETFD, FD_CLOEXEC));
+    }
 
     register_ignore_sigpipe();
 
@@ -102,8 +101,9 @@ TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* conn
 
 void TCPServer::close() {
     TCPSocket::close();
-    if (listen_ >= 0)
+    if (listen_ >= 0) {
         ::close(listen_);
+    }
     listen_ = -1;
 }
 
@@ -144,6 +144,4 @@ EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) :
 EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) :
     TCPServer(port, opts) {}
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

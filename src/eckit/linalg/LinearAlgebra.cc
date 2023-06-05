@@ -17,12 +17,9 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/StringTools.h"
 
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 //-----------------------------------------------------------------------------
-
 
 ///@note __backend supports the deprecated functionality, to remove
 static const struct LinearAlgebraInstance : public LinearAlgebra {
@@ -120,6 +117,4 @@ std::string LinearAlgebra::name() {
 
 //-----------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

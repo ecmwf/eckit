@@ -34,7 +34,7 @@ class Channel : public std::ostream, private NonCopyable {
 public:  // methods
     Channel(LogTarget* = 0);
 
-    virtual ~Channel() override;
+    ~Channel() override;
 
     bool operator!() const;
     operator bool() const;
@@ -78,7 +78,8 @@ class AutoIndent {
     Channel& channel_;
 
 public:
-    AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
+    AutoIndent(Channel& channel, const char* prefix = "") :
+        channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
 };
 

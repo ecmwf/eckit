@@ -20,11 +20,7 @@
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
 
-
-namespace eckit {
-namespace linalg {
-namespace sparse {
-
+namespace eckit::linalg::sparse {
 
 static const LinearAlgebraGeneric __la_generic("generic");
 #if eckit_HAVE_OMP
@@ -148,7 +144,4 @@ void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const V
     }
 }
 
-
-}  // namespace sparse
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::sparse

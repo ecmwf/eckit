@@ -28,8 +28,8 @@ public:  // methods
     MessageTarget();
 
 private:
-    virtual void line(const char* line) override;
-    virtual void print(std::ostream& s) const override;
+    void line(const char* line) override;
+    void print(std::ostream& s) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

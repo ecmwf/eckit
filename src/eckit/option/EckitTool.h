@@ -14,34 +14,31 @@
 
 #pragma once
 
-#include "eckit/runtime/Tool.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/option/SimpleOption.h"
+#include "eckit/runtime/Tool.h"
 
 namespace eckit {
 
-    namespace option {
-    class Option;
-    class CmdArgs;
-    }
+namespace option {
+class Option;
+class CmdArgs;
+}  // namespace option
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class EckitTool : public eckit::Tool {
 
-protected: // methods
-
-    EckitTool(int argc, char **argv);
+protected:  // methods
+    EckitTool(int argc, char** argv);
 
 public:
-    virtual void usage(const std::string &tool) const = 0;
+    virtual void usage(const std::string& tool) const = 0;
 
-protected: // members
+protected:  // members
+    std::vector<eckit::option::Option*> options_;
 
-    std::vector<eckit::option::Option *> options_;
-
-private: // methods
-
+private:  // methods
     virtual void init(const eckit::option::CmdArgs& args);
     virtual void execute(const eckit::option::CmdArgs& args) = 0;
     virtual void finish(const eckit::option::CmdArgs& args);
@@ -50,10 +47,8 @@ private: // methods
     virtual int minimumPositionalArguments() const { return -1; }
 
     virtual void run();
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit

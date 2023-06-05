@@ -46,11 +46,13 @@ bool Mutex::tryLock(void) {
     }
 
     int errcode = ::pthread_mutex_trylock(&mutex_);
-    if (errcode == 0)
+    if (errcode == 0) {
         return true;
+    }
 
-    if (errcode == EBUSY)
+    if (errcode == EBUSY) {
         return false;
+    }
 
     ThrCall(errcode, "::pthread_mutex_trylock(&mutex_)", __FILE__, __LINE__, __func__);
     return false;  // never reached

@@ -89,8 +89,9 @@ public:
 
         auto compvec = [&]() {
             for (size_t i = 0; i < data_.size(); ++i) {
-                if (data_[i] != rhs.data_[i])
+                if (data_[i] != rhs.data_[i]) {
                     return false;
+                }
             }
             return true;
         };
@@ -111,8 +112,9 @@ public:
     void print(std::ostream& os) const {
         os << "Obj(" << s_ << "," << i_ << "," << d_ << "," << b_ << "," << data_;
 
-        if (next_)
+        if (next_) {
             os << "," << *next_;
+        }
 
         os << ")";
     }
@@ -140,8 +142,9 @@ size_t circlel(size_t i, size_t total) {
 }
 
 size_t circler(size_t i, size_t total) {
-    if (i == 0)
+    if (i == 0) {
         return total - 1;
+    }
     return (i - 1) % total;
 }
 
@@ -160,7 +163,7 @@ public:
 private:
     eckit::Buffer sendBuffer_;
 
-    ObjSend(const ObjSend&) = delete;
+    ObjSend(const ObjSend&)            = delete;
     ObjSend& operator=(const ObjSend&) = delete;
 
     void send(const Obj& o, size_t to) {

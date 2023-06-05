@@ -22,8 +22,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -106,8 +105,7 @@ CASE("test_asynchandle") {
     test.teardown();
 }
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 //----------------------------------------------------------------------------------------------------------------------
 

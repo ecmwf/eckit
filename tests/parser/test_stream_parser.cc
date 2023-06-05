@@ -17,8 +17,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,8 +29,9 @@ CASE("test_eckit_parser_stream_next") {
 
     EXPECT(parser.next() == '1');
     EXPECT(parser.next() == '2');
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 15; i++) {
         parser.next();
+    }
     EXPECT(parser.next() == 'h');
 }
 
@@ -117,8 +117,7 @@ CASE("test_eckit_parser_stream_consume_string") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

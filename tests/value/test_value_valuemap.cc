@@ -21,8 +21,7 @@ using namespace eckit::test::value_helper;
 
 using eckit::types::is_approximately_equal;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -387,9 +386,7 @@ CASE("Hash of a value") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
-
+}  // namespace eckit::test
 
 int main(int argc, char* argv[]) {
     return run_tests(argc, argv);

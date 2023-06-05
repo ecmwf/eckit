@@ -14,6 +14,7 @@
 #ifndef Expression_H
 #define Expression_H
 
+#include <functional>
 #include <memory>
 
 #include "eckit/memory/NonCopyable.h"
@@ -21,49 +22,49 @@
 
 //====================================================================
 
-inline const char* opname(const negate<eckit::Value>&) {
+inline const char* opname(const std::negate<eckit::Value>&) {
     return "-";
 }
-inline const char* opname(const multiplies<eckit::Value>&) {
+inline const char* opname(const std::multiplies<eckit::Value>&) {
     return "*";
 }
-inline const char* opname(const divides<eckit::Value>&) {
+inline const char* opname(const std::divides<eckit::Value>&) {
     return "/";
 }
-inline const char* opname(const modulus<eckit::Value>&) {
+inline const char* opname(const std::modulus<eckit::Value>&) {
     return "%";
 }
-inline const char* opname(const plus<eckit::Value>&) {
+inline const char* opname(const std::plus<eckit::Value>&) {
     return "+";
 }
-inline const char* opname(const minus<eckit::Value>&) {
+inline const char* opname(const std::minus<eckit::Value>&) {
     return "-";
 }
-inline const char* opname(const greater<eckit::Value>&) {
+inline const char* opname(const std::greater<eckit::Value>&) {
     return ">";
 }
-inline const char* opname(const equal_to<eckit::Value>&) {
+inline const char* opname(const std::equal_to<eckit::Value>&) {
     return "==";
 }
-inline const char* opname(const less<eckit::Value>&) {
+inline const char* opname(const std::less<eckit::Value>&) {
     return "<";
 }
-inline const char* opname(const greater_equal<eckit::Value>&) {
+inline const char* opname(const std::greater_equal<eckit::Value>&) {
     return ">=";
 }
-inline const char* opname(const less_equal<eckit::Value>&) {
+inline const char* opname(const std::less_equal<eckit::Value>&) {
     return "<=";
 }
-inline const char* opname(const not_equal_to<eckit::Value>&) {
+inline const char* opname(const std::not_equal_to<eckit::Value>&) {
     return "!=";
 }
-inline const char* opname(const logical_not<eckit::Value>&) {
+inline const char* opname(const std::logical_not<eckit::Value>&) {
     return "!";
 }
-inline const char* opname(const logical_and<eckit::Value>&) {
+inline const char* opname(const std::logical_and<eckit::Value>&) {
     return "&&";
 }
-inline const char* opname(const logical_or<eckit::Value>&) {
+inline const char* opname(const std::logical_or<eckit::Value>&) {
     return "||";
 }
 
@@ -71,7 +72,8 @@ inline const char* opname(const logical_or<eckit::Value>&) {
 
 class EvalError : public eckit::Exception {
 public:
-    EvalError(const std::string& s) : Exception(std::string("EvalError: ") + s) {}
+    EvalError(const std::string& s) :
+        Exception(std::string("EvalError: ") + s) {}
 };
 
 template <class T>
@@ -92,11 +94,12 @@ class CondUnary : public Expression<U> {
 
     std::unique_ptr<Expression<U> > cond_;
 
-    virtual void print(std::ostream& s) const override { s << opname(T()) << '(' << *cond_ << ')'; }
+    void print(std::ostream& s) const override { s << opname(T()) << '(' << *cond_ << ')'; }
 
 public:
-    CondUnary(Expression<U>* cond) : cond_(cond) {}
-    virtual ~CondUnary() override {}
+    CondUnary(Expression<U>* cond) :
+        cond_(cond) {}
+    ~CondUnary() override {}
     virtual eckit::Value eval(U& task) const { return T()(cond_->eval(task)); }
 };
 
@@ -106,12 +109,13 @@ class CondBinary : public Expression<U> {
     std::unique_ptr<Expression<U> > left_;
     std::unique_ptr<Expression<U> > right_;
 
-    virtual void print(std::ostream& s) const override { s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
+    void print(std::ostream& s) const override { s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
 
 public:
-    CondBinary(Expression<U>* left, Expression<U>* right) : left_(left), right_(right) {}
+    CondBinary(Expression<U>* left, Expression<U>* right) :
+        left_(left), right_(right) {}
 
-    virtual ~CondBinary() override {}
+    ~CondBinary() override {}
     eckit::Value eval(U& task) const;
 };
 
@@ -123,56 +127,63 @@ inline eckit::Value CondBinary<T, U>::eval(U& task) const {
 template <class T>
 class StringExpression : public Expression<T> {
     std::string str_;
-    virtual void print(std::ostream& s) const override { s << str_; }
+    void print(std::ostream& s) const override { s << str_; }
 
 public:
-    StringExpression(const std::string& s) : str_(s) {}
-    virtual ~StringExpression() override {}
+    StringExpression(const std::string& s) :
+        str_(s) {}
+    ~StringExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(str_); }
 };
 
 template <class T>
 class NumberExpression : public Expression<T> {
     long long value_;
-    virtual void print(std::ostream& s) const override { s << value_; }
+    void print(std::ostream& s) const override { s << value_; }
 
 protected:
     long long value() const { return value_; }
 
 public:
-    NumberExpression(long long n) : value_(n) {}
-    virtual ~NumberExpression() override {}
+    NumberExpression(long long n) :
+        value_(n) {}
+    ~NumberExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(value_); }
 };
 
 template <class T>
 class ListExpression : public Expression<T> {
     std::vector<Expression<T>*> v_;
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
 public:
     ListExpression();
-    ListExpression(const std::vector<Expression<T>*>& v) : v_(v) {}
-    virtual ~ListExpression() override;
+    ListExpression(const std::vector<Expression<T>*>& v) :
+        v_(v) {}
+    ~ListExpression() override;
     virtual eckit::Value eval(T&) const;
 };
 
 template <class T>
 ListExpression<T>::~ListExpression() {
-    for (size_t i = 0; i < v_.size(); i++)
+    for (size_t i = 0; i < v_.size(); i++) {
         delete v_[i];
+    }
 }
 
 template <class T>
 void ListExpression<T>::print(std::ostream& s) const {
     s << '[';
     for (size_t i = 0; i < v_.size(); i++) {
-        if (i)
+        if (i) {
             s << ',';
-        if (v_[i])
+        }
+        if (v_[i]) {
             s << *v_[i];
-        else
+        }
+        else {
             s << "(null)";
+        }
     }
     s << ']';
 }
@@ -180,9 +191,11 @@ void ListExpression<T>::print(std::ostream& s) const {
 template <class T>
 eckit::Value ListExpression<T>::eval(T& t) const {
     std::vector<eckit::Value> v;
-    for (size_t i = 0; i < v_.size(); i++)
-        if (v_[i])
+    for (size_t i = 0; i < v_.size(); i++) {
+        if (v_[i]) {
             v.push_back(v_[i]->eval(t));
+        }
+    }
 
     return v;
 }

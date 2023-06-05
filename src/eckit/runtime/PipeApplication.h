@@ -31,7 +31,7 @@ class PipeApplication : public Application {
 public:  // methods
     PipeApplication(int argc, char** argv, const char* homeenv);
 
-    virtual ~PipeApplication() override;
+    ~PipeApplication() override;
 
     virtual void process(Stream&) = 0;
     virtual void endBatch();
@@ -45,7 +45,7 @@ private:  // members
     Resource<long> out_;
 
     /// overridden from Application
-    virtual void run() override;
+    void run() override;
 
 protected:  // members
     bool terminate_;

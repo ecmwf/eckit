@@ -15,8 +15,7 @@
 #include "eckit/geometry/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 CASE("Polygon") {
     using geometry::polygon::Polygon;
@@ -265,6 +264,13 @@ CASE("LonLatPolygon") {
                 EXPECT_NOT(poly.contains({lonmax + eps, lat}));
             }
         }
+
+        // Test points at non-canonical coordinates
+        // Default behavior throws
+        EXPECT_THROWS_AS(poly.contains({lonmid, 180. - latmid}), eckit::BadValue);
+
+        EXPECT(poly.contains({lonmid + 360., latmid}, true));
+        EXPECT(poly.contains({lonmid, 180. - latmid}, true));
     }
 
     SECTION("Parallelogram") {
@@ -375,8 +381,7 @@ CASE("LonLatPolygon") {
     }
 }
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

@@ -18,13 +18,12 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 static std::string test(const char* text) {
-    char compressed[10240] = {};
+    char compressed[10240]   = {};
     char uncompressed[10240] = {};
 
     Compress compress(16);
@@ -135,8 +134,7 @@ CASE("test_eckit_compress_4") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

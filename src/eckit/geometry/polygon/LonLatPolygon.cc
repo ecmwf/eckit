@@ -14,13 +14,12 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/types/FloatCompare.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
-namespace polygon {
+namespace eckit::geometry::polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -107,17 +106,14 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
     return out;
 }
 
-bool LonLatPolygon::contains(const Point2& P) const {
-    auto lat = P[LAT];
-    ASSERT(-90 <= lat && lat <= 90);
+bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const {
+    if (!normalise_angle) {
+        assert_latitude_range(Plonlat[LAT]);
+    }
 
-    auto lon = P[LON];
-    while (lon >= min_[LON] + 360) {
-        lon -= 360;
-    }
-    while (lon < min_[LON]) {
-        lon += 360;
-    }
+    const Point2 p = canonicaliseOnSphere(Plonlat, min_[LON]);
+    auto lat       = p[LAT];
+    auto lon       = p[LON];
 
     // check poles
     if (includeNorthPole_ && is_approximately_equal(lat, 90)) {
@@ -176,6 +172,4 @@ bool LonLatPolygon::contains(const Point2& P) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace polygon
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry::polygon

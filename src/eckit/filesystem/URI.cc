@@ -114,8 +114,9 @@ void URI::parse(const std::string& str, size_t first, bool authority, bool query
             std::string query = str.substr(queryStart + 1, last - queryStart - 1);
             last              = queryStart;
 
-            if (!query.empty())
+            if (!query.empty()) {
                 parseQueryValues(query);
+            }
         }
     }
 
@@ -196,19 +197,22 @@ DataHandle* URI::newReadHandle() const {
 }
 
 std::string URI::hostport() const {
-    if (host_.empty() || port_ < 0)
+    if (host_.empty() || port_ < 0) {
         return host_;
+    }
 
-    if (port_ == 0)
+    if (port_ == 0) {
         return host_ + ":";
+    }
 
     return host_ + ":" + std::to_string(port_);
 }
 
 std::string URI::authority() const {
     std::string host = hostport();
-    if (host.empty() || user_.empty())
+    if (host.empty() || user_.empty()) {
         return host;
+    }
 
     return user_ + "@" + host;
 }
@@ -219,16 +223,18 @@ void URI::query(const std::string& attribute, const std::string& value) {
 
 const std::string URI::query(const std::string& attribute) const {
     auto it = queryValues_.find(attribute);
-    if (it != queryValues_.end())
+    if (it != queryValues_.end()) {
         return it->second;
+    }
     return "";
 }
 
 std::string URI::query() const {
     std::string query;
     for (auto& attributeValue : queryValues_) {
-        if (!query.empty())
+        if (!query.empty()) {
             query += "&";
+        }
 
         query += attributeValue.first + "=" + attributeValue.second;
     }
@@ -252,28 +258,35 @@ std::string URI::asString() const {
 
 std::string URI::asRawString() const {
     std::string auth = authority();
-    if (!auth.empty())
+    if (!auth.empty()) {
         auth = "//" + auth;
+    }
     std::string q = query();
-    if (!q.empty())
+    if (!q.empty()) {
         q = "?" + q;
+    }
 
     return scheme_ + ":" + auth + name_ + q + (fragment_.empty() ? "" : "#" + fragment_);
 }
 
 void URI::print(std::ostream& s) const {
     s << "URI[scheme=" << scheme_;
-    if (!user_.empty())
+    if (!user_.empty()) {
         s << ",user=" << user_;
-    if (!host_.empty())
+    }
+    if (!host_.empty()) {
         s << ",host=" << host_;
-    if (port_ != -1)
+    }
+    if (port_ != -1) {
         s << ",port=" << port_;
+    }
     s << ",name=" << name_;
-    if (!fragment_.empty())
+    if (!fragment_.empty()) {
         s << ",fragment=" << fragment_;
-    if (!queryValues_.empty())
+    }
+    if (!queryValues_.empty()) {
         s << ",query=" << queryValues_;
+    }
     s << "]";
 }
 

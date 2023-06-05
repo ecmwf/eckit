@@ -30,9 +30,11 @@ class AutoLock : private NonCopyable {
 public:
     // -- Contructors
 
-    AutoLock(T& resource) : resource_(resource) { resource_.lock(); }
+    AutoLock(T& resource) :
+        resource_(resource) { resource_.lock(); }
 
-    AutoLock(T* resource) : resource_(*resource) { resource_.lock(); }
+    AutoLock(T* resource) :
+        resource_(*resource) { resource_.lock(); }
 
     // -- Destructor
 
@@ -49,8 +51,10 @@ class AutoSharedLock : private NonCopyable {
 public:
     // -- Contructors
 
-    AutoSharedLock(T& resource) : resource_(resource) { resource_.lockShared(); }
-    AutoSharedLock(T* resource) : resource_(*resource) { resource_.lockShared(); }
+    AutoSharedLock(T& resource) :
+        resource_(resource) { resource_.lockShared(); }
+    AutoSharedLock(T* resource) :
+        resource_(*resource) { resource_.lockShared(); }
 
     // -- Destructor
 
@@ -67,7 +71,8 @@ class TimedAutoLock : private NonCopyable {
 public:
     // -- Constructors
 
-    TimedAutoLock(T& resource, const std::string& message) : resource_(resource), timer_(message + " (release)") {
+    TimedAutoLock(T& resource, const std::string& message) :
+        resource_(resource), timer_(message + " (release)") {
         resource_.lock();
         timer_.report(message + " (acquire)");
     }
@@ -88,7 +93,8 @@ class TraceAutoLock : private NonCopyable {
 public:
     // -- Constructors
 
-    TraceAutoLock(T& resource, const std::string& message) : resource_(resource), timer_(message + " (release)") {
+    TraceAutoLock(T& resource, const std::string& message) :
+        resource_(resource), timer_(message + " (release)") {
         resource_.lock();
         timer_.report(message + " (acquire)");
     }

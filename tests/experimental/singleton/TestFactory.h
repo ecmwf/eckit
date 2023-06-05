@@ -11,6 +11,7 @@
 #ifndef TestFactory_h
 #define TestFactory_h
 
+#include <iostream>
 #include <memory>
 #include <string>
 

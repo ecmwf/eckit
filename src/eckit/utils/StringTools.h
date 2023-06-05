@@ -71,8 +71,9 @@ private:
 
 template <typename Iterator>
 std::string StringTools::join(const std::string& delimiter, Iterator begin, Iterator end) {
-    if (begin == end)
+    if (begin == end) {
         return "";
+    }
     std::string r(*begin);
     for (Iterator it = ++begin; it != end; ++it) {
         r += delimiter;

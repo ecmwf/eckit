@@ -58,8 +58,9 @@ DataHandle* FilePool::checkout(const PathName& path) {
     }
     else {
         // FileHandle is cached, but file has been removed on disk
-        if (inCache)
+        if (inCache) {
             cache_.remove(path);
+        }
         dh = path.fileHandle(false);  // append mode (no overwrite)
         dh->openForAppend(0);
     }

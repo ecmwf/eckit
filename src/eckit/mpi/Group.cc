@@ -12,8 +12,7 @@
 
 #include "eckit/mpi/Comm.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -34,16 +33,16 @@ public:
     virtual NullGroupContent* union_group(const GroupContent&) const { return new NullGroupContent(); }
 
     virtual size_t size() const { return -1; }
-    
+
     virtual int rank() const { return -1; }
 
     virtual NullGroupContent* excl(const std::vector<int>& ranks) const { return new NullGroupContent(); };
 
     virtual NullGroupContent* incl(const std::vector<int>& ranks) const { return new NullGroupContent(); };
 
-    virtual NullGroupContent* range_excl(const std::vector<std::array<int,3>>& ranks) const { return new NullGroupContent(); };
+    virtual NullGroupContent* range_excl(const std::vector<std::array<int, 3>>& ranks) const { return new NullGroupContent(); };
 
-    virtual NullGroupContent* range_incl(const std::vector<std::array<int,3>>& ranks) const { return new NullGroupContent(); };
+    virtual NullGroupContent* range_incl(const std::vector<std::array<int, 3>>& ranks) const { return new NullGroupContent(); };
 
     virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const GroupContent&) const { return std::unordered_map<int, int>{}; };
 };
@@ -119,15 +118,15 @@ Group Group::incl(const std::vector<int>& ranks) const {
     return Group(content_->incl(ranks));
 };
 
-Group Group::range_excl(const std::vector<std::array<int, 3>>& ranks) const { 
-    return Group(content_->range_excl(ranks)); 
+Group Group::range_excl(const std::vector<std::array<int, 3>>& ranks) const {
+    return Group(content_->range_excl(ranks));
 };
 
-Group Group::range_incl(const std::vector<std::array<int, 3>>& ranks) const { 
-    return Group(content_->range_incl(ranks)); 
+Group Group::range_incl(const std::vector<std::array<int, 3>>& ranks) const {
+    return Group(content_->range_incl(ranks));
 };
 
-std::unordered_map<int, int> Group::translate_ranks(const std::vector<int>& ranks, const Group& other) const { 
+std::unordered_map<int, int> Group::translate_ranks(const std::vector<int>& ranks, const Group& other) const {
     return content_->translate_ranks(ranks, *other.content_);
 };
 
@@ -139,6 +138,4 @@ GroupContent::~GroupContent() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

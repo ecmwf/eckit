@@ -36,12 +36,12 @@ class SQLMATCHSubquerySessionOutput : public SQLOutput {
 public:
     SQLMATCHSubquerySessionOutput(odb::sql::expression::function::FunctionMATCH&);
     SQLMATCHSubquerySessionOutput(const SQLMATCHSubquerySessionOutput&);
-    virtual ~SQLMATCHSubquerySessionOutput() override;
+    ~SQLMATCHSubquerySessionOutput() override;
 
     SQLMATCHSubquerySessionOutput& operator=(const SQLMATCHSubquerySessionOutput&);
 
 protected:
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 
     // -- Members
@@ -54,10 +54,10 @@ protected:
     virtual unsigned long long count();
     virtual void size(int);
     virtual void reset();
-    virtual void flush() override;
+    void flush() override;
     virtual bool output(const expression::Expressions&);
-    virtual void prepare(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
+    void prepare(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
 
     virtual void outputReal(double, bool) { NOTIMP; };
     virtual void outputDouble(double, bool) { NOTIMP; };

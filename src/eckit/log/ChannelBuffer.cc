@@ -131,8 +131,7 @@ std::streambuf::int_type ChannelBuffer::sync() {
         }
         return 0;
     }
-    else
-        return -1;
+    return -1;
 }
 
 void ChannelBuffer::print(std::ostream& s) const {

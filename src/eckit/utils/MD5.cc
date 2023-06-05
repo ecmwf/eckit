@@ -105,8 +105,9 @@ void MD5::Update(MD5_CTX* context, const unsigned char* input, unsigned int inpu
     index = (unsigned int)((context->count[0] >> 3) & 0x3F);
 
     /* Update number of bits */
-    if ((context->count[0] += ((UINT4)inputLen << 3)) < ((UINT4)inputLen << 3))
+    if ((context->count[0] += ((UINT4)inputLen << 3)) < ((UINT4)inputLen << 3)) {
         context->count[1]++;
+    }
     context->count[1] += ((UINT4)inputLen >> 29);
 
     partLen = 64 - index;
@@ -116,13 +117,15 @@ void MD5::Update(MD5_CTX* context, const unsigned char* input, unsigned int inpu
         ::memcpy((POINTER)&context->buffer[index], (POINTER)input, partLen);
         MD5::Transform(context->state, context->buffer);
 
-        for (i = partLen; i + 63 < inputLen; i += 64)
+        for (i = partLen; i + 63 < inputLen; i += 64) {
             MD5::Transform(context->state, &input[i]);
+        }
 
         index = 0;
     }
-    else
+    else {
         i = 0;
+    }
 
     /* Buffer remaining input */
     ::memcpy((POINTER)&context->buffer[index], (POINTER)&input[i], inputLen - i);
@@ -266,8 +269,10 @@ void MD5::Encode(unsigned char* output, UINT4* input, unsigned int len) {
 void MD5::Decode(UINT4* output, const unsigned char* input, unsigned int len) {
     unsigned int i, j;
 
-    for (i = 0, j = 0; j < len; i++, j += 4)
-        output[i] = ((UINT4)input[j]) | (((UINT4)input[j + 1]) << 8) | (((UINT4)input[j + 2]) << 16) | (((UINT4)input[j + 3]) << 24);
+    for (i = 0, j = 0; j < len; i++, j += 4) {
+        output[i] = ((UINT4)input[j]) | (((UINT4)input[j + 1]) << 8)
+                    | (((UINT4)input[j + 2]) << 16) | (((UINT4)input[j + 3]) << 24);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -331,8 +336,9 @@ void MD5::update(const void* buffer, long length) {
     if (length > 0) {
         void* b = const_cast<void*>(buffer);
         MD5::Update(&s_, static_cast<unsigned char*>(b), length);
-        if (!digest_.empty())
+        if (!digest_.empty()) {
             digest_ = digest_t();  // reset the digest
+        }
     }
 }
 

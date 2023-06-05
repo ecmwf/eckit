@@ -185,8 +185,9 @@ void PathName::children(std::vector<PathName>& files, std::vector<PathName>& dir
 
     path_->children(f, d);
 
-    for (std::vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j)
+    for (std::vector<BasePathName*>::iterator j = f.begin(); j != f.end(); ++j) {
         files.push_back(PathName(*j));
+    }
 
     for (std::vector<BasePathName*>::iterator j = d.begin(); j != d.end(); ++j) {
         dirs.push_back(PathName(*j));
@@ -199,8 +200,9 @@ void PathName::childrenRecursive(std::vector<PathName>& files, std::vector<PathN
 
     children(f, d);
 
-    for (std::vector<PathName>::iterator j = f.begin(); j != f.end(); ++j)
+    for (std::vector<PathName>::iterator j = f.begin(); j != f.end(); ++j) {
         files.push_back(*j);
+    }
 
     for (std::vector<PathName>::iterator j = d.begin(); j != d.end(); ++j) {
         dirs.push_back(*j);
@@ -211,8 +213,9 @@ void PathName::childrenRecursive(std::vector<PathName>& files, std::vector<PathN
 void PathName::match(const PathName& path, std::vector<PathName>& result, bool rec) {
     std::vector<BasePathName*> v;
     path.path_->match(v, rec);
-    for (std::vector<BasePathName*>::iterator j = v.begin(); j != v.end(); ++j)
+    for (std::vector<BasePathName*>::iterator j = v.begin(); j != v.end(); ++j) {
         result.push_back(PathName(*j));
+    }
 }
 
 bool PathName::operator<(const PathName& other) const {

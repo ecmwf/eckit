@@ -18,11 +18,9 @@
 #include <iosfwd>
 #include <string>
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 struct SocketOptions {
-
     static SocketOptions none();
     static SocketOptions server();
     static SocketOptions control();
@@ -136,8 +134,6 @@ private:
     bool tcpNoDelay_ = false;
 };
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

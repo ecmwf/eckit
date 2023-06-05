@@ -24,10 +24,10 @@ class BZip2Compressor : public eckit::Compressor {
 public:  // methods
     BZip2Compressor();
 
-    virtual ~BZip2Compressor() override;
+    ~BZip2Compressor() override;
 
-    virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
-    virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
+    size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
+    void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
 
 protected:  // methods
 };

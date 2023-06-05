@@ -33,8 +33,9 @@ void tokenizeInsert(const std::set<char, std::less<char> >& separator, const std
             }
             token = "";
         }
-        else
+        else {
             token += c;
+        }
 
         index++;
     }
@@ -54,8 +55,9 @@ Tokenizer::Tokenizer(char c, bool keepEmpty) :
 
 Tokenizer::Tokenizer(const std::string& separators, bool keepEmpty) :
     keepEmpty_(keepEmpty) {
-    for (std::string::size_type i = 0; i < separators.length(); i++)
+    for (std::string::size_type i = 0; i < separators.length(); i++) {
         separator_.insert(separators[i]);
+    }
 }
 
 Tokenizer::~Tokenizer() {}
@@ -68,8 +70,9 @@ void Tokenizer::operator()(std::istream& in, std::vector<std::string>& v) const 
     std::string raw;
     char c;
 
-    while (in.get(c) && c != EOF && c != '\n')
+    while (in.get(c) && c != EOF && c != '\n') {
         raw += c;
+    }
 
     tokenizeInsert(separator_, raw, std::inserter(v, v.end()), keepEmpty_);
 }
@@ -82,8 +85,9 @@ void Tokenizer::operator()(std::istream& in, std::set<std::string>& s) const {
     std::string raw;
     char c;
 
-    while (in.get(c) && c != EOF && c != '\n')
+    while (in.get(c) && c != EOF && c != '\n') {
         raw += c;
+    }
 
     tokenizeInsert(separator_, raw, std::inserter(s, s.end()), keepEmpty_);
 }

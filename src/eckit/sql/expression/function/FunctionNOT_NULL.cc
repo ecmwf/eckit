@@ -11,10 +11,7 @@
 #include "eckit/sql/expression/function/FunctionNOT_NULL.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -49,7 +46,4 @@ double FunctionNOT_NULL::eval(bool&) const {
     return !missing;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

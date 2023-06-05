@@ -53,8 +53,9 @@ public:
     }
 
     bool operator<(const ClusterDisk& other) const {
-        if (compare(other) < 0)
+        if (compare(other) < 0) {
             return true;
+        }
         return false;
     }
 
@@ -233,8 +234,9 @@ void ClusterDisks::reset() {
     pthread_once(&once, diskarray_init);
     AutoLock<DiskArray> lock(*clusterDisks);
 
-    for (DiskArray::iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k)
+    for (DiskArray::iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k) {
         (*k).active(false);
+    }
 }
 
 void ClusterDisks::cleanup() {
@@ -319,8 +321,9 @@ void ClusterDisks::list(std::ostream& out) {
 
     AutoLock<DiskArray> lock(*clusterDisks);
     for (DiskArray::const_iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k) {
-        if ((*k).active())
+        if ((*k).active()) {
             out << *k << std::endl;
+        }
     }
 }
 
@@ -348,8 +351,9 @@ time_t ClusterDisks::lastModified(const std::string& type) {
     time_t last = 0;
 
     for (DiskArray::const_iterator k = clusterDisks->begin(); k != clusterDisks->end(); ++k) {
-        if ((*k).active() && ((*k).type() == type))
+        if ((*k).active() && ((*k).type() == type)) {
             last = std::max(last, (*k).lastSeen());
+        }
     }
 
     return last;
@@ -394,9 +398,9 @@ std::string ClusterDisks::node(const std::string& path) {
 
         // This is ineficent, but is should be called very rarely
 
-        if (LocalPathName(path).exists())
+        if (LocalPathName(path).exists()) {
             return NodeInfo::thisNode().node();
-
+        }
 
         LocalPathName df("~/etc/disks/df");
         std::ifstream in(df.localPath());
@@ -458,8 +462,9 @@ void ClusterDisks::receive(Stream& s) {
     while (true) {
 
         s >> more;
-        if (!more)
+        if (!more) {
             break;
+        }
 
         ASSERT(k != clusterDisks->end());
         (*k).receive(s);

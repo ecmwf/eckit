@@ -35,63 +35,63 @@ protected:
 
     // -- Destructor
 
-    virtual ~ListContent() override;
+    ~ListContent() override;
 
     // -- Overridden methods
 
     // -- From Content
 
-    virtual int compare(const Content& other) const override;
+    int compare(const Content& other) const override;
 
-    virtual void value(bool& n) const override;
-    virtual void value(long long& n) const override;
-    virtual void value(double& n) const override;
-    virtual void value(std::string& n) const override;
-    virtual void value(Date& n) const override;
-    virtual void value(Time& n) const override;
-    virtual void value(DateTime& n) const override;
-    virtual void value(ValueList& n) const override;
-    virtual void value(ValueMap& n) const override { Content::value(n); }
+    void value(bool& n) const override;
+    void value(long long& n) const override;
+    void value(double& n) const override;
+    void value(std::string& n) const override;
+    void value(Date& n) const override;
+    void value(Time& n) const override;
+    void value(DateTime& n) const override;
+    void value(ValueList& n) const override;
+    void value(ValueMap& n) const override { Content::value(n); }
 
-    virtual int compareBool(const BoolContent&) const override { return -1; }
-    virtual int compareNumber(const NumberContent&) const override { return -1; }
-    virtual int compareDouble(const DoubleContent&) const override { return -1; }
-    virtual int compareString(const StringContent&) const override { return -1; }
-    virtual int compareNil(const NilContent&) const override { return -1; }
-    virtual int compareList(const ListContent&) const override;
-    virtual int compareMap(const MapContent&) const override { return 1; }
-    virtual int compareDate(const DateContent&) const override { return 1; }
-    virtual int compareTime(const TimeContent&) const override { return 1; }
-    virtual int compareDateTime(const DateTimeContent&) const override { return 1; }
-    virtual int compareOrderedMap(const OrderedMapContent&) const override { return 1; }
+    int compareBool(const BoolContent&) const override { return -1; }
+    int compareNumber(const NumberContent&) const override { return -1; }
+    int compareDouble(const DoubleContent&) const override { return -1; }
+    int compareString(const StringContent&) const override { return -1; }
+    int compareNil(const NilContent&) const override { return -1; }
+    int compareList(const ListContent&) const override;
+    int compareMap(const MapContent&) const override { return 1; }
+    int compareDate(const DateContent&) const override { return 1; }
+    int compareTime(const TimeContent&) const override { return 1; }
+    int compareDateTime(const DateTimeContent&) const override { return 1; }
+    int compareOrderedMap(const OrderedMapContent&) const override { return 1; }
 
-    virtual Content* add(const Content&) const override;
-    virtual Content* sub(const Content&) const override;
-    virtual Content* mul(const Content&) const override;
-    virtual Content* div(const Content&) const override;
-    virtual Content* mod(const Content&) const override;
+    Content* add(const Content&) const override;
+    Content* sub(const Content&) const override;
+    Content* mul(const Content&) const override;
+    Content* div(const Content&) const override;
+    Content* mod(const Content&) const override;
 
-    virtual Content* addList(const ListContent&) const override;
+    Content* addList(const ListContent&) const override;
 
-    virtual void print(std::ostream&) const override;
-    virtual void json(JSON&) const override;
-    virtual std::string typeName() const override { return "List"; }
+    void print(std::ostream&) const override;
+    void json(JSON&) const override;
+    std::string typeName() const override { return "List"; }
 
-    virtual bool isList() const override { return true; }
-    virtual Value& element(const Value&) override;
-    virtual bool contains(const Value& key) const override;
-    virtual void append(const Value&) override;
+    bool isList() const override { return true; }
+    Value& element(const Value&) override;
+    bool contains(const Value& key) const override;
+    void append(const Value&) override;
 
-    virtual Content* clone() const override;
-    virtual size_t size() const override;
-    virtual void dump(std::ostream& out, size_t depth, bool indent = true) const override;
+    Content* clone() const override;
+    size_t size() const override;
+    void dump(std::ostream& out, size_t depth, bool indent = true) const override;
 
-    virtual void hash(Hash&) const override;
+    void hash(Hash&) const override;
 
     // -- From Streamable
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

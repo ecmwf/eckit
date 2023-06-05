@@ -19,8 +19,7 @@
 
 #include "eckit/sql/SQLOutput.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -31,10 +30,12 @@ class SQLDistinctOutput : public SQLOutput {
 
     struct DoubleBitwiseLessComparator {
         bool operator()(const std::vector<double>& lhs, const std::vector<double>& rhs) const {
-            if (lhs.size() != rhs.size()) return lhs.size() < rhs.size();
+            if (lhs.size() != rhs.size()) {
+                return lhs.size() < rhs.size();
+            }
             for (int i = 0; i < lhs.size(); ++i) {
-                const void* p1 = &lhs[i];
-                const void* p2 = &rhs[i];
+                const void* p1          = &lhs[i];
+                const void* p2          = &rhs[i];
                 const uint64_t& punned1 = *reinterpret_cast<const uint64_t*>(p1);
                 const uint64_t& punned2 = *reinterpret_cast<const uint64_t*>(p2);
                 if (punned1 != punned2) {
@@ -47,10 +48,10 @@ class SQLDistinctOutput : public SQLOutput {
 
 public:  // methods
     SQLDistinctOutput(SQLOutput& output);
-    virtual ~SQLDistinctOutput() override;
+    ~SQLDistinctOutput() override;
 
 private:  // methods
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
     // -- Members
 
@@ -60,29 +61,28 @@ private:  // methods
     std::vector<size_t> offsets_;
 
     // -- Overridden methods
-    virtual void reset() override;
-    virtual void flush() override;
-    virtual bool cachedNext() override;
-    virtual bool output(const expression::Expressions&) override;
-    virtual void preprepare(SQLSelect&) override;
-    virtual void prepare(SQLSelect&) override;
-    virtual void updateTypes(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
-    virtual unsigned long long count() override;
+    void reset() override;
+    void flush() override;
+    bool cachedNext() override;
+    bool output(const expression::Expressions&) override;
+    void preprepare(SQLSelect&) override;
+    void prepare(SQLSelect&) override;
+    void updateTypes(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
+    unsigned long long count() override;
 
     // Overridden (and removed) functions
 
-    virtual void outputReal(double, bool) override;
-    virtual void outputDouble(double, bool) override;
-    virtual void outputInt(double, bool) override;
-    virtual void outputUnsignedInt(double, bool) override;
-    virtual void outputString(const char*, size_t, bool) override;
-    virtual void outputBitfield(double, bool) override;
+    void outputReal(double, bool) override;
+    void outputDouble(double, bool) override;
+    void outputInt(double, bool) override;
+    void outputUnsignedInt(double, bool) override;
+    void outputString(const char*, size_t, bool) override;
+    void outputBitfield(double, bool) override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

@@ -40,8 +40,7 @@
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -206,9 +205,7 @@ public:  // methods
             std::string libname = it->second;
             return dynamic_cast<Plugin*>(&lookup(libname));
         }
-        else {
-            return nullptr;
-        }
+        return nullptr;
     }
 
     Plugin& loadPlugin(const std::string& name, const std::string& libname = std::string()) {
@@ -231,13 +228,12 @@ public:  // methods
                 initPlugin(plugin);
                 return *plugin;
             }
-            else {
-                // If the plugin library still doesn't exist after a successful call of dlopen, then
-                // we have managed to load something other than a (self-registering) eckit Plugin library
-                std::ostringstream ss;
-                ss << "Plugin library " << lib << " loaded but Plugin object " << name << " not registered";
-                throw UnexpectedState(ss.str(), Here());
-            }
+            // If the plugin library still doesn't exist after a successful call of dlopen, then
+            // we have managed to load something other than a (self-registering) eckit Plugin library
+            std::ostringstream ss;
+            ss << "Plugin library " << lib << " loaded but Plugin object " << name
+               << " not registered";
+            throw UnexpectedState(ss.str(), Here());
         }
 
         Plugin* plugin = lookupPlugin(name);
@@ -300,8 +296,9 @@ public:  // methods
         for (auto& path : scanPaths) {
 
             LocalPathName dir(path);
-            if (not dir.exists() or not dir.isDir())
+            if (not dir.exists() or not dir.isDir()) {
                 continue;
+            }
 
             LocalPathName realdir(dir.realName());
             if (visited.count(realdir)) {
@@ -427,9 +424,10 @@ const Library& LibraryManager::lookup(const std::string& name) {
 }
 
 const Plugin& LibraryManager::lookupPlugin(const std::string& name) {
-    Plugin * plugin = LibraryRegistry::instance().lookupPlugin(name);
-    if(plugin)
+    Plugin* plugin = LibraryRegistry::instance().lookupPlugin(name);
+    if (plugin) {
         return *plugin;
+    }
     throw eckit::BadValue("Plugin " + name + " not loaded");
 }
 
@@ -455,5 +453,4 @@ void LibraryManager::deregisterPlugin(const std::string& name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

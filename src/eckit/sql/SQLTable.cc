@@ -17,9 +17,7 @@
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/utils/Tokenizer.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 SQLTable::SQLTable(SQLDatabase& owner, const std::string& path, const std::string& name) :
     path_(path), name_(name), owner_(owner) {
@@ -34,16 +32,20 @@ void SQLTable::clearColumns() {}
 
 std::vector<std::string> SQLTable::columnNames() const {
     std::vector<std::string> results;
-    for (std::map<int, SQLColumn*>::const_iterator j = columnsByIndex_.begin(); j != columnsByIndex_.end(); ++j)
+    for (std::map<int, SQLColumn*>::const_iterator j = columnsByIndex_.begin();
+         j != columnsByIndex_.end();
+         ++j) {
         results.push_back((*j).second->name());
+    }
     return results;
 }
 
 FieldNames SQLTable::bitColumnNames(const std::string& name) const {
     typedef std::map<std::string, FieldNames>::const_iterator I;
     I i = bitColumnNames_.find(name);
-    if (i != bitColumnNames_.end())
+    if (i != bitColumnNames_.end()) {
         return (*i).second;
+    }
 
     ASSERT("name not found" && name.find("@") == std::string::npos);
 
@@ -57,10 +59,12 @@ FieldNames SQLTable::bitColumnNames(const std::string& name) const {
             ++counter;
         }
     }
-    if (counter == 0)
+    if (counter == 0) {
         throw eckit::UserError(std::string("Column '") + name + "' not found.");
-    if (counter != 1)
+    }
+    if (counter != 1) {
         throw eckit::UserError(std::string("Ambiguous column name: '") + name + "'");
+    }
 
     return fieldNames;
 }
@@ -95,8 +99,9 @@ void SQLTable::addColumn(const std::string& name, int index, const type::SQLType
     for (FieldNames::const_iterator j = bitmap.begin(); j != bitmap.end(); ++j) {
         std::string fieldName = *j;
         std::string n         = columnName + "." + fieldName;
-        if (!tableName.empty())
+        if (!tableName.empty()) {
             n += "@" + tableName;
+        }
         columnsByName_[n] = col.get();
 
         // Log::info() << "SQLTable::addColumn: columnsByName_[" << n << "] = " << *col << std::endl;
@@ -123,16 +128,18 @@ bool SQLTable::hasColumn(const std::string& name) const {
 
 unsigned long long SQLTable::noRows() const {
     std::map<std::string, SQLColumn*>::const_iterator j = columnsByName_.begin();
-    if (j != columnsByName_.end())
+    if (j != columnsByName_.end()) {
         return (*j).second->noRows();
+    }
     return 0;
 }
 
 
 const SQLColumn& SQLTable::column(const std::string& name) const {
     std::map<std::string, SQLColumn*>::const_iterator j = columnsByName_.find(name);
-    if (j != columnsByName_.end())
+    if (j != columnsByName_.end()) {
         return *(j->second);
+    }
 
     std::vector<std::string> v;
     Tokenizer(".")(name, v);
@@ -167,8 +174,9 @@ const SQLColumn& SQLTable::column(const std::string& name) const {
 void SQLTable::updateColumnDoublesWidth(const std::string& name, size_t nDoubles) {
 
     std::map<std::string, SQLColumn*>::const_iterator j = columnsByName_.find(name);
-    if (j == columnsByName_.end())
+    if (j == columnsByName_.end()) {
         throw eckit::UserError("Column not found", name);
+    }
 
     if (j->second->type().getKind() == type::SQLType::stringType) {
         j->second->updateType(type::SQLType::lookup("string", nDoubles));
@@ -180,8 +188,9 @@ void SQLTable::updateColumnDoublesWidth(const std::string& name, size_t nDoubles
 
 void SQLTable::updateColumnMissingValues(const std::string& name, bool hasMissing, double missingValue) {
     std::map<std::string, SQLColumn*>::const_iterator j = columnsByName_.find(name);
-    if (j == columnsByName_.end())
+    if (j == columnsByName_.end()) {
         throw eckit::UserError("Column not found", name);
+    }
 
     j->second->hasMissingValue(hasMissing);
     j->second->missingValue(missingValue);
@@ -206,12 +215,14 @@ bool SQLTable::hasLinkTo(const SQLTable& to) const {
 }
 
 bool SQLTable::isParentOf(const SQLTable& other) const {
-    if (hasLinkTo(other))
+    if (hasLinkTo(other)) {
         return true;
+    }
 
     for (const auto& l : linksTo_) {
-        if (l.get().isParentOf(other))
+        if (l.get().isParentOf(other)) {
             return true;
+        }
     }
 
     return false;
@@ -230,5 +241,4 @@ void SQLTable::print(std::ostream& s) const {
     s << ")" << std::endl;
 }
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

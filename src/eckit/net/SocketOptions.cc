@@ -13,11 +13,9 @@
 #include "eckit/config/Resource.h"
 #include "eckit/net/SocketOptions.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 static void init(SocketOptions& opts) {
-
     static std::string bindAddr = Resource<std::string>("localBindingAddress", ""); /* "127.0.0.1" */
 
     opts.bindAddress(bindAddr);
@@ -34,7 +32,7 @@ static void init(SocketOptions& opts) {
     static bool tcpNoDelay = eckit::Resource<bool>("socketOptionsTcpNoDelay", true);
 
     static int receiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
-    static int sendBufferSize = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
+    static int sendBufferSize    = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
 
     opts.reusePort(reusePort);
     opts.reuseAddr(reuseAddr);
@@ -45,7 +43,6 @@ static void init(SocketOptions& opts) {
     opts.receiveBufferSize(receiveBufferSize);
     opts.sendBufferSize(sendBufferSize);
 }
-
 
 SocketOptions::SocketOptions() {
     init(*this);
@@ -62,7 +59,7 @@ void SocketOptions::print(std::ostream& s) const {
       << "ipLowDelay=" << ipLowDelay_ << ", "
       << "tcpNoDelay=" << tcpNoDelay_ << ", "
       << "receiveBufferSize=" << receiveBufferSize_ << ", "
-      << "sendBufferSize=" << sendBufferSize_ 
+      << "sendBufferSize=" << sendBufferSize_
       << "]" << std::endl;
 }
 
@@ -87,5 +84,4 @@ std::ostream& operator<<(std::ostream& s, const SocketOptions& o) {
     return s;
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

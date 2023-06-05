@@ -28,7 +28,8 @@ public:
     // void *operator new(size_t s,void *p)  { return p;                          }
     // void operator delete(void* p) { eckit::MemoryPool::fastDeallocate(p); }
 
-    SQLIterator(const type::SQLType& type) : type_(type) {}
+    SQLIterator(const type::SQLType& type) :
+        type_(type) {}
 
     virtual ~SQLIterator() {}
 

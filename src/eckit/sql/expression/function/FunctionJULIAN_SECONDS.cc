@@ -14,10 +14,7 @@
 
 #define trunc(x) ((x)-fmod((x), 1))
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -56,7 +53,4 @@ double FunctionJULIAN_SECONDS::eval(bool& missing) const {
     return eckit::Date(year, month, day).julian() * 24 * 60 * 60 + hour * 3600 + min * 60 + sec;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

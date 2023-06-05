@@ -16,13 +16,9 @@
 
 #include "eckit/linalg/types.h"
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 //-----------------------------------------------------------------------------
-
 
 class LinearAlgebraDense {
 public:
@@ -74,6 +70,4 @@ private:
 
 //-----------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

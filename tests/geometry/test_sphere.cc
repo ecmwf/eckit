@@ -17,9 +17,7 @@
 #include "eckit/geometry/UnitSphere.h"
 #include "eckit/testing/Test.h"
 
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 using namespace geometry;
 
@@ -198,6 +196,82 @@ CASE("test unit sphere lon 315") {
 }
 
 // -----------------------------------------------------------------------------
+// test unit sphere with non-canonical latitudes outside [-90, 90]
+
+CASE("test unit sphere lat 100") {
+    const PointLonLat ll1(0., 100.);
+    const PointLonLat ll2(180., 80.);
+    PointXYZ p, q;
+
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::BadValue);
+
+    UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
+    UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
+
+    // sin(x) and sin(pi-x) are not bitwise identical
+    EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
+    EXPECT(eckit::types::is_approximately_equal(p.y(), q.y()));
+    EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
+}
+
+CASE("test unit sphere lat 290") {
+    const PointLonLat ll1(15., 290.);
+    const PointLonLat ll2(15., -70.);
+    PointXYZ p, q;
+
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::BadValue);
+
+    UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
+    UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
+
+    // sin(x) and sin(pi-x) are not bitwise identical
+    EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
+    EXPECT(eckit::types::is_approximately_equal(p.y(), q.y()));
+    EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
+}
+
+CASE("test unit sphere lat -120") {
+    const PointLonLat ll1(45., -120.);
+    const PointLonLat ll2(225., -60.);
+    PointXYZ p, q;
+
+    // Default behavior throws
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian(ll1, p), eckit::BadValue);
+
+    UnitSphere::convertSphericalToCartesian(ll1, p, 0., true);
+    UnitSphere::convertSphericalToCartesian(ll2, q, 0., true);
+
+    // sin(x) and sin(pi-x) are not bitwise identical
+    EXPECT(eckit::types::is_approximately_equal(p.x(), q.x()));
+    EXPECT(eckit::types::is_approximately_equal(p.y(), q.y()));
+    EXPECT(eckit::types::is_approximately_equal(p.z(), q.z()));
+}
+
+// -----------------------------------------------------------------------------
+// test unit sphere distances with non-canonical coordinates
+
+CASE("test unit sphere distances") {
+    const PointLonLat P1(-71.6, -33.);  // Valparaíso
+    const PointLonLat P2(121.8, 31.4);  // Shanghai
+
+    // Same points with added shifts
+    const PointLonLat P1b(288.4, -33.);    // Valparaíso + longitude shift
+    const PointLonLat P2b(301.8, 148.6);   // Shanghai + latitude/longitude shift
+    const PointLonLat P2c(-58.2, -211.4);  // Shanghai + latitude/longitude shift
+
+    const double d0 = UnitSphere::distance(P1, P2);
+    const double d1 = UnitSphere::distance(P1b, P2);
+    const double d2 = UnitSphere::distance(P1, P2b);
+    const double d3 = UnitSphere::distance(P1, P2c);
+
+    EXPECT(eckit::types::is_approximately_equal(d0, d1));
+    EXPECT(eckit::types::is_approximately_equal(d0, d2));
+    EXPECT(eckit::types::is_approximately_equal(d0, d3));
+}
+
+// -----------------------------------------------------------------------------
 // test unit sphere area
 
 CASE("test unit sphere area globe") {
@@ -249,8 +323,7 @@ CASE("test two units sphere sub areas") {
 
 // -----------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

@@ -54,8 +54,7 @@ Params::value_t getValue(const DispatchParams<Derived>& p, const Params::key_t& 
         const Derived* pobj                                   = static_cast<const Derived*>(&p);
         return (pobj->*fptr)(key);
     }
-    else
-        return Params::value_t();
+    return Params::value_t();
 }
 
 template <class Derived>

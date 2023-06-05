@@ -52,16 +52,19 @@ private:
             case UserChannel::NONE:
                 break;
             case UserChannel::INFO:
-                if (user_)
+                if (user_) {
                     user_->infoMsg(pbase());
+                }
                 break;
             case UserChannel::WARN:
-                if (user_)
+                if (user_) {
                     user_->warningMsg(pbase());
+                }
                 break;
             case UserChannel::ERROR:
-                if (user_)
+                if (user_) {
                     user_->errorMsg(pbase());
+                }
                 break;
         }
 

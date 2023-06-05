@@ -29,8 +29,7 @@ class PathName;
 class Offset;
 };  // namespace eckit
 
-namespace eckit {
-namespace message {
+namespace eckit::message {
 
 class Message;
 class Splitter;
@@ -48,7 +47,6 @@ public:
     eckit::Offset position();
 
 private:
-
     std::unique_ptr<Splitter> splitter_;
     eckit::PeekHandle handle_;
 
@@ -61,9 +59,6 @@ private:
     }
 };
 
-
-}  // namespace message
-}  // namespace eckit
-
+}  // namespace eckit::message
 
 #endif

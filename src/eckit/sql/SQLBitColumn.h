@@ -16,8 +16,7 @@
 
 #include "eckit/sql/SQLColumn.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLBitColumn : public SQLColumn {
 public:
@@ -36,16 +35,15 @@ private:
     // -- Overridden methods
 
     // From ODBIterator
-    virtual void rewind() override;
-    virtual double next(bool& missing) override;
-    virtual void advance(unsigned long) override;
-    virtual void print(std::ostream&) const override;
+    void rewind() override;
+    double next(bool& missing) override;
+    void advance(unsigned long) override;
+    void print(std::ostream&) const override;
 
     // friend std::ostream& operator<<(std::ostream& s,const SQLBitColumn& p)
     //	{ p.print(s); return s; }
 };
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

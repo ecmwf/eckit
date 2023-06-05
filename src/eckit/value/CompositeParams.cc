@@ -26,8 +26,9 @@ CompositeParams::CompositeParams(const Params::List& plist) :
 CompositeParams::CompositeParams(Stream& s) {
     Params::List::size_type len;
     s >> len;
-    for (Params::List::size_type i = 0; i < len; ++i)
+    for (Params::List::size_type i = 0; i < len; ++i) {
         push_back(Params::decode(s));
+    }
 }
 
 CompositeParams& CompositeParams::push_front(const Params& p) {
@@ -43,8 +44,9 @@ CompositeParams& CompositeParams::push_back(const Params& p) {
 Params::value_t getValue(const CompositeParams& p, const Params::key_t& key) {
     for (Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr) {
         Value v = getValue(*citr, key);
-        if (!v.isNil())
+        if (!v.isNil()) {
             return v;
+        }
     }
     return Value();
 }
@@ -52,14 +54,16 @@ Params::value_t getValue(const CompositeParams& p, const Params::key_t& key) {
 //----------------------------------------------------------------------------------------------------------------------
 
 void print(const CompositeParams& p, std::ostream& s) {
-    for (Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr)
+    for (Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr) {
         print(*citr, s);
+    }
 }
 
 void encode(const CompositeParams& p, Stream& s) {
     s << p.plist_.size();
-    for (Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr)
+    for (Params::List::const_iterator citr = p.plist_.begin(); citr != p.plist_.end(); ++citr) {
         encode(*citr, s);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

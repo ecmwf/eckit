@@ -49,7 +49,8 @@ private:
     std::priority_queue<NodeInfo> queue_;
 
 public:
-    SPNodeQueue(size_t k) : k_(k) {}
+    SPNodeQueue(size_t k) :
+        k_(k) {}
 
     void push(Node* n, ID id, double d) {
         NodeInfo info(n, id, d);

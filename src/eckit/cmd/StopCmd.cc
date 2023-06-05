@@ -62,7 +62,7 @@ void StopCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
 
             for (size_t j = 0; j < info.size(); j++) {
                 if (info[j].busy(true) && (all || app == info[j].application())) {
-                    if(non_stoppable.find(info[j].application()) != non_stoppable.end()) {
+                    if (non_stoppable.find(info[j].application()) != non_stoppable.end()) {
                         continue;
                     }
                     if (info[j].pid() != getpid()) {

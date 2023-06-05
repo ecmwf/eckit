@@ -33,7 +33,7 @@ public:  // methods
     /// Compresses the bytestream within the in buffer
     /// @param in input buffer that holds the uncompressed bytesteam.
     /// @param len input buffer size.
-    /// @param out output buffer to hold the compressed bytesteam. Buffer may be oversized, in which case 
+    /// @param out output buffer to hold the compressed bytesteam. Buffer may be oversized, in which case
     ///            resizing is implementation specific. Nevertheless, it is expected that implementations
     ///            will take this as oppurtunity for optimising and avoid resizing.
     /// @note if needed, it will resize or replace the internal buffer of out to match the compressed bytestream size
@@ -41,7 +41,7 @@ public:  // methods
     virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const = 0;
 
     /// Uncompresses the bytestream within the in buffer
-    /// Since some compression algorithms dont record uncompressed size in the bytestream, client code is 
+    /// Since some compression algorithms dont record uncompressed size in the bytestream, client code is
     /// required to record and handle the uncompressed size separately and pass it in via parameter outlen.
     /// @param in input buffer that holds the compressed bytesteam.
     /// @param len input buffer size.
@@ -51,7 +51,6 @@ public:  // methods
     ///        buffer in a tight loop.
     /// @note may resize or replace the internal buffer of out
     virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const = 0;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -61,10 +60,10 @@ class NoCompressor : public Compressor {
 public:  // types
     NoCompressor();
 
-    virtual ~NoCompressor() override = default;
+    ~NoCompressor() override = default;
 
-    virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
-    virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
+    size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
+    void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -80,11 +79,12 @@ public:
 
 template <class T>
 class CompressorBuilder : public CompressorBuilderBase {
-    virtual Compressor* make() override { return new T(); }
+    Compressor* make() override { return new T(); }
 
 public:
-    CompressorBuilder(const std::string& name) : CompressorBuilderBase(name) {}
-    virtual ~CompressorBuilder() override = default;
+    CompressorBuilder(const std::string& name) :
+        CompressorBuilderBase(name) {}
+    ~CompressorBuilder() override = default;
 };
 
 class CompressorFactory {

@@ -21,8 +21,7 @@ class PathName;
 #include "eckit/sql/SQLIterator.h"
 #include "eckit/sql/SQLTypedefs.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 class SQLBitColumn;
 class SQLTable;
@@ -31,7 +30,7 @@ class SQLColumn : public SQLIterator {
 public:
     SQLColumn(const type::SQLType&, SQLTable&, const std::string&, size_t index, bool hasMissingValue,
               double missingValue, const BitfieldDef& d = BitfieldDef());
-    virtual ~SQLColumn() override;
+    ~SQLColumn() override;
 
     void scan();
 
@@ -53,9 +52,9 @@ public:
     bool isBitfield() const { return isBitfield_; }
     bool isMissingValue(const double* val) const {
         // return hasMissingValue_ && (*val == missingValue_);
-        const char* punnable_val = reinterpret_cast<const char*>(val);
-        const char* punnable_missing = reinterpret_cast<const char*>(&missingValue_);
-        const uint64_t* punned_val = reinterpret_cast<const uint64_t*>(punnable_val);
+        const char* punnable_val       = reinterpret_cast<const char*>(val);
+        const char* punnable_missing   = reinterpret_cast<const char*>(&missingValue_);
+        const uint64_t* punned_val     = reinterpret_cast<const uint64_t*>(punnable_val);
         const uint64_t* punned_missing = reinterpret_cast<const uint64_t*>(punnable_missing);
         return hasMissingValue_ && (*punned_val == *punned_missing);
     }
@@ -65,14 +64,14 @@ public:
     // -- Overridden methods
     // From SQLIterator
 
-    virtual void rewind() override;
-    virtual double next(bool& missing) override;
-    virtual void advance(unsigned long) override;
+    void rewind() override;
+    double next(bool& missing) override;
+    void advance(unsigned long) override;
 
 protected:
     unsigned long long noRows_;
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
     // private:
 protected:
     SQLColumn(const SQLColumn&);
@@ -100,7 +99,6 @@ protected:
     size_t sizeDoubles_;
 };
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

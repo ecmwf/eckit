@@ -35,7 +35,7 @@ public:  // methods
     PartFileHandle(const PathName&, const Offset&, const Length&);
     explicit PartFileHandle(Stream&);
 
-    virtual ~PartFileHandle() override;
+    ~PartFileHandle() override;
 
     const PathName& path() const { return path_; }
 
@@ -43,38 +43,38 @@ public:  // methods
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void rewind() override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void rewind() override;
 
-    virtual void print(std::ostream&) const override;
-    virtual bool merge(DataHandle*) override;
-    virtual bool compress(bool = false) override;
-    virtual Length size() override;
-    virtual Length estimate() override;
+    void print(std::ostream&) const override;
+    bool merge(DataHandle*) override;
+    bool compress(bool = false) override;
+    Length size() override;
+    Length estimate() override;
 
-    virtual void restartReadFrom(const Offset& from) override;
-    virtual Offset position() override;
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override;
+    void restartReadFrom(const Offset& from) override;
+    Offset position() override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override;
 
-    virtual void cost(std::map<std::string, Length>&, bool) const override;
-    virtual std::string title() const override;
-    virtual std::string metricsTag() const override;
+    void cost(std::map<std::string, Length>&, bool) const override;
+    std::string title() const override;
+    std::string metricsTag() const override;
 
 
-    virtual bool moveable() const override { return true; }
-    virtual DataHandle* clone() const override;
+    bool moveable() const override { return true; }
+    DataHandle* clone() const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

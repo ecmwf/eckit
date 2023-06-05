@@ -30,13 +30,13 @@ class FileStream : public Stream {
 public:  // methods
     FileStream(const PathName& name, const char* mode);
 
-    virtual ~FileStream() override;
+    ~FileStream() override;
 
     // Overriden from Stream
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void rewind() override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void rewind() override;
 
     void close();
 
@@ -47,9 +47,9 @@ protected:  // members
 
 protected:  // methods
             // Overriden from Stream
-    virtual std::string name() const override;
+    std::string name() const override;
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 };
 
 }  // namespace eckit

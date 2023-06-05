@@ -24,8 +24,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace memory {
-namespace detail {
+namespace memory::detail {
 
 class ThreadedLock {
 public:
@@ -41,8 +40,7 @@ public:
     void unlock() const {}
 };
 
-}  // namespace detail
-}  // namespace memory
+}  // namespace memory::detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -76,7 +74,8 @@ public:  // methods
     void unlock() const { memory::detail::ThreadedLock::unlock(); }
 
 public:
-    Counted() : count_(0) {}
+    Counted() :
+        count_(0) {}
 
     virtual ~Counted();
 

@@ -20,9 +20,7 @@
 #include "eckit/utils/EnumBitmask.h"
 #include "eckit/utils/Optional.h"
 
-
-namespace eckit {
-namespace message {
+namespace eckit::message {
 
 class Message;
 class MetadataGatherer;
@@ -54,7 +52,8 @@ public:  // methods
     virtual ~MessageDecoder();
 
     virtual void getMetadata(const Message& msg, MetadataGatherer& gatherer,
-                             const GetMetadataOptions& options=GetMetadataOptions{}) const = 0;
+                             const GetMetadataOptions& options = GetMetadataOptions{}) const
+        = 0;
 
     virtual eckit::Buffer decode(const Message& msg) const = 0;
 
@@ -73,7 +72,6 @@ private:  // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message
 
 #endif

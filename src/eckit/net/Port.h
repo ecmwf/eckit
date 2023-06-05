@@ -17,9 +17,7 @@
 
 #include <string>
 
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 class Port {
 public:
@@ -31,8 +29,6 @@ private:
     int port_;
 };
 
-}  // namespace net
-}  // namespace eckit
-
+}  // namespace eckit::net
 
 #endif

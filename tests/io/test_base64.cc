@@ -19,13 +19,12 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 static std::string test(const char* text, const char* expect) {
-    char base64ed[10240] = {};
+    char base64ed[10240]   = {};
     char unbase64ed[10240] = {};
 
     Base64 base64;
@@ -95,8 +94,7 @@ CASE("test_eckit_base64_1") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

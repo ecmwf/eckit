@@ -56,10 +56,8 @@ SemLocker::SemLocker(int sem, const PathName& path, int maxWaitLock) :
                 os << "Failed to acquire semaphore lock for " << path_;
                 throw eckit::FailedSystemCall(os.str());
             }
-            else {
-                eckit::Log::warning() << "Sleeping for " << SLEEP << " seconds" << std::endl;
-                ::sleep(SLEEP);
-            }
+            eckit::Log::warning() << "Sleeping for " << SLEEP << " seconds" << std::endl;
+            ::sleep(SLEEP);
         }
         else {
             break;

@@ -31,12 +31,13 @@ SeekableHandle::SeekableHandle(PeekHandle& h) :
     position_(0) {}
 
 SeekableHandle::~SeekableHandle() {
-    if (owned_)
+    if (owned_) {
         delete handle_;
+    }
 }
 
 Length SeekableHandle::openForRead() {
-    position_ = 0;
+    position_      = 0;
     seekableStart_ = 0;
     return handle_->openForRead();
 }

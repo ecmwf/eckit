@@ -23,15 +23,17 @@ namespace eckit {
 class Plural : private eckit::NonCopyable {
 
 public:  // methods
-    Plural(int count, const std::string& s) : s_(s), count_(count) {}
+    Plural(int count, const std::string& s) :
+        s_(s), count_(count) {}
 
     ~Plural() {}
 
 protected:  // methods
     void print(std::ostream& s) const {
         s << BigNum(count_) << ' ' << s_;
-        if (count_ > 1)
+        if (count_ > 1) {
             s << 's';
+        }
     }
 
 private:  // members

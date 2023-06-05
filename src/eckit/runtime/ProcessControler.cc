@@ -31,21 +31,25 @@ ProcessControler::ProcessControler(bool forget) :
     ClassExtent<ProcessControler>(this), pid_(-1), child_(false), status_(0), forget_(forget) {}
 
 ProcessControler::~ProcessControler() {
-    if (!forget_ && active())
+    if (!forget_ && active()) {
         Log::warning() << "~ProcessControler called while process still active" << std::endl;
+    }
 }
 
 void ProcessControler::printStatus(pid_t pid, int status) {
     Log::info() << "-------- End of " << pid;
 
-    if (WIFEXITED(status))
+    if (WIFEXITED(status)) {
         Log::info() << " exited ";
+    }
 
-    if (WEXITSTATUS(status))
+    if (WEXITSTATUS(status)) {
         Log::info() << " status " << WEXITSTATUS(status) << ' ';
+    }
 
-    if (WIFSIGNALED(status))
+    if (WIFSIGNALED(status)) {
         Log::info() << " with signal " << WTERMSIG(status);
+    }
 
     Log::info() << std::endl;
 }
@@ -84,8 +88,9 @@ void ChildReaper::run() {
 
         if (r.pid_ == -1) {
             // Todo: use mutex cond....
-            if (errno != ECHILD)
+            if (errno != ECHILD) {
                 Log::error() << "Wait pid " << Log::syserr << std::endl;
+            }
             ::sleep(5);
         }
         else {
@@ -153,14 +158,17 @@ void ProcessControler::start() {
 }
 
 void ProcessControler::stop() {
-    if (!active())
+    if (!active()) {
         return;
+    }
 
     Log::info() << "ProcessControler::stop " << child_ << '-' << pid_ << std::endl;
-    if (child_)
+    if (child_) {
         ::exit(0);
-    else
+    }
+    else {
         ::kill(pid_, SIGTERM);
+    }
 
     // pid_ = -1;
 }
@@ -172,8 +180,9 @@ void ProcessControler::kill() {
 void ProcessControler::wait() {
     int status;
 
-    if (!active())
+    if (!active()) {
         return;
+    }
 
     Log::info() << "ProcessControler::wait " << pid_ << " " << child_ << std::endl;
     if (pid_ != -1 && !child_) {

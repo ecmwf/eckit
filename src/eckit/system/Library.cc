@@ -32,8 +32,7 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -42,7 +41,8 @@ Library::Library(const std::string& name) :
 
     LibraryManager::enregister(name, this);
 
-    std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(), ::toupper);
+    std::transform(prefix_.begin(), prefix_.end(), prefix_.begin(),
+                   [](char c) { return (c == '-') ? '_' : ::toupper(c); });
 
     std::string s = prefix_ + "_DEBUG";
     const char* e = ::getenv(s.c_str());
@@ -131,8 +131,9 @@ Channel& Library::debugChannel() const {
 const Configuration& Library::configuration() const {
     AutoLock<Mutex> lock(mutex_);
 
-    if (configuration_)
+    if (configuration_) {
         return *configuration_;
+    }
 
     std::string s = "$" + prefix_ + "_CONFIG_PATH";
     std::string p = "~" + name_ + "/etc/" + name_ + "/config.yaml";
@@ -175,11 +176,13 @@ std::string Library::expandPath(const std::string& p) const {
     while (true) {
         LocalPathName tmp = path + extra;
 
-        if (tmp.exists())
+        if (tmp.exists()) {
             return tmp;
+        }
 
-        if (path == root)
+        if (path == root) {
             break;
+        }
 
         path = path.dirName();
     }
@@ -218,5 +221,4 @@ const void* Library::addr() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

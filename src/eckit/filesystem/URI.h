@@ -89,13 +89,11 @@ public:  // methods
     std::string asRawString() const;
 
     bool operator!=(const URI& other) const {
-        return scheme_ != other.scheme_ || name_ != other.name_ || user_ != other.user_ || host_ != other.host_ ||
-               port_ != other.port_ || queryValues_ != other.queryValues_ || fragment_ != other.fragment_;
+        return scheme_ != other.scheme_ || name_ != other.name_ || user_ != other.user_ || host_ != other.host_ || port_ != other.port_ || queryValues_ != other.queryValues_ || fragment_ != other.fragment_;
     }
 
     bool operator==(const URI& other) const {
-        return scheme_ == other.scheme_ && name_ == other.name_ && user_ == other.user_ && host_ == other.host_ &&
-               port_ == other.port_ && queryValues_ == other.queryValues_ && fragment_ == other.fragment_;
+        return scheme_ == other.scheme_ && name_ == other.name_ && user_ == other.user_ && host_ == other.host_ && port_ == other.port_ && queryValues_ == other.queryValues_ && fragment_ == other.fragment_;
     }
 
 protected:  // methods

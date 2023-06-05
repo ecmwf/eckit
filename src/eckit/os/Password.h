@@ -14,6 +14,8 @@
 #ifndef eckit_Password_h
 #define eckit_Password_h
 
+#include <string>
+
 #include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------

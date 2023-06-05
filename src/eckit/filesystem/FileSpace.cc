@@ -54,13 +54,15 @@ const PathName& FileSpace::selectFileSystem(const std::string& s) const {
 }
 
 const std::string& FileSpace::selectionStrategy() const {
-    if (!strategy_.empty())
+    if (!strategy_.empty()) {
         return strategy_;
+    }
 
     strategy_ = Resource<std::string>(std::string(name_ + "FileSystemSelection").c_str(), "");
 
-    if (!strategy_.empty())
+    if (!strategy_.empty()) {
         return strategy_;
+    }
 
     strategy_ = Resource<std::string>("fileSystemSelection", "leastUsed");
 
@@ -88,10 +90,8 @@ const PathName& FileSpace::sameFileSystem(const PathName& path) const {
         Log::info() << f << " matches " << path << std::endl;
         return f;
     }
-    else {
-        Log::warning() << "Cannot find matching file system for " << path << std::endl;
-        return selectFileSystem();
-    }
+    Log::warning() << "Cannot find matching file system for " << path << std::endl;
+    return selectFileSystem();
 }
 
 const PathName& FileSpace::find(const PathName& path, bool& found) const {
@@ -100,11 +100,12 @@ const PathName& FileSpace::find(const PathName& path, bool& found) const {
     PathName m(path.mountPoint());
 
     // TODO: Cache the mount point...
-    for (Ordinal i = 0; i < fileSystems_.size(); i++)
+    for (Ordinal i = 0; i < fileSystems_.size(); i++) {
         if (fileSystems_[i].available() && (fileSystems_[i].mountPoint() == m)) {
             found = true;
             return fileSystems_[i];
         }
+    }
 
     found = false;
     return path;
@@ -137,8 +138,9 @@ void FileSpace::load() const {
     time_t mod2     = ClusterDisks::lastModified(name_);
     time_t modified = std::max(mod1, mod2);
 
-    if ((last_ == modified) && (last_ != 0))
+    if ((last_ == modified) && (last_ != 0)) {
         return;
+    }
 
     ::srandom(static_cast<unsigned>(::getpid()));
 
@@ -151,9 +153,9 @@ void FileSpace::load() const {
 
     if (hasConfigFile) {
         std::ifstream in(config.localPath());
-        if (!in)
+        if (!in) {
             throw CantOpenFile(config);
-
+        }
 
         char line[1024] = {};
         while (in >> line) {
@@ -172,8 +174,9 @@ void FileSpace::load() const {
     for (Ordinal i = 0; i < clusterDisks.size(); i++) {
         PathName path(clusterDisks[i]);
         if (path.node() == NodeInfo::thisNode().node()) {
-            if (std::find(disks.begin(), disks.end(), path.path()) != disks.end())
+            if (std::find(disks.begin(), disks.end(), path.path()) != disks.end()) {
                 continue;
+            }
         }
         disks.push_back(clusterDisks[i]);
     }
@@ -183,8 +186,9 @@ void FileSpace::load() const {
     for (Ordinal i = 0; i < disks.size(); i++) {
         PathName path(disks[i]);
         try {
-            if (path.available())
+            if (path.available()) {
                 path.mkdir();
+            }
             self->fileSystems_.push_back(path);
         }
         catch (std::exception& e) {

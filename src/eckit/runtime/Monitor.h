@@ -144,7 +144,8 @@ class AutoState {
     char old_;
 
 public:
-    AutoState(char c) : old_(Monitor::instance().state(c)) {}
+    AutoState(char c) :
+        old_(Monitor::instance().state(c)) {}
 
     ~AutoState() { Monitor::instance().state(old_); }
 
@@ -159,8 +160,10 @@ class AutoLockTag {
     AutoLock<T> lock_;
 
 public:
-    AutoLockTag(T& t) : state_(t.tag()), lock_(t) { state_.set(t.tag() - 'a' + 'A'); }
-    AutoLockTag(T* t) : state_(t->tag()), lock_(t) { state_.set(t->tag() - 'a' + 'A'); }
+    AutoLockTag(T& t) :
+        state_(t.tag()), lock_(t) { state_.set(t.tag() - 'a' + 'A'); }
+    AutoLockTag(T* t) :
+        state_(t->tag()), lock_(t) { state_.set(t->tag() - 'a' + 'A'); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

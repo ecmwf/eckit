@@ -14,6 +14,8 @@
 #ifndef eckit_FileLocker_h
 #define eckit_FileLocker_h
 
+#include "sys/types.h"  // for off_t
+
 #include "eckit/eckit.h"
 
 namespace eckit {

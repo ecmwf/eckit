@@ -45,7 +45,7 @@ public:  // methods
     void node(const std::string& h) { node_ = h; }
     const std::string& node() const { return node_; }
 
-    void attribute(const std::string& a)            { attributes_.insert(a); }
+    void attribute(const std::string& a) { attributes_.insert(a); }
     void attributes(const std::set<std::string>& a) { attributes_ = a; }
     const std::set<std::string>& attributes() const { return attributes_; }
     bool supportsAttributes(const std::set<std::string>& attrs) const;

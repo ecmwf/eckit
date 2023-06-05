@@ -29,15 +29,15 @@ public:  // types
 
     MD5(const void* data, size_t len);
 
-    virtual ~MD5() override;
+    ~MD5() override;
 
-    virtual void reset() const override;
+    void reset() const override;
 
-    virtual digest_t compute(const void*, long) override;
+    digest_t compute(const void*, long) override;
 
-    virtual void update(const void*, long) override;
+    void update(const void*, long) override;
 
-    virtual digest_t digest() const override;
+    digest_t digest() const override;
 
     // Due to C++ name lookup rules, the base class interface needs to be
     // replicated here to be able to add the template overload, which would

@@ -17,10 +17,7 @@
 
 #include "eckit/sql/expression/SQLExpressions.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,20 +27,20 @@ public:
     FunctionExpression(const FunctionExpression&);
     ~FunctionExpression();
 
-    virtual void print(std::ostream& s) const override;
-    virtual void preprepare(SQLSelect& sql) override;
-    virtual void prepare(SQLSelect& sql) override;
-    virtual void updateType(SQLSelect& sql) override;
-    virtual void cleanup(SQLSelect& sql) override;
-    virtual bool isConstant() const override;
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
+    void print(std::ostream& s) const override;
+    void preprepare(SQLSelect& sql) override;
+    void prepare(SQLSelect& sql) override;
+    void updateType(SQLSelect& sql) override;
+    void cleanup(SQLSelect& sql) override;
+    bool isConstant() const override;
+    std::shared_ptr<SQLExpression> simplify(bool&) override;
 
-    // virtual double eval() const override;
+    // double eval() const override;
     bool isAggregate() const override;
     void partialResult() override;
 
-    virtual const type::SQLType* type() const override;
-    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
+    const type::SQLType* type() const override;
+    std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
 
     // For SQLSelectFactory (maybe it should just friend SQLSelectFactory).
     expression::Expressions& args() { return args_; }
@@ -68,9 +65,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

@@ -24,8 +24,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -59,10 +58,13 @@ void benchmark_densemap_int_string(const std::string& tname) {
             int idx = rand() % MSIZE;
 
             typename MAP::const_iterator it = m.find(idx);
-            if (it != m.cend())
+            if (it != m.cend()) {
                 ASSERT(it->second == "foo" + itos(idx));
-            else
-                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx) << std::endl;
+            }
+            else {
+                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx)
+                          << std::endl;
+            }
         }
     }
 }
@@ -89,10 +91,13 @@ void benchmark_stdmap_int_string(const std::string& tname) {
         for (int i = 0; i < NSAMPLES; ++i) {
             int idx                         = rand() % MSIZE;
             typename MAP::const_iterator it = m.find(idx);
-            if (it != m.end())
+            if (it != m.end()) {
                 ASSERT(it->second == "foo" + itos(idx));
-            else
-                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx) << std::endl;
+            }
+            else {
+                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx)
+                          << std::endl;
+            }
         }
     }
 }
@@ -112,8 +117,7 @@ CASE("benchmark_densemap") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

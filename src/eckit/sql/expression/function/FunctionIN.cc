@@ -12,10 +12,7 @@
 #include "eckit/sql/expression/function/FunctionEQ.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -39,13 +36,12 @@ std::shared_ptr<SQLExpression> FunctionIN::clone() const {
 
 double FunctionIN::eval(bool& missing) const {
     const SQLExpression& x = *args_[size_];
-    for (size_t i = 0; i < size_; ++i)
-        if (FunctionEQ::equal(x, *args_[i], missing))
+    for (size_t i = 0; i < size_; ++i) {
+        if (FunctionEQ::equal(x, *args_[i], missing)) {
             return true;
+        }
+    }
     return false;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

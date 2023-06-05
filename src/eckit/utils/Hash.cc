@@ -84,8 +84,9 @@ Hash* HashFactory::build(const std::string& name) {
     if (j == builders_.end()) {
         eckit::Log::error() << "No HashBuilder for [" << nameLowercase << "]" << std::endl;
         eckit::Log::error() << "HashBuilders are:" << std::endl;
-        for (j = builders_.begin(); j != builders_.end(); ++j)
+        for (j = builders_.begin(); j != builders_.end(); ++j) {
             eckit::Log::error() << "   " << (*j).first << std::endl;
+        }
         throw eckit::SeriousBug(std::string("No HashBuilder called ") + nameLowercase);
     }
 
@@ -103,8 +104,9 @@ Hash* HashFactory::build(const std::string& name, const std::string& param) {
     if (j == builders_.end()) {
         eckit::Log::error() << "No HashBuilder for [" << nameLowercase << "]" << std::endl;
         eckit::Log::error() << "HashBuilders are:" << std::endl;
-        for (j = builders_.begin(); j != builders_.end(); ++j)
+        for (j = builders_.begin(); j != builders_.end(); ++j) {
             eckit::Log::error() << "   " << (*j).first << std::endl;
+        }
         throw eckit::SeriousBug(std::string("No HashBuilder called ") + nameLowercase);
     }
 

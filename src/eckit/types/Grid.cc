@@ -45,8 +45,9 @@ char Grids::nextChar_ = 'a';
 
 char Grids::lookUp(const Grid& g) {
     GridCharTable::iterator i = gridCharTable_.find(g);
-    if (i != gridCharTable_.end())
+    if (i != gridCharTable_.end()) {
         return (*i).second;
+    }
 
     gridCharTable_[g]         = nextChar_;
     charGridTable_[nextChar_] = g;
@@ -114,10 +115,12 @@ long Grid::score(const Grid& p) const {
     double y = eastWest() / p.eastWest();
     int s    = 0;
 
-    if (x == long(x))
+    if (x == long(x)) {
         s++;
-    if (y == long(y))
+    }
+    if (y == long(y)) {
         s++;
+    }
 
     return s;
 }
@@ -139,15 +142,19 @@ Grid::operator std::string() const {
 }
 
 void Grid::print(std::ostream& s) const {
-    if (undefined())
+    if (undefined()) {
         s << "(undefined)";
+    }
     else {
-        if (northSouth_)
+        if (northSouth_) {
             s << northSouth_;
-        if (northSouth_ && eastWest_)
+        }
+        if (northSouth_ && eastWest_) {
             s << "/";
-        if (eastWest_)
+        }
+        if (eastWest_) {
             s << eastWest_;
+        }
     }
 }
 
@@ -179,8 +186,9 @@ const Grid& Grid::bestMatch(const std::vector<Grid>& v) const {
     ASSERT(v.size() > 0);
 
     // Perfect match
-    if (std::find(v.begin(), v.end(), *this) != v.end())
+    if (std::find(v.begin(), v.end(), *this) != v.end()) {
         return *this;
+    }
 
     long smax  = score(v[0]);
     int choice = 0;

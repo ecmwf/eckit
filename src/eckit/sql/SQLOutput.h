@@ -18,8 +18,7 @@
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/sql/SQLOutputConfig.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 namespace expression {
 class Expressions;
@@ -74,7 +73,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

@@ -19,10 +19,7 @@
 #include "eckit/message/MessageContent.h"
 #include "eckit/types/Types.h"
 
-
-namespace eckit {
-namespace message {
-
+namespace eckit::message {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -149,5 +146,4 @@ MetadataGatherer::~MetadataGatherer() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message

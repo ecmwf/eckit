@@ -67,7 +67,7 @@ private:
 
 class CollectMetrics {
 
-    MetricsCollector *collector_;
+    MetricsCollector* collector_;
 
     void print(std::ostream& s) const;
 

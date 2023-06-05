@@ -30,7 +30,7 @@ public:  // methods
     RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
     RadosWriteHandle(Stream&);
 
-    virtual ~RadosWriteHandle() override;
+    ~RadosWriteHandle() override;
 
     // -- Class methods
 
@@ -39,24 +39,24 @@ public:  // methods
     std::string title() const;
 
 public:  // methods
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
-    virtual void rewind() override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void flush() override;
+    void rewind() override;
 
-    virtual Offset position() override;
+    Offset position() override;
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const override;
-    virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(Stream&) const override;
+    const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
     RadosObject object_;

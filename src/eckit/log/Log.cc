@@ -182,10 +182,8 @@ Channel& Log::debug() {
             static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
             return empty;
         }
-        else {
-            static Channel empty;
-            return empty;
-        }
+        static Channel empty;
+        return empty;
     }
 
     if (!Main::instance().debug_) {
@@ -235,8 +233,9 @@ std::ostream& Log::userWarning() {
 void Log::notifyClient(const std::string& msg) {
     UserChannel& u = user();
     UserMsg* um    = u.userMsg();
-    if (um)
+    if (um) {
         um->notifyClient(msg);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

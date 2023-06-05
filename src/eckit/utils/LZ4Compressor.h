@@ -24,10 +24,10 @@ class LZ4Compressor : public eckit::Compressor {
 public:  // methods
     LZ4Compressor();
 
-    virtual ~LZ4Compressor() override;
+    ~LZ4Compressor() override;
 
-    virtual size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
-    virtual void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
+    size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
+    void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
 
 protected:  // methods
 };

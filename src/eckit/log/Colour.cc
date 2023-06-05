@@ -44,8 +44,8 @@ enum
     WHITE   = 7
 };
 
-//#define X(a) putchar(a)
-//#define X(a) out << (a)
+// #define X(a) putchar(a)
+// #define X(a) out << (a)
 #define X(a) out << char(a)
 
 static bool connected_to_console() {

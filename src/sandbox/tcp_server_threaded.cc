@@ -122,7 +122,7 @@ public:
     ~FDBSvrApp() {}
 
 private:  // methods
-    FDBSvrApp(const FDBSvrApp&) = delete;
+    FDBSvrApp(const FDBSvrApp&)            = delete;
     FDBSvrApp& operator=(const FDBSvrApp&) = delete;
 
     virtual void run() {

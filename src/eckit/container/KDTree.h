@@ -32,7 +32,8 @@ public:
     typedef typename SPTreeType::Payload Payload;
 
 public:
-    KDTreeX(Alloc& alloc) : SPTreeType(alloc) {}
+    KDTreeX(Alloc& alloc) :
+        SPTreeType(alloc) {}
 
     /// ITER must be a random access iterator
     /// WARNING: container is changed (sorted)
@@ -76,7 +77,8 @@ public:
     typedef typename KDTree::Payload Payload;
 
 public:
-    KDTreeMemory() : KDTree(alloc_) {}
+    KDTreeMemory() :
+        KDTree(alloc_) {}
 };
 
 template <class Traits>

@@ -12,8 +12,7 @@
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -120,5 +119,4 @@ void SQLDistinctOutput::outputBitfield(double, bool) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql

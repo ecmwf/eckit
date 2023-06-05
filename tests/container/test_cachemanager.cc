@@ -16,8 +16,7 @@
 
 #include "eckit/testing/Test.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -56,8 +55,8 @@ private:
 
 
 struct CacheCreator : Manager::CacheContentCreator {
-    CacheCreator()                    = default;
-    CacheCreator(const CacheCreator&) = delete;
+    CacheCreator()                               = default;
+    CacheCreator(const CacheCreator&)            = delete;
     CacheCreator& operator=(const CacheCreator&) = delete;
 
 private:
@@ -80,8 +79,8 @@ private:
 
 
 struct CacheCreatorCantMiss : ManagerCantMiss::CacheContentCreator {
-    CacheCreatorCantMiss()                            = default;
-    CacheCreatorCantMiss(const CacheCreatorCantMiss&) = delete;
+    CacheCreatorCantMiss()                                       = default;
+    CacheCreatorCantMiss(const CacheCreatorCantMiss&)            = delete;
     CacheCreatorCantMiss& operator=(const CacheCreatorCantMiss&) = delete;
 
 private:
@@ -162,8 +161,7 @@ CASE("test_cachemanager") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

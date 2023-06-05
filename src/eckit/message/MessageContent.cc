@@ -19,8 +19,7 @@
 #include "eckit/message/Decoder.h"
 #include "eckit/message/MessageContent.h"
 
-namespace eckit {
-namespace message {
+namespace eckit::message {
 
 MessageContent::operator bool() const {
     return true;
@@ -104,5 +103,4 @@ MessageContent* MessageContent::transform(const StringDict&) const {
     throw eckit::SeriousBug(oss.str());
 }
 
-}  // namespace message
-}  // namespace eckit
+}  // namespace eckit::message

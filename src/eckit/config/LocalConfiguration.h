@@ -40,7 +40,7 @@ public:  // methods
 
     LocalConfiguration(const Configuration& other, const std::string& path);
 
-    virtual ~LocalConfiguration() override;
+    ~LocalConfiguration() override;
 
     LocalConfiguration& set(const std::string& name, const std::string& value) override;
     LocalConfiguration& set(const std::string& name, const char* value) override;
@@ -69,7 +69,7 @@ protected:
     /// to be used only by class Configuration
     LocalConfiguration(const eckit::Value&, char separator = '.');
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:
     void setValue(const std::vector<std::string>& path, size_t i, Value& root, const Value& value);

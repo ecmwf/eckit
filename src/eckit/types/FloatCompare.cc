@@ -1,4 +1,4 @@
-//#include <cmath>
+// #include <cmath>
 
 // Some of the math.h/cmath functions are not clean when switching to C++11
 #if __cplusplus <= 199711L
@@ -17,8 +17,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
-namespace eckit {
-namespace types {
+namespace eckit::types {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -119,23 +118,28 @@ template <typename T>
 bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
 
     // Bit identical is equal for any epsilon
-    if (a == b)
+    if (a == b) {
         return true;
+    }
 
     // NaNs and infinity are always different
-    if (isnan(a) || isnan(b) || isinf(a) || isinf(b))
+    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) {
         return false;
+    }
 
     // Subnormal numbers are treated as 0
-    if (fpclassify(a) == FP_SUBNORMAL)
+    if (fpclassify(a) == FP_SUBNORMAL) {
         a = 0;
-    if (fpclassify(b) == FP_SUBNORMAL)
+    }
+    if (fpclassify(b) == FP_SUBNORMAL) {
         b = 0;
+    }
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
-    if (detail::abs(a - b) <= epsilon)
+    if (detail::abs(a - b) <= epsilon) {
         return true;
+    }
 
     // If either is zero, compare the absolute value of the other to the minimum normal number
     if (a == 0) {
@@ -145,8 +149,9 @@ bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
         return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
 
-    if (signbit(a) == signbit(b))
+    if (signbit(a) == signbit(b)) {
         return detail::float_distance(a, b) <= maxUlpsDiff;
+    }
 
     // If signs are different, add ULP distances from minimum normal number on both sides of 0
     const int64_t dp = detail::float_distance(a > 0 ? a : b, std::numeric_limits<T>::min());
@@ -161,5 +166,4 @@ template bool is_approximately_equal(double a, double b, double epsilon, int max
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace types
-}  // namespace eckit
+}  // namespace eckit::types

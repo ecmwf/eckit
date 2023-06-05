@@ -75,8 +75,9 @@ void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
             start(out, *i);
         }
 
-        if(wait){
-        ::sleep(1);}
+        if (wait) {
+            ::sleep(1);
+        }
 
         for (size_t j = 0; j < info.size(); j++) {
             if (info[j].busy(true)) {
@@ -89,8 +90,6 @@ void StartCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
         if (!wait || names.size() == 0) {
             break;
         }
-
-
     }
     if (wait && names.size() > 0) {
         std::ostringstream oss;

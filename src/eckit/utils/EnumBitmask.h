@@ -14,33 +14,33 @@
 namespace eckit {
 
 #include <type_traits>
-#define ENUM_FLAG_OPERATORS(T)                                                                                                       \
-    inline constexpr T operator&(T X, T Y) {                                                                                         \
-        return static_cast<T>(                                                                                                       \
-            static_cast<typename std::underlying_type<T>::type>(X) & static_cast<typename std::underlying_type<T>::type>(Y));        \
-    }                                                                                                                                \
-    inline constexpr T operator|(T X, T Y) {                                                                                         \
-        return static_cast<T>(                                                                                                       \
-            static_cast<typename std::underlying_type<T>::type>(X) | static_cast<typename std::underlying_type<T>::type>(Y));        \
-    }                                                                                                                                \
-    inline constexpr T operator^(T X, T Y) {                                                                                         \
-        return static_cast<T>(                                                                                                       \
-            static_cast<typename std::underlying_type<T>::type>(X) ^ static_cast<typename std::underlying_type<T>::type>(Y));        \
-    }                                                                                                                                \
-    inline constexpr T operator~(T X) {                                                                                              \
-        return static_cast<T>(~static_cast<typename std::underlying_type<T>::type>(X));                                              \
-    }                                                                                                                                \
-    inline T& operator&=(T& X, T Y) {                                                                                                \
-        X = X & Y;                                                                                                                   \
-        return X;                                                                                                                    \
-    }                                                                                                                                \
-    inline T& operator|=(T& X, T Y) {                                                                                                \
-        X = X | Y;                                                                                                                   \
-        return X;                                                                                                                    \
-    }                                                                                                                                \
-    inline T& operator^=(T& X, T Y) {                                                                                                \
-        X = X ^ Y;                                                                                                                   \
-        return X;                                                                                                                    \
+#define ENUM_FLAG_OPERATORS(T)                                                                                                \
+    inline constexpr T operator&(T X, T Y) {                                                                                  \
+        return static_cast<T>(                                                                                                \
+            static_cast<typename std::underlying_type<T>::type>(X) & static_cast<typename std::underlying_type<T>::type>(Y)); \
+    }                                                                                                                         \
+    inline constexpr T operator|(T X, T Y) {                                                                                  \
+        return static_cast<T>(                                                                                                \
+            static_cast<typename std::underlying_type<T>::type>(X) | static_cast<typename std::underlying_type<T>::type>(Y)); \
+    }                                                                                                                         \
+    inline constexpr T operator^(T X, T Y) {                                                                                  \
+        return static_cast<T>(                                                                                                \
+            static_cast<typename std::underlying_type<T>::type>(X) ^ static_cast<typename std::underlying_type<T>::type>(Y)); \
+    }                                                                                                                         \
+    inline constexpr T operator~(T X) {                                                                                       \
+        return static_cast<T>(~static_cast<typename std::underlying_type<T>::type>(X));                                       \
+    }                                                                                                                         \
+    inline T& operator&=(T& X, T Y) {                                                                                         \
+        X = X & Y;                                                                                                            \
+        return X;                                                                                                             \
+    }                                                                                                                         \
+    inline T& operator|=(T& X, T Y) {                                                                                         \
+        X = X | Y;                                                                                                            \
+        return X;                                                                                                             \
+    }                                                                                                                         \
+    inline T& operator^=(T& X, T Y) {                                                                                         \
+        X = X ^ Y;                                                                                                            \
+        return X;                                                                                                             \
     }
 
 

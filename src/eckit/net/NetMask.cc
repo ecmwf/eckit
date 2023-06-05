@@ -24,10 +24,7 @@
 #pragma _CRI noopt
 #endif
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 static Translator<std::string, size_t> s2l;
 
@@ -56,5 +53,4 @@ void NetMask::print(std::ostream& s) const {
     s << network_ << '/' << bits_;
 }
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

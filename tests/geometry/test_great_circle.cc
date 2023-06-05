@@ -16,9 +16,7 @@
 #include "eckit/geometry/Point2.h"
 #include "eckit/testing/Test.h"
 
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 using namespace geometry;
 
@@ -239,8 +237,7 @@ CASE("test great circles intersections") {
 
 // -----------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

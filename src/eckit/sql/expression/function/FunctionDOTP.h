@@ -16,10 +16,7 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 class FunctionDOTP : public FunctionExpression {
 public:
@@ -38,11 +35,11 @@ private:
     double value_;
 
     // -- Overridden methods
-    virtual const eckit::sql::type::SQLType* type() const override;
-    virtual void prepare(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
-    virtual void partialResult() override;
-    virtual double eval(bool& missing) const override;
+    const eckit::sql::type::SQLType* type() const override;
+    void prepare(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
+    void partialResult() override;
+    double eval(bool& missing) const override;
 
     bool isAggregate() const override { return true; }
 
@@ -53,9 +50,6 @@ private:
     //	{ p.print(s); return s; }
 };
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

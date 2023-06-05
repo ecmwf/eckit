@@ -128,8 +128,9 @@ class TestOutput : public eckit::sql::SQLOutput {
     virtual void flush() {}
 
     virtual bool output(const eckit::sql::expression::Expressions& results) {
-        for (const auto& r : results)
+        for (const auto& r : results) {
             r->output(*this);
+        }
         return true;
     };
 
@@ -320,12 +321,14 @@ CASE("Functions using test data") {
         EXPECT(o.intOutput.size() == 0);
         EXPECT(o.strOutput.size() == 0);
         EXPECT(o.floatOutput.size() == 18);
-        for (size_t i = 0; i < 12; i++)
+        for (size_t i = 0; i < 12; i++) {
             EXPECT(o.floatOutput[i]);
+        }
         EXPECT(!o.floatOutput[12]);
         EXPECT(o.floatOutput[13]);
-        for (size_t i = 14; i < 18; i++)
+        for (size_t i = 14; i < 18; i++) {
             EXPECT(!o.floatOutput[i]);
+        }
     }
 
     SECTION("Test simple arithmetic -- addition/subtraction") {
@@ -446,12 +449,15 @@ CASE("Functions using test data") {
         EXPECT(o.floatOutput.size() == 9);
         EXPECT(o.strOutput.size() == 0);
 
-        for (size_t i = 0; i < 3; i++)
+        for (size_t i = 0; i < 3; i++) {
             EXPECT(!o.floatOutput[i]);
-        for (size_t i = 3; i < 5; i++)
+        }
+        for (size_t i = 3; i < 5; i++) {
             EXPECT(o.floatOutput[i]);
-        for (size_t i = 6; i < 9; i++)
+        }
+        for (size_t i = 6; i < 9; i++) {
             EXPECT(!o.floatOutput[i]);
+        }
     }
 
     SECTION("Test SQL conditional composition OR") {
@@ -466,12 +472,15 @@ CASE("Functions using test data") {
         EXPECT(o.floatOutput.size() == 9);
         EXPECT(o.strOutput.size() == 0);
 
-        for (size_t i = 0; i < 3; i++)
+        for (size_t i = 0; i < 3; i++) {
             EXPECT(o.floatOutput[i]);
-        for (size_t i = 3; i < 5; i++)
+        }
+        for (size_t i = 3; i < 5; i++) {
             EXPECT(!o.floatOutput[i]);
-        for (size_t i = 6; i < 9; i++)
+        }
+        for (size_t i = 6; i < 9; i++) {
             EXPECT(o.floatOutput[i]);
+        }
     }
 
     SECTION("Test SQL conditional composition NOT OR") {
@@ -486,12 +495,15 @@ CASE("Functions using test data") {
         EXPECT(o.floatOutput.size() == 9);
         EXPECT(o.strOutput.size() == 0);
 
-        for (size_t i = 0; i < 3; i++)
+        for (size_t i = 0; i < 3; i++) {
             EXPECT(!o.floatOutput[i]);
-        for (size_t i = 3; i < 5; i++)
+        }
+        for (size_t i = 3; i < 5; i++) {
             EXPECT(o.floatOutput[i]);
-        for (size_t i = 6; i < 9; i++)
+        }
+        for (size_t i = 6; i < 9; i++) {
             EXPECT(!o.floatOutput[i]);
+        }
     }
 
     SECTION("Test SQL aggregates") {

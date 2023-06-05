@@ -22,7 +22,8 @@ class BSPHyperPlane {
     double d_;
 
 public:
-    BSPHyperPlane() : normal_(), d_() {}
+    BSPHyperPlane() :
+        normal_(), d_() {}
 
     BSPHyperPlane(const Point& normal, const Point& point) :
         normal_(Point::normalize(normal)), d_(-Point::dot(normal_, point)) {}

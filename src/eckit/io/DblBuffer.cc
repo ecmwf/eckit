@@ -160,11 +160,13 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
         Log::message() << "Wait " << i << std::endl;
         AutoLock<MutexCond> lock(buffers[i].cond_);
 
-        while (buffers[i].full_)
+        while (buffers[i].full_) {
             buffers[i].cond_.wait();
+        }
 
-        if (error())
+        if (error()) {
             break;
+        }
 
         Log::message() << "Read " << i << std::endl;
         try {
@@ -173,8 +175,9 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
             double s           = reader.elapsed() - x;
             Log::status() << Bytes(estimate) << " at " << Bytes(buffers[i].length_ / s) << "/s" << std::endl;
             rate += s;
-            if (first == 0.)
+            if (first == 0.) {
                 first = rate;
+            }
 
             watcher_.watch(buffers[i].buffer_, buffers[i].length_);
         }
@@ -216,15 +219,18 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
 
     Log::info() << "Read done " << Bytes(inBytes_) << std::endl;
     Log::info() << "Read rate " << Bytes(inBytes_ / rate) << "/s" << std::endl;
-    if (first != rate)
-        Log::info() << "Read rate no mount " << Bytes(inBytes_ / (rate - first)) << "/s" << std::endl;
+    if (first != rate) {
+        Log::info() << "Read rate no mount " << Bytes(inBytes_ / (rate - first)) << "/s"
+                    << std::endl;
+    }
 
     thread.wait();
     delete[] buffers;
 
     if (error_) {
-        if (restart_)
+        if (restart_) {
             throw RestartTransfer(restartFrom_);
+        }
         throw DblBufferError(why_);
     }
 
@@ -258,14 +264,17 @@ void DblBufferTask::run() {
         Log::message() << "Wait " << i << std::endl;
         AutoLock<MutexCond> lock(buffers_[i].cond_);
 
-        while (!buffers_[i].full_)
+        while (!buffers_[i].full_) {
             buffers_[i].cond_.wait();
+        }
 
-        if (owner_.error())
+        if (owner_.error()) {
             break;
+        }
 
-        if (buffers_[i].length_ == 0)
+        if (buffers_[i].length_ == 0) {
             break;
+        }
 
         long length = -1;
 
@@ -276,8 +285,9 @@ void DblBufferTask::run() {
             double s = writer.elapsed() - x;
             Log::status() << Bytes(buffers_[i].length_ / s) << "/s" << std::endl;
             rate += s;
-            if (first == 0)
+            if (first == 0) {
                 first = rate;
+            }
 
             ASSERT(length == buffers_[i].length_);
         }
@@ -315,8 +325,10 @@ void DblBufferTask::run() {
 
     Log::info() << "Write done " << Bytes(owner_.outBytes_) << std::endl;
     Log::info() << "Write rate " << Bytes(owner_.outBytes_ / rate) << "/s" << std::endl;
-    if (rate != first)
-        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
+    if (rate != first) {
+        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s"
+                    << std::endl;
+    }
 
     Metrics::set("write_time", rate);
 }

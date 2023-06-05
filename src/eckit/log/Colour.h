@@ -16,6 +16,8 @@
 #ifndef eckit_Colour_h
 #define eckit_Colour_h
 
+#include <iosfwd>
+
 #include "eckit/eckit.h"
 
 

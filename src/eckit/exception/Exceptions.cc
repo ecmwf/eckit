@@ -53,16 +53,25 @@ void Exception::exceptionStack(std::ostream& out, bool callStack) {
     while (e) {
         out << e->what() << std::endl;
 
-        if (callStack)
+        if (callStack) {
             out << e->callStack() << std::endl
                 << std::endl;
+        }
 
         e = e->next_;
     }
     out << "End stack" << std::endl;
 }
 
-Exception::Exception(const std::string& w, const CodeLocation& location) :
+Exception::Exception(const std::string& what) :
+    Exception(what, eckit::CodeLocation{}, false) {
+}
+
+Exception::Exception(const std::string& what, const CodeLocation& location) :
+    Exception(what, location, false) {
+}
+
+Exception::Exception(const std::string& w, const CodeLocation& location, bool quiet) :
     what_(w), next_(first()), location_(location) {
     callStack_ = BackTrace::dump();
 
@@ -70,7 +79,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location) :
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    if (!::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+    if (!::getenv("ECKIT_EXCEPTION_IS_SILENT") && !quiet) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
     }
 
@@ -205,8 +214,7 @@ AssertionFailed::AssertionFailed(const char* msg, const CodeLocation& loc) {
 }
 
 
-void handle_assert(const std::string& msg, const CodeLocation& loc)
-{
+void handle_assert(const std::string& msg, const CodeLocation& loc) {
     std::ostringstream s;
     s << "Assertion failed: " << msg << " in " << loc.func() << ", line " << loc.line() << " of " << loc.file();
 
@@ -258,7 +266,8 @@ NotImplemented::NotImplemented(const std::string& s, const eckit::CodeLocation& 
               << BackTrace::dump() << std::endl;
 }
 
-NotImplemented::NotImplemented(const CodeLocation& loc) : NotImplemented("", loc) {}
+NotImplemented::NotImplemented(const CodeLocation& loc) :
+    NotImplemented("", loc) {}
 
 UserError::UserError(const std::string& r, const CodeLocation& loc) :
     Exception(std::string("UserError: ") + r, loc) {}
@@ -325,8 +334,9 @@ CantOpenFile::CantOpenFile(const std::string& file, bool retry) :
     retry_(retry) {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
-    if (retry)
+    if (retry) {
         s << " (retry ok)";
+    }
     reason(s.str());
     Log::status() << what() << std::endl;
 }
@@ -335,8 +345,9 @@ CantOpenFile::CantOpenFile(const std::string& file, const CodeLocation& loc, boo
     retry_(retry) {
     std::ostringstream s;
     s << "Cannot open " << file << " " << Log::syserr;
-    if (retry)
+    if (retry) {
         s << " (retry ok)";
+    }
     s << loc;
     reason(s.str());
     Log::status() << what() << std::endl;

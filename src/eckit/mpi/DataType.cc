@@ -13,8 +13,7 @@
 
 #include "eckit/mpi/DataType.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -217,5 +216,4 @@ size_t Data::Type<std::complex<double> >::size() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

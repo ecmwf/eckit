@@ -36,23 +36,23 @@ public:
 
     // From DataHandle
 
-    virtual Length openForRead() override;
-    virtual void openForWrite(const Length&) override;
-    virtual void openForAppend(const Length&) override;
+    Length openForRead() override;
+    void openForWrite(const Length&) override;
+    void openForAppend(const Length&) override;
 
-    virtual long read(void*, long) override;
-    virtual long write(const void*, long) override;
-    virtual void close() override;
-    virtual void print(std::ostream&) const override;
+    long read(void*, long) override;
+    long write(const void*, long) override;
+    void close() override;
+    void print(std::ostream&) const override;
 
-    virtual Offset position() override;
-    virtual Offset seek(const Offset&) override;
-    virtual bool canSeek() const override { return true; }
-    virtual void skip(const Length&) override;
+    Offset position() override;
+    Offset seek(const Offset&) override;
+    bool canSeek() const override { return true; }
+    void skip(const Length&) override;
 
     // From Streamable
 
-    virtual void encode(Stream&) const override;
+    void encode(Stream&) const override;
 
     // -- Class methods
 

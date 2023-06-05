@@ -43,10 +43,7 @@ bool matchEx(const std::string& regex, const std::string& s) {
 
 }  // namespace
 
-namespace eckit {
-namespace sql {
-namespace expression {
-
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -104,8 +101,9 @@ void StringExpression::expandStars(const std::vector<std::reference_wrapper<cons
             e.push_back(std::make_shared<ColumnExpression>(name, &table.get()));
         }
     }
-    if (!matched)
+    if (!matched) {
         throw eckit::UserError(std::string("No columns matching regex '") + name_ + "' found.");
+    }
 }
 
 std::shared_ptr<SQLExpression> StringExpression::clone() const {
@@ -144,6 +142,4 @@ void StringExpression::print(std::ostream& s) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

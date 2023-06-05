@@ -9,8 +9,8 @@
  */
 
 #include <unistd.h>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "eckit/types/Types.h"
 
@@ -29,8 +29,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -192,8 +191,9 @@ CASE("Find children files and dirs") {
     ref_files.insert("testdir/foo/file.2");
     ref_files.insert("testdir/bar/file.3");
 
-    for (std::set<LocalPathName>::const_iterator j = ref_files.begin(); j != ref_files.end(); ++j)
+    for (std::set<LocalPathName>::const_iterator j = ref_files.begin(); j != ref_files.end(); ++j) {
         j->touch();
+    }
 
     PathName t(LocalPathName::cwd());
     t += "/testdir";
@@ -442,8 +442,7 @@ CASE("Test PathName hashing") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

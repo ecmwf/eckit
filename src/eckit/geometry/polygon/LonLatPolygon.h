@@ -17,9 +17,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
-namespace polygon {
+namespace eckit::geometry::polygon {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -33,8 +31,9 @@ public:
 
     explicit LonLatPolygon(const container_type& points, bool includePoles = true);
 
-    template<typename Point2Iterator>
-    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true) : LonLatPolygon(container_type(begin, end), includePoles) {}
+    template <typename Point2Iterator>
+    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true) :
+        LonLatPolygon(container_type(begin, end), includePoles) {}
 
     LonLatPolygon(const LonLatPolygon&) = default;
     LonLatPolygon(LonLatPolygon&&)      = default;
@@ -59,8 +58,9 @@ public:
     /// @brief Point-in-polygon test based on winding number
     /// @note reference <a href="http://geomalgorithms.com/a03-_inclusion.html">Inclusion of a Point in a Polygon</a>
     /// @param[in] P given point
+    /// @param[in] normalise_angle normalise point angles
     /// @return if point (lon,lat) is in polygon
-    bool contains(const Point2& Plonlat) const;
+    bool contains(const Point2& Plonlat, bool normalise_angle = false) const;
 
 private:
     // -- Methods
@@ -79,6 +79,4 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace polygon
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry::polygon

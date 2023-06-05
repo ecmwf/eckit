@@ -14,8 +14,7 @@
 
 #include "eckit/system/Library.h"
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -23,9 +22,9 @@ class Plugin : public eckit::system::Library {
 public:
     /// @param [in] name    Plugin name
     /// @param [in] libname Library name as will be used in file system
-    explicit Plugin( const std::string& name, const std::string& libname = "" );
+    explicit Plugin(const std::string& name, const std::string& libname = "");
 
-    virtual ~Plugin() override;
+    ~Plugin() override;
 
     /// @brief Plugin name
     const std::string& name() const { return name_; }
@@ -43,7 +42,7 @@ public:
     void* handle() const { return handle_; }
 
 protected:
-    void* handle_ = nullptr; //< handle returned by dlopen
+    void* handle_ = nullptr;  //< handle returned by dlopen
 
 private:
     std::string name_;
@@ -52,5 +51,4 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

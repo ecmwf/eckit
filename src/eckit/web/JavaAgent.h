@@ -40,7 +40,7 @@ public:
 
     // -- Destructor
 
-    virtual ~JavaAgent() override;
+    ~JavaAgent() override;
 
     // -- Methods
 
@@ -53,8 +53,8 @@ public:
 
     // -- Overridden methods
 
-    virtual void encode(eckit::Stream&) const override;
-    virtual const eckit::ReanimatorBase& reanimator() const override { return reanimator_; }
+    void encode(eckit::Stream&) const override;
+    const eckit::ReanimatorBase& reanimator() const override { return reanimator_; }
 
     // -- Class methods
 

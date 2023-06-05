@@ -16,13 +16,9 @@
 
 #include "eckit/linalg/types.h"
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 //-----------------------------------------------------------------------------
-
 
 class LinearAlgebraSparse {
 public:
@@ -76,6 +72,4 @@ private:
 
 //-----------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

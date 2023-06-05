@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <random>
+
 #include "eckit/container/BTree.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/types/FixedString.h"
@@ -19,8 +21,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -119,8 +120,11 @@ CASE("test_eckit_container_btree_int_int_nolocking") {
 CASE("test_eckit_container_btree_random_char_udf") {
     std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    std::random_device rd;
+    std::mt19937 g(rd());
+
     for (int j = 0; j < 1; ++j) {
-        std::random_shuffle(test.begin(), test.end());
+        std::shuffle(test.begin(), test.end(), g);
 
         unlink("foo");
 
@@ -201,8 +205,11 @@ CASE("test_eckit_container_btree_random_char_fixedstring") {
 CASE("test_eckit_container_btree_random_char_int") {
     std::string test = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    std::random_device rd;
+    std::mt19937 g(rd());
+
     for (int j = 0; j < 100; j++) {
-        std::random_shuffle(test.begin(), test.end());
+        std::shuffle(test.begin(), test.end(), g);
 
         unlink("foo");
 
@@ -339,8 +346,7 @@ CASE("test_eckit_container_fixedsttring_fixedsttring") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

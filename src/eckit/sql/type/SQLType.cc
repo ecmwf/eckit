@@ -25,9 +25,7 @@
 
 using namespace eckit;
 
-namespace eckit {
-namespace sql {
-namespace type {
+namespace eckit::sql::type {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -83,12 +81,14 @@ const SQLType* TypeRegistry::lookup(const std::string& name) {
     std::lock_guard<std::mutex> lock(m_);
 
     auto it = map_.find(name);
-    if (it != map_.end())
+    if (it != map_.end()) {
         return it->second.get();
+    }
 
     auto it2 = aliases_.find(name);
-    if (it2 != aliases_.end())
+    if (it2 != aliases_.end()) {
         return it2->second;
+    }
 
     return nullptr;
 }
@@ -128,8 +128,9 @@ const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles) {
         typ = SQLType::registerType(new SQLString(lookupName, sizeof(double) * sizeDoubles));
     }
 
-    if (!typ)
+    if (!typ) {
         throw eckit::SeriousBug(name + ": type not defined");
+    }
     return *typ;
 }
 
@@ -150,7 +151,4 @@ const SQLType* SQLType::subType(const std::string&) const {
     return this;
 }
 
-
-}  // namespace type
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::type

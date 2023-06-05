@@ -33,7 +33,7 @@ class ClusterHeartBeat : public Thread {
     virtual void run();
 
 public:
-    ClusterHeartBeat(ClusterNode& owner, int hostOffset=0) :
+    ClusterHeartBeat(ClusterNode& owner, int hostOffset = 0) :
         hostOffset_(hostOffset),
         owner_(owner) {}
 };
@@ -41,7 +41,7 @@ public:
 void ClusterHeartBeat::run() {
     Monitor::instance().name("heartbeat");
     std::vector<std::string> hosts = Resource<std::vector<std::string>>("clusterHost", {"localhost"});
-    int port         = net::Port("cluster", 9555);
+    int port                       = net::Port("cluster", 9555);
     std::string reply;
     NodeInfo remote;
 

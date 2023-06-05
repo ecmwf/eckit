@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -24,7 +24,6 @@ namespace eckit {
 ///
 class SemanticVersion {
 public:  // methods
-
     SemanticVersion();
     SemanticVersion(unsigned long major, unsigned long minor, unsigned long patch);
     SemanticVersion(const std::string&);
@@ -44,13 +43,13 @@ private:  // methods
     friend std::ostream& operator<<(std::ostream& os, const SemanticVersion& u) {
         u.print(os);
         return os;
-        }
+    }
 
-    private:  // members
-        unsigned long major_;
-        unsigned long minor_;
-        unsigned long patch_;
-    };
+private:  // members
+    unsigned long major_;
+    unsigned long minor_;
+    unsigned long patch_;
+};
 
 //--------------------------------------------------------------------------------------------------
 

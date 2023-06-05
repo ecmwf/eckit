@@ -94,8 +94,9 @@ Hash::digest_t xxHash::compute(const void* buffer, long size) {
 void xxHash::update(const void* buffer, long length) {
     if (length > 0) {
         ctx_->update(buffer, length);
-        if (!digest_.empty())
+        if (!digest_.empty()) {
             digest_ = digest_t();  // reset the digest
+        }
     }
 }
 

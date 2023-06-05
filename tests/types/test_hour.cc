@@ -20,8 +20,7 @@ using namespace eckit::testing;
 
 using eckit::types::is_approximately_equal;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -90,9 +89,7 @@ CASE("Test seconds") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
-
+}  // namespace eckit::test
 
 int main(int argc, char* argv[]) {
     return run_tests(argc, argv);

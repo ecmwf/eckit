@@ -54,24 +54,29 @@ std::string Html::addHex(const std::string& s) {
                 break;
         }
 
-        if (ok)
+        if (ok) {
             t += c;
+        }
         else {
             t += '%';
 
             unsigned int h = ((unsigned char)c) / 16;
             unsigned int l = ((unsigned char)c) % 16;
 
-            if (h >= 10)
+            if (h >= 10) {
                 c = h - 10 + 'A';
-            else
+            }
+            else {
                 c = h + '0';
+            }
             t += c;
 
-            if (l >= 10)
+            if (l >= 10) {
                 c = l - 10 + 'A';
-            else
+            }
+            else {
                 c = l + '0';
+            }
             t += c;
         }
         index++;
@@ -99,8 +104,9 @@ std::string Html::removeHex(const std::string& s) {
 
             t += char(a * 16 + b);
         }
-        else
+        else {
             t += s[index];
+        }
 
         index++;
     }
@@ -142,22 +148,27 @@ void Html::Include::print(std::ostream& s) const {
     while (in.get(c)) {
         if (c == '%') {
             if (word) {
-                if (sub_)
+                if (sub_) {
                     sub_->substitute(s, p);
-                else
+                }
+                else {
                     s << '%' << p << '%';
+                }
                 p    = "";
                 word = false;
             }
-            else
+            else {
                 word = true;
+            }
             in.get(c);
         }
 
-        if (word)
+        if (word) {
             p += c;
-        else
+        }
+        else {
             s << c;
+        }
     }
 
     s << HttpStream::doEncode;
@@ -185,10 +196,12 @@ Html::Link::Link(Url& url) :
     url_(addHex(url.str())) {}
 
 void Html::Link::print(std::ostream& s) const {
-    if (url_.length())
+    if (url_.length()) {
         s << "<A HREF=\"" << url_ << "\">";
-    else
+    }
+    else {
         s << "</A>";
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -196,10 +209,12 @@ void Html::Link::print(std::ostream& s) const {
 
 void Html::Substitute::substitute(std::ostream& s, const std::string& p) {
     std::map<std::string, std::string, std::less<std::string> >::iterator i = map_.find(p);
-    if (i == map_.end())
+    if (i == map_.end()) {
         s << '%' << p << '%';
-    else
+    }
+    else {
         s << HttpStream::doEncode << (*i).second << HttpStream::dontEncode;
+    }
 }
 
 Html::Substitute::Substitute() {}
@@ -219,25 +234,29 @@ void Html::Class::print(std::ostream& s) const {
 
     for (int i = 0; i < len; i++) {
         char c = str_[i];
-        if (isalnum(c) || c == '_')
+        if (isalnum(c) || c == '_') {
             p += c;
+        }
         else if (p.length()) {
             s << Link(base + p) << p << Link();
             s << c;
             p = "";
         }
-        else
+        else {
             s << c;
+        }
     }
-    if (p.length())
+    if (p.length()) {
         s << Link(base + p) << p << Link();
+    }
 }
 
 void Html::BeginForm::print(std::ostream& s) const {
     s << "<FORM METHOD=\"POST\"";
 
-    if (str_.length())
+    if (str_.length()) {
         s << " ACTION=\"" << str_ << "\"";
+    }
 
     s << ">";
 }
@@ -258,8 +277,9 @@ void Html::HiddenField::print(std::ostream& s) const {
 
 void Html::CheckBox::print(std::ostream& s) const {
     s << "<INPUT TYPE=\"checkbox\" ";
-    if (on_)
+    if (on_) {
         s << "checked ";
+    }
     s << "NAME=\"" << name_ << "\" VALUE=\"" << value_ << "\">";
 }
 
@@ -291,8 +311,9 @@ static ImageProvider imageProvider;
 void ImageProvider::GET(std::ostream& out, Url& url) {
     eckit::PathName path = eckit::Resource<PathName>("imagePath", "~/html/image");
 
-    for (int i = 1; i < url.size(); i++)
+    for (int i = 1; i < url.size(); i++) {
         path = path + "/" + url[i];
+    }
 
     std::ifstream in(path.localPath());
     if (!in) {
@@ -304,8 +325,9 @@ void ImageProvider::GET(std::ostream& out, Url& url) {
 
         out << HttpStream::dontEncode;
         char c;
-        while (in.get(c))
+        while (in.get(c)) {
             out << c;
+        }
         out << HttpStream::doEncode;
     }
 }
@@ -325,8 +347,9 @@ static HtmlProvider htmlProvider;
 void HtmlProvider::GET(std::ostream& s, Url& url) {
     std::string path;
 
-    for (int i = 1; i < url.size(); i++)
+    for (int i = 1; i < url.size(); i++) {
         path += "/" + url[i];
+    }
 
     Html::Substitute empty;
     Html::Include include(path, empty);
@@ -338,14 +361,18 @@ void HtmlProvider::GET(std::ostream& s, Url& url) {
 
 void Html::BeginTable::print(std::ostream& s) const {
     s << "<TABLE";
-    if (border_)
+    if (border_) {
         s << " BORDER";
-    if (padding_)
+    }
+    if (padding_) {
         s << " CELLPADDING=" << padding_;
-    if (spacing_)
+    }
+    if (spacing_) {
         s << " CELLSPACING=" << spacing_;
-    if (width_)
+    }
+    if (width_) {
         s << " WIDTH=" << '"' << width_ << '%' << '"';
+    }
     s << ">";
 }
 
@@ -353,23 +380,29 @@ void Html::TableTag::print(std::ostream& s) const {
     s << '<' << tag_;
 
     if (align_) {
-
-        if ((align_ & Center))
+        if ((align_ & Center)) {
             s << " ALIGN=center";
-        if ((align_ & Left))
+        }
+        if ((align_ & Left)) {
             s << " ALIGN=left";
-        if ((align_ & Right))
+        }
+        if ((align_ & Right)) {
             s << " ALIGN=right";
-        if ((align_ & Top))
+        }
+        if ((align_ & Top)) {
             s << " VALIGN=top";
-        if ((align_ & Bottom))
+        }
+        if ((align_ & Bottom)) {
             s << " VALIGN=bottom";
+        }
     }
 
-    if (colspan_)
+    if (colspan_) {
         s << " COLSPAN=" << colspan_;
-    if (rowspan_)
+    }
+    if (rowspan_) {
         s << " ROWSPAN=" << rowspan_;
+    }
 
     s << '>';
 }

@@ -26,9 +26,11 @@ namespace eckit {
 template <class T>
 class TraceTimer : public Timer {
 public:
-    explicit TraceTimer(const char* name) : Timer(name, eckit::Log::debug<T>()) {}
+    explicit TraceTimer(const char* name) :
+        Timer(name, eckit::Log::debug<T>()) {}
 
-    explicit TraceTimer(const std::string& name) : Timer(name, eckit::Log::debug<T>()) {}
+    explicit TraceTimer(const std::string& name) :
+        Timer(name, eckit::Log::debug<T>()) {}
 };
 
 //-----------------------------------------------------------------------------

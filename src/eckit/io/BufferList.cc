@@ -32,8 +32,9 @@ Length BufferList::size() const {
 Buffer BufferList::consolidate() {
     const size_t nbuffs = count();
 
-    if (nbuffs == 0)
+    if (nbuffs == 0) {
         return Buffer();
+    }
 
     // optimize for count() = 1
     // we can do this optimisation because consolidate() clears the contents of the list

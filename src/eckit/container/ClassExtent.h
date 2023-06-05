@@ -122,8 +122,9 @@ void ClassExtent<T>::callAll(void (T::*proc)()) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = map.begin(); i != map.end(); ++i)
+    for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)();
+    }
 }
 
 template <class T>
@@ -134,8 +135,9 @@ void ClassExtent<T>::callAll(void (T::*proc)() const) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i)
+    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)();
+    }
 }
 
 template <class T>
@@ -149,8 +151,9 @@ void ClassExtent<T>::callAll(void (T::*proc)(P), P arg) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = map.begin(); i != map.end(); ++i)
+    for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)(arg);
+    }
 }
 
 template <class T>
@@ -162,8 +165,9 @@ void ClassExtent<T>::callAll(void (T::*proc)(P) const, P arg) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i)
+    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)(arg);
+    }
 }
 
 template <class T>
@@ -177,8 +181,9 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1, P2), P1 arg1, P2 arg2) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = map.begin(); i != map.end(); ++i)
+    for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)(arg1, arg2);
+    }
 }
 
 template <class T>
@@ -190,8 +195,9 @@ void ClassExtent<T>::callAll(void (T::*proc)(P&), P& arg) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i)
+    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)(arg);
+    }
 }
 
 template <class T>
@@ -203,8 +209,9 @@ void ClassExtent<T>::callAll(void (T::*proc)(P&) const, P& arg) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i)
+    for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)(arg);
+    }
 }
 
 template <class T>
@@ -218,12 +225,14 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1&, P2&), P1& arg1, P2& arg2) {
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
     typedef typename ClassExtent<T>::Extent::Map map_type;
     typename map_type::iterator i;
-    for (i = map.begin(); i != map.end(); ++i)
+    for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)(arg1, arg2);
+    }
 }
 
 template <class T>
-ClassExtent<T>::Extent::Extent() : inited_(true) {}
+ClassExtent<T>::Extent::Extent() :
+    inited_(true) {}
 
 template <class T>
 ClassExtent<T>::Extent::~Extent() {

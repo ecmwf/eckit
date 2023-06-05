@@ -58,7 +58,8 @@ template <class T>
 pthread_mutex_t Once<T>::mutex_;
 
 template <class T>
-Once<T>::Once() : value_(0) {}
+Once<T>::Once() :
+    value_(0) {}
 
 template <class T>
 Once<T>::~Once() {}
@@ -69,8 +70,9 @@ Once<T>::operator T&() {
 
     ::pthread_mutex_lock(&mutex_);
 
-    if (!value_)
+    if (!value_) {
         value_ = new T();
+    }
 
     ::pthread_mutex_unlock(&mutex_);
 

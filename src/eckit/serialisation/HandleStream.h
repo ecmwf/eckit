@@ -30,7 +30,8 @@ class HandleStream : public Stream {
 public:
     // -- Contructors
 
-    HandleStream(DataHandle& h) : handle_(h) {}
+    HandleStream(DataHandle& h) :
+        handle_(h) {}
 
     // -- Destructor
 

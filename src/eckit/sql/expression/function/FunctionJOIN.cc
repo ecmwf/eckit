@@ -12,10 +12,7 @@
 #include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -41,7 +38,4 @@ double FunctionJOIN::eval(bool& missing) const {
     return args_[0]->eval(missing) == args_[1]->eval(missing);
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

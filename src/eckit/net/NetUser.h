@@ -33,7 +33,7 @@ protected:
 private:
     virtual void serve(Stream&, std::istream&, std::ostream&) = 0;
 
-    virtual void run() override;
+    void run() override;
 
     friend class NetServiceProcessControler;
 };

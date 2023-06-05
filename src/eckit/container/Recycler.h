@@ -133,7 +133,8 @@ private:
 //-----------------------------------------------------------------------------
 
 template <class T>
-Recycler<T>::Recycler(const PathName& path) : path_(path), fd_(-1) {
+Recycler<T>::Recycler(const PathName& path) :
+    path_(path), fd_(-1) {
     path_.dirName().mkdir();
     fd_ = ::open(path_.localPath(), O_RDWR | O_CREAT, 0777);
     if (fd_ < 0) {
@@ -143,8 +144,9 @@ Recycler<T>::Recycler(const PathName& path) : path_(path), fd_(-1) {
 
 template <class T>
 Recycler<T>::~Recycler() {
-    if (fd_ >= 0)
+    if (fd_ >= 0) {
         SYSCALL(::close(fd_));
+    }
 }
 
 
@@ -185,8 +187,9 @@ void Recycler<T>::push(Iter begin, Iter end) {
     SYSCALL(here = ::lseek(fd_, 0, SEEK_END));
     ASSERT((here % sizeof(T)) == 0);
 
-    for (Iter j = begin; j != end; ++j)
+    for (Iter j = begin; j != end; ++j) {
         ASSERT(::write(fd_, &(*j), sizeof(T)) == sizeof(T));
+    }
 }
 
 template <class T>

@@ -63,10 +63,10 @@ protected:
     int nominalShift_;  // For the HASH operator
 
     // -- Overridden methods
-    virtual void print(std::ostream& s) const override;
-    virtual void cleanup(SQLSelect& sql) override;
-    virtual double eval(bool& missing) const override;
-    virtual void output(SQLOutput& s) const override;
+    void print(std::ostream& s) const override;
+    void cleanup(SQLSelect& sql) override;
+    double eval(bool& missing) const override;
+    void output(SQLOutput& s) const override;
 
 private:
     ShiftedColumnExpression& operator=(const ShiftedColumnExpression&);

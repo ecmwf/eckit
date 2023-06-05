@@ -64,21 +64,19 @@ public:  // methods
     virtual const Configuration& configuration() const;
 
 public:  // methods
-
     /// @deprecated Use LibraryManager instead
     static std::vector<std::string> list();
     /// @deprecated Use LibraryManager instead
-    static  void list(std::ostream& s);
+    static void list(std::ostream& s);
     /// @deprecated Use LibraryManager instead
-    static  bool exists(const std::string& name);
+    static bool exists(const std::string& name);
     /// @deprecated Use LibraryManager instead
-    static  const Library& lookup(const std::string& name);
+    static const Library& lookup(const std::string& name);
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }
 
 protected:  // methods
-
     virtual std::string home() const;
 
     virtual const void* addr() const;

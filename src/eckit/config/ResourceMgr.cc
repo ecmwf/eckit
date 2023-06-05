@@ -41,16 +41,18 @@ void ResourceMgr::reset() {
 // This has to be redone
 
 static const char* skip_spaces(const char* p) {
-    while (*p && isspace(*p))
+    while (*p && isspace(*p)) {
         p++;
+    }
     return p;
 }
 
 bool ResourceMgr::parse(const char* p) {
     p = skip_spaces(p);
 
-    if (*p == 0 || *p == '#')
+    if (*p == 0 || *p == '#') {
         return true;  // skip comments
+    }
 
     std::string s[3];
     int n = 0;
@@ -59,8 +61,9 @@ bool ResourceMgr::parse(const char* p) {
         const char* q = p;
 
         p = skip_spaces(p);
-        while (*p && *p != ':' && *p != '.' && !isspace(*p))
+        while (*p && *p != ':' && *p != '.' && !isspace(*p)) {
             p++;
+        }
 
         int len = p - q;
         p       = skip_spaces(p);
@@ -69,41 +72,44 @@ bool ResourceMgr::parse(const char* p) {
         s[n].resize(len);
         n++;
 
-        if (n == 3 || *p != '.')
+        if (n == 3 || *p != '.') {
             break;
-        p++;
-    }
-    if (*p != ':')
-        return false;
-    else {
-        switch (n) {
-            case 1:
-                s[2] = s[0];
-                s[0] = "";
-                break;
-            case 2:
-                s[2] = s[1];
-                s[1] = s[0];
-                s[0] = "";
-                break;
-            case 3:
-                break;
         }
-
         p++;
-        p = skip_spaces(p);
-
-        // Remove trailing blanks
-        int l = ::strlen(p) - 1;
-        while (l >= 0 && isspace(p[l]))
-            l--;
-
-
-        ResourceQualifier x(s[0], s[1], s[2]);
-
-        std::string t = std::string(p, l + 1);
-        resmap_[x]    = t;
     }
+
+    if (*p != ':') {
+        return false;
+    }
+
+    switch (n) {
+        case 1:
+            s[2] = s[0];
+            s[0] = "";
+            break;
+        case 2:
+            s[2] = s[1];
+            s[1] = s[0];
+            s[0] = "";
+            break;
+        case 3:
+            break;
+    }
+
+    p++;
+    p = skip_spaces(p);
+
+    // Remove trailing blanks
+    int l = ::strlen(p) - 1;
+    while (l >= 0 && isspace(p[l])) {
+        l--;
+    }
+
+    ResourceQualifier x(s[0], s[1], s[2]);
+
+    std::string t = std::string(p, l + 1);
+    resmap_[x]    = t;
+
     return true;
 }
 
@@ -128,8 +134,9 @@ void ResourceMgr::set(const std::string& name, const std::string& value) {
     AutoLock<Mutex> lock(mutex_);
 
     std::string s = name + ": " + value;
-    if (!parse(s.c_str()))
+    if (!parse(s.c_str())) {
         Log::warning() << "Failed to parse " << s << std::endl;
+    }
 }
 
 bool ResourceMgr::doLookUp(const std::string& kind, const std::string& owner, const std::string& name,

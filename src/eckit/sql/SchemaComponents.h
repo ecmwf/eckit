@@ -19,9 +19,7 @@
 
 #include "eckit/sql/SQLTypedefs.h"
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -68,7 +66,6 @@ using TableDefs = std::vector<TableDef>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

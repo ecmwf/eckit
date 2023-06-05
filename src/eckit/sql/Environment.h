@@ -16,8 +16,7 @@
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SelectOneTable.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -25,7 +24,8 @@ class SQLTableIterator;
 
 struct Environment {
 
-    Environment(SortedTables::iterator it) : tableIterator(it) {}
+    Environment(SortedTables::iterator it) :
+        tableIterator(it) {}
     ~Environment() {}
 
     const SelectOneTable& table() const { return **tableIterator; }
@@ -39,7 +39,6 @@ struct Environment {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

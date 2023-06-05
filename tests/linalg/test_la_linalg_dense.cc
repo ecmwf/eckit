@@ -12,8 +12,7 @@
 #include "eckit/linalg/LinearAlgebraDense.h"
 #include "util.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -69,8 +68,7 @@ CASE("test backend") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);

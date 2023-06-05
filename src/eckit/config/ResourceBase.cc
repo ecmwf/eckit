@@ -18,8 +18,9 @@ namespace eckit {
 
 ResourceBase::ResourceBase(Configurable* owner, const std::string& str) :
     owner_(owner), inited_(false) {
-    if (owner_)
+    if (owner_) {
         owner_->add(this);
+    }
 
     const char* p = str.c_str();
 
@@ -46,14 +47,16 @@ ResourceBase::ResourceBase(Configurable* owner, const std::string& str) :
 
         s->resize(len);
 
-        if (*p)
+        if (*p) {
             p++;
+        }
     }
 }
 
 ResourceBase::~ResourceBase() {
-    if (owner_)
+    if (owner_) {
         owner_->remove(this);
+    }
 }
 
 bool ResourceBase::setFromConfigFile() {
@@ -61,10 +64,12 @@ bool ResourceBase::setFromConfigFile() {
 
     std::string s;
 
-    if (owner_)
+    if (owner_) {
         found = ResourceMgr::lookUp(owner_->kind(), owner_->name(), name_, s);
-    else
+    }
+    else {
         found = ResourceMgr::lookUp("", "", name_, s);
+    }
 
     if (found) {
         setValue(s);
@@ -74,22 +79,26 @@ bool ResourceBase::setFromConfigFile() {
 }
 
 void ResourceBase::init() {
-    if (inited_)
+    if (inited_) {
         return;
+    }
 
     // First look in config file
     // First look for an option on the command line
 
     if (options_ != "") {
-        for (int i = 1; i < Main::instance().argc(); i++)
+        for (int i = 1; i < Main::instance().argc(); i++) {
             if (options_ == Main::instance().argv(i)) {
-                if (i + 1 == Main::instance().argc() || Main::instance().argv(i + 1)[0] == '-')
+                if (i + 1 == Main::instance().argc() || Main::instance().argv(i + 1)[0] == '-') {
                     setValue("true");
-                else
+                }
+                else {
                     setValue(Main::instance().argv(i + 1));
+                }
                 inited_ = true;
                 return;
             }
+        }
     }
 
     // Then look for an environment variable
@@ -118,28 +127,30 @@ void ResourceBase::init() {
 }
 
 std::string ResourceBase::name() const {
-    if (owner_)
+    if (owner_) {
         return owner_->kind() + '.' + owner_->name() + '.' + name_;
-    else
-        return name_;
+    }
+    return name_;
 }
 
 void ResourceBase::dump(std::ostream& s) const {
-
     // need const_cast here
     ((ResourceBase*)this)->init();
 
     s << "# " << name_ << ":" << std::endl;
 
-    if (options_ != "")
+    if (options_ != "") {
         s << "#   command line option  " << options_ << std::endl;
+    }
     if (environment_ != "") {
         s << "#   environment variable " << environment_ << " ";
         const char* p = getenv(environment_.c_str() + 1);
-        if (p)
+        if (p) {
             s << "(defined as " << p << ")";
-        else
+        }
+        else {
             s << "(undefined)";
+        }
         s << std::endl;
     }
 

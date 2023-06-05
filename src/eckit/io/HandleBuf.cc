@@ -51,19 +51,22 @@ int HandleBuf::sync() {
 }
 
 int HandleBuf::overflow(int c) {
-    if (sync())
+    if (sync()) {
         return EOF;
+    }
 
-    if (c == EOF)
+    if (c == EOF) {
         return 0;
+    }
 
     sputc(c);
     return 0;
 }
 
 int HandleBuf::underflow() {
-    if (gptr() < egptr())
+    if (gptr() < egptr()) {
         return *(unsigned char*)gptr();
+    }
 
     int n = handle_.read(in_, sizeof(in_));
 

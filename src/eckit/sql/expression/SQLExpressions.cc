@@ -11,19 +11,17 @@
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 const type::SQLType* Expressions::type() const {
     return &type::SQLType::lookup("real");
 }
 
-
 std::shared_ptr<SQLExpression> Expressions::clone() const {
     std::shared_ptr<Expressions> r = std::make_shared<Expressions>(this->size());
-    for (size_t i = 0; i < this->size(); ++i)
+    for (size_t i = 0; i < this->size(); ++i) {
         (*r)[i] = (*this)[i]->clone();
+    }
 
     return r;
 }
@@ -51,6 +49,4 @@ void Expressions::print(std::ostream& o) const {
     o << "]";
 }
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

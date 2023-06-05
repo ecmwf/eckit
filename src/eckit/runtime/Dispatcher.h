@@ -199,12 +199,12 @@ private:
 
     // From Thread
 
-    virtual void run() override;
+    void run() override;
 
     // From Monitorable
 
-    virtual void status(std::ostream&) const override;
-    virtual void json(JSON&) const override;
+    void status(std::ostream&) const override;
+    void json(JSON&) const override;
 
 
     // No copy
@@ -222,10 +222,11 @@ template <class Traits>
 class DispatchInfo : public Thread {
     // Dispatcher owning this thread
     Dispatcher<Traits>& owner_;
-    virtual void run() override;
+    void run() override;
 
 public:
-    DispatchInfo(Dispatcher<Traits>& owner) : owner_(owner) {}
+    DispatchInfo(Dispatcher<Traits>& owner) :
+        owner_(owner) {}
 };
 
 //=================================================================
@@ -234,18 +235,22 @@ template <class Traits>
 void DispatchTask<Traits>::status(std::ostream& s) const {
     AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
     s << "Picks for " << owner_.name() << " thread " << id_ << std::endl;
-    for (size_t i = 0; i < pick_.size(); i++)
-        if (pick_[i])
+    for (size_t i = 0; i < pick_.size(); i++) {
+        if (pick_[i]) {
             Handler::print(s, *pick_[i]);
+        }
+    }
 }
 
 template <class Traits>
 void DispatchTask<Traits>::json(JSON& s) const {
     AutoLock<Mutex> lock(((DispatchTask<Traits>*)this)->mutex_);
     int n = 0;
-    for (size_t i = 0; i < pick_.size(); i++)
-        if (pick_[i])
+    for (size_t i = 0; i < pick_.size(); i++) {
+        if (pick_[i]) {
             n++;
+        }
+    }
 
     if (n) {
         s.startObject();
@@ -253,9 +258,11 @@ void DispatchTask<Traits>::json(JSON& s) const {
         s << "id" << id_;
         s << "picks";
         s.startList();
-        for (size_t i = 0; i < pick_.size(); i++)
-            if (pick_[i])
+        for (size_t i = 0; i < pick_.size(); i++) {
+            if (pick_[i]) {
                 Handler::json(s, *pick_[i]);
+            }
+        }
         s.endList();
         s.endObject();
     }
@@ -371,13 +378,15 @@ void Dispatcher<Traits>::running(long delta) {
 
 template <class Traits>
 void Dispatcher<Traits>::push(Request* r) {
-    if (!r)
+    if (!r) {
         return;
+    }
 
     if (grow_) {
         int cnt = running();
-        if (cnt == count_)
+        if (cnt == count_) {
             changeThreadCount(1);
+        }
     }
 
     _push(r);
@@ -424,18 +433,22 @@ int Dispatcher<Traits>::size() const {
 template <class Traits>
 void Dispatcher<Traits>::print(std::ostream& s) const {
     AutoLock<MutexCond> lock(ready_);
-    for (typename std::list<Request*>::const_iterator i = queue_.begin(); i != queue_.end(); ++i)
-        if (*i)
+    for (typename std::list<Request*>::const_iterator i = queue_.begin(); i != queue_.end(); ++i) {
+        if (*i) {
             Handler::print(s, *(*i));
+        }
+    }
 }
 
 template <class Traits>
 void Dispatcher<Traits>::json(JSON& s) const {
     AutoLock<MutexCond> lock(ready_);
     s.startList();
-    for (typename std::list<Request*>::const_iterator i = queue_.begin(); i != queue_.end(); ++i)
-        if (*i)
+    for (typename std::list<Request*>::const_iterator i = queue_.begin(); i != queue_.end(); ++i) {
+        if (*i) {
             Handler::json(s, *(*i));
+        }
+    }
     s.endList();
 }
 
@@ -447,8 +460,9 @@ bool Dispatcher<Traits>::next(Handler& handler, std::vector<Request*>& result, M
 
     bool stop = false;
 
-    while (queue_.empty())
+    while (queue_.empty()) {
         ready_.wait();
+    }
 
     AutoLock<Mutex> lock2(mutex);  // Lock std::vector
 
@@ -459,9 +473,10 @@ bool Dispatcher<Traits>::next(Handler& handler, std::vector<Request*>& result, M
     typename std::list<Request*>::iterator i = std::find(queue_.begin(), queue_.end(), (Request*)0);
 
     // No null requests found, pick next task from the queue
-    if (i == queue_.end())
+    if (i == queue_.end()) {
         handler.pick(queue_, result);
-    // A null request was found
+        // A null request was found
+    }
     else {
         // Clear the null request and stop the thread
         queue_.erase(i);
@@ -474,8 +489,9 @@ bool Dispatcher<Traits>::next(Handler& handler, std::vector<Request*>& result, M
 
     ready_.signal();  // Let other threads get some more
 
-    if (result.size())
+    if (result.size()) {
         Log::status() << "Processing request" << std::endl;
+    }
 
     return stop;
 }

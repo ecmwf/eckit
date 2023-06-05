@@ -14,8 +14,7 @@
 #pragma clang diagnostic ignored "-Wself-move"
 #endif
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -180,8 +179,7 @@ CASE("Test copying and construction from of std::string") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

@@ -22,9 +22,7 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 static std::string msg("THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG'S BACK 1234567890");
 
@@ -122,8 +120,7 @@ CASE("Compression") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // end namespace test
-}  // end namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char* argv[]) {
     return run_tests(argc, argv);

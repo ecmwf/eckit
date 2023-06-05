@@ -16,13 +16,9 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 //-----------------------------------------------------------------------------
-
 
 static pthread_once_t once                            = PTHREAD_ONCE_INIT;
 static BackendRegistry<LinearAlgebraSparse>* backends = nullptr;
@@ -83,6 +79,4 @@ LinearAlgebraSparse::LinearAlgebraSparse(const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

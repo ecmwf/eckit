@@ -14,9 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -34,22 +32,26 @@ SQLExpressionEvaluated::SQLExpressionEvaluated(SQLExpression& e) :
 SQLExpressionEvaluated::~SQLExpressionEvaluated() {}
 
 void SQLExpressionEvaluated::print(std::ostream& o) const {
-    if (missing_)
+    if (missing_) {
         o << "NULL";
-    else
+    }
+    else {
         o << type_->asString(&value_[0]);
+    }
     o << ", ";
 }
 
 double SQLExpressionEvaluated::eval(bool& missing) const {
-    if (missing_)
+    if (missing_) {
         missing = true;
+    }
     return value_[0];
 }
 
 void SQLExpressionEvaluated::eval(double* out, bool& missing) const {
-    if (missing_)
+    if (missing_) {
         missing = true;
+    }
     ::memcpy(out, &value_[0], value_.size() * sizeof(value_[0]));
 }
 
@@ -108,6 +110,4 @@ const type::SQLType* SQLExpressionEvaluated::type() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression

@@ -26,12 +26,11 @@ class DataHandle;
 
 #include "eckit/memory/OnlyMovable.h"
 #include "eckit/sql/SQLSelectFactory.h"
-//#include "eckit/sql/SQLInsertFactory.h"
+// #include "eckit/sql/SQLInsertFactory.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutputConfig.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -114,7 +113,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

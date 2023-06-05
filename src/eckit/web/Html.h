@@ -42,15 +42,17 @@ public:
 
     class RawTag : public Tag {
         std::string tag_;
-        virtual void print(std::ostream& s) const override { s << tag_; }
+        void print(std::ostream& s) const override { s << tag_; }
 
     protected:
-        RawTag(const std::string& s) : tag_(s) {}
+        RawTag(const std::string& s) :
+            tag_(s) {}
     };
 
     class Line : public RawTag {
     public:
-        Line() : RawTag("<HR>") {}
+        Line() :
+            RawTag("<HR>") {}
     };
 
     // To be used with 'include'
@@ -96,23 +98,25 @@ public:
         Image& operator=(const Image&);
 
         std::string name_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
     };
 
     class Link : public Tag {
     public:
         Link(Url&);
         Link() {}
-        Link(const std::string& url) : url_(addHex(url)) {}
+        Link(const std::string& url) :
+            url_(addHex(url)) {}
 
     private:
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
         std::string url_;
     };
 
     class Class {
     public:
-        Class(const std::string& str) : str_(str) {}
+        Class(const std::string& str) :
+            str_(str) {}
 
     private:
         std::string str_;
@@ -127,51 +131,59 @@ public:
 
     class BeginFormatted : public RawTag {
     public:
-        BeginFormatted() : RawTag("<PRE>") {}
+        BeginFormatted() :
+            RawTag("<PRE>") {}
     };
 
     class EndFormatted : public RawTag {
     public:
-        EndFormatted() : RawTag("</PRE>") {}
+        EndFormatted() :
+            RawTag("</PRE>") {}
     };
     class BeginFixed : public RawTag {
     public:
-        BeginFixed() : RawTag("<TT>") {}
+        BeginFixed() :
+            RawTag("<TT>") {}
     };
 
     class EndFixed : public RawTag {
     public:
-        EndFixed() : RawTag("</TT>") {}
+        EndFixed() :
+            RawTag("</TT>") {}
     };
 
     class BeginBold : public RawTag {
     public:
-        BeginBold() : RawTag("<B>") {}
+        BeginBold() :
+            RawTag("<B>") {}
     };
 
     class EndBold : public RawTag {
     public:
-        EndBold() : RawTag("</B>") {}
+        EndBold() :
+            RawTag("</B>") {}
     };
 
     //----------------------------------------------------------------------------------------------------------------------
 
     class BeginForm : public Tag {
     public:
-        BeginForm(const std::string& str = "") : str_(str) {}
+        BeginForm(const std::string& str = "") :
+            str_(str) {}
 
     private:
         std::string str_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
     };
 
     class EndForm : public Tag {
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
     };
 
     class BeginTextArea {
     public:
-        BeginTextArea(const std::string& name, int row, int col) : name_(name), row_(row), col_(col) {}
+        BeginTextArea(const std::string& name, int row, int col) :
+            name_(name), row_(row), col_(col) {}
 
     private:
         std::string name_;
@@ -210,40 +222,45 @@ public:
     class HiddenField : public Tag {
         std::string name_;
         std::string value_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
-        HiddenField(const std::string& name, const std::string& value) : name_(name), value_(value) {}
+        HiddenField(const std::string& name, const std::string& value) :
+            name_(name), value_(value) {}
     };
 
 
     class Button : public Tag {
         std::string type_;
         std::string title_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
-        Button(const std::string& type, const std::string& title) : type_(type), title_(title) {}
+        Button(const std::string& type, const std::string& title) :
+            type_(type), title_(title) {}
     };
 
     class CheckBox : public Tag {
         std::string name_;
         std::string value_;
         bool on_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
-        CheckBox(const std::string& name, const std::string& value, bool on) : name_(name), value_(value), on_(on) {}
+        CheckBox(const std::string& name, const std::string& value, bool on) :
+            name_(name), value_(value), on_(on) {}
     };
 
     class ResetButton : public Button {
     public:
-        ResetButton(const std::string& title = "Reset") : Button("reset", title) {}
+        ResetButton(const std::string& title = "Reset") :
+            Button("reset", title) {}
     };
 
     class SubmitButton : public Button {
     public:
-        SubmitButton(const std::string& title = "Submit") : Button("submit", title) {}
+        SubmitButton(const std::string& title = "Submit") :
+            Button("submit", title) {}
     };
 
     class Hidden : public Tag {};
@@ -260,7 +277,7 @@ public:
         int padding_;
         int spacing_;
         int width_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     public:
         BeginTable(bool border = true, int width = 0, int padding = 0, int spacing = 0) :
@@ -269,7 +286,8 @@ public:
 
     class EndTable : public RawTag {
     public:
-        EndTable() : RawTag("</TABLE>") {}
+        EndTable() :
+            RawTag("</TABLE>") {}
     };
 
 
@@ -278,7 +296,7 @@ public:
         int align_;
         int colspan_;
         int rowspan_;
-        virtual void print(std::ostream& s) const override;
+        void print(std::ostream& s) const override;
 
     protected:
         TableTag(const std::string& tag, int align, int colspan, int rowspan) :
@@ -287,32 +305,38 @@ public:
 
     class BeginHeader : public TableTag {
     public:
-        BeginHeader(int align = None, int colspan = 0, int rowspan = 0) : TableTag("TH", align, colspan, rowspan) {}
+        BeginHeader(int align = None, int colspan = 0, int rowspan = 0) :
+            TableTag("TH", align, colspan, rowspan) {}
     };
 
     class EndHeader : public RawTag {
     public:
-        EndHeader() : RawTag("</TH>") {}
+        EndHeader() :
+            RawTag("</TH>") {}
     };
 
     class BeginRow : public TableTag {
     public:
-        BeginRow(int align = None, int colspan = 0, int rowspan = 0) : TableTag("TR", align, colspan, rowspan) {}
+        BeginRow(int align = None, int colspan = 0, int rowspan = 0) :
+            TableTag("TR", align, colspan, rowspan) {}
     };
 
     class EndRow : public RawTag {
     public:
-        EndRow() : RawTag("</TR>") {}
+        EndRow() :
+            RawTag("</TR>") {}
     };
 
     class BeginData : public TableTag {
     public:
-        BeginData(int align = None, int colspan = 0, int rowspan = 0) : TableTag("TD", align, colspan, rowspan) {}
+        BeginData(int align = None, int colspan = 0, int rowspan = 0) :
+            TableTag("TD", align, colspan, rowspan) {}
     };
 
     class EndData : public RawTag {
     public:
-        EndData() : RawTag("</TD>") {}
+        EndData() :
+            RawTag("</TD>") {}
     };
 
 };  // class Html

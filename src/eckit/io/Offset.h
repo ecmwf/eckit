@@ -49,8 +49,10 @@ public:
     friend Stream& operator>>(Stream& s, Offset& x);
 
     // Offset(fpos_t); <- To implement
-    Offset(value_t l = 0) : value_(l) {}
-    Offset(const Offset& other) : value_(other.value_) {}
+    Offset(value_t l = 0) :
+        value_(l) {}
+    Offset(const Offset& other) :
+        value_(other.value_) {}
 
 #include "eckit/io/Offset.b"
 

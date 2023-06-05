@@ -34,12 +34,12 @@ public:
     YAMLConfiguration(const std::string&, char separator = '.');
     YAMLConfiguration(const SharedBuffer&, char separator = '.');
 
-    virtual ~YAMLConfiguration() override;
+    ~YAMLConfiguration() override;
 
 private:  // members
     std::string path_;
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

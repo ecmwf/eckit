@@ -19,10 +19,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
-
-namespace eckit {
-namespace linalg {
-
+namespace eckit::linalg {
 
 template <typename LA>
 class BackendRegistry {
@@ -101,6 +98,4 @@ private:  // members
     mutable Mutex mutex_;
 };
 
-
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

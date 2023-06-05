@@ -11,27 +11,29 @@
 #ifndef EllipsoidOfRevolution_H
 #define EllipsoidOfRevolution_H
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
+namespace eckit::geometry {
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Point2;
 class Point3;
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct EllipsoidOfRevolution {
     // Convert elliptic coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radiusA, const double& radiusB, const Point2& Alonlat,
-                                            Point3& B, double height = 0.);
+    static void convertSphericalToCartesian(const double& radiusA,
+                                            const double& radiusB,
+                                            const Point2& Alonlat,
+                                            Point3& B,
+                                            double height        = 0.,
+                                            bool normalise_angle = false);
 };
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry
 
 #endif

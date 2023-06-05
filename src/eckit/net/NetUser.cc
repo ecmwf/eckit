@@ -13,8 +13,7 @@
 #include "eckit/io/SockBuf.h"
 #include "eckit/net/TCPStream.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 NetUser::NetUser(net::TCPSocket& protocol) :
     protocol_(protocol) {
@@ -34,6 +33,4 @@ void NetUser::run() {
     serve(stream, in, out);
 }
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

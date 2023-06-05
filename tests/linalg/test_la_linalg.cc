@@ -12,8 +12,7 @@
 #include "eckit/linalg/LinearAlgebra.h"
 #include "util.h"
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -93,8 +92,7 @@ CASE("test backend") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     using eckit::linalg::LinearAlgebra;

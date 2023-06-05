@@ -23,8 +23,7 @@
 using namespace std;
 using namespace eckit::testing;
 
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -49,8 +48,9 @@ CASE("Atomically update the contents of a file") {
     Log::info() << tmppath << " : exists " << tmppath.exists() << std::endl;
 
     std::ofstream of(tmppath.localPath());
-    if (!of)
+    if (!of) {
         throw CantOpenFile(tmppath.localPath(), Here());
+    }
     of << s.str();
     of.close();
 
@@ -74,8 +74,7 @@ CASE("Atomically update the contents of a file") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     return run_tests(argc, argv);

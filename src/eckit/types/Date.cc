@@ -30,8 +30,9 @@ public:
 static const char* months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 
 static void check(const Date& date, long value) {
-    if (value <= 999999)
+    if (value <= 999999) {
         value += 19000000;
+    }
 
     if (value != date.yyyymmdd()) {
         std::ostringstream os;
@@ -43,8 +44,9 @@ static void check(const Date& date, long value) {
 
 Date::Date(long date) :
     julian_(dateToJulian(date)) {
-    if (date > 0)
+    if (date > 0) {
         check(*this, date);
+    }
 }
 
 Date::Date(long year, long month, long day) :
@@ -75,12 +77,13 @@ long Date::parse(const std::string& s) {
                 case 3:
                     // For climatology
                     err = true;
-                    for (i = 0; i < 12; i++)
+                    for (i = 0; i < 12; i++) {
                         if (s == months[i]) {
                             value = 1900 * 10000 + (i + 1) * 100 + 1;
                             err   = false;
                             break;
                         }
+                    }
                     break;
 
                 case 6:
@@ -109,11 +112,13 @@ long Date::parse(const std::string& s) {
             else {
                 // Dates as yyyy-ddd
 
-                if (result[0].length() != 2 && result[0].length() != 4)
+                if (result[0].length() != 2 && result[0].length() != 4) {
                     err = true;
+                }
 
-                if (result[1].length() != 3)
+                if (result[1].length() != 3) {
                     err = true;
+                }
 
                 {
                     long year = atol(result[0].c_str());
@@ -131,12 +136,15 @@ long Date::parse(const std::string& s) {
 
         case 3:
 
-            if (result[0].length() != 2 && result[0].length() != 4)
+            if (result[0].length() != 2 && result[0].length() != 4) {
                 err = true;
-            if (result[1].length() != 2)
+            }
+            if (result[1].length() != 2) {
                 err = true;
-            if (result[2].length() != 2)
+            }
+            if (result[2].length() != 2) {
                 err = true;
+            }
 
             value = atol(result[0].c_str()) * 10000 + atol(result[1].c_str()) * 100 + atol(result[2].c_str());
 
@@ -148,13 +156,15 @@ long Date::parse(const std::string& s) {
             break;
     }
 
-    if (err)
+    if (err) {
         throw BadDate(std::string("Invalid date ") + s);
+    }
 
     // Come back here....
     // temp patch for monthly means
-    if ((value % 100) == 0)
+    if ((value % 100) == 0) {
         value++;
+    }
 
     return value;
 }
@@ -192,11 +202,12 @@ long Date::julianToDate(long jdate) {
     e = x % 153;
     d = e / 5 + 1;
 
-    if (m < 11)
+    if (m < 11) {
         month = m + 2;
-    else
+    }
+    else {
         month = m - 10;
-
+    }
 
     day  = d;
     year = y + m / 11;
@@ -228,8 +239,9 @@ long Date::dateToJulian(long ddate) {
     long month, day, year;
 
     // Negative dates are relative to today
-    if (ddate <= 0)
+    if (ddate <= 0) {
         return today() + ddate;
+    }
 
     year = ddate / 10000;
     ddate %= 10000;

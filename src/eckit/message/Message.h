@@ -77,10 +77,10 @@ public:
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
     size_t getSize(const std::string& key) const;
-    
-    // Write double array at key to pre allocated array 
+
+    // Write double array at key to pre allocated array
     void getDoubleArray(const std::string& key, double* data, size_t len) const;
-    
+
     void getMetadata(MetadataGatherer&, GetMetadataOptions options = GetMetadataOptions{}) const;
 
     eckit::Buffer decode() const;
@@ -93,7 +93,7 @@ public:
 
 private:
     MessageContent* content_;
-    mutable MessageDecoder* decoder_ = nullptr; // non-owning
+    mutable MessageDecoder* decoder_ = nullptr;  // non-owning
 
     MessageDecoder& lookupDecoder() const;
 
@@ -111,13 +111,13 @@ template <class T>
 class StringSetter : public MetadataGatherer {
     T& object_;
 
-    virtual void setValue(const std::string& key, const std::string& value) override {
+    void setValue(const std::string& key, const std::string& value) override {
         object_.setValue(key, value);
     }
 
-    virtual void setValue(const std::string& /*key*/, long /*value*/) override {}
+    void setValue(const std::string& /*key*/, long /*value*/) override {}
 
-    virtual void setValue(const std::string& /*key*/, double /*value*/) override {}
+    void setValue(const std::string& /*key*/, double /*value*/) override {}
 
 public:
     StringSetter(T& object) :
@@ -128,11 +128,11 @@ template <class T>
 class TypedSetter : public MetadataGatherer {
     T& object_;
 
-    virtual void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
+    void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, long value) override { object_.setValue(key, value); }
+    void setValue(const std::string& key, long value) override { object_.setValue(key, value); }
 
-    virtual void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
+    void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
 
 public:
     TypedSetter(T& object) :

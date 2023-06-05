@@ -75,19 +75,24 @@ public:  // types
 
 public:  // methods
     /// Constructor
-    SharedPtr() : ptr_(0) {}
+    SharedPtr() :
+        ptr_(0) {}
 
     /// Constructor.
     /// @param ptr naked pointer
-    explicit SharedPtr(T* ptr) : ptr_(ptr) {
-        if (!null())
+    explicit SharedPtr(T* ptr) :
+        ptr_(ptr) {
+        if (!null()) {
             ptr_->attach();
+        }
     }
 
     /// Copy constructor
-    SharedPtr(const SharedPtr& other) : ptr_(other.ptr_) {
-        if (!null())
+    SharedPtr(const SharedPtr& other) :
+        ptr_(other.ptr_) {
+        if (!null()) {
             ptr_->attach();
+        }
     }
 
     /// Destructor
@@ -115,15 +120,17 @@ public:  // methods
     /// Reset the ptr
     /// @post ptr_ = other
     void reset(T* other) {
-        if (other == ptr_)
+        if (other == ptr_) {
             return;
+        }
 
         release();
 
         ptr_ = other;
 
-        if (!null())
+        if (!null()) {
             ptr_->attach();
+        }
     }
 
     /// Reset the ptr
@@ -133,23 +140,26 @@ public:  // methods
 
         ptr_ = other.ptr_;
 
-        if (!null())
+        if (!null()) {
             ptr_->attach();
+        }
     }
 
     /// Overloading of "=" with SharedPtr
     /// @return missing documentation
     const SharedPtr& operator=(const SharedPtr& other) {
-        if (ptr_ != other.ptr_)
+        if (ptr_ != other.ptr_) {
             reset(other);
+        }
         return *this;
     }
 
     /// Overloading of "=" with SharedPtr
     /// @return missing documentation
     const SharedPtr& operator=(T* other) {
-        if (ptr_ != other)
+        if (ptr_ != other) {
             reset(other);
+        }
         return *this;
     }
 
@@ -192,8 +202,9 @@ public:  // methods
     }
 
     size_t owners() const {
-        if (!null())
+        if (!null()) {
             return ptr_->owners();
+        }
         return 0;
     }
 

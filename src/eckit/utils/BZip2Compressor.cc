@@ -76,8 +76,9 @@ size_t BZip2Compressor::compress(const void* in, size_t len, Buffer& out) const 
     // To guarantee that the compressed data will fit in its buffer, allocate an output buffer of size 1% larger than
     // the uncompressed data, plus six hundred extra bytes.
     size_t maxcompressed = (size_t)(1.01 * len + 600);
-    if (out.size() < maxcompressed)
+    if (out.size() < maxcompressed) {
         out.resize(maxcompressed);
+    }
     size_t bufferSize = out.size();
 
     ASSERT(len < std::numeric_limits<int>::max());

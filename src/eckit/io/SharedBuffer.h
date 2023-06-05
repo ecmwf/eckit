@@ -31,7 +31,8 @@ namespace eckit {
 
 class CountedBuffer : public eckit::Buffer, public eckit::Counted {
 public:  // methods
-    CountedBuffer(size_t size) : Buffer(size) {}
+    CountedBuffer(size_t size) :
+        Buffer(size) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -44,7 +45,8 @@ public:  // methods
 
     ~SharedBuffer() { buffer_->detach(); }
 
-    SharedBuffer(const SharedBuffer& s) : buffer_(s.buffer_) { buffer_->attach(); }
+    SharedBuffer(const SharedBuffer& s) :
+        buffer_(s.buffer_) { buffer_->attach(); }
 
     SharedBuffer& operator=(const SharedBuffer& s) {
         buffer_->detach();

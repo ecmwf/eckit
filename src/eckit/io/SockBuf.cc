@@ -52,22 +52,26 @@ int SockBuf::sync() {
 }
 
 int SockBuf::overflow(int c) {
-    if (sync())
+    if (sync()) {
         return EOF;
+    }
 
-    if (c == EOF)
+    if (c == EOF) {
         return 0;
+    }
 
     sputc(c);
     return 0;
 }
 
 int SockBuf::underflow() {
-    if (gptr() < egptr())
+    if (gptr() < egptr()) {
         return *(unsigned char*)gptr();
+    }
 
-    if (!protocol_.isConnected())
+    if (!protocol_.isConnected()) {
         return EOF;
+    }
 
 #ifndef OLD_STREAMBUF
     int n = protocol_.read(in_, sizeof(in_));

@@ -26,8 +26,7 @@
 #include "eckit/net/UDPClient.h"
 #include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 UDPClient::UDPClient(const Configuration& cfg) :
     hostname_(cfg.getString("host")), port_(cfg.getInt("port")), socketfd_(0), servinfo_(nullptr), addr_(nullptr) {
@@ -89,6 +88,4 @@ void UDPClient::print(std::ostream& s) const {
     s << "UDPClient[hostname=" << hostname_ << ",port=" << port_ << ",socketfd=" << socketfd_ << "]";
 }
 
-
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net

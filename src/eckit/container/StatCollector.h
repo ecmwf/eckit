@@ -40,8 +40,9 @@ struct StatCollector {
     void statsCall() { calls_++; }
     void statsVisitNode() { nodes_++; }
     void statsDepth(size_t d) {
-        if (d > depth_)
+        if (d > depth_) {
             depth_ = d;
+        }
     }
 
     void statsNewCandidateOK() { newCandidateOK_++; }

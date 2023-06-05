@@ -18,38 +18,36 @@
 
 #include "eckit/sql/expression/SQLExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
+namespace eckit::sql::expression {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SQLExpressionEvaluated : public SQLExpression {
 public:
     SQLExpressionEvaluated(SQLExpression&);
-    virtual ~SQLExpressionEvaluated() override;
+    ~SQLExpressionEvaluated() override;
 
     // Overriden
 
-    virtual void prepare(SQLSelect&) override;
-    virtual void updateType(SQLSelect&) override;
-    virtual void cleanup(SQLSelect&) override;
-    virtual double eval(bool& missing) const override;
-    virtual void eval(double* out, bool& missing) const override;
-    virtual std::string evalAsString(bool& missing) const override;
-    virtual bool isConstant() const override;
-    virtual bool isNumber() const override;
-    virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
-    virtual std::shared_ptr<SQLExpression> clone() const override;
-    virtual std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
-    virtual bool isAggregate() const override;
+    void prepare(SQLSelect&) override;
+    void updateType(SQLSelect&) override;
+    void cleanup(SQLSelect&) override;
+    double eval(bool& missing) const override;
+    void eval(double* out, bool& missing) const override;
+    std::string evalAsString(bool& missing) const override;
+    bool isConstant() const override;
+    bool isNumber() const override;
+    std::shared_ptr<SQLExpression> simplify(bool&) override;
+    std::shared_ptr<SQLExpression> clone() const override;
+    std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
+    bool isAggregate() const override;
 
-    virtual const type::SQLType* type() const override;
+    const type::SQLType* type() const override;
 
-    virtual void output(SQLOutput& o) const override;
+    void output(SQLOutput& o) const override;
 
 protected:
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLExpressionEvaluated& p) {
         p.print(s);
@@ -64,9 +62,6 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
-
+}  // namespace eckit::sql::expression
 
 #endif

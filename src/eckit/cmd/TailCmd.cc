@@ -39,8 +39,9 @@ void TailCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
     long long lines = Resource<long>("tailCmd", 10);
     bool follow     = false;
 
-    if (args.exists(1))
+    if (args.exists(1)) {
         pid = args[1];
+    }
 
     if (args.exists("f")) {
         follow = true;
@@ -74,12 +75,15 @@ void TailCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
         long nl     = 0;
         buffer[len] = 0;
         int j       = 0;
-        for (j = (buffer[len - 1] == '\n') ? len - 2 : len; j >= 0 && nl < lines; j--)
-            if (buffer[j] == '\n')
+        for (j = (buffer[len - 1] == '\n') ? len - 2 : len; j >= 0 && nl < lines; j--) {
+            if (buffer[j] == '\n') {
                 nl++;
+            }
+        }
 
-        if (j != 0)
+        if (j != 0) {
             j++;
+        }
 
         out << &(buffer[j]) << std::flush;
         where = pos;
@@ -99,8 +103,9 @@ void TailCmd::execute(std::istream&, std::ostream& out, CmdArg& args) {
             }
             last = info[pid].last();
         }
-        else
+        else {
             ::usleep(1000);
+        }
     }
 }
 

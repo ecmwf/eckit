@@ -44,8 +44,9 @@ void Url::parse(const std::string& url, bool param) {
         switch (url[index]) {
             case '?':
                 param = true;
-                if (s != "")
+                if (s != "") {
                     url_.push_back(Html::removeHex(s));
+                }
                 s = "";
                 break;
 
@@ -78,12 +79,14 @@ void Url::parse(const std::string& url, bool param) {
 
             case '/':
                 if (!param) {
-                    if (s != "")
+                    if (s != "") {
                         url_.push_back(Html::removeHex(s));
+                    }
                     s = "";
                 }
-                else
+                else {
                     s += url[index];
+                }
                 break;
 
             default:
@@ -95,12 +98,14 @@ void Url::parse(const std::string& url, bool param) {
     }
 
     if (!param) {
-        if (s != "")
+        if (s != "") {
             url_.push_back(Html::removeHex(s));
+        }
     }
     else {
-        if (p != "")
+        if (p != "") {
             dict_[Html::removeHex(p)] = Html::removeHex(s);
+        }
     }
 }
 
@@ -112,8 +117,9 @@ Url::Url(std::istream& in) {
     parse(url, false);
 
     char c = 0;
-    while (in.get(c) && c != '\n')
+    while (in.get(c) && c != '\n') {
         header(c);
+    }
 
     parse(in);
     Log::debug() << "Incomming url-> " << *this << std::endl;
@@ -140,8 +146,9 @@ void Url::parse(std::istream& in) {
         }
 
         header(c);
-        while (in.get(c) && c == ' ')
+        while (in.get(c) && c == ' ') {
             header(c);
+        }
 
         if (c != '\r') {
             header(c);
@@ -209,8 +216,9 @@ std::string Url::name() const {
 }
 
 void Url::print(std::ostream& s) const {
-    for (std::vector<std::string>::const_iterator j = url_.begin(); j != url_.end(); ++j)
+    for (std::vector<std::string>::const_iterator j = url_.begin(); j != url_.end(); ++j) {
         s << "/" << *j;
+    }
 
     char c = '?';
     dict_t::const_iterator i;

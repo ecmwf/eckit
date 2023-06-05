@@ -40,8 +40,7 @@
 #include "eckit/system/SystemInfoFreeBSD.h"
 #endif
 
-namespace eckit {
-namespace system {
+namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -95,15 +94,17 @@ std::string SystemInfo::userName() const {
 }
 
 void SystemInfo::dumpProcMemInfo(std::ostream& os, const char* prepend) const {
-    if (prepend)
+    if (prepend) {
         os << prepend;
+    }
 
     os << " SystemInfo::dumpProcMemInfo() NOT IMPLEMENTED FOR SYSTEM " << ECKIT_OS_NAME << std::endl;
 }
 
 void SystemInfo::dumpSysMemInfo(std::ostream& os, const char* prepend) const {
-    if (prepend)
+    if (prepend) {
         os << prepend;
+    }
 
     os << " SystemInfo::dumpSysMemInfo() NOT IMPLEMENTED FOR SYSTEM " << ECKIT_OS_NAME << std::endl;
 }
@@ -140,5 +141,4 @@ bool SystemInfo::isLittleEndian() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace system
-}  // namespace eckit
+}  // namespace eckit::system

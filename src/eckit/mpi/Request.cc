@@ -12,8 +12,7 @@
 
 #include "eckit/mpi/Comm.h"
 
-namespace eckit {
-namespace mpi {
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -79,6 +78,4 @@ RequestContent::~RequestContent() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
-}  // namespace mpi
-}  // namespace eckit
+}  // namespace eckit::mpi

@@ -14,10 +14,7 @@
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/StringTools.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -46,10 +43,12 @@ void FunctionEQ::trimStringInDouble(char*& p, size_t& len) {
     // n.b. Duplicated into odb::WriterDispatchingIterator
     //      TODO: Put somewhere better.
     len = 0;
-    for (; len < sizeof(double) && isprint(p[len]); ++len)
+    for (; len < sizeof(double) && isprint(p[len]); ++len) {
         ;
-    for (; len > 0 && isspace(p[len - 1]); --len)
+    }
+    for (; len > 0 && isspace(p[len - 1]); --len) {
         ;
+    }
     size_t plen = len;
     for (char* pp = p; isspace(*p) && p < pp + plen;) {
         ++p;
@@ -63,8 +62,9 @@ bool FunctionEQ::equal(const SQLExpression& l, const SQLExpression& r, bool& mis
         std::string v1(l.evalAsString(missing));
         std::string v2(r.evalAsString(missing));
 
-        if (missing)
+        if (missing) {
             return false;
+        }
 
         v1 = StringTools::trim(v1, "\t\n\v\f\r ");
         v2 = StringTools::trim(v2, "\t\n\v\f\r ");
@@ -81,8 +81,9 @@ double FunctionEQ::eval(bool& missing) const {
 
 std::shared_ptr<SQLExpression> FunctionEQ::simplify(bool& changed) {
     std::shared_ptr<SQLExpression> x = FunctionExpression::simplify(changed);
-    if (x)
+    if (x) {
         return x;
+    }
 
     ColumnExpression* a = dynamic_cast<ColumnExpression*>(args_[0].get());
     ColumnExpression* b = dynamic_cast<ColumnExpression*>(args_[1].get());
@@ -92,13 +93,11 @@ std::shared_ptr<SQLExpression> FunctionEQ::simplify(bool& changed) {
     }
 
     //
-    if (args_[0]->isConstant() && !args_[1]->isConstant())
+    if (args_[0]->isConstant() && !args_[1]->isConstant()) {
         std::swap(args_[0], args_[1]);
+    }
 
     return 0;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

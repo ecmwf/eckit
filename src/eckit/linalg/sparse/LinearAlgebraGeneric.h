@@ -13,11 +13,7 @@
 
 #include "eckit/linalg/LinearAlgebraSparse.h"
 
-
-namespace eckit {
-namespace linalg {
-namespace sparse {
-
+namespace eckit::linalg::sparse {
 
 struct LinearAlgebraGeneric final : public LinearAlgebraSparse {
     LinearAlgebraGeneric() {}
@@ -30,7 +26,4 @@ struct LinearAlgebraGeneric final : public LinearAlgebraSparse {
     void print(std::ostream&) const override;
 };
 
-
-}  // namespace sparse
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::sparse

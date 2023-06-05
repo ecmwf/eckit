@@ -28,8 +28,7 @@ namespace eckit {
 
 class BufferList : public OnlyMovable {
 
-public: // methods
-
+public:  // methods
     void append(Buffer&& buf);
 
     size_t count() const { return buffers_.size(); }
@@ -39,8 +38,7 @@ public: // methods
     /// @post count() == 0 and size() == 0
     Buffer consolidate();
 
-private: // members
-
+private:  // members
     std::list<Buffer> buffers_;
 };
 

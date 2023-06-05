@@ -13,16 +13,8 @@
 #include "eckit/memory/SharedPtr.h"
 #include "eckit/exception/Exceptions.h"
 
-namespace eckit {
-
-//----------------------------------------------------------------------------------------------------------------------
-
-namespace detail {
+namespace eckit::detail {
 void assert_valid_SharedPtr(bool is_null) {
     ASSERT(!is_null);
 }
-}  // namespace detail
-
-//----------------------------------------------------------------------------------------------------------------------
-
-}  // namespace eckit
+}  // namespace eckit::detail

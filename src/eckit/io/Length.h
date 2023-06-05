@@ -47,8 +47,10 @@ public:  // methods
 
     // -- Contructors
 
-    Length(long long l = 0) : value_(l) {}
-    Length(const Length& other) : value_(other.value_) {}
+    Length(long long l = 0) :
+        value_(l) {}
+    Length(const Length& other) :
+        value_(other.value_) {}
 
 #include "eckit/io/Length.b"
 

@@ -38,10 +38,12 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
 
     bool send_costs = true;
 
-    if (!from.moveable())
+    if (!from.moveable()) {
         throw SeriousBug(from.title() + " is not moveable");
-    if (!to.moveable())
+    }
+    if (!to.moveable()) {
         throw SeriousBug(to.title() + " is not moveable");
+    }
 
     // Attributes that are required from the mover
 
@@ -67,10 +69,12 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         if (ClusterNodes::available("mover", it->first)) {
             if (!ClusterNodes::lookUp("mover", it->first).supportsAttributes(moverAttributes)) {
                 cost.erase(it++);
-            } else {
+            }
+            else {
                 ++it;
             }
-        } else {
+        }
+        else {
             cost.erase(it++);
         }
     }
@@ -85,8 +89,9 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;
 
     Log::info() << "MoverTransfer::transfer cost:" << std::endl;
-    for (std::map<std::string, Length>::iterator j = cost.begin(); j != cost.end(); ++j)
+    for (std::map<std::string, Length>::iterator j = cost.begin(); j != cost.end(); ++j) {
         Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
+    }
 
     net::Connector& c(net::Connector::service("mover", cost));
     AutoLock<net::Connector> lock(c);
@@ -110,8 +115,9 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     Length estimate = from.estimate();
 
     AutoState state('M');
-    if (estimate)
+    if (estimate) {
         Log::status() << Bytes(estimate) << " ";
+    }
     Log::status() << from.title() << " => " << to.title() << std::endl;
 
     Progress progress("mover", 0, estimate);

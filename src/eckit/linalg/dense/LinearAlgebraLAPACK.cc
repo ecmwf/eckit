@@ -30,11 +30,7 @@ void dgemm_(const char* transa, const char* transb, const int* m, const int* n, 
             const int* ldc);
 }
 
-
-namespace eckit {
-namespace linalg {
-namespace dense {
-
+namespace eckit::linalg::dense {
 
 static const LinearAlgebraLAPACK __la("lapack");
 
@@ -81,7 +77,4 @@ void LinearAlgebraLAPACK::gemm(const Matrix& A, const Matrix& B, Matrix& C) cons
     dgemm_(trans, trans, &m, &n, &k, &alpha, A.data(), &m, B.data(), &k, &beta, C.data(), &m);
 }
 
-
-}  // namespace dense
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::dense

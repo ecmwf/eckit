@@ -24,11 +24,11 @@ class HttpService : public eckit::net::NetService {
 public:
     explicit HttpService(int port, bool visible = false);
 
-    virtual ~HttpService() override;
+    ~HttpService() override;
 
 private:
-    virtual eckit::net::NetUser* newUser(eckit::net::TCPSocket&) const override;
-    virtual std::string name() const override { return "http"; }
+    eckit::net::NetUser* newUser(eckit::net::TCPSocket&) const override;
+    std::string name() const override { return "http"; }
 };
 
 }  // namespace eckit

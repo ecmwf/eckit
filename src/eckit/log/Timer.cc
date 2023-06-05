@@ -36,8 +36,9 @@ Timer::Timer(const char* name, std::ostream& o) :
 Timer::~Timer() {
     stop();
 
-    if (outputAtExit_)
+    if (outputAtExit_) {
         report();
+    }
 }
 
 
@@ -55,24 +56,27 @@ void Timer::start() {
 
 
 void Timer::stop() {
-    if (!running())
+    if (!running()) {
         return;
+    }
     takeTime();
     stopped_ = true;
 }
 
 
 double Timer::elapsed() {
-    if (running())
+    if (running()) {
         takeTime();
+    }
 
     ::timeval diff = timeStop_ - timeStart_;
     return (double)diff.tv_sec + ((double)diff.tv_usec / 1000000.);
 }
 
 double Timer::elapsed_cpu() {
-    if (running())
+    if (running()) {
         takeTime();
+    }
 
     return double(cpuStop_ - cpuStart_) / CLOCKS_PER_SEC;
 }

@@ -29,9 +29,7 @@
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Stream.h"
 
-
-namespace eckit {
-namespace linalg {
+namespace eckit::linalg {
 
 #if eckit_LITTLE_ENDIAN
 static const bool littleEndian = true;
@@ -348,8 +346,9 @@ void SparseMatrix::dump(std::ostream& os) const {
         const_iterator itr  = begin(i);
         const_iterator iend = end(i);
 
-        if (itr == iend)
+        if (itr == iend) {
             continue;
+        }
         os << itr.row();
 
         for (; itr != iend; ++itr) {
@@ -423,8 +422,9 @@ SparseMatrix SparseMatrix::rowReduction(const std::vector<size_t>& p) const {
         const_iterator itr  = begin(row);
         const_iterator iend = end(row);
 
-        if (itr == iend)
+        if (itr == iend) {
             continue;
+        }
 
         for (; itr != iend; ++itr) {
             triplets.push_back(Triplet(newrow, itr.col(), *itr));
@@ -444,12 +444,13 @@ SparseMatrix& SparseMatrix::prune(linalg::Scalar val) {
     for (Size r = 0; r < shape_.rows_; ++r) {
         const Index start = spm_.outer_[r];
         spm_.outer_[r]    = Index(nnz);
-        for (Index c = start; c < spm_.outer_[r + 1]; ++c)
+        for (Index c = start; c < spm_.outer_[r + 1]; ++c) {
             if (spm_.data_[c] != val) {
                 v.push_back(spm_.data_[c]);
                 inner.push_back(spm_.inner_[c]);
                 ++nnz;
             }
+        }
     }
     spm_.outer_[shape_.rows_] = Index(nnz);
 
@@ -617,5 +618,4 @@ SparseMatrix::Allocator::~Allocator() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

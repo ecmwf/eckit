@@ -16,10 +16,7 @@
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -47,10 +44,10 @@ void FunctionTHIN::print(std::ostream& s) const {
 
 double FunctionTHIN::eval(bool& missing) const {
     int every_nth = (int)args_[0]->eval(missing);
-    if ((*count_) % every_nth == 0)
+    if ((*count_) % every_nth == 0) {
         return 1.0;
-    else
-        return 0.0;
+    }
+    return 0.0;
 }
 
 void FunctionTHIN::prepare(SQLSelect& sql) {
@@ -68,7 +65,4 @@ std::shared_ptr<SQLExpression> FunctionTHIN::simplify(bool&) {
     return 0;
 }
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

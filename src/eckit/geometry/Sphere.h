@@ -11,21 +11,22 @@
 #ifndef Sphere_H
 #define Sphere_H
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-namespace eckit {
-namespace geometry {
+namespace eckit::geometry {
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 class Point2;
 class Point3;
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
 struct Sphere {
     /// Great-circle central angle between two points (latitude/longitude coordinates) in radians
-    static double centralAngle(const Point2& Alonlat, const Point2& Blonlat);
+    static double centralAngle(const Point2& Alonlat,
+                               const Point2& Blonlat,
+                               bool normalise_angle = false);
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
     static double centralAngle(const double& radius, const Point3& A, const Point3& B);
@@ -53,15 +54,18 @@ struct Sphere {
                                                   double& Clon1, double& Clon2);
 
     // Convert spherical coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height = 0.);
+    static void convertSphericalToCartesian(const double& radius,
+                                            const Point2& Alonlat,
+                                            Point3& B,
+                                            double height        = 0.,
+                                            bool normalise_angle = false);
 
     // Convert Cartesian coordinates to spherical
     static void convertCartesianToSpherical(const double& radius, const Point3& A, Point2& Blonlat);
 };
 
-//------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace geometry
-}  // namespace eckit
+}  // namespace eckit::geometry
 
 #endif

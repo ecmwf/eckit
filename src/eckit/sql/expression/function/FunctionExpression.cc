@@ -10,10 +10,7 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,28 +37,33 @@ std::shared_ptr<SQLExpression> FunctionExpression::reshift(int minColumnShift) c
 FunctionExpression::~FunctionExpression() {}
 
 void FunctionExpression::preprepare(SQLSelect& sql) {
-    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j) {
         (*j)->preprepare(sql);
+    }
 }
 
 void FunctionExpression::prepare(SQLSelect& sql) {
-    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j) {
         (*j)->prepare(sql);
+    }
 }
 
 void FunctionExpression::updateType(SQLSelect& sql) {
-    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j) {
         (*j)->updateType(sql);
+    }
 }
 
 void FunctionExpression::cleanup(SQLSelect& sql) {
-    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j) {
         (*j)->cleanup(sql);
+    }
 }
 
 void FunctionExpression::partialResult() {
-    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j) {
         (*j)->partialResult();
+    }
 }
 
 
@@ -82,16 +84,20 @@ std::shared_ptr<SQLExpression> FunctionExpression::simplify(bool& changed) {
 
 
 bool FunctionExpression::isConstant() const {
-    for (expression::Expressions::const_iterator j = args_.begin(); j != args_.end(); ++j)
-        if (!(*j)->isConstant())
+    for (expression::Expressions::const_iterator j = args_.begin(); j != args_.end(); ++j) {
+        if (!(*j)->isConstant()) {
             return false;
+        }
+    }
     return true;
 }
 
 bool FunctionExpression::isAggregate() const {
-    for (expression::Expressions::const_iterator j = args_.begin(); j != args_.end(); ++j)
-        if ((*j)->isAggregate())
+    for (expression::Expressions::const_iterator j = args_.begin(); j != args_.end(); ++j) {
+        if ((*j)->isAggregate()) {
             return true;
+        }
+    }
     return false;
 }
 
@@ -99,16 +105,18 @@ void FunctionExpression::print(std::ostream& s) const {
     s << name_;
     s << '(';
     for (expression::Expressions::const_iterator j = args_.begin(); j != args_.end(); ++j) {
-        if (j != args_.begin())
+        if (j != args_.begin()) {
             s << ',';
+        }
         s << *(*j);
     }
     s << ')';
 }
 
 void FunctionExpression::tables(std::set<const SQLTable*>& t) {
-    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j)
+    for (expression::Expressions::iterator j = args_.begin(); j != args_.end(); ++j) {
         (*j)->tables(t);
+    }
 }
 
 void FunctionExpression::shiftArgs(int minColumnShift) {
@@ -117,7 +125,4 @@ void FunctionExpression::shiftArgs(int minColumnShift) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

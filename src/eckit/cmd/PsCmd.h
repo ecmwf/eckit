@@ -26,7 +26,7 @@ class PsCmd : public eckit::CmdResource {
 public:
     PsCmd();
 
-    virtual ~PsCmd() override;
+    ~PsCmd() override;
 
 private:  // methods
     void display(std::ostream&, eckit::TaskInfo&, long, const std::string&) const;
@@ -37,10 +37,10 @@ private:  // methods
 
     // From CmdResource
 
-    virtual void execute(std::istream&, std::ostream& out, eckit::CmdArg&) override;
-    virtual void help(std::ostream&) const override;
+    void execute(std::istream&, std::ostream& out, eckit::CmdArg&) override;
+    void help(std::ostream&) const override;
 
-    virtual eckit::Arg usage(const std::string& cmd) const override;
+    eckit::Arg usage(const std::string& cmd) const override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

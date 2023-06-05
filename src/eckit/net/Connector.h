@@ -21,9 +21,7 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
 
-
-namespace eckit {
-namespace net {
+namespace eckit::net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -32,7 +30,8 @@ class ConnectorException : public Exception {
     virtual bool retryOnClient() const { return true; }
 
 public:
-    ConnectorException(const std::string& what) : Exception(what) {}
+    ConnectorException(const std::string& what) :
+        Exception(what) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -61,7 +60,7 @@ public:
 
     static Connector& service(const std::string& name, const std::string& node);
     static Connector& service(const std::string& name, const std::map<std::string, Length>& cost,
-                              const std::set<std::string>& attributes={});
+                              const std::set<std::string>& attributes = {});
 
     static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 
@@ -121,9 +120,9 @@ private:
     // None
 
     // From Stream
-    virtual long write(const void* buf, long len) override;
-    virtual long read(void* buf, long len) override;
-    virtual std::string name() const override;
+    long write(const void* buf, long len) override;
+    long read(void* buf, long len) override;
+    std::string name() const override;
 
     // -- Friends
 
@@ -144,14 +143,14 @@ class AutoMemoize {
     unsigned long t_;
 
 public:
-    AutoMemoize(Connector& c, unsigned long t) : c_(c), t_(t) { c_.memoize(true, t_); }
+    AutoMemoize(Connector& c, unsigned long t) :
+        c_(c), t_(t) { c_.memoize(true, t_); }
     ~AutoMemoize() { c_.memoize(false, t_); }
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace net
-}  // namespace eckit
+}  // namespace eckit::net
 
 #endif

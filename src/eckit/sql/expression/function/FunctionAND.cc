@@ -12,10 +12,7 @@
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 /* Static self-registration */
 
@@ -60,8 +57,9 @@ bool FunctionAND::andSplit(expression::Expressions& e) {
 
 std::shared_ptr<SQLExpression> FunctionAND::simplify(bool& changed) {
     std::shared_ptr<SQLExpression> x = FunctionExpression::simplify(changed);
-    if (x)
+    if (x) {
         return x;
+    }
 
     for (int i = 0; i < 2; i++) {
         bool missing = false;
@@ -76,19 +74,13 @@ std::shared_ptr<SQLExpression> FunctionAND::simplify(bool& changed) {
                 std::cout << *x << std::endl;
                 return x;
             }
-            else {
-                std::cout << "SYMPLIFY " << *this << "to 0 " << std::endl;
-                changed = true;
-                return SQLExpression::number(0);
-            }
+            std::cout << "SYMPLIFY " << *this << "to 0 " << std::endl;
+            changed = true;
+            return SQLExpression::number(0);
         }
     }
 
     return 0;
 }
 
-
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

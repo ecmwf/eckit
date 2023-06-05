@@ -18,12 +18,9 @@
 using eckit::linalg::TensorDouble;
 using eckit::linalg::TensorFloat;
 
-namespace eckit {
-namespace test {
-
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 CASE("TensorDouble [2, 2]") {
     TensorDouble A = TD({2, 2}, 1., -2., -4., 3.);
@@ -547,8 +544,8 @@ CASE("TensorFloat [6, 3, 2, 5] col-major->row-major->col-major layout") {
 
 CASE("TensorFloat move constructor") {
 
-    std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
-    std::vector<linalg::Size> shape{3,4};
+    std::vector<float> data{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    std::vector<linalg::Size> shape{3, 4};
 
     TensorFloat tensor_from(data.data(), shape, TensorFloat::Layout::Right);
 
@@ -558,28 +555,28 @@ CASE("TensorFloat move constructor") {
     EXPECT(tensor_to.shape()[0] == 3);
     EXPECT(tensor_to.shape()[1] == 4);
 
-    EXPECT(tensor_to(0,0) == 0);
-    EXPECT(tensor_to(0,1) == 1);
-    EXPECT(tensor_to(0,2) == 2);
-    EXPECT(tensor_to(0,3) == 3);
+    EXPECT(tensor_to(0, 0) == 0);
+    EXPECT(tensor_to(0, 1) == 1);
+    EXPECT(tensor_to(0, 2) == 2);
+    EXPECT(tensor_to(0, 3) == 3);
 
-    EXPECT(tensor_to(0,4) == 4);
-    EXPECT(tensor_to(0,5) == 5);
-    EXPECT(tensor_to(0,6) == 6);
-    EXPECT(tensor_to(0,7) == 7);
+    EXPECT(tensor_to(0, 4) == 4);
+    EXPECT(tensor_to(0, 5) == 5);
+    EXPECT(tensor_to(0, 6) == 6);
+    EXPECT(tensor_to(0, 7) == 7);
 
-    EXPECT(tensor_to(0,8) == 8);
-    EXPECT(tensor_to(0,9) == 9);
-    EXPECT(tensor_to(0,10) == 10);
-    EXPECT(tensor_to(0,11) == 11);
+    EXPECT(tensor_to(0, 8) == 8);
+    EXPECT(tensor_to(0, 9) == 9);
+    EXPECT(tensor_to(0, 10) == 10);
+    EXPECT(tensor_to(0, 11) == 11);
 
     EXPECT(tensor_from.data() == nullptr);
 }
 
 CASE("TensorFloat move assignment operator") {
 
-    std::vector<float> data{0,1,2,3,4,5,6,7,8,9,10,11};
-    std::vector<linalg::Size> shape{3,4};
+    std::vector<float> data{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    std::vector<linalg::Size> shape{3, 4};
 
     TensorFloat tensor_from(data.data(), shape, TensorFloat::Layout::Right);
 
@@ -590,29 +587,27 @@ CASE("TensorFloat move assignment operator") {
     EXPECT(tensor_to.shape()[0] == 3);
     EXPECT(tensor_to.shape()[1] == 4);
 
-    EXPECT(tensor_to(0,0) == 0);
-    EXPECT(tensor_to(0,1) == 1);
-    EXPECT(tensor_to(0,2) == 2);
-    EXPECT(tensor_to(0,3) == 3);
+    EXPECT(tensor_to(0, 0) == 0);
+    EXPECT(tensor_to(0, 1) == 1);
+    EXPECT(tensor_to(0, 2) == 2);
+    EXPECT(tensor_to(0, 3) == 3);
 
-    EXPECT(tensor_to(0,4) == 4);
-    EXPECT(tensor_to(0,5) == 5);
-    EXPECT(tensor_to(0,6) == 6);
-    EXPECT(tensor_to(0,7) == 7);
+    EXPECT(tensor_to(0, 4) == 4);
+    EXPECT(tensor_to(0, 5) == 5);
+    EXPECT(tensor_to(0, 6) == 6);
+    EXPECT(tensor_to(0, 7) == 7);
 
-    EXPECT(tensor_to(0,8) == 8);
-    EXPECT(tensor_to(0,9) == 9);
-    EXPECT(tensor_to(0,10) == 10);
-    EXPECT(tensor_to(0,11) == 11);
+    EXPECT(tensor_to(0, 8) == 8);
+    EXPECT(tensor_to(0, 9) == 9);
+    EXPECT(tensor_to(0, 10) == 10);
+    EXPECT(tensor_to(0, 11) == 11);
 
     EXPECT(tensor_from.data() == nullptr);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);

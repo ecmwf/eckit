@@ -18,10 +18,7 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Mutex.h"
 
-
-namespace eckit {
-namespace net {
-
+namespace eckit::net {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
@@ -38,9 +35,9 @@ public:
 
     void closeExec(bool on) { closeExec_ = on; }
 
-    virtual int socket() override;
+    int socket() override;
 
-    virtual void close() override;
+    void close() override;
 
 protected:  // members
     int port_;
@@ -49,20 +46,19 @@ protected:  // members
     SocketOptions options_;  //< options to build the socket
 
 protected:  // methods
-    virtual void bind() override;
+    void bind() override;
 
-    virtual void print(std::ostream& s) const override;
+    void print(std::ostream& s) const override;
 
 private:  // methods
     // To be used by Select
 
-    virtual std::string bindingAddress() const override;
+    std::string bindingAddress() const override;
 
 private:  // members
     bool closeExec_;
     Mutex mutex_;
 };
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -73,9 +69,6 @@ public:
     explicit EphemeralTCPServer(int port, const SocketOptions& = SocketOptions::data());
 };
 
-
-}  // namespace net
-}  // namespace eckit
-
+}  // namespace eckit::net
 
 #endif

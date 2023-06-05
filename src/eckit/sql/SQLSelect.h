@@ -26,24 +26,17 @@
 #include "eckit/sql/SelectOneTable.h"
 #include "eckit/sql/expression/OrderByExpressions.h"
 
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 class SQLTableIterator;
-namespace expression {
-namespace function {
+namespace expression::function {
 class FunctionROWNUMBER;
 class FunctionTHIN;
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace expression::function
+}  // namespace eckit::sql
 
-
-namespace eckit {
-namespace sql {
+namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
-
 
 class SQLSelect : public SQLStatement {
 
@@ -68,7 +61,7 @@ public:
     const SQLTable& findTable(const std::string& name) const;
     void ensureFetch(const SQLTable& table, const std::string& columnName);
 
-    virtual Expressions output() const override;
+    Expressions output() const override;
 
     std::vector<eckit::PathName> outputFiles() const;
     void outputFiles(const std::vector<eckit::PathName>& files);
@@ -79,7 +72,7 @@ public:
     unsigned long long execute() override;
 
 protected:
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream&) const override;
 
 private:
     // No copy allowed
@@ -152,7 +145,6 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql
 
 #endif

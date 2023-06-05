@@ -99,97 +99,96 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
         DblBuffer buf(count, bufsize, watcher);
         return buf.copy(*this, other);
     }
-    else {
 
-        static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
+    static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE",
+                                               64 * 1024 * 1024);
 
-        Buffer buffer(bufsize);
+    Buffer buffer(bufsize);
 
-        watcher.watch(0, 0);
+    watcher.watch(0, 0);
 
-        Length estimate = openForRead();
-        AutoClose closer1(*this);
-        watcher.fromHandleOpened();
-        other.openForWrite(estimate);
-        AutoClose closer2(other);
-        watcher.toHandleOpened();
+    Length estimate = openForRead();
+    AutoClose closer1(*this);
+    watcher.fromHandleOpened();
+    other.openForWrite(estimate);
+    AutoClose closer2(other);
+    watcher.toHandleOpened();
 
-        Progress progress("Moving data", 0, estimate);
+    Progress progress("Moving data", 0, estimate);
 
-        Length total     = 0;
-        long length      = -1;
-        double readTime  = 0;
-        double lastRead  = 0;
-        double writeTime = 0;
-        double lastWrite = 0;
-        Timer timer("Save into");
-        bool more = true;
+    Length total     = 0;
+    long length      = -1;
+    double readTime  = 0;
+    double lastRead  = 0;
+    double writeTime = 0;
+    double lastWrite = 0;
+    Timer timer("Save into");
+    bool more = true;
 
-        while (more) {
-            more = false;
-            try {
-                while ((length = read(buffer, buffer.size())) > 0) {
-                    double r = timer.elapsed() - lastRead;
-                    readTime += r;
-                    lastWrite = timer.elapsed();
+    while (more) {
+        more = false;
+        try {
+            while ((length = read(buffer, buffer.size())) > 0) {
+                double r = timer.elapsed() - lastRead;
+                readTime += r;
+                lastWrite = timer.elapsed();
 
-                    if (other.write((const char*)buffer, length) != length)
-                        throw WriteError(name() + " into " + other.name());
-
-                    double w = timer.elapsed() - lastWrite;
-                    writeTime += w;
-                    total += length;
-                    progress(total);
-                    watcher.watch(buffer, length);
-                    lastRead = timer.elapsed();
-
-                    Bytes rRate(total, readTime);
-                    Bytes wRate(total, writeTime);
-
-                    Log::message() << rRate.shorten() << " " << wRate.shorten() << std::endl;
+                if (other.write((const char*)buffer, length) != length) {
+                    throw WriteError(name() + " into " + other.name());
                 }
-            }
-            catch (RestartTransfer& retry) {
-                Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
-                               << std::endl;
 
-                restartReadFrom(retry.from());
-                other.restartWriteFrom(retry.from());
-                watcher.restartFrom(retry.from());
+                double w = timer.elapsed() - lastWrite;
+                writeTime += w;
+                total += length;
+                progress(total);
+                watcher.watch(buffer, length);
+                lastRead = timer.elapsed();
 
-                Log::warning() << "Total so far " << total << std::endl;
-                total = Length(0) + retry.from();
-                Log::warning() << "New total " << total << std::endl;
-                more = true;
+                Bytes rRate(total, readTime);
+                Bytes wRate(total, writeTime);
+
+                Log::message() << rRate.shorten() << " " << wRate.shorten() << std::endl;
             }
         }
+        catch (RestartTransfer& retry) {
+            Log::warning() << "Retrying transfer from " << retry.from() << " ("
+                           << Bytes(retry.from()) << ")" << std::endl;
 
-        Log::message() << "" << std::endl;
+            restartReadFrom(retry.from());
+            other.restartWriteFrom(retry.from());
+            watcher.restartFrom(retry.from());
 
-
-        Log::info() << "Read  rate: " << Bytes(total, readTime) << std::endl;
-        Log::info() << "Write rate: " << Bytes(total, writeTime) << std::endl;
-
-        if (length < 0)
-            throw ReadError(name() + " into " + other.name());
-
-        if (estimate != 0 && estimate != total) {
-            std::ostringstream os;
-            os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
-            throw ReadError(name() + " into " + other.name() + " " + os.str());
+            Log::warning() << "Total so far " << total << std::endl;
+            total = Length(0) + retry.from();
+            Log::warning() << "New total " << total << std::endl;
+            more = true;
         }
-
-        this->collectMetrics("source");
-        other.collectMetrics("target");
-        Metrics::set("size", total);
-        Metrics::set("time", timer.elapsed());
-        Metrics::set("read_time", readTime);
-        Metrics::set("write_time", writeTime);
-        Metrics::set("double_buffering", false);
-
-
-        return total;
     }
+
+    Log::message() << "" << std::endl;
+
+    Log::info() << "Read  rate: " << Bytes(total, readTime) << std::endl;
+    Log::info() << "Write rate: " << Bytes(total, writeTime) << std::endl;
+
+    if (length < 0) {
+        throw ReadError(name() + " into " + other.name());
+    }
+
+    if (estimate != 0 && estimate != total) {
+        std::ostringstream os;
+        os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
+        throw ReadError(name() + " into " + other.name() + " " + os.str());
+    }
+
+    this->collectMetrics("source");
+    other.collectMetrics("target");
+    Metrics::set("size", total);
+    Metrics::set("time", timer.elapsed());
+    Metrics::set("read_time", readTime);
+    Metrics::set("write_time", writeTime);
+    Metrics::set("double_buffering", false);
+
+    return total;
 }
 
 Length DataHandle::saveInto(const PathName& path, TransferWatcher& w) {
@@ -209,7 +208,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     AutoClose closer1(*this);
 
     Length toRead = ((maxsize != -1) ? std::min(estimate, maxsize) : estimate);
-    
+
     other.openForWrite(toRead);
     watcher.toHandleOpened();
     AutoClose closer2(other);
@@ -217,7 +216,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     Length total = 0;
     long length  = -1;
 
-    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long) (toRead-total)))) > 0) {
+    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long)(toRead - total)))) > 0) {
 
         if (other.write((const char*)buffer, length) != length) {
             throw WriteError(name() + " into " + other.name());

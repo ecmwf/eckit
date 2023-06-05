@@ -74,8 +74,9 @@ bool Params::get(const std::string& name, std::vector<double>& value) const
 */
 Params::value_t Params::operator[](const Params::key_t& key) const {
     value_t v = getValue(*this, key);
-    if (v.isNil())
+    if (v.isNil()) {
         throw BadParameter("Params does not contain key: " + key, Here());
+    }
     return v;
 }
 

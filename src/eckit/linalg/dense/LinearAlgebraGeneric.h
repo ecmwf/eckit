@@ -13,11 +13,7 @@
 
 #include "eckit/linalg/LinearAlgebraDense.h"
 
-
-namespace eckit {
-namespace linalg {
-namespace dense {
-
+namespace eckit::linalg::dense {
 
 struct LinearAlgebraGeneric final : public LinearAlgebraDense {
     LinearAlgebraGeneric() {}
@@ -30,7 +26,4 @@ struct LinearAlgebraGeneric final : public LinearAlgebraDense {
     void print(std::ostream&) const override;
 };
 
-
-}  // namespace dense
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg::dense

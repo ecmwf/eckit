@@ -52,8 +52,9 @@ FTPHandle::FTPHandle(Stream& s) :
 std::string FTPHandle::readLine() {
     std::string s;
     char c;
-    while (cmds_.read(&c, 1) == 1 && c != '\n')
+    while (cmds_.read(&c, 1) == 1 && c != '\n') {
         s += c;
+    }
     Log::info() << "receive " << s << std::endl;
     return s;
 }
@@ -64,8 +65,9 @@ void FTPHandle::ftpCommand(const std::string& s) {
     cmds_.write("\r\n", 2);
     std::string out = readLine();
 
-    if (atoi(out.c_str()) / 100 == 5)
+    if (atoi(out.c_str()) / 100 == 5) {
         throw FTPError();
+    }
 }
 
 FTPHandle::FTPHandle(const std::string& host, const std::string& remote, int port) :
@@ -89,8 +91,9 @@ void FTPHandle::open(const std::string& cmd) {
     snprintf(p, 1024, "PORT %s,%d,%d", addr.c_str(), port / 256, port % 256);
     char* q = p;
     while (*q) {
-        if (*q == '.')
+        if (*q == '.') {
             *q = ',';
+        }
         q++;
     }
     ftpCommand(p);

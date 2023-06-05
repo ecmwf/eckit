@@ -69,9 +69,7 @@ bool SemanticVersion::operator<(const SemanticVersion& o) const {
         if (minor_ == o.minor_) {
             return (patch_ < o.patch_);
         }
-        else {
-            return (minor_ < o.minor_);
-        }
+        return (minor_ < o.minor_);
     }
     return (major_ < o.major_);
 }

@@ -23,10 +23,7 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -79,7 +76,8 @@ public:  // methods
     virtual ~FunctionBuilderBase();
 
     virtual std::shared_ptr<FunctionExpression> make(const std::string& name,
-                                                     const expression::Expressions& args) const = 0;
+                                                     const expression::Expressions& args) const
+        = 0;
     int arity() const;
     std::string help() const;
 };
@@ -114,7 +112,7 @@ protected:
 public:
 	//FunctionFactoryBase() : name_("FunctionFactory"), arity_(-1) {}
 	FunctionFactoryBase(const std::string& name, int arity, const std::string& help);
-    virtual ~FunctionFactoryBase() override;
+    ~FunctionFactoryBase() override;
 
     std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>);
     std::shared_ptr<FunctionExpression> build(const std::string&, std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>);
@@ -126,7 +124,7 @@ class FunctionFactory : public FunctionFactoryBase {
 public:
 	static FunctionFactory& instance();
 	FunctionFactory(); // : FunctionFactoryBase("FunctionFactory", -1) {}
-    virtual ~FunctionFactory() override {}
+    ~FunctionFactory() override {}
 
     typedef std::vector<std::pair<std::pair<std::string, int>, std::string> > FunctionInfo;
 
@@ -154,9 +152,6 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function
 
 #endif

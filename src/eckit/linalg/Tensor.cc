@@ -10,12 +10,10 @@
 
 #include "eckit/linalg/Tensor.h"
 
-namespace eckit {
-namespace linalg {
+namespace eckit::linalg {
 
 // Explicit template instantiation to minimise dynamic library code bloat
 template class Tensor<double>;
 template class Tensor<float>;
 
-}  // namespace linalg
-}  // namespace eckit
+}  // namespace eckit::linalg

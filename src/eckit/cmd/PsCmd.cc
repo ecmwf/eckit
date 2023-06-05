@@ -64,16 +64,18 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
         }
     }
 
-    for (int i = 0; i < info.depth(); i++)
+    for (int i = 0; i < info.depth(); i++) {
         out << "   ";
+    }
 
     // name column
     std::string app = info.name();
     out << app;
 
     int n = info.depth() * 3 + app.length();
-    for (int i = 0; i < 16 - n; i++)
+    for (int i = 0; i < 16 - n; i++) {
         out << ' ';
+    }
 
     // Idle column
     long age = ::time(0) - info.last();
@@ -86,12 +88,15 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
     age /= 24;
     long d = age;
 
-    if (d)
+    if (d) {
         out << std::setw(d > 1 ? 2 : 3) << d << "day" << (d > 1 ? "s" : "");
-    else if (h || m)
+    }
+    else if (h || m) {
         out << std::setw(3) << h << ":" << std::setw(2) << std::setfill('0') << m << std::setfill(' ');
-    else
+    }
+    else {
         out << std::setw(6) << s;
+    }
 
     // State flag
     out << ' ' << info.state();
@@ -145,11 +150,13 @@ static bool sortTasks(int n1, int n2) {
 
 static bool isChild(Monitor::TaskArray& info, const std::string& name, int task) {
     int parent = info[task].parent();
-    if ((parent == -1) && (name == info[task].application()))
+    if ((parent == -1) && (name == info[task].application())) {
         return true;
+    }
 
-    if (parent != -1)
+    if (parent != -1) {
         return isChild(info, name, parent);
+    }
 
     return false;
 }
@@ -158,8 +165,9 @@ static bool isChild(Monitor::TaskArray& info, const std::string& name, int task)
 static bool isParent(Monitor::TaskArray& info, int taskid, int task) {
     int parenttask = info[task].parent();
     int parentid   = info[taskid].parent();
-    if (task == taskid)
+    if (task == taskid) {
         return true;
+    }
 
     return ((parenttask != -1) && isParent(info, taskid, parenttask)) || ((parentid != -1) && isParent(info, parentid, task));
 }
@@ -183,24 +191,29 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
     JSON json(out, false);
     bool doJson = args.exists("json");
 
-
-    for (size_t i = 1; i < args.size(); ++i)
+    for (size_t i = 1; i < args.size(); ++i) {
         if (args.exists(i)) {
             all = false;
             if (args[i].isNumber()) {
                 int id = args[i];
-                if (info.size() >= static_cast<unsigned long>(id))
+                if (info.size() >= static_cast<unsigned long>(id)) {
                     taskids.push_back(id);
-                else
+                }
+                else {
                     pids.push_back(id);
+                }
             }
-            else
+            else {
                 tasks.push_back(args[i]);
+            }
         }
+    }
 
-    for (size_t j = 0; j < info.size(); j++)
-        if (info[j].busy(true) && info[j].show())
+    for (size_t j = 0; j < info.size(); j++) {
+        if (info[j].busy(true) && info[j].show()) {
             t.push_back(j);
+        }
+    }
 
     std::sort(t.begin(), t.end(), sortTasks);
 
@@ -214,7 +227,7 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
         out << Colour::reset;
     }
 
-    if (all)
+    if (all) {
         for (size_t j = 0; j < t.size(); j++) {
             if (!doJson) {
                 display(out, info[t[j]], t[j], grep);
@@ -223,9 +236,10 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                 display(json, info[t[j]], t[j], grep);
             }
         }
-    else
+    }
+    else {
         for (size_t j = 0; j < t.size(); j++) {
-            for (Ordinal i = 0; i < tasks.size(); ++i)
+            for (Ordinal i = 0; i < tasks.size(); ++i) {
                 if (isChild(info, tasks[i], t[j])) {
                     if (!doJson) {
                         display(out, info[t[j]], t[j], grep);
@@ -235,7 +249,8 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                     }
                     break;
                 }
-            for (Ordinal k = 0; k < taskids.size(); ++k)
+            }
+            for (Ordinal k = 0; k < taskids.size(); ++k) {
                 if (isParent(info, taskids[k], t[j])) {
                     if (!doJson) {
                         display(out, info[t[j]], t[j], grep);
@@ -245,7 +260,8 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                     }
                     break;
                 }
-            for (Ordinal l = 0; l < pids.size(); ++l)
+            }
+            for (Ordinal l = 0; l < pids.size(); ++l) {
                 if (pids[l] == info[t[j]].pid()) {
                     if (!doJson) {
                         display(out, info[t[j]], t[j], grep);
@@ -255,7 +271,9 @@ void PsCmd::execute(std::istream& in, std::ostream& out, CmdArg& args) {
                     }
                     break;
                 }
+            }
         }
+    }
 
     if (doJson) {
         json.endList();

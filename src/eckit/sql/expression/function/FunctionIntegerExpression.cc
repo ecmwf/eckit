@@ -18,12 +18,10 @@
 #define ftrunc(x) ((x)-fmod((x), 1))
 #define F90nint(x) (((x) > 0) ? (int)((x) + 0.5) : (int)((x)-0.5))
 
-namespace eckit {
-namespace sql {
-namespace expression {
-namespace function {
+namespace eckit::sql::expression::function {
 
-FunctionIntegerExpression::FunctionIntegerExpression(const std::string& name, const expression::Expressions& args) :
+FunctionIntegerExpression::FunctionIntegerExpression(const std::string& name,
+                                                     const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
 FunctionIntegerExpression::~FunctionIntegerExpression() {}
@@ -143,7 +141,4 @@ static IntegerFunctionBuilder<Func_atoi> atoiFunctionBuilder("atoi");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace function
-}  // namespace expression
-}  // namespace sql
-}  // namespace eckit
+}  // namespace eckit::sql::expression::function

@@ -44,8 +44,9 @@ void ThreadPoolThread::run() {
         Monitor::instance().show(false);
         Log::status() << "-" << std::endl;
         ThreadPoolTask* r = owner_.next();
-        if (!r)
+        if (!r) {
             break;
+        }
         Monitor::instance().show(true);
 
         r->pool_ = &owner_;
@@ -147,8 +148,9 @@ void ThreadPool::endTask() {
 
 void ThreadPool::error(const std::string& msg) {
     AutoLock<MutexCond> lock(done_);
-    if (error_)
+    if (error_) {
         errorMessage_ += " | ";
+    }
     error_ = true;
     errorMessage_ += msg;
 }
@@ -166,8 +168,9 @@ void ThreadPool::push(ThreadPoolTask* r) {
 void ThreadPool::push(std::list<ThreadPoolTask*>& l) {
     AutoLock<MutexCond> lock(ready_);
 
-    for (std::list<ThreadPoolTask*>::iterator j = l.begin(); j != l.end(); ++j)
+    for (std::list<ThreadPoolTask*>::iterator j = l.begin(); j != l.end(); ++j) {
         queue_.push_back((*j));
+    }
 
     l.clear();
     ready_.signal();
@@ -175,14 +178,16 @@ void ThreadPool::push(std::list<ThreadPoolTask*>& l) {
 
 ThreadPoolTask* ThreadPool::next() {
     AutoLock<MutexCond> lock(ready_);
-    while (queue_.empty())
+    while (queue_.empty()) {
         ready_.wait();
+    }
 
     ThreadPoolTask* r = queue_.front();
     queue_.pop_front();
 
-    if (!queue_.empty())
+    if (!queue_.empty()) {
         ready_.signal();
+    }
 
     return r;
 }

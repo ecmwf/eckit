@@ -165,7 +165,6 @@ void Sphere::greatCircleLongitudeGivenLatitude(
 
 Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, double height, bool normalise_angle) {
     ASSERT(radius > 0.);
-    assert_latitude(A.lat);
 
     /*
      * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
@@ -180,15 +179,19 @@ Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, 
      * poles and quadrants.
      */
 
-    const double lambda_deg = PointLonLat::normalise_angle_to_minimum(A.lon, -180.);
-    const double lambda     = degrees_to_radians * lambda_deg;
-    const double phi        = degrees_to_radians * A.lat;
+    if (!normalise_angle) {
+        assert_latitude(A.lat);
+    }
 
-    const double sin_phi    = std::sin(phi);
-    const double cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
-    const double sin_lambda = std::abs(lambda_deg) < 180. ? std::sin(lambda) : 0.;
-    const double cos_lambda = std::abs(lambda_deg) > 90. ? std::cos(lambda)
-                                                         : std::sqrt(1. - sin_lambda * sin_lambda);
+    const auto P      = PointLonLat::make(A.lon, A.lat, -180.);
+    const auto lambda = degrees_to_radians * P.lon;
+    const auto phi    = degrees_to_radians * P.lat;
+
+    const auto sin_phi    = std::sin(phi);
+    const auto cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
+    const auto sin_lambda = std::abs(P.lon) < 180. ? std::sin(lambda) : 0.;
+    const auto cos_lambda = std::abs(P.lon) > 90. ? std::cos(lambda)
+                                                  : std::sqrt(1. - sin_lambda * sin_lambda);
 
     return {(radius + height) * cos_phi * cos_lambda,
             (radius + height) * cos_phi * sin_lambda,

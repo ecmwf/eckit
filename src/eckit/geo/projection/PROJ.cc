@@ -39,7 +39,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
             return proj_coord(q.lon, q.lat, 0, 0);
         }
 
-        Point convert(const PJ_COORD& c) const final { return PointLonLat::make(c.enu.n, c.enu.e, lon_minimum_); }
+        Point convert(const PJ_COORD& c) const final { return PointLonLat::make(c.enu.e, c.enu.n, lon_minimum_); }
 
         explicit LonLat(double lon_minimum) :
             lon_minimum_(lon_minimum) {}

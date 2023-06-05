@@ -17,17 +17,19 @@
 #include "eckit/geometry/UnitSphere.h"
 #include "eckit/testing/Test.h"
 
-namespace eckit::test {
-
-using namespace geometry;
+namespace eckit::tests::geometry {
 
 // set sphere
 struct DatumTwoUnits {
     static double radius() { return 2.; }
 };
 
-using TwoUnitsSphere = SphereT<DatumTwoUnits>;
+using TwoUnitsSphere = eckit::geometry::SphereT<DatumTwoUnits>;
 
+using eckit::geometry::Point3;
+using eckit::geometry::PointLonLat;
+
+using eckit::geometry::UnitSphere;
 const double R = UnitSphere::radius();
 
 
@@ -159,10 +161,11 @@ CASE("test unit sphere lon 315") {
 
 CASE("test unit sphere lat 100") {
     // Default behavior throws
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({0., 100. }), eckit::BadValue);
+    EXPECT_THROWS_AS(PointLonLat(0., 100.), eckit::BadValue);
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({0., 100.}), eckit::BadValue);
 
-    auto p = UnitSphere::convertSphericalToCartesian({0., 100. }, 0., true);
-    auto q = UnitSphere::convertSphericalToCartesian({180., 80.}, 0., true);
+    auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(0., 100.), 0.);
+    auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(180., 80.), 0.);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
@@ -172,10 +175,11 @@ CASE("test unit sphere lat 100") {
 
 CASE("test unit sphere lat 290") {
     // Default behavior throws
+    EXPECT_THROWS_AS(PointLonLat(15., 290.), eckit::BadValue);
     EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({15., 290.}), eckit::BadValue);
 
-    auto p = UnitSphere::convertSphericalToCartesian({15., 290.}, 0., true);
-    auto q = UnitSphere::convertSphericalToCartesian({15., -70.}, 0., true);
+    auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(15., 290.), 0.);
+    auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(15., -70.), 0.);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
@@ -185,10 +189,11 @@ CASE("test unit sphere lat 290") {
 
 CASE("test unit sphere lat -120") {
     // Default behavior throws
+    EXPECT_THROWS_AS(PointLonLat(45., -120.), eckit::BadValue);
     EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({45., -120.}), eckit::BadValue);
 
-    auto p = UnitSphere::convertSphericalToCartesian({45., -120.}, 0., true);
-    auto q = UnitSphere::convertSphericalToCartesian({225., -60.}, 0., true);
+    auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(45., -120.), 0.);
+    auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(225., -60.), 0.);
 
     // sin(x) and sin(pi-x) are not bitwise identical
     EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
@@ -204,9 +209,9 @@ CASE("test unit sphere distances") {
     const PointLonLat P2(121.8, 31.4);  // Shanghai
 
     // Same points with added shifts
-    const PointLonLat P1b(288.4, -33.);    // Valparaíso + longitude shift
-    const PointLonLat P2b(301.8, 148.6);   // Shanghai + latitude/longitude shift
-    const PointLonLat P2c(-58.2, -211.4);  // Shanghai + latitude/longitude shift
+    const auto P1b = PointLonLat::make(288.4, -33.);    // Valparaíso + longitude shift
+    const auto P2b = PointLonLat::make(301.8, 148.6);   // Shanghai + latitude/longitude shift
+    const auto P2c = PointLonLat::make(-58.2, -211.4);  // Shanghai + latitude/longitude shift
 
     const double d0 = UnitSphere::distance(P1, P2);
     const double d1 = UnitSphere::distance(P1b, P2);
@@ -226,8 +231,8 @@ CASE("test unit sphere area globe") {
 }
 
 CASE("test unit sphere area hemispheres") {
-    const double area_hemisphere_north = UnitSphere::area({-180., 90.}, {180., 0.  });
-    const double area_hemisphere_south = UnitSphere::area({-180., 0. }, {180., -90.});
+    const double area_hemisphere_north = UnitSphere::area({-180., 90.}, {180., 0.});
+    const double area_hemisphere_south = UnitSphere::area({-180., 0.}, {180., -90.});
 
     EXPECT(area_hemisphere_north == 0.5 * UnitSphere::area());
     EXPECT(area_hemisphere_north == area_hemisphere_south);
@@ -266,7 +271,7 @@ CASE("test two units sphere sub areas") {
 
 // -----------------------------------------------------------------------------
 
-}  // namespace eckit::test
+}  // namespace eckit::tests::geometry
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

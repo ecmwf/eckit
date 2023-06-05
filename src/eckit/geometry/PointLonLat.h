@@ -38,7 +38,11 @@ public:
     // -- Constructors
 
     PointLonLat(double lon, double lat) :
-        P{lon, lat} { ASSERT_MSG(-90. <= lat && lat <= 90., "PointLonLat: invalid latitude"); }
+        P{lon, lat} {
+        if (!(-90. <= lat && lat <= 90.)) {
+            throw BadValue("PointLonLat: invalid latitude");
+        }
+    }
 
     PointLonLat(const PointLonLat& other) :
         P(other) {}
@@ -76,7 +80,7 @@ public:
 
     static double normalise_angle_to_maximum(double, double maximum);
 
-    static PointLonLat make(double lat, double lon, double lon_minimum = 0) {
+    static PointLonLat make(double lon, double lat, double lon_minimum = 0) {
         lat = normalise_angle_to_minimum(lat, -90.);
 
         if (lat > 90.) {
@@ -84,10 +88,10 @@ public:
             lon += 180.;
         }
 
-        return {lat, lat == -90. || lat == 90. ? 0. : normalise_angle_to_minimum(lon, lon_minimum)};
+        return {lat == -90. || lat == 90. ? 0. : normalise_angle_to_minimum(lon, lon_minimum), lat};
     }
 
-    PointLonLat antipode() const { return make(lat + 180., lon); }
+    PointLonLat antipode() const { return make(lon, lat + 180.); }
 
     // -- Overridden methods
     // None
@@ -101,7 +105,7 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointLonLat& p) {
-        return out << '{' << p.lat << ", " << p.lon << '}';
+        return out << '{' << p.lon << ", " << p.lat << '}';
     }
 };
 

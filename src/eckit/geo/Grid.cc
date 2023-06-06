@@ -1,0 +1,184 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+
+#include "eckit/geo/Grid.h"
+
+#include <map>
+#include <memory>
+#include <sstream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Domain.h"
+#include "eckit/geo/Iterator.h"
+#include "eckit/geo/grid/UnstructuredGrid.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+
+
+namespace eckit::geo {
+
+
+Grid::Grid(const Configuration& config) :
+    bbox_(config) {}
+
+
+Grid::Grid(const BoundingBox& bbox) :
+    bbox_(bbox) {}
+
+
+bool Grid::isGlobal() const {
+    return domain().isGlobal();
+}
+
+
+bool Grid::isPeriodicWestEast() const {
+    std::ostringstream os;
+    os << "Grid::isPeriodicWestEast() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+bool Grid::includesNorthPole() const {
+    std::ostringstream os;
+    os << "Grid::includesNorthPole() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+bool Grid::includesSouthPole() const {
+    std::ostringstream os;
+    os << "Grid::includesSouthPole() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+const Grid* Grid::croppedGrid(const BoundingBox& /*unused*/) const {
+    std::ostringstream os;
+    os << "Grid::croppedGrid() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+bool Grid::sameAs(const Grid& /*unused*/) const {
+    std::ostringstream os;
+    os << "Grid::sameAs() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+bool Grid::crop(BoundingBox& /*unused*/, Renumber& /*unused*/) const {
+    std::ostringstream os;
+    os << "Grid::crop() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+size_t Grid::numberOfPoints() const {
+    std::ostringstream os;
+    os << "Grid::numberOfPoints() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+void Grid::reorder(long /*unused*/, MIRValuesVector& /*unused*/) const {
+    std::ostringstream os;
+    os << "Grid::reorder() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+Iterator* Grid::iterator() const {
+    std::ostringstream os;
+    os << "Grid::iterator() not implemented for " << *this;
+    throw SeriousBug(os.str());
+}
+
+
+Domain Grid::domain() const {
+    double n = includesNorthPole() ? NORTH_POLE : bbox_.north();
+    double s = includesSouthPole() ? SOUTH_POLE : bbox_.south();
+    double w = bbox_.west();
+    double e = isPeriodicWestEast() ? bbox_.west() + GLOBE : bbox_.east();
+
+    return {n, w, s, e};
+}
+
+
+const BoundingBox& Grid::boundingBox() const {
+    return bbox_;
+}
+
+
+static pthread_once_t __once;
+static Mutex* __mutex                         = nullptr;
+static std::map<std::string, GridFactory*>* m = nullptr;
+static void __init() {
+    __mutex = new Mutex;
+    m       = new std::map<std::string, GridFactory*>();
+}
+
+
+GridFactory::GridFactory(const std::string& name) :
+    name_(name) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    if (m->find(name) != m->end()) {
+        throw SeriousBug("GridFactory: duplicate '" + name + "'");
+    }
+
+    ASSERT(m->find(name) == m->end());
+    (*m)[name] = this;
+}
+
+
+GridFactory::~GridFactory() {
+    AutoLock<Mutex> lock(*__mutex);
+
+    m->erase(name_);
+}
+
+
+const Grid* GridFactory::build(const Configuration& params) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    std::string name;
+    if (!params.get("gridType", name)) {
+        throw SeriousBug("GridFactory: cannot get 'gridType'");
+    }
+
+    Log::debug() << "GridFactory: looking for '" << name << "'" << std::endl;
+
+    auto j = m->find(name);
+    if (j == m->end()) {
+        list(Log::error() << "GridFactory: unknown '" << name << "', choices are: ");
+        throw SeriousBug("GridFactory: unknown '" + name + "'");
+    }
+
+    return j->second->make(params);
+}
+
+
+void GridFactory::list(std::ostream& out) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    const char* sep = "";
+    for (const auto& j : *m) {
+        out << sep << j.first;
+        sep = ", ";
+    }
+}
+
+
+}  // namespace eckit::geo

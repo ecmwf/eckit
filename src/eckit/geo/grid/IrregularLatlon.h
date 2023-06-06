@@ -12,56 +12,32 @@
 
 #pragma once
 
-
-namespace eckit {
-class Configuration;
-}
+#include "eckit/geo/Grid.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::grid {
 
 
-class BoundingBox {
+class IrregularLatlon : public Grid {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    BoundingBox(const Configuration&);
-
-    BoundingBox(double north, double west, double south, double east);
-    BoundingBox();
-
-    BoundingBox(const BoundingBox&) = default;
-    BoundingBox(BoundingBox&&)      = default;
+    IrregularLatlon(const Configuration&);
 
     // -- Destructor
 
-    virtual ~BoundingBox() = default;
+    ~IrregularLatlon() override;
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    BoundingBox& operator=(const BoundingBox&) = default;
-    BoundingBox& operator=(BoundingBox&&)      = default;
-    bool operator==(const BoundingBox&) const;
-    bool operator!=(const BoundingBox& other) const { return !operator==(other); }
+    // None
 
     // -- Methods
-
-    double north() const { return north_; }
-    double west() const { return west_; }
-    double south() const { return south_; }
-    double east() const { return east_; }
-    bool isPeriodicWestEast() const;
-    bool contains(double lat, double lon) const;
-    bool contains(const BoundingBox&) const;
-    bool intersects(BoundingBox&) const;
-    bool empty() const;
-    double area(double radius) const;
 
     // -- Overridden methods
     // None
@@ -77,7 +53,8 @@ protected:
     // None
 
     // -- Methods
-    // None
+
+    void print(std::ostream&) const override;
 
     // -- Overridden methods
     // None
@@ -88,22 +65,34 @@ protected:
     // -- Class methods
     // None
 
-    // -- Friends
-    // None
-
 private:
+    IrregularLatlon();
+
     // -- Members
 
-    double north_;
-    double west_;
     double south_;
+    double north_;
+    double south_north_;
+
+    double west_;
     double east_;
+    double west_east_;
+
+    std::vector<double> latitudes_;
+    std::vector<double> longitudes_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    size_t numberOfPoints() const override;
+    bool sameAs(const Grid&) const override;
+    Domain domain() const override;
+    Iterator* iterator() const override;
+    bool isPeriodicWestEast() const override;
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
 
     // -- Class members
     // None
@@ -116,4 +105,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::grid

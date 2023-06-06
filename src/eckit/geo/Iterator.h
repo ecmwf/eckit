@@ -13,6 +13,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
@@ -20,7 +21,10 @@
 
 namespace eckit {
 class Configuration;
+namespace geo {
+class Projection;
 }
+}  // namespace eckit
 
 
 namespace eckit::geo {
@@ -67,6 +71,8 @@ public:
 
     // -- Constructors
 
+    Iterator(Projection* = nullptr);
+
     Iterator(const Iterator&) = delete;
     Iterator(Iterator&&)      = delete;
 
@@ -75,7 +81,8 @@ public:
     virtual ~Iterator() = default;
 
     // -- Convertors
-    // None
+
+    operator bool() { return valid_; }
 
     // -- Operators
 
@@ -106,6 +113,27 @@ public:
     // -- Class methods
     // None
 
+protected:
+    // -- Members
+
+    Point2 point_;
+    std::unique_ptr<Projection> projection_;
+    bool valid_;
+
+    // -- Methods
+
+    virtual void print(std::ostream&) const = 0;
+    virtual size_t index() const            = 0;
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
 private:
     // -- Members
     // None
@@ -123,7 +151,11 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend std::ostream& operator<<(std::ostream& s, const Iterator& p) {
+        p.print(s);
+        return s;
+    }
 };
 
 

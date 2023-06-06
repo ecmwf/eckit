@@ -18,7 +18,7 @@
 namespace eckit::geo::grib {
 
 
-static eckit::Value __root_dummy;
+static Value __root_dummy;
 
 
 GribConfiguration::GribConfiguration(codes_handle* h) :

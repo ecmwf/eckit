@@ -13,42 +13,34 @@
 #pragma once
 
 
-namespace eckit {
-class Configuration;
-}
-
-
 namespace eckit::geo {
 
 
-class BoundingBox {
+class Domain {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    BoundingBox(const Configuration&);
-
-    BoundingBox(double north, double west, double south, double east);
-    BoundingBox();
-
-    BoundingBox(const BoundingBox&) = default;
-    BoundingBox(BoundingBox&&)      = default;
+    Domain(double north, double west, double south, double east);
+    Domain();
+    Domain(const Domain&) = default;
+    Domain(Domain&&)      = default;
 
     // -- Destructor
 
-    virtual ~BoundingBox() = default;
+    virtual ~Domain() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    BoundingBox& operator=(const BoundingBox&) = default;
-    BoundingBox& operator=(BoundingBox&&)      = default;
-    bool operator==(const BoundingBox&) const;
-    bool operator!=(const BoundingBox& other) const { return !operator==(other); }
+    Domain& operator=(const Domain&) = default;
+    Domain& operator=(Domain&&)      = default;
+    bool operator==(const Domain&) const;
+    bool operator!=(const Domain& other) const { return !operator==(other); }
 
     // -- Methods
 
@@ -56,10 +48,15 @@ public:
     double west() const { return west_; }
     double south() const { return south_; }
     double east() const { return east_; }
+
+    bool isGlobal() const;
+    bool includesNorthPole() const;
+    bool includesSouthPole() const;
     bool isPeriodicWestEast() const;
+
     bool contains(double lat, double lon) const;
-    bool contains(const BoundingBox&) const;
-    bool intersects(BoundingBox&) const;
+    bool contains(const Domain&) const;
+    bool intersects(Domain&) const;
     bool empty() const;
     double area(double radius) const;
 

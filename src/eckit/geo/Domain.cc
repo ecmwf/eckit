@@ -10,12 +10,11 @@
  */
 
 
-#include "eckit/geo/BoundingBox.h"
+#include "eckit/geo/Domain.h"
 
 #include <algorithm>
 #include <cmath>
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geometry/Sphere.h"
@@ -25,46 +24,53 @@
 namespace eckit::geo {
 
 
-BoundingBox::BoundingBox(const Configuration& config) :
-    north_(config.getDouble("north")),
-    west_(config.getDouble("west")),
-    south_(config.getDouble("south")),
-    east_(config.getDouble("east")) {
-}
-
-
-BoundingBox::BoundingBox(double north, double west, double south, double east) :
+Domain::Domain(double north, double west, double south, double east) :
     north_(north), west_(west), south_(south), east_(east) {
     if (west_ != east_) {
         auto e = PointLonLat::normalise_angle_to_minimum(east, west);
         east_  = e == west_ ? (e + 360.) : e;
     }
 
-    ASSERT_MSG(west_ <= east_ && east_ <= west_ + 360., "BoundingBox: longitude range");
-    ASSERT_MSG(-90. <= south_ && south_ <= north_ && north_ <= 90., "BoundingBox: latitude range");
+    ASSERT_MSG(west_ <= east_ && east_ <= west_ + 360., "Domain: longitude range");
+    ASSERT_MSG(-90. <= south_ && south_ <= north_ && north_ <= 90., "Domain: latitude range");
 }
 
 
-BoundingBox::BoundingBox() :
-    BoundingBox(90., 0., -90., 360.) {}
+Domain::Domain() :
+    Domain(90., 0., -90., 360.) {}
 
 
-bool BoundingBox::operator==(const BoundingBox& other) const {
+bool Domain::operator==(const Domain& other) const {
     return north_ == other.north_ && south_ == other.south_ && west_ == other.west_ && east_ == other.east_;
 }
 
 
-bool BoundingBox::isPeriodicWestEast() const {
+bool Domain::isGlobal() const {
+    return includesNorthPole() && includesSouthPole() && isPeriodicWestEast();
+}
+
+
+bool Domain::includesNorthPole() const {
+    return north_ == NORTH_POLE;
+}
+
+
+bool Domain::includesSouthPole() const {
+    return south_ == SOUTH_POLE;
+}
+
+
+bool Domain::isPeriodicWestEast() const {
     return west_ != east_ && west_ == PointLonLat::normalise_angle_to_minimum(east_, west_);
 }
 
 
-bool BoundingBox::contains(double lat, double lon) const {
+bool Domain::contains(double lat, double lon) const {
     return lat <= north_ && lat >= south_ && PointLonLat::normalise_angle_to_minimum(lon, west_) <= east_;
 }
 
 
-bool BoundingBox::contains(const BoundingBox& other) const {
+bool Domain::contains(const Domain& other) const {
     if (other.empty()) {
         return contains(other.south_, other.west_);
     }
@@ -78,7 +84,7 @@ bool BoundingBox::contains(const BoundingBox& other) const {
 }
 
 
-bool BoundingBox::intersects(BoundingBox& other) const {
+bool Domain::intersects(Domain& other) const {
     auto n = std::min(north_, other.north_);
     auto s = std::max(south_, other.south_);
 
@@ -95,7 +101,7 @@ bool BoundingBox::intersects(BoundingBox& other) const {
     auto w = std::min(west_, other.west_);
     auto e = w;
 
-    auto intersect = [](const BoundingBox& a, const BoundingBox& b, double& w, double& e) {
+    auto intersect = [](const Domain& a, const Domain& b, double& w, double& e) {
         bool p = a.isPeriodicWestEast();
         if (p || b.isPeriodicWestEast()) {
             w = (p ? b : a).west_;
@@ -119,19 +125,19 @@ bool BoundingBox::intersects(BoundingBox& other) const {
     bool intersectsWE = west_ <= other.west_ ? intersect(*this, other, w, e) || intersect(other, *this, w, e)
                                              : intersect(other, *this, w, e) || intersect(*this, other, w, e);
 
-    ASSERT_MSG(w <= e, "BoundingBox::intersects: longitude range");
+    ASSERT_MSG(w <= e, "Domain::intersects: longitude range");
     other = {n, w, s, e};
 
     return intersectsSN && intersectsWE;
 }
 
 
-bool BoundingBox::empty() const {
+bool Domain::empty() const {
     return types::is_approximately_equal(north_, south_) || types::is_approximately_equal(west_, east_);
 }
 
 
-double BoundingBox::area(double radius) const {
+double Domain::area(double radius) const {
     double lonf = isPeriodicWestEast() ? 1. : ((east_ - west_) / 360.);
     ASSERT(0. <= lonf && lonf <= 1.);
 

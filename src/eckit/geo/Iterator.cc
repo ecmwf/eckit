@@ -16,6 +16,7 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -32,6 +33,17 @@ static std::map<IteratorFactory::key_type, IteratorFactory*>* __factories = null
 static void __init() {
     __mutex     = new Mutex;
     __factories = new std::map<IteratorFactory::key_type, IteratorFactory*>();
+}
+
+
+Iterator::Iterator(Projection* projection) :
+    projection_(projection),
+    valid_(true) {}
+
+
+void Iterator::print(std::ostream& out) const {
+    out << "Iterator[valid?"
+        << valid_ << ",point=" << point_ << "]";
 }
 
 

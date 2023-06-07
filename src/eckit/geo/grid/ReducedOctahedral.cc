@@ -32,15 +32,4 @@ Iterator* ReducedOctahedral::iterator() const {
 }
 
 
-const Grid* ReducedOctahedral::croppedGrid(const BoundingBox& bbox) const {
-    return new ReducedOctahedral(N_, bbox, angularPrecision_);
-}
-
-
-bool ReducedOctahedral::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const ReducedOctahedral*>(&other);
-    return (o != nullptr) && Octahedral::sameAs(other);
-}
-
-
 }  // namespace eckit::geo::grid

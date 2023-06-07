@@ -10,24 +10,30 @@
  */
 
 
-#include "eckit/geo/grid/StretchedLL.h"
+#pragma once
 
-#include <ostream>
-
-
-namespace eckit::geo::grid {
+#include "eckit/geometry/SphereT.h"
 
 
-StretchedLL::StretchedLL(const Configuration& /*config*/) {}
+namespace eckit::geo {
 
 
-void StretchedLL::print(std::ostream& out) const {
-    out << "StretchedLL["
-        << "]";
-}
+struct DatumIFS {
+    static constexpr double radius() { return 6371229.; }
+};
 
 
-static const GridBuilder<StretchedLL> __repres("stretched_ll");
+struct DatumGRIB1 {
+    static constexpr double radius() { return 6367470.; }
+};
 
 
-}  // namespace eckit::geo::grid
+struct DatumWGS84SemiMajorAxis {
+    static constexpr double radius() { return 6378137.; }
+};
+
+
+using Earth = eckit::geometry::SphereT<DatumIFS>;
+
+
+}  // namespace eckit::geo

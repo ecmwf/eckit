@@ -75,8 +75,6 @@ private:
     // -- Overridden methods
 
     Iterator* iterator() const override;
-    const Grid* croppedGrid(const BoundingBox&) const override;
-    bool sameAs(const Grid&) const override;
 
     // -- Class members
     // None

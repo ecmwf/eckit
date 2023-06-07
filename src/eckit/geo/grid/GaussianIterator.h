@@ -16,6 +16,7 @@
 
 #include "eckit/types/Fraction.h"
 
+#include "eckit/geo/BoundingBox.h"
 #include "eckit/geo/Iterator.h"
 
 

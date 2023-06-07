@@ -18,7 +18,7 @@
 namespace eckit::geo::grid {
 
 
-TransverseMercator::TransverseMercator(const Configuration& /*config*/) {}
+TransverseMercator::TransverseMercator(const Configuration& config) : RegularGrid(config){}
 
 
 void TransverseMercator::print(std::ostream& out) const {

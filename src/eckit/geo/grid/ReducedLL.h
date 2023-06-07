@@ -81,11 +81,8 @@ private:
     // -- Overridden methods
 
     Iterator* iterator() const override;
-    bool sameAs(const Grid&) const override;
-    size_t numberOfPoints() const override;
 
-    // From Grid
-    const Grid* croppedGrid(const BoundingBox&) const override;
+    size_t numberOfPoints() const override;
 
     // -- Class members
     // None

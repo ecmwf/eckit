@@ -53,12 +53,10 @@ public:
     void operator=(const UnstructuredGrid&&) = delete;
 
     // -- Methods
-
-    static void save(const PathName&, const std::vector<double>& latitudes,
-                     const std::vector<double>& longitudes, bool binary);
+    // None
 
     // -- Overridden methods
-
+    // None
 
     // -- Class members
     // None
@@ -72,7 +70,6 @@ protected:
 
     // -- Methods
 
-    // From Grid
     void print(std::ostream&) const override;
 
     // -- Overridden methods
@@ -97,7 +94,7 @@ private:
 
     Domain domain() const override;
     Iterator* iterator() const override;
-    bool sameAs(const Grid&) const override;
+
 
     // Domain operations
     bool isPeriodicWestEast() const override;
@@ -105,7 +102,6 @@ private:
     bool includesSouthPole() const override;
 
     size_t numberOfPoints() const override;
-    const Grid* croppedGrid(const BoundingBox&) const override;
 
     // -- Class members
     // None

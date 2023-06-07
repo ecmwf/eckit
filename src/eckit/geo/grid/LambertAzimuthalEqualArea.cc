@@ -53,30 +53,4 @@ Projection LambertAzimuthalEqualArea::make_projection(const Configuration& param
 }
 
 
-const Grid* LambertAzimuthalEqualArea::croppedGrid(const BoundingBox& bbox) const {
-    auto mm = minmax_ij(bbox);
-    auto Ni = x_.size();
-
-    auto projection = grid_.projection();
-    ASSERT(projection);
-
-    auto first = [this, projection, Ni](size_t firsti, size_t firstj) -> Point2 {
-        for (std::unique_ptr<Iterator> it(iterator()); it->next();) {
-            auto i = it->index() % Ni;
-            auto j = it->index() / Ni;
-            if (i == firsti && j == firstj) {
-                const auto& latlon = *(*it);
-                return projection.xy(PointLonLat{latlon[1], latlon[0]});
-            }
-        }
-        throw UserError("LambertAzimuthalEqualArea::croppedGrid: cannot find first point");
-    }(mm.first.i, mm.first.j);
-
-    auto x = linspace(first.x(), std::abs(x_.step()), long(mm.second.i - mm.first.i + 1), xPlus_);
-    auto y = linspace(first.y(), std::abs(y_.step()), long(mm.second.j - mm.first.j + 1), yPlus_);
-
-    return new LambertAzimuthalEqualArea(projection, bbox, x, y, shape_);
-}
-
-
 }  // namespace eckit::geo::grid

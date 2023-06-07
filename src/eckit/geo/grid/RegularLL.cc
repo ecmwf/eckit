@@ -12,60 +12,288 @@
 
 #include "eckit/geo/grid/RegularLL.h"
 
+#include <memory>
 #include <ostream>
+#include <sstream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/grid/RegularLL.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::grid {
 
-RegularLL::RegularLL(const Configuration& config) :
-    LatLon(config) {}
 
-RegularLL::RegularLL(const Increments& increments, const BoundingBox& bbox, const PointLonLat& reference) :
-    LatLon(increments, bbox, reference) {}
+namespace detail {
+
+
+
+
+class RegularIterator {
+public:
+    RegularIterator(const Fraction& a, const Fraction& b, const Fraction& inc, const Fraction& ref);
+    RegularIterator(const Fraction& a, const Fraction& b, const Fraction& inc, const Fraction& ref, const Fraction& period);
+
+    static Fraction adjust(const Fraction& target, const Fraction& inc, bool up) {
+        ASSERT(inc > 0);
+
+        auto r = target / inc;
+        auto n = r.integralPart();
+
+        if (!r.integer() && (r > 0) == up) {
+            n += (up ? 1 : -1);
+        }
+
+        return (n * inc);
+    }
+
+    const Fraction& a() const { return a_; }
+    const Fraction& b() const { return b_; }
+    const Fraction& inc() const { return inc_; }
+    size_t n() const { return n_; }
+
+private:
+    Fraction a_;
+    Fraction b_;
+    Fraction inc_;
+    size_t n_;
+};
+
+
+RegularIterator::RegularIterator(const Fraction& a, const Fraction& b, const Fraction& inc,
+                                 const Fraction& ref) :
+    inc_(inc) {
+    ASSERT(a <= b);
+    ASSERT(inc >= 0);
+
+    if (inc_ == 0) {
+
+        b_ = a_ = a;
+        n_      = 1;
+    }
+    else {
+
+        auto shift = (ref / inc_).decimalPart() * inc;
+        a_         = shift + adjust(a - shift, inc_, true);
+
+        if (b == a) {
+            b_ = a_;
+        }
+        else {
+
+            auto c = shift + adjust(b - shift, inc_, false);
+            c      = a_ + ((c - a_) / inc_).integralPart() * inc_;
+            b_     = c < a_ ? a_ : c;
+        }
+
+        n_ = size_t(((b_ - a_) / inc_).integralPart() + 1);
+    }
+    ASSERT(a_ <= b_);
+    ASSERT(n_ >= 1);
+}
+
+
+RegularIterator::RegularIterator(const Fraction& a, const Fraction& b, const Fraction& inc,
+                                 const Fraction& ref, const Fraction& period) :
+    RegularIterator(a, b, inc, ref) {
+    ASSERT(period > 0);
+
+    if ((n_ - 1) * inc_ >= period) {
+        n_ -= 1;
+        ASSERT(n_ * inc_ == period || (n_ - 1) * inc_ < period);
+
+        b_ = a_ + (n_ - 1) * inc_;
+    }
+}
+
+
+}  // namespace detail
+
+
+RegularLL::RegularLL(const Configuration& config) :
+    Grid(config), increments_(config), reference_(bbox().south(), bbox().west()), ni_(0), nj_(0) {
+    bbox(correctBoundingBox(bbox(), ni_, nj_, increments_, reference_));
+    ASSERT(ni_ != 0);
+    ASSERT(nj_ != 0);
+
+    // confirm Ni/Nj from config (input)
+    size_t ni = 0;
+    size_t nj = 0;
+    ASSERT(config.get("Ni", ni));
+    ASSERT(config.get("Nj", nj));
+
+    ASSERT(ni == ni_);
+    ASSERT(nj == nj_);
+}
+
+
+RegularLL::RegularLL(const Increments& increments, const BoundingBox& bb, const PointLonLat& reference) :
+    Grid(bb), increments_(increments), reference_(reference), ni_(0), nj_(0) {
+    bbox(correctBoundingBox(bbox(), ni_, nj_, increments_, reference_));
+    ASSERT(ni_ != 0);
+    ASSERT(nj_ != 0);
+}
+
 
 RegularLL::~RegularLL() = default;
 
+
+void RegularLL::reorder(long scanningMode) const {
+    grib_reorder(values, scanningMode, ni_, nj_);
+}
+
+
+void RegularLL::print(std::ostream& out) const {
+    out << "RegularLL["
+        << "bbox=" << bbox() << ",increments=" << increments_ << ",ni=" << ni_ << ",nj=" << nj_ << "]";
+}
+
+
+bool RegularLL::isPeriodicWestEast() const {
+
+    // if range West-East is within one increment (or greater than) 360 degree
+    double inc = increments_.west_east().longitude();
+    return bbox().east() - bbox().west() + inc >= GLOBE;
+}
+
+
+bool RegularLL::includesNorthPole() const {
+
+    // if North latitude is within one increment from North Pole
+    double inc = increments_.south_north().latitude();
+    return bbox().north() + inc > NORTH_POLE;
+}
+
+
+bool RegularLL::includesSouthPole() const {
+
+    // if South latitude is within one increment from South Pole
+    auto inc = increments_.south_north;
+    return bbox().south() - inc < SOUTH_POLE;
+}
+
+
+size_t RegularLL::numberOfPoints() const {
+    ASSERT(ni_);
+    ASSERT(nj_);
+    return ni_ * nj_;
+}
+
+
+BoundingBox RegularLL::correctBoundingBox(const BoundingBox& bbox, size_t& ni, size_t& nj, const Increments& inc,
+                                   const PointLonLat& reference) {
+    // Latitude/longitude ranges
+    detail::RegularIterator lat{bbox.south(), bbox.north(), inc.south_north(),
+                                reference.lat};
+    auto n = lat.b();
+    auto s = lat.a();
+
+    nj = lat.n();
+    ASSERT(nj > 0);
+
+    detail::RegularIterator lon{bbox.west(), bbox.east(), inc.west_east().longitude(),
+                                reference.lon, GLOBE};
+    auto w = lon.a();
+    auto e = lon.b();
+
+    ni = lon.n();
+    ASSERT(ni > 0);
+
+    // checks
+    ASSERT(w + (ni - 1) * lon.inc() == e || ni * lon.inc() == GLOBE);
+    ASSERT(s + (nj - 1) * lat.inc() == n);
+
+    return {n, w, s, e};
+}
+
+
 Iterator* RegularLL::iterator() const {
 
-    class RegularLLIterator : protected LatLonIterator, public Iterator {
-        void print(std::ostream& out) const override {
-            out << "RegularLLIterator[";
-            Iterator::print(out);
-            out << ",";
-            LatLonIterator::print(out);
-            out << "]";
+    class RegularLLIterator : public Iterator {
+    public:
+        size_t ni_;
+        size_t nj_;
+        Fraction north_;
+        Fraction west_;
+        Fraction we_;
+        Fraction ns_;
+        size_t i_;
+        size_t j_;
+        Latitude latValue_;
+        Longitude lonValue_;
+        Fraction lat_;
+        Fraction lon_;
+
+        size_t count_;
+        bool first_;
+
+        ~RegularLLIterator() {
+            auto count = count_ + (i_ > 0 || j_ > 0 ? 1 : 0);
+            ASSERT(count == ni_ * nj_);
         }
-        bool next(double& lat, double& lon) override { return LatLonIterator::next(lat, lon); }
+
+        void print(std::ostream& out) const override {
+            out << "RegularLLIterator["
+                << "ni=" << ni_ << ",nj=" << nj_ << ",north=" << north_ << ",west=" << west_ << ",we=" << we_ << ",ns=" << ns_
+                << ",i=" << i_ << ",j=" << j_ << ",count=" << count_ << "]";
+        }
+
+        bool next(double& lat, double& lon) {
+            if (j_ < nj_) {
+                if (i_ < ni_) {
+                    lat = latValue_;
+                    lon = lonValue_;
+
+                    lon_ += we_;
+
+                    if (first_) {
+                        first_ = false;
+                    }
+                    else {
+                        count_++;
+                    }
+
+                    if (++i_ == ni_) {
+                        j_++;
+                        i_ = 0;
+                        lat_ -= ns_;
+                        lon_      = west_;
+                        latValue_ = lat_;
+                    }
+
+                    lonValue_ = lon_;
+
+                    return true;
+                }
+            }
+            return false;
+        }
 
         size_t index() const override { return count_; }
 
     public:
         RegularLLIterator(size_t ni, size_t nj, Latitude north, Longitude west, const Increments& increments) :
-            LatLonIterator(ni, nj, north, west, increments) {}
+            ni_(ni),
+            nj_(nj),
+            north_(north),
+            west_(west),
+            we_(increments.west_east),
+            ns_(increments.south_north),
+            i_(0),
+            j_(0),
+            count_(0),
+            first_(true) {
+            lat_      = north_;
+            lon_      = west_;
+            latValue_ = lat_;
+            lonValue_ = lon_;
+        }
     };
 
-    return new RegularLLIterator(ni_, nj_, bbox_.north(), bbox_.west(), increments_);
-}
-
-void RegularLL::print(std::ostream& out) const {
-    out << "RegularLL[";
-    LatLon::print(out);
-    out << "]";
-}
-
-bool RegularLL::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const RegularLL*>(&other);
-    return (o != nullptr) && LatLon::sameAs(other);
-}
-
-const RegularLL* RegularLL::croppedGrid(const BoundingBox& bbox) const {
-    return new RegularLL(increments_, bbox, reference_);
-}
-
-std::string RegularLL::factory() const {
-    return "regular_ll";
+    return new RegularLLIterator(ni_, nj_, bbox().north(), bbox().west(), increments_);
 }
 
 

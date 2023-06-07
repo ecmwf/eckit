@@ -22,6 +22,10 @@
 namespace eckit::geo::util {
 
 
+constexpr double degree_to_radian = M_PI / 180.;
+constexpr double radian_to_degree = M_1_PI * 180.;
+
+
 using pl_type = std::vector<long>;
 
 

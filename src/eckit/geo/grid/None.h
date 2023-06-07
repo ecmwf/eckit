@@ -61,7 +61,6 @@ protected:
 
     // -- Overridden methods
 
-    // from Grid
     void print(std::ostream&) const override;
 
     // -- Class members

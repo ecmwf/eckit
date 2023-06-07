@@ -20,7 +20,9 @@
 #include <string>
 #include <vector>
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -67,8 +69,9 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
         return "+proj=geos +type=crs +sweep=y" + _h + _l + _e;
     };
 
-    projection_          = RegularGrid::Configuration("type", "proj").set("proj", proj(h, a, b, Lop_));
-    projectionGreenwich_ = RegularGrid::Configuration("type", "proj").set("proj", proj(h, a, b, 0));
+    projection_.reset(ProjectionFactory::build("proj", MappedConfiguration({{"proj", proj(h, a, b, Lop_)}})));
+
+    projectionGreenwich_.reset(ProjectionFactory::build("proj", MappedConfiguration({{"proj", proj(h, a, b, 0)}})));
 
     // (x, y) space
     Nx_ = get<long>(param, "Nx");
@@ -99,7 +102,7 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
 
 
     // longest element diagonal, a multiple of a reference central element diagonal (avoiding distortion)
-    LongestElementDiagonal_ = 20. * Earth::distance(projection_.lonlat({-rx / 2, ry / 2}), projection_.lonlat({rx / 2, -ry / 2}));
+    LongestElementDiagonal_ = 20. * Earth::distance(projection_->inv(geometry::Point2{-rx / 2, ry / 2}), projection_->inv(geometry::Point2{rx / 2, -ry / 2}));
     ASSERT(0. < LongestElementDiagonal_);
 
 
@@ -108,10 +111,10 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
     // [1] page 25, solution of s_d^2=0, restrained at x=0 (lon) and y=0 (lat). Note: uses a, b, height defined there
     auto eps_ll = 1e-6;
 
-    auto n = 90. - radian_to_degree(0.151347) + eps_ll;
+    auto n = 90. - util::radian_to_degree * 0.151347 + eps_ll;
     auto s = -n;
 
-    auto e = 90. - radian_to_degree(0.151853) + eps_ll + Lop_;
+    auto e = 90. - util::radian_to_degree * 0.151853 + eps_ll + Lop_;
     auto w = 2. * Lop_ - e;
 #else
     auto geometric_maximum = [](double x_min, double x_eps, const std::function<double(double)>& f,
@@ -152,10 +155,8 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
 }
 
 
-const std::vector<RegularGrid::PointLonLat>& SpaceViewInternal::lonlat() const {
+const std::vector<PointLonLat>& SpaceViewInternal::lonlat() const {
     if (lonlat_.empty()) {
-        trace::Timer timer("SpaceView: pre-calculate (lon, lat) coordinates");
-
         ASSERT(projectionGreenwich_);  // Greenwich-centred (avoids PROJ normalisation)
         lonlat_.resize(Nx_ * Ny_);
 
@@ -164,11 +165,11 @@ const std::vector<RegularGrid::PointLonLat>& SpaceViewInternal::lonlat() const {
             for (const auto& _x : x()) {
                 auto& ll = lonlat_[index++];
                 ll       = projectionGreenwich_.lonlat({_x, _y});
-                if (std::isfinite(ll.lon()) && std::isfinite(ll.lat())) {
-                    ASSERT(-90. < ll.lon() && ll.lon() < 90.);
-                    ASSERT(-90. < ll.lat() && ll.lat() < 90.);
+                if (std::isfinite(ll.lon) && std::isfinite(ll.lat)) {
+                    ASSERT(-90. < ll.lon && ll.lon < 90.);
+                    ASSERT(-90. < ll.lat && ll.lat < 90.);
 
-                    ll.lon() += Lop_;
+                    ll.lon += Lop_;
                 }
                 else {
                     ll = {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};

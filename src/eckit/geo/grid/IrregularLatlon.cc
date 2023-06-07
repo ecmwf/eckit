@@ -24,7 +24,6 @@ namespace eckit::geo::grid {
 
 
 static void range(const std::vector<double>& v, double& mn, double& mx, double& dmax) {
-
     ASSERT(v.size() >= 2);
 
     dmax = 0;
@@ -41,19 +40,12 @@ static void range(const std::vector<double>& v, double& mn, double& mx, double& 
 
 
 IrregularLatlon::IrregularLatlon(const Configuration& config) {
-
     ASSERT(config.get("latitudes", latitudes_));
     range(latitudes_, south_, north_, south_north_);
 
     ASSERT(config.get("longitudes", longitudes_));
     range(longitudes_, west_, east_, west_east_);
 }
-
-
-IrregularLatlon::IrregularLatlon() = default;
-
-
-IrregularLatlon::~IrregularLatlon() = default;
 
 
 size_t IrregularLatlon::numberOfPoints() const {
@@ -63,22 +55,6 @@ size_t IrregularLatlon::numberOfPoints() const {
 
 void IrregularLatlon::print(std::ostream& out) const {
     out << "IrregularLatlon[latitudes=" << latitudes_.size() << ",longitudes=" << longitudes_.size() << "]";
-}
-
-
-bool IrregularLatlon::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const IrregularLatlon*>(&other);
-    return (o != nullptr) && (latitudes_ == o->latitudes_) && (longitudes_ == o->longitudes_);
-}
-
-
-Domain IrregularLatlon::domain() const {
-    const auto n = includesNorthPole() ? NORTH_POLE : north_;
-    const auto s = includesSouthPole() ? SOUTH_POLE : south_;
-    const auto w = west_;
-    const auto e = isPeriodicWestEast() ? west_ + GLOBE : east_;
-
-    return {n, w, s, e};
 }
 
 

@@ -53,11 +53,6 @@ size_t ReducedLL::numberOfPoints() const {
     return total;
 }
 
-bool ReducedLL::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const ReducedLL*>(&other);
-    return (o != nullptr) && (bbox() == o->bbox()) && (pl_ == o->pl_);
-}
-
 bool ReducedLL::isPeriodicWestEast() const {
     ASSERT(!pl_.empty());
 
@@ -170,13 +165,6 @@ public:
 
 Iterator* ReducedLL::iterator() const {
     return new ReducedLLIterator(pl_, domain());
-}
-
-
-const Grid* mir::repres::latlon::ReducedLL::croppedGrid(const BoundingBox&) const {
-    std::ostringstream os;
-    os << "ReducedLL::croppedGrid() not supported for " << *this;
-    throw FunctionalityNotSupported(os.str());
 }
 
 

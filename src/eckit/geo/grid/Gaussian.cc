@@ -43,12 +43,6 @@ Gaussian::Gaussian(const Configuration& config) :
 Gaussian::~Gaussian() = default;
 
 
-bool Gaussian::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const Gaussian*>(&other);
-    return (o != nullptr) && (N_ == o->N_) && (domain() == o->domain());
-}
-
-
 bool Gaussian::includesNorthPole() const {
     return bbox().north() >= latitudes().front();
 }

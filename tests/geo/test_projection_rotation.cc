@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
         for (auto a : delta) {
             for (auto b : delta) {
                 for (auto c : delta) {
-                    Rotation rot(-90. + static_cast<double>(a), 0. + static_cast<double>(b), static_cast<double>(c));
+                    Rotation rot(0. + static_cast<double>(b), -90. + static_cast<double>(a), static_cast<double>(c));
                     EXPECT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 
                     EXPECT(points_equal(p, rot.inv(rot.fwd(p))));
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
         const int Ni = 12;
         const int Nj = 3;
 
-        Rotation rot(-46.7, 182., 0.);
+        Rotation rot(182., -46.7, 0.);
         const PointLonLat ref[]{
             {-178., -46.7},
             {-178., -16.7},
@@ -143,13 +143,13 @@ int main(int argc, char* argv[]) {
     }
 
     {
-        const Rotation unrotated(-90., 0., 0.);
-        const Rotation angle_only(-90., 0., -180.);
-        const Rotation rotation(-40., 4., 180.);
+        const Rotation non_rotated(0., -90., 0.);
+        const Rotation rotation_angle(0., -90., -180.);
+        const Rotation rotation_matrix(4., -40., 180.);
 
-        EXPECT(not unrotated.rotated());
-        EXPECT(angle_only.rotated());
-        EXPECT(rotation.rotated());
+        EXPECT(not non_rotated.rotated());
+        EXPECT(rotation_angle.rotated());
+        EXPECT(rotation_matrix.rotated());
 
         const PointLonLat p[] = {{0., 90.}, {0., 0.}, {270., 25.}, {-180., 45.}};
 
@@ -158,18 +158,18 @@ int main(int argc, char* argv[]) {
             const PointLonLat a;
             const PointLonLat b;
         } tests[] = {
-            {unrotated, p[0], p[0]},
-            {unrotated, p[1], p[1]},
-            {unrotated, p[2], p[2]},
-            {unrotated, p[3], p[3]},
-            {angle_only, p[0], {p[0].lon - 180., p[0].lat}},
-            {angle_only, p[1], {p[1].lon - 180., p[1].lat}},
-            {angle_only, p[2], {p[2].lon - 180., p[2].lat}},
-            {angle_only, p[3], {p[3].lon - 180., p[3].lat}},
-            {rotation, p[0], {-176., 40.}},
-            {rotation, p[1], {-176., -50.}},
-            {rotation, p[2], {113.657357, 15.762700}},
-            {rotation, p[3], {-176., 85.}},
+            {non_rotated, p[0], p[0]},
+            {non_rotated, p[1], p[1]},
+            {non_rotated, p[2], p[2]},
+            {non_rotated, p[3], p[3]},
+            {rotation_angle, p[0], {p[0].lon - 180., p[0].lat}},
+            {rotation_angle, p[1], {p[1].lon - 180., p[1].lat}},
+            {rotation_angle, p[2], {p[2].lon - 180., p[2].lat}},
+            {rotation_angle, p[3], {p[3].lon - 180., p[3].lat}},
+            {rotation_matrix, p[0], {-176., 40.}},
+            {rotation_matrix, p[1], {-176., -50.}},
+            {rotation_matrix, p[2], {113.657357, 15.762700}},
+            {rotation_matrix, p[3], {-176., 85.}},
         };
 
         for (const auto& test : tests) {

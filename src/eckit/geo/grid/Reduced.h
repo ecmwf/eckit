@@ -71,9 +71,6 @@ protected:
 
     // -- Overridden methods
 
-    bool sameAs(const Grid&) const override;
-
-    // from Grid
     bool isPeriodicWestEast() const override;
 
     // -- Class members

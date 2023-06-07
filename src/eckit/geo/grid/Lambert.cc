@@ -12,6 +12,8 @@
 
 #include "eckit/geo/grid/Lambert.h"
 
+#include "eckit/config/MappedConfiguration.h"
+
 
 namespace eckit::geo::grid {
 
@@ -19,41 +21,38 @@ namespace eckit::geo::grid {
 static const GridBuilder<Lambert> __builder("lambert");
 
 
-Lambert::Lambert(const Configuration& param) :
-    RegularGrid(param, make_projection(param)) {
-    long edition = 0;
-    param.get("edition", edition);
+Lambert::Lambert(const Configuration& config) :
+    RegularGrid(config, make_projection(config)) {
+    auto edition = config.getLong("edition", 0);
 
     // GRIB1 cannot write LaD
     writeLaDInDegrees_ = edition == 2;
-    param.get("writeLaDInDegrees", writeLaDInDegrees_);
+    config.get("writeLaDInDegrees", writeLaDInDegrees_);
 
     // GRIB2 cannot write negative longitude values
     writeLonPositive_ = edition == 2;
-    param.get("writeLonPositive", writeLonPositive_);
+    config.get("writeLonPositive", writeLonPositive_);
 }
 
 
-Projection Lambert::make_projection(const Configuration& param) {
-    auto spec = make_proj_spec(param);
+Projection* Lambert::make_projection(const Configuration& config) {
+#if 0
+    auto spec = make_proj_spec(config);
     if (!spec.empty()) {
         return spec;
     }
+#endif
 
-    double LaDInDegrees;
-    double LoVInDegrees;
-    double Latin1InDegrees;
-    double Latin2InDegrees;
-    ASSERT(param.get("LaDInDegrees", LaDInDegrees));
-    ASSERT(param.get("LoVInDegrees", LoVInDegrees));
-    param.get("Latin1InDegrees", Latin1InDegrees = LaDInDegrees);
-    param.get("Latin2InDegrees", Latin2InDegrees = LaDInDegrees);
+    auto LaDInDegrees    = config.getDouble("LaDInDegrees");
+    auto LoVInDegrees    = config.getDouble("LoVInDegrees");
+    auto Latin1InDegrees = config.getDouble("Latin1InDegrees", LaDInDegrees);
+    auto Latin2InDegrees = config.getDouble("Latin2InDegrees", LaDInDegrees);
 
-    return Configuration("type", "lambert_conformal_conic")
-        .set("latitude1", Latin1InDegrees)
-        .set("latitude2", Latin2InDegrees)
-        .set("latitude0", LaDInDegrees)
-        .set("longitude0", LoVInDegrees);
+    return ProjectionFactory::build("lambert_conformal_conic",
+                                    MappedConfiguration({{"latitude1", Latin1InDegrees},
+                                                         {"latitude2", Latin2InDegrees},
+                                                         {"latitude0", LaDInDegrees},
+                                                         {"longitude0", LoVInDegrees}}));
 }
 
 

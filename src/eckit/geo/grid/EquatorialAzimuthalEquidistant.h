@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "eckit/geo/Grid.h"
+#include "eckit/geo/grid/RegularGrid.h"
 
 
 namespace eckit::geo::grid {
 
 
-class EquatorialAzimuthalEquidistant : public Grid {
+class EquatorialAzimuthalEquidistant : public RegularGrid {
 public:
     // -- Exceptions
     // None

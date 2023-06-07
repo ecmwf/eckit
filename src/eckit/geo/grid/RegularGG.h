@@ -48,23 +48,6 @@ public:
     // -- Class methods
     // None
 
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-
-    void print(std::ostream&) const override;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
     // None
@@ -74,10 +57,8 @@ private:
 
     // -- Overridden methods
 
-    const Grid* croppedGrid(const BoundingBox&) const override;
-    bool sameAs(const Grid&) const override;
+    void print(std::ostream&) const override;
     Iterator* iterator() const override;
-    std::string factory() const override;
 
     // -- Class members
     // None

@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "eckit/geo/Grid.h"
+#include "eckit/geo/grid/RegularGrid.h"
 
 
 namespace eckit::geo::grid {
 
 
-class Albers : public Grid {
+class Albers : public RegularGrid {
 public:
     // -- Exceptions
     // None

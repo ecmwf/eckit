@@ -166,12 +166,6 @@ void Reduced::correctWestEast(double& w, double& e) const {
 }
 
 
-bool Reduced::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const Reduced*>(&other);
-    return (o != nullptr) && Gaussian::sameAs(other);
-}
-
-
 Iterator* Reduced::unrotatedIterator() const {
     auto pl = pls();
     return new GaussianIterator(latitudes(), std::move(pl), bbox(), N_, Nj_, k_);

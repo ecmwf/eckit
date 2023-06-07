@@ -39,6 +39,10 @@ constexpr double NORTH_POLE = 90.;
 constexpr double SOUTH_POLE = -90.;
 
 
+using Longitude = double;
+using Latitude  = double;
+
+
 }  // namespace eckit::geo
 
 

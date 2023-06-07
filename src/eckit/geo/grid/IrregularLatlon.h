@@ -28,8 +28,7 @@ public:
     IrregularLatlon(const Configuration&);
 
     // -- Destructor
-
-    ~IrregularLatlon() override;
+    // None
 
     // -- Convertors
     // None
@@ -66,8 +65,6 @@ protected:
     // None
 
 private:
-    IrregularLatlon();
-
     // -- Members
 
     double south_;
@@ -87,8 +84,6 @@ private:
     // -- Overridden methods
 
     size_t numberOfPoints() const override;
-    bool sameAs(const Grid&) const override;
-    Domain domain() const override;
     Iterator* iterator() const override;
     bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;

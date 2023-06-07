@@ -32,15 +32,4 @@ Iterator* ReducedClassic::iterator() const {
 }
 
 
-const Grid* ReducedClassic::croppedGrid(const BoundingBox& bbox) const {
-    return new ReducedClassic(N_, bbox, angularPrecision_);
-}
-
-
-bool ReducedClassic::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const ReducedClassic*>(&other);
-    return (o != nullptr) && Classic::sameAs(other);
-}
-
-
 }  // namespace eckit::geo::grid

@@ -61,8 +61,7 @@ private:
     static Projection make_projection(const Configuration&);
 
     // -- Overridden methods
-
-    const Grid* croppedGrid(const BoundingBox&) const override;
+    // None
 
     // -- Class members
     // None

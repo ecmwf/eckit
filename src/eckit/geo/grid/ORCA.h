@@ -63,7 +63,6 @@ protected:
 
     // -- Overridden methods
 
-    // from Grid
     void print(std::ostream&) const override;
 
     // -- Class members
@@ -81,8 +80,6 @@ private:
 
     // -- Overridden methods
 
-    // from Grid
-    bool sameAs(const Grid&) const override;
     size_t numberOfPoints() const override;
 
     bool includesNorthPole() const override { return true; }

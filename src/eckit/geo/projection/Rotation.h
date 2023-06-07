@@ -28,7 +28,7 @@ public:
 
     // -- Constructors
 
-    Rotation(double south_pole_lat, double south_pole_lon, double angle);
+    Rotation(double south_pole_lon, double south_pole_lat, double angle);
     explicit Rotation(const Configuration&);
 
     // -- Destructor

@@ -18,6 +18,7 @@
 
 namespace eckit::geo::grid {
 
+
 Regular::Regular(const Configuration& config) :
     Gaussian(config), k_(0), Ni_(0), Nj_(0) {
     // adjust latitudes, longitudes and re-set bounding box
@@ -33,6 +34,7 @@ Regular::Regular(const Configuration& config) :
 
     setNiNj();
 }
+
 
 Regular::Regular(size_t N, const BoundingBox& box, double angularPrecision) :
     Gaussian(N, box, angularPrecision), k_(0), Ni_(0), Nj_(0) {
@@ -51,6 +53,7 @@ Regular::Regular(size_t N, const BoundingBox& box, double angularPrecision) :
     setNiNj();
 }
 
+
 void Regular::correctWestEast(double& w, double& e) const {
     ASSERT(w <= e);
 
@@ -58,40 +61,35 @@ void Regular::correctWestEast(double& w, double& e) const {
     ASSERT(inc > 0);
 
     if (angleApproximatelyEqual(GREENWICH, w) && (angleApproximatelyEqual(GLOBE - inc, e - w) || GLOBE - inc < e - w || (e != w && e.normalise(w) == w))) {
-
         w = GREENWICH;
         e = GLOBE - inc;
+        return;
     }
-    else {
 
-        const Fraction west = w;
-        const Fraction east = e;
+    const Fraction west = w;
+    const Fraction east = e;
 
-        Fraction::value_type Nw = (west / inc).integralPart();
-        if (Nw * inc < west) {
-            Nw += 1;
-        }
-
-        Fraction::value_type Ne = (east / inc).integralPart();
-        if (Ne * inc > east) {
-            Ne -= 1;
-        }
-
-        ASSERT(Nw <= Ne);
-        w = Nw * inc;
-        e = Ne * inc;
+    Fraction::value_type Nw = (west / inc).integralPart();
+    if (Nw * inc < west) {
+        Nw += 1;
     }
+
+    Fraction::value_type Ne = (east / inc).integralPart();
+    if (Ne * inc > east) {
+        Ne -= 1;
+    }
+
+    ASSERT(Nw <= Ne);
+    w = Nw * inc;
+    e = Ne * inc;
 }
 
-bool Regular::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const Regular*>(&other);
-    return (o != nullptr) && (N_ == o->N_) && (bbox() == o->bbox());
-}
 
 eckit::Fraction Regular::getSmallestIncrement() const {
     ASSERT(N_);
     return {90, Fraction::value_type(N_)};
 }
+
 
 size_t Regular::numberOfPoints() const {
     ASSERT(Ni_);
@@ -99,10 +97,12 @@ size_t Regular::numberOfPoints() const {
     return Ni_ * Nj_;
 }
 
+
 bool Regular::isPeriodicWestEast() const {
     auto inc = getSmallestIncrement();
     return bbox().east() - bbox().west() + inc >= GLOBE;
 }
+
 
 void Regular::setNiNj() {
     ASSERT(N_);
@@ -110,22 +110,20 @@ void Regular::setNiNj() {
     const auto inc   = getSmallestIncrement();
     const auto& lats = latitudes();
 
-    double west  = bbox().west();
-    double east  = bbox().east();
-    double south = bbox().south();
-    double north = bbox().north();
+    Fraction w(bbox().west());
+    Fraction e(bbox().east());
+    Fraction s(bbox().south());
+    Fraction n(bbox().north());
 
     Ni_ = N_ * 4;
 
-    if (east - west + inc < GLOBE) {
+    if (e - w + inc < GLOBE) {
 
-        auto w  = west.fraction();
         auto Nw = (w / inc).integralPart();
         if (Nw * inc < w) {
             Nw += 1;
         }
 
-        auto e  = east.fraction();
         auto Ne = (e / inc).integralPart();
         if (Ne * inc > e) {
             Ne -= 1;
@@ -140,13 +138,13 @@ void Regular::setNiNj() {
     k_  = 0;
     Nj_ = N_ * 2;
 
-    if (north < lats.front() || south > lats.back()) {
+    if (n < lats.front() || s > lats.back()) {
         Nj_ = 0;
         for (auto lat : lats) {
-            if (north < lat && !angleApproximatelyEqual(north, lat)) {
+            if (n < lat && !angleApproximatelyEqual(n, lat)) {
                 ++k_;
             }
-            else if (south <= lat || angleApproximatelyEqual(south, lat)) {
+            else if (s <= lat || angleApproximatelyEqual(s, lat)) {
                 ++Nj_;
             }
             else {
@@ -155,8 +153,7 @@ void Regular::setNiNj() {
         }
         ASSERT(Nj_ > 0);
     }
-
-    Log::debug() << "Regular::setNiNj: Ni*Nj = " << Ni_ << " * " << Nj_ << " = " << (Ni_ * Nj_) << std::endl;
 }
+
 
 }  // namespace eckit::geo::grid

@@ -22,7 +22,7 @@
 namespace eckit::geo::grid {
 
 
-// order is important for makeName()
+// order is important
 static const std::vector<std::pair<std::string, std::string>> grib_keys{
     {"orca_name", "unstructuredGridType"}, {"orca_arrangement", "unstructuredGridSubtype"}, {"uid", "uuidOfHGrid"}};
 
@@ -42,24 +42,9 @@ ORCA::ORCA(const Configuration& param) :
 ORCA::~ORCA() = default;
 
 
-bool ORCA::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const ORCA*>(&other);
-    return (o != nullptr) && spec_.getString("uid") == o->spec_.getString("uid");
-}
-
-
 size_t ORCA::numberOfPoints() const {
     return static_cast<size_t>(atlasGridRef().size());
 }
-
-
-// void ORCA::makeName(std::ostream& out) const {
-//     const auto* sep = "";
-//     for (const auto& key : grib_keys) {
-//         out << sep << spec_.getString(key.first);
-//         sep = "_";
-//     }
-// }
 
 
 void ORCA::print(std::ostream& out) const {
@@ -131,6 +116,22 @@ Iterator* ORCA::iterator() const {
 const atlas::Grid& ORCA::atlasGridRef() const {
     return grid_ ? grid_ : (grid_ = atlas::Grid(spec_));
 }
+
+
+#if 0
+Grid* GridBuilder<UnstructuredGrid>::make(const Configuration& config) {
+
+    // specially-named unstructured grids
+    std::string grid;
+    if (config.get("grid", grid)) {
+        if (!key::grid::ORCAPattern::match(grid, config).empty()) {
+            return new other::ORCA(config);
+        }
+    }
+
+    return new UnstructuredGrid(config);
+}
+#endif
 
 
 }  // namespace eckit::geo::grid

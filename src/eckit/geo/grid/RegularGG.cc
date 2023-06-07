@@ -37,25 +37,9 @@ void RegularGG::print(std::ostream& out) const {
 }
 
 
-bool RegularGG::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const RegularGG*>(&other);
-    return (o != nullptr) && Regular::sameAs(other);
-}
-
-
 Iterator* RegularGG::iterator() const {
     std::vector<long> pl(N_ * 2, long(4 * N_));
     return new GaussianIterator(latitudes(), std::move(pl), bbox(), N_, Nj_, k_);
-}
-
-
-const Grid* RegularGG::croppedGrid(const BoundingBox& bbox) const {
-    return new RegularGG(N_, bbox, angularPrecision_);
-}
-
-
-std::string RegularGG::factory() const {
-    return "regular_gg";
 }
 
 

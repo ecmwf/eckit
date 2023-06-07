@@ -10,24 +10,18 @@
  */
 
 
-#include "eckit/geo/grid/StretchedGG.h"
+#include "eckit/geo/Increments.h"
 
-#include <ostream>
-
-
-namespace eckit::geo::grid {
+#include "eckit/config/Configuration.h"
 
 
-StretchedGG::StretchedGG(const Configuration& /*config*/) {}
+namespace eckit::geo {
 
 
-void StretchedGG::print(std::ostream& out) const {
-    out << "StretchedGG["
-        << "]";
+Increments::Increments(const Configuration& config) :
+    Increments(config.getDouble("west_east_increment"), config.getDouble("south_north_increment")) {
 }
 
 
-static const GridBuilder<StretchedGG> __repres("stretched_gg");
 
-
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo

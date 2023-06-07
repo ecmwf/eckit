@@ -24,10 +24,4 @@ FromPL::FromPL(size_t N, const std::vector<long>& pl, const BoundingBox& bbox, d
     Reduced(N, pl, bbox, angularPrecision) {}
 
 
-bool FromPL::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const FromPL*>(&other);
-    return (o != nullptr) && (pls() == o->pls()) && Reduced::sameAs(other);
-}
-
-
 }  // namespace eckit::geo::grid

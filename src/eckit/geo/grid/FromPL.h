@@ -30,8 +30,7 @@ public:
            double angularPrecision = 0);
 
     // -- Destructor
-
-    virtual ~FromPL() override = default;
+    // None
 
     // -- Convertors
     // None
@@ -44,23 +43,6 @@ public:
 
     // -- Overridden methods
     // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    bool sameAs(const Grid&) const override;
 
     // -- Class members
     // None

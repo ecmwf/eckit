@@ -20,9 +20,10 @@
 #include <utility>
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Domain.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/grid/ORCA.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/IfstreamStream.h"
 
@@ -30,7 +31,95 @@
 namespace eckit::geo::grid {
 
 
-UnstructuredGrid::UnstructuredGrid(const Configuration& config) {
+namespace detail {
+
+
+class UnstructuredIterator : public Iterator {
+public:
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+    UnstructuredIterator(const std::vector<double>& latitudes, const std::vector<double>& longitudes) :
+        count_(0), size_(latitudes.size()), latitudes_(latitudes), longitudes_(longitudes), first_(true) {
+        ASSERT(latitudes_.size() == longitudes_.size());
+    }
+
+    UnstructuredIterator(const UnstructuredIterator&) = delete;
+
+    // -- Destructor
+    // None
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+
+    UnstructuredIterator& operator=(const UnstructuredIterator&) = delete;
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+    // -- Members
+
+    size_t count_;
+    const size_t size_;
+    const std::vector<double>& latitudes_;
+    const std::vector<double>& longitudes_;
+    bool first_;
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+
+    // From Iterator
+
+    void print(std::ostream& out) const override {
+        out << "UnstructuredGridIterator[";
+        Iterator::print(out);
+        out << "]";
+    }
+
+    bool next(Latitude& lat, Longitude& lon) override {
+        if ((first_ ? count_ : ++count_) < size_) {
+            first_ = false;
+            lat    = latitudes_[count_];
+            lon    = longitudes_[count_];
+
+            return true;
+        }
+        return false;
+    }
+
+    size_t index() const override { return count_; }
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
+};
+
+
+}  // namespace detail
+
+
+UnstructuredGrid::UnstructuredGrid(const Configuration& config) :
+    Grid(config) {
     config.get("latitudes", latitudes_);
     config.get("longitudes", longitudes_);
 
@@ -38,8 +127,6 @@ UnstructuredGrid::UnstructuredGrid(const Configuration& config) {
         throw UserError("UnstructuredGrid: requires 'latitudes' and 'longitudes'");
     }
     ASSERT(latitudes_.size() == longitudes_.size());
-
-    check_duplicate_points("UnstructuredGrid from Configuration", latitudes_, longitudes_, config);
 }
 
 
@@ -50,9 +137,6 @@ UnstructuredGrid::UnstructuredGrid(const PathName& path) {
     }
 
     if (::isprint(in.peek()) == 0) {
-
-        Log::info() << "UnstructuredGrid::load  " << path << std::endl;
-
         IfstreamStream s(in);
         size_t version;
         s >> version;
@@ -67,7 +151,6 @@ UnstructuredGrid::UnstructuredGrid(const PathName& path) {
         for (size_t i = 0; i < count; ++i) {
             s >> latitudes_[i];
             s >> longitudes_[i];
-            // Log::info() << latitudes_[i] << " " << longitudes_[i] << std::endl;
         }
     }
     else {
@@ -78,35 +161,6 @@ UnstructuredGrid::UnstructuredGrid(const PathName& path) {
             longitudes_.push_back(lon);
         }
     }
-
-    check_duplicate_points("UnstructuredGrid from " + path.asString(), latitudes_, longitudes_);
-}
-
-
-void UnstructuredGrid::save(const PathName& path, const std::vector<double>& latitudes,
-                            const std::vector<double>& longitudes, bool binary) {
-    Log::info() << "UnstructuredGrid::save " << path << std::endl;
-
-    check_duplicate_points("UnstructuredGrid::save to " + path.asString(), latitudes, longitudes);
-
-    ASSERT(latitudes.size() == longitudes.size());
-    if (binary) {
-        FileStream s(path, "w");
-        size_t version = 1;
-        size_t count   = latitudes.size();
-        s << version;
-        s << count;
-        for (size_t i = 0; i < count; ++i) {
-            s << latitudes[i];
-            s << longitudes[i];
-
-            Log::info() << latitudes[i] << " " << longitudes[i] << std::endl;
-        }
-        s.close();
-    }
-    else {
-        NOTIMP;
-    }
 }
 
 
@@ -114,7 +168,6 @@ UnstructuredGrid::UnstructuredGrid(const std::vector<double>& latitudes, const s
                                    const BoundingBox& bbox) :
     Grid(bbox), latitudes_(latitudes), longitudes_(longitudes) {
     ASSERT(latitudes_.size() == longitudes_.size());
-    check_duplicate_points("UnstructuredGrid from arguments", latitudes_, longitudes_);
 }
 
 
@@ -123,12 +176,6 @@ UnstructuredGrid::~UnstructuredGrid() = default;
 
 void UnstructuredGrid::print(std::ostream& out) const {
     out << "UnstructuredGrid[points=" << numberOfPoints() << "]";
-}
-
-
-bool UnstructuredGrid::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const UnstructuredGrid*>(&other);
-    return (o != nullptr) && (latitudes_ == o->latitudes_) && (longitudes_ == o->longitudes_);
 }
 
 
@@ -141,34 +188,6 @@ Domain UnstructuredGrid::domain() const {
 size_t UnstructuredGrid::numberOfPoints() const {
     ASSERT(latitudes_.size() == longitudes_.size());
     return latitudes_.size();
-}
-
-
-const Grid* UnstructuredGrid::croppedGrid(const BoundingBox& bbox) const {
-    std::vector<double> lat;
-    std::vector<double> lon;
-
-    size_t i = 0;
-    size_t j = 0;
-
-    for (const std::unique_ptr<Iterator> iter(iterator()); iter->next(); ++i) {
-        if (bbox.contains(iter->pointUnrotated())) {
-            auto ip = iter->index();
-            lat.emplace_back(latitudes_.at(ip));
-            lon.emplace_back(longitudes_.at(ip));
-            ++j;
-        }
-    }
-
-    if (j < i) {
-        Log::debug() << "UnstructuredGrid::croppedGrid: cropped " << Log::Pretty(i) << " to "
-                     << Log::Pretty(j, {"point"}) << std::endl;
-        ASSERT(j);
-        return new UnstructuredGrid(lat, lon, bbox);
-    }
-
-    Log::debug() << "UnstructuredGrid::croppedGrid: no cropping" << std::endl;
-    return this;
 }
 
 
@@ -194,22 +213,6 @@ bool UnstructuredGrid::includesSouthPole() const {
 
 static const GridBuilder<UnstructuredGrid> triangular_grid("triangular_grid");
 static const GridBuilder<UnstructuredGrid> unstructured_grid("unstructured_grid");
-
-
-template <>
-Grid* GridBuilder<other::UnstructuredGrid>::make(const Configuration& param) {
-#if mir_HAVE_ATLAS
-    // specially-named unstructured grids
-    std::string grid;
-    if (param.get("grid", grid)) {
-        if (!key::grid::ORCAPattern::match(grid, param).empty()) {
-            return new other::ORCA(param);
-        }
-    }
-#endif
-
-    return new other::UnstructuredGrid(param);
-}
 
 
 }  // namespace eckit::geo::grid

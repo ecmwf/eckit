@@ -17,6 +17,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/util.h"
 #include "eckit/geometry/Sphere.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -141,10 +142,8 @@ double Domain::area(double radius) const {
     double lonf = isPeriodicWestEast() ? 1. : ((east_ - west_) / 360.);
     ASSERT(0. <= lonf && lonf <= 1.);
 
-    constexpr auto degrees_to_radians = M_PI / 180.;
-
-    const auto sn = std::sin(north_ * degrees_to_radians);
-    const auto ss = std::sin(south_ * degrees_to_radians);
+    const auto sn = std::sin(north_ * util::degree_to_radian);
+    const auto ss = std::sin(south_ * util::degree_to_radian);
 
     double latf = 0.5 * (sn - ss);
     ASSERT(0. <= latf && latf <= 1.);

@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <ostream>
+
 
 namespace eckit {
 class Configuration;
@@ -56,6 +58,7 @@ public:
     double west() const { return west_; }
     double south() const { return south_; }
     double east() const { return east_; }
+
     bool isPeriodicWestEast() const;
     bool contains(double lat, double lon) const;
     bool contains(const BoundingBox&) const;
@@ -112,7 +115,10 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend std::ostream& operator<<(std::ostream& out, const BoundingBox& p) {
+        return out << '{' << p.north_<< ", " << p.west_<< ", " << p.south_<< ", " << p.east_<< '}';
+    }
 };
 
 

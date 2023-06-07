@@ -81,9 +81,6 @@ protected:
 
     // -- Overridden methods
 
-    // from Grid
-    bool sameAs(const Grid&) const override;
-
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
     bool isPeriodicWestEast() const override;

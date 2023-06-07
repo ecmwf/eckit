@@ -37,17 +37,6 @@ Iterator* ReducedFromPL::iterator() const {
 }
 
 
-const Grid* ReducedFromPL::croppedGrid(const BoundingBox& bbox) const {
-    return new ReducedFromPL(N_, pls(), bbox, angularPrecision_);
-}
-
-
-bool ReducedFromPL::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const ReducedFromPL*>(&other);
-    return (o != nullptr) && FromPL::sameAs(other);
-}
-
-
 static const GridBuilder<ReducedFromPL> reducedFromPL("reduced_gg");
 
 

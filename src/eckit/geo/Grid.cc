@@ -20,6 +20,7 @@
 #include "eckit/geo/Domain.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/grid/UnstructuredGrid.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
@@ -40,74 +41,11 @@ bool Grid::isGlobal() const {
 }
 
 
-bool Grid::isPeriodicWestEast() const {
-    std::ostringstream os;
-    os << "Grid::isPeriodicWestEast() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-bool Grid::includesNorthPole() const {
-    std::ostringstream os;
-    os << "Grid::includesNorthPole() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-bool Grid::includesSouthPole() const {
-    std::ostringstream os;
-    os << "Grid::includesSouthPole() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-const Grid* Grid::croppedGrid(const BoundingBox& /*unused*/) const {
-    std::ostringstream os;
-    os << "Grid::croppedGrid() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-bool Grid::sameAs(const Grid& /*unused*/) const {
-    std::ostringstream os;
-    os << "Grid::sameAs() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-bool Grid::crop(BoundingBox& /*unused*/, Renumber& /*unused*/) const {
-    std::ostringstream os;
-    os << "Grid::crop() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-size_t Grid::numberOfPoints() const {
-    std::ostringstream os;
-    os << "Grid::numberOfPoints() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-void Grid::reorder(long /*unused*/, MIRValuesVector& /*unused*/) const {
-    std::ostringstream os;
-    os << "Grid::reorder() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
-Iterator* Grid::iterator() const {
-    std::ostringstream os;
-    os << "Grid::iterator() not implemented for " << *this;
-    throw SeriousBug(os.str());
-}
-
-
 Domain Grid::domain() const {
-    double n = includesNorthPole() ? NORTH_POLE : bbox_.north();
-    double s = includesSouthPole() ? SOUTH_POLE : bbox_.south();
-    double w = bbox_.west();
-    double e = isPeriodicWestEast() ? bbox_.west() + GLOBE : bbox_.east();
+    auto n = includesNorthPole() ? NORTH_POLE : bbox_.north();
+    auto s = includesSouthPole() ? SOUTH_POLE : bbox_.south();
+    auto w = bbox_.west();
+    auto e = isPeriodicWestEast() ? bbox_.west() + GLOBE : bbox_.east();
 
     return {n, w, s, e};
 }
@@ -156,8 +94,6 @@ const Grid* GridFactory::build(const Configuration& params) {
     if (!params.get("gridType", name)) {
         throw SeriousBug("GridFactory: cannot get 'gridType'");
     }
-
-    Log::debug() << "GridFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {

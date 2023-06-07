@@ -12,13 +12,15 @@
 
 #pragma once
 
-#include "eckit/geo/grid/LatLon.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Increments.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::grid {
 
 
-class RegularLL : public LatLon {
+class RegularLL : public Grid {
 public:
     // -- Exceptions
     // None
@@ -39,7 +41,13 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    size_t Ni() const { return ni_; }
+
+    size_t Nj() const { return nj_; }
+
+    static BoundingBox correctBoundingBox(const BoundingBox&, size_t& ni, size_t& nj, const Increments&,
+                                   const PointLonLat& reference = {0, 0});
 
     // -- Overridden methods
     // None
@@ -52,22 +60,24 @@ public:
 
 private:
     // -- Members
-    // None
+
+    const Increments increments_;
+    const PointLonLat reference_;
+    size_t ni_;
+    size_t nj_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    Iterator* iterator() const override;
     void print(std::ostream&) const override;
-
-    bool sameAs(const Grid&) const override;
-
-    // From Grid
-    const RegularLL* croppedGrid(const BoundingBox&) const override;
-
-    std::string factory() const override;
+    bool isPeriodicWestEast() const override;
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
+    size_t numberOfPoints() const override;
+    void reorder(long scanningMode) const override;
+    Iterator* iterator() const override;
 
     // -- Class members
     // None

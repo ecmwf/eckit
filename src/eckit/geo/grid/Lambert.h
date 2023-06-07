@@ -58,7 +58,7 @@ private:
 
     // -- Methods
 
-    static Projection make_projection(const Configuration&);
+    static Projection* make_projection(const Configuration&);
 
     // -- Overridden methods
     // None

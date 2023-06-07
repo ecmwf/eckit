@@ -3,6 +3,7 @@ list(APPEND eckit_geo_srcs
     BoundingBox.h
     Domain.cc
     Domain.h
+    Earth.h
     Grid.cc
     Grid.h
     Iterator.cc
@@ -14,6 +15,8 @@ list(APPEND eckit_geo_srcs
     Range.cc
     Range.h
     Renumber.h
+    Increments.cc
+    Increments.h
     Scanner.cc
     Scanner.h
     Search.h
@@ -37,8 +40,6 @@ list(APPEND eckit_geo_srcs
     grid/Lambert.h
     grid/LambertAzimuthalEqualArea.cc
     grid/LambertAzimuthalEqualArea.h
-    grid/LatLon.cc
-    grid/LatLon.h
     grid/Mercator.cc
     grid/Mercator.h
     grid/None.cc
@@ -67,26 +68,8 @@ list(APPEND eckit_geo_srcs
     grid/RegularGrid.h
     grid/RegularLL.cc
     grid/RegularLL.h
-    grid/RotatedClassic.cc
-    grid/RotatedClassic.h
-    grid/RotatedFromPL.cc
-    grid/RotatedFromPL.h
-    grid/RotatedGG.cc
-    grid/RotatedGG.h
-    grid/RotatedLL.cc
-    grid/RotatedLL.h
-    grid/RotatedOctahedral.cc
-    grid/RotatedOctahedral.h
     grid/SpaceView.cc
     grid/SpaceView.h
-    grid/StretchedGG.cc
-    grid/StretchedGG.h
-    grid/StretchedLL.cc
-    grid/StretchedLL.h
-    grid/StretchedRotatedGG.cc
-    grid/StretchedRotatedGG.h
-    grid/StretchedRotatedLL.cc
-    grid/StretchedRotatedLL.h
     grid/TransverseMercator.cc
     grid/TransverseMercator.h
     grid/UnstructuredGrid.cc

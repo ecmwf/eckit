@@ -60,13 +60,11 @@ public:
     virtual bool includesSouthPole() const;
     virtual bool isGlobal() const;
     virtual bool isPeriodicWestEast() const;
-    virtual bool sameAs(const Grid&) const;
     virtual const BoundingBox& boundingBox() const;
-    virtual const Grid* croppedGrid(const BoundingBox&) const;
     virtual size_t numberOfPoints() const;
-    virtual Domain domain() const;
     virtual void print(std::ostream&) const;
     virtual void reorder(long scanningMode) const;
+    virtual Domain domain() const;
 
     // -- Overridden methods
     // None
@@ -99,7 +97,6 @@ private:
     // -- Members
 
     BoundingBox bbox_;
-    mutable std::string uniqueName_;
 
     // -- Methods
     // None

@@ -230,16 +230,4 @@ Iterator* RegularGrid::iterator() const {
 }
 
 
-bool RegularGrid::sameAs(const Grid& other) const {
-    auto name = [](const RegularGrid& repres) {
-        std::ostringstream str;
-        // repres.makeName(str);
-        return str.str();
-    };
-
-    const auto* o = dynamic_cast<const RegularGrid*>(&other);
-    return (o != nullptr) && name(*this) == name(*o);
-}
-
-
 }  // namespace eckit::geo::grid

@@ -34,10 +34,4 @@ Octahedral::Octahedral(size_t N, const BoundingBox& box, double angularPrecision
 }
 
 
-bool Octahedral::sameAs(const Grid& other) const {
-    const auto* o = dynamic_cast<const Octahedral*>(&other);
-    return (o != nullptr) && Reduced::sameAs(other);
-}
-
-
 }  // namespace eckit::geo::grid

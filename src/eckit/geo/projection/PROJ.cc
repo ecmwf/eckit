@@ -90,10 +90,10 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 }
 
 
-PROJ::PROJ(const Configuration& param) :
-    PROJ(param.getString("source", "EPSG:4326"),  // default to WGS 84
-         param.getString("target", "EPSG:4326"),  // ...
-         param.getDouble("lon_minimum", 0)) {}
+PROJ::PROJ(const Configuration& config) :
+    PROJ(config.getString("source", "EPSG:4326"),  // default to WGS 84
+         config.getString("target", "EPSG:4326"),  // ...
+         config.getDouble("lon_minimum", 0)) {}
 
 
 std::string PROJ::ellipsoid(const std::string& string) {

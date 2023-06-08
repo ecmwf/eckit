@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
-#include <limits>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -36,28 +35,28 @@ namespace detail {
 
 
 template <typename EXTERNAL_T, typename INTERNAL_T = EXTERNAL_T>
-EXTERNAL_T get(const Configuration& param, const std::string& key) {
+EXTERNAL_T get(const Configuration& config, const std::string& key) {
     INTERNAL_T value;
-    ASSERT(param.get(key, value));
+    ASSERT(config.get(key, value));
     return static_cast<EXTERNAL_T>(value);
 }
 
 
-SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
-    auto earthIsOblate = get<bool>(param, "earthIsOblate");
-    auto a             = get<double>(param, earthIsOblate ? "earthMajorAxis" : "radius");
-    auto b             = earthIsOblate ? get<double>(param, "earthMinorAxis") : a;
+SpaceViewInternal::SpaceViewInternal(const Configuration& config) {
+    auto earthIsOblate = get<bool>(config, "earthIsOblate");
+    auto a             = get<double>(config, earthIsOblate ? "earthMajorAxis" : "radius");
+    auto b             = earthIsOblate ? get<double>(config, "earthMinorAxis") : a;
 
-    auto Nr = get<double>(param, "NrInRadiusOfEarthScaled");
+    auto Nr = get<double>(config, "NrInRadiusOfEarthScaled");
     ASSERT(Nr > 1.);
 
     auto h = (Nr - 1.) * a;
 
-    Lop_     = get<double>(param, "longitudeOfSubSatellitePointInDegrees");
-    auto Lap = get<double>(param, "latitudeOfSubSatellitePointInDegrees");
+    Lop_     = get<double>(config, "longitudeOfSubSatellitePointInDegrees");
+    auto Lap = get<double>(config, "latitudeOfSubSatellitePointInDegrees");
     ASSERT(types::is_approximately_equal(Lap, 0.));
 
-    // ASSERT(get<size_t>(param, "orientationOfTheGridInDegrees") == 180);
+    // ASSERT(get<size_t>(config, "orientationOfTheGridInDegrees") == 180);
 
 
     // projection
@@ -74,12 +73,12 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
     projectionGreenwich_.reset(ProjectionFactory::build("proj", MappedConfiguration({{"proj", proj(h, a, b, 0)}})));
 
     // (x, y) space
-    Nx_ = get<long>(param, "Nx");
+    Nx_ = get<long>(config, "Nx");
     ASSERT(1 < Nx_);
 
-    auto ip = get<bool>(param, "iScansPositively");
-    auto xp = get<double, long>(param, "XpInGridLengths");
-    auto dx = get<double, long>(param, "dx");
+    auto ip = get<bool>(config, "iScansPositively");
+    auto xp = get<double, long>(config, "XpInGridLengths");
+    auto dx = get<double, long>(config, "dx");
     ASSERT(dx > 0);
 
     auto rx = 2. * std::asin(1. / Nr) / dx * h;  // (height factor is PROJ-specific)
@@ -87,12 +86,12 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
     (ip ? xa_ : xb_) = rx * (-xp);
     (ip ? xb_ : xa_) = rx * (-xp + double(Nx_ - 1));
 
-    Ny_ = get<long>(param, "Ny");
+    Ny_ = get<long>(config, "Ny");
     ASSERT(1 < Ny_);
 
-    auto jp = get<bool>(param, "jScansPositively");
-    auto yp = get<double, long>(param, "YpInGridLengths");
-    auto dy = get<double, long>(param, "dy");
+    auto jp = get<bool>(config, "jScansPositively");
+    auto yp = get<double, long>(config, "YpInGridLengths");
+    auto dy = get<double, long>(config, "dy");
     ASSERT(dy > 0);
 
     auto ry = 2. * std::asin(1. / Nr) / dy * h;  // (height factor is PROJ-specific)
@@ -142,11 +141,11 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
     auto eps_xy = 1e-6 * h;
     auto eps_ll = 1e-6;
 
-    auto max_lon = geometric_maximum(0., eps_xy, [&](double x) { return projectionGreenwich_.lonlat({x, 0}).lon(); });
+    auto max_lon = geometric_maximum(0., eps_xy, [&](double x) { return projectionGreenwich_->inv({x, 0}).lon(); });
     auto w       = Lop_ - max_lon - eps_ll;
     auto e       = Lop_ + max_lon + eps_ll;
 
-    auto max_lat = geometric_maximum(0., eps_xy, [&](double y) { return projectionGreenwich_.lonlat({0, y}).lat(); });
+    auto max_lat = geometric_maximum(0., eps_xy, [&](double y) { return projectionGreenwich_->inv({0, y}).lat(); });
     auto n       = max_lat + eps_ll;
     auto s       = -n;
 #endif
@@ -158,21 +157,18 @@ SpaceViewInternal::SpaceViewInternal(const Configuration& param) {
 const std::vector<PointLonLat>& SpaceViewInternal::lonlat() const {
     if (lonlat_.empty()) {
         ASSERT(projectionGreenwich_);  // Greenwich-centred (avoids PROJ normalisation)
-        lonlat_.resize(Nx_ * Ny_);
+        lonlat_.reserve(Nx_ * Ny_);
 
         size_t index = 0;
         for (const auto& _y : y()) {
             for (const auto& _x : x()) {
-                auto& ll = lonlat_[index++];
-                ll       = projectionGreenwich_.lonlat({_x, _y});
+                //                auto& ll = lonlat_[index++];
+                PointLonLat ll = projectionGreenwich_->inv({_x, _y});
                 if (std::isfinite(ll.lon) && std::isfinite(ll.lat)) {
                     ASSERT(-90. < ll.lon && ll.lon < 90.);
-                    ASSERT(-90. < ll.lat && ll.lat < 90.);
 
                     ll.lon += Lop_;
-                }
-                else {
-                    ll = {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+                    lonlat_.push_back(ll);
                 }
             }
         }
@@ -186,10 +182,10 @@ const std::vector<PointLonLat>& SpaceViewInternal::lonlat() const {
 }  // namespace detail
 
 
-SpaceView::SpaceView(const Configuration& param) :
-    detail::SpaceViewInternal(param),
+SpaceView::SpaceView(const Configuration& config) :
+    detail::SpaceViewInternal(config),
     RegularGrid(SpaceViewInternal::projection_, SpaceViewInternal::bbox_, SpaceViewInternal::x(),
-                SpaceViewInternal::y(), {param}) {}
+                SpaceViewInternal::y(), {config}) {}
 
 
 Iterator* SpaceView::iterator() const {
@@ -218,6 +214,8 @@ Iterator* SpaceView::iterator() const {
         }
 
         size_t index() const override { return count_; }
+
+        size_t size() const override { NOTIMP; }
 
     public:
         SpaceViewIterator(const std::vector<PointLonLat>& lonlat) :

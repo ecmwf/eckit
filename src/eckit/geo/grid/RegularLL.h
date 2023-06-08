@@ -31,8 +31,7 @@ public:
     RegularLL(const Increments&, const BoundingBox& = {}, const PointLonLat& reference = {0, 0});
 
     // -- Destructor
-
-    ~RegularLL() override;
+    // None
 
     // -- Convertors
     // None
@@ -42,12 +41,8 @@ public:
 
     // -- Methods
 
-    size_t Ni() const { return ni_; }
-
-    size_t Nj() const { return nj_; }
-
     static BoundingBox correctBoundingBox(const BoundingBox&, size_t& ni, size_t& nj, const Increments&,
-                                   const PointLonLat& reference = {0, 0});
+                                          const PointLonLat& reference = {0, 0});
 
     // -- Overridden methods
     // None
@@ -76,8 +71,10 @@ private:
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
     size_t numberOfPoints() const override;
-    void reorder(long scanningMode) const override;
     Iterator* iterator() const override;
+
+    Renumber crop(BoundingBox&) const override;
+    Renumber reorder(long scanningMode) const override;
 
     // -- Class members
     // None

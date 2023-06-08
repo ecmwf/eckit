@@ -14,14 +14,14 @@
 
 #include <ostream>
 
+#include "eckit/exception/Exceptions.h"
+
 
 namespace eckit::geo::grid {
 
 
 GaussianIterator::GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl,
-                                   const BoundingBox& bbox, size_t N, size_t Nj, size_t k,
-                                   const Rotation& rotation) :
-    Iterator(rotation),
+                                   const BoundingBox& bbox, size_t N, size_t Nj, size_t k) :
     latitudes_(latitudes),
     pl_(pl),
     bbox_(bbox),
@@ -51,15 +51,15 @@ size_t GaussianIterator::resetToRow(size_t j) {
     auto Ni_globe = pl_[j];
     ASSERT(Ni_globe > 1);
 
-    inc_ = GLOBE.fraction() / Ni_globe;
+    inc_ = Fraction(GLOBE) / Ni_globe;
 
-    const auto w = bbox_.west().fraction();
+    const auto w = Fraction(bbox_.west());
     auto Nw      = (w / inc_).integralPart();
     if (Nw * inc_ < w) {
         Nw += 1;
     }
 
-    const auto e = bbox_.east().fraction();
+    const auto e = Fraction(bbox_.east());
     auto Ne      = (e / inc_).integralPart();
     if (Ne * inc_ > e) {
         Ne -= 1;
@@ -107,6 +107,11 @@ bool GaussianIterator::operator++() {
 
 size_t GaussianIterator::index() const {
     return count_;
+}
+
+
+size_t GaussianIterator::size() const {
+    NOTIMP;
 }
 
 

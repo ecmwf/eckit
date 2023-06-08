@@ -17,7 +17,9 @@
 #include <ostream>
 #include <sstream>
 
+#include "eckit/geo/Domain.h"
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
@@ -102,12 +104,12 @@ class ReducedLLIterator : public Iterator {
             << ",count=" << count_ << "]";
     }
 
-    bool next(double& lat, double& lon) override {
+    bool operator++() override {
         while (j_ < nj_ && i_ < ni_) {
-            lat = latitude_;
-            lon = longitude_;
+            // lat = latitude_;
+            // lon = longitude_;
 
-            bool contains = domain_.contains(lat, lon);
+            bool contains = domain_.contains(latitude_, longitude_);
             if (contains && !first_) {
                 count_++;
             }
@@ -138,15 +140,17 @@ class ReducedLLIterator : public Iterator {
 
     size_t index() const override { return count_; }
 
+    size_t size() const override { NOTIMP; }
+
 public:
     ReducedLLIterator(const std::vector<long>& pl, const Domain& dom) :
         pl_(pl),
         nj_(pl.size()),
         domain_(dom),
-        west_(domain_.west().fraction()),
-        ew_((domain_.east() - domain_.west()).fraction()),
-        inc_north_south_((domain_.north() - domain_.south()).fraction() / Fraction(nj_ - 1)),
-        latitude_(domain_.north().fraction()),
+        west_(domain_.west()),
+        ew_((domain_.east() - domain_.west())),
+        inc_north_south_(Fraction(domain_.north() - domain_.south()) / Fraction(nj_ - 1)),
+        latitude_(domain_.north()),
         longitude_(west_),
         i_(0),
         j_(0),

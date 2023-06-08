@@ -18,6 +18,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/grid/RegularLL.h"
 #include "eckit/types/FloatCompare.h"
@@ -28,8 +29,6 @@ namespace eckit::geo::grid {
 
 
 namespace detail {
-
-
 
 
 class RegularIterator {
@@ -138,11 +137,14 @@ RegularLL::RegularLL(const Increments& increments, const BoundingBox& bb, const 
 }
 
 
-RegularLL::~RegularLL() = default;
+Renumber RegularLL::crop(BoundingBox&) const {
+    NOTIMP;
+}
 
 
-void RegularLL::reorder(long scanningMode) const {
-    grib_reorder(values, scanningMode, ni_, nj_);
+Renumber RegularLL::reorder(long scanningMode) const {
+    NOTIMP;
+    //     grib_reorder(values, scanningMode, ni_, nj_);
 }
 
 
@@ -153,26 +155,20 @@ void RegularLL::print(std::ostream& out) const {
 
 
 bool RegularLL::isPeriodicWestEast() const {
-
     // if range West-East is within one increment (or greater than) 360 degree
-    double inc = increments_.west_east().longitude();
-    return bbox().east() - bbox().west() + inc >= GLOBE;
+    return bbox().east() - bbox().west() + increments_.west_east >= GLOBE;
 }
 
 
 bool RegularLL::includesNorthPole() const {
-
     // if North latitude is within one increment from North Pole
-    double inc = increments_.south_north().latitude();
-    return bbox().north() + inc > NORTH_POLE;
+    return bbox().north() + increments_.south_north > NORTH_POLE;
 }
 
 
 bool RegularLL::includesSouthPole() const {
-
     // if South latitude is within one increment from South Pole
-    auto inc = increments_.south_north;
-    return bbox().south() - inc < SOUTH_POLE;
+    return bbox().south() - increments_.south_north < SOUTH_POLE;
 }
 
 
@@ -183,19 +179,24 @@ size_t RegularLL::numberOfPoints() const {
 }
 
 
-BoundingBox RegularLL::correctBoundingBox(const BoundingBox& bbox, size_t& ni, size_t& nj, const Increments& inc,
-                                   const PointLonLat& reference) {
+BoundingBox RegularLL::correctBoundingBox(const BoundingBox& box, size_t& ni, size_t& nj, const Increments& inc,
+                                          const PointLonLat& reference) {
     // Latitude/longitude ranges
-    detail::RegularIterator lat{bbox.south(), bbox.north(), inc.south_north(),
-                                reference.lat};
+    detail::RegularIterator lat{Fraction{box.south()},
+                                Fraction{box.north()},
+                                Fraction{inc.south_north},
+                                Fraction{reference.lat}};
     auto n = lat.b();
     auto s = lat.a();
 
     nj = lat.n();
     ASSERT(nj > 0);
 
-    detail::RegularIterator lon{bbox.west(), bbox.east(), inc.west_east().longitude(),
-                                reference.lon, GLOBE};
+    detail::RegularIterator lon{Fraction{box.west()},
+                                Fraction{box.east()},
+                                Fraction{inc.west_east},
+                                Fraction{reference.lon},
+                                Fraction{GLOBE}};
     auto w = lon.a();
     auto e = lon.b();
 
@@ -241,11 +242,11 @@ Iterator* RegularLL::iterator() const {
                 << ",i=" << i_ << ",j=" << j_ << ",count=" << count_ << "]";
         }
 
-        bool next(double& lat, double& lon) {
+        bool operator++() override {
             if (j_ < nj_) {
                 if (i_ < ni_) {
-                    lat = latValue_;
-                    lon = lonValue_;
+                    // lat = latValue_;
+                    // lon = lonValue_;
 
                     lon_ += we_;
 
@@ -273,6 +274,8 @@ Iterator* RegularLL::iterator() const {
         }
 
         size_t index() const override { return count_; }
+
+        size_t size() const override { NOTIMP; }
 
     public:
         RegularLLIterator(size_t ni, size_t nj, Latitude north, Longitude west, const Increments& increments) :

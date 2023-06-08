@@ -74,7 +74,6 @@ GridFactory::GridFactory(const std::string& name) :
         throw SeriousBug("GridFactory: duplicate '" + name + "'");
     }
 
-    ASSERT(m->find(name) == m->end());
     (*m)[name] = this;
 }
 
@@ -86,12 +85,12 @@ GridFactory::~GridFactory() {
 }
 
 
-const Grid* GridFactory::build(const Configuration& params) {
+const Grid* GridFactory::build(const Configuration& config) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
     std::string name;
-    if (!params.get("gridType", name)) {
+    if (!config.get("gridType", name)) {
         throw SeriousBug("GridFactory: cannot get 'gridType'");
     }
 
@@ -101,7 +100,7 @@ const Grid* GridFactory::build(const Configuration& params) {
         throw SeriousBug("GridFactory: unknown '" + name + "'");
     }
 
-    return j->second->make(params);
+    return j->second->make(config);
 }
 
 

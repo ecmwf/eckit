@@ -23,5 +23,4 @@ Increments::Increments(const Configuration& config) :
 }
 
 
-
 }  // namespace eckit::geo

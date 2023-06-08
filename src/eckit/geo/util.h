@@ -19,14 +19,17 @@
 #include <vector>
 
 
-namespace eckit::geo::util {
+namespace eckit::geo {
+
+
+using pl_type = std::vector<long>;
+
+
+namespace util {
 
 
 constexpr double degree_to_radian = M_PI / 180.;
 constexpr double radian_to_degree = M_1_PI * 180.;
-
-
-using pl_type = std::vector<long>;
 
 
 template <typename T>
@@ -66,4 +69,7 @@ const pl_type& reduced_octahedral_pl(size_t N);
 pl_type::value_type regular_pl(size_t N);
 
 
-}  // namespace eckit::geo::util
+}  // namespace util
+
+
+}  // namespace eckit::geo

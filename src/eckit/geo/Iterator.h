@@ -56,10 +56,6 @@ protected:
         const typename X::value_type& operator*() const { return cnt.at(pos); }
     };
 
-    // -- Constructors
-
-    Iterator() = default;
-
 public:
     // -- Types
 
@@ -93,7 +89,8 @@ public:
 
     // -- Methods
 
-    virtual size_t size() const = 0;
+    virtual size_t size() const  = 0;
+    virtual size_t index() const = 0;
 
     iterator begin() { return {*this, 0}; }
     iterator end() { return {*this, this->size()}; }
@@ -123,7 +120,6 @@ protected:
     // -- Methods
 
     virtual void print(std::ostream&) const = 0;
-    virtual size_t index() const            = 0;
 
     // -- Overridden methods
     // None

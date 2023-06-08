@@ -20,10 +20,10 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/geo/BoundingBox.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/Renumber.h"
 
 
 namespace eckit::geo {
-class Renumber;
 class Domain;
 class Iterator;
 }  // namespace eckit::geo
@@ -55,7 +55,6 @@ public:
     // -- Methods
 
     virtual Iterator* iterator() const;
-    virtual Renumber crop(BoundingBox&) const;
     virtual bool includesNorthPole() const;
     virtual bool includesSouthPole() const;
     virtual bool isGlobal() const;
@@ -63,8 +62,10 @@ public:
     virtual const BoundingBox& boundingBox() const;
     virtual size_t numberOfPoints() const;
     virtual void print(std::ostream&) const;
-    virtual void reorder(long scanningMode) const;
     virtual Domain domain() const;
+
+    virtual Renumber crop(BoundingBox&) const         = 0;
+    virtual Renumber reorder(long scanningMode) const = 0;
 
     // -- Overridden methods
     // None
@@ -139,7 +140,7 @@ public:
 
 template <class T>
 class GridBuilder : public GridFactory {
-    Grid* make(const Configuration& param) override { return new T(param); }
+    Grid* make(const Configuration& config) override { return new T(config); }
 
 public:
     GridBuilder(const std::string& name) :

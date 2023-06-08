@@ -12,36 +12,40 @@
 
 #pragma once
 
-#include "eckit/geo/Grid.h"
+#include "eckit/geo/grid/Gaussian.h"
+#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::grid {
 
 
-class None : public Grid {
+class ReducedGG : public Gaussian {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    None();
-    None(const Configuration&);
-    None(const None&) = delete;
+    ReducedGG(const Configuration&);
+
+    ReducedGG(size_t N, const pl_type& pl, const BoundingBox& box = BoundingBox()) :
+        Gaussian(N, box), k_(0), Nj_(N_ * 2) {
+        setNj(pl, box.south(), box.north());
+    }
 
     // -- Destructor
 
-    ~None() override;
+    ~ReducedGG() override = default;
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    None& operator=(const None&) = delete;
+    // None
 
     // -- Methods
-    // None
+
+    static pl_type pls(const std::string&);
 
     // -- Overridden methods
     // None
@@ -53,31 +57,46 @@ public:
     // None
 
 protected:
+    // -- Constructors
+
+    ReducedGG(size_t N, const BoundingBox& box = BoundingBox()) :
+        Gaussian(N, box), k_(0), Nj_(N * 2) {
+        // derived classes must set k_, Nj_ using this constructor
+    }
+
     // -- Members
-    // None
+
+    size_t k_;
+    size_t Nj_;
 
     // -- Methods
-    // None
+
+    const pl_type& pls() const;
+
+    void setNj(pl_type, double s, double n);
+    void correctWestEast(double& w, double& e) const;
 
     // -- Overridden methods
 
-    void print(std::ostream&) const override;
+    bool isPeriodicWestEast() const override;
+    void print(std::ostream& out) const override;
 
     // -- Class members
-    // None
 
     // -- Class methods
     // None
 
 private:
     // -- Members
-    // None
+
+    pl_type pl_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    size_t numberOfPoints() const override;
 
     // -- Class members
     // None

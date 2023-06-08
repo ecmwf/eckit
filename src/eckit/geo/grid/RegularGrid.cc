@@ -18,6 +18,7 @@
 #include <ostream>
 #include <sstream>
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/config/Resource.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/utils/StringTools.h"
@@ -26,48 +27,53 @@
 namespace eckit::geo::grid {
 
 
-RegularGrid::RegularGrid(const Configuration& param, const Projection& projection) :
-    shape_(param), xPlus_(true), yPlus_(false), firstPointBottomLeft_(false) {
-    ASSERT(projection);
+RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :Grid(config),
+    projection_(projection),
+    shape_(config), xPlus_(true), yPlus_(false), firstPointBottomLeft_(false) {
+    ASSERT(projection_);
 
-    auto get_long_first_key = [](const Configuration& param, const std::vector<std::string>& keys) -> long {
+    auto get_long_first_key = [](const Configuration& config, const std::vector<std::string>& keys) -> long {
         long value = 0;
         for (const auto& key : keys) {
-            if (param.get(key, value)) {
+            if (config.get(key, value)) {
                 return value;
             }
         }
         throw SeriousBug("RegularGrid: couldn't find any key: " + StringTools::join(", ", keys));
     };
 
-    long nx = get_long_first_key(param, {"numberOfPointsAlongXAxis", "Ni"});
-    long ny = get_long_first_key(param, {"numberOfPointsAlongYAxis", "Nj"});
+    long nx = get_long_first_key(config, {"numberOfPointsAlongXAxis", "Ni"});
+    long ny = get_long_first_key(config, {"numberOfPointsAlongYAxis", "Nj"});
     ASSERT(nx > 0);
     ASSERT(ny > 0);
 
     std::vector<double> grid;
-    ASSERT(param.get("grid", grid));
-    ASSERT_KEYWORD_GRID_SIZE(grid.size());
+    ASSERT(config.get("grid", grid));
+    ASSERT(grid.size() == 2);
 
     Point2 firstLL;
-    ASSERT(param.get("latitudeOfFirstGridPointInDegrees", firstLL[LLCOORDS::LAT]));
-    ASSERT(param.get("longitudeOfFirstGridPointInDegrees", firstLL[LLCOORDS::LON]));
+    ASSERT(config.get("latitudeOfFirstGridPointInDegrees", firstLL[LLCOORDS::LAT]));
+    ASSERT(config.get("longitudeOfFirstGridPointInDegrees", firstLL[LLCOORDS::LON]));
     auto first = projection.xy(firstLL);
 
-    param.get("iScansPositively", xPlus_);  // iScansPositively != 0
-    param.get("jScansPositively", yPlus_);  // jScansPositively == 0
-    param.get("first_point_bottom_left", firstPointBottomLeft_);
+    config.get("iScansPositively", xPlus_);  // iScansPositively != 0
+    config.get("jScansPositively", yPlus_);  // jScansPositively == 0
+    config.get("first_point_bottom_left", firstPointBottomLeft_);
 
     x_    = linspace(first.x(), grid[0], nx, firstPointBottomLeft_ || xPlus_);
     y_    = linspace(first.y(), grid[1], ny, firstPointBottomLeft_ || yPlus_);
     grid_ = {x_, y_, projection};
 
+#if 0
     atlas::RectangularDomain range({x_.min(), x_.max()}, {y_.min(), y_.max()}, "meters");
 
     auto box = projection.lonlatBoundingBox(range);
     ASSERT(box);
 
     bbox({box.north(), box.west(), box.south(), box.east()});
+#else
+    bbox({y_.max(), x_.min(), y_.min(), x_.max()});
+#endif
 }
 
 
@@ -91,9 +97,9 @@ RegularGrid::RegularGrid(const Projection& projection, const BoundingBox& bbox, 
 RegularGrid::~RegularGrid() = default;
 
 
-RegularGrid::Configuration RegularGrid::make_proj_spec(const Configuration& param) {
+RegularGrid::Configuration RegularGrid::make_projection_from_proj(const Configuration& config) {
     std::string proj;
-    param.get("proj", proj);
+    config.get("proj", proj);
 
     if (proj.empty() || !::atlas::projection::ProjectionFactory::has("proj")) {
         return {};
@@ -103,12 +109,12 @@ RegularGrid::Configuration RegularGrid::make_proj_spec(const Configuration& para
     spec.set("proj", proj);
 
     std::string projSource;
-    if (param.get("projSource", projSource) && !projSource.empty()) {
+    if (config.get("projSource", projSource) && !projSource.empty()) {
         spec.set("proj_source", projSource);
     }
 
     std::string projGeocentric;
-    if (param.get("projGeocentric", projGeocentric) && !projGeocentric.empty()) {
+    if (config.get("projGeocentric", projGeocentric) && !projGeocentric.empty()) {
         spec.set("proj_geocentric", projGeocentric);
     }
 
@@ -128,26 +134,6 @@ void RegularGrid::print(std::ostream& out) const {
 }
 
 
-bool RegularGrid::crop(BoundingBox& bbox, Renumber& mapping) const {
-    auto mm = minmax_ij(bbox);
-    auto Ni = x_.size();
-    auto N  = (mm.second.i - mm.first.i + 1) * (mm.second.j - mm.first.j + 1);
-    mapping.clear();
-    mapping.reserve(N);
-
-    for (std::unique_ptr<Iterator> it(iterator()); it->next();) {
-        auto i = it->index() % Ni;
-        auto j = it->index() / Ni;
-        if (mm.first.i <= i && i <= mm.second.i && mm.first.j <= j && j <= mm.second.j) {
-            mapping.push_back(it->index());
-        }
-    }
-    ASSERT(mapping.size() == N);
-
-    return true;
-}
-
-
 size_t RegularGrid::numberOfPoints() const {
     return x_.size() * y_.size();
 }
@@ -159,24 +145,28 @@ bool RegularGrid::isPeriodicWestEast() const {
 
 
 bool RegularGrid::includesNorthPole() const {
-    return bbox_.north() == NORTH_POLE;
+    return bbox().north() == NORTH_POLE;
 }
 
 
 bool RegularGrid::includesSouthPole() const {
-    return bbox_.south() == SOUTH_POLE;
+    return bbox().south() == SOUTH_POLE;
 }
 
 
-void RegularGrid::reorder(long /*scanningMode*/) const {
-    // do not reorder, iterator is doing the right thing
-    // FIXME this function should not be overriding to do nothing
+Renumber RegularGrid::crop(BoundingBox& bbox) const {
+    NOTIMP;
+}
+
+
+Renumber RegularGrid::reorder(long /*scanningMode*/) const {
+    NOTIMP;
 }
 
 
 Iterator* RegularGrid::iterator() const {
     class RegularGridIterator : public Iterator {
-        Projection projection_;
+        Projection* projection_;
         const LinearSpacing& x_;
         const LinearSpacing& y_;
         PointLonLat pLonLat_;
@@ -215,6 +205,8 @@ Iterator* RegularGrid::iterator() const {
 
         size_t index() const override { return count_; }
 
+        size_t size() const override { NOTIMP; }
+
     public:
         RegularGridIterator(Projection projection, const LinearSpacing& x, const LinearSpacing& y) :
             projection_(std::move(projection)), x_(x), y_(y), ni_(x.size()), nj_(y.size()), i_(0), j_(0), count_(0) {}
@@ -228,6 +220,75 @@ Iterator* RegularGrid::iterator() const {
 
     return new RegularGridIterator(grid_.projection(), x_, y_);
 }
+
+
+struct Lambert :  RegularGrid {
+    Lambert(const Configuration& config) :
+        RegularGrid(config, make_projection(config)) {
+    }
+
+    static Projection* make_projection(const Configuration& config) {
+        if (auto spec = RegularGrid::make_projection_from_proj(config); spec != nullptr) {
+            return spec;
+        }
+
+        auto LaDInDegrees    = config.getDouble("LaDInDegrees");
+        auto LoVInDegrees    = config.getDouble("LoVInDegrees");
+        auto Latin1InDegrees = config.getDouble("Latin1InDegrees", LaDInDegrees);
+        auto Latin2InDegrees = config.getDouble("Latin2InDegrees", LaDInDegrees);
+
+        return ProjectionFactory::build("lambert_conformal_conic",
+                                        MappedConfiguration({{"latitude1", Latin1InDegrees},
+                                                             {"latitude2", Latin2InDegrees},
+                                                             {"latitude0", LaDInDegrees},
+                                                             {"longitude0", LoVInDegrees}}));
+    }
+};
+
+
+struct LambertAzimuthalEqualArea :  RegularGrid {
+
+    LambertAzimuthalEqualArea(const Configuration& config) :
+        RegularGrid(config, make_projection(config)) {}
+
+    LambertAzimuthalEqualArea(const Projection& projection, const BoundingBox& bbox, const LinearSpacing& x, const LinearSpacing& y, const Shape& shape) :
+        RegularGrid(projection, bbox, x, y, shape) {}
+
+    static Projection* make_projection(const Configuration& config) {
+        if (auto spec = RegularGrid::make_projection_from_proj(config); spec != nullptr) {
+            return spec;
+        }
+
+        double standardParallel = 0.;
+        double centralLongitude = 0.;
+        double radius           = 0.;
+        ASSERT(config.get("standardParallelInDegrees", standardParallel));
+        ASSERT(config.get("centralLongitudeInDegrees", centralLongitude));
+        config.get("radius", radius = Earth::radius());
+
+        return ProjectionFactory::build("lambert_azimuthal_equal_area", MappedConfiguration({{"standard_parallel", standardParallel},
+                                                                                             {"central_longitude", centralLongitude},
+                                                                                             {"radius", radius}}));
+    }
+};
+
+
+struct Mercator :  RegularGrid {
+   Mercator(const Configuration&) :
+        RegularGrid(config, RegularGrid::make_projection_from_proj(config)) {}
+};
+
+
+struct PolarStereographic :  RegularGrid {
+    PolarStereographic(const Configuration& config) :
+        RegularGrid(config, RegularGrid::make_projection_from_proj(config)) {}
+};
+
+
+static const GridBuilder<Lambert> __builder("lambert");
+static const GridBuilder<LambertAzimuthalEqualArea> __builder("lambert_azimuthal_equal_area");
+static const GridBuilder<Mercator> __builder("mercator");
+static const GridBuilder<PolarStereographic> __builder("polar_stereographic");
 
 
 }  // namespace eckit::geo::grid

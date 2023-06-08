@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <ostream>
+
 
 namespace eckit::geo {
 
@@ -49,14 +51,12 @@ public:
     double south() const { return south_; }
     double east() const { return east_; }
 
-    bool isGlobal() const;
     bool includesNorthPole() const;
     bool includesSouthPole() const;
     bool isPeriodicWestEast() const;
 
     bool contains(double lat, double lon) const;
     bool contains(const Domain&) const;
-    bool intersects(Domain&) const;
     bool empty() const;
     double area(double radius) const;
 
@@ -109,7 +109,10 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend std::ostream& operator<<(std::ostream& out, const Domain& p) {
+        return out << '{' << p.north_ << ", " << p.west_ << ", " << p.south_ << ", " << p.east_ << '}';
+    }
 };
 
 

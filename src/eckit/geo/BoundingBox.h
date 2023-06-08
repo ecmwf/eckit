@@ -13,6 +13,7 @@
 #pragma once
 
 #include <ostream>
+#include <tuple>
 
 
 namespace eckit {
@@ -54,15 +55,19 @@ public:
 
     // -- Methods
 
+    std::tuple<double, double, double, double> deconstruct() const { return {north_, west_, south_, east_}; }
+
     double north() const { return north_; }
     double west() const { return west_; }
     double south() const { return south_; }
     double east() const { return east_; }
 
     bool isPeriodicWestEast() const;
+
+    bool intersects(BoundingBox&) const;
+
     bool contains(double lat, double lon) const;
     bool contains(const BoundingBox&) const;
-    bool intersects(BoundingBox&) const;
     bool empty() const;
     double area(double radius) const;
 
@@ -117,7 +122,7 @@ private:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const BoundingBox& p) {
-        return out << '{' << p.north_<< ", " << p.west_<< ", " << p.south_<< ", " << p.east_<< '}';
+        return out << '{' << p.north_ << ", " << p.west_ << ", " << p.south_ << ", " << p.east_ << '}';
     }
 };
 

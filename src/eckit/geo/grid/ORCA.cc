@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::grid {
@@ -31,10 +32,10 @@ ORCA::ORCA(const std::string& uid) :
     Grid(BoundingBox() /*assumed global*/), spec_(atlas::grid::SpecRegistry::get(uid)) {}
 
 
-ORCA::ORCA(const Configuration& param) :
-    ORCA([&param]() {
+ORCA::ORCA(const Configuration& config) :
+    ORCA([&config]() {
         std::string uid;
-        ASSERT(param.get("uid", uid));
+        ASSERT(config.get("uid", uid));
         return uid;
     }()) {}
 
@@ -92,6 +93,8 @@ Iterator* ORCA::iterator() const {
         }
 
         size_t index() const override { return count_; }
+
+        size_t size() const override { NOTIMP; }
 
     public:
         ORCAIterator(::atlas::Grid grid) :

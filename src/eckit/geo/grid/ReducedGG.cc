@@ -10,40 +10,26 @@
  */
 
 
-#include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/grid/ReducedGG.h"
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <numeric>
+#include <ostream>
 #include <set>
 #include <utility>
 
-#include "eckit/geo/grid/GaussianIterator.h"
+#include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::grid {
 
 
-template <typename T>
-std::vector<long> pl_convert(const T& nx) {
-    ASSERT(!nx.empty());
-    std::vector<long> pl(nx.size());
-    std::transform(nx.begin(), nx.end(), pl.begin(), [](typename T::value_type p) { return long(p); });
-    return pl;
-}
-
-
-template <>
-std::vector<long> pl_convert(const std::vector<long>& nx) {
-    ASSERT(!nx.empty());
-    return nx;
-}
-
-
-Reduced::Reduced(const Configuration& config) :
+ReducedGG::ReducedGG(const Configuration& config) :
     Gaussian(config), k_(0), Nj_(N_ * 2) {
 
     // adjust latitudes, longitudes and re-set bounding box
@@ -51,7 +37,7 @@ Reduced::Reduced(const Configuration& config) :
     auto s = bbox().south();
     correctSouthNorth(s, n);
 
-    std::vector<long> pl;
+    pl_type pl;
     ASSERT(config.get("pl", pl));
 
     // if pl isn't global (from file!) insert leading/trailing 0's
@@ -90,33 +76,21 @@ Reduced::Reduced(const Configuration& config) :
 }
 
 
-Reduced::Reduced(size_t N, const std::vector<long>& pl, const BoundingBox& bbox, double angularPrecision) :
-    Gaussian(N, bbox, angularPrecision), k_(0), Nj_(N_ * 2) {
-    setNj(pl, bbox.south(), bbox.north());
-}
-
-
-Reduced::Reduced(size_t N, const BoundingBox& bbox, double angularPrecision) :
-    Gaussian(N, bbox, angularPrecision), k_(0), Nj_(N * 2) {
-    // derived classes must set k_, Nj_ using this constructor
-}
-
-
-void Reduced::correctWestEast(double& w, double& e) const {
+void ReducedGG::correctWestEast(double& w, double& e) const {
     ASSERT(w <= e);
 
     const Fraction smallestIncrement = getSmallestIncrement();
     ASSERT(smallestIncrement > 0);
 
-    if (angleApproximatelyEqual(GREENWICH, w) && (angleApproximatelyEqual(GLOBE - smallestIncrement, e - w) || GLOBE - smallestIncrement < e - w || (e != w && e.normalise(w) == w))) {
+    if (angleApproximatelyEqual(GREENWICH, w) && (angleApproximatelyEqual(GLOBE - smallestIncrement, e - w) || GLOBE - smallestIncrement < e - w || (e != w && PointLonLat::normalise_angle_to_minimum(e, w) == w))) {
 
         w = GREENWICH;
         e = GLOBE - smallestIncrement;
     }
     else {
 
-        const Fraction west = w.fraction();
-        const Fraction east = e.fraction();
+        const Fraction west{w};
+        const Fraction east{e};
         Fraction W          = west;
         Fraction E          = east;
 
@@ -131,7 +105,7 @@ void Reduced::correctWestEast(double& w, double& e) const {
             ASSERT(Ni >= 2);
             if (NiTried.insert(Ni).second) {
 
-                Fraction inc = GLOBE.fraction() / Ni;
+                Fraction inc = Fraction{GLOBE} / Ni;
 
                 Fraction::value_type Nw = (west / inc).integralPart();
                 if (Nw * inc < west) {
@@ -166,19 +140,7 @@ void Reduced::correctWestEast(double& w, double& e) const {
 }
 
 
-Iterator* Reduced::unrotatedIterator() const {
-    auto pl = pls();
-    return new GaussianIterator(latitudes(), std::move(pl), bbox(), N_, Nj_, k_);
-}
-
-
-Iterator* Reduced::rotatedIterator(const Rotation& rotation) const {
-    auto pl = pls();
-    return new GaussianIterator(latitudes(), std::move(pl), bbox(), N_, Nj_, k_, rotation);
-}
-
-
-const std::vector<long>& Reduced::pls() const {
+const pl_type& ReducedGG::pls() const {
     ASSERT(pl_.size() == N_ * 2);
     ASSERT(pl_.size() >= k_ + Nj_);
     ASSERT(Nj_ > 0);
@@ -187,14 +149,7 @@ const std::vector<long>& Reduced::pls() const {
 }
 
 
-std::vector<long> Reduced::pls(const std::string& name) {
-    atlas::ReducedGaussianGrid grid(name);
-    ASSERT(grid);
-    return pl_convert(grid.nx());
-}
-
-
-void Reduced::setNj(std::vector<long> pl, double s, double n) {
+void ReducedGG::setNj(pl_type pl, double s, double n) {
     ASSERT(0 < N_ && N_ * 2 == pl.size());
 
     // position to first latitude and first/last longitude
@@ -227,24 +182,81 @@ void Reduced::setNj(std::vector<long> pl, double s, double n) {
 }
 
 
-size_t Reduced::numberOfPoints() const {
+size_t ReducedGG::numberOfPoints() const {
     if (isGlobal()) {
         const auto& pl = pls();
         return size_t(std::accumulate(pl.begin(), pl.end(), 0L));
     }
 
     size_t total = 0;
-    for (const std::unique_ptr<Iterator> it(iterator()); it->next();) {
+    for (const std::unique_ptr<Iterator> it(iterator()); ++(*it);) {
         total++;
     }
     return total;
 }
 
 
-bool Reduced::isPeriodicWestEast() const {
+bool ReducedGG::isPeriodicWestEast() const {
     auto inc = getSmallestIncrement();
-    return bbox_.east() - bbox_.west() + inc >= GLOBE;
+    return bbox().east() - bbox().west() + inc >= GLOBE;
 }
+
+
+void ReducedGG::print(std::ostream& out) const {
+    out << "ReducedClassic[N=" << N_ << ",bbox=" << bbox() << "]";
+}
+
+
+struct ReducedGGClassic : ReducedGG {
+    ReducedGGClassic(size_t N, const BoundingBox& box= BoundingBox()) :
+        ReducedGG(N, box) {
+
+        // adjust latitudes, longitudes and re-set bounding box
+        auto n = box.north();
+        auto s = box.south();
+        correctSouthNorth(s, n);
+
+        setNj(pls("N" + std::to_string(N_)), s, n);
+
+        auto w = box.west();
+        auto e = box.east();
+        correctWestEast(w, e);
+
+        bbox({n, w, s, e});
+    }
+};
+
+
+
+
+
+struct ReducedGGFromPL : ReducedGG {
+    ReducedGGFromPL(const Configuration& config) :
+        ReducedGG(config) {}
+    ReducedGGFromPL(size_t N, const pl_type& pl, const BoundingBox& box = BoundingBox()) :
+        ReducedGG(N, pl, box) {}
+};
+
+
+struct ReducedGGOctahedral : ReducedGG {
+    ReducedGGOctahedral(size_t N, const BoundingBox& box = BoundingBox()) :
+        ReducedGG(N, box) {
+
+        // adjust latitudes, longitudes and re-set bounding box
+        auto [n, w, s, e] = bbox().deconstruct();
+
+        correctSouthNorth(s, n);
+
+        setNj(pls("O" + std::to_string(N_)), s, n);
+
+        correctWestEast(w, e);
+
+        bbox({n, w, s, e});
+    }
+};
+
+
+static const GridBuilder<ReducedGGFromPL> reducedFromPL("reduced_gg");
 
 
 }  // namespace eckit::geo::grid

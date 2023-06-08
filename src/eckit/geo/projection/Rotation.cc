@@ -97,9 +97,9 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 }
 
 
-Rotation::Rotation(const Configuration& param) :
-    Rotation(param.getDouble("south_pole_lon"), param.getDouble("south_pole_lat"),
-             param.getDouble("angle", 0)) {}
+Rotation::Rotation(const Configuration& config) :
+    Rotation(config.getDouble("south_pole_lon"), config.getDouble("south_pole_lat"),
+             config.getDouble("angle", 0)) {}
 
 
 }  // namespace eckit::geo::projection

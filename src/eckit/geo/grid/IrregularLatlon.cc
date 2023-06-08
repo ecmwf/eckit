@@ -18,6 +18,7 @@
 #include "eckit/utils/MD5.h"
 
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::grid {
@@ -39,7 +40,8 @@ static void range(const std::vector<double>& v, double& mn, double& mx, double& 
 }
 
 
-IrregularLatlon::IrregularLatlon(const Configuration& config) {
+IrregularLatlon::IrregularLatlon(const Configuration& config) :
+    Grid(config) {
     ASSERT(config.get("latitudes", latitudes_));
     range(latitudes_, south_, north_, south_north_);
 
@@ -101,6 +103,8 @@ class IrregularLatlonIterator : public Iterator {
 
     size_t index() const override { return count_; }
 
+    size_t size() const override { NOTIMP; }
+
 public:
     // TODO: Consider keeping a reference on the latitudes and bbox, to avoid copying
 
@@ -132,17 +136,17 @@ Iterator* IrregularLatlon::iterator() const {
 
 
 bool IrregularLatlon::isPeriodicWestEast() const {
-    return (east_ - west_) + west_east_ >= GLOBE.value();
+    return (east_ - west_) + west_east_ >= GLOBE;
 }
 
 
 bool IrregularLatlon::includesNorthPole() const {
-    return north_ + south_north_ >= NORTH_POLE.value();
+    return north_ + south_north_ >= NORTH_POLE;
 }
 
 
 bool IrregularLatlon::includesSouthPole() const {
-    return south_ - south_north_ <= SOUTH_POLE.value();
+    return south_ - south_north_ <= SOUTH_POLE;
 }
 
 

@@ -12,13 +12,18 @@
 
 #pragma once
 
-#include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/grid/Gaussian.h"
+
+
+namespace eckit {
+class Fraction;
+}
 
 
 namespace eckit::geo::grid {
 
 
-class RegularGG : public Regular {
+class RegularGG final : public Gaussian {
 public:
     // -- Exceptions
     // None
@@ -26,10 +31,10 @@ public:
     // -- Constructors
 
     RegularGG(const Configuration&);
-    RegularGG(size_t N, const BoundingBox& = BoundingBox(), double angularPrecision = 0);
+    RegularGG(size_t N, const BoundingBox& = BoundingBox());
 
     // -- Destructor
-    // None
+//None
 
     // -- Convertors
     // None
@@ -38,6 +43,7 @@ public:
     // None
 
     // -- Methods
+    // None
 
     // -- Overridden methods
     // None
@@ -50,15 +56,26 @@ public:
 
 private:
     // -- Members
-    // None
+
+    size_t k_;
+    size_t Ni_;
+    size_t Nj_;
 
     // -- Methods
-    // None
+
+    Fraction getSmallestIncrement() const;
+    void correctWestEast(double& w, double& e) const;
+    void setNiNj();
 
     // -- Overridden methods
 
+    size_t numberOfPoints() const override;
     void print(std::ostream&) const override;
     Iterator* iterator() const override;
+    bool isPeriodicWestEast() const override;
+
+    Renumber crop(BoundingBox&) const         override;
+    Renumber reorder(long scanningMode) const override;
 
     // -- Class members
     // None

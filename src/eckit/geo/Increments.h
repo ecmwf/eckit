@@ -45,7 +45,7 @@ public:
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream&out, const Increments&p) {
+    friend std::ostream& operator<<(std::ostream& out, const Increments& p) {
         return out << '{' << p.west_east << ", " << p.south_north << '}';
     }
 };

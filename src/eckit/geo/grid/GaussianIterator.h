@@ -18,6 +18,7 @@
 
 #include "eckit/geo/BoundingBox.h"
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::grid {
@@ -26,7 +27,7 @@ namespace eckit::geo::grid {
 class GaussianIterator : public Iterator {
 public:
     GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl, const BoundingBox&, size_t N,
-                     size_t Nj, size_t k, const Rotation& = Rotation());
+                     size_t Nj, size_t k);
     ~GaussianIterator() override;
 
 private:
@@ -45,10 +46,11 @@ private:
     size_t count_;
     bool first_;
 
-protected:
     void print(std::ostream&) const override;
     bool operator++() override;
     size_t index() const override;
+    size_t size() const override;
+
     size_t resetToRow(size_t j);
 };
 

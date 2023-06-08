@@ -46,11 +46,6 @@ bool Domain::operator==(const Domain& other) const {
 }
 
 
-bool Domain::isGlobal() const {
-    return includesNorthPole() && includesSouthPole() && isPeriodicWestEast();
-}
-
-
 bool Domain::includesNorthPole() const {
     return north_ == NORTH_POLE;
 }
@@ -82,54 +77,6 @@ bool Domain::contains(const Domain& other) const {
     }
 
     return contains(other.north_, other.west_) && contains(other.north_, other.east_) && contains(other.south_, other.west_) && contains(other.south_, other.east_);
-}
-
-
-bool Domain::intersects(Domain& other) const {
-    auto n = std::min(north_, other.north_);
-    auto s = std::max(south_, other.south_);
-
-    bool intersectsSN = s <= n;
-    if (!intersectsSN) {
-        n = s;
-    }
-
-    if (isPeriodicWestEast() && other.isPeriodicWestEast()) {
-        other = {n, other.west_, s, other.east_};
-        return intersectsSN;
-    }
-
-    auto w = std::min(west_, other.west_);
-    auto e = w;
-
-    auto intersect = [](const Domain& a, const Domain& b, double& w, double& e) {
-        bool p = a.isPeriodicWestEast();
-        if (p || b.isPeriodicWestEast()) {
-            w = (p ? b : a).west_;
-            e = (p ? b : a).east_;
-            return true;
-        }
-
-        auto ref = PointLonLat::normalise_angle_to_minimum(b.west_, a.west_);
-        auto w_  = std::max(a.west_, ref);
-        auto e_  = std::min(a.east_, PointLonLat::normalise_angle_to_minimum(b.east_, ref));
-
-        if (w_ <= e_) {
-            w = w_;
-            e = e_;
-            return true;
-        }
-
-        return false;
-    };
-
-    bool intersectsWE = west_ <= other.west_ ? intersect(*this, other, w, e) || intersect(other, *this, w, e)
-                                             : intersect(other, *this, w, e) || intersect(*this, other, w, e);
-
-    ASSERT_MSG(w <= e, "Domain::intersects: longitude range");
-    other = {n, w, s, e};
-
-    return intersectsSN && intersectsWE;
 }
 
 

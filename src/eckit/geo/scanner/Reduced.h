@@ -24,10 +24,6 @@ namespace eckit::geo::scanner {
 
 class Reduced final : public Scanner {
 public:
-    // -- Types
-
-    using pl_type = util::pl_type;
-
     // -- Exceptions
     // None
 

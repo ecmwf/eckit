@@ -14,19 +14,19 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Scanner.h"
-#include "eckit/geo/iterator/IteratorAggregator.h"
-#include "eckit/geo/iterator/IteratorComposer.h"
+// #include "eckit/geo/iterator/IteratorAggregator.h"
+// #include "eckit/geo/iterator/IteratorComposer.h"
 
 
 int main(int argc, const char* argv[]) {
-    eckit::geo::iterator::IteratorComposer i(nullptr);
+    // eckit::geo::iterator::IteratorComposer i(nullptr);
 
-    struct ScannerTest : public eckit::geo::Scanner {
-        bool operator++() override { NOTIMP; }
-        size_t size() const override { NOTIMP; }
-    };
+    // struct ScannerTest : public eckit::geo::Scanner {
+    //     bool operator++() override { NOTIMP; }
+    //     size_t size() const override { NOTIMP; }
+    // };
 
-    eckit::geo::iterator::IteratorAggregator<ScannerTest> j;
+    // eckit::geo::iterator::IteratorAggregator<ScannerTest> j;
 
     return 0;
 }

@@ -24,6 +24,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Domain.h"
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/IfstreamStream.h"
 
@@ -91,11 +92,11 @@ private:
         out << "]";
     }
 
-    bool next(Latitude& lat, Longitude& lon) override {
+    bool operator++() override {
         if ((first_ ? count_ : ++count_) < size_) {
             first_ = false;
-            lat    = latitudes_[count_];
-            lon    = longitudes_[count_];
+            // lat    = latitudes_[count_];
+            // lon    = longitudes_[count_];
 
             return true;
         }
@@ -103,6 +104,8 @@ private:
     }
 
     size_t index() const override { return count_; }
+
+    size_t size() const override { NOTIMP; }
 
     // -- Class members
     // None

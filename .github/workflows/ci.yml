@@ -4,10 +4,10 @@ on:
   # Trigger the workflow on push to master or develop, except tag creation
   push:
     branches:
-      - "master"
-      - "develop"
+      - 'master'
+      - 'develop'
     tags-ignore:
-      - "**"
+      - '**'
 
   # Trigger the workflow on pull request
   pull_request: ~
@@ -82,3 +82,10 @@ jobs:
       eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
       codecov: true
     secrets: inherit
+
+  formatting:
+    if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/clang-format.yml@v2
+    with:
+      ignore_paths: |
+        src/eckit/contrib

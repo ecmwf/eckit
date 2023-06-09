@@ -30,12 +30,8 @@ Gaussian::Gaussian(size_t N, const BoundingBox& bbox) :
 
 
 Gaussian::Gaussian(const Configuration& config) :
-    Grid(config), N_(0), angularPrecision_(0) {
-
-    ASSERT(config.get("N", N_));
+    Grid(config), N_(config.getUnsigned("N")), angularPrecision_(config.getDouble("angular_precision", 0)) {
     ASSERT(N_ > 0);
-
-    config.get("angular_precision", angularPrecision_);
     ASSERT(angularPrecision_ >= 0);
 }
 

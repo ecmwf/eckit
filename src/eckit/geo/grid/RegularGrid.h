@@ -76,7 +76,6 @@ protected:
     Shape shape_;
     bool xPlus_;
     bool yPlus_;
-    bool firstPointBottomLeft_;
 
     // -- Methods
 

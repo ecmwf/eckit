@@ -32,8 +32,7 @@ RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :
     projection_(projection),
     shape_(config),
     xPlus_(true),
-    yPlus_(false),
-    firstPointBottomLeft_(false) {
+    yPlus_(false) {
     ASSERT(projection_);
 
     auto get_long_first_key = [](const Configuration& config, const std::vector<std::string>& keys) -> long {
@@ -51,21 +50,19 @@ RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :
     ASSERT(nx > 0);
     ASSERT(ny > 0);
 
-    std::vector<double> grid;
-    ASSERT(config.get("grid", grid));
+    auto grid = config.getDoubleVector("grid");
     ASSERT(grid.size() == 2);
 
-    Point2 firstLL;
-    ASSERT(config.get("latitudeOfFirstGridPointInDegrees", firstLL[LLCOORDS::LAT]));
-    ASSERT(config.get("longitudeOfFirstGridPointInDegrees", firstLL[LLCOORDS::LON]));
-    auto first = projection.xy(firstLL);
+    auto first    = projection->fwd(PointLonLat{config.getDouble("longitudeOfFirstGridPointInDegrees"), config.getDouble("latitudeOfFirstGridPointInDegrees")});
+    auto first_xy = std::get<Point2>(first);
 
     config.get("iScansPositively", xPlus_);  // iScansPositively != 0
     config.get("jScansPositively", yPlus_);  // jScansPositively == 0
-    config.get("first_point_bottom_left", firstPointBottomLeft_);
 
-    x_    = linspace(first.x(), grid[0], nx, firstPointBottomLeft_ || xPlus_);
-    y_    = linspace(first.y(), grid[1], ny, firstPointBottomLeft_ || yPlus_);
+    auto firstPointBottomLeft_ = config.getBool("first_point_bottom_left", false);
+
+    x_    = linspace(first_xy.X, grid[0], nx, firstPointBottomLeft_ || xPlus_);
+    y_    = linspace(first_xy.Y, grid[1], ny, firstPointBottomLeft_ || yPlus_);
     grid_ = {x_, y_, projection};
 
     ASSERT(!x_.empty());
@@ -86,8 +83,7 @@ RegularGrid::RegularGrid(const Projection& projection, const BoundingBox& bbox, 
     y_(y),
     shape_(shape),
     xPlus_(x.front() <= x.back()),
-    yPlus_(y.front() < y.back()),
-    firstPointBottomLeft_(false) {
+    yPlus_(y.front() < y.back()) {
     grid_ = {x_, y_, projection};
 
     if (!shape_.provided) {
@@ -132,7 +128,7 @@ RegularGrid::LinearSpacing RegularGrid::linspace(double start, double step, long
 
 void RegularGrid::print(std::ostream& out) const {
     out << "RegularGrid[x=" << x_.spec() << ",y=" << y_.spec() << ",projection=" << grid_.projection().spec()
-        << ",firstPointBottomLeft=" << firstPointBottomLeft_ << ",bbox=" << bbox_ << "]";
+        << ",bbox=" << bbox_ << "]";
 }
 
 

@@ -16,6 +16,11 @@
 #include "eckit/geo/util.h"
 
 
+namespace eckit {
+class Fraction;
+}
+
+
 namespace eckit::geo::grid {
 
 
@@ -97,6 +102,9 @@ private:
     // -- Overridden methods
 
     size_t numberOfPoints() const override;
+    Fraction getSmallestIncrement() const;
+    Renumber crop(BoundingBox&) const override;
+    Renumber reorder(long scanningMode) const override;
 
     // -- Class members
     // None

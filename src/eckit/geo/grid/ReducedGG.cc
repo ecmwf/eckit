@@ -188,6 +188,18 @@ size_t ReducedGG::numberOfPoints() const {
 }
 
 
+Fraction ReducedGG::getSmallestIncrement() const {
+    using distance_t = std::make_signed<size_t>::type;
+
+    const auto& pl = pls();
+    auto maxpl     = *std::max_element(pl.begin() + distance_t(k_), pl.begin() + distance_t(k_ + Nj_));
+    ASSERT(maxpl >= 2);
+
+    const Fraction globe_f(GLOBE);
+    return globe_f / maxpl;
+}
+
+
 bool ReducedGG::isPeriodicWestEast() const {
     auto inc = getSmallestIncrement();
     return bbox().east() - bbox().west() + inc >= GLOBE;
@@ -195,7 +207,17 @@ bool ReducedGG::isPeriodicWestEast() const {
 
 
 void ReducedGG::print(std::ostream& out) const {
-    out << "ReducedClassic[N=" << N_ << ",bbox=" << bbox() << "]";
+    out << "ReducedGG[N=" << N_ << ",bbox=" << bbox() << "]";
+}
+
+
+Renumber ReducedGG::crop(BoundingBox&) const {
+    NOTIMP;
+}
+
+
+Renumber ReducedGG::reorder(long scanningMode) const {
+    NOTIMP;
 }
 
 

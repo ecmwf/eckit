@@ -133,6 +133,7 @@ UnstructuredGrid::UnstructuredGrid(const Configuration& config) :
 }
 
 
+#if 0
 UnstructuredGrid::UnstructuredGrid(const PathName& path) {
     std::ifstream in(path.asString().c_str());
     if (!in) {
@@ -165,6 +166,7 @@ UnstructuredGrid::UnstructuredGrid(const PathName& path) {
         }
     }
 }
+#endif
 
 
 UnstructuredGrid::UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes,
@@ -194,8 +196,18 @@ size_t UnstructuredGrid::numberOfPoints() const {
 }
 
 
+Renumber UnstructuredGrid::crop(BoundingBox&) const {
+    NOTIMP;
+}
+
+
+Renumber UnstructuredGrid::reorder(long scanningMode) const {
+    NOTIMP;
+}
+
+
 Iterator* UnstructuredGrid::iterator() const {
-    return new iterator::UnstructuredIterator(latitudes_, longitudes_);
+    return new detail::UnstructuredIterator(latitudes_, longitudes_);
 }
 
 

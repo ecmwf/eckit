@@ -103,6 +103,9 @@ private:
 
     size_t numberOfPoints() const override;
 
+    Renumber crop(BoundingBox&) const override;
+    Renumber reorder(long scanningMode) const override;
+
     // -- Class members
     // None
 

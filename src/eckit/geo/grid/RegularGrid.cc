@@ -27,9 +27,13 @@
 namespace eckit::geo::grid {
 
 
-RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :Grid(config),
+RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :
+    Grid(config),
     projection_(projection),
-    shape_(config), xPlus_(true), yPlus_(false), firstPointBottomLeft_(false) {
+    shape_(config),
+    xPlus_(true),
+    yPlus_(false),
+    firstPointBottomLeft_(false) {
     ASSERT(projection_);
 
     auto get_long_first_key = [](const Configuration& config, const std::vector<std::string>& keys) -> long {
@@ -64,16 +68,14 @@ RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :G
     y_    = linspace(first.y(), grid[1], ny, firstPointBottomLeft_ || yPlus_);
     grid_ = {x_, y_, projection};
 
-#if 0
-    atlas::RectangularDomain range({x_.min(), x_.max()}, {y_.min(), y_.max()}, "meters");
+    ASSERT(!x_.empty());
+    ASSERT(!y_.empty());
+    auto n = y_.front() > y_.back() ? y_.front() : y_.back();
+    auto s = y_.front() > y_.back() ? y_.back() : y_.front();
+    auto w = x_.front() > x_.back() ? x_.back() : x_.front();
+    auto e = x_.front() > x_.back() ? x_.front() : x_.back();
 
-    auto box = projection.lonlatBoundingBox(range);
-    ASSERT(box);
-
-    bbox({box.north(), box.west(), box.south(), box.east()});
-#else
-    bbox({y_.max(), x_.min(), y_.min(), x_.max()});
-#endif
+    bbox(projection.lonlatBoundingBox({n, w, s, e}));
 }
 
 
@@ -222,7 +224,7 @@ Iterator* RegularGrid::iterator() const {
 }
 
 
-struct Lambert :  RegularGrid {
+struct Lambert : RegularGrid {
     Lambert(const Configuration& config) :
         RegularGrid(config, make_projection(config)) {
     }
@@ -246,7 +248,7 @@ struct Lambert :  RegularGrid {
 };
 
 
-struct LambertAzimuthalEqualArea :  RegularGrid {
+struct LambertAzimuthalEqualArea : RegularGrid {
 
     LambertAzimuthalEqualArea(const Configuration& config) :
         RegularGrid(config, make_projection(config)) {}
@@ -273,13 +275,13 @@ struct LambertAzimuthalEqualArea :  RegularGrid {
 };
 
 
-struct Mercator :  RegularGrid {
-   Mercator(const Configuration&) :
+struct Mercator : RegularGrid {
+    Mercator(const Configuration&) :
         RegularGrid(config, RegularGrid::make_projection_from_proj(config)) {}
 };
 
 
-struct PolarStereographic :  RegularGrid {
+struct PolarStereographic : RegularGrid {
     PolarStereographic(const Configuration& config) :
         RegularGrid(config, RegularGrid::make_projection_from_proj(config)) {}
 };

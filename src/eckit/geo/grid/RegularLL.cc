@@ -18,8 +18,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/grid/RegularLL.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"

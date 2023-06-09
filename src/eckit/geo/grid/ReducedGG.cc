@@ -91,8 +91,8 @@ void ReducedGG::correctWestEast(double& w, double& e) const {
 
         const Fraction west{w};
         const Fraction east{e};
-        Fraction W          = west;
-        Fraction E          = east;
+        Fraction W = west;
+        Fraction E = east;
 
         bool first = true;
         std::set<long> NiTried;
@@ -183,16 +183,8 @@ void ReducedGG::setNj(pl_type pl, double s, double n) {
 
 
 size_t ReducedGG::numberOfPoints() const {
-    if (isGlobal()) {
-        const auto& pl = pls();
-        return size_t(std::accumulate(pl.begin(), pl.end(), 0L));
-    }
-
-    size_t total = 0;
-    for (const std::unique_ptr<Iterator> it(iterator()); ++(*it);) {
-        total++;
-    }
-    return total;
+    const auto& pl = pls();
+    return size_t(std::accumulate(pl.begin(), pl.end(), pl_type::value_type{0}));
 }
 
 
@@ -208,7 +200,7 @@ void ReducedGG::print(std::ostream& out) const {
 
 
 struct ReducedGGClassic : ReducedGG {
-    ReducedGGClassic(size_t N, const BoundingBox& box= BoundingBox()) :
+    ReducedGGClassic(size_t N, const BoundingBox& box = BoundingBox()) :
         ReducedGG(N, box) {
 
         // adjust latitudes, longitudes and re-set bounding box
@@ -225,9 +217,6 @@ struct ReducedGGClassic : ReducedGG {
         bbox({n, w, s, e});
     }
 };
-
-
-
 
 
 struct ReducedGGFromPL : ReducedGG {

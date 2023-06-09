@@ -34,7 +34,7 @@ public:
     RegularGG(size_t N, const BoundingBox& = BoundingBox());
 
     // -- Destructor
-//None
+    // None
 
     // -- Convertors
     // None
@@ -74,7 +74,7 @@ private:
     Iterator* iterator() const override;
     bool isPeriodicWestEast() const override;
 
-    Renumber crop(BoundingBox&) const         override;
+    Renumber crop(BoundingBox&) const override;
     Renumber reorder(long scanningMode) const override;
 
     // -- Class members

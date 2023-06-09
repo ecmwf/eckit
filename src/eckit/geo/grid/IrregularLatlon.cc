@@ -150,6 +150,16 @@ bool IrregularLatlon::includesSouthPole() const {
 }
 
 
+Renumber IrregularLatlon::crop(BoundingBox&) const {
+    NOTIMP;
+}
+
+
+Renumber IrregularLatlon::reorder(long scanningMode) const {
+    NOTIMP;
+}
+
+
 static const GridBuilder<IrregularLatlon> irregularLatlon("irregular_latlon");
 
 

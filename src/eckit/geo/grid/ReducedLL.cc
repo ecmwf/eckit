@@ -172,6 +172,16 @@ Iterator* ReducedLL::iterator() const {
 }
 
 
+Renumber ReducedLL::crop(BoundingBox&) const {
+    NOTIMP;
+}
+
+
+Renumber ReducedLL::reorder(long scanningMode) const {
+    NOTIMP;
+}
+
+
 static const GridBuilder<ReducedLL> reducedLL("reduced_ll");
 
 

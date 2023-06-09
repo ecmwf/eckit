@@ -49,27 +49,6 @@ public:
     // -- Class methods
     // None
 
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    bool isPeriodicWestEast() const override;
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
-
-    void print(std::ostream&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -83,6 +62,15 @@ private:
     Iterator* iterator() const override;
 
     size_t numberOfPoints() const override;
+
+    bool isPeriodicWestEast() const override;
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
+
+    void print(std::ostream&) const override;
+
+    Renumber crop(BoundingBox&) const override;
+    Renumber reorder(long scanningMode) const override;
 
     // -- Class members
     // None

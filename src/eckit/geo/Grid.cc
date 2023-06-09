@@ -36,11 +36,6 @@ Grid::Grid(const BoundingBox& bbox) :
     bbox_(bbox) {}
 
 
-bool Grid::isGlobal() const {
-    return domain().isGlobal();
-}
-
-
 Domain Grid::domain() const {
     auto n = includesNorthPole() ? NORTH_POLE : bbox_.north();
     auto s = includesSouthPole() ? SOUTH_POLE : bbox_.south();

@@ -57,7 +57,6 @@ public:
     virtual Iterator* iterator() const;
     virtual bool includesNorthPole() const;
     virtual bool includesSouthPole() const;
-    virtual bool isGlobal() const;
     virtual bool isPeriodicWestEast() const;
     virtual const BoundingBox& boundingBox() const;
     virtual size_t numberOfPoints() const;

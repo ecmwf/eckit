@@ -175,7 +175,7 @@ Iterator* RegularGG::iterator() const {
 }
 
 
-Renumber RegularGG::crop(BoundingBox&) const         {
+Renumber RegularGG::crop(BoundingBox&) const {
     NOTIMP;
 }
 
@@ -183,8 +183,6 @@ Renumber RegularGG::crop(BoundingBox&) const         {
 Renumber RegularGG::reorder(long /*scanningMode*/) const {
     NOTIMP;
 }
-
-
 
 
 static const GridBuilder<RegularGG> reducedGG("regular_gg");

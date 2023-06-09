@@ -18,7 +18,7 @@
 namespace eckit::geo::grid {
 
 
-class IrregularLatlon : public Grid {
+class IrregularLatlon final : public Grid {
 public:
     // -- Exceptions
     // None
@@ -37,23 +37,6 @@ public:
     // None
 
     // -- Methods
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-
-    void print(std::ostream&) const override;
 
     // -- Overridden methods
     // None
@@ -88,6 +71,10 @@ private:
     bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
+    void print(std::ostream&) const override;
+
+    Renumber crop(BoundingBox&) const override;
+    Renumber reorder(long scanningMode) const override;
 
     // -- Class members
     // None

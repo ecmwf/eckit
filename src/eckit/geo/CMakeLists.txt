@@ -28,8 +28,6 @@ list(APPEND eckit_geo_srcs
     grid/GaussianIterator.h
     grid/IrregularLatlon.cc
     grid/IrregularLatlon.h
-    grid/ORCA.cc
-    grid/ORCA.h
     grid/ReducedGG.cc
     grid/ReducedGG.h
     grid/ReducedLL.cc
@@ -40,8 +38,6 @@ list(APPEND eckit_geo_srcs
     grid/RegularGrid.h
     grid/RegularLL.cc
     grid/RegularLL.h
-    grid/SpaceView.cc
-    grid/SpaceView.h
     grid/UnstructuredGrid.cc
     grid/UnstructuredGrid.h
     projection/LonLatToXYZ.cc

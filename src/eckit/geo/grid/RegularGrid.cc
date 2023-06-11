@@ -20,6 +20,7 @@
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/config/Resource.h"
+#include "eckit/geo/Earth.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/utils/StringTools.h"
 
@@ -27,10 +28,10 @@
 namespace eckit::geo::grid {
 
 
-RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :
+RegularGrid::RegularGrid(Projection* projection, const Configuration& config) :
     Grid(config),
     projection_(projection),
-    shape_(config),
+    figure_(config),
     xPlus_(true),
     yPlus_(false) {
     ASSERT(projection_);
@@ -61,9 +62,14 @@ RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :
 
     auto firstPointBottomLeft_ = config.getBool("first_point_bottom_left", false);
 
-    x_    = linspace(first_xy.X, grid[0], nx, firstPointBottomLeft_ || xPlus_);
-    y_    = linspace(first_xy.Y, grid[1], ny, firstPointBottomLeft_ || yPlus_);
-    grid_ = {x_, y_, projection};
+    auto linspace = [](double start, double step, long num, bool plus) -> LinearSpacing {
+        ASSERT(step >= 0.);
+        //        return {start, start + step * double(plus ? num - 1 : 1 - num), num};
+        NOTIMP;
+    };
+
+    x_ = linspace(first_xy.X, grid[0], nx, firstPointBottomLeft_ || xPlus_);
+    y_ = linspace(first_xy.Y, grid[1], ny, firstPointBottomLeft_ || yPlus_);
 
     ASSERT(!x_.empty());
     ASSERT(!y_.empty());
@@ -72,63 +78,36 @@ RegularGrid::RegularGrid(const Configuration& config, Projection* projection) :
     auto w = x_.front() > x_.back() ? x_.back() : x_.front();
     auto e = x_.front() > x_.back() ? x_.front() : x_.back();
 
-    bbox(projection.lonlatBoundingBox({n, w, s, e}));
+    bbox(BoundingBox::make({n, w, s, e}, *projection_));
 }
 
 
-RegularGrid::RegularGrid(const Projection& projection, const BoundingBox& bbox, const LinearSpacing& x,
-                         const LinearSpacing& y, const Shape& shape) :
+RegularGrid::RegularGrid(Projection* projection, const BoundingBox& bbox, const LinearSpacing& x,
+                         const LinearSpacing& y, const Figure& figure) :
     Grid(bbox),
     x_(x),
     y_(y),
-    shape_(shape),
+    figure_(figure),
     xPlus_(x.front() <= x.back()),
     yPlus_(y.front() < y.back()) {
-    grid_ = {x_, y_, projection};
-
-    if (!shape_.provided) {
-        shape_ = {grid_.projection().spec()};
-    }
 }
 
 
 RegularGrid::~RegularGrid() = default;
 
 
-RegularGrid::Configuration RegularGrid::make_projection_from_proj(const Configuration& config) {
-    std::string proj;
-    config.get("proj", proj);
-
-    if (proj.empty() || !::atlas::projection::ProjectionFactory::has("proj")) {
-        return {};
+Projection* RegularGrid::make_projection_from_proj(const Configuration& config) {
+    if (std::string proj;
+        config.get("proj", proj)) {
+        return ProjectionFactory::build("proj", config);
     }
 
-    Configuration spec("type", "proj");
-    spec.set("proj", proj);
-
-    std::string projSource;
-    if (config.get("projSource", projSource) && !projSource.empty()) {
-        spec.set("proj_source", projSource);
-    }
-
-    std::string projGeocentric;
-    if (config.get("projGeocentric", projGeocentric) && !projGeocentric.empty()) {
-        spec.set("proj_geocentric", projGeocentric);
-    }
-
-    return spec;
-}
-
-
-RegularGrid::LinearSpacing RegularGrid::linspace(double start, double step, long num, bool plus) {
-    ASSERT(step >= 0.);
-    return {start, start + step * double(plus ? num - 1 : 1 - num), num};
+    return nullptr;
 }
 
 
 void RegularGrid::print(std::ostream& out) const {
-    out << "RegularGrid[x=" << x_.spec() << ",y=" << y_.spec() << ",projection=" << grid_.projection().spec()
-        << ",bbox=" << bbox_ << "]";
+    NOTIMP;
 }
 
 
@@ -164,10 +143,9 @@ Renumber RegularGrid::reorder(long /*scanningMode*/) const {
 
 Iterator* RegularGrid::iterator() const {
     class RegularGridIterator : public Iterator {
-        Projection* projection_;
+        const Projection& projection_;
         const LinearSpacing& x_;
         const LinearSpacing& y_;
-        PointLonLat pLonLat_;
 
         size_t ni_;
         size_t nj_;
@@ -181,11 +159,12 @@ Iterator* RegularGrid::iterator() const {
             out << ",i=" << i_ << ",j=" << j_ << ",count=" << count_ << "]";
         }
 
-        bool next(double& _lat, double& _lon) override {
+        bool operator++() override {
             if (j_ < nj_ && i_ < ni_) {
-                pLonLat_ = projection_.lonlat({x_[i_], y_[j_]});
-                _lat     = lat(pLonLat_.lat());
-                _lon     = lon(pLonLat_.lon());
+                const auto p  = projection_.inv(Point2{x_[i_], y_[j_]});
+                const auto ll = std::get<PointLonLat>(p);
+                //                _lat     = ll.lat;
+                //                _lon     = ll.lon;
 
                 if (i_ > 0 || j_ > 0) {
                     count_++;
@@ -206,8 +185,8 @@ Iterator* RegularGrid::iterator() const {
         size_t size() const override { NOTIMP; }
 
     public:
-        RegularGridIterator(Projection projection, const LinearSpacing& x, const LinearSpacing& y) :
-            projection_(std::move(projection)), x_(x), y_(y), ni_(x.size()), nj_(y.size()), i_(0), j_(0), count_(0) {}
+        RegularGridIterator(const Projection& projection, const LinearSpacing& x, const LinearSpacing& y) :
+            projection_(projection), x_(x), y_(y), ni_(x.size()), nj_(y.size()), i_(0), j_(0), count_(0) {}
         ~RegularGridIterator() override = default;
 
         RegularGridIterator(const RegularGridIterator&)            = delete;
@@ -216,18 +195,18 @@ Iterator* RegularGrid::iterator() const {
         RegularGridIterator& operator=(RegularGridIterator&&)      = delete;
     };
 
-    return new RegularGridIterator(grid_.projection(), x_, y_);
+    return new RegularGridIterator(*projection_, x_, y_);
 }
 
 
 struct Lambert : RegularGrid {
     Lambert(const Configuration& config) :
-        RegularGrid(config, make_projection(config)) {
+        RegularGrid(make_projection(config), config) {
     }
 
     static Projection* make_projection(const Configuration& config) {
-        if (auto spec = RegularGrid::make_projection_from_proj(config); spec != nullptr) {
-            return spec;
+        if (auto p = RegularGrid::make_projection_from_proj(config); p != nullptr) {
+            return p;
         }
 
         auto LaDInDegrees    = config.getDouble("LaDInDegrees");
@@ -247,14 +226,14 @@ struct Lambert : RegularGrid {
 struct LambertAzimuthalEqualArea : RegularGrid {
 
     LambertAzimuthalEqualArea(const Configuration& config) :
-        RegularGrid(config, make_projection(config)) {}
+        RegularGrid(make_projection(config), config) {}
 
-    LambertAzimuthalEqualArea(const Projection& projection, const BoundingBox& bbox, const LinearSpacing& x, const LinearSpacing& y, const Shape& shape) :
+    LambertAzimuthalEqualArea(Projection* projection, const BoundingBox& bbox, const LinearSpacing& x, const LinearSpacing& y, const Figure& shape) :
         RegularGrid(projection, bbox, x, y, shape) {}
 
     static Projection* make_projection(const Configuration& config) {
-        if (auto spec = RegularGrid::make_projection_from_proj(config); spec != nullptr) {
-            return spec;
+        if (auto p = RegularGrid::make_projection_from_proj(config); p != nullptr) {
+            return p;
         }
 
         double standardParallel = 0.;
@@ -272,21 +251,21 @@ struct LambertAzimuthalEqualArea : RegularGrid {
 
 
 struct Mercator : RegularGrid {
-    Mercator(const Configuration&) :
-        RegularGrid(config, RegularGrid::make_projection_from_proj(config)) {}
+    Mercator(const Configuration& config) :
+        RegularGrid(RegularGrid::make_projection_from_proj(config), config) {}
 };
 
 
 struct PolarStereographic : RegularGrid {
     PolarStereographic(const Configuration& config) :
-        RegularGrid(config, RegularGrid::make_projection_from_proj(config)) {}
+        RegularGrid(RegularGrid::make_projection_from_proj(config), config) {}
 };
 
 
-static const GridBuilder<Lambert> __builder("lambert");
-static const GridBuilder<LambertAzimuthalEqualArea> __builder("lambert_azimuthal_equal_area");
-static const GridBuilder<Mercator> __builder("mercator");
-static const GridBuilder<PolarStereographic> __builder("polar_stereographic");
+static const GridBuilder<Lambert> __builder1("lambert");
+static const GridBuilder<LambertAzimuthalEqualArea> __builder2("lambert_azimuthal_equal_area");
+static const GridBuilder<Mercator> __builder3("mercator");
+static const GridBuilder<PolarStereographic> __builder4("polar_stereographic");
 
 
 }  // namespace eckit::geo::grid

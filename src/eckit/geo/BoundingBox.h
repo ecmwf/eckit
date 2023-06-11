@@ -18,7 +18,10 @@
 
 namespace eckit {
 class Configuration;
+namespace geo {
+class Projection;
 }
+}  // namespace eckit
 
 
 namespace eckit::geo {
@@ -70,6 +73,8 @@ public:
     bool contains(const BoundingBox&) const;
     bool empty() const;
     double area(double radius) const;
+
+    static BoundingBox make(const BoundingBox&, const Projection&);
 
     // -- Overridden methods
     // None

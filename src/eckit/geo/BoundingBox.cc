@@ -146,4 +146,9 @@ double BoundingBox::area(double radius) const {
 }
 
 
+BoundingBox BoundingBox::make(const BoundingBox&, const Projection&) {
+    NOTIMP;
+}
+
+
 }  // namespace eckit::geo

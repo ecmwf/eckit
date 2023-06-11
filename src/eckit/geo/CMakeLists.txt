@@ -4,8 +4,12 @@ list(APPEND eckit_geo_srcs
     Domain.cc
     Domain.h
     Earth.h
+    Figure.cc
+    Figure.h
     Grid.cc
     Grid.h
+    Increments.cc
+    Increments.h
     Iterator.cc
     Iterator.h
     Point.cc
@@ -15,8 +19,6 @@ list(APPEND eckit_geo_srcs
     Range.cc
     Range.h
     Renumber.h
-    Increments.cc
-    Increments.h
     Scanner.cc
     Scanner.h
     Search.h

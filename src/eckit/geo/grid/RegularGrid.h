@@ -15,13 +15,9 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Projection.h"
-
-
-namespace eckit::geo {
-class Shape {};
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid {
@@ -38,10 +34,8 @@ public:
 
     // -- Constructors
 
-    RegularGrid(const Configuration&, Projection*);
-    RegularGrid(const Projection&, const BoundingBox&, const LinearSpacing& x, const LinearSpacing& y,
-                const Shape&);
     RegularGrid(const RegularGrid&) = delete;
+    RegularGrid(RegularGrid&&)      = delete;
 
     // -- Destructor
 
@@ -53,6 +47,7 @@ public:
     // -- Operators
 
     RegularGrid& operator=(const RegularGrid&) = delete;
+    RegularGrid& operator=(RegularGrid&&)      = delete;
 
     // -- Methods
     // None
@@ -68,19 +63,24 @@ public:
     // None
 
 protected:
+    // -- Constructors
+
+    RegularGrid(Projection*, const Configuration&);
+    RegularGrid(Projection*, const BoundingBox&, const LinearSpacing& x, const LinearSpacing& y,
+                const Figure&);
+
     // -- Members
 
     std::unique_ptr<Projection> projection_;
     LinearSpacing x_;
     LinearSpacing y_;
-    Shape shape_;
+    Figure figure_;
     bool xPlus_;
     bool yPlus_;
 
     // -- Methods
 
-    static Configuration make_proj_spec(const Configuration&);
-    static LinearSpacing linspace(double start, double step, long num, bool plus);
+    static Projection* make_projection_from_proj(const Configuration&);
 
     // -- Overridden methods
 

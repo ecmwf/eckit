@@ -17,6 +17,7 @@
 #include <map>
 
 #include "eckit/geo/Domain.h"
+#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -33,6 +34,11 @@ Gaussian::Gaussian(const Configuration& config) :
     Grid(config), N_(config.getUnsigned("N")), angularPrecision_(config.getDouble("angular_precision", 0)) {
     ASSERT(N_ > 0);
     ASSERT(angularPrecision_ >= 0);
+}
+
+
+const std::vector<double>& Gaussian::latitudes() const {
+    return latitudes_.empty() ? (latitudes_ = util::gaussian_latitudes(N_, false)) : latitudes_;
 }
 
 

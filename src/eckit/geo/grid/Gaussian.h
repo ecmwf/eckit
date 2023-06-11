@@ -55,6 +55,7 @@ protected:
 
     size_t N_;
     double angularPrecision_;
+    mutable std::vector<double> latitudes_;
 
     // -- Methods
 

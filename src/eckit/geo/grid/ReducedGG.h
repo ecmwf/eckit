@@ -83,6 +83,7 @@ protected:
 
     // -- Overridden methods
 
+    Iterator* iterator() const override;
     bool isPeriodicWestEast() const override;
     void print(std::ostream& out) const override;
 

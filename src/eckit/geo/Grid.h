@@ -54,14 +54,16 @@ public:
 
     // -- Methods
 
-    virtual Iterator* iterator() const;
-    virtual bool includesNorthPole() const;
-    virtual bool includesSouthPole() const;
-    virtual bool isPeriodicWestEast() const;
-    virtual const BoundingBox& boundingBox() const;
-    virtual size_t numberOfPoints() const;
-    virtual void print(std::ostream&) const;
     virtual Domain domain() const;
+    virtual const BoundingBox& boundingBox() const;
+
+    virtual Iterator* iterator() const      = 0;
+    virtual size_t numberOfPoints() const   = 0;
+    virtual void print(std::ostream&) const = 0;
+
+    virtual bool includesNorthPole() const  = 0;
+    virtual bool includesSouthPole() const  = 0;
+    virtual bool isPeriodicWestEast() const = 0;
 
     virtual Renumber crop(BoundingBox&) const         = 0;
     virtual Renumber reorder(long scanningMode) const = 0;

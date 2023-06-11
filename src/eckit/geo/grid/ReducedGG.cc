@@ -23,6 +23,7 @@
 
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/grid/GaussianIterator.h"
 #include "eckit/types/Fraction.h"
 
 
@@ -137,6 +138,11 @@ void ReducedGG::correctWestEast(double& w, double& e) const {
         w = W;
         e = E;
     }
+}
+
+
+Iterator* ReducedGG::iterator() const {
+    NOTIMP;
 }
 
 

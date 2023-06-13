@@ -91,6 +91,16 @@ BTree<K, V, S, L>::BTree(const PathName& path, bool readOnly, off_t offset) :
     // maxNodeEntries_ << std::endl;
 }
 
+template <class K, class V, int S, class L>
+void BTree<K, V, S, L>::preload() {
+    Page p;
+    loadPage(1, p);
+
+    while (p.right_) {
+        loadPage(p.right_, p);
+    }
+}
+
 
 template <class K, class V, int S, class L>
 BTree<K, V, S, L>::~BTree() {

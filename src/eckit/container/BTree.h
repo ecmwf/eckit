@@ -80,6 +80,8 @@ public:
     bool get(const K&, V&);
     bool set(const K&, const V&);
 
+    void preload();
+
     template <class T>
     void range(const K& key1, const K& key2, T& result);
 

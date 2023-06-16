@@ -14,15 +14,14 @@
 /// @date March 2016
 
 
+#include "eckit/option/CmdArgs.h"
+
 #include <iostream>
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/option/CmdArgs.h"
 #include "eckit/option/Option.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/utils/StringTools.h"
-#include "eckit/utils/Tokenizer.h"
 
 namespace eckit::option {
 
@@ -62,33 +61,26 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
         }
     }
 
-    Tokenizer parse("=");
     for (int i = 1; i < argc; ++i) {
-        std::string a = ctx.argv(i);
+        const auto a = ctx.argv(i);
         if (a.size() > 2 && a[0] == '-' && a[1] == '-') {
-            std::vector<std::string> v;
-            parse(a.substr(2), v);
+            auto b = a.begin() + 2;
+            auto e = std::find(b, a.end(), '=');
 
-            std::map<std::string, const option::Option*>::const_iterator j = opts.find(v[0]);
-            if (j != opts.end()) {
+            const std::string key(b, e);
+
+            if (auto j = opts.find(key); j != opts.end()) {
                 try {
-                    if (v.size() == 1) {
-                        (*j).second->set(*this);
-                    }
-                    else {
-                        std::vector<std::string>::const_iterator b = v.begin();
-                        ++b;
-                        std::vector<std::string>::const_iterator e = v.end();
-                        (*j).second->set(StringTools::join("=", b, e), *this);
-                    }
+                    const std::string value(e == a.end() ? "" : std::string{++e, a.end()});
+                    value.empty() ? j->second->set(*this) : j->second->set(value, *this);
                 }
                 catch (UserError&) {
-                    Log::info() << "Invalid value for option --" << v[0] << std::endl;
+                    Log::info() << "Invalid value for option --" << key << std::endl;
                     error = true;
                 }
             }
             else {
-                Log::info() << "Invalid option --" << v[0] << std::endl;
+                Log::info() << "Invalid option --" << key << std::endl;
                 error = true;
             }
         }

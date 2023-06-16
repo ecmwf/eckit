@@ -1,4 +1,4 @@
-foreach( TESTCASE RANGE 1 12 )
+foreach( TESTCASE RANGE 1 13 )
   ecbuild_add_test(
     TARGET      eckit_test_option_cmdargs_${TESTCASE}
     SOURCES     eckit_test_option_cmdargs.cc

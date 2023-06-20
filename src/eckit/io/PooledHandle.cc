@@ -31,7 +31,7 @@ static thread_local std::map<PathName, std::unique_ptr<PoolHandleEntry>> pool_;
 }
 
 static size_t maxPooledHandles() {
-    static int maxPooledHandles = eckit::Resource<int>("maxPooledHandles", 16);
+    static int maxPooledHandles = eckit::Resource<int>("$ECKIT_MAX_POOLED_HANDLES;maxPooledHandles", 128);
     return size_t(maxPooledHandles);
 }
 

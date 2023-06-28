@@ -255,6 +255,23 @@ CASE("Parsing uri (query & fragment)") {
         EXPECT(uri.asRawString() == "file:///path?foo=bar&length=123");
         EXPECT(uri.asString() == "///path");
     }
+    {
+        URI uri("file:///path?length=123&remapKey=expver%3D0001%2Cstream%3Doper");
+        EXPECT(uri.scheme() == "file");
+        EXPECT(uri.user().empty());
+        EXPECT(uri.host().empty());
+        EXPECT(uri.hostport().empty());
+        EXPECT(uri.port() == -1);
+        EXPECT(uri.name() == "///path");
+        EXPECT(uri.path() == "/path");
+        EXPECT(uri.query() == "length=123&remapKey=expver%3D0001%2Cstream%3Doper");
+        EXPECT(uri.query("remapKey") == "expver=0001,stream=oper");
+        EXPECT(uri.query("length") == "123");
+        EXPECT(uri.query("non existing").empty());
+        EXPECT(uri.fragment().empty());
+        EXPECT(uri.asRawString() == "file:///path?length=123&remapKey=expver%3D0001%2Cstream%3Doper");
+        EXPECT(uri.asString() == "///path");
+    }
 }
 
 CASE("Parsing uri (authority)") {

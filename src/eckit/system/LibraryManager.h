@@ -82,6 +82,10 @@ public:  // class methods
     ///        To be called from the Plugin destructor
     /// @param [in] name Name of the library plugin to deregister
     static void deregisterPlugin(const std::string& name);
+
+    /// @brief Adds plugin search paths
+    /// @param [in] ":" separated list of search paths
+    static void addPluginSearchPath(const std::string& path);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

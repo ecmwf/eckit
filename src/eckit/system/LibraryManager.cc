@@ -154,16 +154,30 @@ public:  // methods
         return *(j->second);
     }
 
-    void* loadDynamicLibrary(const std::string& libname) {
+    const std::vector<std::string>& pluginSearchPaths() {
+        return plugin_search_paths_;
+    }
 
-        static std::vector<std::string> libPaths(Resource<std::vector<std::string>>(
+    std::vector<std::string> dynamicLibraryPaths() {
+        std::vector<std::string> libPaths(Resource<std::vector<std::string>>(
             "dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib64", "~/lib", "~eckit/lib64", "~eckit/lib"}));
+
+        for( auto& p: pluginSearchPaths() ) {
+            libPaths.push_back(p+"/lib");
+            libPaths.push_back(p+"/lib64");
+        }
+        return libPaths;
+    }
+
+    void* loadDynamicLibrary(const std::string& libname) {
 
         // Get the (system specific) library name for the given library instance
         std::string dynamicLibraryName = SystemInfo::instance().dynamicLibraryName(libname);
 
+        static std::vector<std::string> paths = dynamicLibraryPaths();
+
         // Try the various paths in the way
-        for (const std::string& dir : libPaths) {
+        for (const std::string& dir : paths) {
 
             LocalPathName path = dir + "/" + dynamicLibraryName;
 
@@ -276,24 +290,33 @@ public:  // methods
         }
     }
 
-    std::map<std::string, LocalConfiguration> scanManifestPaths() {
-        std::map<std::string, LocalConfiguration> manifests;
+    std::vector<std::string> pluginManifestScanPaths() {
+        std::vector<std::string> scanPaths;
+        eckit::Tokenizer tokenize(":");
 
         static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "");
-
-        eckit::Tokenizer tokenize(":");
-        std::vector<std::string> scanPaths;
         tokenize(pluginManifestPath, scanPaths);
+
+        for( const auto& p: pluginSearchPaths()) {
+            scanPaths.push_back(p+"/share/plugins");
+        }
 
         // always scan ~eckit/share/plugins and ~/share/plugins as a last resort
         scanPaths.push_back("~eckit/share/plugins");
         scanPaths.push_back("~/share/plugins");
 
+        return scanPaths;
+    }
+
+    std::map<std::string, LocalConfiguration> scanManifestPaths() {
+        std::map<std::string, LocalConfiguration> manifests;
+        std::vector<std::string> scanPaths = pluginManifestScanPaths();
+
         Log::debug() << "Plugins manifest candidate paths " << scanPaths << std::endl;
 
         std::set<LocalPathName> visited;  //< we dont visit same path twice
 
-        for (auto& path : scanPaths) {
+        for (const auto& path : scanPaths) {
 
             LocalPathName dir(path);
             if (not dir.exists() or not dir.isDir()) {
@@ -390,7 +413,13 @@ public:  // methods
         is_plugin_initialized_.erase(name);
     }
 
+    void addPluginSearchPath(const std::string& path) {
+        Tokenizer tokenizer(":");
+        tokenizer(path, plugin_search_paths_);
+    }
+
 private:  // members
+    std::vector<std::string> plugin_search_paths_;
     LibraryMap libs_;
     std::map<std::string, std::string> plugins_;  //< map plugin name to library
     std::map<std::string, bool> is_plugin_initialized_;
@@ -449,6 +478,10 @@ void LibraryManager::enregisterPlugin(const std::string& name, const std::string
 
 void LibraryManager::deregisterPlugin(const std::string& name) {
     LibraryRegistry::instance().deregisterPlugin(name);
+}
+
+void LibraryManager::addPluginSearchPath(const std::string& path) {
+    LibraryRegistry::instance().addPluginSearchPath(path);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

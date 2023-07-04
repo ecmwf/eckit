@@ -53,8 +53,7 @@ public:
     // None
 
     // -- Overridden methods
-
-    Iterator* iterator() const override;
+    // None
 
     // -- Class members
     // None
@@ -89,10 +88,7 @@ protected:
     bool isPeriodicWestEast() const override;
 
     void print(std::ostream&) const override;
-    size_t numberOfPoints() const override;
-
-    Renumber crop(BoundingBox&) const override;
-    Renumber reorder(long scanningMode) const override;
+    size_t size() const override;
 
     // -- Class members
     // None

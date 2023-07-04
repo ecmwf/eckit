@@ -28,6 +28,7 @@ public:
 
     // -- Constructors
 
+    Rotation();
     Rotation(double south_pole_lon, double south_pole_lat, double angle);
     explicit Rotation(const Configuration&);
 

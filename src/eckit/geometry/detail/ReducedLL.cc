@@ -47,7 +47,7 @@ void ReducedLL::print(std::ostream& out) const {
     out << "ReducedLL[bbox=" << bbox() << "]";
 }
 
-size_t ReducedLL::numberOfPoints() const {
+size_t ReducedLL::size() const {
     size_t total = 0;
     for (const auto& j : pl_) {
         total += size_t(j);
@@ -166,20 +166,6 @@ public:
         inc_west_east_ = ew_ / (ni_ - (periodic_ ? 0 : 1));
     }
 };
-
-Iterator* ReducedLL::iterator() const {
-    return new ReducedLLIterator(pl_, domain());
-}
-
-
-Renumber ReducedLL::crop(BoundingBox&) const {
-    NOTIMP;
-}
-
-
-Renumber ReducedLL::reorder(long scanningMode) const {
-    NOTIMP;
-}
 
 
 static const GridBuilder<ReducedLL> reducedLL("reduced_ll");

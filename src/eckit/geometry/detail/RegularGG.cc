@@ -97,7 +97,7 @@ Fraction RegularGG::getSmallestIncrement() const {
 }
 
 
-size_t RegularGG::numberOfPoints() const {
+size_t RegularGG::size() const {
     ASSERT(Ni_);
     ASSERT(Nj_);
     return Ni_ * Nj_;
@@ -169,20 +169,12 @@ void RegularGG::print(std::ostream& out) const {
 }
 
 
+#if 0
 Iterator* RegularGG::iterator() const {
     std::vector<long> pl(N_ * 2, long(4 * N_));
     return new GaussianIterator(latitudes(), std::move(pl), bbox(), N_, Nj_, k_);
 }
-
-
-Renumber RegularGG::crop(BoundingBox&) const {
-    NOTIMP;
-}
-
-
-Renumber RegularGG::reorder(long /*scanningMode*/) const {
-    NOTIMP;
-}
+#endif
 
 
 static const GridBuilder<RegularGG> reducedGG("regular_gg");

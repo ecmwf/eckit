@@ -50,7 +50,7 @@ IrregularLatlon::IrregularLatlon(const Configuration& config) :
 }
 
 
-size_t IrregularLatlon::numberOfPoints() const {
+size_t IrregularLatlon::size() const {
     return latitudes_.size() * longitudes_.size();
 }
 
@@ -130,9 +130,9 @@ public:
 };
 
 
-Iterator* IrregularLatlon::iterator() const {
-    return new IrregularLatlonIterator(latitudes_, longitudes_);
-}
+// Iterator* IrregularLatlon::iterator() const {
+//     return new IrregularLatlonIterator(latitudes_, longitudes_);
+// }
 
 
 bool IrregularLatlon::isPeriodicWestEast() const {
@@ -147,16 +147,6 @@ bool IrregularLatlon::includesNorthPole() const {
 
 bool IrregularLatlon::includesSouthPole() const {
     return south_ - south_north_ <= SOUTH_POLE;
-}
-
-
-Renumber IrregularLatlon::crop(BoundingBox&) const {
-    NOTIMP;
-}
-
-
-Renumber IrregularLatlon::reorder(long scanningMode) const {
-    NOTIMP;
 }
 
 

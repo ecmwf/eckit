@@ -70,11 +70,7 @@ private:
     bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
-    size_t numberOfPoints() const override;
-    Iterator* iterator() const override;
-
-    Renumber crop(BoundingBox&) const override;
-    Renumber reorder(long scanningMode) const override;
+    size_t size() const override;
 
     // -- Class members
     // None

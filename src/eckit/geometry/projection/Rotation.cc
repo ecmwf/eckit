@@ -28,6 +28,10 @@ namespace eckit::geometry::projection {
 static ProjectionBuilder<Rotation> __projection("rotation");
 
 
+Rotation::Rotation() :
+    Rotation(-90., 0., 0.) {}
+
+
 Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     rotated_(true) {
     using M = maths::Matrix3<double>;

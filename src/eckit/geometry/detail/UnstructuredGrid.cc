@@ -180,34 +180,13 @@ UnstructuredGrid::~UnstructuredGrid() = default;
 
 
 void UnstructuredGrid::print(std::ostream& out) const {
-    out << "UnstructuredGrid[points=" << numberOfPoints() << "]";
+    out << "UnstructuredGrid[points=" << size() << "]";
 }
 
 
-Domain UnstructuredGrid::domain() const {
-    // FIXME Should be global?
-    return {bbox().north(), bbox().west(), bbox().south(), bbox().east()};
-}
-
-
-size_t UnstructuredGrid::numberOfPoints() const {
+size_t UnstructuredGrid::size() const {
     ASSERT(latitudes_.size() == longitudes_.size());
     return latitudes_.size();
-}
-
-
-Renumber UnstructuredGrid::crop(BoundingBox&) const {
-    NOTIMP;
-}
-
-
-Renumber UnstructuredGrid::reorder(long scanningMode) const {
-    NOTIMP;
-}
-
-
-Iterator* UnstructuredGrid::iterator() const {
-    return new detail::UnstructuredIterator(latitudes_, longitudes_);
 }
 
 

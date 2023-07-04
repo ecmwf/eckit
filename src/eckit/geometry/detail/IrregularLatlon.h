@@ -66,15 +66,11 @@ private:
 
     // -- Overridden methods
 
-    size_t numberOfPoints() const override;
-    Iterator* iterator() const override;
+    size_t size() const override;
     bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
     void print(std::ostream&) const override;
-
-    Renumber crop(BoundingBox&) const override;
-    Renumber reorder(long scanningMode) const override;
 
     // -- Class members
     // None

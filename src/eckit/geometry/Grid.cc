@@ -36,16 +36,6 @@ Grid::Grid(const BoundingBox& bbox) :
     bbox_(bbox) {}
 
 
-Domain Grid::domain() const {
-    auto n = includesNorthPole() ? NORTH_POLE : bbox_.north();
-    auto s = includesSouthPole() ? SOUTH_POLE : bbox_.south();
-    auto w = bbox_.west();
-    auto e = isPeriodicWestEast() ? bbox_.west() + GLOBE : bbox_.east();
-
-    return {n, w, s, e};
-}
-
-
 const BoundingBox& Grid::boundingBox() const {
     return bbox_;
 }
@@ -89,13 +79,37 @@ const Grid* GridFactory::build(const Configuration& config) {
         throw SeriousBug("GridFactory: cannot get 'gridType'");
     }
 
-    auto j = m->find(name);
-    if (j == m->end()) {
-        list(Log::error() << "GridFactory: unknown '" << name << "', choices are: ");
-        throw SeriousBug("GridFactory: unknown '" + name + "'");
+    if (auto j = m->find(name); j != m->end()) {
+        return j->second->make(config);
     }
 
-    return j->second->make(config);
+    list(Log::error() << "GridFactory: unknown '" << name << "', choices are: ");
+    throw SeriousBug("GridFactory: unknown '" + name + "'");
+}
+
+
+const Grid* GridFactory::build_from_uid(const Grid::UID& uid) {
+    NOTIMP;
+}
+
+
+const Grid* GridFactory::build_from_name(const Grid::Name&, const Grid::Area& area, const Grid::Rotation& rotation) {
+    NOTIMP;
+}
+
+
+const Grid* GridFactory::build_from_name(const Grid::Name&, const Grid::Rotation& rotation) {
+    NOTIMP;
+}
+
+
+const Grid* GridFactory::build_from_increments(const Increments&, const Grid::Area& area, const Grid::Rotation& rotation) {
+    NOTIMP;
+}
+
+
+const Grid* GridFactory::build_from_increments(const Increments&, const Grid::Rotation& rotation) {
+    NOTIMP;
 }
 
 

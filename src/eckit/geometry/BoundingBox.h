@@ -34,7 +34,7 @@ public:
 
     // -- Constructors
 
-    BoundingBox(const Configuration&);
+    explicit BoundingBox(const Configuration&);
 
     BoundingBox(double north, double west, double south, double east);
     BoundingBox();

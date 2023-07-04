@@ -141,11 +141,6 @@ void ReducedGG::correctWestEast(double& w, double& e) const {
 }
 
 
-Iterator* ReducedGG::iterator() const {
-    NOTIMP;
-}
-
-
 const pl_type& ReducedGG::pls() const {
     ASSERT(pl_.size() == N_ * 2);
     ASSERT(pl_.size() >= k_ + Nj_);
@@ -188,7 +183,7 @@ void ReducedGG::setNj(pl_type pl, double s, double n) {
 }
 
 
-size_t ReducedGG::numberOfPoints() const {
+size_t ReducedGG::size() const {
     const auto& pl = pls();
     return size_t(std::accumulate(pl.begin(), pl.end(), pl_type::value_type{0}));
 }
@@ -214,16 +209,6 @@ bool ReducedGG::isPeriodicWestEast() const {
 
 void ReducedGG::print(std::ostream& out) const {
     out << "ReducedGG[N=" << N_ << ",bbox=" << bbox() << "]";
-}
-
-
-Renumber ReducedGG::crop(BoundingBox&) const {
-    NOTIMP;
-}
-
-
-Renumber ReducedGG::reorder(long scanningMode) const {
-    NOTIMP;
 }
 
 

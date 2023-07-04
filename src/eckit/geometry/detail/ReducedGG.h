@@ -83,7 +83,6 @@ protected:
 
     // -- Overridden methods
 
-    Iterator* iterator() const override;
     bool isPeriodicWestEast() const override;
     void print(std::ostream& out) const override;
 
@@ -102,10 +101,8 @@ private:
 
     // -- Overridden methods
 
-    size_t numberOfPoints() const override;
+    size_t size() const override;
     Fraction getSmallestIncrement() const;
-    Renumber crop(BoundingBox&) const override;
-    Renumber reorder(long scanningMode) const override;
 
     // -- Class members
     // None

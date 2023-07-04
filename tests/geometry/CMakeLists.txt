@@ -1,6 +1,7 @@
 foreach( _test
         coordinate_helpers
         great_circle
+        grid
         iterator
         kdtree
         kpoint

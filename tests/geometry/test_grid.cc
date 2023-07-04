@@ -10,23 +10,49 @@
  */
 
 
-#include <iostream>
+#include <memory>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/Scanner.h"
-// #include "eckit/geometry/iterator/IteratorAggregator.h"
-// #include "eckit/geometry/iterator/IteratorComposer.h"
+#include "eckit/config/MappedConfiguration.h"
+#include "eckit/geometry/Grid.h"
+#include "eckit/testing/Test.h"
 
 
-int main(int argc, const char* argv[]) {
-    // eckit::geometry::iterator::IteratorComposer i(nullptr);
+namespace eckit::test {
 
-    // struct ScannerTest : public eckit::grid::Scanner {
-    //     bool operator++() override { NOTIMP; }
-    //     size_t size() const override { NOTIMP; }
-    // };
 
-    // eckit::grid::iterator::IteratorAggregator<ScannerTest> j;
+using namespace geometry;
 
-    return 0;
+
+CASE("GridFactory::build") {
+    SECTION("GridFactory::build_from_name") {
+        std::unique_ptr<const Grid> grid(GridFactory::build_from_name("O2"));
+
+        auto size = grid->size();
+        EXPECT_EQUAL(size, 88);
+    }
+
+
+    SECTION("GridFactory::build_from_uid") {
+    }
+
+
+    SECTION("GridFactory::build_from_increments") {
+    }
+
+
+    SECTION("GridFactory::build") {
+        std::unique_ptr<const Grid> grid(GridFactory::build(MappedConfiguration{
+            {{"grid", "O2"}}}));
+
+        auto size = grid->size();
+        EXPECT_EQUAL(size, 88);
+    }
+}
+
+
+}  // namespace eckit::test
+
+
+int main(int argc, char** argv) {
+    return eckit::testing::run_tests(argc, argv);
 }

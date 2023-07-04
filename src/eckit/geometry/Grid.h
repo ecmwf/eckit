@@ -19,14 +19,10 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/geometry/BoundingBox.h"
+#include "eckit/geometry/Increments.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Renumber.h"
-
-
-namespace eckit::geometry {
-class Domain;
-class Iterator;
-}  // namespace eckit::geometry
+#include "eckit/geometry/projection/Rotation.h"
 
 
 namespace eckit::geometry {
@@ -34,13 +30,22 @@ namespace eckit::geometry {
 
 class Grid {
 public:
+    // -- Types
+
+    using UID      = std::string;
+    using Name     = std::string;
+    using Rotation = projection::Rotation;
+    using Area     = BoundingBox;
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Grid(const Configuration&);
-    Grid(const BoundingBox&);
+    explicit Grid(const Configuration&);
+
+    Grid(const Grid&) = default;
+    Grid(Grid&&)      = default;
 
     // -- Destructor
 
@@ -52,21 +57,20 @@ public:
     // -- Operators
     // None
 
+    Grid& operator=(const Grid&) = default;
+    Grid& operator=(Grid&&)      = default;
+
     // -- Methods
 
-    virtual Domain domain() const;
     virtual const BoundingBox& boundingBox() const;
 
-    virtual Iterator* iterator() const      = 0;
-    virtual size_t numberOfPoints() const   = 0;
+    virtual size_t size() const = 0;
+
     virtual void print(std::ostream&) const = 0;
 
     virtual bool includesNorthPole() const  = 0;
     virtual bool includesSouthPole() const  = 0;
     virtual bool isPeriodicWestEast() const = 0;
-
-    virtual Renumber crop(BoundingBox&) const         = 0;
-    virtual Renumber reorder(long scanningMode) const = 0;
 
     // -- Overridden methods
     // None
@@ -78,7 +82,10 @@ public:
     // None
 
 protected:
-    // -- Members
+    // -- Constructors
+
+    Grid(const BoundingBox&);
+
     // None
 
     // -- Methods
@@ -125,17 +132,31 @@ class GridFactory {
     std::string name_;
     virtual Grid* make(const Configuration&) = 0;
 
-    GridFactory(const GridFactory&)            = delete;
-    GridFactory& operator=(const GridFactory&) = delete;
-
 protected:
-    GridFactory(const std::string&);
+    explicit GridFactory(const std::string&);
     virtual ~GridFactory();
 
 public:
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
+
+    // This is 'const' as Grid should always be immutable
+    static const Grid* build_from_uid(const Grid::UID&);
+
+    // This is 'const' as Grid should always be immutable
+    static const Grid* build_from_name(const Grid::Name&, const Grid::Area& = {}, const Grid::Rotation& = {});
+    static const Grid* build_from_name(const Grid::Name&, const Grid::Rotation&);
+
+    // This is 'const' as Grid should always be immutable
+    static const Grid* build_from_increments(const Increments&, const Grid::Area& = {}, const Grid::Rotation& = {});
+    static const Grid* build_from_increments(const Increments&, const Grid::Rotation&);
+
     static void list(std::ostream&);
+
+    GridFactory(const GridFactory&)            = delete;
+    GridFactory(GridFactory&&)                 = delete;
+    GridFactory& operator=(const GridFactory&) = delete;
+    GridFactory& operator=(GridFactory&&)      = delete;
 };
 
 

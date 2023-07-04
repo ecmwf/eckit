@@ -111,7 +111,7 @@ void RegularGrid::print(std::ostream& out) const {
 }
 
 
-size_t RegularGrid::numberOfPoints() const {
+size_t RegularGrid::size() const {
     return x_.size() * y_.size();
 }
 
@@ -131,16 +131,7 @@ bool RegularGrid::includesSouthPole() const {
 }
 
 
-Renumber RegularGrid::crop(BoundingBox& bbox) const {
-    NOTIMP;
-}
-
-
-Renumber RegularGrid::reorder(long /*scanningMode*/) const {
-    NOTIMP;
-}
-
-
+#if 0
 Iterator* RegularGrid::iterator() const {
     class RegularGridIterator : public Iterator {
         const Projection& projection_;
@@ -197,6 +188,7 @@ Iterator* RegularGrid::iterator() const {
 
     return new RegularGridIterator(*projection_, x_, y_);
 }
+#endif
 
 
 struct Lambert : RegularGrid {

@@ -137,17 +137,6 @@ RegularLL::RegularLL(const Increments& increments, const BoundingBox& bb, const 
 }
 
 
-Renumber RegularLL::crop(BoundingBox&) const {
-    NOTIMP;
-}
-
-
-Renumber RegularLL::reorder(long scanningMode) const {
-    NOTIMP;
-    //     grib_reorder(values, scanningMode, ni_, nj_);
-}
-
-
 void RegularLL::print(std::ostream& out) const {
     out << "RegularLL["
         << "bbox=" << bbox() << ",increments=" << increments_ << ",ni=" << ni_ << ",nj=" << nj_ << "]";
@@ -172,7 +161,7 @@ bool RegularLL::includesSouthPole() const {
 }
 
 
-size_t RegularLL::numberOfPoints() const {
+size_t RegularLL::size() const {
     ASSERT(ni_);
     ASSERT(nj_);
     return ni_ * nj_;
@@ -211,6 +200,7 @@ BoundingBox RegularLL::correctBoundingBox(const BoundingBox& box, size_t& ni, si
 }
 
 
+#if 0
 Iterator* RegularLL::iterator() const {
 
     class RegularLLIterator : public Iterator {
@@ -298,6 +288,7 @@ Iterator* RegularLL::iterator() const {
 
     return new RegularLLIterator(ni_, nj_, bbox().north(), bbox().west(), increments_);
 }
+#endif
 
 
 static const GridBuilder<RegularLL> regularLL("regular_ll");

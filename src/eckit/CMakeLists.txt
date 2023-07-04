@@ -971,7 +971,6 @@ endif()
 
 add_subdirectory( distributed )
 add_subdirectory( geometry )
-add_subdirectory( grid )
 add_subdirectory( linalg )
 add_subdirectory( maths )
 add_subdirectory( mpi )

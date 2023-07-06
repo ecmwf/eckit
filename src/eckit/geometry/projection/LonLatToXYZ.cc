@@ -29,7 +29,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
     ASSERT(0. < b);
 
     struct LonLatToSphereXYZ final : Implementation {
-        using S = geometry::Sphere;
+        using S = Sphere;
         const double R_;
 
         explicit LonLatToSphereXYZ(double R) :
@@ -43,7 +43,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
     };
 
     struct LonLatToSpheroidXYZ final : Implementation {
-        using S = geometry::EllipsoidOfRevolution;
+        using S = EllipsoidOfRevolution;
         const double a_;
         const double b_;
 

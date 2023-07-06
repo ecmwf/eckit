@@ -23,12 +23,6 @@
 namespace eckit::geometry {
 
 
-using geometry::Point2;
-using geometry::Point3;
-using geometry::PointLonLat;
-using geometry::points_equal;
-
-
 using Point = std::variant<PointLonLat, Point2, Point3>;
 bool points_equal(const Point&, const Point&);
 

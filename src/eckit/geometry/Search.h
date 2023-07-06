@@ -32,14 +32,14 @@ struct Traits {
 }  // namespace search
 
 
-using Search3 = KDTreeMemory<search::Traits<geometry::Point3, size_t>>;
+using Search3 = KDTreeMemory<search::Traits<Point3, size_t>>;
 
 
-using Search2 = KDTreeMemory<search::Traits<geometry::Point2, size_t>>;
+using Search2 = KDTreeMemory<search::Traits<Point2, size_t>>;
 
 
 struct SearchLonLat : Search3 {
-    using Point = geometry::PointLonLat;
+    using Point = PointLonLat;
     using Value = SPValue<TT<search::Traits<Point, Payload>, KDMemory>>;
 
     using Search3::Search3;
@@ -72,7 +72,7 @@ struct SearchLonLat : Search3 {
 
 private:
     static Search3::Point convert(const Point& p) {
-        return geometry::UnitSphere::convertSphericalToCartesian(p);
+        return UnitSphere::convertSphericalToCartesian(p);
     }
 };
 

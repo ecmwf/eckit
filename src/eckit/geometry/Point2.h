@@ -26,7 +26,7 @@ namespace eckit::geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-class Point2 : public eckit::geometry::KPoint<2> {
+class Point2 : public KPoint<2> {
     using BasePoint = KPoint<2>;
 
 public:
@@ -57,7 +57,7 @@ public:
 
     double& Y = x_[YY];
 
-    double x(size_t axis) const { return eckit::geometry::KPoint<2>::x(axis); }
+    double x(size_t axis) const { return KPoint<2>::x(axis); }
 
     Point2& operator=(const Point2& other) {
         x_[0] = other[0];

@@ -51,8 +51,7 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
         explicit RotationMatrix(M&& R) :
             R_(R) {}
         PointLonLat operator()(const PointLonLat& p) const override {
-            return geometry::UnitSphere::convertCartesianToSpherical(
-                R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
+            return UnitSphere::convertCartesianToSpherical(R_ * UnitSphere::convertSphericalToCartesian(p));
         }
         const M R_;
     };

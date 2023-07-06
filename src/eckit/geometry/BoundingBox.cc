@@ -142,7 +142,7 @@ double BoundingBox::area(double radius) const {
     double latf = 0.5 * (sn - ss);
     ASSERT(0. <= latf && latf <= 1.);
 
-    return geometry::Sphere::area(radius) * latf * lonf;
+    return Sphere::area(radius) * latf * lonf;
 }
 
 

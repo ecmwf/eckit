@@ -213,7 +213,7 @@ void ReducedGG::print(std::ostream& out) const {
 
 
 struct ReducedGGClassic : ReducedGG {
-    ReducedGGClassic(size_t N, const BoundingBox& box = BoundingBox()) :
+    ReducedGGClassic(size_t N, const area::BoundingBox& box = {}) :
         ReducedGG(N, box) {
 
         // adjust latitudes, longitudes and re-set bounding box
@@ -235,13 +235,13 @@ struct ReducedGGClassic : ReducedGG {
 struct ReducedGGFromPL : ReducedGG {
     ReducedGGFromPL(const Configuration& config) :
         ReducedGG(config) {}
-    ReducedGGFromPL(size_t N, const pl_type& pl, const BoundingBox& box = BoundingBox()) :
+    ReducedGGFromPL(size_t N, const pl_type& pl, const area::BoundingBox& box = {}) :
         ReducedGG(N, pl, box) {}
 };
 
 
 struct ReducedGGOctahedral : ReducedGG {
-    ReducedGGOctahedral(size_t N, const BoundingBox& box = BoundingBox()) :
+    ReducedGGOctahedral(size_t N, const area::BoundingBox& box = {}) :
         ReducedGG(N, box) {
 
         // adjust latitudes, longitudes and re-set bounding box

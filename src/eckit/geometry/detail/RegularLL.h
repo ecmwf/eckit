@@ -28,7 +28,7 @@ public:
     // -- Constructors
 
     RegularLL(const Configuration&);
-    RegularLL(const Increments&, const BoundingBox& = {}, const PointLonLat& reference = {0, 0});
+    RegularLL(const Increments&, const area::BoundingBox& = {}, const PointLonLat& reference = {0, 0});
 
     // -- Destructor
     // None
@@ -41,8 +41,8 @@ public:
 
     // -- Methods
 
-    static BoundingBox correctBoundingBox(const BoundingBox&, size_t& ni, size_t& nj, const Increments&,
-                                          const PointLonLat& reference = {0, 0});
+    static area::BoundingBox correctBoundingBox(const area::BoundingBox&, size_t& ni, size_t& nj, const Increments&,
+                                                const PointLonLat& reference = {0, 0});
 
     // -- Overridden methods
     // None

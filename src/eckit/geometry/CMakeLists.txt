@@ -1,6 +1,6 @@
 list( APPEND eckit_geometry_srcs
-    BoundingBox.cc
-    BoundingBox.h
+    Area.cc
+    Area.h
     CoordinateHelpers.cc
     CoordinateHelpers.h
     Domain.cc
@@ -40,6 +40,8 @@ list( APPEND eckit_geometry_srcs
     Sphere.h
     SphereT.h
     UnitSphere.h
+    area/BoundingBox.cc
+    area/BoundingBox.h
     detail/Gaussian.cc
     detail/Gaussian.h
     detail/GaussianIterator.cc

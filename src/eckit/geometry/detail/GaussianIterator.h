@@ -16,9 +16,9 @@
 
 #include "eckit/types/Fraction.h"
 
-#include "eckit/geometry/BoundingBox.h"
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
+#include "eckit/geometry/area/BoundingBox.h"
 
 
 namespace eckit::geometry::detail {
@@ -26,14 +26,14 @@ namespace eckit::geometry::detail {
 
 class GaussianIterator : public Iterator {
 public:
-    GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl, const BoundingBox&, size_t N,
+    GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl, const area::BoundingBox&, size_t N,
                      size_t Nj, size_t k);
     ~GaussianIterator() override;
 
 private:
     const std::vector<double>& latitudes_;
     const std::vector<long> pl_;
-    const BoundingBox& bbox_;
+    const area::BoundingBox& bbox_;
     const size_t N_;
     size_t Ni_;
     size_t Nj_;

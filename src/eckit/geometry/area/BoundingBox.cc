@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/BoundingBox.h"
+#include "eckit/geometry/area/BoundingBox.h"
 
 #include <algorithm>
 #include <cmath>
@@ -23,7 +23,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geometry {
+namespace eckit::geometry::area {
 
 
 BoundingBox::BoundingBox(const Configuration& config) :
@@ -151,4 +151,4 @@ BoundingBox BoundingBox::make(const BoundingBox&, const Projection&) {
 }
 
 
-}  // namespace eckit::geometry
+}  // namespace eckit::geometry::area

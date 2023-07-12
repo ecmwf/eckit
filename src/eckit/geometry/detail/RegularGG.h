@@ -31,7 +31,7 @@ public:
     // -- Constructors
 
     RegularGG(const Configuration&);
-    RegularGG(size_t N, const BoundingBox& = BoundingBox());
+    RegularGG(size_t N, const area::BoundingBox& = {});
 
     // -- Destructor
     // None

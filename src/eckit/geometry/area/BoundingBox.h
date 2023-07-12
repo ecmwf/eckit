@@ -24,7 +24,7 @@ class Projection;
 }  // namespace eckit
 
 
-namespace eckit::geometry {
+namespace eckit::geometry::area {
 
 
 class BoundingBox {
@@ -132,4 +132,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry
+}  // namespace eckit::geometry::area

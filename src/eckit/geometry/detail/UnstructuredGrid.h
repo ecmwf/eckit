@@ -35,7 +35,7 @@ public:
     explicit UnstructuredGrid(const PathName&);
     explicit UnstructuredGrid(const Configuration&);
     UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes,
-                     const BoundingBox& = BoundingBox());
+                     const area::BoundingBox& = {});
 
     UnstructuredGrid(const UnstructuredGrid&) = delete;
     UnstructuredGrid(UnstructuredGrid&&)      = delete;

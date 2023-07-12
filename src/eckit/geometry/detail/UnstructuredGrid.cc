@@ -170,7 +170,7 @@ UnstructuredGrid::UnstructuredGrid(const PathName& path) {
 
 
 UnstructuredGrid::UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes,
-                                   const BoundingBox& bbox) :
+                                   const area::BoundingBox& bbox) :
     Grid(bbox), latitudes_(latitudes), longitudes_(longitudes) {
     ASSERT(latitudes_.size() == longitudes_.size());
 }

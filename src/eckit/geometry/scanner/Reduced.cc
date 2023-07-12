@@ -22,7 +22,7 @@ namespace eckit::geometry::scanner {
 
 Reduced::Reduced(const std::vector<double>& latitudes,
                  pl_type&& pl,
-                 const BoundingBox& bbox,
+                 const area::BoundingBox& bbox,
                  size_t N,
                  size_t Nj,
                  size_t k) :

@@ -129,7 +129,7 @@ RegularLL::RegularLL(const Configuration& config) :
 }
 
 
-RegularLL::RegularLL(const Increments& increments, const BoundingBox& bb, const PointLonLat& reference) :
+RegularLL::RegularLL(const Increments& increments, const area::BoundingBox& bb, const PointLonLat& reference) :
     Grid(bb), increments_(increments), reference_(reference), ni_(0), nj_(0) {
     bbox(correctBoundingBox(bbox(), ni_, nj_, increments_, reference_));
     ASSERT(ni_ != 0);
@@ -168,8 +168,8 @@ size_t RegularLL::size() const {
 }
 
 
-BoundingBox RegularLL::correctBoundingBox(const BoundingBox& box, size_t& ni, size_t& nj, const Increments& inc,
-                                          const PointLonLat& reference) {
+area::BoundingBox RegularLL::correctBoundingBox(const area::BoundingBox& box, size_t& ni, size_t& nj, const Increments& inc,
+                                                const PointLonLat& reference) {
     // Latitude/longitude ranges
     detail::RegularIterator lat{Fraction{box.south()},
                                 Fraction{box.north()},

@@ -17,9 +17,6 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/Domain.h"
-#include "eckit/geometry/Iterator.h"
-#include "eckit/geometry/detail/UnstructuredGrid.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -32,11 +29,11 @@ Grid::Grid(const Configuration& config) :
     bbox_(config) {}
 
 
-Grid::Grid(const BoundingBox& bbox) :
+Grid::Grid(const area::BoundingBox& bbox) :
     bbox_(bbox) {}
 
 
-const BoundingBox& Grid::boundingBox() const {
+const area::BoundingBox& Grid::boundingBox() const {
     return bbox_;
 }
 
@@ -79,19 +76,19 @@ const Grid* GridFactory::build(const Configuration& config) {
     }
 
     if (Grid::Name name; config.get("name", name)) {
-        return config.has("area") ? config.has("rotation") ? build_from_name(name, new Grid::Area(config), ProjectionFactory::build(config)) : build_from_name(name, new Grid::Area(config)) : config.has("rotation") ? build_from_name(name, ProjectionFactory::build(config))
-                                                                                                                                                                                                                      : build_from_name(name);
+        return config.has("area") ? config.has("rotation") ? build_from_name(name, AreaFactory::build(config), ProjectionFactory::build(config)) : build_from_name(name, AreaFactory::build(config)) : config.has("rotation") ? build_from_name(name, ProjectionFactory::build(config))
+                                                                                                                                                                                                                              : build_from_name(name);
     }
 
     if (Grid::Type type; config.get("type", type)) {
-        return config.has("area") ? config.has("rotation") ? build_from_type(type, new Grid::Area(config), ProjectionFactory::build(config)) : build_from_type(type, new Grid::Area(config)) : config.has("rotation") ? build_from_type(type, ProjectionFactory::build(config))
-                                                                                                                                                                                                                      : build_from_type(type);
+        return config.has("area") ? config.has("rotation") ? build_from_type(type, AreaFactory::build(config), ProjectionFactory::build(config)) : build_from_type(type, AreaFactory::build(config)) : config.has("rotation") ? build_from_type(type, ProjectionFactory::build(config))
+                                                                                                                                                                                                                              : build_from_type(type);
     }
 
     if (config.has("increments")) {
         Grid::Increments increments(config);
-        return config.has("area") ? config.has("rotation") ? build_from_increments(increments, new Grid::Area(config), ProjectionFactory::build(config)) : build_from_increments(increments, new Grid::Area(config)) : config.has("rotation") ? build_from_increments(increments, ProjectionFactory::build(config))
-                                                                                                                                                                                                                                              : build_from_increments(increments);
+        return config.has("area") ? config.has("rotation") ? build_from_increments(increments, AreaFactory::build(config), ProjectionFactory::build(config)) : build_from_increments(increments, AreaFactory::build(config)) : config.has("rotation") ? build_from_increments(increments, ProjectionFactory::build(config))
+                                                                                                                                                                                                                                                      : build_from_increments(increments);
     }
 
     list(Log::error() << "GridFactory: cannot build grid, choices are: ");

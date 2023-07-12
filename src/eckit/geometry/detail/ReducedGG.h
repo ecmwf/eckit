@@ -33,7 +33,7 @@ public:
 
     ReducedGG(const Configuration&);
 
-    ReducedGG(size_t N, const pl_type& pl, const BoundingBox& box = BoundingBox()) :
+    ReducedGG(size_t N, const pl_type& pl, const area::BoundingBox& box = {}) :
         Gaussian(N, box), k_(0), Nj_(N_ * 2) {
         setNj(pl, box.south(), box.north());
     }
@@ -64,7 +64,7 @@ public:
 protected:
     // -- Constructors
 
-    ReducedGG(size_t N, const BoundingBox& box = BoundingBox()) :
+    ReducedGG(size_t N, const area::BoundingBox& box = {}) :
         Gaussian(N, box), k_(0), Nj_(N * 2) {
         // derived classes must set k_, Nj_ using this constructor
     }

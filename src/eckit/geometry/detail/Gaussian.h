@@ -25,7 +25,7 @@ public:
 
     // -- Constructors
 
-    Gaussian(size_t N, const BoundingBox& = {});
+    Gaussian(size_t N, const area::BoundingBox& = {});
     Gaussian(const Configuration&);
 
     // -- Destructor

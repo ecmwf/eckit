@@ -78,11 +78,11 @@ RegularGrid::RegularGrid(Projection* projection, const Configuration& config) :
     auto w = x_.front() > x_.back() ? x_.back() : x_.front();
     auto e = x_.front() > x_.back() ? x_.front() : x_.back();
 
-    bbox(BoundingBox::make({n, w, s, e}, *projection_));
+    bbox(area::BoundingBox::make({n, w, s, e}, *projection_));
 }
 
 
-RegularGrid::RegularGrid(Projection* projection, const BoundingBox& bbox, const LinearSpacing& x,
+RegularGrid::RegularGrid(Projection* projection, const area::BoundingBox& bbox, const LinearSpacing& x,
                          const LinearSpacing& y, const Figure& figure) :
     Grid(bbox),
     x_(x),
@@ -220,7 +220,7 @@ struct LambertAzimuthalEqualArea : RegularGrid {
     LambertAzimuthalEqualArea(const Configuration& config) :
         RegularGrid(make_projection(config), config) {}
 
-    LambertAzimuthalEqualArea(Projection* projection, const BoundingBox& bbox, const LinearSpacing& x, const LinearSpacing& y, const Figure& shape) :
+    LambertAzimuthalEqualArea(Projection* projection, const area::BoundingBox& bbox, const LinearSpacing& x, const LinearSpacing& y, const Figure& shape) :
         RegularGrid(projection, bbox, x, y, shape) {}
 
     static Projection* make_projection(const Configuration& config) {

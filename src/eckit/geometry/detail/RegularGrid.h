@@ -65,7 +65,7 @@ protected:
     // -- Constructors
 
     RegularGrid(Projection*, const Configuration&);
-    RegularGrid(Projection*, const BoundingBox&, const LinearSpacing& x, const LinearSpacing& y,
+    RegularGrid(Projection*, const area::BoundingBox&, const LinearSpacing& x, const LinearSpacing& y,
                 const Figure&);
 
     // -- Members

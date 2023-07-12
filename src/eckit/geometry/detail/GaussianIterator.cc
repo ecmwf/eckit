@@ -21,7 +21,7 @@ namespace eckit::geometry::detail {
 
 
 GaussianIterator::GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl,
-                                   const BoundingBox& bbox, size_t N, size_t Nj, size_t k) :
+                                   const area::BoundingBox& bbox, size_t N, size_t Nj, size_t k) :
     latitudes_(latitudes),
     pl_(pl),
     bbox_(bbox),

@@ -25,7 +25,7 @@
 namespace eckit::geometry::detail {
 
 
-Gaussian::Gaussian(size_t N, const BoundingBox& bbox) :
+Gaussian::Gaussian(size_t N, const area::BoundingBox& bbox) :
     Grid(bbox), N_(N), angularPrecision_(0) {
     ASSERT(N_ > 0);
 }

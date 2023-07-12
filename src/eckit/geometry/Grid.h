@@ -18,11 +18,12 @@
 #include <vector>
 
 #include "eckit/config/Configuration.h"
-#include "eckit/geometry/BoundingBox.h"
+#include "eckit/geometry/Area.h"
 #include "eckit/geometry/Increments.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/Renumber.h"
+#include "eckit/geometry/area/BoundingBox.h"
 
 
 namespace eckit::geometry {
@@ -37,7 +38,7 @@ public:
     using Type       = std::string;
     using Increments = Increments;
     using Projection = Projection;
-    using Area       = BoundingBox;
+    using Area       = Area;
 
     // -- Exceptions
     // None
@@ -64,7 +65,7 @@ public:
 
     // -- Methods
 
-    virtual const BoundingBox& boundingBox() const;
+    virtual const area::BoundingBox& boundingBox() const;
 
     virtual size_t size() const = 0;
 
@@ -86,14 +87,14 @@ public:
 protected:
     // -- Constructors
 
-    Grid(const BoundingBox&);
+    Grid(const area::BoundingBox&);
 
     // None
 
     // -- Methods
 
-    const BoundingBox& bbox() const { return bbox_; }
-    void bbox(const BoundingBox& bbox) { bbox_ = bbox; }
+    area::BoundingBox bbox() const { return bbox_; }
+    void bbox(const area::BoundingBox& bbox) { bbox_ = bbox; }
 
     // -- Overridden methods
     // None
@@ -107,7 +108,7 @@ protected:
 private:
     // -- Members
 
-    BoundingBox bbox_;
+    area::BoundingBox bbox_;
 
     // -- Methods
     // None

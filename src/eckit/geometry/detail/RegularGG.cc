@@ -42,7 +42,7 @@ RegularGG::RegularGG(const Configuration& config) :
 }
 
 
-RegularGG::RegularGG(size_t N, const BoundingBox& box) :
+RegularGG::RegularGG(size_t N, const area::BoundingBox& box) :
     Gaussian(N, box), k_(0), Ni_(0), Nj_(0) {
 
     // adjust latitudes, longitudes and re-set bounding box

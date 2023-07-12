@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include "eckit/geometry/BoundingBox.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Scanner.h"
+#include "eckit/geometry/area/BoundingBox.h"
 #include "eckit/geometry/util.h"
 #include "eckit/types/Fraction.h"
 
@@ -31,7 +31,7 @@ public:
 
     Reduced(const std::vector<double>& latitudes,
             pl_type&& pl,
-            const BoundingBox&,
+            const area::BoundingBox&,
             size_t N,
             size_t Nj,
             size_t k);
@@ -62,7 +62,7 @@ private:
 
     const std::vector<double>& latitudes_;
     const pl_type pl_;
-    const BoundingBox& bbox_;
+    const area::BoundingBox& bbox_;
     const size_t N_;
     size_t Ni_;
     size_t Nj_;

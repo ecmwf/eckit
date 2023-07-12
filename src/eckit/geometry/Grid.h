@@ -32,10 +32,12 @@ class Grid {
 public:
     // -- Types
 
-    using UID      = std::string;
-    using Name     = std::string;
-    using Rotation = projection::Rotation;
-    using Area     = BoundingBox;
+    using UID        = std::string;
+    using Name       = std::string;
+    using Type       = std::string;
+    using Increments = geometry::Increments;
+    using Rotation   = projection::Rotation;
+    using Area       = BoundingBox;
 
     // -- Exceptions
     // None
@@ -139,15 +141,11 @@ protected:
 public:
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
-
-    // This is 'const' as Grid should always be immutable
     static const Grid* build_from_uid(const Grid::UID&);
-
-    // This is 'const' as Grid should always be immutable
     static const Grid* build_from_name(const Grid::Name&, const Grid::Area& = {}, const Grid::Rotation& = {});
     static const Grid* build_from_name(const Grid::Name&, const Grid::Rotation&);
-
-    // This is 'const' as Grid should always be immutable
+    static const Grid* build_from_type(const Grid::Type&, const Grid::Area& = {}, const Grid::Rotation& = {});
+    static const Grid* build_from_type(const Grid::Type&, const Grid::Rotation&);
     static const Grid* build_from_increments(const Increments&, const Grid::Area& = {}, const Grid::Rotation& = {});
     static const Grid* build_from_increments(const Increments&, const Grid::Rotation&);
 

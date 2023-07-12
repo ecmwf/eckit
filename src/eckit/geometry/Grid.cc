@@ -74,17 +74,28 @@ const Grid* GridFactory::build(const Configuration& config) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    std::string name;
-    if (!config.get("gridType", name)) {
-        throw SeriousBug("GridFactory: cannot get 'gridType'");
+    if (Grid::UID uid; config.get("uid", uid)) {
+        return build_from_uid(uid);
     }
 
-    if (auto j = m->find(name); j != m->end()) {
-        return j->second->make(config);
+    if (Grid::Name name; config.get("name", name)) {
+        return config.has("area") ? config.has("rotation") ? build_from_name(name, Grid::Area(config), Grid::Rotation(config)) : build_from_name(name, Grid::Area(config)) : config.has("rotation") ? build_from_name(name, Grid::Rotation(config))
+                                                                                                                                                                                                    : build_from_name(name);
     }
 
-    list(Log::error() << "GridFactory: unknown '" << name << "', choices are: ");
-    throw SeriousBug("GridFactory: unknown '" + name + "'");
+    if (Grid::Type type; config.get("type", type)) {
+        return config.has("area") ? config.has("rotation") ? build_from_type(type, Grid::Area(config), Grid::Rotation(config)) : build_from_type(type, Grid::Area(config)) : config.has("rotation") ? build_from_type(type, Grid::Rotation(config))
+                                                                                                                                                                                                    : build_from_type(type);
+    }
+
+    if (config.has("increments")) {
+        Grid::Increments increments(config);
+        return config.has("area") ? config.has("rotation") ? build_from_increments(increments, Grid::Area(config), Grid::Rotation(config)) : build_from_increments(increments, Grid::Area(config)) : config.has("rotation") ? build_from_increments(increments, Grid::Rotation(config))
+                                                                                                                                                                                                                            : build_from_increments(increments);
+    }
+
+    list(Log::error() << "GridFactory: cannot build grid, choices are: ");
+    throw SeriousBug("GridFactory: cannot build grid");
 }
 
 
@@ -99,6 +110,16 @@ const Grid* GridFactory::build_from_name(const Grid::Name&, const Grid::Area& ar
 
 
 const Grid* GridFactory::build_from_name(const Grid::Name&, const Grid::Rotation& rotation) {
+    NOTIMP;
+}
+
+
+const Grid* GridFactory::build_from_type(const Grid::Type&, const Grid::Area& area, const Grid::Rotation& rotation) {
+    NOTIMP;
+}
+
+
+const Grid* GridFactory::build_from_type(const Grid::Type&, const Grid::Rotation& rotation) {
     NOTIMP;
 }
 

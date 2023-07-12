@@ -18,6 +18,8 @@ namespace eckit::geometry::projection {
 
 static ProjectionBuilder<None> __projection1("");
 static ProjectionBuilder<None> __projection2("none");
+static ProjectionBuilder<None> __projection3("equirectangular");
+static ProjectionBuilder<None> __projection4("plate-carree");
 
 
 None::None(const Configuration&) {}

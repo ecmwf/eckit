@@ -15,6 +15,7 @@
 #include <map>
 #include <ostream>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
@@ -219,28 +220,39 @@ Projection centre (grib2/tables/30/3.5.table)
 #endif
 
 
-static pthread_once_t __once                                                  = PTHREAD_ONCE_INIT;
-static Mutex* __mutex                                                         = nullptr;
-static std::map<ProjectionFactory::key_type, ProjectionFactory*>* __factories = nullptr;
+static pthread_once_t __once                                       = PTHREAD_ONCE_INIT;
+static Mutex* __mutex                                              = nullptr;
+static std::map<Projection::Type, ProjectionFactory*>* __factories = nullptr;
 
 
 static void __init() {
     __mutex     = new Mutex;
-    __factories = new std::map<ProjectionFactory::key_type, ProjectionFactory*>();
+    __factories = new std::map<Projection::Type, ProjectionFactory*>();
 }
 
 
-Projection* ProjectionFactory::build(const ProjectionFactory::key_type& key,
+Projection* ProjectionFactory::build(const Configuration& config) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    Projection::Type type;
+    ASSERT(config.get("type", type));
+
+    return build(type, config);
+}
+
+
+Projection* ProjectionFactory::build(const Projection::Type& type,
                                      const Configuration& config) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    if (auto f = __factories->find(key); f != __factories->end()) {
+    if (auto f = __factories->find(type); f != __factories->end()) {
         return f->second->make(config);
     }
 
-    list(Log::error() << "ProjectionFactory: unknown '" << key << "', choices are: ");
-    throw BadValue("ProjectionFactory: unknown '" + key + "'");
+    list(Log::error() << "ProjectionFactory: unknown '" << type << "', choices are: ");
+    throw BadValue("ProjectionFactory: unknown '" + type + "'");
 }
 
 
@@ -258,7 +270,7 @@ std::ostream& ProjectionFactory::list(std::ostream& out) {
 }
 
 
-ProjectionFactory::ProjectionFactory(const ProjectionFactory::key_type& key) :
+ProjectionFactory::ProjectionFactory(const Projection::Type& key) :
     key_(key) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);

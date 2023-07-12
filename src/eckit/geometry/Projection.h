@@ -29,7 +29,8 @@ namespace eckit::geometry {
 class Projection {
 public:
     // -- Types
-    // None
+
+    using Type = std::string;
 
     // -- Exceptions
     // None
@@ -105,9 +106,8 @@ private:
 
 
 struct ProjectionFactory {
-    using key_type = std::string;
-
-    static Projection* build(const key_type&, const Configuration&);
+    static Projection* build(const Configuration&);
+    static Projection* build(const Projection::Type&, const Configuration&);
     static std::ostream& list(std::ostream&);
 
     ProjectionFactory(const ProjectionFactory&)            = delete;
@@ -118,11 +118,11 @@ struct ProjectionFactory {
     virtual Projection* make(const Configuration&) = 0;
 
 protected:
-    explicit ProjectionFactory(const key_type&);
+    explicit ProjectionFactory(const Projection::Type&);
     virtual ~ProjectionFactory();
 
 private:
-    const key_type key_;
+    const Projection::Type key_;
 };
 
 
@@ -131,7 +131,7 @@ class ProjectionBuilder final : public ProjectionFactory {
     Projection* make(const Configuration& config) override { return new T(config); }
 
 public:
-    explicit ProjectionBuilder(const ProjectionFactory::key_type& key) :
+    explicit ProjectionBuilder(const Projection::Type& key) :
         ProjectionFactory(key) {}
 };
 

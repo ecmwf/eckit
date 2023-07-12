@@ -21,8 +21,8 @@
 #include "eckit/geometry/BoundingBox.h"
 #include "eckit/geometry/Increments.h"
 #include "eckit/geometry/Point.h"
+#include "eckit/geometry/Projection.h"
 #include "eckit/geometry/Renumber.h"
-#include "eckit/geometry/projection/Rotation.h"
 
 
 namespace eckit::geometry {
@@ -35,8 +35,8 @@ public:
     using UID        = std::string;
     using Name       = std::string;
     using Type       = std::string;
-    using Increments = geometry::Increments;
-    using Rotation   = projection::Rotation;
+    using Increments = Increments;
+    using Projection = Projection;
     using Area       = BoundingBox;
 
     // -- Exceptions
@@ -142,12 +142,12 @@ public:
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
     static const Grid* build_from_uid(const Grid::UID&);
-    static const Grid* build_from_name(const Grid::Name&, const Grid::Area& = {}, const Grid::Rotation& = {});
-    static const Grid* build_from_name(const Grid::Name&, const Grid::Rotation&);
-    static const Grid* build_from_type(const Grid::Type&, const Grid::Area& = {}, const Grid::Rotation& = {});
-    static const Grid* build_from_type(const Grid::Type&, const Grid::Rotation&);
-    static const Grid* build_from_increments(const Increments&, const Grid::Area& = {}, const Grid::Rotation& = {});
-    static const Grid* build_from_increments(const Increments&, const Grid::Rotation&);
+    static const Grid* build_from_name(const Grid::Name&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
+    static const Grid* build_from_name(const Grid::Name&, Grid::Projection*);
+    static const Grid* build_from_type(const Grid::Type&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
+    static const Grid* build_from_type(const Grid::Type&, Grid::Projection*);
+    static const Grid* build_from_increments(const Increments&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
+    static const Grid* build_from_increments(const Increments&, Grid::Projection*);
 
     static void list(std::ostream&);
 

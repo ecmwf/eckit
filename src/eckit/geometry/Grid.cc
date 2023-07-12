@@ -79,19 +79,19 @@ const Grid* GridFactory::build(const Configuration& config) {
     }
 
     if (Grid::Name name; config.get("name", name)) {
-        return config.has("area") ? config.has("rotation") ? build_from_name(name, Grid::Area(config), Grid::Rotation(config)) : build_from_name(name, Grid::Area(config)) : config.has("rotation") ? build_from_name(name, Grid::Rotation(config))
-                                                                                                                                                                                                    : build_from_name(name);
+        return config.has("area") ? config.has("rotation") ? build_from_name(name, new Grid::Area(config), ProjectionFactory::build(config)) : build_from_name(name, new Grid::Area(config)) : config.has("rotation") ? build_from_name(name, ProjectionFactory::build(config))
+                                                                                                                                                                                                                      : build_from_name(name);
     }
 
     if (Grid::Type type; config.get("type", type)) {
-        return config.has("area") ? config.has("rotation") ? build_from_type(type, Grid::Area(config), Grid::Rotation(config)) : build_from_type(type, Grid::Area(config)) : config.has("rotation") ? build_from_type(type, Grid::Rotation(config))
-                                                                                                                                                                                                    : build_from_type(type);
+        return config.has("area") ? config.has("rotation") ? build_from_type(type, new Grid::Area(config), ProjectionFactory::build(config)) : build_from_type(type, new Grid::Area(config)) : config.has("rotation") ? build_from_type(type, ProjectionFactory::build(config))
+                                                                                                                                                                                                                      : build_from_type(type);
     }
 
     if (config.has("increments")) {
         Grid::Increments increments(config);
-        return config.has("area") ? config.has("rotation") ? build_from_increments(increments, Grid::Area(config), Grid::Rotation(config)) : build_from_increments(increments, Grid::Area(config)) : config.has("rotation") ? build_from_increments(increments, Grid::Rotation(config))
-                                                                                                                                                                                                                            : build_from_increments(increments);
+        return config.has("area") ? config.has("rotation") ? build_from_increments(increments, new Grid::Area(config), ProjectionFactory::build(config)) : build_from_increments(increments, new Grid::Area(config)) : config.has("rotation") ? build_from_increments(increments, ProjectionFactory::build(config))
+                                                                                                                                                                                                                                              : build_from_increments(increments);
     }
 
     list(Log::error() << "GridFactory: cannot build grid, choices are: ");
@@ -104,32 +104,32 @@ const Grid* GridFactory::build_from_uid(const Grid::UID& uid) {
 }
 
 
-const Grid* GridFactory::build_from_name(const Grid::Name&, const Grid::Area& area, const Grid::Rotation& rotation) {
+const Grid* GridFactory::build_from_name(const Grid::Name&, Grid::Area*, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_name(const Grid::Name&, const Grid::Rotation& rotation) {
+const Grid* GridFactory::build_from_name(const Grid::Name&, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_type(const Grid::Type&, const Grid::Area& area, const Grid::Rotation& rotation) {
+const Grid* GridFactory::build_from_type(const Grid::Type&, Grid::Area*, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_type(const Grid::Type&, const Grid::Rotation& rotation) {
+const Grid* GridFactory::build_from_type(const Grid::Type&, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_increments(const Increments&, const Grid::Area& area, const Grid::Rotation& rotation) {
+const Grid* GridFactory::build_from_increments(const Increments&, Grid::Area*, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_increments(const Increments&, const Grid::Rotation& rotation) {
+const Grid* GridFactory::build_from_increments(const Increments&, Grid::Projection*) {
     NOTIMP;
 }
 

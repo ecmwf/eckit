@@ -33,9 +33,6 @@ class Grid {
 public:
     // -- Types
 
-    using UID        = std::string;
-    using Name       = std::string;
-    using Type       = std::string;
     using Increments = Increments;
     using Projection = Projection;
     using Area       = Area;
@@ -142,11 +139,11 @@ protected:
 public:
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
-    static const Grid* build_from_uid(const Grid::UID&);
-    static const Grid* build_from_name(const Grid::Name&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
-    static const Grid* build_from_name(const Grid::Name&, Grid::Projection*);
-    static const Grid* build_from_type(const Grid::Type&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
-    static const Grid* build_from_type(const Grid::Type&, Grid::Projection*);
+    static const Grid* build_from_uid(const std::string&);
+    static const Grid* build_from_name(const std::string&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
+    static const Grid* build_from_name(const std::string&, Grid::Projection*);
+    static const Grid* build_from_type(const std::string&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
+    static const Grid* build_from_type(const std::string&, Grid::Projection*);
     static const Grid* build_from_increments(const Increments&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
     static const Grid* build_from_increments(const Increments&, Grid::Projection*);
 

@@ -71,16 +71,16 @@ const Grid* GridFactory::build(const Configuration& config) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    if (Grid::UID uid; config.get("uid", uid)) {
+    if (std::string uid; config.get("uid", uid)) {
         return build_from_uid(uid);
     }
 
-    if (Grid::Name name; config.get("name", name)) {
+    if (std::string name; config.get("name", name)) {
         return config.has("area") ? config.has("rotation") ? build_from_name(name, AreaFactory::build(config), ProjectionFactory::build(config)) : build_from_name(name, AreaFactory::build(config)) : config.has("rotation") ? build_from_name(name, ProjectionFactory::build(config))
                                                                                                                                                                                                                               : build_from_name(name);
     }
 
-    if (Grid::Type type; config.get("type", type)) {
+    if (std::string type; config.get("type", type)) {
         return config.has("area") ? config.has("rotation") ? build_from_type(type, AreaFactory::build(config), ProjectionFactory::build(config)) : build_from_type(type, AreaFactory::build(config)) : config.has("rotation") ? build_from_type(type, ProjectionFactory::build(config))
                                                                                                                                                                                                                               : build_from_type(type);
     }
@@ -96,27 +96,27 @@ const Grid* GridFactory::build(const Configuration& config) {
 }
 
 
-const Grid* GridFactory::build_from_uid(const Grid::UID& uid) {
+const Grid* GridFactory::build_from_uid(const std::string& uid) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_name(const Grid::Name&, Grid::Area*, Grid::Projection*) {
+const Grid* GridFactory::build_from_name(const std::string&, Grid::Area*, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_name(const Grid::Name&, Grid::Projection*) {
+const Grid* GridFactory::build_from_name(const std::string&, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_type(const Grid::Type&, Grid::Area*, Grid::Projection*) {
+const Grid* GridFactory::build_from_type(const std::string&, Grid::Area*, Grid::Projection*) {
     NOTIMP;
 }
 
 
-const Grid* GridFactory::build_from_type(const Grid::Type&, Grid::Projection*) {
+const Grid* GridFactory::build_from_type(const std::string&, Grid::Projection*) {
     NOTIMP;
 }
 

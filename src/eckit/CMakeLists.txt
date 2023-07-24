@@ -347,6 +347,8 @@ config/Configuration.cc
 config/Configuration.h
 config/Configured.cc
 config/Configured.h
+config/DynamicConfiguration.cc
+config/DynamicConfiguration.h
 config/EtcTable.cc
 config/EtcTable.h
 config/JSONConfiguration.h

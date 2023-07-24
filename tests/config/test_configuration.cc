@@ -10,7 +10,9 @@
 
 #include <fstream>
 
+#include "eckit/config/DynamicConfiguration.h"
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
@@ -18,7 +20,6 @@
 #include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
 
-using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
@@ -402,6 +403,35 @@ CASE("Hash a configuration") {
     //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "9f060b35735e98b0fdc0bf4c2d6d6d8d");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_dynamic_configuration") {
+    double one        = 1.;
+    int two           = 2;
+    std::string three = "3";
+
+    DynamicConfiguration a;
+    EXPECT_NOT(a.has("a"));
+
+    a.set("a", one);
+    EXPECT(a.has("a"));
+
+    a.set("b", two);
+    EXPECT_EQUAL(a.getInt("b"), two);
+    EXPECT_THROWS_AS(a.getString("b"), std::bad_variant_access);
+
+    a.set("a", three);
+    EXPECT_EQUAL(a.getString("a"), three);
+
+    DynamicConfiguration b(a);
+
+    EXPECT(b.has("a"));
+    EXPECT_EQUAL(b.getString("a"), three);
+
+    b.set("a", two);
+    EXPECT_EQUAL(b.getInt("a"), two);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

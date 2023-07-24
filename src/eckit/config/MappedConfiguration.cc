@@ -22,7 +22,7 @@ namespace eckit {
 namespace {
 
 
-const eckit::Value __empty_root{};
+const eckit::Value __empty_root;
 
 
 template <typename T>

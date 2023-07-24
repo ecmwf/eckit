@@ -32,10 +32,7 @@ namespace eckit::geometry {
 class Grid {
 public:
     // -- Types
-
-    using Increments = Increments;
-    using Projection = Projection;
-    using Area       = Area;
+    // None
 
     // -- Exceptions
     // None
@@ -128,41 +125,99 @@ private:
 };
 
 
-class GridFactory {
-    std::string name_;
-    virtual Grid* make(const Configuration&) = 0;
-
-protected:
-    explicit GridFactory(const std::string&);
-    virtual ~GridFactory();
-
-public:
+static struct GridFactory {
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
-    static const Grid* build_from_uid(const std::string&);
-    static const Grid* build_from_name(const std::string&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
-    static const Grid* build_from_name(const std::string&, Grid::Projection*);
-    static const Grid* build_from_type(const std::string&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
-    static const Grid* build_from_type(const std::string&, Grid::Projection*);
-    static const Grid* build_from_increments(const Increments&, Grid::Area* = nullptr, Grid::Projection* = nullptr);
-    static const Grid* build_from_increments(const Increments&, Grid::Projection*);
+    static void list(std::ostream&);
+};
+
+
+struct GridFactoryUID {
+    explicit GridFactoryUID(const std::string& uid);
+    virtual ~GridFactoryUID();
+
+    virtual const Grid* make() = 0;
+
+    GridFactoryUID(const GridFactoryUID&)            = delete;
+    GridFactoryUID(GridFactoryUID&&)                 = delete;
+    GridFactoryUID& operator=(const GridFactoryUID&) = delete;
+    GridFactoryUID& operator=(GridFactoryUID&&)      = delete;
+
+    // This is 'const' as Grid should always be immutable
+    static const Grid* build(const std::string&);
 
     static void list(std::ostream&);
 
-    GridFactory(const GridFactory&)            = delete;
-    GridFactory(GridFactory&&)                 = delete;
-    GridFactory& operator=(const GridFactory&) = delete;
-    GridFactory& operator=(GridFactory&&)      = delete;
+private:
+    const std::string uid_;
+};
+
+
+struct GridFactoryName {
+    explicit GridFactoryName(const std::string& name);
+    virtual ~GridFactoryName();
+
+    virtual const Grid* make(const Configuration&) = 0;
+
+    GridFactoryName(const GridFactoryName&)            = delete;
+    GridFactoryName(GridFactoryName&&)                 = delete;
+    GridFactoryName& operator=(const GridFactoryName&) = delete;
+    GridFactoryName& operator=(GridFactoryName&&)      = delete;
+
+    // This is 'const' as Grid should always be immutable
+    static const Grid* build(const std::string&, Area* = nullptr, Projection* = nullptr);
+    static const Grid* build(const std::string&, Projection*);
+
+    static void list(std::ostream&);
+
+private:
+    const std::string name_;
+};
+
+
+struct GridFactoryType {
+    explicit GridFactoryType(const std::string& type);
+    virtual ~GridFactoryType();
+
+    virtual const Grid* make(const Configuration&) = 0;
+
+    GridFactoryType(const GridFactoryType&)            = delete;
+    GridFactoryType(GridFactoryType&&)                 = delete;
+    GridFactoryType& operator=(const GridFactoryType&) = delete;
+    GridFactoryType& operator=(GridFactoryType&&)      = delete;
+
+    // This is 'const' as Grid should always be immutable
+    static const Grid* build(const std::string&, Area* = nullptr, Projection* = nullptr);
+    static const Grid* build(const std::string&, Projection*);
+
+    static void list(std::ostream&);
+
+private:
+    const std::string type_;
 };
 
 
 template <class T>
-class GridBuilder : public GridFactory {
-    Grid* make(const Configuration& config) override { return new T(config); }
+struct GridRegisterUID final : GridFactoryUID {
+    explicit GridRegisterUID(const std::string& uid) :
+        GridFactoryUID(uid) {}
+    const Grid* make() override { return new T(); }
+};
 
-public:
-    GridBuilder(const std::string& name) :
-        GridFactory(name) {}
+
+template <class T>
+struct GridRegisterName final : GridFactoryName {
+    explicit GridRegisterName(const std::string& name) :
+        GridFactoryName(name) {}
+    const Grid* make(const Configuration& config) override { return new T(config); }
+};
+
+
+template <class T>
+struct GridRegisterType final : GridFactoryType {
+    explicit GridRegisterType(const std::string& type) :
+        GridFactoryType(type) {}
+    const Grid* make(const Configuration& config) override { return new T(config); }
 };
 
 

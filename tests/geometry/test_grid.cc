@@ -25,22 +25,22 @@ using namespace geometry;
 
 CASE("GridFactory::build") {
     SECTION("GridFactory::build_from_name") {
-        std::unique_ptr<const Grid> grid(GridFactory::build_from_name("O2"));
+        std::unique_ptr<const Grid> grid(GridFactoryName::build("O2"));
 
         auto size = grid->size();
         EXPECT_EQUAL(size, 88);
     }
 
 
-    SECTION("GridFactory::build_from_uid") {
+    SECTION("Grid::build_from_uid") {
     }
 
 
-    SECTION("GridFactory::build_from_increments") {
+    SECTION("Grid::build_from_increments") {
     }
 
 
-    SECTION("GridFactory::build") {
+    SECTION("Grid::build") {
         std::unique_ptr<const Grid> grid(GridFactory::build(MappedConfiguration{
             {{"grid", "O2"}}}));
 

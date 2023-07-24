@@ -168,7 +168,7 @@ public:
 };
 
 
-static const GridBuilder<ReducedLL> reducedLL("reduced_ll");
+static const GridRegisterType<ReducedLL> reducedLL("reduced_ll");
 
 
 }  // namespace eckit::geometry::detail

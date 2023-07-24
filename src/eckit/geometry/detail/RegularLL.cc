@@ -291,7 +291,7 @@ Iterator* RegularLL::iterator() const {
 #endif
 
 
-static const GridBuilder<RegularLL> regularLL("regular_ll");
+static const GridRegisterType<RegularLL> regularLL("regular_ll");
 
 
 }  // namespace eckit::geometry::detail

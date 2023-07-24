@@ -205,8 +205,8 @@ bool UnstructuredGrid::includesSouthPole() const {
 }
 
 
-static const GridBuilder<UnstructuredGrid> triangular_grid("triangular_grid");
-static const GridBuilder<UnstructuredGrid> unstructured_grid("unstructured_grid");
+static const GridRegisterType<UnstructuredGrid> triangular_grid("triangular_grid");
+static const GridRegisterType<UnstructuredGrid> unstructured_grid("unstructured_grid");
 
 
 }  // namespace eckit::geometry::detail

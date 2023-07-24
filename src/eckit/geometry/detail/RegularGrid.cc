@@ -254,10 +254,10 @@ struct PolarStereographic : RegularGrid {
 };
 
 
-static const GridBuilder<Lambert> __builder1("lambert");
-static const GridBuilder<LambertAzimuthalEqualArea> __builder2("lambert_azimuthal_equal_area");
-static const GridBuilder<Mercator> __builder3("mercator");
-static const GridBuilder<PolarStereographic> __builder4("polar_stereographic");
+static const GridRegisterType<Lambert> __builder1("lambert");
+static const GridRegisterType<LambertAzimuthalEqualArea> __builder2("lambert_azimuthal_equal_area");
+static const GridRegisterType<Mercator> __builder3("mercator");
+static const GridRegisterType<PolarStereographic> __builder4("polar_stereographic");
 
 
 }  // namespace eckit::geometry::detail

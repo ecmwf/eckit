@@ -258,7 +258,7 @@ struct ReducedGGOctahedral : ReducedGG {
 };
 
 
-static const GridBuilder<ReducedGGFromPL> reducedFromPL("reduced_gg");
+static const GridRegisterType<ReducedGGFromPL> reducedFromPL("reduced_gg");
 
 
 }  // namespace eckit::geometry::detail

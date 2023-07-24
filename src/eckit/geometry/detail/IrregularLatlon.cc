@@ -150,7 +150,7 @@ bool IrregularLatlon::includesSouthPole() const {
 }
 
 
-static const GridBuilder<IrregularLatlon> irregularLatlon("irregular_latlon");
+static const GridRegisterType<IrregularLatlon> irregularLatlon("irregular_latlon");
 
 
 }  // namespace eckit::geometry::detail

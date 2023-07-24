@@ -177,7 +177,7 @@ Iterator* RegularGG::iterator() const {
 #endif
 
 
-static const GridBuilder<RegularGG> reducedGG("regular_gg");
+static const GridRegisterType<RegularGG> reducedGG("regular_gg");
 
 
 }  // namespace eckit::geometry::detail

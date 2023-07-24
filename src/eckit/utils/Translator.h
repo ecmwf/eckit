@@ -18,6 +18,7 @@
 
 #include <set>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace eckit {
@@ -29,9 +30,44 @@ namespace eckit {
 
 template <class From, class To>
 struct Translator {
+    // To allow using IsTranslatable with SFINAE it is important the the operator is templated and has a `auto` return type
+    // C++14 version would be with enable_if_t and decay_t. FDB5 seems not to have migrated to C++17 compilation yet.
 
-    // Default template calls cast
-    To operator()(const From& from) { return To(from); }
+#if __cplusplus >= 201402L
+    // Test for explicit conversion through constructor (also involves implicit conversion or or user-defined conversion operator).
+    // Note: To(from) is called with () brackets and not with {} because it includes conversion of plain datatypes - MIR is using this
+    template <typename F, std::enable_if_t<
+                              (!std::is_same<std::decay_t<F>, To>::value && (std::is_same<std::decay_t<decltype(To(std::declval<F>()))>, To>::value)),
+                              bool> = true>
+    auto operator()(F&& from) {
+        return To(std::forward<F>(from));
+    }
+
+    // If from and to type are same - simply forward - i.e. allow moving or passing references instead of performing copies
+    template <typename F, std::enable_if_t<
+                              (std::is_same<std::decay_t<F>, To>::value && !(std::is_lvalue_reference<F>::value && !std::is_const<F>::value)),
+                              bool> = true>
+    decltype(auto) operator()(F&& from) {
+        return std::forward<F>(from);
+    }
+    
+    // If mutable references are passed, a const ref is returened to avoid modifications downstream...
+    template <typename F, std::enable_if_t<
+                              (std::is_same<std::decay_t<F>, To>::value && (std::is_lvalue_reference<F>::value && !std::is_const<F>::value)),
+                              bool> = true>
+    const To& operator()(F&& from) {
+        return const_cast<const To&>(from);
+    }
+#else
+    // If conversion is possible
+    template <typename F, typename std::enable_if<
+                              (std::is_same<typename std::decay<decltype(To(std::declval<F>()))>::type, To>::value),
+                              bool>::type
+                          = true>
+    To operator()(F&& from) {
+        return To(std::forward<F>(from));
+    }
+#endif
 };
 
 // Those are predefined
@@ -159,12 +195,12 @@ struct Translator<char, std::string> {
 };
 
 template <>
-struct Translator<std::string, std::vector<std::string> > {
+struct Translator<std::string, std::vector<std::string>> {
     std::vector<std::string> operator()(const std::string&);
 };
 
 template <>
-struct Translator<std::string, std::vector<long> > {
+struct Translator<std::string, std::vector<long>> {
     std::vector<long> operator()(const std::string&);
 };
 
@@ -179,7 +215,7 @@ struct Translator<std::vector<std::string>, std::string> {
 };
 
 template <>
-struct Translator<std::string, std::set<std::string> > {
+struct Translator<std::string, std::set<std::string>> {
     std::set<std::string> operator()(const std::string&);
 };
 
@@ -188,15 +224,42 @@ struct Translator<std::set<std::string>, std::string> {
     std::string operator()(const std::set<std::string>&);
 };
 
+template <>
+struct Translator<signed char, std::string> {
+    std::string operator()(signed char v) { return Translator<int, std::string>{}(static_cast<int>(v)); };
+};
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // This allows using the Translator without having to explicitly name the type of an argument. For example in case of
 // generic string conversion: translate<std::strig>(someVariable)
+#if __cplusplus >= 201402L
+template <typename To, typename From>
+decltype(auto) translate(From&& from) {
+    return Translator<typename std::decay<From>::type, To>{}(std::forward<From>(from));
+}
+#else
 template <typename To, typename From>
 To translate(From&& from) {
-    return Translator<typename std::decay<From>::type, To>()(std::forward<From>(from));
+    return Translator<typename std::decay<From>::type, To>{}(std::forward<From>(from));
 }
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#if __cplusplus >= 201703L
+
+// primary template handles types that do not support pre-increment:
+template <typename From, typename To, class = void>
+struct IsTranslatable : std::false_type {};
+
+// specialization recognizes types that do support pre-increment:
+template <typename From, typename To>
+struct IsTranslatable<From, To,
+                      std::void_t<decltype(Translator<From, To>{}(std::declval<const From&>()))>> : std::true_type {};
+
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

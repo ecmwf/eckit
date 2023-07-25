@@ -4,7 +4,7 @@
 import numpy as np
 
 
-class Healpix:
+class HEALPix:
     def __init__(self, Nside):
         assert 0 < Nside
         self._N = Nside
@@ -36,14 +36,14 @@ class Healpix:
         dlat = 45.0 / self._N
         dlon = 180.0 / self.pl(r)
 
-        j = count - (self._pla[r - 1], 0)[r == 0]
+        j = count if r == 0 else count - self._pla[r - 1]
         lon = dlon * (2 * j + (0, 1)[r % 2])
         lat = 90.0 - dlat * (r + 1)
 
         return lat, lon
 
 
-h = Healpix(4)
+h = HEALPix(4)
 
 for i in range(h.size()):
     print(h.latlon(i))

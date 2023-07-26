@@ -12,26 +12,20 @@
 
 #pragma once
 
-#include "eckit/geometry/detail/Gaussian.h"
+#include "eckit/geometry/Grid.h"
 
 
-namespace eckit {
-class Fraction;
-}
+namespace eckit::geometry::grid {
 
 
-namespace eckit::geometry::detail {
-
-
-class RegularGG final : public Gaussian {
+class IrregularLatlon final : public Grid {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    RegularGG(const Configuration&);
-    RegularGG(size_t N, const area::BoundingBox& = {});
+    IrregularLatlon(const Configuration&);
 
     // -- Destructor
     // None
@@ -43,7 +37,6 @@ public:
     // None
 
     // -- Methods
-    // None
 
     // -- Overridden methods
     // None
@@ -57,22 +50,27 @@ public:
 private:
     // -- Members
 
-    size_t k_;
-    size_t Ni_;
-    size_t Nj_;
+    double south_;
+    double north_;
+    double south_north_;
+
+    double west_;
+    double east_;
+    double west_east_;
+
+    std::vector<double> latitudes_;
+    std::vector<double> longitudes_;
 
     // -- Methods
-
-    Fraction getSmallestIncrement() const;
-    void correctWestEast(double& w, double& e) const;
-    void setNiNj();
+    // None
 
     // -- Overridden methods
 
     size_t size() const override;
-
-    void print(std::ostream&) const override;
     bool isPeriodicWestEast() const override;
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
+    void print(std::ostream&) const override;
 
     // -- Class members
     // None
@@ -85,4 +83,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

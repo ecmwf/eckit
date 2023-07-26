@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/detail/UnstructuredGrid.h"
+#include "eckit/geometry/grid/UnstructuredGrid.h"
 
 #include <fstream>
 #include <memory>
@@ -29,7 +29,7 @@
 #include "eckit/serialisation/IfstreamStream.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 namespace detail {
@@ -209,4 +209,4 @@ static const GridRegisterType<UnstructuredGrid> triangular_grid("triangular_grid
 static const GridRegisterType<UnstructuredGrid> unstructured_grid("unstructured_grid");
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

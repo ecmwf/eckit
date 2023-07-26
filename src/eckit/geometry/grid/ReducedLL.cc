@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/detail/ReducedLL.h"
+#include "eckit/geometry/grid/ReducedLL.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,7 +24,7 @@
 #include "eckit/types/Fraction.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 static bool checkPl(const std::vector<long>& pl) {
     ASSERT(!pl.empty());
@@ -171,4 +171,4 @@ public:
 static const GridRegisterType<ReducedLL> reducedLL("reduced_ll");
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

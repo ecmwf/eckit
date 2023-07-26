@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/detail/ReducedGG.h"
+#include "eckit/geometry/grid/ReducedGG.h"
 
 #include <algorithm>
 #include <cmath>
@@ -23,11 +23,11 @@
 
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
-#include "eckit/geometry/detail/GaussianIterator.h"
+#include "eckit/geometry/grid/GaussianIterator.h"
 #include "eckit/types/Fraction.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 ReducedGG::ReducedGG(const Configuration& config) :
@@ -261,4 +261,4 @@ struct ReducedGGOctahedral : ReducedGG {
 static const GridRegisterType<ReducedGGFromPL> reducedFromPL("reduced_gg");
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

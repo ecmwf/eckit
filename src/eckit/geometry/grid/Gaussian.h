@@ -12,45 +12,31 @@
 
 #pragma once
 
-#include <vector>
-
 #include "eckit/geometry/Grid.h"
 
 
-namespace eckit {
-class PathName;
-}
+namespace eckit::geometry::grid {
 
 
-namespace eckit::geometry::detail {
-
-
-class UnstructuredGrid : public Grid {
+class Gaussian : public Grid {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    explicit UnstructuredGrid(const PathName&);
-    explicit UnstructuredGrid(const Configuration&);
-    UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes,
-                     const area::BoundingBox& = {});
-
-    UnstructuredGrid(const UnstructuredGrid&) = delete;
-    UnstructuredGrid(UnstructuredGrid&&)      = delete;
+    Gaussian(size_t N, const area::BoundingBox& = {});
+    Gaussian(const Configuration&);
 
     // -- Destructor
 
-    ~UnstructuredGrid() override;
+    ~Gaussian() override;
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    void operator=(const UnstructuredGrid&)  = delete;
-    void operator=(const UnstructuredGrid&&) = delete;
+    // None
 
     // -- Methods
     // None
@@ -66,14 +52,24 @@ public:
 
 protected:
     // -- Members
-    // None
+
+    size_t N_;
+    double angularPrecision_;
+    mutable std::vector<double> latitudes_;
 
     // -- Methods
 
-    void print(std::ostream&) const override;
+    const std::vector<double>& latitudes() const;
+
+    bool angleApproximatelyEqual(const double&, const double&) const;
+
+    void correctSouthNorth(double& s, double& n, bool in = true) const;
 
     // -- Overridden methods
-    // None
+
+
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
 
     // -- Class members
     // None
@@ -83,22 +79,13 @@ protected:
 
 private:
     // -- Members
-
-    std::vector<double> latitudes_;
-    std::vector<double> longitudes_;
+    // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
     // None
-
-    // Domain operations
-    bool isPeriodicWestEast() const override;
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
-
-    size_t size() const override;
 
     // -- Class members
     // None
@@ -111,4 +98,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

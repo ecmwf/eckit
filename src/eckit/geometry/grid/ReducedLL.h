@@ -12,42 +12,30 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
-#include "eckit/geometry/Figure.h"
 #include "eckit/geometry/Grid.h"
-#include "eckit/geometry/Projection.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
-class RegularGrid : public Grid {
+class ReducedLL : public Grid {
 public:
-    // -- Types
-
-    using LinearSpacing = std::vector<double>;
-
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    RegularGrid(const RegularGrid&) = delete;
-    RegularGrid(RegularGrid&&)      = delete;
+    ReducedLL(const Configuration&);
 
     // -- Destructor
 
-    ~RegularGrid() override;
+    ~ReducedLL() override;
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    RegularGrid& operator=(const RegularGrid&) = delete;
-    RegularGrid& operator=(RegularGrid&&)      = delete;
+    // None
 
     // -- Methods
     // None
@@ -61,34 +49,23 @@ public:
     // -- Class methods
     // None
 
-protected:
-    // -- Constructors
-
-    RegularGrid(Projection*, const Configuration&);
-    RegularGrid(Projection*, const area::BoundingBox&, const LinearSpacing& x, const LinearSpacing& y,
-                const Figure&);
-
+private:
     // -- Members
 
-    std::unique_ptr<Projection> projection_;
-    LinearSpacing x_;
-    LinearSpacing y_;
-    Figure figure_;
-    bool xPlus_;
-    bool yPlus_;
+    std::vector<long> pl_;
 
     // -- Methods
-
-    static Projection* make_projection_from_proj(const Configuration&);
+    // None
 
     // -- Overridden methods
 
+    size_t size() const override;
+
+    bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
-    bool isPeriodicWestEast() const override;
 
     void print(std::ostream&) const override;
-    size_t size() const override;
 
     // -- Class members
     // None
@@ -101,4 +78,4 @@ protected:
 };
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

@@ -10,19 +10,19 @@
  */
 
 
-#include "eckit/geometry/detail/RegularGG.h"
+#include "eckit/geometry/grid/RegularGG.h"
 
 #include <algorithm>
 #include <ostream>
 #include <utility>
 
-#include "eckit/geometry/detail/GaussianIterator.h"
-#include "eckit/geometry/detail/RegularGG.h"
+#include "eckit/geometry/grid/GaussianIterator.h"
+#include "eckit/geometry/grid/RegularGG.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 RegularGG::RegularGG(const Configuration& config) :
@@ -180,4 +180,4 @@ Iterator* RegularGG::iterator() const {
 static const GridRegisterType<RegularGG> reducedGG("regular_gg");
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

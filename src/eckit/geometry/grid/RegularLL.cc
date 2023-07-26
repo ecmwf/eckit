@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/detail/RegularLL.h"
+#include "eckit/geometry/grid/RegularLL.h"
 
 #include <memory>
 #include <ostream>
@@ -20,12 +20,12 @@
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
-#include "eckit/geometry/detail/RegularLL.h"
+#include "eckit/geometry/grid/RegularLL.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 namespace detail {
@@ -294,4 +294,4 @@ Iterator* RegularLL::iterator() const {
 static const GridRegisterType<RegularLL> regularLL("regular_ll");
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

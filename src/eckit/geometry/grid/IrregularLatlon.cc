@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/detail/IrregularLatlon.h"
+#include "eckit/geometry/grid/IrregularLatlon.h"
 
 #include <cmath>
 #include <ostream>
@@ -21,7 +21,7 @@
 #include "eckit/geometry/Projection.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 static void range(const std::vector<double>& v, double& mn, double& mx, double& dmax) {
@@ -153,4 +153,4 @@ bool IrregularLatlon::includesSouthPole() const {
 static const GridRegisterType<IrregularLatlon> irregularLatlon("irregular_latlon");
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

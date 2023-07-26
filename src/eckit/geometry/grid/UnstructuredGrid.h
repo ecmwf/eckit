@@ -12,45 +12,48 @@
 
 #pragma once
 
-#include "eckit/geometry/detail/Gaussian.h"
-#include "eckit/geometry/util.h"
+#include <vector>
+
+#include "eckit/geometry/Grid.h"
 
 
 namespace eckit {
-class Fraction;
+class PathName;
 }
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
-class ReducedGG : public Gaussian {
+class UnstructuredGrid : public Grid {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    ReducedGG(const Configuration&);
+    explicit UnstructuredGrid(const PathName&);
+    explicit UnstructuredGrid(const Configuration&);
+    UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes,
+                     const area::BoundingBox& = {});
 
-    ReducedGG(size_t N, const pl_type& pl, const area::BoundingBox& box = {}) :
-        Gaussian(N, box), k_(0), Nj_(N_ * 2) {
-        setNj(pl, box.south(), box.north());
-    }
+    UnstructuredGrid(const UnstructuredGrid&) = delete;
+    UnstructuredGrid(UnstructuredGrid&&)      = delete;
 
     // -- Destructor
 
-    ~ReducedGG() override = default;
+    ~UnstructuredGrid() override;
 
     // -- Convertors
     // None
 
     // -- Operators
-    // None
+
+    void operator=(const UnstructuredGrid&)  = delete;
+    void operator=(const UnstructuredGrid&&) = delete;
 
     // -- Methods
-
-    static pl_type pls(const std::string&);
+    // None
 
     // -- Overridden methods
     // None
@@ -62,31 +65,18 @@ public:
     // None
 
 protected:
-    // -- Constructors
-
-    ReducedGG(size_t N, const area::BoundingBox& box = {}) :
-        Gaussian(N, box), k_(0), Nj_(N * 2) {
-        // derived classes must set k_, Nj_ using this constructor
-    }
-
     // -- Members
-
-    size_t k_;
-    size_t Nj_;
+    // None
 
     // -- Methods
 
-    const pl_type& pls() const;
-
-    void setNj(pl_type, double s, double n);
-    void correctWestEast(double& w, double& e) const;
+    void print(std::ostream&) const override;
 
     // -- Overridden methods
-
-    bool isPeriodicWestEast() const override;
-    void print(std::ostream& out) const override;
+    // None
 
     // -- Class members
+    // None
 
     // -- Class methods
     // None
@@ -94,15 +84,21 @@ protected:
 private:
     // -- Members
 
-    pl_type pl_;
+    std::vector<double> latitudes_;
+    std::vector<double> longitudes_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
+    // None
+
+    // Domain operations
+    bool isPeriodicWestEast() const override;
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
 
     size_t size() const override;
-    Fraction getSmallestIncrement() const;
 
     // -- Class members
     // None
@@ -115,4 +111,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

@@ -42,24 +42,24 @@ list( APPEND eckit_geometry_srcs
     UnitSphere.h
     area/BoundingBox.cc
     area/BoundingBox.h
-    detail/Gaussian.cc
-    detail/Gaussian.h
-    detail/GaussianIterator.cc
-    detail/GaussianIterator.h
-    detail/IrregularLatlon.cc
-    detail/IrregularLatlon.h
-    detail/ReducedGG.cc
-    detail/ReducedGG.h
-    detail/ReducedLL.cc
-    detail/ReducedLL.h
-    detail/RegularGG.cc
-    detail/RegularGG.h
-    detail/RegularGrid.cc
-    detail/RegularGrid.h
-    detail/RegularLL.cc
-    detail/RegularLL.h
-    detail/UnstructuredGrid.cc
-    detail/UnstructuredGrid.h
+    grid/Gaussian.cc
+    grid/Gaussian.h
+    grid/GaussianIterator.cc
+    grid/GaussianIterator.h
+    grid/IrregularLatlon.cc
+    grid/IrregularLatlon.h
+    grid/ReducedGG.cc
+    grid/ReducedGG.h
+    grid/ReducedLL.cc
+    grid/ReducedLL.h
+    grid/RegularGG.cc
+    grid/RegularGG.h
+    grid/RegularGrid.cc
+    grid/RegularGrid.h
+    grid/RegularLL.cc
+    grid/RegularLL.h
+    grid/UnstructuredGrid.cc
+    grid/UnstructuredGrid.h
     polygon/LonLatPolygon.cc
     polygon/LonLatPolygon.h
     polygon/Polygon.cc

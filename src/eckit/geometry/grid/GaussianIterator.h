@@ -21,7 +21,7 @@
 #include "eckit/geometry/area/BoundingBox.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 class GaussianIterator : public Iterator {
@@ -55,4 +55,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

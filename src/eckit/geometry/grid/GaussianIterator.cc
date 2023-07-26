@@ -10,14 +10,14 @@
  */
 
 
-#include "eckit/geometry/detail/GaussianIterator.h"
+#include "eckit/geometry/grid/GaussianIterator.h"
 
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 GaussianIterator::GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl,
@@ -115,4 +115,4 @@ size_t GaussianIterator::size() const {
 }
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

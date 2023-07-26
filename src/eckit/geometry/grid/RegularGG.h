@@ -12,24 +12,29 @@
 
 #pragma once
 
-#include "eckit/geometry/Grid.h"
+#include "eckit/geometry/grid/Gaussian.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit {
+class Fraction;
+}
 
 
-class ReducedLL : public Grid {
+namespace eckit::geometry::grid {
+
+
+class RegularGG final : public Gaussian {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    ReducedLL(const Configuration&);
+    RegularGG(const Configuration&);
+    RegularGG(size_t N, const area::BoundingBox& = {});
 
     // -- Destructor
-
-    ~ReducedLL() override;
+    // None
 
     // -- Convertors
     // None
@@ -52,20 +57,22 @@ public:
 private:
     // -- Members
 
-    std::vector<long> pl_;
+    size_t k_;
+    size_t Ni_;
+    size_t Nj_;
 
     // -- Methods
-    // None
+
+    Fraction getSmallestIncrement() const;
+    void correctWestEast(double& w, double& e) const;
+    void setNiNj();
 
     // -- Overridden methods
 
     size_t size() const override;
 
-    bool isPeriodicWestEast() const override;
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
-
     void print(std::ostream&) const override;
+    bool isPeriodicWestEast() const override;
 
     // -- Class members
     // None
@@ -78,4 +85,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

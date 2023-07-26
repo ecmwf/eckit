@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/detail/Gaussian.h"
+#include "eckit/geometry/grid/Gaussian.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,7 +22,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 Gaussian::Gaussian(size_t N, const area::BoundingBox& bbox) :
@@ -118,4 +118,4 @@ void Gaussian::correctSouthNorth(double& s, double& n, bool in) const {
 }
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

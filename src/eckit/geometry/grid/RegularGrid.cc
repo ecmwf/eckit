@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/detail/RegularGrid.h"
+#include "eckit/geometry/grid/RegularGrid.h"
 
 #include <algorithm>
 #include <cmath>
@@ -25,7 +25,7 @@
 #include "eckit/utils/StringTools.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
 RegularGrid::RegularGrid(Projection* projection, const Configuration& config) :
@@ -260,4 +260,4 @@ static const GridRegisterType<Mercator> __builder3("mercator");
 static const GridRegisterType<PolarStereographic> __builder4("polar_stereographic");
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

@@ -13,19 +13,22 @@
 #pragma once
 
 #include "eckit/geometry/Grid.h"
+#include "eckit/geometry/Increments.h"
+#include "eckit/types/Fraction.h"
 
 
-namespace eckit::geometry::detail {
+namespace eckit::geometry::grid {
 
 
-class IrregularLatlon final : public Grid {
+class RegularLL : public Grid {
 public:
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    IrregularLatlon(const Configuration&);
+    RegularLL(const Configuration&);
+    RegularLL(const Increments&, const area::BoundingBox& = {}, const PointLonLat& reference = {0, 0});
 
     // -- Destructor
     // None
@@ -37,6 +40,9 @@ public:
     // None
 
     // -- Methods
+
+    static area::BoundingBox correctBoundingBox(const area::BoundingBox&, size_t& ni, size_t& nj, const Increments&,
+                                                const PointLonLat& reference = {0, 0});
 
     // -- Overridden methods
     // None
@@ -50,27 +56,21 @@ public:
 private:
     // -- Members
 
-    double south_;
-    double north_;
-    double south_north_;
-
-    double west_;
-    double east_;
-    double west_east_;
-
-    std::vector<double> latitudes_;
-    std::vector<double> longitudes_;
+    const Increments increments_;
+    const PointLonLat reference_;
+    size_t ni_;
+    size_t nj_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    size_t size() const override;
+    void print(std::ostream&) const override;
     bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
-    void print(std::ostream&) const override;
+    size_t size() const override;
 
     // -- Class members
     // None
@@ -83,4 +83,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::detail
+}  // namespace eckit::geometry::grid

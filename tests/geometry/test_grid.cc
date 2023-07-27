@@ -42,7 +42,7 @@ CASE("GridFactory::build") {
 
     SECTION("Grid::build") {
         std::unique_ptr<const Grid> grid(GridFactory::build(MappedConfiguration{
-            {{"grid", "O2"}}}));
+            {{"name", "O2"}}}));
 
         auto size = grid->size();
         EXPECT_EQUAL(size, 88);

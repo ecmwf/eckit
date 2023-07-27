@@ -14,7 +14,8 @@
 
 #include <map>
 #include <memory>
-#include <sstream>
+#include <ostream>
+#include <regex>
 #include <type_traits>
 
 #include "eckit/exception/Exceptions.h"
@@ -63,13 +64,11 @@ const Grid* GridFactory::build(const Configuration& config) {
     }
 
     if (std::string name; config.get("name", name)) {
-        return config.has("area") ? config.has("rotation") ? GridFactoryName::build(name, AreaFactory::build(config), ProjectionFactory::build(config)) : GridFactoryName::build(name, AreaFactory::build(config)) : config.has("rotation") ? GridFactoryName::build(name, ProjectionFactory::build(config))
-                                                                                                                                                                                                                                            : GridFactoryName::build(name);
+        return GridFactoryName::build(name);
     }
 
-    if (std::string type; config.get("type", type)) {
-        return config.has("area") ? config.has("rotation") ? GridFactoryType::build(type, AreaFactory::build(config), ProjectionFactory::build(config)) : GridFactoryType::build(type, AreaFactory::build(config)) : config.has("rotation") ? GridFactoryType::build(type, ProjectionFactory::build(config))
-                                                                                                                                                                                                                                            : GridFactoryType::build(type);
+    if (config.has("type")) {
+        return GridFactoryType::build(config);
     }
 
     list(Log::error() << "Grid: cannot build grid, choices are: ");
@@ -81,9 +80,21 @@ void GridFactory::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    GridFactoryUID::list(out);
-    GridFactoryName::list(out);
-    GridFactoryType::list(out);
+    const char* sep = "";
+    for (const auto& j : *__grid_uids) {
+        out << sep << j.first;
+        sep = ", ";
+    }
+
+    for (const auto& j : *__grid_names) {
+        out << sep << j.first;
+        sep = ", ";
+    }
+
+    for (const auto& j : *__grid_types) {
+        out << sep << j.first;
+        sep = ", ";
+    }
 }
 
 
@@ -132,36 +143,50 @@ void GridFactoryUID::list(std::ostream& out) {
 }
 
 
-GridFactoryName::GridFactoryName(const std::string& name) :
-    name_(name) {
+GridFactoryName::GridFactoryName(const std::string& pattern) :
+    pattern_(pattern) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    if (__grid_names->find(name) == __grid_names->end()) {
-        (*__grid_names)[name] = this;
+    if (__grid_names->find(pattern) == __grid_names->end()) {
+        (*__grid_names)[pattern] = this;
         return;
     }
 
-    throw SeriousBug("Grid: duplicate name '" + name + "'");
+    throw SeriousBug("Grid: duplicate name '" + pattern + "'");
 }
 
 
-const Grid* GridFactoryName::build(const std::string& name, Area* area, Projection* projection) {
+const Grid* GridFactoryName::build(const std::string& name) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    if (auto j = __grid_names->find(name); j != __grid_names->end()) {
-        NOTIMP;
-        // return j->second->make(name, area, projection);
+    auto matches = [](const std::string& s, const std::string& pattern) -> bool {
+        const std::regex e(pattern, std::regex_constants::extended);
+        std::smatch match;
+        std::regex_match(s, match, e);
+        return !match.empty();
+    };
+
+    const auto end = __grid_names->cend();
+
+    auto i = end;
+    for (auto j = __grid_names->cbegin(); j != end; ++j) {
+        if (matches(name, j->second->pattern_)) {
+            if (i != end) {
+                throw SeriousBug("Grid: name '" + name + "' matches '" + i->second->pattern_ + "' and '" + j->second->pattern_ + "'");
+            }
+            i = j;
+        }
+    }
+
+    if (i != end) {
+        std::unique_ptr<Configuration> config(i->second->config(name));
+        return GridFactory::build(*config);
     }
 
     list(Log::error() << "Grid: unknown name '" << name << "', choices are: ");
     throw SeriousBug("Grid: unknown name '" + name + "'");
-}
-
-
-const Grid* GridFactoryName::build(const std::string& name, Projection* projection) {
-    return build(name, nullptr, projection);
 }
 
 
@@ -179,7 +204,7 @@ void GridFactoryName::list(std::ostream& out) {
 
 GridFactoryName::~GridFactoryName() {
     AutoLock<Mutex> lock(*__mutex);
-    __grid_names->erase(name_);
+    __grid_names->erase(pattern_);
 }
 
 
@@ -203,22 +228,19 @@ GridFactoryType::~GridFactoryType() {
 }
 
 
-const Grid* GridFactoryType::build(const std::string& type, Area* area, Projection* projection) {
+const Grid* GridFactoryType::build(const Configuration& config) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    if (auto j = __grid_types->find(type); j != __grid_types->end()) {
-        NOTIMP;
-        // return j->second->make(type, area, projection);
+    std::string type;
+    if (config.get("type", type)) {
+        if (auto j = __grid_types->find(type); j != __grid_types->end()) {
+            return j->second->make(config);
+        }
     }
 
     list(Log::error() << "Grid: unknown type '" << type << "', choices are: ");
     throw SeriousBug("Grid: unknown type '" + type + "'");
-}
-
-
-const Grid* GridFactoryType::build(const std::string& type, Projection* projection) {
-    return build(type, nullptr, projection);
 }
 
 

@@ -14,7 +14,6 @@
 
 #include <iosfwd>
 #include <string>
-
 #include <vector>
 
 #include "eckit/config/Configuration.h"
@@ -125,7 +124,7 @@ private:
 };
 
 
-static struct GridFactory {
+struct GridFactory {
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
     static void list(std::ostream&);
@@ -133,11 +132,6 @@ static struct GridFactory {
 
 
 struct GridFactoryUID {
-    explicit GridFactoryUID(const std::string& uid);
-    virtual ~GridFactoryUID();
-
-    virtual const Grid* make() = 0;
-
     GridFactoryUID(const GridFactoryUID&)            = delete;
     GridFactoryUID(GridFactoryUID&&)                 = delete;
     GridFactoryUID& operator=(const GridFactoryUID&) = delete;
@@ -145,54 +139,57 @@ struct GridFactoryUID {
 
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const std::string&);
-
     static void list(std::ostream&);
 
+protected:
+    explicit GridFactoryUID(const std::string& uid);
+    virtual ~GridFactoryUID();
+
 private:
+    virtual const Grid* make() = 0;
+
     const std::string uid_;
 };
 
 
 struct GridFactoryName {
-    explicit GridFactoryName(const std::string& name);
-    virtual ~GridFactoryName();
-
-    virtual const Grid* make(const Configuration&) = 0;
-
     GridFactoryName(const GridFactoryName&)            = delete;
     GridFactoryName(GridFactoryName&&)                 = delete;
     GridFactoryName& operator=(const GridFactoryName&) = delete;
     GridFactoryName& operator=(GridFactoryName&&)      = delete;
 
     // This is 'const' as Grid should always be immutable
-    static const Grid* build(const std::string&, Area* = nullptr, Projection* = nullptr);
-    static const Grid* build(const std::string&, Projection*);
-
+    static const Grid* build(const std::string& name);
     static void list(std::ostream&);
 
+protected:
+    explicit GridFactoryName(const std::string& pattern);
+    virtual ~GridFactoryName();
+
 private:
-    const std::string name_;
+    virtual Configuration* config(const std::string& name) = 0;
+
+    const std::string pattern_;
 };
 
 
 struct GridFactoryType {
-    explicit GridFactoryType(const std::string& type);
-    virtual ~GridFactoryType();
-
-    virtual const Grid* make(const Configuration&) = 0;
-
     GridFactoryType(const GridFactoryType&)            = delete;
     GridFactoryType(GridFactoryType&&)                 = delete;
     GridFactoryType& operator=(const GridFactoryType&) = delete;
     GridFactoryType& operator=(GridFactoryType&&)      = delete;
 
     // This is 'const' as Grid should always be immutable
-    static const Grid* build(const std::string&, Area* = nullptr, Projection* = nullptr);
-    static const Grid* build(const std::string&, Projection*);
-
+    static const Grid* build(const Configuration&);
     static void list(std::ostream&);
 
+protected:
+    explicit GridFactoryType(const std::string& type);
+    virtual ~GridFactoryType();
+
 private:
+    virtual const Grid* make(const Configuration&) = 0;
+
     const std::string type_;
 };
 
@@ -207,9 +204,9 @@ struct GridRegisterUID final : GridFactoryUID {
 
 template <class T>
 struct GridRegisterName final : GridFactoryName {
-    explicit GridRegisterName(const std::string& name) :
-        GridFactoryName(name) {}
-    const Grid* make(const Configuration& config) override { return new T(config); }
+    explicit GridRegisterName(const std::string& pattern) :
+        GridFactoryName(pattern) {}
+    Configuration* config(const std::string& name) override { return T::config(name); }
 };
 
 

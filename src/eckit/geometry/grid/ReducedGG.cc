@@ -21,10 +21,12 @@
 #include <set>
 #include <utility>
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/grid/GaussianIterator.h"
 #include "eckit/types/Fraction.h"
+#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geometry::grid {
@@ -255,10 +257,18 @@ struct ReducedGGOctahedral : ReducedGG {
 
         bbox({n, w, s, e});
     }
+
+    static Configuration* config(const std::string& name) {
+        Translator<std::string, size_t> trans;
+
+        return new MappedConfiguration({{"type", "reduced_gg"},
+                                        {"N", trans(name.substr(1))}});
+    }
 };
 
 
-static const GridRegisterType<ReducedGGFromPL> reducedFromPL("reduced_gg");
+static const GridRegisterType<ReducedGGFromPL> __grid_type("reduced_gg");
+static const GridRegisterName<ReducedGGOctahedral> __grid_pattern("[oO][1-9][0-9]*");
 
 
 }  // namespace eckit::geometry::grid

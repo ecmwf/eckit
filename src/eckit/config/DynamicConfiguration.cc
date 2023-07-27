@@ -21,8 +21,8 @@ namespace eckit {
 namespace {
 
 
-static const LocalConfiguration __empty_configuration;
-static const eckit::Value __empty_root;
+const LocalConfiguration __empty_configuration;
+const eckit::Value __empty_root;
 
 
 }  // namespace
@@ -37,157 +37,167 @@ DynamicConfiguration::DynamicConfiguration(const Configuration& passive) :
 
 
 void DynamicConfiguration::set(const std::string& name, std::string& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, bool& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, int& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, long& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, long long& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::size_t& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, float& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, double& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::vector<int>& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::vector<long>& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::vector<long long>& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::vector<std::size_t>& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::vector<float>& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::vector<double>& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
 }
 
 
 void DynamicConfiguration::set(const std::string& name, std::vector<std::string>& value) {
-    active_.set(name, value);
+    __set(*this, name, value);
+}
+
+
+void DynamicConfiguration::hide(const std::string& name) {
+    hide_.insert(name);
+}
+
+
+void DynamicConfiguration::unhide(const std::string& name) {
+    hide_.erase(name);
 }
 
 
 bool DynamicConfiguration::has(const std::string& name) const {
-    return active_.has(name) || passive_.has(name);
+    return !hide_.contains(name) && (active_.has(name) || passive_.has(name));
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::string& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, bool& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, int& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, long& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, long long& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::size_t& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, float& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, double& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::vector<int>& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::vector<long>& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::vector<long long>& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::vector<std::size_t>& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::vector<float>& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::vector<double>& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 
 bool DynamicConfiguration::get(const std::string& name, std::vector<std::string>& value) const {
-    return active_.get(name, value) || passive_.get(name, value);
+    return __get(*this, name, value);
 }
 
 

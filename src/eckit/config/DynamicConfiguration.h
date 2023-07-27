@@ -11,6 +11,8 @@
 #ifndef eckit_DynamicConfiguration_H
 #define eckit_DynamicConfiguration_H
 
+#include <unordered_set>
+
 #include "eckit/config/Configuration.h"
 #include "eckit/config/MappedConfiguration.h"
 
@@ -59,6 +61,9 @@ public:
     void set(const std::string&, std::vector<double>&);
     void set(const std::string&, std::vector<std::string>&);
 
+    void hide(const std::string&);
+    void unhide(const std::string&);
+
     // -- Overridden methods
 
     bool has(const std::string&) const override;
@@ -92,6 +97,10 @@ private:
     const Configuration& passive_;
     MappedConfiguration active_;
 
+    struct : std::unordered_set<std::string> {
+        bool contains(const value_type& key) const { return find(key) != end(); }
+    } hide_;
+
     // -- Methods
     // None
 
@@ -106,7 +115,17 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    template <typename T>
+    friend void __set(DynamicConfiguration& config, const std::string& name, T& value) {
+        config.active_.set(name, value);
+        config.hide_.erase(name);
+    }
+
+    template <typename T>
+    friend bool __get(const DynamicConfiguration& config, const std::string& name, T& value) {
+        return !config.hide_.contains(name) && (config.active_.get(name, value) || config.passive_.get(name, value));
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

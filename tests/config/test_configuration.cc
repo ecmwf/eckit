@@ -413,25 +413,36 @@ CASE("test_dynamic_configuration") {
     std::string three = "3";
 
     DynamicConfiguration a;
-    EXPECT_NOT(a.has("a"));
+    EXPECT_NOT(a.has("foo"));
 
-    a.set("a", one);
-    EXPECT(a.has("a"));
+    a.set("foo", one);
+    EXPECT(a.has("foo"));
 
-    a.set("b", two);
-    EXPECT_EQUAL(a.getInt("b"), two);
-    EXPECT_THROWS_AS(a.getString("b"), std::bad_variant_access);
+    a.set("bar", two);
+    EXPECT_EQUAL(a.getInt("bar"), two);
+    EXPECT_THROWS_AS(a.getString("bar"), std::bad_variant_access);
 
-    a.set("a", three);
-    EXPECT_EQUAL(a.getString("a"), three);
+    a.set("foo", three);
+    EXPECT_EQUAL(a.getString("foo"), three);
 
     DynamicConfiguration b(a);
 
-    EXPECT(b.has("a"));
-    EXPECT_EQUAL(b.getString("a"), three);
+    EXPECT(b.has("foo"));
+    EXPECT_EQUAL(b.getString("foo"), three);
 
-    b.set("a", two);
-    EXPECT_EQUAL(b.getInt("a"), two);
+    b.set("foo", two);
+    EXPECT_EQUAL(b.getInt("foo"), two);
+
+    DynamicConfiguration c(a);
+
+    ASSERT(c.has("foo"));
+    ASSERT(c.has("bar"));
+
+    c.hide("bar");
+    EXPECT_NOT(c.has("bar"));
+
+    c.unhide("bar");
+    EXPECT_EQUAL(a.getInt("bar"), two);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

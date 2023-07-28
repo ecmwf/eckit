@@ -15,9 +15,10 @@
 #include <ostream>
 #include <tuple>
 
+#include "eckit/geometry/Area.h"
+
 
 namespace eckit {
-class Configuration;
 namespace geometry {
 class Projection;
 }
@@ -27,7 +28,7 @@ class Projection;
 namespace eckit::geometry::area {
 
 
-class BoundingBox {
+class BoundingBox : public Area {
 public:
     // -- Exceptions
     // None
@@ -77,7 +78,8 @@ public:
     static BoundingBox make(const BoundingBox&, const Projection&);
 
     // -- Overridden methods
-    // None
+
+    area::BoundingBox bbox() const override { return *this; }
 
     // -- Class members
     // None

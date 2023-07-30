@@ -16,10 +16,13 @@
 #include <ostream>
 #include <utility>
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geometry/grid/GaussianIterator.h"
 #include "eckit/geometry/grid/RegularGG.h"
+#include "eckit/geometry/util.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
+#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geometry::grid {
@@ -57,6 +60,16 @@ RegularGG::RegularGG(size_t N, const area::BoundingBox& box) :
     bbox({n, w, s, e});
 
     setNiNj();
+}
+
+
+Configuration* RegularGG::config(const std::string& name) {
+    auto N = Translator<std::string, pl_type::value_type>{}(name.substr(1));
+
+    return new MappedConfiguration({{"type", "regular_gg"},
+                                    {"N", N},
+                                    {"Ni", 2 * N},
+                                    {"Nj", 4 * N}});
 }
 
 
@@ -177,7 +190,8 @@ Iterator* RegularGG::iterator() const {
 #endif
 
 
-static const GridRegisterType<RegularGG> reducedGG("regular_gg");
+static const GridRegisterType<RegularGG> __grid_type("regular_gg");
+static const GridRegisterName<RegularGG> __grid_pattern("[fF][1-9][0-9]*");
 
 
 }  // namespace eckit::geometry::grid

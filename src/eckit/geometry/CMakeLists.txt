@@ -84,7 +84,6 @@ list( APPEND eckit_geometry_srcs
     util/monotonic_crop.cc
     util/reduced_classical_pl.cc
     util/reduced_octahedral_pl.cc
-    util/regular_pl.cc
 )
 
 set(eckit_geometry_include_dirs )

@@ -66,9 +66,6 @@ const pl_type& reduced_classical_pl(size_t N);
 const pl_type& reduced_octahedral_pl(size_t N);
 
 
-pl_type::value_type regular_pl(size_t N);
-
-
 }  // namespace util
 
 

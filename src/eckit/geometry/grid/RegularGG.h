@@ -46,7 +46,8 @@ public:
     // None
 
     // -- Overridden methods
-    // None
+
+    static Configuration* config(const std::string& name);
 
     // -- Class members
     // None

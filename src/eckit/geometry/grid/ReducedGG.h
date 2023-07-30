@@ -16,11 +16,6 @@
 #include "eckit/geometry/util.h"
 
 
-namespace eckit {
-class Fraction;
-}
-
-
 namespace eckit::geometry::grid {
 
 
@@ -31,16 +26,11 @@ public:
 
     // -- Constructors
 
-    ReducedGG(const Configuration&);
-
-    ReducedGG(size_t N, const pl_type& pl, const area::BoundingBox& box = {}) :
-        Gaussian(N, box), k_(0), Nj_(N_ * 2) {
-        setNj(pl, box.south(), box.north());
-    }
+    explicit ReducedGG(const Configuration&);
+    ReducedGG(size_t N, const pl_type& pl);
 
     // -- Destructor
-
-    ~ReducedGG() override = default;
+    // None
 
     // -- Convertors
     // None
@@ -49,8 +39,7 @@ public:
     // None
 
     // -- Methods
-
-    static pl_type pls(const std::string&);
+    // None
 
     // -- Overridden methods
     // None
@@ -63,23 +52,13 @@ public:
 
 protected:
     // -- Constructors
-
-    ReducedGG(size_t N, const area::BoundingBox& box = {}) :
-        Gaussian(N, box), k_(0), Nj_(N * 2) {
-        // derived classes must set k_, Nj_ using this constructor
-    }
+    // None
 
     // -- Members
-
-    size_t k_;
-    size_t Nj_;
+    // None
 
     // -- Methods
-
-    const pl_type& pls() const;
-
-    void setNj(pl_type, double s, double n);
-    void correctWestEast(double& w, double& e) const;
+    // None
 
     // -- Overridden methods
 
@@ -95,6 +74,8 @@ private:
     // -- Members
 
     pl_type pl_;
+    size_t k_;
+    size_t Nj_;
 
     // -- Methods
     // None
@@ -102,7 +83,6 @@ private:
     // -- Overridden methods
 
     size_t size() const override;
-    Fraction getSmallestIncrement() const;
 
     // -- Class members
     // None

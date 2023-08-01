@@ -46,6 +46,8 @@ list( APPEND eckit_geometry_srcs
     grid/Gaussian.h
     grid/GaussianIterator.cc
     grid/GaussianIterator.h
+    grid/HEALPix.cc
+    grid/HEALPix.h
     grid/IrregularLatlon.cc
     grid/IrregularLatlon.h
     grid/ReducedGG.cc

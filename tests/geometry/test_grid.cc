@@ -20,19 +20,22 @@
 namespace eckit::test {
 
 
-using namespace geometry;
-
-
 CASE("GridFactory::build") {
+    using geometry::Grid;
+
+
+    struct test_t {
+        std::string name;
+        size_t size;
+    };
+
+
     SECTION("GridFactory::build_from_name") {
-        std::unique_ptr<const Grid> o(GridFactoryName::build("O2"));
-
-        //        auto size = o->size();
-        //        EXPECT_EQUAL(size, 88);
-
-        std::unique_ptr<const Grid> f(GridFactoryName::build("f2"));
-        //        auto size = o->size();
-        //        EXPECT_EQUAL(size, 88);
+        for (const auto& test : {test_t{"O2", 88}, {"f2", 32}, {"h2", 48}}) {
+            std::unique_ptr<const Grid> grid(geometry::GridFactoryName::build(test.name));
+            auto size = grid->size();
+            EXPECT_EQUAL(size, test.size);
+        }
     }
 
 
@@ -45,7 +48,7 @@ CASE("GridFactory::build") {
 
 
     SECTION("Grid::build") {
-        std::unique_ptr<const Grid> grid(GridFactory::build(MappedConfiguration{
+        std::unique_ptr<const Grid> grid(geometry::GridFactory::build(MappedConfiguration{
             {{"name", "O2"}}}));
 
         //        auto size = grid->size();

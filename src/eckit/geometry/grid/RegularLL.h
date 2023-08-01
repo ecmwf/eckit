@@ -66,7 +66,6 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream&) const override;
     bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;

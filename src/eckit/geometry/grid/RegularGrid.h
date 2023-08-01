@@ -87,7 +87,6 @@ protected:
     bool includesSouthPole() const override;
     bool isPeriodicWestEast() const override;
 
-    void print(std::ostream&) const override;
     size_t size() const override;
 
     // -- Class members

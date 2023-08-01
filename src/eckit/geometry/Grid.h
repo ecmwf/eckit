@@ -62,8 +62,6 @@ public:
 
     virtual size_t size() const = 0;
 
-    virtual void print(std::ostream&) const = 0;
-
     virtual bool includesNorthPole() const  = 0;
     virtual bool includesSouthPole() const  = 0;
     virtual bool isPeriodicWestEast() const = 0;
@@ -116,11 +114,7 @@ private:
     // None
 
     // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& s, const Grid& p) {
-        p.print(s);
-        return s;
-    }
+    // None
 };
 
 

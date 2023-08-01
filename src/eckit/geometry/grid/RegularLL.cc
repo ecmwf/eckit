@@ -13,7 +13,6 @@
 #include "eckit/geometry/grid/RegularLL.h"
 
 #include <memory>
-#include <ostream>
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
@@ -137,12 +136,6 @@ RegularLL::RegularLL(const Increments& increments, const area::BoundingBox& bb, 
 }
 
 
-void RegularLL::print(std::ostream& out) const {
-    out << "RegularLL["
-        << "bbox=" << bbox() << ",increments=" << increments_ << ",ni=" << ni_ << ",nj=" << nj_ << "]";
-}
-
-
 bool RegularLL::isPeriodicWestEast() const {
     // if range West-East is within one increment (or greater than) 360 degree
     return bbox().east() - bbox().west() + increments_.west_east >= GLOBE;
@@ -224,12 +217,6 @@ Iterator* RegularLL::iterator() const {
         ~RegularLLIterator() {
             auto count = count_ + (i_ > 0 || j_ > 0 ? 1 : 0);
             ASSERT(count == ni_ * nj_);
-        }
-
-        void print(std::ostream& out) const override {
-            out << "RegularLLIterator["
-                << "ni=" << ni_ << ",nj=" << nj_ << ",north=" << north_ << ",west=" << west_ << ",we=" << we_ << ",ns=" << ns_
-                << ",i=" << i_ << ",j=" << j_ << ",count=" << count_ << "]";
         }
 
         bool operator++() override {

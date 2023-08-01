@@ -14,7 +14,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ostream>
 #include <sstream>
 
 #include "eckit/geometry/Domain.h"
@@ -42,10 +41,6 @@ ReducedLL::ReducedLL(const Configuration& config) :
 }
 
 ReducedLL::~ReducedLL() = default;
-
-void ReducedLL::print(std::ostream& out) const {
-    out << "ReducedLL[bbox=" << bbox() << "]";
-}
 
 size_t ReducedLL::size() const {
     size_t total = 0;
@@ -96,13 +91,6 @@ class ReducedLLIterator : public Iterator {
     size_t count_;
     bool first_;
     bool periodic_;
-
-    void print(std::ostream& out) const override {
-        out << "ReducedLLIterator[";
-        Iterator::print(out);
-        out << ",domain=" << domain_ << ",ni=" << ni_ << ",nj=" << nj_ << ",i=" << i_ << ",j=" << j_ << ",p=" << p_
-            << ",count=" << count_ << "]";
-    }
 
     bool operator++() override {
         while (j_ < nj_ && i_ < ni_) {

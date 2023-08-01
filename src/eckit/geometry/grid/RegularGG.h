@@ -72,7 +72,6 @@ private:
 
     size_t size() const override;
 
-    void print(std::ostream&) const override;
     bool isPeriodicWestEast() const override;
 
     // -- Class members

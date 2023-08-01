@@ -65,8 +65,6 @@ private:
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
 
-    void print(std::ostream&) const override;
-
     // -- Class members
     // None
 

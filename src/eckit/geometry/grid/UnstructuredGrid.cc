@@ -14,7 +14,6 @@
 
 #include <fstream>
 #include <memory>
-#include <ostream>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -85,12 +84,6 @@ private:
     // -- Overridden methods
 
     // From Iterator
-
-    void print(std::ostream& out) const override {
-        out << "UnstructuredGridIterator[";
-        Iterator::print(out);
-        out << "]";
-    }
 
     bool operator++() override {
         if ((first_ ? count_ : ++count_) < size_) {
@@ -177,11 +170,6 @@ UnstructuredGrid::UnstructuredGrid(const std::vector<double>& latitudes, const s
 
 
 UnstructuredGrid::~UnstructuredGrid() = default;
-
-
-void UnstructuredGrid::print(std::ostream& out) const {
-    out << "UnstructuredGrid[points=" << size() << "]";
-}
 
 
 size_t UnstructuredGrid::size() const {

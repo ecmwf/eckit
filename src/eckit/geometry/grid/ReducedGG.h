@@ -63,7 +63,6 @@ protected:
     // -- Overridden methods
 
     bool isPeriodicWestEast() const override;
-    void print(std::ostream& out) const override;
 
     // -- Class members
 
@@ -73,7 +72,9 @@ protected:
 private:
     // -- Members
 
-    pl_type pl_;
+    const pl_type& pl_;
+    pl_type placc_;
+
     size_t k_;
     size_t Nj_;
 

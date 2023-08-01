@@ -13,7 +13,6 @@
 #include "eckit/geometry/grid/IrregularLatlon.h"
 
 #include <cmath>
-#include <ostream>
 
 #include "eckit/utils/MD5.h"
 
@@ -55,11 +54,6 @@ size_t IrregularLatlon::size() const {
 }
 
 
-void IrregularLatlon::print(std::ostream& out) const {
-    out << "IrregularLatlon[latitudes=" << latitudes_.size() << ",longitudes=" << longitudes_.size() << "]";
-}
-
-
 class IrregularLatlonIterator : public Iterator {
     size_t i_;
     size_t ni_;
@@ -70,12 +64,6 @@ class IrregularLatlonIterator : public Iterator {
 
     const std::vector<double>& latitudes_;
     const std::vector<double>& longitudes_;
-
-    void print(std::ostream& out) const override {
-        out << "IrregularLatlonIterator[";
-        Iterator::print(out);
-        out << "]";
-    }
 
     bool operator++() override {
         if (j_ < nj_) {

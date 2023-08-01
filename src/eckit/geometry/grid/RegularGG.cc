@@ -13,7 +13,6 @@
 #include "eckit/geometry/grid/RegularGG.h"
 
 #include <algorithm>
-#include <ostream>
 #include <utility>
 
 #include "eckit/config/MappedConfiguration.h"
@@ -171,13 +170,6 @@ void RegularGG::setNiNj() {
         }
         ASSERT(Nj_ > 0);
     }
-}
-
-
-void RegularGG::print(std::ostream& out) const {
-    out << "RegularGG["
-           "N="
-        << N_ << ",Ni=" << Ni_ << ",Nj=" << Nj_ << ",bbox=" << bbox() << "]";
 }
 
 

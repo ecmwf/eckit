@@ -12,8 +12,6 @@
 
 #include "eckit/geometry/grid/GaussianIterator.h"
 
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 
 
@@ -67,14 +65,6 @@ size_t GaussianIterator::resetToRow(size_t j) {
 
     lon_ = Nw * inc_;
     return Nw > Ne ? 0 : std::min(size_t(Ni_globe), size_t(Ne - Nw + 1));
-}
-
-
-void GaussianIterator::print(std::ostream& out) const {
-    out << "GaussianIterator[";
-    Iterator::print(out);
-    out << ",N=" << N_ << ",bbox=" << bbox_ << ",Ni=" << Ni_ << ",Nj=" << Nj_ << ",i=" << i_ << ",j=" << j_
-        << ",k=" << k_ << ",count=" << count_ << "]";
 }
 
 

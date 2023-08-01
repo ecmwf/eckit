@@ -69,8 +69,7 @@ protected:
     // None
 
     // -- Methods
-
-    void print(std::ostream&) const override;
+    // None
 
     // -- Overridden methods
     // None

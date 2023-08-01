@@ -14,7 +14,6 @@
 
 #include <algorithm>
 #include <numeric>
-#include <ostream>
 #include <set>
 #include <type_traits>
 
@@ -53,32 +52,6 @@ ReducedGG::ReducedGG(size_t N, const pl_type& pl) :
     ASSERT(pl_.size() == N_ * 2);
     ASSERT(pl_.size() >= k_ + Nj_);
     ASSERT(Nj_ > 0);
-
-    // if pl isn't global (from file!) insert leading/trailing 0's
-    if (n < lats.front() || s > lats.back()) {
-        size_t k  = 0;
-        size_t Nj = 0;
-        for (const auto& lat : lats) {
-            if (n < lat) {
-                ++k;
-            }
-            else if (s <= lat) {
-                ASSERT(pl_[Nj] >= 2);
-                ++Nj;
-            }
-            else {
-                break;
-            }
-        }
-        ASSERT(k + Nj <= N_ * 2);
-
-        if (k > 0) {
-            pl_.reserve(N_ * 2);
-            pl_.insert(pl_.begin(), k, 0);
-        }
-        pl_.resize(N_ * 2, 0);
-    }
-
 
     // set-up North/South
     ASSERT(0 < N_ && N_ * 2 == pl_.size());
@@ -170,22 +143,27 @@ ReducedGG::ReducedGG(size_t N, const pl_type& pl) :
 
     // bounding box
     bbox({n, w, s, e});
+
+
+    // accumulated pl
+    placc_.resize(1 + pl_.size());
+    placc_.front() = 0;
+
+    auto i = pl_.begin();
+    for (auto j = placc_.begin(), k = j + 1; k != placc_.end(); ++i, ++j, ++k) {
+        *k = *i + *j;
+    }
 }
 
 
 size_t ReducedGG::size() const {
-    return size_t(std::accumulate(pl_.begin(), pl_.end(), pl_type::value_type{0}));
+    return static_cast<size_t>(placc_.back());
 }
 
 
 bool ReducedGG::isPeriodicWestEast() const {
     auto inc = smallest_increment(pl_);
     return bbox().east() - bbox().west() + inc >= GLOBE;
-}
-
-
-void ReducedGG::print(std::ostream& out) const {
-    out << "ReducedGG[N=" << N_ << ",bbox=" << bbox() << "]";
 }
 
 

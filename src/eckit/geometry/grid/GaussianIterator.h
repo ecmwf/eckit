@@ -46,7 +46,6 @@ private:
     size_t count_;
     bool first_;
 
-    void print(std::ostream&) const override;
     bool operator++() override;
     size_t index() const override;
     size_t size() const override;

@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
-#include <ostream>
 #include <sstream>
 
 #include "eckit/config/MappedConfiguration.h"
@@ -106,11 +105,6 @@ Projection* RegularGrid::make_projection_from_proj(const Configuration& config) 
 }
 
 
-void RegularGrid::print(std::ostream& out) const {
-    NOTIMP;
-}
-
-
 size_t RegularGrid::size() const {
     return x_.size() * y_.size();
 }
@@ -143,12 +137,6 @@ Iterator* RegularGrid::iterator() const {
         size_t i_;
         size_t j_;
         size_t count_;
-
-        void print(std::ostream& out) const override {
-            out << "RegularGridIterator[";
-            Iterator::print(out);
-            out << ",i=" << i_ << ",j=" << j_ << ",count=" << count_ << "]";
-        }
 
         bool operator++() override {
             if (j_ < nj_ && i_ < ni_) {

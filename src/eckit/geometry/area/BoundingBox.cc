@@ -27,10 +27,7 @@ namespace eckit::geometry::area {
 
 
 BoundingBox::BoundingBox(const Configuration& config) :
-    north_(config.getDouble("north")),
-    west_(config.getDouble("west")),
-    south_(config.getDouble("south")),
-    east_(config.getDouble("east")) {
+    BoundingBox(config.getDouble("north", 90.), config.getDouble("west", 0.), config.getDouble("south", -90.), config.getDouble("east", 360.)) {
 }
 
 

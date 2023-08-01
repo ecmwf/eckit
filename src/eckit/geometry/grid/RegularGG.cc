@@ -64,8 +64,7 @@ RegularGG::RegularGG(size_t N, const area::BoundingBox& box) :
 
 
 Configuration* RegularGG::config(const std::string& name) {
-    auto N = Translator<std::string, pl_type::value_type>{}(name.substr(1));
-
+    auto N = Translator<std::string, size_t>{}(name.substr(1));
     return new MappedConfiguration({{"type", "regular_gg"},
                                     {"N", N},
                                     {"Ni", 2 * N},

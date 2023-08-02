@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "eckit/geometry/Grid.h"
 
 
@@ -21,7 +23,12 @@ namespace eckit::geometry::grid {
 class HEALPix final : public Grid {
 public:
     // -- Types
-    // None
+
+    enum ordering_type
+    {
+        ring,
+        nested
+    };
 
     // -- Exceptions
     // None
@@ -29,7 +36,7 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Configuration&);
-    explicit HEALPix(size_t Nside);
+    explicit HEALPix(size_t Nside, ordering_type);
 
     // -- Destructor
     // None
@@ -57,9 +64,15 @@ private:
     // -- Members
 
     const size_t N_;
+    const ordering_type ordering_;
+
+    std::vector<size_t> njacc_;
+    std::vector<double> latitude_;
 
     // -- Methods
-    // None
+
+    size_t ni() const;
+    size_t nj(size_t i) const;
 
     // -- Overridden methods
 

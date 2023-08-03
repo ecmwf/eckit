@@ -192,6 +192,10 @@ ThreadPoolTask* ThreadPool::next() {
     return r;
 }
 
+bool ThreadPool::done() {
+    return (queue_.empty() && !tasks_);
+}
+
 void ThreadPool::wait() {
     AutoLock<MutexCond> lock(active_);
 

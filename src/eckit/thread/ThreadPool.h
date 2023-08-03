@@ -56,6 +56,7 @@ public:  // methods
     const std::string& name() const { return name_; }
     void error(const std::string&);
 
+    bool done();
     void wait();
     void resize(size_t);
 

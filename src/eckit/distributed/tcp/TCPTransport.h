@@ -26,14 +26,14 @@
 
 namespace eckit {
 class Stream;
+}
 
-namespace option {
+namespace eckit::option {
 class Option;
 class CmdArgs;
 }
-}
 
-namespace eckit {
+namespace eckit::distributed {
 
 class Message;
 

@@ -21,7 +21,7 @@
 using eckit::Log;
 using eckit::Bytes;
 
-namespace eckit {
+namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 

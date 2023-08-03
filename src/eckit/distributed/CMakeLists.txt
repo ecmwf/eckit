@@ -35,3 +35,7 @@ ecbuild_add_library( TARGET eckit_distributed TYPE SHARED
                          ${eckit_distributed_srcs}
                      PUBLIC_LIBS
                          eckit )
+
+if ( HAVE_MPI )
+    target_link_libraries( eckit_distributed PUBLIC eckit_mpi )
+endif()

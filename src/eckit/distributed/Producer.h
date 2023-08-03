@@ -18,11 +18,11 @@
 
 #include "eckit/distributed/Actor.h"
 
-namespace eckit {
+namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Producer : public eckit::Actor {
+class Producer : public Actor {
 
 public: // methods
 

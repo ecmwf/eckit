@@ -18,7 +18,7 @@
 
 
 
-namespace eckit {
+namespace eckit::distributed {
 
 class Transport;
 

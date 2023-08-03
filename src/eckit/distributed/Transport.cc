@@ -18,7 +18,7 @@
 #include "eckit/option/CmdArgs.h"
 
 
-namespace eckit {
+namespace eckit::distributed {
 
 
 

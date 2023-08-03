@@ -24,7 +24,7 @@ namespace eckit {
 class Stream;
 }
 
-namespace eckit {
+namespace eckit::distributed {
 
 class TocHandler;
 

@@ -16,7 +16,7 @@
 #include "eckit/distributed/Transport.h"
 #include "eckit/distributed/Message.h"
 
-namespace eckit {
+namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 

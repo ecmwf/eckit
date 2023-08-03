@@ -23,7 +23,7 @@
 
 #include "eckit/distributed/Actor.h"
 
-namespace eckit {
+namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 

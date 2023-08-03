@@ -13,8 +13,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_Transport_H
-#define eckit_Transport_H
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -23,14 +22,12 @@
 #include "eckit/distributed/TransportStatistics.h"
 
 
-namespace eckit {
-namespace option {
+namespace eckit::option {
 class Option;
 class CmdArgs;
 }
-}
 
-namespace eckit {
+namespace eckit::distributed {
 
 class Actor;
 class Message;
@@ -113,6 +110,4 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
-#endif
+} // namespace eckit::distributed

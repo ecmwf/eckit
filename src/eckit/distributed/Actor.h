@@ -20,7 +20,7 @@
 #include "eckit/memory/NonCopyable.h"
 
 
-namespace eckit {
+namespace eckit::distributed {
 
 class Transport;
 class Message;

@@ -12,7 +12,7 @@
 #include "eckit/serialisation/Stream.h"
 
 
-namespace eckit {
+namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -32,7 +32,7 @@
 using namespace eckit;
 using namespace eckit::net;
 
-namespace eckit {
+namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 

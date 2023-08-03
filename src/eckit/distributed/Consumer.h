@@ -18,11 +18,11 @@
 
 #include "eckit/distributed/Actor.h"
 
-namespace eckit {
+namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Consumer : public eckit::Actor {
+class Consumer : public Actor {
 
     virtual void run();
 

@@ -23,19 +23,14 @@
 #include "eckit/thread/Mutex.h"
 
 
-namespace eckit {
-namespace option {
+namespace eckit::option {
 class Option;
 class CmdArgs;
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option
 
-namespace eckit {
+namespace eckit::distributed {
+
 class Message;
-}
-
-
-namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 

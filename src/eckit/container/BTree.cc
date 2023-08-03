@@ -652,6 +652,7 @@ size_t BTree<K, V, S, L>::count(unsigned long page) const {
     return c;
 }
 
+
 template <class K, class V, int S, class L>
 void BTree<K, V, S, L>::lockShared() {
     L::lockRange(file_.fileno(), 0, 0, F_SETLKW, F_RDLCK);

@@ -18,7 +18,7 @@ class HEALPix:
     def Nrow(self):
         return 4 * self._N - 1
 
-    def size(self):
+    def __len__(self):
         return 12 * self._N * self._N
 
     def pl(self, i):
@@ -27,23 +27,21 @@ class HEALPix:
             return self.pl(self.Nrow() - 1 - i)
         return self._N * min(4, i + 1)
 
-    def row(self, count):
-        assert 0 <= count < self.size()
-        return np.searchsorted(self._pla, count, side="right")
-
     def latlon(self, count):
-        r = self.row(count)
-        dlat = 45.0 / self._N
-        dlon = 180.0 / self.pl(r)
+        assert 0 <= count < len(self)
 
-        j = count if r == 0 else count - self._pla[r - 1]
-        lon = dlon * (2 * j + (0, 1)[r % 2])
-        lat = 90.0 - dlat * (r + 1)
+        i = np.searchsorted(self._pla, count, side="right")
+        j = count if i == 0 else count - self._pla[i - 1]
+        dlat = 45.0 / self._N
+        dlon = 180.0 / self.pl(i)
+
+        lon = dlon * (2 * j + (0, 1)[i % 2])
+        lat = 90.0 - dlat * (i + 1)
 
         return lat, lon
 
 
 h = HEALPix(4)
 
-for i in range(h.size()):
+for i in range(len(h)):
     print(h.latlon(i))

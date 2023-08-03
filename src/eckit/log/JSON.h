@@ -15,6 +15,7 @@
 #ifndef eckit_log_JSON_h
 #define eckit_log_JSON_h
 
+#include <sys/time.h>
 #include <ctime>
 #include <iosfwd>
 #include <map>

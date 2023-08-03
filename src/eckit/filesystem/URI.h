@@ -105,6 +105,9 @@ private:  // methods
     void parse(const std::string& uri, size_t first, bool authority, bool query, bool fragment);
     void parseQueryValues(const std::string& query);
 
+    static std::string encode(const std::string &value);
+    static std::string decode(const std::string &value);
+
 private:  // members
     std::string name_;
     std::string scheme_;

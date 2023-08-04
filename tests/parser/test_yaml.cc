@@ -33,21 +33,24 @@ static std::string toJSON(const Value& v) {
     return oss.str();
 }
 
-// CASE ( "test_eckit_yaml_1" ) {
-//     Value v =  YAMLParser::decodeFile("2.1.yaml");
-//     std::cout << "2.1.yaml " << v << std::endl;
-//     std::cout << toJSON(v) << std::endl;
+CASE ( "test_eckit_yaml_1" ) {
+    Value v =  YAMLParser::decodeFile("2.1.yaml");
+    std::cout << "2.1.yaml " << v << std::endl;
+    std::cout << toJSON(v) << std::endl;
 
-//     EXPECT( v.isList() );
-//     EXPECT( v.size() == 3 );
+    EXPECT( v.isList() );
+    EXPECT( v.size() == 3 );
 
-//     EXPECT( v[0] == "Mark McGwire" );
-//     EXPECT( v[1] == "Sammy Sosa" );
-//     EXPECT( v[2] == "Ken Griffey" );
+    EXPECT( v[0].isString() );
+    EXPECT( v[0] == "Mark McGwire" );
+    EXPECT( v[1].isString() );
+    EXPECT( v[1] == "Sammy Sosa" );
+    EXPECT( v[2].isString() );
+    EXPECT( v[2] == "Ken Griffey" );
 
-//     // EXPECT(toJSON(v) == "[\"Mark McGwire\",\"Sammy Sosa\",\"Ken Griffey\"]");
+    // EXPECT(toJSON(v) == "[\"Mark McGwire\",\"Sammy Sosa\",\"Ken Griffey\"]");
 
-// }
+}
 
 CASE("test_eckit_yaml_2") {
     Value v = YAMLParser::decodeFile("2.2.yaml");
@@ -57,8 +60,11 @@ CASE("test_eckit_yaml_2") {
     EXPECT(v.isOrderedMap());
     EXPECT(v.keys().size() == 3);
 
+    EXPECT(v["hr"].isNumber());
     EXPECT(v["hr"] == Value(65));
+    EXPECT(v["avg"].isDouble());
     EXPECT(v["avg"] == Value(0.278));
+    EXPECT(v["rbi"].isNumber());
     EXPECT(v["rbi"] == Value(147));
 }
 
@@ -72,9 +78,15 @@ CASE("test_eckit_yaml_3") {
 
     EXPECT(v["american"].isList());
     EXPECT(v["american"].size() == 3);
+    EXPECT(v["american"][0].isString());
+    EXPECT(v["american"][1].isString());
+    EXPECT(v["american"][2].isString());
 
     EXPECT(v["national"].isList());
     EXPECT(v["national"].size() == 3);
+    EXPECT(v["national"][0].isString());
+    EXPECT(v["national"][1].isString());
+    EXPECT(v["national"][2].isString());
 }
 
 CASE("test_eckit_yaml_4") {
@@ -87,9 +99,15 @@ CASE("test_eckit_yaml_4") {
 
     EXPECT(v[0].isOrderedMap());
     EXPECT(v[0].keys().size() == 3);
+    EXPECT(v[0]["name"].isString());
+    EXPECT(v[0]["hr"].isNumber());
+    EXPECT(v[0]["avg"].isDouble());
 
     EXPECT(v[1].isOrderedMap());
     EXPECT(v[1].keys().size() == 3);
+    EXPECT(v[1]["name"].isString());
+    EXPECT(v[1]["hr"].isNumber());
+    EXPECT(v[1]["avg"].isDouble());
 }
 
 CASE("test_eckit_yaml_5") {
@@ -102,13 +120,22 @@ CASE("test_eckit_yaml_5") {
 
     EXPECT(v[0].isList());
     EXPECT(v[0].size() == 3);
+    EXPECT(v[0][0].isString());
+    EXPECT(v[0][1].isString());
+    EXPECT(v[0][2].isString());
 
     EXPECT(v[1].isList());
     EXPECT(v[1].size() == 3);
+    EXPECT(v[1][0].isString());
+    EXPECT(v[1][1].isNumber());
+    EXPECT(v[1][2].isDouble());
 
 
     EXPECT(v[2].isList());
     EXPECT(v[2].size() == 3);
+    EXPECT(v[2][0].isString());
+    EXPECT(v[2][1].isNumber());
+    EXPECT(v[2][2].isDouble());
 }
 
 CASE("test_eckit_yaml_6") {
@@ -121,32 +148,40 @@ CASE("test_eckit_yaml_6") {
 
     EXPECT(v["Mark McGwire"].isOrderedMap());
     EXPECT(v["Mark McGwire"].keys().size() == 2);
+    EXPECT(v["Mark McGwire"]["hr"].isNumber());
+    EXPECT(v["Mark McGwire"]["avg"].isDouble());
 
     EXPECT(v["Sammy Sosa"].isOrderedMap());
     EXPECT(v["Sammy Sosa"].keys().size() == 2);
+    EXPECT(v["Sammy Sosa"]["hr"].isNumber());
+    EXPECT(v["Sammy Sosa"]["avg"].isDouble());
 }
 
 CASE("test_eckit_yaml_7") {
     Value v = YAMLParser::decodeFile("2.7.yaml");
     std::cout << "2.7.yaml " << v << std::endl;
+    EXPECT(v.isList());
     std::cout << toJSON(v) << std::endl;
 }
 
 CASE("test_eckit_yaml_8") {
     Value v = YAMLParser::decodeFile("2.8.yaml");
     std::cout << "2.8.yaml " << v << std::endl;
+    EXPECT(v.isList());
     std::cout << toJSON(v) << std::endl;
 }
 
 CASE("test_eckit_yaml_9") {
     Value v = YAMLParser::decodeFile("2.9.yaml");
     std::cout << "2.9.yaml " << v << std::endl;
+    EXPECT(v.isMap());
     std::cout << toJSON(v) << std::endl;
 }
 
 CASE("test_eckit_yaml_10") {
     Value v = YAMLParser::decodeFile("2.10.yaml");
     std::cout << "2.10.yaml " << v << std::endl;
+    EXPECT(v.isMap());
     std::cout << toJSON(v) << std::endl;
 }
 
@@ -205,11 +240,11 @@ CASE("test_eckit_yaml_16") {
     std::cout << toJSON(v) << std::endl;
 }
 
-// CASE ( "test_eckit_yaml_17" ) {
-//     Value v =  YAMLParser::decodeFile("2.17.yaml");
-//     std::cout << "2.17.yaml " << v << std::endl;
-//         std::cout << toJSON(v) << std::endl;
-// }
+CASE ( "test_eckit_yaml_17" ) {
+    Value v =  YAMLParser::decodeFile("2.17.yaml");
+    std::cout << "2.17.yaml " << v << std::endl;
+        std::cout << toJSON(v) << std::endl;
+}
 
 CASE("test_eckit_yaml_18") {
     Value v = YAMLParser::decodeFile("2.18.yaml");
@@ -592,7 +627,8 @@ CASE("test_eckit_yaml_text_2") {
 
     ValueMap m(v);
 
-    EXPECT(v.keys()[0].isNumber());
+    // Explicitly quoted string may not be interpreted as numbers - especially not keys
+    EXPECT(v.keys()[0].isString());
 }
 
 

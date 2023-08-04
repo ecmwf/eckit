@@ -524,12 +524,15 @@ parser/CSVParser.h
 parser/JSON.h
 parser/JSONParser.cc
 parser/JSONParser.h
+parser/GenericJSONParser.h
 parser/ObjectParser.cc
 parser/ObjectParser.h
+parser/GenericObjectParser.h
 parser/StreamParser.cc
 parser/StreamParser.h
 parser/YAMLParser.cc
 parser/YAMLParser.h
+parser/GenericYAMLParser.h
 )
 
 list( APPEND eckit_value_srcs
@@ -695,6 +698,7 @@ list( APPEND eckit_utils_srcs
   utils/Clock.h
   utils/Translator.cc
   utils/Translator.h
+  utils/VariantHelpers.h
 )
 
 if(eckit_HAVE_BZIP2)

@@ -11,78 +11,15 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eckit_YAMLParser_h
-#define eckit_YAMLParser_h
+#pragma once
 
 #include <deque>
 
 #include "eckit/parser/ObjectParser.h"
+#include "eckit/parser/GenericYAMLParser.h"
 
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-struct YAMLItem;
-
-class YAMLParser : public ObjectParser {
-
-
-public:  // methods
-    YAMLParser(std::istream& in);
-    ~YAMLParser() override;
-
-    static Value decodeFile(const PathName& path);
-    static Value decodeString(const std::string& str);
-
-private:
-    std::deque<YAMLItem*> items_;
-    YAMLItem* last_;
-
-    std::vector<char> stop_;
-    std::vector<char> comma_;
-    std::vector<char> colon_;
-
-    std::map<Value, Value> anchors_;
-
-private:
-    void loadItem();
-    const YAMLItem& nextItem();
-    const YAMLItem& peekItem();
-
-    std::string nextWord();
-    size_t consumeChars(char);
-    Value consumeJSON(char);
-
-
-    std::string nextToken(size_t& spaces, size_t& lines);
-
-    bool endOfToken(char);
-
-    Value parseValue() override;
-
-    Value parseString(char quote = '"') override;
-    Value parseNumber() override;
-
-    Value parseStringOrNumber(bool& isKey);
-
-    std::string parserName() const override;
-
-
-    void anchor(const Value& key, const Value& value);
-    Value anchor(const Value& key) const;
-
-    friend struct YAMLItemKey;
-    friend struct YAMLItemEntry;
-    friend struct YAMLItemStartDocument;
-    friend struct YAMLItemEndDocument;
-    friend struct YAMLItemAnchor;
-    friend struct YAMLItemReference;
-};
-
-
-//----------------------------------------------------------------------------------------------------------------------
+using YAMLParser = GenericYAMLParser<parser::ValueBuilder, ObjectParser>;
 
 }  // namespace eckit
-
-#endif

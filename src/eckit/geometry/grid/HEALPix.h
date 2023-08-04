@@ -67,12 +67,17 @@ private:
     const ordering_type ordering_;
 
     std::vector<size_t> njacc_;
-    std::vector<double> latitude_;
+
+    mutable std::vector<double> lats_;
+    mutable std::vector<double> lons_;
 
     // -- Methods
 
     size_t ni() const;
     size_t nj(size_t i) const;
+
+    const std::vector<double>& latitudes() const;
+    const std::vector<double>& longitudes(size_t i) const;
 
     // -- Overridden methods
 

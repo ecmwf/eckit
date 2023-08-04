@@ -12,6 +12,9 @@
 
 #include "eckit/geometry/grid/HEALPix.h"
 
+#include <algorithm>
+#include <cmath>
+
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/area/BoundingBox.h"
@@ -37,7 +40,7 @@ HEALPix::HEALPix(const Configuration& config) :
 
 
 HEALPix::HEALPix(size_t Nside, ordering_type ordering) :
-    Grid(__global), N_(Nside), ordering_(ordering), latitude_(ni()) {
+    Grid(__global), N_(Nside), ordering_(ordering) {
     ASSERT(N_ > 0);
     ASSERT(ordering_ == ordering_type::ring);
 
@@ -52,20 +55,6 @@ HEALPix::HEALPix(size_t Nside, ordering_type ordering) :
     }
 
     ASSERT(njacc_.back() == size());
-
-
-    // latitude
-    auto j = latitude_.begin();
-    auto k = latitude_.rbegin();
-    for (size_t i = 1; i < 2 * N_; ++i, ++j, ++k) {
-        auto c = i < N_ ? 1. - static_cast<double>(i * i) / static_cast<double>(3 * N_ * N_)
-                        : static_cast<double>(4 * N_ - 2 * i) / static_cast<double>(3 * N_);
-
-        *j = 90. - util::radian_to_degree * std::acos(c);
-        *k = -*j;
-    }
-
-    latitude_[2 * N_ - 1] = 0.;
 }
 
 
@@ -81,9 +70,54 @@ size_t HEALPix::ni() const {
 
 
 size_t HEALPix::nj(size_t i) const {
-    ASSERT(0 <= i && i < ni());
+    ASSERT(i < ni());
     return i < N_ ? 4 * (i + 1) : i < 3 * N_ ? 4 * N_
                                              : nj(ni() - 1 - i);
+}
+
+
+const std::vector<double>& HEALPix::latitudes() const {
+    const auto Ni = ni();
+
+    if (lats_.empty()) {
+        lats_.resize(Ni);
+
+        auto i = lats_.begin();
+        auto j = lats_.rbegin();
+        for (int ring = 1; ring < 2 * N_; ++ring, ++i, ++j) {
+            const auto f = ring < N_ ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(N_ * N_)) : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(N_));
+
+            *i = 90. - util::radian_to_degree * std::acos(f);
+            *j = -*i;
+        }
+        *i = 0.;
+
+        return lats_;
+    }
+
+    ASSERT(lats_.size() == Ni);
+    return lats_;
+}
+
+
+const std::vector<double>& HEALPix::longitudes(size_t i) const {
+    const auto Ni = ni();
+    ASSERT(i < Ni);
+
+    // ring index: 1-based, symmetric, in range [1, Nside_ + 1]
+    const auto Nj   = nj(i);
+    const auto ring = i >= N_ * 3 ? Ni - i : i >= N_ ? 1 + N_ - i % 2
+                                                     : 1 + i;
+
+    const auto step  = 360. / static_cast<double>(Nj);
+    const auto start = static_cast<bool>(i % 2) ? 180. / static_cast<double>(Nj) : ring == 1 ? 45.
+                                                                                             : 0.;
+
+    lons_.reserve(N_ * 4);
+    lons_.resize(Nj);
+    std::generate_n(lons_.begin(), Nj, [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+
+    return lons_;
 }
 
 

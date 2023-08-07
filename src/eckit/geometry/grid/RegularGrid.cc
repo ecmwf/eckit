@@ -20,7 +20,6 @@
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/config/Resource.h"
 #include "eckit/geometry/Earth.h"
-#include "eckit/geometry/Iterator.h"
 #include "eckit/utils/StringTools.h"
 
 
@@ -242,10 +241,10 @@ struct PolarStereographic : RegularGrid {
 };
 
 
-static const GridRegisterType<Lambert> __builder1("lambert");
-static const GridRegisterType<LambertAzimuthalEqualArea> __builder2("lambert_azimuthal_equal_area");
-static const GridRegisterType<Mercator> __builder3("mercator");
-static const GridRegisterType<PolarStereographic> __builder4("polar_stereographic");
+// static const GridRegisterType<Lambert> __builder1("lambert");
+// static const GridRegisterType<LambertAzimuthalEqualArea> __builder2("lambert_azimuthal_equal_area");
+// static const GridRegisterType<Mercator> __builder3("mercator");
+// static const GridRegisterType<PolarStereographic> __builder4("polar_stereographic");
 
 
 }  // namespace eckit::geometry::grid

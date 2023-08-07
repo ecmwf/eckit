@@ -17,7 +17,6 @@
 #include <sstream>
 
 #include "eckit/geometry/Domain.h"
-#include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
@@ -68,93 +67,6 @@ bool ReducedLL::includesNorthPole() const {
 bool ReducedLL::includesSouthPole() const {
     return bbox().south() == SOUTH_POLE;
 }
-
-class ReducedLLIterator : public Iterator {
-
-    const std::vector<long>& pl_;
-    const size_t nj_;
-    size_t ni_;
-
-    const Domain domain_;
-    const Fraction west_;
-    const Fraction ew_;
-    Fraction inc_west_east_;
-    const Fraction inc_north_south_;
-
-    Fraction latitude_;
-    Fraction longitude_;
-
-    size_t i_;
-    size_t j_;
-    size_t p_;
-
-    size_t count_;
-    bool first_;
-    bool periodic_;
-
-    bool operator++() override {
-        while (j_ < nj_ && i_ < ni_) {
-            // lat = latitude_;
-            // lon = longitude_;
-
-            bool contains = domain_.contains(latitude_, longitude_);
-            if (contains && !first_) {
-                count_++;
-            }
-
-            longitude_ += inc_west_east_;
-
-            if (++i_ == ni_) {
-                ++j_;
-                i_ = 0;
-                latitude_ -= inc_north_south_;
-                longitude_ = west_;
-
-                if (j_ < nj_) {
-                    ASSERT(p_ < pl_.size());
-                    ni_ = size_t(pl_[p_++]);
-                    ASSERT(ni_ > 1);
-                    inc_west_east_ = ew_ / (ni_ - (periodic_ ? 0 : 1));
-                }
-            }
-
-            if (contains) {
-                first_ = false;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    size_t index() const override { return count_; }
-
-    size_t size() const override { NOTIMP; }
-
-public:
-    ReducedLLIterator(const std::vector<long>& pl, const Domain& dom) :
-        pl_(pl),
-        nj_(pl.size()),
-        domain_(dom),
-        west_(domain_.west()),
-        ew_((domain_.east() - domain_.west())),
-        inc_north_south_(Fraction(domain_.north() - domain_.south()) / Fraction(nj_ - 1)),
-        latitude_(domain_.north()),
-        longitude_(west_),
-        i_(0),
-        j_(0),
-        p_(0),
-        count_(0),
-        first_(true),
-        periodic_(dom.isPeriodicWestEast()) {
-
-        ASSERT(nj_ > 1);
-
-        ni_ = size_t(pl_[p_++]);
-        ASSERT(ni_ > 1);
-        inc_west_east_ = ew_ / (ni_ - (periodic_ ? 0 : 1));
-    }
-};
-
 
 static const GridRegisterType<ReducedLL> reducedLL("reduced_ll");
 

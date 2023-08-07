@@ -12,12 +12,15 @@
 
 #include "eckit/geometry/grid/GaussianIterator.h"
 
+#if 0
 #include "eckit/exception/Exceptions.h"
+#endif
 
 
 namespace eckit::geometry::grid {
 
 
+#if 0
 GaussianIterator::GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl,
                                    const area::BoundingBox& bbox, size_t N, size_t Nj, size_t k) :
     latitudes_(latitudes),
@@ -103,6 +106,7 @@ size_t GaussianIterator::index() const {
 size_t GaussianIterator::size() const {
     NOTIMP;
 }
+#endif
 
 
 }  // namespace eckit::geometry::grid

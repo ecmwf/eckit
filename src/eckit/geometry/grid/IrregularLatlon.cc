@@ -16,7 +16,6 @@
 
 #include "eckit/utils/MD5.h"
 
-#include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
 
 
@@ -54,75 +53,6 @@ size_t IrregularLatlon::size() const {
 }
 
 
-class IrregularLatlonIterator : public Iterator {
-    size_t i_;
-    size_t ni_;
-    size_t j_;
-    size_t nj_;
-    size_t count_;
-    bool first_;
-
-    const std::vector<double>& latitudes_;
-    const std::vector<double>& longitudes_;
-
-    bool operator++() override {
-        if (j_ < nj_) {
-            if (i_ < ni_) {
-                // lat = latitudes_[j_];
-                // lon = longitudes_[i_];
-
-                if (first_) {
-                    first_ = false;
-                }
-                else {
-                    count_++;
-                }
-
-                if (++i_ == ni_) {
-                    ++j_;
-                    i_ = 0;
-                }
-
-                return true;
-            }
-        }
-        return false;
-    }
-
-    size_t index() const override { return count_; }
-
-    size_t size() const override { NOTIMP; }
-
-public:
-    // TODO: Consider keeping a reference on the latitudes and bbox, to avoid copying
-
-    IrregularLatlonIterator(const std::vector<double>& latitudes, const std::vector<double>& longitudes) :
-        i_(0),
-        ni_(longitudes.size()),
-        j_(0),
-        nj_(latitudes.size()),
-        count_(0),
-        first_(true),
-        latitudes_(latitudes),
-        longitudes_(longitudes) {}
-
-    ~IrregularLatlonIterator() override {
-        auto count = count_ + (i_ > 0 || j_ > 0 ? 1 : 0);
-        ASSERT(count == ni_ * nj_);
-    }
-
-    IrregularLatlonIterator(const IrregularLatlonIterator&)            = delete;
-    IrregularLatlonIterator(IrregularLatlonIterator&&)                 = delete;
-    IrregularLatlonIterator& operator=(const IrregularLatlonIterator&) = delete;
-    IrregularLatlonIterator& operator=(IrregularLatlonIterator&&)      = delete;
-};
-
-
-// Iterator* IrregularLatlon::iterator() const {
-//     return new IrregularLatlonIterator(latitudes_, longitudes_);
-// }
-
-
 bool IrregularLatlon::isPeriodicWestEast() const {
     return (east_ - west_) + west_east_ >= GLOBE;
 }
@@ -138,7 +68,7 @@ bool IrregularLatlon::includesSouthPole() const {
 }
 
 
-static const GridRegisterType<IrregularLatlon> irregularLatlon("irregular_latlon");
+// static const GridRegisterType<IrregularLatlon> irregularLatlon("irregular_latlon");
 
 
 }  // namespace eckit::geometry::grid

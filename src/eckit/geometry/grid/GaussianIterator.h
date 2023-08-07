@@ -14,16 +14,19 @@
 
 #include <vector>
 
+#if 0
 #include "eckit/types/Fraction.h"
 
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/area/BoundingBox.h"
+#endif
 
 
 namespace eckit::geometry::grid {
 
 
+#if 0
 class GaussianIterator : public Iterator {
 public:
     GaussianIterator(const std::vector<double>& latitudes, std::vector<long>&& pl, const area::BoundingBox&, size_t N,
@@ -52,6 +55,7 @@ private:
 
     size_t resetToRow(size_t j);
 };
+#endif
 
 
 }  // namespace eckit::geometry::grid

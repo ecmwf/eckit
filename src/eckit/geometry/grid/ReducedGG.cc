@@ -18,7 +18,6 @@
 #include <type_traits>
 
 #include "eckit/config/MappedConfiguration.h"
-#include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/grid/GaussianIterator.h"
 #include "eckit/types/Fraction.h"

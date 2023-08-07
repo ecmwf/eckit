@@ -13,6 +13,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,40 @@ namespace eckit::geometry {
 class Grid {
 public:
     // -- Types
-    // None
+
+    struct Iterator {
+        explicit Iterator(const Grid& grid) :
+            grid_(grid) {}
+
+        Iterator(const Iterator&) = delete;
+        Iterator(Iterator&&)      = delete;
+
+        virtual ~Iterator() = default;
+
+        void operator=(const Iterator&) = delete;
+        void operator=(Iterator&&)      = delete;
+
+        bool operator!=(const Iterator& other) const { return &grid_ != &other.grid_ || index_ != other.index_; }
+
+        bool operator++() {
+            index_++;
+            return operator bool();
+        }
+
+        virtual explicit operator bool()       = 0;
+        virtual const Point& operator*() const = 0;
+
+        size_t size() const { return grid_.size(); }
+        size_t index() const { return index_; }
+
+    private:
+        const Grid& grid_;
+        size_t index_ = 0;
+    };
+
+
+    using iterator       = std::unique_ptr<Iterator>;
+    using const_iterator = std::unique_ptr<const Iterator>;
 
     // -- Exceptions
     // None
@@ -40,8 +74,8 @@ public:
 
     explicit Grid(const Configuration&);
 
-    Grid(const Grid&) = default;
-    Grid(Grid&&)      = default;
+    Grid(const Grid&) = delete;
+    Grid(Grid&&)      = delete;
 
     // -- Destructor
 
@@ -53,10 +87,19 @@ public:
     // -- Operators
     // None
 
-    Grid& operator=(const Grid&) = default;
-    Grid& operator=(Grid&&)      = default;
+    Grid& operator=(const Grid&) = delete;
+    Grid& operator=(Grid&&)      = delete;
 
     // -- Methods
+
+    virtual iterator begin() = 0;
+    virtual iterator end()   = 0;
+
+    virtual const_iterator cbegin() const = 0;
+    virtual const_iterator cend() const   = 0;
+
+    virtual const_iterator begin() const = 0;
+    virtual const_iterator end() const   = 0;
 
     virtual const area::BoundingBox& boundingBox() const;
 
@@ -78,9 +121,7 @@ public:
 protected:
     // -- Constructors
 
-    Grid(const area::BoundingBox&);
-
-    // None
+    explicit Grid(const area::BoundingBox&);
 
     // -- Methods
 

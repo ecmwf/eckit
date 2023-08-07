@@ -16,8 +16,6 @@ list( APPEND eckit_geometry_srcs
     Grid.h
     Increments.cc
     Increments.h
-    Iterator.cc
-    Iterator.h
     KPoint.cc
     KPoint.h
     Point.cc

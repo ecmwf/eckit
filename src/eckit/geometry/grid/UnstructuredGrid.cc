@@ -18,14 +18,17 @@
 #include <sstream>
 #include <utility>
 
-#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+
+#if 0
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geometry/Domain.h"
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/IfstreamStream.h"
+#endif
 
 
 namespace eckit::geometry::grid {
@@ -34,6 +37,7 @@ namespace eckit::geometry::grid {
 namespace detail {
 
 
+#if 0
 class UnstructuredIterator : public Iterator {
 public:
     // -- Exceptions
@@ -109,6 +113,7 @@ private:
     // -- Friends
     // None
 };
+#endif
 
 
 }  // namespace detail
@@ -193,8 +198,8 @@ bool UnstructuredGrid::includesSouthPole() const {
 }
 
 
-static const GridRegisterType<UnstructuredGrid> triangular_grid("triangular_grid");
-static const GridRegisterType<UnstructuredGrid> unstructured_grid("unstructured_grid");
+// static const GridRegisterType<UnstructuredGrid> triangular_grid("triangular_grid");
+// static const GridRegisterType<UnstructuredGrid> unstructured_grid("unstructured_grid");
 
 
 }  // namespace eckit::geometry::grid

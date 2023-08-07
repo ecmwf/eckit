@@ -522,15 +522,12 @@ list( APPEND eckit_parser_srcs
 parser/CSVParser.cc
 parser/CSVParser.h
 parser/JSON.h
-parser/JSONParser.cc
 parser/JSONParser.h
 parser/GenericJSONParser.h
-parser/ObjectParser.cc
 parser/ObjectParser.h
 parser/GenericObjectParser.h
 parser/StreamParser.cc
 parser/StreamParser.h
-parser/YAMLParser.cc
 parser/YAMLParser.h
 parser/GenericYAMLParser.h
 )

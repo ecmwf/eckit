@@ -91,8 +91,6 @@ const std::vector<double>& HEALPix::latitudes() const {
             *j = -*i;
         }
         *i = 0.;
-
-        return lats_;
     }
 
     ASSERT(lats_.size() == Ni);
@@ -101,17 +99,9 @@ const std::vector<double>& HEALPix::latitudes() const {
 
 
 const std::vector<double>& HEALPix::longitudes(size_t i) const {
-    const auto Ni = ni();
-    ASSERT(i < Ni);
-
-    // ring index: 1-based, symmetric, in range [1, Nside_ + 1]
-    const auto Nj   = nj(i);
-    const auto ring = i >= N_ * 3 ? Ni - i : i >= N_ ? 1 + N_ - i % 2
-                                                     : 1 + i;
-
+    const auto Nj    = nj(i);
     const auto step  = 360. / static_cast<double>(Nj);
-    const auto start = static_cast<bool>(i % 2) ? 180. / static_cast<double>(Nj) : ring == 1 ? 45.
-                                                                                             : 0.;
+    const auto start = i < N_ || 3 * N_ - 1 < i || static_cast<bool>((i + N_) % 2) ? step / 2. : 0.;
 
     lons_.reserve(N_ * 4);
     lons_.resize(Nj);

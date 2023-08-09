@@ -10,6 +10,12 @@ ecbuild_add_executable( TARGET      eckit_info
                         SOURCES     eckit-info.cc
                         LIBS        eckit_option eckit )
 
+ecbuild_add_executable( TARGET      eckit_grid
+                        OUTPUT_NAME eckit-grid
+                        CONDITION   HAVE_BUILD_TOOLS
+                        SOURCES     eckit-grid.cc
+                        LIBS        eckit_option eckit_geometry )
+
 ### NOT TO INSTALL
 
 ecbuild_add_executable( TARGET      dhcopy

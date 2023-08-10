@@ -27,6 +27,9 @@ using Point = std::variant<PointLonLat, Point2, Point3>;
 bool points_equal(const Point&, const Point&);
 
 
+std::ostream& operator<<(std::ostream&, const Point&);
+
+
 constexpr double GLOBE      = 360.;
 constexpr double GREENWICH  = 0.;
 constexpr double NORTH_POLE = 90.;
@@ -38,6 +41,3 @@ using Latitude  = double;
 
 
 }  // namespace eckit::geometry
-
-
-std::ostream& operator<<(std::ostream&, const eckit::geometry::Point&);

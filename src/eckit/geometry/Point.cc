@@ -26,10 +26,10 @@ bool points_equal(const Point& p, const Point& q) {
 }
 
 
-}  // namespace eckit::geometry
-
-
-std::ostream& operator<<(std::ostream& out, const eckit::geometry::Point& p) {
+std::ostream& operator<<(std::ostream& out, const Point& p) {
     std::visit([&](const auto& p) { out << p; }, p);
     return out;
 }
+
+
+}  // namespace eckit::geometry

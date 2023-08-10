@@ -19,6 +19,7 @@
 #include <type_traits>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -80,21 +81,31 @@ void GridFactory::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    const char* sep = "";
-    for (const auto& j : *__grid_uids) {
-        out << sep << j.first;
-        sep = ", ";
-    }
+    JSON j(out);
+    j.startObject();
 
-    for (const auto& j : *__grid_names) {
-        out << sep << j.first;
-        sep = ", ";
+    j << "uid";
+    j.startList();
+    for (const auto& p : *__grid_uids) {
+        j << p.first;
     }
+    j.endList();
 
-    for (const auto& j : *__grid_types) {
-        out << sep << j.first;
-        sep = ", ";
+    j << "name";
+    j.startList();
+    for (const auto& p : *__grid_names) {
+        j << p.first;
     }
+    j.endList();
+
+    j << "type";
+    j.startList();
+    for (const auto& p : *__grid_types) {
+        j << p.first;
+    }
+    j.endList();
+
+    j.endObject();
 }
 
 
@@ -135,11 +146,12 @@ void GridFactoryUID::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    const char* sep = "";
-    for (const auto& j : *__grid_uids) {
-        out << sep << j.first;
-        sep = ", ";
+    JSON j(out);
+    j.startList();
+    for (const auto& p : *__grid_uids) {
+        out << p.first;
     }
+    j.endList();
 }
 
 
@@ -194,11 +206,12 @@ void GridFactoryName::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    const char* sep = "";
-    for (const auto& j : *__grid_names) {
-        out << sep << j.first;
-        sep = ", ";
+    JSON j(out);
+    j.startList();
+    for (const auto& p : *__grid_names) {
+        out << p.first;
     }
+    j.endList();
 }
 
 
@@ -248,11 +261,12 @@ void GridFactoryType::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    const char* sep = "";
-    for (const auto& j : *__grid_types) {
-        out << sep << j.first;
-        sep = ", ";
+    JSON j(out);
+    j.startList();
+    for (const auto& p : *__grid_types) {
+        out << p.first;
     }
+    j.endList();
 }
 
 

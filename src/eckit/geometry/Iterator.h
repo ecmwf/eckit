@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <cstddef>
+#include "eckit/geometry/Point.h"
 
 
 namespace eckit::geometry {
 
 
-class Scanner {
+class Iterator {
 public:
     // -- Types
     // None
@@ -28,26 +28,30 @@ public:
 
     // -- Constructors
 
-    Scanner(const Scanner&) = delete;
-    Scanner(Scanner&&)      = delete;
+    Iterator(const Iterator&) = delete;
+    Iterator(Iterator&&)      = delete;
 
     // -- Destructor
 
-    virtual ~Scanner() = default;
+    virtual ~Iterator() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    Scanner& operator=(const Scanner&) = delete;
-    Scanner& operator=(Scanner&&)      = delete;
+    void operator=(const Iterator&) = delete;
+    void operator=(Iterator&&)      = delete;
 
-    virtual bool operator++() = 0;
+    virtual bool operator!=(const Iterator&) = 0;
+    virtual bool operator++()                = 0;
+    virtual explicit operator bool()         = 0;
+    virtual const Point& operator*() const   = 0;
 
     // -- Methods
 
-    virtual size_t size() const = 0;
+    virtual size_t size() const  = 0;
+    virtual size_t index() const = 0;
 
     // -- Overridden methods
     // None
@@ -61,7 +65,7 @@ public:
 protected:
     // -- Constructors
 
-    Scanner() = default;
+    Iterator() = default;
 
     // -- Members
     // None

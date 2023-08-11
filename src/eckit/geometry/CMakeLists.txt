@@ -16,6 +16,7 @@ list( APPEND eckit_geometry_srcs
     Grid.h
     Increments.cc
     Increments.h
+    Iterator.h
     KPoint.cc
     KPoint.h
     Point.cc
@@ -31,8 +32,6 @@ list( APPEND eckit_geometry_srcs
     Range.cc
     Range.h
     Renumber.h
-    Scanner.cc
-    Scanner.h
     Search.h
     Sphere.cc
     Sphere.h
@@ -60,6 +59,12 @@ list( APPEND eckit_geometry_srcs
     grid/RegularLL.h
     grid/UnstructuredGrid.cc
     grid/UnstructuredGrid.h
+    iterator/Reduced.cc
+    iterator/Reduced.h
+    iterator/Regular.cc
+    iterator/Regular.h
+    iterator/Unstructured.cc
+    iterator/Unstructured.h
     polygon/LonLatPolygon.cc
     polygon/LonLatPolygon.h
     polygon/Polygon.cc
@@ -70,12 +75,6 @@ list( APPEND eckit_geometry_srcs
     projection/None.h
     projection/Rotation.cc
     projection/Rotation.h
-    scanner/Reduced.cc
-    scanner/Reduced.h
-    scanner/Regular.cc
-    scanner/Regular.h
-    scanner/Unstructured.cc
-    scanner/Unstructured.h
     util.cc
     util.h
     util/arange.cc

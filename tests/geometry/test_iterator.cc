@@ -13,7 +13,7 @@
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/Scanner.h"
+// #include "eckit/geometry/Scanner.h"
 // #include "eckit/geometry/iterator/IteratorAggregator.h"
 // #include "eckit/geometry/iterator/IteratorComposer.h"
 

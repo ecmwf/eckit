@@ -10,14 +10,14 @@
  */
 
 
-#include "eckit/geometry/scanner/Reduced.h"
+#include "eckit/geometry/iterator/Reduced.h"
 
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 
 
-namespace eckit::geometry::scanner {
+namespace eckit::geometry::iterator {
 
 
 Reduced::Reduced(const std::vector<double>& latitudes,
@@ -104,4 +104,4 @@ size_t Reduced::size() const {
 }
 
 
-}  // namespace eckit::geometry::scanner
+}  // namespace eckit::geometry::iterator

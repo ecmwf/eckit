@@ -14,6 +14,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Grid.h"
+#include "eckit/geometry/Point.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
@@ -45,6 +46,9 @@ private:
             return;
         }
 
+        geometry::Point x = geometry::PointLonLat(0., 90.);
+        std::cout << x << std::endl;
+
         auto& out = Log::info();
         // JSON out(Log::info());
         // out.precision(args.getInt("precision", 16));
@@ -57,8 +61,12 @@ private:
             out << "size: " << grid->size() << std::endl;
             out << "bounding_box: " << grid->boundingBox() << std::endl;
 
-            // auto it = grid->begin();
-            // out << "first: " << **it << std::endl;
+            auto it = grid->begin();
+
+            std::cout << **it << std::endl;
+
+            //             (*it).print(out) << std::endl;
+            //             static_cast<std::ostream&>(out) << "first: " << q << std::endl;
 
             // it += grid->size() - 1;
             // out << "last: " << **it << std::endl;

@@ -20,6 +20,7 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/geometry/Area.h"
 #include "eckit/geometry/Increments.h"
+#include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/Renumber.h"
@@ -32,37 +33,6 @@ namespace eckit::geometry {
 class Grid {
 public:
     // -- Types
-
-    struct Iterator {
-        explicit Iterator(const Grid& grid) :
-            grid_(grid) {}
-
-        Iterator(const Iterator&) = delete;
-        Iterator(Iterator&&)      = delete;
-
-        virtual ~Iterator() = default;
-
-        void operator=(const Iterator&) = delete;
-        void operator=(Iterator&&)      = delete;
-
-        bool operator!=(const Iterator& other) const { return &grid_ != &other.grid_ || index_ != other.index_; }
-
-        bool operator++() {
-            index_++;
-            return operator bool();
-        }
-
-        virtual explicit operator bool()       = 0;
-        virtual const Point& operator*() const = 0;
-
-        size_t size() const { return grid_.size(); }
-        size_t index() const { return index_; }
-
-    private:
-        const Grid& grid_;
-        size_t index_ = 0;
-    };
-
 
     using iterator       = std::unique_ptr<Iterator>;
     using const_iterator = std::unique_ptr<const Iterator>;

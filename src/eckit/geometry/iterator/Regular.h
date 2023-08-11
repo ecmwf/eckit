@@ -12,32 +12,29 @@
 
 #pragma once
 
+#include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Point.h"
-#include "eckit/geometry/Scanner.h"
-#include "eckit/geometry/area/BoundingBox.h"
-#include "eckit/geometry/util.h"
 #include "eckit/types/Fraction.h"
 
 
-namespace eckit::geometry::scanner {
+namespace eckit::geometry::iterator {
 
 
-class Reduced final : public Scanner {
+class Regular final : public Iterator {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Reduced(const std::vector<double>& latitudes,
-            pl_type&& pl,
-            const area::BoundingBox&,
-            size_t N,
-            size_t Nj,
-            size_t k);
+    Regular(size_t ni, size_t nj, double north, double west, double we, double ns);
 
     // -- Destructor
-    // None
+
+    ~Regular() override;
 
     // -- Convertors
     // None
@@ -60,18 +57,18 @@ public:
 private:
     // -- Members
 
-    const std::vector<double>& latitudes_;
-    const pl_type pl_;
-    const area::BoundingBox& bbox_;
-    const size_t N_;
-    size_t Ni_;
-    size_t Nj_;
-    Fraction lon_;
-    double lat_;
-    Fraction inc_;
+    size_t ni_;
+    size_t nj_;
+    Fraction north_;
+    Fraction west_;
+    Fraction we_;
+    Fraction ns_;
     size_t i_;
     size_t j_;
-    size_t k_;
+    double latValue_;
+    double lonValue_;
+    Fraction lat_;
+    Fraction lon_;
     size_t count_;
     bool first_;
 
@@ -80,8 +77,6 @@ private:
     // -- Methods
 
     void print(std::ostream&) const;
-    size_t index() const;
-    size_t resetToRow(size_t);
 
     // -- Overridden methods
 
@@ -99,4 +94,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::scanner
+}  // namespace eckit::geometry::iterator

@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "eckit/geometry/Scanner.h"
+#include "eckit/geometry/Iterator.h"
 
 
-namespace eckit::geometry::scanner {
+namespace eckit::geometry::iterator {
 
 
-class Unstructured final : public Scanner {
+class Unstructured final : public Iterator {
 public:
     // -- Types
     // None
@@ -74,4 +74,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::scanner
+}  // namespace eckit::geometry::iterator

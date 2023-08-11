@@ -10,12 +10,12 @@
  */
 
 
-#include "eckit/geometry/scanner/Unstructured.h"
+#include "eckit/geometry/iterator/Unstructured.h"
 
 // #include <>
 
 
-namespace eckit::geometry::scanner {
+namespace eckit::geometry::iterator {
 
 
 Unstructured::Unstructured() = default;
@@ -31,4 +31,4 @@ size_t Unstructured::size() const {
 }
 
 
-}  // namespace eckit::geometry::scanner
+}  // namespace eckit::geometry::iterator

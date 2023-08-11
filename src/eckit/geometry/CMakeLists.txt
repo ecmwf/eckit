@@ -19,6 +19,7 @@ list( APPEND eckit_geometry_srcs
     Iterator.h
     KPoint.cc
     KPoint.h
+    Ordering.h
     Point.cc
     Point.h
     Point2.cc

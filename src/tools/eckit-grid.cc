@@ -63,7 +63,7 @@ private:
 
             auto it = grid->begin();
 
-            std::cout << **it << std::endl;
+            std::cout << *it << std::endl;
 
             //             (*it).print(out) << std::endl;
             //             static_cast<std::ostream&>(out) << "first: " << q << std::endl;

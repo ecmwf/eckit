@@ -12,8 +12,6 @@
 
 #include "eckit/geometry/iterator/Reduced.h"
 
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 
 
@@ -31,17 +29,6 @@ Reduced::Reduced(const std::vector<double>& latitudes,
     // NOTE: pl is global
     ASSERT(N_ * 2 == latitudes_.size());
     ASSERT(Nj_ > 0);
-}
-
-
-void Reduced::print(std::ostream& out) const {
-    out << "Reduced[N=" << N_ << /*",bbox=" << bbox_ <<*/ ",Ni=" << Ni_ << ",Nj=" << Nj_
-        << ",i=" << i_ << ",j=" << j_ << ",k=" << k_ << ",count=" << count_ << "]";
-}
-
-
-size_t Reduced::index() const {
-    return count_;
 }
 
 
@@ -68,6 +55,11 @@ size_t Reduced::resetToRow(size_t j) {
 
     lon_ = Nw * inc_;
     return Nw > Ne ? 0 : std::min(static_cast<size_t>(Ni_globe), static_cast<size_t>(Ne - Nw + 1));
+}
+
+
+bool Reduced::operator!=(const Iterator&) {
+    NOTIMP;
 }
 
 
@@ -99,8 +91,27 @@ bool Reduced::operator++() {
 }
 
 
+bool Reduced::operator--() {
+    NOTIMP;
+}
+
+
+Reduced::operator bool() {
+    NOTIMP;
+}
+
+
+Point& Reduced::operator*() {
+    NOTIMP;
+}
+
+
 size_t Reduced::size() const {
-    return 0;
+    NOTIMP;
+}
+
+size_t Reduced::index() const {
+    return count_;
 }
 
 

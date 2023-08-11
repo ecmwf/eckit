@@ -63,8 +63,6 @@ list( APPEND eckit_geometry_srcs
     iterator/Reduced.h
     iterator/Regular.cc
     iterator/Regular.h
-    iterator/Unstructured.cc
-    iterator/Unstructured.h
     polygon/LonLatPolygon.cc
     polygon/LonLatPolygon.h
     polygon/Polygon.cc

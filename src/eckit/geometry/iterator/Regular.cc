@@ -12,8 +12,6 @@
 
 #include "eckit/geometry/iterator/Regular.h"
 
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 
 
@@ -62,16 +60,8 @@ Regular::Regular(size_t ni, size_t nj, double north, double west, double we, dou
 }
 
 
-Regular::~Regular() {
-    auto count = count_ + (i_ > 0 || j_ > 0 ? 1 : 0);
-    ASSERT(count == ni_ * nj_);
-}
-
-
-void Regular::print(std::ostream& out) const {
-    out << "Regular[ni=" << ni_ << ",nj=" << nj_ << ",north=" << north_ << ",west=" << west_
-        << ",we=" << we_ << ",ns=" << ns_ << ",i=" << i_ << ",j=" << j_ << ",count=" << count_
-        << "]";
+bool Regular::operator!=(const Iterator&) {
+    NOTIMP;
 }
 
 
@@ -106,8 +96,27 @@ bool Regular::operator++() {
 }
 
 
+bool Regular::operator--() {
+    NOTIMP;
+}
+
+
+Regular::operator bool() {
+    NOTIMP;
+}
+
+
+Point& Regular::operator*() {
+    NOTIMP;
+}
+
+
 size_t Regular::size() const {
-    return 0;
+    NOTIMP;
+}
+
+size_t Regular::index() const {
+    NOTIMP;
 }
 
 

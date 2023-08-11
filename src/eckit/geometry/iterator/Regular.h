@@ -33,8 +33,7 @@ public:
     Regular(size_t ni, size_t nj, double north, double west, double we, double ns);
 
     // -- Destructor
-
-    ~Regular() override;
+    // None
 
     // -- Convertors
     // None
@@ -75,13 +74,19 @@ private:
     Point p_;
 
     // -- Methods
-
-    void print(std::ostream&) const;
+    // None
 
     // -- Overridden methods
 
+    bool operator!=(const Iterator&) override;
     bool operator++() override;
+    bool operator--() override;
+
+    explicit operator bool() override;
+    Point& operator*() override;
+
     size_t size() const override;
+    size_t index() const override;
 
     // -- Class members
     // None

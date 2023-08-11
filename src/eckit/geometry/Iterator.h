@@ -45,8 +45,10 @@ public:
 
     virtual bool operator!=(const Iterator&) = 0;
     virtual bool operator++()                = 0;
-    virtual explicit operator bool()         = 0;
-    virtual const Point& operator*() const   = 0;
+    virtual bool operator--()                = 0;
+
+    virtual explicit operator bool() = 0;
+    virtual Point& operator*()       = 0;
 
     // -- Methods
 

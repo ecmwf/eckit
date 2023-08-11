@@ -34,8 +34,31 @@ class Grid {
 public:
     // -- Types
 
-    using iterator       = std::unique_ptr<Iterator>;
-    using const_iterator = std::unique_ptr<const Iterator>;
+    struct Iterator final : std::unique_ptr<geometry::Iterator> {
+        explicit Iterator(geometry::Iterator* it) :
+            unique_ptr(it) { ASSERT(operator bool()); }
+
+        Iterator(const Iterator&) = delete;
+        Iterator(Iterator&&)      = delete;
+
+        ~Iterator() = default;
+
+        void operator=(const Iterator&) = delete;
+        void operator=(Iterator&&)      = delete;
+
+        bool operator!=(const Iterator& other) { return get()->operator!=(*(other.get())); }
+        bool operator++() { return get()->operator++(); }
+        bool operator--() { return get()->operator--(); }
+
+        explicit operator bool() { return get()->operator bool(); }
+        Point& operator*() { return get()->operator*(); }
+
+        size_t size() const { return get()->size(); }
+        size_t index() const { return get()->index(); }
+    };
+
+    using iterator       = Iterator;
+    using const_iterator = const Iterator;
 
     // -- Exceptions
     // None

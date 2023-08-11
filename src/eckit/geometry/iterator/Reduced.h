@@ -79,14 +79,19 @@ private:
 
     // -- Methods
 
-    void print(std::ostream&) const;
-    size_t index() const;
     size_t resetToRow(size_t);
 
     // -- Overridden methods
 
+    bool operator!=(const Iterator&) override;
     bool operator++() override;
+    bool operator--() override;
+
+    explicit operator bool() override;
+    Point& operator*() override;
+
     size_t size() const override;
+    size_t index() const override;
 
     // -- Class members
     // None

@@ -277,7 +277,11 @@ Iterator* RegularLL::iterator() const {
 #endif
 
 
-static const GridRegisterType<RegularLL> regularLL("regular_ll");
+static const GridRegisterType<RegularLL> __grid_type("regular_ll");
+
+#define fp "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
+static const GridRegisterName<RegularLL> __grid_pattern(fp "/" fp);
+#undef fp
 
 
 }  // namespace eckit::geometry::grid

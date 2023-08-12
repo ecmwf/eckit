@@ -59,7 +59,6 @@ private:
             // out << "name: " << grid->name() << std::endl;
             // out << "uid: " << grid->uid() << std::endl;
             out << "size: " << grid->size() << std::endl;
-            out << "bounding_box: " << grid->boundingBox() << std::endl;
 
             auto it = grid->begin();
 

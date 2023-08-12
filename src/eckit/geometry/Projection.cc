@@ -17,6 +17,7 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -260,11 +261,17 @@ std::ostream& ProjectionFactory::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    const char* sep = "'";
-    for (const auto& j : *__factories) {
-        out << sep << j.first << '\'';
-        sep = ", '";
+    JSON j(out);
+    j.startObject();
+
+    j << "type";
+    j.startList();
+    for (const auto& p : *__factories) {
+        j << p.first;
     }
+    j.endList();
+
+    j.endObject();
 
     return out;
 }

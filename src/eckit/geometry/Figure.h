@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include <ostream>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -87,10 +88,37 @@ private:
 
     // -- Friends
     // None
+};
 
-    friend std::ostream& operator<<(std::ostream& out, const Figure& p) {
-        return out << '{' << '}';
-    }
+
+struct FigureFactory {
+    static Figure* build(const Configuration&);
+    static Figure* build(const std::string&, const Configuration&);
+    static std::ostream& list(std::ostream&);
+
+    FigureFactory(const FigureFactory&)            = delete;
+    FigureFactory(FigureFactory&&)                 = delete;
+    FigureFactory& operator=(const FigureFactory&) = delete;
+    FigureFactory& operator=(FigureFactory&&)      = delete;
+
+    virtual Figure* make(const Configuration&) = 0;
+
+protected:
+    explicit FigureFactory(const std::string&);
+    virtual ~FigureFactory();
+
+private:
+    const std::string key_;
+};
+
+
+template <class T>
+class FigureBuilder final : public FigureFactory {
+    Figure* make(const Configuration& config) override { return new T(config); }
+
+public:
+    explicit FigureBuilder(const std::string& key) :
+        FigureFactory(key) {}
 };
 
 

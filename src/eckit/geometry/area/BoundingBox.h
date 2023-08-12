@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <ostream>
 #include <tuple>
 
 #include "eckit/geometry/Area.h"
@@ -127,10 +126,7 @@ private:
     // None
 
     // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& out, const BoundingBox& p) {
-        return out << '{' << p.north_ << ", " << p.west_ << ", " << p.south_ << ", " << p.east_ << '}';
-    }
+    // None
 };
 
 

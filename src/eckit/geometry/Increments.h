@@ -13,7 +13,6 @@
 #pragma once
 
 #include <array>
-#include <ostream>
 
 
 namespace eckit {
@@ -31,6 +30,12 @@ private:
     using P = std::array<double, 2>;
 
 public:
+    // -- Types
+    // None
+
+    // -- Exceptions
+    // None
+
     // -- Constructors
 
     Increments(double west_east, double south_north) :
@@ -38,16 +43,66 @@ public:
 
     Increments(const Configuration&);
 
-    // -- Members
+    // -- Destructor
+    // None
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+    // None
+
+    // Members
 
     double& west_east   = P::operator[](0);
     double& south_north = P::operator[](1);
 
-    // -- Friends
+    // -- Methods
+    // None
 
-    friend std::ostream& operator<<(std::ostream& out, const Increments& p) {
-        return out << '{' << p.west_east << ", " << p.south_north << '}';
-    }
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
 };
 
 

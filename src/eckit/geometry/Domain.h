@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <ostream>
-
 
 namespace eckit::geometry {
 
@@ -109,10 +107,7 @@ private:
     // None
 
     // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& out, const Domain& p) {
-        return out << '{' << p.north_ << ", " << p.west_ << ", " << p.south_ << ", " << p.east_ << '}';
-    }
+    // None
 };
 
 

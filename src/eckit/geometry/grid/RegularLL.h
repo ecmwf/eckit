@@ -44,6 +44,8 @@ public:
     static area::BoundingBox correctBoundingBox(const area::BoundingBox&, size_t& ni, size_t& nj, const Increments&,
                                                 const PointLonLat& reference = {0, 0});
 
+    static Configuration* config(const std::string& name);
+
     // -- Overridden methods
     // None
 

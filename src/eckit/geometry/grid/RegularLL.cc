@@ -14,13 +14,18 @@
 
 #include <memory>
 #include <sstream>
+#include <string>
+#include <vector>
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/grid/RegularLL.h"
+#include "eckit/geometry/util/regex.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
+#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geometry::grid {
@@ -279,8 +284,28 @@ Iterator* RegularLL::iterator() const {
 
 static const GridRegisterType<RegularLL> __grid_type("regular_ll");
 
+
 #define fp "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
+
+
+Configuration* RegularLL::config(const std::string& name) {
+    static const std::string pattern("(" fp ")/(" fp ")");
+
+    auto match = util::regex_match(pattern, name);
+    ASSERT(match);
+    ASSERT(match.size() == 3);
+
+    auto d = Translator<std::string, double>{};
+    std::vector<double> increments{d(match[1]), d(match[2])};
+
+    return new MappedConfiguration({{"type", "regular_ll"},
+                                    {"increments", increments}});
+}
+
+
 static const GridRegisterName<RegularLL> __grid_pattern(fp "/" fp);
+
+
 #undef fp
 
 

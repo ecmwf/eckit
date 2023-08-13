@@ -23,7 +23,6 @@
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/grid/RegularLL.h"
 #include "eckit/geometry/util/regex.h"
-#include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
@@ -124,8 +123,8 @@ RegularLL::RegularLL(const Configuration& config) :
     // confirm Ni/Nj from config (input)
     size_t ni = 0;
     size_t nj = 0;
-    ASSERT(config.get("Ni", ni));
-    ASSERT(config.get("Nj", nj));
+    ASSERT(config.get("ni", ni));
+    ASSERT(config.get("nj", nj));
 
     ASSERT(ni == ni_);
     ASSERT(nj == nj_);
@@ -197,116 +196,37 @@ area::BoundingBox RegularLL::correctBoundingBox(const area::BoundingBox& box, si
 }
 
 
-#if 0
-Iterator* RegularLL::iterator() const {
-
-    class RegularLLIterator : public Iterator {
-    public:
-        size_t ni_;
-        size_t nj_;
-        Fraction north_;
-        Fraction west_;
-        Fraction we_;
-        Fraction ns_;
-        size_t i_;
-        size_t j_;
-        Latitude latValue_;
-        Longitude lonValue_;
-        Fraction lat_;
-        Fraction lon_;
-
-        size_t count_;
-        bool first_;
-
-        ~RegularLLIterator() {
-            auto count = count_ + (i_ > 0 || j_ > 0 ? 1 : 0);
-            ASSERT(count == ni_ * nj_);
-        }
-
-        bool operator++() override {
-            if (j_ < nj_) {
-                if (i_ < ni_) {
-                    // lat = latValue_;
-                    // lon = lonValue_;
-
-                    lon_ += we_;
-
-                    if (first_) {
-                        first_ = false;
-                    }
-                    else {
-                        count_++;
-                    }
-
-                    if (++i_ == ni_) {
-                        j_++;
-                        i_ = 0;
-                        lat_ -= ns_;
-                        lon_      = west_;
-                        latValue_ = lat_;
-                    }
-
-                    lonValue_ = lon_;
-
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        size_t index() const override { return count_; }
-
-        size_t size() const override { NOTIMP; }
-
-    public:
-        RegularLLIterator(size_t ni, size_t nj, Latitude north, Longitude west, const Increments& increments) :
-            ni_(ni),
-            nj_(nj),
-            north_(north),
-            west_(west),
-            we_(increments.west_east),
-            ns_(increments.south_north),
-            i_(0),
-            j_(0),
-            count_(0),
-            first_(true) {
-            lat_      = north_;
-            lon_      = west_;
-            latValue_ = lat_;
-            lonValue_ = lon_;
-        }
-    };
-
-    return new RegularLLIterator(ni_, nj_, bbox().north(), bbox().west(), increments_);
-}
-#endif
-
-
 static const GridRegisterType<RegularLL> __grid_type("regular_ll");
 
 
-#define fp "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
+#define POSITIVE_REAL "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
 
 
 Configuration* RegularLL::config(const std::string& name) {
-    static const std::string pattern("(" fp ")/(" fp ")");
+    static const std::string pattern("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 
     auto match = util::regex_match(pattern, name);
     ASSERT(match);
-    ASSERT(match.size() == 3);
+    ASSERT(match.size() == 7);  // because of sub-matches
 
     auto d = Translator<std::string, double>{};
-    std::vector<double> increments{d(match[1]), d(match[2])};
+    std::vector<double> increments{d(match[1]), d(match[4])};
+
+    auto ni = detail::RegularIterator(Fraction(0), Fraction(360), Fraction(increments[0]), Fraction(0), Fraction(360)).n();
+    auto nj = detail::RegularIterator(Fraction(-90), Fraction(90), Fraction(increments[1]), Fraction(0)).n();
 
     return new MappedConfiguration({{"type", "regular_ll"},
-                                    {"increments", increments}});
+                                    {"west_east_increment", increments[0]},
+                                    {"south_north_increment", increments[1]},
+                                    {"ni", ni},
+                                    {"nj", nj}});
 }
 
 
-static const GridRegisterName<RegularLL> __grid_pattern(fp "/" fp);
+static const GridRegisterName<RegularLL> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL);
 
 
-#undef fp
+#undef POSITIVE_REAL
 
 
 }  // namespace eckit::geometry::grid

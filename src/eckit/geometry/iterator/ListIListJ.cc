@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/iterator/Regular.h"
+#include "eckit/geometry/iterator/ListIListJ.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -18,19 +18,32 @@
 namespace eckit::geometry::iterator {
 
 
-Regular::Regular(size_t ni, size_t nj, double north, double west, double we, double ns) :
-    ni_(ni), nj_(nj), north_(north), west_(west), we_(we), ns_(ns), i_(0), j_(0), lat_(north_), lon_(west_), count_(0), first_(true), p_(PointLonLat{0, 0}) {
+ListIListJ::ListIListJ(const Grid& grid) :
+    Iterator(grid),
+    ni_(0),     // size_t ni
+    nj_(0),     // size_t nj
+    north_(0),  // double north
+    west_(0),   // double west
+    we_(0),     // double we
+    ns_(0),     // double ns
+    i_(0),
+    j_(0),
+    lat_(north_),
+    lon_(west_),
+    count_(0),
+    first_(true),
+    p_(PointLonLat{0, 0}) {
     latValue_ = lat_;
     lonValue_ = lon_;
 }
 
 
-bool Regular::operator!=(const Iterator&) {
+bool ListIListJ::operator==(const Iterator&) {
     NOTIMP;
 }
 
 
-bool Regular::operator++() {
+bool ListIListJ::operator++() {
     if (j_ < nj_) {
         if (i_ < ni_) {
             p_ = PointLonLat{lonValue_, latValue_};
@@ -61,26 +74,27 @@ bool Regular::operator++() {
 }
 
 
-bool Regular::operator--() {
+bool ListIListJ::operator--() {
     NOTIMP;
 }
 
 
-Regular::operator bool() {
+ListIListJ::operator bool() {
     NOTIMP;
 }
 
 
-Point& Regular::operator*() {
+const Point& ListIListJ::operator*() {
     NOTIMP;
 }
 
 
-size_t Regular::size() const {
+size_t ListIListJ::size() const {
     NOTIMP;
 }
 
-size_t Regular::index() const {
+
+size_t ListIListJ::index() const {
     NOTIMP;
 }
 

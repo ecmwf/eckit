@@ -37,7 +37,32 @@ Grid::Grid(const area::BoundingBox& bbox) :
 
 
 const area::BoundingBox& Grid::boundingBox() const {
-    return bbox_;
+    throw NotImplemented("Grid::boundingBox", Here());
+}
+
+
+size_t Grid::size() const {
+    throw NotImplemented("Grid::size", Here());
+}
+
+
+bool Grid::includesNorthPole() const {
+    throw NotImplemented("Grid::includesNorthPole", Here());
+}
+
+
+bool Grid::includesSouthPole() const {
+    throw NotImplemented("Grid::includesSouthPole", Here());
+}
+
+
+bool Grid::isPeriodicWestEast() const {
+    throw NotImplemented("Grid::isPeriodicWestEast", Here());
+}
+
+
+const std::vector<Point>& Grid::to_points() const {
+    throw NotImplemented("Grid::to_points", Here());
 }
 
 

@@ -13,28 +13,23 @@
 #pragma once
 
 #include "eckit/geometry/Iterator.h"
-#include "eckit/geometry/Point.h"
-#include "eckit/geometry/area/BoundingBox.h"
-#include "eckit/geometry/util.h"
 #include "eckit/types/Fraction.h"
 
 
 namespace eckit::geometry::iterator {
 
 
-class Reduced final : public Iterator {
+class ListIListJ final : public Iterator {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Reduced(const std::vector<double>& latitudes,
-            pl_type&& pl,
-            const area::BoundingBox&,
-            size_t N,
-            size_t Nj,
-            size_t k);
+    explicit ListIListJ(const Grid&);
 
     // -- Destructor
     // None
@@ -60,35 +55,33 @@ public:
 private:
     // -- Members
 
-    const std::vector<double>& latitudes_;
-    const pl_type pl_;
-    const area::BoundingBox& bbox_;
-    const size_t N_;
-    size_t Ni_;
-    size_t Nj_;
-    Fraction lon_;
-    double lat_;
-    Fraction inc_;
+    size_t ni_;
+    size_t nj_;
+    Fraction north_;
+    Fraction west_;
+    Fraction we_;
+    Fraction ns_;
     size_t i_;
     size_t j_;
-    size_t k_;
+    double latValue_;
+    double lonValue_;
+    Fraction lat_;
+    Fraction lon_;
     size_t count_;
     bool first_;
-
     Point p_;
 
     // -- Methods
-
-    size_t resetToRow(size_t);
+    // None
 
     // -- Overridden methods
 
-    bool operator!=(const Iterator&) override;
+    bool operator==(const Iterator&) override;
     bool operator++() override;
     bool operator--() override;
 
     explicit operator bool() override;
-    Point& operator*() override;
+    const Point& operator*() override;
 
     size_t size() const override;
     size_t index() const override;

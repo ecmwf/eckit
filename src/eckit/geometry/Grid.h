@@ -46,12 +46,13 @@ public:
         void operator=(const Iterator&) = delete;
         void operator=(Iterator&&)      = delete;
 
+        bool operator==(const Iterator& other) { return get()->operator==(*(other.get())); }
         bool operator!=(const Iterator& other) { return get()->operator!=(*(other.get())); }
         bool operator++() { return get()->operator++(); }
         bool operator--() { return get()->operator--(); }
 
         explicit operator bool() { return get()->operator bool(); }
-        Point& operator*() { return get()->operator*(); }
+        const Point& operator*() { return get()->operator*(); }
 
         size_t size() const { return get()->size(); }
         size_t index() const { return get()->index(); }
@@ -96,11 +97,13 @@ public:
 
     virtual const area::BoundingBox& boundingBox() const;
 
-    virtual size_t size() const = 0;
+    virtual size_t size() const;
 
-    virtual bool includesNorthPole() const  = 0;
-    virtual bool includesSouthPole() const  = 0;
-    virtual bool isPeriodicWestEast() const = 0;
+    virtual bool includesNorthPole() const;
+    virtual bool includesSouthPole() const;
+    virtual bool isPeriodicWestEast() const;
+
+    virtual const std::vector<Point>& to_points() const;
 
     // -- Overridden methods
     // None

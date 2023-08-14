@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/iterator/Reduced.h"
+#include "eckit/geometry/iterator/ReducedIListJ.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -18,13 +18,29 @@
 namespace eckit::geometry::iterator {
 
 
-Reduced::Reduced(const std::vector<double>& latitudes,
-                 pl_type&& pl,
-                 const area::BoundingBox& bbox,
-                 size_t N,
-                 size_t Nj,
-                 size_t k) :
-    latitudes_(latitudes), pl_(pl), bbox_(bbox), N_(N), Ni_(0), Nj_(Nj), lat_(latitudes[k]), i_(0), j_(0), k_(k), count_(0), first_(true), p_(PointLonLat{0, 0}) {
+// FIXME
+static const std::vector<double> __latitudes;
+static const area::BoundingBox __bbox;
+static const pl_type __pl;
+
+
+ReducedIListJ::ReducedIListJ(
+    const Grid& grid) :
+    Iterator(grid),
+    latitudes_(__latitudes),  // const std::vector<double>& latitudes
+    pl_(__pl),                // pl_type&& pl
+    bbox_(__bbox),            // const area::BoundingBox& bbox
+    N_(0),                    // size_t N
+    Ni_(0),
+    Nj_(0),  // size_t Nj
+    lon_(0),
+    lat_(0),  // lat_(latitudes[k])
+    i_(0),
+    j_(0),
+    k_(0),  // size_t k
+    count_(0),
+    first_(true),
+    p_(PointLonLat{0, 0}) {
     // NOTE: latitudes_ span the globe, sorted from North-to-South, k_ positions the North
     // NOTE: pl is global
     ASSERT(N_ * 2 == latitudes_.size());
@@ -32,7 +48,7 @@ Reduced::Reduced(const std::vector<double>& latitudes,
 }
 
 
-size_t Reduced::resetToRow(size_t j) {
+size_t ReducedIListJ::resetToRow(size_t j) {
     ASSERT(j < latitudes_.size());
     lat_ = latitudes_[j];
 
@@ -58,12 +74,12 @@ size_t Reduced::resetToRow(size_t j) {
 }
 
 
-bool Reduced::operator!=(const Iterator&) {
+bool ReducedIListJ::operator==(const Iterator&) {
     NOTIMP;
 }
 
 
-bool Reduced::operator++() {
+bool ReducedIListJ::operator++() {
     while (Ni_ == 0 && j_ < Nj_) {
         Ni_ = resetToRow(k_ + j_++);
     }
@@ -91,26 +107,26 @@ bool Reduced::operator++() {
 }
 
 
-bool Reduced::operator--() {
+bool ReducedIListJ::operator--() {
     NOTIMP;
 }
 
 
-Reduced::operator bool() {
+ReducedIListJ::operator bool() {
     NOTIMP;
 }
 
 
-Point& Reduced::operator*() {
+const Point& ReducedIListJ::operator*() {
     NOTIMP;
 }
 
 
-size_t Reduced::size() const {
+size_t ReducedIListJ::size() const {
     NOTIMP;
 }
 
-size_t Reduced::index() const {
+size_t ReducedIListJ::index() const {
     return count_;
 }
 

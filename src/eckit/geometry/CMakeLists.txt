@@ -60,10 +60,12 @@ list( APPEND eckit_geometry_srcs
     grid/RegularLL.h
     grid/UnstructuredGrid.cc
     grid/UnstructuredGrid.h
-    iterator/Reduced.cc
-    iterator/Reduced.h
-    iterator/Regular.cc
-    iterator/Regular.h
+    iterator/ListI.cc
+    iterator/ListI.h
+    iterator/ListIListJ.cc
+    iterator/ListIListJ.h
+    iterator/ReducedIListJ.cc
+    iterator/ReducedIListJ.h
     polygon/LonLatPolygon.cc
     polygon/LonLatPolygon.h
     polygon/Polygon.cc

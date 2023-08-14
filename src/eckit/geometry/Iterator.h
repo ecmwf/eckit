@@ -16,6 +16,11 @@
 
 
 namespace eckit::geometry {
+class Grid;
+}
+
+
+namespace eckit::geometry {
 
 
 class Iterator {
@@ -43,12 +48,14 @@ public:
     void operator=(const Iterator&) = delete;
     void operator=(Iterator&&)      = delete;
 
-    virtual bool operator!=(const Iterator&) = 0;
+    bool operator!=(const Iterator& other) { return !operator==(other); }
+
+    virtual bool operator==(const Iterator&) = 0;
     virtual bool operator++()                = 0;
     virtual bool operator--()                = 0;
 
     virtual explicit operator bool() = 0;
-    virtual Point& operator*()       = 0;
+    virtual const Point& operator*() = 0;
 
     // -- Methods
 
@@ -67,7 +74,7 @@ public:
 protected:
     // -- Constructors
 
-    Iterator() = default;
+    Iterator(const Grid&) {}
 
     // -- Members
     // None

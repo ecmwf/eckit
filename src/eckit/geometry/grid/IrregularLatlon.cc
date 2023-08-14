@@ -12,39 +12,49 @@
 
 #include "eckit/geometry/grid/IrregularLatlon.h"
 
-#include <cmath>
+#include <algorithm>
 
-#include "eckit/utils/MD5.h"
-
-#include "eckit/geometry/Projection.h"
+#include "eckit/geometry/area/BoundingBox.h"
 
 
 namespace eckit::geometry::grid {
 
 
-static void range(const std::vector<double>& v, double& mn, double& mx, double& dmax) {
-    ASSERT(v.size() >= 2);
+static void range(const std::vector<double>& v, double& mn, double& mx) {
+    ASSERT(!v.empty());
 
-    dmax = 0;
-    mx   = v[0];
-    mn   = v[0];
-
+    mx = v[0];
+    mn = v[0];
     for (size_t i = 1; i < v.size(); ++i) {
-        double d = std::abs(v[i] - v[i - 1]);
-        dmax     = std::max(d, dmax);
-        mx       = std::max(v[i], mx);
-        mn       = std::min(v[i], mn);
+        mx = std::max(v[i], mx);
+        mn = std::min(v[i], mn);
     }
 }
 
 
 IrregularLatlon::IrregularLatlon(const Configuration& config) :
     Grid(config) {
+    double south = 0;
+    double north = 0;
     ASSERT(config.get("latitudes", latitudes_));
-    range(latitudes_, south_, north_, south_north_);
+    range(latitudes_, south, north);
 
+    double west = 0;
+    double east = 0;
     ASSERT(config.get("longitudes", longitudes_));
-    range(longitudes_, west_, east_, west_east_);
+    range(longitudes_, west, east);
+
+    Grid::boundingBox({north, west, south, east});
+}
+
+
+Grid::iterator IrregularLatlon::cbegin() const {
+    NOTIMP;
+}
+
+
+Grid::iterator IrregularLatlon::cend() const {
+    NOTIMP;
 }
 
 
@@ -53,22 +63,12 @@ size_t IrregularLatlon::size() const {
 }
 
 
-bool IrregularLatlon::isPeriodicWestEast() const {
-    return (east_ - west_) + west_east_ >= GLOBE;
+std::vector<Point>&& IrregularLatlon::to_points() const {
+    NOTIMP;
 }
 
 
-bool IrregularLatlon::includesNorthPole() const {
-    return north_ + south_north_ >= NORTH_POLE;
-}
-
-
-bool IrregularLatlon::includesSouthPole() const {
-    return south_ - south_north_ <= SOUTH_POLE;
-}
-
-
-// static const GridRegisterType<IrregularLatlon> irregularLatlon("irregular_latlon");
+static const GridRegisterType<IrregularLatlon> irregularLatlon("irregular_latlon");
 
 
 }  // namespace eckit::geometry::grid

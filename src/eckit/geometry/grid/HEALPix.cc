@@ -121,6 +121,11 @@ size_t HEALPix::size() const {
 }
 
 
+std::vector<Point>&& HEALPix::to_points() const {
+    NOTIMP;
+}
+
+
 static const GridRegisterType<HEALPix> __grid_type("healpix");
 static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*");
 

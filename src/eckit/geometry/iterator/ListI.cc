@@ -12,8 +12,6 @@
 
 #include "eckit/geometry/iterator/ListI.h"
 
-#include <type_traits>
-
 #include "eckit/geometry/Grid.h"
 
 
@@ -23,7 +21,8 @@ namespace eckit::geometry::iterator {
 ListI::ListI(const Grid& grid) :
     Iterator(grid),
     points_(grid.to_points()),
-    index_(0) {
+    index_(0),
+    first_(true) {
 }
 
 
@@ -34,7 +33,12 @@ bool ListI::operator==(const Iterator& other) {
 
 
 bool ListI::operator++() {
-    ++index_;
+    if (first_) {
+        first_ = false;
+    }
+    else {
+        index_++;
+    }
     return operator bool();
 }
 

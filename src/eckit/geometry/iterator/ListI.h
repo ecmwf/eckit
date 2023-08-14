@@ -56,6 +56,7 @@ private:
 
     const std::vector<Point>& points_;
     size_t index_;
+    bool first_;
 
     // -- Methods
     // None

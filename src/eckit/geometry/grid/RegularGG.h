@@ -74,6 +74,8 @@ private:
 
     bool isPeriodicWestEast() const override;
 
+    std::vector<Point>&& to_points() const override;
+
     // -- Class members
     // None
 

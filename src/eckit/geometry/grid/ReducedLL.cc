@@ -24,10 +24,12 @@
 
 namespace eckit::geometry::grid {
 
+
 static bool checkPl(const std::vector<long>& pl) {
     ASSERT(!pl.empty());
     return *std::min_element(pl.begin(), pl.end()) >= 2;
 }
+
 
 ReducedLL::ReducedLL(const Configuration& config) :
     Grid(config) {
@@ -39,7 +41,9 @@ ReducedLL::ReducedLL(const Configuration& config) :
     ASSERT(Nj == pl_.size());
 }
 
+
 ReducedLL::~ReducedLL() = default;
+
 
 size_t ReducedLL::size() const {
     size_t total = 0;
@@ -48,6 +52,7 @@ size_t ReducedLL::size() const {
     }
     return total;
 }
+
 
 bool ReducedLL::isPeriodicWestEast() const {
     ASSERT(!pl_.empty());
@@ -60,13 +65,21 @@ bool ReducedLL::isPeriodicWestEast() const {
     return bbox().east() - bbox().west() + inc >= GLOBE;
 }
 
+
 bool ReducedLL::includesNorthPole() const {
     return bbox().north() == NORTH_POLE;
 }
 
+
 bool ReducedLL::includesSouthPole() const {
     return bbox().south() == SOUTH_POLE;
 }
+
+
+std::vector<Point>&& ReducedLL::to_points() const {
+    NOTIMP;
+}
+
 
 static const GridRegisterType<ReducedLL> reducedLL("reduced_ll");
 

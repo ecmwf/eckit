@@ -65,14 +65,10 @@ private:
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
 
-    iterator begin() override { NOTIMP; }
-    iterator end() override { NOTIMP; }
+    iterator cbegin() const override { NOTIMP; }
+    iterator cend() const override { NOTIMP; }
 
-    const_iterator cbegin() const override { NOTIMP; }
-    const_iterator cend() const override { NOTIMP; }
-
-    const_iterator begin() const override { NOTIMP; }
-    const_iterator end() const override { NOTIMP; }
+    std::vector<Point>&& to_points() const override;
 
     // -- Class members
     // None

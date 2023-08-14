@@ -164,6 +164,11 @@ size_t RegularLL::size() const {
 }
 
 
+std::vector<Point>&& RegularLL::to_points() const {
+    NOTIMP;
+}
+
+
 area::BoundingBox RegularLL::correctBoundingBox(const area::BoundingBox& box, size_t& ni, size_t& nj, const Increments& inc,
                                                 const PointLonLat& reference) {
     // Latitude/longitude ranges

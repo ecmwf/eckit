@@ -17,11 +17,6 @@
 #include "eckit/geometry/Grid.h"
 
 
-namespace eckit {
-class PathName;
-}
-
-
 namespace eckit::geometry::grid {
 
 
@@ -32,13 +27,7 @@ public:
 
     // -- Constructors
 
-    explicit UnstructuredGrid(const PathName&);
-    explicit UnstructuredGrid(const Configuration&);
-    UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes,
-                     const area::BoundingBox& = {});
-
-    UnstructuredGrid(const UnstructuredGrid&) = delete;
-    UnstructuredGrid(UnstructuredGrid&&)      = delete;
+    explicit UnstructuredGrid(std::vector<Point>&&);
 
     // -- Destructor
 
@@ -48,24 +37,6 @@ public:
     // None
 
     // -- Operators
-
-    void operator=(const UnstructuredGrid&)  = delete;
-    void operator=(const UnstructuredGrid&&) = delete;
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
     // None
 
     // -- Methods
@@ -83,19 +54,19 @@ protected:
 private:
     // -- Members
 
-    std::vector<double> latitudes_;
-    std::vector<double> longitudes_;
+    std::vector<Point> points_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
 
-    // Domain operations
-    bool isPeriodicWestEast() const override;
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    bool isPeriodicWestEast() const override { return true; }
+    bool includesNorthPole() const override { return true; }
+    bool includesSouthPole() const override { return true; }
 
     size_t size() const override;
 

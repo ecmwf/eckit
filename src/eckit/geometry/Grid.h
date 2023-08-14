@@ -58,8 +58,7 @@ public:
         size_t index() const { return get()->index(); }
     };
 
-    using iterator       = Iterator;
-    using const_iterator = const Iterator;
+    using iterator = Iterator;
 
     // -- Exceptions
     // None
@@ -86,16 +85,14 @@ public:
 
     // -- Methods
 
-    virtual iterator begin() = 0;
-    virtual iterator end()   = 0;
+    iterator begin() const { return cbegin(); }
+    iterator end() const { return cend(); }
 
-    virtual const_iterator cbegin() const = 0;
-    virtual const_iterator cend() const   = 0;
-
-    virtual const_iterator begin() const = 0;
-    virtual const_iterator end() const   = 0;
+    virtual iterator cbegin() const = 0;
+    virtual iterator cend() const   = 0;
 
     virtual const area::BoundingBox& boundingBox() const;
+    void boundingBox(const area::BoundingBox&);
 
     virtual size_t size() const;
 
@@ -103,7 +100,7 @@ public:
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;
 
-    virtual const std::vector<Point>& to_points() const;
+    virtual std::vector<Point>&& to_points() const = 0;
 
     // -- Overridden methods
     // None

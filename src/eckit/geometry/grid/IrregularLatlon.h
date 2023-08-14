@@ -25,7 +25,7 @@ public:
 
     // -- Constructors
 
-    IrregularLatlon(const Configuration&);
+    explicit IrregularLatlon(const Configuration&);
 
     // -- Destructor
     // None
@@ -50,14 +50,6 @@ public:
 private:
     // -- Members
 
-    double south_;
-    double north_;
-    double south_north_;
-
-    double west_;
-    double east_;
-    double west_east_;
-
     std::vector<double> latitudes_;
     std::vector<double> longitudes_;
 
@@ -66,10 +58,12 @@ private:
 
     // -- Overridden methods
 
+    iterator cbegin() const override;
+    iterator cend() const override;
+
     size_t size() const override;
-    bool isPeriodicWestEast() const override;
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
+
+    std::vector<Point>&& to_points() const override;
 
     // -- Class members
     // None

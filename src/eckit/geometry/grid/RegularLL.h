@@ -14,7 +14,6 @@
 
 #include "eckit/geometry/Grid.h"
 #include "eckit/geometry/Increments.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geometry::grid {
@@ -27,8 +26,8 @@ public:
 
     // -- Constructors
 
-    RegularLL(const Configuration&);
-    RegularLL(const Increments&, const area::BoundingBox& = {}, const PointLonLat& reference = {0, 0});
+    explicit RegularLL(const Configuration&);
+    explicit RegularLL(const Increments&, const area::BoundingBox& = {}, const PointLonLat& reference = {0, 0});
 
     // -- Destructor
     // None
@@ -68,19 +67,16 @@ private:
 
     // -- Overridden methods
 
-    iterator begin() override { NOTIMP; }
-    iterator end() override { NOTIMP; }
-
-    const_iterator cbegin() const override { NOTIMP; }
-    const_iterator cend() const override { NOTIMP; }
-
-    const_iterator begin() const override { NOTIMP; }
-    const_iterator end() const override { NOTIMP; }
+    iterator cbegin() const override { NOTIMP; }
+    iterator cend() const override { NOTIMP; }
 
     bool isPeriodicWestEast() const override;
     bool includesNorthPole() const override;
     bool includesSouthPole() const override;
+
     size_t size() const override;
+
+    std::vector<Point>&& to_points() const override;
 
     // -- Class members
     // None

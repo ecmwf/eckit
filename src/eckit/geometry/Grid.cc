@@ -41,6 +41,11 @@ const area::BoundingBox& Grid::boundingBox() const {
 }
 
 
+void Grid::boundingBox(const area::BoundingBox& bbox) {
+    bbox_ = bbox;
+}
+
+
 size_t Grid::size() const {
     throw NotImplemented("Grid::size", Here());
 }
@@ -61,7 +66,7 @@ bool Grid::isPeriodicWestEast() const {
 }
 
 
-const std::vector<Point>& Grid::to_points() const {
+std::vector<Point>&& Grid::to_points() const {
     throw NotImplemented("Grid::to_points", Here());
 }
 

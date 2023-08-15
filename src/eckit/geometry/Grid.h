@@ -24,6 +24,7 @@
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/Renumber.h"
+#include "eckit/geometry/Search.h"
 #include "eckit/geometry/area/BoundingBox.h"
 
 
@@ -101,6 +102,9 @@ public:
     virtual bool isPeriodicWestEast() const;
 
     virtual std::vector<Point> to_points() const;
+
+    virtual SearchLonLat::Result nearest(const PointLonLat&) const;
+    virtual SearchLonLat::Results nearest(const PointLonLat&, size_t k) const;
 
     // -- Overridden methods
     // None

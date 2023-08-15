@@ -71,6 +71,30 @@ std::vector<Point> Grid::to_points() const {
 }
 
 
+SearchLonLat::Result Grid::nearest(const PointLonLat& p) const {
+    SearchLonLat search;
+
+    size_t index = 0;
+    for (const auto& p : to_points()) {
+        search.insert({std::get<PointLonLat>(p), index});
+    }
+
+    return search.nearestNeighbour(p);
+}
+
+
+SearchLonLat::Results Grid::nearest(const PointLonLat& p, size_t k) const {
+    SearchLonLat search;
+
+    size_t index = 0;
+    for (const auto& p : to_points()) {
+        search.insert({std::get<PointLonLat>(p), index});
+    }
+
+    return search.kNearestNeighbours(p, k);
+}
+
+
 static pthread_once_t __once;
 
 static Mutex* __mutex                                        = nullptr;

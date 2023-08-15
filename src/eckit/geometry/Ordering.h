@@ -18,29 +18,29 @@ namespace eckit::geometry {
 
 enum Ordering
 {
-    scan_list_i_list_j_i_positively_j_negatively_ij_i_single_direction,
-    scan_list_i_list_j_i_negatively_j_negatively_ij_i_single_direction,
-    scan_list_i_list_j_i_positively_j_positively_ij_i_single_direction,
-    scan_list_i_list_j_i_negatively_j_positively_ij_i_single_direction,
-    scan_list_i_list_j_i_positively_j_negatively_ji_i_single_direction,
-    scan_list_i_list_j_i_negatively_j_negatively_ji_i_single_direction,
-    scan_list_i_list_j_i_positively_j_positively_ji_i_single_direction,
-    scan_list_i_list_j_i_negatively_j_positively_ji_i_single_direction,
-    scan_list_i_list_j_i_positively_j_negatively_ij_i_alternating_direction,
-    scan_list_i_list_j_i_negatively_j_negatively_ij_i_alternating_direction,
-    scan_list_i_list_j_i_positively_j_positively_ij_i_alternating_direction,
-    scan_list_i_list_j_i_negatively_j_positively_ij_i_alternating_direction,
-    scan_list_i_list_j_i_positively_j_negatively_ji_i_alternating_direction,
-    scan_list_i_list_j_i_negatively_j_negatively_ji_i_alternating_direction,
-    scan_list_i_list_j_i_positively_j_positively_ji_i_alternating_direction,
-    scan_list_i_list_j_i_negatively_j_positively_ji_i_alternating_direction,
-    // TODO scan_ ... shift
+    regular_scan_i_positively_j_negatively_ij_i_single_direction,
+    regular_scan_i_negatively_j_negatively_ij_i_single_direction,
+    regular_scan_i_positively_j_positively_ij_i_single_direction,
+    regular_scan_i_negatively_j_positively_ij_i_single_direction,
+    regular_scan_i_positively_j_negatively_ji_i_single_direction,
+    regular_scan_i_negatively_j_negatively_ji_i_single_direction,
+    regular_scan_i_positively_j_positively_ji_i_single_direction,
+    regular_scan_i_negatively_j_positively_ji_i_single_direction,
+    regular_scan_i_positively_j_negatively_ij_i_alternating_direction,
+    regular_scan_i_negatively_j_negatively_ij_i_alternating_direction,
+    regular_scan_i_positively_j_positively_ij_i_alternating_direction,
+    regular_scan_i_negatively_j_positively_ij_i_alternating_direction,
+    regular_scan_i_positively_j_negatively_ji_i_alternating_direction,
+    regular_scan_i_negatively_j_negatively_ji_i_alternating_direction,
+    regular_scan_i_positively_j_positively_ji_i_alternating_direction,
+    regular_scan_i_negatively_j_positively_ji_i_alternating_direction,
+    // TODO regular_scan_ ... shift
 
-    scan_reduced_i_list_j_i_positively_j_negatively,
-    scan_reduced_i_list_j_i_negatively_j_negatively,
-    scan_reduced_i_list_j_i_positively_j_positively,
-    scan_reduced_i_list_j_i_negatively_j_positively,
-    // TODO scan_ ... shift
+    reduced_scan_i_positively_j_negatively,
+    reduced_scan_i_negatively_j_negatively,
+    reduced_scan_i_positively_j_positively,
+    reduced_scan_i_negatively_j_positively,
+    // TODO reduced_scan_ ... shift
 
     healpix_ring,
     healpix_nested,

@@ -76,11 +76,6 @@ bool ReducedLL::includesSouthPole() const {
 }
 
 
-std::vector<Point> ReducedLL::to_points() const {
-    NOTIMP;
-}
-
-
 static const GridRegisterType<ReducedLL> reducedLL("reduced_ll");
 
 

@@ -15,6 +15,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/config/Configuration.h"
@@ -38,6 +39,7 @@ public:
     struct Iterator final : std::unique_ptr<geometry::Iterator> {
         explicit Iterator(geometry::Iterator* it) :
             unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+        using diff_t = unique_ptr::element_type::diff_t;
 
         Iterator(const Iterator&) = delete;
         Iterator(Iterator&&)      = delete;
@@ -47,15 +49,18 @@ public:
         void operator=(const Iterator&) = delete;
         void operator=(Iterator&&)      = delete;
 
-        bool operator==(const Iterator& other) { return get()->operator==(*(other.get())); }
-        bool operator!=(const Iterator& other) { return get()->operator!=(*(other.get())); }
+        bool operator==(const Iterator& other) const { return get()->operator==(*(other.get())); }
+        bool operator!=(const Iterator& other) const { return get()->operator!=(*(other.get())); }
+
         bool operator++() { return get()->operator++(); }
+        bool operator+=(diff_t d) { return get()->operator+=(d); }
+
         bool operator--() { return get()->operator--(); }
+        bool operator-=(diff_t d) { return get()->operator-=(d); }
 
         explicit operator bool() const { return get()->operator bool(); }
-        const Point& operator*() const { return get()->operator*(); }
+        Point operator*() const { return get()->operator*(); }
 
-        size_t size() const { return get()->size(); }
         size_t index() const { return get()->index(); }
     };
 
@@ -102,6 +107,7 @@ public:
     virtual bool isPeriodicWestEast() const;
 
     virtual std::vector<Point> to_points() const;
+    virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
 
     virtual SearchLonLat::Result nearest(const PointLonLat&) const;
     virtual SearchLonLat::Results nearest(const PointLonLat&, size_t k) const;

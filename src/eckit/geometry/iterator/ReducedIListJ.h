@@ -72,6 +72,7 @@ private:
     size_t count_;
     bool first_;
     Point p_;
+    const size_t size_;
 
     // -- Methods
 
@@ -79,14 +80,13 @@ private:
 
     // -- Overridden methods
 
-    bool operator==(const Iterator&) override;
+    bool operator==(const Iterator&) const override;
     bool operator++() override;
-    bool operator--() override;
+    bool operator+=(diff_t) override;
 
-    explicit operator bool() override;
-    const Point& operator*() override;
+    explicit operator bool() const override;
+    Point operator*() const override;
 
-    size_t size() const override;
     size_t index() const override;
 
     // -- Class members

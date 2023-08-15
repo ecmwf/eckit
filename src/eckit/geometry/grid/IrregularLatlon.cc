@@ -63,11 +63,6 @@ size_t IrregularLatlon::size() const {
 }
 
 
-std::vector<Point> IrregularLatlon::to_points() const {
-    NOTIMP;
-}
-
-
 static const GridRegisterType<IrregularLatlon> irregularLatlon("irregular_latlon");
 
 

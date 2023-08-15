@@ -12,12 +12,6 @@
 
 #include "eckit/geometry/grid/UnstructuredGrid.h"
 
-#include <fstream>
-#include <memory>
-#include <set>
-#include <sstream>
-#include <utility>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/iterator/ListI.h"
 
@@ -25,40 +19,24 @@
 namespace eckit::geometry::grid {
 
 
-static const area::BoundingBox __global;
-
-
-static std::vector<Point> lonlat_to_points(const std::vector<double> lons, const std::vector<double> lats) {
-    auto N = lats.size();
-    ASSERT(N == lons.size());
-
-    std::vector<Point> points;
-    points.reserve(N);
-
-    for (auto lon = lons.begin(), lat = lats.begin(); lon != lons.end(); ++lon, ++lat) {
-        points.emplace_back(PointLonLat{*lon, *lat});
-    }
-
-    return points;
-}
-
-
 UnstructuredGrid::UnstructuredGrid(const Configuration& config) :
-    UnstructuredGrid(config.getDoubleVector("longitudes"), config.getDoubleVector("latitudes")) {
+    UnstructuredGrid(std::make_pair(config.getDoubleVector("longitudes"), config.getDoubleVector("latitudes"))) {
 }
 
 
 UnstructuredGrid::UnstructuredGrid(const Grid& grid) :
-    UnstructuredGrid(grid.to_points()) {}
+    UnstructuredGrid(grid.to_latlon()) {}
 
 
-UnstructuredGrid::UnstructuredGrid(std::vector<Point>&& points) :
-    Grid(__global), points_(points) {
+UnstructuredGrid::UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes) :
+    Grid(area::BoundingBox::make_global_prime()), latitudes_(latitudes), longitudes_(longitudes) {
+    ASSERT(!latitudes_.empty());
+    ASSERT(latitudes_.size() == longitudes_.size());
 }
 
 
-UnstructuredGrid::UnstructuredGrid(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
-    Grid(__global), points_(lonlat_to_points(longitudes, latitudes)) {
+UnstructuredGrid::UnstructuredGrid(std::pair<std::vector<double>, std::vector<double>>&& latlon) :
+    Grid(area::BoundingBox::make_global_prime()), latitudes_(std::move(latlon.first)), longitudes_(std::move(latlon.second)) {
 }
 
 
@@ -76,12 +54,24 @@ UnstructuredGrid::~UnstructuredGrid() = default;
 
 
 size_t UnstructuredGrid::size() const {
-    return points_.size();
+    return latitudes_.size();
 }
 
 
 std::vector<Point> UnstructuredGrid::to_points() const {
-    return points_;
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (auto lat = latitudes_.begin(), lon = longitudes_.begin(); lat != latitudes_.end(); ++lat, ++lon) {
+        points.emplace_back(PointLonLat{*lon, *lat});
+    }
+
+    return points;
+}
+
+
+std::pair<std::vector<double>, std::vector<double>> UnstructuredGrid::to_latlon() const {
+    return {latitudes_, longitudes_};
 }
 
 

@@ -54,23 +54,23 @@ public:
 private:
     // -- Members
 
+    const std::vector<double>& latitudes_;
+    const std::vector<double>& longitudes_;
+    const size_t size_;
     size_t index_;
-    const std::vector<Point>& points_;
-    bool first_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    bool operator==(const Iterator&) override;
+    bool operator==(const Iterator&) const override;
     bool operator++() override;
-    bool operator--() override;
+    bool operator+=(diff_t) override;
 
-    explicit operator bool() override;
-    const Point& operator*() override;
+    explicit operator bool() const override;
+    Point operator*() const override;
 
-    size_t size() const override;
     size_t index() const override;
 
     // -- Class members

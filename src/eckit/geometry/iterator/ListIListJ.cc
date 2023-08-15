@@ -38,7 +38,7 @@ ListIListJ::ListIListJ(const Grid& grid) :
 }
 
 
-bool ListIListJ::operator==(const Iterator&) {
+bool ListIListJ::operator==(const Iterator&) const {
     NOTIMP;
 }
 
@@ -74,22 +74,17 @@ bool ListIListJ::operator++() {
 }
 
 
-bool ListIListJ::operator--() {
+bool ListIListJ::operator+=(diff_t) {
     NOTIMP;
 }
 
 
-ListIListJ::operator bool() {
+ListIListJ::operator bool() const {
     NOTIMP;
 }
 
 
-const Point& ListIListJ::operator*() {
-    NOTIMP;
-}
-
-
-size_t ListIListJ::size() const {
+Point ListIListJ::operator*() const {
     NOTIMP;
 }
 

@@ -160,11 +160,6 @@ size_t ReducedGG::size() const {
 }
 
 
-std::vector<Point> ReducedGG::to_points() const {
-    NOTIMP;
-}
-
-
 bool ReducedGG::isPeriodicWestEast() const {
     auto inc = smallest_increment(pl_);
     return bbox().east() - bbox().west() + inc >= GLOBE;

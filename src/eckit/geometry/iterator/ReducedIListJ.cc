@@ -13,6 +13,7 @@
 #include "eckit/geometry/iterator/ReducedIListJ.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/Grid.h"
 
 
 namespace eckit::geometry::iterator {
@@ -40,7 +41,8 @@ ReducedIListJ::ReducedIListJ(
     k_(0),  // size_t k
     count_(0),
     first_(true),
-    p_(PointLonLat{0, 0}) {
+    p_(PointLonLat{0, 0}),
+    size_(grid.size()) {
     // NOTE: latitudes_ span the globe, sorted from North-to-South, k_ positions the North
     // NOTE: pl is global
     ASSERT(N_ * 2 == latitudes_.size());
@@ -74,7 +76,7 @@ size_t ReducedIListJ::resetToRow(size_t j) {
 }
 
 
-bool ReducedIListJ::operator==(const Iterator&) {
+bool ReducedIListJ::operator==(const Iterator&) const {
     NOTIMP;
 }
 
@@ -107,24 +109,20 @@ bool ReducedIListJ::operator++() {
 }
 
 
-bool ReducedIListJ::operator--() {
+bool ReducedIListJ::operator+=(diff_t) {
     NOTIMP;
 }
 
 
-ReducedIListJ::operator bool() {
+ReducedIListJ::operator bool() const {
     NOTIMP;
 }
 
 
-const Point& ReducedIListJ::operator*() {
+Point ReducedIListJ::operator*() const {
     NOTIMP;
 }
 
-
-size_t ReducedIListJ::size() const {
-    NOTIMP;
-}
 
 size_t ReducedIListJ::index() const {
     return count_;

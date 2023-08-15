@@ -17,6 +17,7 @@
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/area/BoundingBox.h"
 #include "eckit/geometry/util.h"
 #include "eckit/utils/Translator.h"
@@ -25,13 +26,43 @@
 namespace eckit::geometry::grid {
 
 
-static const area::BoundingBox __global;
-
-
 static HEALPix::ordering_type ordering_type_from_string(const std::string& str) {
     return str == "ring" ? HEALPix::ordering_type::ring : str == "nested" ? HEALPix::ordering_type::nested
                                                                           : throw AssertionFailed("HEALPix::ordering_type", Here());
 }
+
+
+struct RingIterator final : geometry::Iterator {
+    explicit RingIterator(const Grid& grid, size_t index = 0) :
+        geometry::Iterator(grid), size_(grid.size()), index_(index) {}
+
+    bool operator==(const Iterator& other) const override {
+        const auto* another = dynamic_cast<const RingIterator*>(&other);
+        return another != nullptr && index_ == another->index_;
+    }
+
+    bool operator++() override {
+        index_++;
+        return operator bool();
+    }
+
+    bool operator+=(diff_t d) override {
+        NOTIMP;
+    }
+
+    explicit operator bool() const override {
+        return index_ < size_;
+    }
+
+    Point operator*() const override {
+        NOTIMP;
+    }
+
+    size_t index() const override { return index_; }
+
+    const size_t size_;
+    size_t index_;
+};
 
 
 HEALPix::HEALPix(const Configuration& config) :
@@ -40,7 +71,7 @@ HEALPix::HEALPix(const Configuration& config) :
 
 
 HEALPix::HEALPix(size_t Nside, ordering_type ordering) :
-    Grid(__global), N_(Nside), ordering_(ordering) {
+    Grid(area::BoundingBox::make_global_prime()), N_(Nside), ordering_(ordering) {
     ASSERT(N_ > 0);
     ASSERT(ordering_ == ordering_type::ring);
 
@@ -112,7 +143,8 @@ const std::vector<double>& HEALPix::longitudes(size_t i) const {
 
 
 const area::BoundingBox& HEALPix::boundingBox() const {
-    return __global;
+    static const auto __bbox(area::BoundingBox::make_global_prime());
+    return __bbox;
 }
 
 
@@ -121,7 +153,16 @@ size_t HEALPix::size() const {
 }
 
 
-std::vector<Point> HEALPix::to_points() const {
+Grid::iterator HEALPix::cbegin() const {
+    if (ordering_ == ordering_type::ring) {
+        return iterator{new RingIterator(*this, 0)};
+    }
+    NOTIMP;
+}
+Grid::iterator HEALPix::cend() const {
+    if (ordering_ == ordering_type::ring) {
+        return iterator{new RingIterator(*this, size())};
+    }
     NOTIMP;
 }
 

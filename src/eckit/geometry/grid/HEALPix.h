@@ -89,10 +89,8 @@ private:
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
 
-    iterator cbegin() const override { NOTIMP; }
-    iterator cend() const override { NOTIMP; }
-
-    std::vector<Point> to_points() const override;
+    iterator cbegin() const override;
+    iterator cend() const override;
 
     // -- Class members
     // None

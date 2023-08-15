@@ -34,8 +34,7 @@ public:
 
     explicit UnstructuredGrid(const Configuration&);
     explicit UnstructuredGrid(const Grid&);
-    explicit UnstructuredGrid(std::vector<Point>&&);
-    UnstructuredGrid(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
+    UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes);
 
     // -- Destructor
 
@@ -60,9 +59,14 @@ public:
     // None
 
 private:
+    // -- Constructors
+
+    explicit UnstructuredGrid(std::pair<std::vector<double>, std::vector<double>>&&);
+
     // -- Members
 
-    std::vector<Point> points_;
+    std::vector<double> latitudes_;
+    std::vector<double> longitudes_;
 
     // -- Methods
     // None
@@ -79,6 +83,7 @@ private:
     bool includesSouthPole() const override { return true; }
 
     std::vector<Point> to_points() const override;
+    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
     // -- Class members
     // None

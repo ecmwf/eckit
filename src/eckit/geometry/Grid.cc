@@ -67,7 +67,12 @@ bool Grid::isPeriodicWestEast() const {
 
 
 std::vector<Point> Grid::to_points() const {
-    throw NotImplemented("Grid::to_points", Here());
+    throw NotImplemented("Grid::to_points");
+}
+
+
+std::pair<std::vector<double>, std::vector<double>> Grid::to_latlon() const {
+    throw NotImplemented("Grid::to_latlon");
 }
 
 

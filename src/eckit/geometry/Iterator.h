@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include "eckit/geometry/Point.h"
 
 
@@ -26,7 +28,8 @@ namespace eckit::geometry {
 class Iterator {
 public:
     // -- Types
-    // None
+
+    using diff_t = std::make_signed<size_t>::type;
 
     // -- Exceptions
     // None
@@ -48,18 +51,20 @@ public:
     void operator=(const Iterator&) = delete;
     void operator=(Iterator&&)      = delete;
 
-    bool operator!=(const Iterator& other) { return !operator==(other); }
+    virtual bool operator==(const Iterator&) const = 0;
+    bool operator!=(const Iterator& other) const { return !operator==(other); }
 
-    virtual bool operator==(const Iterator&) = 0;
-    virtual bool operator++()                = 0;
-    virtual bool operator--()                = 0;
+    virtual bool operator++()       = 0;
+    virtual bool operator+=(diff_t) = 0;
 
-    virtual explicit operator bool() = 0;
-    virtual const Point& operator*() = 0;
+    virtual bool operator--() { return operator-=(1); }
+    virtual bool operator-=(diff_t diff) { return operator+=(-diff); }
+
+    virtual explicit operator bool() const = 0;
+    virtual Point operator*() const        = 0;
 
     // -- Methods
 
-    virtual size_t size() const  = 0;
     virtual size_t index() const = 0;
 
     // -- Overridden methods

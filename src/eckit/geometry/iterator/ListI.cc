@@ -21,51 +21,41 @@ namespace eckit::geometry::iterator {
 
 ListI::ListI(const Grid& grid, size_t index) :
     Iterator(grid),
-    index_(index),
-    points_(dynamic_cast<const grid::UnstructuredGrid&>(grid).points_),
-    first_(true) {
+    latitudes_(dynamic_cast<const grid::UnstructuredGrid&>(grid).latitudes_),
+    longitudes_(dynamic_cast<const grid::UnstructuredGrid&>(grid).longitudes_),
+    size_(grid.size()),
+    index_(index) {
 }
 
 
-bool ListI::operator==(const Iterator& other) {
+bool ListI::operator==(const Iterator& other) const {
     const auto* another = dynamic_cast<const ListI*>(&other);
-    return another != nullptr && points_.data() == another->points_.data() && index_ == another->index_;
+    return another != nullptr && latitudes_.data() == another->latitudes_.data() && longitudes_.data() == another->longitudes_.data() && index_ == another->index_;
 }
 
 
 bool ListI::operator++() {
-    if (first_) {
-        first_ = false;
-    }
-    else {
-        index_++;
-    }
+    index_++;
     return operator bool();
 }
 
 
-bool ListI::operator--() {
-    if (index_ == 0) {
-        return false;
-    }
-    index_--;
+bool ListI::operator+=(diff_t d) {
+    auto i = static_cast<diff_t>(index_);
+    ASSERT(static_cast<size_t>(i) == index_);
+    index_ = i + d < 0 ? size_ : static_cast<size_t>(i + d);
     return operator bool();
 }
 
 
-ListI::operator bool() {
-    return index_ < points_.size();
+ListI::operator bool() const {
+    return index_ < size_;
 }
 
 
-const Point& ListI::operator*() {
+Point ListI::operator*() const {
     ASSERT(operator bool());
-    return points_[index_];
-}
-
-
-size_t ListI::size() const {
-    return points_.size();
+    return PointLonLat{longitudes_[index_], latitudes_[index_]};
 }
 
 

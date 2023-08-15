@@ -121,11 +121,6 @@ bool RegularGG::isPeriodicWestEast() const {
 }
 
 
-std::vector<Point> RegularGG::to_points() const {
-    NOTIMP;
-}
-
-
 void RegularGG::setNiNj() {
     ASSERT(N_);
 

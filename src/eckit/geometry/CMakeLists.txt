@@ -1,6 +1,8 @@
 list( APPEND eckit_geometry_srcs
     Area.cc
     Area.h
+    Cache.cc
+    Cache.h
     CoordinateHelpers.cc
     CoordinateHelpers.h
     Domain.cc

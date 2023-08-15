@@ -160,7 +160,7 @@ size_t ReducedGG::size() const {
 }
 
 
-std::vector<Point>&& ReducedGG::to_points() const {
+std::vector<Point> ReducedGG::to_points() const {
     NOTIMP;
 }
 

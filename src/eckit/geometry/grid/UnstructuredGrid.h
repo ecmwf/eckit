@@ -17,6 +17,11 @@
 #include "eckit/geometry/Grid.h"
 
 
+namespace eckit::geometry::iterator {
+class ListI;
+}
+
+
 namespace eckit::geometry::grid {
 
 
@@ -27,7 +32,10 @@ public:
 
     // -- Constructors
 
+    explicit UnstructuredGrid(const Configuration&);
+    explicit UnstructuredGrid(const Grid&);
     explicit UnstructuredGrid(std::vector<Point>&&);
+    UnstructuredGrid(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
 
     // -- Destructor
 
@@ -64,11 +72,13 @@ private:
     iterator cbegin() const override;
     iterator cend() const override;
 
+    size_t size() const override;
+
     bool isPeriodicWestEast() const override { return true; }
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
 
-    size_t size() const override;
+    std::vector<Point> to_points() const override;
 
     // -- Class members
     // None
@@ -77,7 +87,8 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend class geometry::iterator::ListI;
 };
 
 

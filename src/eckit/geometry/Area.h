@@ -56,8 +56,7 @@ public:
     Area& operator=(Area&&)      = default;
 
     // -- Methods
-
-    virtual area::BoundingBox bbox() const = 0;
+    // None
 
     // -- Overridden methods
     // None

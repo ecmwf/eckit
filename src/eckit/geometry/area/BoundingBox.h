@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <tuple>
+#include <array>
 
 #include "eckit/geometry/Area.h"
 
@@ -27,7 +27,7 @@ class Projection;
 namespace eckit::geometry::area {
 
 
-class BoundingBox : public Area {
+class BoundingBox : public Area, protected std::array<double, 4> {
 public:
     // -- Exceptions
     // None
@@ -39,26 +39,20 @@ public:
     BoundingBox(double north, double west, double south, double east);
     BoundingBox();
 
-    BoundingBox(const BoundingBox&) = default;
-    BoundingBox(BoundingBox&&)      = default;
-
     // -- Destructor
-
-    virtual ~BoundingBox() = default;
+    // None
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    BoundingBox& operator=(const BoundingBox&) = default;
-    BoundingBox& operator=(BoundingBox&&)      = default;
     bool operator==(const BoundingBox&) const;
     bool operator!=(const BoundingBox& other) const { return !operator==(other); }
 
     // -- Methods
 
-    std::tuple<double, double, double, double> deconstruct() const { return {north_, west_, south_, east_}; }
+    std::array<double, 4> deconstruct() const { return {north_, west_, south_, east_}; }
 
     double north() const { return north_; }
     double west() const { return west_; }
@@ -76,9 +70,11 @@ public:
 
     static BoundingBox make(const BoundingBox&, const Projection&);
 
-    // -- Overridden methods
+    static BoundingBox make_global_prime() { return {90., 0., -90., 360.}; }
+    static BoundingBox make_global_antiprime() { return {90., -180., -90., 180.}; }
 
-    area::BoundingBox bbox() const override { return *this; }
+    // -- Overridden methods
+    // None
 
     // -- Class members
     // None

@@ -36,7 +36,7 @@ public:
 
     struct Iterator final : std::unique_ptr<geometry::Iterator> {
         explicit Iterator(geometry::Iterator* it) :
-            unique_ptr(it) { ASSERT(operator bool()); }
+            unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
 
         Iterator(const Iterator&) = delete;
         Iterator(Iterator&&)      = delete;
@@ -51,8 +51,8 @@ public:
         bool operator++() { return get()->operator++(); }
         bool operator--() { return get()->operator--(); }
 
-        explicit operator bool() { return get()->operator bool(); }
-        const Point& operator*() { return get()->operator*(); }
+        explicit operator bool() const { return get()->operator bool(); }
+        const Point& operator*() const { return get()->operator*(); }
 
         size_t size() const { return get()->size(); }
         size_t index() const { return get()->index(); }
@@ -100,7 +100,7 @@ public:
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;
 
-    virtual std::vector<Point>&& to_points() const = 0;
+    virtual std::vector<Point> to_points() const;
 
     // -- Overridden methods
     // None

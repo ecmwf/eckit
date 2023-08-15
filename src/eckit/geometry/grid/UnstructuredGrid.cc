@@ -19,16 +19,7 @@
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
-
-#if 0
-#include "eckit/config/Resource.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/geometry/Domain.h"
-#include "eckit/geometry/Iterator.h"
-#include "eckit/geometry/Projection.h"
-#include "eckit/serialisation/FileStream.h"
-#include "eckit/serialisation/IfstreamStream.h"
-#endif
+#include "eckit/geometry/iterator/ListI.h"
 
 
 namespace eckit::geometry::grid {
@@ -37,18 +28,47 @@ namespace eckit::geometry::grid {
 static const area::BoundingBox __global;
 
 
+static std::vector<Point> lonlat_to_points(const std::vector<double> lons, const std::vector<double> lats) {
+    auto N = lats.size();
+    ASSERT(N == lons.size());
+
+    std::vector<Point> points;
+    points.reserve(N);
+
+    for (auto lon = lons.begin(), lat = lats.begin(); lon != lons.end(); ++lon, ++lat) {
+        points.emplace_back(PointLonLat{*lon, *lat});
+    }
+
+    return points;
+}
+
+
+UnstructuredGrid::UnstructuredGrid(const Configuration& config) :
+    UnstructuredGrid(config.getDoubleVector("longitudes"), config.getDoubleVector("latitudes")) {
+}
+
+
+UnstructuredGrid::UnstructuredGrid(const Grid& grid) :
+    UnstructuredGrid(grid.to_points()) {}
+
+
 UnstructuredGrid::UnstructuredGrid(std::vector<Point>&& points) :
     Grid(__global), points_(points) {
 }
 
 
+UnstructuredGrid::UnstructuredGrid(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
+    Grid(__global), points_(lonlat_to_points(longitudes, latitudes)) {
+}
+
+
 Grid::iterator UnstructuredGrid::cbegin() const {
-    NOTIMP;
+    return iterator{new geometry::iterator::ListI(*this)};
 }
 
 
 Grid::iterator UnstructuredGrid::cend() const {
-    NOTIMP;
+    return iterator{new geometry::iterator::ListI(*this, size())};
 }
 
 
@@ -60,7 +80,12 @@ size_t UnstructuredGrid::size() const {
 }
 
 
-// static const GridRegisterType<UnstructuredGrid> unstructured_grid("unstructured_grid");
+std::vector<Point> UnstructuredGrid::to_points() const {
+    return points_;
+}
+
+
+static const GridRegisterType<UnstructuredGrid> unstructured_grid("unstructured_grid");
 
 
 }  // namespace eckit::geometry::grid

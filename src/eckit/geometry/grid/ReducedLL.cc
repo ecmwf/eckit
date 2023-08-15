@@ -76,7 +76,7 @@ bool ReducedLL::includesSouthPole() const {
 }
 
 
-std::vector<Point>&& ReducedLL::to_points() const {
+std::vector<Point> ReducedLL::to_points() const {
     NOTIMP;
 }
 

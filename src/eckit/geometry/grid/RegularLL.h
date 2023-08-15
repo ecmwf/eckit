@@ -76,7 +76,7 @@ private:
 
     size_t size() const override;
 
-    std::vector<Point>&& to_points() const override;
+    std::vector<Point> to_points() const override;
 
     // -- Class members
     // None

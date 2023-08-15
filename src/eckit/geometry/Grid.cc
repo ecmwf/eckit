@@ -66,7 +66,7 @@ bool Grid::isPeriodicWestEast() const {
 }
 
 
-std::vector<Point>&& Grid::to_points() const {
+std::vector<Point> Grid::to_points() const {
     throw NotImplemented("Grid::to_points", Here());
 }
 

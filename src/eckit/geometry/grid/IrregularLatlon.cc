@@ -63,7 +63,7 @@ size_t IrregularLatlon::size() const {
 }
 
 
-std::vector<Point>&& IrregularLatlon::to_points() const {
+std::vector<Point> IrregularLatlon::to_points() const {
     NOTIMP;
 }
 

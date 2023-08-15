@@ -15,6 +15,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/config/MappedConfiguration.h"
@@ -22,6 +23,7 @@
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/grid/RegularLL.h"
+#include "eckit/geometry/util.h"
 #include "eckit/geometry/util/regex.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -158,14 +160,32 @@ bool RegularLL::includesSouthPole() const {
 
 
 size_t RegularLL::size() const {
-    ASSERT(ni_);
-    ASSERT(nj_);
+    ASSERT(0 < ni_);
+    ASSERT(0 < nj_);
     return ni_ * nj_;
 }
 
 
-std::vector<Point>&& RegularLL::to_points() const {
-    NOTIMP;
+std::vector<Point> RegularLL::to_points() const {
+    auto [n, w, s, e] = bbox().deconstruct();
+    auto [we, sn]     = increments_.deconstruct();
+
+    auto longitudes = util::arange(w, e, we);
+    ASSERT(longitudes.size() == ni_);
+
+    auto latitudes = util::arange(n, s, -sn);
+    ASSERT(latitudes.size() == nj_);
+
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (const auto lat : latitudes) {
+        for (const auto lon : longitudes) {
+            points.emplace_back(PointLonLat{lon, lat});
+        }
+    }
+
+    return points;
 }
 
 

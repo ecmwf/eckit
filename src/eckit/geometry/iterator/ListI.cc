@@ -13,15 +13,16 @@
 #include "eckit/geometry/iterator/ListI.h"
 
 #include "eckit/geometry/Grid.h"
+#include "eckit/geometry/grid/UnstructuredGrid.h"
 
 
 namespace eckit::geometry::iterator {
 
 
-ListI::ListI(const Grid& grid) :
+ListI::ListI(const Grid& grid, size_t index) :
     Iterator(grid),
-    points_(grid.to_points()),
-    index_(0),
+    index_(index),
+    points_(dynamic_cast<const grid::UnstructuredGrid&>(grid).points_),
     first_(true) {
 }
 

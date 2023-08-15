@@ -28,7 +28,7 @@ public:
 
     // -- Constructors
 
-    explicit ListI(const Grid&);
+    explicit ListI(const Grid&, size_t index = 0);
 
     // -- Destructor
     // None
@@ -54,8 +54,8 @@ public:
 private:
     // -- Members
 
-    const std::vector<Point>& points_;
     size_t index_;
+    const std::vector<Point>& points_;
     bool first_;
 
     // -- Methods

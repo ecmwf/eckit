@@ -121,7 +121,7 @@ size_t HEALPix::size() const {
 }
 
 
-std::vector<Point>&& HEALPix::to_points() const {
+std::vector<Point> HEALPix::to_points() const {
     NOTIMP;
 }
 

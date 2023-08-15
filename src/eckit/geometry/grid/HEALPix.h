@@ -92,7 +92,7 @@ private:
     iterator cbegin() const override { NOTIMP; }
     iterator cend() const override { NOTIMP; }
 
-    std::vector<Point>&& to_points() const override;
+    std::vector<Point> to_points() const override;
 
     // -- Class members
     // None

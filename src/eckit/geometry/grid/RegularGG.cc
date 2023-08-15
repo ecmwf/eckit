@@ -121,7 +121,7 @@ bool RegularGG::isPeriodicWestEast() const {
 }
 
 
-std::vector<Point>&& RegularGG::to_points() const {
+std::vector<Point> RegularGG::to_points() const {
     NOTIMP;
 }
 

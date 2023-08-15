@@ -58,7 +58,8 @@ public:
     double& south_north = P::operator[](1);
 
     // -- Methods
-    // None
+
+    std::array<double, 2> deconstruct() const { return {west_east, south_north}; }
 
     // -- Overridden methods
     // None

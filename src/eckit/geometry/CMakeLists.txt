@@ -21,6 +21,8 @@ list( APPEND eckit_geometry_srcs
     Iterator.h
     KPoint.cc
     KPoint.h
+    LibEcKitGeometry.cc
+    LibEcKitGeometry.h
     Ordering.h
     Point.cc
     Point.h

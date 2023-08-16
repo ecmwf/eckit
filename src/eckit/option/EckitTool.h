@@ -10,12 +10,13 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date   Mar 2016
 
 #pragma once
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/option/SimpleOption.h"
+#include "eckit/option/Option.h"
 #include "eckit/runtime/Tool.h"
 
 namespace eckit {

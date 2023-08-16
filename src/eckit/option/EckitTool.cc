@@ -10,6 +10,7 @@
 
 #include "EckitTool.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 

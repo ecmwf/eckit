@@ -39,11 +39,13 @@ public:
 
 private:
     void execute(const option::CmdArgs& args) override {
-        bool list = false;
-        args.get("list", list);
+        if (args.getBool("list", false)) {
+            geometry::GridFactory::list(Log::info());
+            Log::info() << std::endl;
+            return;
+        }
 
-        bool uid = false;
-        args.get("uid", uid);
+        auto uid = args.getBool("uid", false);
 
         geometry::PointLonLat nearest_point{0, 0};
         size_t nearest_k = 0;
@@ -51,12 +53,6 @@ private:
             ASSERT(point.size() == 2);
             nearest_point = {point[0], point[1]};
             nearest_k     = args.getUnsigned("nearest-k", 1);
-        }
-
-        if (list) {
-            geometry::GridFactory::list(Log::info());
-            Log::info() << std::endl;
-            return;
         }
 
         auto& out = Log::info();

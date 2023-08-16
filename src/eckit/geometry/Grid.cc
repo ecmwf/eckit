@@ -84,27 +84,13 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlon() const {
 }
 
 
-SearchLonLat::Result Grid::nearest(const PointLonLat& p) const {
-    SearchLonLat search;
-
-    size_t index = 0;
-    for (const auto& p : to_points()) {
-        search.insert({std::get<PointLonLat>(p), index});
-    }
-
-    return search.nearestNeighbour(p);
+Ordering Grid::order() const {
+    throw NotImplemented("Grid::order");
 }
 
 
-SearchLonLat::Results Grid::nearest(const PointLonLat& p, size_t k) const {
-    SearchLonLat search;
-
-    size_t index = 0;
-    for (const auto& p : to_points()) {
-        search.insert({std::get<PointLonLat>(p), index});
-    }
-
-    return search.kNearestNeighbours(p, k);
+Renumber Grid::reorder(const PointLonLat&) const {
+    throw NotImplemented("Grid::reorder");
 }
 
 

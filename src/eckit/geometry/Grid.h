@@ -22,10 +22,10 @@
 #include "eckit/geometry/Area.h"
 #include "eckit/geometry/Increments.h"
 #include "eckit/geometry/Iterator.h"
+#include "eckit/geometry/Ordering.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/Renumber.h"
-#include "eckit/geometry/Search.h"
 #include "eckit/geometry/area/BoundingBox.h"
 
 
@@ -109,8 +109,8 @@ public:
     virtual std::vector<Point> to_points() const;
     virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
 
-    virtual SearchLonLat::Result nearest(const PointLonLat&) const;
-    virtual SearchLonLat::Results nearest(const PointLonLat&, size_t k) const;
+    virtual Ordering order() const;
+    virtual Renumber reorder(const PointLonLat&) const;
 
     // -- Overridden methods
     // None

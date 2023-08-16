@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "eckit/geometry/Grid.h"
-#include "eckit/geometry/Ordering.h"
 
 
 namespace eckit::geometry::grid {

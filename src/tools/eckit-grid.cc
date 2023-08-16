@@ -15,10 +15,13 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Grid.h"
 #include "eckit/geometry/Point.h"
-#include "eckit/log/JSON.h"
+#include "eckit/geometry/Search.h"
+#include "eckit/geometry/grid/UnstructuredGrid.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
+#include "eckit/option/SimpleOption.h"
+#include "eckit/option/VectorOption.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,6 +33,8 @@ public:
         EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<bool>("list", "List possible grids"));
         options_.push_back(new option::SimpleOption<bool>("uid", "by grid unique identifier, instead of name"));
+        options_.push_back(new option::VectorOption<double>("nearest-point", "nearest point location (lon/lat)", 2));
+        options_.push_back(new option::SimpleOption<size_t>("nearest-k", "nearest k points"));
     }
 
 private:
@@ -40,42 +45,51 @@ private:
         bool uid = false;
         args.get("uid", uid);
 
+        geometry::PointLonLat nearest_point{0, 0};
+        size_t nearest_k = 0;
+        if (std::vector<double> point; args.get("nearest-point", point)) {
+            ASSERT(point.size() == 2);
+            nearest_point = {point[0], point[1]};
+            nearest_k     = args.getUnsigned("nearest-k", 1);
+        }
+
         if (list) {
             geometry::GridFactory::list(Log::info());
             Log::info() << std::endl;
             return;
         }
 
-        geometry::Point x = geometry::PointLonLat(0., 90.);
-        std::cout << x << std::endl;
-
         auto& out = Log::info();
-        // JSON out(Log::info());
-        // out.precision(args.getInt("precision", 16));
+        out.precision(args.getInt("precision", 16));
 
-        for (std::string arg : args) {
+        for (const auto& arg : args) {
             std::unique_ptr<const geometry::Grid> grid(uid ? geometry::GridFactoryUID::build(arg) : geometry::GridFactoryName::build(arg));
 
-            // out << "name: " << grid->name() << std::endl;
-            // out << "uid: " << grid->uid() << std::endl;
             out << "size: " << grid->size() << std::endl;
 
-            auto it = grid->begin();
+            for (const auto& p : *grid) {
+                out << p << std::endl;
+            }
 
-            std::cout << *it << std::endl;
+            for (const auto& p : geometry::grid::UnstructuredGrid(*grid)) {
+                out << p << std::endl;
+            }
 
-            //             (*it).print(out) << std::endl;
-            //             static_cast<std::ostream&>(out) << "first: " << q << std::endl;
+            if (nearest_k > 0) {
+                geometry::SearchLonLat search;
+                search.build(grid->to_points());
+
+                const auto* sep = "";
+                for (auto& near : search.kNearestNeighbours(nearest_point, nearest_k)) {
+                    out << sep << near;
+                    sep = ", ";
+                }
+                out << std::endl;
+            }
 
             // it += grid->size() - 1;
-            // out << "last: " << **it << std::endl;
+            // out << "last: " << *it << std::endl;
             // ASSERT(it == grid->rbegin());
-
-            // out.startList();
-            // for (const auto& p : *grid) {
-            //     out << p;
-            // }
-            // out.endList();
         }
     }
 

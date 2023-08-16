@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <tuple>
 #include <vector>
 
 #include "eckit/container/KDTree.h"
@@ -33,18 +32,15 @@ struct Traits {
 }  // namespace search
 
 
-using Search3 = KDTreeMemory<search::Traits<Point3, size_t>>;
+using Search3 = KDTreeMemory<search::Traits<geometry::Point3, size_t>>;
 
 
-using Search2 = KDTreeMemory<search::Traits<Point2, size_t>>;
+using Search2 = KDTreeMemory<search::Traits<geometry::Point2, size_t>>;
 
 
 struct SearchLonLat : Search3 {
-    using Point = PointLonLat;
+    using Point = geometry::PointLonLat;
     using Value = SPValue<TT<search::Traits<Point, Payload>, KDMemory>>;
-
-    using Result  = std::tuple<Point, Payload, double>;
-    using Results = std::vector<Result>;
 
     using Search3::Search3;
 
@@ -56,35 +52,34 @@ struct SearchLonLat : Search3 {
     void build(const Container& c) {
         size_t index = 0;
         for (const auto& p : c) {
-            insert({p, index++});
+            insert({std::get<Point>(p), index++});
         }
     }
 
-    Result nearestNeighbour(const Point& p) {
+    size_t nearestNeighbour(const Point& p) {
         auto n = Search3::nearestNeighbour(to_cartesian(p));
-        return {UnitSphere::convertCartesianToSpherical(n.point()), n.payload(), n.distance()};
+        return n.payload();
     }
 
-    Results findInSphere(const Point& p, double radius) {
-        return to_spherical(Search3::findInSphere(to_cartesian(p), radius));
+    std::vector<size_t> findInSphere(const Point& p, double radius) {
+        std::vector<size_t> near;
+        for (auto& n : Search3::findInSphere(to_cartesian(p), radius)) {
+            near.emplace_back(n.payload());
+        }
+        return near;
     }
 
-    Results kNearestNeighbours(const Point& p, size_t k) {
-        return to_spherical(Search3::kNearestNeighbours(to_cartesian(p), k));
+    std::vector<size_t> kNearestNeighbours(const Point& p, size_t k) {
+        std::vector<size_t> near;
+        for (auto& n : Search3::kNearestNeighbours(to_cartesian(p), k)) {
+            near.emplace_back(n.payload());
+        }
+        return near;
     }
 
 private:
     static Search3::Point to_cartesian(const Point& p) {
         return UnitSphere::convertSphericalToCartesian(p);
-    }
-
-    static Results to_spherical(const NodeList& nodes) {
-        Results list;
-        list.reserve(nodes.size());
-        for (const auto& n : nodes) {
-            list.emplace_back(UnitSphere::convertCartesianToSpherical(n.point()), n.payload(), n.distance());
-        }
-        return list;
     }
 };
 

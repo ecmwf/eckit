@@ -17,7 +17,6 @@
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/area/BoundingBox.h"
 #include "eckit/geometry/util.h"
 #include "eckit/utils/Translator.h"
@@ -26,54 +25,95 @@
 namespace eckit::geometry::grid {
 
 
-static HEALPix::ordering_type ordering_type_from_string(const std::string& str) {
-    return str == "ring" ? HEALPix::ordering_type::ring : str == "nested" ? HEALPix::ordering_type::nested
-                                                                          : throw AssertionFailed("HEALPix::ordering_type", Here());
+static Ordering ordering_from_string(const std::string& str) {
+    return str == "ring" ? Ordering::healpix_ring : str == "nested" ? Ordering::healpix_nested
+                                                                    : throw AssertionFailed("HEALPix::Ordering", Here());
 }
 
 
-struct RingIterator final : geometry::Iterator {
-    explicit RingIterator(const Grid& grid, size_t index = 0) :
-        geometry::Iterator(grid), size_(grid.size()), index_(index) {}
+HEALPix::RingIterator::RingIterator(const Grid& grid, size_t index) :
+    geometry::Iterator(grid),
+    grid_(dynamic_cast<const HEALPix&>(grid)),
+    index_(index),
+    index_size_(grid.size()) {
+    if (index_ < index_size_) {
+        ASSERT(2 <= grid_.njacc_.size());
 
-    bool operator==(const Iterator& other) const override {
-        const auto* another = dynamic_cast<const RingIterator*>(&other);
-        return another != nullptr && index_ == another->index_;
+        longitudes_j_ = grid_.longitudes(j_ = j(index_));
+        ASSERT(grid_.njacc_.at(j_) <= index && index_ < grid_.njacc_.at(j_ + 1));
+
+        grid_.latitudes();
+        ASSERT(grid_.latitudes_.size() == grid_.ni());
+    }
+}
+
+
+bool HEALPix::RingIterator::operator==(const Iterator& other) const {
+    const auto* another = dynamic_cast<const RingIterator*>(&other);
+    return another != nullptr && index_ == another->index_;
+}
+
+
+bool HEALPix::RingIterator::operator++() {
+    if (index_++; index_ < index_size_) {
+        if (!(index_ < grid_.njacc_[j_ + 1])) {
+            longitudes_j_ = grid_.longitudes(++j_);
+        }
+
+        ASSERT(grid_.njacc_[j_] <= index_ && index_ < grid_.njacc_[j_ + 1]);
+        return true;
     }
 
-    bool operator++() override {
-        index_++;
-        return operator bool();
+    index_ = index_size_;  // ensure it's invalid
+    return false;
+}
+
+
+bool HEALPix::RingIterator::operator+=(diff_t d) {
+    if (auto di = static_cast<diff_t>(index_); 0 <= di + d && di + d < static_cast<diff_t>(index_size_)) {
+        if (index_ = static_cast<size_t>(di + d); !(grid_.njacc_[j_] <= index_ && index_ < grid_.njacc_[j_ + 1])) {
+            longitudes_j_ = grid_.longitudes(j_ = j(index_));
+        }
+
+        ASSERT(grid_.njacc_[j_] <= index_ && index_ < grid_.njacc_[j_ + 1]);
+        return true;
     }
 
-    bool operator+=(diff_t d) override {
-        NOTIMP;
-    }
+    index_ = index_size_;  // ensure it's invalid
+    return false;
+}
 
-    explicit operator bool() const override {
-        return index_ < size_;
-    }
 
-    Point operator*() const override {
-        NOTIMP;
-    }
+HEALPix::RingIterator::operator bool() const {
+    return index_ < index_size_;
+}
 
-    size_t index() const override { return index_; }
 
-    const size_t size_;
-    size_t index_;
-};
+Point HEALPix::RingIterator::operator*() const {
+    return PointLonLat{longitudes_j_.at(index_ - grid_.njacc_[j_]), grid_.latitudes_.at(j_)};
+}
+
+
+size_t HEALPix::RingIterator::j(size_t index) const {
+    ASSERT(index < index_size_);
+
+    const auto& njacc = grid_.njacc_;
+    auto dist         = std::distance(njacc.begin(), std::upper_bound(njacc.begin(), njacc.end(), index));
+    ASSERT(1 <= dist && dist <= njacc.size() - 1);
+
+    return static_cast<size_t>(dist - 1);
+}
 
 
 HEALPix::HEALPix(const Configuration& config) :
-    HEALPix(config.getUnsigned("Nside"), ordering_type_from_string(config.getString("orderingConvention", "ring"))) {
+    HEALPix(config.getUnsigned("Nside"), ordering_from_string(config.getString("orderingConvention", "ring"))) {
 }
 
 
-HEALPix::HEALPix(size_t Nside, ordering_type ordering) :
+HEALPix::HEALPix(size_t Nside, Ordering ordering) :
     Grid(area::BoundingBox::make_global_prime()), N_(Nside), ordering_(ordering) {
     ASSERT(N_ > 0);
-    ASSERT(ordering_ == ordering_type::ring);
+    ASSERT(ordering_ == Ordering::healpix_ring);
 
 
     // accumulated nj
@@ -110,11 +150,11 @@ size_t HEALPix::nj(size_t i) const {
 const std::vector<double>& HEALPix::latitudes() const {
     const auto Ni = ni();
 
-    if (lats_.empty()) {
-        lats_.resize(Ni);
+    if (latitudes_.empty()) {
+        latitudes_.resize(Ni);
 
-        auto i = lats_.begin();
-        auto j = lats_.rbegin();
+        auto i = latitudes_.begin();
+        auto j = latitudes_.rbegin();
         for (int ring = 1; ring < 2 * N_; ++ring, ++i, ++j) {
             const auto f = ring < N_ ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(N_ * N_)) : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(N_));
 
@@ -124,21 +164,30 @@ const std::vector<double>& HEALPix::latitudes() const {
         *i = 0.;
     }
 
-    ASSERT(lats_.size() == Ni);
-    return lats_;
+    ASSERT(latitudes_.size() == Ni);
+    return latitudes_;
 }
 
 
-const std::vector<double>& HEALPix::longitudes(size_t i) const {
-    const auto Nj    = nj(i);
+std::vector<double> HEALPix::longitudes(size_t ring) const {
+    const auto Nj    = nj(ring);
     const auto step  = 360. / static_cast<double>(Nj);
-    const auto start = i < N_ || 3 * N_ - 1 < i || static_cast<bool>((i + N_) % 2) ? step / 2. : 0.;
+    const auto start = ring < N_ || 3 * N_ - 1 < ring || static_cast<bool>((ring + N_) % 2) ? step / 2. : 0.;
 
-    lons_.reserve(N_ * 4);
-    lons_.resize(Nj);
-    std::generate_n(lons_.begin(), Nj, [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+    std::vector<double> lons(Nj);
+    std::generate_n(lons.begin(), Nj, [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
 
-    return lons_;
+    return lons;
+}
+
+
+Grid::iterator HEALPix::cbegin() const {
+    return ordering_ == Ordering::healpix_ring ? iterator{new RingIterator(*this, 0)} : NOTIMP;
+}
+
+
+Grid::iterator HEALPix::cend() const {
+    return ordering_ == Ordering::healpix_ring ? iterator{new RingIterator(*this, size())} : NOTIMP;
 }
 
 
@@ -153,17 +202,18 @@ size_t HEALPix::size() const {
 }
 
 
-Grid::iterator HEALPix::cbegin() const {
-    if (ordering_ == ordering_type::ring) {
-        return iterator{new RingIterator(*this, 0)};
+std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlon() const {
+    std::pair<std::vector<double>, std::vector<double>> latlon;
+    latlon.first.reserve(size());
+    latlon.second.reserve(size());
+
+    for (const auto& p : to_points()) {
+        const auto& q = std::get<PointLonLat>(p);
+        latlon.first.push_back(q.lat);
+        latlon.second.push_back(q.lon);
     }
-    NOTIMP;
-}
-Grid::iterator HEALPix::cend() const {
-    if (ordering_ == ordering_type::ring) {
-        return iterator{new RingIterator(*this, size())};
-    }
-    NOTIMP;
+
+    return latlon;
 }
 
 

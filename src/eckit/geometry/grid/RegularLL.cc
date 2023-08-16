@@ -166,7 +166,7 @@ size_t RegularLL::size() const {
 }
 
 
-std::vector<Point> RegularLL::to_points() const {
+std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlon() const {
     auto [n, w, s, e] = bbox().deconstruct();
     auto [we, sn]     = increments_.deconstruct();
 
@@ -176,16 +176,18 @@ std::vector<Point> RegularLL::to_points() const {
     auto latitudes = util::arange(n, s, -sn);
     ASSERT(latitudes.size() == nj_);
 
-    std::vector<Point> points;
-    points.reserve(size());
+    std::pair<std::vector<double>, std::vector<double>> latlon;
+    latlon.first.reserve(size());
+    latlon.second.reserve(size());
 
     for (const auto lat : latitudes) {
         for (const auto lon : longitudes) {
-            points.emplace_back(PointLonLat{lon, lat});
+            latlon.first.push_back(lat);
+            latlon.second.push_back(lon);
         }
     }
 
-    return points;
+    return latlon;
 }
 
 

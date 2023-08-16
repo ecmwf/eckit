@@ -27,7 +27,7 @@ std::vector<double> arange(double start, double stop, double step) {
     const auto num = static_cast<size_t>((stop - start) / step) + 1;
 
     std::vector<double> l(num);
-    std::generate_n(l.begin(), num, [start, step, n = 0]() mutable { return start + static_cast<double>(n++) * step; });
+    std::generate_n(l.begin(), num, [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
 
     return l;
 }

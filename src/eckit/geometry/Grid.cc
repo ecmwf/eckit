@@ -67,7 +67,15 @@ bool Grid::isPeriodicWestEast() const {
 
 
 std::vector<Point> Grid::to_points() const {
-    throw NotImplemented("Grid::to_points");
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (const auto& p : *this) {
+        const auto& q = std::get<PointLonLat>(p);
+        points.push_back(p);
+    }
+
+    return points;
 }
 
 

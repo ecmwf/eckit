@@ -36,77 +36,77 @@ DynamicConfiguration::DynamicConfiguration(const Configuration& passive) :
     Configuration(__empty_root), passive_(passive) {}
 
 
-void DynamicConfiguration::set(const std::string& name, std::string& value) {
+void DynamicConfiguration::set(const std::string& name, const std::string& value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, bool& value) {
+void DynamicConfiguration::set(const std::string& name, bool value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, int& value) {
+void DynamicConfiguration::set(const std::string& name, int value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, long& value) {
+void DynamicConfiguration::set(const std::string& name, long value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, long long& value) {
+void DynamicConfiguration::set(const std::string& name, long long value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::size_t& value) {
+void DynamicConfiguration::set(const std::string& name, std::size_t value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, float& value) {
+void DynamicConfiguration::set(const std::string& name, float value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, double& value) {
+void DynamicConfiguration::set(const std::string& name, double value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::vector<int>& value) {
+void DynamicConfiguration::set(const std::string& name, const std::vector<int>& value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::vector<long>& value) {
+void DynamicConfiguration::set(const std::string& name, const std::vector<long>& value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::vector<long long>& value) {
+void DynamicConfiguration::set(const std::string& name, const std::vector<long long>& value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::vector<std::size_t>& value) {
+void DynamicConfiguration::set(const std::string& name, const std::vector<std::size_t>& value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::vector<float>& value) {
+void DynamicConfiguration::set(const std::string& name, const std::vector<float>& value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::vector<double>& value) {
+void DynamicConfiguration::set(const std::string& name, const std::vector<double>& value) {
     __set(*this, name, value);
 }
 
 
-void DynamicConfiguration::set(const std::string& name, std::vector<std::string>& value) {
+void DynamicConfiguration::set(const std::string& name, const std::vector<std::string>& value) {
     __set(*this, name, value);
 }
 

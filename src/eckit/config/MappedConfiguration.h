@@ -63,22 +63,24 @@ public:
 
     // -- Methods
 
-    void set(const std::string&, std::string&);
-    void set(const std::string&, bool&);
-    void set(const std::string&, int&);
-    void set(const std::string&, long&);
-    void set(const std::string&, long long&);
-    void set(const std::string&, std::size_t&);
-    void set(const std::string&, float&);
-    void set(const std::string&, double&);
+    // (consistent with Configured)
+    void set(const std::string&, const std::string&);
+    void set(const std::string&, bool);
+    void set(const std::string&, int);
+    void set(const std::string&, long);
+    void set(const std::string&, long long);
+    void set(const std::string&, std::size_t);
+    void set(const std::string&, float);
+    void set(const std::string&, double);
 
-    void set(const std::string&, std::vector<int>&);
-    void set(const std::string&, std::vector<long>&);
-    void set(const std::string&, std::vector<long long>&);
-    void set(const std::string&, std::vector<std::size_t>&);
-    void set(const std::string&, std::vector<float>&);
-    void set(const std::string&, std::vector<double>&);
-    void set(const std::string&, std::vector<std::string>&);
+    // (consistent with Configured)
+    void set(const std::string&, const std::vector<int>&);
+    void set(const std::string&, const std::vector<long>&);
+    void set(const std::string&, const std::vector<long long>&);
+    void set(const std::string&, const std::vector<std::size_t>&);
+    void set(const std::string&, const std::vector<float>&);
+    void set(const std::string&, const std::vector<double>&);
+    void set(const std::string&, const std::vector<std::string>&);
 
     // -- Overridden methods
 

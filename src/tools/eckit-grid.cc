@@ -31,7 +31,6 @@ class EckitGrid final : public EckitTool {
 public:
     EckitGrid(int argc, char** argv) :
         EckitTool(argc, argv) {
-        options_.push_back(new option::SimpleOption<bool>("list", "List possible grids"));
         options_.push_back(new option::SimpleOption<bool>("uid", "by grid unique identifier, instead of name"));
         options_.push_back(new option::VectorOption<double>("nearest-point", "nearest point location (lon/lat)", 2));
         options_.push_back(new option::SimpleOption<size_t>("nearest-k", "nearest k points"));
@@ -39,12 +38,6 @@ public:
 
 private:
     void execute(const option::CmdArgs& args) override {
-        if (args.getBool("list", false)) {
-            geometry::GridFactory::list(Log::info());
-            Log::info() << std::endl;
-            return;
-        }
-
         auto uid = args.getBool("uid", false);
 
         geometry::PointLonLat nearest_point{0, 0};
@@ -67,9 +60,9 @@ private:
                 out << p << std::endl;
             }
 
-            for (const auto& p : geometry::grid::UnstructuredGrid(*grid)) {
-                out << p << std::endl;
-            }
+            //            for (const auto& p : geometry::grid::UnstructuredGrid(*grid)) {
+            //                out << p << std::endl;
+            //            }
 
             if (nearest_k > 0) {
                 geometry::SearchLonLat search;

@@ -54,77 +54,77 @@ MappedConfiguration::MappedConfiguration(container_type&& map) :
     map_(map) {}
 
 
-void MappedConfiguration::set(const std::string& name, std::string& value) {
+void MappedConfiguration::set(const std::string& name, const std::string& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, bool& value) {
+void MappedConfiguration::set(const std::string& name, bool value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, int& value) {
+void MappedConfiguration::set(const std::string& name, int value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, long& value) {
+void MappedConfiguration::set(const std::string& name, long value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, long long& value) {
+void MappedConfiguration::set(const std::string& name, long long value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::size_t& value) {
+void MappedConfiguration::set(const std::string& name, std::size_t value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, float& value) {
+void MappedConfiguration::set(const std::string& name, float value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, double& value) {
+void MappedConfiguration::set(const std::string& name, double value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::vector<int>& value) {
+void MappedConfiguration::set(const std::string& name, const std::vector<int>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::vector<long>& value) {
+void MappedConfiguration::set(const std::string& name, const std::vector<long>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::vector<long long>& value) {
+void MappedConfiguration::set(const std::string& name, const std::vector<long long>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::vector<std::size_t>& value) {
+void MappedConfiguration::set(const std::string& name, const std::vector<std::size_t>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::vector<float>& value) {
+void MappedConfiguration::set(const std::string& name, const std::vector<float>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::vector<double>& value) {
+void MappedConfiguration::set(const std::string& name, const std::vector<double>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::vector<std::string>& value) {
+void MappedConfiguration::set(const std::string& name, const std::vector<std::string>& value) {
     map_[name] = value;
 }
 

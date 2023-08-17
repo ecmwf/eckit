@@ -14,12 +14,11 @@
 
 #include <memory>
 
-#include "eckit/config/Configuration.h"
-
 
 namespace eckit {
+class Configuration;
 class PathName;
-}
+}  // namespace eckit
 
 
 namespace eckit::geometry {

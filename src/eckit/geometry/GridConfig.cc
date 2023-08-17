@@ -12,11 +12,14 @@
 
 #include "eckit/geometry/GridConfig.h"
 
+#include <algorithm>
+
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geometry/Grid.h"
 #include "eckit/geometry/LibEcKitGeometry.h"
+#include "eckit/geometry/util.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"
 
@@ -28,24 +31,25 @@ namespace {
 
 
 template <typename T>
-MappedConfiguration::value_type __from_value_list(const ValueList& list) {
-    if (list.size() == 1) {
-        typename T::value_type to;
-        fromValue(to, list[0]);
-        return {to};
-    }
-
+MappedConfiguration::value_type __from_value(const Value& value) {
     T to;
-    fromValue(to, list);
+    fromValue(to, value);
     return {to};
 }
 
 
 void set_config_value(MappedConfiguration& config, const std::string& key, const Value& value) {
-    ValueList list(value);
-    auto val = std::all_of(list.begin(), list.end(), [](const Value& v) { return v.isDouble(); })   ? __from_value_list<std::vector<double>>(list)
-               : std::all_of(list.begin(), list.end(), [](const Value& v) { return v.isNumber(); }) ? __from_value_list<std::vector<long>>(list)
-                                                                                                    : __from_value_list<std::vector<std::string>>(list);
+    using number_type = pl_type::value_type;
+
+    auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
+
+    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })   ? __from_value<std::vector<double>>(value)
+               : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); }) ? __from_value<std::vector<number_type>>(value)
+               : value.isList()                                                                ? __from_value<std::vector<std::string>>(value)
+               : value.isDouble()                                                              ? __from_value<double>(value)
+               : value.isNumber()                                                              ? __from_value<number_type>(value)
+                                                                                               : __from_value<std::string>(value);
+
     std::visit([&](const auto& val) { config.set(key, val); }, val);
 }
 

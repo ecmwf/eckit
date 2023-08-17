@@ -14,6 +14,12 @@
 
 #include "eckit/system/Library.h"
 
+
+namespace eckit {
+class PathName;
+}
+
+
 namespace eckit {
 
 
@@ -40,6 +46,7 @@ public:
     // -- Methods
 
     static LibEcKitGeometry& instance();
+    static eckit::PathName configFileGrid();
 
     // -- Overridden methods
     // None

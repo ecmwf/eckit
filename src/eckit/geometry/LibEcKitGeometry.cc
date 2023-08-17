@@ -12,7 +12,9 @@
 
 #include "eckit/geometry/LibEcKitGeometry.h"
 
+#include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
+#include "eckit/filesystem/PathName.h"
 
 
 namespace eckit {
@@ -28,6 +30,12 @@ LibEcKitGeometry::LibEcKitGeometry() :
 LibEcKitGeometry& LibEcKitGeometry::instance() {
     static LibEcKitGeometry lib;
     return lib;
+}
+
+
+PathName LibEcKitGeometry::configFileGrid() {
+    static const PathName path{eckit::LibResource<std::string, LibEcKitGeometry>("eckit-geometry-grid;$ECKIT_GEOMETRY_GRID", "~eckit/etc/eckit/geometry/grid.yaml")};
+    return path;
 }
 
 

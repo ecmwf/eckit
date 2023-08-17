@@ -226,18 +226,11 @@ const Grid* GridFactoryName::build(const std::string& name) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    auto matches = [](const std::string& s, const std::string& pattern) -> bool {
-        const std::regex e(pattern, std::regex_constants::extended);
-        std::smatch match;
-        std::regex_match(s, match, e);
-        return !match.empty();
-    };
-
     const auto end = __grid_names->cend();
 
     auto i = end;
     for (auto j = __grid_names->cbegin(); j != end; ++j) {
-        if (matches(name, j->second->pattern_)) {
+        if (util::regex_match(j->second->pattern_, name)) {
             if (i != end) {
                 throw SeriousBug("Grid: name '" + name + "' matches '" + i->second->pattern_ + "' and '" + j->second->pattern_ + "'");
             }

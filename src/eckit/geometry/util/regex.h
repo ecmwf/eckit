@@ -20,7 +20,7 @@ namespace eckit::geometry::util {
 
 
 struct regex_match_type : std::smatch {
-    operator bool() const { return !std::smatch::empty(); }
+    explicit operator bool() const { return !std::smatch::empty(); }
 };
 
 

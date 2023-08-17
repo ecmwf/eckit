@@ -16,6 +16,8 @@ list( APPEND eckit_geometry_srcs
     GreatCircle.h
     Grid.cc
     Grid.h
+    GridConfig.cc
+    GridConfig.h
     Increments.cc
     Increments.h
     Iterator.h

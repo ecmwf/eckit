@@ -10,8 +10,7 @@
 
 #include "eckit/config/MappedConfiguration.h"
 
-#include <ostream>
-
+#include "eckit/log/JSON.h"
 #include "eckit/value/Value.h"
 
 namespace eckit {
@@ -35,7 +34,7 @@ bool __get(const MappedConfiguration::container_type& map, const std::string& na
 }
 
 
-std::ostream& operator<<(std::ostream& out, const MappedConfiguration::value_type& v) {
+JSON& operator<<(JSON& out, const MappedConfiguration::value_type& v) {
     std::visit([&](auto&& arg) { out << arg; }, v);
     return out;
 }
@@ -229,16 +228,19 @@ bool MappedConfiguration::get(const std::string& name, std::vector<std::string>&
 }
 
 
-void MappedConfiguration::print(std::ostream& out) const {
-    out << "MappedConfiguration[";
-
-    const auto* sep = "";
+void MappedConfiguration::json(JSON& j) const {
+    j.startObject();
     for (const auto& nv : map_) {
-        out << sep << nv.first << ": " << nv.second;
-        sep = ", ";
+        j << nv.first;
+        j << nv.second;
     }
+    j.endObject();
+}
 
-    out << "]";
+
+void MappedConfiguration::print(std::ostream& out) const {
+    JSON j(out);
+    json(j);
 }
 
 

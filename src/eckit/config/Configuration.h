@@ -149,7 +149,7 @@ protected:  // members
     char separator_;
 
 private:  // methods
-    void json(JSON& s) const;
+    virtual void json(JSON& s) const;
     friend JSON& operator<<(JSON& s, const Configuration& v) {
         v.json(s);
         return s;

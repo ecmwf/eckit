@@ -15,10 +15,12 @@
 #include <map>
 #include <memory>
 #include <ostream>
-#include <regex>
 #include <type_traits>
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/GridConfig.h"
+#include "eckit/geometry/util/regex.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
@@ -113,6 +115,8 @@ const Grid* GridFactory::build(const Configuration& config) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
+    GridConfig::instance();
+
     if (std::string uid; config.get("uid", uid)) {
         return GridFactoryUID::build(uid);
     }
@@ -134,30 +138,29 @@ void GridFactory::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    JSON j(out);
+    GridConfig::instance();
+
+    GridFactoryUID::list(out << "uid: ");
+    out << std::endl;
+
+    GridFactoryName::list(out << "name: ");
+    out << std::endl;
+
+    GridFactoryType::list(out << "type: ");
+    out << std::endl;
+}
+
+
+void GridFactory::json(JSON& j) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    GridConfig::instance();
+
     j.startObject();
-
-    j << "uid";
-    j.startList();
-    for (const auto& p : *__grid_uids) {
-        j << p.first;
-    }
-    j.endList();
-
-    j << "name";
-    j.startList();
-    for (const auto& p : *__grid_names) {
-        j << p.first;
-    }
-    j.endList();
-
-    j << "type";
-    j.startList();
-    for (const auto& p : *__grid_types) {
-        j << p.first;
-    }
-    j.endList();
-
+    GridFactoryUID::json(j << "uid");
+    GridFactoryName::json(j << "name");
+    GridFactoryType::json(j << "type");
     j.endObject();
 }
 
@@ -187,7 +190,8 @@ const Grid* GridFactoryUID::build(const std::string& uid) {
     AutoLock<Mutex> lock(*__mutex);
 
     if (auto j = __grid_uids->find(uid); j != __grid_uids->end()) {
-        return j->second->make();
+        std::unique_ptr<Configuration> config(j->second->config());
+        return GridFactory::build(*config);
     }
 
     list(Log::error() << "Grid: unknown identifier '" << uid << "', choices are: ");
@@ -200,16 +204,42 @@ void GridFactoryUID::list(std::ostream& out) {
     AutoLock<Mutex> lock(*__mutex);
 
     JSON j(out);
-    j.startList();
-    for (const auto& p : *__grid_uids) {
-        out << p.first;
-    }
-    j.endList();
+    json(j);
 }
 
 
-GridFactoryName::GridFactoryName(const std::string& pattern) :
-    pattern_(pattern) {
+void GridFactoryUID::json(JSON& j) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    j.startObject();
+    for (const auto& p : *__grid_uids) {
+        j << p.first;
+
+        std::unique_ptr<Configuration> config(p.second->config());
+        j << *config;
+    }
+    j.endObject();
+}
+
+
+void GridFactoryUID::insert(const std::string& uid, MappedConfiguration* config) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    struct Insert final : GridFactoryUID {
+        Insert(const std::string& uid, MappedConfiguration* config) :
+            GridFactoryUID(uid), config_(config) {}
+        Configuration* config() override { return new MappedConfiguration(*config_); }
+        const std::unique_ptr<MappedConfiguration> config_;
+    };
+
+    new Insert(uid, config);
+}
+
+
+GridFactoryName::GridFactoryName(const std::string& pattern, const std::string& example) :
+    pattern_(pattern), example_(example) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
@@ -253,11 +283,38 @@ void GridFactoryName::list(std::ostream& out) {
     AutoLock<Mutex> lock(*__mutex);
 
     JSON j(out);
-    j.startList();
+    json(j);
+}
+
+
+void GridFactoryName::json(JSON& j) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    j.startObject();
     for (const auto& p : *__grid_names) {
-        out << p.first;
+        j << p.first;
+
+        std::unique_ptr<Configuration> config(p.second->config());
+        j << *config;
     }
-    j.endList();
+    j.endObject();
+}
+
+
+void GridFactoryName::insert(const std::string& name, MappedConfiguration* config) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
+    struct Insert final : GridFactoryName {
+        Insert(const std::string& name, const std::string& example, MappedConfiguration* config) :
+            GridFactoryName(name, example), config_(config) {}
+        Configuration* config(const std::string&) const override { return new MappedConfiguration(*config_); }
+        const std::unique_ptr<MappedConfiguration> config_;
+    };
+
+    ASSERT(config != nullptr);
+    new Insert(name, config->getString("example", ""), config);
 }
 
 
@@ -308,9 +365,17 @@ void GridFactoryType::list(std::ostream& out) {
     AutoLock<Mutex> lock(*__mutex);
 
     JSON j(out);
+    json(j);
+}
+
+
+void GridFactoryType::json(JSON& j) {
+    pthread_once(&__once, __init);
+    AutoLock<Mutex> lock(*__mutex);
+
     j.startList();
     for (const auto& p : *__grid_types) {
-        out << p.first;
+        j << p.first;
     }
     j.endList();
 }

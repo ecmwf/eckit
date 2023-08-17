@@ -8,31 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/geometry/Grid.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/EckitTool.h"
-#include "eckit/option/SimpleOption.h"
 
-#include "eckit/geometry/GridConfig.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+namespace eckit::tools {
 
-namespace eckit {
 
-class EckitGrid final : public EckitTool {
-public:
-    EckitGrid(int argc, char** argv) :
-        EckitTool(argc, argv) {
-        options_.push_back(new option::SimpleOption<bool>("list", "List possible grids"));
-    }
+struct EckitGridList final : EckitTool {
+    EckitGridList(int argc, char** argv) :
+        EckitTool(argc, argv) {}
 
-private:
-    void execute(const option::CmdArgs& args) override {
-
-        Log::info() << geometry::GridConfig::instance().config() << std::endl;
-
-        geometry::GridFactory::list(Log::info());
+    void execute(const option::CmdArgs&) override {
+        JSON j(Log::info());
+        geometry::GridFactory::json(j);
         Log::info() << std::endl;
     }
 
@@ -43,11 +35,11 @@ private:
     }
 };
 
-}  // namespace eckit
 
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::tools
+
 
 int main(int argc, char** argv) {
-    eckit::EckitGrid app(argc, argv);
+    eckit::tools::EckitGridList app(argc, argv);
     return app.start();
 }

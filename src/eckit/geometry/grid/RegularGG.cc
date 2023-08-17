@@ -182,7 +182,7 @@ Iterator* RegularGG::iterator() const {
 
 
 static const GridRegisterType<RegularGG> __grid_type("regular_gg");
-static const GridRegisterName<RegularGG> __grid_pattern("[fF][1-9][0-9]*");
+static const GridRegisterName<RegularGG> __grid_pattern("[fF][1-9][0-9]*", "F2");
 
 
 }  // namespace eckit::geometry::grid

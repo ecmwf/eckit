@@ -250,7 +250,7 @@ Configuration* RegularLL::config(const std::string& name) {
 }
 
 
-static const GridRegisterName<RegularLL> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL);
+static const GridRegisterName<RegularLL> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL, "30/45");
 
 
 #undef POSITIVE_REAL

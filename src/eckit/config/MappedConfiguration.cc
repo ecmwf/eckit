@@ -107,8 +107,8 @@ bool __get_v_real(const MappedConfiguration::container_type& map, const std::str
 }
 
 
-JSON& operator<<(JSON& out, const MappedConfiguration::value_type& v) {
-    std::visit([&](auto&& arg) { out << arg; }, v);
+JSON& operator<<(JSON& out, const MappedConfiguration::value_type& value) {
+    std::visit([&](const auto& arg) { out << arg; }, value);
     return out;
 }
 

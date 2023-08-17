@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/config/Configuration.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geometry/Area.h"
 #include "eckit/geometry/Increments.h"
 #include "eckit/geometry/Iterator.h"
@@ -27,6 +27,11 @@
 #include "eckit/geometry/Projection.h"
 #include "eckit/geometry/Renumber.h"
 #include "eckit/geometry/area/BoundingBox.h"
+
+
+namespace eckit {
+class JSON;
+}
 
 
 namespace eckit::geometry {
@@ -166,6 +171,7 @@ struct GridFactory {
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
     static void list(std::ostream&);
+    static void json(JSON&);
 };
 
 
@@ -177,14 +183,17 @@ struct GridFactoryUID {
 
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const std::string&);
+
     static void list(std::ostream&);
+    static void json(JSON&);
+    static void insert(const std::string& name, MappedConfiguration*);
 
 protected:
     explicit GridFactoryUID(const std::string& uid);
     virtual ~GridFactoryUID();
 
 private:
-    virtual const Grid* make() = 0;
+    virtual Configuration* config() = 0;
 
     const std::string uid_;
 };
@@ -198,16 +207,21 @@ struct GridFactoryName {
 
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const std::string& name);
+
     static void list(std::ostream&);
+    static void json(JSON&);
+    static void insert(const std::string& name, MappedConfiguration*);
 
 protected:
-    explicit GridFactoryName(const std::string& pattern);
+    explicit GridFactoryName(const std::string& pattern, const std::string& example = "");
     virtual ~GridFactoryName();
 
 private:
-    virtual Configuration* config(const std::string& name) = 0;
+    Configuration* config() const { return config(example_); }
+    virtual Configuration* config(const std::string& name) const = 0;
 
     const std::string pattern_;
+    const std::string example_;
 };
 
 
@@ -219,7 +233,9 @@ struct GridFactoryType {
 
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
+
     static void list(std::ostream&);
+    static void json(JSON&);
 
 protected:
     explicit GridFactoryType(const std::string& type);
@@ -236,15 +252,15 @@ template <class T>
 struct GridRegisterUID final : GridFactoryUID {
     explicit GridRegisterUID(const std::string& uid) :
         GridFactoryUID(uid) {}
-    const Grid* make() override { return new T(); }
+    Configuration* config() override { return T::config(); }
 };
 
 
 template <class T>
 struct GridRegisterName final : GridFactoryName {
-    explicit GridRegisterName(const std::string& pattern) :
-        GridFactoryName(pattern) {}
-    Configuration* config(const std::string& name) override { return T::config(name); }
+    explicit GridRegisterName(const std::string& pattern, const std::string& example) :
+        GridFactoryName(pattern, example) {}
+    Configuration* config(const std::string& name) const override { return T::config(name); }
 };
 
 

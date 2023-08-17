@@ -187,8 +187,8 @@ struct ReducedGGOctahedral {
 
 
 static const GridRegisterType<ReducedGG> __grid_type("reduced_gg");
-static const GridRegisterName<ReducedGGClassical> __grid_pattern_1("[nN][1-9][0-9]*");
-static const GridRegisterName<ReducedGGOctahedral> __grid_pattern_2("[oO][1-9][0-9]*");
+static const GridRegisterName<ReducedGGClassical> __grid_pattern_1("[nN][1-9][0-9]*", "N16");
+static const GridRegisterName<ReducedGGOctahedral> __grid_pattern_2("[oO][1-9][0-9]*", "O2");
 
 
 }  // namespace eckit::geometry::grid

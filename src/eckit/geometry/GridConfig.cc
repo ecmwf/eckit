@@ -28,26 +28,25 @@ namespace {
 
 
 template <typename T>
-T from_value_t(const Value& from) {
+MappedConfiguration::value_type __from_value_list(const ValueList& list) {
+    if (list.size() == 1) {
+        typename T::value_type to;
+        fromValue(to, list[0]);
+        return {to};
+    }
+
     T to;
-    fromValue(to, from);
-    return to;
+    fromValue(to, list);
+    return {to};
 }
 
 
 void set_config_value(MappedConfiguration& config, const std::string& key, const Value& value) {
-    auto all_values = [](const Value& value, const std::function<bool(const Value&)>& pred) -> bool {
-        ValueList list(value);
-        return std::all_of(list.begin(), list.end(), pred);
-    };
-
-    value.isDouble()                                                         ? config.set(key, from_value_t<double>(value))
-    : value.isNumber()                                                       ? config.set(key, from_value_t<long>(value))
-    : value.isBool()                                                         ? config.set(key, from_value_t<bool>(value))
-    : all_values(value, [](const Value& value) { return value.isDouble(); }) ? config.set(key, from_value_t<std::vector<double>>(value))
-    : all_values(value, [](const Value& value) { return value.isNumber(); }) ? config.set(key, from_value_t<std::vector<long>>(value))
-    : all_values(value, [](const Value& value) { return value.isString(); }) ? config.set(key, from_value_t<std::vector<std::string>>(value))
-                                                                             : config.set(key, from_value_t<std::string>(value));
+    ValueList list(value);
+    auto val = std::all_of(list.begin(), list.end(), [](const Value& v) { return v.isDouble(); })   ? __from_value_list<std::vector<double>>(list)
+               : std::all_of(list.begin(), list.end(), [](const Value& v) { return v.isNumber(); }) ? __from_value_list<std::vector<long>>(list)
+                                                                                                    : __from_value_list<std::vector<std::string>>(list);
+    std::visit([&](const auto& val) { config.set(key, val); }, val);
 }
 
 
@@ -70,36 +69,33 @@ const GridConfig& GridConfig::instance() {
 
 
 GridConfig::GridConfig(const PathName& path) {
-    if (!path.exists()) {
-        return;
-    }
-
     auto* config = new MappedConfiguration;
     config_.reset(config);
 
-    ValueMap map(YAMLParser::decodeFile(path));
+    if (path.exists()) {
+        ValueMap map(YAMLParser::decodeFile(path));
 
-    for (const auto& kv : map) {
-        ASSERT(kv.first.isString());
-        const auto key = kv.first.as<std::string>();
+        for (const auto& kv : map) {
+            const auto key = kv.first.as<std::string>();
 
-        if (key == "grid-names") {
-            for (ValueMap m : static_cast<ValueList>(kv.second)) {
-                ASSERT(m.size() == 1);
-                GridFactoryName::insert(m.begin()->first, config_from_value_map(m.begin()->second));
+            if (key == "grid_names") {
+                for (ValueMap m : static_cast<ValueList>(kv.second)) {
+                    ASSERT(m.size() == 1);
+                    GridFactoryName::insert(m.begin()->first, config_from_value_map(m.begin()->second));
+                }
+                continue;
             }
-            continue;
-        }
 
-        if (key == "grid-uids") {
-            for (ValueMap m : static_cast<ValueList>(kv.second)) {
-                ASSERT(m.size() == 1);
-                GridFactoryUID::insert(m.begin()->first, config_from_value_map(m.begin()->second));
+            if (key == "grid_uids") {
+                for (ValueMap m : static_cast<ValueList>(kv.second)) {
+                    ASSERT(m.size() == 1);
+                    GridFactoryUID::insert(m.begin()->first, config_from_value_map(m.begin()->second));
+                }
+                continue;
             }
-            continue;
-        }
 
-        set_config_value(*config, key, kv.second);
+            set_config_value(*config, key, kv.second);
+        }
     }
 }
 

@@ -20,7 +20,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class MappedConfiguration : public Configuration {
+class MappedConfiguration final : public Configuration {
 public:
     // -- Types
 
@@ -52,6 +52,9 @@ public:
     explicit MappedConfiguration(const container_type& = {});
     explicit MappedConfiguration(container_type&&);
 
+    MappedConfiguration(const MappedConfiguration&);
+    MappedConfiguration(MappedConfiguration&&);
+
     // -- Destructor
     // None
 
@@ -59,7 +62,9 @@ public:
     // None
 
     // -- Operators
-    // None
+
+    MappedConfiguration& operator=(const MappedConfiguration&);
+    MappedConfiguration& operator=(MappedConfiguration&&);
 
     // -- Methods
 

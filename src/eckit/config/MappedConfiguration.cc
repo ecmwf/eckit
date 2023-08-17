@@ -49,9 +49,29 @@ MappedConfiguration::MappedConfiguration(const MappedConfiguration::container_ty
     map_(map) {}
 
 
-MappedConfiguration::MappedConfiguration(container_type&& map) :
+MappedConfiguration::MappedConfiguration(MappedConfiguration::container_type&& map) :
     Configuration(__empty_root),
     map_(map) {}
+
+
+MappedConfiguration::MappedConfiguration(const MappedConfiguration& config) :
+    MappedConfiguration(config.map_) {}
+
+
+MappedConfiguration::MappedConfiguration(MappedConfiguration&& config) :
+    MappedConfiguration(config.map_) {}
+
+
+MappedConfiguration& MappedConfiguration::operator=(MappedConfiguration&& config) {
+    map_.swap(config.map_);
+    return *this;
+}
+
+
+MappedConfiguration& MappedConfiguration::operator=(const MappedConfiguration& config) {
+    map_ = config.map_;
+    return *this;
+}
 
 
 void MappedConfiguration::set(const std::string& name, const std::string& value) {

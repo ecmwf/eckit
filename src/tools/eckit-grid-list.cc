@@ -10,7 +10,6 @@
 
 
 #include "eckit/geometry/Grid.h"
-#include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/EckitTool.h"
 
@@ -23,9 +22,7 @@ struct EckitGridList final : EckitTool {
         EckitTool(argc, argv) {}
 
     void execute(const option::CmdArgs&) override {
-        JSON j(Log::info());
-        geometry::GridFactory::json(j);
-        Log::info() << std::endl;
+        Log::info() << geometry::GridFactoryType::instance() << std::endl;
     }
 
     void usage(const std::string& tool) const override {

@@ -20,7 +20,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/GridConfig.h"
 #include "eckit/geometry/util/regex.h"
-#include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -100,13 +99,11 @@ static pthread_once_t __once;
 static Mutex* __mutex                                        = nullptr;
 static std::map<std::string, GridFactoryUID*>* __grid_uids   = nullptr;
 static std::map<std::string, GridFactoryName*>* __grid_names = nullptr;
-static std::map<std::string, GridFactoryType*>* __grid_types = nullptr;
 
 static void __init() {
     __mutex      = new Mutex;
     __grid_uids  = new std::remove_reference<decltype(*__grid_uids)>::type;
     __grid_names = new std::remove_reference<decltype(*__grid_names)>::type;
-    __grid_types = new std::remove_reference<decltype(*__grid_types)>::type;
 }
 
 
@@ -124,8 +121,8 @@ const Grid* GridFactory::build(const Configuration& config) {
         return GridFactoryName::build(name);
     }
 
-    if (config.has("type")) {
-        return GridFactoryType::build(config);
+    if (std::string type; config.get("type", type)) {
+        return GridFactoryType::instance().get(type).create(config);
     }
 
     list(Log::error() << "Grid: cannot build grid, choices are: ");
@@ -145,22 +142,7 @@ void GridFactory::list(std::ostream& out) {
     GridFactoryName::list(out << "name: ");
     out << std::endl;
 
-    GridFactoryType::list(out << "type: ");
-    out << std::endl;
-}
-
-
-void GridFactory::json(JSON& j) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    GridConfig::instance();
-
-    j.startObject();
-    GridFactoryUID::json(j << "uid");
-    GridFactoryName::json(j << "name");
-    GridFactoryType::json(j << "type");
-    j.endObject();
+    out << GridFactoryType::instance() << std::endl;
 }
 
 
@@ -202,23 +184,7 @@ void GridFactoryUID::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    JSON j(out);
-    json(j);
-}
-
-
-void GridFactoryUID::json(JSON& j) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    j.startObject();
-    for (const auto& p : *__grid_uids) {
-        j << p.first;
-
-        std::unique_ptr<Configuration> config(p.second->config());
-        j << *config;
-    }
-    j.endObject();
+    out << "..." << std::endl;
 }
 
 
@@ -281,23 +247,7 @@ void GridFactoryName::list(std::ostream& out) {
     pthread_once(&__once, __init);
     AutoLock<Mutex> lock(*__mutex);
 
-    JSON j(out);
-    json(j);
-}
-
-
-void GridFactoryName::json(JSON& j) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    j.startObject();
-    for (const auto& p : *__grid_names) {
-        j << p.first;
-
-        std::unique_ptr<Configuration> config(p.second->config());
-        j << *config;
-    }
-    j.endObject();
+    out << "..." << std::endl;
 }
 
 
@@ -320,63 +270,6 @@ void GridFactoryName::insert(const std::string& name, MappedConfiguration* confi
 GridFactoryName::~GridFactoryName() {
     AutoLock<Mutex> lock(*__mutex);
     __grid_names->erase(pattern_);
-}
-
-
-GridFactoryType::GridFactoryType(const std::string& type) :
-    type_(type) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    if (__grid_types->find(type) == __grid_types->end()) {
-        (*__grid_types)[type] = this;
-        return;
-    }
-
-    throw SeriousBug("Grid: duplicate type '" + type + "'");
-}
-
-
-GridFactoryType::~GridFactoryType() {
-    AutoLock<Mutex> lock(*__mutex);
-    __grid_types->erase(type_);
-}
-
-
-const Grid* GridFactoryType::build(const Configuration& config) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    std::string type;
-    if (config.get("type", type)) {
-        if (auto j = __grid_types->find(type); j != __grid_types->end()) {
-            return j->second->make(config);
-        }
-    }
-
-    list(Log::error() << "Grid: unknown type '" << type << "', choices are: ");
-    throw SeriousBug("Grid: unknown type '" + type + "'");
-}
-
-
-void GridFactoryType::list(std::ostream& out) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    JSON j(out);
-    json(j);
-}
-
-
-void GridFactoryType::json(JSON& j) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    j.startList();
-    for (const auto& p : *__grid_types) {
-        j << p.first;
-    }
-    j.endList();
 }
 
 

@@ -27,11 +27,8 @@
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Renumber.h"
 #include "eckit/geometry/area/BoundingBox.h"
-
-
-namespace eckit {
-class JSON;
-}
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
 
 
 namespace eckit::geometry {
@@ -40,6 +37,9 @@ namespace eckit::geometry {
 class Grid {
 public:
     // -- Types
+
+    using builder_t = BuilderT1<Grid>;
+    using ARG1      = const Configuration&;
 
     struct Iterator final : std::unique_ptr<geometry::Iterator> {
         explicit Iterator(geometry::Iterator* it) :
@@ -124,7 +124,8 @@ public:
     // None
 
     // -- Class methods
-    // None
+
+    static std::string className() { return "grid"; }
 
 protected:
     // -- Constructors
@@ -167,11 +168,16 @@ private:
 };
 
 
+using GridFactoryType = Factory<Grid>;
+
+template <typename T>
+using GridRegisterType = ConcreteBuilderT1<Grid, T>;
+
+
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration&);
     static void list(std::ostream&);
-    static void json(JSON&);
 };
 
 
@@ -185,7 +191,6 @@ struct GridFactoryUID {
     static const Grid* build(const std::string&);
 
     static void list(std::ostream&);
-    static void json(JSON&);
     static void insert(const std::string& name, MappedConfiguration*);
 
 protected:
@@ -209,7 +214,6 @@ struct GridFactoryName {
     static const Grid* build(const std::string& name);
 
     static void list(std::ostream&);
-    static void json(JSON&);
     static void insert(const std::string& name, MappedConfiguration*);
 
 protected:
@@ -222,29 +226,6 @@ private:
 
     const std::string pattern_;
     const std::string example_;
-};
-
-
-struct GridFactoryType {
-    GridFactoryType(const GridFactoryType&)            = delete;
-    GridFactoryType(GridFactoryType&&)                 = delete;
-    GridFactoryType& operator=(const GridFactoryType&) = delete;
-    GridFactoryType& operator=(GridFactoryType&&)      = delete;
-
-    // This is 'const' as Grid should always be immutable
-    static const Grid* build(const Configuration&);
-
-    static void list(std::ostream&);
-    static void json(JSON&);
-
-protected:
-    explicit GridFactoryType(const std::string& type);
-    virtual ~GridFactoryType();
-
-private:
-    virtual const Grid* make(const Configuration&) = 0;
-
-    const std::string type_;
 };
 
 
@@ -261,14 +242,6 @@ struct GridRegisterName final : GridFactoryName {
     explicit GridRegisterName(const std::string& pattern, const std::string& example) :
         GridFactoryName(pattern, example) {}
     Configuration* config(const std::string& name) const override { return T::config(name); }
-};
-
-
-template <class T>
-struct GridRegisterType final : GridFactoryType {
-    explicit GridRegisterType(const std::string& type) :
-        GridFactoryType(type) {}
-    const Grid* make(const Configuration& config) override { return new T(config); }
 };
 
 

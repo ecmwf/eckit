@@ -3,17 +3,19 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_memory_Factory_h
-#define eckit_memory_Factory_h
-
 /// @file Factory.h
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Jul 2014
+
+
+#pragma once
 
 #include <iomanip>
 #include <map>
@@ -23,23 +25,34 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
+
 namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
 template <class T>
 class Factory {
+public:
+    // -- Types
 
-public:  // types
-    typedef std::string key_t;
+    using product_t   = T;
+    using key_t       = std::string;
+    using builder_t   = typename product_t::builder_t;
+    using builder_ptr = builder_t*;
+    using storage_t   = std::map<key_t, builder_ptr>;
 
-    typedef T product_t;
-    typedef typename product_t::builder_t builder_t;
-    typedef builder_t* builder_ptr;
+    // -- Constructors
 
-    typedef std::map<key_t, builder_ptr> storage_t;
+    Factory(const Factory&) = delete;
+    Factory(Factory&&)      = delete;
 
-public:  // methods
+    // -- Operators
+
+    void operator=(const Factory&) = delete;
+    void operator=(Factory&&)      = delete;
+
+    // -- Methods
+
     /// @return the instance of this singleton factory
     static Factory<T>& instance();
 
@@ -48,7 +61,7 @@ public:  // methods
 
     /// Checks if a builder is registered
     /// @param name of the builder
-    bool exists(const key_t& k) const;
+    bool exists(const key_t&) const;
 
     /// Registers a builder
     /// @param builder pointer
@@ -61,39 +74,37 @@ public:  // methods
 
     /// Gets the builder registered to the associated key
     /// @param name of the builder
-    const builder_t& get(const key_t& name) const;
+    const builder_t& get(const key_t&) const;
 
     /// @returns the number of builders registered to the factory
     size_t size() const;
 
     std::vector<key_t> keys() const;
 
+private:
+    // Constructors
+
+    Factory() = default;
+
+    // Destructor
+
+    ~Factory() { ASSERT(store_.empty()); }
+
+    // -- Members
+
+    mutable Mutex mutex_;  ///< mutex protecting Factory singleton
+    storage_t store_;      ///< storage for the builders in a map indexed by key_t
+
+    // -- Methods
+
+    void print(std::ostream&) const;
+
+    // -- Friends
+
     friend std::ostream& operator<<(std::ostream& os, const Factory<T>& o) {
         o.print(os);
         return os;
     }
-
-private:  // methods
-    void print(std::ostream&) const;
-
-    Factory() {
-        // std::cout << "Building Factory of " << build_type() << std::endl;
-    }
-
-    ~Factory() {
-        //		std::cout << "Destroying Factory of " << build_type() << std::endl;
-        //		if( store_.size() != 0 )
-        //		{
-        //			std::cout << "WARNING : Factory of " << build_type() << " still has " << size() << " providers" <<
-        // std::endl; 			std::cout << *this << std::endl;
-        //		}
-
-        ASSERT(store_.size() == 0);
-    }
-
-private:                   // members
-    mutable Mutex mutex_;  ///< mutex protecting Factory singleton
-    storage_t store_;      ///< storage for the builders in a map indexed by key_t
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -113,9 +124,9 @@ bool Factory<T>::exists(const key_t& k) const {
 template <class T>
 void Factory<T>::regist(const key_t& k, builder_ptr b) {
     AutoLock<Mutex> lock(mutex_);
-    ASSERT(b);
+    ASSERT(b != nullptr);
     if (exists(k)) {
-        throw BadParameter("Factory of " + build_type() + " has already a builder for " + k, Here());
+        throw BadParameter("Factory(" + build_type() + ") has already a builder for " + k, Here());
     }
     store_[k] = b;
 }
@@ -124,7 +135,7 @@ template <class T>
 void Factory<T>::unregist(const key_t& k) {
     AutoLock<Mutex> lock(mutex_);
     if (!exists(k)) {
-        throw BadParameter("Factory of " + build_type() + " has no builder for " + k, Here());
+        throw BadParameter("Factory(" + build_type() + ") has no builder for " + k, Here());
     }
     store_.erase(k);
 }
@@ -139,9 +150,9 @@ template <class T>
 const typename Factory<T>::builder_t& Factory<T>::get(const key_t& k) const {
     AutoLock<Mutex> lock(mutex_);
     if (!exists(k)) {
-        throw BadParameter("Factory of " + build_type() + " has no builder for " + k, Here());
+        throw BadParameter("Factory(" + build_type() + ") has no builder for " + k, Here());
     }
-    return *store_.find(k)->second;
+    return *(store_.find(k)->second);
 }
 
 template <class T>
@@ -149,13 +160,13 @@ void Factory<T>::print(std::ostream& os) const {
     AutoLock<Mutex> lock(mutex_);
     os << "Factory(" << build_type() << ")" << std::endl;
 
-    size_t key_width = 0;
-    for (typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i) {
-        key_width = std::max(i->first.size(), key_width);
+    int key_width = 0;
+    for (const auto& i : store_) {
+        key_width = std::max(static_cast<int>(i.first.size()), key_width);
     }
 
-    for (typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i) {
-        os << "    " << std::setw(key_width) << std::left << i->first << "  --  " << (*(*i).second) << std::endl;
+    for (const auto& i : store_) {
+        os << "    " << std::setw(key_width) << std::left << i.first << "  --  " << i.second << std::endl;
     }
 }
 
@@ -165,8 +176,8 @@ std::vector<typename Factory<T>::key_t> Factory<T>::keys() const {
 
     std::vector<key_t> keysv;
     keysv.reserve(store_.size());
-    for (typename storage_t::const_iterator i = store_.begin(); i != store_.end(); ++i) {
-        keysv.push_back(i->first);
+    for (const auto& i : store_) {
+        keysv.push_back(i.first);
     }
     return keysv;
 }
@@ -174,5 +185,3 @@ std::vector<typename Factory<T>::key_t> Factory<T>::keys() const {
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_memory_Factory_h

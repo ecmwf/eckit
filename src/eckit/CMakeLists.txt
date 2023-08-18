@@ -762,7 +762,6 @@ endif()
 
 
 list( APPEND eckit_memory_srcs
-memory/Builder.cc
 memory/Builder.h
 memory/Counted.cc
 memory/Counted.h

@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     Point p = PointLonLat{1, 1};
 
     {
-        Projection projection(ProjectionFactory::build("none", MappedConfiguration{}));
+        Projection projection(ProjectionFactory::instance().get("none").create(MappedConfiguration{}));
         EXPECT(points_equal(p, projection->inv(p)));
         EXPECT(points_equal(p, projection->fwd(p)));
     }
@@ -44,16 +44,16 @@ int main(int argc, char* argv[]) {
             {"south_pole_lon", -361.},
         });
 
-        Projection projection(ProjectionFactory::build(param.getString("projection"), param));
+        Projection projection(ProjectionFactory::instance().get(param.getString("projection")).create(param));
 
         EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
         EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
     }
 
     {
-        Projection s1(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"R", 1.}})));
-        Projection s2(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"a", 1.}, {"b", 1.}})));
-        Projection s3(ProjectionFactory::build("ll_to_xyz", MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
+        Projection s1(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"R", 1.}})));
+        Projection s2(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 1.}})));
+        Projection s3(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
 
         EXPECT(points_equal(p, s1->inv(s1->fwd(p))));
         EXPECT(points_equal(p, s2->inv(s2->fwd(p))));

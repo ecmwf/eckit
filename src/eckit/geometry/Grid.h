@@ -13,6 +13,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Ordering.h"
 #include "eckit/geometry/Point.h"
-#include "eckit/geometry/Projection.h"
 #include "eckit/geometry/Renumber.h"
 #include "eckit/geometry/area/BoundingBox.h"
 

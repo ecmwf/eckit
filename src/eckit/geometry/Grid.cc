@@ -12,7 +12,6 @@
 
 #include "eckit/geometry/Grid.h"
 
-#include <map>
 #include <memory>
 #include <ostream>
 #include <type_traits>

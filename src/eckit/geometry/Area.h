@@ -12,16 +12,15 @@
 
 #pragma once
 
-#include <iosfwd>
 #include <string>
+
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
 
 
 namespace eckit {
 class Configuration;
-namespace geometry::area {
-class BoundingBox;
 }
-}  // namespace eckit
 
 
 namespace eckit::geometry {
@@ -31,15 +30,15 @@ class Area {
 public:
     // -- Types
 
-    using Type = std::string;
+    using builder_t = BuilderT1<Area>;
+    using ARG1      = const Configuration&;
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Area() noexcept = default;
-
+    Area() noexcept   = default;
     Area(const Area&) = default;
     Area(Area&&)      = default;
 
@@ -56,7 +55,8 @@ public:
     Area& operator=(Area&&)      = default;
 
     // -- Methods
-    // None
+
+    static std::string className() { return "area"; }
 
     // -- Overridden methods
     // None
@@ -104,35 +104,10 @@ private:
 };
 
 
-struct AreaFactory {
-    static Area* build(const Configuration&);
-    static Area* build(const Area::Type&, const Configuration&);
-    static std::ostream& list(std::ostream&);
+using AreaFactory = Factory<Area>;
 
-    AreaFactory(const AreaFactory&)            = delete;
-    AreaFactory(AreaFactory&&)                 = delete;
-    AreaFactory& operator=(const AreaFactory&) = delete;
-    AreaFactory& operator=(AreaFactory&&)      = delete;
-
-    virtual Area* make(const Configuration&) = 0;
-
-protected:
-    explicit AreaFactory(const Area::Type&);
-    virtual ~AreaFactory();
-
-private:
-    const Area::Type key_;
-};
-
-
-template <class T>
-class AreaBuilder final : public AreaFactory {
-    Area* make(const Configuration& config) override { return new T(config); }
-
-public:
-    explicit AreaBuilder(const Area::Type& key) :
-        AreaFactory(key) {}
-};
+template <typename T>
+using AreaBuilder = ConcreteBuilderT1<Area, T>;
 
 
 }  // namespace eckit::geometry

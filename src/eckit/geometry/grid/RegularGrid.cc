@@ -29,7 +29,6 @@ namespace eckit::geometry::grid {
 RegularGrid::RegularGrid(Projection* projection, const Configuration& config) :
     Grid(config),
     projection_(projection),
-    figure_(config),
     xPlus_(true),
     yPlus_(false) {
     ASSERT(projection_);
@@ -95,9 +94,8 @@ RegularGrid::~RegularGrid() = default;
 
 
 Projection* RegularGrid::make_projection_from_proj(const Configuration& config) {
-    if (std::string proj;
-        config.get("proj", proj)) {
-        return ProjectionFactory::build("proj", config);
+    if (config.has("proj")) {
+        return ProjectionFactory::instance().get("proj").create(config);
     }
 
     return nullptr;
@@ -193,11 +191,7 @@ struct Lambert : RegularGrid {
         auto Latin1InDegrees = config.getDouble("Latin1InDegrees", LaDInDegrees);
         auto Latin2InDegrees = config.getDouble("Latin2InDegrees", LaDInDegrees);
 
-        return ProjectionFactory::build("lambert_conformal_conic",
-                                        MappedConfiguration({{"latitude1", Latin1InDegrees},
-                                                             {"latitude2", Latin2InDegrees},
-                                                             {"latitude0", LaDInDegrees},
-                                                             {"longitude0", LoVInDegrees}}));
+        return ProjectionFactory::instance().get("lambert_conformal_conic").create(MappedConfiguration({{"latitude1", Latin1InDegrees}, {"latitude2", Latin2InDegrees}, {"latitude0", LaDInDegrees}, {"longitude0", LoVInDegrees}}));
     }
 };
 
@@ -222,9 +216,7 @@ struct LambertAzimuthalEqualArea : RegularGrid {
         ASSERT(config.get("centralLongitudeInDegrees", centralLongitude));
         config.get("radius", radius = Earth::radius());
 
-        return ProjectionFactory::build("lambert_azimuthal_equal_area", MappedConfiguration({{"standard_parallel", standardParallel},
-                                                                                             {"central_longitude", centralLongitude},
-                                                                                             {"radius", radius}}));
+        return ProjectionFactory::instance().get("lambert_azimuthal_equal_area").create(MappedConfiguration({{"standard_parallel", standardParallel}, {"central_longitude", centralLongitude}, {"radius", radius}}));
     }
 };
 

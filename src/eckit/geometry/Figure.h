@@ -12,8 +12,10 @@
 
 #pragma once
 
-#include <iosfwd>
 #include <string>
+
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
 
 
 namespace eckit {
@@ -27,23 +29,34 @@ namespace eckit::geometry {
 class Figure {
 public:
     // -- Types
-    // None
+
+    using builder_t = BuilderT1<Figure>;
+    using ARG1      = const Configuration&;
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Figure(const Configuration&);
+    Figure() noexcept     = default;
+    Figure(const Figure&) = default;
+    Figure(Figure&&)      = default;
+
+    // -- Destructor
+
+    virtual ~Figure() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
-    // None
+
+    Figure& operator=(const Figure&) = default;
+    Figure& operator=(Figure&&)      = default;
 
     // -- Methods
-    // None
+
+    static std::string className() { return "figure"; }
 
     // -- Overridden methods
     // None
@@ -91,35 +104,10 @@ private:
 };
 
 
-struct FigureFactory {
-    static Figure* build(const Configuration&);
-    static Figure* build(const std::string&, const Configuration&);
-    static std::ostream& list(std::ostream&);
+using FigureFactory = Factory<Figure>;
 
-    FigureFactory(const FigureFactory&)            = delete;
-    FigureFactory(FigureFactory&&)                 = delete;
-    FigureFactory& operator=(const FigureFactory&) = delete;
-    FigureFactory& operator=(FigureFactory&&)      = delete;
-
-    virtual Figure* make(const Configuration&) = 0;
-
-protected:
-    explicit FigureFactory(const std::string&);
-    virtual ~FigureFactory();
-
-private:
-    const std::string key_;
-};
-
-
-template <class T>
-class FigureBuilder final : public FigureFactory {
-    Figure* make(const Configuration& config) override { return new T(config); }
-
-public:
-    explicit FigureBuilder(const std::string& key) :
-        FigureFactory(key) {}
-};
+template <typename T>
+using FigureBuilder = ConcreteBuilderT1<Figure, T>;
 
 
 }  // namespace eckit::geometry

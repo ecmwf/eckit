@@ -1,5 +1,4 @@
 list( APPEND eckit_geometry_srcs
-    Area.cc
     Area.h
     Cache.cc
     Cache.h
@@ -10,7 +9,6 @@ list( APPEND eckit_geometry_srcs
     Earth.h
     EllipsoidOfRevolution.cc
     EllipsoidOfRevolution.h
-    Figure.cc
     Figure.h
     GreatCircle.cc
     GreatCircle.h
@@ -34,7 +32,6 @@ list( APPEND eckit_geometry_srcs
     Point3.h
     PointLonLat.cc
     PointLonLat.h
-    Projection.cc
     Projection.h
     Range.cc
     Range.h

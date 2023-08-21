@@ -13,6 +13,7 @@
 #include "eckit/geometry/GridConfig.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
@@ -76,24 +77,38 @@ GridConfig::GridConfig(const PathName& path) {
     auto* config = new MappedConfiguration;
     config_.reset(config);
 
+    struct ConfigurationFromUID final : GridConfigurationUID::configurator_t {
+        explicit ConfigurationFromUID(MappedConfiguration* config) :
+            config_(config) {}
+        Configuration* config() const override { return new MappedConfiguration(*config_); }
+        std::unique_ptr<MappedConfiguration> config_;
+    };
+
+    struct ConfigurationFromName final : GridConfigurationName::configurator_t {
+        explicit ConfigurationFromName(MappedConfiguration* config) :
+            config_(config) {}
+        Configuration* config(GridConfigurationName::configurator_t::arg1_t) const override { return new MappedConfiguration(*config_); }
+        std::unique_ptr<MappedConfiguration> config_;
+    };
+
     if (path.exists()) {
         ValueMap map(YAMLParser::decodeFile(path));
 
         for (const auto& kv : map) {
             const auto key = kv.first.as<std::string>();
 
-            if (key == "grid_names") {
+            if (key == "grid_uids") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    GridFactoryName::insert(m.begin()->first, config_from_value_map(m.begin()->second));
+                    GridConfigurationUID::instance().regist(m.begin()->first.as<std::string>(), new ConfigurationFromUID(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }
 
-            if (key == "grid_uids") {
+            if (key == "grid_names") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    GridFactoryUID::insert(m.begin()->first, config_from_value_map(m.begin()->second));
+                    GridConfigurationName::instance().regist(m.begin()->first.as<std::string>(), new ConfigurationFromName(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }

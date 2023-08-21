@@ -218,7 +218,7 @@ std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlon() const {
 
 
 static const GridRegisterType<HEALPix> __grid_type("healpix");
-static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*", "H2");
+static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*");
 
 
 }  // namespace eckit::geometry::grid

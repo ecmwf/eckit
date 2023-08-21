@@ -14,12 +14,9 @@
 
 #include <memory>
 #include <ostream>
-#include <type_traits>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/GridConfig.h"
-#include "eckit/geometry/util/regex.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -94,31 +91,25 @@ Renumber Grid::reorder(const PointLonLat&) const {
 }
 
 
-static pthread_once_t __once;
-
-static Mutex* __mutex                                        = nullptr;
-static std::map<std::string, GridFactoryUID*>* __grid_uids   = nullptr;
-static std::map<std::string, GridFactoryName*>* __grid_names = nullptr;
-
-static void __init() {
-    __mutex      = new Mutex;
-    __grid_uids  = new std::remove_reference<decltype(*__grid_uids)>::type;
-    __grid_names = new std::remove_reference<decltype(*__grid_names)>::type;
+GridFactory& GridFactory::instance() {
+    static GridFactory obj;
+    return obj;
 }
 
 
-const Grid* GridFactory::build(const Configuration& config) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
+const Grid* GridFactory::build_(const Configuration& config) const {
+    AutoLock<Mutex> lock(mutex_);
 
     GridConfig::instance();
 
     if (std::string uid; config.get("uid", uid)) {
-        return GridFactoryUID::build(uid);
+        std::unique_ptr<Configuration> cfg(GridConfigurationUID::instance().get(uid).config());
+        return build(*cfg);
     }
 
     if (std::string name; config.get("name", name)) {
-        return GridFactoryName::build(name);
+        std::unique_ptr<Configuration> cfg(GridConfigurationName::instance().match(name).config(name));
+        return build(*cfg);
     }
 
     if (std::string type; config.get("type", type)) {
@@ -130,146 +121,14 @@ const Grid* GridFactory::build(const Configuration& config) {
 }
 
 
-void GridFactory::list(std::ostream& out) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
+void GridFactory::list_(std::ostream& out) const {
+    AutoLock<Mutex> lock(mutex_);
 
     GridConfig::instance();
 
-    GridFactoryUID::list(out << "uid: ");
-    out << std::endl;
-
-    GridFactoryName::list(out << "name: ");
-    out << std::endl;
-
+    out << GridConfigurationUID::instance() << std::endl;
+    out << GridConfigurationName::instance() << std::endl;
     out << GridFactoryType::instance() << std::endl;
-}
-
-
-GridFactoryUID::GridFactoryUID(const std::string& uid) :
-    uid_(uid) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    if (__grid_uids->find(uid) == __grid_uids->end()) {
-        (*__grid_uids)[uid] = this;
-        return;
-    }
-
-    throw SeriousBug("Grid: duplicate identifier '" + uid + "'");
-}
-
-
-GridFactoryUID::~GridFactoryUID() {
-    AutoLock<Mutex> lock(*__mutex);
-    __grid_uids->erase(uid_);
-}
-
-
-const Grid* GridFactoryUID::build(const std::string& uid) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    if (auto j = __grid_uids->find(uid); j != __grid_uids->end()) {
-        std::unique_ptr<Configuration> config(j->second->config());
-        return GridFactory::build(*config);
-    }
-
-    list(Log::error() << "Grid: unknown identifier '" << uid << "', choices are: ");
-    throw SeriousBug("Grid: unknown identifier '" + uid + "'");
-}
-
-
-void GridFactoryUID::list(std::ostream& out) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    out << "..." << std::endl;
-}
-
-
-void GridFactoryUID::insert(const std::string& uid, MappedConfiguration* config) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    struct Insert final : GridFactoryUID {
-        Insert(const std::string& uid, MappedConfiguration* config) :
-            GridFactoryUID(uid), config_(config) {}
-        Configuration* config() override { return new MappedConfiguration(*config_); }
-        const std::unique_ptr<MappedConfiguration> config_;
-    };
-
-    new Insert(uid, config);
-}
-
-
-GridFactoryName::GridFactoryName(const std::string& pattern, const std::string& example) :
-    pattern_(pattern), example_(example) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    if (__grid_names->find(pattern) == __grid_names->end()) {
-        (*__grid_names)[pattern] = this;
-        return;
-    }
-
-    throw SeriousBug("Grid: duplicate name '" + pattern + "'");
-}
-
-
-const Grid* GridFactoryName::build(const std::string& name) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    const auto end = __grid_names->cend();
-
-    auto i = end;
-    for (auto j = __grid_names->cbegin(); j != end; ++j) {
-        if (util::regex_match(j->second->pattern_, name)) {
-            if (i != end) {
-                throw SeriousBug("Grid: name '" + name + "' matches '" + i->second->pattern_ + "' and '" + j->second->pattern_ + "'");
-            }
-            i = j;
-        }
-    }
-
-    if (i != end) {
-        std::unique_ptr<Configuration> config(i->second->config(name));
-        return GridFactory::build(*config);
-    }
-
-    list(Log::error() << "Grid: unknown name '" << name << "', choices are: ");
-    throw SeriousBug("Grid: unknown name '" + name + "'");
-}
-
-
-void GridFactoryName::list(std::ostream& out) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    out << "..." << std::endl;
-}
-
-
-void GridFactoryName::insert(const std::string& name, MappedConfiguration* config) {
-    pthread_once(&__once, __init);
-    AutoLock<Mutex> lock(*__mutex);
-
-    struct Insert final : GridFactoryName {
-        Insert(const std::string& name, const std::string& example, MappedConfiguration* config) :
-            GridFactoryName(name, example), config_(config) {}
-        Configuration* config(const std::string&) const override { return new MappedConfiguration(*config_); }
-        const std::unique_ptr<MappedConfiguration> config_;
-    };
-
-    ASSERT(config != nullptr);
-    new Insert(name, config->getString("example", ""), config);
-}
-
-
-GridFactoryName::~GridFactoryName() {
-    AutoLock<Mutex> lock(*__mutex);
-    __grid_names->erase(pattern_);
 }
 
 

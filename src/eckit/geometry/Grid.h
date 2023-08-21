@@ -21,6 +21,7 @@
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/geometry/Area.h"
+#include "eckit/geometry/Configurator.h"
 #include "eckit/geometry/Increments.h"
 #include "eckit/geometry/Iterator.h"
 #include "eckit/geometry/Ordering.h"
@@ -168,80 +169,34 @@ private:
 };
 
 
-using GridFactoryType = Factory<Grid>;
+using GridFactoryType       = Factory<Grid>;
+using GridConfigurationName = Configurator<ConfigurationGeneratorT1<const std::string&>>;
+using GridConfigurationUID  = Configurator<ConfigurationGeneratorT0>;
+
 
 template <typename T>
 using GridRegisterType = ConcreteBuilderT1<Grid, T>;
 
+template <typename T>
+using GridRegisterUID = ConcreteConfigurationGeneratorT0<T>;
+
+template <typename T>
+using GridRegisterName = ConcreteConfigurationGeneratorT1<T, const std::string&>;
+
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    static const Grid* build(const Configuration&);
-    static void list(std::ostream&);
-};
-
-
-struct GridFactoryUID {
-    GridFactoryUID(const GridFactoryUID&)            = delete;
-    GridFactoryUID(GridFactoryUID&&)                 = delete;
-    GridFactoryUID& operator=(const GridFactoryUID&) = delete;
-    GridFactoryUID& operator=(GridFactoryUID&&)      = delete;
-
-    // This is 'const' as Grid should always be immutable
-    static const Grid* build(const std::string&);
-
-    static void list(std::ostream&);
-    static void insert(const std::string& name, MappedConfiguration*);
-
-protected:
-    explicit GridFactoryUID(const std::string& uid);
-    virtual ~GridFactoryUID();
+    static const Grid* build(const Configuration& config) { return instance().build_(config); }
+    static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
-    virtual Configuration* config() = 0;
-
-    const std::string uid_;
-};
-
-
-struct GridFactoryName {
-    GridFactoryName(const GridFactoryName&)            = delete;
-    GridFactoryName(GridFactoryName&&)                 = delete;
-    GridFactoryName& operator=(const GridFactoryName&) = delete;
-    GridFactoryName& operator=(GridFactoryName&&)      = delete;
+    static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable
-    static const Grid* build(const std::string& name);
+    const Grid* build_(const Configuration&) const;
+    void list_(std::ostream&) const;
 
-    static void list(std::ostream&);
-    static void insert(const std::string& name, MappedConfiguration*);
-
-protected:
-    explicit GridFactoryName(const std::string& pattern, const std::string& example = "");
-    virtual ~GridFactoryName();
-
-private:
-    Configuration* config() const { return config(example_); }
-    virtual Configuration* config(const std::string& name) const = 0;
-
-    const std::string pattern_;
-    const std::string example_;
-};
-
-
-template <class T>
-struct GridRegisterUID final : GridFactoryUID {
-    explicit GridRegisterUID(const std::string& uid) :
-        GridFactoryUID(uid) {}
-    Configuration* config() override { return T::config(); }
-};
-
-
-template <class T>
-struct GridRegisterName final : GridFactoryName {
-    explicit GridRegisterName(const std::string& pattern, const std::string& example) :
-        GridFactoryName(pattern, example) {}
-    Configuration* config(const std::string& name) const override { return T::config(name); }
+    mutable Mutex mutex_;
 };
 
 

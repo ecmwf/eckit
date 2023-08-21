@@ -32,7 +32,8 @@ CASE("GridFactory::build") {
 
     SECTION("GridFactory::build_from_name") {
         for (const auto& test : {test_t{"O2", 88}, {"f2", 32}, {"h2", 48}}) {
-            std::unique_ptr<const Grid> grid(geometry::GridFactoryName::build(test.name));
+            std::unique_ptr<Configuration> cfg(new MappedConfiguration({{"name", test.name}}));
+            std::unique_ptr<const Grid> grid(geometry::GridFactory::build(*cfg));
             auto size = grid->size();
             EXPECT_EQUAL(size, test.size);
         }

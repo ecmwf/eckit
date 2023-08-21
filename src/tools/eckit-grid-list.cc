@@ -22,7 +22,8 @@ struct EckitGridList final : EckitTool {
         EckitTool(argc, argv) {}
 
     void execute(const option::CmdArgs&) override {
-        Log::info() << geometry::GridFactoryType::instance() << std::endl;
+        geometry::GridFactory::list(Log::info());
+        Log::info() << std::endl;
     }
 
     void usage(const std::string& tool) const override {

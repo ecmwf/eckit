@@ -2,6 +2,7 @@ list( APPEND eckit_geometry_srcs
     Area.h
     Cache.cc
     Cache.h
+    Configurator.h
     CoordinateHelpers.cc
     CoordinateHelpers.h
     Domain.cc

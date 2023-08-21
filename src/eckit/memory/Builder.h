@@ -31,7 +31,7 @@ namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-class Builder : private NonCopyable {
+class Builder {
 public:
     // -- Types
 
@@ -77,13 +77,11 @@ class BuilderT0 : public Builder {
 public:
     // -- Types
 
-    using product_t   = Base;
-    using product_ptr = product_t*;
-    using builder_ptr = typename Factory<Base>::builder_ptr;
+    using product_t = Base;
 
     // -- Methods
 
-    virtual product_ptr create() const = 0;
+    virtual product_t* create() const = 0;
 
     // -- Overridden methods
 
@@ -97,14 +95,13 @@ class BuilderT1 : public Builder {
 public:
     // -- Types
 
-    using product_t   = Base;
-    using product_ptr = product_t*;
-    using builder_ptr = typename Factory<Base>::builder_ptr;
-    using ARG1        = typename product_t::ARG1;
+    using product_t = Base;
+
+    using ARG1 = typename product_t::ARG1;
 
     // -- Methods
 
-    virtual product_ptr create(ARG1) const = 0;
+    virtual product_t* create(ARG1) const = 0;
 
     // -- Overridden methods
 
@@ -118,16 +115,14 @@ class BuilderT2 : public Builder {
 public:
     // -- Types
 
-    using product_t   = Base;
-    using product_ptr = product_t*;
-    using builder_ptr = typename Factory<Base>::builder_ptr;
+    using product_t = Base;
 
     using ARG1 = typename product_t::ARG1;
     using ARG2 = typename product_t::ARG2;
 
     // -- Methods
 
-    virtual product_ptr create(ARG1, ARG2) const = 0;
+    virtual product_t* create(ARG1, ARG2) const = 0;
 
     // -- Overridden methods
 
@@ -176,7 +171,7 @@ public:
     // -- Overridden methods
 
     typename base_t::key_t name() const override { return T::className(); }
-    typename base_t::product_ptr create() const override { return new T(); }
+    typename base_t::product_t* create() const override { return new T(); }
 
 private:
     // -- Members
@@ -234,7 +229,7 @@ public:
     // -- Overridden methods
 
     typename base_t::key_t name() const override { return T::className(); }
-    typename base_t::product_ptr create(typename base_t::ARG1 p1) const override { return new T(p1); }
+    typename base_t::product_t* create(typename base_t::ARG1 p1) const override { return new T(p1); }
 
 
 private:
@@ -293,7 +288,7 @@ public:
     // -- Overridden methods
 
     typename base_t::key_t name() const override { return T::className(); }
-    typename base_t::product_ptr create(typename base_t::ARG1 p1, typename base_t::ARG2 p2) const override { return new T(p1, p2); }
+    typename base_t::product_t* create(typename base_t::ARG1 p1, typename base_t::ARG2 p2) const override { return new T(p1, p2); }
 
 
 private:

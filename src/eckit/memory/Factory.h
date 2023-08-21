@@ -35,11 +35,10 @@ class Factory {
 public:
     // -- Types
 
-    using product_t   = T;
-    using key_t       = std::string;
-    using builder_t   = typename product_t::builder_t;
-    using builder_ptr = builder_t*;
-    using storage_t   = std::map<key_t, builder_ptr>;
+    using product_t = T;
+    using builder_t = typename product_t::builder_t;
+    using key_t     = std::string;
+    using storage_t = std::map<key_t, builder_t*>;
 
     // -- Constructors
 
@@ -66,7 +65,7 @@ public:
     /// Registers a builder
     /// @param builder pointer
     /// @throw BadParameter if the builder already registered
-    void regist(const key_t&, builder_ptr);
+    void regist(const key_t&, builder_t*);
 
     /// Remove a registered builder
     /// @throw BadParameter if the builder is not registered
@@ -79,6 +78,7 @@ public:
     /// @returns the number of builders registered to the factory
     size_t size() const;
 
+    /// @returns the builder keys registered to the factory
     std::vector<key_t> keys() const;
 
 private:
@@ -122,7 +122,7 @@ bool Factory<T>::exists(const key_t& k) const {
 }
 
 template <class T>
-void Factory<T>::regist(const key_t& k, builder_ptr b) {
+void Factory<T>::regist(const key_t& k, builder_t* b) {
     AutoLock<Mutex> lock(mutex_);
     ASSERT(b != nullptr);
     if (exists(k)) {

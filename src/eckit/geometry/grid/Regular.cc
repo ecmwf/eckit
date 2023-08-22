@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geometry/grid/RegularLL.h"
+#include "eckit/geometry/grid/Regular.h"
 
 #include <memory>
 #include <sstream>
@@ -22,7 +22,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Projection.h"
-#include "eckit/geometry/grid/RegularLL.h"
+#include "eckit/geometry/grid/Regular.h"
 #include "eckit/geometry/util.h"
 #include "eckit/geometry/util/regex.h"
 #include "eckit/types/Fraction.h"
@@ -116,7 +116,12 @@ RegularIterator::RegularIterator(const Fraction& a, const Fraction& b, const Fra
 }  // namespace detail
 
 
-RegularLL::RegularLL(const Configuration& config) :
+Regular::Increments::Increments(const Configuration& config) :
+    Increments(config.getDouble("west_east_increment"), config.getDouble("south_north_increment")) {
+}
+
+
+Regular::Regular(const Configuration& config) :
     Grid(config), increments_(config), reference_(bbox().south(), bbox().west()), ni_(0), nj_(0) {
     bbox(correctBoundingBox(bbox(), ni_, nj_, increments_, reference_));
     ASSERT(ni_ != 0);
@@ -133,7 +138,7 @@ RegularLL::RegularLL(const Configuration& config) :
 }
 
 
-RegularLL::RegularLL(const Increments& increments, const area::BoundingBox& bb, const PointLonLat& reference) :
+Regular::Regular(const Increments& increments, const area::BoundingBox& bb, const PointLonLat& reference) :
     Grid(bb), increments_(increments), reference_(reference), ni_(0), nj_(0) {
     bbox(correctBoundingBox(bbox(), ni_, nj_, increments_, reference_));
     ASSERT(ni_ != 0);
@@ -141,32 +146,32 @@ RegularLL::RegularLL(const Increments& increments, const area::BoundingBox& bb, 
 }
 
 
-bool RegularLL::isPeriodicWestEast() const {
+bool Regular::isPeriodicWestEast() const {
     // if range West-East is within one increment (or greater than) 360 degree
     return bbox().east() - bbox().west() + increments_.west_east >= GLOBE;
 }
 
 
-bool RegularLL::includesNorthPole() const {
+bool Regular::includesNorthPole() const {
     // if North latitude is within one increment from North Pole
     return bbox().north() + increments_.south_north > NORTH_POLE;
 }
 
 
-bool RegularLL::includesSouthPole() const {
+bool Regular::includesSouthPole() const {
     // if South latitude is within one increment from South Pole
     return bbox().south() - increments_.south_north < SOUTH_POLE;
 }
 
 
-size_t RegularLL::size() const {
+size_t Regular::size() const {
     ASSERT(0 < ni_);
     ASSERT(0 < nj_);
     return ni_ * nj_;
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> Regular::to_latlon() const {
     auto [n, w, s, e] = bbox().deconstruct();
     auto [we, sn]     = increments_.deconstruct();
 
@@ -191,8 +196,8 @@ std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlon() const
 }
 
 
-area::BoundingBox RegularLL::correctBoundingBox(const area::BoundingBox& box, size_t& ni, size_t& nj, const Increments& inc,
-                                                const PointLonLat& reference) {
+area::BoundingBox Regular::correctBoundingBox(const area::BoundingBox& box, size_t& ni, size_t& nj, const Increments& inc,
+                                              const PointLonLat& reference) {
     // Latitude/longitude ranges
     detail::RegularIterator lat{Fraction{box.south()},
                                 Fraction{box.north()},
@@ -223,13 +228,13 @@ area::BoundingBox RegularLL::correctBoundingBox(const area::BoundingBox& box, si
 }
 
 
-static const GridRegisterType<RegularLL> __grid_type("regular_ll");
+static const GridRegisterType<Regular> __grid_type("regular_ll");
 
 
 #define POSITIVE_REAL "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
 
 
-Configuration* RegularLL::config(const std::string& name) {
+Configuration* Regular::config(const std::string& name) {
     static const std::string pattern("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 
     auto match = util::regex_match(pattern, name);
@@ -250,7 +255,7 @@ Configuration* RegularLL::config(const std::string& name) {
 }
 
 
-static const GridRegisterName<RegularLL> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL);
+static const GridRegisterName<Regular> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL);
 
 
 #undef POSITIVE_REAL

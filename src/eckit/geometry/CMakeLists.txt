@@ -17,8 +17,6 @@ list( APPEND eckit_geometry_srcs
     Grid.h
     GridConfig.cc
     GridConfig.h
-    Increments.cc
-    Increments.h
     Iterator.h
     KPoint.cc
     KPoint.h
@@ -58,12 +56,12 @@ list( APPEND eckit_geometry_srcs
     grid/ReducedGG.h
     grid/ReducedLL.cc
     grid/ReducedLL.h
+    grid/Regular.cc
+    grid/Regular.h
     grid/RegularGG.cc
     grid/RegularGG.h
     grid/RegularGrid.cc
     grid/RegularGrid.h
-    grid/RegularLL.cc
-    grid/RegularLL.h
     grid/UnstructuredGrid.cc
     grid/UnstructuredGrid.h
     iterator/ListI.cc

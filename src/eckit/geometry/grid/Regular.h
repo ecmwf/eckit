@@ -13,21 +13,62 @@
 #pragma once
 
 #include "eckit/geometry/Grid.h"
-#include "eckit/geometry/Increments.h"
+#include "eckit/geometry/Point.h"
+
+
+namespace eckit {
+class Configuration;
+}
 
 
 namespace eckit::geometry::grid {
 
 
-class RegularLL : public Grid {
+class Regular : public Grid {
 public:
+    // -- Types
+
+#if 0
+    struct Increments {
+        template <typename U                                                     = P,
+                  typename std::enable_if_t<std::is_same_v<U, PointLonLat>, int> = 0>
+        explicit Increments(const Configuration& config) :
+            P(config.getDouble("west_east_increment"), config.getDouble("south_north_increment")) {
+        }
+
+        template <typename U                                                = P,
+                  typename std::enable_if_t<std::is_same_v<U, Point2>, int> = 0>
+        explicit Increments(const Configuration& config) :
+            P(config.getDouble("dx"), config.getDouble("dy")) {
+        }
+
+        std::array<double, 2> deconstruct() const { return {P::operator[](0), P::operator[](0)}; }
+
+        const P point_;
+    };
+#else
+    struct Increments : protected std::array<double, 2> {
+        using P = std::array<double, 2>;
+
+        Increments(double west_east, double south_north) :
+            P{west_east, south_north} {};
+
+        explicit Increments(const Configuration& config);
+
+        double& west_east   = P::operator[](0);
+        double& south_north = P::operator[](1);
+
+        std::array<double, 2> deconstruct() const { return {west_east, south_north}; }
+    };
+#endif
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    explicit RegularLL(const Configuration&);
-    explicit RegularLL(const Increments&, const area::BoundingBox& = {}, const PointLonLat& reference = {0, 0});
+    explicit Regular(const Configuration&);
+    explicit Regular(const Increments&, const area::BoundingBox& = {}, const PointLonLat& reference = {0, 0});
 
     // -- Destructor
     // None

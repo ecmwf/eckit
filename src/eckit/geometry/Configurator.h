@@ -176,6 +176,8 @@ public:
 
     using key_t = std::string;
 
+    static constexpr const char* uid_pattern = "[0-9a-fA-F]{32}";
+
     // -- Constructors
 
     ConfigurationGenerator()                              = default;

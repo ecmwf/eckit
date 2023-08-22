@@ -52,6 +52,8 @@ list( APPEND eckit_geometry_srcs
     grid/HEALPix.h
     grid/IrregularLatlon.cc
     grid/IrregularLatlon.h
+    grid/ORCA.cc
+    grid/ORCA.h
     grid/ReducedGG.cc
     grid/ReducedGG.h
     grid/ReducedLL.cc

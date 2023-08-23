@@ -24,11 +24,84 @@ namespace {
 const eckit::Value __empty_root;
 
 
+template <typename From, typename To>
+bool __get_s(const From& from, To& to) {
+    to = static_cast<To>(from);
+    return true;
+}
+
+
+template <typename From>
+bool __get_s(const From& from, From& to) {
+    to = from;
+    return true;
+}
+
+
+template <typename From, typename To>
+bool __get_v(const std::vector<From>& from, std::vector<To>& to) {
+    to.clear();
+    for (const auto& f : from) {
+        to.emplace_back(static_cast<To>(f));
+    }
+    return true;
+}
+
+
+template <typename From>
+bool __get_v(const std::vector<From>& from, std::vector<From>& to) {
+    to = from;
+    return true;
+}
+
+
 template <typename T>
-bool __get(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+bool __get_s_integral(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
     if (auto it = map.find(name); it != map.cend()) {
-        value = std::get<T>(it->second);
-        return true;
+        const auto& v = it->second;
+        return std::holds_alternative<int>(v)           ? __get_s(std::get<int>(v), value)
+               : std::holds_alternative<long>(v)        ? __get_s(std::get<long>(v), value)
+               : std::holds_alternative<long long>(v)   ? __get_s(std::get<long long>(v), value)
+               : std::holds_alternative<std::size_t>(v) ? __get_s(std::get<std::size_t>(v), value)
+                                                        : false;
+    }
+    return false;
+}
+
+
+template <typename T>
+bool __get_s_real(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+    if (auto it = map.find(name); it != map.cend()) {
+        const auto& v = it->second;
+        return std::holds_alternative<double>(v)  ? __get_s(std::get<double>(v), value)
+               : std::holds_alternative<float>(v) ? __get_s(std::get<float>(v), value)
+                                                  : false;
+    }
+    return false;
+}
+
+
+template <typename T>
+bool __get_v_integral(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+    if (auto it = map.find(name); it != map.cend()) {
+        const auto& v = it->second;
+        return std::holds_alternative<std::vector<int>>(v)           ? __get_v(std::get<std::vector<int>>(v), value)
+               : std::holds_alternative<std::vector<long>>(v)        ? __get_v(std::get<std::vector<long>>(v), value)
+               : std::holds_alternative<std::vector<long long>>(v)   ? __get_v(std::get<std::vector<long long>>(v), value)
+               : std::holds_alternative<std::vector<std::size_t>>(v) ? __get_v(std::get<std::vector<std::size_t>>(v), value)
+                                                                     : false;
+    }
+    return false;
+}
+
+
+template <typename T>
+bool __get_v_real(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+    if (auto it = map.find(name); it != map.cend()) {
+        const auto& v = it->second;
+        return std::holds_alternative<std::vector<double>>(v)  ? __get_v(std::get<std::vector<double>>(v), value)
+               : std::holds_alternative<std::vector<float>>(v) ? __get_v(std::get<std::vector<float>>(v), value)
+                                                               : false;
     }
     return false;
 }
@@ -154,77 +227,98 @@ bool MappedConfiguration::has(const std::string& name) const {
 
 
 bool MappedConfiguration::get(const std::string& name, std::string& value) const {
-    return __get(map_, name, value);
+    if (auto it = map_.find(name); it != map_.cend()) {
+        value = std::holds_alternative<std::string>(it->second) ? std::get<std::string>(it->second)
+                                                                : std::visit([](auto&& arg) -> std::string { return (std::ostringstream() << arg).str(); }, it->second);
+        return true;
+    }
+    return false;
 }
 
 
 bool MappedConfiguration::get(const std::string& name, bool& value) const {
-    return __get(map_, name, value);
+    if (auto it = map_.find(name); it != map_.cend()) {
+        if (std::holds_alternative<bool>(it->second)) {
+            std::get<bool>(it->second);
+            return true;
+        }
+
+        if (int i = 0; __get_s_integral<int>(map_, name, i)) {
+            value = i != 0;
+            return true;
+        }
+    }
+    return false;
 }
 
 
 bool MappedConfiguration::get(const std::string& name, int& value) const {
-    return __get(map_, name, value);
+    return __get_s_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, long& value) const {
-    return __get(map_, name, value);
+    return __get_s_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, long long& value) const {
-    return __get(map_, name, value);
+    return __get_s_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::size_t& value) const {
-    return __get(map_, name, value);
+    return __get_s_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, float& value) const {
-    return __get(map_, name, value);
+    return __get_s_real(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, double& value) const {
-    return __get(map_, name, value);
+    return __get_s_real(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::vector<int>& value) const {
-    return __get(map_, name, value);
+    return __get_v_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::vector<long>& value) const {
-    return __get(map_, name, value);
+    return __get_v_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::vector<long long>& value) const {
-    return __get(map_, name, value);
+    return __get_v_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::vector<std::size_t>& value) const {
-    return __get(map_, name, value);
+    return __get_v_integral(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::vector<float>& value) const {
-    return __get(map_, name, value);
+    return __get_v_real(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::vector<double>& value) const {
-    return __get(map_, name, value);
+    return __get_v_real(map_, name, value);
 }
 
 
 bool MappedConfiguration::get(const std::string& name, std::vector<std::string>& value) const {
-    return __get(map_, name, value);
+    auto it = map_.find(name);
+    if (it != map_.cend() && std::holds_alternative<std::vector<std::string>>(it->second)) {
+        value = std::get<std::vector<std::string>>(it->second);
+        return true;
+    }
+    return false;
 }
 
 

@@ -15,6 +15,7 @@
 #include <memory>
 #include <ostream>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/GridConfig.h"
 #include "eckit/log/Log.h"

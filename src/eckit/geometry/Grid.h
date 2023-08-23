@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geometry/Area.h"
 #include "eckit/geometry/Configurator.h"
 #include "eckit/geometry/Increments.h"
@@ -30,6 +29,11 @@
 #include "eckit/geometry/area/BoundingBox.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
+
+
+namespace eckit {
+class Configuration;
+}
 
 
 namespace eckit::geometry {

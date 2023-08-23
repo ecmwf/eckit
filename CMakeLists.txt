@@ -142,6 +142,14 @@ ecbuild_add_option( FEATURE AEC
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "xxHash support for hashing" )
 
+### Geometry options
+
+ecbuild_add_option( FEATURE GEOMETRY_CACHING
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::geometry default caching behaviour" )
+
+set( eckit_GEOMETRY_CACHE_PATH "/tmp/cache" )
+
 ### LAPACK
 
 if( eckit_HAVE_MKL )

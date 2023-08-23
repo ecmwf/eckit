@@ -46,7 +46,11 @@ public:
     // -- Methods
 
     static LibEcKitGeometry& instance();
+
     static eckit::PathName configFileGrid();
+
+    static bool caching();
+    static std::string cacheDir();
 
     // -- Overridden methods
     // None

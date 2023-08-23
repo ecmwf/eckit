@@ -1,4 +1,12 @@
+
+configure_file( eckit_geometry_config.h.in eckit_geometry_config.h @ONLY )
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_geometry_config.h
+    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
+)
+
 list( APPEND eckit_geometry_srcs
+    ${CMAKE_CURRENT_BINARY_DIR}/eckit_geometry_config.h
     Area.h
     Cache.cc
     Cache.h
@@ -92,8 +100,12 @@ list( APPEND eckit_geometry_srcs
     util/regex.h
 )
 
-set(eckit_geometry_include_dirs )
-set(eckit_geometry_libs eckit_maths)
+set(eckit_geometry_include_dirs
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
+)
+
+set(eckit_geometry_libs eckit_maths eckit_codec)
 
 if(HAVE_PROJ)
     list(APPEND eckit_geometry_srcs projection/PROJ.cc projection/PROJ.h)
@@ -103,11 +115,13 @@ endif()
 
 ecbuild_add_library(
     TARGET eckit_geometry
-    TYPE SHARED
-    INSTALL_HEADERS ALL
+    TYPE   SHARED
+
+    INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geometry
+    PUBLIC_LIBS        ${eckit_geometry_libs}
+    PUBLIC_INCLUDES    ${eckit_geometry_include_dirs}
+
     SOURCES ${eckit_geometry_srcs}
-    PUBLIC_LIBS ${eckit_geometry_libs}
-    PUBLIC_INCLUDES ${eckit_geometry_include_dirs}
 )
 

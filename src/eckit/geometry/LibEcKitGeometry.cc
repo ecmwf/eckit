@@ -15,6 +15,7 @@
 #include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geometry/eckit_geometry_config.h"
 
 
 namespace eckit {
@@ -34,7 +35,19 @@ LibEcKitGeometry& LibEcKitGeometry::instance() {
 
 
 PathName LibEcKitGeometry::configFileGrid() {
-    static const PathName path{eckit::LibResource<std::string, LibEcKitGeometry>("eckit-geometry-grid;$ECKIT_GEOMETRY_GRID", "~eckit/etc/eckit/geometry/grid.yaml")};
+    static const PathName path{LibResource<std::string, LibEcKitGeometry>("eckit-geometry-grid;$ECKIT_GEOMETRY_GRID", "~eckit/etc/eckit/geometry/grid.yaml")};
+    return path;
+}
+
+
+bool LibEcKitGeometry::caching() {
+    static const bool yes{LibResource<bool, LibEcKitGeometry>("eckit-geometry-caching;$ECKIT_GEOMETRY_CACHING", eckit_HAVE_GEOMETRY_CACHING != 0 ? true : false)};
+    return yes;
+}
+
+
+std::string LibEcKitGeometry::cacheDir() {
+    static std::string path = PathName{LibResource<PathName, LibEcKitGeometry>("eckit-geometry-cache-path;$ECKIT_GEOMETRY_CACHE_PATH", eckit_GEOMETRY_CACHE_PATH)};
     return path;
 }
 

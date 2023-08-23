@@ -113,6 +113,7 @@ ORCA::ORCA(const Configuration& config) :
 
 
     // TODO
+    ASSERT(dimensions_.size() == 2);
     ASSERT(0 < dimensions_[0]);
     ASSERT(0 < dimensions_[1]);
 
@@ -124,11 +125,12 @@ ORCA::ORCA(const Configuration& config) :
     ASSERT(pivot_[0] >= 0);
     ASSERT(pivot_[1] >= 0);
 
-    size_t size = dimensions_[0] * dimensions_[1];
-    ASSERT(0 < size);
-    ASSERT(longitudes_.size() == size);
-    ASSERT(latitudes_.size() == size);
-    ASSERT(flags_.size() == size);
+    auto n = static_cast<size_t>(dimensions_[0] & dimensions_[1]);
+    ASSERT(0 < n);
+
+    ASSERT(longitudes_.size() == n);
+    ASSERT(latitudes_.size() == n);
+    ASSERT(flags_.size() == n);
 
 
     auto url = config.getString("url_prefix", "") + config.getString("url");

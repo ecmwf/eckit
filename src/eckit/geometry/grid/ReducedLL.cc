@@ -16,6 +16,7 @@
 #include <cmath>
 #include <sstream>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/geometry/Domain.h"
 #include "eckit/geometry/Projection.h"
 #include "eckit/types/FloatCompare.h"

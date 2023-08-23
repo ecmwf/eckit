@@ -12,6 +12,7 @@
 
 #include "eckit/geometry/grid/UnstructuredGrid.h"
 
+#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/iterator/ListI.h"
 

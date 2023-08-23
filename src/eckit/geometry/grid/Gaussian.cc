@@ -16,6 +16,7 @@
 #include <cmath>
 #include <map>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Domain.h"
 #include "eckit/geometry/util.h"

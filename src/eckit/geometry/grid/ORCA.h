@@ -127,9 +127,7 @@ private:
 
     const area::BoundingBox& boundingBox() const override;
 
-    size_t size() const override {
-        return ni_ * nj_;
-    }
+    size_t size() const override { return ni() * nj(); }
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct

@@ -14,6 +14,7 @@
 
 #include <algorithm>
 
+#include "eckit/config/Configuration.h"
 #include "eckit/geometry/area/BoundingBox.h"
 
 

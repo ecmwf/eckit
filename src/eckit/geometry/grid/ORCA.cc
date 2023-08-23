@@ -12,8 +12,21 @@
 
 #include "eckit/geometry/grid/ORCA.h"
 
+#include "eckit/codec/codec.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/geometry/LibEcKitGeometry.h"
 #include "eckit/geometry/area/BoundingBox.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Timer.h"
+#include "eckit/utils/ByteSwap.h"
+#include "eckit/utils/MD5.h"
+
+#ifdef eckit_HAVE_CURL
+#include "eckit/io/URLHandle.h"
+#endif
 
 
 namespace eckit::geometry::grid {
@@ -32,9 +45,13 @@ ORCA::Arrangement arrangement_from_string(const std::string& str) {
 }
 
 
-size_t dimension(const std::vector<size_t>& dim, size_t index) {
-    ASSERT(dim.size() == 2 && index < 2);
-    return dim[index];
+std::string arrangement_to_string(ORCA::Arrangement a) {
+    return a == ORCA::Arrangement::F   ? "F"
+           : a == ORCA::Arrangement::T ? "T"
+           : a == ORCA::Arrangement::U ? "U"
+           : a == ORCA::Arrangement::V ? "V"
+           : a == ORCA::Arrangement::W ? "W"
+                                       : throw AssertionFailed("ORCA::Arrangement", Here());
 }
 
 
@@ -90,16 +107,145 @@ Point ORCA::Iterator::operator*() const {
 
 ORCA::ORCA(const Configuration& config) :
     Grid(config),
-    ni_(dimension(config.getUnsignedVector("dimensions"), 0)),
-    nj_(dimension(config.getUnsignedVector("dimensions"), 1)),
     name_(config.getString("orca_name")),
     uid_(config.getString("orca_uid")),
     arrangement_(arrangement_from_string(config.getString("orca_arrangement"))) {
-    ASSERT(0 < ni_);
-    ASSERT(0 < nj_);
+
+
+    // TODO
+    ASSERT(0 < dimensions_[0]);
+    ASSERT(0 < dimensions_[1]);
+
+    ASSERT(halo_[0] >= 0);
+    ASSERT(halo_[1] >= 0);
+    ASSERT(halo_[2] >= 0);
+    ASSERT(halo_[3] >= 0);
+
+    ASSERT(pivot_[0] >= 0);
+    ASSERT(pivot_[1] >= 0);
+
+    size_t size = dimensions_[0] * dimensions_[1];
+    ASSERT(0 < size);
+    ASSERT(longitudes_.size() == size);
+    ASSERT(latitudes_.size() == size);
+    ASSERT(flags_.size() == size);
+
 
     auto url = config.getString("url_prefix", "") + config.getString("url");
     Log::info() << "url: '" << url << "'" << std::endl;
+}
+
+
+ORCA::ORCA(const URI& uri) :
+    Grid(area::BoundingBox::make_global_prime()) {
+    if (uri.scheme().find("http") == 0) {
+        PathName path = "...";  // from url
+
+        if (!path.exists() && LibEcKitGeometry::caching()) {
+            Timer timer;
+
+
+            Log::debug() << "Downloading " << uri << " to " << path << std::endl;
+
+            path.dirName().mkdir();
+
+            PathName tmp  = path + ".download";
+            Length length = 0;
+
+#if eckit_HAVE_CURL
+            try {
+                length = URLHandle(uri.asRawString()).saveInto(tmp);
+            }
+            catch (...) {
+                length = 0;
+            }
+#endif
+
+            if (length <= 0) {
+                if (tmp.exists()) {
+                    tmp.unlink(true);
+                }
+
+                throw UserError("Could not download file from url " + uri.asRawString());
+            }
+
+            if (!path.exists()) {
+                throw UserError("Could not locate orca grid data file " + path);
+            }
+
+            PathName::rename(tmp, path);
+
+            Log::info() << "Download of " << Bytes(length) << " took " << timer.elapsed() << " s." << std::endl;
+        }
+        else {
+            throw UserError("Could not locate orca grid data file " + path);
+        }
+    }
+    else {
+        if (!uri.path().exists()) {
+            throw UserError("Could not locate orca grid data file " + uri.asRawString());
+        }
+    }
+}
+
+
+void ORCA::read(const PathName& p) {
+    codec::RecordReader reader(p);
+
+    int version = -1;
+    reader.read("version", version).wait();
+
+    if (version == 0) {
+        reader.read("dimensions", dimensions_);
+        reader.read("pivot", pivot_);
+        reader.read("halo", halo_);
+        reader.read("longitude", longitudes_);
+        reader.read("latitude", latitudes_);
+        reader.read("flags", flags_);
+        reader.wait();
+    }
+    else {
+        ASSERT_MSG(false, "Unsupported version ");
+    }
+}
+
+
+size_t ORCA::write(const PathName& p, const std::string& compression) {
+    codec::RecordWriter record;
+
+    record.compression(compression);
+    record.set("version", 0);
+    record.set("dimensions", dimensions_);
+    record.set("halo", halo_);
+    record.set("pivot", pivot_);
+    record.set("longitude", codec::ArrayReference(longitudes_.data(), dimensions_));
+    record.set("latitude", codec::ArrayReference(latitudes_.data(), dimensions_));
+    record.set("flags", codec::ArrayReference(flags_.data(), dimensions_));
+
+    return record.write(p);
+}
+
+
+std::string ORCA::uid(const Configuration& config) const {
+    MD5 hash;
+    hash.add(arrangement_to_string(arrangement_));
+
+    auto sized = static_cast<long>(longitudes_.size() * sizeof(double));
+
+    if constexpr (eckit_LITTLE_ENDIAN) {
+        hash.add(latitudes_.data(), sized);
+        hash.add(longitudes_.data(), sized);
+    }
+    else {
+        auto lonsw = longitudes_;
+        auto latsw = latitudes_;
+        eckit::byteswap(latsw.data(), latsw.size());
+        eckit::byteswap(lonsw.data(), lonsw.size());
+        hash.add(latsw.data(), sized);
+        hash.add(lonsw.data(), sized);
+    }
+
+    return hash.digest();
 }
 
 

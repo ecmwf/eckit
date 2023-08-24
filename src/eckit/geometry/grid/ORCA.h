@@ -15,16 +15,13 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <memory>
-#include <vector>
 
 #include "eckit/geometry/Grid.h"
 
 
 namespace eckit {
 class PathName;
-class URI;
-}  // namespace eckit
+}
 
 
 namespace eckit::geometry::grid {
@@ -70,7 +67,6 @@ public:
     // -- Constructors
 
     explicit ORCA(const Configuration&);
-    explicit ORCA(const URI&);
 
     // -- Destructor
     // None
@@ -83,10 +79,7 @@ public:
 
     // -- Methods
 
-    void read(const PathName&);
-    size_t write(const PathName&, const std::string& compression = "none");
-
-    std::string uid(const Configuration& config) const;
+    std::string uid() const;
 
     // -- Overridden methods
     // None
@@ -105,20 +98,21 @@ private:
     std::string uid_;
     Arrangement arrangement_;
 
+    std::array<std::int32_t, 2> dimensions_;
+    std::array<std::int32_t, 4> halo_;
+    std::array<double, 2> pivot_;
     std::vector<double> longitudes_;
     std::vector<double> latitudes_;
-
-    std::array<std::int32_t, 2> dimensions_{-1, -1};
-    std::array<std::int32_t, 4> halo_{-1, -1, -1, -1};
-    std::array<double, 2> pivot_{-1, -1};
     std::vector<std::byte> flags_;
 
     // -- Methods
 
+    void read(const PathName&);
+    void check(const Configuration&);
+    size_t write(const PathName&, const std::string& compression = "none");
+
     size_t ni() const { return static_cast<size_t>(dimensions_[0]); }
     size_t nj() const { return static_cast<size_t>(dimensions_[1]); }
-
-    std::vector<double> longitudes(size_t ring) const;
 
     // -- Overridden methods
 

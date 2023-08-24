@@ -15,12 +15,12 @@
 #include "eckit/codec/codec.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/filesystem/URI.h"
 #include "eckit/geometry/LibEcKitGeometry.h"
 #include "eckit/geometry/area/BoundingBox.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/ByteSwap.h"
 #include "eckit/utils/MD5.h"
 
@@ -65,12 +65,14 @@ ORCA::Iterator::Iterator(const Grid& grid, size_t index) :
     longitudes_(dynamic_cast<const ORCA&>(grid).longitudes_),
     latitudes_(dynamic_cast<const ORCA&>(grid).latitudes_),
     uid_(dynamic_cast<const ORCA&>(grid).uid_) {
+    ASSERT(index_size_ == longitudes_.size());
+    ASSERT(index_size_ == latitudes_.size());
 }
 
 
 bool ORCA::Iterator::operator==(const geometry::Iterator& other) const {
     const auto* another = dynamic_cast<const Iterator*>(&other);
-    return another != nullptr && uid_ == another->uid_;
+    return another != nullptr && index_ == another->index_ && uid_ == another->uid_;
 }
 
 
@@ -109,85 +111,50 @@ ORCA::ORCA(const Configuration& config) :
     Grid(config),
     name_(config.getString("orca_name")),
     uid_(config.getString("orca_uid")),
-    arrangement_(arrangement_from_string(config.getString("orca_arrangement"))) {
+    arrangement_(arrangement_from_string(config.getString("orca_arrangement"))),
+    dimensions_{-1, -1},
+    halo_{-1, -1, -1, -1},
+    pivot_{-1, -1} {
+    PathName path = config.getString("path", LibEcKitGeometry::cacheDir() + "/eckit/geometry/orca/" + uid_ + ".atlas");
 
+#if eckit_HAVE_CURL  // for eckit::URLHandle
+    if (!path.exists() && LibEcKitGeometry::caching()) {
+        auto dir = path.dirName();
+        dir.mkdir();
+        ASSERT(dir.exists());
 
-    // TODO
-    ASSERT(dimensions_.size() == 2);
-    ASSERT(0 < dimensions_[0]);
-    ASSERT(0 < dimensions_[1]);
+        auto tmp = path + ".download";
+        auto url = config.getString("url_prefix", "") + config.getString("url");
 
-    ASSERT(halo_[0] >= 0);
-    ASSERT(halo_[1] >= 0);
-    ASSERT(halo_[2] >= 0);
-    ASSERT(halo_[3] >= 0);
+        Timer timer;
+        Log::info() << "ORCA: downloading '" << url << "' to '" << path << "'..." << std::endl;
 
-    ASSERT(pivot_[0] >= 0);
-    ASSERT(pivot_[1] >= 0);
+        Length length = 0;
+        try {
+            length = URLHandle(url).saveInto(tmp);
+        }
+        catch (...) {
+            length = 0;
+        }
 
-    auto n = static_cast<size_t>(dimensions_[0] & dimensions_[1]);
-    ASSERT(0 < n);
-
-    ASSERT(longitudes_.size() == n);
-    ASSERT(latitudes_.size() == n);
-    ASSERT(flags_.size() == n);
-
-
-    auto url = config.getString("url_prefix", "") + config.getString("url");
-    Log::info() << "url: '" << url << "'" << std::endl;
-}
-
-
-ORCA::ORCA(const URI& uri) :
-    Grid(area::BoundingBox::make_global_prime()) {
-    if (uri.scheme().find("http") == 0) {
-        PathName path = "...";  // from url
-
-        if (!path.exists() && LibEcKitGeometry::caching()) {
-            Timer timer;
-
-
-            Log::debug() << "Downloading " << uri << " to " << path << std::endl;
-
-            path.dirName().mkdir();
-
-            PathName tmp  = path + ".download";
-            Length length = 0;
-
-#if eckit_HAVE_CURL
-            try {
-                length = URLHandle(uri.asRawString()).saveInto(tmp);
+        if (length <= 0) {
+            if (tmp.exists()) {
+                tmp.unlink(true);
             }
-            catch (...) {
-                length = 0;
-            }
+
+            throw UserError("ORCA: download error");
+        }
+
+        PathName::rename(tmp, path);
+        Log::info() << "ORCA: download of " << Bytes(static_cast<double>(length)) << " took " << timer.elapsed() << " s." << std::endl;
+    }
+
+    ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
 #endif
 
-            if (length <= 0) {
-                if (tmp.exists()) {
-                    tmp.unlink(true);
-                }
-
-                throw UserError("Could not download file from url " + uri.asRawString());
-            }
-
-            if (!path.exists()) {
-                throw UserError("Could not locate orca grid data file " + path);
-            }
-
-            PathName::rename(tmp, path);
-
-            Log::info() << "Download of " << Bytes(length) << " took " << timer.elapsed() << " s." << std::endl;
-        }
-        else {
-            throw UserError("Could not locate orca grid data file " + path);
-        }
-    }
-    else {
-        if (!uri.path().exists()) {
-            throw UserError("Could not locate orca grid data file " + uri.asRawString());
-        }
-    }
+    // read and check against metadata (if present)
+    read(path);
+    check(config);
 }
 
 
@@ -199,16 +166,46 @@ void ORCA::read(const PathName& p) {
 
     if (version == 0) {
         reader.read("dimensions", dimensions_);
-        reader.read("pivot", pivot_);
-        reader.read("halo", halo_);
+        reader.read("pivot", pivot_);  // different order from writer
+        reader.read("halo", halo_);    //...
         reader.read("longitude", longitudes_);
         reader.read("latitude", latitudes_);
         reader.read("flags", flags_);
         reader.wait();
+        return;
     }
-    else {
-        ASSERT_MSG(false, "Unsupported version ");
+
+    throw SeriousBug("ORCA::read: unsupported version");
+}
+
+
+void ORCA::check(const Configuration& config) {
+    ASSERT(uid_.length() == 32);
+    if (config.getBool("orca_uid_check", false)) {
+        ASSERT(uid_ == uid());
     }
+
+    if (std::vector<decltype(dimensions_)::value_type> d; config.get("dimensions", d)) {
+        ASSERT(d.size() == 2);
+        ASSERT(d[0] == dimensions_[0] && d[1] == dimensions_[1]);
+    }
+
+    if (std::vector<decltype(halo_)::value_type> h; config.get("halo", h)) {
+        ASSERT(h.size() == 4);
+        ASSERT(h[0] == halo_[0] && h[1] == halo_[1] && h[2] == halo_[2] && h[3] == halo_[3]);
+    }
+
+    if (std::vector<decltype(pivot_)::value_type> p; config.get("pivot", p)) {
+        ASSERT(p.size() == 2);
+        ASSERT(types::is_approximately_equal(p[0], pivot_[0]));
+        ASSERT(types::is_approximately_equal(p[1], pivot_[1]));
+    }
+
+    auto n = static_cast<size_t>(dimensions_[0] * dimensions_[1]);
+    ASSERT(n > 0);
+    ASSERT(n == longitudes_.size());
+    ASSERT(n == latitudes_.size());
+    ASSERT(n == flags_.size());
 }
 
 
@@ -228,7 +225,7 @@ size_t ORCA::write(const PathName& p, const std::string& compression) {
 }
 
 
-std::string ORCA::uid(const Configuration& config) const {
+std::string ORCA::uid() const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement_));
 
@@ -247,7 +244,10 @@ std::string ORCA::uid(const Configuration& config) const {
         hash.add(lonsw.data(), sized);
     }
 
-    return hash.digest();
+    auto d = hash.digest();
+    ASSERT(d.length() == 32);
+
+    return d;
 }
 
 

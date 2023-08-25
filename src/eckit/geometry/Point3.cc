@@ -19,7 +19,14 @@ namespace eckit::geometry {
 //----------------------------------------------------------------------------------------------------------------------
 
 bool points_equal(const Point3& a, const Point3& b) {
-    return eckit::types::is_approximately_equal<double>(Point3::distance2(a, b), 0.0);
+    auto eps = 1e-6;
+    return types::is_approximately_equal(a.X, b.X, eps) &&
+           types::is_approximately_equal(a.Y, b.Y, eps) &&
+           types::is_approximately_equal(a.Z, b.Z, eps);
+
+}
+
+bool operator<(const Point3& a, const Point3& b) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------

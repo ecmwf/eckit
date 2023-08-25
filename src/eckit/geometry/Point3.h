@@ -88,6 +88,8 @@ public:
 
 bool points_equal(const Point3&, const Point3&);
 
+bool operator<(const Point3&, const Point3&);
+
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry

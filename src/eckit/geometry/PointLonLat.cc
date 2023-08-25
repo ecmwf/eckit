@@ -12,16 +12,10 @@
 
 #include "eckit/geometry/PointLonLat.h"
 
-#include "eckit/geometry/UnitSphere.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geometry {
-
-
-bool points_equal(const PointLonLat& a, const PointLonLat& b) {
-    return types::is_approximately_equal<double>(UnitSphere::centralAngle(a, b), 0.0);
-}
 
 
 double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
@@ -43,6 +37,18 @@ double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
         a += 360.;
     }
     return a;
+}
+
+
+bool points_equal(const PointLonLat& a, const PointLonLat& b) {
+    // FIXME
+    // solved {180., 0.} == {-180., 0.}
+    // could be more performant
+    auto c = PointLonLat::make(a.lon, a.lat);
+    auto d = PointLonLat::make(b.lon, b.lat);
+    auto eps = 1e-6;
+    return types::is_approximately_equal(c.lon, d.lon, eps) &&
+           types::is_approximately_equal(c.lat, d.lat, eps);
 }
 
 

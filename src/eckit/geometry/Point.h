@@ -24,8 +24,8 @@ namespace eckit::geometry {
 
 
 using Point = std::variant<PointLonLat, Point2, Point3>;
-bool points_equal(const Point&, const Point&);
 
+bool points_equal(const Point&, const Point&);
 
 std::ostream& operator<<(std::ostream&, const Point&);
 
@@ -36,6 +36,7 @@ constexpr double NORTH_POLE = 90.;
 constexpr double SOUTH_POLE = -90.;
 
 
+// FIXME remove
 using Longitude = double;
 using Latitude  = double;
 

@@ -12,67 +12,36 @@
 
 #pragma once
 
-#include <string>
-
-#include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
+#include "eckit/geometry/Range.h"
 
 
-namespace eckit {
-class Configuration;
-}
+namespace eckit::geometry::range {
 
 
-namespace eckit::geometry {
-
-
-class Area {
+class LocalRegular final : public Range {
 public:
     // -- Types
-
-    using builder_t = BuilderT1<Area>;
-    using ARG1      = const Configuration&;
+    // None
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Area() noexcept   = default;
-    Area(const Area&) = default;
-    Area(Area&&)      = default;
+    LocalRegular(size_t n, double a, double b, bool endpoint, double precision = 0.);
 
     // -- Destructor
-
-    virtual ~Area() = default;
+    // None
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    Area& operator=(const Area&) = default;
-    Area& operator=(Area&&)      = default;
-
-    // -- Methods
-
-    static std::string className() { return "area"; }
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
     // None
 
     // -- Methods
-    // None
+
+    const std::vector<double>& values() const override;
 
     // -- Overridden methods
     // None
@@ -85,7 +54,11 @@ protected:
 
 private:
     // -- Members
-    // None
+
+    const double a_;
+    const double b_;
+    const bool endpoint_;
+    const double precision_;
 
     // -- Methods
     // None
@@ -104,10 +77,4 @@ private:
 };
 
 
-// using AreaFactory = Factory<Area>;
-
-// template <typename T>
-// using AreaBuilder = ConcreteBuilderT1<Area, T>;
-
-
-}  // namespace eckit::geometry
+}  // namespace eckit::geometry::range

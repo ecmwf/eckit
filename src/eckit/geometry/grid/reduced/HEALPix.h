@@ -12,38 +12,16 @@
 
 #pragma once
 
-#include <vector>
-
-#include "eckit/geometry/Grid.h"
+#include "eckit/geometry/grid/Reduced.h"
 
 
-namespace eckit::geometry::grid {
+namespace eckit::geometry::grid::reduced {
 
 
-class HEALPix final : public Grid {
+class HEALPix final : public Reduced {
 public:
     // -- Types
-
-    class RingIterator final : public geometry::Iterator {
-    public:
-        explicit RingIterator(const Grid&, size_t index = 0);
-
-    private:
-        bool operator==(const Iterator&) const override;
-        bool operator++() override;
-        bool operator+=(diff_t) override;
-        explicit operator bool() const override;
-        Point operator*() const override;
-
-        size_t index() const override { return index_; }
-        size_t j(size_t index) const;
-
-        const HEALPix& grid_;
-        std::vector<double> longitudes_j_;
-        size_t j_;
-        size_t index_;
-        const size_t index_size_;
-    };
+    // None
 
     // -- Exceptions
     // None
@@ -66,7 +44,12 @@ public:
     // None
 
     // -- Overridden methods
-    // None
+
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    size_t ni(size_t j) const override;
+    size_t nj() const override;
 
     // -- Class members
 
@@ -81,22 +64,12 @@ private:
     const size_t N_;
     const Ordering ordering_;
 
-    std::vector<size_t> njacc_;
-
     mutable std::vector<double> latitudes_;
 
     // -- Methods
-
-    size_t ni() const;
-    size_t nj(size_t i) const;
-
-    const std::vector<double>& latitudes() const;
-    std::vector<double> longitudes(size_t ring) const;
+    // None
 
     // -- Overridden methods
-
-    iterator cbegin() const override;
-    iterator cend() const override;
 
     const area::BoundingBox& boundingBox() const override;
 
@@ -108,6 +81,9 @@ private:
 
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
+    const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
+
     // -- Class members
     // None
 
@@ -115,9 +91,8 @@ private:
     // None
 
     // -- Friends
-
-    friend class RingIterator;
+    // None
 };
 
 
-}  // namespace eckit::geometry::grid
+}  // namespace eckit::geometry::grid::reduced

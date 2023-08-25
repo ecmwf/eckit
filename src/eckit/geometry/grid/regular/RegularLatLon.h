@@ -12,14 +12,13 @@
 
 #pragma once
 
-#include "eckit/geometry/Iterator.h"
-#include "eckit/types/Fraction.h"
+#include "eckit/geometry/grid/Regular.h"
 
 
-namespace eckit::geometry::iterator {
+namespace eckit::geometry::grid::regular {
 
 
-class ListIListJ final : public Iterator {
+class RegularLatLon final : public Regular {
 public:
     // -- Types
     // None
@@ -29,7 +28,7 @@ public:
 
     // -- Constructors
 
-    explicit ListIListJ(const Grid&);
+    explicit RegularLatLon(const Configuration&);
 
     // -- Destructor
     // None
@@ -44,7 +43,12 @@ public:
     // None
 
     // -- Overridden methods
-    // None
+
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    size_t ni() const override;
+    size_t nj() const override;
 
     // -- Class members
     // None
@@ -54,36 +58,15 @@ public:
 
 private:
     // -- Members
-
-    size_t ni_;
-    size_t nj_;
-    Fraction north_;
-    Fraction west_;
-    Fraction we_;
-    Fraction ns_;
-    size_t i_;
-    size_t j_;
-    double latValue_;
-    double lonValue_;
-    Fraction lat_;
-    Fraction lon_;
-    size_t count_;
-    bool first_;
-    Point p_;
+    // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    bool operator==(const Iterator&) const override;
-    bool operator++() override;
-    bool operator+=(diff_t) override;
-
-    explicit operator bool() const override;
-    Point operator*() const override;
-
-    size_t index() const override;
+    const std::vector<double>& longitudes() const override;
+    const std::vector<double>& latitudes() const override;
 
     // -- Class members
     // None
@@ -96,4 +79,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::iterator
+}  // namespace eckit::geometry::grid::regular

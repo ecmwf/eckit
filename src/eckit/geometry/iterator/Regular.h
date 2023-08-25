@@ -12,25 +12,31 @@
 
 #pragma once
 
-#include "eckit/geometry/Grid.h"
+#include "eckit/geometry/Iterator.h"
 
 
 namespace eckit::geometry::grid {
+class Regular;
+}
 
 
-class Gaussian : public Grid {
+namespace eckit::geometry::iterator {
+
+
+class Regular final : public Iterator {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Gaussian(size_t N, const area::BoundingBox& = {});
-    Gaussian(const Configuration&);
+    explicit Regular(const Grid&, size_t index = 0);
 
     // -- Destructor
-
-    ~Gaussian() override;
+    // None
 
     // -- Convertors
     // None
@@ -50,44 +56,31 @@ public:
     // -- Class methods
     // None
 
-protected:
-    // -- Members
-
-    size_t N_;
-    double angularPrecision_;
-    mutable std::vector<double> latitudes_;
-
-    // -- Methods
-
-    const std::vector<double>& latitudes() const;
-
-    bool angleApproximatelyEqual(const double&, const double&) const;
-
-    void correctSouthNorth(double& s, double& n, bool in = true) const;
-
-    // -- Overridden methods
-
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
-
-    iterator cbegin() const override { NOTIMP; }
-    iterator cend() const override { NOTIMP; }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
-    // None
+
+    const grid::Regular& grid_;
+    const std::vector<double>& longitudes_;
+    const std::vector<double>& latitudes_;
+    size_t i_;
+    size_t j_;
+    size_t index_;
+    const size_t ni_;
+    const size_t nj_;
+    const size_t index_size_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    bool operator==(const Iterator&) const override;
+    bool operator++() override;
+    bool operator+=(diff_t) override;
+    explicit operator bool() const override;
+    Point operator*() const override;
+
+    size_t index() const override { return index_; }
 
     // -- Class members
     // None
@@ -100,4 +93,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::grid
+}  // namespace eckit::geometry::iterator

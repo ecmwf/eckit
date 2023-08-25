@@ -12,66 +12,37 @@
 
 #pragma once
 
-#include <string>
-
-#include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
+#include "eckit/geometry/Iterator.h"
 
 
-namespace eckit {
-class Configuration;
-}
+namespace eckit::geometry::iterator {
 
 
-namespace eckit::geometry {
-
-
-class Area {
+class Unstructured final : public Iterator {
 public:
     // -- Types
-
-    using builder_t = BuilderT1<Area>;
-    using ARG1      = const Configuration&;
+    // None
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Area() noexcept   = default;
-    Area(const Area&) = default;
-    Area(Area&&)      = default;
+    explicit Unstructured(const Grid&, size_t index = 0);
 
     // -- Destructor
-
-    virtual ~Area() = default;
+    // None
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    Area& operator=(const Area&) = default;
-    Area& operator=(Area&&)      = default;
-
-    // -- Methods
-
-    static std::string className() { return "area"; }
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
     // None
 
     // -- Methods
+    // None
+
+    // -- Overridden operators
     // None
 
     // -- Overridden methods
@@ -85,13 +56,27 @@ protected:
 
 private:
     // -- Members
-    // None
+
+    size_t index_;
+    const size_t index_size_;
+
+    const std::vector<double>& longitudes_;
+    const std::vector<double>& latitudes_;
+    const std::string uid_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    bool operator==(const geometry::Iterator&) const override;
+    bool operator++() override;
+    bool operator+=(diff_t) override;
+
+    explicit operator bool() const override;
+    Point operator*() const override;
+
+    size_t index() const override { return index_; }
 
     // -- Class members
     // None
@@ -104,10 +89,4 @@ private:
 };
 
 
-// using AreaFactory = Factory<Area>;
-
-// template <typename T>
-// using AreaBuilder = ConcreteBuilderT1<Area, T>;
-
-
-}  // namespace eckit::geometry
+}  // namespace eckit::geometry::iterator

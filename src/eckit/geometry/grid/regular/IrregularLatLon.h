@@ -12,70 +12,43 @@
 
 #pragma once
 
-#include <string>
-
-#include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
+#include "eckit/geometry/grid/Regular.h"
 
 
-namespace eckit {
-class Configuration;
-}
+namespace eckit::geometry::grid::regular {
 
 
-namespace eckit::geometry {
-
-
-class Area {
+class IrregularLatLon final : public Regular {
 public:
     // -- Types
-
-    using builder_t = BuilderT1<Area>;
-    using ARG1      = const Configuration&;
+    // None
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Area() noexcept   = default;
-    Area(const Area&) = default;
-    Area(Area&&)      = default;
+    explicit IrregularLatLon(const Configuration&);
 
     // -- Destructor
-
-    virtual ~Area() = default;
+    // None
 
     // -- Convertors
     // None
 
     // -- Operators
-
-    Area& operator=(const Area&) = default;
-    Area& operator=(Area&&)      = default;
-
-    // -- Methods
-
-    static std::string className() { return "area"; }
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
     // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
-    // None
+
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    size_t ni() const override;
+    size_t nj() const override;
 
     // -- Class members
     // None
@@ -91,7 +64,9 @@ private:
     // None
 
     // -- Overridden methods
-    // None
+
+    const std::vector<double>& longitudes() const override;
+    const std::vector<double>& latitudes() const override;
 
     // -- Class members
     // None
@@ -104,10 +79,4 @@ private:
 };
 
 
-// using AreaFactory = Factory<Area>;
-
-// template <typename T>
-// using AreaBuilder = ConcreteBuilderT1<Area, T>;
-
-
-}  // namespace eckit::geometry
+}  // namespace eckit::geometry::grid::regular

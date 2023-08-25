@@ -83,7 +83,6 @@ public:
     static PointLonLat make(double lon, double lat, double lon_minimum = 0) {
         lat = normalise_angle_to_minimum(lat, -90.);
 
-        // FIXME problems with lat << -90 and lat >> 90
         if (lat > 90.) {
             lat = 180. - lat;
             lon += 180.;

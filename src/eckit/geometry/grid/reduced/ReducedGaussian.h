@@ -12,16 +12,17 @@
 
 #pragma once
 
-#include "eckit/geometry/Iterator.h"
-#include "eckit/geometry/area/BoundingBox.h"
+#include <memory>
+
+#include "eckit/geometry/Range.h"
+#include "eckit/geometry/grid/Reduced.h"
 #include "eckit/geometry/util.h"
-#include "eckit/types/Fraction.h"
 
 
-namespace eckit::geometry::iterator {
+namespace eckit::geometry::grid::reduced {
 
 
-class ReducedIListJ : public Iterator {
+class ReducedGaussian : public Reduced {
 public:
     // -- Types
     // None
@@ -31,7 +32,8 @@ public:
 
     // -- Constructors
 
-    explicit ReducedIListJ(const Grid&);
+    explicit ReducedGaussian(const Configuration&);
+    ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
     // -- Destructor
     // None
@@ -46,7 +48,12 @@ public:
     // None
 
     // -- Overridden methods
-    // None
+
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    size_t ni(size_t j) const override;
+    size_t nj() const override;
 
     // -- Class members
     // None
@@ -57,37 +64,20 @@ public:
 private:
     // -- Members
 
-    const std::vector<double>& latitudes_;
     const pl_type pl_;
-    const area::BoundingBox& bbox_;
-    const size_t N_;
-    size_t Ni_;
-    size_t Nj_;
-    Fraction lon_;
-    double lat_;
-    Fraction inc_;
-    size_t i_;
     size_t j_;
-    size_t k_;
-    size_t count_;
-    bool first_;
-    Point p_;
-    const size_t size_;
+    size_t Nj_;
+
+    std::unique_ptr<Range> x_;
+    std::unique_ptr<Range> y_;
 
     // -- Methods
-
-    size_t resetToRow(size_t);
+    // None
 
     // -- Overridden methods
 
-    bool operator==(const Iterator&) const override;
-    bool operator++() override;
-    bool operator+=(diff_t) override;
-
-    explicit operator bool() const override;
-    Point operator*() const override;
-
-    size_t index() const override;
+    const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
 
     // -- Class members
     // None
@@ -100,4 +90,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::iterator
+}  // namespace eckit::geometry::grid::reduced

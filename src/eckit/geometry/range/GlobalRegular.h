@@ -12,22 +12,23 @@
 
 #pragma once
 
-#include "eckit/geometry/grid/Gaussian.h"
-#include "eckit/geometry/util.h"
+#include "eckit/geometry/Range.h"
 
 
-namespace eckit::geometry::grid {
+namespace eckit::geometry::range {
 
 
-class ReducedGG : public Gaussian {
+class GlobalRegular final : public Range {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    explicit ReducedGG(const Configuration&);
-    ReducedGG(size_t N, const pl_type& pl);
+    GlobalRegular(size_t n, double a, double b, double precision = 0.);
 
     // -- Destructor
     // None
@@ -39,32 +40,14 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    const std::vector<double>& values() const override;
 
     // -- Overridden methods
     // None
 
     // -- Class members
     // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Constructors
-    // None
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    bool isPeriodicWestEast() const override;
-
-    // -- Class members
 
     // -- Class methods
     // None
@@ -72,18 +55,15 @@ protected:
 private:
     // -- Members
 
-    const pl_type& pl_;
-    pl_type placc_;
-
-    size_t k_;
-    size_t Nj_;
+    const double a_;
+    const double b_;
+    const double precision_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-
-    size_t size() const override;
+    // None
 
     // -- Class members
     // None
@@ -96,4 +76,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::grid
+}  // namespace eckit::geometry::range

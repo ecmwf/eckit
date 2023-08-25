@@ -43,6 +43,7 @@ class Grid {
 public:
     // -- Types
 
+    using uid_t     = std::string;
     using builder_t = BuilderT1<Grid>;
     using ARG1      = const Configuration&;
 
@@ -111,6 +112,7 @@ public:
     void boundingBox(const area::BoundingBox&);
 
     virtual size_t size() const;
+    virtual uid_t uid() const;
 
     virtual bool includesNorthPole() const;
     virtual bool includesSouthPole() const;

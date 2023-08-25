@@ -49,6 +49,11 @@ size_t Grid::size() const {
 }
 
 
+Grid::uid_t Grid::uid() const {
+    throw NotImplemented("Grid::uid", Here());
+}
+
+
 bool Grid::includesNorthPole() const {
     throw NotImplemented("Grid::includesNorthPole", Here());
 }

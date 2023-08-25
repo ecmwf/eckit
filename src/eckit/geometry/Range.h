@@ -12,29 +12,35 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
-#include "eckit/types/Fraction.h"
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
+
+
+namespace eckit {
+class Configuration;
+}
 
 
 namespace eckit::geometry {
 
 
-class Range {
+class Range : protected std::vector<double> {
 public:
     // -- Types
-    // None
+
+    using builder_t = BuilderT1<Range>;
+    using ARG1      = const Configuration&;
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Range(double a, double b, double inc, double ref, double period);
-    Range(double a, double b, double inc, double ref);
-
-    Range(const Range&) = delete;
-    Range(Range&&)      = delete;
+    Range(const Range&) = default;
+    Range(Range&&)      = default;
 
     // -- Destructor
 
@@ -45,16 +51,17 @@ public:
 
     // -- Operators
 
-    Range& operator=(const Range&) = delete;
-    Range& operator=(Range&&)      = delete;
+    Range& operator=(const Range&) = default;
+    Range& operator=(Range&&)      = default;
 
     // -- Methods
 
-    size_t n() const { return n_; }
-    double a() const { return a_; }
-    double b() const { return b_; }
+    static std::string className() { return "range"; }
 
-    std::vector<double> to_vector() const;
+    bool empty() const { return vector::empty(); }
+    size_t size() const { return empty() ? n_ : vector::size(); }
+
+    virtual const std::vector<double>& values() const = 0;
 
     // -- Overridden methods
     // None
@@ -66,11 +73,19 @@ public:
     // None
 
 protected:
+    // -- Constructors
+
+    explicit Range(const Configuration&);
+    explicit Range(size_t n);
+
     // -- Members
     // None
 
     // -- Methods
-    // None
+
+    virtual const std::vector<double>& valuesVector() const {
+        return *this;
+    }
 
     // -- Overridden methods
     // None
@@ -84,10 +99,7 @@ protected:
 private:
     // -- Members
 
-    size_t n_;
-    double a_;
-    double b_;
-    Fraction inc_;
+    const size_t n_;
 
     // -- Methods
     // None
@@ -104,6 +116,12 @@ private:
     // -- Friends
     // None
 };
+
+
+// using RangeFactory = Factory<Range>;
+
+// template <typename T>
+// using RangeBuilder = ConcreteBuilderT1<Range, T>;
 
 
 }  // namespace eckit::geometry

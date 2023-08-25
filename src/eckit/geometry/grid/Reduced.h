@@ -12,33 +12,31 @@
 
 #pragma once
 
-#include <vector>
-
 #include "eckit/geometry/Grid.h"
 
 
 namespace eckit::geometry::iterator {
-class ListI;
+class Reduced;
 }
 
 
 namespace eckit::geometry::grid {
 
 
-class UnstructuredGrid : public Grid {
+class Reduced : public Grid {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
-
-    explicit UnstructuredGrid(const Configuration&);
-    explicit UnstructuredGrid(const Grid&);
-    UnstructuredGrid(const std::vector<double>& latitudes, const std::vector<double>& longitudes);
+    // None
 
     // -- Destructor
 
-    ~UnstructuredGrid() override;
+    ~Reduced() override = default;
 
     // -- Convertors
     // None
@@ -47,8 +45,36 @@ public:
     // None
 
     // -- Methods
+    // None
 
-    Renumber list_duplicates() const;
+    // -- Overridden methods
+
+    size_t size() const override;
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Constructors
+
+    explicit Reduced(const Configuration&);
+    explicit Reduced(const area::BoundingBox&);
+
+    // -- Members
+    // None
+
+    // -- Methods
+
+    const std::vector<size_t>& niacc() const;
+
+    virtual size_t ni(size_t j) const = 0;
+    virtual size_t nj() const         = 0;
+
+    virtual const std::vector<double>& latitudes() const   = 0;
+    virtual std::vector<double> longitudes(size_t i) const = 0;
 
     // -- Overridden methods
     // None
@@ -60,31 +86,15 @@ public:
     // None
 
 private:
-    // -- Constructors
-
-    explicit UnstructuredGrid(std::pair<std::vector<double>, std::vector<double>>&&);
-
     // -- Members
 
-    std::vector<double> latitudes_;
-    std::vector<double> longitudes_;
+    mutable std::vector<size_t> niacc_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-
-    iterator cbegin() const override;
-    iterator cend() const override;
-
-    size_t size() const override;
-
-    bool isPeriodicWestEast() const override { return true; }
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-
-    std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+    // None
 
     // -- Class members
     // None
@@ -94,7 +104,7 @@ private:
 
     // -- Friends
 
-    friend class geometry::iterator::ListI;
+    friend class ::eckit::geometry::iterator::Reduced;
 };
 
 

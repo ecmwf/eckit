@@ -12,29 +12,31 @@
 
 #pragma once
 
-#include "eckit/geometry/grid/Gaussian.h"
+#include "eckit/geometry/Grid.h"
 
 
-namespace eckit {
-class Fraction;
+namespace eckit::geometry::iterator {
+class Unstructured;
 }
 
 
 namespace eckit::geometry::grid {
 
 
-class RegularGG final : public Gaussian {
+class Unstructured : public Grid {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
-
-    RegularGG(const Configuration&);
-    RegularGG(size_t N, const area::BoundingBox& = {});
+    // None
 
     // -- Destructor
-    // None
+
+    ~Unstructured() override = default;
 
     // -- Convertors
     // None
@@ -47,7 +49,30 @@ public:
 
     // -- Overridden methods
 
-    static Configuration* config(const std::string& name);
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Constructors
+
+    explicit Unstructured(const Configuration&);
+
+    // -- Members
+    // None
+
+    // -- Methods
+
+    virtual const std::vector<double>& longitudes() const = 0;
+    virtual const std::vector<double>& latitudes() const  = 0;
+
+    // -- Overridden methods
+    // None
 
     // -- Class members
     // None
@@ -57,22 +82,13 @@ public:
 
 private:
     // -- Members
-
-    size_t k_;
-    size_t Ni_;
-    size_t Nj_;
+    // None
 
     // -- Methods
-
-    Fraction getSmallestIncrement() const;
-    void correctWestEast(double& w, double& e) const;
-    void setNiNj();
+    // None
 
     // -- Overridden methods
-
-    size_t size() const override;
-
-    bool isPeriodicWestEast() const override;
+    // None
 
     // -- Class members
     // None
@@ -81,7 +97,8 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend class ::eckit::geometry::iterator::Unstructured;
 };
 
 

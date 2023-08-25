@@ -12,24 +12,31 @@
 
 #pragma once
 
-#include "eckit/geometry/Grid.h"
+#include "eckit/geometry/Iterator.h"
 
 
 namespace eckit::geometry::grid {
+class Reduced;
+}
 
 
-class ReducedLL : public Grid {
+namespace eckit::geometry::iterator {
+
+
+class Reduced final : public geometry::Iterator {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    ReducedLL(const Configuration&);
+    explicit Reduced(const Grid&, size_t index = 0);
 
     // -- Destructor
-
-    ~ReducedLL() override;
+    // None
 
     // -- Convertors
     // None
@@ -52,21 +59,29 @@ public:
 private:
     // -- Members
 
-    std::vector<long> pl_;
+    const grid::Reduced& grid_;
+    std::vector<double> longitudes_j_;
+    const std::vector<double>& latitudes_;
+    const std::vector<size_t>& niacc_;
+    size_t j_;
+    size_t index_;
+    const size_t index_size_;
 
     // -- Methods
     // None
 
+    // -- Overridden operators
+
+    bool operator==(const Iterator&) const override;
+    bool operator++() override;
+    bool operator+=(diff_t) override;
+    explicit operator bool() const override;
+    Point operator*() const override;
+
     // -- Overridden methods
 
-    size_t size() const override;
-
-    bool isPeriodicWestEast() const override;
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
-
-    iterator cbegin() const override { NOTIMP; }
-    iterator cend() const override { NOTIMP; }
+    size_t index() const override { return index_; }
+    size_t j(size_t idx) const;
 
     // -- Class members
     // None
@@ -79,4 +94,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::grid
+}  // namespace eckit::geometry::iterator

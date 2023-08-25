@@ -12,13 +12,14 @@
 
 #pragma once
 
-#include "eckit/geometry/Iterator.h"
+#include "eckit/geometry/Range.h"
+#include "eckit/geometry/grid/Regular.h"
 
 
-namespace eckit::geometry::iterator {
+namespace eckit::geometry::grid::regular {
 
 
-class ListI final : public Iterator {
+class RegularGaussian final : public Regular {
 public:
     // -- Types
     // None
@@ -28,7 +29,8 @@ public:
 
     // -- Constructors
 
-    explicit ListI(const Grid&, size_t index = 0);
+    explicit RegularGaussian(const Configuration&);
+    explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
     // -- Destructor
     // None
@@ -43,35 +45,35 @@ public:
     // None
 
     // -- Overridden methods
-    // None
+
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    size_t ni() const override { return x_->size(); }
+    size_t nj() const override { return y_->size(); }
 
     // -- Class members
     // None
 
     // -- Class methods
-    // None
+
+    static Configuration* config(const std::string& name);
 
 private:
     // -- Members
 
-    const std::vector<double>& latitudes_;
-    const std::vector<double>& longitudes_;
-    const size_t size_;
-    size_t index_;
+    size_t ni_;
+
+    std::unique_ptr<Range> x_;
+    std::unique_ptr<Range> y_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    bool operator==(const Iterator&) const override;
-    bool operator++() override;
-    bool operator+=(diff_t) override;
-
-    explicit operator bool() const override;
-    Point operator*() const override;
-
-    size_t index() const override;
+    const std::vector<double>& longitudes() const override;
+    const std::vector<double>& latitudes() const override;
 
     // -- Class members
     // None
@@ -84,4 +86,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::iterator
+}  // namespace eckit::geometry::grid::regular

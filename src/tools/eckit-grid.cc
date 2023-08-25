@@ -16,7 +16,7 @@
 #include "eckit/geometry/Grid.h"
 #include "eckit/geometry/Point.h"
 #include "eckit/geometry/Search.h"
-#include "eckit/geometry/grid/UnstructuredGrid.h"
+#include "eckit/geometry/grid/Unstructured.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"

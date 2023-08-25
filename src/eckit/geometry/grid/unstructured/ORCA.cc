@@ -10,13 +10,14 @@
  */
 
 
-#include "eckit/geometry/grid/ORCA.h"
+#include "eckit/geometry/grid/unstructured/ORCA.h"
 
 #include "eckit/codec/codec.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geometry/LibEcKitGeometry.h"
 #include "eckit/geometry/area/BoundingBox.h"
+#include "eckit/geometry/iterator/Unstructured.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
@@ -29,7 +30,7 @@
 #endif
 
 
-namespace eckit::geometry::grid {
+namespace eckit::geometry::grid::unstructured {
 
 
 namespace {
@@ -58,57 +59,8 @@ std::string arrangement_to_string(ORCA::Arrangement a) {
 }  // namespace
 
 
-ORCA::Iterator::Iterator(const Grid& grid, size_t index) :
-    geometry::Iterator(grid),
-    index_(index),
-    index_size_(grid.size()),
-    longitudes_(dynamic_cast<const ORCA&>(grid).longitudes_),
-    latitudes_(dynamic_cast<const ORCA&>(grid).latitudes_),
-    uid_(dynamic_cast<const ORCA&>(grid).uid_) {
-    ASSERT(index_size_ == longitudes_.size());
-    ASSERT(index_size_ == latitudes_.size());
-}
-
-
-bool ORCA::Iterator::operator==(const geometry::Iterator& other) const {
-    const auto* another = dynamic_cast<const Iterator*>(&other);
-    return another != nullptr && index_ == another->index_ && uid_ == another->uid_;
-}
-
-
-bool ORCA::Iterator::operator++() {
-    if (index_++; index_ < index_size_) {
-        return true;
-    }
-
-    index_ = index_size_;  // ensure it's invalid
-    return false;
-}
-
-
-bool ORCA::Iterator::operator+=(diff_t d) {
-    if (auto di = static_cast<diff_t>(index_); 0 <= di + d && di + d < static_cast<diff_t>(index_size_)) {
-        index_ = static_cast<size_t>(di + d);
-        return true;
-    }
-
-    index_ = index_size_;  // ensure it's invalid
-    return false;
-}
-
-
-ORCA::Iterator::operator bool() const {
-    return index_ < index_size_;
-}
-
-
-Point ORCA::Iterator::operator*() const {
-    return PointLonLat{longitudes_.at(index_), latitudes_.at(index_)};
-}
-
-
 ORCA::ORCA(const Configuration& config) :
-    Grid(config),
+    Unstructured(config),
     name_(config.getString("orca_name")),
     uid_(config.getString("orca_uid")),
     arrangement_(arrangement_from_string(config.getString("orca_arrangement"))),
@@ -155,6 +107,32 @@ ORCA::ORCA(const Configuration& config) :
     // read and check against metadata (if present)
     read(path);
     check(config);
+}
+
+
+Grid::uid_t ORCA::calculate_uid() const {
+    MD5 hash;
+    hash.add(arrangement_to_string(arrangement_));
+
+    auto sized = static_cast<long>(longitudes_.size() * sizeof(double));
+
+    if constexpr (eckit_LITTLE_ENDIAN) {
+        hash.add(latitudes_.data(), sized);
+        hash.add(longitudes_.data(), sized);
+    }
+    else {
+        auto lonsw = longitudes_;
+        auto latsw = latitudes_;
+        eckit::byteswap(latsw.data(), latsw.size());
+        eckit::byteswap(lonsw.data(), lonsw.size());
+        hash.add(latsw.data(), sized);
+        hash.add(lonsw.data(), sized);
+    }
+
+    auto d = hash.digest();
+    ASSERT(d.length() == 32);
+
+    return {d};
 }
 
 
@@ -225,44 +203,13 @@ size_t ORCA::write(const PathName& p, const std::string& compression) {
 }
 
 
-std::string ORCA::uid() const {
-    MD5 hash;
-    hash.add(arrangement_to_string(arrangement_));
-
-    auto sized = static_cast<long>(longitudes_.size() * sizeof(double));
-
-    if constexpr (eckit_LITTLE_ENDIAN) {
-        hash.add(latitudes_.data(), sized);
-        hash.add(longitudes_.data(), sized);
-    }
-    else {
-        auto lonsw = longitudes_;
-        auto latsw = latitudes_;
-        eckit::byteswap(latsw.data(), latsw.size());
-        eckit::byteswap(lonsw.data(), lonsw.size());
-        hash.add(latsw.data(), sized);
-        hash.add(lonsw.data(), sized);
-    }
-
-    auto d = hash.digest();
-    ASSERT(d.length() == 32);
-
-    return d;
-}
-
-
-Configuration* ORCA::config(const std::string& name) {
-    return GridConfigurationUID::instance().get(name).config();
-}
-
-
 Grid::iterator ORCA::cbegin() const {
-    return iterator{new Iterator(*this, 0)};
+    return iterator{new geometry::iterator::Unstructured(*this, 0)};
 }
 
 
 Grid::iterator ORCA::cend() const {
-    return iterator{new Iterator(*this, size())};
+    return iterator{new geometry::iterator::Unstructured(*this, size())};
 }
 
 
@@ -277,8 +224,13 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlon() const {
 }
 
 
+Configuration* ORCA::config(const std::string& name) {
+    return GridConfigurationUID::instance().get(name).config();
+}
+
+
 static const GridRegisterType<ORCA> __grid_type("ORCA");
 static const GridRegisterName<ORCA> __grid_pattern(GridRegisterName<ORCA>::uid_pattern);
 
 
-}  // namespace eckit::geometry::grid
+}  // namespace eckit::geometry::grid::unstructured

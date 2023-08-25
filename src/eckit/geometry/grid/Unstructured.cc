@@ -10,21 +10,26 @@
  */
 
 
-#include "eckit/geometry/grid/Regular.h"
+#include "eckit/geometry/grid/Unstructured.h"
 
-// #include <>
+#include "eckit/geometry/iterator/Unstructured.h"
 
 
 namespace eckit::geometry::grid {
 
 
-Regular::Regular(const Configuration& config) :
-    Grid(config) {
+Grid::iterator Unstructured::cbegin() const {
+    return iterator{new geometry::iterator::Unstructured(*this)};
 }
 
 
-Regular::Regular(const area::BoundingBox& bbox) :
-    Grid(bbox) {
+Grid::iterator Unstructured::cend() const {
+    return iterator{new geometry::iterator::Unstructured(*this, size())};
+}
+
+
+Unstructured::Unstructured(const Configuration& config) :
+    Grid(config) {
 }
 
 

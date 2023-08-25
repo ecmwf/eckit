@@ -50,34 +50,32 @@ list( APPEND eckit_geometry_srcs
     UnitSphere.h
     area/BoundingBox.cc
     area/BoundingBox.h
-    grid/Gaussian.cc
-    grid/Gaussian.h
-    grid/GaussianIterator.cc
-    grid/GaussianIterator.h
-    grid/HEALPix.cc
-    grid/HEALPix.h
-    grid/IrregularLatlon.cc
-    grid/IrregularLatlon.h
-    grid/ORCA.cc
-    grid/ORCA.h
-    grid/ReducedGG.cc
-    grid/ReducedGG.h
-    grid/ReducedLL.cc
-    grid/ReducedLL.h
+    grid/Reduced.cc
+    grid/Reduced.h
     grid/Regular.cc
     grid/Regular.h
-    grid/RegularGG.cc
-    grid/RegularGG.h
-    grid/RegularGrid.cc
-    grid/RegularGrid.h
-    grid/UnstructuredGrid.cc
-    grid/UnstructuredGrid.h
-    iterator/ListI.cc
-    iterator/ListI.h
-    iterator/ListIListJ.cc
-    iterator/ListIListJ.h
-    iterator/ReducedIListJ.cc
-    iterator/ReducedIListJ.h
+    grid/Unstructured.cc
+    grid/Unstructured.h
+    grid/reduced/HEALPix.cc
+    grid/reduced/HEALPix.h
+    grid/reduced/ReducedGaussian.cc
+    grid/reduced/ReducedGaussian.h
+    grid/reduced/ReducedLatLon.cc
+    grid/reduced/ReducedLatLon.h
+    grid/regular/IrregularLatLon.cc
+    grid/regular/IrregularLatLon.h
+    grid/regular/RegularGaussian.cc
+    grid/regular/RegularGaussian.h
+    grid/regular/RegularLatLon.cc
+    grid/regular/RegularLatLon.h
+    grid/unstructured/ORCA.cc
+    grid/unstructured/ORCA.h
+    iterator/Reduced.cc
+    iterator/Reduced.h
+    iterator/Regular.cc
+    iterator/Regular.h
+    iterator/Unstructured.cc
+    iterator/Unstructured.h
     polygon/LonLatPolygon.cc
     polygon/LonLatPolygon.h
     polygon/Polygon.cc
@@ -88,6 +86,12 @@ list( APPEND eckit_geometry_srcs
     projection/None.h
     projection/Rotation.cc
     projection/Rotation.h
+    range/Gaussian.cc
+    range/Gaussian.h
+    range/GlobalRegular.cc
+    range/GlobalRegular.h
+    range/LocalRegular.cc
+    range/LocalRegular.h
     util.cc
     util.h
     util/arange.cc
@@ -124,4 +128,3 @@ ecbuild_add_library(
 
     SOURCES ${eckit_geometry_srcs}
 )
-

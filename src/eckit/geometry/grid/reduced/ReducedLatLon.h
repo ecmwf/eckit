@@ -12,20 +12,23 @@
 
 #pragma once
 
-#include "eckit/geometry/Grid.h"
+#include "eckit/geometry/grid/Reduced.h"
 
 
-namespace eckit::geometry::grid {
+namespace eckit::geometry::grid::reduced {
 
 
-class IrregularLatlon final : public Grid {
+class ReducedLatLon : public Reduced {
 public:
+    // -- Types
+    // None
+
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    explicit IrregularLatlon(const Configuration&);
+    explicit ReducedLatLon(const Configuration&);
 
     // -- Destructor
     // None
@@ -37,9 +40,15 @@ public:
     // None
 
     // -- Methods
+    // None
 
     // -- Overridden methods
-    // None
+
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    size_t ni(size_t j) const override;
+    size_t nj() const override;
 
     // -- Class members
     // None
@@ -49,19 +58,15 @@ public:
 
 private:
     // -- Members
-
-    std::vector<double> latitudes_;
-    std::vector<double> longitudes_;
+    // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    iterator cbegin() const override;
-    iterator cend() const override;
-
-    size_t size() const override;
+    const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
 
     // -- Class members
     // None
@@ -74,4 +79,4 @@ private:
 };
 
 
-}  // namespace eckit::geometry::grid
+}  // namespace eckit::geometry::grid::reduced

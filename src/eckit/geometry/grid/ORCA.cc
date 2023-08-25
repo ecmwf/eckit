@@ -148,9 +148,9 @@ ORCA::ORCA(const Configuration& config) :
         PathName::rename(tmp, path);
         Log::info() << "ORCA: download of " << Bytes(static_cast<double>(length)) << " took " << timer.elapsed() << " s." << std::endl;
     }
+#endif
 
     ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
-#endif
 
     // read and check against metadata (if present)
     read(path);

@@ -111,4 +111,6 @@ public:
 
 bool points_equal(const PointLonLat&, const PointLonLat&);
 
+bool operator<(const PointLonLat&, const PointLonLat&);
+
 }  // namespace eckit::geometry

@@ -47,7 +47,8 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    Renumber list_duplicates() const;
 
     // -- Overridden methods
     // None

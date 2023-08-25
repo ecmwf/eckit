@@ -131,7 +131,7 @@ HEALPix::HEALPix(size_t Nside, Ordering ordering) :
 
 Configuration* HEALPix::config(const std::string& name) {
     auto Nside = Translator<std::string, size_t>{}(name.substr(1));
-    return new MappedConfiguration({{"type", "healpix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
+    return new MappedConfiguration({{"type", "HEALPix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
 }
 
 
@@ -217,7 +217,7 @@ std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlon() const {
 }
 
 
-static const GridRegisterType<HEALPix> __grid_type("healpix");
+static const GridRegisterType<HEALPix> __grid_type("HEALPix");
 static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*");
 
 

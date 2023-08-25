@@ -12,6 +12,8 @@
 
 #include "eckit/geometry/grid/UnstructuredGrid.h"
 
+#include <set>
+
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/iterator/ListI.h"
@@ -36,8 +38,25 @@ UnstructuredGrid::UnstructuredGrid(const std::vector<double>& latitudes, const s
 }
 
 
+Renumber UnstructuredGrid::list_duplicates() const {
+    std::vector<size_t> dupes;
+
+    std::set<PointLonLat> seen;
+
+    for (auto i = cbegin(); i != cend(); ++i) {
+        if (!seen.insert(std::get<PointLonLat>(*i)).second) {
+            dupes.push_back(i->index());
+        }
+    }
+
+    return dupes;
+}
+
+
 UnstructuredGrid::UnstructuredGrid(std::pair<std::vector<double>, std::vector<double>>&& latlon) :
     Grid(area::BoundingBox::make_global_prime()), latitudes_(std::move(latlon.first)), longitudes_(std::move(latlon.second)) {
+    ASSERT(!latitudes_.empty());
+    ASSERT(latitudes_.size() == longitudes_.size());
 }
 
 

@@ -46,4 +46,13 @@ double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
 }
 
 
+bool operator<(const PointLonLat& a, const PointLonLat& b) {
+    if (types::is_approximately_equal(a.lon, b.lon) || types::is_approximately_equal(a.lat, b.lat)) {
+        return false;
+    }
+
+    return a.lon < b.lon && a.lat < b.lat;
+}
+
+
 }  // namespace eckit::geometry

@@ -12,8 +12,7 @@
 #define GreatCircle_H
 
 #include <vector>
-
-#include "eckit/geometry/PointLonLat.h"
+#include "eckit/geometry/Point2.h"
 
 //------------------------------------------------------------------------------------------------------
 
@@ -24,7 +23,7 @@ namespace eckit::geometry {
 class GreatCircle {
 public:
     /// Great circle given two points in geographic coordinates
-    GreatCircle(const PointLonLat&, const PointLonLat&);
+    GreatCircle(const Point2&, const Point2&);
 
     /// Great circle latitude given longitude, see http://www.edwilliams.org/avform.htm#Int
     std::vector<double> latitude(double lon) const;
@@ -35,8 +34,8 @@ public:
     bool crossesPoles() const;
 
 private:
-    const PointLonLat A_;
-    const PointLonLat B_;
+    const Point2 A_;
+    const Point2 B_;
 
     bool crossesPoles_;
 };

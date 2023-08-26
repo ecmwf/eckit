@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/geometry/Grid.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/EckitTool.h"
 
@@ -22,7 +22,7 @@ struct EckitGridList final : EckitTool {
         EckitTool(argc, argv) {}
 
     void execute(const option::CmdArgs&) override {
-        geometry::GridFactory::list(Log::info());
+        geo::GridFactory::list(Log::info());
         Log::info() << std::endl;
     }
 

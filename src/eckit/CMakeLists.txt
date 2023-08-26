@@ -347,8 +347,6 @@ config/Configuration.cc
 config/Configuration.h
 config/Configured.cc
 config/Configured.h
-config/DynamicConfiguration.cc
-config/DynamicConfiguration.h
 config/EtcTable.cc
 config/EtcTable.h
 config/JSONConfiguration.h
@@ -356,8 +354,6 @@ config/LibEcKit.cc
 config/LibEcKit.h
 config/LocalConfiguration.cc
 config/LocalConfiguration.h
-config/MappedConfiguration.cc
-config/MappedConfiguration.h
 config/Parametrisation.cc
 config/Parametrisation.h
 config/Resource.h
@@ -368,6 +364,15 @@ config/ResourceMgr.h
 config/YAMLConfiguration.cc
 config/YAMLConfiguration.h
 )
+
+if( HAVE_EXPERIMENTAL )
+    list( APPEND eckit_config_srcs
+        config/DynamicConfiguration.cc
+        config/DynamicConfiguration.h
+        config/MappedConfiguration.cc
+        config/MappedConfiguration.h
+    )
+endif()
 
 list( APPEND eckit_runtime_srcs
 runtime/Application.cc
@@ -963,11 +968,11 @@ ecbuild_add_library(
 ### sub-directories
 
 if( HAVE_ECKIT_CMD )
-  add_subdirectory( cmd )
+    add_subdirectory( cmd )
 endif()
 
 if( HAVE_ECKIT_SQL )
-  add_subdirectory( sql )
+    add_subdirectory( sql )
 endif()
 
 add_subdirectory( distributed )
@@ -977,3 +982,9 @@ add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
+
+if( HAVE_EXPERIMENTAL )
+    add_subdirectory( codec )
+    add_subdirectory( geo )
+endif()
+

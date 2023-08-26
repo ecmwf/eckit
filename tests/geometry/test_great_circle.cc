@@ -13,12 +13,19 @@
 #include <vector>
 
 #include "eckit/geometry/GreatCircle.h"
-#include "eckit/geometry/PointLonLat.h"
+#include "eckit/geometry/Point2.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
 
 using namespace geometry;
+
+struct PointLonLat : Point2 {
+    PointLonLat(double x, double y) :
+        Point2(x, y) {}
+    const double& lon() const { return x_[0]; }
+    const double& lat() const { return x_[1]; }
+};
 
 // -----------------------------------------------------------------------------
 // test great circles
@@ -101,13 +108,12 @@ CASE("test great circles intersections") {
 
         const PointLonLat mid(-159.18, -6.81);
 
-        auto lats = gc.latitude(mid.lon);
-        EXPECT(lats.size() == 1 && is_approximately_equal(lats[0], mid.lat, 0.01));
+        auto lats = gc.latitude(mid.lon());
+        EXPECT(lats.size() == 1 && is_approximately_equal(lats[0], mid.lat(), 0.01));
 
-        auto lons = gc.longitude(mid.lat);
+        auto lons = gc.longitude(mid.lat());
         EXPECT(lons.size() == 2);
-        EXPECT(is_approximately_equal_longitude(lons[0], mid.lon, 0.01)
-               || is_approximately_equal_longitude(lons[1], mid.lon, 0.01));
+        EXPECT(is_approximately_equal_longitude(lons[0], mid.lon(), 0.01) || is_approximately_equal_longitude(lons[1], mid.lon(), 0.01));
     }
 
     SECTION("mal-formed great circle") {
@@ -120,11 +126,11 @@ CASE("test great circles intersections") {
 
             EXPECT_THROWS_AS(GreatCircle(A, B), BadValue);
 
-            if (is_approximately_pole(A.lat)) {
+            if (is_approximately_pole(A.lat())) {
                 for (double lon1_gc : longitudes) {
                     for (double lon2_gc : longitudes) {
-                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, A.lat}, {lon2_gc, A.lat}), BadValue);
-                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, B.lat}, {lon2_gc, B.lat}), BadValue);
+                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, A.lat()}, {lon2_gc, A.lat()}), BadValue);
+                        EXPECT_THROWS_AS(GreatCircle({lon1_gc, B.lat()}, {lon2_gc, B.lat()}), BadValue);
                     }
                 }
             }

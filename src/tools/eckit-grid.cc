@@ -13,10 +13,10 @@
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/Grid.h"
-#include "eckit/geometry/Point.h"
-#include "eckit/geometry/Search.h"
-#include "eckit/geometry/grid/Unstructured.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Search.h"
+#include "eckit/geo/grid/Unstructured.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
@@ -40,7 +40,7 @@ private:
     void execute(const option::CmdArgs& args) override {
         auto uid = args.getBool("uid", false);
 
-        geometry::PointLonLat nearest_point{0, 0};
+        geo::PointLonLat nearest_point{0, 0};
         size_t nearest_k = 0;
         if (std::vector<double> point; args.get("nearest-point", point)) {
             ASSERT(point.size() == 2);
@@ -53,7 +53,7 @@ private:
 
         for (const auto& arg : args) {
             std::unique_ptr<Configuration> cfg(new MappedConfiguration({{uid ? "uid" : "name", std::string(arg)}}));
-            std::unique_ptr<const geometry::Grid> grid(geometry::GridFactory::build(*cfg));
+            std::unique_ptr<const geo::Grid> grid(geo::GridFactory::build(*cfg));
 
             out << "size: " << grid->size() << std::endl;
 
@@ -61,12 +61,12 @@ private:
                 out << p << std::endl;
             }
 
-            //            for (const auto& p : geometry::grid::UnstructuredGrid(*grid)) {
+            //            for (const auto& p : geo::grid::UnstructuredGrid(*grid)) {
             //                out << p << std::endl;
             //            }
 
             if (nearest_k > 0) {
-                geometry::SearchLonLat search;
+                geo::SearchLonLat search;
                 search.build(grid->to_points());
 
                 const auto* sep = "";

@@ -21,13 +21,20 @@ namespace eckit::geometry {
 
 /// Definition of a unit datum
 struct DatumUnit {
-    static constexpr double radius() { return 1.; }
+
+    /* C++-11:
+    static constexpr double radius() {
+        return 1.;
+    }
+    */
+
+    static double radius() { return 1.; }
 };
 
 //------------------------------------------------------------------------------------------------------
 
 /// Definition of a unit sphere
-using UnitSphere = SphereT<DatumUnit>;
+typedef SphereT<DatumUnit> UnitSphere;
 
 //------------------------------------------------------------------------------------------------------
 

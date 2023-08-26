@@ -1,12 +1,18 @@
 list( APPEND eckit_maths_lib_srcs
-Eigen.h
-Lapack.cc
-Lapack.h
-Matrix.h
-Matrix3.h
-MatrixEigen.h
-MatrixLapack.h
+    Eigen.h
+    Lapack.cc
+    Lapack.h
+    Matrix.h
+    MatrixEigen.h
+    MatrixLapack.h
 )
+
+if( HAVE_EXPERIMENTAL )
+    # for eckit::geo
+    list( APPEND eckit_maths_lib_srcs
+        Matrix3.h
+    )
+endif()
 
 ecbuild_add_library( TARGET              eckit_maths TYPE SHARED
                      INSTALL_HEADERS     ALL

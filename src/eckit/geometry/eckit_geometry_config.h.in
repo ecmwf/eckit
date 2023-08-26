@@ -1,5 +1,0 @@
-#pragma once
-
-#cmakedefine01 eckit_HAVE_GEOMETRY_CACHING 
-#cmakedefine eckit_GEOMETRY_CACHE_PATH "@eckit_GEOMETRY_CACHE_PATH@"
-

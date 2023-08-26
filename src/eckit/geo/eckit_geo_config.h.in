@@ -1,0 +1,5 @@
+#pragma once
+
+#cmakedefine01 eckit_HAVE_GEO_CACHING 
+#cmakedefine eckit_GEO_CACHE_PATH "@eckit_GEO_CACHE_PATH@"
+

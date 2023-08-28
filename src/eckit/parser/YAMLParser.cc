@@ -25,8 +25,6 @@
 
 namespace eckit {
 
-static Value toValue(const std::string& s);
-
 struct YAMLItem : public Counted {
 
     long indent_;

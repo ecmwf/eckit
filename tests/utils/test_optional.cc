@@ -122,12 +122,18 @@ CASE("copy and move assign") {
         EXPECT(!opt3);
 
         // Self move-assignement
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-move"
         opt2 = std::move(opt2);
+#pragma clang diagnostic pop
         EXPECT(opt2);
         EXPECT(opt2.value() == 2);
 
         // Self copy-assignement
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-assign-overloaded"
         opt2 = opt2;
+#pragma clang diagnostic pop
         EXPECT(opt2);
         EXPECT(opt2.value() == 2);
 
@@ -192,7 +198,10 @@ CASE("non-trivial object: std::string") {
 
         // Test move assign to self
         Optional<std::string> optTmp4("tmp4");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-move"
         optTmp4 = std::move(optTmp4);
+#pragma clang diagnostic pop
         EXPECT(optTmp4);
         EXPECT_EQUAL(optTmp4.value(), std::string("tmp4"));
 

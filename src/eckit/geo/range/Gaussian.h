@@ -28,7 +28,9 @@ public:
 
     // -- Constructors
 
-    explicit Gaussian(size_t N);
+    explicit Gaussian(size_t N, double precision = 0.) :
+        Gaussian(N, 90., -90., precision) {}
+
     Gaussian(size_t N, double a, double b, double precision = 0.);
 
     // -- Destructor
@@ -60,7 +62,7 @@ private:
     const size_t N_;
     const double a_;
     const double b_;
-    const double precision_;
+    const double eps_;
 
     // -- Methods
     // None

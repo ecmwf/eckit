@@ -27,46 +27,6 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 }
 
 
-template <typename X>
-struct iterator_t {
-    X& cnt;
-    size_t pos;
-
-    bool operator!=(const iterator_t& other) const { return &cnt != &other.cnt || pos != other.pos; }
-
-    iterator_t& operator++() {
-        pos++;
-        return *this;
-    }
-
-    iterator_t operator++(int) {
-        auto old = *this;
-        operator++();
-        return old;
-    }
-
-    typename X::value_type& operator*() { return cnt.at(pos); }
-
-    const typename X::value_type& operator*() const { return cnt.at(pos); }
-};
-
-
-class iterable_t : public std::vector<double> {
-    using iterator       = iterator_t<iterable_t>;
-    using const_iterator = iterator_t<const iterable_t>;
-
-public:
-    using vector::vector;
-
-    iterator begin() { return {*this, 0}; }
-    iterator end() { return {*this, this->size()}; }
-    const_iterator cbegin() const { return {*this, 0}; }
-    const_iterator cend() const { return {*this, this->size()}; }
-    const_iterator begin() const { return cbegin(); }
-    const_iterator end() const { return cend(); }
-};
-
-
 int main(int argc, char* argv[]) {
     using namespace eckit::geo::util;
 

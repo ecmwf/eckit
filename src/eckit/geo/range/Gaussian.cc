@@ -22,59 +22,35 @@
 namespace eckit::geo::range {
 
 
-Gaussian::Gaussian(size_t N) :
-    Gaussian(N, 90., -90) {
-}
-
-
 Gaussian::Gaussian(size_t N, double a, double b, double precision) :
     Range(2 * N),
     N_(N),
     a_(a),
     b_(b),
-    precision_(precision) {
+    eps_(precision) {
     ASSERT(N > 0);
-    ASSERT(precision_ >= 0.);
+    ASSERT(eps_ >= 0.);
+
+    // pre-calculate on cropping
+    auto [min, max] = std::minmax(a_, b_);
+    if (!types::is_approximately_equal(min, -90., eps_) || !types::is_approximately_equal(max, 90., eps_)) {
+        auto [from, to] = util::monotonic_crop(values(), min, max, precision);
+        if (to != end()) {
+            erase(to);
+        }
+        if (from != begin()) {
+            erase(begin(), from);
+        }
+        ASSERT(!empty());
+    }
 }
 
 
 const std::vector<double>& Gaussian::values() const {
     if (empty()) {
-        auto& v = const_cast<std::vector<double>&>(valuesVector());
-        v       = util::gaussian_latitudes(N_, a_ < b_);
-        ASSERT(v.size() == 2 * N_);
-
-        const bool same(a_ == b_);
-
-        auto a = a_;
-        auto b = b_;
-
-        if (a < v.back()) {
-            a = v.back();
-        }
-        else {
-            auto best = std::lower_bound(v.begin(), v.end(), a, [&](double l1, double l2) {
-                return !types::is_approximately_equal(l1, l2, precision_) && !(l1 < l2);
-            });
-            ASSERT(best != v.end());
-            a = *best;
-        }
-
-        if (same) {
-            b = a;
-        }
-        else if (b > v.front()) {
-            b = v.front();
-        }
-        else {
-            auto best = std::lower_bound(v.rbegin(), v.rend(), b, [&](double l1, double l2) {
-                return !types::is_approximately_equal(l1, l2, precision_) && !(l1 > l2);
-            });
-            ASSERT(best != v.rend());
-            b = *best;
-        }
-
-        ASSERT((a_ <= b_) == (a <= b));
+        const_cast<std::vector<double>&>(valuesVector()) = util::gaussian_latitudes(N_, a_ < b_);
+        ASSERT(!empty());
+        ASSERT(size() == 2 * N_);
     }
 
     return *this;

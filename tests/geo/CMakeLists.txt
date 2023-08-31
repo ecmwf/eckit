@@ -9,6 +9,7 @@ foreach( _test
         points
         polygon
         projection
+        range
         search
         sphere
         types

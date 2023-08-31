@@ -58,7 +58,8 @@ public:
 
     static std::string className() { return "range"; }
 
-    bool empty() const { return vector::empty(); }
+    using vector::empty;
+
     size_t size() const { return empty() ? n_ : vector::size(); }
 
     virtual const std::vector<double>& values() const = 0;

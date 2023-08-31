@@ -54,7 +54,8 @@ public:
     // None
 
     // -- Class methods
-    // None
+
+    static Configuration* config(const std::string& name);
 
 private:
     // -- Members

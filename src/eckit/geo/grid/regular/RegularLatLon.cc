@@ -12,7 +12,10 @@
 
 #include "eckit/geo/grid/regular/RegularLatLon.h"
 
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/util/regex.h"
+#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
@@ -51,6 +54,34 @@ const std::vector<double>& RegularLatLon::longitudes() const {
 const std::vector<double>& RegularLatLon::latitudes() const {
     NOTIMP;
 }
+
+
+#define POSITIVE_REAL "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
+
+
+Configuration* RegularLatLon::config(const std::string& name) {
+    static const std::string pattern("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
+
+    auto match = util::regex_match(pattern, name);
+    ASSERT(match);
+    ASSERT(match.size() == 7);  // because of sub-matches
+
+    auto d = Translator<std::string, double>{};
+    std::vector<double> increments{d(match[1]), d(match[4])};
+
+    auto ni = 1;  // detail::RegularIterator(Fraction(0), Fraction(360), Fraction(increments[0]), Fraction(0), Fraction(360)).n();
+    auto nj = 1;  // detail::RegularIterator(Fraction(-90), Fraction(90), Fraction(increments[1]), Fraction(0)).n();
+
+    return new MappedConfiguration({{"type", "regular_ll"},
+                                    {"west_east_increment", increments[0]},
+                                    {"south_north_increment", increments[1]},
+                                    {"ni", ni},
+                                    {"nj", nj}});
+}
+
+
+static const GridRegisterType<RegularLatLon> __grid_type("regular_ll");
+static const GridRegisterName<RegularLatLon> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL);
 
 
 }  // namespace eckit::geo::grid::regular

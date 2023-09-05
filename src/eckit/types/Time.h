@@ -34,7 +34,7 @@ class Time {
 public:  // methods
     Time(long, long, long);
     Time(long seconds = 0);
-    Time(const std::string&);
+    Time(const std::string&, bool extended = false);
 
 #include "eckit/types/Time.b"
 

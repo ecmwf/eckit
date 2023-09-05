@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <regex>
+
 #include "eckit/eckit.h"
 
 #include "eckit/persist/DumpLoad.h"
@@ -37,70 +39,76 @@ Time::Time(long seconds) :
     }
 }
 
-Time::Time(const std::string& s) {
-    Tokenizer parse(":");
-    std::vector<std::string> result;
-
-    parse(s, result);
-
-    long hh = 0, mm = 0, ss = 0;
-    bool err = false;
-    long t   = atol(s.c_str());
-
-    switch (result.size()) {
-        case 1:
-            // hh or hhmm or hhmmss
-            switch (s.length()) {
-                case 2:
-                    hh = t;
-                    break;
-                case 4:
-                    hh = t / 100;
-                    mm = t % 100;
-                    break;
-                case 6:
-                    hh = t / 10000;
-                    mm = (t % 10000) / 100;
-                    ss = (t % 10000) % 100;
-                    break;
-                default:
-                    err = true;
-                    break;
+Time::Time(const std::string& s, bool extended) {
+    long ss = 0, mm = 0, hh = 0, dd = 0;
+    std::smatch m;
+    
+    if (std::regex_match (s, m, std::regex("^[0-9]+$"))) { // only digits
+        long t = std::stol(s);
+        if (s.length() < 3) {     // cases: h, hh
+            hh = t;
+        } else {
+            if (s.length() < 5) { // cases: hmm, hhmm
+                hh = t / 100;
+                mm = t % 100;
+            } else {              // cases: hmmss, hhmmss
+                hh = t / 10000;
+                mm = (t / 100) % 100;
+                ss = t % 100;
             }
-            break;
-
-        case 2:
-            // hh:mm
-            err = result[0].length() != 2 || result[1].length() != 2;
-
-            hh = atol(result[0].c_str());
-            mm = atol(result[1].c_str());
-
-            break;
-
-        case 3:
-            // hh:mm:ss
-
-            err = result[0].length() != 2 || result[1].length() != 2 || result[2].length() != 2;
-
-            hh = atol(result[0].c_str());
-            mm = atol(result[1].c_str());
-            ss = atol(result[2].c_str());
-
-            break;
-
-        default:
-            err = true;
-            break;
+        }
+    }
+    else {
+        if (std::regex_match (s, m, std::regex("^([0-9]+):([0-5]?[0-9])(:[0-5]?[0-9])?$"))) {
+            for (int i=1; i<m.size(); i++) {
+                if (m[i].matched) {
+                    switch (i) {
+                        case 1: hh = std::stol(m[i].str()); break;
+                        case 2: mm = std::stol(m[i].str()); break;
+                        case 3: std::string aux = m[i].str();
+                                aux.erase(0,1);
+                                ss = std::stol(aux); break;
+                    }
+                }
+            }
+        }
+        else {
+            if (std::regex_match (s, m, std::regex("^([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$"))) {
+                for (int i=1; i<m.size(); i++) {
+                    if (m[i].matched) {
+                        std::string aux = m[i].str();
+                        aux.pop_back();
+                        long t = std::stol(aux);
+                        switch (i) {
+                            case 1: dd = t; break;
+                            case 2: hh = t; break;
+                            case 3: mm = t; break;
+                            case 4: ss = t;
+                        }
+                    }
+                }
+                if (extended) {
+                    ss += 60 * (mm + 60 * (hh + 24 * dd));
+                    dd =  ss / 86400;
+                    hh = (ss /  3600) % 24;
+                    mm = (ss /    60) % 60;
+                    ss =  ss          % 60;
+                }
+            } else {
+                std::string msg = "Wrong input for time: ";
+                msg += s;
+                throw BadTime(msg);
+            }
+        }
     }
 
-    if (err) {
-        throw BadTime(std::string("Invalid time ") + s);
-    }
-
-    if (hh >= 24 || mm >= 60 || ss >= 60 || hh < 0 || mm < 0 || ss < 0) {
+    if ((!extended && (hh >= 24 || dd > 0)) || mm >= 60 || ss >= 60 || hh < 0 || mm < 0 || ss < 0) {
         std::string msg = "Wrong input for time: ";
         Translator<long, std::string> t;
+        if (dd>0) {
+            msg += t(dd);
+            msg += " days ";
+        }
         msg += t(hh);
         msg += " hours ";
         msg += t(mm);
@@ -109,8 +117,7 @@ Time::Time(const std::string& s) {
         msg += " seconds";
         throw BadTime(msg);
     }
-
-    seconds_ = hh * 3600 + mm * 60 + ss;
+    seconds_ = dd * 86400 + hh * 3600 + mm * 60 + ss;
 }
 
 Time::operator std::string() const {

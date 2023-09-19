@@ -85,7 +85,7 @@ private:
     // -- Overridden methods
 
     using Option::set;
-    void set(const std::string& value, Configured&) const override;
+
     bool active() const override;
     void copy(const Configuration& from, Configured& to) const override;
 

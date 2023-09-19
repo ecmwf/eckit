@@ -9,6 +9,7 @@
  */
 
 #include "eckit/option/CmdArgs.h"
+#include "eckit/option/MultiValueOption.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/option/VectorOption.h"
 #include "eckit/runtime/Main.h"
@@ -235,6 +236,552 @@ CASE("test_eckit_option_cmdargs_vector_size_check") {
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------
+
+#if TESTCASE == 13
+CASE("test_eckit_option__string_with_default_value") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", "", "default-value"));
+
+    std::vector<const char*> input = {"exe"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]), nullptr);
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    EXPECT(args.has("arg1"));
+    auto arg1_actual = args.getString("arg1");
+    EXPECT_EQUAL(arg1_actual, "default-value");
+}
+#endif
+
+#if TESTCASE == 14
+CASE("test_eckit_option__string_no_default_value") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+
+    std::vector<const char*> input = {"exe"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]), nullptr);
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    EXPECT(!args.has("arg1"));
+}
+#endif
+
+#if TESTCASE == 15
+CASE("test_eckit_option__bool_plus_separated_string") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new SimpleOption<bool>("arg2", ""));
+
+    std::vector<const char*> input = {"exe", "--arg2", "--arg1", "value"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]), nullptr);
+
+    CmdArgs args(&usage, options, 0, 0, true);
+    EXPECT(args.has("arg1"));
+    EXPECT(args.has("arg2"));
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        std::string s;
+        args.get("arg1", s);
+        EXPECT_EQUAL(s, "value");
+        auto arg1_actual = args.getString("arg1");
+        EXPECT_EQUAL(arg1_actual, "value");
+    }
+    {
+        bool flag;
+        args.get("arg2", flag);
+        EXPECT_EQUAL(flag, true);
+        auto arg2_actual = args.getBool("arg2");
+        EXPECT_EQUAL(arg2_actual, true);
+    }
+}
+#endif
+
+#if TESTCASE == 16
+CASE("test_eckit_option__bool_plus_joint_string") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new SimpleOption<bool>("arg2", ""));
+
+    std::vector<const char*> input = {"exe", "--arg2", "--arg1=value"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+    EXPECT(args.has("arg1"));
+    EXPECT(args.has("arg2"));
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        std::string s;
+        args.get("arg1", s);
+        EXPECT_EQUAL(s, "value");
+        auto arg1_actual = args.getString("arg1");
+        EXPECT_EQUAL(arg1_actual, "value");
+    }
+    {
+        bool flag;
+        args.get("arg2", flag);
+        EXPECT_EQUAL(flag, true);
+        auto arg2_actual = args.getBool("arg2");
+        EXPECT_EQUAL(arg2_actual, true);
+    }
+}
+#endif
+
+#if TESTCASE == 17
+CASE("test_eckit_option__long_plus_joint_string") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new SimpleOption<long>("arg2", ""));
+
+    std::vector<const char*> input = {"exe", "--arg2=12345", "--arg1=value"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+    EXPECT(args.has("arg1"));
+    EXPECT(args.has("arg2"));
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        std::string s;
+        args.get("arg1", s);
+        EXPECT_EQUAL(s, "value");
+        auto arg1_actual = args.getString("arg1");
+        EXPECT_EQUAL(arg1_actual, "value");
+    }
+
+    {
+        long i;
+        args.get("arg2", i);
+        EXPECT_EQUAL(i, 12345);
+        auto arg2_actual = args.getLong("arg2");
+        EXPECT_EQUAL(arg2_actual, 12345L);
+    }
+}
+#endif
+
+#if TESTCASE == 18
+CASE("test_eckit_option__long_plus_joint_and_separated_string") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new SimpleOption<std::string>("arg2", ""));
+    options.push_back(new SimpleOption<long>("arg3", ""));
+
+    std::vector<const char*> input
+        = {"exe", "--arg1", "value1", "pos1", "pos2", "pos3", "--arg2=value2", "pos4", "--arg3=1234", "pos5"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 4, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 5);
+    auto pos1_actual = args(0);
+    EXPECT_EQUAL(pos1_actual, "pos1");
+    auto pos2_actual = args(1);
+    EXPECT_EQUAL(pos2_actual, "pos2");
+    auto pos3_actual = args(2);
+    EXPECT_EQUAL(pos3_actual, "pos3");
+    auto pos4_actual = args(3);
+    EXPECT_EQUAL(pos4_actual, "pos4");
+    auto pos5_actual = args(4);
+    EXPECT_EQUAL(pos5_actual, "pos5");
+
+    {
+        EXPECT(args.has("arg1"));
+        std::string s;
+        args.get("arg1", s);
+        EXPECT_EQUAL(s, "value1");
+        auto arg1_actual = args.getString("arg1");
+        EXPECT_EQUAL(arg1_actual, "value1");
+    }
+
+    {
+        EXPECT(args.has("arg2"));
+        std::string s;
+        args.get("arg2", s);
+        EXPECT_EQUAL(s, "value2");
+        auto arg2_actual = args.getString("arg2");
+        EXPECT_EQUAL(arg2_actual, "value2");
+    }
+
+    {
+        EXPECT(args.has("arg3"));
+        long i;
+        args.get("arg3", i);
+        EXPECT_EQUAL(i, 1234L);
+        auto arg3_actual = args.getLong("arg3");
+        EXPECT_EQUAL(arg3_actual, 1234L);
+    }
+}
+#endif
+
+#if TESTCASE == 19
+CASE("test_eckit_option__multi_separate_value_alone") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2));
+
+    std::vector<const char*> input = {"exe", "--arg1", "value1", "value2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+    }
+}
+#endif
+
+#if TESTCASE == 20
+CASE("test_eckit_option__multi_joint_value_alone") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2));
+
+    std::vector<const char*> input = {"exe", "--arg1=value1", "value2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+    }
+}
+#endif
+
+#if TESTCASE == 21
+CASE("test_eckit_option__multi_value_no_default_value") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2));
+
+    std::vector<const char*> input = {"exe", "pos1", "pos2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 2, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 2);
+
+    EXPECT(!args.has("arg1"));
+}
+#endif
+
+#if TESTCASE == 22
+CASE("test_eckit_option__multi_value_with_default_value") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2, MultiValueOption::values_t{"value1", "value2"}));
+
+    std::vector<const char*> input = {"exe", "pos1", "pos2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 2, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 2);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+    }
+}
+#endif
+
+#if TESTCASE == 23
+CASE("test_eckit_option__multi_value_with_1_mandatory_0_optional") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 1, 0));
+
+    std::vector<const char*> input = {"exe", "--arg1", "value1", "pos1", "pos2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 2, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 2);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 1);
+            EXPECT_EQUAL(v[0], "value1");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 1);
+            EXPECT_EQUAL(v[0], "value1");
+        }
+    }
+}
+#endif
+
+#if TESTCASE == 24
+CASE("test_eckit_option__multi_value_with_2_mandatory_0_optional") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2, 0));
+
+    std::vector<const char*> input = {"exe", "--arg1", "value1", "value2", "pos1", "pos2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 2, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 2);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+        }
+    }
+}
+#endif
+
+#if TESTCASE == 25
+CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_2_provided") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2, 2));
+    options.push_back(new SimpleOption<bool>("arg2", ""));
+
+    std::vector<const char*> input
+        = {"exe", "--arg1", "value1", "value2", "optional1", "optional2", "--arg2", "pos1", "pos2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 2, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 2);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 4);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+            EXPECT_EQUAL(v[2], "optional1");
+            EXPECT_EQUAL(v[3], "optional2");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 4);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+            EXPECT_EQUAL(v[2], "optional1");
+            EXPECT_EQUAL(v[3], "optional2");
+        }
+    }
+
+    EXPECT(args.has("arg2"));
+}
+#endif
+
+#if TESTCASE == 26
+CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_1_provided_followed_by_another_option") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2, 2));
+    options.push_back(new SimpleOption<bool>("arg2", ""));
+
+    std::vector<const char*> input = {"exe", "--arg1", "value1", "value2", "optional1", "--arg2", "pos1", "pos2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 2, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 2);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 3);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+            EXPECT_EQUAL(v[2], "optional1");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 3);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+            EXPECT_EQUAL(v[2], "optional1");
+        }
+    }
+
+    EXPECT(args.has("arg2"));
+}
+#endif
+
+#if TESTCASE == 27
+CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_1_provided_at_end") {
+    std::vector<Option*> options;
+    options.push_back(new MultiValueOption("arg1", "", 2, 2));
+
+    std::vector<const char*> input = {"exe", "--arg1", "value1", "value2", "optional1"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        EXPECT(args.has("arg1"));
+        {
+            std::vector<std::string> v;
+            args.get("arg1", v);
+            EXPECT_EQUAL(v.size(), 3);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+            EXPECT_EQUAL(v[2], "optional1");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("arg1");
+            EXPECT_EQUAL(v.size(), 3);
+            EXPECT_EQUAL(v[0], "value1");
+            EXPECT_EQUAL(v[1], "value2");
+            EXPECT_EQUAL(v[2], "optional1");
+        }
+    }
+}
+#endif
+
+#if TESTCASE == 28
+CASE("test_eckit_option__multi_value_with_others") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new SimpleOption<std::string>("arg2", ""));
+    options.push_back(new MultiValueOption("label", "", 2));
+
+    std::vector<const char*> input = {"exe",
+                                      "--arg1",
+                                      "value1",
+                                      "pos1",
+                                      "pos2",
+                                      "pos3",
+                                      "--arg2=value2",
+                                      "pos4",
+                                      "--label=somelabel",
+                                      "--a-label-value--",
+                                      "pos5"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 4, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 5);
+    auto pos1_actual = args(0);
+    EXPECT_EQUAL(pos1_actual, "pos1");
+    auto pos2_actual = args(1);
+    EXPECT_EQUAL(pos2_actual, "pos2");
+    auto pos3_actual = args(2);
+    EXPECT_EQUAL(pos3_actual, "pos3");
+    auto pos4_actual = args(3);
+    EXPECT_EQUAL(pos4_actual, "pos4");
+    auto pos5_actual = args(4);
+    EXPECT_EQUAL(pos5_actual, "pos5");
+
+    {
+        EXPECT(args.has("arg1"));
+        std::string s;
+        args.get("arg1", s);
+        EXPECT_EQUAL(s, "value1");
+        auto arg1_actual = args.getString("arg1");
+        EXPECT_EQUAL(arg1_actual, "value1");
+    }
+
+    {
+        EXPECT(args.has("arg2"));
+        std::string s;
+        args.get("arg2", s);
+        EXPECT_EQUAL(s, "value2");
+        auto arg2_actual = args.getString("arg2");
+        EXPECT_EQUAL(arg2_actual, "value2");
+    }
+
+    {
+        EXPECT(args.has("label"));
+        {
+            std::vector<std::string> v;
+            args.get("label", v);
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "somelabel");
+            EXPECT_EQUAL(v[1], "--a-label-value--");
+        }
+        {
+            std::vector<std::string> v = args.getStringVector("label");
+            EXPECT_EQUAL(v.size(), 2);
+            EXPECT_EQUAL(v[0], "somelabel");
+            EXPECT_EQUAL(v[1], "--a-label-value--");
+        }
+    }
+}
+#endif
 
 }  // namespace eckit::test
 

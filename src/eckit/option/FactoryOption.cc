@@ -27,22 +27,34 @@ namespace option {
 
 template <class T>
 FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description) :
-    Option(name, description) {}
+    base_t(name, description) {}
 
 template <class T>
-FactoryOption<T>::~FactoryOption() {}
+FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description, std::string default_value) :
+    base_t(name, description, std::move(default_value)) {}
+
+template <class T>
+size_t FactoryOption<T>::set(Configured& parametrisation, args_t::const_iterator begin, args_t::const_iterator end) const {
+    if (begin == end) {
+        throw UserError("No option value found for FactoryOption, where 1 was expected");
+    }
+    set(*begin, parametrisation);
+    return 1;
+}
 
 template <class T>
 void FactoryOption<T>::set(const std::string& value, Configured& parametrisation) const {
+    set_value(value, parametrisation);
+}
+
+template <class T>
+void FactoryOption<T>::set_value(const std::string& value, Configured& parametrisation) const {
     parametrisation.set(name_, value);
 }
 
 template <class T>
 void FactoryOption<T>::copy(const Configuration& from, Configured& to) const {
-    std::string v;
-    if (from.get(name_, v)) {
-        to.set(name_, v);
-    }
+    Option::copy<std::string>(name_, from, to);
 }
 
 template <class T>

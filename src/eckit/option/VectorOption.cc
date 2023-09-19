@@ -32,17 +32,22 @@ namespace option {
 template <class T>
 VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
                               const char* separator) :
-    Option(name, description), size_(size), separator_(separator) {}
+    base_t(name, description), size_(size), separator_(separator) {}
+
+template <class T>
+VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
+                              const std::vector<T>& default_value, const char* separator) :
+    base_t(Option(name, description, default_value)), size_(size), separator_(separator) {}
 
 
 template <class T>
-VectorOption<T>::~VectorOption() {}
-
-template <class T>
-void VectorOption<T>::set(Configured& parametrisation) const {
-    set(std::string{}, parametrisation);
+size_t VectorOption<T>::set(Configured& parametrisation, args_t::const_iterator begin, args_t::const_iterator end) const {
+    if (begin == end) {
+        throw UserError("No option value found for VectorOption, where 1 was expected");
+    }
+    set(*begin, parametrisation);
+    return 1;
 }
-
 
 template <class T>
 void VectorOption<T>::set(const std::string& value, Configured& parametrisation) const {
@@ -59,15 +64,20 @@ void VectorOption<T>::set(const std::string& value, Configured& parametrisation)
 
     if (size_) {
         if (values.size() != size_)
-            throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect", Here());
+            throw UserError(std::string("Size of supplied vector \"") + this->name() + "\" incorrect", Here());
     }
 
-    parametrisation.set(name_, values);
+    set_value(values, parametrisation);
+}
+
+template <class T>
+void VectorOption<T>::set_value(const std::vector<T>& value, Configured& parametrisation) const {
+    parametrisation.set(this->name(), value);
 }
 
 template <class T>
 void VectorOption<T>::print(std::ostream& out) const {
-    out << "   --" << name_;
+    out << "   --" << this->name();
 
     const char* sep = "=";
     for (size_t i = 0; i < (size_ ? size_ : 2); i++) {
@@ -79,16 +89,13 @@ void VectorOption<T>::print(std::ostream& out) const {
         out << sep << "...";
     }
 
-    out << " (" << description_ << ")";
+    out << " (" << this->description() << ")";
 }
 
 
 template <class T>
 void VectorOption<T>::copy(const Configuration& from, Configured& to) const {
-    std::vector<T> v;
-    if (from.get(name_, v)) {
-        to.set(name_, v);
-    }
+    Option::copy<T>(this->name(), from, to);
 }
 
 

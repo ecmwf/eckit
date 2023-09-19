@@ -24,18 +24,21 @@
 namespace eckit::option {
 
 template <class T>
-class VectorOption : public Option {
+class VectorOption : public BaseOption<std::vector<T>> {
 public:
+    using base_t = BaseOption<std::vector<T>>;
+    using args_t = Option::args_t;
     // -- Exceptions
     // None
 
     // -- Contructors
 
     VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator = "/");
+    VectorOption(const std::string& name, const std::string& description, size_t size, const std::vector<T>& default_value, const char* separator = "/");
 
     // -- Destructor
 
-    ~VectorOption() override;  // Change to virtual if base class
+    ~VectorOption() override = default;
 
     // -- Convertors
     // None
@@ -44,7 +47,7 @@ public:
     // None
 
     // -- Methods
-    // None
+    void set_value(const std::vector<T>& value, Configured&) const override;
 
 
     // -- Overridden methods
@@ -88,8 +91,9 @@ private:
 
     // -- Overridden methods
 
-    void set(Configured&) const override;
-    void set(const std::string& value, Configured&) const override;
+    size_t set(Configured&, args_t::const_iterator begin, args_t::const_iterator end) const override;
+    void set(const std::string& value, Configured&) const;
+
     void copy(const Configuration& from, Configured& to) const override;
 
     // -- Class members

@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,8 @@
 namespace eckit::geo {
 
 
-using pl_type = std::vector<long>;
+using difference_type = std::make_signed_t<size_t>;
+using pl_type         = std::vector<long>;
 
 
 namespace util {
@@ -56,8 +58,7 @@ std::vector<double> gaussian_latitudes(size_t N, bool increasing);
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
 
 
-std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterator> monotonic_crop(
-    const std::vector<double>&, double min, double max, double eps);
+std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>&, double min, double max, double eps);
 
 
 const pl_type& reduced_classical_pl(size_t N);

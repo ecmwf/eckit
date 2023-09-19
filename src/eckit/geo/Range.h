@@ -15,9 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
-
 
 namespace eckit {
 class Configuration;
@@ -30,17 +27,15 @@ namespace eckit::geo {
 class Range : protected std::vector<double> {
 public:
     // -- Types
-
-    using builder_t = BuilderT1<Range>;
-    using ARG1      = const Configuration&;
+    // None
 
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Range(const Range&) = default;
-    Range(Range&&)      = default;
+    Range(const Range&) = delete;
+    Range(Range&&)      = delete;
 
     // -- Destructor
 
@@ -51,12 +46,11 @@ public:
 
     // -- Operators
 
-    Range& operator=(const Range&) = default;
-    Range& operator=(Range&&)      = default;
+    Range& operator=(const Range&) = delete;
+    Range& operator=(Range&&)      = delete;
 
     // -- Methods
-
-    static std::string className() { return "range"; }
+    // None
 
     using vector::empty;
 
@@ -117,12 +111,6 @@ private:
     // -- Friends
     // None
 };
-
-
-// using RangeFactory = Factory<Range>;
-
-// template <typename T>
-// using RangeBuilder = ConcreteBuilderT1<Range, T>;
 
 
 }  // namespace eckit::geo

@@ -18,7 +18,7 @@
 namespace eckit::geo::range {
 
 
-class GlobalRegular final : public Range {
+class Regular final : public Range {
 public:
     // -- Types
     // None
@@ -28,7 +28,8 @@ public:
 
     // -- Constructors
 
-    GlobalRegular(size_t n, double a, double b, double precision = 0.);
+    explicit Regular(size_t n, double a, double b, double precision = 0.);
+    explicit Regular(size_t n, double a, double b, bool endpoint, double precision = 0.);
 
     // -- Destructor
     // None
@@ -58,6 +59,7 @@ private:
     const double a_;
     const double b_;
     const double precision_;
+    const bool endpoint_;
 
     // -- Methods
     // None

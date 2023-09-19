@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/range/GlobalRegular.h"
+#include "eckit/geo/range/Regular.h"
 
 #include "eckit/geo/util.h"
 
@@ -18,22 +18,32 @@
 namespace eckit::geo::range {
 
 
-GlobalRegular::GlobalRegular(size_t n, double a, double b, double precision) :
+Regular::Regular(size_t n, double a, double b, double precision) :
     Range(n),
     a_(a),
     b_(b),
-    precision_(precision) {
+    precision_(precision),
+    endpoint_(false) {
 }
 
 
-const std::vector<double>& GlobalRegular::values() const {
+Regular::Regular(size_t n, double a, double b, bool endpoint, double precision) :
+    Range(n),
+    a_(a),
+    b_(b),
+    precision_(precision),
+    endpoint_(endpoint) {
+}
+
+
+const std::vector<double>& Regular::values() const {
     if (empty()) {
         auto& v = const_cast<std::vector<double>&>(valuesVector());
         v       = util::linspace(0., 360., size(), false);
 
-        auto mm = util::monotonic_crop(v, a_, b_, 1e-3);
-        v.erase(mm.second, v.end());
-        v.erase(v.begin(), mm.first);
+        auto [from, to] = util::monotonic_crop(v, a_, b_, 1e-3);
+        v.erase(v.begin() + to, v.end());
+        v.erase(v.begin(), v.begin() + from);
     }
 
     return *this;

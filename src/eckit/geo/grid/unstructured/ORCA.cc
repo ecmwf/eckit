@@ -190,14 +190,16 @@ void ORCA::check(const Configuration& config) {
 size_t ORCA::write(const PathName& p, const std::string& compression) {
     codec::RecordWriter record;
 
+    codec::ArrayShape shape{static_cast<size_t>(dimensions_[0]), static_cast<size_t>(dimensions_[1])};
+
     record.compression(compression);
     record.set("version", 0);
     record.set("dimensions", dimensions_);
     record.set("halo", halo_);
     record.set("pivot", pivot_);
-    record.set("longitude", codec::ArrayReference(longitudes_.data(), dimensions_));
-    record.set("latitude", codec::ArrayReference(latitudes_.data(), dimensions_));
-    record.set("flags", codec::ArrayReference(flags_.data(), dimensions_));
+    record.set("longitude", codec::ArrayReference(longitudes_.data(), shape));
+    record.set("latitude", codec::ArrayReference(latitudes_.data(), shape));
+    record.set("flags", codec::ArrayReference(flags_.data(), shape));
 
     return record.write(p);
 }

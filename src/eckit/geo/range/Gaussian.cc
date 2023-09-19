@@ -34,12 +34,17 @@ Gaussian::Gaussian(size_t N, double a, double b, double precision) :
     // pre-calculate on cropping
     auto [min, max] = std::minmax(a_, b_);
     if (!types::is_approximately_equal(min, -90., eps_) || !types::is_approximately_equal(max, 90., eps_)) {
-        auto [from, to] = util::monotonic_crop(values(), min, max, precision);
-        if (to != end()) {
-            erase(to);
+        auto& v = values();
+
+        auto [from, to] = util::monotonic_crop(v, min, max, precision);
+        auto f          = v.begin() + from;
+        auto t          = v.begin() + to;
+
+        if (t != end()) {
+            erase(t);
         }
-        if (from != begin()) {
-            erase(begin(), from);
+        if (f != begin()) {
+            erase(begin(), f);
         }
         ASSERT(!empty());
     }

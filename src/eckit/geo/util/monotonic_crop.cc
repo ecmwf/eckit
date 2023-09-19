@@ -11,6 +11,8 @@
 
 
 #include <algorithm>
+#include <iterator>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -21,21 +23,28 @@
 namespace eckit::geo::util {
 
 
-std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterator> monotonic_crop(
+using difference_type = std::make_signed_t<size_t>;
+
+
+std::pair<difference_type, difference_type> monotonic_crop(
     const std::vector<double>& values, double min, double max, double eps) {
     if (values.empty() || min > max) {
         return {};
     }
 
+    auto b = values.begin();
+    auto e = values.end();
 
     // monotonically increasing
     const auto increasing = values.size() == 1 || values.front() < values.back();
     if (increasing) {
-        ASSERT(std::is_sorted(values.begin(), values.end()));
+        ASSERT(std::is_sorted(b, e));
 
         auto lt = [eps](double a, double b) { return a < b && (0. == eps || !types::is_approximately_equal(a, b, eps)); };
-        return {std::lower_bound(values.begin(), values.end(), min, lt),
-                std::upper_bound(values.begin(), values.end(), max, lt)};
+
+        return {
+            std::distance(b, std::lower_bound(b, e, min, lt)),
+            std::distance(b, std::upper_bound(b, e, max, lt))};
     }
 
 
@@ -43,8 +52,10 @@ std::pair<std::vector<double>::const_iterator, std::vector<double>::const_iterat
     ASSERT(std::is_sorted(values.rbegin(), values.rend()));
 
     auto gt = [eps](double a, double b) { return a > b && (0. == eps || !types::is_approximately_equal(a, b, eps)); };
-    return {std::lower_bound(values.begin(), values.end(), max, gt),
-            std::upper_bound(values.begin(), values.end(), min, gt)};
+
+    return {
+        std::distance(b, std::lower_bound(b, e, max, gt)),
+        std::distance(b, std::upper_bound(b, e, min, gt))};
 }
 
 

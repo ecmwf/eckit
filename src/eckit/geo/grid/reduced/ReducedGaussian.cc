@@ -16,7 +16,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Gaussian.h"
-#include "eckit/geo/range/GlobalRegular.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -68,7 +68,7 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
     auto Ni = ni(j);
     if (!x_ || x_->size() != Ni) {
         const_cast<std::unique_ptr<Range>&>(x_).reset(
-            new range::GlobalRegular(Ni, bbox().west(), bbox().east()));
+            new range::Regular(Ni, bbox().west(), bbox().east()));
     }
 
     return x_->values();

@@ -48,8 +48,7 @@ public:
     explicit ORCA(const Configuration&);
 
     // -- Destructor
-
-    ~ORCA() override = default;
+    // None
 
     // -- Convertors
     // None
@@ -88,11 +87,11 @@ public:
     const std::vector<double>& latitudes() const override { return latitudes_; }
 
     // -- Class members
-
-    static Configuration* config(const std::string& name);
+    // None
 
     // -- Class methods
-    // None
+
+    static Configuration* config(const std::string& name);
 
 private:
     // -- Members

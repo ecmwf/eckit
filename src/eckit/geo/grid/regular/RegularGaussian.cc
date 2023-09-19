@@ -15,18 +15,18 @@
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/Gaussian.h"
-#include "eckit/geo/range/LocalRegular.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
-// LocalRegular(size_t n, double a, double b, bool endpoint, double precision = 0.);
+// Regular(size_t n, double a, double b, bool endpoint, double precision = 0.);
 
 
 RegularGaussian::RegularGaussian(const Configuration& config) :
     Regular(config),
     ni_(config.getUnsigned("ni", config.getUnsigned("ni"))),
-    x_(new range::LocalRegular(ni_, config.getDouble("west", 0.), config.getDouble("east", 360.), true /*FIXME*/)),
+    x_(new range::Regular(ni_, config.getDouble("west", 0.), config.getDouble("east", 360.), true /*FIXME*/)),
     y_(new range::Gaussian(config.getUnsigned("N"),
                            config.getDouble("north", 90.),
                            config.getDouble("south", -90.))) {
@@ -37,7 +37,7 @@ RegularGaussian::RegularGaussian(const Configuration& config) :
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
     Regular(bbox),
     ni_(4 * N),
-    x_(new range::LocalRegular(ni_, bbox.west(), bbox.east(), true /*FIXME*/)),
+    x_(new range::Regular(ni_, bbox.west(), bbox.east(), true /*FIXME*/)),
     y_(new range::Gaussian(N, bbox.west(), bbox.east())) {
 }
 

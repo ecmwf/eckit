@@ -88,10 +88,8 @@ list( APPEND eckit_geo_srcs
     projection/Rotation.h
     range/Gaussian.cc
     range/Gaussian.h
-    range/GlobalRegular.cc
-    range/GlobalRegular.h
-    range/LocalRegular.cc
-    range/LocalRegular.h
+    range/Regular.cc
+    range/Regular.h
     util.cc
     util.h
     util/arange.cc

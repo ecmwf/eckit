@@ -19,6 +19,25 @@ using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
+/*
+ *
+ * The following tests access the ECMWF's Nexus Repository, namely
+ * the repository 'test-data' which holds public ancillary data to
+ * support tests available at:
+ *
+ *   https://get.ecmwf.int/#browse/browse:test-data:eckit
+ *
+ * The tests also use the Nexus' REST API, which has its base path at:
+ *
+ *   https://get.ecmwf.int/service/rest/
+ *
+ * The description of the end-points made available by Nexus, is
+ * available at:
+ *
+ *   https://get.ecmwf.int/service/rest/swagger.json
+ *
+ */
+
 namespace eckit {
 namespace test {
 
@@ -30,6 +49,42 @@ CASE("EasyCURL GET") {
     auto response = curl.GET("https://get.ecmwf.int/repository/test-data/eckit/tests/io/t.grib.md5");
     EXPECT(response.code() == 200);
     EXPECT(response.body() == "f59fdc6a09c1d11b0e567309ef541bef  t.grib\n");
+}
+
+CASE("EasyCURL GET (REST API, Successful operation)") {
+    EasyCURLHeaders headers;
+    headers["content-type"] = "application/json";
+
+    auto curl = EasyCURL();
+    curl.headers(headers);
+
+    auto response = curl.GET("https://get.ecmwf.int/service/rest/v1/assets?repository=test-data");
+    EXPECT(response.code() == 200);
+    EXPECT(response.body().find(R"("items")") != std::string::npos);
+}
+
+CASE("EasyCURL GET (REST API, Insufficient permissions)") {
+    EasyCURLHeaders headers;
+    headers["content-type"] = "application/json";
+
+    auto curl = EasyCURL();
+    curl.headers(headers);
+
+    auto response = curl.GET("https://get.ecmwf.int/service/rest/v1/security/anonymous");
+    EXPECT(response.code() == 403);
+    EXPECT(response.body() == "");
+}
+
+CASE("EasyCURL PUT (REST API, Insufficient permissions)") {
+    EasyCURLHeaders headers;
+    headers["content-type"] = "application/json";
+
+    auto curl = EasyCURL();
+    curl.headers(headers);
+
+    auto response = curl.PUT("https://get.ecmwf.int/service/rest/v1/security/anonymous", "");
+    EXPECT(response.code() == 403);
+    EXPECT(response.body() == "");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -10,6 +10,7 @@
 
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/MultiValueOption.h"
+#include "eckit/option/Separator.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/option/VectorOption.h"
 #include "eckit/runtime/Main.h"
@@ -779,6 +780,61 @@ CASE("test_eckit_option__multi_value_with_others") {
             EXPECT_EQUAL(v[0], "somelabel");
             EXPECT_EQUAL(v[1], "--a-label-value--");
         }
+    }
+}
+#endif
+
+#if TESTCASE == 29
+CASE("test_eckit_option__with_separator") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new Separator("Separator"));
+    options.push_back(new SimpleOption<std::string>("arg2", ""));
+
+    std::vector<const char*> input = {"exe", "--arg1", "value1", "--arg2=value2"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        EXPECT(args.has("arg1"));
+        std::string s;
+        args.get("arg1", s);
+        EXPECT_EQUAL(s, "value1");
+        auto arg1_actual = args.getString("arg1");
+        EXPECT_EQUAL(arg1_actual, "value1");
+    }
+
+    {
+        EXPECT(args.has("arg2"));
+        std::string s;
+        args.get("arg2", s);
+        EXPECT_EQUAL(s, "value2");
+        auto arg2_actual = args.getString("arg2");
+        EXPECT_EQUAL(arg2_actual, "value2");
+    }
+}
+#endif
+
+#if TESTCASE == 30
+CASE("test_eckit_option__with_separator_and_some_invalid_option_to_force_logging_usage") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", ""));
+    options.push_back(new Separator("Separator"));
+    options.push_back(new SimpleOption<std::string>("arg2", ""));
+
+    std::vector<const char*> input = {"exe", "--arg1", "value1", "--arg2=value2", "--invalid=!!!"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    try {
+        CmdArgs args(&usage, options, 0, 0, true);
+        EXPECT(false);
+    }
+    catch (const Exception& e) {
+        EXPECT(std::string(e.what()).find("UserError: An error occurred in argument parsing") != std::string::npos);
     }
 }
 #endif

@@ -14,14 +14,14 @@
 /// @date March 2016
 
 
+#include "eckit/option/CmdArgs.h"
+
 #include <iostream>
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/option/CmdArgs.h"
 #include "eckit/option/Option.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/utils/StringTools.h"
 
 namespace eckit::option {
 
@@ -87,7 +87,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
             // ... and tokenize [<name>(,<tail>)]
             std::vector<std::string> tokens = split_at(a, '=');
 
-            std::string name = tokens[0];
+            const std::string name = tokens[0];
             tokens.erase(tokens.begin());
 
             if (auto found = opts.find(name); found != opts.end()) {
@@ -108,7 +108,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
                     i += static_cast<int>(consumed - tokens.size());
                 }
                 catch (UserError&) {
-                    Log::info() << "Invalid value for option --" << tokens[0] << std::endl;
+                    Log::info() << "Invalid value for option --" << name << std::endl;
                     error = true;
                 }
             }
@@ -143,11 +143,9 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
         if (options_.size()) {
             Log::info() << std::endl;
             Log::info() << "Options are:" << std::endl;
-            Log::info() << "===========:" << std::endl
-                        << std::endl;
+            Log::info() << "===========:" << std::endl << std::endl;
             for (const Option* j : options_) {
-                Log::info() << *j << std::endl
-                            << std::endl;
+                Log::info() << *j << std::endl << std::endl;
             }
             Log::info() << std::endl;
         }

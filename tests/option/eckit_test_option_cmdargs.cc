@@ -43,6 +43,17 @@ namespace eckit::test {
 
 namespace {
 
+/// A self-cleaning container for Option
+struct options_t : public std::vector<Option*> {
+    using vector::push_back;
+
+    ~options_t() {
+        for (auto* option : *this) {
+            delete option;
+        }
+    }
+};
+
 /// A local function to satisfy the CmdArg details
 void usage(const std::string&) {
     // Empty
@@ -53,7 +64,7 @@ void init(int nargs, const char* global_args[]) {
     CmdArgs(&usage, 1, 0, true);
 }
 
-void init(int nargs, const char* global_args[], std::vector<Option*>& options, int args_count = 0) {
+void init(int nargs, const char* global_args[], options_t& options, int args_count = 0) {
     Main::initialise(nargs, const_cast<char**>(global_args));
     CmdArgs(&usage, options, args_count, 0, true);
 }
@@ -87,7 +98,7 @@ CASE("test_eckit_option_cmdargs_numbered_args_required") {
 
 #if TESTCASE >= 4 and TESTCASE <= 6
 CASE("test_eckit_option_cmdargs_numbered_args_required_with_options") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
 
     // Argument parser will succeed when passed exactly one unnamed argument.
@@ -116,7 +127,7 @@ CASE("test_eckit_option_cmdargs_numbered_args_required_with_options") {
 CASE("test_eckit_option_cmdargs_simple_argument_string") {
     // Set up he parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<long>("arg2", ""));
 
@@ -140,7 +151,7 @@ CASE("test_eckit_option_cmdargs_simple_argument_string") {
 CASE("test_eckit_option_cmdargs_simple_argument_integer") {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<long>("arg2", ""));
 
@@ -162,7 +173,7 @@ CASE("test_eckit_option_cmdargs_simple_argument_integer") {
 
 #if TESTCASE == 9
 CASE("test_eckit_option_cmdargs_simple_argument_missing") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<long>("arg2", ""));
 
@@ -177,7 +188,7 @@ CASE("test_eckit_option_cmdargs_simple_argument_missing") {
 CASE("test_eckit_option_cmdargs_integer_vector") {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new VectorOption<long>("arg", "", 3));
 
     const char* input[] = {"exe", "--arg=-12345/678/-123"};
@@ -203,7 +214,7 @@ CASE("test_eckit_option_cmdargs_integer_vector") {
 CASE("test_eckit_option_cmdargs_double_vector") {
     // Set up the parser to accept two named arguments, one integer and one string
     // n.b. Option* are deleted inside CmdArgs.
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new VectorOption<double>("arg", "", 4));
 
     const char* input[] = {"exe", "--arg=-123.45/67.8/90/-123.0"};
@@ -228,7 +239,7 @@ CASE("test_eckit_option_cmdargs_double_vector") {
 
 #if TESTCASE == 12
 CASE("test_eckit_option_cmdargs_vector_size_check") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new VectorOption<long>("arg", "", 4));
 
     const char* input[] = {"exe", "--arg=1/2/3"};
@@ -240,7 +251,7 @@ CASE("test_eckit_option_cmdargs_vector_size_check") {
 
 #if TESTCASE == 13
 CASE("test_eckit_option__string_with_default_value") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", "", "default-value"));
 
     std::vector<const char*> input = {"exe"};
@@ -259,7 +270,7 @@ CASE("test_eckit_option__string_with_default_value") {
 
 #if TESTCASE == 14
 CASE("test_eckit_option__string_no_default_value") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
 
     std::vector<const char*> input = {"exe"};
@@ -276,7 +287,7 @@ CASE("test_eckit_option__string_no_default_value") {
 
 #if TESTCASE == 15
 CASE("test_eckit_option__bool_plus_separated_string") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<bool>("arg2", ""));
 
@@ -308,7 +319,7 @@ CASE("test_eckit_option__bool_plus_separated_string") {
 
 #if TESTCASE == 16
 CASE("test_eckit_option__bool_plus_joint_string") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<bool>("arg2", ""));
 
@@ -340,7 +351,7 @@ CASE("test_eckit_option__bool_plus_joint_string") {
 
 #if TESTCASE == 17
 CASE("test_eckit_option__long_plus_joint_string") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<long>("arg2", ""));
 
@@ -373,7 +384,7 @@ CASE("test_eckit_option__long_plus_joint_string") {
 
 #if TESTCASE == 18
 CASE("test_eckit_option__long_plus_joint_and_separated_string") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<std::string>("arg2", ""));
     options.push_back(new SimpleOption<long>("arg3", ""));
@@ -428,7 +439,7 @@ CASE("test_eckit_option__long_plus_joint_and_separated_string") {
 
 #if TESTCASE == 19
 CASE("test_eckit_option__multi_separate_value_alone") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2));
 
     std::vector<const char*> input = {"exe", "--arg1", "value1", "value2"};
@@ -460,7 +471,7 @@ CASE("test_eckit_option__multi_separate_value_alone") {
 
 #if TESTCASE == 20
 CASE("test_eckit_option__multi_joint_value_alone") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2));
 
     std::vector<const char*> input = {"exe", "--arg1=value1", "value2"};
@@ -492,7 +503,7 @@ CASE("test_eckit_option__multi_joint_value_alone") {
 
 #if TESTCASE == 21
 CASE("test_eckit_option__multi_value_no_default_value") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2));
 
     std::vector<const char*> input = {"exe", "pos1", "pos2"};
@@ -509,7 +520,7 @@ CASE("test_eckit_option__multi_value_no_default_value") {
 
 #if TESTCASE == 22
 CASE("test_eckit_option__multi_value_with_default_value") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2, MultiValueOption::values_t{"value1", "value2"}));
 
     std::vector<const char*> input = {"exe", "pos1", "pos2"};
@@ -541,7 +552,7 @@ CASE("test_eckit_option__multi_value_with_default_value") {
 
 #if TESTCASE == 23
 CASE("test_eckit_option__multi_value_with_1_mandatory_0_optional") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 1, 0));
 
     std::vector<const char*> input = {"exe", "--arg1", "value1", "pos1", "pos2"};
@@ -571,7 +582,7 @@ CASE("test_eckit_option__multi_value_with_1_mandatory_0_optional") {
 
 #if TESTCASE == 24
 CASE("test_eckit_option__multi_value_with_2_mandatory_0_optional") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2, 0));
 
     std::vector<const char*> input = {"exe", "--arg1", "value1", "value2", "pos1", "pos2"};
@@ -603,7 +614,7 @@ CASE("test_eckit_option__multi_value_with_2_mandatory_0_optional") {
 
 #if TESTCASE == 25
 CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_2_provided") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2, 2));
     options.push_back(new SimpleOption<bool>("arg2", ""));
 
@@ -643,7 +654,7 @@ CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_2_provided") {
 
 #if TESTCASE == 26
 CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_1_provided_followed_by_another_option") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2, 2));
     options.push_back(new SimpleOption<bool>("arg2", ""));
 
@@ -680,7 +691,7 @@ CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_1_provided_foll
 
 #if TESTCASE == 27
 CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_1_provided_at_end") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new MultiValueOption("arg1", "", 2, 2));
 
     std::vector<const char*> input = {"exe", "--arg1", "value1", "value2", "optional1"};
@@ -714,7 +725,7 @@ CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_1_provided_at_e
 
 #if TESTCASE == 28
 CASE("test_eckit_option__multi_value_with_others") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new SimpleOption<std::string>("arg2", ""));
     options.push_back(new MultiValueOption("label", "", 2));
@@ -786,7 +797,7 @@ CASE("test_eckit_option__multi_value_with_others") {
 
 #if TESTCASE == 29
 CASE("test_eckit_option__with_separator") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new Separator("Separator"));
     options.push_back(new SimpleOption<std::string>("arg2", ""));
@@ -821,7 +832,7 @@ CASE("test_eckit_option__with_separator") {
 
 #if TESTCASE == 30
 CASE("test_eckit_option__with_separator_and_some_invalid_option_to_force_logging_usage") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", ""));
     options.push_back(new Separator("Separator"));
     options.push_back(new SimpleOption<std::string>("arg2", ""));
@@ -841,7 +852,7 @@ CASE("test_eckit_option__with_separator_and_some_invalid_option_to_force_logging
 
 #if TESTCASE == 31
 CASE("test_eckit_option__with_simple_string_value_containing_equals_sign") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", "description"));
 
     std::vector<const char*> input = {"exe", "--arg1=some=value=with=equals", "/some/path", "/another/path"};
@@ -863,7 +874,7 @@ CASE("test_eckit_option__with_simple_string_value_containing_equals_sign") {
 
 #if TESTCASE == 32
 CASE("test_eckit_option__can_handle_bool_option_without_value") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<bool>("arg1", "description"));
 
     std::vector<const char*> input = {
@@ -887,7 +898,7 @@ CASE("test_eckit_option__can_handle_bool_option_without_value") {
 
 #if TESTCASE == 33
 CASE("test_eckit_option__can_handle_bool_option_with_true_value") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<bool>("arg1", "description"));
 
     std::vector<const char*> input = {
@@ -911,7 +922,7 @@ CASE("test_eckit_option__can_handle_bool_option_with_true_value") {
 
 #if TESTCASE == 34
 CASE("test_eckit_option__can_handle_bool_option_with_false_value") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<bool>("arg1", "description"));
 
     std::vector<const char*> input = {
@@ -935,7 +946,7 @@ CASE("test_eckit_option__can_handle_bool_option_with_false_value") {
 
 #if TESTCASE == 35
 CASE("test_eckit_option__can_handle_simple_option_provided_twice") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new SimpleOption<std::string>("arg1", "description"));
 
     std::vector<const char*> input = {
@@ -959,7 +970,7 @@ CASE("test_eckit_option__can_handle_simple_option_provided_twice") {
 
 #if TESTCASE == 36
 CASE("test_eckit_option__can_handle_vector_option_of_double") {
-    std::vector<Option*> options;
+    options_t options;
     options.push_back(new VectorOption<double>("arg1", "description", 2));
 
     std::vector<const char*> input = {
@@ -977,6 +988,46 @@ CASE("test_eckit_option__can_handle_vector_option_of_double") {
     }
 }
 #endif
+
+#if TESTCASE == 37
+CASE("test_eckit_option_cmdargs_value_with_equals") {
+    options_t options;
+    for (auto c : std::string{"abcdefghijk"}) {
+        options.push_back(new SimpleOption<std::string>(std::string{c}, ""));
+    }
+
+    const char* input[] = {"exe",
+                           "--a=a",
+                           "--b==b",
+                           "--c=c=",
+                           "--d===d",
+                           "--e==e=",
+                           "--f=f==",
+                           "--g=g=g",
+                           "--h==h=h",
+                           "--i==ii=",
+                           "--j=j==j",
+                           "--k=k=k="};
+
+    Main::initialise(12, const_cast<char**>(input));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    EXPECT(args.getString("a") == "a");
+    EXPECT(args.getString("b") == "=b");
+    EXPECT(args.getString("c") == "c=");
+    EXPECT(args.getString("d") == "==d");
+    EXPECT(args.getString("e") == "=e=");
+    EXPECT(args.getString("f") == "f==");
+    EXPECT(args.getString("g") == "g=g");
+    EXPECT(args.getString("h") == "=h=h");
+    EXPECT(args.getString("i") == "=ii=");
+    EXPECT(args.getString("j") == "j==j");
+    EXPECT(args.getString("k") == "k=k=");
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::test
 

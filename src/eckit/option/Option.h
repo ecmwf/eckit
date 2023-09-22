@@ -48,7 +48,8 @@ public:  // methods
      *
      * Return: number of items consumed from the range `[begin, end)`.
      */
-    virtual size_t set(Configured& param, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const = 0;
+    virtual size_t set(Configured& param, size_t values, args_t::const_iterator begin,
+                       args_t::const_iterator end) const = 0;
 
     virtual void copy(const Configuration& from, Configured& to) const = 0;
 
@@ -82,13 +83,24 @@ public:
         Option(name, description), default_value_{std::make_optional(default_value_)} {};
     ~BaseOption() override = default;
 
+    [[deprecated("Specify the default value(s) when calling the ctor")]]
+    Option* defaultValue(const std::string& value) {
+        T translated   = translate(value);
+        default_value_ = std::make_optional(translated);
+        return this;
+    }
+
     void setDefault(Configured& parametrisation) const final {
         if (default_value_) {
             set_value(default_value_.value(), parametrisation);
         }
     }
 
+protected:
     virtual void set_value(const T& value, Configured& parametrisation) const = 0;
+
+    // Performs the conversion from 'string' value to actual 'type' value
+    virtual T translate(const std::string& value) const = 0;
 
 private:
     std::optional<T> default_value_;

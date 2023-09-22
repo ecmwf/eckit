@@ -71,14 +71,16 @@ SimpleOption<T>::SimpleOption(const std::string& name, const std::string& descri
     base_t(name, description, default_value) {}
 
 template <>
-inline size_t SimpleOption<bool>::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
-                                      [[maybe_unused]] args_t::const_iterator end) const {
+inline size_t SimpleOption<bool>::set(Configured& parametrisation, [[maybe_unused]] size_t values,
+                                      args_t::const_iterator begin, [[maybe_unused]] args_t::const_iterator end) const {
     // When handling bool, we might not have a value in the range [begin, end), thus the need for this specialization
     if (values > 0) {
-        bool value = Translator<std::string, bool>()(*begin);
+        // Take first value in range [begin, end)
+        bool value = translate(*begin);
         set_value(value, parametrisation);
         return 1;
     }
+    // Nothing to take from range [begin, end)
     set_value(true, parametrisation);
     return 0;
 }
@@ -89,25 +91,21 @@ size_t SimpleOption<T>::set(Configured& parametrisation, [[maybe_unused]] size_t
     if (begin == end) {
         throw UserError("No option value found for SimpleOption, where 1 was expected");
     }
-    set(*begin, parametrisation);
+    // Take first value in range [begin, end)
+    T value = translate(*begin);
+    set_value(value, parametrisation);
     return 1;
-}
-
-template <>
-inline void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& parametrisation) const {
-    parametrisation.set(name_, value);
-}
-
-
-template <class T>
-void SimpleOption<T>::set(const std::string& value, Configured& parametrisation) const {
-    T v = eckit::Translator<std::string, T>()(value);
-    set_value(v, parametrisation);
 }
 
 template <class T>
 void SimpleOption<T>::set_value(const T& value, Configured& parametrisation) const {
     parametrisation.set(this->name(), value);
+}
+
+template <class T>
+T SimpleOption<T>::translate(const std::string& value) const {
+    T v = eckit::Translator<std::string, T>()(value);
+    return v;
 }
 
 template <>

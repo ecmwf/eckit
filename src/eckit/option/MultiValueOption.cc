@@ -77,6 +77,10 @@ void MultiValueOption::set_value(const values_t& values, Configured& parametrisa
     parametrisation.set(this->name(), values);
 }
 
+MultiValueOption::values_t MultiValueOption::translate(const std::string& value) const {
+    NOTIMP;
+}
+
 void MultiValueOption::copy(const Configuration& from, Configured& to) const {
     Option::copy<values_t>(this->name(), from, to);
 }

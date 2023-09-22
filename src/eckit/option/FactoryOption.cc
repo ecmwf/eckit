@@ -38,18 +38,19 @@ size_t FactoryOption<T>::set(Configured& parametrisation, [[maybe_unused]] size_
     if (begin == end) {
         throw UserError("No option value found for FactoryOption, where 1 was expected");
     }
-    set(*begin, parametrisation);
-    return 1;
-}
-
-template <class T>
-void FactoryOption<T>::set(const std::string& value, Configured& parametrisation) const {
+    auto value = translate(*begin);
     set_value(value, parametrisation);
+    return 1;
 }
 
 template <class T>
 void FactoryOption<T>::set_value(const std::string& value, Configured& parametrisation) const {
     parametrisation.set(name_, value);
+}
+
+template <class T>
+std::string FactoryOption<T>::translate(const std::string& value) const {
+    return value;
 }
 
 template <class T>

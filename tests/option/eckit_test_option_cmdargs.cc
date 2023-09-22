@@ -389,8 +389,8 @@ CASE("test_eckit_option__long_plus_joint_and_separated_string") {
     options.push_back(new SimpleOption<std::string>("arg2", ""));
     options.push_back(new SimpleOption<long>("arg3", ""));
 
-    std::vector<const char*> input
-        = {"exe", "--arg1", "value1", "pos1", "pos2", "pos3", "--arg2=value2", "pos4", "--arg3=1234", "pos5"};
+    std::vector<const char*> input = {"exe",  "--arg1",        "value1", "pos1",        "pos2",
+                                      "pos3", "--arg2=value2", "pos4",   "--arg3=1234", "pos5"};
     Main::initialise(input.size(), const_cast<char**>(&input[0]));
 
     CmdArgs args(&usage, options, -1, 4, true);
@@ -618,8 +618,8 @@ CASE("test_eckit_option__multi_value_with_2_mandatory_2_optional_2_provided") {
     options.push_back(new MultiValueOption("arg1", "", 2, 2));
     options.push_back(new SimpleOption<bool>("arg2", ""));
 
-    std::vector<const char*> input
-        = {"exe", "--arg1", "value1", "value2", "optional1", "optional2", "--arg2", "pos1", "pos2"};
+    std::vector<const char*> input = {"exe",       "--arg1", "value1", "value2", "optional1",
+                                      "optional2", "--arg2", "pos1",   "pos2"};
     Main::initialise(input.size(), const_cast<char**>(&input[0]));
 
     CmdArgs args(&usage, options, -1, 2, true);
@@ -950,11 +950,7 @@ CASE("test_eckit_option__can_handle_simple_option_provided_twice") {
     options.push_back(new SimpleOption<std::string>("arg1", "description"));
 
     std::vector<const char*> input = {
-        "exe",
-        "--arg1=first.value",
-        "--arg1",
-        "second.value",
-        "--arg1=last.value",
+        "exe", "--arg1=first.value", "--arg1", "second.value", "--arg1=last.value",
     };
     Main::initialise(input.size(), const_cast<char**>(&input[0]));
 
@@ -973,10 +969,7 @@ CASE("test_eckit_option__can_handle_vector_option_of_double") {
     options_t options;
     options.push_back(new VectorOption<double>("arg1", "description", 2));
 
-    std::vector<const char*> input = {
-        "exe",
-        "--arg1=-32.0/10"
-    };
+    std::vector<const char*> input = {"exe", "--arg1=-32.0/10"};
     Main::initialise(input.size(), const_cast<char**>(&input[0]));
 
     CmdArgs args(&usage, options, 0, 0, true);
@@ -996,20 +989,10 @@ CASE("test_eckit_option_cmdargs_value_with_equals") {
         options.push_back(new SimpleOption<std::string>(std::string{c}, ""));
     }
 
-    const char* input[] = {"exe",
-                           "--a=a",
-                           "--b==b",
-                           "--c=c=",
-                           "--d===d",
-                           "--e==e=",
-                           "--f=f==",
-                           "--g=g=g",
-                           "--h==h=h",
-                           "--i==ii=",
-                           "--j=j==j",
-                           "--k=k=k="};
+    std::vector<const char*> input = {"exe",     "--a=a",   "--b==b",   "--c=c=",   "--d===d",  "--e==e=",
+                                      "--f=f==", "--g=g=g", "--h==h=h", "--i==ii=", "--j=j==j", "--k=k=k="};
 
-    Main::initialise(12, const_cast<char**>(input));
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
 
     CmdArgs args(&usage, options, 0, 0, true);
 
@@ -1024,6 +1007,55 @@ CASE("test_eckit_option_cmdargs_value_with_equals") {
     EXPECT(args.getString("i") == "=ii=");
     EXPECT(args.getString("j") == "j==j");
     EXPECT(args.getString("k") == "k=k=");
+}
+#endif
+
+#if TESTCASE == 38
+CASE("test_eckit_option__allows_to_set_default_value_for_options") {
+    options_t options;
+    {
+        auto o = (new SimpleOption<std::string>("arg1", ""))->defaultValue("default string");
+        options.push_back(o);
+    }
+    {
+        auto o = (new VectorOption<std::string>("arg2", "", 0))->defaultValue("q/w/e/r/t/y");
+        options.push_back(o);
+    }
+    {
+        auto o = (new VectorOption<long>("arg3", "", 0))->defaultValue("1/2/3/4");
+        options.push_back(o);
+    }
+
+    std::vector<const char*> input = {"exe"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    {
+        EXPECT(args.has("arg1"));
+        auto v = args.getString("arg1");
+        EXPECT_EQUAL(v, "default string");
+    }
+    {
+        EXPECT(args.has("arg2"));
+        auto v = args.getStringVector("arg2");
+        EXPECT_EQUAL(v.size(), 6);
+        EXPECT_EQUAL(v[0], "q");
+        EXPECT_EQUAL(v[1], "w");
+        EXPECT_EQUAL(v[2], "e");
+        EXPECT_EQUAL(v[3], "r");
+        EXPECT_EQUAL(v[4], "t");
+        EXPECT_EQUAL(v[5], "y");
+    }
+    {
+        EXPECT(args.has("arg3"));
+        auto v = args.getLongVector("arg3");
+        EXPECT_EQUAL(v.size(), 4);
+        EXPECT_EQUAL(v[0], 1L);
+        EXPECT_EQUAL(v[1], 2L);
+        EXPECT_EQUAL(v[2], 3L);
+        EXPECT_EQUAL(v[3], 4L);
+    }
 }
 #endif
 

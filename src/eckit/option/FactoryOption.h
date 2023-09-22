@@ -36,15 +36,15 @@ public:
 
     ~FactoryOption() override = default;
 
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
+
 protected:
     void print(std::ostream&) const override;
 
 private:
-    using Option::set;
-
-    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
-    void set(const std::string& value, Configured&) const;
     void set_value(const std::string& value, Configured&) const override;
+
+    [[nodiscard]] std::string translate(const std::string& value) const override;
 
     void copy(const Configuration& from, Configured& to) const override;
 };

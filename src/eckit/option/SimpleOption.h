@@ -33,14 +33,16 @@ public:
 
     ~SimpleOption() override = default;
 
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
+
 protected:
     void print(std::ostream&) const override;
 
 private:
-    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
 
-    void set(const std::string& value, Configured&) const;
     void set_value(const T& value, Configured&) const override;
+
+    [[nodiscard]] T translate(const std::string& value) const override;
 
     void copy(const Configuration& from, Configured& to) const override;
 };

@@ -47,11 +47,10 @@ public:
     // None
 
     // -- Methods
-    void set_value(const std::vector<T>& value, Configured&) const override;
-
+    // None
 
     // -- Overridden methods
-    // None
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
 
     // -- Class members
     // None
@@ -90,9 +89,9 @@ private:
     // None
 
     // -- Overridden methods
+    void set_value(const std::vector<T>& value, Configured&) const override;
 
-    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
-    void set(const std::string& value, Configured&) const;
+    [[nodiscard]] std::vector<T> translate(const std::string& value) const override;
 
     void copy(const Configuration& from, Configured& to) const override;
 

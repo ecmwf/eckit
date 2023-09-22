@@ -46,21 +46,28 @@ size_t VectorOption<T>::set(Configured& parametrisation, size_t values, args_t::
     if (begin == end) {
         throw UserError("No option value found for VectorOption, where 1 was expected");
     }
-    set(*begin, parametrisation);
+    // Take first value in range [begin, end)
+    auto value = translate(*begin);
+    set_value(value, parametrisation);
     return 1;
 }
 
 template <class T>
-void VectorOption<T>::set(const std::string& value, Configured& parametrisation) const {
+void VectorOption<T>::set_value(const std::vector<T>& value, Configured& parametrisation) const {
+    parametrisation.set(this->name(), value);
+}
+
+template <class T>
+std::vector<T> VectorOption<T>::translate(const std::string& value) const {
     eckit::Translator<std::string, T> t;
 
     eckit::Tokenizer parse(separator_);
-    std::vector<std::string> v;
-    parse(value, v);
+    std::vector<std::string> tokens;
+    parse(value, tokens);
 
     std::vector<T> values;
-    for (size_t i = 0; i < v.size(); i++) {
-        values.push_back(t(v[i]));
+    for (size_t i = 0; i < tokens.size(); i++) {
+        values.push_back(t(tokens[i]));
     }
 
     if (size_) {
@@ -68,12 +75,7 @@ void VectorOption<T>::set(const std::string& value, Configured& parametrisation)
             throw UserError(std::string("Size of supplied vector \"") + this->name() + "\" incorrect", Here());
     }
 
-    set_value(values, parametrisation);
-}
-
-template <class T>
-void VectorOption<T>::set_value(const std::vector<T>& value, Configured& parametrisation) const {
-    parametrisation.set(this->name(), value);
+    return values;
 }
 
 template <class T>

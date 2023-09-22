@@ -43,9 +43,12 @@ public:  // methods
     /**
      * Set the value of the option into `parameter`, taking as many values as necessary from the range `[begin, end)`.
      *
+     * - `values` indicates the number of items in `[begin, end)` that were provided as an option value.
+     *    This parameter is expected to be either 0 (for --flag options) or 1 (for traditional --option=<value>)
+     *
      * Return: number of items consumed from the range `[begin, end)`.
      */
-    virtual size_t set(Configured& parameter, args_t::const_iterator begin, args_t::const_iterator end) const = 0;
+    virtual size_t set(Configured& param, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const = 0;
 
     virtual void copy(const Configuration& from, Configured& to) const = 0;
 

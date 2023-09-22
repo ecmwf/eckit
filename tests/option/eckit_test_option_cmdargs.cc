@@ -839,6 +839,145 @@ CASE("test_eckit_option__with_separator_and_some_invalid_option_to_force_logging
 }
 #endif
 
+#if TESTCASE == 31
+CASE("test_eckit_option__with_simple_string_value_containing_equals_sign") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", "description"));
+
+    std::vector<const char*> input = {"exe", "--arg1=some=value=with=equals", "/some/path", "/another/path"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, -1, 2, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 2);
+
+    {
+        EXPECT(args.has("arg1"));
+        std::string s;
+        args.get("arg1", s);
+        EXPECT_EQUAL(s, "some=value=with=equals");
+    }
+}
+#endif
+
+#if TESTCASE == 32
+CASE("test_eckit_option__can_handle_bool_option_without_value") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<bool>("arg1", "description"));
+
+    std::vector<const char*> input = {
+        "exe",
+        "--arg1",
+    };
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        EXPECT(args.has("arg1"));
+        bool v = args.getBool("arg1");
+        EXPECT_EQUAL(v, true);
+    }
+}
+#endif
+
+#if TESTCASE == 33
+CASE("test_eckit_option__can_handle_bool_option_with_true_value") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<bool>("arg1", "description"));
+
+    std::vector<const char*> input = {
+        "exe",
+        "--arg1=yes",
+    };
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        EXPECT(args.has("arg1"));
+        bool v = args.getBool("arg1");
+        EXPECT_EQUAL(v, true);
+    }
+}
+#endif
+
+#if TESTCASE == 34
+CASE("test_eckit_option__can_handle_bool_option_with_false_value") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<bool>("arg1", "description"));
+
+    std::vector<const char*> input = {
+        "exe",
+        "--arg1=0",
+    };
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    auto args_count = args.count();
+    EXPECT_EQUAL(args_count, 0);
+
+    {
+        EXPECT(args.has("arg1"));
+        bool v = args.getBool("arg1");
+        EXPECT_EQUAL(v, false);
+    }
+}
+#endif
+
+#if TESTCASE == 35
+CASE("test_eckit_option__can_handle_simple_option_provided_twice") {
+    std::vector<Option*> options;
+    options.push_back(new SimpleOption<std::string>("arg1", "description"));
+
+    std::vector<const char*> input = {
+        "exe",
+        "--arg1=first.value",
+        "--arg1",
+        "second.value",
+        "--arg1=last.value",
+    };
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    {
+        EXPECT(args.has("arg1"));
+        std::string s = args.getString("arg1");
+        EXPECT_EQUAL(s, "last.value");
+    }
+}
+#endif
+
+#if TESTCASE == 36
+CASE("test_eckit_option__can_handle_vector_option_of_double") {
+    std::vector<Option*> options;
+    options.push_back(new VectorOption<double>("arg1", "description", 2));
+
+    std::vector<const char*> input = {
+        "exe",
+        "--arg1=-32.0/10"
+    };
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+
+    {
+        EXPECT(args.has("arg1"));
+        auto s = args.getDoubleVector("arg1");
+        EXPECT_EQUAL(s.size(), 2);
+    }
+}
+#endif
+
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {

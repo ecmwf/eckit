@@ -71,15 +71,20 @@ SimpleOption<T>::SimpleOption(const std::string& name, const std::string& descri
     base_t(name, description, default_value) {}
 
 template <>
-inline size_t SimpleOption<bool>::set(Configured& parametrisation, args_t::const_iterator begin [[maybe_unused]],
-                                      args_t::const_iterator end [[maybe_unused]]) const {
-    // When handling bool, there is no actual value in the range [begin, end), thus the need for this specialization
+inline size_t SimpleOption<bool>::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
+                                      [[maybe_unused]] args_t::const_iterator end) const {
+    // When handling bool, we might not have a value in the range [begin, end), thus the need for this specialization
+    if (values > 0) {
+        bool value = Translator<std::string, bool>()(*begin);
+        set_value(value, parametrisation);
+        return 1;
+    }
     set_value(true, parametrisation);
     return 0;
 }
 
 template <class T>
-size_t SimpleOption<T>::set(Configured& parametrisation, args_t::const_iterator begin,
+size_t SimpleOption<T>::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
                             args_t::const_iterator end) const {
     if (begin == end) {
         throw UserError("No option value found for SimpleOption, where 1 was expected");

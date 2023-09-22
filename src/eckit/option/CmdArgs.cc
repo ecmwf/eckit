@@ -22,7 +22,6 @@
 #include "eckit/option/Option.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/utils/StringTools.h"
-#include "eckit/utils/Tokenizer.h"
 
 namespace eckit::option {
 
@@ -43,6 +42,17 @@ CmdArgs::CmdArgs(std::function<void(const std::string&)> usage, std::vector<Opti
     std::swap(options_, options);  // Take ownership so it can be destroyed
     init(usage, args_count, minimum_args, throw_on_error);
 }
+
+namespace {
+
+std::vector<std::string> split_at(const std::string& s, char separator) {
+    if (auto found = s.find_first_of(separator); found != std::string::npos) {
+        return {s.substr(0, found), s.substr(found + 1)};
+    }
+    return {s};
+}
+
+}  // namespace
 
 void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count, int minimum_args,
                    bool throw_on_error) {
@@ -66,15 +76,16 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
     }
 
     const static std::string prefix = "--";
-    Tokenizer parse("=");
     // Process all options/values in argv, letting each Option collect the necessary entries
     for (int i = 1; i < argc; ++i) {
         std::string a = ctx.argv(i);
-        if (a.substr(0, prefix.size()) == prefix) { // An Option 'a' is found (starts with '--')!
+        if (a.substr(0, prefix.size()) == prefix) {  // An Option 'a' is found (starts with '--')!
 
-            // The Option might be formatted as --<name>=<value>, so we tokenize and take the <name>
-            std::vector<std::string> tokens;
-            parse(a.substr(2), tokens);
+            // The Option might be formatted as --<name>=<value>
+            // ... so we remove the '--' prefix
+            a = a.substr(2);
+            // ... and tokenize [<name>(,<tail>)]
+            std::vector<std::string> tokens = split_at(a, '=');
 
             std::string name = tokens[0];
             tokens.erase(tokens.begin());
@@ -92,7 +103,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
                         remaining.push_back(ctx.argv(j));
                     }
                     // ... allow the Option to set itself based on all remaining argv tokens
-                    size_t consumed = option->set(*this, std::begin(remaining), std::end(remaining));
+                    size_t consumed = option->set(*this, tokens.size(), std::begin(remaining), std::end(remaining));
                     // ... and, disregard the number of consumed tokens.
                     i += static_cast<int>(consumed - tokens.size());
                 }

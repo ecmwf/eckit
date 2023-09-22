@@ -45,7 +45,7 @@ MultiValueOption::MultiValueOption(const std::string& name, const std::string& d
     ASSERT_MSG(n_mandatory_values >= 1, "At least 1 mandatory value is expected.");
 }
 
-size_t MultiValueOption::set(Configured& parametrisation, args_t::const_iterator begin,
+size_t MultiValueOption::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
                              args_t::const_iterator end) const {
     if (std::distance(begin, end) < n_mandatory_values_) {
         throw UserError("Not enough option values found for MultiValueOption, where at least "
@@ -53,8 +53,8 @@ size_t MultiValueOption::set(Configured& parametrisation, args_t::const_iterator
     }
 
     // Collect n_mandatory_values_ mandatory values from the range [begin, end)
-    values_t values;
-    std::copy_n(begin, n_mandatory_values_, std::back_inserter(values));
+    values_t collected;
+    std::copy_n(begin, n_mandatory_values_, std::back_inserter(collected));
     begin = begin + n_mandatory_values_;
 
     // Collect up to n_optional_values from the range [(updated-)begin, end)
@@ -64,13 +64,13 @@ size_t MultiValueOption::set(Configured& parametrisation, args_t::const_iterator
             break;
         }
 
-        values.push_back(*begin);
+        collected.push_back(*begin);
         ++begin;
     }
 
     // Store the collected values
-    set_value(values, parametrisation);
-    return values.size();
+    set_value(collected, parametrisation);
+    return collected.size();
 }
 
 void MultiValueOption::set_value(const values_t& values, Configured& parametrisation) const {

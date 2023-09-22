@@ -91,7 +91,7 @@ private:
 
     // -- Overridden methods
 
-    size_t set(Configured&, args_t::const_iterator begin, args_t::const_iterator end) const override;
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
     void set(const std::string& value, Configured&) const;
 
     void copy(const Configuration& from, Configured& to) const override;

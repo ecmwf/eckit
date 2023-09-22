@@ -26,15 +26,15 @@ namespace option {
 
 
 template <class T>
-FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description) :
-    base_t(name, description) {}
+FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description) : base_t(name, description) {}
 
 template <class T>
 FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description, std::string default_value) :
     base_t(name, description, std::move(default_value)) {}
 
 template <class T>
-size_t FactoryOption<T>::set(Configured& parametrisation, args_t::const_iterator begin, args_t::const_iterator end) const {
+size_t FactoryOption<T>::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
+                             args_t::const_iterator end) const {
     if (begin == end) {
         throw UserError("No option value found for FactoryOption, where 1 was expected");
     }
@@ -61,8 +61,7 @@ template <class T>
 void FactoryOption<T>::print(std::ostream& out) const {
     out << "   --" << name_ << "=name"
         << " (" << description_ << ")";
-    out << std::endl
-        << "     Values are: ";
+    out << std::endl << "     Values are: ";
     T::list(out);
 }
 

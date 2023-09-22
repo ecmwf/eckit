@@ -42,7 +42,7 @@ public:
     // None
 
     // -- Methods
-    size_t set(Configured& parameter, args_t::const_iterator begin, args_t::const_iterator end) const override;
+    size_t set(Configured& parameter, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
 
     void setDefault(Configured&) const override;
 

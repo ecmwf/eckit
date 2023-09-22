@@ -31,7 +31,7 @@ public:
     void print(std::ostream&) const override;
 
 private:
-    size_t set(Configured&, args_t::const_iterator begin, args_t::const_iterator end) const override;
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
 
     void set_value(const values_t& values, Configured&) const override;
 

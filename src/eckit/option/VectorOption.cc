@@ -41,7 +41,8 @@ VectorOption<T>::VectorOption(const std::string& name, const std::string& descri
 
 
 template <class T>
-size_t VectorOption<T>::set(Configured& parametrisation, args_t::const_iterator begin, args_t::const_iterator end) const {
+size_t VectorOption<T>::set(Configured& parametrisation, size_t values, args_t::const_iterator begin,
+                            args_t::const_iterator end) const {
     if (begin == end) {
         throw UserError("No option value found for VectorOption, where 1 was expected");
     }
@@ -95,7 +96,7 @@ void VectorOption<T>::print(std::ostream& out) const {
 
 template <class T>
 void VectorOption<T>::copy(const Configuration& from, Configured& to) const {
-    Option::copy<T>(this->name(), from, to);
+    Option::copy<std::vector<T>>(this->name(), from, to);
 }
 
 

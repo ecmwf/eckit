@@ -42,7 +42,7 @@ protected:
 private:
     using Option::set;
 
-    size_t set(Configured&, args_t::const_iterator begin, args_t::const_iterator end) const override;
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
     void set(const std::string& value, Configured&) const;
     void set_value(const std::string& value, Configured&) const override;
 

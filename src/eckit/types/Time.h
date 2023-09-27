@@ -32,8 +32,8 @@ typedef double Second;
 class Time {
 
 public:  // methods
-    Time(long, long, long);
-    Time(long seconds = 0);
+    Time(long, long, long, bool extended = false);
+    Time(long seconds = 0, bool extended = false);
     Time(const std::string&, bool extended = false);
 
 #include "eckit/types/Time.b"

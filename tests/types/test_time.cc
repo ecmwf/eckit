@@ -30,6 +30,20 @@ CASE("Time only digits (hhmmss)") {
     EXPECT(Time(0,0,0) == Time("0000"));
     EXPECT(Time(0,0,0) == Time("00000"));
     EXPECT(Time(0,0,0) == Time("000000"));
+    EXPECT(Time(0,0,0) == Time(0));
+    EXPECT(Time(0,0,1) == Time(1));
+    EXPECT(Time(0,1,0) == Time(60));
+    EXPECT(Time(0,1,1) == Time(61));
+    EXPECT(Time(1,0,0) == Time(3600));
+    EXPECT(Time(1,0,1) == Time(3601));
+    EXPECT(Time(1,1,0) == Time(3660));
+    EXPECT(Time(1,1,1) == Time(3661));
+    EXPECT(Time(2,3,4) == Time(3600*2 + 60*3 + 4));
+    EXPECT_THROWS(Time(24*3600));
+    EXPECT_THROWS(Time(24,0,0));
+    EXPECT_THROWS(Time("24"));
+    EXPECT(Time(24,0,0, true) == Time(24*3600, true));
+    EXPECT(Time(24,0,0, true) == Time("24", true));
 
     EXPECT(Time(2,0,0) == Time("2"));
     EXPECT(Time(2,0,0) == Time("02"));
@@ -37,6 +51,17 @@ CASE("Time only digits (hhmmss)") {
     EXPECT(Time(2,0,0) == Time("0200"));
     EXPECT(Time(2,0,0) == Time("20000"));
     EXPECT(Time(2,0,0) == Time("020000"));
+
+    EXPECT(Time(20,0,0) == Time("20"));
+    EXPECT(Time(20,0,0) == Time("2000"));
+    EXPECT(Time(20,0,0) == Time("200000"));
+    EXPECT(Time(20,0,0) == Time("20", true));
+    EXPECT_THROWS(Time(30,0,0));
+    EXPECT_THROWS(Time("30"));
+    EXPECT_THROWS(Time("3000"));
+    EXPECT_THROWS(Time("300000"));
+    EXPECT(Time(30,0,0, true) == Time("30", true));
+
 
     EXPECT(Time(0,3,0) == Time("003"));
     EXPECT(Time(0,3,0) == Time("0003"));
@@ -108,24 +133,22 @@ CASE("Time format (hh:mm:ss)") {
 CASE("Time with unit (__h__m__s)") {
     EXPECT(Time(2,0,0) == Time("2h"));
     EXPECT(Time(2,0,0) == Time("0002H"));
-    EXPECT_THROWS(Time("120m"));
-    EXPECT(Time(2,0,0) == Time("120m", true));
-    EXPECT_THROWS(Time("7200s"));
-    EXPECT(Time(2,0,0) == Time("7200s", true));
+    EXPECT(Time(2,0,0) == Time("120m"));
+    EXPECT(Time(2,0,0) == Time("7200s"));
 
     EXPECT(Time(0,3,0) == Time("3M"));
-    EXPECT(Time(0,3,0) == Time("180s", true));
+    EXPECT(Time(0,3,0) == Time("180s"));
 
     EXPECT(Time(1,23,45) == Time("1h23m45s"));
     EXPECT(Time(1,23,45) == Time("01h23m45s"));
-    EXPECT(Time(1,23,45) == Time("5025s", true));
-    EXPECT(Time(1,23,45) == Time("83m45s", true));
+    EXPECT(Time(1,23,45) == Time("5025s"));
+    EXPECT(Time(1,23,45) == Time("83m45s"));
 
     EXPECT_THROWS(Time("25h"));
     EXPECT_NO_THROW(Time("25h", true));
 
     EXPECT(Time("0d3h10m20s") == Time("3h10m20s"));
-    EXPECT(Time("0d3h10m20s") == Time("3h620s", true));
+    EXPECT(Time("0d3h10m20s") == Time("3h620s"));
     EXPECT(Time("2D3h", true) == Time("51h", true));
 }
 

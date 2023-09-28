@@ -9,6 +9,7 @@
  */
 
 #include <regex>
+#include <cmath>
 
 #include "eckit/eckit.h"
 

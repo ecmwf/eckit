@@ -19,8 +19,7 @@ namespace eckit::geo::grid::reduced {
 
 
 ReducedLatLon::ReducedLatLon(const Configuration& config) :
-    Reduced(config) {
-}
+    Reduced(config) {}
 
 
 Grid::iterator ReducedLatLon::cbegin() const {

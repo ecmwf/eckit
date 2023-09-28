@@ -49,7 +49,9 @@ public:
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) :
-            unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+            unique_ptr(it) {
+            ASSERT(unique_ptr::operator bool());
+        }
         using diff_t = unique_ptr::element_type::diff_t;
 
         Iterator(const Iterator&) = delete;

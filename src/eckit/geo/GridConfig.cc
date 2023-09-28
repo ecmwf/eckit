@@ -44,12 +44,14 @@ void set_config_value(MappedConfiguration& config, const std::string& key, const
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
 
-    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })   ? __from_value<std::vector<double>>(value)
-               : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); }) ? __from_value<std::vector<number_type>>(value)
-               : value.isList()                                                                ? __from_value<std::vector<std::string>>(value)
-               : value.isDouble()                                                              ? __from_value<double>(value)
-               : value.isNumber()                                                              ? __from_value<number_type>(value)
-                                                                                               : __from_value<std::string>(value);
+    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
+                   ? __from_value<std::vector<double>>(value)
+               : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); })
+                   ? __from_value<std::vector<number_type>>(value)
+               : value.isList()   ? __from_value<std::vector<std::string>>(value)
+               : value.isDouble() ? __from_value<double>(value)
+               : value.isNumber() ? __from_value<number_type>(value)
+                                  : __from_value<std::string>(value);
 
     std::visit([&](const auto& val) { config.set(key, val); }, val);
 }
@@ -87,7 +89,9 @@ GridConfig::GridConfig(const PathName& path) {
     struct ConfigurationFromName final : GridConfigurationName::configurator_t {
         explicit ConfigurationFromName(MappedConfiguration* config) :
             config_(config) {}
-        Configuration* config(GridConfigurationName::configurator_t::arg1_t) const override { return new MappedConfiguration(*config_); }
+        Configuration* config(GridConfigurationName::configurator_t::arg1_t) const override {
+            return new MappedConfiguration(*config_);
+        }
         std::unique_ptr<MappedConfiguration> config_;
     };
 
@@ -100,7 +104,9 @@ GridConfig::GridConfig(const PathName& path) {
             if (key == "grid_uids") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    GridConfigurationUID::instance().regist(m.begin()->first.as<std::string>(), new ConfigurationFromUID(config_from_value_map(m.begin()->second)));
+                    GridConfigurationUID::instance().regist(
+                        m.begin()->first.as<std::string>(),
+                        new ConfigurationFromUID(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }
@@ -108,7 +114,9 @@ GridConfig::GridConfig(const PathName& path) {
             if (key == "grid_names") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    GridConfigurationName::instance().regist(m.begin()->first.as<std::string>(), new ConfigurationFromName(config_from_value_map(m.begin()->second)));
+                    GridConfigurationName::instance().regist(
+                        m.begin()->first.as<std::string>(),
+                        new ConfigurationFromName(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }

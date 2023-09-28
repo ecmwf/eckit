@@ -249,9 +249,7 @@ public:
 
     // -- Destructor
 
-    ~ConcreteConfigurationGeneratorT0() override {
-        Configurator<ConfigurationGeneratorT0>::instance().unregist(key_);
-    }
+    ~ConcreteConfigurationGeneratorT0() override { Configurator<ConfigurationGeneratorT0>::instance().unregist(key_); }
 
     // -- Operators
 
@@ -332,7 +330,10 @@ public:
 
     // -- Overridden methods
 
-    Configuration* config(typename ConfigurationGeneratorT1<ARG1>::arg1_t p1, typename ConfigurationGeneratorT1<ARG1>::arg2_t p2) const override { return T::config(p1, p2); }
+    Configuration* config(typename ConfigurationGeneratorT1<ARG1>::arg1_t p1,
+                          typename ConfigurationGeneratorT1<ARG1>::arg2_t p2) const override {
+        return T::config(p1, p2);
+    }
 
 private:
     // -- Members

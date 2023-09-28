@@ -23,8 +23,7 @@ class PointLonLat;
 
 struct Sphere {
     /// Great-circle central angle between two points in radians
-    static double centralAngle(const PointLonLat&,
-                               const PointLonLat&);
+    static double centralAngle(const PointLonLat&, const PointLonLat&);
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
     static double centralAngle(double radius, const Point3&, const Point3&);
@@ -45,7 +44,8 @@ struct Sphere {
     static double greatCircleLatitudeGivenLongitude(const PointLonLat&, const PointLonLat&, double lon);
 
     // Great-circle intermediate longitude(s) provided two circle points and intermediate latitude in degrees
-    static void greatCircleLongitudeGivenLatitude(const PointLonLat&, const PointLonLat&, double lat, double& lon1, double& lon2);
+    static void greatCircleLongitudeGivenLatitude(
+        const PointLonLat&, const PointLonLat&, double lat, double& lon1, double& lon2);
 
     // Convert spherical to Cartesian coordinates
     static Point3 convertSphericalToCartesian(double radius,

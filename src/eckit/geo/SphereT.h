@@ -33,10 +33,7 @@ struct SphereT {
     inline static double radius() { return DATUM::radius(); }
 
     /// Great-circle central angle between two points in radians
-    inline static double centralAngle(const PointLonLat& A,
-                                      const PointLonLat& B) {
-        return Sphere::centralAngle(A, B);
-    }
+    inline static double centralAngle(const PointLonLat& A, const PointLonLat& B) { return Sphere::centralAngle(A, B); }
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
     inline static double centralAngle(const Point3& A, const Point3& B) {
@@ -65,8 +62,8 @@ struct SphereT {
     }
 
     // Great-circle intermediate longitude(s) provided two circle points and intermediate latitude in degrees
-    inline static void greatCircleLongitudeGivenLatitude(const PointLonLat& A, const PointLonLat& B,
-                                                         double lat, double& lon1, double& lon2) {
+    inline static void greatCircleLongitudeGivenLatitude(
+        const PointLonLat& A, const PointLonLat& B, double lat, double& lon1, double& lon2) {
         return Sphere::greatCircleLongitudeGivenLatitude(A, B, lat, lon1, lon2);
     }
 

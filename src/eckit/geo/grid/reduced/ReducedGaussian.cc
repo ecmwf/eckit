@@ -24,16 +24,11 @@ namespace eckit::geo::grid::reduced {
 
 
 ReducedGaussian::ReducedGaussian(const Configuration& config) :
-    ReducedGaussian(config.getUnsigned("N"), config.getLongVector("pl"),
-                    area::BoundingBox(config)) {}
+    ReducedGaussian(config.getUnsigned("N"), config.getLongVector("pl"), area::BoundingBox(config)) {}
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox),
-    pl_(pl),
-    j_(0),
-    Nj_(N * 2),
-    y_(new range::Gaussian(N, bbox.north(), bbox.south())) {
+    Reduced(bbox), pl_(pl), j_(0), Nj_(N * 2), y_(new range::Gaussian(N, bbox.north(), bbox.south())) {
     ASSERT(y_);
 }
 
@@ -67,8 +62,7 @@ const std::vector<double>& ReducedGaussian::latitudes() const {
 std::vector<double> ReducedGaussian::longitudes(size_t j) const {
     auto Ni = ni(j);
     if (!x_ || x_->size() != Ni) {
-        const_cast<std::unique_ptr<Range>&>(x_).reset(
-            new range::Regular(Ni, bbox().west(), bbox().east()));
+        const_cast<std::unique_ptr<Range>&>(x_).reset(new range::Regular(Ni, bbox().west(), bbox().east()));
     }
 
     return x_->values();
@@ -78,9 +72,7 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 struct ReducedGaussianClassical {
     static Configuration* config(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
-        return new MappedConfiguration({{"type", "reduced_gg"},
-                                        {"N", N},
-                                        {"pl", util::reduced_classical_pl(N)}});
+        return new MappedConfiguration({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
 };
 
@@ -88,9 +80,7 @@ struct ReducedGaussianClassical {
 struct ReducedGaussianOctahedral {
     static Configuration* config(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
-        return new MappedConfiguration({{"type", "reduced_gg"},
-                                        {"N", N},
-                                        {"pl", util::reduced_octahedral_pl(N)}});
+        return new MappedConfiguration({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
     }
 };
 

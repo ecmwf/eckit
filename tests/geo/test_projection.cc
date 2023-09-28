@@ -51,8 +51,10 @@ int main(int argc, char* argv[]) {
 
     {
         Projection s1(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"R", 1.}})));
-        Projection s2(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 1.}})));
-        Projection s3(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
+        Projection s2(
+            ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 1.}})));
+        Projection s3(
+            ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
 
         EXPECT(points_equal(p, s1->inv(s1->fwd(p))));
         EXPECT(points_equal(p, s2->inv(s2->fwd(p))));
@@ -118,7 +120,9 @@ int main(int argc, char* argv[]) {
         for (auto a : delta) {
             for (auto b : delta) {
                 for (auto c : delta) {
-                    projection::Rotation rot(0. + static_cast<double>(b), -90. + static_cast<double>(a), static_cast<double>(c));
+                    projection::Rotation rot(0. + static_cast<double>(b),
+                                             -90. + static_cast<double>(a),
+                                             static_cast<double>(c));
                     EXPECT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 
                     EXPECT(points_equal(p, rot.inv(rot.fwd(p))));
@@ -287,15 +291,14 @@ int main(int argc, char* argv[]) {
             {a, "EPSG:4326"},
             {a, "EPSG:4979"},
             {Point3{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
-            {Point3{3574529.7050235, 759789.74368715, 5219005.2599833},
-             "+proj=cart +R=6371229."},
-            {Point3{3574399.5431832, 759762.07693392, 5218815.216709},
-             "+proj=cart +ellps=sphere"},
+            {Point3{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
+            {Point3{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
             {a, "+proj=latlon +ellps=sphere"},
         };
 
         for (const auto& test : tests) {
-            Projection projection(ProjectionFactory::instance().get("proj").create(MappedConfiguration{{{"source", "EPSG:4326"}, {"target", test.target}}}));
+            Projection projection(ProjectionFactory::instance().get("proj").create(
+                MappedConfiguration{{{"source", "EPSG:4326"}, {"target", test.target}}}));
 
 #if 0
         std::cout << "ellipsoid: '" << PROJ::ellipsoid(projection.target())
@@ -310,7 +313,8 @@ int main(int argc, char* argv[]) {
             EXPECT(points_equal(b, test.b));
             EXPECT(points_equal(c, a));
 
-            Projection reverse(ProjectionFactory::instance().get("proj").create(MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}})));
+            Projection reverse(ProjectionFactory::instance().get("proj").create(
+                MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}})));
 
             auto d = reverse->fwd(test.b);
             auto e = reverse->inv(d);

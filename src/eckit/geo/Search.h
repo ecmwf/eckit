@@ -44,9 +44,7 @@ struct SearchLonLat : Search3 {
 
     using Search3::Search3;
 
-    void insert(const SearchLonLat::Value& value) {
-        Search3::insert({to_cartesian(value.point()), value.payload()});
-    }
+    void insert(const SearchLonLat::Value& value) { Search3::insert({to_cartesian(value.point()), value.payload()}); }
 
     template <typename Container>
     void build(const Container& c) {
@@ -78,9 +76,7 @@ struct SearchLonLat : Search3 {
     }
 
 private:
-    static Search3::Point to_cartesian(const Point& p) {
-        return UnitSphere::convertSphericalToCartesian(p);
-    }
+    static Search3::Point to_cartesian(const Point& p) { return UnitSphere::convertSphericalToCartesian(p); }
 };
 
 

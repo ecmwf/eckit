@@ -19,21 +19,11 @@ namespace eckit::geo::range {
 
 
 Regular::Regular(size_t n, double a, double b, double precision) :
-    Range(n),
-    a_(a),
-    b_(b),
-    precision_(precision),
-    endpoint_(false) {
-}
+    Range(n), a_(a), b_(b), precision_(precision), endpoint_(false) {}
 
 
 Regular::Regular(size_t n, double a, double b, bool endpoint, double precision) :
-    Range(n),
-    a_(a),
-    b_(b),
-    precision_(precision),
-    endpoint_(endpoint) {
-}
+    Range(n), a_(a), b_(b), precision_(precision), endpoint_(endpoint) {}
 
 
 const std::vector<double>& Regular::values() const {

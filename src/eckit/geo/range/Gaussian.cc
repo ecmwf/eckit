@@ -23,11 +23,7 @@ namespace eckit::geo::range {
 
 
 Gaussian::Gaussian(size_t N, double a, double b, double precision) :
-    Range(2 * N),
-    N_(N),
-    a_(a),
-    b_(b),
-    eps_(precision) {
+    Range(2 * N), N_(N), a_(a), b_(b), eps_(precision) {
     ASSERT(N > 0);
     ASSERT(eps_ >= 0.);
 

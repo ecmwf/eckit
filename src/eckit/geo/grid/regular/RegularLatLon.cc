@@ -22,8 +22,7 @@ namespace eckit::geo::grid::regular {
 
 
 RegularLatLon::RegularLatLon(const Configuration& config) :
-    Regular(config) {
-}
+    Regular(config) {}
 
 
 Grid::iterator RegularLatLon::cbegin() const {
@@ -69,7 +68,8 @@ Configuration* RegularLatLon::config(const std::string& name) {
     auto d = Translator<std::string, double>{};
     std::vector<double> increments{d(match[1]), d(match[4])};
 
-    auto ni = 1;  // detail::RegularIterator(Fraction(0), Fraction(360), Fraction(increments[0]), Fraction(0), Fraction(360)).n();
+    auto ni = 1;  // detail::RegularIterator(Fraction(0), Fraction(360), Fraction(increments[0]), Fraction(0),
+                  // Fraction(360)).n();
     auto nj = 1;  // detail::RegularIterator(Fraction(-90), Fraction(90), Fraction(increments[1]), Fraction(0)).n();
 
     return new MappedConfiguration({{"type", "regular_ll"},

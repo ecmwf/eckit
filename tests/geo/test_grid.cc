@@ -40,17 +40,14 @@ CASE("GridFactory::build") {
     }
 
 
-    SECTION("Grid::build_from_uid") {
-    }
+    SECTION("Grid::build_from_uid") {}
 
 
-    SECTION("Grid::build_from_increments") {
-    }
+    SECTION("Grid::build_from_increments") {}
 
 
     SECTION("Grid::build") {
-        std::unique_ptr<const Grid> grid(geo::GridFactory::build(MappedConfiguration{
-            {{"name", "O2"}}}));
+        std::unique_ptr<const Grid> grid(geo::GridFactory::build(MappedConfiguration{{{"name", "O2"}}}));
 
         //        auto size = grid->size();
         //        EXPECT_EQUAL(size, 88);

@@ -27,10 +27,7 @@ int main(int argc, const char* argv[]) {
 
 
     {
-        std::vector<double> ref{59.44440828916676,
-                                19.87571914744090,
-                                -19.87571914744090,
-                                -59.44440828916676};
+        std::vector<double> ref{59.44440828916676, 19.87571914744090, -19.87571914744090, -59.44440828916676};
 
         auto global = Gaussian(2);
         EXPECT(global.size() == ref.size());

@@ -24,13 +24,11 @@ size_t Reduced::size() const {
 
 
 Reduced::Reduced(const Configuration& config) :
-    Grid(config) {
-}
+    Grid(config) {}
 
 
 Reduced::Reduced(const area::BoundingBox& bbox) :
-    Grid(bbox) {
-}
+    Grid(bbox) {}
 
 
 const std::vector<size_t>& Reduced::niacc() const {

@@ -27,9 +27,7 @@ RegularGaussian::RegularGaussian(const Configuration& config) :
     Regular(config),
     ni_(config.getUnsigned("ni", config.getUnsigned("ni"))),
     x_(new range::Regular(ni_, config.getDouble("west", 0.), config.getDouble("east", 360.), true /*FIXME*/)),
-    y_(new range::Gaussian(config.getUnsigned("N"),
-                           config.getDouble("north", 90.),
-                           config.getDouble("south", -90.))) {
+    y_(new range::Gaussian(config.getUnsigned("N"), config.getDouble("north", 90.), config.getDouble("south", -90.))) {
     ASSERT(ni_ > 0);
 }
 
@@ -38,8 +36,7 @@ RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
     Regular(bbox),
     ni_(4 * N),
     x_(new range::Regular(ni_, bbox.west(), bbox.east(), true /*FIXME*/)),
-    y_(new range::Gaussian(N, bbox.west(), bbox.east())) {
-}
+    y_(new range::Gaussian(N, bbox.west(), bbox.east())) {}
 
 
 Grid::iterator RegularGaussian::cbegin() const {
@@ -54,10 +51,7 @@ Grid::iterator RegularGaussian::cend() const {
 
 Configuration* RegularGaussian::config(const std::string& name) {
     auto N = Translator<std::string, size_t>{}(name.substr(1));
-    return new MappedConfiguration({{"type", "regular_gg"},
-                                    {"N", N},
-                                    {"Ni", 2 * N},
-                                    {"Nj", 4 * N}});
+    return new MappedConfiguration({{"type", "regular_gg"}, {"N", N}, {"Ni", 2 * N}, {"Nj", 4 * N}});
 }
 
 

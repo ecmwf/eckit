@@ -19,13 +19,11 @@ namespace eckit::geo::grid {
 
 
 Regular::Regular(const Configuration& config) :
-    Grid(config) {
-}
+    Grid(config) {}
 
 
 Regular::Regular(const area::BoundingBox& bbox) :
-    Grid(bbox) {
-}
+    Grid(bbox) {}
 
 
 }  // namespace eckit::geo::grid

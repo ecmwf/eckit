@@ -34,12 +34,8 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
 
         explicit LonLatToSphereXYZ(double R) :
             R_(R) {}
-        Point3 operator()(const PointLonLat& p) const override {
-            return S::convertSphericalToCartesian(R_, p, 0.);
-        }
-        PointLonLat operator()(const Point3& q) const override {
-            return S::convertCartesianToSpherical(R_, q);
-        }
+        Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(R_, p, 0.); }
+        PointLonLat operator()(const Point3& q) const override { return S::convertCartesianToSpherical(R_, q); }
     };
 
     struct LonLatToSpheroidXYZ final : Implementation {
@@ -49,9 +45,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
 
         explicit LonLatToSpheroidXYZ(double a, double b) :
             a_(a), b_(b) {}
-        Point3 operator()(const PointLonLat& p) const override {
-            return S::convertSphericalToCartesian(a_, b_, p, 0.);
-        }
+        Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(a_, b_, p, 0.); }
         PointLonLat operator()(const Point3& q) const override { NOTIMP; }
     };
 
@@ -65,8 +59,7 @@ LonLatToXYZ::LonLatToXYZ(double R) :
 
 
 LonLatToXYZ::LonLatToXYZ(const Configuration& config) :
-    LonLatToXYZ(config.getDouble("a", config.getDouble("R", 1.)),
-                config.getDouble("b", config.getDouble("R", 1.))) {}
+    LonLatToXYZ(config.getDouble("a", config.getDouble("R", 1.)), config.getDouble("b", config.getDouble("R", 1.))) {}
 
 
 }  // namespace eckit::geo::projection

@@ -29,8 +29,7 @@ Grid::iterator Unstructured::cend() const {
 
 
 Unstructured::Unstructured(const Configuration& config) :
-    Grid(config) {
-}
+    Grid(config) {}
 
 
 }  // namespace eckit::geo::grid

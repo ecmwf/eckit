@@ -24,11 +24,8 @@ class PointLonLat;
 
 struct EllipsoidOfRevolution {
     // Convert elliptic coordinates to Cartesian
-    static Point3 convertSphericalToCartesian(double a,
-                                              double b,
-                                              const PointLonLat&,
-                                              double height        = 0.,
-                                              bool normalise_angle = false);
+    static Point3 convertSphericalToCartesian(
+        double a, double b, const PointLonLat&, double height = 0., bool normalise_angle = false);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

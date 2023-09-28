@@ -79,7 +79,8 @@ public:
     }
 
     static Point3 cross(const Point3& p1, const Point3& p2) {
-        return Point3(p1[YY] * p2[ZZ] - p1[ZZ] * p2[YY], p1[ZZ] * p2[XX] - p1[XX] * p2[ZZ],
+        return Point3(p1[YY] * p2[ZZ] - p1[ZZ] * p2[YY],
+                      p1[ZZ] * p2[XX] - p1[XX] * p2[ZZ],
                       p1[XX] * p2[YY] - p1[YY] * p2[XX]);
     }
 };

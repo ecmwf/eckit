@@ -98,7 +98,8 @@ ORCA::ORCA(const Configuration& config) :
         }
 
         PathName::rename(tmp, path);
-        Log::info() << "ORCA: download of " << Bytes(static_cast<double>(length)) << " took " << timer.elapsed() << " s." << std::endl;
+        Log::info() << "ORCA: download of " << Bytes(static_cast<double>(length)) << " took " << timer.elapsed()
+                    << " s." << std::endl;
     }
 #endif
 

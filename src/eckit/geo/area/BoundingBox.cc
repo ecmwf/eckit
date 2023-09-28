@@ -27,8 +27,10 @@ namespace eckit::geo::area {
 
 
 BoundingBox::BoundingBox(const Configuration& config) :
-    BoundingBox(config.getDouble("north", 90.), config.getDouble("west", 0.), config.getDouble("south", -90.), config.getDouble("east", 360.)) {
-}
+    BoundingBox(config.getDouble("north", 90.),
+                config.getDouble("west", 0.),
+                config.getDouble("south", -90.),
+                config.getDouble("east", 360.)) {}
 
 
 BoundingBox::BoundingBox(double north, double west, double south, double east) :
@@ -68,11 +70,13 @@ bool BoundingBox::contains(const BoundingBox& other) const {
     }
 
     // check for West/East range (if non-periodic), then other's corners
-    if (east_ - west_ < other.east_ - other.west_ || east_ < PointLonLat::normalise_angle_to_minimum(other.east_, west_)) {
+    if (east_ - west_ < other.east_ - other.west_ ||
+        east_ < PointLonLat::normalise_angle_to_minimum(other.east_, west_)) {
         return false;
     }
 
-    return contains(other.north_, other.west_) && contains(other.north_, other.east_) && contains(other.south_, other.west_) && contains(other.south_, other.east_);
+    return contains(other.north_, other.west_) && contains(other.north_, other.east_) &&
+           contains(other.south_, other.west_) && contains(other.south_, other.east_);
 }
 
 

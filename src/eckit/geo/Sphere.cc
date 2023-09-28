@@ -79,8 +79,9 @@ double Sphere::centralAngle(const PointLonLat& A, const PointLonLat& B) {
     const double cos_lambda = cos(lambda);
     const double sin_lambda = sin(lambda);
 
-    const double angle = std::atan2(std::sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
-                                    sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
+    const double angle = std::atan2(
+        std::sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
+        sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
     if (is_approximately_equal(angle, 0.)) {
         return 0.;
@@ -127,10 +128,8 @@ double Sphere::area(double radius, const PointLonLat& WestNorth, const PointLonL
     // Set longitude fraction
     double W = WestNorth.lon;
     double E = PointLonLat::normalise_angle_to_minimum(EastSouth.lon, W);
-    double longitude_range(is_approximately_equal(W, E)
-                                   && !is_approximately_equal(EastSouth.lon, WestNorth.lon)
-                               ? 360.
-                               : E - W);
+    double longitude_range(
+        is_approximately_equal(W, E) && !is_approximately_equal(EastSouth.lon, WestNorth.lon) ? 360. : E - W);
     ASSERT(longitude_range <= 360.);
 
     double longitude_fraction = longitude_range / 360.;
@@ -146,9 +145,7 @@ double Sphere::area(double radius, const PointLonLat& WestNorth, const PointLonL
     return area(radius) * latitude_fraction * longitude_fraction;
 }
 
-double Sphere::greatCircleLatitudeGivenLongitude(const PointLonLat& A,
-                                                 const PointLonLat& B,
-                                                 double Clon) {
+double Sphere::greatCircleLatitudeGivenLongitude(const PointLonLat& A, const PointLonLat& B, double Clon) {
     GreatCircle gc(A, B);
     auto lat = gc.latitude(Clon);
     return lat.size() == 1 ? lat[0] : std::numeric_limits<double>::signaling_NaN();
@@ -190,8 +187,7 @@ Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& A, 
     const auto sin_phi    = std::sin(phi);
     const auto cos_phi    = std::sqrt(1. - sin_phi * sin_phi);
     const auto sin_lambda = std::abs(P.lon) < 180. ? std::sin(lambda) : 0.;
-    const auto cos_lambda = std::abs(P.lon) > 90. ? std::cos(lambda)
-                                                  : std::sqrt(1. - sin_lambda * sin_lambda);
+    const auto cos_lambda = std::abs(P.lon) > 90. ? std::cos(lambda) : std::sqrt(1. - sin_lambda * sin_lambda);
 
     return {(radius + height) * cos_phi * cos_lambda,
             (radius + height) * cos_phi * sin_lambda,

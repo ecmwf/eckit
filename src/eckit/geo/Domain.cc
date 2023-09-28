@@ -72,11 +72,13 @@ bool Domain::contains(const Domain& other) const {
     }
 
     // check for West/East range (if non-periodic), then other's corners
-    if (east_ - west_ < other.east_ - other.west_ || east_ < PointLonLat::normalise_angle_to_minimum(other.east_, west_)) {
+    if (east_ - west_ < other.east_ - other.west_ ||
+        east_ < PointLonLat::normalise_angle_to_minimum(other.east_, west_)) {
         return false;
     }
 
-    return contains(other.north_, other.west_) && contains(other.north_, other.east_) && contains(other.south_, other.west_) && contains(other.south_, other.east_);
+    return contains(other.north_, other.west_) && contains(other.north_, other.east_) &&
+           contains(other.south_, other.west_) && contains(other.south_, other.east_);
 }
 
 

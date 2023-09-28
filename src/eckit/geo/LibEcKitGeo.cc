@@ -35,19 +35,22 @@ LibEcKitGeo& LibEcKitGeo::instance() {
 
 
 PathName LibEcKitGeo::configFileGrid() {
-    static const PathName path{LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID", "~eckit/etc/eckit/geo/grid.yaml")};
+    static const PathName path{
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID", "~eckit/etc/eckit/geo/grid.yaml")};
     return path;
 }
 
 
 bool LibEcKitGeo::caching() {
-    static const bool yes{LibResource<bool, LibEcKitGeo>("eckit-geo-caching;$ECKIT_GEO_CACHING", eckit_HAVE_GEO_CACHING != 0 ? true : false)};
+    static const bool yes{LibResource<bool, LibEcKitGeo>("eckit-geo-caching;$ECKIT_GEO_CACHING",
+                                                         eckit_HAVE_GEO_CACHING != 0 ? true : false)};
     return yes;
 }
 
 
 std::string LibEcKitGeo::cacheDir() {
-    static std::string path = PathName{LibResource<PathName, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH)};
+    static std::string path = PathName{
+        LibResource<PathName, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH)};
     return path;
 }
 

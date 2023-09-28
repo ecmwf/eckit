@@ -24,11 +24,8 @@ namespace eckit::geo {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a,
-                                                          double b,
-                                                          const PointLonLat& P,
-                                                          double height,
-                                                          bool normalise_angle) {
+Point3 EllipsoidOfRevolution::convertSphericalToCartesian(
+    double a, double b, const PointLonLat& P, double height, bool normalise_angle) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
 

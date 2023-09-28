@@ -86,23 +86,34 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     // q = Rz Ry Ra p = [  cosφ sinφ   ] [  cosϑ   sinϑ ] [  cosα sinα   ] p
     //                  [ -sinφ cosφ   ] [       1      ] [ -sinα cosα   ]
     //                  [            1 ] [ -sinϑ   cosϑ ] [            1 ]
-    fwd_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp, cp * st,    //
-                                              -sa * cp - ca * ct * sp, ca * cp - sa * ct * sp, -sp * st,  //
-                                              -ca * st, -sa * st, ct});
+    fwd_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp,
+                                              sa * cp * ct + ca * sp,
+                                              cp * st,  //
+                                              -sa * cp - ca * ct * sp,
+                                              ca * cp - sa * ct * sp,
+                                              -sp * st,  //
+                                              -ca * st,
+                                              -sa * st,
+                                              ct});
 
     // Un-rotate (rotate by -φ, -ϑ, -α):
     // p = Ra Ry Rz q = [ cosα -sinα   ] [ cosϑ   -sinϑ ] [ cosφ -sinφ   ] q
     //                  [ sinα  cosα   ] [      1       ] [ sinφ  cosφ   ]
     //                  [            1 ] [ sinϑ    cosϑ ] [            1 ]
-    inv_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp, -ca * st,  //
-                                              sa * cp * ct + ca * sp, ca * cp - sa * ct * sp, -sa * st,   //
-                                              cp * st, -sp * st, ct});
+    inv_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp,
+                                              -sa * cp - ca * ct * sp,
+                                              -ca * st,  //
+                                              sa * cp * ct + ca * sp,
+                                              ca * cp - sa * ct * sp,
+                                              -sa * st,  //
+                                              cp * st,
+                                              -sp * st,
+                                              ct});
 }
 
 
 Rotation::Rotation(const Configuration& config) :
-    Rotation(config.getDouble("south_pole_lon"), config.getDouble("south_pole_lat"),
-             config.getDouble("angle", 0)) {}
+    Rotation(config.getDouble("south_pole_lon"), config.getDouble("south_pole_lat"), config.getDouble("angle", 0)) {}
 
 
 }  // namespace eckit::geo::projection

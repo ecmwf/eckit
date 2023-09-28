@@ -78,9 +78,7 @@ protected:
 
     // -- Methods
 
-    virtual const std::vector<double>& valuesVector() const {
-        return *this;
-    }
+    virtual const std::vector<double>& valuesVector() const { return *this; }
 
     // -- Overridden methods
     // None

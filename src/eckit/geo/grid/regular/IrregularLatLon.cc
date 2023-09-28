@@ -19,8 +19,7 @@ namespace eckit::geo::grid::regular {
 
 
 IrregularLatLon::IrregularLatLon(const Configuration& config) :
-    Regular(config) {
-}
+    Regular(config) {}
 
 
 Grid::iterator IrregularLatLon::cbegin() const {

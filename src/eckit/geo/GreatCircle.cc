@@ -67,7 +67,8 @@ std::vector<double> GreatCircle::latitude(double lon) const {
     const double lambda2p = degrees_to_radians * (lon - B_.lon);
     const double lambda   = degrees_to_radians * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -180.);
 
-    double lat = std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
+    double lat =
+        std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
     return {radians_to_degrees * lat};
 }
 

@@ -20,8 +20,7 @@ namespace eckit::geo {
 
 
 Range::Range(const Configuration& config) :
-    Range(config.getUnsigned("n")) {
-}
+    Range(config.getUnsigned("n")) {}
 
 
 Range::Range(size_t n) :

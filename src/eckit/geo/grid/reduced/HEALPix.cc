@@ -22,14 +22,14 @@ namespace eckit::geo::grid::reduced {
 
 
 static Ordering ordering_from_string(const std::string& str) {
-    return str == "ring" ? Ordering::healpix_ring : str == "nested" ? Ordering::healpix_nested
-                                                                    : throw AssertionFailed("HEALPix::Ordering", Here());
+    return str == "ring"     ? Ordering::healpix_ring
+           : str == "nested" ? Ordering::healpix_nested
+                             : throw AssertionFailed("HEALPix::Ordering", Here());
 }
 
 
 HEALPix::HEALPix(const Configuration& config) :
-    HEALPix(config.getUnsigned("Nside"), ordering_from_string(config.getString("orderingConvention", "ring"))) {
-}
+    HEALPix(config.getUnsigned("Nside"), ordering_from_string(config.getString("orderingConvention", "ring"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
@@ -51,8 +51,7 @@ Grid::iterator HEALPix::cend() const {
 
 size_t HEALPix::ni(size_t j) const {
     ASSERT(j < nj());
-    return j < N_ ? 4 * (j + 1) : j < 3 * N_ ? 4 * N_
-                                             : ni(nj() - 1 - j);
+    return j < N_ ? 4 * (j + 1) : j < 3 * N_ ? 4 * N_ : ni(nj() - 1 - j);
 }
 
 
@@ -102,7 +101,8 @@ const std::vector<double>& HEALPix::latitudes() const {
         auto i = latitudes_.begin();
         auto j = latitudes_.rbegin();
         for (size_t ring = 1; ring < 2 * N_; ++ring, ++i, ++j) {
-            const auto f = ring < N_ ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(N_ * N_)) : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(N_));
+            const auto f = ring < N_ ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(N_ * N_))
+                                     : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(N_));
 
             *i = 90. - util::radian_to_degree * std::acos(f);
             *j = -*i;
@@ -121,7 +121,9 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
     const auto start = j < N_ || 3 * N_ - 1 < j || static_cast<bool>((j + N_) % 2) ? step / 2. : 0.;
 
     std::vector<double> lons(Ni);
-    std::generate_n(lons.begin(), Ni, [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+    std::generate_n(lons.begin(), Ni, [start, step, n = 0ULL]() mutable {
+        return start + static_cast<double>(n++) * step;
+    });
 
     return lons;
 }

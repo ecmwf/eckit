@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/reduced/ReducedLatLon.h"
+#include "eckit/geo/grid/reduced/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
 
@@ -18,36 +18,36 @@
 namespace eckit::geo::grid::reduced {
 
 
-ReducedLatLon::ReducedLatLon(const Configuration& config) :
+ReducedLL::ReducedLL(const Configuration& config) :
     Reduced(config) {}
 
 
-Grid::iterator ReducedLatLon::cbegin() const {
+Grid::iterator ReducedLL::cbegin() const {
     return iterator{new geo::iterator::Reduced(*this, 0)};
 }
 
 
-Grid::iterator ReducedLatLon::cend() const {
+Grid::iterator ReducedLL::cend() const {
     return iterator{new geo::iterator::Reduced(*this, size())};
 }
 
 
-size_t ReducedLatLon::ni(size_t j) const {
+size_t ReducedLL::ni(size_t j) const {
     NOTIMP;
 }
 
 
-size_t ReducedLatLon::nj() const {
+size_t ReducedLL::nj() const {
     NOTIMP;
 }
 
 
-const std::vector<double>& ReducedLatLon::latitudes() const {
+const std::vector<double>& ReducedLL::latitudes() const {
     NOTIMP;
 }
 
 
-std::vector<double> ReducedLatLon::longitudes(size_t j) const {
+std::vector<double> ReducedLL::longitudes(size_t j) const {
     NOTIMP;
 }
 

@@ -12,18 +12,13 @@
 
 #pragma once
 
-#include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/grid/Reduced.h"
 
 
-namespace eckit::geo {
-class Increments;
-}
+namespace eckit::geo::grid::reduced {
 
 
-namespace eckit::geo::grid::regular {
-
-
-class RegularLatLon final : public Regular {
+class ReducedLL : public Reduced {
 public:
     // -- Types
     // None
@@ -33,13 +28,7 @@ public:
 
     // -- Constructors
 
-    explicit RegularLatLon(const Configuration&);
-
-    RegularLatLon(const Increments&, const area::BoundingBox&, const PointLonLat& reference = {0, 0});
-    RegularLatLon(size_t ni, size_t nj, const area::BoundingBox&, const PointLonLat& reference = {0, 0});
-
-    explicit RegularLatLon(const Increments&, const PointLonLat& reference = {0, 0});
-    RegularLatLon(size_t ni, size_t nj, const PointLonLat& reference = {0, 0});
+    explicit ReducedLL(const Configuration&);
 
     // -- Destructor
     // None
@@ -58,29 +47,26 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return ni_; }
-    size_t nj() const override { return nj_; }
+    size_t ni(size_t j) const override;
+    size_t nj() const override;
 
     // -- Class members
     // None
 
     // -- Class methods
-
-    static Configuration* config(const std::string& name);
+    // None
 
 private:
     // -- Members
-
-    size_t ni_;
-    size_t nj_;
+    // None
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    const std::vector<double>& longitudes() const override;
     const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
 
     // -- Class members
     // None
@@ -93,4 +79,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid::reduced

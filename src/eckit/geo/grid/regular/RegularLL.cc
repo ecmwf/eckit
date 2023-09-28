@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/regular/RegularLatLon.h"
+#include "eckit/geo/grid/regular/RegularLL.h"
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/Increments.h"
@@ -22,43 +22,43 @@
 namespace eckit::geo::grid::regular {
 
 
-RegularLatLon::RegularLatLon(const Configuration& config) :
-    RegularLatLon({config.getDouble("west_east_increment"), config.getDouble("south_north_increment")},
-                  area::BoundingBox(config),
-                  {config.getDouble("west", 0.), config.getDouble("south", -90.)}) {}
+RegularLL::RegularLL(const Configuration& config) :
+    RegularLL({config.getDouble("west_east_increment"), config.getDouble("south_north_increment")},
+              area::BoundingBox(config),
+              {config.getDouble("west", 0.), config.getDouble("south", -90.)}) {}
 
 
-RegularLatLon::RegularLatLon(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& reference) :
+RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& reference) :
     Regular(bbox) {}
 
 
-RegularLatLon::RegularLatLon(size_t ni, size_t nj, const area::BoundingBox& bbox, const PointLonLat& reference) :
+RegularLL::RegularLL(size_t ni, size_t nj, const area::BoundingBox& bbox, const PointLonLat& reference) :
     Regular(bbox), ni_(ni), nj_(nj) {}
 
 
-RegularLatLon::RegularLatLon(const Increments& inc, const PointLonLat& reference) :
-    RegularLatLon(inc, area::BoundingBox::make_global_prime(), reference) {}
+RegularLL::RegularLL(const Increments& inc, const PointLonLat& reference) :
+    RegularLL(inc, area::BoundingBox::make_global_prime(), reference) {}
 
 
-RegularLatLon::RegularLatLon(size_t ni, size_t nj, const PointLonLat& reference) :
-    RegularLatLon(ni, nj, area::BoundingBox::make_global_prime(), reference) {}
+RegularLL::RegularLL(size_t ni, size_t nj, const PointLonLat& reference) :
+    RegularLL(ni, nj, area::BoundingBox::make_global_prime(), reference) {}
 
 
-Grid::iterator RegularLatLon::cbegin() const {
+Grid::iterator RegularLL::cbegin() const {
     return iterator{new geo::iterator::Regular(*this, 0)};
 }
 
 
-Grid::iterator RegularLatLon::cend() const {
+Grid::iterator RegularLL::cend() const {
     return iterator{new geo::iterator::Regular(*this, size())};
 }
 
-const std::vector<double>& RegularLatLon::longitudes() const {
+const std::vector<double>& RegularLL::longitudes() const {
     NOTIMP;
 }
 
 
-const std::vector<double>& RegularLatLon::latitudes() const {
+const std::vector<double>& RegularLL::latitudes() const {
     NOTIMP;
 }
 
@@ -66,7 +66,7 @@ const std::vector<double>& RegularLatLon::latitudes() const {
 #define POSITIVE_REAL "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
 
 
-Configuration* RegularLatLon::config(const std::string& name) {
+Configuration* RegularLL::config(const std::string& name) {
     static const std::string pattern("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 
     auto match = util::regex_match(pattern, name);
@@ -88,8 +88,8 @@ Configuration* RegularLatLon::config(const std::string& name) {
 }
 
 
-static const GridRegisterType<RegularLatLon> __grid_type("regular_ll");
-static const GridRegisterName<RegularLatLon> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL);
+static const GridRegisterType<RegularLL> __grid_type("regular_ll");
+static const GridRegisterName<RegularLL> __grid_pattern(POSITIVE_REAL "/" POSITIVE_REAL);
 
 
 }  // namespace eckit::geo::grid::regular

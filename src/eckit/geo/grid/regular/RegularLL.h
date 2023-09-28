@@ -15,10 +15,15 @@
 #include "eckit/geo/grid/Regular.h"
 
 
+namespace eckit::geo {
+class Increments;
+}
+
+
 namespace eckit::geo::grid::regular {
 
 
-class IrregularLatLon final : public Regular {
+class RegularLL final : public Regular {
 public:
     // -- Types
     // None
@@ -28,7 +33,13 @@ public:
 
     // -- Constructors
 
-    explicit IrregularLatLon(const Configuration&);
+    explicit RegularLL(const Configuration&);
+
+    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& reference = {0, 0});
+    RegularLL(size_t ni, size_t nj, const area::BoundingBox&, const PointLonLat& reference = {0, 0});
+
+    explicit RegularLL(const Increments&, const PointLonLat& reference = {0, 0});
+    RegularLL(size_t ni, size_t nj, const PointLonLat& reference = {0, 0});
 
     // -- Destructor
     // None
@@ -47,18 +58,21 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override;
-    size_t nj() const override;
+    size_t ni() const override { return ni_; }
+    size_t nj() const override { return nj_; }
 
     // -- Class members
     // None
 
     // -- Class methods
-    // None
+
+    static Configuration* config(const std::string& name);
 
 private:
     // -- Members
-    // None
+
+    size_t ni_;
+    size_t nj_;
 
     // -- Methods
     // None

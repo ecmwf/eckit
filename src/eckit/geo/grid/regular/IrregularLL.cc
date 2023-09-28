@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/regular/IrregularLatLon.h"
+#include "eckit/geo/grid/regular/IrregularLL.h"
 
 // #include <>
 
@@ -18,36 +18,36 @@
 namespace eckit::geo::grid::regular {
 
 
-IrregularLatLon::IrregularLatLon(const Configuration& config) :
+IrregularLL::IrregularLL(const Configuration& config) :
     Regular(config) {}
 
 
-Grid::iterator IrregularLatLon::cbegin() const {
+Grid::iterator IrregularLL::cbegin() const {
     NOTIMP;
 }
 
 
-Grid::iterator IrregularLatLon::cend() const {
+Grid::iterator IrregularLL::cend() const {
     NOTIMP;
 }
 
 
-size_t IrregularLatLon::ni() const {
+size_t IrregularLL::ni() const {
     NOTIMP;
 }
 
 
-size_t IrregularLatLon::nj() const {
+size_t IrregularLL::nj() const {
     NOTIMP;
 }
 
 
-const std::vector<double>& IrregularLatLon::longitudes() const {
+const std::vector<double>& IrregularLL::longitudes() const {
     NOTIMP;
 }
 
 
-const std::vector<double>& IrregularLatLon::latitudes() const {
+const std::vector<double>& IrregularLL::latitudes() const {
     NOTIMP;
 }
 

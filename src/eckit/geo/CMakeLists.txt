@@ -60,14 +60,14 @@ list( APPEND eckit_geo_srcs
     grid/reduced/HEALPix.h
     grid/reduced/ReducedGaussian.cc
     grid/reduced/ReducedGaussian.h
-    grid/reduced/ReducedLatLon.cc
-    grid/reduced/ReducedLatLon.h
-    grid/regular/IrregularLatLon.cc
-    grid/regular/IrregularLatLon.h
+    grid/reduced/ReducedLL.cc
+    grid/reduced/ReducedLL.h
+    grid/regular/IrregularLL.cc
+    grid/regular/IrregularLL.h
     grid/regular/RegularGaussian.cc
     grid/regular/RegularGaussian.h
-    grid/regular/RegularLatLon.cc
-    grid/regular/RegularLatLon.h
+    grid/regular/RegularLL.cc
+    grid/regular/RegularLL.h
     grid/unstructured/ORCA.cc
     grid/unstructured/ORCA.h
     iterator/Reduced.cc

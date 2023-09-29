@@ -18,10 +18,19 @@
 
 #include <cstdint>
 #include <memory>
+
 #include "eckit/config/Parametrisation.h"
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class ConfigurationNotFound : public Exception {
+public:
+    explicit ConfigurationNotFound(const std::string& name);
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -22,39 +22,45 @@
 #define EXPECT_APPROX(a, b) EXPECT(::eckit::types::is_approximately_equal((a), (b), 1e-12))
 
 
-int main(int argc, const char* argv[]) {
-    using namespace eckit::geo::range;
+namespace eckit::test {
 
 
-    {
-        std::vector<double> ref{59.44440828916676, 19.87571914744090, -19.87571914744090, -59.44440828916676};
+CASE("range::Gaussian") {
+    using geo::range::Gaussian;
 
-        auto global = Gaussian(2);
-        EXPECT(global.size() == ref.size());
+    std::vector<double> ref{59.44440828916676, 19.87571914744090, -19.87571914744090, -59.44440828916676};
 
-        size_t i = 0;
-        for (const auto& test : global.values()) {
-            EXPECT_APPROX(test, ref[i++]);
-        }
+    auto global = Gaussian(2);
 
-        auto cropped = Gaussian(2, 50., -50., 1e-3);
-        EXPECT(cropped.size() == ref.size() - 2);
+    EXPECT(global.size() == ref.size());
 
-        i = 1;
-        for (const auto& test : cropped.values()) {
-            EXPECT_APPROX(test, ref[i++]);
-        }
-
-        EXPECT(Gaussian(2, 59.444, -59.444, 1e-3).size() == 4);
-        EXPECT(Gaussian(2, 59.444, -59.444, 1e-6).size() == 2);
-        EXPECT(Gaussian(2, 59.444, -59.445, 1e-6).size() == 3);
-
-        auto single = Gaussian(2, -59.444, -59.444, 1e-3);
-        EXPECT(single.size() == 1);
-
-        EXPECT_APPROX(single.values().front(), ref.back());
+    size_t i = 0;
+    for (const auto& test : global.values()) {
+        EXPECT_APPROX(test, ref[i++]);
     }
 
+    auto cropped = Gaussian(2, 50., -50., 1e-3);
+    EXPECT(cropped.size() == ref.size() - 2);
 
-    return 0;
+    i = 1;
+    for (const auto& test : cropped.values()) {
+        EXPECT_APPROX(test, ref[i++]);
+    }
+
+    EXPECT(Gaussian(2, 59.444, -59.444, 1e-3).size() == 4);
+    EXPECT(Gaussian(2, 59.444, -59.444, 1e-6).size() == 2);
+    EXPECT(Gaussian(2, 59.444, -59.445, 1e-6).size() == 3);
+
+    auto single = Gaussian(2, -59.444, -59.444, 1e-3);
+    EXPECT(single.size() == 1);
+
+    EXPECT_APPROX(single.values().front(), ref.back());
+}
+
+
+}  // namespace eckit::test
+
+
+int main(int argc, char** argv) {
+    return eckit::testing::run_tests(argc, argv);
 }

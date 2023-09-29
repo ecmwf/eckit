@@ -25,6 +25,10 @@ namespace eckit::geo {
 
 
 class Range : protected std::vector<double> {
+protected:
+    // -- Types
+    using P = vector;
+
 public:
     // -- Types
     // None
@@ -50,13 +54,10 @@ public:
     Range& operator=(Range&&)      = delete;
 
     // -- Methods
-    // None
 
-    using vector::empty;
+    size_t size() const { return empty() ? n_ : P::size(); }
 
-    size_t size() const { return empty() ? n_ : vector::size(); }
-
-    virtual const std::vector<double>& values() const = 0;
+    virtual const P& values() const = 0;
 
     // -- Overridden methods
     // None
@@ -78,7 +79,7 @@ protected:
 
     // -- Methods
 
-    virtual const std::vector<double>& valuesVector() const { return *this; }
+    virtual const P& valuesVector() const { return *this; }
 
     // -- Overridden methods
     // None

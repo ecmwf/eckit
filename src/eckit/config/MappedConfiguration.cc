@@ -71,11 +71,15 @@ bool __get_s_integral(const MappedConfiguration::container_type& map, const std:
 
 template <typename T>
 bool __get_s_real(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+    if (__get_s_integral(map, name, value)) {
+        return true;
+    }
+
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<double>(v)  ? __get_s(std::get<double>(v), value)
-               : std::holds_alternative<float>(v) ? __get_s(std::get<float>(v), value)
-                                                  : false;
+        return std::holds_alternative<float>(v)    ? __get_s(std::get<float>(v), value)
+               : std::holds_alternative<double>(v) ? __get_s(std::get<double>(v), value)
+                                                   : false;
     }
     return false;
 }
@@ -85,11 +89,12 @@ template <typename T>
 bool __get_v_integral(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<std::vector<int>>(v)           ? __get_v(std::get<std::vector<int>>(v), value)
-               : std::holds_alternative<std::vector<long>>(v)        ? __get_v(std::get<std::vector<long>>(v), value)
-               : std::holds_alternative<std::vector<long long>>(v)   ? __get_v(std::get<std::vector<long long>>(v), value)
-               : std::holds_alternative<std::vector<std::size_t>>(v) ? __get_v(std::get<std::vector<std::size_t>>(v), value)
-                                                                     : false;
+        return std::holds_alternative<std::vector<int>>(v)         ? __get_v(std::get<std::vector<int>>(v), value)
+               : std::holds_alternative<std::vector<long>>(v)      ? __get_v(std::get<std::vector<long>>(v), value)
+               : std::holds_alternative<std::vector<long long>>(v) ? __get_v(std::get<std::vector<long long>>(v), value)
+               : std::holds_alternative<std::vector<std::size_t>>(v)
+                   ? __get_v(std::get<std::vector<std::size_t>>(v), value)
+                   : false;
     }
     return false;
 }
@@ -97,11 +102,15 @@ bool __get_v_integral(const MappedConfiguration::container_type& map, const std:
 
 template <typename T>
 bool __get_v_real(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+    if (__get_v_integral(map, name, value)) {
+        return true;
+    }
+
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<std::vector<double>>(v)  ? __get_v(std::get<std::vector<double>>(v), value)
-               : std::holds_alternative<std::vector<float>>(v) ? __get_v(std::get<std::vector<float>>(v), value)
-                                                               : false;
+        return std::holds_alternative<std::vector<float>>(v)    ? __get_v(std::get<std::vector<float>>(v), value)
+               : std::holds_alternative<std::vector<double>>(v) ? __get_v(std::get<std::vector<double>>(v), value)
+                                                                : false;
     }
     return false;
 }
@@ -117,13 +126,11 @@ JSON& operator<<(JSON& out, const MappedConfiguration::value_type& value) {
 
 
 MappedConfiguration::MappedConfiguration(const MappedConfiguration::container_type& map) :
-    Configuration(__empty_root),
-    map_(map) {}
+    Configuration(__empty_root), map_(map) {}
 
 
 MappedConfiguration::MappedConfiguration(MappedConfiguration::container_type&& map) :
-    Configuration(__empty_root),
-    map_(map) {}
+    Configuration(__empty_root), map_(map) {}
 
 
 MappedConfiguration::MappedConfiguration(const MappedConfiguration& config) :
@@ -228,8 +235,10 @@ bool MappedConfiguration::has(const std::string& name) const {
 
 bool MappedConfiguration::get(const std::string& name, std::string& value) const {
     if (auto it = map_.find(name); it != map_.cend()) {
-        value = std::holds_alternative<std::string>(it->second) ? std::get<std::string>(it->second)
-                                                                : std::visit([](auto&& arg) -> std::string { return (std::ostringstream() << arg).str(); }, it->second);
+        value =
+            std::holds_alternative<std::string>(it->second)
+                ? std::get<std::string>(it->second)
+                : std::visit([](auto&& arg) -> std::string { return (std::ostringstream() << arg).str(); }, it->second);
         return true;
     }
     return false;
@@ -239,7 +248,7 @@ bool MappedConfiguration::get(const std::string& name, std::string& value) const
 bool MappedConfiguration::get(const std::string& name, bool& value) const {
     if (auto it = map_.find(name); it != map_.cend()) {
         if (std::holds_alternative<bool>(it->second)) {
-            std::get<bool>(it->second);
+            value = std::get<bool>(it->second);
             return true;
         }
 

@@ -73,6 +73,7 @@ private:
 
     size_t ni_;
     size_t nj_;
+    PointLonLat reference_;
 
     // -- Methods
     // None

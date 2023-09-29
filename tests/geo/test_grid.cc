@@ -43,7 +43,17 @@ CASE("GridFactory::build") {
     SECTION("Grid::build_from_uid") {}
 
 
-    SECTION("Grid::build_from_increments") {}
+    SECTION("Grid::build_from_increments") {
+        std::unique_ptr<Configuration> cfg(new MappedConfiguration({
+            {"type", "regular_ll"},
+            {"west_east_increment", 1},
+            {"south_north_increment", 1},
+        }));
+        std::unique_ptr<const Grid> grid(geo::GridFactory::build(*cfg));
+
+        auto size = grid->size();
+        EXPECT_EQUAL(size, 360 * 181);
+    }
 
 
     SECTION("Grid::build") {

@@ -15,8 +15,8 @@
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
 
@@ -407,6 +407,72 @@ CASE("Hash a configuration") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("test_mapped_configuration") {
+    int one = 1;
+    MappedConfiguration a({
+        {"double", static_cast<double>(one)},
+        {"float", static_cast<float>(one)},
+        {"int", static_cast<int>(one)},
+        {"long", static_cast<long>(one)},
+        {"size_t", static_cast<size_t>(one)},
+    });
+
+    // test scalar type conversion
+    for (std::string key : {"double", "float", "int", "long", "size_t"}) {
+        double value_as_double = 0;
+        float value_as_float   = 0;
+
+        EXPECT(a.get(key, value_as_double) && value_as_double == static_cast<double>(one));
+        EXPECT(a.get(key, value_as_float) && value_as_float == static_cast<float>(one));
+
+        if (key == "int" || key == "long" || key == "size_t") {
+            int value_as_int       = 0;
+            long value_as_long     = 0;
+            size_t value_as_size_t = 0;
+
+            EXPECT(a.get(key, value_as_int) && value_as_int == static_cast<int>(one));
+            EXPECT(a.get(key, value_as_long) && value_as_long == static_cast<long>(one));
+            EXPECT(a.get(key, value_as_size_t) && value_as_size_t == static_cast<size_t>(one));
+        }
+
+        EXPECT_EQUAL(a.getString(key), std::to_string(1));
+    }
+
+
+    MappedConfiguration b({
+        {"true", true},
+        {"false", false},
+        {"zero", 0},
+        {"one", 1},
+    });
+
+    EXPECT(b.getBool("true"));
+    EXPECT(!b.getBool("false"));
+
+    bool maybe = false;
+    EXPECT(!b.has("?"));
+    EXPECT(!b.getBool("?", false));
+    EXPECT(b.getBool("?", true));
+
+    EXPECT(b.get("true", maybe = false) && maybe);
+    EXPECT(b.getBool("true", true));
+    EXPECT(b.getBool("true", false));
+
+    EXPECT(b.get("false", maybe = true) && !maybe);
+    EXPECT(!b.getBool("false", true));
+    EXPECT(!b.getBool("false", false));
+
+    EXPECT(!b.getBool("zero"));
+    EXPECT(!b.getBool("zero", maybe = true));
+    EXPECT(b.get("zero", maybe = true) && !maybe);
+
+    EXPECT(b.getBool("one"));
+    EXPECT(b.getBool("one", maybe = false));
+    EXPECT(b.get("one", maybe = false) && maybe);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE("test_dynamic_configuration") {
     double one        = 1.;
     int two           = 2;
@@ -417,10 +483,13 @@ CASE("test_dynamic_configuration") {
 
     a.set("foo", one);
     EXPECT(a.has("foo"));
+    EXPECT_THROWS_AS(a.getInt("foo"), eckit::ConfigurationNotFound);  // cannot access as int
+    EXPECT(a.getString("foo") == "1");
 
     a.set("bar", two);
     EXPECT_EQUAL(a.getInt("bar"), two);
-    EXPECT_THROWS_AS(a.getString("bar"), std::bad_variant_access);
+    EXPECT(::eckit::types::is_approximately_equal(a.getDouble("bar"), static_cast<double>(two)));
+    EXPECT(a.getString("bar") == "2");
 
     a.set("foo", three);
     EXPECT_EQUAL(a.getString("foo"), three);
@@ -429,6 +498,8 @@ CASE("test_dynamic_configuration") {
 
     EXPECT(b.has("foo"));
     EXPECT_EQUAL(b.getString("foo"), three);
+    EXPECT_THROWS_AS(b.getInt("foo"), eckit::ConfigurationNotFound);     // cannot access as int
+    EXPECT_THROWS_AS(b.getDouble("foo"), eckit::ConfigurationNotFound);  // cannot access as real
 
     b.set("foo", two);
     EXPECT_EQUAL(b.getInt("foo"), two);

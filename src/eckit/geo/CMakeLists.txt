@@ -90,6 +90,8 @@ list( APPEND eckit_geo_srcs
     range/Gaussian.h
     range/Regular.cc
     range/Regular.h
+    range/RegularLongitude.cc
+    range/RegularLongitude.h
     util.cc
     util.h
     util/arange.cc

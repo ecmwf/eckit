@@ -32,8 +32,9 @@ CASE("GridFactory::build") {
 
     SECTION("GridFactory::build_from_name") {
         for (const auto& test : {test_t{"O2", 88}, {"f2", 32}, {"h2", 48}}) {
-            std::unique_ptr<Configuration> cfg(new MappedConfiguration({{"name", test.name}}));
-            std::unique_ptr<const Grid> grid(geo::GridFactory::build(*cfg));
+            std::unique_ptr<const Grid> grid(geo::GridFactory::build(
+                *std::unique_ptr<Configuration>(new MappedConfiguration({{"name", test.name}}))));
+
             auto size = grid->size();
             EXPECT_EQUAL(size, test.size);
         }
@@ -44,23 +45,34 @@ CASE("GridFactory::build") {
 
 
     SECTION("Grid::build_from_increments") {
-        std::unique_ptr<Configuration> cfg(new MappedConfiguration({
-            {"type", "regular_ll"},
-            {"west_east_increment", 1},
-            {"south_north_increment", 1},
-        }));
-        std::unique_ptr<const Grid> grid(geo::GridFactory::build(*cfg));
+        SECTION("global") {
+            std::unique_ptr<const Grid> global(
+                geo::GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
+                    {"type", "regular_ll"},
+                    {"west_east_increment", 1},
+                    {"south_north_increment", 1},
+                }))));
 
-        auto size = grid->size();
-        EXPECT_EQUAL(size, 360 * 181);
-    }
+            auto size = global->size();
+            EXPECT_EQUAL(size, 360 * 181);
+        }
 
 
-    SECTION("Grid::build") {
-        std::unique_ptr<const Grid> grid(geo::GridFactory::build(MappedConfiguration{{{"name", "O2"}}}));
+        SECTION("non-global") {
+            std::unique_ptr<const Grid> grid(
+                geo::GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
+                    {"type", "regular_ll"},
+                    {"west_east_increment", 1},
+                    {"south_north_increment", 1},
+                    {"north", 10},
+                    {"west", 1},
+                    {"south", 1},
+                    {"east", 10},
+                }))));
 
-        //        auto size = grid->size();
-        //        EXPECT_EQUAL(size, 88);
+            auto size = grid->size();
+            EXPECT_EQUAL(size, 100);
+        }
     }
 }
 

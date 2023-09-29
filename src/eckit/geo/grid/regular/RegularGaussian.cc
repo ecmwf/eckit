@@ -15,28 +15,28 @@
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/Gaussian.h"
-#include "eckit/geo/range/Regular.h"
+#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
-// Regular(size_t n, double a, double b, bool endpoint, double precision = 0.);
 
 
 RegularGaussian::RegularGaussian(const Configuration& config) :
-    Regular(config),
-    ni_(config.getUnsigned("ni", config.getUnsigned("ni"))),
-    x_(new range::Regular(ni_, config.getDouble("west", 0.), config.getDouble("east", 360.), true /*FIXME*/)),
-    y_(new range::Gaussian(config.getUnsigned("N"), config.getDouble("north", 90.), config.getDouble("south", -90.))) {
-    ASSERT(ni_ > 0);
-}
+    RegularGaussian(config.getUnsigned("N"), config.getUnsigned("ni"), area::BoundingBox(config)) {}
 
 
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
+    RegularGaussian(N, 4 * N, bbox) {}
+
+
+RegularGaussian::RegularGaussian(size_t N, size_t ni, const area::BoundingBox& bbox) :
     Regular(bbox),
-    ni_(4 * N),
-    x_(new range::Regular(ni_, bbox.west(), bbox.east(), true /*FIXME*/)),
-    y_(new range::Gaussian(N, bbox.west(), bbox.east())) {}
+    x_(new range::RegularLongitude(ni, bbox.west(), bbox.east())),
+    y_(new range::Gaussian(N, bbox.north(), bbox.south())) {
+    ASSERT(x_->size() > 0);
+    ASSERT(y_->size() > 0);
+}
 
 
 Grid::iterator RegularGaussian::cbegin() const {
@@ -51,7 +51,7 @@ Grid::iterator RegularGaussian::cend() const {
 
 Configuration* RegularGaussian::config(const std::string& name) {
     auto N = Translator<std::string, size_t>{}(name.substr(1));
-    return new MappedConfiguration({{"type", "regular_gg"}, {"N", N}, {"Ni", 2 * N}, {"Nj", 4 * N}});
+    return new MappedConfiguration({{"type", "regular_gg"}, {"N", N}, {"ni", 4 * N}});
 }
 
 

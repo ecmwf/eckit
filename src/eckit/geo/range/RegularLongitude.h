@@ -13,13 +13,12 @@
 #pragma once
 
 #include "eckit/geo/Range.h"
-#include "eckit/geo/grid/Regular.h"
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::range {
 
 
-class RegularGaussian final : public Regular {
+class RegularLongitude final : public Range {
 public:
     // -- Types
     // None
@@ -29,9 +28,7 @@ public:
 
     // -- Constructors
 
-    explicit RegularGaussian(const Configuration&);
-    explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
-    RegularGaussian(size_t N, size_t ni, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit RegularLongitude(size_t n, double a, double b, double precision = 0.);
 
     // -- Destructor
     // None
@@ -43,36 +40,31 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    const std::vector<double>& values() const override;
 
     // -- Overridden methods
-
-    iterator cbegin() const override;
-    iterator cend() const override;
-
-    size_t ni() const override { return x_->size(); }
-    size_t nj() const override { return y_->size(); }
+    // None
 
     // -- Class members
     // None
 
     // -- Class methods
-
-    static Configuration* config(const std::string& name);
+    // None
 
 private:
     // -- Members
 
-    std::unique_ptr<Range> x_;
-    std::unique_ptr<Range> y_;
+    const double a_;
+    const double b_;
+    const double precision_;
+    bool endpoint_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
-
-    const std::vector<double>& longitudes() const override;
-    const std::vector<double>& latitudes() const override;
+    // None
 
     // -- Class members
     // None
@@ -85,4 +77,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::range

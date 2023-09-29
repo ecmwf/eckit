@@ -33,6 +33,8 @@ namespace util {
 constexpr double degree_to_radian = M_PI / 180.;
 constexpr double radian_to_degree = M_1_PI * 180.;
 
+constexpr double eps = 1e-12;
+
 
 template <typename T>
 pl_type pl_convert(const T& pl) {

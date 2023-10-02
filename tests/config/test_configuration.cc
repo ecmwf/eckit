@@ -386,7 +386,11 @@ CASE("Hash a configuration") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_mapped_configuration") {
-    int one = 1;
+    int one           = 1;
+    double two        = 2.;
+    std::string three = "3";
+
+
     MappedConfiguration a({
         {"double", static_cast<double>(one)},
         {"float", static_cast<float>(one)},
@@ -447,51 +451,68 @@ CASE("test_mapped_configuration") {
     EXPECT(b.getBool("one"));
     EXPECT(b.getBool("one", maybe = false));
     EXPECT(b.get("one", maybe = false) && maybe);
+
+
+    MappedConfiguration c;
+    EXPECT_NOT(c.has("foo"));
+
+    c.set("foo", two);
+    EXPECT(c.has("foo"));
+    EXPECT_THROWS_AS(c.getInt("foo"), eckit::ConfigurationNotFound);  // cannot access as int
+    EXPECT(::eckit::types::is_approximately_equal(c.getDouble("foo"), two));
+    EXPECT(c.getString("foo") == "2");
+
+    c.set("bar", one);
+    EXPECT_EQUAL(c.getInt("bar"), one);
+    EXPECT(::eckit::types::is_approximately_equal(c.getDouble("bar"), static_cast<double>(one)));
+    EXPECT(c.getString("bar") == "1");
+
+    c.set("foo", three);
+    EXPECT_EQUAL(c.getString("foo"), three);
+
+
+    MappedConfiguration d(c);
+
+    EXPECT(d.has("foo"));
+    EXPECT_EQUAL(d.getString("foo"), three);
+    EXPECT_THROWS_AS(d.getInt("foo"), eckit::ConfigurationNotFound);     // cannot access as int
+    EXPECT_THROWS_AS(d.getDouble("foo"), eckit::ConfigurationNotFound);  // cannot access as real
+
+    d.set("foo", one);
+    EXPECT_EQUAL(d.getInt("foo"), one);
+
+
+    MappedConfiguration e(c);
+
+    ASSERT(e.has("foo"));
+    ASSERT(e.has("bar"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_dynamic_configuration") {
-    double one        = 1.;
-    int two           = 2;
-    std::string three = "3";
+    int one    = 1;
+    double two = 2.;
 
-    DynamicConfiguration a;
-    EXPECT_NOT(a.has("foo"));
-
-    a.set("foo", one);
-    EXPECT(a.has("foo"));
-    EXPECT_THROWS_AS(a.getInt("foo"), eckit::ConfigurationNotFound);  // cannot access as int
-    EXPECT(a.getString("foo") == "1");
-
-    a.set("bar", two);
-    EXPECT_EQUAL(a.getInt("bar"), two);
-    EXPECT(::eckit::types::is_approximately_equal(a.getDouble("bar"), static_cast<double>(two)));
-    EXPECT(a.getString("bar") == "2");
-
-    a.set("foo", three);
-    EXPECT_EQUAL(a.getString("foo"), three);
+    MappedConfiguration a({{"foo", one}, {"bar", two}});
+    ASSERT(a.has("foo"));
+    ASSERT(a.has("bar"));
 
     DynamicConfiguration b(a);
 
-    EXPECT(b.has("foo"));
-    EXPECT_EQUAL(b.getString("foo"), three);
-    EXPECT_THROWS_AS(b.getInt("foo"), eckit::ConfigurationNotFound);     // cannot access as int
-    EXPECT_THROWS_AS(b.getDouble("foo"), eckit::ConfigurationNotFound);  // cannot access as real
+    ASSERT(b.has("foo"));
+    ASSERT(b.has("bar"));
 
-    b.set("foo", two);
-    EXPECT_EQUAL(b.getInt("foo"), two);
+    b.hide("foo");
+    EXPECT_NOT(b.has("foo"));
 
-    DynamicConfiguration c(a);
+    b.unhide("foo");
+    ASSERT(b.has("foo"));
 
-    ASSERT(c.has("foo"));
-    ASSERT(c.has("bar"));
+    EXPECT_EQUAL(a.getInt("foo"), one);
 
-    c.hide("bar");
-    EXPECT_NOT(c.has("bar"));
-
-    c.unhide("bar");
-    EXPECT_EQUAL(a.getInt("bar"), two);
+    auto value = b.getInt("foo");
+    EXPECT_EQUAL(value, one);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

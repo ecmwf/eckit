@@ -15,7 +15,7 @@
 #include <memory>
 #include <ostream>
 
-#include "eckit/config/Configuration.h"
+#include "eckit/config/DynamicConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/GridConfig.h"
 #include "eckit/log/Log.h"
@@ -109,13 +109,22 @@ const Grid* GridFactory::build_(const Configuration& config) const {
     GridConfig::instance();
 
     if (std::string uid; config.get("uid", uid)) {
-        std::unique_ptr<Configuration> cfg(GridConfigurationUID::instance().get(uid).config());
-        return build(*cfg);
+        auto* cfg = new DynamicConfiguration(config);
+        ASSERT(cfg != nullptr);
+
+        cfg->push_back(GridConfigurationUID::instance().get(uid).config());
+
+        return build(*std::unique_ptr<Configuration>(cfg));
     }
 
     if (std::string name; config.get("name", name)) {
-        std::unique_ptr<Configuration> cfg(GridConfigurationName::instance().match(name).config(name));
-        return build(*cfg);
+        auto* cfg = new DynamicConfiguration(config);
+        ASSERT(cfg != nullptr);
+
+        cfg->push_back(GridConfigurationName::instance().match(name).config(name));
+        cfg->hide("name");
+
+        return build(*std::unique_ptr<Configuration>(cfg));
     }
 
     if (std::string type; config.get("type", type)) {

@@ -17,62 +17,40 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
-
-using namespace eckit;
-using namespace eckit::testing;
 
 namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-template <typename T>
-std::vector<T> make_vector(const T& t1, const T& t2) {
-    std::vector<T> result;
-    result.push_back(t1);
-    result.push_back(t2);
-    return result;
-}
-template <typename T>
-std::vector<T> make_vector(const T& t1, const T& t2, const T& t3) {
-    std::vector<T> result;
-    result.push_back(t1);
-    result.push_back(t2);
-    result.push_back(t3);
-    return result;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 CASE("test_configuration_interface") {
-    bool value_bool                            = bool(true);
-    int value_int                              = int(1);
-    long value_long                            = long(2);
-    long long value_long_long                  = 2ll;
-    size_t value_size_t                        = size_t(3);
-    float value_float                          = float(1.234567);
-    double value_double                        = double(1.2345678912345789123456789);
-    std::string value_string                   = std::string("string");
-    std::vector<int> value_arr_int             = make_vector(1, 2, 3);
-    std::vector<long> value_arr_long           = make_vector(4l, 5l);
-    std::vector<long long> value_arr_long_long = make_vector(4ll, 5ll);
-    std::vector<size_t> value_arr_size_t       = make_vector(std::size_t{6}, std::size_t{7});
-    std::vector<float> value_arr_float         = make_vector(1.234567f, 2.345678f);
-    std::vector<double> value_arr_double       = make_vector(1.234567, 2.345678);
-    std::vector<std::string> value_arr_string  = make_vector(std::string("hello"), std::string("world"));
+    bool value_bool                            = true;
+    int value_int                              = 1;
+    long value_long                            = 2;
+    long long value_long_long                  = 2;
+    size_t value_size_t                        = 3;
+    float value_float                          = 1.234567;
+    double value_double                        = 1.2345678912345789123456789;
+    std::string value_string                   = "string";
+    std::vector<int> value_arr_int             = {1, 2, 3};
+    std::vector<long> value_arr_long           = {4, 5};
+    std::vector<long long> value_arr_long_long = {4, 5};
+    std::vector<size_t> value_arr_size_t       = {6, 7};
+    std::vector<float> value_arr_float         = {1.234567, 2.345678};
+    std::vector<double> value_arr_double       = {1.234567, 2.345678};
+    std::vector<std::string> value_arr_string  = {"hello", "world"};
     std::int32_t value_int32                   = value_int;
     std::int64_t value_int64                   = value_long_long;
-    std::vector<std::int32_t> value_arr_int32{4, 5};
-    std::vector<std::int64_t> value_arr_int64{4ll, 5ll};
+    std::vector<std::int32_t> value_arr_int32  = {4, 5};
+    std::vector<std::int64_t> value_arr_int64  = {4, 5};
 
-    bool result_bool;
-    int result_int;
-    long result_long;
-    long long result_long_long;
-    size_t result_size_t;
-    float result_float;
-    double result_double;
+    bool result_bool           = false;
+    int result_int             = 0;
+    long result_long           = 0;
+    long long result_long_long = 0;
+    size_t result_size_t       = 0;
+    float result_float         = 0;
+    double result_double       = 0;
     std::string result_string;
     std::vector<int> result_arr_int;
     std::vector<long> result_arr_long;
@@ -81,8 +59,8 @@ CASE("test_configuration_interface") {
     std::vector<float> result_arr_float;
     std::vector<double> result_arr_double;
     std::vector<std::string> result_arr_string;
-    std::int32_t result_int32;
-    std::int64_t result_int64;
+    std::int32_t result_int32 = 0;
+    std::int64_t result_int64 = 0;
     std::vector<std::int32_t> result_arr_int32;
     std::vector<std::int64_t> result_arr_int64;
 
@@ -521,5 +499,5 @@ CASE("test_dynamic_configuration") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

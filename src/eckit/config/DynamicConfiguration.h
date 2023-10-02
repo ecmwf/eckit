@@ -11,10 +11,12 @@
 #ifndef eckit_DynamicConfiguration_H
 #define eckit_DynamicConfiguration_H
 
+#include <algorithm>
+#include <deque>
+#include <memory>
 #include <unordered_set>
 
 #include "eckit/config/Configuration.h"
-#include "eckit/config/MappedConfiguration.h"
 
 namespace eckit {
 
@@ -44,48 +46,36 @@ public:
 
     // -- Methods
 
-    // (consistent with Configured)
-    void set(const std::string&, const std::string&);
-    void set(const std::string&, bool);
-    void set(const std::string&, int);
-    void set(const std::string&, long);
-    void set(const std::string&, long long);
-    void set(const std::string&, std::size_t);
-    void set(const std::string&, float);
-    void set(const std::string&, double);
-
-    // (consistent with Configured)
-    void set(const std::string&, const std::vector<int>&);
-    void set(const std::string&, const std::vector<long>&);
-    void set(const std::string&, const std::vector<long long>&);
-    void set(const std::string&, const std::vector<std::size_t>&);
-    void set(const std::string&, const std::vector<float>&);
-    void set(const std::string&, const std::vector<double>&);
-    void set(const std::string&, const std::vector<std::string>&);
-
     void hide(const std::string&);
     void unhide(const std::string&);
+    void push_back(Configuration*);
+    void push_front(Configuration*);
 
     // -- Overridden methods
 
-    bool has(const std::string&) const override;
+    bool has(const std::string& name) const override {
+        return !hide_.contains(name) &&
+               (config_.has(name) ||
+                std::any_of(configs_.begin(), configs_.end(), [&](const decltype(configs_)::value_type& c) {
+                    return c->has(name);
+                }));
+    }
 
-    bool get(const std::string&, std::string&) const override;
-    bool get(const std::string&, bool&) const override;
-    bool get(const std::string&, int&) const override;
-    bool get(const std::string&, long&) const override;
-    bool get(const std::string&, long long&) const override;
-    bool get(const std::string&, std::size_t&) const override;
-    bool get(const std::string&, float&) const override;
-    bool get(const std::string&, double&) const override;
-
-    bool get(const std::string&, std::vector<int>&) const override;
-    bool get(const std::string&, std::vector<long>&) const override;
-    bool get(const std::string&, std::vector<long long>&) const override;
-    bool get(const std::string&, std::vector<std::size_t>&) const override;
-    bool get(const std::string&, std::vector<float>&) const override;
-    bool get(const std::string&, std::vector<double>&) const override;
-    bool get(const std::string&, std::vector<std::string>&) const override;
+    bool get(const std::string& name, std::string& value) const override { return __get(name, value); }
+    bool get(const std::string& name, bool& value) const override { return __get(name, value); }
+    bool get(const std::string& name, int& value) const override { return __get(name, value); }
+    bool get(const std::string& name, long& value) const override { return __get(name, value); }
+    bool get(const std::string& name, long long& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::size_t& value) const override { return __get(name, value); }
+    bool get(const std::string& name, float& value) const override { return __get(name, value); }
+    bool get(const std::string& name, double& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<int>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<long>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<long long>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<std::size_t>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<float>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<double>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<std::string>& value) const override { return __get(name, value); }
 
     // -- Class members
     // None
@@ -96,15 +86,23 @@ public:
 private:
     // -- Members
 
-    const Configuration& passive_;
-    MappedConfiguration active_;
-
     struct : std::unordered_set<std::string> {
-        bool contains(const value_type& key) const { return find(key) != end(); }
+        bool contains(const value_type& name) const { return find(name) != end(); }
     } hide_;
 
+    const Configuration& config_;
+    std::deque<std::unique_ptr<Configuration>> configs_;
+
     // -- Methods
-    // None
+
+    template <typename T>
+    bool __get(const std::string& name, T& value) const {
+        return !hide_.contains(name) &&
+               (config_.get(name, value) ||
+                std::any_of(configs_.begin(), configs_.end(), [&](const decltype(configs_)::value_type& c) {
+                    return c->get(name, value);
+                }));
+    }
 
     // -- Overridden methods
 
@@ -117,17 +115,7 @@ private:
     // None
 
     // -- Friends
-
-    template <typename T>
-    friend void __set(DynamicConfiguration& config, const std::string& name, T& value) {
-        config.active_.set(name, value);
-        config.hide_.erase(name);
-    }
-
-    template <typename T>
-    friend bool __get(const DynamicConfiguration& config, const std::string& name, T& value) {
-        return !config.hide_.contains(name) && (config.active_.get(name, value) || config.passive_.get(name, value));
-    }
+    // None
 };
 
 //----------------------------------------------------------------------------------------------------------------------

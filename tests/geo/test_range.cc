@@ -19,7 +19,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-#define EXPECT_APPROX(a, b) EXPECT(::eckit::types::is_approximately_equal((a), (b), 1e-12))
+#define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal((a), (b), (eps)))
 
 
 namespace eckit::test {
@@ -30,31 +30,47 @@ CASE("range::Gaussian") {
 
     std::vector<double> ref{59.44440828916676, 19.87571914744090, -19.87571914744090, -59.44440828916676};
 
-    auto global = Gaussian(2);
 
-    EXPECT(global.size() == ref.size());
+    SECTION("global") {
+        auto global = Gaussian(2);
+        EXPECT(global.size() == ref.size());
 
-    size_t i = 0;
-    for (const auto& test : global.values()) {
-        EXPECT_APPROX(test, ref[i++]);
+        size_t i = 0;
+        for (const auto& test : global.values()) {
+            EXPECT_APPROX(test, ref[i++], 1e-12);
+        }
     }
 
-    auto cropped = Gaussian(2, 50., -50., 1e-3);
-    EXPECT(cropped.size() == ref.size() - 2);
 
-    i = 1;
-    for (const auto& test : cropped.values()) {
-        EXPECT_APPROX(test, ref[i++]);
+    SECTION("crop [50., -50.]") {
+        constexpr auto eps = 1e-3;
+
+        auto cropped = Gaussian(2, 50., -50., eps);
+        EXPECT(cropped.size() == ref.size() - 2);
+
+        EXPECT_APPROX(cropped.values()[0], ref[1], eps);
+        EXPECT_APPROX(cropped.values()[1], ref[2], eps);
+
+        EXPECT(Gaussian(2, 59.444, -59.444, 1e-3).size() == 4);
+        EXPECT(Gaussian(2, 59.444, -59.444, 1e-6).size() == 2);
+        EXPECT(Gaussian(2, 59.444, -59.445, 1e-6).size() == 3);
+
+        auto single = Gaussian(2, -59.444, -59.444, eps);
+        EXPECT(single.size() == 1);
+
+        EXPECT_APPROX(single.values().front(), ref.back(), eps);
     }
 
-    EXPECT(Gaussian(2, 59.444, -59.444, 1e-3).size() == 4);
-    EXPECT(Gaussian(2, 59.444, -59.444, 1e-6).size() == 2);
-    EXPECT(Gaussian(2, 59.444, -59.445, 1e-6).size() == 3);
 
-    auto single = Gaussian(2, -59.444, -59.444, 1e-3);
-    EXPECT(single.size() == 1);
+    SECTION("crop [90., 0.]") {
+        constexpr auto eps = 1e-3;
 
-    EXPECT_APPROX(single.values().front(), ref.back());
+        auto cropped = Gaussian(2, 90., 0., eps);
+        EXPECT(cropped.size() == ref.size() / 2);
+
+        EXPECT_APPROX(cropped.values()[0], ref[0], eps);
+        EXPECT_APPROX(cropped.values()[1], ref[1], eps);
+    }
 }
 
 

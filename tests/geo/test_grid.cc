@@ -41,6 +41,15 @@ CASE("GridFactory::build") {
     }
 
 
+    SECTION("RegularGaussian") {
+        std::unique_ptr<const Grid> grid(geo::GridFactory::build(
+            *std::unique_ptr<Configuration>(new MappedConfiguration({{"name", "f2"}, {"south", 0}}))));
+
+        auto nh = grid->size();
+        EXPECT_EQUAL(nh, 32 / 2);
+    }
+
+
     SECTION("Grid::build_from_uid") {}
 
 

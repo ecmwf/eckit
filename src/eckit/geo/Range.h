@@ -79,7 +79,7 @@ protected:
 
     // -- Methods
 
-    virtual const P& valuesVector() const { return *this; }
+    const P& valuesVector() const { return *this; }
 
     // -- Overridden methods
     // None

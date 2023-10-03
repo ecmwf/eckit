@@ -12,6 +12,7 @@
 
 #include "eckit/geo/range/Regular.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
 
 
@@ -19,11 +20,7 @@ namespace eckit::geo::range {
 
 
 Regular::Regular(size_t n, double a, double b, double precision) :
-    Range(n), a_(a), b_(b), precision_(precision), endpoint_(false) {}
-
-
-Regular::Regular(size_t n, double a, double b, bool endpoint, double precision) :
-    Range(n), a_(a), b_(b), precision_(precision), endpoint_(endpoint) {}
+    Range(n), a_(a), b_(b), precision_(precision) {}
 
 
 const std::vector<double>& Regular::values() const {
@@ -31,9 +28,11 @@ const std::vector<double>& Regular::values() const {
         auto& v = const_cast<std::vector<double>&>(valuesVector());
         v       = util::linspace(0., 360., size(), false);
 
-        auto [from, to] = util::monotonic_crop(v, a_, b_, 1e-3);
+        auto [from, to] = util::monotonic_crop(v, a_, b_, precision_);
         v.erase(v.begin() + to, v.end());
         v.erase(v.begin(), v.begin() + from);
+
+        ASSERT(!empty());
     }
 
     return *this;

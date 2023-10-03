@@ -108,13 +108,30 @@ const Grid* GridFactory::build_(const Configuration& config) const {
 
     GridConfig::instance();
 
+    std::unique_ptr<Configuration> cfg(configure_(config));
+
+    if (std::string type; cfg->get("type", type)) {
+        return GridFactoryType::instance().get(type).create(*cfg);
+    }
+
+    list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
+    throw SeriousBug("Grid: cannot build grid without 'type'");
+}
+
+
+Configuration* GridFactory::configure_(const Configuration& config) const {
+    AutoLock<Mutex> lock(mutex_);
+
+    GridConfig::instance();
+
     if (std::string uid; config.get("uid", uid)) {
         auto* cfg = new DynamicConfiguration(config);
         ASSERT(cfg != nullptr);
 
         cfg->push_back(GridConfigurationUID::instance().get(uid).config());
+        cfg->hide("uid");
 
-        return build(*std::unique_ptr<Configuration>(cfg));
+        return configure_(*cfg);
     }
 
     if (std::string name; config.get("name", name)) {
@@ -124,15 +141,17 @@ const Grid* GridFactory::build_(const Configuration& config) const {
         cfg->push_back(GridConfigurationName::instance().match(name).config(name));
         cfg->hide("name");
 
-        return build(*std::unique_ptr<Configuration>(cfg));
+        return configure_(*cfg);
     }
 
-    if (std::string type; config.get("type", type)) {
-        return GridFactoryType::instance().get(type).create(config);
+    // interpretation (gridspec)
+    // TODO
+
+    if (config.has("type")) {
+        return new DynamicConfiguration(config);
     }
 
-    list(Log::error() << "Grid: cannot build grid, choices are: ");
-    throw SeriousBug("Grid: cannot build grid");
+    throw SeriousBug("Grid: cannot interpret gridspec");
 }
 
 

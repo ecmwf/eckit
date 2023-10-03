@@ -195,6 +195,8 @@ using GridRegisterName = ConcreteConfigurationGeneratorT1<T, const std::string&>
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Configuration& config) { return instance().build_(config); }
+
+    static Configuration* configure(const Configuration& config) { return instance().configure_(config); }
     static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
@@ -202,6 +204,8 @@ private:
 
     // This is 'const' as Grid should always be immutable
     const Grid* build_(const Configuration&) const;
+
+    Configuration* configure_(const Configuration&) const;
     void list_(std::ostream&) const;
 
     mutable Mutex mutex_;

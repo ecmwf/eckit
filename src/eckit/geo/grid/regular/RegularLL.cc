@@ -100,9 +100,8 @@ struct DiscreteRange {
 
 
 RegularLL::RegularLL(const Configuration& config) :
-    RegularLL({config.getDouble("west_east_increment"), config.getDouble("south_north_increment")},
-              area::BoundingBox(config),
-              {config.getDouble("west", 0), config.getDouble("south", 0)}) {}
+    RegularLL(
+        Increments{config}, area::BoundingBox{config}, {config.getDouble("west", 0), config.getDouble("south", 0)}) {}
 
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref) :
@@ -163,11 +162,7 @@ Configuration* RegularLL::config(const std::string& name) {
                   // Fraction(360)).n();
     auto nj = 1;  // detail::RegularIterator(Fraction(-90), Fraction(90), Fraction(increments[1]), Fraction(0)).n();
 
-    return new MappedConfiguration({{"type", "regular_ll"},
-                                    {"west_east_increment", increments[0]},
-                                    {"south_north_increment", increments[1]},
-                                    {"ni", ni},
-                                    {"nj", nj}});
+    return new MappedConfiguration({{"type", "regular_ll"}, {"grid", increments}, {"ni", ni}, {"nj", nj}});
 }
 
 

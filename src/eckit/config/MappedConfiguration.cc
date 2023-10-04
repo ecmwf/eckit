@@ -234,11 +234,8 @@ bool MappedConfiguration::has(const std::string& name) const {
 
 
 bool MappedConfiguration::get(const std::string& name, std::string& value) const {
-    if (auto it = map_.find(name); it != map_.cend()) {
-        value =
-            std::holds_alternative<std::string>(it->second)
-                ? std::get<std::string>(it->second)
-                : std::visit([](auto&& arg) -> std::string { return (std::ostringstream() << arg).str(); }, it->second);
+    if (auto it = map_.find(name); it != map_.cend() && std::holds_alternative<std::string>(it->second)) {
+        value = std::get<std::string>(it->second);
         return true;
     }
     return false;

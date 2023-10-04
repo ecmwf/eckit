@@ -67,6 +67,9 @@ public:
     // -- Methods
 
     bool empty() const { return map_.empty(); }
+    void clear() { map_.clear(); }
+
+    void set(const std::string& name, const char* value) { set(name, std::string{value}); }
 
     // (consistent with Configured)
     void set(const std::string&, const std::string&);

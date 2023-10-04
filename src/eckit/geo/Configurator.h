@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -57,6 +58,8 @@ public:
     static Configurator<C>& instance();
 
     bool exists(const key_t&) const;
+    bool matches(const std::string&) const;
+
     void regist(const key_t&, configurator_t*);
     void unregist(const key_t&);
 
@@ -100,7 +103,13 @@ Configurator<C>& Configurator<C>::instance() {
 template <class C>
 bool Configurator<C>::exists(const key_t& k) const {
     AutoLock<Mutex> lock(mutex_);
-    return (store_.find(k) != store_.end());
+    return store_.find(k) != store_.end();
+}
+
+template <class C>
+bool Configurator<C>::matches(const std::string& k) const {
+    AutoLock<Mutex> lock(mutex_);
+    return std::any_of(store_.begin(), store_.end(), [&](const auto& p) { return Regex(p.first).match(k); });
 }
 
 template <class C>
@@ -116,19 +125,20 @@ void Configurator<C>::regist(const key_t& k, configurator_t* c) {
 template <class C>
 void Configurator<C>::unregist(const key_t& k) {
     AutoLock<Mutex> lock(mutex_);
-    if (!exists(k)) {
-        throw BadParameter("Configurator unknown: '" + k + "'", Here());
+    if (auto it = store_.find(k); it != store_.end()) {
+        store_.erase(it);
+        return;
     }
-    store_.erase(k);
+    throw BadParameter("Configurator unknown: '" + k + "'", Here());
 }
 
 template <class C>
 const typename Configurator<C>::configurator_t& Configurator<C>::get(const key_t& k) const {
     AutoLock<Mutex> lock(mutex_);
-    if (!exists(k)) {
-        throw BadParameter("Configurator unknown: '" + k + "'", Here());
+    if (auto it = store_.find(k); it != store_.end()) {
+        return *(it->second);
     }
-    return *(store_.find(k)->second);
+    throw BadParameter("Configurator unknown: '" + k + "'", Here());
 }
 
 template <class C>

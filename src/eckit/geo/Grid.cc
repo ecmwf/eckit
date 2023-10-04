@@ -16,6 +16,7 @@
 #include <ostream>
 
 #include "eckit/config/DynamicConfiguration.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/GridConfig.h"
 #include "eckit/log/Log.h"
@@ -106,8 +107,6 @@ GridFactory& GridFactory::instance() {
 const Grid* GridFactory::build_(const Configuration& config) const {
     AutoLock<Mutex> lock(mutex_);
 
-    GridConfig::instance();
-
     std::unique_ptr<Configuration> cfg(configure_(config));
 
     if (std::string type; cfg->get("type", type)) {
@@ -124,34 +123,39 @@ Configuration* GridFactory::configure_(const Configuration& config) const {
 
     GridConfig::instance();
 
-    if (std::string uid; config.get("uid", uid)) {
-        auto* cfg = new DynamicConfiguration(config);
-        ASSERT(cfg != nullptr);
+    auto* cfg = new DynamicConfiguration(config);
+    ASSERT(cfg != nullptr);
 
-        cfg->push_back(GridConfigurationUID::instance().get(uid).config());
-        cfg->hide("uid");
 
-        return configure_(*cfg);
+    // hardcoded, interpreted options (contributing to gridspec)
+
+    auto* map = new MappedConfiguration;
+    ASSERT(map != nullptr);
+
+    if (size_t N = 0; cfg->get("N", N)) {
+        map->set("grid", "O" + std::to_string(N));
     }
 
-    if (std::string name; config.get("name", name)) {
-        auto* cfg = new DynamicConfiguration(config);
-        ASSERT(cfg != nullptr);
-
-        cfg->push_back(GridConfigurationName::instance().match(name).config(name));
-        cfg->hide("name");
-
-        return configure_(*cfg);
+    if (std::vector<double> grid; cfg->get("grid", grid) && grid.size() == 2) {
+        map->set("type", "regular_ll");
     }
 
-    // interpretation (gridspec)
-    // TODO
+    cfg->push_back(map);
 
-    if (config.has("type")) {
-        return new DynamicConfiguration(config);
+
+    // configurable options
+
+    if (std::string uid; cfg->get("uid", uid)) {
+        cfg->push_front(GridConfigurationUID::instance().get(uid).config());
+    }
+    else if (std::string grid; cfg->get("grid", grid) && GridConfigurationName::instance().matches(grid)) {
+        cfg->push_front(GridConfigurationName::instance().match(grid).config(grid));
     }
 
-    throw SeriousBug("Grid: cannot interpret gridspec");
+
+    // finalise
+
+    return cfg;
 }
 
 

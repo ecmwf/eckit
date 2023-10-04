@@ -24,25 +24,23 @@ class MappedConfiguration final : public Configuration {
 public:
     // -- Types
 
-    using value_type = std::variant<
-        std::string,
-        bool,
-        int,
-        long,
-        long long,
-        std::size_t,
-        float,
-        double,
-        std::vector<int>,
-        std::vector<long>,
-        std::vector<long long>,
-        std::vector<std::size_t>,
-        std::vector<float>,
-        std::vector<double>,
-        std::vector<std::string>>;
+    using value_type = std::variant<std::string,
+                                    bool,
+                                    int,
+                                    long,
+                                    long long,
+                                    std::size_t,
+                                    float,
+                                    double,
+                                    std::vector<int>,
+                                    std::vector<long>,
+                                    std::vector<long long>,
+                                    std::vector<std::size_t>,
+                                    std::vector<float>,
+                                    std::vector<double>,
+                                    std::vector<std::string>>;
 
-    using container_type = std::map<std::string,
-                                    value_type>;
+    using container_type = std::map<std::string, value_type>;
 
     // -- Exceptions
     // None
@@ -67,6 +65,8 @@ public:
     MappedConfiguration& operator=(MappedConfiguration&&);
 
     // -- Methods
+
+    bool empty() const { return map_.empty(); }
 
     // (consistent with Configured)
     void set(const std::string&, const std::string&);

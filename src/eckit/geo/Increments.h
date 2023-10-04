@@ -13,6 +13,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 
 
 namespace eckit {
@@ -29,6 +30,10 @@ private:
 
     using P = std::array<double, 2>;
 
+    struct VectorHelper : std::vector<double> {
+        explicit VectorHelper(const Configuration&);
+    };
+
 public:
     // -- Types
     // None
@@ -38,10 +43,9 @@ public:
 
     // -- Constructors
 
-    Increments(double west_east, double south_north) :
-        P{west_east, south_north} {};
+    Increments(double west_east, double south_north);
 
-    Increments(const Configuration&);
+    explicit Increments(const Configuration& config);
 
     // -- Destructor
     // None
@@ -70,23 +74,11 @@ public:
     // -- Class methods
     // None
 
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
+    // -- Constructors
+
+    explicit Increments(const VectorHelper&);
+
     // -- Members
     // None
 

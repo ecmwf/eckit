@@ -25,6 +25,8 @@ list( APPEND eckit_geo_srcs
     Grid.h
     GridConfig.cc
     GridConfig.h
+    Increments.cc
+    Increments.h
     Iterator.h
     KPoint.cc
     KPoint.h

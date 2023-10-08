@@ -71,6 +71,8 @@ list( APPEND eckit_geo_srcs
     grid/reduced/ReducedLL.h
     grid/regular/IrregularLL.cc
     grid/regular/IrregularLL.h
+    grid/regular/Mercator.cc
+    grid/regular/Mercator.h
     grid/regular/RegularGaussian.cc
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc
@@ -89,6 +91,8 @@ list( APPEND eckit_geo_srcs
     polygon/Polygon.h
     projection/LonLatToXYZ.cc
     projection/LonLatToXYZ.h
+    projection/Mercator.cc
+    projection/Mercator.h
     projection/None.cc
     projection/None.h
     projection/Rotation.cc

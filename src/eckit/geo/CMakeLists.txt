@@ -18,6 +18,7 @@ list( APPEND eckit_geo_srcs
     Earth.h
     EllipsoidOfRevolution.cc
     EllipsoidOfRevolution.h
+    Figure.cc
     Figure.h
     GreatCircle.cc
     GreatCircle.h
@@ -52,6 +53,10 @@ list( APPEND eckit_geo_srcs
     UnitSphere.h
     area/BoundingBox.cc
     area/BoundingBox.h
+    figure/OblateSpheroid.cc
+    figure/OblateSpheroid.h
+    figure/Sphere.cc
+    figure/Sphere.h
     grid/Reduced.cc
     grid/Reduced.h
     grid/Regular.cc

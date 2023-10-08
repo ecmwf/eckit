@@ -42,6 +42,8 @@ public:
     Figure(const Figure&) = default;
     Figure(Figure&&)      = default;
 
+    explicit Figure(const Configuration&);
+
     // -- Destructor
 
     virtual ~Figure() = default;
@@ -57,6 +59,12 @@ public:
     // -- Methods
 
     static std::string className() { return "figure"; }
+
+    virtual double R() const;
+    virtual double a() const;
+    virtual double b() const;
+
+    double eccentricity() const;
 
     // -- Overridden methods
     // None

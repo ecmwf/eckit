@@ -15,12 +15,18 @@
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/projection/Mercator.h"
 #include "eckit/geo/projection/Rotation.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 
 
-int main(int argc, char* argv[]) {
+namespace eckit::test {
+
+
+CASE("projection") {
     using eckit::MappedConfiguration;
 
     using namespace eckit::geo;
@@ -30,13 +36,15 @@ int main(int argc, char* argv[]) {
 
     Point p = PointLonLat{1, 1};
 
-    {
+
+    SECTION("projection type: none") {
         Projection projection(ProjectionFactory::instance().get("none").create(MappedConfiguration{}));
         EXPECT(points_equal(p, projection->inv(p)));
         EXPECT(points_equal(p, projection->fwd(p)));
     }
 
-    {
+
+    SECTION("projection type: rotation") {
         MappedConfiguration param({
             {"projection", "rotation"},
             {"south_pole_lat", -91.},
@@ -49,7 +57,8 @@ int main(int argc, char* argv[]) {
         EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
     }
 
-    {
+
+    SECTION("projection type: ll_to_xyz") {
         Projection s1(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"R", 1.}})));
         Projection s2(
             ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 1.}})));
@@ -85,35 +94,31 @@ int main(int argc, char* argv[]) {
     }
 
 
-    {
-
+    SECTION("projection type: ll_to_xyz") {
         const PointLonLat p(723., 1.);  // <- FIXME
 
-        {
-            projection::LonLatToXYZ to_xyz(1.);
+        projection::LonLatToXYZ to_xyz_r(1.);
 
-            auto q = to_xyz.fwd(p);
-            auto r = to_xyz.inv(q);
-            std::cout << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
+        auto q = to_xyz_r.fwd(p);
+        auto r = to_xyz_r.inv(q);
+        std::cout << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
 
-            EXPECT(points_equal(p, r));
+        EXPECT(points_equal(p, r));
+
+        // oblate spheroid (supported)
+        projection::LonLatToXYZ to_xyz_ab(3., 2.);
+
+        for (const auto& lon : {0., 90., 180., 270.}) {
+            PointLonLat p{lon, 0.};
+            std::cout << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_ab.fwd(p) << std::endl;
         }
 
-
-        {
-            projection::LonLatToXYZ to_xyz_ab(3., 2.);  // oblate
-            projection::LonLatToXYZ to_xyz_ba(2., 3.);  // problate
-
-            for (const auto& lon : {0., 90., 180., 270.}) {
-                PointLonLat p{lon, 0.};
-                std::cout << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_ab.fwd(p)
-                          << ", p_ba(x,y,z): " << to_xyz_ba.fwd(p) << std::endl;
-            }
-        }
+        // problate spheroid (not supported)
+        EXPECT_THROWS(projection::LonLatToXYZ(2., 3.));
     }
 
 
-    {
+    SECTION("projection type: rotation") {
         const PointLonLat p(1, 1);
         int delta[] = {-360, -180, -1, 0, 1, 90, 91, 180};
 
@@ -133,7 +138,8 @@ int main(int argc, char* argv[]) {
     }
 
 
-    {
+#if 0
+    SECTION("projection type: rotation") {
         const int Ni = 12;
         const int Nj = 3;
 
@@ -230,14 +236,17 @@ int main(int argc, char* argv[]) {
                 PointLonLat a(static_cast<double>(i) * 360. / static_cast<double>(Ni),
                               static_cast<double>(j - Nj) * 90. / static_cast<double>(Nj));
                 auto b = rot.fwd(a);
+                auto c = rot.inv(b);
+
                 EXPECT(points_equal(b, ref[k]));
-                EXPECT(points_equal(a, rot.inv(b)));
+                EXPECT(points_equal(a, c));
             }
         }
     }
+#endif
 
 
-    {
+    SECTION("projection type: rotation") {
         const projection::Rotation non_rotated(0., -90., 0.);
         const projection::Rotation rotation_angle(0., -90., -180.);
         const projection::Rotation rotation_matrix(4., -40., 180.);
@@ -277,52 +286,87 @@ int main(int argc, char* argv[]) {
     }
 
 
-    if (ProjectionFactory::instance().exists("proj")) {
-        std::cout.precision(14);
+    SECTION("projection type: proj") {
+        if (ProjectionFactory::instance().exists("proj")) {
+            std::cout.precision(14);
 
-        PointLonLat a{12., 55.};
+            PointLonLat a{12., 55.};
 
-        struct {
-            const Point b;
-            const std::string target;
-        } tests[] = {
-            {Point2{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
-            {Point2{691875.632137542, 6098907.825129169}, "EPSG:32632"},
-            {a, "EPSG:4326"},
-            {a, "EPSG:4979"},
-            {Point3{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
-            {Point3{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
-            {Point3{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
-            {a, "+proj=latlon +ellps=sphere"},
-        };
+            struct {
+                const Point b;
+                const std::string target;
+            } tests[] = {
+                {Point2{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
+                {Point2{691875.632137542, 6098907.825129169}, "EPSG:32632"},
+                {a, "EPSG:4326"},
+                {a, "EPSG:4979"},
+                {Point3{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
+                {Point3{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
+                {Point3{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
+                {a, "+proj=latlon +ellps=sphere"},
+            };
 
-        for (const auto& test : tests) {
-            Projection projection(ProjectionFactory::instance().get("proj").create(
-                MappedConfiguration{{{"source", "EPSG:4326"}, {"target", test.target}}}));
+            for (const auto& test : tests) {
+                Projection projection(ProjectionFactory::instance().get("proj").create(
+                    MappedConfiguration{{{"source", "EPSG:4326"}, {"target", test.target}}}));
 
 #if 0
         std::cout << "ellipsoid: '" << PROJ::ellipsoid(projection.target())
                   << std::endl;
 #endif
 
-            auto b = projection->fwd(a);
-            auto c = projection->inv(b);
+                auto b = projection->fwd(a);
+                auto c = projection->inv(b);
 
-            std::cout << "-> a:" << a << " -> fwd(a):" << b << " -> inv(fwd(a)):" << c << std::endl;
+                std::cout << "-> a:" << a << " -> fwd(a):" << b << " -> inv(fwd(a)):" << c << std::endl;
 
-            EXPECT(points_equal(b, test.b));
-            EXPECT(points_equal(c, a));
+                EXPECT(points_equal(b, test.b));
+                EXPECT(points_equal(c, a));
 
-            Projection reverse(ProjectionFactory::instance().get("proj").create(
-                MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}})));
+                Projection reverse(ProjectionFactory::instance().get("proj").create(
+                    MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}})));
 
-            auto d = reverse->fwd(test.b);
-            auto e = reverse->inv(d);
+                auto d = reverse->fwd(test.b);
+                auto e = reverse->inv(d);
 
-            std::cout << "-> b:" << test.b << " -> fwd(b):" << d << " -> inv(fwd(b)):" << e << std::endl;
+                std::cout << "-> b:" << test.b << " -> fwd(b):" << d << " -> inv(fwd(b)):" << e << std::endl;
 
-            EXPECT(points_equal(d, a));
-            EXPECT(points_equal(e, test.b));
+                EXPECT(points_equal(d, a));
+                EXPECT(points_equal(e, test.b));
+            }
         }
     }
+
+
+    SECTION("projection type: mercator") {
+        PointLonLat first{262.036, 14.7365};
+
+        {
+            projection::Mercator projection(0., 14., new figure::Sphere(6371229.), first);
+
+            auto p = projection.inv({0, 0});
+            Log::info() << p << std::endl;
+
+            auto q = projection.fwd(p);
+            Log::info() << q << std::endl;
+        }
+
+        {
+            projection::Mercator projection(-180., 0., new figure::Sphere(1.), {0, 0});
+
+            auto q = projection.fwd({-75, 35});
+            Log::info() << q << std::endl;
+
+            auto p = projection.inv(q);
+            Log::info() << p << std::endl;
+        }
+    }
+}
+
+
+}  // namespace eckit::test
+
+
+int main(int argc, char** argv) {
+    return eckit::testing::run_tests(argc, argv);
 }

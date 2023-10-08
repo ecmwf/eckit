@@ -21,7 +21,8 @@
 
 namespace eckit {
 class Configuration;
-}
+class MappedConfiguration;
+}  // namespace eckit
 
 
 namespace eckit::geo {
@@ -33,6 +34,8 @@ public:
 
     using builder_t = BuilderT1<Projection>;
     using ARG1      = const Configuration&;
+
+    using Spec = MappedConfiguration;
 
     // -- Exceptions
     // None
@@ -57,10 +60,12 @@ public:
 
     // -- Methods
 
+    static std::string className() { return "projection"; }
+
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
-    static std::string className() { return "projection"; }
+    virtual Spec spec() const = 0;
 
     // -- Overridden methods
     // None

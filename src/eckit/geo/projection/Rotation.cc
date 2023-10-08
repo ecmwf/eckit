@@ -15,7 +15,7 @@
 #include <cmath>
 #include <utility>
 
-#include "eckit/config/Configuration.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/UnitSphere.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
@@ -38,22 +38,32 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 
     struct NonRotated final : Rotate {
         PointLonLat operator()(const PointLonLat& p) const override { return p; }
+        Spec spec() const override { return Spec{}; }
     };
 
     struct RotationAngle final : Rotate {
         explicit RotationAngle(double angle) :
             angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
+        Spec spec() const override { return Spec{{{"angle", angle_}}}; }
         const double angle_;
     };
 
     struct RotationMatrix final : Rotate {
         explicit RotationMatrix(M&& R) :
-            R_(R) {}
+            RotationMatrix(std::move(R), 0, 0, 0) {}
+        RotationMatrix(M&& R, double south_pole_lon, double south_pole_lat, double angle) :
+            R_(R), south_pole_lon_(south_pole_lon), south_pole_lat_(south_pole_lat), angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override {
             return UnitSphere::convertCartesianToSpherical(R_ * UnitSphere::convertSphericalToCartesian(p));
         }
+        Spec spec() const override {
+            return Spec{{{"south_pole_lon", south_pole_lon_}, {"south_pole_lat", south_pole_lat_}, {"angle", angle_}}};
+        }
         const M R_;
+        const double south_pole_lon_;
+        const double south_pole_lat_;
+        const double angle_;
     };
 
     const auto alpha = util::degree_to_radian * angle;
@@ -112,6 +122,11 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 
 Rotation::Rotation(const Configuration& config) :
     Rotation(config.getDouble("south_pole_lon"), config.getDouble("south_pole_lat"), config.getDouble("angle", 0)) {}
+
+
+Projection::Spec Rotation::spec() const {
+    return fwd_->spec();
+}
 
 
 }  // namespace eckit::geo::projection

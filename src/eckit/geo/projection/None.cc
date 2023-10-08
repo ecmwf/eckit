@@ -12,6 +12,8 @@
 
 #include "eckit/geo/projection/None.h"
 
+#include "eckit/config/MappedConfiguration.h"
+
 
 namespace eckit::geo::projection {
 
@@ -23,6 +25,11 @@ static ProjectionBuilder<None> __projection4("plate-carree");
 
 
 None::None(const Configuration&) {}
+
+
+Projection::Spec None::spec() const {
+    return Spec{};
+}
 
 
 }  // namespace eckit::geo::projection

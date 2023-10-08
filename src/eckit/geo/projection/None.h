@@ -44,7 +44,8 @@ public:
     // None
 
     // -- Overridden methods
-    // None
+
+    Spec spec() const override;
 
     // -- Class members
     // None

@@ -12,7 +12,7 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
-#include "eckit/config/Configuration.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 
 
@@ -120,6 +120,11 @@ Point PROJ::fwd(const Point& p) const {
 
 Point PROJ::inv(const Point& q) const {
     return from_->convert(proj_trans(proj_.get(), PJ_INV, to_->convert(q)));
+}
+
+
+Projection::Spec PROJ::spec() const {
+    return Spec{{{"source", source_}, {"target", target_}}};
 }
 
 

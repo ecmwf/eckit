@@ -12,7 +12,7 @@
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 
-#include "eckit/config/Configuration.h"
+#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/EllipsoidOfRevolution.h"
 #include "eckit/geo/Sphere.h"
 #include "eckit/types/FloatCompare.h"
@@ -25,8 +25,7 @@ static ProjectionBuilder<LonLatToXYZ> __projection("ll_to_xyz");
 
 
 LonLatToXYZ::LonLatToXYZ(double a, double b) {
-    ASSERT(0. < a);
-    ASSERT(0. < b);
+    ASSERT_MSG(types::is_strictly_greater(b, 0.) && b <= a, "LonLatToXYZ requires 0 < b <= a");
 
     struct LonLatToSphereXYZ final : Implementation {
         using S = Sphere;
@@ -36,6 +35,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
             R_(R) {}
         Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(R_, p, 0.); }
         PointLonLat operator()(const Point3& q) const override { return S::convertCartesianToSpherical(R_, q); }
+        Spec spec() const override { return Spec{{{"R", R_}}}; }
     };
 
     struct LonLatToSpheroidXYZ final : Implementation {
@@ -47,6 +47,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
             a_(a), b_(b) {}
         Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(a_, b_, p, 0.); }
         PointLonLat operator()(const Point3& q) const override { NOTIMP; }
+        Spec spec() const override { return Spec{{{"a", a_}, {"b", b_}}}; }
     };
 
     impl_.reset(types::is_approximately_equal(a, b) ? static_cast<Implementation*>(new LonLatToSphereXYZ(a))
@@ -60,6 +61,11 @@ LonLatToXYZ::LonLatToXYZ(double R) :
 
 LonLatToXYZ::LonLatToXYZ(const Configuration& config) :
     LonLatToXYZ(config.getDouble("a", config.getDouble("R", 1.)), config.getDouble("b", config.getDouble("R", 1.))) {}
+
+
+Projection::Spec LonLatToXYZ::spec() const {
+    return impl_->spec();
+}
 
 
 }  // namespace eckit::geo::projection

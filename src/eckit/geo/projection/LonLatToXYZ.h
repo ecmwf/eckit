@@ -47,7 +47,8 @@ public:
     PointLonLat inv(const Point3& q) const { return (*impl_)(q); }
 
     // -- Overridden methods
-    // None
+
+    Spec spec() const override;
 
     // -- Class members
     // None
@@ -69,6 +70,7 @@ private:
 
         virtual Point3 operator()(const PointLonLat&) const = 0;
         virtual PointLonLat operator()(const Point3&) const = 0;
+        virtual Spec spec() const                           = 0;
     };
 
     // -- Members

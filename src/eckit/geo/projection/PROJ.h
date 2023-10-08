@@ -83,6 +83,8 @@ public:
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
+    Spec spec() const override;
+
     // -- Class members
     // None
 

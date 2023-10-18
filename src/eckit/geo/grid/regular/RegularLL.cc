@@ -100,30 +100,24 @@ struct DiscreteRange {
 
 
 RegularLL::RegularLL(const Configuration& config) :
-    RegularLL(
-        Increments{config}, area::BoundingBox{config}, {config.getDouble("west", 0), config.getDouble("south", 0)}) {}
+    RegularLL(Increments{config},
+              area::BoundingBox{config},
+              PointLonLat{config.getDouble("reference_lon", config.getDouble("west", 0)),
+                          config.getDouble("reference_lat", config.getDouble("south", -90))}) {}
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref) :
+RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& reference) :
     Regular(bbox),
-    ni_(DiscreteRange(bbox.west(), bbox.east(), inc.west_east, ref.lon, 360).n),
-    nj_(DiscreteRange(bbox.south(), bbox.north(), inc.south_north, ref.lat).n),
-    reference_(ref) {
+    ni_(DiscreteRange(bbox.west(), bbox.east(), inc.west_east, reference.lon, 360).n),
+    nj_(DiscreteRange(bbox.south(), bbox.north(), inc.south_north, reference.lat).n),
+    reference_(reference) {
     ASSERT(ni_ > 0);
     ASSERT(nj_ > 0);
 }
 
 
-RegularLL::RegularLL(size_t ni, size_t nj, const area::BoundingBox& bbox, const PointLonLat& ref) :
-    Regular(bbox), ni_(ni), nj_(nj), reference_(ref) {}
-
-
-RegularLL::RegularLL(const Increments& inc, const PointLonLat& ref) :
-    RegularLL(inc, area::BoundingBox::make_global_prime(), ref) {}
-
-
-RegularLL::RegularLL(size_t ni, size_t nj, const PointLonLat& ref) :
-    RegularLL(ni, nj, area::BoundingBox::make_global_prime(), ref) {}
+RegularLL::RegularLL(size_t ni, size_t nj, const area::BoundingBox& bbox, const PointLonLat& reference) :
+    Regular(bbox), ni_(ni), nj_(nj), reference_(reference) {}
 
 
 Grid::iterator RegularLL::cbegin() const {
@@ -134,6 +128,7 @@ Grid::iterator RegularLL::cbegin() const {
 Grid::iterator RegularLL::cend() const {
     return iterator{new geo::iterator::Regular(*this, size())};
 }
+
 
 const std::vector<double>& RegularLL::longitudes() const {
     NOTIMP;

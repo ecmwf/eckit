@@ -35,11 +35,14 @@ public:
 
     explicit RegularLL(const Configuration&);
 
-    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& reference = {0, 0});
-    RegularLL(size_t ni, size_t nj, const area::BoundingBox&, const PointLonLat& reference = {0, 0});
+    explicit RegularLL(const Increments& increments, const area::BoundingBox& bbox = {}) :
+        RegularLL(increments, bbox, {bbox.south(), bbox.west()}) {}
 
-    explicit RegularLL(const Increments&, const PointLonLat& reference = {0, 0});
-    RegularLL(size_t ni, size_t nj, const PointLonLat& reference = {0, 0});
+    explicit RegularLL(size_t ni, size_t nj, const area::BoundingBox& bbox = {}) :
+        RegularLL(ni, nj, bbox, {bbox.south(), bbox.west()}) {}
+
+    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& reference);
+    RegularLL(size_t ni, size_t nj, const area::BoundingBox&, const PointLonLat& reference);
 
     // -- Destructor
     // None

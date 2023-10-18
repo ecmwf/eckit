@@ -31,8 +31,8 @@ namespace option {
 
 template <class T>
 VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
-                              const char* separator) :
-    Option(name, description), size_(size), separator_(separator) {}
+                              const char* separator, bool keepEmpty) :
+    Option(name, description), size_(size), separator_(separator), keepEmpty_(keepEmpty) {}
 
 
 template <class T>
@@ -48,7 +48,7 @@ template <class T>
 void VectorOption<T>::set(const std::string& value, Configured& parametrisation) const {
     eckit::Translator<std::string, T> t;
 
-    eckit::Tokenizer parse(separator_);
+    eckit::Tokenizer parse(separator_, keepEmpty_);
     std::vector<std::string> v;
     parse(value, v);
 

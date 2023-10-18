@@ -40,6 +40,41 @@ CASE("test_eckit_option_vector_size") {
         EXPECT_EQUAL(config.getLongVector("size-3").size(), 3);
         EXPECT_EQUAL(config.getLongVector("size-0").size(), 5);
     }
+
+
+    SECTION("test empty options"){
+        LocalConfiguration config;
+
+        std::unique_ptr<option::Option> option_size_1(new option::VectorOption<long>("size-1", "", 1, "/", true));
+        std::unique_ptr<option::Option> option_size_2(new option::VectorOption<long>("size-2", "", 2, "/", true));
+        std::unique_ptr<option::Option> option_size_3(new option::VectorOption<long>("size-3", "", 3, "/", true));
+        std::unique_ptr<option::Option> option_size_0(new option::VectorOption<long>("size-0", "", 0, "/", true));
+
+        EXPECT_NO_THROW(option_size_1->set("", config));
+        EXPECT_NO_THROW(option_size_2->set("/2", config));
+        EXPECT_NO_THROW(option_size_3->set("/2/", config));
+        EXPECT_NO_THROW(option_size_0->set("1/2///", config));
+
+        EXPECT_THROWS_AS(option_size_1->set("1/2", config), UserError);
+
+        constexpr auto EMPTY = long();
+
+        EXPECT_EQUAL(config.getLongVector("size-1").size(), 1);
+        EXPECT_EQUAL(config.getLongVector("size-1")[0], EMPTY);
+
+        EXPECT_EQUAL(config.getLongVector("size-2").size(), 2);
+        EXPECT_EQUAL(config.getLongVector("size-2")[0], EMPTY);
+        EXPECT_EQUAL(config.getLongVector("size-2")[1], 2);
+
+        EXPECT_EQUAL(config.getLongVector("size-3").size(), 3);
+        EXPECT_EQUAL(config.getLongVector("size-3")[0], EMPTY);
+        EXPECT_EQUAL(config.getLongVector("size-3")[1], 2);
+        EXPECT_EQUAL(config.getLongVector("size-3")[2], EMPTY);
+
+        EXPECT_EQUAL(config.getLongVector("size-0").size(), 5);
+        EXPECT_EQUAL(config.getLongVector("size-0")[0], 1);
+        EXPECT_EQUAL(config.getLongVector("size-0")[4], EMPTY);
+    }
 }
 
 

@@ -31,7 +31,8 @@ public:
 
     // -- Contructors
 
-    VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator = "/");
+    VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator = "/",
+                 bool keepEmpty = false);
 
     // -- Destructor
 
@@ -82,6 +83,7 @@ private:
 
     size_t size_;
     const char* separator_;
+    bool keepEmpty_;
 
     // -- Methods
     // None
